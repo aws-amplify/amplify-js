@@ -50,6 +50,12 @@ export interface ISignUpConfig {
 	hideAllDefaults?: boolean;
 	hiddenDefaults?: string[];
 	signUpFields?: ISignUpField[];
+	customAttributes?: ICustomAttribute[];
+}
+
+export interface ICustomAttribute {
+	name: string;
+	value: string;
 }
 
 export interface ISignUpProps extends IAuthPieceProps {
@@ -60,6 +66,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 	public defaultSignUpFields: ISignUpField[];
 	public header: string;
 	public signUpFields: ISignUpField[];
+	public customAttributes: ICustomAttribute[];
 
 	constructor(props: ISignUpProps) {
 		super(props);
@@ -264,6 +271,22 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 				`Couldn't find the label: ${this.getUsernameLabel()}, in sign up fields according to usernameAttributes!`
 			);
 		}
+
+		this.customAttributes.forEach(attr => {
+			if (!attr.name) {
+				throw new Error(`Custom attribute is expected to have non-empty name`);
+			}
+			if (!attr.value) {
+				throw new Error(`Custom attribute is expected to have non-empty value`);
+			}
+			if (attr.name in signup_info.attributes) {
+				throw new Error(
+					`Attribute with name '${attr.name}' is already present in the SignUp info`
+				);
+			}
+			signup_info.attributes[attr.name] = attr.value;
+		});
+
 		Auth.signUp(signup_info)
 			.then(data => {
 				this.setState({ requestPending: false });
@@ -285,6 +308,10 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 			this.signUpFields = this.props.signUpConfig.signUpFields;
 		}
 		this.sortFields();
+		this.customAttributes =
+			this.props.signUpConfig && this.props.signUpConfig.customAttributes
+				? this.props.signUpConfig.customAttributes
+				: [];
 		return (
 			<FormSection theme={theme} data-test={auth.signUp.section}>
 				<SectionHeader theme={theme} data-test={auth.signUp.headerSection}>

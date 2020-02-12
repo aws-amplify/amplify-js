@@ -870,3 +870,301 @@ describe('signUp with signUpConfig', () => {
 		expect(spyon).toBeCalled();
 	});
 });
+
+describe('signUp with customAttributes', () => {
+	let wrapper;
+	beforeEach(() => {
+		wrapper = shallow(<SignUp />);
+	});
+
+	test('signUp should pass custom attributes, if provided', async () => {
+		const wrapper = shallow(<SignUp />);
+		wrapper.setProps({
+			authState: 'signUp',
+			theme: AmplifyTheme,
+			signUpConfig: {
+				customAttributes: [
+					{
+						name: 'custom_name',
+						value: 'custom_value',
+					},
+				],
+			},
+		});
+
+		const spyon = jest
+			.spyOn(Auth, 'signUp')
+			.mockImplementationOnce((user, password) => {
+				return new Promise((res, rej) => {
+					res(mockResult);
+				});
+			});
+
+		const event_username = {
+			target: {
+				name: 'username',
+				value: 'user1',
+			},
+		};
+		const event_password = {
+			target: {
+				name: 'password',
+				value: 'abc',
+			},
+		};
+
+		const event_email = {
+			target: {
+				name: 'email',
+				value: 'email@amazon.com',
+			},
+		};
+
+		const phone_number = '+12345678901';
+
+		wrapper
+			.find(Input)
+			.at(0)
+			.simulate('change', event_username);
+		wrapper
+			.find(Input)
+			.at(1)
+			.simulate('change', event_password);
+		wrapper
+			.find(Input)
+			.at(2)
+			.simulate('change', event_email);
+		wrapper
+			.find(PhoneField)
+			.at(0)
+			.simulate('changeText', phone_number);
+		await wrapper.find(Button).simulate('click');
+
+		expect(spyon).toBeCalledWith({
+			attributes: {
+				custom_name: 'custom_value',
+				email: 'email@amazon.com',
+				phone_number: '+12345678901',
+			},
+			password: 'abc',
+			username: 'user1',
+		});
+
+		spyon.mockClear();
+	});
+
+	test('signUp should not complete if custom attribute name is empty', async () => {
+		const wrapper = shallow(<SignUp />);
+		wrapper.setProps({
+			authState: 'signUp',
+			theme: AmplifyTheme,
+			signUpConfig: {
+				customAttributes: [
+					{
+						name: '',
+						value: 'custom_value',
+					},
+				],
+			},
+		});
+
+		const spyon = jest
+			.spyOn(Auth, 'signUp')
+			.mockImplementationOnce((user, password) => {
+				return new Promise((res, rej) => {
+					res(mockResult);
+				});
+			});
+
+		const event_username = {
+			target: {
+				name: 'username',
+				value: 'user1',
+			},
+		};
+		const event_password = {
+			target: {
+				name: 'password',
+				value: 'abc',
+			},
+		};
+
+		const event_email = {
+			target: {
+				name: 'email',
+				value: 'email@amazon.com',
+			},
+		};
+
+		const phone_number = '+12345678901';
+
+		wrapper
+			.find(Input)
+			.at(0)
+			.simulate('change', event_username);
+		wrapper
+			.find(Input)
+			.at(1)
+			.simulate('change', event_password);
+		wrapper
+			.find(Input)
+			.at(2)
+			.simulate('change', event_email);
+		wrapper
+			.find(PhoneField)
+			.at(0)
+			.simulate('changeText', phone_number);
+
+		try {
+			await wrapper.find(Button).simulate('click');
+		} catch (err) {
+			expect(err).toEqual(
+				new Error('Custom attribute is expected to have non-empty name')
+			);
+		}
+	});
+
+	test('signUp should not complete if custom attribute value is empty', async () => {
+		const wrapper = shallow(<SignUp />);
+		wrapper.setProps({
+			authState: 'signUp',
+			theme: AmplifyTheme,
+			signUpConfig: {
+				customAttributes: [
+					{
+						name: 'custom_name',
+						value: '',
+					},
+				],
+			},
+		});
+
+		const spyon = jest
+			.spyOn(Auth, 'signUp')
+			.mockImplementationOnce((user, password) => {
+				return new Promise((res, rej) => {
+					res(mockResult);
+				});
+			});
+
+		const event_username = {
+			target: {
+				name: 'username',
+				value: 'user1',
+			},
+		};
+		const event_password = {
+			target: {
+				name: 'password',
+				value: 'abc',
+			},
+		};
+
+		const event_email = {
+			target: {
+				name: 'email',
+				value: 'email@amazon.com',
+			},
+		};
+
+		const phone_number = '+12345678901';
+
+		wrapper
+			.find(Input)
+			.at(0)
+			.simulate('change', event_username);
+		wrapper
+			.find(Input)
+			.at(1)
+			.simulate('change', event_password);
+		wrapper
+			.find(Input)
+			.at(2)
+			.simulate('change', event_email);
+		wrapper
+			.find(PhoneField)
+			.at(0)
+			.simulate('changeText', phone_number);
+
+		try {
+			await wrapper.find(Button).simulate('click');
+		} catch (err) {
+			expect(err).toEqual(
+				new Error('Custom attribute is expected to have non-empty value')
+			);
+		}
+	});
+
+	test('signUp should not complete if custom attribute clashes with the standard one', async () => {
+		const wrapper = shallow(<SignUp />);
+		wrapper.setProps({
+			authState: 'signUp',
+			theme: AmplifyTheme,
+			signUpConfig: {
+				customAttributes: [
+					{
+						name: 'email',
+						value: 'email1@amazon.com',
+					},
+				],
+			},
+		});
+
+		const spyon = jest
+			.spyOn(Auth, 'signUp')
+			.mockImplementationOnce((user, password) => {
+				return new Promise((res, rej) => {
+					res(mockResult);
+				});
+			});
+
+		const event_username = {
+			target: {
+				name: 'username',
+				value: 'user1',
+			},
+		};
+		const event_password = {
+			target: {
+				name: 'password',
+				value: 'abc',
+			},
+		};
+
+		const event_email = {
+			target: {
+				name: 'email',
+				value: 'email@amazon.com',
+			},
+		};
+
+		const phone_number = '+12345678901';
+
+		wrapper
+			.find(Input)
+			.at(0)
+			.simulate('change', event_username);
+		wrapper
+			.find(Input)
+			.at(1)
+			.simulate('change', event_password);
+		wrapper
+			.find(Input)
+			.at(2)
+			.simulate('change', event_email);
+		wrapper
+			.find(PhoneField)
+			.at(0)
+			.simulate('changeText', phone_number);
+
+		try {
+			await wrapper.find(Button).simulate('click');
+		} catch (err) {
+			expect(err).toEqual(
+				new Error(
+					"Attribute with name 'email' is already present in the SignUp info"
+				)
+			);
+		}
+	});
+});
