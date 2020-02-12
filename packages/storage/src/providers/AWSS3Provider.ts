@@ -15,15 +15,17 @@ import {
 	Hub,
 	Credentials,
 	Parser,
-	appendAmplifyUserAgent,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { S3Client } from '@aws-sdk/client-s3-browser/S3Client';
+import {
+	S3Client,
+	GetObjectCommand,
+	PutObjectCommand,
+	DeleteObjectCommand,
+	ListObjectsCommand,
+} from '@aws-sdk/client-s3';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
-import { GetObjectCommand } from '@aws-sdk/client-s3-browser/commands/GetObjectCommand';
-import { PutObjectCommand } from '@aws-sdk/client-s3-browser/commands/PutObjectCommand';
-import { DeleteObjectCommand } from '@aws-sdk/client-s3-browser/commands/DeleteObjectCommand';
-import { ListObjectsCommand } from '@aws-sdk/client-s3-browser/commands/ListObjectsCommand';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
 
@@ -122,7 +124,17 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, download, track, expires } = opt;
+		const {
+			bucket,
+			download,
+			cacheControl,
+			contentDisposition,
+			contentEncoding,
+			contentLanguage,
+			contentType,
+			expires,
+			track,
+		} = opt;
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		const s3 = this._createNewS3Client(opt);
@@ -132,6 +144,14 @@ export class AWSS3Provider implements StorageProvider {
 			Bucket: bucket,
 			Key: final_key,
 		};
+
+		// See: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
+		if (cacheControl) params.ResponseCacheControl = cacheControl;
+		if (contentDisposition)
+			params.ResponseContentDisposition = contentDisposition;
+		if (contentEncoding) params.ResponseContentEncoding = contentEncoding;
+		if (contentLanguage) params.ResponseContentLanguage = contentLanguage;
+		if (contentType) params.ResponseContentType = contentType;
 
 		if (download === true) {
 			const getObjectCommand = new GetObjectCommand(params);
@@ -364,7 +384,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, track } = opt;
+		const { bucket, track, maxKeys } = opt;
 
 		const prefix = this._prefix(opt);
 		const final_path = prefix + path;
@@ -374,6 +394,7 @@ export class AWSS3Provider implements StorageProvider {
 		const params = {
 			Bucket: bucket,
 			Prefix: final_path,
+			MaxKeys: maxKeys,
 		};
 
 		const listObjectsCommand = new ListObjectsCommand(params);
@@ -482,9 +503,9 @@ export class AWSS3Provider implements StorageProvider {
 		const s3client = new S3Client({
 			region,
 			credentials,
+			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
 		});
-		appendAmplifyUserAgent(s3client);
 		return s3client;
 	}
 }

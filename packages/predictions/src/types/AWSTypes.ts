@@ -116,7 +116,7 @@ export interface Image {
 	/**
 	 * <p>Blob of image bytes up to 5 MBs.</p>
 	 */
-	Bytes?: ArrayBuffer | ArrayBufferView | string;
+	Bytes?: Uint8Array;
 
 	/**
 	 * <p>Identifies an S3 object as the image source.</p>
@@ -150,7 +150,7 @@ export interface Document {
 	/**
 	 * <p>A blob of base-64 encoded documents bytes. The maximum size of a document that's provided in a blob of bytes is 5 MB. The document bytes must be in PNG or JPG format.</p> <p>If you are using an AWS SDK to call Amazon Textract, you might not need to base64-encode image bytes passed using the <code>Bytes</code> field. </p>
 	 */
-	Bytes?: ArrayBuffer | ArrayBufferView | string;
+	Bytes?: Uint8Array;
 
 	/**
 	 * <p>Identifies an S3 object as the document source. The maximum size of a document stored in an S3 bucket is 5 MB.</p>

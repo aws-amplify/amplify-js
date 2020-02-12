@@ -3,21 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@1.2.4...@aws-amplify/api@1.3.0) (2020-01-10)
+## [2.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@2.1.3...@aws-amplify/api@2.1.5) (2020-02-07)
 
 ### Bug Fixes
 
-- **@aws-amplify/api:** expose tree-shaking for Webpack ([768a5f2](https://github.com/aws-amplify/amplify-js/commit/768a5f2bed0b1ecdfc9518c313a4a550a703fea7))
+- **cache:** export correct module for RN ([#4786](https://github.com/aws-amplify/amplify-js/issues/4786)) ([a15730c](https://github.com/aws-amplify/amplify-js/commit/a15730cc50692d9d31a0f586c3544b3dcdbea659))
+
+## [2.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@2.1.2...@aws-amplify/api@2.1.3) (2020-01-10)
+
+### Bug Fixes
+
+- [#4311](https://github.com/aws-amplify/amplify-js/issues/4311) Update main entry field to point to CJS builds instead of webpack bundles ([#4678](https://github.com/aws-amplify/amplify-js/issues/4678)) ([54fbdf4](https://github.com/aws-amplify/amplify-js/commit/54fbdf4b1393567735fb7b5f4144db273f1a5f6a))
+
+## [2.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@2.1.1...@aws-amplify/api@2.1.2) (2019-12-18)
+
+**Note:** Version bump only for package @aws-amplify/api
+
+## [2.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@2.1.0...@aws-amplify/api@2.1.1) (2019-12-03)
+
+### Bug Fixes
+
+- Downgrade TS to ~3.6 ([86597db](https://github.com/aws-amplify/amplify-js/commit/86597db2b0704d7aff5b612557536142b82e1731))
+
+# [2.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@1.2.4...@aws-amplify/api@2.1.0) (2019-11-15)
 
 ### Features
 
-- **@aws-amplify/api:** publish ES2015/ESM artifacts ([68e0870](https://github.com/aws-amplify/amplify-js/commit/68e087056a0798d465b2c16d6f043e2ae8fd5a7c))
-- **@aws-amplify/core:** publish ES2015/ESM artifacts ([d73d5e1](https://github.com/aws-amplify/amplify-js/commit/d73d5e14b5e6a46b36dc00045029693a229046d4))
 - enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
-
-### Reverts
-
-- Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
 
 ## [1.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@1.2.3...@aws-amplify/api@1.2.4) (2019-10-29)
 

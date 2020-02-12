@@ -12,8 +12,10 @@
  */
 import { Credentials } from '@aws-amplify/core';
 import { AmazonPersonalizeProvider } from '../../src/Providers/AmazonPersonalizeProvider';
-import { PersonalizeEventsClient } from '@aws-sdk/client-personalize-events-browser/PersonalizeEventsClient';
-import { PutEventsCommand } from '@aws-sdk/client-personalize-events-browser/commands/PutEventsCommand';
+import {
+	PersonalizeEventsClient,
+	PutEventsCommand,
+} from '@aws-sdk/client-personalize-events';
 
 const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -27,7 +29,7 @@ const TRACKING_ID = 'trackingId';
 
 jest.useFakeTimers();
 
-jest.mock('@aws-sdk/client-personalize-events-browser/PersonalizeEventsClient');
+jest.mock('@aws-sdk/client-personalize-events');
 
 beforeEach(() => {
 	PersonalizeEventsClient.prototype.send = jest.fn(async command => {

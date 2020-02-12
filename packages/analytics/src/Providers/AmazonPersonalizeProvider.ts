@@ -15,11 +15,13 @@ import {
 	ConsoleLogger as Logger,
 	Credentials,
 	JS,
-	appendAmplifyUserAgent,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { PersonalizeEventsClient } from '@aws-sdk/client-personalize-events-browser/PersonalizeEventsClient';
-import { PutEventsCommand } from '@aws-sdk/client-personalize-events-browser/commands/PutEventsCommand';
-import { PutEventsInput } from '@aws-sdk/client-personalize-events-browser/types/PutEventsInput';
+import {
+	PersonalizeEventsClient,
+	PutEventsCommand,
+	PutEventsCommandInput,
+} from '@aws-sdk/client-personalize-events';
 import {
 	SessionInfo,
 	RequestParams,
@@ -93,7 +95,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		Object.assign(params, {
 			config: this._config,
 			credentials,
-			sentAt: new Date().getTime() / 1000,
+			sentAt: new Date(),
 		});
 		const { eventType, properties } = params.event;
 
@@ -141,6 +143,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 			}
 			return;
 		}
+
 		return this.putToBuffer(requestParams);
 	}
 
@@ -261,7 +264,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 				);
 				events.push(eventPayload);
 			}
-			const payload = <PutEventsInput>{};
+			const payload = <PutEventsCommandInput>{};
 			payload.trackingId = sessionInfo.trackingId;
 			payload.sessionId = sessionInfo.sessionId;
 			payload.userId = sessionInfo.userId;
@@ -347,7 +350,8 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		const { eventData, sentAt } = params;
 		const trackPayload = <RecordEventPayload>{};
 		trackPayload.sentAt = sentAt;
-		trackPayload.properties = eventData.properties;
+		trackPayload.properties =
+			eventData.properties && JSON.stringify(eventData.properties);
 		trackPayload.eventId =
 			this._sessionManager.getTimerKey() + sessionInfo.sessionId;
 		trackPayload.eventType = eventData.eventType;
@@ -378,8 +382,8 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		this._personalize = new PersonalizeEventsClient({
 			region,
 			credentials,
+			customUserAgent: getAmplifyUserAgent(),
 		});
-		appendAmplifyUserAgent(this._personalize);
 		return true;
 	}
 

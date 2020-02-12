@@ -52,6 +52,7 @@ jobs:
             yarn run test --scope @aws-amplify/predictions
             yarn run test --scope @aws-amplify/storage
             yarn run test --scope @aws-amplify/xr
+            yarn run test --scope amazon-cognito-identity-js
             yarn run test --scope aws-amplify-react
             yarn run test --scope aws-amplify-angular
             yarn run test --scope aws-amplify-vue
@@ -67,7 +68,7 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
-            # git checkout modularization
+            git checkout modularization
             yarn
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
@@ -185,12 +186,18 @@ jobs:
             cd amplify-js/packages/aws-amplify-angular
             yarn link
       - run:
+          name: 'Link @aws-amplify/analytics'
+          command: |
+            cd amplify-js/packages/analytics
+            yarn link
+      - run:
           name: 'Install Angular Authenticator sample'
           command: |
             cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
             yarn
             yarn link aws-amplify
             yarn link aws-amplify-angular
+            yarn link @aws-amplify/analytics
       - run:
           name: 'Start Angular Authenticator Sample server in background'
           command: |
@@ -215,6 +222,11 @@ jobs:
       - restore_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
       - run:
+          name: 'Install Vue Authenticator sample'
+          command: |
+            cd amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
+            yarn
+      - run:
           name: 'Link aws-amplify'
           command: |
             cd amplify-js/packages/aws-amplify
@@ -224,13 +236,6 @@ jobs:
           command: |
             cd amplify-js/packages/aws-amplify-vue
             yarn link
-      - run:
-          name: 'Install Vue Authenticator sample'
-          command: |
-            cd amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
-            yarn
-            yarn link aws-amplify
-            yarn link aws-amplify-vue
       - run:
           name: 'Start Vue Authenticator Sample server in background'
           command: |
@@ -286,6 +291,7 @@ workflows:
                 - release
                 - master
                 - ui-components/master
+                - 1.0-stable
           requires:
             - build
       - integ_react_predictions:
@@ -295,6 +301,7 @@ workflows:
                 - release
                 - master
                 - ui-components/master
+                - 1.0-stable
           requires:
             - integ_setup
       - integ_react_auth:
@@ -304,6 +311,7 @@ workflows:
                 - release
                 - master
                 - ui-components/master
+                - 1.0-stable
           requires:
             - integ_setup
       - integ_angular_auth:
@@ -312,6 +320,7 @@ workflows:
               only:
                 - release
                 - master
+                - 1.0-stable
           requires:
             - integ_setup
       - integ_vue_auth:
@@ -320,6 +329,7 @@ workflows:
               only:
                 - release
                 - master
+                - 1.0-stable
           requires:
             - integ_setup
       - deploy:
@@ -330,6 +340,8 @@ workflows:
                 - master
                 - beta
                 - ui-components/master
+                - 1.0-stable
+                - modularization
           requires:
             - unit_test
             - integ_react_predictions

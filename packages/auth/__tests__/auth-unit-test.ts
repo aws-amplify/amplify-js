@@ -213,7 +213,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 });
 
 import { AuthOptions, SignUpParams, AwsCognitoOAuthOpts } from '../src/types';
-import Auth from '../src/Auth';
+import { AuthClass as Auth } from '../src/Auth';
 import Cache from '@aws-amplify/cache';
 import {
 	CookieStorage,
@@ -765,13 +765,13 @@ describe('auth unit test', () => {
 			const spyon2 = jest
 				.spyOn(auth, 'currentUserPoolUser')
 				.mockImplementationOnce(() => {
-					return Promise.reject('User is disabled');
+					return Promise.reject('User is disabled.');
 				});
 			expect.assertions(2);
 			try {
 				await auth.signIn('username', 'password');
 			} catch (e) {
-				expect(e).toBe('User is disabled');
+				expect(e).toBe('User is disabled.');
 				expect(spyon2).toBeCalled();
 			}
 
@@ -2737,6 +2737,16 @@ describe('auth unit test', () => {
 				.mockImplementation(() => {
 					throw new Error('no user logged in');
 				});
+
+			jest
+				.spyOn(StorageHelper.prototype, 'getStorage')
+				.mockImplementation(() => {
+					return {
+						setItem() {
+							return null;
+						},
+					};
+				});
 		});
 
 		test('User Pools Code Flow', async () => {
@@ -3122,7 +3132,7 @@ describe('auth unit test', () => {
 				.mockImplementationOnce(callback => {
 					callback(
 						{
-							message: 'User is disabled',
+							message: 'User is disabled.',
 						},
 						null
 					);
@@ -3145,7 +3155,7 @@ describe('auth unit test', () => {
 				await auth.currentUserPoolUser();
 			} catch (e) {
 				expect(e).toEqual({
-					message: 'User is disabled',
+					message: 'User is disabled.',
 				});
 			}
 

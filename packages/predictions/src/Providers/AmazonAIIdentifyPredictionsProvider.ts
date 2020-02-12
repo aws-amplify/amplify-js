@@ -1,26 +1,22 @@
 import {
 	Credentials,
 	ConsoleLogger as Logger,
-	appendAmplifyUserAgent,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import Storage from '@aws-amplify/storage';
 import { AbstractIdentifyPredictionsProvider } from '../types/Providers';
-import { RekognitionClient } from '@aws-sdk/client-rekognition-browser/RekognitionClient';
-import { SearchFacesByImageCommand } from '@aws-sdk/client-rekognition-browser/commands/SearchFacesByImageCommand';
 import {
+	RekognitionClient,
+	SearchFacesByImageCommand,
 	DetectTextCommand,
-	DetectTextInput,
-} from '@aws-sdk/client-rekognition-browser/commands/DetectTextCommand';
-import {
+	DetectTextCommandInput,
 	DetectLabelsCommand,
-	DetectLabelsInput,
-} from '@aws-sdk/client-rekognition-browser/commands/DetectLabelsCommand';
-import { DetectFacesCommand } from '@aws-sdk/client-rekognition-browser/commands/DetectFacesCommand';
-import {
+	DetectLabelsCommandInput,
+	DetectFacesCommand,
 	DetectModerationLabelsCommand,
-	DetectModerationLabelsInput,
-} from '@aws-sdk/client-rekognition-browser/commands/DetectModerationLabelsCommand';
-import { RecognizeCelebritiesCommand } from '@aws-sdk/client-rekognition-browser/commands/RecognizeCelebritiesCommand';
+	DetectModerationLabelsCommandInput,
+	RecognizeCelebritiesCommand,
+} from '@aws-sdk/client-rekognition';
 import {
 	IdentifyLabelsInput,
 	IdentifyLabelsOutput,
@@ -43,15 +39,13 @@ import {
 	TextDetectionList,
 	BlockList,
 } from '../types/AWSTypes';
-import { TextractClient } from '@aws-sdk/client-textract-browser/TextractClient';
 import {
+	TextractClient,
 	DetectDocumentTextCommand,
-	DetectDocumentTextInput,
-} from '@aws-sdk/client-textract-browser/commands/DetectDocumentTextCommand';
-import {
+	DetectDocumentTextCommandInput,
 	AnalyzeDocumentCommand,
-	AnalyzeDocumentInput,
-} from '@aws-sdk/client-textract-browser/commands/AnalyzeDocumentCommand';
+	AnalyzeDocumentCommandInput,
+} from '@aws-sdk/client-textract';
 import { makeCamelCase, makeCamelCaseArray, blobToArrayBuffer } from './Utils';
 import {
 	categorizeRekognitionBlocks,
@@ -95,7 +89,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			} else if (isFileSource(source)) {
 				blobToArrayBuffer(source.file)
 					.then(buffer => {
-						res({ Bytes: buffer });
+						res({ Bytes: new Uint8Array(buffer) });
 					})
 					.catch(err => rej(err));
 			} else if (isBytesSource(source)) {
@@ -103,9 +97,12 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				if (bytes instanceof Blob) {
 					blobToArrayBuffer(bytes)
 						.then(buffer => {
-							res({ Bytes: buffer });
+							res({ Bytes: new Uint8Array(buffer) });
 						})
 						.catch(err => rej(err));
+				}
+				if (bytes instanceof ArrayBuffer || bytes instanceof Buffer) {
+					res({ Bytes: new Uint8Array(bytes) } as Image);
 				}
 				// everything else can be directly passed to Rekognition / Textract.
 				res({ Bytes: bytes } as Image);
@@ -132,10 +129,16 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				defaults: { format: configFormat = 'PLAIN' } = {},
 			} = {},
 		} = this._config;
-		this.rekognitionClient = new RekognitionClient({ region, credentials });
-		appendAmplifyUserAgent(this.rekognitionClient);
-		this.textractClient = new TextractClient({ region, credentials });
-		appendAmplifyUserAgent(this.textractClient);
+		this.rekognitionClient = new RekognitionClient({
+			region,
+			credentials,
+			customUserAgent: getAmplifyUserAgent(),
+		});
+		this.textractClient = new TextractClient({
+			region,
+			credentials,
+			customUserAgent: getAmplifyUserAgent(),
+		});
 		let inputDocument: Document;
 
 		try {
@@ -156,10 +159,10 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			 * for everyday images but has 50 word limit) first and see if reaches its word limit. If it does, then
 			 * we call textract and use the data that identify more words.
 			 */
-			const textractParam: DetectDocumentTextInput = {
+			const textractParam: DetectDocumentTextCommandInput = {
 				Document: inputDocument,
 			};
-			const rekognitionParam: DetectTextInput = {
+			const rekognitionParam: DetectTextCommandInput = {
 				Image: inputDocument,
 			};
 
@@ -194,7 +197,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				Promise.reject(err);
 			}
 		} else {
-			const param: AnalyzeDocumentInput = {
+			const param: AnalyzeDocumentCommandInput = {
 				Document: inputDocument,
 				FeatureTypes: featureTypes,
 			};
@@ -228,8 +231,11 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 					defaults: { type = 'LABELS' } = {},
 				} = {},
 			} = this._config;
-			this.rekognitionClient = new RekognitionClient({ region, credentials });
-			appendAmplifyUserAgent(this.rekognitionClient);
+			this.rekognitionClient = new RekognitionClient({
+				region,
+				credentials,
+				customUserAgent: getAmplifyUserAgent(),
+			});
 			let inputImage: Image;
 			await this.configureSource(input.labels.source)
 				.then(data => {
@@ -271,7 +277,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 	 * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectLabels response.
 	 */
 	private async detectLabels(
-		param: DetectLabelsInput
+		param: DetectLabelsCommandInput
 	): Promise<IdentifyLabelsOutput> {
 		try {
 			const detectLabelsCommand = new DetectLabelsCommand(param);
@@ -302,7 +308,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 	 * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectModerationLabels response.
 	 */
 	private async detectModerationLabels(
-		param: DetectModerationLabelsInput
+		param: DetectModerationLabelsCommandInput
 	): Promise<IdentifyLabelsOutput> {
 		try {
 			const detectModerationLabelsCommand = new DetectModerationLabelsCommand(
@@ -344,8 +350,11 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		} = this._config;
 		// default arguments
 
-		this.rekognitionClient = new RekognitionClient({ region, credentials });
-		appendAmplifyUserAgent(this.rekognitionClient);
+		this.rekognitionClient = new RekognitionClient({
+			region,
+			credentials,
+			customUserAgent: getAmplifyUserAgent(),
+		});
 		let inputImage: Image;
 		await this.configureSource(input.entities.source)
 			.then(data => (inputImage = data))

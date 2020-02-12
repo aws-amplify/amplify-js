@@ -79,7 +79,7 @@ describe('TOTPSetupComp test', () => {
 
 			expect(spyon).toBeCalled();
 
-			spyon.mockClear();
+			spyon.mockRestore();
 		});
 
 		test('error case', async () => {
@@ -96,7 +96,7 @@ describe('TOTPSetupComp test', () => {
 
 			expect(spyon).toBeCalled();
 
-			spyon.mockClear();
+			spyon.mockRestore();
 		});
 	});
 
@@ -127,27 +127,30 @@ describe('TOTPSetupComp test', () => {
 
 			const spyon = jest
 				.spyOn(Auth, 'verifyTotpToken')
-				.mockImplementationOnce(() => {
+				.mockImplementation(() => {
 					return new Promise((res, rej) => {
 						res();
 					});
 				});
+
 			const spyon2 = jest
 				.spyOn(Auth, 'setPreferredMFA')
-				.mockImplementationOnce(() => {
-					return;
+				.mockImplementation(() => {
+					return new Promise((res, rej) => {
+						res();
+					});
 				});
-			const spyon3 = jest.spyOn(instance, 'triggerTOTPEvent');
 
+			const spyon3 = jest.spyOn(instance, 'triggerTOTPEvent');
 			await instance.verifyTotpToken();
 
 			expect(spyon).toBeCalled();
 			expect(spyon2).toBeCalled();
 			expect(spyon3).toBeCalled();
 
-			spyon.mockClear();
-			spyon2.mockClear();
-			spyon3.mockClear();
+			spyon.mockRestore();
+			spyon2.mockRestore();
+			spyon3.mockRestore();
 		});
 
 		test('no input', async () => {
@@ -166,7 +169,7 @@ describe('TOTPSetupComp test', () => {
 
 			expect(spyon).not.toBeCalled();
 
-			spyon.mockClear();
+			spyon.mockRestore();
 		});
 
 		test('error case', async () => {
@@ -188,18 +191,21 @@ describe('TOTPSetupComp test', () => {
 						rej();
 					});
 				});
+
 			const spyon2 = jest
 				.spyOn(Auth, 'setPreferredMFA')
-				.mockImplementationOnce(() => {
-					return;
+				.mockImplementation(() => {
+					return new Promise((res, rej) => {
+						res();
+					});
 				});
-			const spyon3 = jest.spyOn(instance, 'triggerTOTPEvent');
 
 			await instance.verifyTotpToken();
 
 			expect(spyon).toBeCalled();
+			expect(spyon2).not.toBeCalled();
 
-			spyon.mockClear();
+			spyon.mockRestore();
 		});
 	});
 });

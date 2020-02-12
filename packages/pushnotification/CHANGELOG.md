@@ -3,15 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@1.1.4...@aws-amplify/pushnotification@1.2.0) (2020-01-10)
+## [2.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@2.1.3...@aws-amplify/pushnotification@2.1.5) (2020-02-07)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+## [2.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@2.1.2...@aws-amplify/pushnotification@2.1.3) (2020-01-10)
+
+### Bug Fixes
+
+- **dependencies:** pin version for push-notification-ios ([#4696](https://github.com/aws-amplify/amplify-js/issues/4696)) ([c06f8c9](https://github.com/aws-amplify/amplify-js/commit/c06f8c93b7bf0cb7ed47fac68cd2cd63c97785da))
+
+## [2.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@2.1.1...@aws-amplify/pushnotification@2.1.2) (2019-12-18)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+## [2.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@2.1.0...@aws-amplify/pushnotification@2.1.1) (2019-12-03)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+# [2.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@1.1.4...@aws-amplify/pushnotification@2.1.0) (2019-11-15)
 
 ### Features
 
 - enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
-
-### Reverts
-
-- Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
 
 ## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@1.1.3...@aws-amplify/pushnotification@1.1.4) (2019-10-29)
 

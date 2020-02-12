@@ -3,23 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [1.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@1.5.0...@aws-amplify/auth@1.6.0) (2020-01-10)
+## [2.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.3...@aws-amplify/auth@2.1.5) (2020-02-07)
 
 ### Bug Fixes
 
-- **@aws-amplify/auth:** expose tree-shaking for Webpack ([7ad2d4e](https://github.com/aws-amplify/amplify-js/commit/7ad2d4e7a2673481ab45b416caed7593b7973f32))
+- **auth:** prevent urlListener from firing auth flow twice with the same URL ([#4798](https://github.com/aws-amplify/amplify-js/issues/4798)) ([cf8738a](https://github.com/aws-amplify/amplify-js/commit/cf8738ac5e7961a163ce158a7383bc27f693475f))
+- **cache:** export correct module for RN ([#4786](https://github.com/aws-amplify/amplify-js/issues/4786)) ([a15730c](https://github.com/aws-amplify/amplify-js/commit/a15730cc50692d9d31a0f586c3544b3dcdbea659))
+
+## [2.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.2...@aws-amplify/auth@2.1.3) (2020-01-10)
+
+### Bug Fixes
+
+- [#4311](https://github.com/aws-amplify/amplify-js/issues/4311) Update main entry field to point to CJS builds instead of webpack bundles ([#4678](https://github.com/aws-amplify/amplify-js/issues/4678)) ([54fbdf4](https://github.com/aws-amplify/amplify-js/commit/54fbdf4b1393567735fb7b5f4144db273f1a5f6a))
+
+## [2.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.1...@aws-amplify/auth@2.1.2) (2019-12-18)
+
+### Bug Fixes
+
+- **@aws-amplify/auth:** Adjust Cognito error message checking for dis… ([#4546](https://github.com/aws-amplify/amplify-js/issues/4546)) ([2d4d24b](https://github.com/aws-amplify/amplify-js/commit/2d4d24b004e8a52901b673265abbf4fb7241c4e4)), closes [#4544](https://github.com/aws-amplify/amplify-js/issues/4544)
+
+## [2.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.0...@aws-amplify/auth@2.1.1) (2019-12-03)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+# [2.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@1.5.0...@aws-amplify/auth@2.1.0) (2019-11-15)
+
+### Bug Fixes
+
 - **@aws-amplify/auth:** NotAuthorizedException ([#4281](https://github.com/aws-amplify/amplify-js/issues/4281)) ([023f496](https://github.com/aws-amplify/amplify-js/commit/023f4960d80c9774d85cbc7593175d7380fcbed2))
-- **core, auth, aws-amplify-react:** fix tests ([bdd162c](https://github.com/aws-amplify/amplify-js/commit/bdd162c2dd03488168a299f8dd8c554f76ca8a12))
 
 ### Features
 
-- **@aws-amplify/auth:** publish ES2015/ESM artifacts ([6cf2c22](https://github.com/aws-amplify/amplify-js/commit/6cf2c22b9a9013092fa81ee51ff5f280d6152e1d))
-- **@aws-amplify/core:** [Delivers [#168673137](https://github.com/aws-amplify/amplify-js/issues/168673137)] Migrate core category to aws sdk V3 ([#4077](https://github.com/aws-amplify/amplify-js/issues/4077)) ([beb73a4](https://github.com/aws-amplify/amplify-js/commit/beb73a4b1c051654750f5bdc3b20cde3a3aba37d))
 - enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
-
-### Reverts
-
-- Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
 
 # [1.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@1.4.3...@aws-amplify/auth@1.5.0) (2019-10-29)
 
