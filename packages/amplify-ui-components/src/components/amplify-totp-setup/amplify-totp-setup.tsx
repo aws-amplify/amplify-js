@@ -1,7 +1,7 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import QRCode from 'qrcode';
 
-import { Logger, isEmpty, Hub } from '@aws-amplify/core';
+import { Logger, isEmpty } from '@aws-amplify/core';
 import { CognitoUserInterface, AuthStateHandler, AuthState, MfaOption } from '../../common/types/auth-types';
 import { Auth } from '@aws-amplify/auth';
 import { TOTPSetupEventType } from './amplify-totp-setup-interface';
@@ -17,7 +17,7 @@ import {
   ALT_QR_CODE,
   TOTP_LABEL,
 } from '../../common/constants';
-import { dispatchToastHubEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 const logger = new Logger('TOTP');
 
@@ -34,9 +34,7 @@ export class AmplifyTOTPSetup {
   /** Used in order to configure TOTP for a user */
   @Prop() user: CognitoUserInterface;
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: AuthStateHandler = (nextAuthState: AuthState, data?: object) => {
-    Hub.dispatch('AuthenticatorState', { event: nextAuthState, data });
-  };
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 
   @State() code: string | null = null;
   @State() setupMessage: string | null = null;

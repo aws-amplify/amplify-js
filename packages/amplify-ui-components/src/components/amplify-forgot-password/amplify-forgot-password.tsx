@@ -5,8 +5,8 @@ import { RESET_YOUR_PASSWORD, SEND_CODE, BACK_TO_SIGN_IN, NO_AUTH_MODULE_FOUND }
 import { CodeDeliveryType } from './amplify-forgot-password-interface';
 
 import { Auth } from '@aws-amplify/auth';
-import { Logger, Hub } from '@aws-amplify/core';
-import { dispatchToastHubEvent } from '../../common/helpers';
+import { Logger } from '@aws-amplify/core';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 const logger = new Logger('ForgotPassword');
 
@@ -28,9 +28,7 @@ export class AmplifyForgotPassword {
   /** The function called when submitting a new password */
   @Prop() handleSubmit: (event: Event) => void = event => this.submit(event);
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: AuthStateHandler = (nextAuthState: AuthState, data?: object) => {
-    Hub.dispatch('AuthenticatorState', { event: nextAuthState, data });
-  };
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 
   @State() username: string;
   @State() password: string;

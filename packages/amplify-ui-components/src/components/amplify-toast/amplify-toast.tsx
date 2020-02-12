@@ -7,7 +7,7 @@ import { Component, Prop, h } from '@stencil/core';
 })
 export class AmplifyToast {
   /** Used in order to add a dismissable `x` for the Toast component */
-  @Prop() onClose: () => void;
+  @Prop() handleClose: () => void;
   @Prop() message: string = '';
 
   /* 
@@ -21,7 +21,7 @@ export class AmplifyToast {
         <amplify-icon class="toast-icon" name="warning" />
         {this.message ? <span>{this.message}</span> : null}
         <slot />
-        <a class="toast-close" onClick={this.onClose} />
+        <a class="toast-close" onClick={this.handleClose} />
       </div>
     );
   }

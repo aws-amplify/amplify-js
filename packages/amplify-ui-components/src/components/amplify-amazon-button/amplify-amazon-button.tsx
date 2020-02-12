@@ -1,7 +1,7 @@
 import { Auth } from '@aws-amplify/auth';
-import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
-
+import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_AMAZON } from '../../common/constants';
 import { AuthState, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
 
@@ -17,9 +17,7 @@ export class AmplifyAmazonButton {
   /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
-  @Prop() handleAuthStateChange: AuthStateHandler = (nextAuthState: AuthState, data?: object) => {
-    Hub.dispatch('AuthenticatorState', { event: nextAuthState, data });
-  };
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** (Optional) Override default styling */
   @Prop() overrideStyle: boolean = false;
 

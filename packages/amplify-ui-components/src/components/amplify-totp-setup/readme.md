@@ -5,10 +5,10 @@
 
 ## Properties
 
-| Property                | Attribute | Description                                                                     | Type                                                | Default                                                                                                                      |
-| ----------------------- | --------- | ------------------------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `handleAuthStateChange` | --        | Passed from the Authenticator component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `(nextAuthState: AuthState, data?: object) => {     Hub.dispatch('AuthenticatorState', { event: nextAuthState, data });   }` |
-| `user`                  | --        | Used in order to configure TOTP for a user                                      | `CognitoUserInterface`                              | `undefined`                                                                                                                  |
+| Property                | Attribute | Description                                                                     | Type                                                | Default                        |
+| ----------------------- | --------- | ------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------ |
+| `handleAuthStateChange` | --        | Passed from the Authenticator component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent` |
+| `user`                  | --        | Used in order to configure TOTP for a user                                      | `CognitoUserInterface`                              | `undefined`                    |
 
 
 ## Dependencies

@@ -12,9 +12,9 @@ import {
   RESET_PASSWORD_TEXT,
 } from '../../common/constants';
 
-import { Hub, Logger, isEmpty } from '@aws-amplify/core';
+import { Logger, isEmpty } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
-import { dispatchToastHubEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 const logger = new Logger('SignIn');
 
@@ -37,9 +37,7 @@ export class AmplifySignIn {
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: AuthStateHandler = (nextAuthState: AuthState, data?: object) => {
-    Hub.dispatch('AuthenticatorState', { event: nextAuthState, data });
-  };
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing

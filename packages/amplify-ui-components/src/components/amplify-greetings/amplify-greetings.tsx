@@ -1,8 +1,6 @@
 import { Component, h, Prop, State, Watch, FunctionalComponent } from '@stencil/core';
-import { AuthStateHandler, CognitoUserInterface, AuthState } from '../../common/types/auth-types';
-
-import { Hub } from '@aws-amplify/core';
-
+import { AuthStateHandler, CognitoUserInterface } from '../../common/types/auth-types';
+import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 @Component({
   tag: 'amplify-greetings',
   styleUrl: 'amplify-greetings.scss',
@@ -14,9 +12,7 @@ export class AmplifyGreetings {
   /** Logo displayed inside of the header */
   @Prop() logo: FunctionalComponent | null = null;
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: AuthStateHandler = (nextAuthState: AuthState, data?: object) => {
-    Hub.dispatch('AuthenticatorState', { event: nextAuthState, data });
-  };
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Override default styling */
   @Prop() overrideStyle: boolean = false;
 

@@ -167,7 +167,7 @@ export class AmplifyAuthenticator {
         {this.toastMessage ? (
           <amplify-toast
             message={this.toastMessage}
-            onClose={() => {
+            handleClose={() => {
               this.toastMessage = '';
             }}
             data-test="authenticator-error"

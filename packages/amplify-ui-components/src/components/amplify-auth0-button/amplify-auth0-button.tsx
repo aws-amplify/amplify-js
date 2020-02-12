@@ -1,9 +1,9 @@
 import { Auth } from '@aws-amplify/auth';
-import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
-
 import { AUTH_SOURCE_KEY, SIGN_IN_WITH_AUTH0 } from '../../common/constants';
 import { AuthStateHandler, FederatedConfig, AuthState } from '../../common/types/auth-types';
+import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 const logger = new Logger('amplify-auth0-button');
 
@@ -16,9 +16,7 @@ export class AmplifyAuth0Button {
   @Prop() config: FederatedConfig['auth0Config'];
   /** (Optional) Override default styling */
   @Prop() overrideStyle: boolean = false;
-  @Prop() handleAuthStateChange: AuthStateHandler = (nextAuthState: AuthState, data?: object) => {
-    Hub.dispatch('AuthenticatorState', { event: nextAuthState, data });
-  };
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 
   _auth0: any;
 
