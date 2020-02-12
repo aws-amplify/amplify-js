@@ -130,9 +130,7 @@ export class SyncEngine {
 				try {
 					await this.setupModels(params);
 				} catch (err) {
-					logger.error(
-						"Sync engine stopped. IndexedDB not supported in this browser's private mode"
-					);
+					logger.error('Sync engine error on start', err);
 					return;
 				}
 
