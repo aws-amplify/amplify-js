@@ -137,4 +137,4 @@ export const FAILURE = 'FAILURE';
 // Hub Events and Channels
 export const UI_AUTH_CHANNEL = 'UI Auth';
 export const TOAST_AUTH_ERROR_EVENT = 'ToastAuthError';
-export const AUTH_STATE_CHANGE = 'AuthStateChange';
+export const AUTH_STATE_CHANGE_EVENT = 'AuthStateChange';

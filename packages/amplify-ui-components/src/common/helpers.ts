@@ -1,6 +1,6 @@
 import { cx } from 'emotion';
 import { Hub } from '@aws-amplify/core';
-import { UI_AUTH_CHANNEL, TOAST_AUTH_ERROR_EVENT } from './constants';
+import { UI_AUTH_CHANNEL, TOAST_AUTH_ERROR_EVENT, AUTH_STATE_CHANGE_EVENT } from './constants';
 import { AuthState } from '../common/types/auth-types';
 
 interface ToastError {
@@ -22,5 +22,9 @@ export const dispatchToastHubEvent = (error: ToastError) => {
 };
 
 export const dispatchAuthStateChangeEvent = (nextAuthState: AuthState, data?: object) => {
-  Hub.dispatch(UI_AUTH_CHANNEL, { event: nextAuthState, data });
+  Hub.dispatch(UI_AUTH_CHANNEL, {
+    event: AUTH_STATE_CHANGE_EVENT,
+    message: nextAuthState,
+    data
+  });
 };
