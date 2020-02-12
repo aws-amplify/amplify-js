@@ -31,7 +31,6 @@ const AmplifyFormSectionFooter: FunctionalComponent<AmplifyFormSectionFooterProp
 @Component({
   tag: 'amplify-form-section',
   styleUrl: 'amplify-form-section.scss',
-  shadow: true,
 })
 export class AmplifyFormSection {
   /** (Required) Function called upon submission of form */
