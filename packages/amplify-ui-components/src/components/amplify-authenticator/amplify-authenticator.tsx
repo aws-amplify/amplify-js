@@ -144,11 +144,7 @@ export class AmplifyAuthenticator {
           </slot>
         );
       case AuthState.SignedIn:
-        return (
-          <slot name="greetings">
-            <amplify-greetings user={this.authData} />
-          </slot>
-        );
+        return [<slot name="greetings"></slot>, <slot></slot>];
       default:
         throw new Error(`Unhandled auth state: ${authState}`);
     }
