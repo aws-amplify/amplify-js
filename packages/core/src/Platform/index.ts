@@ -11,7 +11,6 @@
  * and limitations under the License.
  */
 import { version } from './version';
-import { appendToUserAgent } from '@aws-sdk/util-user-agent-browser';
 
 const BASE_USER_AGENT = `aws-amplify/${version}`;
 
@@ -36,28 +35,8 @@ if (typeof navigator !== 'undefined' && navigator.product) {
 	}
 }
 
-const appendUserAgentMiddleware = next => args => {
-	const { request } = args;
-	appendToUserAgent(request, Platform.userAgent);
-	return next({
-		...args,
-		request,
-	});
-};
-
-export const appendAmplifyUserAgent = client => {
-	if (
-		typeof client !== undefined &&
-		client &&
-		typeof client.middlewareStack !== undefined &&
-		client.middlewareStack
-	) {
-		client.middlewareStack.add(appendUserAgentMiddleware, {
-			step: 'build',
-			priority: 0,
-			tags: { CUSTOM_USER_AGENT: true },
-		});
-	}
+export const getAmplifyUserAgent = () => {
+	return Platform.userAgent;
 };
 
 /**

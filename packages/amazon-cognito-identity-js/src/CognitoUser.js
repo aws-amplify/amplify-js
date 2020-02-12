@@ -70,6 +70,9 @@ import StorageHelper from './StorageHelper';
  * @param {bool=} userConfirmationNecessary User must be confirmed.
  */
 
+const isBrowser = typeof navigator !== 'undefined';
+const userAgent = isBrowser ? navigator.userAgent : 'nodejs';
+
 /** @class */
 export default class CognitoUser {
 	/**
@@ -544,7 +547,7 @@ export default class CognitoUser {
 						DeviceKey: newDeviceMetadata.DeviceKey,
 						AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 						DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
-						DeviceName: navigator.userAgent,
+						DeviceName: userAgent,
 					},
 					(errConfirm, dataConfirm) => {
 						if (errConfirm) {
@@ -926,7 +929,7 @@ export default class CognitoUser {
 									.getAccessToken()
 									.getJwtToken(),
 								DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
-								DeviceName: navigator.userAgent,
+								DeviceName: userAgent,
 							},
 							(errConfirm, dataConfirm) => {
 								if (errConfirm) {

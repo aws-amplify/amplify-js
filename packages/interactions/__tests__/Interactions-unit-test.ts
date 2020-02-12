@@ -1,9 +1,11 @@
-import { LexRuntimeServiceClient } from '@aws-sdk/client-lex-runtime-service-browser/LexRuntimeServiceClient';
-import Interactions from '../src/Interactions';
+import { InteractionsClass as Interactions } from '../src/Interactions';
 import { AWSLexProvider, AbstractInteractionsProvider } from '../src/Providers';
 import { Credentials } from '@aws-amplify/core';
-import { PostContentCommand } from '@aws-sdk/client-lex-runtime-service-browser/commands/PostContentCommand';
-import { PostTextCommand } from '@aws-sdk/client-lex-runtime-service-browser/commands/PostTextCommand';
+import {
+	LexRuntimeServiceClient,
+	PostContentCommand,
+	PostTextCommand,
+} from '@aws-sdk/client-lex-runtime-service';
 
 LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof PostTextCommand) {
@@ -94,6 +96,10 @@ class AWSLexProviderWrong extends AbstractInteractionsProvider {
 		});
 	}
 }
+
+afterEach(() => {
+	jest.restoreAllMocks();
+});
 
 describe('Interactions', () => {
 	describe('constructor test', () => {
@@ -436,10 +442,9 @@ describe('Interactions', () => {
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
-				const onCompleteCallback = jest.fn((err, confirmation) => {
+				function onCompleteCallback(err, confirmation) {
 					expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
-					done();
-				});
+				}
 
 				const configuration = {
 					Interactions: {
@@ -511,15 +516,15 @@ describe('Interactions', () => {
 					},
 				});
 			});
+
 			test('Interactions configuration and send message to existing bot and call onComplete from configure onComplete', async () => {
 				const curCredSpyOn = jest
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
-				const onCompleteCallback = jest.fn((err, confirmation) => {
+				function onCompleteCallback(err, confirmation) {
 					expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
-					done();
-				});
+				}
 
 				const configuration = {
 					Interactions: {
@@ -770,7 +775,10 @@ describe('Interactions', () => {
 				}
 			});
 
-			test('Adding custom pluggin happy path', async () => {
+			test('Adding custom plugin happy path', async () => {
+				jest
+					.spyOn(Credentials, 'get')
+					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 				const configuration = {
 					Interactions: {
 						bots: {

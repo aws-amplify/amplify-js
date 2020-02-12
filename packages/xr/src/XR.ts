@@ -210,3 +210,5 @@ export class XRClass {
 		return this._pluggables[provider].enableAudio(sceneName);
 	}
 }
+
+export const XR = new XRClass(null);

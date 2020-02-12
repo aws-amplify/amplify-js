@@ -1,7 +1,6 @@
 import { Credentials } from '@aws-amplify/core';
 import KinesisProvider from '../../src/Providers/AWSKinesisProvider';
-import { KinesisClient } from '@aws-sdk/client-kinesis-browser/KinesisClient';
-import { PutRecordsCommand } from '@aws-sdk/client-kinesis-browser/commands/PutRecordsCommand';
+import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 
 jest.useFakeTimers();
 
@@ -13,7 +12,7 @@ const credentials = {
 	authenticated: true,
 };
 
-jest.mock('@aws-sdk/client-kinesis-browser/KinesisClient');
+jest.mock('@aws-sdk/client-kinesis');
 
 beforeEach(() => {
 	KinesisClient.prototype.send = jest.fn(async command => {

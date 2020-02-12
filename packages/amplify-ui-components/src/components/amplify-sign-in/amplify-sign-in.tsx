@@ -14,6 +14,7 @@ import {
 
 import { Hub, Logger, isEmpty } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
+import { dispatchToastHubEvent } from '../../common/helpers';
 
 const logger = new Logger('SignIn');
 
@@ -147,14 +148,13 @@ export class AmplifySignIn {
         this.checkContact(user);
       }
     } catch (error) {
+      dispatchToastHubEvent(error);
       if (error.code === 'UserNotConfirmedException') {
         logger.debug('the user is not confirmed');
         this.handleAuthStateChange(AuthState.ConfirmSignUp, { username: this.username });
       } else if (error.code === 'PasswordResetRequiredException') {
         logger.debug('the user requires a new password');
         this.handleAuthStateChange(AuthState.ForgotPassword, { username: this.username });
-      } else {
-        throw new Error(error);
       }
     } finally {
       this.loading = false;

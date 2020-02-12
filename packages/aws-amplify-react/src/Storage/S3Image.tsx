@@ -25,6 +25,7 @@ const logger = new Logger('Storage.S3Image');
 
 export interface IS3ImageProps {
 	body?: any;
+	className?: string;
 	contentType?: any;
 	fileToKey?: any;
 	hidden?: any;
@@ -42,8 +43,8 @@ export interface IS3ImageProps {
 	theme?: any;
 	track?: any;
 	translate?:
-	| string
-	| ((params: { type: string; key: string; content: string }) => string);
+		| string
+		| ((params: { type: string; key: string; content: string }) => string);
 }
 
 export interface IS3ImageState {
@@ -193,11 +194,12 @@ export class S3Image extends React.Component<IS3ImageProps, IS3ImageState> {
 			return null;
 		}
 
-		const { selected } = this.props;
+		const { className, selected } = this.props;
 		const containerStyle: React.CSSProperties = { position: 'relative' };
 		return (
 			<div style={containerStyle} onClick={this.handleClick}>
 				<img
+					className={className}
 					style={theme.photoImg}
 					src={src}
 					onLoad={this.handleOnLoad}
@@ -216,10 +218,10 @@ export class S3Image extends React.Component<IS3ImageProps, IS3ImageState> {
 				typeof translate === 'string'
 					? translate
 					: translate({
-						type: 'image',
-						key: imgKey,
-						content: src,
-					});
+							type: 'image',
+							key: imgKey,
+							content: src,
+					  });
 		}
 		if (!src && !picker) {
 			return null;

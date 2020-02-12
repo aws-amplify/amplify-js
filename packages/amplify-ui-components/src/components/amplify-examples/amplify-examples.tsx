@@ -5,6 +5,12 @@ import TOTPAuthenticatorExample from './auth-totp-example';
 import example4 from './example4';
 import sceneExample from './scene-example';
 
+import Auth from '@aws-amplify/auth';
+import XR from '@aws-amplify/xr';
+
+Auth.configure({});
+XR.configure({});
+
 const examples = [AuthenticatorExample, CustomAuthenticatorExample, TOTPAuthenticatorExample, example4, sceneExample];
 
 (window as any).LOG_LEVEL = 'DEBUG';

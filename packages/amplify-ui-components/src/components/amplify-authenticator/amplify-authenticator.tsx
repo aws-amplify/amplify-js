@@ -1,6 +1,13 @@
 import { Component, State, Prop, h, Host } from '@stencil/core';
 import { AuthState, CognitoUserInterface, FederatedConfig } from '../../common/types/auth-types';
-import { NO_AUTH_MODULE_FOUND, SIGNING_IN_WITH_HOSTEDUI_KEY, AUTHENTICATOR_AUTHSTATE } from '../../common/constants';
+import {
+  NO_AUTH_MODULE_FOUND,
+  SIGNING_IN_WITH_HOSTEDUI_KEY,
+  AUTHENTICATOR_AUTHSTATE,
+  UI_AUTH_CHANNEL,
+  TOAST_AUTH_ERROR_EVENT,
+  AUTH_STATE_CHANGE,
+} from '../../common/constants';
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
 import { Hub, Logger } from '@aws-amplify/core';
 
@@ -18,11 +25,20 @@ export class AmplifyAuthenticator {
 
   @State() authState: AuthState = AuthState.Loading;
   @State() authData: CognitoUserInterface;
+  @State() toastMessage: string = '';
 
   async componentWillLoad() {
-    Hub.listen('AuthenticatorState', data =>
-      this.onAuthStateChange(data.payload.event as AuthState, data.payload.data),
-    );
+    Hub.listen(UI_AUTH_CHANNEL, data => {
+      const { payload } = data;
+      switch (payload.event) {
+        case TOAST_AUTH_ERROR_EVENT:
+          if (payload.message) this.toastMessage = payload.message;
+          break;
+        case AUTH_STATE_CHANGE:
+          this.onAuthStateChange(data.payload.event as AuthState, data.payload.data);
+          break;
+      }
+    });
 
     appendToCognitoUserAgent('amplify-ui');
     const byHostedUI = localStorage.getItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
@@ -136,7 +152,29 @@ export class AmplifyAuthenticator {
     }
   }
 
+  async componentDidUnload() {
+    Hub.remove(UI_AUTH_CHANNEL, data => {
+      const { payload } = data;
+      if (payload.event === TOAST_AUTH_ERROR_EVENT && payload.message) {
+        this.toastMessage = payload.message;
+      }
+    });
+  }
+
   render() {
-    return <Host>{this.renderAuthComponent(this.authState)}</Host>;
+    return (
+      <Host>
+        {this.toastMessage ? (
+          <amplify-toast
+            message={this.toastMessage}
+            onClose={() => {
+              this.toastMessage = '';
+            }}
+            data-test="authenticator-error"
+          />
+        ) : null}
+        {this.renderAuthComponent(this.authState)}
+      </Host>
+    );
   }
 }

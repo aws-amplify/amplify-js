@@ -3,9 +3,11 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.1.3...@aws-amplify/ui@1.1.4) (2020-01-10)
+## [1.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.1.3...@aws-amplify/ui@1.1.5) (2020-02-07)
 
-**Note:** Version bump only for package @aws-amplify/ui
+### Bug Fixes
+
+- **@aws-amplify/ui:** Add padding to caret for SignUp component ([#4757](https://github.com/aws-amplify/amplify-js/issues/4757)) ([34cdc6c](https://github.com/aws-amplify/amplify-js/commit/34cdc6c9841b48c077eff42b21fa2b3fcc9a80be))
 
 ## [1.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.1.2...@aws-amplify/ui@1.1.3) (2019-10-23)
 

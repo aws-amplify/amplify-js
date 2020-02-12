@@ -4,5 +4,5 @@ export const Constants = {
 	GOOGLE: 'google',
 	FACEBOOK: 'facebook',
 	AMAZON: 'amazon',
-	SIGNING_IN_WITH_HOSTEDUI_KEY: 'amplify-signin-with-hostedUI',
+	REDIRECTED_FROM_HOSTED_UI: 'amplify-redirected-from-hosted-ui',
 };

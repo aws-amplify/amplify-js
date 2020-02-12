@@ -224,6 +224,7 @@ export default class OAuth {
 			}
 		} catch (e) {
 			logger.error(`Error handling auth response.`, e);
+			throw e;
 		}
 	}
 

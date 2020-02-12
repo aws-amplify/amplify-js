@@ -6,6 +6,7 @@ import { CodeDeliveryType } from './amplify-forgot-password-interface';
 
 import { Auth } from '@aws-amplify/auth';
 import { Logger, Hub } from '@aws-amplify/core';
+import { dispatchToastHubEvent } from '../../common/helpers';
 
 const logger = new Logger('ForgotPassword');
 
@@ -90,8 +91,7 @@ export class AmplifyForgotPassword {
       ];
       this.delivery = data.CodeDeliveryDetails;
     } catch (error) {
-      logger.error(error);
-      throw new Error(error);
+      dispatchToastHubEvent(error);
     }
   }
 
@@ -108,8 +108,7 @@ export class AmplifyForgotPassword {
       this.handleAuthStateChange(AuthState.SignIn);
       this.delivery = null;
     } catch (error) {
-      logger.error(error);
-      throw new Error(error);
+      dispatchToastHubEvent(error);
     }
   }
 

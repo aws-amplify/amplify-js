@@ -3,20 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [2.6.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@2.5.4...aws-amplify-react@2.6.0) (2020-01-10)
+## [3.1.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.3...aws-amplify-react@3.1.5) (2020-02-07)
 
 ### Bug Fixes
 
-- **core, auth, aws-amplify-react:** fix tests ([bdd162c](https://github.com/aws-amplify/amplify-js/commit/bdd162c2dd03488168a299f8dd8c554f76ca8a12))
+- **aws-amplify-react) fix(aws-amplify-react-native) fix(aws-amplify-angular:** Fix peer dependencies ([#4647](https://github.com/aws-amplify/amplify-js/issues/4647)) ([c4c990e](https://github.com/aws-amplify/amplify-js/commit/c4c990ea62a77625add92e8fe94ba170b0dd2af1))
+
+## [3.1.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.2...aws-amplify-react@3.1.3) (2020-01-10)
+
+### Bug Fixes
+
+- [#4311](https://github.com/aws-amplify/amplify-js/issues/4311) Update main entry field to point to CJS builds instead of webpack bundles ([#4678](https://github.com/aws-amplify/amplify-js/issues/4678)) ([54fbdf4](https://github.com/aws-amplify/amplify-js/commit/54fbdf4b1393567735fb7b5f4144db273f1a5f6a))
+
+## [3.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.1...aws-amplify-react@3.1.2) (2019-12-18)
+
+**Note:** Version bump only for package aws-amplify-react
+
+## [3.1.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.0...aws-amplify-react@3.1.1) (2019-12-03)
+
+**Note:** Version bump only for package aws-amplify-react
+
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@2.5.4...aws-amplify-react@3.1.0) (2019-11-15)
 
 ### Features
 
-- **aws-amplify-react): publish ES2015/ESM artifacts:** publish ES2015/ESM artifacts ([3a60350](https://github.com/aws-amplify/amplify-js/commit/3a6035028c2b61744bd1154e7125eed38339b140))
 - enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
-
-### Reverts
-
-- Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
 
 ## [2.5.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@2.5.3...aws-amplify-react@2.5.4) (2019-10-29)
 

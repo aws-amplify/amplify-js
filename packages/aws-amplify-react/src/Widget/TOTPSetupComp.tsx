@@ -47,7 +47,7 @@ export interface ITOTPSetupCompState {
 export class TOTPSetupComp extends React.Component<
 	ITOTPSetupCompProps,
 	ITOTPSetupCompState
-	> {
+> {
 	public inputs: any;
 
 	constructor(props) {
@@ -127,13 +127,19 @@ export class TOTPSetupComp extends React.Component<
 				'No Auth module found, please ensure @aws-amplify/auth is imported'
 			);
 		}
-		Auth.verifyTotpToken(user, totpCode)
+		return Auth.verifyTotpToken(user, totpCode)
 			.then(() => {
 				// set it to preferred mfa
-				Auth.setPreferredMFA(user, 'TOTP');
-				this.setState({ setupMessage: 'Setup TOTP successfully!' });
-				logger.debug('set up totp success!');
-				this.triggerTOTPEvent('Setup TOTP', 'SUCCESS', user);
+				return Auth.setPreferredMFA(user, 'TOTP')
+					.then(() => {
+						this.setState({ setupMessage: 'Setup TOTP successfully!' });
+						logger.debug('set up totp success!');
+						this.triggerTOTPEvent('Setup TOTP', 'SUCCESS', user);
+					})
+					.catch(err => {
+						this.setState({ setupMessage: 'Setup TOTP failed!' });
+						logger.error(err);
+					});
 			})
 			.catch(err => {
 				this.setState({ setupMessage: 'Setup TOTP failed!' });
