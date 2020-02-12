@@ -18,6 +18,7 @@ import {
 
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
+import { dispatchToastHubEvent } from '../../common/helpers';
 
 const logger = new Logger('amplify-require-new-password');
 
@@ -68,8 +69,7 @@ export class AmplifyRequireNewPassword {
         this.handleAuthStateChange(AuthState.VerifyContact, user);
       }
     } catch (error) {
-      logger.error(error);
-      throw new Error(error);
+      dispatchToastHubEvent(error);
     }
   }
 
@@ -100,8 +100,7 @@ export class AmplifyRequireNewPassword {
           this.checkContact(user);
       }
     } catch (error) {
-      logger.error(error);
-      throw new Error(error);
+      dispatchToastHubEvent(error);
     }
   }
 

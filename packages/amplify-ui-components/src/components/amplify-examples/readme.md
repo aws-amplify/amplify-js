@@ -32,6 +32,7 @@ graph TD;
   amplify-authenticator --> amplify-verify-contact
   amplify-authenticator --> amplify-totp-setup
   amplify-authenticator --> amplify-greetings
+  amplify-authenticator --> amplify-toast
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-form-section
   amplify-sign-in --> amplify-federated-buttons
@@ -94,6 +95,7 @@ graph TD;
   amplify-greetings --> amplify-nav
   amplify-greetings --> amplify-sign-out
   amplify-sign-out --> amplify-button
+  amplify-toast --> amplify-icon
   amplify-select-mfa-type --> amplify-form-section
   amplify-select-mfa-type --> amplify-radio-button
   amplify-select-mfa-type --> amplify-totp-setup

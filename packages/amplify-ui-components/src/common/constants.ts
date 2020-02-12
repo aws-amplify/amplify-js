@@ -133,3 +133,7 @@ export const VERIFY_CONTACT_PHONE_LABEL = 'Phone Number';
 // Common events
 export const SUCCESS = 'SUCCESS';
 export const FAILURE = 'FAILURE';
+
+// Hub Events and Channels
+export const UI_AUTH_CHANNEL = 'UI Auth';
+export const TOAST_AUTH_ERROR_EVENT = 'ToastAuthError';

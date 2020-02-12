@@ -14,10 +14,9 @@ import {
   CONFIRM_TOTP_CODE,
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
-import { Logger, isEmpty } from '@aws-amplify/core';
+import { isEmpty } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
-
-const logger = new Logger('ConfirmSignIn');
+import { dispatchToastHubEvent } from '../../common/helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-in',
@@ -110,8 +109,7 @@ export class AmplifyConfirmSignIn {
       await Auth.confirmSignIn(this.user, this.code, mfaType);
       this.checkContact(this.user);
     } catch (error) {
-      logger.error(error);
-      throw new Error(error);
+      dispatchToastHubEvent(error);
     }
   }
 

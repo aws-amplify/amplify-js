@@ -18,6 +18,7 @@ import {
   ALT_QR_CODE,
   TOTP_LABEL,
 } from '../../common/constants';
+import { dispatchToastHubEvent } from '../../common/helpers';
 
 const logger = new Logger('TOTP');
 
@@ -61,7 +62,7 @@ export class AmplifyTOTPSetup {
         this.handleAuthStateChange(AuthState.VerifyContact, newUser);
       }
     } catch (error) {
-      throw new Error(error);
+      dispatchToastHubEvent(error);
     }
   }
 
@@ -82,7 +83,7 @@ export class AmplifyTOTPSetup {
     try {
       this.qrCodeImageSource = await QRCode.toDataURL(codeFromTotp);
     } catch (error) {
-      throw new Error(error);
+      dispatchToastHubEvent(error);
     }
   }
 
@@ -102,8 +103,8 @@ export class AmplifyTOTPSetup {
 
       this.generateQRCode(this.code);
     } catch (error) {
+      dispatchToastHubEvent(error);
       logger.debug(TOTP_SETUP_FAILURE, error);
-      throw new Error(error);
     }
   }
 

@@ -14,7 +14,7 @@ export const toast = css`
   z-index: 99;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3);
   padding: 16px;
-  background-color: var(--amplify-red-problem);
+  background-color: var(--amplify-dark-blue);
   font-size: var(--amplify-secondary-font-size);
   color: var(--amplify-white);
   box-sizing: border-box;

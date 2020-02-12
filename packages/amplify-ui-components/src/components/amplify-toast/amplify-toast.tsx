@@ -9,6 +9,7 @@ import { toast, toastClose, toastIcon } from './amplify-toast.style';
 export class AmplifyToast {
   /** Used in order to add a dismissable `x` for the Toast component */
   @Prop() onClose: () => void;
+  @Prop() message: string = '';
 
   /* 
   TODO #170365145: Work on a helper function that will populate and 
@@ -19,6 +20,7 @@ export class AmplifyToast {
     return (
       <div class={toast}>
         <amplify-icon class={toastIcon} name="warning" />
+        {this.message ? <span>{this.message}</span> : null}
         <slot />
         <a class={toastClose} onClick={this.onClose} />
       </div>
