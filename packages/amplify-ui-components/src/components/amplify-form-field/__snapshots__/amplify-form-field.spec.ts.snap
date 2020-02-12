@@ -111,7 +111,7 @@ exports[`amplify-form-field spec: Render logic -> replaces the input component, 
     </div>
     <div>
       <input slot="input">
-      <slot-fb hidden="" name="input">
+      <slot-fb name="input">
         <amplify-input description="description" fieldid="id" placeholder="" type="text"></amplify-input>
       </slot-fb>
     </div>
