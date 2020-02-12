@@ -17,10 +17,6 @@
 
 ## Dependencies
 
-### Used by
-
- - [amplify-authenticator](../amplify-authenticator)
-
 ### Depends on
 
 - [amplify-nav](../amplify-nav)
@@ -32,7 +28,6 @@ graph TD;
   amplify-greetings --> amplify-nav
   amplify-greetings --> amplify-sign-out
   amplify-sign-out --> amplify-button
-  amplify-authenticator --> amplify-greetings
   style amplify-greetings fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
