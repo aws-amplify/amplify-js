@@ -16,6 +16,8 @@ export const config: Config = {
   ],
   commonjs: {
     namedExports: {
+      '@aws-sdk/client-cognito-identity-browser': ['CognitoIdentityClient', 'GetIdCommand'],
+      '@aws-sdk/credential-provider-cognito-identity': ['fromCognitoIdentity', 'fromCognitoIdentityPool'],
       '@aws-crypto/sha256-js': ['Sha256'],
       '@aws-crypto/sha256-browser': ['Sha256'],
       '@aws-sdk/config-resolver': ['resolveRegionConfig', 'resolveEndpointsConfig'],
