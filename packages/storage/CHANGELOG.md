@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@2.1.3...@aws-amplify/storage@2.2.0) (2020-02-07)
+
+
+### Bug Fixes
+
+* **cache:** export correct module for RN ([#4786](https://github.com/aws-amplify/amplify-js/issues/4786)) ([a15730c](https://github.com/aws-amplify/amplify-js/commit/a15730cc50692d9d31a0f586c3544b3dcdbea659))
+
+
+### Features
+
+* **@aws-amplify/storage:** add support to maxKeys when listing objects ([#4099](https://github.com/aws-amplify/amplify-js/issues/4099)) ([030b6c3](https://github.com/aws-amplify/amplify-js/commit/030b6c310367b136e40bbd8ff6e6d6916b2706b3))
+* **@aws-amplify/storage:** get supports Response headers ([#4323](https://github.com/aws-amplify/amplify-js/issues/4323)) ([4a4340a](https://github.com/aws-amplify/amplify-js/commit/4a4340a8f9b41d21d4fc8f2b56b2f95a236a2475))
+
+
+
+
+
 ## [2.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@2.1.2...@aws-amplify/storage@2.1.3) (2020-01-10)
 
 
