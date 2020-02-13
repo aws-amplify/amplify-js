@@ -41,7 +41,7 @@ export class AmplifyTOTPSetup {
   @State() qrCodeImageSource: string;
   @State() qrCodeInput: string | null = null;
 
-  componentWillRender() {
+  componentWillLoad() {
     this.setup();
   }
 
