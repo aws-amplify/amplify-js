@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -20,7 +20,6 @@ import {
 import {
 	S3Client,
 	GetObjectCommand,
-	PutObjectCommand,
 	DeleteObjectCommand,
 	ListObjectsCommand,
 } from '@aws-sdk/client-s3';
@@ -28,6 +27,9 @@ import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
+import { AxiosHttpHandler } from './axios-http-handler';
+import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
+import * as events from 'events';
 
 const logger = new Logger('AWSS3Provider');
 
@@ -65,7 +67,6 @@ const localTestingStorageEndpoint = 'http://localhost:20005';
 export class AWSS3Provider implements StorageProvider {
 	static CATEGORY = 'Storage';
 	static PROVIDER_NAME = 'AWSS3';
-
 	/**
 	 * @private
 	 */
@@ -245,7 +246,6 @@ export class AWSS3Provider implements StorageProvider {
 
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
-		const s3 = this._createNewS3Client(opt);
 		logger.debug('put ' + key + ' to ' + final_key);
 
 		const params: any = {
@@ -284,9 +284,23 @@ export class AWSS3Provider implements StorageProvider {
 				params.SSEKMSKeyId = SSEKMSKeyId;
 			}
 		}
+		const emitter = new events.EventEmitter();
+		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
 		try {
-			const putObjectCommand = new PutObjectCommand(params);
-			const response = await s3.send(putObjectCommand);
+			emitter.on('sendProgress', progress => {
+				if (progressCallback) {
+					if (typeof progressCallback === 'function') {
+						progressCallback(progress);
+					} else {
+						logger.warn(
+							'progressCallback should be a function, not a ' +
+								typeof progressCallback
+						);
+					}
+				}
+			});
+
+			const response = await uploader.upload();
 
 			logger.debug('upload result', response);
 			dispatchStorageEvent(
@@ -310,16 +324,6 @@ export class AWSS3Provider implements StorageProvider {
 			);
 			throw error;
 		}
-		// This functionality is not available in V3 SDK. Amplify needs to implement it.
-		// .on('httpUploadProgress', progress => {
-		//     if (progressCallback) {
-		//         if (typeof progressCallback === 'function') {
-		//             progressCallback(progress);
-		//         } else {
-		//             logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
-		//         }
-		//     }
-		// });
 	}
 
 	/**
@@ -484,7 +488,7 @@ export class AWSS3Provider implements StorageProvider {
 	/**
 	 * @private creates an S3 client with new V3 aws sdk
 	 */
-	private _createNewS3Client(config) {
+	private _createNewS3Client(config, emitter?) {
 		const {
 			region,
 			credentials,
@@ -505,6 +509,7 @@ export class AWSS3Provider implements StorageProvider {
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
+			requestHandler: new AxiosHttpHandler({}, emitter),
 		});
 		return s3client;
 	}
