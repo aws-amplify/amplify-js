@@ -100,7 +100,11 @@ export class AmplifyAuthenticator {
           </slot>
         );
       case AuthState.ConfirmSignIn:
-        return <amplify-confirm-sign-in user={this.authData} />;
+        return (
+          <slot name="confirm-sign-in">
+            <amplify-confirm-sign-in user={this.authData} />
+          </slot>
+        );
       case AuthState.SignUp:
         return (
           <slot name="sign-up">
