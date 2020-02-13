@@ -41,7 +41,6 @@ import {
 } from '../types';
 import { v1 as uuid } from 'uuid';
 import EventsBuffer from './EventBuffer';
-import { parseUrl } from '@aws-sdk/url-parser-node';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
 typeof Symbol.for === 'function'
@@ -610,7 +609,6 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			region,
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
-			urlParser: parseUrl,
 		});
 
 		if (this._bufferExists() && identityId === credentials.identityId) {
@@ -664,14 +662,14 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 	}
 
 	private _customizePinpointClientReq() {
-		// TODO: Find a middleware to do this with AWS V3 SDK
-		if (Platform.isReactNative) {
-			this.pinpointClient.customizeRequests(request => {
-				request.on('build', req => {
-					req.httpRequest.headers['user-agent'] = Platform.userAgent;
-				});
-			});
-		}
+		// TODO FIXME: Find a middleware to do this with AWS V3 SDK
+		// if (Platform.isReactNative) {
+		// 	this.pinpointClient.customizeRequests(request => {
+		// 		request.on('build', req => {
+		// 			req.httpRequest.headers['user-agent'] = Platform.userAgent;
+		// 		});
+		// 	});
+		// }
 	}
 
 	private async _getEndpointId(cacheKey) {

@@ -22,7 +22,8 @@
 		"publish:master": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=unstable --preid=unstable --exact",
 		"publish:beta": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=beta --preid=beta --exact",
 		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]'",
-		"publish:1.0-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-1.0 --message 'chore(release): Publish [ci skip]'"
+		"publish:1.0-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-1.0 --message 'chore(release): Publish [ci skip]'",
+		"publish:modularization": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=preview --preid=preview --exact"
 	},
 	"husky": {
 		"hooks": {
@@ -78,10 +79,6 @@
 		"webpack-bundle-analyzer": "^3.3.2",
 		"webpack-cli": "^3.1.0",
 		"winston": "^3.2.1"
-	},
-	"resolutions": {
-		"@aws-crypto/sha256-browser": "1.0.0-alpha.0",
-		"@aws-crypto/sha256-js": "1.0.0-alpha.0"
 	},
 	"jest": {
 		"resetMocks": true,

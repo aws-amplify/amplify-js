@@ -30,7 +30,6 @@ import { StorageOptions, StorageProvider } from '../types';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import * as events from 'events';
-import { parseUrl } from '@aws-sdk/url-parser-node';
 
 const logger = new Logger('AWSS3Provider');
 
@@ -511,7 +510,6 @@ export class AWSS3Provider implements StorageProvider {
 			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
 			requestHandler: new AxiosHttpHandler({}, emitter),
-			urlParser: parseUrl,
 		});
 		return s3client;
 	}

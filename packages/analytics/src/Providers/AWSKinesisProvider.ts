@@ -18,7 +18,6 @@ import {
 } from '@aws-amplify/core';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 import { AnalyticsProvider } from '../types';
-import { parseUrl } from '@aws-sdk/url-parser-node';
 
 const logger = new Logger('AWSKinesisProvider');
 
@@ -225,7 +224,6 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 			region,
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
-			urlParser: parseUrl,
 		});
 		return true;
 	}
