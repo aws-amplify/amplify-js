@@ -19,6 +19,7 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { BrowserHttpOptions } from '@aws-sdk/fetch-http-handler';
 
 const logger = new Logger('axios-http-handler');
+export const SEND_PROGRESS_EVENT = 'sendProgress';
 
 export class AxiosHttpHandler implements HttpHandler {
 	constructor(
@@ -58,7 +59,7 @@ export class AxiosHttpHandler implements HttpHandler {
 		axiosRequest.data = request.body;
 		if (emitter) {
 			axiosRequest.onUploadProgress = function(event) {
-				emitter.emit('sendProgress', event);
+				emitter.emit(SEND_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
 		}

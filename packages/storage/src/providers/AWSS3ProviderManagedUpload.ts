@@ -27,7 +27,7 @@ import {
 	ListPartsCommand,
 	AbortMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
-import { AxiosHttpHandler } from './axios-http-handler';
+import { AxiosHttpHandler, SEND_PROGRESS_EVENT } from './axios-http-handler';
 import { fromString } from '@aws-sdk/util-buffer-from';
 import * as events from 'events';
 import { parseUrl } from '@aws-sdk/url-parser-node';
@@ -36,7 +36,8 @@ const logger = new Logger('AWSS3ProviderManagedUpload');
 
 const localTestingStorageEndpoint = 'http://localhost:20005';
 
-export declare interface BodyPart {
+const SET_CONTENT_LENGTH_HEADER = 'SET_CONTENT_LENGTH';
+export declare interface Part {
 	bodyPart: any;
 	partNumber: number;
 	emitter: any;
@@ -93,7 +94,7 @@ export class AWSS3ProviderManagedUpload {
 				await this.checkIfUploadCancelled(uploadId);
 
 				// Upload as many as `queueSize` parts simultaneously
-				const parts: BodyPart[] = this.createParts(start);
+				const parts: Part[] = this.createParts(start);
 				await this.uploadParts(uploadId, parts);
 
 				/** Call cleanup a second time in case there were part upload requests
@@ -107,8 +108,8 @@ export class AWSS3ProviderManagedUpload {
 		}
 	}
 
-	private createParts(startPartNumber: number): BodyPart[] {
-		const parts: BodyPart[] = [];
+	private createParts(startPartNumber: number): Part[] {
+		const parts: Part[] = [];
 		let partNumber = startPartNumber;
 		for (
 			let bodyStart = startPartNumber * this.minPartSize;
@@ -136,7 +137,7 @@ export class AWSS3ProviderManagedUpload {
 			Key: this.params.Key,
 		});
 		const s3 = this._createNewS3Client(this.opts);
-		s3.middlewareStack.remove('SET_CONTENT_LENGTH');
+		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		const response = await s3.send(createMultiPartUploadCommand);
 		logger.debug(response.UploadId);
 		return response.UploadId;
@@ -146,7 +147,7 @@ export class AWSS3ProviderManagedUpload {
 	 * @private Not to be extended outside of tests
 	 * @VisibleFotTesting
 	 */
-	protected async uploadParts(uploadId: string, parts: BodyPart[]) {
+	protected async uploadParts(uploadId: string, parts: Part[]) {
 		const promises: Array<Promise<UploadPartCommandOutput>> = [];
 		for (const part of parts) {
 			this.setupEventListener(part);
@@ -159,7 +160,7 @@ export class AWSS3ProviderManagedUpload {
 			};
 			const uploadPartCommand = new UploadPartCommand(uploadPartCommandInput);
 			const s3 = this._createNewS3Client(this.opts, part.emitter);
-			s3.middlewareStack.remove('SET_CONTENT_LENGTH');
+			s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 			promises.push(s3.send(uploadPartCommand));
 		}
 		try {
@@ -192,7 +193,7 @@ export class AWSS3ProviderManagedUpload {
 		};
 		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
 		const s3 = this._createNewS3Client(this.opts);
-		s3.middlewareStack.remove('SET_CONTENT_LENGTH');
+		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		const data = await s3.send(completeUploadCommand);
 		return data.Key;
 	}
@@ -227,7 +228,7 @@ export class AWSS3ProviderManagedUpload {
 		};
 
 		const s3 = this._createNewS3Client(this.opts);
-		s3.middlewareStack.remove('SET_CONTENT_LENGTH');
+		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		await s3.send(new AbortMultipartUploadCommand(input));
 
 		// verify that all parts are removed.
@@ -238,8 +239,8 @@ export class AWSS3ProviderManagedUpload {
 		}
 	}
 
-	private setupEventListener(part: BodyPart) {
-		part.emitter.on('sendProgress', progress => {
+	private setupEventListener(part: Part) {
+		part.emitter.on(SEND_PROGRESS_EVENT, progress => {
 			this.progressChanged(
 				part.partNumber,
 				progress.loaded - part._lastUploadedBytes
@@ -250,7 +251,7 @@ export class AWSS3ProviderManagedUpload {
 
 	private progressChanged(partNumber: number, incrementalUpdate: number) {
 		this.bytesUploaded += incrementalUpdate;
-		this.emitter.emit('sendProgress', {
+		this.emitter.emit(SEND_PROGRESS_EVENT, {
 			loaded: this.bytesUploaded,
 			total: this.totalBytesToUpload,
 			part: partNumber,
