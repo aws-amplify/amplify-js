@@ -29,7 +29,7 @@
     "start": "stencil build --watch --serve --dev",
     "storybook": "concurrently 'start-storybook -p 3000 -s ./www' 'yarn:stencil:watch' --raw",
     "build-with-test": "npm run clean && npm test && npm run stencil",
-    "build": "npm run clean && npm run stencil",
+    "build": "npm run clean && npm run stencil --ci",
     "build:watch": "npm run clean && npm run stencil:watch",
     "clean": "rimraf dist .stencil"
   },
