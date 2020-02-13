@@ -1,4 +1,5 @@
 ---
+
 name: Request For Comments (RFC)
 about: Gather community feedback regarding a proposed change to the library
 title: 'RFC: PROPOSAL HEADLINE'
