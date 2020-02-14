@@ -743,15 +743,15 @@ describe('AnalyticsProvider test', () => {
 				analytics.configure(options);
 
 				const spyonUpdateEndpoint = jest
-					.spyOn(Pinpoint.prototype, 'updateEndpoint')
+					.spyOn(PinpointClient.prototype, 'send')
 					// Reject with error the first time we execute updateEndpoint
-					.mockImplementationOnce(params => ({
-						promise: jest.fn().mockRejectedValue(mockExceededMaxError),
-					}))
+					.mockImplementationOnce(async params => {
+						throw mockExceededMaxError;
+					})
 					// Succeed on the second attempt (i.e. after we go through _retryEndpointUpdate)
-					.mockImplementationOnce(params => ({
-						promise: jest.fn(() => Promise.resolve('data')),
-					}));
+					.mockImplementationOnce(async params => {
+						return 'data';
+					});
 
 				jest
 					.spyOn(Credentials, 'get')
