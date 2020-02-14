@@ -35,6 +35,7 @@ export interface IS3ImageProps {
 	onClick?: any;
 	onError?: any;
 	onLoad?: any;
+	onUploadSuccess?: any;
 	path?: any;
 	picker?: any;
 	selected?: any;
@@ -141,9 +142,16 @@ export class S3Image extends React.Component<IS3ImageProps, IS3ImageState> {
 	handlePick(data) {
 		const that = this;
 
-		const path = this.props.path || '';
-		const { imgKey, level, fileToKey, track, identityId } = this.props;
-		const { file, name, size, type } = data;
+		const {
+			imgKey,
+			level,
+			fileToKey,
+			track,
+			identityId,
+			path = '',
+			onUploadSuccess,
+		} = this.props;
+		const { file, type } = data;
 		const key = imgKey || path + calcKey(data, fileToKey);
 		if (!Storage || typeof Storage.put !== 'function') {
 			throw new Error(
@@ -158,6 +166,7 @@ export class S3Image extends React.Component<IS3ImageProps, IS3ImageState> {
 			.then(data => {
 				logger.debug('handle pick data', data);
 				that.getImageSource(key, level, track, identityId);
+				if (onUploadSuccess) onUploadSuccess();
 			})
 			.catch(err => logger.debug('handle pick error', err));
 	}
