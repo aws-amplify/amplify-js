@@ -2,21 +2,30 @@
 
 exports[`amplify-tooltip spec: Render logic -> should render a normal tooltip by default 1`] = `
 <amplify-tooltip>
-  <!---->
-  <div class="amplify-ui--tooltip css-kga9yu"></div>
+  <mock:shadow-root>
+    <div class="tooltip">
+      <slot></slot>
+    </div>
+  </mock:shadow-root>
 </amplify-tooltip>
 `;
 
 exports[`amplify-tooltip spec: Render logic -> should render an automatically-shown tooltip 1`] = `
 <amplify-tooltip should-auto-show="true">
-  <!---->
-  <div class="amplify-ui--tooltip css-1udymob"></div>
+  <mock:shadow-root>
+    <div class="auto-show-tooltip tooltip">
+      <slot></slot>
+    </div>
+  </mock:shadow-root>
 </amplify-tooltip>
 `;
 
 exports[`amplify-tooltip spec: Render logic -> should render without Emotion CSS classes when style override is true 1`] = `
 <amplify-tooltip override-style="true">
-  <!---->
-  <div class="amplify-ui--tooltip"></div>
+  <mock:shadow-root>
+    <div class="tooltip">
+      <slot></slot>
+    </div>
+  </mock:shadow-root>
 </amplify-tooltip>
 `;

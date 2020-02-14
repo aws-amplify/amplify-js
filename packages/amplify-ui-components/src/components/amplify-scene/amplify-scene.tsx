@@ -1,18 +1,17 @@
 import { Component, Prop, State, h } from '@stencil/core';
-import { sceneContainer, scene, sceneBar, sceneActions } from './amplify-scene.style';
 import { AmplifySceneError } from './amplify-scene-interface';
-// import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import XR from '@aws-amplify/xr';
 
 const SCENE_CONTAINER_DOM_ID = 'scene-container-dom-id';
 const SCENE_DOM_ID = 'scene-dom-id';
 
-// TODO: Add logger after Stencil PR is merged: https://github.com/ionic-team/stencil/pull/1773
-// const logger = new Logger('amplify-scene');
+const logger = new Logger('amplify-scene');
 
 @Component({
   tag: 'amplify-scene',
-  shadow: false,
+  styleUrl: 'amplify-scene.scss',
+  shadow: true,
 })
 export class AmplifyScene {
   /* The name of the scene being downloaded and rendered */
@@ -105,7 +104,7 @@ export class AmplifyScene {
         XR.enterVR(this.sceneName);
       }
     } catch (e) {
-      // logger.error('Unable to start/stop WebVR System: ' + e.message);
+      logger.error('Unable to start/stop WebVR System: ' + e.message);
       return;
     }
     this.isVRPresentationActive = !this.isVRPresentationActive;
@@ -134,12 +133,12 @@ export class AmplifyScene {
 
       if (XR.isVRCapable(this.sceneName)) {
         if (this.isVRPresentationActive) {
-          // logger.info('VR Presentation Active');
+          logger.info('VR Presentation Active');
           enterOrExitVRButton = (
             <amplify-icon-button name="exit-vr" tooltip="Exit VR" onClick={() => this.toggleVRPresentation()} />
           );
         } else {
-          // logger.info('VR Presentation Inactive');
+          logger.info('VR Presentation Inactive');
           enterOrExitVRButton = (
             <amplify-icon-button name="enter-vr" tooltip="Enter VR" onClick={() => this.toggleVRPresentation()} />
           );
@@ -156,8 +155,8 @@ export class AmplifyScene {
     }
 
     return (
-      <div id={SCENE_CONTAINER_DOM_ID} class={sceneContainer}>
-        <div id={SCENE_DOM_ID} class={scene}>
+      <div id={SCENE_CONTAINER_DOM_ID} class="scene-container">
+        <div id={SCENE_DOM_ID} class="scene">
           {this.loading ? (
             <amplify-scene-loading
               scene-name={this.sceneName}
@@ -167,8 +166,8 @@ export class AmplifyScene {
           ) : null}
         </div>
 
-        <div class={sceneBar}>
-          <span class={sceneActions}>
+        <div class="scene-bar">
+          <span class="scene-actions">
             {muteButton}
             {enterOrExitVRButton}
             {screenSizeButton}

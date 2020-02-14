@@ -1,7 +1,6 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import { AuthState, ChallengeName, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
-import { formSectionFooter } from '../amplify-form-section/amplify-form-section.style';
 
 import {
   HEADER_TEXT,
@@ -15,13 +14,14 @@ import {
 
 import { Logger, isEmpty } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
-import { dispatchToastHubEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 const logger = new Logger('SignIn');
 
 @Component({
   tag: 'amplify-sign-in',
-  shadow: false,
+  styleUrl: 'amplify-sign-in.scss',
+  shadow: true,
 })
 export class AmplifySignIn {
   /** Fires when sign in form is submitted */
@@ -37,7 +37,7 @@ export class AmplifySignIn {
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: AuthStateHandler;
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing
@@ -177,10 +177,7 @@ export class AmplifySignIn {
 
         <amplify-auth-fields formFields={this.formFields} />
         <div slot="amplify-form-section-footer">
-          <div class={formSectionFooter}>
-            <amplify-button type="submit" overrideStyle={this.overrideStyle} data-test="sign-in-sign-in-button">
-              {this.submitButtonText}
-            </amplify-button>
+          <div class="sign-in-form-footer">
             <span>
               {NO_ACCOUNT_TEXT}{' '}
               <amplify-link
@@ -190,6 +187,9 @@ export class AmplifySignIn {
                 {CREATE_ACCOUNT_TEXT}
               </amplify-link>
             </span>
+            <amplify-button type="submit" overrideStyle={this.overrideStyle} data-test="sign-in-sign-in-button">
+              {this.submitButtonText}
+            </amplify-button>
           </div>
         </div>
       </amplify-form-section>

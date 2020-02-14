@@ -2,8 +2,10 @@
 
 exports[`amplify-confirm-sign-in spec: Render logic -> should render a \`confirm sign in\` form by default 1`] = `
 <amplify-confirm-sign-in>
-  <amplify-form-section headertext="Confirm SMS Code" submitbuttontext="Confirm">
-    <amplify-auth-fields></amplify-auth-fields>
-  </amplify-form-section>
+  <mock:shadow-root>
+    <amplify-form-section headertext="Confirm SMS Code" submitbuttontext="Confirm">
+      <amplify-auth-fields></amplify-auth-fields>
+    </amplify-form-section>
+  </mock:shadow-root>
 </amplify-confirm-sign-in>
 `;

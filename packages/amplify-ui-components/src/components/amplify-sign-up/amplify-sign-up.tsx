@@ -19,11 +19,12 @@ import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
 import { AmplifySignUpAttributes, PhoneNumberInterface } from './amplify-sign-up-interface';
 
 import { Auth } from '@aws-amplify/auth';
-import { dispatchToastHubEvent } from '../../common/helpers';
+import { dispatchAuthStateChangeEvent, dispatchToastHubEvent } from '../../common/helpers';
 
 @Component({
   tag: 'amplify-sign-up',
-  shadow: false,
+  styleUrl: 'amplify-sign-up.scss',
+  shadow: true,
 })
 export class AmplifySignUp {
   /** Fires when sign up form is submitted */
@@ -87,7 +88,7 @@ export class AmplifySignUp {
   /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
-  @Prop() handleAuthStateChange: AuthStateHandler;
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 
   @State() username: string;
   @State() password: string;

@@ -1,6 +1,4 @@
-import { css } from 'emotion';
-
-export const section = css`
+.section {
   position: relative;
   margin-bottom: 20px;
   background-color: var(--amplify-section-background-color);
@@ -12,4 +10,4 @@ export const section = css`
   box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
   font-family: var(--amplify-font-family);
-`;
+}

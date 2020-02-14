@@ -27,7 +27,6 @@
 - [amplify-require-new-password](../amplify-require-new-password)
 - [amplify-verify-contact](../amplify-verify-contact)
 - [amplify-totp-setup](../amplify-totp-setup)
-- [amplify-greetings](../amplify-greetings)
 - [amplify-toast](../amplify-toast)
 
 ### Graph
@@ -41,7 +40,6 @@ graph TD;
   amplify-authenticator --> amplify-require-new-password
   amplify-authenticator --> amplify-verify-contact
   amplify-authenticator --> amplify-totp-setup
-  amplify-authenticator --> amplify-greetings
   amplify-authenticator --> amplify-toast
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-form-section
@@ -102,9 +100,6 @@ graph TD;
   amplify-radio-button --> amplify-label
   amplify-totp-setup --> amplify-form-section
   amplify-totp-setup --> amplify-form-field
-  amplify-greetings --> amplify-nav
-  amplify-greetings --> amplify-sign-out
-  amplify-sign-out --> amplify-button
   amplify-toast --> amplify-icon
   amplify-examples --> amplify-authenticator
   style amplify-authenticator fill:#f9f,stroke:#333,stroke-width:4px

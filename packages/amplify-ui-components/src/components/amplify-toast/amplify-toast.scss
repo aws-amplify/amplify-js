@@ -1,10 +1,8 @@
-import { css } from 'emotion';
-
-export const toastIcon = css`
+.toast-icon {
   padding-right: 5px;
-`;
+}
 
-export const toast = css`
+.toast {
   display: flex;
   justify-content: space-between;
   position: absolute;
@@ -24,9 +22,9 @@ export const toast = css`
   > span {
     margin-right: 10px;
   }
-`;
+}
 
-export const toastClose = css`
+.toast-close {
   margin-left: auto;
   align-self: center;
   position: relative;
@@ -35,8 +33,8 @@ export const toastClose = css`
   overflow: hidden;
   cursor: pointer;
 
-  ::before,
-  ::after {
+  &::before,
+  &::after {
     content: '';
     position: absolute;
     height: 2px;
@@ -44,26 +42,26 @@ export const toastClose = css`
     top: 50%;
     left: 0;
     margin-top: -1px;
-    background: var(--amplify-light-grey);
+    background: var(--amplify-white);
   }
 
-  :hover::before,
-  :hover::after {
+  &:hover::before,
+  &:hover::after {
     background: var(--amplify-red);
   }
 
-  ::before {
+  &::before {
     -webkit-transform: rotate(45deg);
     -moz-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     -o-transform: rotate(45deg);
     transform: rotate(45deg);
   }
-  ::after {
+  &::after {
     -webkit-transform: rotate(-45deg);
     -moz-transform: rotate(-45deg);
     -ms-transform: rotate(-45deg);
     -o-transform: rotate(-45deg);
     transform: rotate(-45deg);
   }
-`;
+}

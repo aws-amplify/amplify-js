@@ -2,15 +2,15 @@ import { Component, Prop, h } from '@stencil/core';
 import { SIGN_OUT, NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
 import { Auth } from '@aws-amplify/auth';
-import { dispatchToastHubEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 @Component({
   tag: 'amplify-sign-out',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifySignOut {
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: AuthStateHandler;
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /** Text inside of the Sign Out button */

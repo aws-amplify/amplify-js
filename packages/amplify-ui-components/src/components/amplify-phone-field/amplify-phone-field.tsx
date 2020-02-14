@@ -1,10 +1,10 @@
 import { Component, Prop, FunctionalComponent, h } from '@stencil/core';
 import { PHONE_SUFFIX, PHONE_LABEL, PHONE_PLACEHOLDER } from '../../common/constants';
-import { phoneField } from './amplify-phone-field.style';
 
 @Component({
   tag: 'amplify-phone-field',
-  shadow: false,
+  styleUrl: 'amplify-phone-field.scss',
+  shadow: true,
 })
 export class AmplifyPhoneField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */
@@ -30,7 +30,7 @@ export class AmplifyPhoneField {
     return (
       <div>
         <amplify-form-field label={this.label} type="tel" hint={this.hint} required={this.required}>
-          <div class={phoneField} slot="input">
+          <div class="phone-field" slot="input">
             <amplify-country-dial-code handleInputChange={this.handleInputChange} />
             <amplify-input
               fieldId={this.fieldId}

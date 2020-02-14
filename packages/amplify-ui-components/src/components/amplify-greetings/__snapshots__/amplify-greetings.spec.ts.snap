@@ -2,10 +2,12 @@
 
 exports[`amplify-greetings spec: Render logic -> should render 1`] = `
 <amplify-greetings>
-  <header class="amplify-ui--greetings css-1xadjc9">
-    <amplify-nav>
-      <amplify-sign-out></amplify-sign-out>
-    </amplify-nav>
-  </header>
+  <mock:shadow-root>
+    <header class="greetings">
+      <amplify-nav>
+        <amplify-sign-out></amplify-sign-out>
+      </amplify-nav>
+    </header>
+  </mock:shadow-root>
 </amplify-greetings>
 `;

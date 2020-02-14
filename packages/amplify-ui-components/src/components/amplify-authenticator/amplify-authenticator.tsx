@@ -6,34 +6,39 @@ import {
   AUTHENTICATOR_AUTHSTATE,
   UI_AUTH_CHANNEL,
   TOAST_AUTH_ERROR_EVENT,
+  AUTH_STATE_CHANGE_EVENT,
 } from '../../common/constants';
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
-import { Hub } from '@aws-amplify/core';
-import { Logger } from '@aws-amplify/core';
+import { Hub, Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Authenticator');
 
 @Component({
   tag: 'amplify-authenticator',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyAuthenticator {
   /** Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp */
   @Prop() initialAuthState: AuthState = AuthState.SignIn;
-  /** Used as a flag in order to trigger the content displayed */
-  @State() authState: AuthState = AuthState.Loading;
-
-  @State() authData: CognitoUserInterface;
-  @State() toastMessage: string = '';
-
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
+
+  @State() authState: AuthState = AuthState.Loading;
+  @State() authData: CognitoUserInterface;
+  @State() toastMessage: string = '';
 
   async componentWillLoad() {
     Hub.listen(UI_AUTH_CHANNEL, data => {
       const { payload } = data;
-      if (payload.event === TOAST_AUTH_ERROR_EVENT && payload.message) {
-        this.toastMessage = payload.message;
+      switch (payload.event) {
+        case TOAST_AUTH_ERROR_EVENT:
+          if (payload.message) this.toastMessage = payload.message;
+          break;
+        case AUTH_STATE_CHANGE_EVENT:
+          if (payload.message) this.onAuthStateChange(payload.message as AuthState, payload.data);
+          break;
+        default:
+          logger.warn('Unhandled Auth Event', payload.event);
       }
     });
 
@@ -89,25 +94,61 @@ export class AmplifyAuthenticator {
   renderAuthComponent(authState: AuthState) {
     switch (authState) {
       case AuthState.SignIn:
-        return <amplify-sign-in federated={this.federated} handleAuthStateChange={this.onAuthStateChange} />;
+        return (
+          <slot name="sign-in">
+            <amplify-sign-in federated={this.federated} />
+          </slot>
+        );
       case AuthState.ConfirmSignIn:
-        return <amplify-confirm-sign-in handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+        return (
+          <slot name="confirm-sign-in">
+            <amplify-confirm-sign-in user={this.authData} />
+          </slot>
+        );
       case AuthState.SignUp:
-        return <amplify-sign-up handleAuthStateChange={this.onAuthStateChange} />;
+        return (
+          <slot name="sign-up">
+            <amplify-sign-up />
+          </slot>
+        );
       case AuthState.ConfirmSignUp:
-        return <amplify-confirm-sign-up handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+        return (
+          <slot name="confirm-sign-up">
+            <amplify-confirm-sign-up user={this.authData} />
+          </slot>
+        );
       case AuthState.ForgotPassword:
-        return <amplify-forgot-password handleAuthStateChange={this.onAuthStateChange} />;
+        return (
+          <slot name="forgot-password">
+            <amplify-forgot-password />
+          </slot>
+        );
       case AuthState.ResetPassword:
-        return <amplify-require-new-password handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+        return (
+          <slot name="require-new-password">
+            <amplify-require-new-password user={this.authData} />
+          </slot>
+        );
       case AuthState.VerifyContact:
-        return <amplify-verify-contact handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+        return (
+          <slot name="verify-contact">
+            <amplify-verify-contact user={this.authData} />
+          </slot>
+        );
       case AuthState.TOTPSetup:
-        return <amplify-totp-setup handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+        return (
+          <slot name="totp-setup">
+            <amplify-totp-setup user={this.authData} />
+          </slot>
+        );
       case AuthState.Loading:
-        return <div>Loading...</div>;
+        return (
+          <slot name="loading">
+            <div>Loading...</div>
+          </slot>
+        );
       case AuthState.SignedIn:
-        return <amplify-greetings handleAuthStateChange={this.onAuthStateChange} user={this.authData} />;
+        return [<slot name="greetings"></slot>, <slot></slot>];
       default:
         throw new Error(`Unhandled auth state: ${authState}`);
     }
@@ -128,16 +169,13 @@ export class AmplifyAuthenticator {
         {this.toastMessage ? (
           <amplify-toast
             message={this.toastMessage}
-            onClose={() => {
+            handleClose={() => {
               this.toastMessage = '';
             }}
             data-test="authenticator-error"
           />
         ) : null}
         {this.renderAuthComponent(this.authState)}
-        <div hidden={this.authState !== AuthState.SignedIn}>
-          <slot />
-        </div>
       </Host>
     );
   }

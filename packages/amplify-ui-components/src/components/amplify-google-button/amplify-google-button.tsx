@@ -1,7 +1,7 @@
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
-
+import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_GOOGLE } from '../../common/constants';
 import { AuthState, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
 
@@ -9,13 +9,13 @@ const logger = new Logger('amplify-google-button');
 
 @Component({
   tag: 'amplify-google-button',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyGoogleButton {
   /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
-  @Prop() handleAuthStateChange: AuthStateHandler;
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** App-specific client ID from Google */
   @Prop() clientId: FederatedConfig['googleClientId'];
   /** (Optional) Override default styling */

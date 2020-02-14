@@ -1,18 +1,10 @@
 import { Component, Prop, h } from '@stencil/core';
 import { AmplifySceneError } from '../amplify-scene/amplify-scene-interface';
-import {
-  loadingOverlay,
-  loadingContainer,
-  loadingLogo,
-  loadingSceneName,
-  sceneErrorText,
-  loadingBar,
-  loadingBarFill,
-} from './amplify-scene-loading.style';
 
 @Component({
   tag: 'amplify-scene-loading',
-  shadow: false,
+  styleUrl: 'amplify-scene-loading.scss',
+  shadow: true,
 })
 export class AmplifySceneLoading {
   /* The name of the scene being loaded */
@@ -24,9 +16,9 @@ export class AmplifySceneLoading {
 
   render() {
     return (
-      <div class={loadingOverlay} data-test="sumerianScene.loading">
-        <div class={loadingContainer}>
-          <div class={loadingLogo}>
+      <div class="loading-overlay" data-test="sumerianScene.loading">
+        <div class="loading-container">
+          <div class="loading-logo">
             <slot name="amplify-scene-loading-logo">
               <svg viewBox="0 0 800 481" xmlns="http://www.w3.org/2000/svg">
                 <g id="Page-1" fillRule="evenodd">
@@ -48,12 +40,12 @@ export class AmplifySceneLoading {
               </svg>
             </slot>
           </div>
-          <div class={loadingSceneName}>{this.sceneName}</div>
+          <div class="loading-scene-name">{this.sceneName}</div>
           {this.sceneError ? (
-            <div class={sceneErrorText}>{this.sceneError.displayText}</div>
+            <div class="scene-error-text">{this.sceneError.displayText}</div>
           ) : (
-            <div class={loadingBar}>
-              <div class={loadingBarFill} style={{ width: this.loadPercentage + '%' }} />
+            <div class="loading-bar">
+              <div class="loading-bar-fill" style={{ width: this.loadPercentage + '%' }} />
             </div>
           )}
         </div>

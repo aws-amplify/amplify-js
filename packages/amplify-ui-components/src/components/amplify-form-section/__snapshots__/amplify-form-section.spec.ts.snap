@@ -7,16 +7,14 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
     <amplify-section>
       <div>
         <slot-fb name="amplify-form-section-header">
-          <div class="amplify-ui--section-header css-m2crxr">
-            <h3 data-test="form-section-header-section">
-              Amplify
-            </h3>
+          <div class="form-section-header">
+            <h3 data-test="form-section-header-section"></h3>
           </div>
         </slot-fb>
       </div>
       <div>
         <slot-fb name="amplify-form-section-footer">
-          <div class="amplify-ui--section-footer css-25p8x5">
+          <div class="form-section-footer">
             <amplify-button data-test="form-section-form-section-button" type="submit">
               Submit
             </amplify-button>
@@ -35,16 +33,14 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
     <amplify-section>
       <div>
         <slot-fb name="amplify-form-section-header">
-          <div class="amplify-ui--section-header css-m2crxr">
-            <h3 data-test="form-section-header-section">
-              Amplify
-            </h3>
+          <div class="form-section-header">
+            <h3 data-test="form-section-header-section"></h3>
           </div>
         </slot-fb>
       </div>
       <div>
         <slot-fb name="amplify-form-section-footer">
-          <div class="amplify-ui--section-footer css-25p8x5">
+          <div class="form-section-footer">
             <amplify-button data-test="form-section-form-section-button" type="submit">
               Go
             </amplify-button>
@@ -63,16 +59,14 @@ exports[`amplify-form-section spec: Render logic -> should render without Emotio
     <amplify-section overridestyle="">
       <div>
         <slot-fb name="amplify-form-section-header">
-          <div class="amplify-ui--section-header">
-            <h3 data-test="form-section-header-section">
-              Amplify
-            </h3>
+          <div class="form-section-header">
+            <h3 data-test="form-section-header-section"></h3>
           </div>
         </slot-fb>
       </div>
       <div>
         <slot-fb name="amplify-form-section-footer">
-          <div class="amplify-ui--section-footer">
+          <div class="form-section-footer">
             <amplify-button data-test="form-section-form-section-button" overridestyle="" type="submit">
               Submit
             </amplify-button>

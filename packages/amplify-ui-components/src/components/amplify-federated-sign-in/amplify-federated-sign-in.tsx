@@ -9,7 +9,7 @@ const logger = new Logger('amplify-federated-sign-in');
 
 @Component({
   tag: 'amplify-federated-sign-in',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyFederatedSignIn {
   /** The current authentication state. */

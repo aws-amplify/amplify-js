@@ -1,6 +1,4 @@
-import { css } from 'emotion';
-
-export const tooltip = css`
+.tooltip {
   display: inline;
   position: relative;
   font-size: 12px;
@@ -24,15 +22,15 @@ export const tooltip = css`
     position: absolute;
     white-space: nowrap;
     opacity: 0;
-    transition: all .3s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
-  
+
   :before {
     border: solid;
     border-color: var(--amplify-deep-squid-ink) transparent transparent transparent;
     border-width: 5px;
     bottom: 36px;
-    content:"";
+    content: '';
     left: 50%;
     -webkit-transform: translateX(-50%);
     -moz-transform: translateX(-50%);
@@ -42,7 +40,7 @@ export const tooltip = css`
     position: absolute;
     font-size: 14px;
     opacity: 0;
-    transition: all .3s ease-in-out;
+    transition: all 0.3s ease-in-out;
   }
 
   :hover:after {
@@ -54,9 +52,9 @@ export const tooltip = css`
     opacity: 1;
     transition-delay: 1s;
   }
-`;
+}
 
-export const autoShowTooltip = css`
+.auto-show-tooltip {
   :after {
     opacity: 1;
     transition-delay: 1s;
@@ -66,4 +64,4 @@ export const autoShowTooltip = css`
     opacity: 1;
     transition-delay: 1s;
   }
-`;
+}

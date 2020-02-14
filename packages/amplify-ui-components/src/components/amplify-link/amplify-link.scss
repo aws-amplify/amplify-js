@@ -1,20 +1,18 @@
-import { css } from 'emotion';
-
-export const link = css`
+.link {
   color: #ff9900;
   cursor: pointer;
-  :link {
+  &:link {
     color: var(--amplify-amazon-orange);
     text-decoration: none;
   }
 
-  :hover {
+  &:hover {
     color: var(--amplify-light-amazon-orange);
     text-decoration: underline;
   }
-  
-  :active {
+
+  &:active {
     color: var(--amplify-button-click);
     text-decoration: underline;
   }
-`;
+}

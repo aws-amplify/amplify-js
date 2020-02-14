@@ -14,10 +14,6 @@ describe('amplify-require-new-password spec:', () => {
 			expect(requireNewPassword.handleSubmit).toBeDefined();
 		});
 
-		it('should evaluate `handleAuthStateChange` as undefined by default', () => {
-			expect(requireNewPassword.handleAuthStateChange).toBeUndefined();
-		});
-
 		it('should evaluate `user` as undefined by default', () => {
 			expect(requireNewPassword.user).toBeUndefined();
 		});

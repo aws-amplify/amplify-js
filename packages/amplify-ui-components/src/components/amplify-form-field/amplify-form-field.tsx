@@ -1,16 +1,9 @@
 import { Component, Prop, h, FunctionalComponent } from '@stencil/core';
-import { formField, formFieldLabel, formFieldDescription } from './amplify-form-field.style';
-import { styleNuker } from '../../common/helpers';
 import { TextFieldTypes } from '../../common/types/ui-types';
-import { AMPLIFY_UI_PREFIX } from '../../common/constants';
-
-const STATIC_FORM_FIELD_LABEL_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--form-field-label`;
-const STATIC_FORM_FIELD_DESCRIPTION_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--form-field-description`;
-const STATIC_FORM_FIELD_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--form-field`;
-
 @Component({
   tag: 'amplify-form-field',
-  shadow: false,
+  styleUrl: 'amplify-form-field.scss',
+  shadow: true,
 })
 export class AmplifyFormField {
   /** The ID of the field.  Should match with its corresponding input's ID. */
@@ -42,20 +35,16 @@ export class AmplifyFormField {
 
   render() {
     return (
-      <div class={styleNuker(this.overrideStyle, STATIC_FORM_FIELD_CLASS_NAME, formField)}>
+      <div class="form-field">
         {this.label && (
-          <div class={styleNuker(this.overrideStyle, STATIC_FORM_FIELD_LABEL_CLASS_NAME, formFieldLabel)}>
+          <div class="form-field-label">
             <amplify-label htmlFor={this.fieldId} overrideStyle={this.overrideStyle}>
               {this.label}
             </amplify-label>
           </div>
         )}
         {this.description && (
-          <div
-            id={`${this.fieldId}-description`}
-            class={styleNuker(this.overrideStyle, STATIC_FORM_FIELD_DESCRIPTION_CLASS_NAME, formFieldDescription)}
-            data-test="form-field-description"
-          >
+          <div id={`${this.fieldId}-description`} class="form-field-description" data-test="form-field-description">
             {this.description}
           </div>
         )}

@@ -3,6 +3,7 @@ import { angularOutputTarget } from '@stencil/angular-output-target';
 import { reactOutputTarget } from '@stencil/react-output-target';
 import externals from 'rollup-plugin-node-externals';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
+import { sass } from '@stencil/sass';
 
 export const config: Config = {
   excludeSrc: ['**/*.e2e.*', '**/*.spec.*', '**/*.stories.*'],
@@ -13,6 +14,7 @@ export const config: Config = {
       include: ['@aws-amplify/auth', '@aws-amplify/core'],
     }),
     nodePolyfills(),
+    sass()
   ],
   commonjs: {
     namedExports: {
@@ -48,5 +50,5 @@ export const config: Config = {
       serviceWorker: null, // disable service workers
     },
   ],
-  globalScript: 'src/global/index.ts'
+  globalScript: 'src/global/theme.ts'
 };

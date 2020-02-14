@@ -2,25 +2,32 @@
 
 exports[`amplify-hint spec: Render logic -> renders with hint text FOO 1`] = `
 <amplify-hint>
-  <!---->
-  <div class="amplify-ui--hint css-1tereo9">
-    FOO
-  </div>
+  <mock:shadow-root>
+    <div class="hint">
+      <slot></slot>
+    </div>
+  </mock:shadow-root>
+  FOO
 </amplify-hint>
 `;
 
 exports[`amplify-hint spec: Render logic -> renders with no hint text 1`] = `
 <amplify-hint>
-  <!---->
-  <div class="amplify-ui--hint css-1tereo9"></div>
+  <mock:shadow-root>
+    <div class="hint">
+      <slot></slot>
+    </div>
+  </mock:shadow-root>
 </amplify-hint>
 `;
 
 exports[`amplify-hint spec: Render logic -> renders without Emotion CSS class when overrideStyle is true 1`] = `
 <amplify-hint override-style="true">
-  <!---->
-  <div class="amplify-ui--hint">
-    FOO
-  </div>
+  <mock:shadow-root>
+    <div class="hint">
+      <slot></slot>
+    </div>
+  </mock:shadow-root>
+  FOO
 </amplify-hint>
 `;

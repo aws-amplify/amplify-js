@@ -3,7 +3,7 @@ import { PASSWORD_SUFFIX, PASSWORD_LABEL, PASSWORD_PLACEHOLDER } from '../../com
 
 @Component({
   tag: 'amplify-password-field',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyPasswordField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */

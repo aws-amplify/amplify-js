@@ -9,6 +9,9 @@
 
 - [amplify-authenticator](../amplify-authenticator)
 - [amplify-authenticator](../amplify-authenticator)
+- [amplify-sign-in](../amplify-sign-in)
+- [amplify-sign-up](../amplify-sign-up)
+- [amplify-authenticator](../amplify-authenticator)
 - [amplify-select-mfa-type](../amplify-select-mfa-type)
 - [rock-paper-scissor](rock-paper-scissor)
 - [rock-paper-scissor](rock-paper-scissor)
@@ -18,6 +21,9 @@
 ```mermaid
 graph TD;
   amplify-examples --> amplify-authenticator
+  amplify-examples --> amplify-authenticator
+  amplify-examples --> amplify-sign-in
+  amplify-examples --> amplify-sign-up
   amplify-examples --> amplify-authenticator
   amplify-examples --> amplify-select-mfa-type
   amplify-examples --> rock-paper-scissor
@@ -31,7 +37,6 @@ graph TD;
   amplify-authenticator --> amplify-require-new-password
   amplify-authenticator --> amplify-verify-contact
   amplify-authenticator --> amplify-totp-setup
-  amplify-authenticator --> amplify-greetings
   amplify-authenticator --> amplify-toast
   amplify-sign-in --> amplify-link
   amplify-sign-in --> amplify-form-section
@@ -92,9 +97,6 @@ graph TD;
   amplify-radio-button --> amplify-label
   amplify-totp-setup --> amplify-form-section
   amplify-totp-setup --> amplify-form-field
-  amplify-greetings --> amplify-nav
-  amplify-greetings --> amplify-sign-out
-  amplify-sign-out --> amplify-button
   amplify-toast --> amplify-icon
   amplify-select-mfa-type --> amplify-form-section
   amplify-select-mfa-type --> amplify-radio-button

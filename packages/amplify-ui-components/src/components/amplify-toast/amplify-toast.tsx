@@ -1,14 +1,13 @@
 import { Component, Prop, h } from '@stencil/core';
 
-import { toast, toastClose, toastIcon } from './amplify-toast.style';
-
 @Component({
   tag: 'amplify-toast',
-  shadow: false,
+  styleUrl: 'amplify-toast.scss',
+  shadow: true,
 })
 export class AmplifyToast {
   /** Used in order to add a dismissable `x` for the Toast component */
-  @Prop() onClose: () => void;
+  @Prop() handleClose: () => void;
   @Prop() message: string = '';
 
   /* 
@@ -18,11 +17,11 @@ export class AmplifyToast {
 
   render() {
     return (
-      <div class={toast}>
-        <amplify-icon class={toastIcon} name="warning" />
+      <div class="toast">
+        <amplify-icon class="toast-icon" name="warning" />
         {this.message ? <span>{this.message}</span> : null}
         <slot />
-        <a class={toastClose} onClick={this.onClose} />
+        <a class="toast-close" onClick={this.handleClose} />
       </div>
     );
   }

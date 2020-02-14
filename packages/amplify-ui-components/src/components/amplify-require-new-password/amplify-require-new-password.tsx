@@ -18,13 +18,13 @@ import {
 
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
-import { dispatchToastHubEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 const logger = new Logger('amplify-require-new-password');
 
 @Component({
   tag: 'amplify-require-new-password',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyRequireNewPassword {
   /** The header text of the forgot password section */
@@ -36,7 +36,7 @@ export class AmplifyRequireNewPassword {
   /** The function called when submitting a new password */
   @Prop() handleSubmit: (event: Event) => void = event => this.completeNewPassword(event);
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: AuthStateHandler;
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
   /** The form fields displayed inside of the forgot password form */

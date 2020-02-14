@@ -1,14 +1,14 @@
 import { Component, h } from '@stencil/core';
-import { nav } from './amplify-nav.style';
 
 @Component({
   tag: 'amplify-nav',
-  shadow: false,
+  styleUrl: 'amplify-nav.scss',
+  shadow: true,
 })
 export class AmplifyNav {
   render() {
     return (
-      <nav class={nav}>
+      <nav class="nav">
         <slot />
       </nav>
     );

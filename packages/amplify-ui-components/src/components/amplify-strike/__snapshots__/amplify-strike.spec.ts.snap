@@ -1,19 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`amplify-strike stories withOverrideStyle 1`] = `
-<amplify-strike class="amplify-ui--strike">
-  <!---->
-  <span class="amplify-ui--strike">
-    Unstyled
-  </span>
+<amplify-strike class="strike">
+  <mock:shadow-root>
+    <span class="strike-content">
+      <slot></slot>
+    </span>
+  </mock:shadow-root>
+  Unstyled
 </amplify-strike>
 `;
 
 exports[`amplify-strike stories withText 1`] = `
-<amplify-strike class="amplify-ui--strike css-1ket5td">
-  <!---->
-  <span class="amplify-ui--strike css-15gu3cp">
-    or
-  </span>
+<amplify-strike class="strike">
+  <mock:shadow-root>
+    <span class="strike-content">
+      <slot></slot>
+    </span>
+  </mock:shadow-root>
+  or
 </amplify-strike>
 `;

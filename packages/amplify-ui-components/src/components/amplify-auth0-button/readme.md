@@ -5,11 +5,11 @@
 
 ## Properties
 
-| Property                | Attribute        | Description                                                           | Type                                                                                                                                     | Default     |
-| ----------------------- | ---------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `config`                | --               | See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters | `{ audience?: string; clientID: string; domain: string; responseType: string; redirectUri: string; returnTo?: string; scope?: string; }` | `undefined` |
-| `handleAuthStateChange` | --               |                                                                       | `(nextAuthState: AuthState, data?: object) => void`                                                                                      | `undefined` |
-| `overrideStyle`         | `override-style` | (Optional) Override default styling                                   | `boolean`                                                                                                                                | `false`     |
+| Property                | Attribute        | Description                                                           | Type                                                                                                                                     | Default                        |
+| ----------------------- | ---------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| `config`                | --               | See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters | `{ audience?: string; clientID: string; domain: string; responseType: string; redirectUri: string; returnTo?: string; scope?: string; }` | `undefined`                    |
+| `handleAuthStateChange` | --               |                                                                       | `(nextAuthState: AuthState, data?: object) => void`                                                                                      | `dispatchAuthStateChangeEvent` |
+| `overrideStyle`         | `override-style` | (Optional) Override default styling                                   | `boolean`                                                                                                                                | `false`                        |
 
 
 ## Dependencies

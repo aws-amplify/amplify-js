@@ -1,11 +1,3 @@
-// Namespace
-export const AMPLIFY_UI_PREFIX = 'amplify-ui';
-
-// Classnames
-export const AMPLIFY_UI_TEXT_INPUT = `${AMPLIFY_UI_PREFIX}-text-input`;
-export const AMPLIFY_UI_SCENE = `${AMPLIFY_UI_PREFIX}-scene`;
-export const AMPLIFY_UI_SCENE_LOADING = `${AMPLIFY_UI_PREFIX}-scene-loading`;
-
 // Dictionaries
 
 /*
@@ -137,3 +129,4 @@ export const FAILURE = 'FAILURE';
 // Hub Events and Channels
 export const UI_AUTH_CHANNEL = 'UI Auth';
 export const TOAST_AUTH_ERROR_EVENT = 'ToastAuthError';
+export const AUTH_STATE_CHANGE_EVENT = 'AuthStateChange';

@@ -1,16 +1,14 @@
-import { Component, Prop, h } from '@stencil/core';
-import { button, buttonTypeReset, buttonTypeSafe } from './amplify-button.style';
-import { styleNuker, styleBranch } from '../../common/helpers';
+import { Element, Component, Prop, h } from '@stencil/core';
 import { ButtonTypes } from '../../common/types/ui-types';
-import { AMPLIFY_UI_PREFIX } from '../../common/constants';
-
-const STATIC_BUTTON_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--button`;
+import { hasShadowDom } from '../../common/helpers';
 
 @Component({
   tag: 'amplify-button',
-  shadow: false,
+  styleUrl: 'amplify-button.scss',
+  shadow: true,
 })
 export class AmplifyButton {
+  @Element() el!: HTMLElement;
   /** Type of the button: 'button', 'submit' or 'reset' */
   @Prop() type: ButtonTypes = 'button';
   /** (Optional) Callback called when a user clicks on the button */
@@ -18,13 +16,35 @@ export class AmplifyButton {
   /** (Optional) Override default styling */
   @Prop() overrideStyle: boolean = false;
 
+  private handleClick = (ev: Event) => {
+    if (this.handleButtonClick) {
+      this.handleButtonClick(ev);
+    } else if (hasShadowDom(this.el) && this.type == 'submit') {
+      // this button wants to specifically submit a form
+      // climb up the dom to see if we're in a <form>
+      // and if so, then use JS to submit it
+      const form = this.el.closest('form');
+      if (form) {
+        ev.preventDefault();
+
+        const fakeButton = document.createElement('button');
+        fakeButton.type = this.type;
+        fakeButton.style.display = 'none';
+        form.appendChild(fakeButton);
+        fakeButton.click();
+        fakeButton.remove();
+      }
+    }
+  };
+
   render() {
-    const emotionButtonClass = styleBranch(this.type === 'reset', button, buttonTypeReset, buttonTypeSafe);
     return (
       <button
-        class={styleNuker(this.overrideStyle, STATIC_BUTTON_CLASS_NAME, emotionButtonClass)}
+        class={{
+          button: true,
+        }}
         type={this.type}
-        onClick={this.handleButtonClick}
+        onClick={this.handleClick}
       >
         <slot />
       </button>
