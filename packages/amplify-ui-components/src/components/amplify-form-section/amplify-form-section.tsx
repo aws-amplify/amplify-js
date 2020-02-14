@@ -34,7 +34,7 @@ const AmplifyFormSectionFooter: FunctionalComponent<AmplifyFormSectionFooterProp
 })
 export class AmplifyFormSection {
   /** (Required) Function called upon submission of form */
-  @Prop() handleSubmit: (inputEvent: Event) => void;
+  @Prop() handleSubmit: (event: Event) => void;
   /** (Optional) Used as a the default value within the default footer slot */
   @Prop() submitButtonText?: string = 'Submit';
   /** Used for form section header */

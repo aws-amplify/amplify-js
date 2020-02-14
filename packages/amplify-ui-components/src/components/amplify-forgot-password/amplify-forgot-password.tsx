@@ -93,7 +93,7 @@ export class AmplifyForgotPassword {
     }
   }
 
-  async submit(event) {
+  async submit(event: Event) {
     if (event) {
       event.preventDefault();
     }
