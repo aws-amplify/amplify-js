@@ -14,7 +14,7 @@ import * as Observable from 'zen-observable';
 import { GraphQLError } from 'graphql';
 import * as url from 'url';
 import { v4 as uuid } from 'uuid';
-
+import { Buffer } from 'buffer';
 import { ProvidertOptions } from '../types';
 import {
 	Logger,
