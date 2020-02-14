@@ -12,7 +12,7 @@
     "noUnusedParameters": true,
     "jsx": "react",
     "jsxFactory": "h",
-    "typeRoots": ["node_modules/@types", "./types"]
+    "typeRoots": ["../../node_modules/@types", "node_modules/@types", "./types"]
   },
   "include": ["src", "types/jsx.d.ts"],
   "exclude": ["node_modules", "../../node_modules"]
