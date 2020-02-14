@@ -509,7 +509,7 @@ export class AWSS3Provider implements StorageProvider {
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler({ bufferBody: true }, emitter),
+			// requestHandler: new AxiosHttpHandler({ bufferBody: true }, emitter),
 		});
 		return s3client;
 	}
