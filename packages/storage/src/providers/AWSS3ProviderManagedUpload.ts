@@ -321,7 +321,7 @@ export class AWSS3ProviderManagedUpload {
 			region,
 			credentials,
 			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler({}, emitter),
+			requestHandler: new AxiosHttpHandler({ bufferBody: true }, emitter),
 			customUserAgent: getAmplifyUserAgent(),
 			urlParser: parseUrl,
 		});
