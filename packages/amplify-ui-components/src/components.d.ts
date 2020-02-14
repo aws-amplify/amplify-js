@@ -836,11 +836,11 @@ export namespace Components {
     'overrideStyle': boolean;
   }
   interface AmplifyToast {
-    'message': string;
     /**
     * Used in order to add a dismissable `x` for the Toast component
     */
-    'onClose': () => void;
+    'handleClose': () => void;
+    'message': string;
   }
   interface AmplifyTooltip {
     /**
@@ -2059,11 +2059,11 @@ declare namespace LocalJSX {
     'overrideStyle'?: boolean;
   }
   interface AmplifyToast {
-    'message'?: string;
     /**
     * Used in order to add a dismissable `x` for the Toast component
     */
-    'onClose'?: () => void;
+    'handleClose'?: () => void;
+    'message'?: string;
   }
   interface AmplifyTooltip {
     /**

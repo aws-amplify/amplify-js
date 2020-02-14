@@ -2,29 +2,33 @@
 
 exports[`amplify-scene spec: Render logic -> should render loading overlay by default 1`] = `
 <amplify-scene scenename="{'scene1'}">
-  <div class="css-etfphl" id="scene-container-dom-id">
-    <div class="css-s08p0c" id="scene-dom-id">
-      <amplify-scene-loading load-percentage="0"></amplify-scene-loading>
+  <mock:shadow-root>
+    <div class="scene-container" id="scene-container-dom-id">
+      <div class="scene" id="scene-dom-id">
+        <amplify-scene-loading load-percentage="0"></amplify-scene-loading>
+      </div>
+      <div class="scene-bar">
+        <span class="scene-actions"></span>
+      </div>
     </div>
-    <div class="css-xdndw7">
-      <span class="css-31nfqj"></span>
-    </div>
-  </div>
+  </mock:shadow-root>
 </amplify-scene>
 `;
 
 exports[`amplify-scene spec: Render logic -> should render scene action bar when 'isSceneLoaded' is true 1`] = `
 <amplify-scene scenename="{'scene1'}">
-  <div class="css-etfphl" id="scene-container-dom-id">
-    <div class="css-s08p0c" id="scene-dom-id">
-      <amplify-scene-loading load-percentage="0"></amplify-scene-loading>
+  <mock:shadow-root>
+    <div class="scene-container" id="scene-container-dom-id">
+      <div class="scene" id="scene-dom-id">
+        <amplify-scene-loading load-percentage="0"></amplify-scene-loading>
+      </div>
+      <div class="scene-bar">
+        <span class="scene-actions">
+          <amplify-icon-button name="sound" tooltip="Mute"></amplify-icon-button>
+          <amplify-icon-button name="maximize" tooltip="Fullscreen"></amplify-icon-button>
+        </span>
+      </div>
     </div>
-    <div class="css-xdndw7">
-      <span class="css-31nfqj">
-        <amplify-icon-button name="sound" tooltip="Mute"></amplify-icon-button>
-        <amplify-icon-button name="maximize" tooltip="Fullscreen"></amplify-icon-button>
-      </span>
-    </div>
-  </div>
+  </mock:shadow-root>
 </amplify-scene>
 `;

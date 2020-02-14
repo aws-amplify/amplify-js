@@ -13,7 +13,7 @@
 import { injectGlobal } from 'emotion';
 
 injectGlobal`
-  :root {
+   :root {
     /* Colors */
     --amplify-amazon-orange: #ff9900;
     --amplify-light-amazon-orange: #ffac31;
@@ -30,7 +30,6 @@ injectGlobal`
     --amplify-light-blue: #00a1c9;
     --amplify-yellow-warning: #f8d047;
     --amplify-red-problem: #cc1454;
-
     /* Theme */
     /* All of the variables below can be used within any application that does an @import inside of their application */
     --amplify-button-color: var(--amplify-white);
@@ -49,7 +48,6 @@ injectGlobal`
     --amplify-primary-font-size: 1em;
     --amplify-secondary-font-size: 0.875em;
     --amplify-third-font-size: 0.813em;
-
     --amplify-font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
   }
-`;
+`; 

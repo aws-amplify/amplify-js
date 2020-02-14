@@ -1,6 +1,4 @@
-import { css } from 'emotion';
-
-export const input = css`
+.input {
   display: block;
   width: 100%;
   padding: 16px;
@@ -13,8 +11,12 @@ export const input = css`
   box-sizing: border-box;
   margin-bottom: 10px;
 
-  :focus {
+  &:focus {
     outline: none;
     border-color: orange;
   }
-`;
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}

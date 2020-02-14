@@ -1,6 +1,4 @@
-import { css } from 'emotion';
-
-export const totpSetup = css`
+.totp-setup {
   text-align: center;
   margin-bottom: 30px;
 
@@ -8,4 +6,4 @@ export const totpSetup = css`
     height: 128px;
     width: 128px;
   }
-`;
+}

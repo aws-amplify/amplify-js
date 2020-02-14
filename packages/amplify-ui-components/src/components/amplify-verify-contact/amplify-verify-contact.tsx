@@ -1,7 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { Logger } from '@aws-amplify/core';
 import { Component, h, Prop, State } from '@stencil/core';
-
 import { AuthState, AuthStateHandler, CognitoUserInterface } from '../../common/types/auth-types';
 import {
   VERIFY_CONTACT_VERIFY_LABEL,
@@ -12,16 +11,17 @@ import {
   VERIFY_CONTACT_PHONE_LABEL,
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
+import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 const logger = new Logger('AmplifyVerifyContact');
 
 @Component({
   tag: 'amplify-verify-contact',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyVerifyContact {
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: AuthStateHandler;
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** (Optional) Override default styling */
   @Prop() overrideStyle: boolean = false;
   /** Used for the username to be passed to resend code */

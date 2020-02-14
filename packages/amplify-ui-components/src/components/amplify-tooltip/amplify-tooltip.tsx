@@ -1,15 +1,9 @@
 import { Component, h, Prop } from '@stencil/core';
-import { tooltip, autoShowTooltip } from './amplify-tooltip.style';
-import { styleNuker, styleBranch } from '../../common/helpers';
-import { AMPLIFY_UI_PREFIX } from '../../common/constants';
-
-const STATIC_TOOLTIP_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--tooltip`;
 
 @Component({
   tag: 'amplify-tooltip',
-  shadow: false,
+  shadow: true,
 })
-
 export class AmplifyTooltip {
   /** (Required) The text in the tooltip */
   @Prop() text: string;
@@ -19,9 +13,8 @@ export class AmplifyTooltip {
   @Prop() shouldAutoShow: boolean = false;
 
   render() {
-    const emotionTooltipClass = styleBranch(this.shouldAutoShow, tooltip, autoShowTooltip, null);
     return (
-      <div class={styleNuker(this.overrideStyle, STATIC_TOOLTIP_CLASS_NAME, emotionTooltipClass)} data-text={this.text}>
+      <div class={{ tooltip: true, 'auto-show-tooltip': this.shouldAutoShow }} data-text={this.text}>
         <slot />
       </div>
     );

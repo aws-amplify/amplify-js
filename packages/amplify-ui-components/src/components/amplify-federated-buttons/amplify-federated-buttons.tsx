@@ -1,13 +1,13 @@
 import { Auth } from '@aws-amplify/auth';
 import { isEmpty } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
-
+import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { AuthState, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
 
 @Component({
   tag: 'amplify-federated-buttons',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyFederatedButtons {
   /** The current authentication state. */
@@ -17,7 +17,7 @@ export class AmplifyFederatedButtons {
   /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
-  @Prop() handleAuthStateChange: AuthStateHandler;
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** (Optional) Override default styling */
   @Prop() overrideStyle: boolean = false;
 

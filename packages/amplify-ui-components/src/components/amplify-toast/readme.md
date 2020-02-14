@@ -7,10 +7,10 @@
 
 ## Properties
 
-| Property  | Attribute | Description                                                    | Type         | Default     |
-| --------- | --------- | -------------------------------------------------------------- | ------------ | ----------- |
-| `message` | `message` |                                                                | `string`     | `''`        |
-| `onClose` | --        | Used in order to add a dismissable `x` for the Toast component | `() => void` | `undefined` |
+| Property      | Attribute | Description                                                    | Type         | Default     |
+| ------------- | --------- | -------------------------------------------------------------- | ------------ | ----------- |
+| `handleClose` | --        | Used in order to add a dismissable `x` for the Toast component | `() => void` | `undefined` |
+| `message`     | `message` |                                                                | `string`     | `''`        |
 
 
 ## Dependencies

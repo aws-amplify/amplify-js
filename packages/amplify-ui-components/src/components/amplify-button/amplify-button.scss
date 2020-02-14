@@ -1,14 +1,4 @@
-import { css } from 'emotion';
-
-export const buttonTypeReset = css`
-  background-color: var(--amplify-button-background-color-danger);
-`;
-
-export const buttonTypeSafe = css`
-  background-color: var(--amplify-button-background-color);
-`;
-
-export const button = css`
+.button {
   min-width: 153px;
   display: inline-block;
   margin-bottom: 0;
@@ -28,16 +18,18 @@ export const button = css`
   padding: 14px;
   letter-spacing: 1.1px;
   border: none;
-  :active {
+  background-color: var(--amplify-button-background-color);
+
+  &:active {
     opacity: 1;
     background-color: #e88b01;
   }
-  :hover {
+  &:hover {
     opacity: 0.8;
   }
-  :disabled {
+  &:disabled {
     opacity: 1;
     cursor: auto;
     background-color: #ffc46d;
   }
-`;
+}

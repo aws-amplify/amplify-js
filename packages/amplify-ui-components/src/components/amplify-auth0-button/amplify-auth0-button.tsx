@@ -1,22 +1,22 @@
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
-
 import { AUTH_SOURCE_KEY, SIGN_IN_WITH_AUTH0 } from '../../common/constants';
 import { AuthStateHandler, FederatedConfig, AuthState } from '../../common/types/auth-types';
+import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 const logger = new Logger('amplify-auth0-button');
 
 @Component({
   tag: 'amplify-auth0-button',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyAuth0Button {
   /** See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters */
   @Prop() config: FederatedConfig['auth0Config'];
   /** (Optional) Override default styling */
   @Prop() overrideStyle: boolean = false;
-  @Prop() handleAuthStateChange: AuthStateHandler;
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 
   _auth0: any;
 

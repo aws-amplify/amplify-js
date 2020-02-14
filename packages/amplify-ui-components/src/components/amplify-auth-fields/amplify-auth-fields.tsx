@@ -4,7 +4,7 @@ import componentFieldMapping from './component-field-mapping';
 
 @Component({
   tag: 'amplify-auth-fields',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyAuthFields {
   /**

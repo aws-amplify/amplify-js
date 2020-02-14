@@ -1,10 +1,4 @@
-import { css } from 'emotion';
-
-export const icon = css`
-  fill: var(--amplify-white);
-`;
-
-export const actionButton = css`
+.action-button {
   button {
     position: relative;
     padding: 0;
@@ -41,8 +35,4 @@ export const actionButton = css`
       filter: drop-shadow(1px 1px 1px var(--amplify-grey));
     }
   }
-`;
-
-export const actionIcon = css`
-  fill: var(--amplify-white);
-`;
+}

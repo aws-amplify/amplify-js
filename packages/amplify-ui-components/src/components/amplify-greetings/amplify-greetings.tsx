@@ -1,14 +1,10 @@
 import { Component, h, Prop, State, Watch, FunctionalComponent } from '@stencil/core';
-import { greetings } from './amplify-greetings.style';
 import { AuthStateHandler, CognitoUserInterface } from '../../common/types/auth-types';
-import { styleNuker } from '../../common/helpers';
-import { AMPLIFY_UI_PREFIX } from '../../common/constants';
-
-const STATIC_GREETINGS_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--greetings`;
-
+import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 @Component({
   tag: 'amplify-greetings',
-  shadow: false,
+  styleUrl: 'amplify-greetings.scss',
+  shadow: true,
 })
 export class AmplifyGreetings {
   /** Used for the username to be passed to resend code */
@@ -16,7 +12,7 @@ export class AmplifyGreetings {
   /** Logo displayed inside of the header */
   @Prop() logo: FunctionalComponent | null = null;
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: AuthStateHandler;
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Override default styling */
   @Prop() overrideStyle: boolean = false;
 
@@ -30,7 +26,7 @@ export class AmplifyGreetings {
 
   render() {
     return (
-      <header class={styleNuker(this.overrideStyle, STATIC_GREETINGS_CLASS_NAME, greetings)}>
+      <header class="greetings">
         {// TODO: user <amplify-logo> instead of <span>
         this.logo && <span>Logo</span>}
         <amplify-nav>

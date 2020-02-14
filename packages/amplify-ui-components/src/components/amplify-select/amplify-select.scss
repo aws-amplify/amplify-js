@@ -1,6 +1,4 @@
-import { css } from 'emotion';
-
-export const select = css`
+.select {
   padding: 14px;
   font-size: 14px;
   color: var(--amplify-deep-squid-ink);
@@ -26,4 +24,4 @@ export const select = css`
     outline: none;
     border-color: var(--amplify-amazon-orange);
   }
-`;
+}

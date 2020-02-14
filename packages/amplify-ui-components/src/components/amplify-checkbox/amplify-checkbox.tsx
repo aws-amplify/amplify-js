@@ -1,13 +1,9 @@
 import { Component, Prop, h } from '@stencil/core';
-import { checkbox } from './amplify-checkbox.style';
-import { styleNuker } from '../../common/helpers';
-import { AMPLIFY_UI_PREFIX } from '../../common/constants';
-
-const STATIC_CHECKBOX_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--checkbox`;
 
 @Component({
   tag: 'amplify-checkbox',
-  shadow: false,
+  styleUrl: 'amplify-checkbox.scss',
+  shadow: true,
 })
 export class AmplifyCheckbox {
   /** (Optional) Overrides default styling */
@@ -31,7 +27,7 @@ export class AmplifyCheckbox {
 
   render() {
     return (
-      <span class={styleNuker(this.overrideStyle, STATIC_CHECKBOX_CLASS_NAME, checkbox)}>
+      <span class="checkbox">
         <input
           onClick={this.onClick}
           type="checkbox"

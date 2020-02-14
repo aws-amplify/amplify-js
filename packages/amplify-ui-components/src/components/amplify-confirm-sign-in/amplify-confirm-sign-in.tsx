@@ -16,11 +16,11 @@ import {
 } from '../../common/constants';
 import { isEmpty } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
-import { dispatchToastHubEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-in',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyConfirmSignIn {
   /** Fires when confirm sign in form is submitted */
@@ -34,7 +34,7 @@ export class AmplifyConfirmSignIn {
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /** Passed from the Authenticator component in order to change Authentication state */
-  @Prop() handleAuthStateChange: AuthStateHandler;
+  @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing

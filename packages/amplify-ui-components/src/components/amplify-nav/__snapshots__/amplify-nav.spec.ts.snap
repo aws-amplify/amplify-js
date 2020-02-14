@@ -2,7 +2,10 @@
 
 exports[`amplify-nav spec: Render logic -> should render 1`] = `
 <amplify-nav>
-  <!---->
-  <nav class="css-1qc8kij"></nav>
+  <mock:shadow-root>
+    <nav class="nav">
+      <slot></slot>
+    </nav>
+  </mock:shadow-root>
 </amplify-nav>
 `;

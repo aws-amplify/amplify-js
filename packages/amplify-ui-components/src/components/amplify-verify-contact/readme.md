@@ -5,11 +5,11 @@
 
 ## Properties
 
-| Property                | Attribute        | Description                                                                     | Type                                                | Default     |
-| ----------------------- | ---------------- | ------------------------------------------------------------------------------- | --------------------------------------------------- | ----------- |
-| `handleAuthStateChange` | --               | Passed from the Authenticator component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `undefined` |
-| `overrideStyle`         | `override-style` | (Optional) Override default styling                                             | `boolean`                                           | `false`     |
-| `user`                  | --               | Used for the username to be passed to resend code                               | `CognitoUserInterface`                              | `undefined` |
+| Property                | Attribute        | Description                                                                     | Type                                                | Default                        |
+| ----------------------- | ---------------- | ------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------ |
+| `handleAuthStateChange` | --               | Passed from the Authenticator component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent` |
+| `overrideStyle`         | `override-style` | (Optional) Override default styling                                             | `boolean`                                           | `false`                        |
+| `user`                  | --               | Used for the username to be passed to resend code                               | `CognitoUserInterface`                              | `undefined`                    |
 
 
 ## Dependencies

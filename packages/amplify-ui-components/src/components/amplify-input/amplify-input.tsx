@@ -1,13 +1,9 @@
 import { Component, Prop, h } from '@stencil/core';
-import { input } from './amplify-input.style';
-import { styleNuker } from '../../common/helpers';
 import { TextFieldTypes } from '../../common/types/ui-types';
-import { AMPLIFY_UI_PREFIX } from '../../common/constants';
-
-const STATIC_INPUT_CLASS_NAME = `${AMPLIFY_UI_PREFIX}--input`;
 
 @Component({
   tag: 'amplify-input',
+  styleUrl: 'amplify-input.scss',
   shadow: false,
 })
 export class AmplifyInput {
@@ -41,7 +37,7 @@ export class AmplifyInput {
         onInput={this.handleInputChange}
         placeholder={this.placeholder}
         name={this.name}
-        class={styleNuker(this.overrideStyle, STATIC_INPUT_CLASS_NAME, input)}
+        class="input"
         value={this.value}
         disabled={this.disabled}
         {...this.inputProps}
