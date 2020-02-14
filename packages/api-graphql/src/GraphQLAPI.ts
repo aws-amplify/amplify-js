@@ -288,8 +288,8 @@ export class GraphQLAPIClass {
 		const authenticationType =
 			defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
 
-		if (Amplify.PubSub && typeof Amplify.PubSub.subscribe === 'function') {
-			return Amplify.PubSub.subscribe('', {
+		if (PubSub && typeof PubSub.subscribe === 'function') {
+			return PubSub.subscribe('', {
 				provider: INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 				appSyncGraphqlEndpoint,
 				authenticationType,

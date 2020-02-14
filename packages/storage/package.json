@@ -39,7 +39,9 @@
     "@aws-sdk/client-s3": "^1.0.0-alpha.16",
     "@aws-sdk/s3-request-presigner": "^1.0.0-alpha.15",
     "@aws-sdk/util-create-request": "^1.0.0-alpha.11",
-    "@aws-sdk/util-format-url": "^1.0.0-alpha.4"
+    "@aws-sdk/util-format-url": "^1.0.0-alpha.4",
+    "events": "^3.1.0",
+    "sinon": "^7.5.0"
   },
   "jest": {
     "globals": {
@@ -81,5 +83,8 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ]
+  },
+  "devDependencies": {
+    "@types/sinon": "^7.5.1"
   }
 }
