@@ -29,7 +29,7 @@ export class AmplifySelectMFAType {
   /** Current authenticated user in order to sign requests properly for TOTP */
   @Prop() authData: CognitoUserInterface;
   /** Fires when Verify is clicked */
-  @Prop() handleSubmit: (submitEvent: Event) => void = submitEvent => this.verify(submitEvent);
+  @Prop() handleSubmit: (event: Event) => void = event => this.verify(event);
 
   @State() TOTPSetup: boolean = false;
   @State() selectMessage: string = null;

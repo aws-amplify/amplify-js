@@ -22,7 +22,7 @@ import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../commo
 })
 export class AmplifyConfirmSignUp {
   /** Fires when sign up form is submitted */
-  @Prop() handleSubmit: (submitEvent: Event) => void = () => this.confirmSignUp();
+  @Prop() handleSubmit: (submitEvent: Event) => void = event => this.confirmSignUp(event);
   /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: string;
   /** Used for header text in confirm sign up component */
@@ -111,7 +111,7 @@ export class AmplifyConfirmSignUp {
 
   // TODO: Add validation
   // TODO: Prefix
-  async confirmSignUp() {
+  async confirmSignUp(event: Event) {
     if (event) {
       event.preventDefault();
     }

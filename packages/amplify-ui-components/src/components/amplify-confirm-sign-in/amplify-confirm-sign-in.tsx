@@ -24,7 +24,7 @@ import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../commo
 })
 export class AmplifyConfirmSignIn {
   /** Fires when confirm sign in form is submitted */
-  @Prop() handleSubmit: (Event: Event) => void = event => this.confirm(event);
+  @Prop() handleSubmit: (event: Event) => void = event => this.confirm(event);
   /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: string;
   /** Used for header text in confirm sign in component */
@@ -95,7 +95,7 @@ export class AmplifyConfirmSignIn {
     });
   }
 
-  async confirm(event) {
+  async confirm(event: Event) {
     if (event) {
       event.preventDefault();
     }

@@ -73,7 +73,7 @@ export class AmplifyRequireNewPassword {
     }
   }
 
-  async completeNewPassword(event) {
+  async completeNewPassword(event: Event) {
     if (event) {
       event.preventDefault();
     }

@@ -25,7 +25,7 @@ const logger = new Logger('SignIn');
 })
 export class AmplifySignIn {
   /** Fires when sign in form is submitted */
-  @Prop() handleSubmit: (Event: Event) => void = event => this.signIn(event);
+  @Prop() handleSubmit: (event: Event) => void = event => this.signIn(event);
   /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: string;
   /** Used for header text in sign in component */
@@ -113,7 +113,7 @@ export class AmplifySignIn {
     });
   }
 
-  async signIn(event) {
+  async signIn(event: Event) {
     // avoid submitting the form
     if (event) {
       event.preventDefault();

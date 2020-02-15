@@ -174,7 +174,7 @@ export namespace Components {
     /**
     * Fires when confirm sign in form is submitted
     */
-    'handleSubmit': (Event: Event) => void;
+    'handleSubmit': (event: Event) => void;
     /**
     * Used for header text in confirm sign in component
     */
@@ -413,7 +413,7 @@ export namespace Components {
     /**
     * (Required) Function called upon submission of form
     */
-    'handleSubmit': (inputEvent: Event) => void;
+    'handleSubmit': (event: Event) => void;
     /**
     * Used for form section header
     */
@@ -734,7 +734,7 @@ export namespace Components {
     /**
     * Fires when Verify is clicked
     */
-    'handleSubmit': (submitEvent: Event) => void;
+    'handleSubmit': (event: Event) => void;
   }
   interface AmplifySignIn {
     /**
@@ -752,7 +752,7 @@ export namespace Components {
     /**
     * Fires when sign in form is submitted
     */
-    'handleSubmit': (Event: Event) => void;
+    'handleSubmit': (event: Event) => void;
     /**
     * Used for header text in sign in component
     */
@@ -803,7 +803,7 @@ export namespace Components {
     /**
     * Fires when sign up form is submitted
     */
-    'handleSubmit': (submitEvent: Event) => void;
+    'handleSubmit': (event: Event) => void;
     /**
     * Used for the submit button text in sign up component
     */
@@ -1397,7 +1397,7 @@ declare namespace LocalJSX {
     /**
     * Fires when confirm sign in form is submitted
     */
-    'handleSubmit'?: (Event: Event) => void;
+    'handleSubmit'?: (event: Event) => void;
     /**
     * Used for header text in confirm sign in component
     */
@@ -1636,7 +1636,7 @@ declare namespace LocalJSX {
     /**
     * (Required) Function called upon submission of form
     */
-    'handleSubmit'?: (inputEvent: Event) => void;
+    'handleSubmit'?: (event: Event) => void;
     /**
     * Used for form section header
     */
@@ -1957,7 +1957,7 @@ declare namespace LocalJSX {
     /**
     * Fires when Verify is clicked
     */
-    'handleSubmit'?: (submitEvent: Event) => void;
+    'handleSubmit'?: (event: Event) => void;
   }
   interface AmplifySignIn {
     /**
@@ -1975,7 +1975,7 @@ declare namespace LocalJSX {
     /**
     * Fires when sign in form is submitted
     */
-    'handleSubmit'?: (Event: Event) => void;
+    'handleSubmit'?: (event: Event) => void;
     /**
     * Used for header text in sign in component
     */
@@ -2026,7 +2026,7 @@ declare namespace LocalJSX {
     /**
     * Fires when sign up form is submitted
     */
-    'handleSubmit'?: (submitEvent: Event) => void;
+    'handleSubmit'?: (event: Event) => void;
     /**
     * Used for the submit button text in sign up component
     */
