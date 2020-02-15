@@ -1,19 +1,37 @@
 import 'fake-indexeddb/auto';
 import * as uuidValidate from 'uuid-validate';
-import { initSchema as initSchemaType } from '../src/datastore/datastore';
+import {
+	initSchema as initSchemaType,
+	DataStore as DataStoreType,
+} from '../src/datastore/datastore';
 import {
 	ModelInit,
 	MutableModel,
 	PersistentModelConstructor,
 	Schema,
 } from '../src/types';
+import StorageType from '../src/storage/storage';
+import Observable from 'zen-observable-ts';
 
 let initSchema: typeof initSchemaType;
+let DataStore: typeof DataStoreType;
+let Storage: typeof StorageType;
 
 beforeEach(() => {
 	jest.resetModules();
 
-	({ initSchema } = require('../src/datastore/datastore'));
+	jest.doMock('../src/storage/storage', () => {
+		const mock = jest.fn().mockImplementation(() => ({
+			runExclusive: jest.fn(),
+			query: jest.fn(),
+			observe: jest.fn(() => Observable.of()),
+		}));
+
+		(<any>mock).getNamespace = () => ({ models: {} });
+
+		return { default: mock };
+	});
+	({ initSchema, DataStore } = require('../src/datastore/datastore'));
 });
 
 describe('DataStore tests', () => {
@@ -65,6 +83,14 @@ describe('DataStore tests', () => {
 			expect(
 				uuidValidate(model.id.replace(/^(.{4})-(.{4})-(.{8})/, '$3-$2-$1'), 1)
 			).toBe(true);
+		});
+
+		test('initSchema is executed only once', () => {
+			initSchema(testSchema());
+
+			expect(() => {
+				initSchema(testSchema());
+			}).toThrow('The schema has already been initialized');
 		});
 	});
 
@@ -122,6 +148,39 @@ describe('DataStore tests', () => {
 			expect(model1.id).toBe(model2.id);
 		});
 	});
+
+	describe('Initialization', () => {
+		test('start is called only once', async () => {
+			Storage = require('../src/storage/storage').default;
+
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes;
+
+			const promises = [
+				DataStore.query(Model),
+				DataStore.query(Model),
+				DataStore.query(Model),
+				DataStore.query(Model),
+			];
+
+			await Promise.all(promises);
+
+			expect(Storage).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	test('It is initialized when observing (no query)', async () => {
+		Storage = require('../src/storage/storage').default;
+
+		const classes = initSchema(testSchema());
+
+		const { Model } = classes;
+
+		DataStore.observe(Model).subscribe(jest.fn());
+
+		expect(Storage).toHaveBeenCalledTimes(1);
+	});
 });
 
 //#region Test helpers
@@ -144,6 +203,7 @@ function testSchema(): Schema {
 		models: {
 			Model: {
 				name: 'Model',
+				pluralName: 'Models',
 				syncable: true,
 				fields: {
 					id: {
@@ -162,6 +222,7 @@ function testSchema(): Schema {
 			},
 			LocalModel: {
 				name: 'LocalModel',
+				pluralName: 'LocalModels',
 				syncable: false,
 				fields: {
 					id: {
@@ -179,7 +240,7 @@ function testSchema(): Schema {
 				},
 			},
 		},
-		version: 1,
+		version: '1',
 	};
 }
 

@@ -474,7 +474,6 @@ const observe: {
 	modelConstructor?: PersistentModelConstructor<T>,
 	idOrCriteria?: string | ProducerModelPredicate<T>
 ) => {
-	start();
 	let predicate: ModelPredicate<T>;
 
 	if (idOrCriteria !== undefined && modelConstructor === undefined) {
@@ -504,9 +503,24 @@ const observe: {
 			);
 	}
 
-	return storage
-		.observe(modelConstructor, predicate)
-		.filter(({ model }) => namespaceResolver(model) === USER);
+	return new Observable<SubscriptionMessage<any>>(observer => {
+		let handle: ZenObservable.Subscription;
+
+		(async () => {
+			await start();
+
+			handle = storage
+				.observe(modelConstructor, predicate)
+				.filter(({ model }) => namespaceResolver(model) === USER)
+				.subscribe(observer);
+		})();
+
+		return () => {
+			if (handle) {
+				handle.unsubscribe();
+			}
+		};
+	});
 };
 
 const query: {
@@ -683,21 +697,29 @@ async function checkSchemaVersion(
 			if (storedValue !== version) {
 				await s.clear(false);
 			}
+		} else {
+			await s.save(
+				modelInstanceCreator(Setting, {
+					key: SETTING_SCHEMA_VERSION,
+					value: JSON.stringify(version),
+				})
+			);
 		}
-
-		await s.save(
-			modelInstanceCreator(Setting, {
-				key: SETTING_SCHEMA_VERSION,
-				value: JSON.stringify(version),
-			})
-		);
 	});
 }
 
 let syncSubscription: ZenObservable.Subscription;
 
+let initResolve: Function;
+let initialized: Promise<void>;
 async function start(): Promise<void> {
-	if (storage !== undefined) {
+	if (initialized === undefined) {
+		initialized = new Promise(res => {
+			initResolve = res;
+		});
+	} else {
+		await initialized;
+
 		return;
 	}
 
@@ -709,10 +731,6 @@ async function start(): Promise<void> {
 	);
 
 	await checkSchemaVersion(storage, schema.version);
-
-	if (sync !== undefined) {
-		return;
-	}
 
 	const { aws_appsync_graphqlEndpoint } = amplifyConfig;
 
@@ -738,6 +756,8 @@ async function start(): Promise<void> {
 				},
 			});
 	}
+
+	initResolve();
 }
 
 async function clear() {
