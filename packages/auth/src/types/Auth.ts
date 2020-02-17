@@ -50,6 +50,7 @@ export interface AuthOptions {
 	authenticationFlowType?: string;
 	identityPoolRegion?: string;
 	clientMetadata?: any;
+	endpoint?: any;
 }
 
 export enum CognitoHostedUIIdentityProvider {
