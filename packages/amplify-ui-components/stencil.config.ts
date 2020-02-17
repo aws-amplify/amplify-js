@@ -11,7 +11,7 @@ export const config: Config = {
   plugins: [
     externals({
       // deps to include in externals (default: [])
-      include: ['@aws-amplify/auth', '@aws-amplify/core'],
+      include: ['@aws-amplify/auth', '@aws-amplify/core', '@aws-amplify/storage', '@aws-amplify/xr'],
     }),
     nodePolyfills(),
     sass()
