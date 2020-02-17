@@ -5,9 +5,17 @@ export default class Client {
 	 * Constructs a new AWS Cognito Identity Provider client object
 	 * @param {string} region AWS region
 	 * @param {string} endpoint endpoint
+	 * @param {boolean} fipsEnabled fips flag
 	 */
-	constructor(region, endpoint) {
-		this.endpoint = endpoint || `https://cognito-idp.${region}.amazonaws.com/`;
+	constructor(region, endpoint, fipsEnabled) {
+		if (fipsEnabled) {
+			this.endpoint =
+				endpoint || `https://cognito-idp-fips.${region}.amazonaws.com/`;
+		} else {
+			this.endpoint =
+				endpoint || `https://cognito-idp.${region}.amazonaws.com/`;
+		}
+
 		this.userAgent = UserAgent.prototype.userAgent || 'aws-amplify/0.1.x js';
 	}
 
