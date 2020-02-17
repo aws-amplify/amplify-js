@@ -219,7 +219,7 @@ export default class StorageClass {
 	/**
 	 * List bucket objects relative to the level and prefix specified
 	 * @param {String} path - the path that contains objects
-	 * @param {Object} [config] - { level : private|protected|public }
+	 * @param {Object} [config] - { level : private|protected|public, maxKeys: NUMBER }
 	 * @return - Promise resolves to list of keys for all objects in path
 	 */
 	public async list(path, config?): Promise<any> {
