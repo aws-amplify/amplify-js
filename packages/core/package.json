@@ -23,7 +23,7 @@
 		"lint": "tslint 'src/**/*.ts'"
 	},
 	"react-native": {
-		"./index": "./lib-esm/index.js",
+		"./lib/index": "./lib-esm/index.js",
 		"./lib-esm/ClientDevice": "./lib-esm/ClientDevice/reactnative.js",
 		"./lib-esm/RNComponents": "./lib-esm/RNComponents/reactnative.js",
 		"./lib-esm/StorageHelper": "./lib-esm/StorageHelper/reactnative.js"
