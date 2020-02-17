@@ -43,6 +43,8 @@ export class AmplifyFormSection {
   @Prop() overrideStyle?: boolean = false;
   /** String prefix for the data-test attributes in this component primarily used for testing purposes */
   @Prop() testDataPrefix?: string = 'form-section';
+  /** Loading state for the form */
+  @Prop() loading?: boolean = false;
 
   @Prop() primaryFooterContent: string | FunctionalComponent = (
     <amplify-button
@@ -50,7 +52,8 @@ export class AmplifyFormSection {
       overrideStyle={this.overrideStyle}
       data-test={this.testDataPrefix + '-' + this.testDataPrefix + '-button'}
     >
-      {this.submitButtonText}
+      <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
+      <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
     </amplify-button>
   );
   @Prop() secondaryFooterContent: string | FunctionalComponent | null = null;

@@ -84,6 +84,20 @@ exports[`amplify-icon-button spec: Render logic -> renders google icon button co
 </amplify-icon-button>
 `;
 
+exports[`amplify-icon-button spec: Render logic -> renders loading icon button correctly 1`] = `
+<amplify-icon-button name="loading">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="loading"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
 exports[`amplify-icon-button spec: Render logic -> renders maximize icon button correctly 1`] = `
 <amplify-icon-button name="maximize">
   <mock:shadow-root>

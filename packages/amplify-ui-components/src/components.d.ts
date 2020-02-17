@@ -82,6 +82,10 @@ export namespace Components {
   }
   interface AmplifyButton {
     /**
+    * Disabled state of the button
+    */
+    'disabled'?: boolean;
+    /**
     * (Optional) Callback called when a user clicks on the button
     */
     'handleButtonClick': (evt: Event) => void;
@@ -419,6 +423,10 @@ export namespace Components {
     */
     'headerText': string;
     /**
+    * Loading state for the form
+    */
+    'loading'?: boolean;
+    /**
     * (Optional) Overrides default styling
     */
     'overrideStyle'?: boolean;
@@ -540,6 +548,7 @@ export namespace Components {
     'overrideStyle': boolean;
     'role': string;
   }
+  interface AmplifyLoadingSpinner {}
   interface AmplifyNav {}
   interface AmplifyOauthButton {
     'config': FederatedConfig['oauthConfig'];
@@ -1078,6 +1087,12 @@ declare global {
     new (): HTMLAmplifyLinkElement;
   };
 
+  interface HTMLAmplifyLoadingSpinnerElement extends Components.AmplifyLoadingSpinner, HTMLStencilElement {}
+  var HTMLAmplifyLoadingSpinnerElement: {
+    prototype: HTMLAmplifyLoadingSpinnerElement;
+    new (): HTMLAmplifyLoadingSpinnerElement;
+  };
+
   interface HTMLAmplifyNavElement extends Components.AmplifyNav, HTMLStencilElement {}
   var HTMLAmplifyNavElement: {
     prototype: HTMLAmplifyNavElement;
@@ -1236,6 +1251,7 @@ declare global {
     'amplify-input': HTMLAmplifyInputElement;
     'amplify-label': HTMLAmplifyLabelElement;
     'amplify-link': HTMLAmplifyLinkElement;
+    'amplify-loading-spinner': HTMLAmplifyLoadingSpinnerElement;
     'amplify-nav': HTMLAmplifyNavElement;
     'amplify-oauth-button': HTMLAmplifyOauthButtonElement;
     'amplify-password-field': HTMLAmplifyPasswordFieldElement;
@@ -1304,6 +1320,10 @@ declare namespace LocalJSX {
     'initialAuthState'?: AuthState;
   }
   interface AmplifyButton {
+    /**
+    * Disabled state of the button
+    */
+    'disabled'?: boolean;
     /**
     * (Optional) Callback called when a user clicks on the button
     */
@@ -1642,6 +1662,10 @@ declare namespace LocalJSX {
     */
     'headerText'?: string;
     /**
+    * Loading state for the form
+    */
+    'loading'?: boolean;
+    /**
     * (Optional) Overrides default styling
     */
     'overrideStyle'?: boolean;
@@ -1763,6 +1787,7 @@ declare namespace LocalJSX {
     'overrideStyle'?: boolean;
     'role'?: string;
   }
+  interface AmplifyLoadingSpinner {}
   interface AmplifyNav {}
   interface AmplifyOauthButton {
     'config'?: FederatedConfig['oauthConfig'];
@@ -2169,6 +2194,7 @@ declare namespace LocalJSX {
     'amplify-input': AmplifyInput;
     'amplify-label': AmplifyLabel;
     'amplify-link': AmplifyLink;
+    'amplify-loading-spinner': AmplifyLoadingSpinner;
     'amplify-nav': AmplifyNav;
     'amplify-oauth-button': AmplifyOauthButton;
     'amplify-password-field': AmplifyPasswordField;
@@ -2226,6 +2252,7 @@ declare module "@stencil/core" {
       'amplify-input': LocalJSX.AmplifyInput & JSXBase.HTMLAttributes<HTMLAmplifyInputElement>;
       'amplify-label': LocalJSX.AmplifyLabel & JSXBase.HTMLAttributes<HTMLAmplifyLabelElement>;
       'amplify-link': LocalJSX.AmplifyLink & JSXBase.HTMLAttributes<HTMLAmplifyLinkElement>;
+      'amplify-loading-spinner': LocalJSX.AmplifyLoadingSpinner & JSXBase.HTMLAttributes<HTMLAmplifyLoadingSpinnerElement>;
       'amplify-nav': LocalJSX.AmplifyNav & JSXBase.HTMLAttributes<HTMLAmplifyNavElement>;
       'amplify-oauth-button': LocalJSX.AmplifyOauthButton & JSXBase.HTMLAttributes<HTMLAmplifyOauthButtonElement>;
       'amplify-password-field': LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;

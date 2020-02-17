@@ -36,7 +36,9 @@ graph TD;
   amplify-confirm-sign-in --> amplify-link
   amplify-confirm-sign-in --> amplify-auth-fields
   amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-loading-spinner
   amplify-form-section --> amplify-section
+  amplify-loading-spinner --> amplify-icon
   amplify-auth-fields --> amplify-username-field
   amplify-auth-fields --> amplify-password-field
   amplify-auth-fields --> amplify-email-field

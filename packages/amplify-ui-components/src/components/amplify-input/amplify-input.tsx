@@ -34,7 +34,7 @@ export class AmplifyInput {
         id={this.fieldId}
         aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
         type={this.type}
-        onInput={this.handleInputChange}
+        onChange={this.handleInputChange}
         placeholder={this.placeholder}
         name={this.name}
         class="input"

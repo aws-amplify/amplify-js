@@ -4,7 +4,7 @@ import { icons, IconNameType } from './icons';
 @Component({
   tag: 'amplify-icon',
   styleUrl: 'amplify-icon.scss',
-  shadow: true,
+  scoped: true,
 })
 export class AmplifyIcon {
   /** (Required) Name of icon used to determine the icon rendered */

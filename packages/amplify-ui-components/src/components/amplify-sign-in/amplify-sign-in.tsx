@@ -87,9 +87,9 @@ export class AmplifySignIn {
   /* Whether or not the sign-in component is loading */
   @State() loading: boolean = false;
   /* The username value in the sign-in form */
-  @State() username: string;
+  @State() username: string = '';
   /* The password value in the sign-in form */
-  @State() password: string;
+  @State() password: string = '';
 
   handleUsernameChange(event) {
     this.username = event.target.value;
@@ -187,8 +187,14 @@ export class AmplifySignIn {
                 {CREATE_ACCOUNT_TEXT}
               </amplify-link>
             </span>
-            <amplify-button type="submit" overrideStyle={this.overrideStyle} data-test="sign-in-sign-in-button">
-              {this.submitButtonText}
+            <amplify-button
+              type="submit"
+              disabled={this.loading}
+              overrideStyle={this.overrideStyle}
+              data-test="sign-in-sign-in-button"
+            >
+              <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
+              <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
             </amplify-button>
           </div>
         </div>
