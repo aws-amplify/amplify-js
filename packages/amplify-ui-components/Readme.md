@@ -33,7 +33,7 @@ import React from 'react';
 import { AmplifyAuthenticator } from '@aws-amplify/ui-react';
 
 const App = () => (
-	<AmplifyAuthenticator />
+  <AmplifyAuthenticator />
 );
 ```
 
@@ -52,9 +52,9 @@ import React from 'react';
 import { AmplifyAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
 
 const App = () => (
-	<AmplifyAuthenticator>
-		<div>My App</div>
-	</AmplifyAuthenticator>
+  <AmplifyAuthenticator>
+    <div>My App</div>
+  </AmplifyAuthenticator>
 );
 ```
 
@@ -75,15 +75,15 @@ import { AmplifyAuthenticator } from '@aws-amplify/ui-vue'
 Vue.use(AmplifyAuthenticator)
 
 new Vue({
-    components: {
-        AmplifyAuthenticator
-    }
+  components: {
+    AmplifyAuthenticator
+  }
 });
 
 <div id="app">
-    <amplify-authenticator>
-			<div>My App</div>
-		</amplify-authenticator>
+  <amplify-authenticator>
+    <div>My App</div>
+  </amplify-authenticator>
 </div>
 ```
 
