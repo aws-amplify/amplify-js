@@ -33,8 +33,10 @@ graph TD;
   amplify-verify-contact --> amplify-form-section
   amplify-verify-contact --> amplify-link
   amplify-radio-button --> amplify-label
-  amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
+  amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-loading-spinner
+  amplify-loading-spinner --> amplify-icon
   amplify-authenticator --> amplify-verify-contact
   style amplify-verify-contact fill:#f9f,stroke:#333,stroke-width:4px
 ```

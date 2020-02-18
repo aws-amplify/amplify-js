@@ -38,6 +38,7 @@ export class AmplifySelectMFAType {
   @State() isTOTP: boolean = false;
   @State() isNoMFA: boolean = false;
   @State() isSMS: boolean = false;
+  @State() loading: boolean = false;
 
   handleRadioButtonChange(event) {
     this.TOTPSetup = false;
@@ -86,6 +87,7 @@ export class AmplifySelectMFAType {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
+    this.loading = true;
     try {
       const preferredMFAData = await Auth.setPreferredMFA(user, this.MFAMethod);
 
@@ -104,6 +106,8 @@ export class AmplifySelectMFAType {
         this.selectMessage = UNABLE_TO_SETUP_MFA_AT_THIS_TIME;
         // 	TODO Add Toast = showToast: true,
       }
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -125,6 +129,7 @@ export class AmplifySelectMFAType {
         submitButtonText={SELECT_MFA_TYPE_SUBMIT_BUTTON_TEXT}
         headerText={SELECT_MFA_TYPE_HEADER_TEXT}
         handleSubmit={event => this.handleSubmit(event)}
+        loading={this.loading}
       >
         {SMS ? (
           <amplify-radio-button

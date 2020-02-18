@@ -6,18 +6,19 @@ exports[`amplify-sign-in spec: Render logic -> should render a \`sign in\` form 
     <amplify-form-section headertext="Sign in to your account" testdataprefix="sign-in">
       <amplify-federated-buttons></amplify-federated-buttons>
       <amplify-auth-fields></amplify-auth-fields>
-      <div slot="amplify-form-section-footer">
-        <div class="sign-in-form-footer">
-          <span>
-            No account?
-            <amplify-link data-test="sign-in-create-account-link">
-              Create account
-            </amplify-link>
-          </span>
-          <amplify-button data-test="sign-in-sign-in-button" type="submit">
+      <div class="sign-in-form-footer" slot="amplify-form-section-footer">
+        <span>
+          No account?
+          <amplify-link data-test="sign-in-create-account-link">
+            Create account
+          </amplify-link>
+        </span>
+        <amplify-button data-test="sign-in-sign-in-button" type="submit">
+          <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
+          <span style="display: initial;">
             Sign In
-          </amplify-button>
-        </div>
+          </span>
+        </amplify-button>
       </div>
     </amplify-form-section>
   </mock:shadow-root>
@@ -30,18 +31,19 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withEmptyFederate
     <amplify-form-section headertext="Sign in to your account" testdataprefix="sign-in">
       <amplify-federated-buttons></amplify-federated-buttons>
       <amplify-auth-fields></amplify-auth-fields>
-      <div slot="amplify-form-section-footer">
-        <div class="sign-in-form-footer">
-          <span>
-            No account?
-            <amplify-link data-test="sign-in-create-account-link">
-              Create account
-            </amplify-link>
-          </span>
-          <amplify-button data-test="sign-in-sign-in-button" type="submit">
+      <div class="sign-in-form-footer" slot="amplify-form-section-footer">
+        <span>
+          No account?
+          <amplify-link data-test="sign-in-create-account-link">
+            Create account
+          </amplify-link>
+        </span>
+        <amplify-button data-test="sign-in-sign-in-button" type="submit">
+          <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
+          <span style="display: initial;">
             Sign In
-          </amplify-button>
-        </div>
+          </span>
+        </amplify-button>
       </div>
     </amplify-form-section>
   </mock:shadow-root>
@@ -57,18 +59,19 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederated 1`]
         or
       </amplify-strike>
       <amplify-auth-fields></amplify-auth-fields>
-      <div slot="amplify-form-section-footer">
-        <div class="sign-in-form-footer">
-          <span>
-            No account?
-            <amplify-link data-test="sign-in-create-account-link">
-              Create account
-            </amplify-link>
-          </span>
-          <amplify-button data-test="sign-in-sign-in-button" type="submit">
+      <div class="sign-in-form-footer" slot="amplify-form-section-footer">
+        <span>
+          No account?
+          <amplify-link data-test="sign-in-create-account-link">
+            Create account
+          </amplify-link>
+        </span>
+        <amplify-button data-test="sign-in-sign-in-button" type="submit">
+          <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
+          <span style="display: initial;">
             Sign In
-          </amplify-button>
-        </div>
+          </span>
+        </amplify-button>
       </div>
     </amplify-form-section>
   </mock:shadow-root>
@@ -84,18 +87,19 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederatedAndO
         or
       </amplify-strike>
       <amplify-auth-fields></amplify-auth-fields>
-      <div slot="amplify-form-section-footer">
-        <div class="sign-in-form-footer">
-          <span>
-            No account?
-            <amplify-link data-test="sign-in-create-account-link">
-              Create account
-            </amplify-link>
-          </span>
-          <amplify-button data-test="sign-in-sign-in-button" overridestyle="" type="submit">
+      <div class="sign-in-form-footer" slot="amplify-form-section-footer">
+        <span>
+          No account?
+          <amplify-link data-test="sign-in-create-account-link">
+            Create account
+          </amplify-link>
+        </span>
+        <amplify-button data-test="sign-in-sign-in-button" overridestyle="" type="submit">
+          <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
+          <span style="display: initial;">
             Sign In
-          </amplify-button>
-        </div>
+          </span>
+        </amplify-button>
       </div>
     </amplify-form-section>
   </mock:shadow-root>
@@ -108,18 +112,19 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withOverrideStyle
     <amplify-form-section headertext="Sign in to your account" testdataprefix="sign-in">
       <amplify-federated-buttons></amplify-federated-buttons>
       <amplify-auth-fields></amplify-auth-fields>
-      <div slot="amplify-form-section-footer">
-        <div class="sign-in-form-footer">
-          <span>
-            No account?
-            <amplify-link data-test="sign-in-create-account-link">
-              Create account
-            </amplify-link>
-          </span>
-          <amplify-button data-test="sign-in-sign-in-button" type="submit">
+      <div class="sign-in-form-footer" slot="amplify-form-section-footer">
+        <span>
+          No account?
+          <amplify-link data-test="sign-in-create-account-link">
+            Create account
+          </amplify-link>
+        </span>
+        <amplify-button data-test="sign-in-sign-in-button" type="submit">
+          <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
+          <span style="display: initial;">
             Sign In
-          </amplify-button>
-        </div>
+          </span>
+        </amplify-button>
       </div>
     </amplify-form-section>
   </mock:shadow-root>
