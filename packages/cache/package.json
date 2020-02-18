@@ -6,7 +6,7 @@
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
-    "./lib/index": "./lib/reactnative.js"
+    "./lib/index": "./lib-esm/reactnative.js"
   },
   "sideEffects": false,
   "publishConfig": {
