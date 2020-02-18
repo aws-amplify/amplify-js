@@ -14,7 +14,7 @@ export const config: Config = {
       include: ['@aws-amplify/auth', '@aws-amplify/core', '@aws-amplify/storage', '@aws-amplify/xr'],
     }),
     nodePolyfills(),
-    sass()
+    sass(),
   ],
   commonjs: {
     namedExports: {
@@ -26,11 +26,11 @@ export const config: Config = {
       '@aws-sdk/middleware-signing': ['resolveAwsAuthConfig', 'getAwsAuthPlugin'],
       '@aws-sdk/middleware-retry': ['resolveRetryConfig', 'getRetryPlugin'],
       '@aws-sdk/middleware-user-agent': ['resolveUserAgentConfig', 'getUserAgentPlugin'],
-      '@aws-sdk/smithy-client': ['Client', 'Command'],
+      '@aws-sdk/smithy-client': ['Client', 'Command', 'isa'],
       '@aws-sdk/protocol-http': ['HttpRequest'],
       '@aws-sdk/middleware-serde': ['getSerdePlugin'],
       '@aws-sdk/property-provider': ['ProviderError'],
-      '@aws-sdk/fetch-http-handler': ['FetchHttpHandler']
+      '@aws-sdk/fetch-http-handler': ['FetchHttpHandler'],
     },
   },
   outputTargets: [
@@ -50,5 +50,5 @@ export const config: Config = {
       serviceWorker: null, // disable service workers
     },
   ],
-  globalScript: 'src/global/theme.ts'
+  globalScript: 'src/global/theme.ts',
 };
