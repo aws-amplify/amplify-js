@@ -5,16 +5,15 @@
 
 ## Properties
 
-| Property                 | Attribute                  | Description                                                                                      | Type                                | Default                                                                                                                                                                                                                                                                                                                                                                                       |
-| ------------------------ | -------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `handleSubmit`           | --                         | (Required) Function called upon submission of form                                               | `(event: Event) => void`            | `undefined`                                                                                                                                                                                                                                                                                                                                                                                   |
-| `headerText`             | `header-text`              | Used for form section header                                                                     | `string`                            | `undefined`                                                                                                                                                                                                                                                                                                                                                                                   |
-| `loading`                | `loading`                  | Loading state for the form                                                                       | `boolean`                           | `false`                                                                                                                                                                                                                                                                                                                                                                                       |
-| `overrideStyle`          | `override-style`           | (Optional) Overrides default styling                                                             | `boolean`                           | `false`                                                                                                                                                                                                                                                                                                                                                                                       |
-| `primaryFooterContent`   | `primary-footer-content`   |                                                                                                  | `FunctionalComponent<{}> \| string` | `(     <amplify-button       type="submit"       overrideStyle={this.overrideStyle}       data-test={this.testDataPrefix + '-' + this.testDataPrefix + '-button'}     >       <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />       <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>     </amplify-button>   )` |
-| `secondaryFooterContent` | `secondary-footer-content` |                                                                                                  | `FunctionalComponent<{}> \| string` | `null`                                                                                                                                                                                                                                                                                                                                                                                        |
-| `submitButtonText`       | `submit-button-text`       | (Optional) Used as a the default value within the default footer slot                            | `string`                            | `'Submit'`                                                                                                                                                                                                                                                                                                                                                                                    |
-| `testDataPrefix`         | `test-data-prefix`         | String prefix for the data-test attributes in this component primarily used for testing purposes | `string`                            | `'form-section'`                                                                                                                                                                                                                                                                                                                                                                              |
+| Property                 | Attribute                  | Description                                                                                      | Type                                | Default          |
+| ------------------------ | -------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------- | ---------------- |
+| `handleSubmit`           | --                         | (Required) Function called upon submission of form                                               | `(event: Event) => void`            | `undefined`      |
+| `headerText`             | `header-text`              | Used for form section header                                                                     | `string`                            | `undefined`      |
+| `loading`                | `loading`                  | Loading state for the form                                                                       | `boolean`                           | `false`          |
+| `overrideStyle`          | `override-style`           | (Optional) Overrides default styling                                                             | `boolean`                           | `false`          |
+| `secondaryFooterContent` | `secondary-footer-content` | Secondary footer component or text                                                               | `FunctionalComponent<{}> \| string` | `null`           |
+| `submitButtonText`       | `submit-button-text`       | (Optional) Used as a the default value within the default footer slot                            | `string`                            | `'Submit'`       |
+| `testDataPrefix`         | `test-data-prefix`         | String prefix for the data-test attributes in this component primarily used for testing purposes | `string`                            | `'form-section'` |
 
 
 ## Dependencies
@@ -34,16 +33,16 @@
 
 ### Depends on
 
+- [amplify-section](../amplify-section)
 - [amplify-button](../amplify-button)
 - [amplify-loading-spinner](../amplify-loading-spinner)
-- [amplify-section](../amplify-section)
 
 ### Graph
 ```mermaid
 graph TD;
+  amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-loading-spinner
-  amplify-form-section --> amplify-section
   amplify-loading-spinner --> amplify-icon
   amplify-confirm-sign-in --> amplify-form-section
   amplify-confirm-sign-up --> amplify-form-section

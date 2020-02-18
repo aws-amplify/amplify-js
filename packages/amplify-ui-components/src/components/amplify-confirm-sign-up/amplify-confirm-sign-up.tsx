@@ -57,6 +57,7 @@ export class AmplifyConfirmSignUp {
 
   @State() username: string = this.user ? this.user.username : null;
   @State() code: string;
+  @State() loading: boolean = false;
 
   componentWillLoad() {
     this.formFields = [
@@ -119,12 +120,15 @@ export class AmplifyConfirmSignUp {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
+    this.loading = true;
     try {
       const user = await Auth.confirmSignUp(this.username, this.code);
 
       this.handleAuthStateChange(AuthState.SignedIn, user);
     } catch (error) {
       dispatchToastHubEvent(error);
+    } finally {
+      this.loading = false;
     }
   }
 

@@ -73,7 +73,7 @@ exports[`amplify-form-section spec: Render logic -> should render without Emotio
       <div>
         <slot-fb name="amplify-form-section-footer">
           <div class="form-section-footer">
-            <amplify-button data-test="form-section-form-section-button" overridestyle="" type="submit">
+            <amplify-button data-test="form-section-form-section-button" type="submit">
               <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
               <span style="display: initial;">
                 Submit

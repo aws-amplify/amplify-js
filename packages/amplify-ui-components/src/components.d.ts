@@ -430,7 +430,9 @@ export namespace Components {
     * (Optional) Overrides default styling
     */
     'overrideStyle'?: boolean;
-    'primaryFooterContent': string | FunctionalComponent;
+    /**
+    * Secondary footer component or text
+    */
     'secondaryFooterContent': string | FunctionalComponent | null;
     /**
     * (Optional) Used as a the default value within the default footer slot
@@ -1669,7 +1671,9 @@ declare namespace LocalJSX {
     * (Optional) Overrides default styling
     */
     'overrideStyle'?: boolean;
-    'primaryFooterContent'?: string | FunctionalComponent;
+    /**
+    * Secondary footer component or text
+    */
     'secondaryFooterContent'?: string | FunctionalComponent | null;
     /**
     * (Optional) Used as a the default value within the default footer slot

@@ -26,7 +26,7 @@ export const config: Config = {
       '@aws-sdk/middleware-signing': ['resolveAwsAuthConfig', 'getAwsAuthPlugin'],
       '@aws-sdk/middleware-retry': ['resolveRetryConfig', 'getRetryPlugin'],
       '@aws-sdk/middleware-user-agent': ['resolveUserAgentConfig', 'getUserAgentPlugin'],
-      '@aws-sdk/smithy-client': ['Client', 'Command'],
+      '@aws-sdk/smithy-client': ['Client', 'Command', 'isa'],
       '@aws-sdk/protocol-http': ['HttpRequest'],
       '@aws-sdk/middleware-serde': ['getSerdePlugin'],
       '@aws-sdk/property-provider': ['ProviderError'],
