@@ -134,7 +134,7 @@ yarn add @aws-amplify/ui-components
 
 - #### [amplify-authenticator](src/components/amplify-authenticator/readme.md)
 
-<img alt="amplify-authenticator" src="https://user-images.githubusercontent.com/3868826/74710028-86392f80-51d5-11ea-951a-d582cb55d351.png">
+<img width="450" alt="amplify-authenticator" src="https://user-images.githubusercontent.com/3868826/74710028-86392f80-51d5-11ea-951a-d582cb55d351.png">
 
 - [amplify-sign-in](src/components/amplify-sign-in/readme.md)
 
