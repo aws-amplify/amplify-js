@@ -6,10 +6,10 @@
 
 | Framework          | Package                                                                                  | Version                                                                                                                                    |                        READMEs                        | Quick Start                         |
 | ------------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | :---------------------------------------------------: | ----------------------------------- |
-| **Web Components** | [`@aws-amplify/ui-components`](https://www.npmjs.com/package/@aws-amplify/ui-components) | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-components/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-components) |    [`README.md`](amplify-ui-components/README.md)     | [`Web Components`](#web-components) |
+| **React**          | [`@aws-amplify/ui-react`](https://www.npmjs.com/package/@aws-amplify/ui-react)           | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-react/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-react)           | [`README.md`](../packages/amplify-ui-react/README.md) | [`React`](#react)                   |
 | **Angular**        | [`@aws-amplify/ui-angular`](https://www.npmjs.com/package/@aws-amplify/ui-angular)       | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-angular/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-angular)       |    [`README.md`](../amplify-ui-angular/README.md)     | [`Angular`](#angular)               |
 | **Vue**            | [`@aws-amplify/ui-vue`](https://www.npmjs.com/package/@aws-amplify/ui-vue)               | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-vue/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-vue)               |      [`README.md`](../amplify-ui-vue/README.md)       | [`Vue`](#vue)                       |
-| **React**          | [`@aws-amplify/ui-react`](https://www.npmjs.com/package/@aws-amplify/ui-react)           | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-react/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-react)           | [`README.md`](../packages/amplify-ui-react/README.md) | [`React`](#react)                   |
+| **Web Components** | [`@aws-amplify/ui-components`](https://www.npmjs.com/package/@aws-amplify/ui-components) | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-components/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-components) |    [`README.md`](amplify-ui-components/README.md)     | [`Web Components`](#web-components) |
 
 ## Quick Start
 
@@ -28,13 +28,11 @@ yarn add @aws-amplify/ui-react
 
 ##### Usage
 
-```
+```js
 import React from 'react';
 import { AmplifyAuthenticator } from '@aws-amplify/ui-react';
 
-const App = () => (
-  <AmplifyAuthenticator />
-);
+const App = () => <AmplifyAuthenticator />;
 ```
 
 #### Angular
@@ -47,15 +45,30 @@ yarn add @aws-amplify/ui-angular
 
 ##### Usage
 
-```
-import React from 'react';
-import { AmplifyAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
+_app.module.ts_
 
-const App = () => (
-  <AmplifyAuthenticator>
-    <div>My App</div>
-  </AmplifyAuthenticator>
-);
+```js
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { AmplifyModule } from '@aws-amplify/ui-angular';
+
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [AppComponent],
+  imports: [AmplifyModule, BrowserModule],
+  providers: [],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+_app.component.html_
+
+```html
+<amplify-authenticator>
+  <div>My App</div>
+</amplify-authenticator>
 ```
 
 #### Vue
@@ -68,23 +81,31 @@ yarn add @aws-amplify/ui-vue
 
 ##### Usage
 
-```
-import Vue from 'vue'
-import { AmplifyAuthenticator } from '@aws-amplify/ui-vue'
+_main.ts_
 
-Vue.use(AmplifyAuthenticator)
+```js
+import Vue from 'vue';
+import { AmplifyAuthenticator } from '@aws-amplify/ui-vue';
+
+Vue.use(AmplifyAuthenticator);
 
 new Vue({
   components: {
-    AmplifyAuthenticator
-  }
+    AmplifyAuthenticator,
+  },
 });
+```
 
-<div id="app">
-  <amplify-authenticator>
-    <div>My App</div>
-  </amplify-authenticator>
-</div>
+_App.vue_
+
+```html
+<template>
+  <div id="app">
+    <amplify-authenticator>
+      <div>My App</div>
+    </amplify-authenticator>
+  </div>
+</template>
 ```
 
 #### Web Components
@@ -97,17 +118,16 @@ yarn add @aws-amplify/ui-components
 
 ##### Usage
 
-```
+```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <script src="https://unpkg.com/@aws-amplify/ui-components/latest/dist/amplify-ui-components.js"></script>
-</head>
-<body>
-  <amplify-authenticator></amplify-authenticator>
-</body>
+  <head>
+    <script src="https://unpkg.com/@aws-amplify/ui-components/latest/dist/amplify-ui-components.js"></script>
+  </head>
+  <body>
+    <amplify-authenticator></amplify-authenticator>
+  </body>
 </html>
-
 ```
 
 ## Component READMEs
@@ -129,3 +149,111 @@ yarn add @aws-amplify/ui-components
 - [amplify-verify-contact](src/components/amplify-verify-contact/readme.md)
 
 - [amplify-totp-setup](src/components/amplify-totp-setup/readme.md)
+
+## Migration Guide
+
+- [React](#react)
+- [Angular](#angular)
+- [Vue](#vue)
+- [Web Components](#web-components)
+
+#### React
+
+##### Installation
+
+```diff
+- yarn add aws-amplify-react
++ yarn add @aws-amplify/ui-react
+```
+
+##### Usage
+
+```diff
+import React from 'react';
+- import { Authenticator } from 'aws-amplify-react';
++ import { AmplifyAuthenticator } from '@aws-amplify/ui-react';
+
+const App = () => (
+-  <Authenticator />
++  <AmplifyAuthenticator />
+);
+```
+
+#### Angular
+
+##### Installation
+
+```diff
+- yarn add aws-amplify-angular
++ yarn add @aws-amplify/ui-angular
+```
+
+##### Usage
+
+_app.module.ts_
+
+```diff
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+- import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
++ import { AmplifyModule } from '@aws-amplify/ui-angular';
+
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [AppComponent],
+  imports: [AmplifyModule, BrowserModule],
+  providers: [],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+_app.component.html_
+
+```html
+<amplify-authenticator>
+  <div>My App</div>
+</amplify-authenticator>
+```
+
+#### Vue
+
+##### Installation
+
+```diff
+- yarn add aws-amplify-vue
++ yarn add @aws-amplify/ui-vue
+```
+
+##### Usage
+
+_main.ts_
+
+```diff
+import Vue from 'vue';
+- import Amplify, * as AmplifyModules from 'aws-amplify'
+- import { AmplifyPlugin } from 'aws-amplify-vue'
++ import { AmplifyAuthenticator } from '@aws-amplify/ui-vue';
+
+- Vue.use(AmplifyPlugin, AmplifyModules)
++ Vue.use(AmplifyAuthenticator);
+
+new Vue({
+  components: {
+    AmplifyAuthenticator,
+  },
+});
+```
+
+_App.vue_
+
+```diff
+<template>
+  <div id="app">
+    <amplify-authenticator>
+      <div>My App</div>
+    </amplify-authenticator>
+  </div>
+</template>
+```
