@@ -34,8 +34,10 @@ graph TD;
   amplify-require-new-password --> amplify-form-section
   amplify-require-new-password --> amplify-link
   amplify-require-new-password --> amplify-auth-fields
-  amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
+  amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-loading-spinner
+  amplify-loading-spinner --> amplify-icon
   amplify-auth-fields --> amplify-username-field
   amplify-auth-fields --> amplify-password-field
   amplify-auth-fields --> amplify-email-field

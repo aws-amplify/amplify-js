@@ -30,8 +30,10 @@ graph TD;
   amplify-select-mfa-type --> amplify-form-section
   amplify-select-mfa-type --> amplify-radio-button
   amplify-select-mfa-type --> amplify-totp-setup
-  amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
+  amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-loading-spinner
+  amplify-loading-spinner --> amplify-icon
   amplify-radio-button --> amplify-label
   amplify-totp-setup --> amplify-form-section
   amplify-totp-setup --> amplify-form-field

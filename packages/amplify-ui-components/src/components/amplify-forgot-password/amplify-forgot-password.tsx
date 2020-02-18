@@ -34,6 +34,7 @@ export class AmplifyForgotPassword {
   @State() password: string;
   @State() code: string;
   @State() delivery: CodeDeliveryType | null = null;
+  @State() loading: boolean = false;
 
   componentWillLoad() {
     this.formFields = [
@@ -68,6 +69,7 @@ export class AmplifyForgotPassword {
     if (!Auth || typeof Auth.forgotPassword !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
+    this.loading = true;
     try {
       const data = await Auth.forgotPassword(this.username);
       logger.debug(data);
@@ -90,6 +92,8 @@ export class AmplifyForgotPassword {
       this.delivery = data.CodeDeliveryDetails;
     } catch (error) {
       dispatchToastHubEvent(error);
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -100,6 +104,7 @@ export class AmplifyForgotPassword {
     if (!Auth || typeof Auth.forgotPasswordSubmit !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
+    this.loading = true;
     try {
       const data = await Auth.forgotPasswordSubmit(this.username, this.code, this.password);
       logger.debug(data);
@@ -107,6 +112,8 @@ export class AmplifyForgotPassword {
       this.delivery = null;
     } catch (error) {
       dispatchToastHubEvent(error);
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -117,6 +124,7 @@ export class AmplifyForgotPassword {
         headerText={this.headerText}
         overrideStyle={this.overrideStyle}
         handleSubmit={submitFn}
+        loading={this.loading}
         secondaryFooterContent={
           <amplify-link
             onClick={() => this.handleAuthStateChange(AuthState.SignIn)}

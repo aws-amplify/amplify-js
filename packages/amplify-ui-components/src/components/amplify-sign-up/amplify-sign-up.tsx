@@ -14,7 +14,6 @@ import {
   PHONE_EMPTY_ERROR_MESSAGE,
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
-import { AmplifySignUpFormFooter } from './amplify-sign-up-form-footer';
 import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
 import { AmplifySignUpAttributes, PhoneNumberInterface } from './amplify-sign-up-interface';
 
@@ -90,6 +89,7 @@ export class AmplifySignUp {
    */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 
+  @State() loading: boolean = false;
   @State() username: string;
   @State() password: string;
   @State() email: string;
@@ -175,13 +175,17 @@ export class AmplifySignUp {
         testDataPrefix={'sign-up'}
       >
         <amplify-auth-fields formFields={this.formFields} />
-        <div slot="amplify-form-section-footer">
-          <AmplifySignUpFormFooter
-            submitButtonText={this.submitButtonText}
-            haveAcccountText={this.haveAccountText}
-            signInText={this.signInText}
-            handleAuthStateChange={this.handleAuthStateChange}
-          />
+        <div class="sign-up-form-footer" slot="amplify-form-section-footer">
+          <span>
+            {this.haveAccountText}{' '}
+            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignIn)} data-test="sign-up-sign-in-link">
+              {this.signInText}
+            </amplify-link>
+          </span>
+          <amplify-button type="submit" overrideStyle={this.overrideStyle} data-test="sign-up-create-account-button">
+            <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
+            <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
+          </amplify-button>
         </div>
       </amplify-form-section>
     );

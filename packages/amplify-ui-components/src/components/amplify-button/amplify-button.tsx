@@ -15,6 +15,8 @@ export class AmplifyButton {
   @Prop() handleButtonClick: (evt: Event) => void;
   /** (Optional) Override default styling */
   @Prop() overrideStyle: boolean = false;
+  /** Disabled state of the button */
+  @Prop() disabled?: boolean = false;
 
   private handleClick = (ev: Event) => {
     if (this.handleButtonClick) {
@@ -44,6 +46,7 @@ export class AmplifyButton {
           button: true,
         }}
         type={this.type}
+        disabled={this.disabled}
         onClick={this.handleClick}
       >
         <slot />

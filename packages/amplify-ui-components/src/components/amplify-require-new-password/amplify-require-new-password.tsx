@@ -51,6 +51,7 @@ export class AmplifyRequireNewPassword {
   ];
 
   @State() password: string;
+  @State() loading: boolean = false;
 
   handlePasswordChange(event) {
     this.password = event.target.value;
@@ -82,6 +83,7 @@ export class AmplifyRequireNewPassword {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
+    this.loading = true;
     try {
       const { requiredAttributes } = this.user.challengeParam;
       const user = await Auth.completeNewPassword(this.user, this.password, requiredAttributes);
@@ -101,6 +103,8 @@ export class AmplifyRequireNewPassword {
       }
     } catch (error) {
       dispatchToastHubEvent(error);
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -110,6 +114,7 @@ export class AmplifyRequireNewPassword {
         headerText={this.headerText}
         overrideStyle={this.overrideStyle}
         handleSubmit={this.handleSubmit}
+        loading={this.loading}
         secondaryFooterContent={
           <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>{BACK_TO_SIGN_IN}</amplify-link>
         }

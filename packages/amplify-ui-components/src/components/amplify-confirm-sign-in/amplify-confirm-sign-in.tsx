@@ -105,11 +105,14 @@ export class AmplifyConfirmSignIn {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
+    this.loading = true;
     try {
       await Auth.confirmSignIn(this.user, this.code, mfaType);
       this.checkContact(this.user);
     } catch (error) {
       dispatchToastHubEvent(error);
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -120,6 +123,7 @@ export class AmplifyConfirmSignIn {
         overrideStyle={this.overrideStyle}
         handleSubmit={this.handleSubmit}
         submitButtonText={this.submitButtonText}
+        loading={this.loading}
         secondaryFooterContent={
           <span>
             <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>{BACK_TO_SIGN_IN}</amplify-link>

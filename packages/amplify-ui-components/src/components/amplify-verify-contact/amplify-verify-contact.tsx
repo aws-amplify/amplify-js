@@ -26,7 +26,9 @@ export class AmplifyVerifyContact {
   @Prop() overrideStyle: boolean = false;
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
+
   @State() verifyAttr: any;
+  @State() loading: boolean = false;
 
   handleSubmit(event) {
     event.preventDefault();
@@ -64,6 +66,7 @@ export class AmplifyVerifyContact {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
+    this.loading = true;
     try {
       const data = await Auth.verifyCurrentUserAttribute(contact);
 
@@ -71,6 +74,8 @@ export class AmplifyVerifyContact {
       this.verifyAttr = contact;
     } catch (error) {
       logger.error(error);
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -136,6 +141,7 @@ export class AmplifyVerifyContact {
         handleSubmit={event => this.handleSubmit(event)}
         headerText={VERIFY_CONTACT_HEADER_TEXT}
         overrideStyle={this.overrideStyle}
+        loading={this.loading}
         secondaryFooterContent={
           <span>
             <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}>Skip</amplify-link>
