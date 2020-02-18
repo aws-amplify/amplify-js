@@ -11,10 +11,10 @@ export const config: Config = {
   plugins: [
     externals({
       // deps to include in externals (default: [])
-      include: ['@aws-amplify/auth', '@aws-amplify/core'],
+      include: ['@aws-amplify/auth', '@aws-amplify/core', '@aws-amplify/storage', '@aws-amplify/xr'],
     }),
     nodePolyfills(),
-    sass()
+    sass(),
   ],
   commonjs: {
     namedExports: {
@@ -30,7 +30,7 @@ export const config: Config = {
       '@aws-sdk/protocol-http': ['HttpRequest'],
       '@aws-sdk/middleware-serde': ['getSerdePlugin'],
       '@aws-sdk/property-provider': ['ProviderError'],
-      '@aws-sdk/fetch-http-handler': ['FetchHttpHandler']
+      '@aws-sdk/fetch-http-handler': ['FetchHttpHandler'],
     },
   },
   outputTargets: [
@@ -50,5 +50,5 @@ export const config: Config = {
       serviceWorker: null, // disable service workers
     },
   ],
-  globalScript: 'src/global/theme.ts'
+  globalScript: 'src/global/theme.ts',
 };
