@@ -4,7 +4,7 @@ import { icons, IconNameType } from '../amplify-icon/icons';
 @Component({
   tag: 'amplify-sign-in-button',
   styleUrl: 'amplify-sign-in-button.scss',
-  shadow: true,
+  scoped: true,
 })
 export class AmplifySignInButton {
   /** (Optional) Override default styling */
