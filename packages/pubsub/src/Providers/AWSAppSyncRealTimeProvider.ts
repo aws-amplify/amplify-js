@@ -656,7 +656,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 							this.awsRealTimeSocket.onmessage = this._handleIncomingSubscriptionMessage.bind(
 								this
 							);
-							this.awsRealTimeSocket.onerror = logger.debug;
+							this.awsRealTimeSocket.onerror = logger.debug.bind(logger);
 							res('Cool, connected to AWS AppSyncRealTime');
 							return;
 						}
