@@ -39,7 +39,7 @@ export default class ReachabilityNavigator implements Reachability {
 			}, 2000);
 
 			return () => {
-				logger.warn('unsubscribing reachability');
+				logger.log('unsubscribing reachability');
 
 				clearInterval(id);
 			};
