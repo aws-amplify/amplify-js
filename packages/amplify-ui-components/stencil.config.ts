@@ -9,10 +9,10 @@ export const config: Config = {
   excludeSrc: ['**/*.e2e.*', '**/*.spec.*', '**/*.stories.*'],
   namespace: 'amplify-ui-components',
   plugins: [
-    externals({
-      // deps to include in externals (default: [])
-      include: ['@aws-amplify/auth', '@aws-amplify/core', '@aws-amplify/storage', '@aws-amplify/xr'],
-    }),
+    // externals({
+    //   // deps to include in externals (default: [])
+    //   include: ['@aws-amplify/auth', '@aws-amplify/core', '@aws-amplify/storage', '@aws-amplify/xr'],
+    // }),
     nodePolyfills(),
     sass(),
   ],
@@ -31,6 +31,7 @@ export const config: Config = {
       '@aws-sdk/middleware-serde': ['getSerdePlugin'],
       '@aws-sdk/property-provider': ['ProviderError'],
       '@aws-sdk/fetch-http-handler': ['FetchHttpHandler'],
+      '@aws-sdk/util-uri-escape': ['escapeUri'],
     },
   },
   outputTargets: [

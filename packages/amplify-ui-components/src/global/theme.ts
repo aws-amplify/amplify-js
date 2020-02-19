@@ -16,10 +16,19 @@ injectGlobal`
    :root {
 
     /* Typography */
+    --amplify-font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
+
     --amplify-primary-font-size: 1em;
     --amplify-secondary-font-size: 0.875em;
     --amplify-third-font-size: 0.813em;
-    --amplify-font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
+
+    --amplify-text-xs:;
+    --amplify-text-sm:;
+    --amplify-text-md:;
+    --amplify-text-lg:;
+    --amplify-text-xl:;
+    --amplify-text-xxl:;
+
 
     /* Colors */
     --amplify-amazon-orange: #ff9900;
