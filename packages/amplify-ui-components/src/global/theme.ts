@@ -25,42 +25,26 @@ injectGlobal`
     --amplify-amazon-orange: #ff9900;
     --amplify-light-amazon-orange: #ffac31;
     --amplify-dark-amazon-orange: #e88b01;
-    --amplify-squid-ink: #232f3e;
     --amplify-light-squid-ink: #31465f;
     --amplify-deep-squid-ink: #152939;
     --amplify-grey: #828282;
     --amplify-light-grey: #c4c4c4;
-    --amplify-silver: #e1e4ea;
-    --amplify-dark-blue: #31465f;
-    --amplify-red: #dd3f5b;
     --amplify-white: #ffffff;
-    --amplify-light-blue: #00a1c9;
-    --amplify-yellow-warning: #f8d047;
-    --amplify-red-problem: #cc1454;
+    --amplify-dark-blue: #31465f;
+    --amplify-light-blue: #00a1c9; 
+    --amplify-red: #dd3f5b;
 
     /* Space Scale */
 
     /* Breakpoints */
-    --breakpointSm: 480px
-    --breakpointMd: 768px
-    --breakpointLg: 1024px
-    --breakpointXl: 1280px
+    --breakpointSm: 480px;
+    --breakpointMd: 768px;
+    --breakpointLg: 1024px;
+    --breakpointXl: 1280px;
 
 
     /* Theme */
     /* All of the variables below can be used within any application that does an @import inside of their application */
-    --amplify-button-color: var(--amplify-white);
-    --amplify-button-background-color: var(--amplify-amazon-orange);
-    --amplify-button-background-color-danger: var(--amplify-color-danger);
-    --amplify-button-click: var(--amplify-dark-amazon-orange);
-    --amplify-section-background-color: var(--amplify-white);
-    --amplify-section-header-color: var(--amplify-deep-squid-ink);
-    --amplify-label-color: var(--amplify-deep-squid-ink);
-    --amplify-link-color: var(--amplify-amazon-orange);
-    --amplify-hint-color: var(--amplify-grey);
-    --amplify-form-color: var(--amplify-white);
-    --amplify-input-color: var(--amplify-deep-squid-ink);
-    --amplify-input-background-color: var(--amplify-white);
-    --amplify-input-border-color: var(--amplify-light-grey);
+
   }
 `;

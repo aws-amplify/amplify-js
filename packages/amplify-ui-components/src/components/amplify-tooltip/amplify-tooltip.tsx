@@ -2,6 +2,7 @@ import { Component, h, Prop } from '@stencil/core';
 
 @Component({
   tag: 'amplify-tooltip',
+  styleUrl: 'amplify-tooltip.scss',
   shadow: true,
 })
 export class AmplifyTooltip {

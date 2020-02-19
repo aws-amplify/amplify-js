@@ -1,15 +1,22 @@
+:host {
+  --font-family: var(--amplify-font-family);
+  --background-color: var(--amplify-deep-squid-ink);
+  --color: var(--amplify-white);
+  --border-color: var(--amplify-deep-squid-ink);
+}
+
 .tooltip {
   display: inline;
   position: relative;
   font-size: 12px;
-  font-family: var(--amplify-font-family);
+  font-family: var(--font-family);
   margin: 0 0 0 16px;
 
   :after {
-    background-color: var(--amplify-deep-squid-ink);
+    background-color: var(--background-color);
     border-radius: 2px;
     bottom: 46px;
-    color: var(--amplify-white);
+    color: var(--color);
     content: attr(data-text);
     text-decoration: none;
     padding: 10px;
@@ -27,7 +34,7 @@
 
   :before {
     border: solid;
-    border-color: var(--amplify-deep-squid-ink) transparent transparent transparent;
+    border-color: var(--border-color) transparent transparent transparent;
     border-width: 5px;
     bottom: 36px;
     content: '';

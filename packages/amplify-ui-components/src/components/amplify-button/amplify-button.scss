@@ -1,3 +1,13 @@
+:host {
+  --background-color: var(--amplify-amazon-orange);
+  --background-color-active: var(--amplify-dark-amazon-orange);
+  --background-color-disable : #ffc46d;
+  --color: var(--amplify-white);
+  --border-width: initial;
+  --border-color: initial;
+  --border-style: initial;
+}
+
 .button {
   min-width: 153px;
   display: inline-block;
@@ -12,17 +22,18 @@
   cursor: pointer;
   user-select: none;
   background-image: none;
-  color: var(--amplify-button-color);
-  border-color: #ccc;
+  color: var(--color);
   text-transform: uppercase;
   padding: 14px;
   letter-spacing: 1.1px;
-  border: none;
-  background-color: var(--amplify-button-background-color);
+  background-color: var(--background-color);
+  border-width: var(--border-width);
+  border-color: var(--border-color);
+  border-style: var(--border-style);
 
   &:active {
     opacity: 1;
-    background-color: #e88b01;
+    background-color: var(--background-color-active);
   }
   &:hover {
     opacity: 0.8;
@@ -30,6 +41,6 @@
   &:disabled {
     opacity: 1;
     cursor: auto;
-    background-color: #ffc46d;
+    background-color: var(--background-color-disable);
   }
 }

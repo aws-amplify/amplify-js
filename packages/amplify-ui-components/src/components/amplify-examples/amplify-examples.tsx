@@ -4,7 +4,6 @@ import { CustomAuthenticatorExample } from './custom-authenticator-example';
 import TOTPAuthenticatorExample from './auth-totp-example';
 import example4 from './example4';
 import sceneExample from './scene-example';
-import { SampleCssExample } from './css-sample';
 
 import Auth from '@aws-amplify/auth';
 import XR from '@aws-amplify/xr';
@@ -13,14 +12,7 @@ import config from './src/aws-exports.js';
 Auth.configure(config);
 XR.configure(config);
 
-const examples = [
-  AuthenticatorExample,
-  CustomAuthenticatorExample,
-  TOTPAuthenticatorExample,
-  example4,
-  sceneExample,
-  SampleCssExample,
-];
+const examples = [AuthenticatorExample, CustomAuthenticatorExample, TOTPAuthenticatorExample, example4, sceneExample];
 
 (window as any).LOG_LEVEL = 'DEBUG';
 

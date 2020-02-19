@@ -1,3 +1,8 @@
+:host {
+  --button-color: var(--amplify-white);
+  --button-background-color: var(--amplify-deep-squid-ink);
+}
+
 .action-button {
   button {
     position: relative;
@@ -11,10 +16,10 @@
     border: none;
     border-radius: 30px;
     transition: all 0.3s ease-in-out;
-    color: var(--amplify-white);
+    color: var(--button-color);
     fill: currentColor;
     &:hover {
-      background-color: var(--amplify-deep-squid-ink);
+      background-color: var(--button-background-color);
       box-shadow: 0.3px 0.3px 0.3px rgba(0, 0, 0, 0.3);
     }
     &:hover > .tooltip {
@@ -31,8 +36,8 @@
     & svg {
       width: 1.8em;
       height: 1.8em;
-      -webkit-filter: drop-shadow(1px 1px 1px var(--amplify-grey));
-      filter: drop-shadow(1px 1px 1px var(--amplify-grey));
+      -webkit-filter: drop-shadow(1px 1px 1px #828282);
+      filter: drop-shadow(1px 1px 1px #828282);
     }
   }
 }
