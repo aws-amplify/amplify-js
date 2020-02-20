@@ -177,15 +177,15 @@ _index.html_
 
 ## Customization
 
+- [React](#react-1)
+- [Angular](#angular-1)
+- [Vue](#vue-1)
+- [Web Components](#web-components-1)
+
 #### React
 
 ```js
-import React from 'react';
-import Amplify from 'aws-amplify';
 import { AmplifyAuthenticator, AmplifySignIn, AmplifySignUp } from '@aws-amplify/ui-react';
-import awsconfig from './aws-exports';
-
-Amplify.configure(awsconfig);
 
 const App = () => {
   <AmplifyAuthenticator>
@@ -236,10 +236,10 @@ TODO
 
 ## Migration Guide
 
-- [React](#react)
-- [Angular](#angular)
-- [Vue](#vue)
-- [Web Components](#web-components)
+- [React](#react-2)
+- [Angular](#angular-2)
+- [Vue](#vue-2)
+- [Web Components](#web-components-2)
 
 #### React
 
