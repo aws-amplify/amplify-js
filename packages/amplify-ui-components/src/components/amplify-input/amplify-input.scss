@@ -1,15 +1,15 @@
 :host {
-  --color: var(--amplify-deep-squid-ink);
-  --background-color: var(--amplify-white);
+  --color: var(--amplify-secondary-color);
+  --background-color: var(--amplify-secondary-contrast);
   --border-color: var(--amplify-light-grey);
-  --border-color-focus: var(--amplify-amazon-orange);
+  --border-color-focus: var(--amplify-primary-color);
 }
 
 .input {
   display: block;
   width: 100%;
   padding: 16px;
-  font-size: 14px;
+  font-size: var(--amplify-text-sm);
   color: var(--color);
   background-color: var(--background-color);
   background-image: none;

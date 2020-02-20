@@ -1,8 +1,8 @@
 :host {
-  --background-color: var(--amplify-amazon-orange);
-  --background-color-active: var(--amplify-dark-amazon-orange);
-  --background-color-disable : #ffc46d;
-  --color: var(--amplify-white);
+  --background-color: var(--amplify-primary-color);
+  --background-color-active: var(--amplify-primary-tint);
+  --background-color-disable : var(--amplify-primary-shade);
+  --color: var(--amplify-primary-contrast);
   --border-width: initial;
   --border-color: initial;
   --border-style: initial;
@@ -12,7 +12,7 @@
   min-width: 153px;
   display: inline-block;
   margin-bottom: 0;
-  font-size: 12px;
+  font-size: var(--amplify-text-xxs);
   font-weight: 400;
   line-height: 1.42857143;
   text-align: center;
@@ -39,7 +39,7 @@
     opacity: 0.8;
   }
   &:disabled {
-    opacity: 1;
+    opacity: 0.65;
     cursor: auto;
     background-color: var(--background-color-disable);
   }

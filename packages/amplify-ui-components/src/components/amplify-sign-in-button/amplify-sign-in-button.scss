@@ -1,7 +1,7 @@
 :host {
-  --button-color: var(--amplify-deep-squid-ink);
-  --amazon-button-background: var(--amplify-amazon-orange);
-  --amazon-button-color: var(--amplify-white);
+  --button-color: var(--amplify-secondary-color);
+  --amazon-button-background: var(--amplify-primary-color);
+  --amazon-button-color: var(--amplify-primary-contrast);
   --auth0-button-background: #eb5424;
   --auth0--button-border-color: #e14615;
   --auth0-button-color: var(--amplify-white);
@@ -24,7 +24,7 @@
     cursor: pointer;
     padding: 0;
     color: var(--button-color);
-    font-size: 14px;
+    font-size: var(--amplify-text-sm);
     box-sizing: content-box;
 
     &:hover {

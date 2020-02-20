@@ -17,6 +17,6 @@
 .strike-content {
   background: var(--content-background);
   padding: 0 25px;
-  font-size: 14px;
+  font-size: var(--amplify-text-sm);
   font-weight: 500;
 }

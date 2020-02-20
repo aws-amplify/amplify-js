@@ -1,14 +1,14 @@
 :host {
   --font-family: var(--amplify-font-family);
-  --background-color: var(--amplify-deep-squid-ink);
-  --color: var(--amplify-white);
-  --border-color: var(--amplify-deep-squid-ink);
+  --background-color: var(--amplify-secondary-color);
+  --color: var(--amplify-secondary-contrast);
+  --border-color: var(--amplify-secondary-color);
 }
 
 .tooltip {
   display: inline;
   position: relative;
-  font-size: 12px;
+  font-size: var(--amplify-text-xxs);
   font-family: var(--font-family);
   margin: 0 0 0 16px;
 
@@ -45,7 +45,7 @@
     -o-transform: translateX(-50%);
     transform: translateX(-50%);
     position: absolute;
-    font-size: 14px;
+    font-size: var(--amplify-text-sm);
     opacity: 0;
     transition: all 0.3s ease-in-out;
   }

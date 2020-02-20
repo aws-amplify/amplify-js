@@ -1,7 +1,7 @@
 :host {
-  --link-color: var(--amplify-amazon-orange);
-  --link-hover: var(--amplify-light-amazon-orange);
-  --link-active: var(--amplify-dark-amazon-orange);
+  --link-color: var(--amplify-primary-color);
+  --link-hover: var(--amplify-primary-shade);
+  --link-active: var(--amplify-primary-tint);
 }
 
 .link {

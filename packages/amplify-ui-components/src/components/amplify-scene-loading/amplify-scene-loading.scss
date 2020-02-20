@@ -1,9 +1,9 @@
 :host{
   --scene-loading-background: var(--amplify-light-squid-ink);
-  --scene-loading-bar-color: var(--amplify-deep-squid-ink);
+  --scene-loading-bar-color: var(--amplify-secondary-color);
   --scene-loading-bar-fill: var(--amplify-light-blue);
-  --scene-logo-fill: var(--amplify-white);
-  --scene-name-color: var(--amplify-white);
+  --scene-logo-fill: var(--amplify-secondary-contrast);
+  --scene-name-color: var(--amplify-secondary-contrast);
   --scene-error-color: var(--amplify-red);
 }
 
@@ -34,7 +34,7 @@
 .loading-scene-name {
   color: var(--scene-name-color);
   margin: 0 2px 20px 2px;
-  font-size: 1em;
+  font-size: var(--amplify-text-md);
   font-family: 'Amazon Ember';
 }
 
@@ -53,6 +53,6 @@
 
 .scene-error-text {
   color: var(--scene-error-color);
-  font-size: 14px;
+  font-size: var(--amplify-text-sm);
   font-family: 'Amazon Ember';
 }
