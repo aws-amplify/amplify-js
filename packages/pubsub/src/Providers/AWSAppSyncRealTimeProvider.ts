@@ -372,22 +372,27 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 	private _removeSubscriptionObserver(subscriptionId) {
 		this.subscriptionObserverMap.delete(subscriptionId);
-		if (this.subscriptionObserverMap.size === 0) {
-			// Socket could be sending data to unsubscribe so is required to wait until is flushed
-			this._closeSocketWhenFlushed();
-		}
+
+		// Verifying 1000ms after removing subscription in case there are new subscription unmount/mount
+		setTimeout(this._closeSocketIfRequired.bind(this), 1000);
 	}
 
-	private _closeSocketWhenFlushed() {
-		logger.debug('closing WebSocket...');
-		clearTimeout(this.keepAliveTimeoutId);
+	private _closeSocketIfRequired() {
+		if (this.subscriptionObserverMap.size > 0) {
+			// Active subscriptions on the WebSocket
+			return;
+		}
+
 		if (!this.awsRealTimeSocket) {
 			this.socketStatus = SOCKET_STATUS.CLOSED;
 			return;
 		}
 		if (this.awsRealTimeSocket.bufferedAmount > 0) {
-			setTimeout(this._closeSocketWhenFlushed.bind(this), 1000);
+			// Still data on the WebSocket
+			setTimeout(this._closeSocketIfRequired.bind(this), 1000);
 		} else {
+			logger.debug('closing WebSocket...');
+			clearTimeout(this.keepAliveTimeoutId);
 			const tempSocket = this.awsRealTimeSocket;
 			tempSocket.close(1000);
 			this.awsRealTimeSocket = null;
