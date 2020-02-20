@@ -379,7 +379,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 	private _closeSocketIfRequired() {
 		if (this.subscriptionObserverMap.size > 0) {
-			// No active subscriptions on the WebSocket
+			// Active subscriptions on the WebSocket
 			return;
 		}
 
