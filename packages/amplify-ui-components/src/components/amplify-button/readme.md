@@ -7,6 +7,7 @@
 
 | Property            | Attribute        | Description                                                 | Type                              | Default     |
 | ------------------- | ---------------- | ----------------------------------------------------------- | --------------------------------- | ----------- |
+| `disabled`          | `disabled`       | Disabled state of the button                                | `boolean`                         | `false`     |
 | `handleButtonClick` | --               | (Optional) Callback called when a user clicks on the button | `(evt: Event) => void`            | `undefined` |
 | `overrideStyle`     | `override-style` | (Optional) Override default styling                         | `boolean`                         | `false`     |
 | `type`              | `type`           | Type of the button: 'button', 'submit' or 'reset'           | `"button" \| "reset" \| "submit"` | `'button'`  |

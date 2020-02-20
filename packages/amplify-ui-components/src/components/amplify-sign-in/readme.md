@@ -32,6 +32,7 @@
 - [amplify-strike](../amplify-strike)
 - [amplify-auth-fields](../amplify-auth-fields)
 - [amplify-button](../amplify-button)
+- [amplify-loading-spinner](../amplify-loading-spinner)
 
 ### Graph
 ```mermaid
@@ -42,8 +43,11 @@ graph TD;
   amplify-sign-in --> amplify-strike
   amplify-sign-in --> amplify-auth-fields
   amplify-sign-in --> amplify-button
-  amplify-form-section --> amplify-button
+  amplify-sign-in --> amplify-loading-spinner
   amplify-form-section --> amplify-section
+  amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-loading-spinner
+  amplify-loading-spinner --> amplify-icon
   amplify-federated-buttons --> amplify-google-button
   amplify-federated-buttons --> amplify-facebook-button
   amplify-federated-buttons --> amplify-amazon-button

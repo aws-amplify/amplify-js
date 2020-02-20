@@ -23,7 +23,7 @@
 ##### Installation
 
 ```
-yarn add aws-amplify @aws-amplify/ui-react
+yarn add aws-amplify@ui-preview @aws-amplify/ui-react@ui-preview
 ```
 
 ##### Usage
@@ -48,7 +48,7 @@ const App = () => {
 ##### Installation
 
 ```
-yarn add aws-amplify @aws-amplify/ui-angular
+yarn add aws-amplify@ui-preview @aws-amplify/ui-angular@ui-preview
 ```
 
 ##### Usage
@@ -60,7 +60,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 
-import { AmplifyModule } from '@aws-amplify/ui-angular';
+import { AmplifyUIAngularModule } from '@aws-amplify/ui-angular';
 import Amplify from 'aws-amplify';
 import awsconfig from './aws-exports';
 
@@ -68,7 +68,7 @@ Amplify.configure(awsconfig);
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [AmplifyModule, BrowserModule],
+  imports: [AmplifyUIAngularModule, BrowserModule],
   providers: [],
   bootstrap: [AppComponent],
 })
@@ -88,7 +88,7 @@ _app.component.html_
 ##### Installation
 
 ```
-yarn add aws-amplify @aws-amplify/ui-vue
+yarn add aws-amplify@ui-preview @aws-amplify/ui-vue@ui-preview
 ```
 
 ##### Usage
@@ -123,7 +123,7 @@ _App.vue_
 ##### Installation
 
 ```
-yarn add aws-amplify @aws-amplify/ui-components
+yarn add aws-amplify@ui-preview @aws-amplify/ui-components@ui-preview
 ```
 
 ##### Usage
@@ -247,7 +247,7 @@ TODO
 
 ```diff
 - yarn add aws-amplify-react
-+ yarn add @aws-amplify/ui-react
++ yarn add @aws-amplify/ui-react@ui-preview
 ```
 
 ##### Usage
@@ -272,7 +272,7 @@ const App = () => (
 
 ```diff
 - yarn add aws-amplify-angular
-+ yarn add @aws-amplify/ui-angular
++ yarn add @aws-amplify/ui-angular@ui-preview
 ```
 
 ##### Usage
@@ -284,7 +284,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 - import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
-+ import { AmplifyModule } from '@aws-amplify/ui-angular';
++ import { AmplifyUIAngularModule } from '@aws-amplify/ui-angular';
 import Amplify from 'aws-amplify';
 import awsconfig from './aws-exports';
 
@@ -293,7 +293,7 @@ Amplify.configure(awsconfig);
 @NgModule({
   declarations: [AppComponent],
 - imports: [AmplifyAngularModule, BrowserModule],
-+ imports: [AmplifyModule, BrowserModule],
++ imports: [AmplifyUIAngularModule, BrowserModule],
 - providers: [AmplifyService],
 + providers: [],
   bootstrap: [AppComponent],
@@ -315,7 +315,7 @@ _app.component.html_
 
 ```diff
 - yarn add aws-amplify-vue
-+ yarn add @aws-amplify/ui-vue
++ yarn add @aws-amplify/ui-vue@ui-preview
 ```
 
 ##### Usage

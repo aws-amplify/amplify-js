@@ -28,8 +28,10 @@
 graph TD;
   amplify-totp-setup --> amplify-form-section
   amplify-totp-setup --> amplify-form-field
-  amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
+  amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-loading-spinner
+  amplify-loading-spinner --> amplify-icon
   amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint

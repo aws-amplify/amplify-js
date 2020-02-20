@@ -25,8 +25,10 @@ graph TD;
   amplify-federated-sign-in --> amplify-form-section
   amplify-federated-sign-in --> amplify-section
   amplify-federated-sign-in --> amplify-federated-buttons
-  amplify-form-section --> amplify-button
   amplify-form-section --> amplify-section
+  amplify-form-section --> amplify-button
+  amplify-form-section --> amplify-loading-spinner
+  amplify-loading-spinner --> amplify-icon
   amplify-federated-buttons --> amplify-google-button
   amplify-federated-buttons --> amplify-facebook-button
   amplify-federated-buttons --> amplify-amazon-button

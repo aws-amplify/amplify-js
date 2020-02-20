@@ -4,12 +4,13 @@ import { CustomAuthenticatorExample } from './custom-authenticator-example';
 import TOTPAuthenticatorExample from './auth-totp-example';
 import example4 from './example4';
 import sceneExample from './scene-example';
-
 import Auth from '@aws-amplify/auth';
 import XR from '@aws-amplify/xr';
 
-Auth.configure({});
-XR.configure({});
+const awsexports = {};
+
+Auth.configure(awsexports);
+XR.configure(awsexports);
 
 const examples = [AuthenticatorExample, CustomAuthenticatorExample, TOTPAuthenticatorExample, example4, sceneExample];
 

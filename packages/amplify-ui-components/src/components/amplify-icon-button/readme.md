@@ -5,12 +5,12 @@
 
 ## Properties
 
-| Property          | Attribute           | Description                         | Type                                                                                                                                           | Default     |
-| ----------------- | ------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `autoShowTooltip` | `auto-show-tooltip` |                                     | `boolean`                                                                                                                                      | `false`     |
-| `name`            | `name`              |                                     | `"amazon" \| "auth0" \| "enter-vr" \| "exit-vr" \| "facebook" \| "google" \| "maximize" \| "minimize" \| "sound" \| "sound-mute" \| "warning"` | `undefined` |
-| `overrideStyle`   | `override-style`    | (Optional) Override default styling | `boolean`                                                                                                                                      | `false`     |
-| `tooltip`         | `tooltip`           |                                     | `string`                                                                                                                                       | `null`      |
+| Property          | Attribute           | Description                         | Type                                                                                                                                                        | Default     |
+| ----------------- | ------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `autoShowTooltip` | `auto-show-tooltip` |                                     | `boolean`                                                                                                                                                   | `false`     |
+| `name`            | `name`              |                                     | `"amazon" \| "auth0" \| "enter-vr" \| "exit-vr" \| "facebook" \| "google" \| "loading" \| "maximize" \| "minimize" \| "sound" \| "sound-mute" \| "warning"` | `undefined` |
+| `overrideStyle`   | `override-style`    | (Optional) Override default styling | `boolean`                                                                                                                                                   | `false`     |
+| `tooltip`         | `tooltip`           |                                     | `string`                                                                                                                                                    | `null`      |
 
 
 ## Dependencies

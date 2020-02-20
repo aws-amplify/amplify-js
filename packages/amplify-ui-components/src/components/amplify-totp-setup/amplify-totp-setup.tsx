@@ -40,6 +40,7 @@ export class AmplifyTOTPSetup {
   @State() setupMessage: string | null = null;
   @State() qrCodeImageSource: string;
   @State() qrCodeInput: string | null = null;
+  @State() loading: boolean = false;
 
   componentWillLoad() {
     this.setup();
@@ -95,6 +96,7 @@ export class AmplifyTOTPSetup {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
+    this.loading = true;
     try {
       const secretKey = await Auth.setupTOTP(this.user);
 
@@ -105,6 +107,8 @@ export class AmplifyTOTPSetup {
     } catch (error) {
       dispatchToastHubEvent(error);
       logger.debug(TOTP_SETUP_FAILURE, error);
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -145,6 +149,7 @@ export class AmplifyTOTPSetup {
         headerText={TOTP_HEADER_TEXT}
         submitButtonText={TOTP_SUBMIT_BUTTON_TEXT}
         handleSubmit={event => this.verifyTotpToken(event)}
+        loading={this.loading}
       >
         <div class="totp-setup">
           <img src={this.qrCodeImageSource} alt={ALT_QR_CODE} />
