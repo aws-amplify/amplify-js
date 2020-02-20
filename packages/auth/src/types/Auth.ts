@@ -51,7 +51,6 @@ export interface AuthOptions {
 	identityPoolRegion?: string;
 	clientMetadata?: any;
 	endpoint?: string;
-	fipsEnabled?: boolean;
 }
 
 export enum CognitoHostedUIIdentityProvider {

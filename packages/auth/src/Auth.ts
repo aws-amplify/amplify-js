@@ -154,7 +154,6 @@ export default class AuthClass {
 			identityPoolRegion,
 			clientMetadata,
 			endpoint,
-			fipsEnabled,
 		} = this._config;
 
 		if (!this._config.storage) {
@@ -181,7 +180,6 @@ export default class AuthClass {
 				UserPoolId: userPoolId,
 				ClientId: userPoolWebClientId,
 				endpoint,
-				fipsEnabled,
 			};
 			userPoolData.Storage = this._storage;
 

@@ -291,7 +291,6 @@ declare module 'amazon-cognito-identity-js' {
 		UserPoolId: string;
 		ClientId: string;
 		endpoint?: string;
-		fipsEnabled?: boolean;
 		Storage?: ICognitoStorage;
 	}
 
