@@ -23,16 +23,24 @@
 ##### Installation
 
 ```
-yarn add @aws-amplify/ui-react
+yarn add aws-amplify @aws-amplify/ui-react
 ```
 
 ##### Usage
 
 ```js
 import React from 'react';
+import Amplify from 'aws-amplify';
 import { AmplifyAuthenticator } from '@aws-amplify/ui-react';
+import awsconfig from './aws-exports';
 
-const App = () => <AmplifyAuthenticator />;
+Amplify.configure(awsconfig);
+
+const App = () => {
+  <AmplifyAuthenticator>
+    <div>My App</div>
+  </AmplifyAuthenticator>;
+};
 ```
 
 #### Angular
@@ -40,7 +48,7 @@ const App = () => <AmplifyAuthenticator />;
 ##### Installation
 
 ```
-yarn add @aws-amplify/ui-angular
+yarn add aws-amplify @aws-amplify/ui-angular
 ```
 
 ##### Usage
@@ -50,9 +58,13 @@ _app.module.ts_
 ```js
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { AmplifyModule } from '@aws-amplify/ui-angular';
-
 import { AppComponent } from './app.component';
+
+import { AmplifyModule } from '@aws-amplify/ui-angular';
+import Amplify from 'aws-amplify';
+import awsconfig from './aws-exports';
+
+Amplify.configure(awsconfig);
 
 @NgModule({
   declarations: [AppComponent],
@@ -76,7 +88,7 @@ _app.component.html_
 ##### Installation
 
 ```
-yarn add @aws-amplify/ui-vue
+yarn add aws-amplify @aws-amplify/ui-vue
 ```
 
 ##### Usage
@@ -85,26 +97,24 @@ _main.ts_
 
 ```js
 import Vue from 'vue';
-import { AmplifyAuthenticator } from '@aws-amplify/ui-vue';
+import '@aws-amplify/ui-vue';
+import Amplify from 'aws-amplify';
+import awsconfig from './aws-exports';
 
-Vue.use(AmplifyAuthenticator);
+Amplify.configure(awsconfig);
 
 new Vue({
-  components: {
-    AmplifyAuthenticator,
-  },
-});
+  render: h => h(App),
+}).$mount('#app');
 ```
 
 _App.vue_
 
 ```html
 <template>
-  <div id="app">
-    <amplify-authenticator>
-      <div>My App</div>
-    </amplify-authenticator>
-  </div>
+  <amplify-authenticator>
+    <div>My App</div>
+  </amplify-authenticator>
 </template>
 ```
 
@@ -113,19 +123,32 @@ _App.vue_
 ##### Installation
 
 ```
-yarn add @aws-amplify/ui-components
+yarn add aws-amplify @aws-amplify/ui-components
 ```
 
 ##### Usage
 
+_app.js_
+
+```js
+import '@aws-amplify/ui-vue';
+import Amplify from 'aws-amplify';
+import awsconfig from './aws-exports';
+
+Amplify.configure(awsconfig);
+```
+
+_index.html_
+
 ```html
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <script src="https://unpkg.com/@aws-amplify/ui-components/latest/dist/amplify-ui-components.js"></script>
-  </head>
   <body>
-    <amplify-authenticator></amplify-authenticator>
+    <amplify-authenticator>
+      <div>My App</div>
+    </amplify-authenticator>
+
+    <script src="app.js"></script>
   </body>
 </html>
 ```
@@ -152,6 +175,65 @@ yarn add @aws-amplify/ui-components
 
 - [amplify-totp-setup](src/components/amplify-totp-setup/readme.md)
 
+## Customization
+
+#### React
+
+```js
+import React from 'react';
+import Amplify from 'aws-amplify';
+import { AmplifyAuthenticator, AmplifySignIn, AmplifySignUp } from '@aws-amplify/ui-react';
+import awsconfig from './aws-exports';
+
+Amplify.configure(awsconfig);
+
+const App = () => {
+  <AmplifyAuthenticator>
+    <AmplifySignIn headerText="My Custom Sign In Header" slot="sign-in" />
+    <AmplifySignUp headerText="My Custom Sign Up Header" slot="sign-up" />
+
+    <div>My App</div>
+  </AmplifyAuthenticator>;
+};
+```
+
+#### Angular
+
+```html
+<amplify-authenticator>
+  <amplify-sign-in header-text="My Custom Sign In Header" slot="sign-in" />
+  <amplify-sign-up header-text="My Custom Sign In Header" slot="sign-up" />
+
+  <div>My App<div>
+</amplify-authenticator>
+```
+
+#### Vue
+
+```html
+<amplify-authenticator>
+  <amplify-sign-in header-text="My Custom Sign In Header" slot="sign-in" />
+  <amplify-sign-up header-text="My Custom Sign In Header" slot="sign-up" />
+
+  <div>My App<div>
+</amplify-authenticator>
+```
+
+#### Web Components
+
+```html
+<amplify-authenticator>
+  <amplify-sign-in header-text="My Custom Sign In Header" slot="sign-in" />
+  <amplify-sign-up header-text="My Custom Sign In Header" slot="sign-up" />
+
+  <div>My App<div>
+</amplify-authenticator>
+```
+
+## Theming
+
+TODO
+
 ## Migration Guide
 
 - [React](#react)
@@ -171,7 +253,6 @@ yarn add @aws-amplify/ui-components
 ##### Usage
 
 ```diff
-import React from 'react';
 - import { Authenticator } from 'aws-amplify-react';
 + import { AmplifyAuthenticator } from '@aws-amplify/ui-react';
 
@@ -195,28 +276,8 @@ const App = () => (
 _app.module.ts_
 
 ```diff
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
 - import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
 + import { AmplifyModule } from '@aws-amplify/ui-angular';
-
-import { AppComponent } from './app.component';
-
-@NgModule({
-  declarations: [AppComponent],
-  imports: [AmplifyModule, BrowserModule],
-  providers: [],
-  bootstrap: [AppComponent],
-})
-export class AppModule {}
-```
-
-_app.component.html_
-
-```html
-<amplify-authenticator>
-  <div>My App</div>
-</amplify-authenticator>
 ```
 
 #### Vue
@@ -233,31 +294,11 @@ _app.component.html_
 _main.ts_
 
 ```diff
-import Vue from 'vue';
 - import Amplify, * as AmplifyModules from 'aws-amplify'
 - import { AmplifyPlugin } from 'aws-amplify-vue'
-+ import { AmplifyAuthenticator } from '@aws-amplify/ui-vue';
-
-- Vue.use(AmplifyPlugin, AmplifyModules)
-+ Vue.use(AmplifyAuthenticator);
-
-new Vue({
-  components: {
-    AmplifyAuthenticator,
-  },
-});
-```
-
-_App.vue_
-
-```diff
-<template>
-  <div id="app">
-    <amplify-authenticator>
-      <div>My App</div>
-    </amplify-authenticator>
-  </div>
-</template>
++ import '@aws-amplify/ui-vue';
++ import Amplify from 'aws-amplify';
++ import awsconfig from './aws-exports';
 ```
 
 ---
