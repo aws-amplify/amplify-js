@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "@aws-amplify/ui-storybook",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
