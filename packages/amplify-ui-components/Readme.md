@@ -257,8 +257,12 @@ TODO
 + import { AmplifyAuthenticator } from '@aws-amplify/ui-react';
 
 const App = () => (
--  <Authenticator />
-+  <AmplifyAuthenticator />
+
++ <AmplifyAuthenticator>
+- <Authenticator>
+    <div>My App</div>
++ </AmplifyAuthenticator>;
+- </Authenticator>
 );
 ```
 
@@ -276,8 +280,33 @@ const App = () => (
 _app.module.ts_
 
 ```diff
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { AppComponent } from './app.component';
 - import { AmplifyAngularModule, AmplifyService } from 'aws-amplify-angular';
 + import { AmplifyModule } from '@aws-amplify/ui-angular';
+import Amplify from 'aws-amplify';
+import awsconfig from './aws-exports';
+
+Amplify.configure(awsconfig);
+
+@NgModule({
+  declarations: [AppComponent],
+- imports: [AmplifyAngularModule, BrowserModule],
++ imports: [AmplifyModule, BrowserModule],
+- providers: [AmplifyService],
++ providers: [],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+_app.component.html_
+
+```diff
+<amplify-authenticator>
++  <div>My App</div>
+</amplify-authenticator>
 ```
 
 #### Vue
@@ -294,11 +323,28 @@ _app.module.ts_
 _main.ts_
 
 ```diff
+import Vue from 'vue';
 - import Amplify, * as AmplifyModules from 'aws-amplify'
 - import { AmplifyPlugin } from 'aws-amplify-vue'
 + import '@aws-amplify/ui-vue';
 + import Amplify from 'aws-amplify';
 + import awsconfig from './aws-exports';
+
+Amplify.configure(awsconfig);
+
+new Vue({
+  render: h => h(App),
+}).$mount('#app');
+```
+
+_App.vue_
+
+```diff
+<template>
+  <amplify-authenticator>
++    <div>My App</div>
+  </amplify-authenticator>
+</template>
 ```
 
 ---
