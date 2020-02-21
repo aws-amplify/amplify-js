@@ -13,6 +13,15 @@
 
 ## Quick Start
 
+In this Quick Start guide you will set up an Authenticator component and the cloud resources required to use it inside of your app.
+
+**Prerequisites**
+
+- Follow [Get Started](https://aws-amplify.github.io/docs/) on Amplify Docs.
+- Use [Amplify CLI](https://aws-amplify.github.io/docs/cli-toolchain/quickstart#auth-examples) to initialize your project set up Auth cloud resources.
+
+**Frameworks**
+
 - [React](#react)
 - [Angular](#angular)
 - [Vue](#vue)
@@ -103,6 +112,7 @@ _main.ts_
 
 ```js
 import Vue from 'vue';
+import App from './App.vue';
 import '@aws-amplify/ui-vue';
 import Amplify from 'aws-amplify';
 import awsconfig from './aws-exports';
@@ -367,6 +377,7 @@ _main.ts_
 
 ```diff
 import Vue from 'vue';
+import App from "./App.vue";
 - import Amplify, * as AmplifyModules from 'aws-amplify'
 - import { AmplifyPlugin } from 'aws-amplify-vue'
 + import '@aws-amplify/ui-vue';
