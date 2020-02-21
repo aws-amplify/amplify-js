@@ -197,7 +197,7 @@ Amplify UI Components use [slots](https://developer.mozilla.org/en-US/docs/Web/H
 
 **Slots**
 
-> These slots can be overridden with the [components listed above](#components) to preserve the authenticator state flow.
+> You can override the [components listed above](#components) and pass them into these slots to preserve the authenticator state flow.
 
 | Name                     | Description                                                                                                            |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
