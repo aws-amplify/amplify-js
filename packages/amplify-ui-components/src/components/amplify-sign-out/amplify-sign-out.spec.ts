@@ -13,10 +13,6 @@ describe('amplify-sign-out spec:', () => {
     it('should render default `buttonText`', () => {
       expect(signOut.buttonText).toEqual(SIGN_OUT);
     });
-
-    it('should render `overrideStyle` to false by default', () => {
-      expect(signOut.overrideStyle).toBe(false);
-    });
   });
   describe('Render logic ->', () => {
     it('should render a `sign out` button by default', async () => {

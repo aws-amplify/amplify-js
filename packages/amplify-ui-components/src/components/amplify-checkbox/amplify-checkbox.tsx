@@ -6,8 +6,6 @@ import { Component, Prop, h } from '@stencil/core';
   shadow: true,
 })
 export class AmplifyCheckbox {
-  /** (Optional) Overrides default styling */
-  @Prop() overrideStyle: boolean = false;
   /** Name of the checkbox */
   @Prop() name?: string;
   /** Value of the checkbox */

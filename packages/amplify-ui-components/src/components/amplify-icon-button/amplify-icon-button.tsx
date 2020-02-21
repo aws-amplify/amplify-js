@@ -13,8 +13,6 @@ export class AmplifyIconButton {
   @Prop() tooltip: string | null = null;
   /* (Optional) Whether or not to show the tooltip automatically */
   @Prop() autoShowTooltip: boolean = false;
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
 
   render() {
     return (

@@ -31,8 +31,6 @@ export class AmplifyRequireNewPassword {
   @Prop() headerText: string = CHANGE_PASSWORD;
   /** The text displayed inside of the submit button for the form */
   @Prop() submitButtonText: string = CHANGE_PASSWORD_ACTION;
-  /** (Optional) Overrides default styling */
-  @Prop() overrideStyle: boolean = false;
   /** The function called when submitting a new password */
   @Prop() handleSubmit: (event: Event) => void = event => this.completeNewPassword(event);
   /** Passed from the Authenticator component in order to change Authentication state */
@@ -112,7 +110,6 @@ export class AmplifyRequireNewPassword {
     return (
       <amplify-form-section
         headerText={this.headerText}
-        overrideStyle={this.overrideStyle}
         handleSubmit={this.handleSubmit}
         loading={this.loading}
         secondaryFooterContent={

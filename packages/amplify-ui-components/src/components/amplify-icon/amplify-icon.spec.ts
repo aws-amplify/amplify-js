@@ -19,10 +19,4 @@ describe('amplify-icon spec:', () => {
       it(`renders ${name} correctly`, async () => snapshotTestIcon(name));
     });
   });
-  describe('Component logic ->', () => {
-    it(`has overrideStyle false by default`, async () => {
-      const icon = new AmplifyIcon();
-      expect(icon.overrideStyle).toBe(false);
-    });
-  });
 });

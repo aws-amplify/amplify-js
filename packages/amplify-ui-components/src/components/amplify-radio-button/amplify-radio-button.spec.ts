@@ -16,16 +16,12 @@ describe('amplify-radio-button spec:', () => {
     it('should render false for disabled prop by default', () => {
       expect(radio.disabled).toBe(false);
     });
-
-    it('should render false for style override prop by default', () => {
-      expect(radio.overrideStyle).toBe(false);
-    });
   });
   describe('Render logic ->', () => {
     it('should render a radio button with no label and a type of radio for input by default', async () => {
       const page = await newSpecPage({
         components: [AmplifyRadioButton],
-        html: `<amplify-radio-button></amplify-radio-button>`
+        html: `<amplify-radio-button></amplify-radio-button>`,
       });
 
       expect(page.root).toMatchSnapshot();
@@ -34,7 +30,7 @@ describe('amplify-radio-button spec:', () => {
     it('should render only class `amplify-ui--radio-button` when style override is set to true', async () => {
       const page = await newSpecPage({
         components: [AmplifyRadioButton],
-        html: `<amplify-radio-button override-style="true"></amplify-radio-button>`
+        html: `<amplify-radio-button override-style="true"></amplify-radio-button>`,
       });
 
       expect(page.root).toMatchSnapshot();

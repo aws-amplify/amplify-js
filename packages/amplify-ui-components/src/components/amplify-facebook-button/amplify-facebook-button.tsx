@@ -19,8 +19,6 @@ export class AmplifyFacebookButton {
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
 
   federatedSignIn = authResponse => {
     const { accessToken, expiresIn } = authResponse;
@@ -98,11 +96,7 @@ export class AmplifyFacebookButton {
 
   render() {
     return (
-      <amplify-sign-in-button
-        onClick={event => this.signInWithFacebook(event)}
-        overrideStyle={this.overrideStyle}
-        provider="facebook"
-      >
+      <amplify-sign-in-button onClick={event => this.signInWithFacebook(event)} provider="facebook">
         <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
         {SIGN_IN_WITH_FACEBOOK}
       </amplify-sign-in-button>

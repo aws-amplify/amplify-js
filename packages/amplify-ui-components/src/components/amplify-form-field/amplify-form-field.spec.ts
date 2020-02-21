@@ -36,10 +36,6 @@ describe('amplify-form-field spec:', () => {
     it('should have name prop be undefined by default', () => {
       expect(formField.name).toBeUndefined();
     });
-
-    it('should have style override prop set to false by default', () => {
-      expect(formField.overrideStyle).toBe(false);
-    });
   });
   describe('Render logic ->', () => {
     it('renders no label or description if none are provided', async () => {

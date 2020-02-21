@@ -13,8 +13,6 @@ export class AmplifyButton {
   @Prop() type: ButtonTypes = 'button';
   /** (Optional) Callback called when a user clicks on the button */
   @Prop() handleButtonClick: (evt: Event) => void;
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
   /** Disabled state of the button */
   @Prop() disabled?: boolean = false;
 

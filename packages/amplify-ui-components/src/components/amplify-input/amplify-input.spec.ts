@@ -11,14 +11,6 @@ describe('amplify-input spec:', () => {
 
       expect(page.root).toMatchSnapshot();
     });
-    it('renders without Emotion CSS class when overrideStyle is true', async () => {
-      const page = await newSpecPage({
-        components: [AmplifyInput],
-        html: `<amplify-input override-style='true'></amplify-input>`,
-      });
-
-      expect(page.root).toMatchSnapshot();
-    });
 
     it('renders with a name for the input', async () => {
       const page = await newSpecPage({
@@ -67,10 +59,6 @@ describe('amplify-input spec:', () => {
 
     it('should have `type` set to `text` by default', () => {
       expect(input.type).toEqual('text');
-    });
-
-    it('should have overrideStyle false by default', () => {
-      expect(input.overrideStyle).toBe(false);
     });
   });
 });

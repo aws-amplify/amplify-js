@@ -22,8 +22,6 @@ const logger = new Logger('AmplifyVerifyContact');
 export class AmplifyVerifyContact {
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
 
@@ -87,7 +85,6 @@ export class AmplifyVerifyContact {
             autocomplete: 'off',
           }}
           name="code"
-          overrideStyle={this.overrideStyle}
           placeholder={CODE_PLACEHOLDER}
         />
       </div>
@@ -112,22 +109,13 @@ export class AmplifyVerifyContact {
 
     return (
       <div>
-        {email && (
-          <amplify-radio-button
-            label={VERIFY_CONTACT_EMAIL_LABEL}
-            key="email"
-            name="contact"
-            overrideStyle={this.overrideStyle}
-            value="email"
-          />
-        )}
+        {email && <amplify-radio-button label={VERIFY_CONTACT_EMAIL_LABEL} key="email" name="contact" value="email" />}
 
         {phone_number && (
           <amplify-radio-button
             label={VERIFY_CONTACT_PHONE_LABEL}
             key="phone_number"
             name="contact"
-            overrideStyle={this.overrideStyle}
             value="phone_number"
           />
         )}
@@ -140,7 +128,6 @@ export class AmplifyVerifyContact {
       <amplify-form-section
         handleSubmit={event => this.handleSubmit(event)}
         headerText={VERIFY_CONTACT_HEADER_TEXT}
-        overrideStyle={this.overrideStyle}
         loading={this.loading}
         secondaryFooterContent={
           <span>

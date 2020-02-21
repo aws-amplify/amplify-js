@@ -11,8 +11,6 @@ import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../commo
 export class AmplifySignOut {
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
-  /** (Optional) Overrides default styling */
-  @Prop() overrideStyle: boolean = false;
   /** Text inside of the Sign Out button */
   @Prop() buttonText: string = SIGN_OUT;
 
@@ -35,11 +33,7 @@ export class AmplifySignOut {
 
   render() {
     return (
-      <amplify-button
-        overrideStyle={this.overrideStyle}
-        onClick={event => this.signOut(event)}
-        data-test="sign-out-button"
-      >
+      <amplify-button onClick={event => this.signOut(event)} data-test="sign-out-button">
         {this.buttonText}
       </amplify-button>
     );

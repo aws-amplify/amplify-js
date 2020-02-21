@@ -6,9 +6,6 @@ import { Component, Host, h, Prop } from '@stencil/core';
   shadow: true,
 })
 export class AmplifyStrike {
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
-
   render() {
     return (
       <Host>
