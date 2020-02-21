@@ -1,0 +1,50 @@
+import { Meta, Props, Story, Preview } from '@storybook/addon-docs/blocks';
+import { AmplifyAuthenticator } from '@aws-amplify/ui-react';
+import { withKnobs, text } from '@storybook/addon-knobs';
+
+<Meta title="Authenticator" decorators={[withKnobs]} />
+
+# Authenticator
+
+The Authenticator is a drop-in UI component that provides:
+
+- User Sign in
+- User Sign up
+- User Sign out
+- Forgot Password
+- Federated authentication
+- MFA (Multi-Factor Authentication) e.g. SMS, Email, and TOTP (Temporary One Time Password)
+- Confirm MFA Code’s and Provide QR codes for TOTP
+
+## Live Demo
+
+<Preview>
+	<Story name="Demo">
+		<AmplifyAuthenticator />
+	</Story>
+</Preview>
+
+---
+
+<Props of="amplify-authenticator" />
+
+Use `AmplifyAuthenticator` to render whatever
+
+<Preview>
+	<Story name="with Federated Signin">
+		<AmplifyAuthenticator
+			federated={{
+				amazonClientId: text('Amazon client ID', 'amazon_client_id'),
+				auth0Config: {
+					clientID: text('Auth0 client ID', 'auth0_client_id'),
+					domain: text('Auth0 account domain', 'example.auth0.com'),
+					redirectUri: 'http://localhost:3000/',
+					responseType: 'token id_token',
+				},
+				facebookAppId: text('Facebook app ID', 'facebook_app_id'),
+				googleClientId: text('Google client ID', 'google_client_id'),
+				oauthConfig: {},
+			}}
+		/>
+	</Story>
+</Preview>
