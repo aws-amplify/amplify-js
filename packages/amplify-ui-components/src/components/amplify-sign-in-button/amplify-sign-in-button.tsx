@@ -4,7 +4,7 @@ import { icons, IconNameType } from '../amplify-icon/icons';
 @Component({
   tag: 'amplify-sign-in-button',
   styleUrl: 'amplify-sign-in-button.scss',
-  shadow: true,
+  scoped: true,
 })
 export class AmplifySignInButton {
   /** (Optional) Override default styling */
@@ -15,11 +15,7 @@ export class AmplifySignInButton {
     return (
       <Host class={`sign-in-button ${this.provider}`}>
         <button>
-          {this.provider in icons && (
-            <span class="icon">
-              <amplify-icon name={this.provider as IconNameType} />
-            </span>
-          )}
+          {this.provider in icons && <amplify-icon name={this.provider as IconNameType} />}
 
           <span class="content">
             <slot />

@@ -2,22 +2,18 @@
 
 exports[`amplify-strike stories withOverrideStyle 1`] = `
 <amplify-strike class="strike">
-  <mock:shadow-root>
-    <span class="strike-content">
-      <slot></slot>
-    </span>
-  </mock:shadow-root>
-  Unstyled
+  <!---->
+  <span class="strike-content">
+    Unstyled
+  </span>
 </amplify-strike>
 `;
 
 exports[`amplify-strike stories withText 1`] = `
 <amplify-strike class="strike">
-  <mock:shadow-root>
-    <span class="strike-content">
-      <slot></slot>
-    </span>
-  </mock:shadow-root>
-  or
+  <!---->
+  <span class="strike-content">
+    or
+  </span>
 </amplify-strike>
 `;
