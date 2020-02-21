@@ -17,13 +17,13 @@ import {
 	Component,
 	Input,
 	OnInit,
-	ViewChild,
 	ComponentFactoryResolver,
 	OnDestroy,
 	Output,
 	EventEmitter,
+	ViewContainerRef,
+	Inject,
 } from '@angular/core';
-import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount } from '../../component.mount';
 import { ChatBotClass } from './chatbot.class';
 import { ChatbotComponentIonic } from './chatbot.component.ionic';
@@ -48,14 +48,23 @@ export class ChatBotComponent implements OnInit, OnDestroy {
 	@Input() textEnabled: boolean;
 	@Output()
 	complete: EventEmitter<string> = new EventEmitter<string>();
-	@ViewChild(DynamicComponentDirective)
-	componentHost: DynamicComponentDirective;
+	viewContainerRef: ViewContainerRef;
 
-	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+	constructor(
+		private componentFactoryResolver: ComponentFactoryResolver,
+		@Inject('dynamic-component-service') shared
+	) {
+		shared.onContainerCreated(container => {
+			this.viewContainerRef = container;
+			this.loadComponent();
+		});
 
-	ngOnInit() {
-		this.loadComponent();
+		shared.onContainerDestroyed(() => {
+			this.viewContainerRef = undefined;
+		});
 	}
+
+	ngOnInit() {}
 
 	ngOnDestroy() {}
 
@@ -79,10 +88,11 @@ export class ChatBotComponent implements OnInit, OnDestroy {
 			interactionComponent.component
 		);
 
-		const viewContainerRef = this.componentHost.viewContainerRef;
-		viewContainerRef.clear();
+		this.viewContainerRef.clear();
 
-		const componentRef = viewContainerRef.createComponent(componentFactory);
+		const componentRef = this.viewContainerRef.createComponent(
+			componentFactory
+		);
 		(<ChatBotClass>componentRef.instance).data = interactionComponent.data;
 
 		componentRef.instance.complete.subscribe(e => {

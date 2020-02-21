@@ -17,12 +17,12 @@ import {
 	Component,
 	Input,
 	OnInit,
-	ViewChild,
 	ComponentFactoryResolver,
 	OnDestroy,
+	ViewContainerRef,
+	Inject,
 } from '@angular/core';
 
-import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount } from '../../component.mount';
 import { AuthClass } from './authenticator.class';
 import { AuthenticatorIonicComponent } from './authenticator.component.ionic';
@@ -41,14 +41,23 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
 	@Input() hide: string[] = [];
 	@Input() signUpConfig: any;
 	@Input() usernameAttributes: string = 'username';
-	@ViewChild(DynamicComponentDirective)
-	componentHost: DynamicComponentDirective;
+	viewContainerRef: ViewContainerRef;
 
-	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+	constructor(
+		private componentFactoryResolver: ComponentFactoryResolver,
+		@Inject('dynamic-component-service') shared
+	) {
+		shared.onContainerCreated(container => {
+			this.viewContainerRef = container;
+			this.loadComponent();
+		});
 
-	ngOnInit() {
-		this.loadComponent();
+		shared.onContainerDestroyed(() => {
+			this.viewContainerRef = undefined;
+		});
 	}
+
+	ngOnInit() {}
 
 	ngOnDestroy() {}
 
@@ -70,10 +79,12 @@ export class AuthenticatorComponent implements OnInit, OnDestroy {
 			authComponent.component
 		);
 
-		const viewContainerRef = this.componentHost.viewContainerRef;
-		viewContainerRef.clear();
+		this.viewContainerRef.clear();
 
-		const componentRef = viewContainerRef.createComponent(componentFactory);
+		const componentRef = this.viewContainerRef.createComponent(
+			componentFactory
+		);
+
 		(<AuthClass>componentRef.instance).data = authComponent.data;
 	}
 }

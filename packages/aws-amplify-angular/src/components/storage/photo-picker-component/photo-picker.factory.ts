@@ -17,13 +17,13 @@ import {
 	Component,
 	Input,
 	OnInit,
-	ViewChild,
 	ComponentFactoryResolver,
 	OnDestroy,
 	Output,
 	EventEmitter,
+	ViewContainerRef,
+	Inject,
 } from '@angular/core';
-import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount } from '../../component.mount';
 import { PhotoPickerClass } from './photo-picker.class';
 import { PhotoPickerIonicComponent } from './photo-picker.component.ionic';
@@ -48,14 +48,23 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
 	loaded: EventEmitter<string> = new EventEmitter<string>();
 	@Output()
 	uploaded: EventEmitter<Object> = new EventEmitter<Object>();
-	@ViewChild(DynamicComponentDirective)
-	componentHost: DynamicComponentDirective;
+	viewContainerRef: ViewContainerRef;
 
-	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+	constructor(
+		private componentFactoryResolver: ComponentFactoryResolver,
+		@Inject('dynamic-component-service') shared
+	) {
+		shared.onContainerCreated(container => {
+			this.viewContainerRef = container;
+			this.loadComponent();
+		});
 
-	ngOnInit() {
-		this.loadComponent();
+		shared.onContainerDestroyed(() => {
+			this.viewContainerRef = undefined;
+		});
 	}
+
+	ngOnInit() {}
 
 	ngOnDestroy() {}
 
@@ -77,10 +86,11 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
 			photoPickerComponent.component
 		);
 
-		const viewContainerRef = this.componentHost.viewContainerRef;
-		viewContainerRef.clear();
+		this.viewContainerRef.clear();
 
-		const componentRef = viewContainerRef.createComponent(componentFactory);
+		const componentRef = this.viewContainerRef.createComponent(
+			componentFactory
+		);
 		(<PhotoPickerClass>componentRef.instance).data = photoPickerComponent.data;
 
 		componentRef.instance.picked.subscribe(e => {

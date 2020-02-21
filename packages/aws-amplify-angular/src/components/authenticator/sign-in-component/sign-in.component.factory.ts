@@ -17,17 +17,16 @@ import {
 	Component,
 	Input,
 	OnInit,
-	ViewChild,
 	ComponentFactoryResolver,
 	OnDestroy,
+	ViewContainerRef,
+	Inject,
 } from '@angular/core';
-import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount } from '../../component.mount';
 import { SignInClass } from './sign-in.class';
 import { SignInComponentIonic } from './sign-in.component.ionic';
 import { SignInComponentCore } from './sign-in.component.core';
 import { AuthState } from '../../../providers';
-import { authDecorator } from '../../../providers/auth.decorator';
 
 @Component({
 	selector: 'amplify-auth-sign-in',
@@ -42,19 +41,28 @@ export class SignInComponent implements OnInit, OnDestroy {
 	@Input() authState: AuthState;
 	@Input() usernameAttributes: string = 'username';
 	@Input() hide: string[] = [];
-	@ViewChild(DynamicComponentDirective)
-	componentHost: DynamicComponentDirective;
+	viewContainerRef: ViewContainerRef;
 
-	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+	constructor(
+		private componentFactoryResolver: ComponentFactoryResolver,
+		@Inject('dynamic-component-service') shared
+	) {
+		shared.onContainerCreated(container => {
+			this.viewContainerRef = container;
+			this.loadComponent();
+		});
 
-	ngOnInit() {
-		this.loadComponent();
+		shared.onContainerDestroyed(() => {
+			this.viewContainerRef = undefined;
+		});
 	}
+
+	ngOnInit() {}
 
 	ngOnDestroy() {}
 
 	loadComponent() {
-		let authComponent =
+		const authComponent =
 			this.framework && this.framework === 'ionic'
 				? new ComponentMount(SignInComponentIonic, {
 						authState: this.authState,
@@ -71,10 +79,11 @@ export class SignInComponent implements OnInit, OnDestroy {
 			authComponent.component
 		);
 
-		const viewContainerRef = this.componentHost.viewContainerRef;
-		viewContainerRef.clear();
+		this.viewContainerRef.clear();
 
-		const componentRef = viewContainerRef.createComponent(componentFactory);
+		const componentRef = this.viewContainerRef.createComponent(
+			componentFactory
+		);
 		(<SignInClass>componentRef.instance).data = authComponent.data;
 	}
 }

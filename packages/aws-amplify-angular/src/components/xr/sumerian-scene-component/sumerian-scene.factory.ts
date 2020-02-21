@@ -14,12 +14,12 @@ import {
 	Component,
 	Input,
 	OnInit,
-	ViewChild,
 	ComponentFactoryResolver,
 	OnDestroy,
+	ViewContainerRef,
+	Inject,
 } from '@angular/core';
 
-import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount } from '../../component.mount';
 import { SumerianSceneClass } from './sumerian-scene.class';
 import { SumerianSceneComponentCore } from './sumerian-scene.component.core';
@@ -34,19 +34,28 @@ import { SumerianSceneComponentIonic } from './sumerian-scene.component.ionic';
 export class SumerianSceneComponent implements OnInit, OnDestroy {
 	@Input() framework: string;
 	@Input() sceneName: string;
-	@ViewChild(DynamicComponentDirective)
-	componentHost: DynamicComponentDirective;
+	viewContainerRef: ViewContainerRef;
 
-	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+	constructor(
+		private componentFactoryResolver: ComponentFactoryResolver,
+		@Inject('dynamic-component-service') shared
+	) {
+		shared.onContainerCreated(container => {
+			this.viewContainerRef = container;
+			this.loadComponent();
+		});
 
-	ngOnInit() {
-		this.loadComponent();
+		shared.onContainerDestroyed(() => {
+			this.viewContainerRef = undefined;
+		});
 	}
+
+	ngOnInit() {}
 
 	ngOnDestroy() {}
 
 	loadComponent() {
-		let sumerianScene =
+		const sumerianScene =
 			this.framework && this.framework.toLowerCase() === 'ionic'
 				? new ComponentMount(SumerianSceneComponentIonic, {
 						sceneName: this.sceneName,
@@ -55,14 +64,15 @@ export class SumerianSceneComponent implements OnInit, OnDestroy {
 						sceneName: this.sceneName,
 				  });
 
-		let componentFactory = this.componentFactoryResolver.resolveComponentFactory(
+		const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
 			sumerianScene.component
 		);
 
-		let viewContainerRef = this.componentHost.viewContainerRef;
-		viewContainerRef.clear();
+		this.viewContainerRef.clear();
 
-		let componentRef = viewContainerRef.createComponent(componentFactory);
+		const componentRef = this.viewContainerRef.createComponent(
+			componentFactory
+		);
 		(<SumerianSceneClass>componentRef.instance).data = sumerianScene.data;
 	}
 }

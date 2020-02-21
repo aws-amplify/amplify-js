@@ -16,13 +16,13 @@ import {
 	Component,
 	Input,
 	OnInit,
-	ViewChild,
 	ComponentFactoryResolver,
 	OnDestroy,
 	Output,
 	EventEmitter,
+	ViewContainerRef,
+	Inject,
 } from '@angular/core';
-import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount } from '../../component.mount';
 import { S3AlbumClass } from './s3-album.class';
 import { S3AlbumComponentIonic } from './s3-album.component.ionic';
@@ -42,14 +42,23 @@ export class S3AlbumComponent implements OnInit, OnDestroy {
 	@Input() options: any;
 	@Output()
 	selected: EventEmitter<string> = new EventEmitter<string>();
-	@ViewChild(DynamicComponentDirective)
-	componentHost: DynamicComponentDirective;
+	viewContainerRef: ViewContainerRef;
 
-	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+	constructor(
+		private componentFactoryResolver: ComponentFactoryResolver,
+		@Inject('dynamic-component-service') shared
+	) {
+		shared.onContainerCreated(container => {
+			this.viewContainerRef = container;
+			this.loadComponent();
+		});
 
-	ngOnInit() {
-		this.loadComponent();
+		shared.onContainerDestroyed(() => {
+			this.viewContainerRef = undefined;
+		});
 	}
+
+	ngOnInit() {}
 
 	ngOnDestroy() {}
 
@@ -69,10 +78,11 @@ export class S3AlbumComponent implements OnInit, OnDestroy {
 			albumComponent.component
 		);
 
-		const viewContainerRef = this.componentHost.viewContainerRef;
-		viewContainerRef.clear();
+		this.viewContainerRef.clear();
 
-		const componentRef = viewContainerRef.createComponent(componentFactory);
+		const componentRef = this.viewContainerRef.createComponent(
+			componentFactory
+		);
 		(<S3AlbumClass>componentRef.instance).data = albumComponent.data;
 
 		componentRef.instance.selected.subscribe(e => {

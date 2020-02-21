@@ -47,6 +47,7 @@ import { FormComponent } from './components/common/form.component';
 import { SumerianSceneComponent } from './components/xr/sumerian-scene-component/sumerian-scene.factory';
 import { SumerianSceneComponentCore } from './components/xr/sumerian-scene-component/sumerian-scene.component.core';
 import { SumerianSceneLoadingComponentCore } from './components/xr/sumerian-scene-component/sumerian-scene-loading.component.core';
+import { DynamicComponentService } from './components/dynamic.component.service';
 // tslint:enable:max-line-length
 
 const components = [
@@ -86,7 +87,12 @@ const components = [
 	imports: [CommonModule, FormsModule],
 	declarations: [DynamicComponentDirective, ...components],
 	entryComponents: [...components],
-	providers: [],
+	providers: [
+		{
+			provide: 'dynamic-component-service',
+			useValue: DynamicComponentService,
+		},
+	],
 	exports: [...components],
 })
 export class AmplifyAngularModule {}

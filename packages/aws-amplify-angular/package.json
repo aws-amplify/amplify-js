@@ -3,6 +3,7 @@
   "version": "4.1.6",
   "description": "AWS Amplify Angular Components",
   "main": "bundles/aws-amplify-angular.umd.js",
+  "module_ivy_ngcc": "__ivy_ngcc__/dist/index.js",
   "module": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
@@ -16,7 +17,8 @@
     "build:esm:watch": "ngc --watch",
     "build:cjs:watch": "echo \"CommonJS modules are not exported in angular. Use target build:esm:watch\"",
     "format": "echo \"Not implemented\"",
-    "declarations": "ngc --p ./declarations/"
+    "declarations": "ngc --p ./declarations/",
+    "prepublishOnly": "node --eval \"console.error('ERROR: Trying to publish a package that has been compiled by NGCC. This is not allowed.\\nPlease delete and rebuild the package, without compiling with NGCC, before attempting to publish.\\nNote that NGCC may have been run by importing this package into another project that is being built with Ivy enabled.\\n')\" && exit 1"
   },
   "jest": {
     "transformIgnorePatterns": [
@@ -74,5 +76,9 @@
   },
   "peerDependencies": {
     "aws-amplify": "^2.0.0"
+  },
+  "__processed_by_ivy_ngcc__": {
+    "module": "9.0.0-rc.1+990.sha-b93c537",
+    "typings": "9.0.0-rc.1+990.sha-b93c537"
   }
 }

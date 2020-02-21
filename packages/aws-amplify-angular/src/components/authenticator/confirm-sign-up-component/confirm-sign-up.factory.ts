@@ -17,11 +17,11 @@ import {
 	Component,
 	Input,
 	OnInit,
-	ViewChild,
 	ComponentFactoryResolver,
 	OnDestroy,
+	ViewContainerRef,
+	Inject,
 } from '@angular/core';
-import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
 import { ComponentMount } from '../../component.mount';
 import { ConfirmSignUpClass } from './confirm-sign-up.class';
 import { ConfirmSignUpComponentIonic } from './confirm-sign-up.component.ionic';
@@ -41,14 +41,23 @@ export class ConfirmSignUpComponent implements OnInit, OnDestroy {
 	@Input() authState: AuthState;
 	@Input() usernameAttributes: string = 'username';
 	@Input() hide: string[] = [];
-	@ViewChild(DynamicComponentDirective)
-	componentHost: DynamicComponentDirective;
+	viewContainerRef: ViewContainerRef;
 
-	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+	constructor(
+		private componentFactoryResolver: ComponentFactoryResolver,
+		@Inject('dynamic-component-service') shared
+	) {
+		shared.onContainerCreated(container => {
+			this.viewContainerRef = container;
+			this.loadComponent();
+		});
 
-	ngOnInit() {
-		this.loadComponent();
+		shared.onContainerDestroyed(() => {
+			this.viewContainerRef = undefined;
+		});
 	}
+
+	ngOnInit() {}
 
 	ngOnDestroy() {}
 
@@ -70,10 +79,11 @@ export class ConfirmSignUpComponent implements OnInit, OnDestroy {
 			authComponent.component
 		);
 
-		const viewContainerRef = this.componentHost.viewContainerRef;
-		viewContainerRef.clear();
+		this.viewContainerRef.clear();
 
-		const componentRef = viewContainerRef.createComponent(componentFactory);
+		const componentRef = this.viewContainerRef.createComponent(
+			componentFactory
+		);
 		(<ConfirmSignUpClass>componentRef.instance).data = authComponent.data;
 	}
 }
