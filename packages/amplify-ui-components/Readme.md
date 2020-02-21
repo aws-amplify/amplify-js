@@ -187,7 +187,31 @@ _index.html_
 
 - [amplify-totp-setup](src/components/amplify-totp-setup/readme.md)
 
+- [amplify-greetings](src/components/amplify-greetings/readme.md)
+
 ## Customization
+
+Amplify UI Components use [slots](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot) to allow for component customization. Component customization and slot usage is exemplified below.
+
+### Amplify Authenticator
+
+**Slots**
+
+> These slots can be overridden with the [components listed above](#components) to preserve the authenticator state flow.
+
+| Name                     | Description                                                                                                            |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `"sign-in"`              | Content placed inside of the sign in workflow for when a user wants to sign into their account                         |
+| `"confirm-sign-in"`      | Content placed inside of the confirm sign in workflow for when a user needs to confirm the account they signed in with |
+| `"sign-up"`              | Content placed inside of the sign up workflow for when a user wants to register a new account                          |
+| `"confirm-sign-up"`      | Content placed inside of the confirm sign up workflow for when a user needs to confirm the account they signed up with |
+| `"forgot-password"`      | Content placed inside of the forgot password workflow for when a user wants to reset their password                    |
+| `"require-new-password"` | Content placed inside of the require new password workflow for when a user is required to update their password        |
+| `"verify-contact"`       | Content placed inside of the verify-contact workflow for when a user must verify their contact information             |
+| `"totp-setup"`           | Content placed inside of the totp-setup workflow for when a user opts to use TOTP MFA                                  |
+| `"greetings"`            | Content placed inside of the greetings navigation for when a user is signed in                                         |
+
+**Framworks**
 
 - [React](#react-1)
 - [Angular](#angular-1)
