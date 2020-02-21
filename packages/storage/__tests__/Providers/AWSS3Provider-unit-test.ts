@@ -166,12 +166,10 @@ describe('StorageProvider test', () => {
 			).toBe('url');
 			expect(spyon.mock.calls[0][0].query).toEqual({
 				'response-cache-control': 'no-cache',
-				'response-content-disposition':
-					'attachment%3B%20filename%3D%22filename.jpg%22',
+				'response-content-disposition': 'attachment; filename="filename.jpg"',
 				'response-content-encoding': 'identity',
 				'response-content-language': 'en-US',
-				'response-content-type':
-					'multipart%2Fform-data%3B%20boundary%3Dsomething',
+				'response-content-type': 'multipart/form-data; boundary=something',
 				'x-id': 'GetObject',
 			});
 			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
