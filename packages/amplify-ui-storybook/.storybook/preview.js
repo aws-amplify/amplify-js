@@ -1,4 +1,4 @@
-import { components } from '@aws-amplify/ui-components/docs.json';
+import { components } from '@aws-amplify/ui-components/dist/docs.json';
 import { addParameters } from '@storybook/react';
 import { extractProps } from '@storybook/addon-docs/dist/frameworks/react/extractProps';
 
