@@ -31,14 +31,17 @@ yarn add aws-amplify@ui-preview @aws-amplify/ui-react@ui-preview
 ```js
 import React from 'react';
 import Amplify from 'aws-amplify';
-import { AmplifyAuthenticator } from '@aws-amplify/ui-react';
+import { AmplifyAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
 import awsconfig from './aws-exports';
 
 Amplify.configure(awsconfig);
 
 const App = () => {
   <AmplifyAuthenticator>
-    <div>My App</div>
+    <div>
+      My App
+      <AmplifySignOut />
+    </div>
   </AmplifyAuthenticator>;
 };
 ```
@@ -79,7 +82,10 @@ _app.component.html_
 
 ```html
 <amplify-authenticator>
-  <div>My App</div>
+  <div>
+    My App
+    <amplify-sign-out></amplify-sign-out>
+  </div>
 </amplify-authenticator>
 ```
 
@@ -113,7 +119,10 @@ _App.vue_
 ```html
 <template>
   <amplify-authenticator>
-    <div>My App</div>
+    <div>
+      My App
+      <amplify-sign-out></amplify-sign-out>
+    </div>
   </amplify-authenticator>
 </template>
 ```
@@ -145,7 +154,10 @@ _index.html_
 <html lang="en">
   <body>
     <amplify-authenticator>
-      <div>My App</div>
+      <div>
+        My App
+        <amplify-sign-out></amplify-sign-out>
+      </div>
     </amplify-authenticator>
 
     <script src="app.js"></script>
@@ -192,7 +204,10 @@ const App = () => {
     <AmplifySignIn headerText="My Custom Sign In Header" slot="sign-in" />
     <AmplifySignUp headerText="My Custom Sign Up Header" slot="sign-up" />
 
-    <div>My App</div>
+    <div>
+      My App
+      <AmplifySignOut />
+    </div>
   </AmplifyAuthenticator>;
 };
 ```
@@ -204,7 +219,10 @@ const App = () => {
   <amplify-sign-in header-text="My Custom Sign In Header" slot="sign-in" />
   <amplify-sign-up header-text="My Custom Sign In Header" slot="sign-up" />
 
-  <div>My App<div>
+  <div>
+    My App
+    <amplify-sign-out></amplify-sign-out>
+  </div>
 </amplify-authenticator>
 ```
 
@@ -215,7 +233,10 @@ const App = () => {
   <amplify-sign-in header-text="My Custom Sign In Header" slot="sign-in" />
   <amplify-sign-up header-text="My Custom Sign In Header" slot="sign-up" />
 
-  <div>My App<div>
+  <div>
+    My App
+    <amplify-sign-out></amplify-sign-out>
+  </div>
 </amplify-authenticator>
 ```
 
@@ -226,7 +247,10 @@ const App = () => {
   <amplify-sign-in header-text="My Custom Sign In Header" slot="sign-in" />
   <amplify-sign-up header-text="My Custom Sign In Header" slot="sign-up" />
 
-  <div>My App<div>
+  <div>
+    My App
+    <amplify-sign-out></amplify-sign-out>
+  </div>
 </amplify-authenticator>
 ```
 
@@ -260,7 +284,10 @@ const App = () => (
 
 + <AmplifyAuthenticator>
 - <Authenticator>
-    <div>My App</div>
+    <div>
+      My App
++     <AmplifySignOut />
+    </div>
 + </AmplifyAuthenticator>;
 - </Authenticator>
 );
@@ -301,14 +328,6 @@ Amplify.configure(awsconfig);
 export class AppModule {}
 ```
 
-_app.component.html_
-
-```diff
-<amplify-authenticator>
-+  <div>My App</div>
-</amplify-authenticator>
-```
-
 #### Vue
 
 ##### Installation
@@ -335,16 +354,6 @@ Amplify.configure(awsconfig);
 new Vue({
   render: h => h(App),
 }).$mount('#app');
-```
-
-_App.vue_
-
-```diff
-<template>
-  <amplify-authenticator>
-+    <div>My App</div>
-  </amplify-authenticator>
-</template>
 ```
 
 ---

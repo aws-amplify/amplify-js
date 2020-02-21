@@ -35,4 +35,4 @@ const DECLARATIONS = [
 	imports: [],
 	providers: [],
 })
-export class AmplifyAngularModule { }
+export class AmplifyUIAngularModule { }
