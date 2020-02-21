@@ -11,7 +11,7 @@ export class AmplifyStrike {
 
   render() {
     return (
-      <Host class="strike">
+      <Host>
         <span class="strike-content">
           <slot />
         </span>
