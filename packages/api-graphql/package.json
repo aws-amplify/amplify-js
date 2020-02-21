@@ -2,11 +2,11 @@
   "name": "@aws-amplify/api-graphql",
   "version": "1.0.1",
   "description": "Api-graphql category of aws-amplify",
-  "main": "./index.js",
+  "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
-    "./index": "./lib-esm/index.js"
+    "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": false,
   "publishConfig": {

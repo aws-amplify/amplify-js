@@ -65,6 +65,18 @@ export class AxiosHttpHandler implements HttpHandler {
 		}
 		const raceOfPromises = [
 			axios(axiosRequest).then(response => {
+				// Return the response with buffered body
+				if (this.httpOptions.bufferBody) {
+					return {
+						response: new HttpResponse({
+							headers: response.headers,
+							statusCode: response.status,
+							body: new Blob([response.data]),
+						}),
+					};
+				}
+				// Return the response with streaming body
+
 				return {
 					response: new HttpResponse({
 						headers: response.headers,
