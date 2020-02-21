@@ -48,13 +48,5 @@ injectGlobal`
     --amplify-white: #ffffff;
     
     --amplify-red: #dd3f5b;
-
-    /* Breakpoints */
-    --breakpointSm: 320px;
-    --breakpointMd: 672px;
-    --breakpointLg: 1056px;
-    --breakpointXl: 1321px;
-    --breakpointMax: 1584px;
-
   }
 `;
