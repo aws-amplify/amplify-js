@@ -10,24 +10,15 @@ Object {
   "amplify-ui-components/p-1826e5f0.js": "8 KB",
   "amplify-ui-components/p-2e0e3795.js": "3 KB",
   "amplify-ui-components/p-3b66a627.js": "18 KB",
-<<<<<<< HEAD
   "amplify-ui-components/p-424b0317.system.js": "6 KB",
   "amplify-ui-components/p-4fc7389f.system.js": "402 Bytes",
   "amplify-ui-components/p-50ea2036.system.js": "76 Bytes",
   "amplify-ui-components/p-60a061fe.js": "264 Bytes",
   "amplify-ui-components/p-6cbc1a95.js": "14 KB",
-=======
-  "amplify-ui-components/p-4fc7389f.system.js": "402 Bytes",
-  "amplify-ui-components/p-50ea2036.system.js": "76 Bytes",
-  "amplify-ui-components/p-60a061fe.js": "264 Bytes",
-  "amplify-ui-components/p-638fe7c9.system.js": "40 KB",
-  "amplify-ui-components/p-6etwn3h0.system.entry.js": "2 KB",
->>>>>>> upstream/ui-components/master
   "amplify-ui-components/p-75f321a4.js": "5 KB",
   "amplify-ui-components/p-7f0fe06d.system.js": "1 KB",
   "amplify-ui-components/p-7f10eb01.system.js": "19 KB",
   "amplify-ui-components/p-a0bea9e2.system.js": "6 KB",
-<<<<<<< HEAD
   "amplify-ui-components/p-a59d8e58.system.js": "22 KB",
   "amplify-ui-components/p-atklmo5v.system.entry.js": "3 KB",
   "amplify-ui-components/p-cd233c4c.system.js": "3 KB",
@@ -35,28 +26,13 @@ Object {
   "amplify-ui-components/p-f0qxbfw8.system.entry.js": "1 KB",
   "amplify-ui-components/p-fypmtpou.entry.js": "938 Bytes",
   "amplify-ui-components/p-hrezzpix.entry.js": "673 Bytes",
+  "amplify-ui-components/p-jkapkrpx.system.entry.js": "126 KB",
   "amplify-ui-components/p-klbmsvg3.entry.js": "982 Bytes",
   "amplify-ui-components/p-kopp9tsp.system.entry.js": "882 Bytes",
+  "amplify-ui-components/p-pbvxyryq.entry.js": "108 KB",
   "amplify-ui-components/p-ptxonesl.entry.js": "1 KB",
   "amplify-ui-components/p-ttlkcsfu.system.entry.js": "2 KB",
-  "amplify-ui-components/p-wzcqfceu.system.entry.js": "125 KB",
-  "amplify-ui-components/p-y4wf5jta.entry.js": "107 KB",
-=======
-  "amplify-ui-components/p-a57d3ef3.js": "29 KB",
-  "amplify-ui-components/p-bkqs8nfh.entry.js": "906 Bytes",
-  "amplify-ui-components/p-cd233c4c.system.js": "3 KB",
-  "amplify-ui-components/p-dbe40eff.system.js": "9 KB",
-  "amplify-ui-components/p-e32e1361.system.js": "7 KB",
-  "amplify-ui-components/p-ip6ftjv2.entry.js": "638 Bytes",
-  "amplify-ui-components/p-izr7awbz.entry.js": "993 Bytes",
-  "amplify-ui-components/p-j0mzkyyb.system.entry.js": "3 KB",
-  "amplify-ui-components/p-ljddr4cb.system.entry.js": "1 KB",
-  "amplify-ui-components/p-myc0rwjt.entry.js": "105 KB",
-  "amplify-ui-components/p-t7c7kmji.system.entry.js": "850 Bytes",
-  "amplify-ui-components/p-tnxkqjpc.system.entry.js": "123 KB",
-  "amplify-ui-components/p-xgtu7vej.entry.js": "1 KB",
->>>>>>> upstream/ui-components/master
-  "cjs/amplify-amazon-button_44.cjs.entry.js": "219 KB",
+  "cjs/amplify-amazon-button_44.cjs.entry.js": "220 KB",
   "cjs/amplify-checkbox.cjs.entry.js": "1 KB",
   "cjs/amplify-federated-sign-in.cjs.entry.js": "2 KB",
   "cjs/amplify-greetings.cjs.entry.js": "2 KB",
@@ -64,11 +40,7 @@ Object {
   "cjs/amplify-ui-components.cjs.js": "6 KB",
   "cjs/auth-types-276cc849.js": "2 KB",
   "cjs/constants-e9c4f3a9.js": "9 KB",
-<<<<<<< HEAD
   "cjs/core-079da8ad.js": "72 KB",
-=======
-  "cjs/core-9303da09.js": "107 KB",
->>>>>>> upstream/ui-components/master
   "cjs/css-shim-8775d9ad-6446d33f.js": "21 KB",
   "cjs/dom-76cc7c7d-769a0dda.js": "19 KB",
   "cjs/helpers-bd0d9b29.js": "780 Bytes",
@@ -106,13 +78,8 @@ Object {
   "collection/components/amplify-examples/rock-paper-scissor/rock-paper-scissor.css": "69 Bytes",
   "collection/components/amplify-examples/rock-paper-scissor/rock-paper-scissor.js": "2 KB",
   "collection/components/amplify-examples/scene-example.js": "191 Bytes",
-<<<<<<< HEAD
   "collection/components/amplify-facebook-button/amplify-facebook-button.js": "5 KB",
   "collection/components/amplify-federated-buttons/amplify-federated-buttons.js": "5 KB",
-=======
-  "collection/components/amplify-facebook-button/amplify-facebook-button.js": "6 KB",
-  "collection/components/amplify-federated-buttons/amplify-federated-buttons.js": "6 KB",
->>>>>>> upstream/ui-components/master
   "collection/components/amplify-federated-sign-in/amplify-federated-sign-in.js": "4 KB",
   "collection/components/amplify-forgot-password/amplify-forgot-password-interface.js": "0 Bytes",
   "collection/components/amplify-forgot-password/amplify-forgot-password.js": "8 KB",
@@ -179,7 +146,7 @@ Object {
   "collection/components/amplify-username-field/amplify-username-field.js": "5 KB",
   "collection/components/amplify-verify-contact/amplify-verify-contact.js": "5 KB",
   "collection/global/theme.js": "2 KB",
-  "esm-es5/amplify-amazon-button_44.entry.js": "262 KB",
+  "esm-es5/amplify-amazon-button_44.entry.js": "263 KB",
   "esm-es5/amplify-checkbox.entry.js": "1 KB",
   "esm-es5/amplify-federated-sign-in.entry.js": "2 KB",
   "esm-es5/amplify-greetings.entry.js": "2 KB",
@@ -187,11 +154,7 @@ Object {
   "esm-es5/amplify-ui-components.mjs": "7 KB",
   "esm-es5/auth-types-32fed357.js": "2 KB",
   "esm-es5/constants-81918824.js": "7 KB",
-<<<<<<< HEAD
   "esm-es5/core-af665c64.js": "77 KB",
-=======
-  "esm-es5/core-f897aca7.js": "122 KB",
->>>>>>> upstream/ui-components/master
   "esm-es5/css-shim-8775d9ad-556f0cc2.js": "21 KB",
   "esm-es5/dom-76cc7c7d-0a082895.js": "27 KB",
   "esm-es5/helpers-350fca68.js": "715 Bytes",
@@ -206,11 +169,7 @@ Object {
   "esm/amplify-ui-components.mjs": "6 KB",
   "esm/auth-types-32fed357.js": "2 KB",
   "esm/constants-81918824.js": "7 KB",
-<<<<<<< HEAD
   "esm/core-af665c64.js": "71 KB",
-=======
-  "esm/core-f897aca7.js": "106 KB",
->>>>>>> upstream/ui-components/master
   "esm/css-shim-8775d9ad-556f0cc2.js": "21 KB",
   "esm/dom-76cc7c7d-0a082895.js": "19 KB",
   "esm/helpers-350fca68.js": "714 Bytes",
@@ -244,17 +203,10 @@ Object {
   "types/components/amplify-auth-fields/amplify-auth-fields-interface.d.ts": "416 Bytes",
   "types/components/amplify-auth-fields/amplify-auth-fields.d.ts": "916 Bytes",
   "types/components/amplify-auth-fields/component-field-mapping.d.ts": "386 Bytes",
-<<<<<<< HEAD
   "types/components/amplify-auth0-button/amplify-auth0-button.d.ts": "400 Bytes",
-  "types/components/amplify-authenticator/amplify-authenticator.d.ts": "758 Bytes",
+  "types/components/amplify-authenticator/amplify-authenticator.d.ts": "784 Bytes",
   "types/components/amplify-button/amplify-button.d.ts": "427 Bytes",
   "types/components/amplify-checkbox/amplify-checkbox.d.ts": "455 Bytes",
-=======
-  "types/components/amplify-auth0-button/amplify-auth0-button.d.ts": "475 Bytes",
-  "types/components/amplify-authenticator/amplify-authenticator.d.ts": "784 Bytes",
-  "types/components/amplify-button/amplify-button.d.ts": "502 Bytes",
-  "types/components/amplify-checkbox/amplify-checkbox.d.ts": "531 Bytes",
->>>>>>> upstream/ui-components/master
   "types/components/amplify-code-field/amplify-code-field.d.ts": "1012 Bytes",
   "types/components/amplify-confirm-sign-in/amplify-confirm-sign-in.d.ts": "2 KB",
   "types/components/amplify-confirm-sign-up/amplify-confirm-sign-up.d.ts": "2 KB",

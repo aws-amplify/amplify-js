@@ -2,11 +2,9 @@
 
 exports[`amplify-strike stories withText 1`] = `
 <amplify-strike>
-  <mock:shadow-root>
-    <span class="strike-content">
-      <slot></slot>
-    </span>
-  </mock:shadow-root>
-  or
+  <!---->
+  <span class="strike-content">
+    or
+  </span>
 </amplify-strike>
 `;
