@@ -78,7 +78,7 @@ export namespace Components {
     /**
     * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
     */
-    'initialAuthState': AuthState;
+    'initialAuthState': AuthState.SignIn | AuthState.SignUp;
   }
   interface AmplifyButton {
     /**
@@ -1319,7 +1319,7 @@ declare namespace LocalJSX {
     /**
     * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
     */
-    'initialAuthState'?: AuthState;
+    'initialAuthState'?: AuthState.SignIn | AuthState.SignUp;
   }
   interface AmplifyButton {
     /**

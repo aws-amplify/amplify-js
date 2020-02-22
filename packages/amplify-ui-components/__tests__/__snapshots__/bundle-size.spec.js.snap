@@ -203,7 +203,7 @@ Object {
   "types/components/amplify-auth-fields/amplify-auth-fields.d.ts": "916 Bytes",
   "types/components/amplify-auth-fields/component-field-mapping.d.ts": "386 Bytes",
   "types/components/amplify-auth0-button/amplify-auth0-button.d.ts": "475 Bytes",
-  "types/components/amplify-authenticator/amplify-authenticator.d.ts": "758 Bytes",
+  "types/components/amplify-authenticator/amplify-authenticator.d.ts": "784 Bytes",
   "types/components/amplify-button/amplify-button.d.ts": "502 Bytes",
   "types/components/amplify-checkbox/amplify-checkbox.d.ts": "531 Bytes",
   "types/components/amplify-code-field/amplify-code-field.d.ts": "1012 Bytes",
