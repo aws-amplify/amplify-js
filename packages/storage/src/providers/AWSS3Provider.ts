@@ -29,6 +29,7 @@ import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
+import { httpHandlerOptions } from './httpHandlerOptions';
 import * as events from 'events';
 
 const logger = new Logger('AWSS3Provider');
@@ -509,7 +510,7 @@ export class AWSS3Provider implements StorageProvider {
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler({}, emitter),
+			requestHandler: new AxiosHttpHandler(httpHandlerOptions, emitter),
 		});
 		return s3client;
 	}

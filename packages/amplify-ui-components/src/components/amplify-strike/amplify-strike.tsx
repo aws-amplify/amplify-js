@@ -3,7 +3,7 @@ import { Component, Host, h } from '@stencil/core';
 @Component({
   tag: 'amplify-strike',
   styleUrl: 'amplify-strike.scss',
-  shadow: true,
+  scoped: true,
 })
 export class AmplifyStrike {
   render() {

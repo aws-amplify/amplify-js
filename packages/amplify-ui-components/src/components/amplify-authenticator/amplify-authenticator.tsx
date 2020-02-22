@@ -19,7 +19,7 @@ const logger = new Logger('Authenticator');
 })
 export class AmplifyAuthenticator {
   /** Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp */
-  @Prop() initialAuthState: AuthState = AuthState.SignIn;
+  @Prop() initialAuthState: AuthState.SignIn | AuthState.SignUp = AuthState.SignIn;
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
 
