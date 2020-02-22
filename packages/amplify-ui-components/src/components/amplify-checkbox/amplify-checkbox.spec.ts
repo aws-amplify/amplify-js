@@ -27,10 +27,10 @@ describe('amplify-checkbox spec:', () => {
       expect(page.root).toMatchSnapshot();
     });
 
-    it('should render with only a class of `amplify-ui--checkbox` when style override is true', async () => {
+    it('should render with only a class of `amplify-ui--checkbox`', async () => {
       const page = await newSpecPage({
         components: [AmplifyCheckbox],
-        html: `<amplify-checkbox override-style='true'></amplify-checkbox>`,
+        html: `<amplify-checkbox></amplify-checkbox>`,
       });
 
       expect(page.root).toMatchSnapshot();

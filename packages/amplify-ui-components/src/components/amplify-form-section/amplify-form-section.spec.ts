@@ -32,10 +32,10 @@ describe('amplify-form-section spec:', () => {
       expect(page.root).toMatchSnapshot();
     });
 
-    it('should render without Emotion CSS classes when style override is true', async () => {
+    it('should render without Emotion CSS classes', async () => {
       const page = await newSpecPage({
         components: [AmplifyFormSection],
-        html: `<amplify-form-section override-style='true'></amplify-form-section>`,
+        html: `<amplify-form-section></amplify-form-section>`,
       });
 
       expect(page.root).toMatchSnapshot();

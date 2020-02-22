@@ -10,8 +10,8 @@ exports[`amplify-label spec: Render logic -> should render a label by default 1`
 </amplify-label>
 `;
 
-exports[`amplify-label spec: Render logic -> should render only class \`amplify-ui--label\` when override style is set to true 1`] = `
-<amplify-label override-style="true">
+exports[`amplify-label spec: Render logic -> should render only class \`amplify-ui--label\` 1`] = `
+<amplify-label>
   <mock:shadow-root>
     <label class="label">
       <slot></slot>

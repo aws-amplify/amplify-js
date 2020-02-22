@@ -20,14 +20,3 @@ exports[`amplify-hint spec: Render logic -> renders with no hint text 1`] = `
   </mock:shadow-root>
 </amplify-hint>
 `;
-
-exports[`amplify-hint spec: Render logic -> renders without Emotion CSS class when overrideStyle is true 1`] = `
-<amplify-hint override-style="true">
-  <mock:shadow-root>
-    <div class="hint">
-      <slot></slot>
-    </div>
-  </mock:shadow-root>
-  FOO
-</amplify-hint>
-`;

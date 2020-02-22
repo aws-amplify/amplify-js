@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop } from '@stencil/core';
+import { Component, Host, h } from '@stencil/core';
 
 @Component({
   tag: 'amplify-strike',

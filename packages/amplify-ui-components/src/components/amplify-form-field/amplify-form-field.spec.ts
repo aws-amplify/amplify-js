@@ -83,10 +83,10 @@ describe('amplify-form-field spec:', () => {
       expect(page.root).toMatchSnapshot();
     });
 
-    it('renders without Emotion CSS classes when style override is true', async () => {
+    it('renders without Emotion CSS classes', async () => {
       const page = await newSpecPage({
         components: [AmplifyFormField],
-        html: `<amplify-form-field label='label' description='description' field-id='id' override-style='true'></amplify-form-field>`,
+        html: `<amplify-form-field label='label' description='description' field-id='id'></amplify-form-field>`,
       });
 
       expect(page.root).toMatchSnapshot();

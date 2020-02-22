@@ -80,12 +80,12 @@ exports[`amplify-form-field spec: Render logic -> renders with an name, if it is
 </amplify-form-field>
 `;
 
-exports[`amplify-form-field spec: Render logic -> renders without Emotion CSS classes when style override is true 1`] = `
-<amplify-form-field description="description" field-id="id" label="label" override-style="true">
+exports[`amplify-form-field spec: Render logic -> renders without Emotion CSS classes 1`] = `
+<amplify-form-field description="description" field-id="id" label="label">
   <mock:shadow-root>
     <div class="form-field">
       <div class="form-field-label">
-        <amplify-label htmlfor="id" overridestyle="">
+        <amplify-label htmlfor="id">
           label
         </amplify-label>
       </div>
@@ -94,7 +94,7 @@ exports[`amplify-form-field spec: Render logic -> renders without Emotion CSS cl
       </div>
       <div>
         <slot name="input">
-          <amplify-input description="description" fieldid="id" overridestyle="" placeholder="" type="text"></amplify-input>
+          <amplify-input description="description" fieldid="id" placeholder="" type="text"></amplify-input>
         </slot>
       </div>
     </div>

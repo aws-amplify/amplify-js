@@ -10,8 +10,8 @@ exports[`amplify-link spec: Render logic -> should render a link by default 1`] 
 </amplify-link>
 `;
 
-exports[`amplify-link spec: Render logic -> should render only class \`amplify-ui--link\` when override style is set to true 1`] = `
-<amplify-link override-style="true">
+exports[`amplify-link spec: Render logic -> should render only class \`amplify-ui--link\` 1`] = `
+<amplify-link>
   <mock:shadow-root>
     <a class="link" role="navigation">
       <slot></slot>

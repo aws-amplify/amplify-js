@@ -11,5 +11,5 @@ formSectionStories.add('custom text', () => {
   const submitButtonText = knobs.formSectionSubmitKnob('Go');
   const headerText = knobs.formSectionHeaderKnob('Amplify');
 
-  return `<amplify-form-section submit-button-text="${submitButtonText}" header-text="${headerText}" override-style=${override}></amplify-form-section>`;
+  return `<amplify-form-section submit-button-text="${submitButtonText}" header-text="${headerText}"></amplify-form-section>`;
 });

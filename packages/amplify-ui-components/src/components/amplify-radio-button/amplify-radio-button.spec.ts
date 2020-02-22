@@ -27,10 +27,10 @@ describe('amplify-radio-button spec:', () => {
       expect(page.root).toMatchSnapshot();
     });
 
-    it('should render only class `amplify-ui--radio-button` when style override is set to true', async () => {
+    it('should render only class `amplify-ui--radio-button`', async () => {
       const page = await newSpecPage({
         components: [AmplifyRadioButton],
-        html: `<amplify-radio-button override-style="true"></amplify-radio-button>`,
+        html: `<amplify-radio-button></amplify-radio-button>`,
       });
 
       expect(page.root).toMatchSnapshot();

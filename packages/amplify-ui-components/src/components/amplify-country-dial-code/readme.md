@@ -5,12 +5,11 @@
 
 ## Properties
 
-| Property            | Attribute        | Description                                                           | Type                          | Default                    |
-| ------------------- | ---------------- | --------------------------------------------------------------------- | ----------------------------- | -------------------------- |
-| `fieldId`           | `field-id`       | The ID of the field.  Should match with its corresponding input's ID. | `string`                      | `COUNTRY_DIAL_CODE_SUFFIX` |
-| `handleInputChange` | --               | The callback, called when the input is modified by the user.          | `(inputEvent: Event) => void` | `undefined`                |
-| `options`           | --               | The options of the country dial code select input.                    | `CountryCodeDialOptions`      | `countryDialCodes`         |
-| `overrideStyle`     | `override-style` | (Optional) Overrides default styling                                  | `boolean`                     | `false`                    |
+| Property            | Attribute  | Description                                                           | Type                          | Default                    |
+| ------------------- | ---------- | --------------------------------------------------------------------- | ----------------------------- | -------------------------- |
+| `fieldId`           | `field-id` | The ID of the field.  Should match with its corresponding input's ID. | `string`                      | `COUNTRY_DIAL_CODE_SUFFIX` |
+| `handleInputChange` | --         | The callback, called when the input is modified by the user.          | `(inputEvent: Event) => void` | `undefined`                |
+| `options`           | --         | The options of the country dial code select input.                    | `CountryCodeDialOptions`      | `countryDialCodes`         |
 
 
 ## Dependencies

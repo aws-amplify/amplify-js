@@ -23,11 +23,3 @@ exports[`amplify-input spec: Render logic -> renders with complex prop: inputPro
   </mock:shadow-root>
 </amplify-input>
 `;
-
-exports[`amplify-input spec: Render logic -> renders without Emotion CSS class when overrideStyle is true 1`] = `
-<amplify-input override-style="true">
-  <mock:shadow-root>
-    <input class="input" placeholder="" type="text">
-  </mock:shadow-root>
-</amplify-input>
-`;

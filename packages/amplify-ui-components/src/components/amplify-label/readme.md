@@ -7,10 +7,9 @@
 
 ## Properties
 
-| Property        | Attribute        | Description | Type      | Default     |
-| --------------- | ---------------- | ----------- | --------- | ----------- |
-| `htmlFor`       | `html-for`       |             | `string`  | `undefined` |
-| `overrideStyle` | `override-style` |             | `boolean` | `false`     |
+| Property  | Attribute  | Description | Type     | Default     |
+| --------- | ---------- | ----------- | -------- | ----------- |
+| `htmlFor` | `html-for` |             | `string` | `undefined` |
 
 
 ## Dependencies

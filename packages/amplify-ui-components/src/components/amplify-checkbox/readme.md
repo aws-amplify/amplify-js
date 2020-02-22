@@ -7,15 +7,14 @@
 
 ## Properties
 
-| Property        | Attribute        | Description                                  | Type      | Default     |
-| --------------- | ---------------- | -------------------------------------------- | --------- | ----------- |
-| `checked`       | `checked`        | If `true`, the checkbox is selected.         | `boolean` | `false`     |
-| `disabled`      | `disabled`       | If `true`, the checkbox is disabled          | `boolean` | `false`     |
-| `fieldId`       | `field-id`       | Field ID used for the 'htmlFor' in the label | `string`  | `undefined` |
-| `label`         | `label`          | Label for the checkbox                       | `string`  | `undefined` |
-| `name`          | `name`           | Name of the checkbox                         | `string`  | `undefined` |
-| `overrideStyle` | `override-style` | (Optional) Overrides default styling         | `boolean` | `false`     |
-| `value`         | `value`          | Value of the checkbox                        | `string`  | `undefined` |
+| Property   | Attribute  | Description                                  | Type      | Default     |
+| ---------- | ---------- | -------------------------------------------- | --------- | ----------- |
+| `checked`  | `checked`  | If `true`, the checkbox is selected.         | `boolean` | `false`     |
+| `disabled` | `disabled` | If `true`, the checkbox is disabled          | `boolean` | `false`     |
+| `fieldId`  | `field-id` | Field ID used for the 'htmlFor' in the label | `string`  | `undefined` |
+| `label`    | `label`    | Label for the checkbox                       | `string`  | `undefined` |
+| `name`     | `name`     | Name of the checkbox                         | `string`  | `undefined` |
+| `value`    | `value`    | Value of the checkbox                        | `string`  | `undefined` |
 
 
 ## Dependencies

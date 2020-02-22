@@ -32,10 +32,10 @@ describe('amplify-tooltip spec:', () => {
       expect(page.root).toMatchSnapshot();
     });
 
-    it('should render without Emotion CSS classes when style override is true', async () => {
+    it('should render without Emotion CSS classes', async () => {
       const page = await newSpecPage({
         components: [AmplifyTooltip],
-        html: `<amplify-tooltip override-style='true'></amplify-tooltip>`,
+        html: `<amplify-tooltip></amplify-tooltip>`,
       });
 
       expect(page.root).toMatchSnapshot();

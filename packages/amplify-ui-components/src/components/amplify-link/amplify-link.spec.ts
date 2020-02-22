@@ -8,10 +8,6 @@ describe('amplify-link spec:', () => {
     beforeEach(() => {
       link = new AmplifyLink();
     });
-
-    it('should render false for style override prop by default', () => {
-      expect(link.role).toEqual('navigation');
-    });
   });
   describe('Render logic ->', () => {
     it('should render a link by default', async () => {
@@ -23,10 +19,10 @@ describe('amplify-link spec:', () => {
       expect(page.root).toMatchSnapshot();
     });
 
-    it('should render only class `amplify-ui--link` when override style is set to true', async () => {
+    it('should render only class `amplify-ui--link`', async () => {
       const page = await newSpecPage({
         components: [AmplifyLink],
-        html: `<amplify-link override-style="true"></amplify-link>`,
+        html: `<amplify-link></amplify-link>`,
       });
 
       expect(page.root).toMatchSnapshot();

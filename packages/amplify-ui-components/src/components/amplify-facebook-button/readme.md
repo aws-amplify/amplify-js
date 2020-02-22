@@ -5,11 +5,10 @@
 
 ## Properties
 
-| Property                | Attribute        | Description                                                                                                                    | Type                                                | Default                        |
-| ----------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------- | ------------------------------ |
-| `appId`                 | `app-id`         | App-specific client ID from Facebook                                                                                           | `string`                                            | `undefined`                    |
-| `handleAuthStateChange` | --               | Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent` |
-| `overrideStyle`         | `override-style` | (Optional) Override default styling                                                                                            | `boolean`                                           | `false`                        |
+| Property                | Attribute | Description                                                                                                                    | Type                                                | Default                        |
+| ----------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------- | ------------------------------ |
+| `appId`                 | `app-id`  | App-specific client ID from Facebook                                                                                           | `string`                                            | `undefined`                    |
+| `handleAuthStateChange` | --        | Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent` |
 
 
 ## Dependencies
