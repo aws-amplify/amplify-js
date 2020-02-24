@@ -5,6 +5,7 @@ import JS from './JS';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { ICredentials } from './types';
 import Amplify from './Amplify';
+import { DateUtils } from './Util';
 
 const logger = new Logger('Credentials');
 
@@ -201,6 +202,7 @@ export class Credentials {
 			},
 			{
 				region,
+				correctClockSkew: true,
 			}
 		);
 
@@ -228,6 +230,7 @@ export class Credentials {
 						},
 						{
 							region,
+							correctClockSkew: true,
 						}
 					);
 					return this._loadCredentials(newCredentials, 'guest', false, null);
@@ -284,6 +287,7 @@ export class Credentials {
 			},
 			{
 				region,
+				correctClockSkew: true,
 			}
 		);
 
@@ -308,6 +312,7 @@ export class Credentials {
 			},
 			{
 				region,
+				correctClockSkew: true,
 			}
 		);
 
@@ -331,6 +336,15 @@ export class Credentials {
 				}
 
 				logger.debug('Load credentials successfully', credentials);
+				if (
+					credentials['cognito'] &&
+					credentials['cognito']['config'] &&
+					credentials['cognito']['config']['systemClockOffset']
+				) {
+					DateUtils.setClockOffset(
+						credentials['cognito']['config']['systemClockOffset']
+					);
+				}
 				that._credentials = credentials;
 				that._credentials.authenticated = authenticated;
 				that._credentials_source = source;
@@ -413,6 +427,7 @@ export class Credentials {
 				},
 				{
 					region,
+					correctClockSkew: true,
 				}
 			);
 			credentials.clearCachedId();
