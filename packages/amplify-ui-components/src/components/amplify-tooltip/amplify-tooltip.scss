@@ -1,15 +1,22 @@
+:host {
+  --font-family: var(--amplify-font-family);
+  --background-color: var(--amplify-secondary-color);
+  --color: var(--amplify-secondary-contrast);
+  --border-color: var(--amplify-secondary-color);
+}
+
 .tooltip {
   display: inline;
   position: relative;
-  font-size: 12px;
-  font-family: var(--amplify-font-family);
+  font-size: var(--amplify-text-xxs);
+  font-family: var(--font-family);
   margin: 0 0 0 16px;
 
   :after {
-    background-color: var(--amplify-deep-squid-ink);
+    background-color: var(--background-color);
     border-radius: 2px;
     bottom: 46px;
-    color: var(--amplify-white);
+    color: var(--color);
     content: attr(data-text);
     text-decoration: none;
     padding: 10px;
@@ -27,7 +34,7 @@
 
   :before {
     border: solid;
-    border-color: var(--amplify-deep-squid-ink) transparent transparent transparent;
+    border-color: var(--border-color) transparent transparent transparent;
     border-width: 5px;
     bottom: 36px;
     content: '';
@@ -38,7 +45,7 @@
     -o-transform: translateX(-50%);
     transform: translateX(-50%);
     position: absolute;
-    font-size: 14px;
+    font-size: var(--amplify-text-sm);
     opacity: 0;
     transition: all 0.3s ease-in-out;
   }

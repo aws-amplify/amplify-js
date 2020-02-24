@@ -8,6 +8,5 @@ export interface AmplifySignInFormFooterProps {
   submitButtonText: string;
   noAccountText: string;
   createAccountText: string;
-  overrideStyle?: boolean;
   onAuthStateChange?: any;
 }

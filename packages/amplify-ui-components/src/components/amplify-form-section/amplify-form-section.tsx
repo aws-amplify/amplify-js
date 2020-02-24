@@ -11,8 +11,6 @@ export class AmplifyFormSection {
   @Prop() submitButtonText?: string = 'Submit';
   /** Used for form section header */
   @Prop() headerText: string;
-  /** (Optional) Overrides default styling */
-  @Prop() overrideStyle?: boolean = false;
   /** String prefix for the data-test attributes in this component primarily used for testing purposes */
   @Prop() testDataPrefix?: string = 'form-section';
   /** Loading state for the form */
@@ -23,7 +21,7 @@ export class AmplifyFormSection {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <amplify-section overrideStyle={this.overrideStyle}>
+        <amplify-section>
           <div>
             <slot name="amplify-form-section-header">
               <div class="form-section-header">

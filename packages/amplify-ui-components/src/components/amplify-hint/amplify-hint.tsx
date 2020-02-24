@@ -1,4 +1,4 @@
-import { Component, h, Prop } from '@stencil/core';
+import { Component, h } from '@stencil/core';
 
 @Component({
   tag: 'amplify-hint',
@@ -6,9 +6,6 @@ import { Component, h, Prop } from '@stencil/core';
   shadow: true,
 })
 export class AmplifyHint {
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
-
   render() {
     return (
       <div class="hint">

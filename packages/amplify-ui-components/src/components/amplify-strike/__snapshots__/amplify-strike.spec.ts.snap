@@ -1,16 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`amplify-strike stories withOverrideStyle 1`] = `
-<amplify-strike class="strike">
-  <!---->
-  <span class="strike-content">
-    Unstyled
-  </span>
-</amplify-strike>
-`;
-
 exports[`amplify-strike stories withText 1`] = `
-<amplify-strike class="strike">
+<amplify-strike>
   <!---->
   <span class="strike-content">
     or

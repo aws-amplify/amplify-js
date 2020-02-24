@@ -10,21 +10,12 @@ import { COUNTRY_DIAL_CODE_SUFFIX } from '../../common/constants';
 export class AmplifyCountryDialCode {
   /** The ID of the field.  Should match with its corresponding input's ID. */
   @Prop() fieldId: string = COUNTRY_DIAL_CODE_SUFFIX;
-  /** (Optional) Overrides default styling */
-  @Prop() overrideStyle: boolean = false;
   /** The options of the country dial code select input. */
   @Prop() options: CountryCodeDialOptions = countryDialCodes;
   /** The callback, called when the input is modified by the user. */
   @Prop() handleInputChange?: (inputEvent: Event) => void;
 
   render() {
-    return (
-      <amplify-select
-        fieldId={this.fieldId}
-        options={this.options}
-        overrideStyle={this.overrideStyle}
-        handleInputChange={this.handleInputChange}
-      />
-    );
+    return <amplify-select fieldId={this.fieldId} options={this.options} handleInputChange={this.handleInputChange} />;
   }
 }

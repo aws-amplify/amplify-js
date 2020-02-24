@@ -25,10 +25,6 @@ describe('amplify-confirm-sign-up spec:', () => {
     it('should render `submitButtonText` to `Confirm` by default', () => {
       expect(confirmSignUp.submitButtonText).toEqual(CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT);
     });
-
-    it('should render `overrideStyle` to false by default', () => {
-      expect(confirmSignUp.overrideStyle).toBe(false);
-    });
   });
   describe('Render logic ->', () => {
     it('should render a `confirm sign up` form by default', async () => {

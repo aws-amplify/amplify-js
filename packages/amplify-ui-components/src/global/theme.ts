@@ -10,44 +10,48 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { injectGlobal } from 'emotion';
 
-injectGlobal`
-   :root {
+let customStyles = document.createElement('style');
+customStyles.appendChild(
+  document.createTextNode(`
+  :root {
+    /* Typography */
+    --amplify-font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
+
+    --amplify-text-xxs: 0.75rem;
+    --amplify-text-xs: 0.81rem;
+    --amplify-text-sm: 0.875rem;
+    --amplify-text-md: 1rem;
+    --amplify-text-lg: 1.5rem;
+    --amplify-text-xl: 2rem;
+    --amplify-text-xxl: 2.5rem;
+
     /* Colors */
-    --amplify-amazon-orange: #ff9900;
-    --amplify-light-amazon-orange: #ffac31;
-    --amplify-dark-amazon-orange: #e88b01;
-    --amplify-squid-ink: #232f3e;
-    --amplify-light-squid-ink: #31465f;
-    --amplify-deep-squid-ink: #152939;
+    --amplify-primary-color: #ff9900;
+    --amplify-primary-contrast: var(--amplify-white);
+    --amplify-primary-tint: #ffac31;
+    --amplify-primary-shade: #e88b01;
+
+    --amplify-secondary-color: #152939;
+    --amplify-secondary-contrast: var(--amplify-white);
+    --amplify-secondary-tint: #31465f;
+    --amplify-secondary-shade: #1F2A37;
+
+    --amplify-tertiary-color: #5d8aff;
+    --amplify-tertiary-contrast: var(--amplify-white);
+    --amplify-tertiary-tint: #7da1ff;
+    --amplify-tertiary-shade: #537BE5;
+
+    /* Neutral */
     --amplify-grey: #828282;
     --amplify-light-grey: #c4c4c4;
-    --amplify-silver: #e1e4ea;
-    --amplify-dark-blue: #31465f;
-    --amplify-red: #dd3f5b;
     --amplify-white: #ffffff;
-    --amplify-light-blue: #00a1c9;
-    --amplify-yellow-warning: #f8d047;
-    --amplify-red-problem: #cc1454;
-    /* Theme */
-    /* All of the variables below can be used within any application that does an @import inside of their application */
-    --amplify-button-color: var(--amplify-white);
-    --amplify-button-background-color: var(--amplify-amazon-orange);
-    --amplify-button-background-color-danger: var(--amplify-color-danger);
-    --amplify-button-click: var(--amplify-dark-amazon-orange);
-    --amplify-section-background-color: var(--amplify-white);
-    --amplify-section-header-color: var(--amplify-deep-squid-ink);
-    --amplify-label-color: var(--amplify-deep-squid-ink);
-    --amplify-link-color: var(--amplify-amazon-orange);
-    --amplify-hint-color: var(--amplify-grey);
-    --amplify-form-color: var(--amplify-white);
-    --amplify-input-color: var(--amplify-deep-squid-ink);
-    --amplify-input-background-color: var(--amplify-white);
-    --amplify-input-border-color: var(--amplify-light-grey);
-    --amplify-primary-font-size: 1em;
-    --amplify-secondary-font-size: 0.875em;
-    --amplify-third-font-size: 0.813em;
-    --amplify-font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
+
+    --amplify-red: #dd3f5b;
   }
-`; 
+`),
+);
+
+let parentElement = document.getElementsByTagName('head')[0];
+const firstChild = parentElement.firstChild;
+parentElement.insertBefore(customStyles, firstChild);

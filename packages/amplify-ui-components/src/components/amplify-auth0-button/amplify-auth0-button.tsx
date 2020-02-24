@@ -14,8 +14,6 @@ const logger = new Logger('amplify-auth0-button');
 export class AmplifyAuth0Button {
   /** See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters */
   @Prop() config: FederatedConfig['auth0Config'];
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 
   _auth0: any;
@@ -101,11 +99,7 @@ export class AmplifyAuth0Button {
 
   render() {
     return (
-      <amplify-sign-in-button
-        onClick={event => this.signInWithAuth0(event)}
-        overrideStyle={this.overrideStyle}
-        provider="auth0"
-      >
+      <amplify-sign-in-button onClick={event => this.signInWithAuth0(event)} provider="auth0">
         <script onLoad={this.handleLoad} src="https://cdn.auth0.com/js/auth0/9.11/auth0.min.js"></script>
         {SIGN_IN_WITH_AUTH0}
       </amplify-sign-in-button>

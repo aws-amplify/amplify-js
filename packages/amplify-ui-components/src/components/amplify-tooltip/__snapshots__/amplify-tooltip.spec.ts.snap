@@ -20,8 +20,8 @@ exports[`amplify-tooltip spec: Render logic -> should render an automatically-sh
 </amplify-tooltip>
 `;
 
-exports[`amplify-tooltip spec: Render logic -> should render without Emotion CSS classes when style override is true 1`] = `
-<amplify-tooltip override-style="true">
+exports[`amplify-tooltip spec: Render logic -> should render without Emotion CSS classes 1`] = `
+<amplify-tooltip>
   <mock:shadow-root>
     <div class="tooltip">
       <slot></slot>

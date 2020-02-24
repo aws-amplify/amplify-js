@@ -21,8 +21,6 @@ export class AmplifyForgotPassword {
   @Prop() submitButtonText: string = SEND_CODE;
   /** The form fields displayed inside of the forgot password form */
   @Prop() formFields: FormFieldTypes;
-  /** (Optional) Overrides default styling */
-  @Prop() overrideStyle: boolean = false;
   /** The function called when making a request to reset password */
   @Prop() handleSend: (event: Event) => void = event => this.send(event);
   /** The function called when submitting a new password */
@@ -122,7 +120,6 @@ export class AmplifyForgotPassword {
     return (
       <amplify-form-section
         headerText={this.headerText}
-        overrideStyle={this.overrideStyle}
         handleSubmit={submitFn}
         loading={this.loading}
         secondaryFooterContent={

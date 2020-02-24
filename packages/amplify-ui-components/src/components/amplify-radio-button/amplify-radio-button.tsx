@@ -8,8 +8,6 @@ import { Component, Prop, h } from '@stencil/core';
 export class AmplifyRadioButton {
   /** The callback, called when the input is modified by the user. */
   @Prop() handleInputChange?: (inputEvent: Event) => void;
-  /** (Optional) Overrides default styling */
-  @Prop() overrideStyle: boolean = false;
   /** (Optional) Name of radio button */
   @Prop() name?: string;
   /** (Optional) Value of radio button */

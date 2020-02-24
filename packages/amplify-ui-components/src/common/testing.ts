@@ -40,10 +40,6 @@ export const knobs = {
     return textKnob('Button text', buttonTextPlaceholder);
   },
 
-  overrideStyleKnob() {
-    return booleanKnob('Override style', false);
-  },
-
   toggleKnob(toggleDefault: boolean) {
     return booleanKnob('Toggle', toggleDefault);
   },

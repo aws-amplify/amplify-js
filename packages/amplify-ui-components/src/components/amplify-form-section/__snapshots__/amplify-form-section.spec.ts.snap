@@ -58,11 +58,11 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
 </amplify-form-section>
 `;
 
-exports[`amplify-form-section spec: Render logic -> should render without Emotion CSS classes when style override is true 1`] = `
-<amplify-form-section override-style="true">
+exports[`amplify-form-section spec: Render logic -> should render without Emotion CSS classes 1`] = `
+<amplify-form-section>
   <!---->
   <form>
-    <amplify-section overridestyle="">
+    <amplify-section>
       <div>
         <slot-fb name="amplify-form-section-header">
           <div class="form-section-header">

@@ -38,8 +38,6 @@ export class AmplifySignUp {
   @Prop() haveAccountText: string = HAVE_ACCOUNT_TEXT;
   /** Used for the submit button text in sign up component */
   @Prop() signInText: string = SIGN_IN_TEXT;
-  /** (Optional) Overrides default styling */
-  @Prop() overrideStyle: boolean = false;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing
@@ -168,12 +166,7 @@ export class AmplifySignUp {
 
   render() {
     return (
-      <amplify-form-section
-        headerText={this.headerText}
-        overrideStyle={this.overrideStyle}
-        handleSubmit={this.handleSubmit}
-        testDataPrefix={'sign-up'}
-      >
+      <amplify-form-section headerText={this.headerText} handleSubmit={this.handleSubmit} testDataPrefix={'sign-up'}>
         <amplify-auth-fields formFields={this.formFields} />
         <div class="sign-up-form-footer" slot="amplify-form-section-footer">
           <span>
@@ -182,7 +175,7 @@ export class AmplifySignUp {
               {this.signInText}
             </amplify-link>
           </span>
-          <amplify-button type="submit" overrideStyle={this.overrideStyle} data-test="sign-up-create-account-button">
+          <amplify-button type="submit" data-test="sign-up-create-account-button">
             <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
             <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
           </amplify-button>

@@ -48,10 +48,6 @@ export namespace Components {
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange': AuthStateHandler;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
   }
   interface AmplifyAuthFields {
     /**
@@ -65,10 +61,6 @@ export namespace Components {
     */
     'config': FederatedConfig['auth0Config'];
     'handleAuthStateChange': AuthStateHandler;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
   }
   interface AmplifyAuthenticator {
     /**
@@ -89,10 +81,6 @@ export namespace Components {
     * (Optional) Callback called when a user clicks on the button
     */
     'handleButtonClick': (evt: Event) => void;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
     /**
     * Type of the button: 'button', 'submit' or 'reset'
     */
@@ -119,10 +107,6 @@ export namespace Components {
     * Name of the checkbox
     */
     'name'?: string;
-    /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
     /**
     * Value of the checkbox
     */
@@ -184,10 +168,6 @@ export namespace Components {
     */
     'headerText': string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
-    /**
     * Used for the submit button text in confirm sign in component
     */
     'submitButtonText': string;
@@ -218,10 +198,6 @@ export namespace Components {
     */
     'headerText': string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
-    /**
     * Used for the submit button text in confirm sign up component
     */
     'submitButtonText': string;
@@ -247,10 +223,6 @@ export namespace Components {
     * The options of the country dial code select input.
     */
     'options': CountryCodeDialOptions;
-    /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
   }
   interface AmplifyEmailField {
     /**
@@ -296,10 +268,6 @@ export namespace Components {
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange': AuthStateHandler;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
   }
   interface AmplifyFederatedButtons {
     /**
@@ -314,10 +282,6 @@ export namespace Components {
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange': AuthStateHandler;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
   }
   interface AmplifyFederatedSignIn {
     /**
@@ -350,10 +314,6 @@ export namespace Components {
     * The header text of the forgot password section
     */
     'headerText': string;
-    /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
     /**
     * The text displayed inside of the submit button for the form
     */
@@ -393,10 +353,6 @@ export namespace Components {
     */
     'name'?: string;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
-    /**
     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
     'placeholder'?: string;
@@ -427,10 +383,6 @@ export namespace Components {
     */
     'loading'?: boolean;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
-    /**
     * Secondary footer component or text
     */
     'secondaryFooterContent': string | FunctionalComponent | null;
@@ -452,10 +404,6 @@ export namespace Components {
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange': AuthStateHandler;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
   }
   interface AmplifyGreetings {
     /**
@@ -467,37 +415,20 @@ export namespace Components {
     */
     'logo': FunctionalComponent | null;
     /**
-    * Override default styling
-    */
-    'overrideStyle': boolean;
-    /**
     * Used for the username to be passed to resend code
     */
     'user': CognitoUserInterface;
   }
-  interface AmplifyHint {
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
-  }
+  interface AmplifyHint {}
   interface AmplifyIcon {
     /**
     * (Required) Name of icon used to determine the icon rendered
     */
     'name': IconNameType;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
   }
   interface AmplifyIconButton {
     'autoShowTooltip': boolean;
     'name': IconNameType;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
     'tooltip': string | null;
   }
   interface AmplifyInput {
@@ -526,10 +457,6 @@ export namespace Components {
     */
     'name'?: string;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
-    /**
     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
     'placeholder'?: string;
@@ -544,20 +471,14 @@ export namespace Components {
   }
   interface AmplifyLabel {
     'htmlFor': string;
-    'overrideStyle': boolean;
   }
   interface AmplifyLink {
-    'overrideStyle': boolean;
     'role': string;
   }
   interface AmplifyLoadingSpinner {}
   interface AmplifyNav {}
   interface AmplifyOauthButton {
     'config': FederatedConfig['oauthConfig'];
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
   }
   interface AmplifyPasswordField {
     /**
@@ -661,10 +582,6 @@ export namespace Components {
     */
     'name'?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
-    /**
     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
     'placeholder'?: string;
@@ -691,10 +608,6 @@ export namespace Components {
     */
     'headerText': string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
-    /**
     * The text displayed inside of the submit button for the form
     */
     'submitButtonText': string;
@@ -712,7 +625,6 @@ export namespace Components {
     'sceneName': string;
   }
   interface AmplifySection {
-    'overrideStyle'?: boolean;
     'role': string;
   }
   interface AmplifySelect {
@@ -728,10 +640,6 @@ export namespace Components {
     * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
     */
     'options': SelectOptionsString | SelectOptionsNumber;
-    /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
   }
   interface AmplifySelectMfaType {
     /**
@@ -769,10 +677,6 @@ export namespace Components {
     */
     'headerText': string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
-    /**
     * Used for the submit button text in sign in component
     */
     'submitButtonText': string;
@@ -782,10 +686,6 @@ export namespace Components {
     'validationErrors': string;
   }
   interface AmplifySignInButton {
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
     'provider': 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
   }
   interface AmplifySignOut {
@@ -797,10 +697,6 @@ export namespace Components {
     * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange': AuthStateHandler;
-    /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
   }
   interface AmplifySignUp {
     /**
@@ -824,10 +720,6 @@ export namespace Components {
     */
     'headerText': string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle': boolean;
-    /**
     * Used for the submit button text in sign up component
     */
     'signInText': string;
@@ -840,12 +732,7 @@ export namespace Components {
     */
     'validationErrors': string;
   }
-  interface AmplifyStrike {
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
-  }
+  interface AmplifyStrike {}
   interface AmplifyToast {
     /**
     * Used in order to add a dismissable `x` for the Toast component
@@ -854,10 +741,6 @@ export namespace Components {
     'message': string;
   }
   interface AmplifyTooltip {
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
     /**
     * (Optional) Whether or not the tooltip should be automatically shown, i.e. not disappear when not hovered
     */
@@ -916,10 +799,6 @@ export namespace Components {
     * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange': AuthStateHandler;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle': boolean;
     /**
     * Used for the username to be passed to resend code
     */
@@ -1289,10 +1168,6 @@ declare namespace LocalJSX {
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange'?: AuthStateHandler;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
   }
   interface AmplifyAuthFields {
     /**
@@ -1306,10 +1181,6 @@ declare namespace LocalJSX {
     */
     'config'?: FederatedConfig['auth0Config'];
     'handleAuthStateChange'?: AuthStateHandler;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
   }
   interface AmplifyAuthenticator {
     /**
@@ -1330,10 +1201,6 @@ declare namespace LocalJSX {
     * (Optional) Callback called when a user clicks on the button
     */
     'handleButtonClick'?: (evt: Event) => void;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
     /**
     * Type of the button: 'button', 'submit' or 'reset'
     */
@@ -1360,10 +1227,6 @@ declare namespace LocalJSX {
     * Name of the checkbox
     */
     'name'?: string;
-    /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
     /**
     * Value of the checkbox
     */
@@ -1425,10 +1288,6 @@ declare namespace LocalJSX {
     */
     'headerText'?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
-    /**
     * Used for the submit button text in confirm sign in component
     */
     'submitButtonText'?: string;
@@ -1459,10 +1318,6 @@ declare namespace LocalJSX {
     */
     'headerText'?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
-    /**
     * Used for the submit button text in confirm sign up component
     */
     'submitButtonText'?: string;
@@ -1488,10 +1343,6 @@ declare namespace LocalJSX {
     * The options of the country dial code select input.
     */
     'options'?: CountryCodeDialOptions;
-    /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
   }
   interface AmplifyEmailField {
     /**
@@ -1537,10 +1388,6 @@ declare namespace LocalJSX {
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange'?: AuthStateHandler;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
   }
   interface AmplifyFederatedButtons {
     /**
@@ -1555,10 +1402,6 @@ declare namespace LocalJSX {
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange'?: AuthStateHandler;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
   }
   interface AmplifyFederatedSignIn {
     /**
@@ -1591,10 +1434,6 @@ declare namespace LocalJSX {
     * The header text of the forgot password section
     */
     'headerText'?: string;
-    /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
     /**
     * The text displayed inside of the submit button for the form
     */
@@ -1634,10 +1473,6 @@ declare namespace LocalJSX {
     */
     'name'?: string;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
-    /**
     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
     'placeholder'?: string;
@@ -1668,10 +1503,6 @@ declare namespace LocalJSX {
     */
     'loading'?: boolean;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
-    /**
     * Secondary footer component or text
     */
     'secondaryFooterContent'?: string | FunctionalComponent | null;
@@ -1693,10 +1524,6 @@ declare namespace LocalJSX {
     * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
     */
     'handleAuthStateChange'?: AuthStateHandler;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
   }
   interface AmplifyGreetings {
     /**
@@ -1708,37 +1535,20 @@ declare namespace LocalJSX {
     */
     'logo'?: FunctionalComponent | null;
     /**
-    * Override default styling
-    */
-    'overrideStyle'?: boolean;
-    /**
     * Used for the username to be passed to resend code
     */
     'user'?: CognitoUserInterface;
   }
-  interface AmplifyHint {
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
-  }
+  interface AmplifyHint {}
   interface AmplifyIcon {
     /**
     * (Required) Name of icon used to determine the icon rendered
     */
     'name'?: IconNameType;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
   }
   interface AmplifyIconButton {
     'autoShowTooltip'?: boolean;
     'name'?: IconNameType;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
     'tooltip'?: string | null;
   }
   interface AmplifyInput {
@@ -1767,10 +1577,6 @@ declare namespace LocalJSX {
     */
     'name'?: string;
     /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
-    /**
     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
     'placeholder'?: string;
@@ -1785,20 +1591,14 @@ declare namespace LocalJSX {
   }
   interface AmplifyLabel {
     'htmlFor'?: string;
-    'overrideStyle'?: boolean;
   }
   interface AmplifyLink {
-    'overrideStyle'?: boolean;
     'role'?: string;
   }
   interface AmplifyLoadingSpinner {}
   interface AmplifyNav {}
   interface AmplifyOauthButton {
     'config'?: FederatedConfig['oauthConfig'];
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
   }
   interface AmplifyPasswordField {
     /**
@@ -1902,10 +1702,6 @@ declare namespace LocalJSX {
     */
     'name'?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
-    /**
     * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
     */
     'placeholder'?: string;
@@ -1932,10 +1728,6 @@ declare namespace LocalJSX {
     */
     'headerText'?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
-    /**
     * The text displayed inside of the submit button for the form
     */
     'submitButtonText'?: string;
@@ -1953,7 +1745,6 @@ declare namespace LocalJSX {
     'sceneName'?: string;
   }
   interface AmplifySection {
-    'overrideStyle'?: boolean;
     'role'?: string;
   }
   interface AmplifySelect {
@@ -1969,10 +1760,6 @@ declare namespace LocalJSX {
     * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
     */
     'options'?: SelectOptionsString | SelectOptionsNumber;
-    /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
   }
   interface AmplifySelectMfaType {
     /**
@@ -2010,10 +1797,6 @@ declare namespace LocalJSX {
     */
     'headerText'?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
-    /**
     * Used for the submit button text in sign in component
     */
     'submitButtonText'?: string;
@@ -2023,10 +1806,6 @@ declare namespace LocalJSX {
     'validationErrors'?: string;
   }
   interface AmplifySignInButton {
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
     'provider'?: 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
   }
   interface AmplifySignOut {
@@ -2038,10 +1817,6 @@ declare namespace LocalJSX {
     * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange'?: AuthStateHandler;
-    /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
   }
   interface AmplifySignUp {
     /**
@@ -2065,10 +1840,6 @@ declare namespace LocalJSX {
     */
     'headerText'?: string;
     /**
-    * (Optional) Overrides default styling
-    */
-    'overrideStyle'?: boolean;
-    /**
     * Used for the submit button text in sign up component
     */
     'signInText'?: string;
@@ -2081,12 +1852,7 @@ declare namespace LocalJSX {
     */
     'validationErrors'?: string;
   }
-  interface AmplifyStrike {
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
-  }
+  interface AmplifyStrike {}
   interface AmplifyToast {
     /**
     * Used in order to add a dismissable `x` for the Toast component
@@ -2095,10 +1861,6 @@ declare namespace LocalJSX {
     'message'?: string;
   }
   interface AmplifyTooltip {
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
     /**
     * (Optional) Whether or not the tooltip should be automatically shown, i.e. not disappear when not hovered
     */
@@ -2157,10 +1919,6 @@ declare namespace LocalJSX {
     * Passed from the Authenticator component in order to change Authentication state
     */
     'handleAuthStateChange'?: AuthStateHandler;
-    /**
-    * (Optional) Override default styling
-    */
-    'overrideStyle'?: boolean;
     /**
     * Used for the username to be passed to resend code
     */

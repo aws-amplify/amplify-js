@@ -9,7 +9,6 @@ export class AmplifyLink {
   @Element() el: HTMLElement;
 
   @Prop() role: string = 'navigation';
-  @Prop() overrideStyle: boolean = false;
 
   render() {
     return (

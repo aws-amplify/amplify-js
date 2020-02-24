@@ -32,8 +32,6 @@ export class AmplifySignIn {
   @Prop() headerText: string = HEADER_TEXT;
   /** Used for the submit button text in sign in component */
   @Prop() submitButtonText: string = SIGN_IN_SUBMIT_BUTTON_TEXT;
-  /** (Optional) Overrides default styling */
-  @Prop() overrideStyle: boolean = false;
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
   /** Passed from the Authenticator component in order to change Authentication state */
@@ -161,19 +159,10 @@ export class AmplifySignIn {
 
   render() {
     return (
-      <amplify-form-section
-        headerText={this.headerText}
-        overrideStyle={this.overrideStyle}
-        handleSubmit={this.handleSubmit}
-        testDataPrefix={'sign-in'}
-      >
-        <amplify-federated-buttons
-          handleAuthStateChange={this.handleAuthStateChange}
-          federated={this.federated}
-          overrideStyle={this.overrideStyle}
-        />
+      <amplify-form-section headerText={this.headerText} handleSubmit={this.handleSubmit} testDataPrefix={'sign-in'}>
+        <amplify-federated-buttons handleAuthStateChange={this.handleAuthStateChange} federated={this.federated} />
 
-        {!isEmpty(this.federated) && <amplify-strike overrideStyle={this.overrideStyle}>or</amplify-strike>}
+        {!isEmpty(this.federated) && <amplify-strike>or</amplify-strike>}
 
         <amplify-auth-fields formFields={this.formFields} />
         <div slot="amplify-form-section-footer" class="sign-in-form-footer">
@@ -186,12 +175,7 @@ export class AmplifySignIn {
               {CREATE_ACCOUNT_TEXT}
             </amplify-link>
           </span>
-          <amplify-button
-            type="submit"
-            disabled={this.loading}
-            overrideStyle={this.overrideStyle}
-            data-test="sign-in-sign-in-button"
-          >
+          <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
             <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
             <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
           </amplify-button>

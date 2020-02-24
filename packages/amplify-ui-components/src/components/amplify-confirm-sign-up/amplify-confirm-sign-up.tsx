@@ -29,8 +29,6 @@ export class AmplifyConfirmSignUp {
   @Prop() headerText: string = CONFIRM_SIGN_UP_HEADER_TEXT;
   /** Used for the submit button text in confirm sign up component */
   @Prop() submitButtonText: string = CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT;
-  /** (Optional) Overrides default styling */
-  @Prop() overrideStyle: boolean = false;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing
@@ -136,7 +134,6 @@ export class AmplifyConfirmSignUp {
     return (
       <amplify-form-section
         headerText={this.headerText}
-        overrideStyle={this.overrideStyle}
         submitButtonText={this.submitButtonText}
         handleSubmit={this.handleSubmit}
         secondaryFooterContent={

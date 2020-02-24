@@ -9,7 +9,6 @@ export class AmplifySection {
   @Element() el: HTMLElement;
 
   @Prop() role: string = 'application';
-  @Prop() overrideStyle?: boolean = false;
 
   render() {
     return (

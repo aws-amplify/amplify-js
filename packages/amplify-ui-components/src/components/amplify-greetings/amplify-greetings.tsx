@@ -13,8 +13,6 @@ export class AmplifyGreetings {
   @Prop() logo: FunctionalComponent | null = null;
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
-  /** Override default styling */
-  @Prop() overrideStyle: boolean = false;
 
   @Watch('user')
   watchHandler(newUserValue: CognitoUserInterface) {

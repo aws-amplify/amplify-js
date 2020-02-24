@@ -5,10 +5,9 @@
 
 ## Properties
 
-| Property        | Attribute        | Description | Type      | Default        |
-| --------------- | ---------------- | ----------- | --------- | -------------- |
-| `overrideStyle` | `override-style` |             | `boolean` | `false`        |
-| `role`          | `role`           |             | `string`  | `'navigation'` |
+| Property | Attribute | Description | Type     | Default        |
+| -------- | --------- | ----------- | -------- | -------------- |
+| `role`   | `role`    |             | `string` | `'navigation'` |
 
 
 ## Dependencies
