@@ -16,7 +16,6 @@
 import { Component, Input, OnInit, Inject } from '@angular/core';
 import { AmplifyService, AuthState } from '../../../providers';
 import { constants } from '../common';
-import { UsernameAttributes } from '../types';
 import { auth } from '../../../assets/data-test-attributes';
 
 const template = `
