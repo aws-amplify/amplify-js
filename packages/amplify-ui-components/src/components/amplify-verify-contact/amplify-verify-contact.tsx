@@ -1,17 +1,10 @@
 import { Auth } from '@aws-amplify/auth';
-import { Logger } from '@aws-amplify/core';
+import { I18n, Logger } from '@aws-amplify/core';
 import { Component, h, Prop, State } from '@stencil/core';
 import { AuthState, AuthStateHandler, CognitoUserInterface } from '../../common/types/auth-types';
-import {
-  VERIFY_CONTACT_VERIFY_LABEL,
-  VERIFY_CONTACT_SUBMIT_LABEL,
-  VERIFY_CONTACT_HEADER_TEXT,
-  CODE_PLACEHOLDER,
-  VERIFY_CONTACT_EMAIL_LABEL,
-  VERIFY_CONTACT_PHONE_LABEL,
-  NO_AUTH_MODULE_FOUND,
-} from '../../common/constants';
+import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { AuthMessages } from '../../common/types/AuthMessages';
 
 const logger = new Logger('AmplifyVerifyContact');
 
@@ -88,7 +81,7 @@ export class AmplifyVerifyContact {
           }}
           name="code"
           overrideStyle={this.overrideStyle}
-          placeholder={CODE_PLACEHOLDER}
+          placeholder={I18n.get(AuthMessages.CODE_PLACEHOLDER)}
         />
       </div>
     );
@@ -114,7 +107,7 @@ export class AmplifyVerifyContact {
       <div>
         {email && (
           <amplify-radio-button
-            label={VERIFY_CONTACT_EMAIL_LABEL}
+            label={I18n.get(AuthMessages.VERIFY_CONTACT_EMAIL_LABEL)}
             key="email"
             name="contact"
             overrideStyle={this.overrideStyle}
@@ -124,7 +117,7 @@ export class AmplifyVerifyContact {
 
         {phone_number && (
           <amplify-radio-button
-            label={VERIFY_CONTACT_PHONE_LABEL}
+            label={I18n.get(AuthMessages.VERIFY_CONTACT_PHONE_LABEL)}
             key="phone_number"
             name="contact"
             overrideStyle={this.overrideStyle}
@@ -139,7 +132,7 @@ export class AmplifyVerifyContact {
     return (
       <amplify-form-section
         handleSubmit={event => this.handleSubmit(event)}
-        headerText={VERIFY_CONTACT_HEADER_TEXT}
+        headerText={I18n.get(AuthMessages.VERIFY_CONTACT_HEADER_TEXT)}
         overrideStyle={this.overrideStyle}
         loading={this.loading}
         secondaryFooterContent={
@@ -147,7 +140,11 @@ export class AmplifyVerifyContact {
             <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}>Skip</amplify-link>
           </span>
         }
-        submitButtonText={this.verifyAttr ? VERIFY_CONTACT_SUBMIT_LABEL : VERIFY_CONTACT_VERIFY_LABEL}
+        submitButtonText={
+          this.verifyAttr
+            ? I18n.get(AuthMessages.VERIFY_CONTACT_SUBMIT_LABEL)
+            : I18n.get(AuthMessages.VERIFY_CONTACT_VERIFY_LABEL)
+        }
       >
         {this.verifyAttr ? this.renderSubmit() : this.renderVerify()}
       </amplify-form-section>

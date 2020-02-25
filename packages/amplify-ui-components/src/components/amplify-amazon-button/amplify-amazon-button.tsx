@@ -1,9 +1,11 @@
+import { I18n } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 import { dispatchAuthStateChangeEvent } from '../../common/helpers';
-import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_AMAZON } from '../../common/constants';
+import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { AuthState, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
+import { AuthMessages } from '../../common/types/AuthMessages';
 
 const logger = new Logger('amplify-amazon-button');
 
@@ -84,7 +86,7 @@ export class AmplifyAmazonButton {
         provider="amazon"
       >
         <script src="https://assets.loginwithamazon.com/sdk/na/login1.js"></script>
-        {SIGN_IN_WITH_AMAZON}
+        {I18n.get(AuthMessages.SIGN_IN_WITH_AMAZON)}
       </amplify-sign-in-button>
     );
   }

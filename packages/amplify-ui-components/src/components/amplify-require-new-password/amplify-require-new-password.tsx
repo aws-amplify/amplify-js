@@ -1,3 +1,4 @@
+import { I18n } from '@aws-amplify/core';
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import {
@@ -7,14 +8,8 @@ import {
   AuthFormField,
   AuthStateHandler,
 } from '../../common/types/auth-types';
-import {
-  CHANGE_PASSWORD,
-  CHANGE_PASSWORD_ACTION,
-  NEW_PASSWORD_LABEL,
-  NEW_PASSWORD_PLACEHOLDER,
-  BACK_TO_SIGN_IN,
-  NO_AUTH_MODULE_FOUND,
-} from '../../common/constants';
+import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
+import { AuthMessages } from '../../common/types/AuthMessages';
 
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
@@ -28,9 +23,9 @@ const logger = new Logger('amplify-require-new-password');
 })
 export class AmplifyRequireNewPassword {
   /** The header text of the forgot password section */
-  @Prop() headerText: string = CHANGE_PASSWORD;
+  @Prop() headerText: string = I18n.get(AuthMessages.CHANGE_PASSWORD);
   /** The text displayed inside of the submit button for the form */
-  @Prop() submitButtonText: string = CHANGE_PASSWORD_ACTION;
+  @Prop() submitButtonText: string = I18n.get(AuthMessages.CHANGE_PASSWORD_ACTION);
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /** The function called when submitting a new password */
@@ -45,8 +40,8 @@ export class AmplifyRequireNewPassword {
       type: AuthFormField.Password,
       required: true,
       handleInputChange: event => this.handlePasswordChange(event),
-      label: NEW_PASSWORD_LABEL,
-      placeholder: NEW_PASSWORD_PLACEHOLDER,
+      label: I18n.get(AuthMessages.NEW_PASSWORD_LABEL),
+      placeholder: I18n.get(AuthMessages.NEW_PASSWORD_PLACEHOLDER),
     },
   ];
 
@@ -116,7 +111,9 @@ export class AmplifyRequireNewPassword {
         handleSubmit={this.handleSubmit}
         loading={this.loading}
         secondaryFooterContent={
-          <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>{BACK_TO_SIGN_IN}</amplify-link>
+          <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
+            {I18n.get(AuthMessages.BACK_TO_SIGN_IN)}
+          </amplify-link>
         }
       >
         <amplify-auth-fields formFields={this.formFields} />

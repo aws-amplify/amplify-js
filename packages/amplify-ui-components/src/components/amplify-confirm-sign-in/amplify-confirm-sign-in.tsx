@@ -1,3 +1,5 @@
+import { Auth } from '@aws-amplify/auth';
+import { I18n, isEmpty } from '@aws-amplify/core';
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
@@ -7,16 +9,9 @@ import {
   ChallengeName,
   AuthStateHandler,
 } from '../../common/types/auth-types';
-import {
-  BACK_TO_SIGN_IN,
-  CONFIRM,
-  CONFIRM_SMS_CODE,
-  CONFIRM_TOTP_CODE,
-  NO_AUTH_MODULE_FOUND,
-} from '../../common/constants';
-import { isEmpty } from '@aws-amplify/core';
-import { Auth } from '@aws-amplify/auth';
+import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { AuthMessages } from '../../common/types/AuthMessages';
 
 @Component({
   tag: 'amplify-confirm-sign-in',
@@ -28,9 +23,9 @@ export class AmplifyConfirmSignIn {
   /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: string;
   /** Used for header text in confirm sign in component */
-  @Prop() headerText: string = CONFIRM_SMS_CODE;
+  @Prop() headerText: string = I18n.get(AuthMessages.CONFIRM_SMS_CODE);
   /** Used for the submit button text in confirm sign in component */
-  @Prop() submitButtonText: string = CONFIRM;
+  @Prop() submitButtonText: string = I18n.get(AuthMessages.CONFIRM);
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /** Passed from the Authenticator component in order to change Authentication state */
@@ -71,8 +66,8 @@ export class AmplifyConfirmSignIn {
     if (this.user && this.user['challengeName'] === ChallengeName.SoftwareTokenMFA) {
       this.mfaOption = MfaOption.TOTP;
       // If header text is using default use TOTP string
-      if (this.headerText === CONFIRM_SMS_CODE) {
-        this.headerText = CONFIRM_TOTP_CODE;
+      if (this.headerText === I18n.get(AuthMessages.CONFIRM_SMS_CODE)) {
+        this.headerText = I18n.get(AuthMessages.CONFIRM_TOTP_CODE);
       }
     }
   }
@@ -126,7 +121,9 @@ export class AmplifyConfirmSignIn {
         loading={this.loading}
         secondaryFooterContent={
           <span>
-            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>{BACK_TO_SIGN_IN}</amplify-link>
+            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
+              {I18n.get(AuthMessages.BACK_TO_SIGN_IN)}
+            </amplify-link>
           </span>
         }
       >

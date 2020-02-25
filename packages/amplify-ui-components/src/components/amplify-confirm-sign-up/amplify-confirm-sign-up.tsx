@@ -1,16 +1,8 @@
+import { I18n } from '@aws-amplify/core';
 import { Component, Prop, h, State } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
-import {
-  CONFIRM_SIGN_UP_HEADER_TEXT,
-  CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT,
-  BACK_TO_SIGN_IN,
-  USERNAME_PLACEHOLDER,
-  CONFIRM_SIGN_UP_CODE_LABEL,
-  CONFIRM_SIGN_UP_CODE_PLACEHOLDER,
-  CONFIRM_SIGN_UP_LOST_CODE,
-  CONFIRM_SIGN_UP_RESEND_CODE,
-  NO_AUTH_MODULE_FOUND,
-} from '../../common/constants';
+import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
+import { AuthMessages } from '../../common/types/AuthMessages';
 import { AuthState, CognitoUserInterface, AuthStateHandler } from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
@@ -26,9 +18,9 @@ export class AmplifyConfirmSignUp {
   /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: string;
   /** Used for header text in confirm sign up component */
-  @Prop() headerText: string = CONFIRM_SIGN_UP_HEADER_TEXT;
+  @Prop() headerText: string = I18n.get(AuthMessages.CONFIRM_SIGN_UP_HEADER_TEXT);
   /** Used for the submit button text in confirm sign up component */
-  @Prop() submitButtonText: string = CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT;
+  @Prop() submitButtonText: string = I18n.get(AuthMessages.CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT);
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /**
@@ -63,7 +55,7 @@ export class AmplifyConfirmSignUp {
     this.formFields = [
       {
         type: 'username',
-        placeholder: USERNAME_PLACEHOLDER,
+        placeholder: I18n.get(AuthMessages.USERNAME_PLACEHOLDER),
         required: true,
         handleInputChange: event => this.handleUsernameChange(event),
         value: this.user ? this.user.username : null,
@@ -72,13 +64,15 @@ export class AmplifyConfirmSignUp {
       },
       {
         type: 'code',
-        label: CONFIRM_SIGN_UP_CODE_LABEL,
-        placeholder: CONFIRM_SIGN_UP_CODE_PLACEHOLDER,
+        label: I18n.get(AuthMessages.CONFIRM_SIGN_UP_CODE_LABEL),
+        placeholder: I18n.get(AuthMessages.CONFIRM_SIGN_UP_CODE_PLACEHOLDER),
         required: true,
         hint: (
           <div>
-            {CONFIRM_SIGN_UP_LOST_CODE}{' '}
-            <amplify-link onClick={() => this.resendConfirmCode()}>{CONFIRM_SIGN_UP_RESEND_CODE}</amplify-link>
+            {I18n.get(AuthMessages.CONFIRM_SIGN_UP_LOST_CODE)}{' '}
+            <amplify-link onClick={() => this.resendConfirmCode()}>
+              {I18n.get(AuthMessages.CONFIRM_SIGN_UP_RESEND_CODE)}
+            </amplify-link>
           </div>
         ),
         handleInputChange: event => this.handleCodeChange(event),
@@ -143,7 +137,7 @@ export class AmplifyConfirmSignUp {
           <div>
             <span>
               <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
-                {BACK_TO_SIGN_IN}
+                {I18n.get(AuthMessages.BACK_TO_SIGN_IN)}
               </amplify-link>
             </span>
           </div>

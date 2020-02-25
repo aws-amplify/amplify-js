@@ -1,8 +1,10 @@
-import { Component, Prop, h } from '@stencil/core';
-import { SIGN_OUT, NO_AUTH_MODULE_FOUND } from '../../common/constants';
-import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
 import { Auth } from '@aws-amplify/auth';
+import { I18n } from '@aws-amplify/core';
+import { Component, Prop, h } from '@stencil/core';
+import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
+import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
 import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { AuthMessages } from '../../common/types/AuthMessages';
 
 @Component({
   tag: 'amplify-sign-out',
@@ -14,7 +16,7 @@ export class AmplifySignOut {
   /** (Optional) Overrides default styling */
   @Prop() overrideStyle: boolean = false;
   /** Text inside of the Sign Out button */
-  @Prop() buttonText: string = SIGN_OUT;
+  @Prop() buttonText: string = I18n.get(AuthMessages.SIGN_OUT);
 
   async signOut(event) {
     if (event) event.preventDefault();
