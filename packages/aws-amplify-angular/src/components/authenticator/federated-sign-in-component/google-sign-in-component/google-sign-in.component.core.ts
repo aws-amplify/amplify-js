@@ -91,7 +91,7 @@ export class GoogleSignInComponentCore implements OnInit {
 			);
 
 			const user = await this.amplifyService.auth().currentAuthenticatedUser();
-			this.amplifyService.setAuthState({ state: 'signedIn', user: user });
+			this.amplifyService.setAuthState({ state: 'signedIn', user });
 		} catch (error) {
 			this.logger.error(error);
 		}

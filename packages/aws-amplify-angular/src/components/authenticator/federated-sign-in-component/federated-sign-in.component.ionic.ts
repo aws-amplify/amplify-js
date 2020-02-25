@@ -13,8 +13,8 @@
  */
 // tslint:enable
 
-import { Component, Input } from '@angular/core';
-import { AmplifyService, AuthState } from '../../../providers';
+import { Component } from '@angular/core';
+import { AmplifyService } from '../../../providers';
 import { FederatedSignInComponentCore } from './federated-sign-in.component.core';
 
 const template = `
@@ -34,15 +34,14 @@ const template = `
     [amazonClientId]="amazonClientId"
   ></amplify-auth-amazon-sign-in-ionic>
 </div>
-`
+`;
 
 @Component({
-  selector: 'amplify-auth-federated-sign-in-ionic',
-  template: template
+	selector: 'amplify-auth-federated-sign-in-ionic',
+	template: template,
 })
 export class FederatedSignInComponentIonic extends FederatedSignInComponentCore {
-
-  constructor(amplifyService: AmplifyService) {
-    super(amplifyService);
-  }
+	constructor(amplifyService: AmplifyService) {
+		super(amplifyService);
+	}
 }

@@ -71,21 +71,6 @@ export class GreetingComponentCore implements OnInit {
 		this.authState = authState;
 		this.signedIn = authState.state === 'signedIn';
 
-		let username = '';
-		if (authState.user) {
-			if (this._usernameAttributes === UsernameAttributes.EMAIL) {
-				username = authState.user.attributes
-					? authState.user.attributes.email
-					: authState.user.username;
-			} else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
-				username = authState.user.attributes
-					? authState.user.attributes.phone_number
-					: authState.user.username;
-			} else {
-				username = authState.user.username;
-			}
-		}
-
 		this.greeting = this.signedIn
 			? this.amplifyService
 					.i18n()
