@@ -13,46 +13,60 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
+import {
+	Component,
+	Input,
+	OnInit,
+	ViewChild,
+	ComponentFactoryResolver,
+	OnDestroy,
+} from '@angular/core';
 import { DynamicComponentDirective } from '../../../../directives/dynamic.component.directive';
 import { ComponentMount } from '../../../component.mount';
 import { AmazonSignInClass } from './amazon-sign-in.class';
-import { AmazonSignInComponentIonic } from './amazon-sign-in.component.ionic'
+import { AmazonSignInComponentIonic } from './amazon-sign-in.component.ionic';
 import { AmazonSignInComponentCore } from './amazon-sign-in.component.core';
 
 @Component({
-  selector: 'amplify-auth-amazon-sign-in',
-  template: `
-              <div>
-                <ng-template component-host></ng-template>
-              </div>
-            `
+	selector: 'amplify-auth-amazon-sign-in',
+	template: `
+		<div>
+			<ng-template component-host></ng-template>
+		</div>
+	`,
 })
 export class AmazonSignInComponent implements OnInit, OnDestroy {
-  @Input() framework: string;
-  @Input() amazonClientId: string;
-  @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
+	@Input() framework: string;
+	@Input() amazonClientId: string;
+	@ViewChild(DynamicComponentDirective)
+	componentHost: DynamicComponentDirective;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
+	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
 
-  ngOnInit() {
-    this.loadComponent();
-  }
+	ngOnInit() {
+		this.loadComponent();
+	}
 
-  ngOnDestroy() {}
+	ngOnDestroy() {}
 
-  loadComponent() {
+	loadComponent() {
+		let authComponent =
+			this.framework && this.framework === 'ionic'
+				? new ComponentMount(AmazonSignInComponentIonic, {
+						amazonClientId: this.amazonClientId,
+				  })
+				: new ComponentMount(AmazonSignInComponentCore, {
+						amazonClientId: this.amazonClientId,
+				  });
 
-    let authComponent = this.framework && this.framework === 'ionic' 
-      ? new ComponentMount(AmazonSignInComponentIonic, { amazonClientId: this.amazonClientId }) 
-      : new ComponentMount(AmazonSignInComponentCore, { amazonClientId: this.amazonClientId });
+		let componentFactory = this.componentFactoryResolver.resolveComponentFactory(
+			authComponent.component
+		);
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
+		const viewContainerRef = this.componentHost.viewContainerRef;
+		viewContainerRef.clear();
 
-    const viewContainerRef = this.componentHost.viewContainerRef;
-    viewContainerRef.clear();
-
-    const componentRef = viewContainerRef.createComponent(componentFactory);
-    (<AmazonSignInClass>componentRef.instance).data = authComponent.data;
-  }
+		const componentRef = viewContainerRef.createComponent(componentFactory);
+		(<AmazonSignInClass>componentRef.instance).data = authComponent.data;
+	}
 }

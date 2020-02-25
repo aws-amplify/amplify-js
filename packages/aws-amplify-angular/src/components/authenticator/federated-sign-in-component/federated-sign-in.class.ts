@@ -14,5 +14,5 @@
 // tslint:enable
 
 export class FederatedSignInClass {
-  data: any;
+	data: any;
 }

@@ -33,14 +33,14 @@ const template = `
      Sign In with Google
     </span>
   </ion-button>
-`
+`;
 
 @Component({
-  selector: 'amplify-auth-google-sign-in-ionic',
-  template
+	selector: 'amplify-auth-google-sign-in-ionic',
+	template,
 })
 export class GoogleSignInComponentIonic extends GoogleSignInComponentCore {
-  constructor(protected amplifyService: AmplifyService) {
-    super(amplifyService);
-  }
+	constructor(protected amplifyService: AmplifyService) {
+		super(amplifyService);
+	}
 }

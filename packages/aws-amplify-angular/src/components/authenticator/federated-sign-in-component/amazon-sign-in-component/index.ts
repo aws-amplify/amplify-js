@@ -13,7 +13,6 @@
  */
 // tslint:enable
 
-
 export { AmazonSignInComponent } from './amazon-sign-in.component.factory';
 export { AmazonSignInClass } from './amazon-sign-in.class';
 export { AmazonSignInComponentCore } from './amazon-sign-in.component.core';

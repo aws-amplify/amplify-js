@@ -14,5 +14,5 @@
 // tslint:enable
 
 export class AmazonSignInClass {
-  data: any;
+	data: any;
 }

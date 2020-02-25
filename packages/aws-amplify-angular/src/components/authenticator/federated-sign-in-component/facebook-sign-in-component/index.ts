@@ -13,7 +13,6 @@
  */
 // tslint:enable
 
-
 export { FacebookSignInComponent } from './facebook-sign-in.component.factory';
 export { FacebookSignInClass } from './facebook-sign-in.class';
 export { FacebookSignInComponentCore } from './facebook-sign-in.component.core';

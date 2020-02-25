@@ -13,9 +13,9 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit  } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AmplifyService } from '../../../../providers';
-import { constants, setLocalStorage } from '../../common'
+import { constants, setLocalStorage } from '../../common';
 import * as AmplifyUI from '@aws-amplify/ui';
 
 const template = `
@@ -27,103 +27,113 @@ const template = `
         Sign In with Amazon
     </span>
   </button>
-`
+`;
 
 @Component({
-  selector: 'amplify-auth-amazon-sign-in-core',
-  template
+	selector: 'amplify-auth-amazon-sign-in-core',
+	template,
 })
-export class AmazonSignInComponentCore implements OnInit  {
-  @Input() amazonClientId: string;
-  protected logger: any;
-  amplifyUI: any;
+export class AmazonSignInComponentCore implements OnInit {
+	@Input() amazonClientId: string;
+	protected logger: any;
+	amplifyUI: any;
 
-  constructor(protected amplifyService: AmplifyService) {
-    this.logger = this.amplifyService.logger('AmazonSignInComponent', 'INFO');
-    this.amplifyUI = AmplifyUI;
-  }
+	constructor(protected amplifyService: AmplifyService) {
+		this.logger = this.amplifyService.logger('AmazonSignInComponent', 'INFO');
+		this.amplifyUI = AmplifyUI;
+	}
 
-  ngOnInit() {
-    if (!this.amplifyService.auth() || 
-      typeof this.amplifyService.auth().federatedSignIn !== 'function' || 
-      typeof this.amplifyService.auth().currentAuthenticatedUser !== 'function') {
-      this.logger.warn('No Auth module found, please ensure @aws-amplify/auth is imported');
-    }
+	ngOnInit() {
+		if (
+			!this.amplifyService.auth() ||
+			typeof this.amplifyService.auth().federatedSignIn !== 'function' ||
+			typeof this.amplifyService.auth().currentAuthenticatedUser !== 'function'
+		) {
+			this.logger.warn(
+				'No Auth module found, please ensure @aws-amplify/auth is imported'
+			);
+		}
 
-    if (this.amazonClientId && !(<any>window).amazon) {
-      this.createScript();
-    }
-  }
+		if (this.amazonClientId && !(<any>window).amazon) {
+			this.createScript();
+		}
+	}
 
-  async onSignIn() { 
-    try {
-      const response: any = await this.amazonAuthorize()
-      console.log(response)
+	async onSignIn() {
+		try {
+			const response: any = await this.amazonAuthorize();
+			console.log(response);
 
-      const payload = { provider: constants.AMAZON };
-      setLocalStorage(constants.AUTH_SOURCE_KEY, payload, this.logger);
+			const payload = { provider: constants.AMAZON };
+			setLocalStorage(constants.AUTH_SOURCE_KEY, payload, this.logger);
 
-      const { access_token, expires_in } = response;
-      const date = new Date();
-      const expires_at = expires_in * 1000 + date.getTime();
-      if (!access_token) {
-          return;
-      }
+			const { access_token, expires_in } = response;
+			const date = new Date();
+			const expires_at = expires_in * 1000 + date.getTime();
+			if (!access_token) {
+				return;
+			}
 
-      const userInfo: any = await this.amazonRetrieveProfile()
-      const amazonUser = { name: userInfo.profile.Name };
+			const userInfo: any = await this.amazonRetrieveProfile();
+			const amazonUser = { name: userInfo.profile.Name };
 
-      await this.amplifyService.auth().federatedSignIn('amazon', {
-        token: access_token,
-        expires_at
-      }, amazonUser);
-      this.logger.debug(`Signed in with federated identity: ${constants.AMAZON}`);
+			await this.amplifyService.auth().federatedSignIn(
+				'amazon',
+				{
+					token: access_token,
+					expires_at,
+				},
+				amazonUser
+			);
+			this.logger.debug(
+				`Signed in with federated identity: ${constants.AMAZON}`
+			);
 
-      const user = await this.amplifyService.auth().currentAuthenticatedUser();
-      this.amplifyService.setAuthState({ state: 'signedIn', user: user });
-    } catch (error) {
-      this.logger.error(error)
-    }    
-  }
+			const user = await this.amplifyService.auth().currentAuthenticatedUser();
+			this.amplifyService.setAuthState({ state: 'signedIn', user: user });
+		} catch (error) {
+			this.logger.error(error);
+		}
+	}
 
-  initAmazon() {
-    const amz = (<any>window).amazon;
-    this.logger.debug('init amazon');
-    amz.Login.setClientId(this.amazonClientId);
-  }
+	initAmazon() {
+		const amz = (<any>window).amazon;
+		this.logger.debug('init amazon');
+		amz.Login.setClientId(this.amazonClientId);
+	}
 
-  amazonAuthorize() {
-    const amz = (<any>window).amazon;
-    const options = { scope: 'profile' };
-    return new Promise((resolve, reject) => {
-      amz.Login.authorize(options, (response: any) => {
-        if (response.error) {
-          reject(response.error)
-        } else {
-          resolve(response)
-        }
-      })
-    })
-  }
+	amazonAuthorize() {
+		const amz = (<any>window).amazon;
+		const options = { scope: 'profile' };
+		return new Promise((resolve, reject) => {
+			amz.Login.authorize(options, (response: any) => {
+				if (response.error) {
+					reject(response.error);
+				} else {
+					resolve(response);
+				}
+			});
+		});
+	}
 
-  amazonRetrieveProfile() {
-    const amz = (<any>window).amazon;
-    return new Promise((resolve, reject) => {
-      amz.Login.retrieveProfile(response => {
-        if (!response.success) {
-          reject('Get user Info failed')
-        } else {
-          resolve(response)
-        }
-      })
-    })
-  }
- 
-  createScript() {
-    const script = document.createElement('script');
-    script.src = 'https://api-cdn.amazon.com/sdk/login1.js';
-    script.async = true;
-    script.onload = this.initAmazon.bind(this);
-    document.body.appendChild(script);
-  }
+	amazonRetrieveProfile() {
+		const amz = (<any>window).amazon;
+		return new Promise((resolve, reject) => {
+			amz.Login.retrieveProfile(response => {
+				if (!response.success) {
+					reject('Get user Info failed');
+				} else {
+					resolve(response);
+				}
+			});
+		});
+	}
+
+	createScript() {
+		const script = document.createElement('script');
+		script.src = 'https://api-cdn.amazon.com/sdk/login1.js';
+		script.async = true;
+		script.onload = this.initAmazon.bind(this);
+		document.body.appendChild(script);
+	}
 }

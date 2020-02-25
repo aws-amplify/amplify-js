@@ -33,15 +33,14 @@ const template = `
         Sign In with Facebook
     </span>
   </ion-button>
-`
+`;
 
 @Component({
-  selector: 'amplify-auth-facebook-sign-in-ionic',
-  template
+	selector: 'amplify-auth-facebook-sign-in-ionic',
+	template,
 })
 export class FacebookSignInComponentIonic extends FacebookSignInComponentCore {
-
-  constructor(protected amplifyService: AmplifyService) {
-    super(amplifyService);
-  }
+	constructor(protected amplifyService: AmplifyService) {
+		super(amplifyService);
+	}
 }

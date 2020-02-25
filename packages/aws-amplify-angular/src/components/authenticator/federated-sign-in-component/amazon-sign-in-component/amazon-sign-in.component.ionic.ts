@@ -33,15 +33,14 @@ const template = `
         Sign In with Amazon
     </span>
   </ion-button>
-`
+`;
 
 @Component({
-  selector: 'amplify-auth-amazon-sign-in-ionic',
-  template
+	selector: 'amplify-auth-amazon-sign-in-ionic',
+	template,
 })
 export class AmazonSignInComponentIonic extends AmazonSignInComponentCore {
-
-  constructor(protected amplifyService: AmplifyService) {
-    super(amplifyService);
-  }
+	constructor(protected amplifyService: AmplifyService) {
+		super(amplifyService);
+	}
 }

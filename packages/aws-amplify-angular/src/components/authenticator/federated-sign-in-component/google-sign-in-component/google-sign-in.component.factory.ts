@@ -13,46 +13,60 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
+import {
+	Component,
+	Input,
+	OnInit,
+	ViewChild,
+	ComponentFactoryResolver,
+	OnDestroy,
+} from '@angular/core';
 import { DynamicComponentDirective } from '../../../../directives/dynamic.component.directive';
 import { ComponentMount } from '../../../component.mount';
 import { GoogleSignInClass } from './google-sign-in.class';
-import { GoogleSignInComponentIonic } from './google-sign-in.component.ionic'
+import { GoogleSignInComponentIonic } from './google-sign-in.component.ionic';
 import { GoogleSignInComponentCore } from './google-sign-in.component.core';
 
 @Component({
-  selector: 'amplify-auth-google-sign-in',
-  template: `
-              <div>
-                <ng-template component-host></ng-template>
-              </div>
-            `
+	selector: 'amplify-auth-google-sign-in',
+	template: `
+		<div>
+			<ng-template component-host></ng-template>
+		</div>
+	`,
 })
 export class GoogleSignInComponent implements OnInit, OnDestroy {
-  @Input() framework: string;
-  @Input() googleClientId: string;
-  @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
+	@Input() framework: string;
+	@Input() googleClientId: string;
+	@ViewChild(DynamicComponentDirective)
+	componentHost: DynamicComponentDirective;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
+	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
 
-  ngOnInit() {
-    this.loadComponent();
-  }
+	ngOnInit() {
+		this.loadComponent();
+	}
 
-  ngOnDestroy() {}
+	ngOnDestroy() {}
 
-  loadComponent() {
+	loadComponent() {
+		let authComponent =
+			this.framework && this.framework === 'ionic'
+				? new ComponentMount(GoogleSignInComponentIonic, {
+						googleClientId: this.googleClientId,
+				  })
+				: new ComponentMount(GoogleSignInComponentCore, {
+						googleClientId: this.googleClientId,
+				  });
 
-    let authComponent = this.framework && this.framework === 'ionic' 
-      ? new ComponentMount(GoogleSignInComponentIonic, { googleClientId: this.googleClientId }) 
-      : new ComponentMount(GoogleSignInComponentCore, { googleClientId: this.googleClientId });
+		let componentFactory = this.componentFactoryResolver.resolveComponentFactory(
+			authComponent.component
+		);
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
+		const viewContainerRef = this.componentHost.viewContainerRef;
+		viewContainerRef.clear();
 
-    const viewContainerRef = this.componentHost.viewContainerRef;
-    viewContainerRef.clear();
-
-    const componentRef = viewContainerRef.createComponent(componentFactory);
-    (<GoogleSignInClass>componentRef.instance).data = authComponent.data;
-  }
+		const componentRef = viewContainerRef.createComponent(componentFactory);
+		(<GoogleSignInClass>componentRef.instance).data = authComponent.data;
+	}
 }

@@ -14,5 +14,5 @@
 // tslint:enable
 
 export class GoogleSignInClass {
-  data: any;
+	data: any;
 }

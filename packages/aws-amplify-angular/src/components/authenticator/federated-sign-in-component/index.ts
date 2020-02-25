@@ -13,7 +13,6 @@
  */
 // tslint:enable
 
-
 export { FederatedSignInComponent } from './federated-sign-in.component.factory';
 export { FederatedSignInClass } from './federated-sign-in.class';
 export { FederatedSignInComponentCore } from './federated-sign-in.component.core';

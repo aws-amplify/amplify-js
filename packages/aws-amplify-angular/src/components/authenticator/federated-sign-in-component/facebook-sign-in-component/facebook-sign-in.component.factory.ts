@@ -13,46 +13,60 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
+import {
+	Component,
+	Input,
+	OnInit,
+	ViewChild,
+	ComponentFactoryResolver,
+	OnDestroy,
+} from '@angular/core';
 import { DynamicComponentDirective } from '../../../../directives/dynamic.component.directive';
 import { ComponentMount } from '../../../component.mount';
 import { FacebookSignInClass } from './facebook-sign-in.class';
-import { FacebookSignInComponentIonic } from './facebook-sign-in.component.ionic'
+import { FacebookSignInComponentIonic } from './facebook-sign-in.component.ionic';
 import { FacebookSignInComponentCore } from './facebook-sign-in.component.core';
 
 @Component({
-  selector: 'amplify-auth-facebook-sign-in',
-  template: `
-              <div>
-                <ng-template component-host></ng-template>
-              </div>
-            `
+	selector: 'amplify-auth-facebook-sign-in',
+	template: `
+		<div>
+			<ng-template component-host></ng-template>
+		</div>
+	`,
 })
 export class FacebookSignInComponent implements OnInit, OnDestroy {
-  @Input() framework: string;
-  @Input() facebookAppId: string;
-  @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
+	@Input() framework: string;
+	@Input() facebookAppId: string;
+	@ViewChild(DynamicComponentDirective)
+	componentHost: DynamicComponentDirective;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
+	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
 
-  ngOnInit() {
-    this.loadComponent();
-  }
+	ngOnInit() {
+		this.loadComponent();
+	}
 
-  ngOnDestroy() {}
+	ngOnDestroy() {}
 
-  loadComponent() {
+	loadComponent() {
+		let authComponent =
+			this.framework && this.framework === 'ionic'
+				? new ComponentMount(FacebookSignInComponentIonic, {
+						facebookAppId: this.facebookAppId,
+				  })
+				: new ComponentMount(FacebookSignInComponentCore, {
+						facebookAppId: this.facebookAppId,
+				  });
 
-    let authComponent = this.framework && this.framework === 'ionic' 
-      ? new ComponentMount(FacebookSignInComponentIonic, { facebookAppId: this.facebookAppId }) 
-      : new ComponentMount(FacebookSignInComponentCore, { facebookAppId: this.facebookAppId });
+		let componentFactory = this.componentFactoryResolver.resolveComponentFactory(
+			authComponent.component
+		);
 
-    let componentFactory = this.componentFactoryResolver.resolveComponentFactory(authComponent.component);
+		const viewContainerRef = this.componentHost.viewContainerRef;
+		viewContainerRef.clear();
 
-    const viewContainerRef = this.componentHost.viewContainerRef;
-    viewContainerRef.clear();
-
-    const componentRef = viewContainerRef.createComponent(componentFactory);
-    (<FacebookSignInClass>componentRef.instance).data = authComponent.data;
-  }
+		const componentRef = viewContainerRef.createComponent(componentFactory);
+		(<FacebookSignInClass>componentRef.instance).data = authComponent.data;
+	}
 }

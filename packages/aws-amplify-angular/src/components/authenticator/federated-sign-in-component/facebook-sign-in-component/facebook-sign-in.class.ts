@@ -14,5 +14,5 @@
 // tslint:enable
 
 export class FacebookSignInClass {
-  data: any;
+	data: any;
 }
