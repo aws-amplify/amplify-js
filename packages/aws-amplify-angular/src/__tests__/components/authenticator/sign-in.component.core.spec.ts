@@ -10,6 +10,7 @@ import { AmplifyService, AmplifyModules } from '../../../providers';
 import { authModule } from '../../../__mocks__/mock_module';
 import { SignInComponentCore } from '../../../components/authenticator/sign-in-component/sign-in.component.core';
 import { UsernameFieldComponentCore } from '../../../components/authenticator/username-field-component/username-field.component.core';
+import { FederatedSignInComponentCore } from '../../../components/authenticator/federated-sign-in-component/federated-sign-in.component.core';
 
 describe('SignInComponentCore: ', () => {
 	let component: SignInComponentCore;
@@ -29,6 +30,7 @@ describe('SignInComponentCore: ', () => {
 			declarations: [
 				SignInComponentCore,
 				MockComponent(UsernameFieldComponentCore),
+				MockComponent(FederatedSignInComponentCore),
 			],
 			providers: [
 				{

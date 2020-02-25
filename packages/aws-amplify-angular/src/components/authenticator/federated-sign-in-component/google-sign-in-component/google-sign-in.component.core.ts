@@ -13,9 +13,9 @@
  */
 // tslint:enable
 
-import { Component, Input, OnInit  } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AmplifyService } from '../../../../providers/amplify.service';
-import { constants, setLocalStorage } from '../../common'
+import { constants, setLocalStorage } from '../../common';
 import * as AmplifyUI from '@aws-amplify/ui';
 
 const template = `
@@ -27,83 +27,94 @@ const template = `
      Sign In with Google
     </span>
   </button>
-`
+`;
 
 @Component({
-  selector: 'amplify-auth-google-sign-in-core',
-  template
+	selector: 'amplify-auth-google-sign-in-core',
+	template,
 })
 export class GoogleSignInComponentCore implements OnInit {
-  @Input() googleClientId: string;
-  protected logger: any;
-  amplifyUI: any;
+	@Input() googleClientId: string;
+	protected logger: any;
+	amplifyUI: any;
 
-  constructor(protected amplifyService: AmplifyService) {
-    this.logger = this.amplifyService.logger('GoogleSignInComponent', 'INFO');
-    this.amplifyUI = AmplifyUI
-  }
+	constructor(protected amplifyService: AmplifyService) {
+		this.logger = this.amplifyService.logger('GoogleSignInComponent', 'INFO');
+		this.amplifyUI = AmplifyUI;
+	}
 
-  ngOnInit() {
-    if (!this.amplifyService.auth() || 
-      typeof this.amplifyService.auth().federatedSignIn !== 'function' || 
-      typeof this.amplifyService.auth().currentAuthenticatedUser !== 'function') {
-      this.logger.warn('No Auth module found, please ensure @aws-amplify/auth is imported');
-    }
+	ngOnInit() {
+		if (
+			!this.amplifyService.auth() ||
+			typeof this.amplifyService.auth().federatedSignIn !== 'function' ||
+			typeof this.amplifyService.auth().currentAuthenticatedUser !== 'function'
+		) {
+			this.logger.warn(
+				'No Auth module found, please ensure @aws-amplify/auth is imported'
+			);
+		}
 
-    const ga = (<any>window).gapi && (<any>window).gapi.auth2 
-      ? (<any>window).gapi.auth2.getAuthInstance() 
-      : null;
-    if (this.googleClientId && !ga) {
-      this.createScript();
-    }
-  }
+		const ga =
+			(<any>window).gapi && (<any>window).gapi.auth2
+				? (<any>window).gapi.auth2.getAuthInstance()
+				: null;
+		if (this.googleClientId && !ga) {
+			this.createScript();
+		}
+	}
 
-  async onSignIn() {
-    const ga = (<any>window).gapi.auth2.getAuthInstance();
-    try {
-      const googleUser = await ga.signIn()
-      const { id_token, expires_at } = googleUser.getAuthResponse();
-      const profile = googleUser.getBasicProfile();
-      const gapiUser = {
-        email: profile.getEmail(),
-        name: profile.getName(),
-        picture: profile.getImageUrl(),
-      };
+	async onSignIn() {
+		const ga = (<any>window).gapi.auth2.getAuthInstance();
+		try {
+			const googleUser = await ga.signIn();
+			const { id_token, expires_at } = googleUser.getAuthResponse();
+			const profile = googleUser.getBasicProfile();
+			const gapiUser = {
+				email: profile.getEmail(),
+				name: profile.getName(),
+				picture: profile.getImageUrl(),
+			};
 
-      const payload = { provider: constants.GOOGLE };
-      setLocalStorage(constants.AUTH_SOURCE_KEY, payload, this.logger);
+			const payload = { provider: constants.GOOGLE };
+			setLocalStorage(constants.AUTH_SOURCE_KEY, payload, this.logger);
 
-      await this.amplifyService.auth().federatedSignIn('google', {
-        token: id_token,
-        expires_at
-      }, gapiUser);
-      this.logger.debug(`Signed in with federated identity: ${constants.GOOGLE}`);
-      
-      const user = await this.amplifyService.auth().currentAuthenticatedUser();
-      this.amplifyService.setAuthState({ state: 'signedIn', user: user});
-    } catch(error) {
-      this.logger.error(error);
-    }
-  }
+			await this.amplifyService.auth().federatedSignIn(
+				'google',
+				{
+					token: id_token,
+					expires_at,
+				},
+				gapiUser
+			);
+			this.logger.debug(
+				`Signed in with federated identity: ${constants.GOOGLE}`
+			);
 
-  initGapi() {
-    this.logger.debug('init gapi');
-    const ga = (<any>window).gapi;
-    const self = this;
-    ga.load('auth2', () => {
-        ga.auth2.init({
-            client_id: self.googleClientId,
-            scope: 'profile email openid'
-        });
-    });
-  }
+			const user = await this.amplifyService.auth().currentAuthenticatedUser();
+			this.amplifyService.setAuthState({ state: 'signedIn', user: user });
+		} catch (error) {
+			this.logger.error(error);
+		}
+	}
 
-  createScript() {
-    const script = document.createElement('script');
-  
-    script.src = 'https://apis.google.com/js/platform.js';
-    script.async = true;
-    script.onload = this.initGapi.bind(this)
-    document.body.appendChild(script);
-  }
+	initGapi() {
+		this.logger.debug('init gapi');
+		const ga = (<any>window).gapi;
+		const self = this;
+		ga.load('auth2', () => {
+			ga.auth2.init({
+				client_id: self.googleClientId,
+				scope: 'profile email openid',
+			});
+		});
+	}
+
+	createScript() {
+		const script = document.createElement('script');
+
+		script.src = 'https://apis.google.com/js/platform.js';
+		script.async = true;
+		script.onload = this.initGapi.bind(this);
+		document.body.appendChild(script);
+	}
 }

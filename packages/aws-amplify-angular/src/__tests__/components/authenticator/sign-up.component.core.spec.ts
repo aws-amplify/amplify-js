@@ -14,7 +14,6 @@ import {
 	SignUpField,
 } from '../../../components/authenticator/sign-up-component/sign-up.component.core';
 import { PhoneFieldComponentCore } from '../../../components/authenticator/phone-field-component/phone-field.component.core';
-// tslint:enable
 
 describe('SignUpComponentCore (basics): ', () => {
 	let component: SignUpComponentCore;

@@ -27,7 +27,7 @@ const template = `
       <div class="amplify-form-header" data-test="${auth.signIn.headerSection}">
         {{ this.amplifyService.i18n().get('Sign in to your account') }}
       </div>
-      <div *ngIf="_signInConfig.federatedSignInConfig">
+      <div *ngIf="_signInConfig && _signInConfig.federatedSignInConfig">
         <amplify-auth-federated-sign-in-core
           [authState]="_authState"
           [federatedSignInConfig]="_signInConfig.federatedSignInConfig"

@@ -23,12 +23,10 @@ const template = `
       *ngIf="googleClientId"
       [googleClientId]="googleClientId"
     ></amplify-auth-google-sign-in-core>
-
     <amplify-auth-facebook-sign-in-core
       *ngIf="facebookAppId"
       [facebookAppId]="facebookAppId"
     ></amplify-auth-facebook-sign-in-core>
-
     <amplify-auth-amazon-sign-in-core
       *ngIf="amazonClientId"
       [amazonClientId]="amazonClientId"
@@ -37,38 +35,38 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-federated-sign-in-core',
-  template
+	selector: 'amplify-auth-federated-sign-in-core',
+	template,
 })
 export class FederatedSignInComponentCore {
-  _authState: AuthState;
-  _show: boolean;
-  _federatedSignInConfig: any;
-  googleClientId: string;
-  facebookAppId: string;
-  amazonClientId: string; 
+	_authState: AuthState;
+	_show: boolean;
+	_federatedSignInConfig: any;
+	googleClientId: string;
+	facebookAppId: string;
+	amazonClientId: string;
 
-  constructor(protected amplifyService: AmplifyService) {}
+	constructor(protected amplifyService: AmplifyService) {}
 
-  @Input()
-  set authState(authState: AuthState) {
-    this._authState = authState;
-    this._show = includes(['signIn', 'signedOut', 'signedUp'], authState.state);
-  }
+	@Input()
+	set authState(authState: AuthState) {
+		this._authState = authState;
+		this._show = includes(['signIn', 'signedOut', 'signedUp'], authState.state);
+	}
 
-  @Input()
-  set federatedSignInConfig(federatedSignInConfig: any) {
-    if (federatedSignInConfig) {
-      this._federatedSignInConfig = federatedSignInConfig;
-      if (this._federatedSignInConfig.googleClientId) {
-        this.googleClientId = this._federatedSignInConfig.googleClientId;
-      }
-      if (this._federatedSignInConfig.facebookAppId) {
-        this.facebookAppId = this._federatedSignInConfig.facebookAppId;
-      }
-      if (this._federatedSignInConfig.amazonClientId) {
-        this.amazonClientId = this._federatedSignInConfig.amazonClientId;
-      }
-    }
-  }
+	@Input()
+	set federatedSignInConfig(federatedSignInConfig: any) {
+		if (federatedSignInConfig) {
+			this._federatedSignInConfig = federatedSignInConfig;
+			if (this._federatedSignInConfig.googleClientId) {
+				this.googleClientId = this._federatedSignInConfig.googleClientId;
+			}
+			if (this._federatedSignInConfig.facebookAppId) {
+				this.facebookAppId = this._federatedSignInConfig.facebookAppId;
+			}
+			if (this._federatedSignInConfig.amazonClientId) {
+				this.amazonClientId = this._federatedSignInConfig.amazonClientId;
+			}
+		}
+	}
 }
