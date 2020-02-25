@@ -10,7 +10,12 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import { I18n } from '@aws-amplify/core';
 import { injectGlobal } from 'emotion';
+
+import * as languages from '../common/translations';
+
+I18n.putVocabularies(languages);
 
 injectGlobal`
    :root {
@@ -50,4 +55,4 @@ injectGlobal`
     --amplify-third-font-size: 0.813em;
     --amplify-font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
   }
-`; 
+`;
