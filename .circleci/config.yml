@@ -2,7 +2,7 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2
+version: 2.1
 machine:
   environment:
     PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
@@ -251,26 +251,28 @@ jobs:
       - store_artifacts:
           path: amplify-js-samples-staging/cypress/screenshots
 
-  integ_rn_setup:
-    <<: *defaults
+  integ_rn_ios_setup:
+    macos:
+      xcode: '11.3.1'
     working_directory: ~/
     steps:
       - attach_workspace:
-        at: /root
+          at: /root
       - run:
-        name: Configure Detox
-        environment:
-          HOMEBREW_NO_AUTO_UPDATE: 1
-        command: |
-          brew tap wix/brew
-          brew install applesimutils
-          yarn global add detox-cli
+          name: Configure Detox
+          environment:
+            HOMEBREW_NO_AUTO_UPDATE: 1
+          command: |
+            brew tap wix/brew
+            brew install applesimutils
+            yarn global add detox-cli
       - persist_to_workspace:
           root: /root
           paths: amplify-js-samples-staging
 
-  integ_rn_storage:
-    <<: *defaults
+  integ_rn_ios_storage:
+    macos:
+      xcode: '11.3.1'
     working_directory: ~/
     steps:
       - attach_workspace:
@@ -309,9 +311,12 @@ workflows:
   build_test_deploy:
     jobs:
       - build
-      - integ_rn_setup:
+      - integ_rn_ios_setup:
           requires:
             - build
+      - integ_rn_ios_storage:
+          requires:
+            - integ_rn_ios_setup
       # - unit_test:
       #     requires:
       #       - build
