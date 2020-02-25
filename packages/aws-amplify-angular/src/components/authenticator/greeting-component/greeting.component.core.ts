@@ -31,127 +31,141 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-auth-greetings-core',
-  template
+	selector: 'amplify-auth-greetings-core',
+	template,
 })
 export class GreetingComponentCore implements OnInit {
-  signedIn: boolean;
-  greeting: string;
-  _usernameAttributes: string = 'username';
-  protected logger: any;
+	signedIn: boolean;
+	greeting: string;
+	_usernameAttributes: string = 'username';
+	protected logger: any;
 
-  constructor(@Inject(AmplifyService) protected amplifyService: AmplifyService) {
-    this.logger = this.amplifyService.logger('GreetingComponent');
-    this.subscribe();
-  }
+	constructor(
+		@Inject(AmplifyService) protected amplifyService: AmplifyService
+	) {
+		this.logger = this.amplifyService.logger('GreetingComponent');
+		this.subscribe();
+	}
 
-  @Input()
-  authState: AuthState;
+	@Input()
+	authState: AuthState;
 
-  @Input()
-  set usernameAttributes(usernameAttributes: string) {
-    this._usernameAttributes = usernameAttributes;
-  }
-  
-  ngOnInit() {
-    if (!this.amplifyService.auth()){
-      throw new Error('Auth module not registered on AmplifyService provider');
-    }
-  }
+	@Input()
+	set usernameAttributes(usernameAttributes: string) {
+		this._usernameAttributes = usernameAttributes;
+	}
 
-  subscribe() {
-    this.amplifyService.authStateChange$
-      .subscribe(state => this.setAuthState(state));
-  }
+	ngOnInit() {
+		if (!this.amplifyService.auth()) {
+			throw new Error('Auth module not registered on AmplifyService provider');
+		}
+	}
 
-  setAuthState(authState: AuthState) {
-    this.authState = authState;
-    this.signedIn = authState.state === 'signedIn';
+	subscribe() {
+		this.amplifyService.authStateChange$.subscribe(state =>
+			this.setAuthState(state)
+		);
+	}
 
-    let username = "";
-    if (authState.user) {
-      if (this._usernameAttributes === UsernameAttributes.EMAIL) {
-        username = authState.user.attributes ?
-        authState.user.attributes.email : authState.user.username;
-      } else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
-        username = authState.user.attributes ?
-        authState.user.attributes.phone_number : authState.user.username;
-      } else {
-        username = authState.user.username;
-      }
-    }
-    
-    this.greeting = this.signedIn
-      ? this.amplifyService.i18n().get("Hello, {{username}}")
-        .replace('{{username}}', authState.user.username || authState.user.name)
-      : "";
-  }
+	setAuthState(authState: AuthState) {
+		this.authState = authState;
+		this.signedIn = authState.state === 'signedIn';
 
-  googleSignOut() {
-    const ga = (<any>window).gapi && (<any>window).gapi.auth2
-      ? (<any>window).gapi.auth2.getAuthInstance() 
-      : null;
-    if (!ga) {
-      return Promise.resolve();
-    }
-     ga.then((googleAuth: any) => {
-      if (!googleAuth) {
-        return Promise.resolve();
-      }
-      return googleAuth.signOut();
-    });
-  }
+		let username = '';
+		if (authState.user) {
+			if (this._usernameAttributes === UsernameAttributes.EMAIL) {
+				username = authState.user.attributes
+					? authState.user.attributes.email
+					: authState.user.username;
+			} else if (this._usernameAttributes === UsernameAttributes.PHONE_NUMBER) {
+				username = authState.user.attributes
+					? authState.user.attributes.phone_number
+					: authState.user.username;
+			} else {
+				username = authState.user.username;
+			}
+		}
 
-  facebookSignOut() {
-    const fb = (<any>window).FB;
-    if (!fb) {
-      return Promise.resolve();
-    }
-    fb.getLoginStatus(response => {
-      if (response.status === 'connected') {
-        return new Promise((res, rej) => {
-          fb.logout(response => {
-            res(response);
-          });
-        });
-      } else {
-        return Promise.resolve();
-      }
-    });
-  }
+		this.greeting = this.signedIn
+			? this.amplifyService
+					.i18n()
+					.get('Hello, {{username}}')
+					.replace(
+						'{{username}}',
+						authState.user.username || authState.user.name
+					)
+			: '';
+	}
 
-  amazonSignOut() {
-    const amz = (<any>window).amazon;
-    if (!amz) {
-      // this.logger.debug('Amazon Login sdk undefined');
-      return Promise.resolve();
-    }
-    //  this.logger.debug('Amazon signing out');
-    amz.Login.logout();
-  }
+	googleSignOut() {
+		const ga =
+			(<any>window).gapi && (<any>window).gapi.auth2
+				? (<any>window).gapi.auth2.getAuthInstance()
+				: null;
+		if (!ga) {
+			return Promise.resolve();
+		}
+		ga.then((googleAuth: any) => {
+			if (!googleAuth) {
+				return Promise.resolve();
+			}
+			return googleAuth.signOut();
+		});
+	}
 
-  onSignOut() {
-    let payload: any = {};
-    try {
-      payload = JSON.parse(localStorage.getItem(constants.AUTH_SOURCE_KEY)) || {};
-      localStorage.removeItem(constants.AUTH_SOURCE_KEY);
-    } catch (e) {
-      this.logger.debug(`Failed to parse the info from ${constants.AUTH_SOURCE_KEY} from localStorage with ${e}`);
-    }
+	facebookSignOut() {
+		const fb = (<any>window).FB;
+		if (!fb) {
+			return Promise.resolve();
+		}
+		fb.getLoginStatus(response => {
+			if (response.status === 'connected') {
+				return new Promise((res, rej) => {
+					fb.logout(response => {
+						res(response);
+					});
+				});
+			} else {
+				return Promise.resolve();
+			}
+		});
+	}
 
-    switch (payload.provider) {
-      case constants.GOOGLE:
-        this.googleSignOut();
-        break;
-      case constants.FACEBOOK:
-        this.facebookSignOut();
-        break;
-      case constants.AMAZON:
-        this.amazonSignOut();
-        break;
-      default:
-        break;
-    }
-    this.amplifyService.auth().signOut();
-  }
+	amazonSignOut() {
+		const amz = (<any>window).amazon;
+		if (!amz) {
+			// this.logger.debug('Amazon Login sdk undefined');
+			return Promise.resolve();
+		}
+		//  this.logger.debug('Amazon signing out');
+		amz.Login.logout();
+	}
+
+	onSignOut() {
+		let payload: any = {};
+		try {
+			payload =
+				JSON.parse(localStorage.getItem(constants.AUTH_SOURCE_KEY)) || {};
+			localStorage.removeItem(constants.AUTH_SOURCE_KEY);
+		} catch (e) {
+			this.logger.debug(
+				`Failed to parse the info from ${constants.AUTH_SOURCE_KEY} from localStorage with ${e}`
+			);
+		}
+
+		switch (payload.provider) {
+			case constants.GOOGLE:
+				this.googleSignOut();
+				break;
+			case constants.FACEBOOK:
+				this.facebookSignOut();
+				break;
+			case constants.AMAZON:
+				this.amazonSignOut();
+				break;
+			default:
+				break;
+		}
+		this.amplifyService.auth().signOut();
+	}
 }

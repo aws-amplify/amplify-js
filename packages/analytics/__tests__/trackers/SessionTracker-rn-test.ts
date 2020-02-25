@@ -2,104 +2,115 @@ const mockAddEventListener = jest.fn();
 const mockRemoveEventListener = jest.fn();
 
 jest.mock('react-native', () => {
-    return {
-        AppState: {
-            currentState: 'inactive',
-            addEventListener: mockAddEventListener,
-            removeEventListener: mockRemoveEventListener
-        }
-    }
+	return {
+		AppState: {
+			currentState: 'inactive',
+			addEventListener: mockAddEventListener,
+			removeEventListener: mockRemoveEventListener,
+		},
+	};
 });
 
 import SessionTracker from '../../src/trackers/SessionTracker-rn';
 import { AppState } from 'react-native';
 
 const tracker = jest.fn().mockImplementation(() => {
-    return Promise.resolve();
+	return Promise.resolve();
 });
 
 describe('SessionTracker test', () => {
-    describe('constructor test', () => {
-        test('happy case', () => {
-            tracker.mockClear();
+	describe('constructor test', () => {
+		test('happy case', () => {
+			tracker.mockClear();
 
-            const sessionTracker = new SessionTracker(tracker, {
-                enable: true
-            });
+			const sessionTracker = new SessionTracker(tracker, {
+				enable: true,
+			});
 
-            expect(tracker).toBeCalledWith({
-                name: '_session.start',
-                attributes: {}
-            }, 'AWSPinpoint');
-            expect(mockAddEventListener).toBeCalled();
+			expect(tracker).toBeCalledWith(
+				{
+					name: '_session.start',
+					attributes: {},
+				},
+				'AWSPinpoint'
+			);
+			expect(mockAddEventListener).toBeCalled();
 
-            mockAddEventListener.mockClear();
-        });
-    });
+			mockAddEventListener.mockClear();
+		});
+	});
 
-    describe('configure test', () => {
-        test('happy case', () => {
-            const sessionTracker = new SessionTracker(tracker, {
-                enable: true
-            });
+	describe('configure test', () => {
+		test('happy case', () => {
+			const sessionTracker = new SessionTracker(tracker, {
+				enable: true,
+			});
 
-            expect(sessionTracker.configure({
-                enable: true,
-                attributes: {
-                    attr1: 'val1'
-                },
-                provider: 'myProvider'
-            })).toEqual({
-                enable: true,
-                attributes: {
-                    attr1: 'val1'
-                },
-                provider: 'myProvider'
-            });
-        });
+			expect(
+				sessionTracker.configure({
+					enable: true,
+					attributes: {
+						attr1: 'val1',
+					},
+					provider: 'myProvider',
+				})
+			).toEqual({
+				enable: true,
+				attributes: {
+					attr1: 'val1',
+				},
+				provider: 'myProvider',
+			});
+		});
 
-        test('autoTrack disabled', () => {
-            const sessionTracker = new SessionTracker(tracker, {
-                enable: true
-            });
+		test('autoTrack disabled', () => {
+			const sessionTracker = new SessionTracker(tracker, {
+				enable: true,
+			});
 
-            mockRemoveEventListener.mockClear();
+			mockRemoveEventListener.mockClear();
 
-            sessionTracker.configure({
-                enable: false
-            });
+			sessionTracker.configure({
+				enable: false,
+			});
 
-            expect(mockRemoveEventListener).toBeCalled();
-            mockRemoveEventListener.mockClear();
-        });
-    });
+			expect(mockRemoveEventListener).toBeCalled();
+			mockRemoveEventListener.mockClear();
+		});
+	});
 
-    describe('track function test', () => {
-        test('if the app turns to be active', () => {
-            const sessionTracker = new SessionTracker(tracker, {
-                enable: true
-            });
-            tracker.mockClear();
+	describe('track function test', () => {
+		test('if the app turns to be active', () => {
+			const sessionTracker = new SessionTracker(tracker, {
+				enable: true,
+			});
+			tracker.mockClear();
 
-            // mock to be inactive
-            sessionTracker._currentState = 'inactive';
-            sessionTracker._trackFunc('active');
+			// mock to be inactive
+			sessionTracker._currentState = 'inactive';
+			sessionTracker._trackFunc('active');
 
-            expect(tracker).toBeCalledWith({
-                name: '_session.start',
-                attributes: {}
-            }, 'AWSPinpoint');
-        });
+			expect(tracker).toBeCalledWith(
+				{
+					name: '_session.start',
+					attributes: {},
+				},
+				'AWSPinpoint'
+			);
+		});
 
-        test('if app turns into background', () => {
-            const sessionTracker = new SessionTracker(tracker, {
-                enable: true
-            });
-            tracker.mockClear();
+		test('if app turns into background', () => {
+			const sessionTracker = new SessionTracker(tracker, {
+				enable: true,
+			});
+			tracker.mockClear();
 
-            sessionTracker._trackFunc('inactive');
+			sessionTracker._trackFunc('inactive');
 
-            expect(tracker).toBeCalledWith({"attributes": {}, "immediate": true, "name": "_session.stop"}, 'AWSPinpoint');
-        });
-    });
+			expect(tracker).toBeCalledWith(
+				{ attributes: {}, immediate: true, name: '_session.stop' },
+				'AWSPinpoint'
+			);
+		});
+	});
 });

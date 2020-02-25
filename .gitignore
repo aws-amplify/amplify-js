@@ -5,6 +5,7 @@ lerna-debug.log
 node_modules/**
 packages/*/node_modules/**
 packages/**/lib/
+packages/**/lib-esm/
 packages/**/dist/
 packages/**/es/
 .DS_Store

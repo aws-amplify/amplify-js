@@ -14,55 +14,66 @@
 // tslint:enable
 
 import {
-  Component,
-  Input, OnInit,
-  ViewChild,
-  ComponentFactoryResolver,
-  OnDestroy
+	Component,
+	Input,
+	OnInit,
+	ViewChild,
+	ComponentFactoryResolver,
+	OnDestroy,
 } from '@angular/core';
 import { DynamicComponentDirective } from '../../../directives/dynamic.component.directive';
-import { ComponentMount }      from '../../component.mount';
+import { ComponentMount } from '../../component.mount';
 import { ConfirmSignUpClass } from './confirm-sign-up.class';
 import { ConfirmSignUpComponentIonic } from './confirm-sign-up.component.ionic';
 import { ConfirmSignUpComponentCore } from './confirm-sign-up.component.core';
 import { AuthState } from '../../../providers';
 
 @Component({
-  selector: 'amplify-auth-confirm-sign-up',
-  template: `
-              <div>
-                <ng-template component-host></ng-template>
-              </div>
-            `
+	selector: 'amplify-auth-confirm-sign-up',
+	template: `
+		<div>
+			<ng-template component-host></ng-template>
+		</div>
+	`,
 })
 export class ConfirmSignUpComponent implements OnInit, OnDestroy {
-  @Input() framework: string;
-  @Input() authState: AuthState;
-  @Input() usernameAttributes: string = 'username';
-  @Input() hide: string[] = [];
-  @ViewChild(DynamicComponentDirective) componentHost: DynamicComponentDirective;
+	@Input() framework: string;
+	@Input() authState: AuthState;
+	@Input() usernameAttributes: string = 'username';
+	@Input() hide: string[] = [];
+	@ViewChild(DynamicComponentDirective)
+	componentHost: DynamicComponentDirective;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
+	constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
 
-  ngOnInit() {
-    this.loadComponent();
-  }
+	ngOnInit() {
+		this.loadComponent();
+	}
 
-  ngOnDestroy() {}
+	ngOnDestroy() {}
 
-  loadComponent() {
+	loadComponent() {
+		const authComponent =
+			this.framework && this.framework.toLowerCase() === 'ionic'
+				? new ComponentMount(ConfirmSignUpComponentIonic, {
+						authState: this.authState,
+						usernameAttributes: this.usernameAttributes,
+						hide: this.hide,
+				  })
+				: new ComponentMount(ConfirmSignUpComponentCore, {
+						authState: this.authState,
+						usernameAttributes: this.usernameAttributes,
+						hide: this.hide,
+				  });
 
-    const authComponent = this.framework && this.framework.toLowerCase() === 'ionic' ?
-    new ComponentMount(ConfirmSignUpComponentIonic,{authState: this.authState, usernameAttributes: this.usernameAttributes, hide: this.hide}) :
-    new ComponentMount(ConfirmSignUpComponentCore, {authState: this.authState, usernameAttributes: this.usernameAttributes, hide: this.hide});
+		const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
+			authComponent.component
+		);
 
-    const componentFactory = this.componentFactoryResolver
-    .resolveComponentFactory(authComponent.component);
+		const viewContainerRef = this.componentHost.viewContainerRef;
+		viewContainerRef.clear();
 
-    const viewContainerRef = this.componentHost.viewContainerRef;
-    viewContainerRef.clear();
-
-    const componentRef = viewContainerRef.createComponent(componentFactory);
-    (<ConfirmSignUpClass>componentRef.instance).data = authComponent.data;
-  }
+		const componentRef = viewContainerRef.createComponent(componentFactory);
+		(<ConfirmSignUpClass>componentRef.instance).data = authComponent.data;
+	}
 }

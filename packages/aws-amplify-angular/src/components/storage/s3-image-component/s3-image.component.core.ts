@@ -25,55 +25,62 @@ const template = `
 `;
 
 @Component({
-  selector: 'amplify-s3-image-core',
-  template
+	selector: 'amplify-s3-image-core',
+	template,
 })
 export class S3ImageComponentCore implements OnInit {
-  url: any;
-  _path: string;
-  _options: any = {};
-  protected logger: any;
+	url: any;
+	_path: string;
+	_options: any = {};
+	protected logger: any;
 
-  @Output()
-  selected: EventEmitter<string> = new EventEmitter<string>();
+	@Output()
+	selected: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(protected amplifyService: AmplifyService) {
-    this.logger = this.amplifyService.logger('S3ImageComponent');
-  }
+	constructor(protected amplifyService: AmplifyService) {
+		this.logger = this.amplifyService.logger('S3ImageComponent');
+	}
 
-  @Input()
-  set data(data:any){
-    if (!data.path) { return; }
-    this._path = data.path;
-    this._options = data.options;
-  }
+	@Input()
+	set data(data: any) {
+		if (!data.path) {
+			return;
+		}
+		this._path = data.path;
+		this._options = data.options;
+	}
 
-  @Input()
-  set path(path: string) {
-    this._path = path;
-  }
+	@Input()
+	set path(path: string) {
+		this._path = path;
+	}
 
-  @Input()
-  set options(options: any) {
-    this._options = options;
-  }
+	@Input()
+	set options(options: any) {
+		this._options = options;
+	}
 
-  ngOnInit() {
-    if (!this._path) { return; }
-    if (!this.amplifyService.storage()){
-      throw new Error('Storage module not registered on AmplifyService provider');
-    }
-    this.getImage(this._path, this._options);
-  }
+	ngOnInit() {
+		if (!this._path) {
+			return;
+		}
+		if (!this.amplifyService.storage()) {
+			throw new Error(
+				'Storage module not registered on AmplifyService provider'
+			);
+		}
+		this.getImage(this._path, this._options);
+	}
 
-  onImageClicked() {
-    this.selected.emit(this.url);
-  }
+	onImageClicked() {
+		this.selected.emit(this.url);
+	}
 
-  getImage(path, options) {
-    this.amplifyService.storage()
-    .get(path, options)
-    .then(url => this.url = url)
-    .catch(e => console.error(e));
-  }
+	getImage(path, options) {
+		this.amplifyService
+			.storage()
+			.get(path, options)
+			.then(url => (this.url = url))
+			.catch(e => console.error(e));
+	}
 }

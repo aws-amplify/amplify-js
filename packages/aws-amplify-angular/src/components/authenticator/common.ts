@@ -14,32 +14,31 @@
 // tslint:enable
 
 export function includes(ary, match) {
-  return ary.filter(item => item === match).length > 0;
+	return ary.filter(item => item === match).length > 0;
 }
 
 export function setLocalStorage(key: string, payload: any, logger: any) {
-  try {
-    localStorage.setItem(key, JSON.stringify(payload));
-  } catch (e) {
-    logger.debug('Failed to cache auth source into localStorage', e);
-  }
+	try {
+		localStorage.setItem(key, JSON.stringify(payload));
+	} catch (e) {
+		logger.debug('Failed to cache auth source into localStorage', e);
+	}
 }
 
 export const constants = {
-  AUTH_SOURCE_KEY: 'amplify-angular-auth-source',
-  AUTH0: 'auth0',
-  GOOGLE: 'google',
-  FACEBOOK: 'facebook',
-  AMAZON: 'amazon',
+	AUTH_SOURCE_KEY: 'amplify-angular-auth-source',
+	AUTH0: 'auth0',
+	GOOGLE: 'google',
+	FACEBOOK: 'facebook',
+	AMAZON: 'amazon',
 };
 
 export const labelMap = {
-  email: 'Email',
-  phone_number: 'Phone Number',
-  username: 'Username'
+	email: 'Email',
+	phone_number: 'Phone Number',
+	username: 'Username',
 };
 
 export const composePhoneNumber = (countryCode, local_phone_number) => {
-    return `+${countryCode}${local_phone_number.replace(/[-()]/g, '')}`;
-}
-
+	return `+${countryCode}${local_phone_number.replace(/[-()]/g, '')}`;
+};
