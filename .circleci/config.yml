@@ -311,9 +311,12 @@ workflows:
   build_test_deploy:
     jobs:
       - build
-      - integ_rn_ios_setup:
+      - integ_setup:
           requires:
             - build
+      - integ_rn_ios_setup:
+          requires:
+            - integ_setup
       - integ_rn_ios_storage:
           requires:
             - integ_rn_ios_setup
