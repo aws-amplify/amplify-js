@@ -319,6 +319,19 @@ export class Credentials {
 		return this._loadCredentials(credentials, 'userPool', true, null);
 	}
 
+	private _setClockOffset(credentials) {
+		if (
+			credentials &&
+			credentials['cognito'] &&
+			credentials['cognito']['config'] &&
+			credentials['cognito']['config']['systemClockOffset']
+		) {
+			DateUtils.setClockOffset(
+				credentials['cognito']['config']['systemClockOffset']
+			);
+		}
+	}
+
 	private _loadCredentials(
 		credentials,
 		source,
@@ -336,15 +349,7 @@ export class Credentials {
 				}
 
 				logger.debug('Load credentials successfully', credentials);
-				if (
-					credentials['cognito'] &&
-					credentials['cognito']['config'] &&
-					credentials['cognito']['config']['systemClockOffset']
-				) {
-					DateUtils.setClockOffset(
-						credentials['cognito']['config']['systemClockOffset']
-					);
-				}
+				that._setClockOffset(credentials);
 				that._credentials = credentials;
 				that._credentials.authenticated = authenticated;
 				that._credentials_source = source;
