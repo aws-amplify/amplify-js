@@ -5,7 +5,7 @@ import { Component, h, Prop } from '@stencil/core';
 import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { AuthState, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
-import { AuthMessages } from '../../common/types/AuthMessages';
+import { Translations } from '../../common/Translations';
 
 const logger = new Logger('amplify-amazon-button');
 
@@ -80,7 +80,7 @@ export class AmplifyAmazonButton {
     return (
       <amplify-sign-in-button onClick={event => this.signInWithAmazon(event)} provider="amazon">
         <script src="https://assets.loginwithamazon.com/sdk/na/login1.js"></script>
-        {I18n.get(AuthMessages.SIGN_IN_WITH_AMAZON)}
+        {I18n.get(Translations.SIGN_IN_WITH_AMAZON)}
       </amplify-sign-in-button>
     );
   }

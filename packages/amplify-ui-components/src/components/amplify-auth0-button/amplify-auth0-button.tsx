@@ -4,7 +4,7 @@ import { Component, h, Prop } from '@stencil/core';
 import { AUTH_SOURCE_KEY } from '../../common/constants';
 import { AuthStateHandler, FederatedConfig, AuthState } from '../../common/types/auth-types';
 import { dispatchAuthStateChangeEvent } from '../../common/helpers';
-import { AuthMessages } from '../../common/types/AuthMessages';
+import { Translations } from '../../common/Translations';
 
 const logger = new Logger('amplify-auth0-button');
 
@@ -102,7 +102,7 @@ export class AmplifyAuth0Button {
     return (
       <amplify-sign-in-button onClick={event => this.signInWithAuth0(event)} provider="auth0">
         <script onLoad={this.handleLoad} src="https://cdn.auth0.com/js/auth0/9.11/auth0.min.js"></script>
-        {I18n.get(AuthMessages.SIGN_IN_WITH_AUTH0)}
+        {I18n.get(Translations.SIGN_IN_WITH_AUTH0)}
       </amplify-sign-in-button>
     );
   }

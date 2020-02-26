@@ -12,7 +12,7 @@ import {
 import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
 import { AmplifySignUpAttributes, PhoneNumberInterface } from './amplify-sign-up-interface';
 import { dispatchAuthStateChangeEvent, dispatchToastHubEvent } from '../../common/helpers';
-import { AuthMessages } from '../../common/types/AuthMessages';
+import { Translations } from '../../common/Translations';
 
 @Component({
   tag: 'amplify-sign-up',
@@ -25,13 +25,13 @@ export class AmplifySignUp {
   /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: string;
   /** Used for header text in sign up component */
-  @Prop() headerText: string = I18n.get(AuthMessages.SIGN_UP_HEADER_TEXT);
+  @Prop() headerText: string = I18n.get(Translations.SIGN_UP_HEADER_TEXT);
   /** Used for the submit button text in sign up component */
-  @Prop() submitButtonText: string = I18n.get(AuthMessages.SIGN_UP_SUBMIT_BUTTON_TEXT);
+  @Prop() submitButtonText: string = I18n.get(Translations.SIGN_UP_SUBMIT_BUTTON_TEXT);
   /** Used for the submit button text in sign up component */
-  @Prop() haveAccountText: string = I18n.get(AuthMessages.SIGN_UP_HAVE_ACCOUNT_TEXT);
+  @Prop() haveAccountText: string = I18n.get(Translations.SIGN_UP_HAVE_ACCOUNT_TEXT);
   /** Used for the submit button text in sign up component */
-  @Prop() signInText: string = I18n.get(AuthMessages.SIGN_IN_TEXT);
+  @Prop() signInText: string = I18n.get(Translations.SIGN_IN_TEXT);
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing
@@ -51,19 +51,19 @@ export class AmplifySignUp {
   @Prop() formFields: FormFieldTypes | string[] = [
     {
       type: 'username',
-      placeholder: I18n.get(AuthMessages.SIGN_UP_USERNAME_PLACEHOLDER),
+      placeholder: I18n.get(Translations.SIGN_UP_USERNAME_PLACEHOLDER),
       required: true,
       handleInputChange: event => this.handleUsernameChange(event),
     },
     {
       type: 'password',
-      placeholder: I18n.get(AuthMessages.SIGN_UP_PASSWORD_PLACEHOLDER),
+      placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
       required: true,
       handleInputChange: event => this.handlePasswordChange(event),
     },
     {
       type: 'email',
-      placeholder: I18n.get(AuthMessages.SIGN_UP_EMAIL_PLACEHOLDER),
+      placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
       required: true,
       handleInputChange: event => this.handleEmailChange(event),
     },

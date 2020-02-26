@@ -11,8 +11,8 @@
 | `fieldId`           | `field-id`    | Based on the type of field e.g. sign in, sign up, forgot password, etc.                                            | `string`                      | `EMAIL_SUFFIX`                             |
 | `handleInputChange` | --            | The callback, called when the input is modified by the user.                                                       | `(inputEvent: Event) => void` | `undefined`                                |
 | `inputProps`        | --            | Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes | `object`                      | `undefined`                                |
-| `label`             | `label`       | Used for the EMAIL label                                                                                           | `string`                      | `I18n.get(AuthMessages.EMAIL_LABEL)`       |
-| `placeholder`       | `placeholder` | Used for the placeholder label                                                                                     | `string`                      | `I18n.get(AuthMessages.EMAIL_PLACEHOLDER)` |
+| `label`             | `label`       | Used for the EMAIL label                                                                                           | `string`                      | `I18n.get(Translations.EMAIL_LABEL)`       |
+| `placeholder`       | `placeholder` | Used for the placeholder label                                                                                     | `string`                      | `I18n.get(Translations.EMAIL_PLACEHOLDER)` |
 | `required`          | `required`    | The required flag in order to make an input required prior to submitting a form                                    | `boolean`                     | `false`                                    |
 | `value`             | `value`       | The value of the content inside of the input field                                                                 | `string`                      | `undefined`                                |
 

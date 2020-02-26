@@ -3,7 +3,7 @@ import { I18n } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 
 import { FederatedConfig } from '../../common/types/auth-types';
-import { AuthMessages } from '../../common/types/AuthMessages';
+import { Translations } from '../../common/Translations';
 
 @Component({
   tag: 'amplify-oauth-button',
@@ -20,7 +20,7 @@ export class AmplifyOAuthButton {
   render() {
     return (
       <amplify-sign-in-button onClick={event => this.signInWithOAuth(event)} provider="oauth">
-        {this.config.label || I18n.get(AuthMessages.SIGN_IN_WITH_AWS)}
+        {this.config.label || I18n.get(Translations.SIGN_IN_WITH_AWS)}
       </amplify-sign-in-button>
     );
   }

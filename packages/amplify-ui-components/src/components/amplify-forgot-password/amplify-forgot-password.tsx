@@ -5,7 +5,7 @@ import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
-import { AuthMessages } from '../../common/types/AuthMessages';
+import { Translations } from '../../common/Translations';
 import { CodeDeliveryType } from './amplify-forgot-password-interface';
 
 import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
@@ -18,9 +18,9 @@ const logger = new Logger('ForgotPassword');
 })
 export class AmplifyForgotPassword {
   /** The header text of the forgot password section */
-  @Prop() headerText: string = I18n.get(AuthMessages.RESET_YOUR_PASSWORD);
+  @Prop() headerText: string = I18n.get(Translations.RESET_YOUR_PASSWORD);
   /** The text displayed inside of the submit button for the form */
-  @Prop() submitButtonText: string = I18n.get(AuthMessages.SEND_CODE);
+  @Prop() submitButtonText: string = I18n.get(Translations.SEND_CODE);
   /** The form fields displayed inside of the forgot password form */
   @Prop() formFields: FormFieldTypes;
   /** The function called when making a request to reset password */
@@ -129,7 +129,7 @@ export class AmplifyForgotPassword {
             onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
             data-test="forgot-password-back-to-sign-in-link"
           >
-            {I18n.get(AuthMessages.BACK_TO_SIGN_IN)}
+            {I18n.get(Translations.BACK_TO_SIGN_IN)}
           </amplify-link>
         }
         testDataPrefix={'forgot-password'}

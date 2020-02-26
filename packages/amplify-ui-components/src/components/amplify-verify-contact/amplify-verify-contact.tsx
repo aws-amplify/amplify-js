@@ -4,7 +4,7 @@ import { Component, h, Prop, State } from '@stencil/core';
 import { AuthState, AuthStateHandler, CognitoUserInterface } from '../../common/types/auth-types';
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { dispatchAuthStateChangeEvent } from '../../common/helpers';
-import { AuthMessages } from '../../common/types/AuthMessages';
+import { Translations } from '../../common/Translations';
 
 const logger = new Logger('AmplifyVerifyContact');
 
@@ -78,7 +78,7 @@ export class AmplifyVerifyContact {
             autocomplete: 'off',
           }}
           name="code"
-          placeholder={I18n.get(AuthMessages.CODE_PLACEHOLDER)}
+          placeholder={I18n.get(Translations.CODE_PLACEHOLDER)}
         />
       </div>
     );
@@ -104,7 +104,7 @@ export class AmplifyVerifyContact {
       <div>
         {email && (
           <amplify-radio-button
-            label={I18n.get(AuthMessages.VERIFY_CONTACT_EMAIL_LABEL)}
+            label={I18n.get(Translations.VERIFY_CONTACT_EMAIL_LABEL)}
             key="email"
             name="contact"
             value="email"
@@ -113,7 +113,7 @@ export class AmplifyVerifyContact {
 
         {phone_number && (
           <amplify-radio-button
-            label={I18n.get(AuthMessages.VERIFY_CONTACT_PHONE_LABEL)}
+            label={I18n.get(Translations.VERIFY_CONTACT_PHONE_LABEL)}
             key="phone_number"
             name="contact"
             value="phone_number"
@@ -127,7 +127,7 @@ export class AmplifyVerifyContact {
     return (
       <amplify-form-section
         handleSubmit={event => this.handleSubmit(event)}
-        headerText={I18n.get(AuthMessages.VERIFY_CONTACT_HEADER_TEXT)}
+        headerText={I18n.get(Translations.VERIFY_CONTACT_HEADER_TEXT)}
         loading={this.loading}
         secondaryFooterContent={
           <span>
@@ -136,8 +136,8 @@ export class AmplifyVerifyContact {
         }
         submitButtonText={
           this.verifyAttr
-            ? I18n.get(AuthMessages.VERIFY_CONTACT_SUBMIT_LABEL)
-            : I18n.get(AuthMessages.VERIFY_CONTACT_VERIFY_LABEL)
+            ? I18n.get(Translations.VERIFY_CONTACT_SUBMIT_LABEL)
+            : I18n.get(Translations.VERIFY_CONTACT_VERIFY_LABEL)
         }
       >
         {this.verifyAttr ? this.renderSubmit() : this.renderVerify()}

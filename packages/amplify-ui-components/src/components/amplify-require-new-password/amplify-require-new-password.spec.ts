@@ -1,7 +1,7 @@
 import { I18n } from '@aws-amplify/core';
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyRequireNewPassword } from './amplify-require-new-password';
-import { AuthMessages } from '../../common/types/AuthMessages';
+import { Translations } from '../../common/Translations';
 
 describe('amplify-require-new-password spec:', () => {
   describe('Component logic ->', () => {
@@ -20,11 +20,11 @@ describe('amplify-require-new-password spec:', () => {
     });
 
     it('should evaluate `headerText` to `Change Password` by default', () => {
-      expect(requireNewPassword.headerText).toEqual(I18n.get(AuthMessages.CHANGE_PASSWORD));
+      expect(requireNewPassword.headerText).toEqual(I18n.get(Translations.CHANGE_PASSWORD));
     });
 
     it('should evaluate `submitButtonText` to `Change` by default', () => {
-      expect(requireNewPassword.submitButtonText).toEqual(I18n.get(AuthMessages.CHANGE_PASSWORD_ACTION));
+      expect(requireNewPassword.submitButtonText).toEqual(I18n.get(Translations.CHANGE_PASSWORD_ACTION));
     });
   });
   describe('Render logic ->', () => {

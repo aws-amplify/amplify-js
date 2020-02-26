@@ -3,7 +3,7 @@ import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND } from '../../common/constants';
-import { AuthMessages } from '../../common/types/AuthMessages';
+import { Translations } from '../../common/Translations';
 import { AuthState, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
 
 const logger = new Logger('amplify-google-button');
@@ -92,7 +92,7 @@ export class AmplifyGoogleButton {
     return (
       <amplify-sign-in-button onClick={event => this.signInWithGoogle(event)} provider="google">
         <script onLoad={this.handleLoad} src="https://apis.google.com/js/api:client.js"></script>
-        {I18n.get(AuthMessages.SIGN_IN_WITH_GOOGLE)}
+        {I18n.get(Translations.SIGN_IN_WITH_GOOGLE)}
       </amplify-sign-in-button>
     );
   }

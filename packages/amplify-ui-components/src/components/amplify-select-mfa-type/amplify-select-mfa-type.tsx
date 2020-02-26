@@ -7,7 +7,7 @@ import {
   USER_NOT_SETUP_SOFTWARE_TOKEN_MFA,
   USER_NOT_VERIFIED_SOFTWARE_TOKEN_MFA,
 } from '../../common/constants';
-import { AuthMessages } from '../../common/types/AuthMessages';
+import { Translations } from '../../common/Translations';
 
 const logger = new Logger('SelectMFAType');
 
@@ -84,18 +84,18 @@ export class AmplifySelectMFAType {
       const preferredMFAData = await Auth.setPreferredMFA(user, this.MFAMethod);
 
       logger.debug('Set Preferred MFA Succeeded', preferredMFAData);
-      this.selectMessage = `${I18n.get(AuthMessages.SUCCESS_MFA_TYPE)} ${this.MFAMethod}`;
+      this.selectMessage = `${I18n.get(Translations.SUCCESS_MFA_TYPE)} ${this.MFAMethod}`;
       // 	TODO Add Toast = showToast: true,
     } catch (error) {
       const { message } = error;
 
       if (message === USER_NOT_SETUP_SOFTWARE_TOKEN_MFA || message === USER_NOT_VERIFIED_SOFTWARE_TOKEN_MFA) {
         this.TOTPSetup = true;
-        this.selectMessage = I18n.get(AuthMessages.SETUP_TOTP_REQUIRED);
+        this.selectMessage = I18n.get(Translations.SETUP_TOTP_REQUIRED);
         // 	TODO Add Toast = showToast: true,
       } else {
         logger.debug('Set Preferred MFA failed', error);
-        this.selectMessage = I18n.get(AuthMessages.UNABLE_TO_SETUP_MFA_AT_THIS_TIME);
+        this.selectMessage = I18n.get(Translations.UNABLE_TO_SETUP_MFA_AT_THIS_TIME);
         // 	TODO Add Toast = showToast: true,
       }
     } finally {
@@ -105,10 +105,10 @@ export class AmplifySelectMFAType {
 
   contentBuilder() {
     if (!this.MFATypes || Object.keys(this.MFATypes).length < 2) {
-      logger.debug(I18n.get(AuthMessages.LESS_THAN_TWO_MFA_VALUES_MESSAGE));
+      logger.debug(I18n.get(Translations.LESS_THAN_TWO_MFA_VALUES_MESSAGE));
       return (
         <div>
-          <a>{I18n.get(AuthMessages.LESS_THAN_TWO_MFA_VALUES_MESSAGE)}</a>
+          <a>{I18n.get(Translations.LESS_THAN_TWO_MFA_VALUES_MESSAGE)}</a>
         </div>
       );
     }
@@ -118,8 +118,8 @@ export class AmplifySelectMFAType {
     return (
       // TODO: Add Toast messages
       <amplify-form-section
-        submitButtonText={I18n.get(AuthMessages.SELECT_MFA_TYPE_SUBMIT_BUTTON_TEXT)}
-        headerText={I18n.get(AuthMessages.SELECT_MFA_TYPE_HEADER_TEXT)}
+        submitButtonText={I18n.get(Translations.SELECT_MFA_TYPE_SUBMIT_BUTTON_TEXT)}
+        headerText={I18n.get(Translations.SELECT_MFA_TYPE_HEADER_TEXT)}
         handleSubmit={event => this.handleSubmit(event)}
         loading={this.loading}
       >

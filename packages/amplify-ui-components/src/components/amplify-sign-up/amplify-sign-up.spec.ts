@@ -1,7 +1,7 @@
 import { I18n } from '@aws-amplify/core';
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifySignUp } from './amplify-sign-up';
-import { AuthMessages } from '../../common/types/AuthMessages';
+import { Translations } from '../../common/Translations';
 
 describe('amplify-sign-up spec:', () => {
   describe('Component logic ->', () => {
@@ -20,11 +20,11 @@ describe('amplify-sign-up spec:', () => {
     });
 
     it('should render `headerText` to `Create a new account` by default', () => {
-      expect(signUp.headerText).toEqual(I18n.get(AuthMessages.SIGN_UP_HEADER_TEXT));
+      expect(signUp.headerText).toEqual(I18n.get(Translations.SIGN_UP_HEADER_TEXT));
     });
 
     it('should render `submitButtonText` to `Create account` by default', () => {
-      expect(signUp.submitButtonText).toEqual(I18n.get(AuthMessages.SIGN_UP_SUBMIT_BUTTON_TEXT));
+      expect(signUp.submitButtonText).toEqual(I18n.get(Translations.SIGN_UP_SUBMIT_BUTTON_TEXT));
     });
   });
   describe('Render logic ->', () => {
