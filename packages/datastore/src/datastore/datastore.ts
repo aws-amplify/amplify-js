@@ -792,13 +792,16 @@ function getNamespace(): SchemaNamespace {
 	return namespace;
 }
 
-const dataStore = {
-	query,
-	save,
-	delete: remove,
-	observe,
-	configure,
-	clear,
-};
+class DataStore {
+	static getModuleName() {
+		return 'DataStore';
+	}
+	static query = query;
+	static save = save;
+	static delete = remove;
+	static observe = observe;
+	static configure = configure;
+	static clear = clear;
+}
 
-export { initSchema, dataStore };
+export { initSchema, DataStore };
