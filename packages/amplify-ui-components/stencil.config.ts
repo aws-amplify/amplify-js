@@ -51,8 +51,5 @@ export const config: Config = {
       serviceWorker: null, // disable service workers
     },
   ],
-  globalScript: './src/global/index.ts',
-  testing: {
-    setupFilesAfterEnv: ['./src/global/index.ts'],
-  },
+  globalScript: 'src/global/theme.ts',
 };

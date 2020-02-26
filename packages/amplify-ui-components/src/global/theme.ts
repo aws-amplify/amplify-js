@@ -10,11 +10,6 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { I18n } from '@aws-amplify/core';
-import * as languages from '../common/translations';
-
-I18n.putVocabularies(languages);
-I18n.setLanguage(window?.navigator?.language || 'en-US');
 
 let customStyles = document.createElement('style');
 customStyles.appendChild(
