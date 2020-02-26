@@ -1,6 +1,7 @@
+import { I18n } from '@aws-amplify/core';
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyForgotPassword } from './amplify-forgot-password';
-import { RESET_YOUR_PASSWORD, SEND_CODE } from '../../common/constants';
+import { AuthMessages } from '../../common/types/AuthMessages';
 
 describe('amplify-forgot-password spec:', () => {
   describe('Component logic ->', () => {
@@ -11,11 +12,11 @@ describe('amplify-forgot-password spec:', () => {
     });
 
     it('`headerText` should be set by default', () => {
-      expect(amplifyForgotPassword.headerText).toBe(RESET_YOUR_PASSWORD);
+      expect(amplifyForgotPassword.headerText).toBe(I18n.get(AuthMessages.RESET_YOUR_PASSWORD));
     });
 
     it('`submitButtonText` should be set by default', () => {
-      expect(amplifyForgotPassword.submitButtonText).toBe(SEND_CODE);
+      expect(amplifyForgotPassword.submitButtonText).toBe(I18n.get(AuthMessages.SEND_CODE));
     });
   });
   describe('Render logic ->', () => {

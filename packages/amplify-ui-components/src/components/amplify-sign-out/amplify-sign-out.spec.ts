@@ -1,6 +1,7 @@
+import { I18n } from '@aws-amplify/core';
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifySignOut } from './amplify-sign-out';
-import { SIGN_OUT } from '../../common/constants';
+import { AuthMessages } from '../../common/types/AuthMessages';
 
 describe('amplify-sign-out spec:', () => {
   describe('Component logic ->', () => {
@@ -11,7 +12,7 @@ describe('amplify-sign-out spec:', () => {
     });
 
     it('should render default `buttonText`', () => {
-      expect(signOut.buttonText).toEqual(SIGN_OUT);
+      expect(signOut.buttonText).toEqual(I18n.get(AuthMessages.SIGN_OUT));
     });
   });
   describe('Render logic ->', () => {
