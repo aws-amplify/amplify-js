@@ -25,10 +25,6 @@ describe('amplify-sign-up spec:', () => {
     it('should render `submitButtonText` to `Create account` by default', () => {
       expect(signUp.submitButtonText).toEqual(SIGN_UP_SUBMIT_BUTTON_TEXT);
     });
-
-    it('should render `overrideStyle` to false by default', () => {
-      expect(signUp.overrideStyle).toBe(false);
-    });
   });
   describe('Render logic ->', () => {
     it('should render a `sign up` form by default', async () => {

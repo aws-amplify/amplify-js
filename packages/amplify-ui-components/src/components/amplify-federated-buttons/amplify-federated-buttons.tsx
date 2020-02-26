@@ -18,8 +18,6 @@ export class AmplifyFederatedButtons {
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
 
   componentWillLoad() {
     if (!Auth || typeof Auth.configure !== 'function') {
@@ -55,47 +53,31 @@ export class AmplifyFederatedButtons {
       <div>
         {googleClientId && (
           <div>
-            <amplify-google-button
-              clientId={googleClientId}
-              handleAuthStateChange={this.handleAuthStateChange}
-              overrideStyle={this.overrideStyle}
-            />
+            <amplify-google-button clientId={googleClientId} handleAuthStateChange={this.handleAuthStateChange} />
           </div>
         )}
 
         {facebookAppId && (
           <div>
-            <amplify-facebook-button
-              appId={facebookAppId}
-              handleAuthStateChange={this.handleAuthStateChange}
-              overrideStyle={this.overrideStyle}
-            />
+            <amplify-facebook-button appId={facebookAppId} handleAuthStateChange={this.handleAuthStateChange} />
           </div>
         )}
 
         {amazonClientId && (
           <div>
-            <amplify-amazon-button
-              clientId={amazonClientId}
-              handleAuthStateChange={this.handleAuthStateChange}
-              overrideStyle={this.overrideStyle}
-            />
+            <amplify-amazon-button clientId={amazonClientId} handleAuthStateChange={this.handleAuthStateChange} />
           </div>
         )}
 
         {oauthConfig && (
           <div>
-            <amplify-oauth-button config={oauthConfig} overrideStyle={this.overrideStyle} />
+            <amplify-oauth-button config={oauthConfig} />
           </div>
         )}
 
         {auth0Config && (
           <div>
-            <amplify-auth0-button
-              config={auth0Config}
-              handleAuthStateChange={this.handleAuthStateChange}
-              overrideStyle={this.overrideStyle}
-            />
+            <amplify-auth0-button config={auth0Config} handleAuthStateChange={this.handleAuthStateChange} />
           </div>
         )}
       </div>

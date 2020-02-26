@@ -19,8 +19,6 @@ export class AmplifyGoogleButton {
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** App-specific client ID from Google */
   @Prop() clientId: FederatedConfig['googleClientId'];
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
 
   getAuthInstance() {
     if (window['gapi'] && window['gapi'].auth2) {
@@ -92,11 +90,7 @@ export class AmplifyGoogleButton {
 
   render() {
     return (
-      <amplify-sign-in-button
-        onClick={event => this.signInWithGoogle(event)}
-        overrideStyle={this.overrideStyle}
-        provider="google"
-      >
+      <amplify-sign-in-button onClick={event => this.signInWithGoogle(event)} provider="google">
         <script onLoad={this.handleLoad} src="https://apis.google.com/js/api:client.js"></script>
         {I18n.get(AuthMessages.SIGN_IN_WITH_GOOGLE)}
       </amplify-sign-in-button>

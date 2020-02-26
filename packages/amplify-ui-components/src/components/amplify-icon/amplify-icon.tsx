@@ -9,8 +9,6 @@ import { icons, IconNameType } from './icons';
 export class AmplifyIcon {
   /** (Required) Name of icon used to determine the icon rendered */
   @Prop() name: IconNameType;
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
 
   @Watch('name')
   validateName(newValue: string) {

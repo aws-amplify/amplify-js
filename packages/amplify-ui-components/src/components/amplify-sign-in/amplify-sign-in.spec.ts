@@ -68,10 +68,6 @@ describe('amplify-sign-in spec:', () => {
     it('should render `submitButtonText` to `Sign in` by default', () => {
       expect(signIn.submitButtonText).toEqual('Sign In');
     });
-
-    it('should render `overrideStyle` to false by default', () => {
-      expect(signIn.overrideStyle).toBe(false);
-    });
   });
   describe('Render logic ->', () => {
     it('should render a `sign in` form by default', async () => {

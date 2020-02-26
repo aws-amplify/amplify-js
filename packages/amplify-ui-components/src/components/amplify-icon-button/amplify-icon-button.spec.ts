@@ -18,10 +18,4 @@ describe('amplify-icon-button spec:', () => {
       it(`renders ${name} icon button correctly`, async () => snapshotTestIconButton(name));
     });
   });
-  describe('Component logic ->', () => {
-    it('should have overrideStyle false by default', async () => {
-      const button = new AmplifyIconButton();
-      expect(button.overrideStyle).toBe(false);
-    });
-  });
 });

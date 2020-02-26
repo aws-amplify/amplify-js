@@ -34,7 +34,6 @@
     "clean": "rimraf dist .stencil"
   },
   "dependencies": {
-    "emotion": "^10.0.9",
     "qrcode": "^1.4.4"
   },
   "devDependencies": {

@@ -26,8 +26,6 @@ export class AmplifyConfirmSignIn {
   @Prop() headerText: string = I18n.get(AuthMessages.CONFIRM_SMS_CODE);
   /** Used for the submit button text in confirm sign in component */
   @Prop() submitButtonText: string = I18n.get(AuthMessages.CONFIRM);
-  /** (Optional) Overrides default styling */
-  @Prop() overrideStyle: boolean = false;
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /**
@@ -115,7 +113,6 @@ export class AmplifyConfirmSignIn {
     return (
       <amplify-form-section
         headerText={this.headerText}
-        overrideStyle={this.overrideStyle}
         handleSubmit={this.handleSubmit}
         submitButtonText={this.submitButtonText}
         loading={this.loading}

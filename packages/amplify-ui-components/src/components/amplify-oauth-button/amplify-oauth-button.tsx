@@ -11,8 +11,6 @@ import { AuthMessages } from '../../common/types/AuthMessages';
 })
 export class AmplifyOAuthButton {
   @Prop() config: FederatedConfig['oauthConfig'] = {};
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
 
   signInWithOAuth(event) {
     event.preventDefault();
@@ -21,11 +19,7 @@ export class AmplifyOAuthButton {
 
   render() {
     return (
-      <amplify-sign-in-button
-        onClick={event => this.signInWithOAuth(event)}
-        overrideStyle={this.overrideStyle}
-        provider="oauth"
-      >
+      <amplify-sign-in-button onClick={event => this.signInWithOAuth(event)} provider="oauth">
         {this.config.label || I18n.get(AuthMessages.SIGN_IN_WITH_AWS)}
       </amplify-sign-in-button>
     );

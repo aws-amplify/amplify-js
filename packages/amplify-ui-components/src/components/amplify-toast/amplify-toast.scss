@@ -1,3 +1,12 @@
+:host {
+--background-color: var(--amplify-secondary-tint);
+--color: var(--amplify-white);
+--font-size: var(--amplify-text-sm);
+--font-family: var(--amplify-font-family);
+--close-icon-color: var(--amplify-white);
+--close-icon-hover: var(--amplify-red)
+}
+
 .toast-icon {
   padding-right: 5px;
 }
@@ -12,12 +21,12 @@
   z-index: 99;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.3);
   padding: 16px;
-  background-color: var(--amplify-dark-blue);
-  font-size: var(--amplify-secondary-font-size);
-  color: var(--amplify-white);
+  background-color: var(--background-color);
+  font-size: var(--font-size);
+  color: var(--color);
   box-sizing: border-box;
   border-radius: 5px;
-  font-family: var(--amplify-font-family);
+  font-family: var(--font-family);
 
   > span {
     margin-right: 10px;
@@ -42,12 +51,12 @@
     top: 50%;
     left: 0;
     margin-top: -1px;
-    background: var(--amplify-white);
+    background: var(--close-icon-color);
   }
 
   &:hover::before,
   &:hover::after {
-    background: var(--amplify-red);
+    background: var(--close-icon-hover);
   }
 
   &::before {

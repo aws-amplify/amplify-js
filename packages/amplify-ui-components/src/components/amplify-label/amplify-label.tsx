@@ -7,7 +7,6 @@ import { Component, Prop, h } from '@stencil/core';
 })
 export class AmplifyLabel {
   @Prop() htmlFor: string;
-  @Prop() overrideStyle: boolean = false;
 
   render() {
     return (

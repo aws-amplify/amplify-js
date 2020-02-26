@@ -1,17 +1,14 @@
-import { Component, Host, h, Prop } from '@stencil/core';
+import { Component, Host, h } from '@stencil/core';
 
 @Component({
   tag: 'amplify-strike',
   styleUrl: 'amplify-strike.scss',
-  shadow: true,
+  scoped: true,
 })
 export class AmplifyStrike {
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
-
   render() {
     return (
-      <Host class="strike">
+      <Host>
         <span class="strike-content">
           <slot />
         </span>
