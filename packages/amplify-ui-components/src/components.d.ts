@@ -13,6 +13,7 @@ import {
   CognitoUserInterface,
   FederatedConfig,
   MFATypesInterface,
+  UsernameAttributes,
 } from './common/types/auth-types';
 import {
   FormFieldTypes,
@@ -71,6 +72,7 @@ export namespace Components {
     * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
     */
     'initialAuthState': AuthState.SignIn | AuthState.SignUp;
+    'usernameAttribute': UsernameAttributes;
   }
   interface AmplifyButton {
     /**
@@ -680,6 +682,7 @@ export namespace Components {
     * Used for the submit button text in sign in component
     */
     'submitButtonText': string;
+    'usernameAttributes': UsernameAttributes;
     /**
     * Engages when invalid actions occur, such as missing field, etc.
     */
@@ -1191,6 +1194,7 @@ declare namespace LocalJSX {
     * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
     */
     'initialAuthState'?: AuthState.SignIn | AuthState.SignUp;
+    'usernameAttribute'?: UsernameAttributes;
   }
   interface AmplifyButton {
     /**
@@ -1800,6 +1804,7 @@ declare namespace LocalJSX {
     * Used for the submit button text in sign in component
     */
     'submitButtonText'?: string;
+    'usernameAttributes'?: UsernameAttributes;
     /**
     * Engages when invalid actions occur, such as missing field, etc.
     */

@@ -98,3 +98,5 @@ export enum ChallengeName {
 export enum AuthFormField {
   Password = 'password',
 }
+
+export type UsernameAttributes = 'email' | 'username' | 'phone_number';

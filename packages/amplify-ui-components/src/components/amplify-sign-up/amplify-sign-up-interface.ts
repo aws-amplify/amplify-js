@@ -13,8 +13,3 @@ export interface AmplifySignUpAttributes {
     phone_number?: string;
   };
 }
-
-export interface PhoneNumberInterface {
-  countryDialCodeValue?: string;
-  phoneNumberValue?: string;
-}

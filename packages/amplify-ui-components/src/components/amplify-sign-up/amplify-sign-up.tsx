@@ -1,5 +1,8 @@
 import { Component, Prop, h, State } from '@stencil/core';
-import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
+import {
+  FormFieldTypes,
+  PhoneNumberInterface,
+} from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
   SIGN_UP_HEADER_TEXT,
   SIGN_UP_SUBMIT_BUTTON_TEXT,
@@ -15,7 +18,7 @@ import {
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
 import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
-import { AmplifySignUpAttributes, PhoneNumberInterface } from './amplify-sign-up-interface';
+import { AmplifySignUpAttributes } from './amplify-sign-up-interface';
 
 import { Auth } from '@aws-amplify/auth';
 import { dispatchAuthStateChangeEvent, dispatchToastHubEvent } from '../../common/helpers';

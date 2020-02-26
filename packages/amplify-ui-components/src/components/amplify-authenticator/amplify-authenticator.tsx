@@ -1,5 +1,5 @@
 import { Component, State, Prop, h, Host } from '@stencil/core';
-import { AuthState, CognitoUserInterface, FederatedConfig } from '../../common/types/auth-types';
+import { AuthState, CognitoUserInterface, FederatedConfig, UsernameAttributes } from '../../common/types/auth-types';
 import {
   NO_AUTH_MODULE_FOUND,
   SIGNING_IN_WITH_HOSTEDUI_KEY,
@@ -22,6 +22,7 @@ export class AmplifyAuthenticator {
   @Prop() initialAuthState: AuthState.SignIn | AuthState.SignUp = AuthState.SignIn;
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
+  @Prop() usernameAttribute: UsernameAttributes;
 
   @State() authState: AuthState = AuthState.Loading;
   @State() authData: CognitoUserInterface;
@@ -96,7 +97,7 @@ export class AmplifyAuthenticator {
       case AuthState.SignIn:
         return (
           <slot name="sign-in">
-            <amplify-sign-in federated={this.federated} />
+            <amplify-sign-in federated={this.federated} usernameAttributes={this.usernameAttribute} />
           </slot>
         );
       case AuthState.ConfirmSignIn:

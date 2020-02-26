@@ -1,6 +1,17 @@
 import { Component, Prop, State, h } from '@stencil/core';
-import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState, ChallengeName, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
+import {
+  FormFieldType,
+  FormFieldTypes,
+  PhoneNumberInterface,
+} from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
+
+import {
+  AuthState,
+  ChallengeName,
+  FederatedConfig,
+  AuthStateHandler,
+  UsernameAttributes,
+} from '../../common/types/auth-types';
 
 import {
   HEADER_TEXT,
@@ -10,6 +21,9 @@ import {
   NO_AUTH_MODULE_FOUND,
   FORGOT_PASSWORD_TEXT,
   RESET_PASSWORD_TEXT,
+  PHONE_SUFFIX,
+  COUNTRY_DIAL_CODE_DEFAULT,
+  COUNTRY_DIAL_CODE_SUFFIX,
 } from '../../common/constants';
 
 import { Logger, isEmpty } from '@aws-amplify/core';
@@ -36,6 +50,8 @@ export class AmplifySignIn {
   @Prop() federated: FederatedConfig;
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
+
+  @Prop() usernameAttributes: UsernameAttributes = 'username';
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing
@@ -52,35 +68,7 @@ export class AmplifySignIn {
    * ]
    * ```
    */
-  @Prop() formFields: FormFieldTypes | string[] = [
-    {
-      type: 'username',
-      required: true,
-      handleInputChange: event => this.handleUsernameChange(event),
-      inputProps: {
-        'data-test': 'username-input',
-      },
-    },
-    {
-      type: 'password',
-      hint: (
-        <div>
-          {FORGOT_PASSWORD_TEXT}{' '}
-          <amplify-link
-            onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}
-            data-test="sign-in-forgot-password-link"
-          >
-            {RESET_PASSWORD_TEXT}
-          </amplify-link>
-        </div>
-      ),
-      required: true,
-      handleInputChange: event => this.handlePasswordChange(event),
-      inputProps: {
-        'data-test': 'sign-in-password-input',
-      },
-    },
-  ];
+  @Prop() formFields: FormFieldTypes | string[] = [];
 
   /* Whether or not the sign-in component is loading */
   @State() loading: boolean = false;
@@ -88,6 +76,11 @@ export class AmplifySignIn {
   @State() username: string = '';
   /* The password value in the sign-in form */
   @State() password: string = '';
+  @State() email: string;
+  @State() phoneNumber: PhoneNumberInterface = {
+    countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
+    phoneNumberValue: null,
+  };
 
   handleUsernameChange(event) {
     this.username = event.target.value;
@@ -95,6 +88,28 @@ export class AmplifySignIn {
 
   handlePasswordChange(event) {
     this.password = event.target.value;
+  }
+
+  handleEmailChange(event) {
+    this.email = event.target.value;
+  }
+
+  handlePhoneNumberChange(event) {
+    const name = event.target.name;
+    const value = event.target.value;
+
+    /** Cognito expects to have a string be passed when signing up. Since the Select input is separate
+     * input from the phone number input, we need to first capture both components values and combined
+     * them together.
+     */
+
+    if (name === COUNTRY_DIAL_CODE_SUFFIX) {
+      this.phoneNumber.countryDialCodeValue = value;
+    }
+
+    if (name === PHONE_SUFFIX) {
+      this.phoneNumber.phoneNumberValue = value;
+    }
   }
 
   checkContact(user) {
@@ -155,6 +170,61 @@ export class AmplifySignIn {
     } finally {
       this.loading = false;
     }
+  }
+
+  async componentWillLoad() {
+    const formFieldInputs = [];
+    switch (this.usernameAttributes) {
+      case 'email':
+        formFieldInputs.push({
+          type: 'email',
+          required: true,
+          handleInputChange: event => this.handleEmailChange(event),
+        });
+        break;
+      case 'phone_number':
+        formFieldInputs.push({
+          type: 'phone',
+          required: true,
+          handleInputChange: event => this.handlePhoneNumberChange(event),
+          inputProps: {
+            'data-test': 'phone-number-input',
+          },
+        });
+        break;
+      case 'username':
+      default:
+        formFieldInputs.push({
+          type: 'username',
+          required: true,
+          handleInputChange: event => this.handleUsernameChange(event),
+          inputProps: {
+            'data-test': 'username-input',
+          },
+        });
+        break;
+    }
+
+    formFieldInputs.push({
+      type: 'password',
+      hint: (
+        <div>
+          {FORGOT_PASSWORD_TEXT}{' '}
+          <amplify-link
+            onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}
+            data-test="sign-in-forgot-password-link"
+          >
+            {RESET_PASSWORD_TEXT}
+          </amplify-link>
+        </div>
+      ),
+      required: true,
+      handleInputChange: event => this.handlePasswordChange(event),
+      inputProps: {
+        'data-test': 'sign-in-password-input',
+      },
+    });
+    this.formFields = formFieldInputs;
   }
 
   render() {
