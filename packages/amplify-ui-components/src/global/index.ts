@@ -16,6 +16,7 @@ import { injectGlobal } from 'emotion';
 import * as languages from '../common/translations';
 
 I18n.putVocabularies(languages);
+I18n.setLanguage(window?.navigator?.language || 'en-US');
 
 injectGlobal`
    :root {
