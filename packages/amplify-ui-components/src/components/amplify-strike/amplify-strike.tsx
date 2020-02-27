@@ -1,4 +1,4 @@
-import { Component, Host, h } from '@stencil/core';
+import { Component, h } from '@stencil/core';
 
 @Component({
   tag: 'amplify-strike',
@@ -8,11 +8,9 @@ import { Component, Host, h } from '@stencil/core';
 export class AmplifyStrike {
   render() {
     return (
-      <Host>
-        <span class="strike-content">
-          <slot />
-        </span>
-      </Host>
+      <span class="strike-content">
+        <slot />
+      </span>
     );
   }
 }

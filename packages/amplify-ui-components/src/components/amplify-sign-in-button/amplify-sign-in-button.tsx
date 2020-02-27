@@ -1,4 +1,4 @@
-import { Component, h, Prop, Host } from '@stencil/core';
+import { Component, h, Prop } from '@stencil/core';
 import { icons, IconNameType } from '../amplify-icon/icons';
 
 @Component({
@@ -11,15 +11,19 @@ export class AmplifySignInButton {
 
   render() {
     return (
-      <Host class={`sign-in-button ${this.provider}`}>
+      <div class={`sign-in-button ${this.provider}`}>
         <button>
-          {this.provider in icons && <amplify-icon name={this.provider as IconNameType} />}
+          {this.provider in icons && (
+            <span class="icon">
+              <amplify-icon name={this.provider as IconNameType} />
+            </span>
+          )}
 
           <span class="content">
             <slot />
           </span>
         </button>
-      </Host>
+      </div>
     );
   }
 }
