@@ -2,13 +2,6 @@ import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyLink } from './amplify-link';
 
 describe('amplify-link spec:', () => {
-  describe('Component logic ->', () => {
-    let link;
-
-    beforeEach(() => {
-      link = new AmplifyLink();
-    });
-  });
   describe('Render logic ->', () => {
     it('should render a link by default', async () => {
       const page = await newSpecPage({

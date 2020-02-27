@@ -2,13 +2,6 @@ import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyLabel } from './amplify-label';
 
 describe('amplify-label spec:', () => {
-  describe('Component logic ->', () => {
-    let label;
-
-    beforeEach(() => {
-      label = new AmplifyLabel();
-    });
-  });
   describe('Render logic ->', () => {
     it('should render a label by default', async () => {
       const page = await newSpecPage({
