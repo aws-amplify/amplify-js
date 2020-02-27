@@ -234,8 +234,9 @@ const createModelClass = <T extends PersistentModel>(
 			} = modelInstanceMetadata;
 
 			const id =
-				// instancesIds is set by modelInstanceCreator, it is accessible only internally
-				_id !== null && _id !== undefined
+				init.id !== null && init.id !== undefined
+					? init.id
+					: _id !== null && _id !== undefined
 					? _id
 					: modelDefinition.syncable
 					? uuid4()

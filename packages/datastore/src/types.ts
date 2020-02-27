@@ -151,7 +151,7 @@ export type PersistentModelConstructor<T extends PersistentModel> = {
 	copyOf(src: T, mutator: (draft: MutableModel<T>) => T | void): T;
 };
 export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
-export type ModelInit<T> = Omit<T, 'id'>;
+export type ModelInit<T> = Omit<T, 'id'> & { id?: string };
 export type MutableModel<T> = Omit<
 	{
 		-readonly [P in keyof T]: T[P];
