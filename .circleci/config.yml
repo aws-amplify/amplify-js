@@ -254,10 +254,10 @@ jobs:
   integ_rn_ios_setup:
     macos:
       xcode: '11.3.1'
-    working_directory: ~/amplify-js-samples-staging
+    working_directory: ~/
     steps:
       - attach_workspace:
-          at: .
+          at: ./amplify-js-samples-staging
       - run: pwd && ls
       - run:
           name: Configure Detox
