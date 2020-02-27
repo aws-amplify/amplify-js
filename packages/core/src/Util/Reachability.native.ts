@@ -1,7 +1,4 @@
-import {
-	default as NetInfo,
-	NetInfoState,
-} from '@react-native-community/netinfo';
+import { default as NetInfo } from '@react-native-community/netinfo';
 import * as Observable from 'zen-observable';
 import { ConsoleLogger as Logger } from '../Logger';
 

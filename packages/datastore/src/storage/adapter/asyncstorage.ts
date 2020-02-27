@@ -315,7 +315,6 @@ class AsyncStorageAdapter implements Adapter {
 			const modelConstructor = modelOrModelConstructor;
 			const nameSpace = this.namespaceResolver(modelConstructor);
 
-			const storeName = this.getStorenameForModel(modelConstructor);
 			// models to be deleted.
 			const models = await this.query(modelConstructor, condition);
 			// TODO: refactor this to use a function like getRelations()
