@@ -5,9 +5,7 @@ const DB_NAME = '@AmplifyDatastore';
 const COLLECTION = 'Collection';
 const DATA = 'Data';
 
-// write a function for getCollectionForStore.
-// handle errors.
-// write batch save/ transactional save.
+//TODO: Consider refactoring to a batch save operation.
 class AsyncStorageDatabase {
 	async save<T extends PersistentModel>(item: T, storeName: string) {
 		const itemKey = this.getKeyForItem(storeName, item.id);
@@ -80,7 +78,6 @@ class AsyncStorageDatabase {
 		await AsyncStorage.multiRemove(allDataStoreKeys);
 	}
 
-	// Can ID not be a string?
 	private getKeyForItem(storeName: string, id: string): string {
 		return `${DB_NAME}::${storeName}::${DATA}::${id}`;
 	}
@@ -94,4 +91,4 @@ class AsyncStorageDatabase {
 	}
 }
 
-export default new AsyncStorageDatabase();
+export default AsyncStorageDatabase;
