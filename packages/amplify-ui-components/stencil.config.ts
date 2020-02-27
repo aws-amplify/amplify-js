@@ -51,5 +51,5 @@ export const config: Config = {
       serviceWorker: null, // disable service workers
     },
   ],
-  globalScript: 'src/global/theme.ts',
+  globalStyle: 'src/global/theme.scss',
 };
