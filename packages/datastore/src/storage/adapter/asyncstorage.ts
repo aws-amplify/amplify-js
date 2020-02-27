@@ -1,5 +1,4 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { AsyncStorage } from 'react-native';
 import AsyncStorageDatabase from './AsyncStorageDatabase';
 import { Adapter } from '.';
 import { ModelInstanceCreator } from '../../datastore/datastore';
@@ -78,7 +77,7 @@ class AsyncStorageAdapter implements Adapter {
 		this.getModelConstructorByModelName = getModelConstructorByModelName;
 		try {
 			if (!this.db) {
-				this.db = AsyncStorageDatabase;
+				this.db = new AsyncStorageDatabase();
 				this.resolve();
 			}
 		} catch (error) {
@@ -109,7 +108,7 @@ class AsyncStorageAdapter implements Adapter {
 				return { storeName, item, instance };
 			}
 		);
-		const fromDB = await AsyncStorageDatabase.get(model.id, storeName);
+		const fromDB = await this.db.get(model.id, storeName);
 
 		if (condition) {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
@@ -132,22 +131,21 @@ class AsyncStorageAdapter implements Adapter {
 
 			const { id } = item;
 
-			const opType: OpType = (await AsyncStorageDatabase.get(id, storeName))
+			const opType: OpType = (await this.db.get(id, storeName))
 				? OpType.UPDATE
 				: OpType.INSERT;
 
 			if (id === model.id) {
-				await AsyncStorageDatabase.save(item, storeName);
+				await this.db.save(item, storeName);
 
 				result.push([instance, opType]);
 			} else {
 				if (opType === OpType.INSERT) {
-					await AsyncStorageDatabase.save(item, storeName);
+					await this.db.save(item, storeName);
 
 					result.push([instance, opType]);
 				}
 			}
-			const savedItem = await AsyncStorageDatabase.get(id, storeName);
 		}
 
 		return result;
@@ -186,7 +184,7 @@ class AsyncStorageAdapter implements Adapter {
 				case 'HAS_ONE':
 					for await (const recordItem of records) {
 						if (recordItem[fieldName]) {
-							const connectionRecord = await AsyncStorageDatabase.get(
+							const connectionRecord = await this.db.get(
 								recordItem[fieldName],
 								storeName
 							);
@@ -201,7 +199,7 @@ class AsyncStorageAdapter implements Adapter {
 				case 'BELONGS_TO':
 					for await (const recordItem of records) {
 						if (recordItem[targetName]) {
-							const connectionRecord = await AsyncStorageDatabase.get(
+							const connectionRecord = await this.db.get(
 								recordItem[targetName],
 								storeName
 							);
@@ -249,7 +247,7 @@ class AsyncStorageAdapter implements Adapter {
 				if (idPredicate) {
 					const { operand: id } = idPredicate;
 
-					const record = <any>await AsyncStorageDatabase.get(id, storeName);
+					const record = <any>await this.db.get(id, storeName);
 
 					if (record) {
 						const [x] = await this.load(namespaceName, modelConstructor.name, [
@@ -260,7 +258,7 @@ class AsyncStorageAdapter implements Adapter {
 					return [];
 				}
 
-				const all = <T[]>await AsyncStorageDatabase.getAll(storeName);
+				const all = <T[]>await this.db.getAll(storeName);
 
 				const filtered = predicateObjs
 					? all.filter(m => validatePredicate(m, type, predicateObjs))
@@ -273,7 +271,7 @@ class AsyncStorageAdapter implements Adapter {
 				);
 			}
 		}
-		const all = <T[]>await AsyncStorageDatabase.getAll(storeName);
+		const all = <T[]>await this.db.getAll(storeName);
 
 		return await this.load(
 			namespaceName,
@@ -303,7 +301,7 @@ class AsyncStorageAdapter implements Adapter {
 		firstOrLast: QueryOne = QueryOne.FIRST
 	): Promise<T | undefined> {
 		const storeName = this.getStorenameForModel(modelConstructor);
-		const result = <T>await AsyncStorageDatabase.getOne(firstOrLast, storeName);
+		const result = <T>await this.db.getOne(firstOrLast, storeName);
 		return result && this.modelInstanceCreator(modelConstructor, result);
 	}
 
@@ -368,7 +366,7 @@ class AsyncStorageAdapter implements Adapter {
 
 			const storeName = this.getStorenameForModel(modelConstructor);
 			if (condition) {
-				const fromDB = await AsyncStorageDatabase.get(model.id, storeName);
+				const fromDB = await this.db.get(model.id, storeName);
 				const predicates = ModelPredicateCreator.getPredicates(condition);
 				const { predicates: predicateObjs, type } = predicates;
 
@@ -418,10 +416,6 @@ class AsyncStorageAdapter implements Adapter {
 	private async deleteItem<T extends PersistentModel>(
 		deleteQueue?: { storeName: string; items: T[] | IDBValidKey[] }[]
 	) {
-		const connectionStoreNames = deleteQueue.map(({ storeName }) => {
-			return storeName;
-		});
-
 		for await (const deleteItem of deleteQueue) {
 			const { storeName, items } = deleteItem;
 
@@ -429,7 +423,7 @@ class AsyncStorageAdapter implements Adapter {
 				if (item) {
 					if (typeof item === 'object') {
 						const id = item['id'];
-						await AsyncStorageDatabase.delete(id, storeName);
+						await this.db.delete(id, storeName);
 					}
 				}
 			}
@@ -461,7 +455,7 @@ class AsyncStorageAdapter implements Adapter {
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
-						const allRecords = await AsyncStorageDatabase.getAll(storeName);
+						const allRecords = await this.db.getAll(storeName);
 						const recordToDelete = allRecords.filter(
 							childItem => childItem[index] === model.id
 						);
@@ -478,7 +472,7 @@ class AsyncStorageAdapter implements Adapter {
 					break;
 				case 'HAS_MANY':
 					for await (const model of models) {
-						const allRecords = await AsyncStorageDatabase.getAll(storeName);
+						const allRecords = await this.db.getAll(storeName);
 						const childrenArray = allRecords.filter(
 							childItem => childItem[index] === model.id
 						);
@@ -514,7 +508,7 @@ class AsyncStorageAdapter implements Adapter {
 	}
 
 	async clear(): Promise<void> {
-		await AsyncStorageDatabase.clear();
+		await this.db.clear();
 
 		this.db = undefined;
 		this.initPromise = undefined;
