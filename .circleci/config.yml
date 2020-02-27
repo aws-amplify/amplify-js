@@ -254,10 +254,11 @@ jobs:
   integ_rn_ios_setup:
     macos:
       xcode: '11.3.1'
-    working_directory: ~/
+    working_directory: ~/amplify-js-samples-staging
     steps:
       - attach_workspace:
-          at: /root
+          at: .
+      - run: pwd && ls
       - run:
           name: Configure Detox
           environment:
@@ -267,7 +268,7 @@ jobs:
             brew install applesimutils
             yarn global add detox-cli
       - persist_to_workspace:
-          root: /root
+          root: .
           paths: amplify-js-samples-staging
 
   integ_rn_ios_storage:
