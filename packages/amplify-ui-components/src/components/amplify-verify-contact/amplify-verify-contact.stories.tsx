@@ -1,7 +1,5 @@
 import { h } from '@stencil/core';
 
-import { knobs } from '../../common/testing';
-
 export default {
   title: 'amplify-verify-contact',
 };

@@ -1,5 +1,4 @@
 import { storiesOf } from '@storybook/html';
-import { knobs } from '../../common/testing';
 
 const coutnryDialCodeStories = storiesOf('amplify-country-dial-code', module);
 
