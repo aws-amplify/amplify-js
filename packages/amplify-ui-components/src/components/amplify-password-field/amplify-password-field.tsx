@@ -1,5 +1,7 @@
+import { I18n } from '@aws-amplify/core';
 import { Component, Prop, FunctionalComponent, h } from '@stencil/core';
-import { PASSWORD_SUFFIX, PASSWORD_LABEL, PASSWORD_PLACEHOLDER } from '../../common/constants';
+import { PASSWORD_SUFFIX } from '../../common/constants';
+import { Translations } from '../../common/Translations';
 
 @Component({
   tag: 'amplify-password-field',
@@ -9,9 +11,9 @@ export class AmplifyPasswordField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */
   @Prop() fieldId: string = PASSWORD_SUFFIX;
   /** Used for the password label */
-  @Prop() label: string = PASSWORD_LABEL;
+  @Prop() label: string = I18n.get(Translations.PASSWORD_LABEL);
   /** Used for the placeholder label */
-  @Prop() placeholder: string = PASSWORD_PLACEHOLDER;
+  @Prop() placeholder: string = I18n.get(Translations.PASSWORD_PLACEHOLDER);
   /** Used as the hint in case you forgot your password, etc. */
   @Prop() hint: string | FunctionalComponent | null;
   /** The required flag in order to make an input required prior to submitting a form */

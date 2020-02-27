@@ -5,7 +5,7 @@ exports[`amplify-amazon-button stories defaults 1`] = `
   <mock:shadow-root>
     <amplify-sign-in-button provider="amazon">
       <script src="https://assets.loginwithamazon.com/sdk/na/login1.js"></script>
-      Sign In with Amazon
+      Sign in with Amazon
     </amplify-sign-in-button>
   </mock:shadow-root>
 </amplify-amazon-button>

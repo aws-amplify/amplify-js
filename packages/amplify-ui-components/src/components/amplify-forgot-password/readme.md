@@ -5,14 +5,14 @@
 
 ## Properties
 
-| Property                | Attribute            | Description                                                                     | Type                                                | Default                        |
-| ----------------------- | -------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------ |
-| `formFields`            | --                   | The form fields displayed inside of the forgot password form                    | `FormFieldTypes`                                    | `undefined`                    |
-| `handleAuthStateChange` | --                   | Passed from the Authenticator component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent` |
-| `handleSend`            | --                   | The function called when making a request to reset password                     | `(event: Event) => void`                            | `event => this.send(event)`    |
-| `handleSubmit`          | --                   | The function called when submitting a new password                              | `(event: Event) => void`                            | `event => this.submit(event)`  |
-| `headerText`            | `header-text`        | The header text of the forgot password section                                  | `string`                                            | `RESET_YOUR_PASSWORD`          |
-| `submitButtonText`      | `submit-button-text` | The text displayed inside of the submit button for the form                     | `string`                                            | `SEND_CODE`                    |
+| Property                | Attribute            | Description                                                                     | Type                                                | Default                                      |
+| ----------------------- | -------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------- | -------------------------------------------- |
+| `formFields`            | --                   | The form fields displayed inside of the forgot password form                    | `FormFieldTypes`                                    | `undefined`                                  |
+| `handleAuthStateChange` | --                   | Passed from the Authenticator component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent`               |
+| `handleSend`            | --                   | The function called when making a request to reset password                     | `(event: Event) => void`                            | `event => this.send(event)`                  |
+| `handleSubmit`          | --                   | The function called when submitting a new password                              | `(event: Event) => void`                            | `event => this.submit(event)`                |
+| `headerText`            | `header-text`        | The header text of the forgot password section                                  | `string`                                            | `I18n.get(Translations.RESET_YOUR_PASSWORD)` |
+| `submitButtonText`      | `submit-button-text` | The text displayed inside of the submit button for the form                     | `string`                                            | `I18n.get(Translations.SEND_CODE)`           |
 
 
 ## Dependencies

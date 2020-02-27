@@ -1,19 +1,11 @@
+import { Auth } from '@aws-amplify/auth';
+import { I18n, Logger, isEmpty } from '@aws-amplify/core';
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import { AuthState, ChallengeName, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
+import { Translations } from '../../common/Translations';
+import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 
-import {
-  HEADER_TEXT,
-  SIGN_IN_SUBMIT_BUTTON_TEXT,
-  CREATE_ACCOUNT_TEXT,
-  NO_ACCOUNT_TEXT,
-  NO_AUTH_MODULE_FOUND,
-  FORGOT_PASSWORD_TEXT,
-  RESET_PASSWORD_TEXT,
-} from '../../common/constants';
-
-import { Logger, isEmpty } from '@aws-amplify/core';
-import { Auth } from '@aws-amplify/auth';
 import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 const logger = new Logger('SignIn');
@@ -29,9 +21,9 @@ export class AmplifySignIn {
   /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: string;
   /** Used for header text in sign in component */
-  @Prop() headerText: string = HEADER_TEXT;
+  @Prop() headerText: string = I18n.get(Translations.SIGN_IN_HEADER_TEXT);
   /** Used for the submit button text in sign in component */
-  @Prop() submitButtonText: string = SIGN_IN_SUBMIT_BUTTON_TEXT;
+  @Prop() submitButtonText: string = I18n.get(Translations.SIGN_IN_ACTION);
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
   /** Passed from the Authenticator component in order to change Authentication state */
@@ -65,12 +57,12 @@ export class AmplifySignIn {
       type: 'password',
       hint: (
         <div>
-          {FORGOT_PASSWORD_TEXT}{' '}
+          {I18n.get(Translations.FORGOT_PASSWORD_TEXT)}{' '}
           <amplify-link
             onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}
             data-test="sign-in-forgot-password-link"
           >
-            {RESET_PASSWORD_TEXT}
+            {I18n.get(Translations.RESET_PASSWORD_TEXT)}
           </amplify-link>
         </div>
       ),
@@ -167,12 +159,12 @@ export class AmplifySignIn {
         <amplify-auth-fields formFields={this.formFields} />
         <div slot="amplify-form-section-footer" class="sign-in-form-footer">
           <span>
-            {NO_ACCOUNT_TEXT}{' '}
+            {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
             <amplify-link
               onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
               data-test="sign-in-create-account-link"
             >
-              {CREATE_ACCOUNT_TEXT}
+              {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
             </amplify-link>
           </span>
           <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">

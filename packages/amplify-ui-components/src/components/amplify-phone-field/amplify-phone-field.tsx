@@ -1,5 +1,7 @@
+import { I18n } from '@aws-amplify/core';
 import { Component, Prop, FunctionalComponent, h } from '@stencil/core';
-import { PHONE_SUFFIX, PHONE_LABEL, PHONE_PLACEHOLDER } from '../../common/constants';
+import { Translations } from '../../common/Translations';
+import { PHONE_SUFFIX } from '../../common/constants';
 
 @Component({
   tag: 'amplify-phone-field',
@@ -10,9 +12,9 @@ export class AmplifyPhoneField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */
   @Prop() fieldId: string = PHONE_SUFFIX;
   /** Used for the Phone label */
-  @Prop() label: string = PHONE_LABEL;
+  @Prop() label: string = I18n.get(Translations.PHONE_LABEL);
   /** Used for the placeholder label */
-  @Prop() placeholder: string = PHONE_PLACEHOLDER;
+  @Prop() placeholder: string = I18n.get(Translations.PHONE_PLACEHOLDER);
   /** Used as the hint in case you forgot your confirmation code, etc. */
   @Prop() hint: string | FunctionalComponent | null;
   /** The required flag in order to make an input required prior to submitting a form */

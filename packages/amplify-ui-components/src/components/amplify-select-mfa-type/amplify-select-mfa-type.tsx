@@ -1,21 +1,13 @@
 import { Component, Prop, State, h } from '@stencil/core';
-import { Logger } from '@aws-amplify/core';
+import { I18n, Logger } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 import { CognitoUserInterface, MFATypesInterface, MfaOption } from '../../common/types/auth-types';
 import {
   NO_AUTH_MODULE_FOUND,
-  SET_PREFERRED_MFA_FAILURE,
-  SET_PREFERRED_MFA_SUCCESS,
   USER_NOT_SETUP_SOFTWARE_TOKEN_MFA,
   USER_NOT_VERIFIED_SOFTWARE_TOKEN_MFA,
-  SETUP_TOTP_REQUIRED,
-  UNABLE_TO_SETUP_MFA_AT_THIS_TIME,
-  SUCCESS_MFA_TYPE,
-  LESS_THAN_TWO_MFA_VALUES_MESSAGE,
-  SELECT_MFA_TYPE_SUBMIT_BUTTON_TEXT,
-  SELECT_MFA_TYPE_HEADER_TEXT,
-  MFA_TYPE_VALUES,
 } from '../../common/constants';
+import { Translations } from '../../common/Translations';
 
 const logger = new Logger('SelectMFAType');
 
@@ -71,7 +63,7 @@ export class AmplifySelectMFAType {
       event.preventDefault();
     }
 
-    logger.debug(MFA_TYPE_VALUES, { TOTP: this.isTOTP, SMS: this.isSMS, 'No MFA': this.isNoMFA });
+    logger.debug('MFA Type Values', { TOTP: this.isTOTP, SMS: this.isSMS, 'No MFA': this.isNoMFA });
 
     if (this.isTOTP) {
       this.MFAMethod = MfaOption.TOTP;
@@ -91,19 +83,19 @@ export class AmplifySelectMFAType {
     try {
       const preferredMFAData = await Auth.setPreferredMFA(user, this.MFAMethod);
 
-      logger.debug(SET_PREFERRED_MFA_SUCCESS, preferredMFAData);
-      this.selectMessage = `${SUCCESS_MFA_TYPE} ${this.MFAMethod}`;
+      logger.debug('Set Preferred MFA Succeeded', preferredMFAData);
+      this.selectMessage = `${I18n.get(Translations.SUCCESS_MFA_TYPE)} ${this.MFAMethod}`;
       // 	TODO Add Toast = showToast: true,
     } catch (error) {
       const { message } = error;
 
       if (message === USER_NOT_SETUP_SOFTWARE_TOKEN_MFA || message === USER_NOT_VERIFIED_SOFTWARE_TOKEN_MFA) {
         this.TOTPSetup = true;
-        this.selectMessage = SETUP_TOTP_REQUIRED;
+        this.selectMessage = I18n.get(Translations.SETUP_TOTP_REQUIRED);
         // 	TODO Add Toast = showToast: true,
       } else {
-        logger.debug(SET_PREFERRED_MFA_FAILURE, error);
-        this.selectMessage = UNABLE_TO_SETUP_MFA_AT_THIS_TIME;
+        logger.debug('Set Preferred MFA failed', error);
+        this.selectMessage = I18n.get(Translations.UNABLE_TO_SETUP_MFA_AT_THIS_TIME);
         // 	TODO Add Toast = showToast: true,
       }
     } finally {
@@ -113,10 +105,10 @@ export class AmplifySelectMFAType {
 
   contentBuilder() {
     if (!this.MFATypes || Object.keys(this.MFATypes).length < 2) {
-      logger.debug(LESS_THAN_TWO_MFA_VALUES_MESSAGE);
+      logger.debug(I18n.get(Translations.LESS_THAN_TWO_MFA_VALUES_MESSAGE));
       return (
         <div>
-          <a>{LESS_THAN_TWO_MFA_VALUES_MESSAGE}</a>
+          <a>{I18n.get(Translations.LESS_THAN_TWO_MFA_VALUES_MESSAGE)}</a>
         </div>
       );
     }
@@ -126,8 +118,8 @@ export class AmplifySelectMFAType {
     return (
       // TODO: Add Toast messages
       <amplify-form-section
-        submitButtonText={SELECT_MFA_TYPE_SUBMIT_BUTTON_TEXT}
-        headerText={SELECT_MFA_TYPE_HEADER_TEXT}
+        submitButtonText={I18n.get(Translations.SELECT_MFA_TYPE_SUBMIT_BUTTON_TEXT)}
+        headerText={I18n.get(Translations.SELECT_MFA_TYPE_HEADER_TEXT)}
         handleSubmit={event => this.handleSubmit(event)}
         loading={this.loading}
       >
