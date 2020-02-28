@@ -271,12 +271,31 @@ jobs:
       - store_artifacts:
           path: amplify-js-samples-staging/cypress/screenshots
 
-  integ_rn_ios_setup:
+  integ_rn_ios_storage:
     <<: *defaults_rn
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
       - attach_workspace:
           at: ~/
-      - run: pwd && ls
+      - run: pwd && ls -alF
+      - run:
+          name: Yarn Install
+          command: yarn install --non-interactive --no-lockfile
+            - restore_pods
+      - run:
+          name: Install CocoaPods
+          command: |
+            cd ios
+            pod install
+      - save_pods
+      - run:
+          background: true
+          command: xcrun simctl boot "iPhone 11"
+          name: Start iOS simulator (background)
+      - run:
+          background: true
+          command: yarn start
+          name: Start Metro Packager (background)
       - run:
           name: Configure Detox
           environment:
@@ -285,16 +304,9 @@ jobs:
             brew tap wix/brew
             brew install applesimutils
             yarn global add detox-cli
-
-  integ_rn_ios_storage:
-    <<: *defaults_rn
-    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run: detox --version
-      - run: pwd
-      - run: ls -alF
+      - run:
+          name: Detox Build
+          command: detox build -c ios.sim.debug
 
   deploy:
     <<: *defaults
@@ -325,16 +337,14 @@ workflows:
   version: 2
   build_test_deploy:
     jobs:
-      - build
-      - integ_setup:
-          requires:
-            - build
-      - integ_rn_ios_setup:
-          requires:
-            - integ_setup
+      # - build
+      # - integ_setup:
+      #     requires:
+      #       - build
+      - integ_setup
       - integ_rn_ios_storage:
           requires:
-            - integ_rn_ios_setup
+            - integ_setup
       # - unit_test:
       #     requires:
       #       - build
