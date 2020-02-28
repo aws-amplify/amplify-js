@@ -291,7 +291,6 @@ jobs:
 
             cp -rf ~/amplify-js/packages/amazon-cognito-identity-js/dist ./node_modules/amazon-cognito-identity-js/dist
             cp -rf ~/amplify-js/packages/amazon-cognito-identity-js/lib ./node_modules/amazon-cognito-identity-js/lib
-            cp -rf ~/amplify-js/packages/amazon-cognito-identity-js/lib-esm ./node_modules/amazon-cognito-identity-js/lib-esm
 
             cp -rf ~/amplify-js/packages/analytics/dist ./node_modules/@aws-amplify/analytics/dist
             cp -rf ~/amplify-js/packages/analytics/lib ./node_modules/@aws-amplify/analytics/lib
