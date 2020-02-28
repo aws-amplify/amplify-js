@@ -14,6 +14,26 @@ defaults: &defaults
         ## this enables colors in the output
         TERM: xterm
 
+defaults_rn: &defaults_rn
+  macos:
+    xcode: '11.3.1'
+  working_directory: ~/amplify-js-samples-staging
+
+commands:
+  restore_pods:
+    steps:
+      - restore_cache:
+          keys:
+            - v1-storage-app-pods-{{ checksum "ios/Podfile.lock" }}
+            - v1-storage-app-pods-
+
+  save_pods:
+    steps:
+      - save_cache:
+          key: v1-storage-app-pods-{{ checksum "ios/Podfile.lock" }}
+          paths:
+            - ios/Pods
+
 jobs:
   build:
     <<: *defaults
@@ -252,9 +272,7 @@ jobs:
           path: amplify-js-samples-staging/cypress/screenshots
 
   integ_rn_ios_setup:
-    macos:
-      xcode: '11.3.1'
-    working_directory: ~/
+    <<: *defaults_rn
     steps:
       - attach_workspace:
           at: .
@@ -267,9 +285,6 @@ jobs:
             brew tap wix/brew
             brew install applesimutils
             yarn global add detox-cli
-      - persist_to_workspace:
-          root: .
-          paths: .
 
   integ_rn_ios_storage:
     macos:
@@ -318,9 +333,6 @@ workflows:
       - integ_rn_ios_setup:
           requires:
             - integ_setup
-      - integ_rn_ios_storage:
-          requires:
-            - integ_rn_ios_setup
       # - unit_test:
       #     requires:
       #       - build
