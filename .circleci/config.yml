@@ -257,7 +257,7 @@ jobs:
     working_directory: ~/
     steps:
       - attach_workspace:
-          at: ./amplify-js-samples-staging
+          at: .
       - run: pwd && ls
       - run:
           name: Configure Detox
@@ -269,7 +269,7 @@ jobs:
             yarn global add detox-cli
       - persist_to_workspace:
           root: .
-          paths: amplify-js-samples-staging
+          paths: .
 
   integ_rn_ios_storage:
     macos:
