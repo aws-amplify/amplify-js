@@ -273,7 +273,6 @@ jobs:
 
   integ_rn_ios_setup:
     <<: *defaults_rn
-    working_directory: ~/
     steps:
       - attach_workspace:
           at: ~/
@@ -288,12 +287,11 @@ jobs:
             yarn global add detox-cli
 
   integ_rn_ios_storage:
-    macos:
-      xcode: '11.3.1'
-    working_directory: ~/
+    <<: *defaults_rn
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
       - attach_workspace:
-          at: .
+          at: ~/
       - run: detox --version
       - run: pwd
       - run: ls -alF
@@ -334,6 +332,9 @@ workflows:
       - integ_rn_ios_setup:
           requires:
             - integ_setup
+      - integ_rn_ios_storage:
+          requires:
+            - integ_rn_ios_setup
       # - unit_test:
       #     requires:
       #       - build
