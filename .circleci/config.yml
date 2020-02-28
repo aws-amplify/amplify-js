@@ -323,9 +323,9 @@ jobs:
       - run:
           name: Detox Build
           command: detox build -c ios.sim.debug
-      - run:
-          name: Detox Clean Cache
-          command: detox clean-framework-cache && detox build-framework-cache
+      # - run:
+      #     name: Detox Clean Cache
+      #     command: detox clean-framework-cache && detox build-framework-cache
       - run:
           environment:
             JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
