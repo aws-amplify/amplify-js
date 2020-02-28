@@ -89,6 +89,7 @@ export default class CognitoUserPool {
 	 * @param {(AttributeArg[])=} validationData Application metadata.
 	 * @param {(AttributeArg[])=} clientMetadata Client metadata.
 	 * @param {nodeCallback<SignUpResult>} callback Called on error or with the new user.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	signUp(
