@@ -281,7 +281,7 @@ jobs:
       - run:
           name: Yarn Install
           command: yarn install --non-interactive --no-lockfile
-            - restore_pods
+      - restore_pods
       - run:
           name: Install CocoaPods
           command: |
