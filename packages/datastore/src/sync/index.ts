@@ -130,15 +130,14 @@ export class SyncEngine {
 				try {
 					await this.setupModels(params);
 				} catch (err) {
-					logger.error(
-						"Sync engine stopped. IndexedDB not supported in this browser's private mode"
-					);
+					logger.error('Sync engine error on start', err);
 					return;
 				}
 
 				new Reachability().networkMonitor().subscribe(async ({ online }) => {
 					this.online = online;
 					if (online) {
+						//#region GraphQL Subscriptions
 						const [
 							ctlSubsObservable,
 							dataSubsObservable,
@@ -153,6 +152,9 @@ export class SyncEngine {
 						}
 
 						logger.log('Realtime ready');
+						//#endregion
+
+						//#region Base & Sync queries
 						const currentTimeStamp = new Date().getTime();
 
 						const modelLastSync: Map<
@@ -183,8 +185,9 @@ export class SyncEngine {
 							observer.error(err);
 							return;
 						}
+						//#endregion
 
-						// process mutations
+						//#region process mutations
 						subscriptions.push(
 							this.mutationsProcessor
 								.start()
@@ -203,8 +206,9 @@ export class SyncEngine {
 									}
 								)
 						);
+						//#endregion
 
-						// TODO: extract to funciton
+						// TODO: extract to function
 						subscriptions.push(
 							dataSubsObservable.subscribe(
 								([_transformerMutationType, modelDefinition, item]) => {

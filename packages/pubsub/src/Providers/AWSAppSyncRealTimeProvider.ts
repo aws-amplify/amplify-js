@@ -456,7 +456,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		if (type === MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE) {
 			clearTimeout(this.keepAliveTimeoutId);
 			this.keepAliveTimeoutId = setTimeout(
-				this._timeoutDisconnect.bind(this),
+				this._errorDisconnect.bind(this, 'Timeout disconnect'),
 				this.keepAliveTimeout
 			);
 			return;
@@ -492,16 +492,15 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		}
 	}
 
-	private _timeoutDisconnect() {
+	private _errorDisconnect(msg: string) {
 		this.subscriptionObserverMap.forEach(({ observer }) => {
 			if (!observer.closed) {
 				observer.error({
-					errors: [{ ...new GraphQLError(`Timeout disconnect`) }],
+					errors: [{ ...new GraphQLError(msg) }],
 				});
-				observer.complete();
 			}
 		});
-		this.subscriptionObserverMap = new Map();
+		this.subscriptionObserverMap.clear();
 		if (this.awsRealTimeSocket) {
 			this.awsRealTimeSocket.close();
 		}
@@ -661,7 +660,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 							this.awsRealTimeSocket.onmessage = this._handleIncomingSubscriptionMessage.bind(
 								this
 							);
-							this.awsRealTimeSocket.onerror = logger.debug;
+							this.awsRealTimeSocket.onerror = err => {
+								logger.debug(err);
+								this._errorDisconnect('Connection closed');
+							};
 							res('Cool, connected to AWS AppSyncRealTime');
 							return;
 						}
