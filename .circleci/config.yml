@@ -286,7 +286,6 @@ jobs:
           name: 'Link aws-amplify'
           command: |
             cp -rf ~/amplify-js/packages/aws-amplify ./node_modules/
-            mkdir node_modules/@aws-amplify
             cp -rf ~/amplify-js/packages/analytics ./node_modules/@aws-amplify/
             cp -rf ~/amplify-js/packages/api ./node_modules/@aws-amplify/
             cp -rf ~/amplify-js/packages/auth ./node_modules/@aws-amplify/
