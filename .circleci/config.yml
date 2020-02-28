@@ -410,70 +410,70 @@ workflows:
           requires:
             - build
       - integ_setup:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
+          # filters:
+          #   branches:
+          #     only:
+          #       - release
+          #       - master
+          #       - 1.0-stable
           requires:
             - build
-      - integ_react_predictions:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
-          requires:
-            - integ_setup
-      - integ_react_auth:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
-          requires:
-            - integ_setup
-      - integ_angular_auth:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
-          requires:
-            - integ_setup
-      - integ_vue_auth:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
-          requires:
-            - integ_setup
+      # - integ_react_predictions:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #           - master
+      #           - 1.0-stable
+      #     requires:
+      #       - integ_setup
+      # - integ_react_auth:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #           - master
+      #           - 1.0-stable
+      #     requires:
+      #       - integ_setup
+      # - integ_angular_auth:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #           - master
+      #           - 1.0-stable
+      #     requires:
+      #       - integ_setup
+      # - integ_vue_auth:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #           - master
+      #           - 1.0-stable
+      #     requires:
+      #       - integ_setup
       - integ_rn_ios_storage:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
+          # filters:
+          #   branches:
+          #     only:
+          #       - release
+          #       - master
+          #       - 1.0-stable
           requires:
             - integ_setup
-      - deploy:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - beta
-                - 1.0-stable
-          requires:
-            - unit_test
-            - integ_react_predictions
-            - integ_react_auth
-            - integ_angular_auth
-            - integ_vue_auth
+      # - deploy:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #           - master
+      #           - beta
+      #           - 1.0-stable
+      #     requires:
+      #       - unit_test
+      #       - integ_react_predictions
+      #       - integ_react_auth
+      #       - integ_angular_auth
+      #       - integ_vue_auth
