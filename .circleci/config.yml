@@ -273,9 +273,10 @@ jobs:
 
   integ_rn_ios_setup:
     <<: *defaults_rn
+    working_directory: ~/
     steps:
       - attach_workspace:
-          at: .
+          at: ~/
       - run: pwd && ls
       - run:
           name: Configure Detox
