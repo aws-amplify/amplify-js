@@ -277,10 +277,16 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run: pwd && ls -alF
       - run:
           name: Yarn Install
           command: yarn install --non-interactive --no-lockfile
+      - run:
+          name: 'Link aws-amplify'
+          command: |
+            cd ~/amplify-js/packages/aws-amplify
+            yarn link
+            cd ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+            yarn link aws-amplify
       - restore_pods
       - run:
           name: Install CocoaPods
@@ -307,6 +313,19 @@ jobs:
       - run:
           name: Detox Build
           command: detox build -c ios.sim.debug
+      - run:
+          name: Detox Clean Cache
+          command: detox clean-framework-cache && detox build-framework-cache
+      - run:
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
+            JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
+          name: Detox Test
+          command: detox test -c ios.sim.debug -u
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
 
   deploy:
     <<: *defaults
@@ -337,11 +356,10 @@ workflows:
   version: 2
   build_test_deploy:
     jobs:
-      # - build
-      # - integ_setup:
-      #     requires:
-      #       - build
-      - integ_setup
+      - build
+      - integ_setup:
+          requires:
+            - build
       - integ_rn_ios_storage:
           requires:
             - integ_setup
