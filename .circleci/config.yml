@@ -473,3 +473,4 @@ workflows:
             - integ_react_auth
             - integ_angular_auth
             - integ_vue_auth
+            - integ_rn_ios_storage
