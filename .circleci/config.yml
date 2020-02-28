@@ -280,6 +280,9 @@ jobs:
       - run:
           name: Yarn Install
           command: yarn install --non-interactive --no-lockfile
+      - run:
+          name: Install netinfo
+          command: yarn add @react-native-community/netinfo && npx react-native link @react-native-community/netinfo
       # TODO: Metro Bundler doesn't work with linked packages. Consider copying the build output instead
       # - run:
       #     name: 'Link aws-amplify'
