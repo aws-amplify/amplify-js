@@ -280,13 +280,14 @@ jobs:
       - run:
           name: Yarn Install
           command: yarn install --non-interactive --no-lockfile
-      - run:
-          name: 'Link aws-amplify'
-          command: |
-            cd ~/amplify-js/packages/aws-amplify
-            yarn link
-            cd ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
-            yarn link aws-amplify
+      # TODO: Metro Bundler doesn't work with linked packages. Consider copying the build output instead
+      # - run:
+      #     name: 'Link aws-amplify'
+      #     command: |
+      #       cd ~/amplify-js/packages/aws-amplify
+      #       yarn link
+      #       cd ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+      #       yarn link aws-amplify
       - restore_pods
       - run:
           name: Install CocoaPods
@@ -360,9 +361,6 @@ workflows:
       - integ_setup:
           requires:
             - build
-      - integ_rn_ios_storage:
-          requires:
-            - integ_setup
       # - unit_test:
       #     requires:
       #       - build
@@ -420,6 +418,9 @@ workflows:
       #           - 1.0-stable
       #     requires:
       #       - integ_setup
+      - integ_rn_ios_storage:
+          requires:
+            - integ_setup
       # - deploy:
       #     filters:
       #       branches:
