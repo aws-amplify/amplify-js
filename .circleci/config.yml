@@ -336,7 +336,6 @@ workflows:
                 - master
                 - beta
                 - 1.0-stable
-                - rn-datastore
           requires:
             - unit_test
             - integ_react_predictions
