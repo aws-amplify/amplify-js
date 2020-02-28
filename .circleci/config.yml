@@ -297,7 +297,7 @@ jobs:
       - save_pods
       - run:
           background: true
-          command: xcrun simctl boot "iPhone 11"
+          command: xcrun simctl boot "iPhone 11" || true
           name: Start iOS simulator (background)
       - run:
           background: true
