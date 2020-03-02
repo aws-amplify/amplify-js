@@ -5,12 +5,11 @@
 
 ## Properties
 
-| Property            | Attribute        | Description                                                                                                                 | Type                                             | Default                 |
-| ------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | ----------------------- |
-| `fieldId`           | `field-id`       | Used for id field                                                                                                           | `string`                                         | `undefined`             |
-| `handleInputChange` | --               | The callback, called when the select is modified by the user.                                                               | `(inputEvent: Event) => void`                    | `undefined`             |
-| `options`           | --               | The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string\|number} | `SelectOptions<number> \| SelectOptions<string>` | `DEFAULT_SELECT_OPTION` |
-| `overrideStyle`     | `override-style` | (Optional) Overrides default styling                                                                                        | `boolean`                                        | `false`                 |
+| Property            | Attribute  | Description                                                                                                                 | Type                                             | Default                 |
+| ------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | ----------------------- |
+| `fieldId`           | `field-id` | Used for id field                                                                                                           | `string`                                         | `undefined`             |
+| `handleInputChange` | --         | The callback, called when the select is modified by the user.                                                               | `(inputEvent: Event) => void`                    | `undefined`             |
+| `options`           | --         | The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string\|number} | `SelectOptions<number> \| SelectOptions<string>` | `DEFAULT_SELECT_OPTION` |
 
 
 ## Dependencies

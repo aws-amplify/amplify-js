@@ -23,10 +23,10 @@
 		"lint": "tslint 'src/**/*.ts'"
 	},
 	"react-native": {
-		"./index": "./lib/index.js",
-		"./lib/ClientDevice": "./lib/ClientDevice/reactnative.js",
-		"./lib/RNComponents": "./lib/RNComponents/reactnative.js",
-		"./lib/StorageHelper": "./lib/StorageHelper/reactnative.js"
+		"./lib/index": "./lib-esm/index.js",
+		"./lib-esm/ClientDevice": "./lib-esm/ClientDevice/reactnative.js",
+		"./lib-esm/RNComponents": "./lib-esm/RNComponents/reactnative.js",
+		"./lib-esm/StorageHelper": "./lib-esm/StorageHelper/reactnative.js"
 	},
 	"repository": {
 		"type": "git",

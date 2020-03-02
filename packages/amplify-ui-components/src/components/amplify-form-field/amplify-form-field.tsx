@@ -22,8 +22,6 @@ export class AmplifyFormField {
   @Prop() handleInputChange?: (inputEvent: Event) => void;
   /** (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. */
   @Prop() placeholder?: string = '';
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle?: boolean = false;
   /** (Optional) String value for the name of the input. */
   @Prop() name?: string;
   /** The value of the content inside of the input field */
@@ -38,9 +36,7 @@ export class AmplifyFormField {
       <div class="form-field">
         {this.label && (
           <div class="form-field-label">
-            <amplify-label htmlFor={this.fieldId} overrideStyle={this.overrideStyle}>
-              {this.label}
-            </amplify-label>
+            <amplify-label htmlFor={this.fieldId}>{this.label}</amplify-label>
           </div>
         )}
         {this.description && (
@@ -56,7 +52,6 @@ export class AmplifyFormField {
               type={this.type}
               handleInputChange={this.handleInputChange}
               placeholder={this.placeholder}
-              overrideStyle={this.overrideStyle}
               name={this.name}
               value={this.value}
               inputProps={this.inputProps}
@@ -64,11 +59,7 @@ export class AmplifyFormField {
             />
           </slot>
         </div>
-        {this.hint && (
-          <amplify-hint id={`${this.fieldId}-hint`} overrideStyle={this.overrideStyle}>
-            {this.hint}
-          </amplify-hint>
-        )}
+        {this.hint && <amplify-hint id={`${this.fieldId}-hint`}>{this.hint}</amplify-hint>}
       </div>
     );
   }

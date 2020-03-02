@@ -1,4 +1,4 @@
-import { Component, h, Prop, Host } from '@stencil/core';
+import { Component, h, Prop } from '@stencil/core';
 import { icons, IconNameType } from '../amplify-icon/icons';
 
 @Component({
@@ -7,21 +7,23 @@ import { icons, IconNameType } from '../amplify-icon/icons';
   scoped: true,
 })
 export class AmplifySignInButton {
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
   @Prop() provider: 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
 
   render() {
     return (
-      <Host class={`sign-in-button ${this.provider}`}>
+      <div class={`sign-in-button ${this.provider}`}>
         <button>
-          {this.provider in icons && <amplify-icon name={this.provider as IconNameType} />}
+          {this.provider in icons && (
+            <span class="icon">
+              <amplify-icon name={this.provider as IconNameType} />
+            </span>
+          )}
 
           <span class="content">
             <slot />
           </span>
         </button>
-      </Host>
+      </div>
     );
   }
 }

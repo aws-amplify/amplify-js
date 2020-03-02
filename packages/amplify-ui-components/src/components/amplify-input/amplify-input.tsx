@@ -4,7 +4,7 @@ import { TextFieldTypes } from '../../common/types/ui-types';
 @Component({
   tag: 'amplify-input',
   styleUrl: 'amplify-input.scss',
-  shadow: false,
+  shadow: true,
 })
 export class AmplifyInput {
   /** The ID of the field.  Should match with its corresponding input's ID. */
@@ -17,8 +17,6 @@ export class AmplifyInput {
   @Prop() handleInputChange?: (inputEvent: Event) => void;
   /** (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. */
   @Prop() placeholder?: string = '';
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
   /** (Optional) String value for the name of the input. */
   @Prop() name?: string;
   /** The value of the content inside of the input field */

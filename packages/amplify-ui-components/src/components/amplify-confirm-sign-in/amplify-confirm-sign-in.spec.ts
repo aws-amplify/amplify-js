@@ -1,6 +1,7 @@
+import { I18n } from '@aws-amplify/core';
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyConfirmSignIn } from './amplify-confirm-sign-in';
-import { CONFIRM, CONFIRM_SMS_CODE } from '../../common/constants';
+import { Translations } from '../../common/Translations';
 
 describe('amplify-confirm-sign-in spec:', () => {
   describe('Component logic ->', () => {
@@ -19,15 +20,11 @@ describe('amplify-confirm-sign-in spec:', () => {
     });
 
     it('should render `headerText` to `Confirm SMS Code` by default', () => {
-      expect(confirmSignIn.headerText).toEqual(CONFIRM_SMS_CODE);
+      expect(confirmSignIn.headerText).toEqual(I18n.get(Translations.CONFIRM_SMS_CODE));
     });
 
     it('should render `submitButtonText` to `Confirm` by default', () => {
-      expect(confirmSignIn.submitButtonText).toEqual(CONFIRM);
-    });
-
-    it('should render `overrideStyle` to false by default', () => {
-      expect(confirmSignIn.overrideStyle).toBe(false);
+      expect(confirmSignIn.submitButtonText).toEqual(I18n.get(Translations.CONFIRM));
     });
   });
   describe('Render logic ->', () => {

@@ -1,9 +1,11 @@
+import { I18n } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 import { dispatchAuthStateChangeEvent } from '../../common/helpers';
-import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_AMAZON } from '../../common/constants';
+import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { AuthState, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
+import { Translations } from '../../common/Translations';
 
 const logger = new Logger('amplify-amazon-button');
 
@@ -18,8 +20,6 @@ export class AmplifyAmazonButton {
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
 
   federatedSignIn = response => {
     const { access_token, expires_in } = response;
@@ -78,13 +78,9 @@ export class AmplifyAmazonButton {
 
   render() {
     return (
-      <amplify-sign-in-button
-        onClick={event => this.signInWithAmazon(event)}
-        overrideStyle={this.overrideStyle}
-        provider="amazon"
-      >
+      <amplify-sign-in-button onClick={event => this.signInWithAmazon(event)} provider="amazon">
         <script src="https://assets.loginwithamazon.com/sdk/na/login1.js"></script>
-        {SIGN_IN_WITH_AMAZON}
+        {I18n.get(Translations.SIGN_IN_WITH_AMAZON)}
       </amplify-sign-in-button>
     );
   }

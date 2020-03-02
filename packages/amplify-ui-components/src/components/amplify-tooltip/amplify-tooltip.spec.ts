@@ -12,16 +12,12 @@ describe('amplify-tooltip spec:', () => {
     it('should have automatically shown prop set to false by default', () => {
       expect(tooltip.shouldAutoShow).toBe(false);
     });
-
-    it('should have style override prop set to false by default', () => {
-      expect(tooltip.overrideStyle).toBe(false);
-    });
   });
   describe('Render logic ->', () => {
     it('should render an automatically-shown tooltip', async () => {
       const page = await newSpecPage({
         components: [AmplifyTooltip],
-        html: `<amplify-tooltip should-auto-show='true'></amplify-tooltip>`
+        html: `<amplify-tooltip should-auto-show='true'></amplify-tooltip>`,
       });
 
       expect(page.root).toMatchSnapshot();
@@ -30,16 +26,16 @@ describe('amplify-tooltip spec:', () => {
     it('should render a normal tooltip by default', async () => {
       const page = await newSpecPage({
         components: [AmplifyTooltip],
-        html: `<amplify-tooltip></amplify-tooltip>`
+        html: `<amplify-tooltip></amplify-tooltip>`,
       });
 
       expect(page.root).toMatchSnapshot();
     });
 
-    it('should render without Emotion CSS classes when style override is true', async () => {
+    it('should render without Emotion CSS classes', async () => {
       const page = await newSpecPage({
         components: [AmplifyTooltip],
-        html: `<amplify-tooltip override-style='true'></amplify-tooltip>`
+        html: `<amplify-tooltip></amplify-tooltip>`,
       });
 
       expect(page.root).toMatchSnapshot();

@@ -14,8 +14,6 @@ const DEFAULT_SELECT_OPTION = [{ label: '', value: 1 }];
   shadow: true,
 })
 export class AmplifySelect {
-  /** (Optional) Overrides default styling */
-  @Prop() overrideStyle: boolean = false;
   /** The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number} */
   @Prop() options: SelectOptionsString | SelectOptionsNumber = DEFAULT_SELECT_OPTION;
   /** Used for id field */

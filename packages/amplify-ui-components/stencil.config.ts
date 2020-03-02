@@ -31,6 +31,7 @@ export const config: Config = {
       '@aws-sdk/middleware-serde': ['getSerdePlugin'],
       '@aws-sdk/property-provider': ['ProviderError'],
       '@aws-sdk/fetch-http-handler': ['FetchHttpHandler'],
+      '@aws-sdk/util-uri-escape': ['escapeUri'],
     },
   },
   outputTargets: [

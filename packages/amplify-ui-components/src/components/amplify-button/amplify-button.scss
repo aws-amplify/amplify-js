@@ -1,8 +1,18 @@
+:host {
+  --background-color: var(--amplify-primary-color);
+  --background-color-active: var(--amplify-primary-shade);
+  --background-color-disable : var(--amplify-primary-tint);
+  --color: var(--amplify-primary-contrast);
+  --border-width: initial;
+  --border-color: initial;
+  --border-style: initial;
+}
+
 .button {
   min-width: 153px;
   display: inline-block;
   margin-bottom: 0;
-  font-size: 12px;
+  font-size: var(--amplify-text-xxs);
   font-weight: 400;
   line-height: 1.42857143;
   text-align: center;
@@ -12,24 +22,25 @@
   cursor: pointer;
   user-select: none;
   background-image: none;
-  color: var(--amplify-button-color);
-  border-color: #ccc;
+  color: var(--color);
   text-transform: uppercase;
   padding: 14px;
   letter-spacing: 1.1px;
-  border: none;
-  background-color: var(--amplify-button-background-color);
+  background-color: var(--background-color);
+  border-width: var(--border-width);
+  border-color: var(--border-color);
+  border-style: var(--border-style);
 
   &:active {
     opacity: 1;
-    background-color: #e88b01;
+    background-color: var(--background-color-active);
   }
   &:hover {
     opacity: 0.8;
   }
   &:disabled {
-    opacity: 1;
+    opacity: 0.65;
     cursor: auto;
-    background-color: #ffc46d;
+    background-color: var(--background-color-disable);
   }
 }

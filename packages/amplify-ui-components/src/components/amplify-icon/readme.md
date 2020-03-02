@@ -5,10 +5,9 @@
 
 ## Properties
 
-| Property        | Attribute        | Description                                                 | Type                                                                                                                                                        | Default     |
-| --------------- | ---------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `name`          | `name`           | (Required) Name of icon used to determine the icon rendered | `"amazon" \| "auth0" \| "enter-vr" \| "exit-vr" \| "facebook" \| "google" \| "loading" \| "maximize" \| "minimize" \| "sound" \| "sound-mute" \| "warning"` | `undefined` |
-| `overrideStyle` | `override-style` | (Optional) Override default styling                         | `boolean`                                                                                                                                                   | `false`     |
+| Property | Attribute | Description                                                 | Type                                                                                                                                                        | Default     |
+| -------- | --------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `name`   | `name`    | (Required) Name of icon used to determine the icon rendered | `"amazon" \| "auth0" \| "enter-vr" \| "exit-vr" \| "facebook" \| "google" \| "loading" \| "maximize" \| "minimize" \| "sound" \| "sound-mute" \| "warning"` | `undefined` |
 
 
 ## Dependencies

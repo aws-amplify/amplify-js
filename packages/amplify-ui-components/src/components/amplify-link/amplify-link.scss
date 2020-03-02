@@ -1,18 +1,25 @@
+:host {
+  --link-color: var(--amplify-primary-color);
+  --link-hover: var(--amplify-primary-tint);
+  --link-active: var(--amplify-primary-shade);
+}
+
 .link {
-  color: #ff9900;
+  color: var(--link-color);
   cursor: pointer;
+
   &:link {
-    color: var(--amplify-amazon-orange);
+    color: var(--link-color);
     text-decoration: none;
   }
 
   &:hover {
-    color: var(--amplify-light-amazon-orange);
+    color: var(--link-hover);
     text-decoration: underline;
   }
 
   &:active {
-    color: var(--amplify-button-click);
+    color: var(--link-active);
     text-decoration: underline;
   }
 }

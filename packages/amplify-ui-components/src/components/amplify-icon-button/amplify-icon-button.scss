@@ -1,3 +1,8 @@
+:host {
+  --button-color: var(--amplify-secondary-contrast);
+  --button-background-hover: var(--amplify-secondary-color);
+}
+
 .action-button {
   button {
     position: relative;
@@ -11,10 +16,10 @@
     border: none;
     border-radius: 30px;
     transition: all 0.3s ease-in-out;
-    color: var(--amplify-white);
+    color: var(--button-color);
     fill: currentColor;
     &:hover {
-      background-color: var(--amplify-deep-squid-ink);
+      background-color: var(--button-background-hover);
       box-shadow: 0.3px 0.3px 0.3px rgba(0, 0, 0, 0.3);
     }
     &:hover > .tooltip {

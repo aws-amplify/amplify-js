@@ -10,7 +10,6 @@
 | `handleSubmit`           | --                         | (Required) Function called upon submission of form                                               | `(event: Event) => void`            | `undefined`      |
 | `headerText`             | `header-text`              | Used for form section header                                                                     | `string`                            | `undefined`      |
 | `loading`                | `loading`                  | Loading state for the form                                                                       | `boolean`                           | `false`          |
-| `overrideStyle`          | `override-style`           | (Optional) Overrides default styling                                                             | `boolean`                           | `false`          |
 | `secondaryFooterContent` | `secondary-footer-content` | Secondary footer component or text                                                               | `FunctionalComponent<{}> \| string` | `null`           |
 | `submitButtonText`       | `submit-button-text`       | (Optional) Used as a the default value within the default footer slot                            | `string`                            | `'Submit'`       |
 | `testDataPrefix`         | `test-data-prefix`         | String prefix for the data-test attributes in this component primarily used for testing purposes | `string`                            | `'form-section'` |

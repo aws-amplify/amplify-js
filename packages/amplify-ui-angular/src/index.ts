@@ -2,4 +2,4 @@
 export * from './directives/proxies';
 
 // PACKAGE MODULE
-export { AmplifyModule } from './amplify-module';
+export { AmplifyUIAngularModule } from './amplify-module';

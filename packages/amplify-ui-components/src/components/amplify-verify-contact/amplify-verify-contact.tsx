@@ -1,17 +1,10 @@
 import { Auth } from '@aws-amplify/auth';
-import { Logger } from '@aws-amplify/core';
+import { I18n, Logger } from '@aws-amplify/core';
 import { Component, h, Prop, State } from '@stencil/core';
 import { AuthState, AuthStateHandler, CognitoUserInterface } from '../../common/types/auth-types';
-import {
-  VERIFY_CONTACT_VERIFY_LABEL,
-  VERIFY_CONTACT_SUBMIT_LABEL,
-  VERIFY_CONTACT_HEADER_TEXT,
-  CODE_PLACEHOLDER,
-  VERIFY_CONTACT_EMAIL_LABEL,
-  VERIFY_CONTACT_PHONE_LABEL,
-  NO_AUTH_MODULE_FOUND,
-} from '../../common/constants';
+import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { Translations } from '../../common/Translations';
 
 const logger = new Logger('AmplifyVerifyContact');
 
@@ -22,8 +15,6 @@ const logger = new Logger('AmplifyVerifyContact');
 export class AmplifyVerifyContact {
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
-  /** (Optional) Override default styling */
-  @Prop() overrideStyle: boolean = false;
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
 
@@ -87,8 +78,7 @@ export class AmplifyVerifyContact {
             autocomplete: 'off',
           }}
           name="code"
-          overrideStyle={this.overrideStyle}
-          placeholder={CODE_PLACEHOLDER}
+          placeholder={I18n.get(Translations.CODE_PLACEHOLDER)}
         />
       </div>
     );
@@ -114,20 +104,18 @@ export class AmplifyVerifyContact {
       <div>
         {email && (
           <amplify-radio-button
-            label={VERIFY_CONTACT_EMAIL_LABEL}
+            label={I18n.get(Translations.VERIFY_CONTACT_EMAIL_LABEL)}
             key="email"
             name="contact"
-            overrideStyle={this.overrideStyle}
             value="email"
           />
         )}
 
         {phone_number && (
           <amplify-radio-button
-            label={VERIFY_CONTACT_PHONE_LABEL}
+            label={I18n.get(Translations.VERIFY_CONTACT_PHONE_LABEL)}
             key="phone_number"
             name="contact"
-            overrideStyle={this.overrideStyle}
             value="phone_number"
           />
         )}
@@ -139,15 +127,18 @@ export class AmplifyVerifyContact {
     return (
       <amplify-form-section
         handleSubmit={event => this.handleSubmit(event)}
-        headerText={VERIFY_CONTACT_HEADER_TEXT}
-        overrideStyle={this.overrideStyle}
+        headerText={I18n.get(Translations.VERIFY_CONTACT_HEADER_TEXT)}
         loading={this.loading}
         secondaryFooterContent={
           <span>
             <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}>Skip</amplify-link>
           </span>
         }
-        submitButtonText={this.verifyAttr ? VERIFY_CONTACT_SUBMIT_LABEL : VERIFY_CONTACT_VERIFY_LABEL}
+        submitButtonText={
+          this.verifyAttr
+            ? I18n.get(Translations.VERIFY_CONTACT_SUBMIT_LABEL)
+            : I18n.get(Translations.VERIFY_CONTACT_VERIFY_LABEL)
+        }
       >
         {this.verifyAttr ? this.renderSubmit() : this.renderVerify()}
       </amplify-form-section>
