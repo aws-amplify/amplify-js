@@ -45,6 +45,7 @@ export const config: Config = {
       proxiesFile: '../amplify-ui-react/src/components.ts',
     }),
     { type: 'dist' },
+    { type: 'docs-json', file: 'dist/docs.json' },
     { type: 'docs-readme' },
     {
       type: 'www',
