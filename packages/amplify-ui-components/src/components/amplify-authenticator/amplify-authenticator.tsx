@@ -109,19 +109,19 @@ export class AmplifyAuthenticator {
       case AuthState.SignUp:
         return (
           <slot name="sign-up">
-            <amplify-sign-up />
+            <amplify-sign-up usernameAttributes={this.usernameAttribute} />
           </slot>
         );
       case AuthState.ConfirmSignUp:
         return (
           <slot name="confirm-sign-up">
-            <amplify-confirm-sign-up user={this.authData} />
+            <amplify-confirm-sign-up user={this.authData} usernameAttributes={this.usernameAttribute} />
           </slot>
         );
       case AuthState.ForgotPassword:
         return (
           <slot name="forgot-password">
-            <amplify-forgot-password />
+            <amplify-forgot-password usernameAttributes={this.usernameAttribute} />
           </slot>
         );
       case AuthState.ResetPassword:

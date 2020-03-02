@@ -17,7 +17,7 @@ import {
   PHONE_EMPTY_ERROR_MESSAGE,
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
-import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
+import { AuthState, AuthStateHandler, UsernameAttributes } from '../../common/types/auth-types';
 import { AmplifySignUpAttributes } from './amplify-sign-up-interface';
 
 import { Auth } from '@aws-amplify/auth';
@@ -57,38 +57,14 @@ export class AmplifySignUp {
    * ]
    * ```
    */
-  @Prop() formFields: FormFieldTypes | string[] = [
-    {
-      type: 'username',
-      placeholder: SIGN_UP_USERNAME_PLACEHOLDER,
-      required: true,
-      handleInputChange: event => this.handleUsernameChange(event),
-    },
-    {
-      type: 'password',
-      placeholder: SIGN_UP_PASSWORD_PLACEHOLDER,
-      required: true,
-      handleInputChange: event => this.handlePasswordChange(event),
-    },
-    {
-      type: 'email',
-      placeholder: SIGN_UP_EMAIL_PLACEHOLDER,
-      required: true,
-      handleInputChange: event => this.handleEmailChange(event),
-    },
-    {
-      type: 'phone',
-      required: true,
-      handleInputChange: event => this.handlePhoneNumberChange(event),
-      inputProps: {
-        'data-test': 'phone-number-input',
-      },
-    },
-  ];
+  @Prop() formFields: FormFieldTypes | string[] = [];
   /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
+
+  @Prop() usernameAttributes: UsernameAttributes = 'username';
+  @Prop() userInput;
 
   @State() loading: boolean = false;
   @State() username: string;
@@ -150,9 +126,22 @@ export class AmplifySignUp {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
+    switch (this.usernameAttributes) {
+      case 'email':
+        this.userInput = this.email;
+        break;
+      case 'phone_number':
+        this.userInput = this.phoneNumber;
+        break;
+      case 'username':
+      default:
+        this.userInput = this.username;
+        break;
+    }
+
     try {
       const signUpAttrs: AmplifySignUpAttributes = {
-        username: this.username,
+        username: this.userInput,
         password: this.password,
         attributes: {
           email: this.email,
@@ -164,6 +153,90 @@ export class AmplifySignUp {
       this.handleAuthStateChange(AuthState.ConfirmSignUp, data.user);
     } catch (error) {
       dispatchToastHubEvent(error);
+    }
+  }
+
+  async componentWillLoad() {
+    switch (this.usernameAttributes) {
+      case 'email':
+        this.formFields = [
+          {
+            type: 'email',
+            placeholder: SIGN_UP_EMAIL_PLACEHOLDER,
+            required: true,
+            handleInputChange: event => this.handleEmailChange(event),
+          },
+          {
+            type: 'password',
+            placeholder: SIGN_UP_PASSWORD_PLACEHOLDER,
+            required: true,
+            handleInputChange: event => this.handlePasswordChange(event),
+          },
+          {
+            type: 'phone',
+            required: true,
+            handleInputChange: event => this.handlePhoneNumberChange(event),
+            inputProps: {
+              'data-test': 'phone-number-input',
+            },
+          },
+        ];
+        break;
+      case 'phone_number':
+        this.formFields = [
+          {
+            type: 'phone',
+            required: true,
+            handleInputChange: event => this.handlePhoneNumberChange(event),
+            inputProps: {
+              'data-test': 'phone-number-input',
+            },
+          },
+          {
+            type: 'password',
+            placeholder: SIGN_UP_PASSWORD_PLACEHOLDER,
+            required: true,
+            handleInputChange: event => this.handlePasswordChange(event),
+          },
+          {
+            type: 'email',
+            placeholder: SIGN_UP_EMAIL_PLACEHOLDER,
+            required: true,
+            handleInputChange: event => this.handleEmailChange(event),
+          },
+        ];
+        break;
+      case 'username':
+      default:
+        this.formFields = [
+          {
+            type: 'username',
+            placeholder: SIGN_UP_USERNAME_PLACEHOLDER,
+            required: true,
+            handleInputChange: event => this.handleUsernameChange(event),
+          },
+          {
+            type: 'password',
+            placeholder: SIGN_UP_PASSWORD_PLACEHOLDER,
+            required: true,
+            handleInputChange: event => this.handlePasswordChange(event),
+          },
+          {
+            type: 'email',
+            placeholder: SIGN_UP_EMAIL_PLACEHOLDER,
+            required: true,
+            handleInputChange: event => this.handleEmailChange(event),
+          },
+          {
+            type: 'phone',
+            required: true,
+            handleInputChange: event => this.handlePhoneNumberChange(event),
+            inputProps: {
+              'data-test': 'phone-number-input',
+            },
+          },
+        ];
+        break;
     }
   }
 

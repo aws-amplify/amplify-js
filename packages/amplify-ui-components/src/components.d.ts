@@ -207,6 +207,7 @@ export namespace Components {
     * Used for the username to be passed to resend code
     */
     'user': CognitoUserInterface;
+    'usernameAttributes': UsernameAttributes;
     /**
     * Engages when invalid actions occur, such as missing field, etc.
     */
@@ -320,6 +321,7 @@ export namespace Components {
     * The text displayed inside of the submit button for the form
     */
     'submitButtonText': string;
+    'usernameAttributes': UsernameAttributes;
   }
   interface AmplifyFormField {
     /**
@@ -730,6 +732,8 @@ export namespace Components {
     * Used for the submit button text in sign up component
     */
     'submitButtonText': string;
+    'userInput': any;
+    'usernameAttributes': UsernameAttributes;
     /**
     * Engages when invalid actions occur, such as missing field, etc.
     */
@@ -1329,6 +1333,7 @@ declare namespace LocalJSX {
     * Used for the username to be passed to resend code
     */
     'user'?: CognitoUserInterface;
+    'usernameAttributes'?: UsernameAttributes;
     /**
     * Engages when invalid actions occur, such as missing field, etc.
     */
@@ -1442,6 +1447,7 @@ declare namespace LocalJSX {
     * The text displayed inside of the submit button for the form
     */
     'submitButtonText'?: string;
+    'usernameAttributes'?: UsernameAttributes;
   }
   interface AmplifyFormField {
     /**
@@ -1852,6 +1858,8 @@ declare namespace LocalJSX {
     * Used for the submit button text in sign up component
     */
     'submitButtonText'?: string;
+    'userInput'?: any;
+    'usernameAttributes'?: UsernameAttributes;
     /**
     * Engages when invalid actions occur, such as missing field, etc.
     */

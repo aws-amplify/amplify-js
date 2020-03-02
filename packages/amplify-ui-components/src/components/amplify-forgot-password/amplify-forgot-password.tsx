@@ -1,7 +1,15 @@
 import { Component, Prop, State, h } from '@stencil/core';
-import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
-import { RESET_YOUR_PASSWORD, SEND_CODE, BACK_TO_SIGN_IN, NO_AUTH_MODULE_FOUND } from '../../common/constants';
+import { FormFieldTypes, PhoneNumberInterface } from '../amplify-auth-fields/amplify-auth-fields-interface';
+import { AuthState, AuthStateHandler, UsernameAttributes } from '../../common/types/auth-types';
+import {
+  RESET_YOUR_PASSWORD,
+  SEND_CODE,
+  BACK_TO_SIGN_IN,
+  NO_AUTH_MODULE_FOUND,
+  COUNTRY_DIAL_CODE_DEFAULT,
+  COUNTRY_DIAL_CODE_SUFFIX,
+  PHONE_SUFFIX,
+} from '../../common/constants';
 import { CodeDeliveryType } from './amplify-forgot-password-interface';
 
 import { Auth } from '@aws-amplify/auth';
@@ -28,28 +36,86 @@ export class AmplifyForgotPassword {
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 
+  @Prop() usernameAttributes: UsernameAttributes = 'username';
+
   @State() username: string;
   @State() password: string;
   @State() code: string;
   @State() delivery: CodeDeliveryType | null = null;
   @State() loading: boolean = false;
+  @State() email: string;
+  @State() phoneNumber: PhoneNumberInterface = {
+    countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
+    phoneNumberValue: null,
+  };
 
   componentWillLoad() {
-    this.formFields = [
-      {
-        type: 'username',
-        required: true,
-        handleInputChange: event => this.handleUsernameChange(event),
-        value: this.username,
-        inputProps: {
-          'data-test': 'username-input',
-        },
-      },
-    ];
+    switch (this.usernameAttributes) {
+      case 'email':
+        this.formFields = [
+          {
+            type: 'email',
+            required: true,
+            handleInputChange: event => this.handleEmailChange(event),
+            inputProps: {
+              'data-test': 'email-input',
+            },
+          },
+        ];
+        break;
+      case 'phone_number':
+        this.formFields = [
+          {
+            type: 'phone',
+            required: true,
+            handleInputChange: event => this.handlePhoneNumberChange(event),
+            inputProps: {
+              'data-test': 'phone-number-input',
+            },
+          },
+        ];
+        break;
+      case 'username':
+      default:
+        this.formFields = [
+          {
+            type: 'username',
+            required: true,
+            handleInputChange: event => this.handleUsernameChange(event),
+            value: this.username,
+            inputProps: {
+              'data-test': 'username-input',
+            },
+          },
+        ];
+        break;
+    }
   }
 
   handleUsernameChange(event) {
     this.username = event.target.value;
+  }
+
+  handleEmailChange(event) {
+    this.email = event.target.value;
+  }
+
+  handlePhoneNumberChange(event) {
+    const name = event.target.name;
+    const value = event.target.value;
+
+    /** Cognito expects to have a string be passed when signing up. Since the Select input is separate
+     * input from the phone number input, we need to first capture both components values and combined
+     * them together.
+     */
+
+    if (name === COUNTRY_DIAL_CODE_SUFFIX) {
+      this.phoneNumber.countryDialCodeValue = value;
+    }
+
+    if (name === PHONE_SUFFIX) {
+      this.phoneNumber.phoneNumberValue = value;
+    }
   }
 
   handlePasswordChange(event) {

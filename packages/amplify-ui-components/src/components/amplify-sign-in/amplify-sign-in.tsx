@@ -1,6 +1,5 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import {
-  FormFieldType,
   FormFieldTypes,
   PhoneNumberInterface,
 } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
@@ -28,7 +27,7 @@ import {
 
 import { Logger, isEmpty } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, composePhoneNumberInput } from '../../common/helpers';
 
 const logger = new Logger('SignIn');
 
@@ -81,6 +80,7 @@ export class AmplifySignIn {
     countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
     phoneNumberValue: null,
   };
+  @State() userInput = this.username;
 
   handleUsernameChange(event) {
     this.username = event.target.value;
@@ -136,8 +136,22 @@ export class AmplifySignIn {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
     this.loading = true;
+
+    switch (this.usernameAttributes) {
+      case 'email':
+        this.userInput = this.email;
+        break;
+      case 'phone_number':
+        this.userInput = composePhoneNumberInput(this.phoneNumber);
+        break;
+      case 'username':
+      default:
+        this.userInput = this.username;
+        break;
+    }
+
     try {
-      const user = await Auth.signIn(this.username, this.password);
+      const user = await Auth.signIn(this.userInput, this.password);
       logger.debug(user);
       if (user.challengeName === ChallengeName.SMSMFA || user.challengeName === ChallengeName.SoftwareTokenMFA) {
         logger.debug('confirm user with ' + user.challengeName);
