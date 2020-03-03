@@ -1,4 +1,4 @@
-import { Props, Story } from '@storybook/addon-docs/blocks';
+import { Preview, Props, Story } from '@storybook/addon-docs/blocks';
 
 # AmplifyAuthenticator
 
@@ -12,14 +12,18 @@ The Authenticator is a drop-in UI component that provides:
 - MFA (Multi-Factor Authentication) e.g. SMS, Email, and TOTP (Temporary One Time Password)
 - Confirm MFA Code’s and Provide QR codes for TOTP
 
-<Props of="amplify-authenticator" />
-
 ## Live Demo
 
-<Story id="amplifyauthenticator--basic" />
+<Story id="amplifyauthenticator--basic" inline={false} />
+
+## Props
+
+<Props of="amplify-authenticator" />
 
 ## Social Providers
 
 <Story id="amplifyauthenticator--federated-identity-providers" />
 
 ## Initial State
+
+<Story id="amplifyauthenticator--initial-state" />
