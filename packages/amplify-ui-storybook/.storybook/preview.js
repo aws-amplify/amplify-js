@@ -1,7 +1,8 @@
 import { components } from '@aws-amplify/ui-components/dist/docs.json';
-import { addParameters } from '@storybook/react';
+import { addDecorator, addParameters } from '@storybook/react';
 import { create } from '@storybook/theming';
 import { extractProps } from '@storybook/addon-docs/dist/frameworks/react/extractProps';
+import Amplify from 'aws-amplify';
 
 // Borrowed from https://github.com/storybookjs/storybook/blob/aed5276e0bc05d1126b592b649499125508015be/addons/docs/src/frameworks/web-components/config.js
 function mapData(data) {
@@ -17,6 +18,11 @@ function mapData(data) {
 	}));
 }
 
+addDecorator(storyFn => {
+	Amplify.configure({});
+
+	return storyFn();
+});
 addParameters({
 	docs: {
 		extractProps(tagName) {
