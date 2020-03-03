@@ -20,7 +20,7 @@
   },
   "scripts": {
     "test": "react-scripts test",
-    "start": "start-storybook -p 9009 -s public",
+    "start": "start-storybook -p 3000 -s public",
     "build": "build-storybook -s public -o dist"
   },
   "eslintConfig": {
