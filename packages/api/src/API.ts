@@ -352,7 +352,7 @@ export default class APIClass {
 	 */
 	graphql(
 		{ query: paramQuery, variables = {}, authMode }: GraphQLOptions,
-		addtionalHeaders?: { [key: string]: string }
+		additionalHeaders?: { [key: string]: string }
 	) {
 		const query =
 			typeof paramQuery === 'string'
@@ -369,7 +369,7 @@ export default class APIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
-				return this._graphql({ query, variables, authMode }, addtionalHeaders);
+				return this._graphql({ query, variables, authMode }, additionalHeaders);
 			case 'subscription':
 				return this._graphqlSubscribe({
 					query,
