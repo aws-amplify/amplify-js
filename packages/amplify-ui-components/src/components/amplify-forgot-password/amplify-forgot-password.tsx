@@ -14,7 +14,7 @@ import { CodeDeliveryType } from './amplify-forgot-password-interface';
 
 import { Auth } from '@aws-amplify/auth';
 import { Logger } from '@aws-amplify/core';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, composePhoneNumberInput } from '../../common/helpers';
 
 const logger = new Logger('ForgotPassword');
 
@@ -134,6 +134,20 @@ export class AmplifyForgotPassword {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
     this.loading = true;
+
+    switch (this.usernameAttributes) {
+      case 'email':
+        this.username = this.email;
+        break;
+      case 'phone_number':
+        this.username = composePhoneNumberInput(this.phoneNumber);
+        break;
+      case 'username':
+      default:
+        this.username = this.username;
+        break;
+    }
+
     try {
       const data = await Auth.forgotPassword(this.username);
       logger.debug(data);
