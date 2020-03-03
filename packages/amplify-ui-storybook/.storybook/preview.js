@@ -1,18 +1,9 @@
 import { addDecorator, addParameters } from '@storybook/react';
 import { create } from '@storybook/theming';
-import Amplify from 'aws-amplify';
 import { extractPropsFromComponentName } from './extractPropsFromComponentName';
+import { withAmplify } from './withAmplify';
 
-addDecorator(storyFn => {
-	Amplify.configure({});
-	// Amplify.Auth.currentAuthenticatedUser = async () => {
-	// 	return {
-	// 		name: 'Eric',
-	// 	};
-	// };
-
-	return storyFn();
-});
+addDecorator(withAmplify);
 
 addParameters({
 	docs: {
