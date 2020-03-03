@@ -22,12 +22,6 @@ const cacheClass = {
 	},
 };
 
-const cognitoCredentialSpyon = jest
-	.spyOn(CognitoIdentityCredentials.prototype, 'get')
-	.mockImplementation(callback => {
-		callback(null);
-	});
-
 const options = {
 	userPoolId: 'awsUserPoolsId',
 	userPoolWebClientId: 'awsUserPoolsWebClientId',
@@ -70,10 +64,12 @@ describe('Credentials test', () => {
 			Amplify.register(cacheClass);
 			const credentials = new Credentials(null);
 
+			const expireTime = new Date().getTime() + 20 * 60 * 1000;
 			credentials['_credentials'] = {
 				expired: false,
-				expireTime: new Date().getTime() + 20 * 60 * 1000,
+				expireTime,
 			};
+			credentials['_nextCredentialsRefresh'] = expireTime + 1;
 			expect(await credentials.get()).toEqual(credentials['_credentials']);
 		});
 

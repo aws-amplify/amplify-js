@@ -20,13 +20,14 @@ jest.mock('../src/Facet', () => {
 		};
 		return { update };
 	};
+
 	return {
 		AWS: ret,
 	};
 });
 
 import Signer from '../src/Signer';
-import AWS from '../src';
+import { DateUtils } from '../src';
 
 describe('Signer test', () => {
 	describe('sign test', () => {
@@ -45,6 +46,8 @@ describe('Signer test', () => {
 				.spyOn(Date.prototype, 'toISOString')
 				.mockReturnValueOnce('0');
 
+			const getDateSpy = jest.spyOn(DateUtils, 'getDateWithClockOffset');
+
 			const res = {
 				headers: {
 					Authorization:
@@ -56,6 +59,7 @@ describe('Signer test', () => {
 				url: url,
 			};
 			expect(Signer.sign(request, access_info)).toEqual(res);
+			expect(getDateSpy).toHaveBeenCalledTimes(1);
 
 			spyon.mockClear();
 		});

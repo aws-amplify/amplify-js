@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.5...aws-amplify@2.2.6) (2020-02-28)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [2.2.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.4...aws-amplify@2.2.5) (2020-02-14)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [2.2.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.2...aws-amplify@2.2.4) (2020-02-07)
+
+
+### Bug Fixes
+
+* **cache:** export correct module for RN ([#4786](https://github.com/aws-amplify/amplify-js/issues/4786)) ([a15730c](https://github.com/aws-amplify/amplify-js/commit/a15730cc50692d9d31a0f586c3544b3dcdbea659))
+
+
+
+
+
 ## [2.2.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.1...aws-amplify@2.2.2) (2020-01-10)
 
 

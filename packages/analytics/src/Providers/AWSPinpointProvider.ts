@@ -491,13 +491,21 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		const { params } = endpointObject;
 
 		// TODO: implement retry with exp back off once exp function is available
+		const {
+			config: { resendLimit },
+		} = params;
+
+		params.resendLimit =
+			typeof params.resendLimit === 'number' ? params.resendLimit : resendLimit;
 
 		if (params.resendLimit-- > 0) {
 			logger.debug(
 				`resending endpoint update ${params.event.eventId} with ${params.resendLimit} retry attempts remaining`
 			);
 			// insert at the front of endpointBuffer
-			this._endpointBuffer.unshift(endpointObject);
+			this._endpointBuffer.length
+				? this._endpointBuffer.unshift(endpointObject)
+				: this._updateEndpoint(endpointObject);
 			return;
 		}
 
@@ -512,6 +520,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
 	private async _removeUnusedEndpoints(appId, userId) {
 		return new Promise((res, rej) => {
+			// TODO: re-write with Promise (during refactor pt. 2)
 			this.pinpointClient.getUserEndpoints(
 				{
 					ApplicationId: appId,
