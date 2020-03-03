@@ -1,5 +1,6 @@
 import { components } from '@aws-amplify/ui-components/dist/docs.json';
 import { addParameters } from '@storybook/react';
+import { create } from '@storybook/theming';
 import { extractProps } from '@storybook/addon-docs/dist/frameworks/react/extractProps';
 
 // Borrowed from https://github.com/storybookjs/storybook/blob/aed5276e0bc05d1126b592b649499125508015be/addons/docs/src/frameworks/web-components/config.js
@@ -39,5 +40,19 @@ addParameters({
 
 			return { sections };
 		},
+	},
+
+	options: {
+		theme: create({
+			appBg: '#F6F6F5',
+			base: 'light',
+			brandImage:
+				'https://aws-amplify.github.io/docs/images/Logos/Amplify%20Logo.svg',
+			brandTitle: 'Amplify UI',
+			colorPrimary: '#232f3e',
+			colorSecondary: '#ff9900',
+			fontBase: '"Amazon Ember", "Helvetica", sans-serif',
+			fontCode: '"Source Code Pro", Monaco, monospace',
+		}),
 	},
 });
