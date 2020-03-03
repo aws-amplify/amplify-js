@@ -1,4 +1,4 @@
-import { AmplifyAuthenticator } from '@aws-amplify/ui-react';
+import { AmplifyAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
 import { withKnobs, select, text } from '@storybook/addon-knobs';
 import React from 'react';
 
@@ -11,7 +11,12 @@ export default {
 	parameters: { docs: { page } },
 };
 
-export const basic = () => <AmplifyAuthenticator />;
+export const basic = () => (
+	<AmplifyAuthenticator>
+		<h1>You are signed in!</h1>
+		<AmplifySignOut />
+	</AmplifyAuthenticator>
+);
 
 export const federatedIdentityProviders = () => (
 	<AmplifyAuthenticator
