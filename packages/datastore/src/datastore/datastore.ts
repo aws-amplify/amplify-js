@@ -2,7 +2,11 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Draft, immerable, produce, setAutoFreeze } from 'immer';
 import { v1 as uuid1, v4 as uuid4 } from 'uuid';
 import Observable from 'zen-observable-ts';
-import { isPredicatesAll, ModelPredicateCreator } from '../predicates';
+import {
+	isPredicatesAll,
+	ModelPredicateCreator,
+	PredicateAll,
+} from '../predicates';
 import Storage from '../storage/storage';
 import { SyncEngine } from '../sync';
 import {
@@ -368,11 +372,11 @@ const remove: {
 	): Promise<T>;
 	<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
-		condition: ProducerModelPredicate<T>
+		condition: ProducerModelPredicate<T> | typeof PredicateAll
 	): Promise<T[]>;
 } = async <T extends PersistentModel>(
 	modelOrConstructor: T | PersistentModelConstructor<T>,
-	idOrCriteria?: string | ProducerModelPredicate<T>
+	idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll
 ) => {
 	await start();
 	let condition: ModelPredicate<T>;
@@ -403,7 +407,11 @@ const remove: {
 		} else {
 			condition = ModelPredicateCreator.createFromExisting(
 				getModelDefinition(modelConstructor),
-				idOrCriteria
+				/**
+				 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
+				 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
+				 */
+				idOrCriteria as ProducerModelPredicate<T>
 			);
 
 			if (!condition || !ModelPredicateCreator.isValidPredicate(condition)) {
@@ -530,12 +538,12 @@ const query: {
 	): Promise<T | undefined>;
 	<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
-		criteria?: ProducerModelPredicate<T>,
+		criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
 		pagination?: PaginationInput
 	): Promise<T[]>;
 } = async <T extends PersistentModel>(
 	modelConstructor: PersistentModelConstructor<T>,
-	idOrCriteria?: string | ProducerModelPredicate<T>,
+	idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll,
 	pagination?: PaginationInput
 ) => {
 	await start();
@@ -564,11 +572,17 @@ const query: {
 		return undefined;
 	}
 
+	/**
+	 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
+	 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
+	 */
+	const criteria = idOrCriteria as ProducerModelPredicate<T>;
+
 	// Predicates.ALL means "all records", so no predicate (undefined)
-	const predicate = !isPredicatesAll(idOrCriteria)
+	const predicate = !isPredicatesAll(criteria)
 		? ModelPredicateCreator.createFromExisting(
 				getModelDefinition(modelConstructor),
-				idOrCriteria
+				criteria
 		  )
 		: undefined;
 
