@@ -12,17 +12,20 @@ import { exhaustiveCheck } from '../util';
 
 const predicatesAllSet = new WeakSet<ProducerModelPredicate<any>>();
 
-export function isPredicatesAll(predicate: ProducerModelPredicate<any>) {
+export function isPredicatesAll(predicate: any) {
 	return predicatesAllSet.has(predicate);
 }
 
+// This symbol is not used at runtime, only its type (unique symbol)
+export const PredicateAll = Symbol('A predicate that matches all records');
+
 export class Predicates {
-	public static get ALL() {
+	public static get ALL(): typeof PredicateAll {
 		const predicate = <ProducerModelPredicate<any>>(c => c);
 
 		predicatesAllSet.add(predicate);
 
-		return predicate;
+		return <typeof PredicateAll>(<unknown>predicate);
 	}
 }
 
