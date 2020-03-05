@@ -590,6 +590,9 @@ export namespace Components {
     */
     'value'?: string;
   }
+  interface AmplifyRadioGroup {
+    'value': any;
+  }
   interface AmplifyRequireNewPassword {
     /**
     * The form fields displayed inside of the forgot password form
@@ -1004,6 +1007,12 @@ declare global {
     new (): HTMLAmplifyRadioButtonElement;
   };
 
+  interface HTMLAmplifyRadioGroupElement extends Components.AmplifyRadioGroup, HTMLStencilElement {}
+  var HTMLAmplifyRadioGroupElement: {
+    prototype: HTMLAmplifyRadioGroupElement;
+    new (): HTMLAmplifyRadioGroupElement;
+  };
+
   interface HTMLAmplifyRequireNewPasswordElement extends Components.AmplifyRequireNewPassword, HTMLStencilElement {}
   var HTMLAmplifyRequireNewPasswordElement: {
     prototype: HTMLAmplifyRequireNewPasswordElement;
@@ -1138,6 +1147,7 @@ declare global {
     'amplify-password-field': HTMLAmplifyPasswordFieldElement;
     'amplify-phone-field': HTMLAmplifyPhoneFieldElement;
     'amplify-radio-button': HTMLAmplifyRadioButtonElement;
+    'amplify-radio-group': HTMLAmplifyRadioGroupElement;
     'amplify-require-new-password': HTMLAmplifyRequireNewPasswordElement;
     'amplify-scene': HTMLAmplifySceneElement;
     'amplify-scene-loading': HTMLAmplifySceneLoadingElement;
@@ -1710,6 +1720,10 @@ declare namespace LocalJSX {
     */
     'value'?: string;
   }
+  interface AmplifyRadioGroup {
+    'onRadioChange'?: (event: CustomEvent<any>) => void;
+    'value'?: any;
+  }
   interface AmplifyRequireNewPassword {
     /**
     * The form fields displayed inside of the forgot password form
@@ -1962,6 +1976,7 @@ declare namespace LocalJSX {
     'amplify-password-field': AmplifyPasswordField;
     'amplify-phone-field': AmplifyPhoneField;
     'amplify-radio-button': AmplifyRadioButton;
+    'amplify-radio-group': AmplifyRadioGroup;
     'amplify-require-new-password': AmplifyRequireNewPassword;
     'amplify-scene': AmplifyScene;
     'amplify-scene-loading': AmplifySceneLoading;
@@ -2020,6 +2035,7 @@ declare module "@stencil/core" {
       'amplify-password-field': LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
       'amplify-phone-field': LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
       'amplify-radio-button': LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
+      'amplify-radio-group': LocalJSX.AmplifyRadioGroup & JSXBase.HTMLAttributes<HTMLAmplifyRadioGroupElement>;
       'amplify-require-new-password': LocalJSX.AmplifyRequireNewPassword & JSXBase.HTMLAttributes<HTMLAmplifyRequireNewPasswordElement>;
       'amplify-scene': LocalJSX.AmplifyScene & JSXBase.HTMLAttributes<HTMLAmplifySceneElement>;
       'amplify-scene-loading': LocalJSX.AmplifySceneLoading & JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement>;

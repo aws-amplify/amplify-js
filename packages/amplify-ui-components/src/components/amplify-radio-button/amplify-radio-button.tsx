@@ -1,11 +1,14 @@
-import { Component, Prop, h } from '@stencil/core';
+import { Element, Component, Prop, h } from '@stencil/core';
 
 @Component({
   tag: 'amplify-radio-button',
   styleUrl: 'amplify-radio-button.scss',
-  shadow: true,
+  shadow: false,
 })
 export class AmplifyRadioButton {
+  @Element() el!: HTMLElement;
+  private radioGroup = null;
+
   /** The callback, called when the input is modified by the user. */
   @Prop() handleInputChange?: (inputEvent: Event) => void;
   /** (Optional) Name of radio button */
@@ -22,6 +25,28 @@ export class AmplifyRadioButton {
   @Prop() checked: boolean = false;
   /** If `true`, the checkbox is disabled */
   @Prop() disabled: boolean = false;
+
+  connectedCallback() {
+    const radioGroup = (this.radioGroup = this.el.closest('amplify-radio-group'));
+    if (radioGroup) {
+      this.updateState();
+      radioGroup.addEventListener('radioChange', this.updateState);
+    }
+  }
+
+  disconnectedCallback() {
+    const radioGroup = this.radioGroup;
+    if (radioGroup) {
+      radioGroup.removeEventListener('radioChange', this.updateState);
+      this.radioGroup = null;
+    }
+  }
+
+  private updateState = () => {
+    if (this.radioGroup) {
+      this.checked = this.radioGroup.value === this.value;
+    }
+  };
 
   render() {
     return (
