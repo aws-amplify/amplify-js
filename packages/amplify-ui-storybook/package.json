@@ -22,7 +22,7 @@
   "scripts": {
     "test": "react-scripts test",
     "start": "start-storybook -p 3000 -s public",
-    "build": "build-storybook -s public -o dist"
+    "build": "build-storybook -s public -o dist --quiet"
   },
   "eslintConfig": {
     "extends": "react-app"
