@@ -1,7 +1,7 @@
 import Amplify from 'aws-amplify';
 
-export const withAmplify = storyFn => {
+export function withAmplify(storyFn) {
 	Amplify.configure({});
 
 	return storyFn();
-};
+}
