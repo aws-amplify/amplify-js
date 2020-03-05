@@ -3,7 +3,6 @@ import { Element, Component, Prop, h } from '@stencil/core';
 @Component({
   tag: 'amplify-radio-button',
   styleUrl: 'amplify-radio-button.scss',
-  shadow: false,
 })
 export class AmplifyRadioButton {
   @Element() el!: HTMLElement;
