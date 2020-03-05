@@ -18,7 +18,8 @@ export class AmplifyIcon {
     }
   }
 
+  // https://stenciljs.com/docs/templating-jsx#avoid-shared-jsx-nodes
   render() {
-    return <span class="icon">{icons[this.name]}</span>;
+    return <span class="icon">{icons[this.name]()}</span>;
   }
 }
