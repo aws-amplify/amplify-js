@@ -2,7 +2,7 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2
+version: 2.1
 machine:
   environment:
     PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
@@ -14,6 +14,26 @@ defaults: &defaults
         ## this enables colors in the output
         TERM: xterm
 
+defaults_rn: &defaults_rn
+  macos:
+    xcode: '11.3.1'
+  working_directory: ~/amplify-js-samples-staging
+
+commands:
+  restore_pods:
+    steps:
+      - restore_cache:
+          keys:
+            - v1-storage-app-pods-{{ checksum "ios/Podfile.lock" }}
+            - v1-storage-app-pods-
+
+  save_pods:
+    steps:
+      - save_cache:
+          key: v1-storage-app-pods-{{ checksum "ios/Podfile.lock" }}
+          paths:
+            - ios/Pods
+
 jobs:
   build:
     <<: *defaults
@@ -23,8 +43,8 @@ jobs:
       - checkout
       - run: yarn config set workspaces-experimental true
       - run: yarn
-      - run: yarn run bootstrap
-      - run: yarn run build
+      - run: yarn bootstrap
+      - run: yarn build
 
       - save_cache:
           key: amplify-ssh-deps-{{ .Branch }}
@@ -250,6 +270,108 @@ jobs:
           path: amplify-js-samples-staging/cypress/videos
       - store_artifacts:
           path: amplify-js-samples-staging/cypress/screenshots
+
+  integ_rn_ios_storage:
+    <<: *defaults_rn
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Yarn Install
+          command: yarn install --non-interactive --no-lockfile
+      # Metro Bundler doesn't work with linked packages so we're copying them from amplify-js
+      # TODO: utilize Verdaccio for this instead
+      - run:
+          name: 'Link aws-amplify'
+          command: |
+            cp -rf ~/amplify-js/packages/aws-amplify/dist ./node_modules/aws-amplify/dist
+            cp -rf ~/amplify-js/packages/aws-amplify/lib ./node_modules/aws-amplify/lib
+            cp -rf ~/amplify-js/packages/aws-amplify/lib-esm ./node_modules/aws-amplify/lib-esm
+
+            cp -rf ~/amplify-js/packages/amazon-cognito-identity-js/dist ./node_modules/amazon-cognito-identity-js/dist
+            cp -rf ~/amplify-js/packages/amazon-cognito-identity-js/lib ./node_modules/amazon-cognito-identity-js/lib
+
+            cp -rf ~/amplify-js/packages/analytics/dist ./node_modules/@aws-amplify/analytics/dist
+            cp -rf ~/amplify-js/packages/analytics/lib ./node_modules/@aws-amplify/analytics/lib
+            cp -rf ~/amplify-js/packages/analytics/lib-esm ./node_modules/@aws-amplify/analytics/lib-esm
+
+            cp -rf ~/amplify-js/packages/api/dist ./node_modules/@aws-amplify/api/dist
+            cp -rf ~/amplify-js/packages/api/lib ./node_modules/@aws-amplify/api/lib
+            cp -rf ~/amplify-js/packages/api/lib-esm ./node_modules/@aws-amplify/api/lib-esm
+
+            cp -rf ~/amplify-js/packages/auth/dist ./node_modules/@aws-amplify/auth/dist
+            cp -rf ~/amplify-js/packages/auth/lib ./node_modules/@aws-amplify/auth/lib
+            cp -rf ~/amplify-js/packages/auth/lib-esm ./node_modules/@aws-amplify/auth/lib-esm
+
+            cp -rf ~/amplify-js/packages/cache/dist ./node_modules/@aws-amplify/cache/dist
+            cp -rf ~/amplify-js/packages/cache/lib ./node_modules/@aws-amplify/cache/lib
+            cp -rf ~/amplify-js/packages/cache/lib-esm ./node_modules/@aws-amplify/cache/lib-esm
+
+            cp -rf ~/amplify-js/packages/core/dist ./node_modules/@aws-amplify/core/dist
+            cp -rf ~/amplify-js/packages/core/lib ./node_modules/@aws-amplify/core/lib
+            cp -rf ~/amplify-js/packages/core/lib-esm ./node_modules/@aws-amplify/core/lib-esm
+
+            cp -rf ~/amplify-js/packages/interactions/dist ./node_modules/@aws-amplify/interactions/dist
+            cp -rf ~/amplify-js/packages/interactions/lib ./node_modules/@aws-amplify/interactions/lib
+            cp -rf ~/amplify-js/packages/interactions/lib-esm ./node_modules/@aws-amplify/interactions/lib-esm
+
+            cp -rf ~/amplify-js/packages/predictions/dist ./node_modules/@aws-amplify/predictions/dist
+            cp -rf ~/amplify-js/packages/predictions/lib ./node_modules/@aws-amplify/predictions/lib
+            cp -rf ~/amplify-js/packages/predictions/lib-esm ./node_modules/@aws-amplify/predictions/lib-esm
+
+            cp -rf ~/amplify-js/packages/pubsub/dist ./node_modules/@aws-amplify/pubsub/dist
+            cp -rf ~/amplify-js/packages/pubsub/lib ./node_modules/@aws-amplify/pubsub/lib
+            cp -rf ~/amplify-js/packages/pubsub/lib-esm ./node_modules/@aws-amplify/pubsub/lib-esm
+
+            cp -rf ~/amplify-js/packages/storage/dist ./node_modules/@aws-amplify/storage/dist
+            cp -rf ~/amplify-js/packages/storage/lib ./node_modules/@aws-amplify/storage/lib
+            cp -rf ~/amplify-js/packages/storage/lib-esm ./node_modules/@aws-amplify/storage/lib-esm
+
+            cp -rf ~/amplify-js/packages/amplify-ui/dist ./node_modules/@aws-amplify/ui/dist
+            cp -rf ~/amplify-js/packages/amplify-ui/lib ./node_modules/@aws-amplify/ui/lib
+
+            cp -rf ~/amplify-js/packages/xr/dist ./node_modules/@aws-amplify/xr/dist
+            cp -rf ~/amplify-js/packages/xr/lib ./node_modules/@aws-amplify/xr/lib
+            cp -rf ~/amplify-js/packages/xr/lib-esm ./node_modules/@aws-amplify/xr/lib-esm
+
+      - restore_pods
+      - run:
+          name: Install CocoaPods
+          command: |
+            cd ios
+            pod install
+      - save_pods
+      - run:
+          background: true
+          command: xcrun simctl boot "iPhone 11" || true
+          name: Start iOS simulator (background)
+      - run:
+          background: true
+          command: yarn start
+          name: Start Metro Packager (background)
+      - run:
+          name: Configure Detox
+          environment:
+            HOMEBREW_NO_AUTO_UPDATE: 1
+          command: |
+            brew tap wix/brew
+            brew install applesimutils
+            yarn global add detox-cli
+      - run:
+          name: Detox Build
+          command: detox build -c ios.sim.debug
+      - run:
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
+            JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
+          name: Detox Test
+          command: detox test -c ios.sim.debug -u
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
+
   deploy:
     <<: *defaults
     working_directory: ~/amplify-js
@@ -328,6 +450,15 @@ workflows:
                 - 1.0-stable
           requires:
             - integ_setup
+      - integ_rn_ios_storage:
+          filters:
+            branches:
+              only:
+                - release
+                - master
+                - 1.0-stable
+          requires:
+            - integ_setup
       - deploy:
           filters:
             branches:
@@ -342,3 +473,4 @@ workflows:
             - integ_react_auth
             - integ_angular_auth
             - integ_vue_auth
+            - integ_rn_ios_storage
