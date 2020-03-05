@@ -1,3 +1,7 @@
+// // https://reactjs.org/blog/2018/10/01/create-react-app-v2.html#breaking-changes
+import 'react-app-polyfill/ie11';
+import 'react-app-polyfill/stable';
+
 import { addDecorator, addParameters } from '@storybook/react';
 import { create } from '@storybook/theming';
 import { extractPropsFromComponentName } from './extractPropsFromComponentName';
