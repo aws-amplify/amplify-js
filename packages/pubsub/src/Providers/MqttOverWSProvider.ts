@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import * as Paho from '../vendor/paho-mqtt';
+import * as Paho from 'paho-mqtt';
 import { v4 as uuid } from 'uuid';
 import * as Observable from 'zen-observable';
 
@@ -102,14 +102,31 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 	public onDisconnect({ clientId, errorCode, ...args }) {
 		if (errorCode !== 0) {
 			logger.warn(clientId, JSON.stringify({ errorCode, ...args }, null, 2));
-			this._topicObservers.forEach((observerForTopic, _observerTopic) => {
-				observerForTopic.forEach(observer => {
-					observer.error('Disconnected, error code: ' + errorCode);
-					observer.complete();
+
+			const topicsToDelete = [];
+			const clientIdObservers = this._clientIdObservers.get(clientId);
+			if (!clientIdObservers) {
+				return;
+			}
+			clientIdObservers.forEach(observer => {
+				observer.error('Disconnected, error code: ' + errorCode);
+				// removing observers for disconnected clientId
+				this._topicObservers.forEach((observerForTopic, observerTopic) => {
+					observerForTopic.delete(observer);
+					if (observerForTopic.size === 0) {
+						topicsToDelete.push(observerTopic);
+					}
 				});
 			});
+
+			// forgiving any trace of clientId
+			this._clientIdObservers.delete(clientId);
+
+			// Removing topics that are not listen by an observer
+			topicsToDelete.forEach(topic => {
+				this._topicObservers.delete(topic);
+			});
 		}
-		this._topicObservers = new Map();
 	}
 
 	public async newClient({
@@ -119,6 +136,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 	}: MqttProvidertOptions): Promise<any> {
 		logger.debug('Creating new MQTT client', clientId);
 
+		// @ts-ignore
 		const client = new Paho.Client(url, clientId);
 		// client.trace = (args) => logger.debug(clientId, JSON.stringify(args, null, 2));
 		client.onMessageArrived = ({
@@ -178,6 +196,11 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		Set<SubscriptionObserver<any>>
 	> = new Map();
 
+	protected _clientIdObservers: Map<
+		string,
+		Set<SubscriptionObserver<any>>
+	> = new Map();
+
 	private _onMessage(topic: string, msg: any, parse = true) {
 		try {
 			const matchedTopicObservers = [];
@@ -209,6 +232,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 		return new Observable(observer => {
 			targetTopics.forEach(topic => {
+				// this._topicObservers is used to notify the observers according to the topic received on the message
 				let observersForTopic = this._topicObservers.get(topic);
 
 				if (!observersForTopic) {
@@ -220,8 +244,17 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 				observersForTopic.add(observer);
 			});
 
+			// @ts-ignore
 			let client: Paho.Client;
 			const { clientId = this.clientId, parseJSON } = options;
+
+			// this._clientIdObservers is used to close observers when client gets disconnected
+			let observersForClientId = this._clientIdObservers.get(clientId);
+			if (!observersForClientId) {
+				observersForClientId = new Set();
+			}
+			observersForClientId.add(observer);
+			this._clientIdObservers.set(clientId, observersForClientId);
 
 			(async () => {
 				const { url = await this.endpoint } = options;
@@ -240,21 +273,28 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 				logger.debug('Unsubscribing from topic(s)', targetTopics.join(','));
 
 				if (client) {
-					targetTopics.forEach(topic => {
-						if (client.isConnected()) {
-							client.unsubscribe(topic);
-						}
+					this._clientIdObservers.get(clientId).delete(observer);
+					// No more observers per client => client not needed anymore
+					if (this._clientIdObservers.get(clientId).size === 0) {
+						this.disconnect(clientId);
+						this._clientIdObservers.delete(clientId);
+					}
 
+					targetTopics.forEach(topic => {
 						const observersForTopic =
 							this._topicObservers.get(topic) ||
 							(new Set() as Set<SubscriptionObserver<any>>);
 
-						observersForTopic.forEach(observer => observer.complete());
+						observersForTopic.delete(observer);
 
-						observersForTopic.clear();
+						// if no observers exists for the topic, topic should be removed
+						if (observersForTopic.size === 0) {
+							this._topicObservers.delete(topic);
+							if (client.isConnected()) {
+								client.unsubscribe(topic);
+							}
+						}
 					});
-
-					this.disconnect(clientId);
 				}
 
 				return null;

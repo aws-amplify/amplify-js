@@ -2,8 +2,9 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: ''
+labels: to-be-reproduced
 assignees: ''
+
 ---
 
 **Describe the bug**
@@ -17,17 +18,26 @@ Steps to reproduce the behavior:
 3. Scroll down to '....'
 4. See error
 
+-- or --
+
+Link to sample code
+
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
+<details>
+  <summary><strong>Environment</strong></summary>
 
-- OS: [e.g. iOS]
-- Browser [e.g. chrome, safari]
-- Version [e.g. 22]
+<!-- Please run the following command inside your project and copy/paste the output into the codeblock: -->
+```
+npx envinfo --system --binaries --browsers --npmPackages --npmGlobalPackages
+```
+
+</details>
+
 
 **Smartphone (please complete the following information):**
 

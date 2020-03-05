@@ -17,14 +17,18 @@ describe('ServiceWorker test', () => {
 
 			return expect(enablePush).toThrow('Service Worker not registered');
 		});
-		test('fails when registering', () => {
+		test('fails when registering', async () => {
 			global.navigator.serviceWorker = {
 				register: () => Promise.reject('an error'),
 			};
 
 			const serviceWorker = new ServiceWorker();
 
-			return expect(serviceWorker.register()).rejects.toThrow('an error');
+			try {
+				await serviceWorker.register();
+			} catch (e) {
+				expect(e).toEqual('an error');
+			}
 		});
 	});
 	describe('Register with status', () => {

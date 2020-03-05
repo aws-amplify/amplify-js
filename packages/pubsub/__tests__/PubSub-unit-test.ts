@@ -8,7 +8,7 @@ import {
 // import Amplify from '../../src/';
 import { Credentials } from '@aws-amplify/core';
 import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
-import * as Paho from '../src/vendor/paho-mqtt';
+import * as Paho from 'paho-mqtt';
 
 const pahoClientMockCache = {};
 
@@ -48,12 +48,6 @@ const credentials = {
 	identityId: 'identityId',
 	authenticated: true,
 };
-
-const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
-	return new Promise((res, rej) => {
-		res(credentials);
-	});
-});
 
 const testPubSubAsync = (pubsub, topic, message, options?) =>
 	new Promise((resolve, reject) => {
@@ -109,6 +103,18 @@ const testAppSyncAsync = (pubsub, topic, message) =>
 		testClient.send(topic, JSON.stringify({ data: { testKey: message } }));
 	});
 
+beforeEach(() => {
+	const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
+		return new Promise((res, rej) => {
+			res(credentials);
+		});
+	});
+});
+
+afterEach(() => {
+	jest.restoreAllMocks();
+});
+
 describe('PubSub', () => {
 	describe('constructor test', () => {
 		test('happy case', () => {
@@ -128,7 +134,7 @@ describe('PubSub', () => {
 			expect(config).toEqual(options);
 		});
 
-		test('should accept PubSub key in configuration object', async () => {
+		test('should accept PubSub key in configuration object', () => {
 			const pubsub = new PubSub({});
 
 			const options = {
@@ -168,12 +174,12 @@ describe('PubSub', () => {
 				value: 'my message',
 				provider: awsIotProvider,
 			};
-			var obs = pubsub.subscribe('topicA').subscribe({
+			const obs = pubsub.subscribe('topicA').subscribe({
 				next: data => {
 					expect(data).toEqual(expectedData);
 					done();
 				},
-				close: () => console.log('done'),
+				complete: () => console.log('done'),
 				error: error => console.log('error', error),
 			});
 
@@ -224,7 +230,7 @@ describe('PubSub', () => {
 			});
 			pubsub.addPluggable(awsIotProvider);
 
-			pubsub.subscribe('topic').subscribe({
+			pubsub.subscribe('topic', { clientId: '123' }).subscribe({
 				error: () => done(),
 			});
 
@@ -303,7 +309,7 @@ describe('PubSub', () => {
 			await testPubSubAsync(pubsub, 'topicA', 'my message MqttOverWSProvider');
 		});
 
-		test('error is thrown if provider name is not found', async () => {
+		test('error is thrown if provider name is not found', () => {
 			const testProviderName = 'FooProvider';
 			const pubsub = new PubSub();
 
@@ -345,7 +351,83 @@ describe('PubSub', () => {
 
 			expect(
 				pubsub.publish('topicA', 'my message AWSIoTProvider')
-			).rejects.toThrowError('Failed to publish');
+			).rejects.toMatch('Failed to publish');
 		});
+
+		test('On unsubscribe when is the last observer it should disconnect the websocket', async () => {
+			const pubsub = new PubSub();
+
+			const spyDisconnect = jest.spyOn(
+				MqttOverWSProvider.prototype,
+				'disconnect'
+			);
+			const mqttOverWSProvider = new MqttOverWSProvider({
+				aws_pubsub_endpoint: 'wss://iot.mock-endpoint.org:443/mqtt',
+			});
+			pubsub.addPluggable(mqttOverWSProvider);
+
+			const subscription1 = pubsub.subscribe(['topic1', 'topic2']).subscribe({
+				next: _data => {
+					console.log({ _data });
+				},
+				complete: () => console.log('done'),
+				error: error => console.log('error', error),
+			});
+
+			// TODO: we should now when the connection is established to wait for that first
+			await (() => {
+				return new Promise(res => {
+					setTimeout(res, 100);
+				});
+			})();
+
+			subscription1.unsubscribe();
+			expect(spyDisconnect).toHaveBeenCalled();
+			spyDisconnect.mockClear();
+		});
+
+		test(
+			'For multiple observers, client should not be disconnected if there are ' +
+				'other observers connected when unsubscribing',
+			async () => {
+				const pubsub = new PubSub();
+
+				const spyDisconnect = jest.spyOn(
+					MqttOverWSProvider.prototype,
+					'disconnect'
+				);
+				const mqttOverWSProvider = new MqttOverWSProvider({
+					aws_pubsub_endpoint: 'wss://iot.mock-endpoint.org:443/mqtt',
+				});
+				pubsub.addPluggable(mqttOverWSProvider);
+
+				const subscription1 = pubsub.subscribe(['topic1', 'topic2']).subscribe({
+					next: _data => {
+						console.log({ _data });
+					},
+					complete: () => console.log('done'),
+					error: error => console.log('error', error),
+				});
+
+				const subscription2 = pubsub.subscribe(['topic3', 'topic4']).subscribe({
+					next: _data => {
+						console.log({ _data });
+					},
+					complete: () => console.log('done'),
+					error: error => console.log('error', error),
+				});
+
+				// TODO: we should now when the connection is established to wait for that first
+				await (() => {
+					return new Promise(res => {
+						setTimeout(res, 100);
+					});
+				})();
+
+				subscription2.unsubscribe();
+				expect(spyDisconnect).not.toHaveBeenCalled();
+				spyDisconnect.mockClear();
+			}
+		);
 	});
 });

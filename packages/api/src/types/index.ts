@@ -79,8 +79,10 @@ export enum GRAPHQL_AUTH_MODE {
 	AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
 }
 
-export interface GraphQLResult {
-	data?: object;
+export interface GraphQLResult<T = object> {
+	data?: T;
 	errors?: [object];
-	extensions?: { [key: string]: any };
+	extensions?: {
+		[key: string]: any;
+	};
 }

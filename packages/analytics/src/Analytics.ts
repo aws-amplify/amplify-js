@@ -11,13 +11,7 @@
  * and limitations under the License.
  */
 
-import {
-	ConsoleLogger as Logger,
-	missingConfig,
-	Hub,
-	Parser,
-	Platform,
-} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Hub, Parser } from '@aws-amplify/core';
 import AWSPinpointProvider from './Providers/AWSPinpointProvider';
 
 import {
@@ -55,10 +49,8 @@ const trackers = {
  */
 export default class AnalyticsClass {
 	private _config;
-	private _provider;
 	private _pluggables: AnalyticsProvider[];
 	private _disabled;
-	private _autoSessionRecord;
 	private _trackers;
 
 	/**
@@ -254,7 +246,7 @@ export default class AnalyticsClass {
 	}
 
 	public async updateEndpoint(attrs, provider?) {
-		const event = Object.assign({ name: '_update_endpoint' }, attrs);
+		const event = { ...attrs, name: '_update_endpoint' };
 
 		return this.record(event, provider);
 	}

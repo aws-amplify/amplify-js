@@ -2,12 +2,13 @@ import { ConsoleLogger as Logger } from './Logger';
 import StorageHelper from './StorageHelper';
 import { AWS } from './Facet';
 import JS from './JS';
-import Platform from './Platform';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { ICredentials } from './types';
 import Amplify from './Amplify';
 
 const logger = new Logger('Credentials');
+
+const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
 
 export class Credentials {
 	private _config;
@@ -17,6 +18,7 @@ export class Credentials {
 	private _refreshHandlers = {};
 	private _storage;
 	private _storageSync;
+	private _nextCredentialsRefresh: Number;
 
 	constructor(config) {
 		this.configure(config);
@@ -101,9 +103,7 @@ export class Credentials {
 	public refreshFederatedToken(federatedInfo) {
 		logger.debug('Getting federated credentials');
 		const { provider, user } = federatedInfo;
-		let token = federatedInfo.token;
-		let expires_at = federatedInfo.expires_at;
-		let identity_id = federatedInfo.identity_id;
+		let { token, expires_at, identity_id } = federatedInfo;
 
 		const that = this;
 		logger.debug('checking if federated jwt token expired');
@@ -161,7 +161,11 @@ export class Credentials {
 		const ts = new Date().getTime();
 		const delta = 10 * 60 * 1000; // 10 minutes
 		const { expired, expireTime } = credentials;
-		if (!expired && expireTime > ts + delta) {
+		if (
+			!expired &&
+			expireTime > ts + delta &&
+			ts < this._nextCredentialsRefresh
+		) {
 			return false;
 		}
 		return true;
@@ -307,7 +311,6 @@ export class Credentials {
 			}
 		);
 
-		const that = this;
 		return this._loadCredentials(credentials, 'userPool', true, null);
 	}
 
@@ -331,6 +334,7 @@ export class Credentials {
 				that._credentials = credentials;
 				that._credentials.authenticated = authenticated;
 				that._credentials_source = source;
+				that._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 				if (source === 'federated') {
 					const user = Object.assign(
 						{ id: this._credentials.identityId },

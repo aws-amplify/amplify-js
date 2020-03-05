@@ -66,6 +66,7 @@ export default class TextPicker extends Component<
 			const reader = new FileReader();
 			reader.onload = function(e) {
 				const text = e.target.result;
+				// @ts-ignore
 				that.setState({ previewText: text });
 				if (onLoad) {
 					onLoad(text);
