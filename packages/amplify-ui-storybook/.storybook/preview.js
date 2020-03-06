@@ -20,7 +20,7 @@ addParameters({
 			base: 'light',
 			brandImage:
 				'https://aws-amplify.github.io/docs/images/Logos/Amplify%20Logo.svg',
-			brandTitle: 'Amplify UI',
+			brandTitle: 'Amplify UI Components',
 			colorPrimary: '#232f3e',
 			colorSecondary: '#ff9900',
 			fontBase: '"Amazon Ember", "Helvetica", sans-serif',
