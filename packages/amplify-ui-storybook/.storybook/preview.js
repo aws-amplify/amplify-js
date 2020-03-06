@@ -2,6 +2,7 @@
 import 'react-app-polyfill/ie11';
 import 'react-app-polyfill/stable';
 
+import { Meta, Preview, Props, Story } from '@storybook/addon-docs/blocks';
 import { addDecorator, addParameters } from '@storybook/react';
 import { create } from '@storybook/theming';
 import { extractPropsFromComponentName } from './extractPropsFromComponentName';
@@ -11,6 +12,12 @@ addDecorator(withAmplify);
 
 addParameters({
 	docs: {
+		components: {
+			Meta,
+			Preview,
+			Props,
+			Story,
+		},
 		extractProps: extractPropsFromComponentName,
 	},
 
