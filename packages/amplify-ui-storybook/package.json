@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "@aws-amplify/ui-react": "^0.0.1",
+    "@aws-amplify/ui-react": "ui-preview",
     "@storybook/addon-knobs": "^5.3.13",
     "@storybook/theming": "^5.3.14",
     "@testing-library/jest-dom": "^4.2.4",
