@@ -49,7 +49,7 @@ const componentFieldMapping = {
     />
   ),
   // TODO: Will create a phone field component once the dial country code component is in
-  phone: (ff: FormFieldType) => (
+  phone_number: (ff: FormFieldType) => (
     <amplify-phone-field
       label={ff.label}
       placeholder={ff.placeholder}

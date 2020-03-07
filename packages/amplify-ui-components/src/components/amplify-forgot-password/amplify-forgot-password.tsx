@@ -66,7 +66,7 @@ export class AmplifyForgotPassword {
       case 'phone_number':
         this.formFields = [
           {
-            type: 'phone',
+            type: 'phone_number',
             required: true,
             handleInputChange: event => this.handlePhoneNumberChange(event),
             inputProps: {

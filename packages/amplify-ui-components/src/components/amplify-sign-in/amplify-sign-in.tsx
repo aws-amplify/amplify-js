@@ -176,10 +176,10 @@ export class AmplifySignIn {
       dispatchToastHubEvent(error);
       if (error.code === 'UserNotConfirmedException') {
         logger.debug('the user is not confirmed');
-        this.handleAuthStateChange(AuthState.ConfirmSignUp, { username: this.username });
+        this.handleAuthStateChange(AuthState.ConfirmSignUp, { username: this.userInput });
       } else if (error.code === 'PasswordResetRequiredException') {
         logger.debug('the user requires a new password');
-        this.handleAuthStateChange(AuthState.ForgotPassword, { username: this.username });
+        this.handleAuthStateChange(AuthState.ForgotPassword, { username: this.userInput });
       }
     } finally {
       this.loading = false;
@@ -198,7 +198,7 @@ export class AmplifySignIn {
         break;
       case 'phone_number':
         formFieldInputs.push({
-          type: 'phone',
+          type: 'phone_number',
           required: true,
           handleInputChange: event => this.handlePhoneNumberChange(event),
           inputProps: {

@@ -14,14 +14,13 @@ import {
   PHONE_SUFFIX,
   COUNTRY_DIAL_CODE_DEFAULT,
   COUNTRY_DIAL_CODE_SUFFIX,
-  PHONE_EMPTY_ERROR_MESSAGE,
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
 import { AuthState, AuthStateHandler, UsernameAttributes } from '../../common/types/auth-types';
 import { AmplifySignUpAttributes } from './amplify-sign-up-interface';
 
 import { Auth } from '@aws-amplify/auth';
-import { dispatchAuthStateChangeEvent, dispatchToastHubEvent } from '../../common/helpers';
+import { dispatchAuthStateChangeEvent, dispatchToastHubEvent, composePhoneNumberInput } from '../../common/helpers';
 
 @Component({
   tag: 'amplify-sign-up',
@@ -106,16 +105,6 @@ export class AmplifySignUp {
     }
   }
 
-  composePhoneNumberInput(phoneNumber: PhoneNumberInterface) {
-    if (!phoneNumber.phoneNumberValue) {
-      throw new Error(PHONE_EMPTY_ERROR_MESSAGE);
-    }
-
-    const sanitizedPhoneNumberValue = phoneNumber.phoneNumberValue.replace(/[-()\s]/g, '');
-
-    return `${phoneNumber.countryDialCodeValue}${sanitizedPhoneNumberValue}`;
-  }
-
   // TODO: Add validation
   // TODO: Prefix
   async signUp(event: Event) {
@@ -131,7 +120,7 @@ export class AmplifySignUp {
         this.userInput = this.email;
         break;
       case 'phone_number':
-        this.userInput = this.phoneNumber;
+        this.userInput = composePhoneNumberInput(this.phoneNumber);
         break;
       case 'username':
       default:
@@ -145,7 +134,7 @@ export class AmplifySignUp {
         password: this.password,
         attributes: {
           email: this.email,
-          phone_number: this.composePhoneNumberInput(this.phoneNumber),
+          phone_number: composePhoneNumberInput(this.phoneNumber),
         },
       };
 
@@ -173,7 +162,7 @@ export class AmplifySignUp {
             handleInputChange: event => this.handlePasswordChange(event),
           },
           {
-            type: 'phone',
+            type: 'phone_number',
             required: true,
             handleInputChange: event => this.handlePhoneNumberChange(event),
             inputProps: {
@@ -185,7 +174,7 @@ export class AmplifySignUp {
       case 'phone_number':
         this.formFields = [
           {
-            type: 'phone',
+            type: 'phone_number',
             required: true,
             handleInputChange: event => this.handlePhoneNumberChange(event),
             inputProps: {
@@ -228,7 +217,7 @@ export class AmplifySignUp {
             handleInputChange: event => this.handleEmailChange(event),
           },
           {
-            type: 'phone',
+            type: 'phone_number',
             required: true,
             handleInputChange: event => this.handlePhoneNumberChange(event),
             inputProps: {

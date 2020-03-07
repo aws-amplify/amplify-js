@@ -1,23 +1,19 @@
 import { Component, Prop, h, State } from '@stencil/core';
-import { FormFieldTypes, PhoneNumberInterface } from '../amplify-auth-fields/amplify-auth-fields-interface';
+import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import {
   CONFIRM_SIGN_UP_HEADER_TEXT,
   CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT,
   BACK_TO_SIGN_IN,
-  USERNAME_PLACEHOLDER,
   CONFIRM_SIGN_UP_CODE_LABEL,
   CONFIRM_SIGN_UP_CODE_PLACEHOLDER,
   CONFIRM_SIGN_UP_LOST_CODE,
   CONFIRM_SIGN_UP_RESEND_CODE,
   NO_AUTH_MODULE_FOUND,
-  PHONE_SUFFIX,
-  COUNTRY_DIAL_CODE_SUFFIX,
-  COUNTRY_DIAL_CODE_DEFAULT,
 } from '../../common/constants';
 import { AuthState, CognitoUserInterface, AuthStateHandler, UsernameAttributes } from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, composePhoneNumberInput } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-up',
@@ -57,90 +53,32 @@ export class AmplifyConfirmSignUp {
   @Prop() user: CognitoUserInterface;
   @Prop() usernameAttributes: UsernameAttributes = 'username';
 
-  @State() username: string = this.user ? this.user.username : null;
   @State() code: string;
   @State() loading: boolean = false;
-  @State() email: string;
-
-  @State() phoneNumber: PhoneNumberInterface = {
-    countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
-    phoneNumberValue: null,
-  };
+  @State() userInput: string = this.user ? this.user.username : null;
 
   componentWillLoad() {
-    const formFieldInputs = [];
-    switch (this.usernameAttributes) {
-      case 'email':
-        formFieldInputs.push({
-          type: 'email',
-          required: true,
-          handleInputChange: event => this.handleEmailChange(event),
-        });
-        break;
-      case 'phone_number':
-        formFieldInputs.push({
-          type: 'phone',
-          required: true,
-          handleInputChange: event => this.handlePhoneNumberChange(event),
-          inputProps: {
-            'data-test': 'phone-number-input',
-          },
-        });
-        break;
-      case 'username':
-      default:
-        formFieldInputs.push({
-          type: 'username',
-          required: true,
-          handleInputChange: event => this.handleUsernameChange(event),
-          value: this.user ? this.user.username : null,
-          // TODO: Add class style adjustment
-          disabled: this.user && this.user.username ? true : false,
-        });
-        break;
-    }
-
-    formFieldInputs.push({
-      type: 'code',
-      label: CONFIRM_SIGN_UP_CODE_LABEL,
-      placeholder: CONFIRM_SIGN_UP_CODE_PLACEHOLDER,
-      required: true,
-      hint: (
-        <div>
-          {CONFIRM_SIGN_UP_LOST_CODE}{' '}
-          <amplify-link onClick={() => this.resendConfirmCode()}>{CONFIRM_SIGN_UP_RESEND_CODE}</amplify-link>
-        </div>
-      ),
-      handleInputChange: event => this.handleCodeChange(event),
-    });
-
-    this.formFields = formFieldInputs;
-  }
-
-  handleUsernameChange(event) {
-    this.username = event.target.value;
-  }
-
-  handleEmailChange(event) {
-    this.email = event.target.value;
-  }
-
-  handlePhoneNumberChange(event) {
-    const name = event.target.name;
-    const value = event.target.value;
-
-    /** Cognito expects to have a string be passed when signing up. Since the Select input is separate
-     * input from the phone number input, we need to first capture both components values and combined
-     * them together.
-     */
-
-    if (name === COUNTRY_DIAL_CODE_SUFFIX) {
-      this.phoneNumber.countryDialCodeValue = value;
-    }
-
-    if (name === PHONE_SUFFIX) {
-      this.phoneNumber.phoneNumberValue = value;
-    }
+    this.formFields = [
+      {
+        type: `${this.usernameAttributes}`,
+        required: true,
+        value: this.user ? this.user.username : null,
+        disabled: this.user && this.user.username ? true : false,
+      },
+      {
+        type: 'code',
+        label: CONFIRM_SIGN_UP_CODE_LABEL,
+        placeholder: CONFIRM_SIGN_UP_CODE_PLACEHOLDER,
+        required: true,
+        hint: (
+          <div>
+            {CONFIRM_SIGN_UP_LOST_CODE}{' '}
+            <amplify-link onClick={() => this.resendConfirmCode()}>{CONFIRM_SIGN_UP_RESEND_CODE}</amplify-link>
+          </div>
+        ),
+        handleInputChange: event => this.handleCodeChange(event),
+      },
+    ];
   }
 
   handleCodeChange(event) {
@@ -155,8 +93,8 @@ export class AmplifyConfirmSignUp {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
     try {
-      if (!this.username) throw new Error('Username can not be empty');
-      await Auth.resendSignUp(this.username);
+      if (!this.userInput) throw new Error('Username can not be empty');
+      await Auth.resendSignUp(this.userInput);
       this.handleAuthStateChange(AuthState.ConfirmSignUp);
     } catch (error) {
       dispatchToastHubEvent(error);
@@ -175,22 +113,8 @@ export class AmplifyConfirmSignUp {
 
     this.loading = true;
 
-    switch (this.usernameAttributes) {
-      case 'email':
-        this.username = this.email;
-        break;
-      case 'phone_number':
-        this.username = composePhoneNumberInput(this.phoneNumber);
-        break;
-      case 'username':
-      default:
-        this.username = this.username;
-        break;
-    }
-
     try {
-      const user = await Auth.confirmSignUp(this.username, this.code);
-
+      const user = await Auth.confirmSignUp(this.userInput, this.code);
       this.handleAuthStateChange(AuthState.SignedIn, user);
     } catch (error) {
       dispatchToastHubEvent(error);
