@@ -5,10 +5,11 @@
 
 ## Properties
 
-| Property           | Attribute            | Description                                                                                                                     | Type                                   | Default            |
-| ------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ------------------ |
-| `federated`        | --                   | Federated credentials & configuration.                                                                                          | `FederatedConfig`                      | `undefined`        |
-| `initialAuthState` | `initial-auth-state` | Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp | `AuthState.SignIn \| AuthState.SignUp` | `AuthState.SignIn` |
+| Property            | Attribute            | Description                                                                                                                     | Type                                      | Default            |
+| ------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ------------------ |
+| `federated`         | --                   | Federated credentials & configuration.                                                                                          | `FederatedConfig`                         | `undefined`        |
+| `initialAuthState`  | `initial-auth-state` | Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp | `AuthState.SignIn \| AuthState.SignUp`    | `AuthState.SignIn` |
+| `usernameAttribute` | `username-attribute` |                                                                                                                                 | `"email" \| "phone_number" \| "username"` | `undefined`        |
 
 
 ## Dependencies
