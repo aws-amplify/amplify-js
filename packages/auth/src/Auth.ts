@@ -1882,7 +1882,12 @@ export default class AuthClass {
 				currentUser.setSignInUserSession(session);
 				//#endregion
 
-				if (window && typeof window.history !== 'undefined') {
+				if (
+					window &&
+					typeof window.history !== 'undefined' &&
+					(this._config.oauth as AwsCognitoOAuthOpts)
+						.disableReplaceStateAfterSignIn !== true
+				) {
 					window.history.replaceState(
 						{},
 						null,

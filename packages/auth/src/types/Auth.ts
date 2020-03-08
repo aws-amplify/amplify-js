@@ -126,6 +126,7 @@ export interface AwsCognitoOAuthOpts {
 	scope: Array<string>;
 	redirectSignIn: string;
 	redirectSignOut: string;
+	disableReplaceStateAfterSignIn?: boolean;
 	responseType: string;
 	options?: object;
 	urlOpener?: (url: string, redirectUrl: string) => Promise<any>;
