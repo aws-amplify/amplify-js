@@ -57,7 +57,7 @@ export class AmplifyForgotPassword {
             required: true,
             handleInputChange: event => this.handleEmailChange(event),
             inputProps: {
-              'data-test': 'email-input',
+              'data-test': 'forgot-password-email-input',
             },
           },
         ];
@@ -69,7 +69,7 @@ export class AmplifyForgotPassword {
             required: true,
             handleInputChange: event => this.handlePhoneNumberChange(event),
             inputProps: {
-              'data-test': 'phone-number-input',
+              'data-test': 'forgot-password-phone-number-input',
             },
           },
         ];
@@ -83,7 +83,7 @@ export class AmplifyForgotPassword {
             handleInputChange: event => this.handleUsernameChange(event),
             value: this.username,
             inputProps: {
-              'data-test': 'username-input',
+              'data-test': 'forgot-password-username-input',
             },
           },
         ];
@@ -143,7 +143,6 @@ export class AmplifyForgotPassword {
         break;
       case 'username':
       default:
-        this.username = this.username;
         break;
     }
 
@@ -156,6 +155,9 @@ export class AmplifyForgotPassword {
           required: true,
           handleInputChange: event => this.handleCodeChange(event),
           value: this.code,
+          inputProps: {
+            'data-test': 'forgot-password-code-input',
+          },
         },
         {
           type: 'password',

@@ -23,7 +23,7 @@ export class AmplifyAuthenticator {
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
-  @Prop() usernameAlias: UsernameAlias = 'username';
+  @Prop() usernameAlias: UsernameAlias;
 
   @State() authState: AuthState = AuthState.Loading;
   @State() authData: CognitoUserInterface;

@@ -186,6 +186,9 @@ export class AmplifySignIn {
           type: 'email',
           required: true,
           handleInputChange: event => this.handleEmailChange(event),
+          inputProps: {
+            'data-test': 'sign-in-email-input',
+          },
         });
         break;
       case 'phone_number':
@@ -194,7 +197,7 @@ export class AmplifySignIn {
           required: true,
           handleInputChange: event => this.handlePhoneNumberChange(event),
           inputProps: {
-            'data-test': 'phone-number-input',
+            'data-test': 'sign-in-phone-number-input',
           },
         });
         break;
@@ -205,7 +208,7 @@ export class AmplifySignIn {
           required: true,
           handleInputChange: event => this.handleUsernameChange(event),
           inputProps: {
-            'data-test': 'username-input',
+            'data-test': 'sign-in-username-input',
           },
         });
         break;

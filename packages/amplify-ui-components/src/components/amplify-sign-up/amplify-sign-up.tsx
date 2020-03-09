@@ -148,19 +148,25 @@ export class AmplifySignUp {
             placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
             required: true,
             handleInputChange: event => this.handleEmailChange(event),
+            inputProps: {
+              'data-test': 'sign-up-email-input',
+            },
           },
           {
             type: 'password',
             placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
             required: true,
             handleInputChange: event => this.handlePasswordChange(event),
+            inputProps: {
+              'data-test': 'sign-up-password-input',
+            },
           },
           {
             type: 'phone_number',
             required: true,
             handleInputChange: event => this.handlePhoneNumberChange(event),
             inputProps: {
-              'data-test': 'phone-number-input',
+              'data-test': 'sign-up-phone-number-input',
             },
           },
         ];
@@ -172,7 +178,7 @@ export class AmplifySignUp {
             required: true,
             handleInputChange: event => this.handlePhoneNumberChange(event),
             inputProps: {
-              'data-test': 'phone-number-input',
+              'data-test': 'sign-up-phone-number-input',
             },
           },
           {
@@ -180,12 +186,18 @@ export class AmplifySignUp {
             placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
             required: true,
             handleInputChange: event => this.handlePasswordChange(event),
+            inputProps: {
+              'data-test': 'sign-up-password-input',
+            },
           },
           {
             type: 'email',
             placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
             required: true,
             handleInputChange: event => this.handleEmailChange(event),
+            inputProps: {
+              'data-test': 'sign-up-email-input',
+            },
           },
         ];
         break;
@@ -197,25 +209,34 @@ export class AmplifySignUp {
             placeholder: I18n.get(Translations.SIGN_UP_USERNAME_PLACEHOLDER),
             required: true,
             handleInputChange: event => this.handleUsernameChange(event),
+            inputProps: {
+              'data-test': 'sign-up-username-input',
+            },
           },
           {
             type: 'password',
             placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
             required: true,
             handleInputChange: event => this.handlePasswordChange(event),
+            inputProps: {
+              'data-test': 'sign-up-password-input',
+            },
           },
           {
             type: 'email',
             placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
             required: true,
             handleInputChange: event => this.handleEmailChange(event),
+            inputProps: {
+              'data-test': 'sign-up-email-input',
+            },
           },
           {
             type: 'phone_number',
             required: true,
             handleInputChange: event => this.handlePhoneNumberChange(event),
             inputProps: {
-              'data-test': 'phone-number-input',
+              'data-test': 'sign-up-phone-number-input',
             },
           },
         ];

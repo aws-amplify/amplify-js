@@ -12,10 +12,6 @@ describe('amplify-authenticator spec:', () => {
     it('should render `authState` as `loading` by default', () => {
       expect(authenticator.authState).toEqual('loading');
     });
-
-    it('should render `usernameAlias` as `username` by default', () => {
-      expect(authenticator.usernameAlias).toEqual('username');
-    });
   });
   describe('Render logic ->', () => {
     it('should render a `sign up` if initialAuthState is `signup`', async () => {
