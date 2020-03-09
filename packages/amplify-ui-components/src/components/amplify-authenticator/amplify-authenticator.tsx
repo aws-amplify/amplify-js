@@ -1,5 +1,5 @@
 import { Component, State, Prop, h, Host } from '@stencil/core';
-import { AuthState, CognitoUserInterface, FederatedConfig, UsernameAttributes } from '../../common/types/auth-types';
+import { AuthState, CognitoUserInterface, FederatedConfig, UsernameAlias } from '../../common/types/auth-types';
 import {
   NO_AUTH_MODULE_FOUND,
   SIGNING_IN_WITH_HOSTEDUI_KEY,
@@ -22,7 +22,8 @@ export class AmplifyAuthenticator {
   @Prop() initialAuthState: AuthState.SignIn | AuthState.SignUp = AuthState.SignIn;
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
-  @Prop() usernameAttribute: UsernameAttributes;
+  /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
+  @Prop() usernameAlias: UsernameAlias;
 
   @State() authState: AuthState = AuthState.Loading;
   @State() authData: CognitoUserInterface;
@@ -97,7 +98,7 @@ export class AmplifyAuthenticator {
       case AuthState.SignIn:
         return (
           <slot name="sign-in">
-            <amplify-sign-in federated={this.federated} usernameAttributes={this.usernameAttribute} />
+            <amplify-sign-in federated={this.federated} usernameAlias={this.usernameAlias} />
           </slot>
         );
       case AuthState.ConfirmSignIn:
@@ -109,19 +110,19 @@ export class AmplifyAuthenticator {
       case AuthState.SignUp:
         return (
           <slot name="sign-up">
-            <amplify-sign-up usernameAttributes={this.usernameAttribute} />
+            <amplify-sign-up usernameAlias={this.usernameAlias} />
           </slot>
         );
       case AuthState.ConfirmSignUp:
         return (
           <slot name="confirm-sign-up">
-            <amplify-confirm-sign-up user={this.authData} usernameAttributes={this.usernameAttribute} />
+            <amplify-confirm-sign-up user={this.authData} usernameAlias={this.usernameAlias} />
           </slot>
         );
       case AuthState.ForgotPassword:
         return (
           <slot name="forgot-password">
-            <amplify-forgot-password usernameAttributes={this.usernameAttribute} />
+            <amplify-forgot-password usernameAlias={this.usernameAlias} />
           </slot>
         );
       case AuthState.ResetPassword:

@@ -10,7 +10,7 @@ import {
   CONFIRM_SIGN_UP_RESEND_CODE,
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
-import { AuthState, CognitoUserInterface, AuthStateHandler, UsernameAttributes } from '../../common/types/auth-types';
+import { AuthState, CognitoUserInterface, AuthStateHandler, UsernameAlias } from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
 import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
@@ -51,7 +51,8 @@ export class AmplifyConfirmSignUp {
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
-  @Prop() usernameAttributes: UsernameAttributes = 'username';
+  /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
+  @Prop() usernameAlias: UsernameAlias = 'username';
 
   @State() code: string;
   @State() loading: boolean = false;
@@ -60,7 +61,7 @@ export class AmplifyConfirmSignUp {
   componentWillLoad() {
     this.formFields = [
       {
-        type: `${this.usernameAttributes}`,
+        type: `${this.usernameAlias}`,
         required: true,
         value: this.user ? this.user.username : null,
         disabled: this.user && this.user.username ? true : false,

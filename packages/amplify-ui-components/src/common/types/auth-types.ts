@@ -99,4 +99,4 @@ export enum AuthFormField {
   Password = 'password',
 }
 
-export type UsernameAttributes = 'email' | 'username' | 'phone_number';
+export type UsernameAlias = 'email' | 'username' | 'phone_number';

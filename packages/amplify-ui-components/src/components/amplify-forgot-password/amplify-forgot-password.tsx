@@ -1,6 +1,6 @@
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes, PhoneNumberInterface } from '../amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState, AuthStateHandler, UsernameAttributes } from '../../common/types/auth-types';
+import { AuthState, AuthStateHandler, UsernameAlias } from '../../common/types/auth-types';
 import {
   RESET_YOUR_PASSWORD,
   SEND_CODE,
@@ -35,8 +35,8 @@ export class AmplifyForgotPassword {
   @Prop() handleSubmit: (event: Event) => void = event => this.submit(event);
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
-
-  @Prop() usernameAttributes: UsernameAttributes = 'username';
+  /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
+  @Prop() usernameAlias: UsernameAlias = 'username';
 
   @State() username: string;
   @State() password: string;
@@ -50,7 +50,7 @@ export class AmplifyForgotPassword {
   };
 
   componentWillLoad() {
-    switch (this.usernameAttributes) {
+    switch (this.usernameAlias) {
       case 'email':
         this.formFields = [
           {
@@ -135,7 +135,7 @@ export class AmplifyForgotPassword {
     }
     this.loading = true;
 
-    switch (this.usernameAttributes) {
+    switch (this.usernameAlias) {
       case 'email':
         this.username = this.email;
         break;

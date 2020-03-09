@@ -16,7 +16,7 @@ import {
   COUNTRY_DIAL_CODE_SUFFIX,
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
-import { AuthState, AuthStateHandler, UsernameAttributes } from '../../common/types/auth-types';
+import { AuthState, AuthStateHandler, UsernameAlias } from '../../common/types/auth-types';
 import { AmplifySignUpAttributes } from './amplify-sign-up-interface';
 
 import { Auth } from '@aws-amplify/auth';
@@ -61,9 +61,9 @@ export class AmplifySignUp {
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
-
-  @Prop() usernameAttributes: UsernameAttributes = 'username';
-  @Prop() userInput;
+  /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
+  @Prop() usernameAlias: UsernameAlias = 'username';
+  private userInput: string | PhoneNumberInterface;
 
   @State() loading: boolean = false;
   @State() username: string;
@@ -115,7 +115,7 @@ export class AmplifySignUp {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
-    switch (this.usernameAttributes) {
+    switch (this.usernameAlias) {
       case 'email':
         this.userInput = this.email;
         break;
@@ -146,7 +146,7 @@ export class AmplifySignUp {
   }
 
   async componentWillLoad() {
-    switch (this.usernameAttributes) {
+    switch (this.usernameAlias) {
       case 'email':
         this.formFields = [
           {
