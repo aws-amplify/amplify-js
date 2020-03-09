@@ -1,6 +1,8 @@
+import { I18n } from '@aws-amplify/core';
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyPhoneField } from './amplify-phone-field';
-import { PHONE_SUFFIX, PHONE_LABEL, PHONE_PLACEHOLDER } from '../../common/constants';
+import { PHONE_SUFFIX } from '../../common/constants';
+import { Translations } from '../../common/Translations';
 
 describe('amplify-phone-field spec:', () => {
   describe('Component logic ->', () => {
@@ -15,11 +17,11 @@ describe('amplify-phone-field spec:', () => {
     });
 
     it('should have `label` render to `Verification phone` by default', () => {
-      expect(phoneField.label).toEqual(PHONE_LABEL);
+      expect(phoneField.label).toEqual(I18n.get(Translations.PHONE_LABEL));
     });
 
     it('should have `placeholder` render to `Enter phone` by default', () => {
-      expect(phoneField.placeholder).toEqual(PHONE_PLACEHOLDER);
+      expect(phoneField.placeholder).toEqual(I18n.get(Translations.PHONE_PLACEHOLDER));
     });
 
     it('should have `required` set to `false` by default', () => {

@@ -2,7 +2,7 @@ build
 coverage
 Config
 lerna-debug.log
-node_modules/**
+node_modules
 packages/*/node_modules/**
 packages/**/lib/
 packages/**/lib-esm/

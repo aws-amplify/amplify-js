@@ -1,5 +1,7 @@
+import { I18n } from '@aws-amplify/core';
 import { Component, Prop, h } from '@stencil/core';
-import { USERNAME_SUFFIX, USERNAME_LABEL, USERNAME_PLACEHOLDER } from '../../common/constants';
+import { USERNAME_SUFFIX } from '../../common/constants';
+import { Translations } from '../../common/Translations';
 
 @Component({
   tag: 'amplify-username-field',
@@ -9,9 +11,9 @@ export class AmplifyUsernameField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */
   @Prop() fieldId: string = USERNAME_SUFFIX;
   /** Used for the username label */
-  @Prop() label: string = USERNAME_LABEL;
+  @Prop() label: string = I18n.get(Translations.USERNAME_LABEL);
   /** Used for the placeholder label */
-  @Prop() placeholder: string = USERNAME_PLACEHOLDER;
+  @Prop() placeholder: string = I18n.get(Translations.USERNAME_PLACEHOLDER);
   /** The required flag in order to make an input required prior to submitting a form */
   @Prop() required: boolean = false;
   /** The callback, called when the input is modified by the user. */

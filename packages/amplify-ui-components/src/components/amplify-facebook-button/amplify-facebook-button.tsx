@@ -1,10 +1,11 @@
 import { Auth } from '@aws-amplify/auth';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Component, h, Prop } from '@stencil/core';
 
-import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND, SIGN_IN_WITH_FACEBOOK } from '../../common/constants';
+import { AUTH_SOURCE_KEY, NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { AuthState, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
 import { dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { Translations } from '../../common/Translations';
 
 const logger = new Logger('amplify-facebook-button');
 
@@ -98,7 +99,7 @@ export class AmplifyFacebookButton {
     return (
       <amplify-sign-in-button onClick={event => this.signInWithFacebook(event)} provider="facebook">
         <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
-        {SIGN_IN_WITH_FACEBOOK}
+        {I18n.get(Translations.SIGN_IN_WITH_FACEBOOK)}
       </amplify-sign-in-button>
     );
   }

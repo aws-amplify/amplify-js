@@ -46,6 +46,7 @@ export const config: Config = {
     }),
     { type: 'dist' },
     { type: 'docs-readme' },
+    { type: 'docs-json', file: 'dist/docs.json' },
     {
       type: 'www',
       serviceWorker: null, // disable service workers

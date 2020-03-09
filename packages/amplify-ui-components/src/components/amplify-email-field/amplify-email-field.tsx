@@ -1,5 +1,8 @@
+import { I18n } from '@aws-amplify/core';
 import { Component, Prop, h } from '@stencil/core';
-import { EMAIL_SUFFIX, EMAIL_LABEL, EMAIL_PLACEHOLDER } from '../../common/constants';
+import { EMAIL_SUFFIX } from '../../common/constants';
+import { Translations } from '../../common/Translations';
+
 @Component({
   tag: 'amplify-email-field',
   shadow: true,
@@ -8,9 +11,9 @@ export class AmplifyEmailField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */
   @Prop() fieldId: string = EMAIL_SUFFIX;
   /** Used for the EMAIL label */
-  @Prop() label: string = EMAIL_LABEL;
+  @Prop() label: string = I18n.get(Translations.EMAIL_LABEL);
   /** Used for the placeholder label */
-  @Prop() placeholder: string = EMAIL_PLACEHOLDER;
+  @Prop() placeholder: string = I18n.get(Translations.EMAIL_PLACEHOLDER);
   /** The required flag in order to make an input required prior to submitting a form */
   @Prop() required: boolean = false;
   /** The callback, called when the input is modified by the user. */

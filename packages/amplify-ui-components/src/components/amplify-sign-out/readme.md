@@ -5,10 +5,10 @@
 
 ## Properties
 
-| Property                | Attribute     | Description                                                                     | Type                                                | Default                        |
-| ----------------------- | ------------- | ------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------ |
-| `buttonText`            | `button-text` | Text inside of the Sign Out button                                              | `string`                                            | `SIGN_OUT`                     |
-| `handleAuthStateChange` | --            | Passed from the Authenticator component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent` |
+| Property                | Attribute     | Description                                                                     | Type                                                | Default                           |
+| ----------------------- | ------------- | ------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------- |
+| `buttonText`            | `button-text` | Text inside of the Sign Out button                                              | `string`                                            | `I18n.get(Translations.SIGN_OUT)` |
+| `handleAuthStateChange` | --            | Passed from the Authenticator component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent`    |
 
 
 ## Dependencies

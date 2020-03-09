@@ -1,22 +1,12 @@
+import { Auth } from '@aws-amplify/auth';
+import { I18n, Logger, isEmpty } from '@aws-amplify/core';
 import { Component, Prop, State, h } from '@stencil/core';
 import QRCode from 'qrcode';
 
-import { Logger, isEmpty } from '@aws-amplify/core';
 import { CognitoUserInterface, AuthStateHandler, AuthState, MfaOption } from '../../common/types/auth-types';
-import { Auth } from '@aws-amplify/auth';
+import { Translations } from '../../common/Translations';
 import { TOTPSetupEventType } from './amplify-totp-setup-interface';
-import {
-  NO_AUTH_MODULE_FOUND,
-  TOTP_SETUP_FAILURE,
-  NO_TOTP_CODE_PROVIDED,
-  TOTP_SUCCESS_MESSAGE,
-  TOTP_HEADER_TEXT,
-  TOTP_SUBMIT_BUTTON_TEXT,
-  SETUP_TOTP,
-  SUCCESS,
-  ALT_QR_CODE,
-  TOTP_LABEL,
-} from '../../common/constants';
+import { NO_AUTH_MODULE_FOUND, SETUP_TOTP, SUCCESS } from '../../common/constants';
 import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 const logger = new Logger('TOTP');
@@ -106,7 +96,7 @@ export class AmplifyTOTPSetup {
       this.generateQRCode(this.code);
     } catch (error) {
       dispatchToastHubEvent(error);
-      logger.debug(TOTP_SETUP_FAILURE, error);
+      logger.debug(I18n.get(Translations.TOTP_SETUP_FAILURE), error);
     } finally {
       this.loading = false;
     }
@@ -118,7 +108,7 @@ export class AmplifyTOTPSetup {
     }
 
     if (!this.qrCodeInput) {
-      logger.debug(NO_TOTP_CODE_PROVIDED);
+      logger.debug('No TOTP Code provided');
       return;
     }
 
@@ -132,12 +122,12 @@ export class AmplifyTOTPSetup {
       await Auth.verifyTotpToken(user, this.qrCodeInput);
       await Auth.setPreferredMFA(user, MfaOption.TOTP);
 
-      this.setupMessage = TOTP_SUCCESS_MESSAGE;
-      logger.debug(TOTP_SUCCESS_MESSAGE);
+      this.setupMessage = I18n.get(Translations.TOTP_SUCCESS_MESSAGE);
+      logger.debug(I18n.get(Translations.TOTP_SUCCESS_MESSAGE));
 
       this.onTOTPEvent(SETUP_TOTP, SUCCESS, user);
     } catch (error) {
-      this.setupMessage = TOTP_SETUP_FAILURE;
+      this.setupMessage = I18n.get(Translations.TOTP_SETUP_FAILURE);
       logger.error(error);
     }
   }
@@ -146,15 +136,15 @@ export class AmplifyTOTPSetup {
   render() {
     return (
       <amplify-form-section
-        headerText={TOTP_HEADER_TEXT}
-        submitButtonText={TOTP_SUBMIT_BUTTON_TEXT}
+        headerText={I18n.get(Translations.TOTP_HEADER_TEXT)}
+        submitButtonText={I18n.get(Translations.TOTP_SUBMIT_BUTTON_TEXT)}
         handleSubmit={event => this.verifyTotpToken(event)}
         loading={this.loading}
       >
         <div class="totp-setup">
-          <img src={this.qrCodeImageSource} alt={ALT_QR_CODE} />
+          <img src={this.qrCodeImageSource} alt={I18n.get(Translations.QR_CODE_ALT)} />
           <amplify-form-field
-            label={TOTP_LABEL}
+            label={I18n.get(Translations.TOTP_LABEL)}
             inputProps={this.inputProps}
             fieldId="totpCode"
             name="totpCode"
