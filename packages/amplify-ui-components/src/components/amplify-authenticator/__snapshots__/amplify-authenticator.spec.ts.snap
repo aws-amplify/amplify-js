@@ -4,7 +4,7 @@ exports[`amplify-authenticator spec: Render logic -> should render a \`forgot pa
 <amplify-authenticator initial-auth-state="forgotpassword">
   <mock:shadow-root>
     <slot name="forgot-password">
-      <amplify-forgot-password></amplify-forgot-password>
+      <amplify-forgot-password usernamealias="username"></amplify-forgot-password>
     </slot>
   </mock:shadow-root>
 </amplify-authenticator>
@@ -14,7 +14,7 @@ exports[`amplify-authenticator spec: Render logic -> should render a \`sign in\`
 <amplify-authenticator>
   <mock:shadow-root>
     <slot name="sign-in">
-      <amplify-sign-in></amplify-sign-in>
+      <amplify-sign-in usernamealias="username"></amplify-sign-in>
     </slot>
   </mock:shadow-root>
 </amplify-authenticator>
@@ -24,7 +24,7 @@ exports[`amplify-authenticator spec: Render logic -> should render a \`sign up\`
 <amplify-authenticator initial-auth-state="signup">
   <mock:shadow-root>
     <slot name="sign-up">
-      <amplify-sign-up></amplify-sign-up>
+      <amplify-sign-up usernamealias="username"></amplify-sign-up>
     </slot>
   </mock:shadow-root>
 </amplify-authenticator>

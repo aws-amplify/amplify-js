@@ -9,7 +9,7 @@
 | ------------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ------------------ |
 | `federated`        | --                   | Federated credentials & configuration.                                                                                          | `FederatedConfig`                         | `undefined`        |
 | `initialAuthState` | `initial-auth-state` | Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp | `AuthState.SignIn \| AuthState.SignUp`    | `AuthState.SignIn` |
-| `usernameAlias`    | `username-alias`     | Username Alias is used to setup authentication with `username`, `email` or `phone_number`                                       | `"email" \| "phone_number" \| "username"` | `undefined`        |
+| `usernameAlias`    | `username-alias`     | Username Alias is used to setup authentication with `username`, `email` or `phone_number`                                       | `"email" \| "phone_number" \| "username"` | `'username'`       |
 
 
 ## Dependencies
