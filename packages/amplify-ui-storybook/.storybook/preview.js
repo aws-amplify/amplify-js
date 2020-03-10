@@ -7,6 +7,7 @@ import { addDecorator, addParameters } from '@storybook/react';
 import { create } from '@storybook/theming';
 import { extractPropsFromComponentName } from './extractPropsFromComponentName';
 import { withAmplify } from './withAmplify';
+import { PreviewStory } from './PreviewStory';
 
 addDecorator(withAmplify);
 
@@ -15,6 +16,7 @@ addParameters({
 		components: {
 			Meta,
 			Preview,
+			PreviewStory,
 			Props,
 			Story,
 		},
