@@ -26,6 +26,10 @@ describe('amplify-confirm-sign-up spec:', () => {
     it('should render `submitButtonText` to `Confirm` by default', () => {
       expect(confirmSignUp.submitButtonText).toEqual(I18n.get(Translations.CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT));
     });
+
+    it('should render `usernameAlias` as `username` by default', () => {
+      expect(confirmSignUp.usernameAlias).toEqual('username');
+    });
   });
   describe('Render logic ->', () => {
     it('should render a `confirm sign up` form by default', async () => {

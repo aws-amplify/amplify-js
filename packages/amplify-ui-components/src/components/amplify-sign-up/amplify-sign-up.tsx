@@ -1,17 +1,24 @@
 import { I18n } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 import { Component, Prop, h, State } from '@stencil/core';
-import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
+import {
+  FormFieldTypes,
+  PhoneNumberInterface,
+} from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
   PHONE_SUFFIX,
   COUNTRY_DIAL_CODE_DEFAULT,
   COUNTRY_DIAL_CODE_SUFFIX,
-  PHONE_EMPTY_ERROR_MESSAGE,
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
-import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
-import { AmplifySignUpAttributes, PhoneNumberInterface } from './amplify-sign-up-interface';
-import { dispatchAuthStateChangeEvent, dispatchToastHubEvent } from '../../common/helpers';
+import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
+import { AmplifySignUpAttributes } from './amplify-sign-up-interface';
+import {
+  dispatchAuthStateChangeEvent,
+  dispatchToastHubEvent,
+  composePhoneNumberInput,
+  checkUsernameAlias,
+} from '../../common/helpers';
 import { Translations } from '../../common/Translations';
 
 @Component({
@@ -48,38 +55,14 @@ export class AmplifySignUp {
    * ]
    * ```
    */
-  @Prop() formFields: FormFieldTypes | string[] = [
-    {
-      type: 'username',
-      placeholder: I18n.get(Translations.SIGN_UP_USERNAME_PLACEHOLDER),
-      required: true,
-      handleInputChange: event => this.handleUsernameChange(event),
-    },
-    {
-      type: 'password',
-      placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
-      required: true,
-      handleInputChange: event => this.handlePasswordChange(event),
-    },
-    {
-      type: 'email',
-      placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
-      required: true,
-      handleInputChange: event => this.handleEmailChange(event),
-    },
-    {
-      type: 'phone',
-      required: true,
-      handleInputChange: event => this.handlePhoneNumberChange(event),
-      inputProps: {
-        'data-test': 'phone-number-input',
-      },
-    },
-  ];
+  @Prop() formFields: FormFieldTypes | string[] = [];
   /** Passed from the Authenticator component in order to change Authentication state
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
+  /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
+  @Prop() usernameAlias: UsernameAliasStrings = 'username';
+  private userInput: string | PhoneNumberInterface;
 
   @State() loading: boolean = false;
   @State() username: string;
@@ -121,16 +104,6 @@ export class AmplifySignUp {
     }
   }
 
-  composePhoneNumberInput(phoneNumber: PhoneNumberInterface) {
-    if (!phoneNumber.phoneNumberValue) {
-      throw new Error(PHONE_EMPTY_ERROR_MESSAGE);
-    }
-
-    const sanitizedPhoneNumberValue = phoneNumber.phoneNumberValue.replace(/[-()\s]/g, '');
-
-    return `${phoneNumber.countryDialCodeValue}${sanitizedPhoneNumberValue}`;
-  }
-
   // TODO: Add validation
   // TODO: Prefix
   async signUp(event: Event) {
@@ -141,13 +114,26 @@ export class AmplifySignUp {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
+    switch (this.usernameAlias) {
+      case 'email':
+        this.userInput = this.email;
+        break;
+      case 'phone_number':
+        this.userInput = composePhoneNumberInput(this.phoneNumber);
+        break;
+      case 'username':
+      default:
+        this.userInput = this.username;
+        break;
+    }
+
     try {
       const signUpAttrs: AmplifySignUpAttributes = {
-        username: this.username,
+        username: this.userInput,
         password: this.password,
         attributes: {
           email: this.email,
-          phone_number: this.composePhoneNumberInput(this.phoneNumber),
+          phone_number: composePhoneNumberInput(this.phoneNumber),
         },
       };
 
@@ -155,6 +141,112 @@ export class AmplifySignUp {
       this.handleAuthStateChange(AuthState.ConfirmSignUp, data.user);
     } catch (error) {
       dispatchToastHubEvent(error);
+    }
+  }
+
+  async componentWillLoad() {
+    checkUsernameAlias(this.usernameAlias);
+    switch (this.usernameAlias) {
+      case 'email':
+        this.formFields = [
+          {
+            type: 'email',
+            placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
+            required: true,
+            handleInputChange: event => this.handleEmailChange(event),
+            inputProps: {
+              'data-test': 'sign-up-email-input',
+            },
+          },
+          {
+            type: 'password',
+            placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
+            required: true,
+            handleInputChange: event => this.handlePasswordChange(event),
+            inputProps: {
+              'data-test': 'sign-up-password-input',
+            },
+          },
+          {
+            type: 'phone_number',
+            required: true,
+            handleInputChange: event => this.handlePhoneNumberChange(event),
+            inputProps: {
+              'data-test': 'sign-up-phone-number-input',
+            },
+          },
+        ];
+        break;
+      case 'phone_number':
+        this.formFields = [
+          {
+            type: 'phone_number',
+            required: true,
+            handleInputChange: event => this.handlePhoneNumberChange(event),
+            inputProps: {
+              'data-test': 'sign-up-phone-number-input',
+            },
+          },
+          {
+            type: 'password',
+            placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
+            required: true,
+            handleInputChange: event => this.handlePasswordChange(event),
+            inputProps: {
+              'data-test': 'sign-up-password-input',
+            },
+          },
+          {
+            type: 'email',
+            placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
+            required: true,
+            handleInputChange: event => this.handleEmailChange(event),
+            inputProps: {
+              'data-test': 'sign-up-email-input',
+            },
+          },
+        ];
+        break;
+      case 'username':
+      default:
+        this.formFields = [
+          {
+            type: 'username',
+            placeholder: I18n.get(Translations.SIGN_UP_USERNAME_PLACEHOLDER),
+            required: true,
+            handleInputChange: event => this.handleUsernameChange(event),
+            inputProps: {
+              'data-test': 'sign-up-username-input',
+            },
+          },
+          {
+            type: 'password',
+            placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
+            required: true,
+            handleInputChange: event => this.handlePasswordChange(event),
+            inputProps: {
+              'data-test': 'sign-up-password-input',
+            },
+          },
+          {
+            type: 'email',
+            placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
+            required: true,
+            handleInputChange: event => this.handleEmailChange(event),
+            inputProps: {
+              'data-test': 'sign-up-email-input',
+            },
+          },
+          {
+            type: 'phone_number',
+            required: true,
+            handleInputChange: event => this.handlePhoneNumberChange(event),
+            inputProps: {
+              'data-test': 'sign-up-phone-number-input',
+            },
+          },
+        ];
+        break;
     }
   }
 

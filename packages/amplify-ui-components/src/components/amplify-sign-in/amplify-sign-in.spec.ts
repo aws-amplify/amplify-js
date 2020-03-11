@@ -68,6 +68,10 @@ describe('amplify-sign-in spec:', () => {
     it('should render `submitButtonText` to `Sign in` by default', () => {
       expect(signIn.submitButtonText).toEqual('Sign In');
     });
+
+    it('should render `usernameAlias` as `username` by default', () => {
+      expect(signIn.usernameAlias).toEqual('username');
+    });
   });
   describe('Render logic ->', () => {
     it('should render a `sign in` form by default', async () => {

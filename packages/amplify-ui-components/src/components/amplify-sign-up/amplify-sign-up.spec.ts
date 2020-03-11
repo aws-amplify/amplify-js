@@ -26,7 +26,12 @@ describe('amplify-sign-up spec:', () => {
     it('should render `submitButtonText` to `Create account` by default', () => {
       expect(signUp.submitButtonText).toEqual(I18n.get(Translations.SIGN_UP_SUBMIT_BUTTON_TEXT));
     });
+
+    it('should render `usernameAlias` as `username` by default', () => {
+      expect(signUp.usernameAlias).toEqual('username');
+    });
   });
+
   describe('Render logic ->', () => {
     it('should render a `sign up` form by default', async () => {
       const page = await newSpecPage({

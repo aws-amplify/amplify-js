@@ -3,7 +3,6 @@ import { Component, Prop, h } from '@stencil/core';
 @Component({
   tag: 'amplify-radio-button',
   styleUrl: 'amplify-radio-button.scss',
-  shadow: true,
 })
 export class AmplifyRadioButton {
   /** The callback, called when the input is modified by the user. */

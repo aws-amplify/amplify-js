@@ -1,12 +1,31 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger, isEmpty } from '@aws-amplify/core';
 import { Component, Prop, State, h } from '@stencil/core';
-import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState, ChallengeName, FederatedConfig, AuthStateHandler } from '../../common/types/auth-types';
+import {
+  FormFieldTypes,
+  PhoneNumberInterface,
+} from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
+import {
+  AuthState,
+  ChallengeName,
+  FederatedConfig,
+  AuthStateHandler,
+  UsernameAliasStrings,
+} from '../../common/types/auth-types';
 import { Translations } from '../../common/Translations';
-import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
+import {
+  NO_AUTH_MODULE_FOUND,
+  COUNTRY_DIAL_CODE_DEFAULT,
+  COUNTRY_DIAL_CODE_SUFFIX,
+  PHONE_SUFFIX,
+} from '../../common/constants';
 
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
+import {
+  dispatchToastHubEvent,
+  dispatchAuthStateChangeEvent,
+  composePhoneNumberInput,
+  checkUsernameAlias,
+} from '../../common/helpers';
 
 const logger = new Logger('SignIn');
 
@@ -28,6 +47,8 @@ export class AmplifySignIn {
   @Prop() federated: FederatedConfig;
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
+  /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
+  @Prop() usernameAlias: UsernameAliasStrings = 'username';
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing
@@ -44,35 +65,7 @@ export class AmplifySignIn {
    * ]
    * ```
    */
-  @Prop() formFields: FormFieldTypes | string[] = [
-    {
-      type: 'username',
-      required: true,
-      handleInputChange: event => this.handleUsernameChange(event),
-      inputProps: {
-        'data-test': 'username-input',
-      },
-    },
-    {
-      type: 'password',
-      hint: (
-        <div>
-          {I18n.get(Translations.FORGOT_PASSWORD_TEXT)}{' '}
-          <amplify-link
-            onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}
-            data-test="sign-in-forgot-password-link"
-          >
-            {I18n.get(Translations.RESET_PASSWORD_TEXT)}
-          </amplify-link>
-        </div>
-      ),
-      required: true,
-      handleInputChange: event => this.handlePasswordChange(event),
-      inputProps: {
-        'data-test': 'sign-in-password-input',
-      },
-    },
-  ];
+  @Prop() formFields: FormFieldTypes | string[] = [];
 
   /* Whether or not the sign-in component is loading */
   @State() loading: boolean = false;
@@ -80,6 +73,12 @@ export class AmplifySignIn {
   @State() username: string = '';
   /* The password value in the sign-in form */
   @State() password: string = '';
+  @State() email: string;
+  @State() phoneNumber: PhoneNumberInterface = {
+    countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
+    phoneNumberValue: null,
+  };
+  @State() userInput = this.username;
 
   handleUsernameChange(event) {
     this.username = event.target.value;
@@ -87,6 +86,28 @@ export class AmplifySignIn {
 
   handlePasswordChange(event) {
     this.password = event.target.value;
+  }
+
+  handleEmailChange(event) {
+    this.email = event.target.value;
+  }
+
+  handlePhoneNumberChange(event) {
+    const name = event.target.name;
+    const value = event.target.value;
+
+    /** Cognito expects to have a string be passed when signing up. Since the Select input is separate
+     * input from the phone number input, we need to first capture both components values and combined
+     * them together.
+     */
+
+    if (name === COUNTRY_DIAL_CODE_SUFFIX) {
+      this.phoneNumber.countryDialCodeValue = value;
+    }
+
+    if (name === PHONE_SUFFIX) {
+      this.phoneNumber.phoneNumberValue = value;
+    }
   }
 
   checkContact(user) {
@@ -113,8 +134,22 @@ export class AmplifySignIn {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
     this.loading = true;
+
+    switch (this.usernameAlias) {
+      case 'email':
+        this.userInput = this.email;
+        break;
+      case 'phone_number':
+        this.userInput = composePhoneNumberInput(this.phoneNumber);
+        break;
+      case 'username':
+      default:
+        this.userInput = this.username;
+        break;
+    }
+
     try {
-      const user = await Auth.signIn(this.username, this.password);
+      const user = await Auth.signIn(this.userInput, this.password);
       logger.debug(user);
       if (user.challengeName === ChallengeName.SMSMFA || user.challengeName === ChallengeName.SoftwareTokenMFA) {
         logger.debug('confirm user with ' + user.challengeName);
@@ -139,14 +174,72 @@ export class AmplifySignIn {
       dispatchToastHubEvent(error);
       if (error.code === 'UserNotConfirmedException') {
         logger.debug('the user is not confirmed');
-        this.handleAuthStateChange(AuthState.ConfirmSignUp, { username: this.username });
+        this.handleAuthStateChange(AuthState.ConfirmSignUp, { username: this.userInput });
       } else if (error.code === 'PasswordResetRequiredException') {
         logger.debug('the user requires a new password');
-        this.handleAuthStateChange(AuthState.ForgotPassword, { username: this.username });
+        this.handleAuthStateChange(AuthState.ForgotPassword, { username: this.userInput });
       }
     } finally {
       this.loading = false;
     }
+  }
+  async componentWillLoad() {
+    checkUsernameAlias(this.usernameAlias);
+    const formFieldInputs = [];
+    switch (this.usernameAlias) {
+      case 'email':
+        formFieldInputs.push({
+          type: 'email',
+          required: true,
+          handleInputChange: event => this.handleEmailChange(event),
+          inputProps: {
+            'data-test': 'sign-in-email-input',
+          },
+        });
+        break;
+      case 'phone_number':
+        formFieldInputs.push({
+          type: 'phone_number',
+          required: true,
+          handleInputChange: event => this.handlePhoneNumberChange(event),
+          inputProps: {
+            'data-test': 'sign-in-phone-number-input',
+          },
+        });
+        break;
+      case 'username':
+      default:
+        formFieldInputs.push({
+          type: 'username',
+          required: true,
+          handleInputChange: event => this.handleUsernameChange(event),
+          inputProps: {
+            'data-test': 'sign-in-username-input',
+          },
+        });
+        break;
+    }
+
+    formFieldInputs.push({
+      type: 'password',
+      hint: (
+        <div>
+          {I18n.get(Translations.FORGOT_PASSWORD_TEXT)}{' '}
+          <amplify-link
+            onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}
+            data-test="sign-in-forgot-password-link"
+          >
+            {I18n.get(Translations.RESET_PASSWORD_TEXT)}
+          </amplify-link>
+        </div>
+      ),
+      required: true,
+      handleInputChange: event => this.handlePasswordChange(event),
+      inputProps: {
+        'data-test': 'sign-in-password-input',
+      },
+    });
+    this.formFields = formFieldInputs;
   }
 
   render() {

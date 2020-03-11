@@ -1,5 +1,5 @@
 import { Component, State, Prop, h, Host } from '@stencil/core';
-import { AuthState, CognitoUserInterface, FederatedConfig } from '../../common/types/auth-types';
+import { AuthState, CognitoUserInterface, FederatedConfig, UsernameAliasStrings } from '../../common/types/auth-types';
 import {
   NO_AUTH_MODULE_FOUND,
   SIGNING_IN_WITH_HOSTEDUI_KEY,
@@ -22,6 +22,8 @@ export class AmplifyAuthenticator {
   @Prop() initialAuthState: AuthState.SignIn | AuthState.SignUp = AuthState.SignIn;
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
+  /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
+  @Prop() usernameAlias: UsernameAliasStrings;
 
   @State() authState: AuthState = AuthState.Loading;
   @State() authData: CognitoUserInterface;
@@ -96,7 +98,7 @@ export class AmplifyAuthenticator {
       case AuthState.SignIn:
         return (
           <slot name="sign-in">
-            <amplify-sign-in federated={this.federated} />
+            <amplify-sign-in federated={this.federated} usernameAlias={this.usernameAlias} />
           </slot>
         );
       case AuthState.ConfirmSignIn:
@@ -108,19 +110,19 @@ export class AmplifyAuthenticator {
       case AuthState.SignUp:
         return (
           <slot name="sign-up">
-            <amplify-sign-up />
+            <amplify-sign-up usernameAlias={this.usernameAlias} />
           </slot>
         );
       case AuthState.ConfirmSignUp:
         return (
           <slot name="confirm-sign-up">
-            <amplify-confirm-sign-up user={this.authData} />
+            <amplify-confirm-sign-up user={this.authData} usernameAlias={this.usernameAlias} />
           </slot>
         );
       case AuthState.ForgotPassword:
         return (
           <slot name="forgot-password">
-            <amplify-forgot-password />
+            <amplify-forgot-password usernameAlias={this.usernameAlias} />
           </slot>
         );
       case AuthState.ResetPassword:

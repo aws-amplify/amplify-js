@@ -98,3 +98,11 @@ export enum ChallengeName {
 export enum AuthFormField {
   Password = 'password',
 }
+
+export enum UsernameAlias {
+  username = 'username',
+  email = 'email',
+  phone_number = 'phone_number',
+}
+
+export type UsernameAliasStrings = keyof typeof UsernameAlias;

@@ -3,10 +3,10 @@ import { Component, Prop, h, State } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { Translations } from '../../common/Translations';
-import { AuthState, CognitoUserInterface, AuthStateHandler } from '../../common/types/auth-types';
+import { AuthState, CognitoUserInterface, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, checkUsernameAlias } from '../../common/helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-up',
@@ -44,20 +44,20 @@ export class AmplifyConfirmSignUp {
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
+  /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
+  @Prop() usernameAlias: UsernameAliasStrings = 'username';
 
-  @State() username: string = this.user ? this.user.username : null;
   @State() code: string;
   @State() loading: boolean = false;
+  @State() userInput: string = this.user ? this.user.username : null;
 
   componentWillLoad() {
+    checkUsernameAlias(this.usernameAlias);
     this.formFields = [
       {
-        type: 'username',
-        placeholder: I18n.get(Translations.USERNAME_PLACEHOLDER),
+        type: `${this.usernameAlias}`,
         required: true,
-        handleInputChange: event => this.handleUsernameChange(event),
         value: this.user ? this.user.username : null,
-        // TODO: Add class style adjustment
         disabled: this.user && this.user.username ? true : false,
       },
       {
@@ -78,10 +78,6 @@ export class AmplifyConfirmSignUp {
     ];
   }
 
-  handleUsernameChange(event) {
-    this.username = event.target.value;
-  }
-
   handleCodeChange(event) {
     this.code = event.target.value;
   }
@@ -94,8 +90,8 @@ export class AmplifyConfirmSignUp {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
     try {
-      if (!this.username) throw new Error('Username can not be empty');
-      await Auth.resendSignUp(this.username);
+      if (!this.userInput) throw new Error('Username can not be empty');
+      await Auth.resendSignUp(this.userInput);
       this.handleAuthStateChange(AuthState.ConfirmSignUp);
     } catch (error) {
       dispatchToastHubEvent(error);
@@ -113,9 +109,9 @@ export class AmplifyConfirmSignUp {
     }
 
     this.loading = true;
-    try {
-      const user = await Auth.confirmSignUp(this.username, this.code);
 
+    try {
+      const user = await Auth.confirmSignUp(this.userInput, this.code);
       this.handleAuthStateChange(AuthState.SignedIn, user);
     } catch (error) {
       dispatchToastHubEvent(error);
