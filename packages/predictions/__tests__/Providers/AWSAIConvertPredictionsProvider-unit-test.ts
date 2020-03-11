@@ -30,6 +30,15 @@ PollyClient.prototype.send = jest.fn(command => {
 	}
 }) as any;
 
+(global as any).Response = jest.fn(stream => {
+	const response = {
+		arrayBuffer: () => {
+			return 'dummyStream';
+		},
+	};
+	return response;
+});
+
 (global as any).WebSocket = jest.fn(url => {
 	let onCloseCallback = null;
 	let onErrorCallback = null;

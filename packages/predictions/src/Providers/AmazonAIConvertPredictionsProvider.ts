@@ -127,7 +127,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		});
 		try {
 			const data = await this.pollyClient.send(synthesizeSpeechCommand);
-			const response = new Response(data.AudioStream);
+			const response = new Response(data.AudioStream as ReadableStream);
 			const arrayBuffer = await response.arrayBuffer();
 			const blob = new Blob([arrayBuffer], {
 				type: data.ContentType,
