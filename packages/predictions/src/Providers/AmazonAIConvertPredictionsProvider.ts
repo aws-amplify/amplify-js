@@ -24,7 +24,6 @@ import {
 	MessageHeaderValue,
 } from '@aws-sdk/eventstream-marshaller';
 import { fromUtf8, toUtf8 } from '@aws-sdk/util-utf8-node';
-
 const logger = new Logger('AmazonAIConvertPredictionsProvider');
 const eventBuilder = new EventStreamMarshaller(toUtf8, fromUtf8);
 
@@ -128,13 +127,15 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		});
 		try {
 			const data = await this.pollyClient.send(synthesizeSpeechCommand);
-			const blob = new Blob([data.AudioStream], {
+			const response = new Response(data.AudioStream as ReadableStream);
+			const arrayBuffer = await response.arrayBuffer();
+			const blob = new Blob([arrayBuffer], {
 				type: data.ContentType,
 			});
 			const url = URL.createObjectURL(blob);
 			return {
 				speech: { url },
-				audioStream: (data.AudioStream as any).buffer,
+				audioStream: arrayBuffer,
 				text: input.textToSpeech.source.text,
 			} as TextToSpeechOutput;
 		} catch (err) {
