@@ -6,7 +6,7 @@
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
-    "./index": "./lib/index.js"
+    "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": false,
   "publishConfig": {
@@ -36,11 +36,12 @@
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
     "@aws-amplify/core": "^2.2.4",
-    "@aws-sdk/client-s3": "^1.0.0-alpha.13",
-    "@aws-sdk/s3-request-presigner": "^1.0.0-alpha.12",
-    "@aws-sdk/url-parser-node": "^1.0.0-alpha.4",
-    "@aws-sdk/util-create-request": "^1.0.0-alpha.9",
-    "@aws-sdk/util-format-url": "^1.0.0-alpha.4"
+    "@aws-sdk/client-s3": "^1.0.0-alpha.16",
+    "@aws-sdk/s3-request-presigner": "^1.0.0-alpha.15",
+    "@aws-sdk/util-create-request": "^1.0.0-alpha.11",
+    "@aws-sdk/util-format-url": "^1.0.0-alpha.4",
+    "events": "^3.1.0",
+    "sinon": "^7.5.0"
   },
   "jest": {
     "globals": {
@@ -82,5 +83,8 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ]
+  },
+  "devDependencies": {
+    "@types/sinon": "^7.5.1"
   }
 }

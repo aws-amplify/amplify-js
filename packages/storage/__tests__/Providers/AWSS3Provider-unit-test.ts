@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -164,7 +164,6 @@ describe('StorageProvider test', () => {
 					expires: 123456789,
 				})
 			).toBe('url');
-			console.log(spyon.mock.calls[0][0]);
 			expect(spyon.mock.calls[0][0].query).toEqual({
 				'response-cache-control': 'no-cache',
 				'response-content-disposition': 'attachment; filename="filename.jpg"',

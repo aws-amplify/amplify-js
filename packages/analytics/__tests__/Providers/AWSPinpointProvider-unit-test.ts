@@ -732,6 +732,51 @@ describe('AnalyticsProvider test', () => {
 				expect(reject).toBeCalledWith(mockError);
 				spyon.mockRestore();
 			});
+
+			test('Exceeded maximum endpoint per user count', async () => {
+				const analytics = new AnalyticsProvider();
+				const mockExceededMaxError = {
+					statusCode: 400,
+					message: 'Exceeded maximum endpoint per user count 10',
+				};
+
+				analytics.configure(options);
+
+				const spyonUpdateEndpoint = jest
+					.spyOn(PinpointClient.prototype, 'send')
+					// Reject with error the first time we execute updateEndpoint
+					.mockImplementationOnce(async params => {
+						throw mockExceededMaxError;
+					})
+					// Succeed on the second attempt (i.e. after we go through _retryEndpointUpdate)
+					.mockImplementationOnce(async params => {
+						return 'data';
+					});
+
+				jest
+					.spyOn(Credentials, 'get')
+					.mockImplementationOnce(() => Promise.resolve(credentials));
+
+				jest
+					.spyOn(AnalyticsProvider.prototype, '_removeUnusedEndpoints')
+					.mockImplementationOnce(() => ({
+						promise: jest.fn().mockResolvedValue(true),
+					}));
+
+				const spyonRetryEndpointUpdate = jest.spyOn(
+					AnalyticsProvider.prototype,
+					'_retryEndpointUpdate'
+				);
+
+				const params = { event: { name: '_update_endpoint', immediate: true } };
+
+				await analytics.record(params, { resolve, reject });
+
+				expect(spyonUpdateEndpoint).toHaveBeenCalledTimes(2); // 1 failed + 1 successful call
+				expect(spyonRetryEndpointUpdate).toHaveBeenCalled();
+
+				spyonUpdateEndpoint.mockRestore();
+			});
 		});
 	});
 });

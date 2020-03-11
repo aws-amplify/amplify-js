@@ -171,7 +171,10 @@ describe('S3Image', () => {
 					return;
 				});
 
-			const wrapper = shallow(<S3Image />);
+			const mockOnUploadSuccess = jest.fn();
+			const wrapper = shallow(
+				<S3Image onUploadSuccess={mockOnUploadSuccess} />
+			);
 			const s3Image = wrapper.instance();
 			wrapper.setProps({
 				imgKey: 'imgKey',
@@ -188,12 +191,13 @@ describe('S3Image', () => {
 
 			await s3Image.handlePick(data);
 
-			expect.assertions(2);
+			expect.assertions(3);
 			expect(spyon).toBeCalledWith('imgKey', 'file', {
 				contentType: 'type',
 				level: 'level',
 				track: undefined,
 			});
+			expect(mockOnUploadSuccess).toBeCalled();
 			expect(spyon2).toBeCalled();
 
 			spyon.mockClear();

@@ -25,9 +25,11 @@ class MemoryStorage {
 	 * @returns {string} value that was set
 	 */
 	static setItem(key, value) {
-		AsyncStorage.setItem(MEMORY_KEY_PREFIX + key, value);
-		dataMemory[key] = value;
-		return dataMemory[key];
+		if (value) {
+			AsyncStorage.setItem(MEMORY_KEY_PREFIX + key, value);
+			dataMemory[key] = value;
+			return dataMemory[key];
+		}
 	}
 
 	/**

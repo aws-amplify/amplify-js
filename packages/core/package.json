@@ -23,10 +23,10 @@
 		"lint": "tslint 'src/**/*.ts'"
 	},
 	"react-native": {
-		"./index": "./lib/index.js",
-		"./lib/ClientDevice": "./lib/ClientDevice/reactnative.js",
-		"./lib/RNComponents": "./lib/RNComponents/reactnative.js",
-		"./lib/StorageHelper": "./lib/StorageHelper/reactnative.js"
+		"./lib/index": "./lib-esm/index.js",
+		"./lib-esm/ClientDevice": "./lib-esm/ClientDevice/reactnative.js",
+		"./lib-esm/RNComponents": "./lib-esm/RNComponents/reactnative.js",
+		"./lib-esm/StorageHelper": "./lib-esm/StorageHelper/reactnative.js"
 	},
 	"repository": {
 		"type": "git",
@@ -45,15 +45,14 @@
 	},
 	"dependencies": {
 		"@aws-crypto/sha256-js": "1.0.0-alpha.0",
-		"@aws-sdk/client-cognito-identity": "^1.0.0-alpha.18",
-		"@aws-sdk/credential-provider-cognito-identity": "^1.0.0-alpha.16",
+		"@aws-sdk/client-cognito-identity": "^1.0.0-alpha.21",
+		"@aws-sdk/credential-provider-cognito-identity": "^1.0.0-alpha.19",
 		"@aws-sdk/node-http-handler": "^1.0.0-alpha.7",
 		"@aws-sdk/types": "^1.0.0-alpha.4",
-		"@aws-sdk/url-parser-node": "^1.0.0-alpha.4",
 		"@aws-sdk/util-hex-encoding": "^1.0.0-alpha.2",
 		"@aws-sdk/util-user-agent-browser": "^1.0.0-alpha.7",
-		"zen-observable": "^0.8.6",
-		"url": "^0.11.0"
+		"url": "^0.11.0",
+		"zen-observable": "^0.8.6"
 	},
 	"jest": {
 		"globals": {
