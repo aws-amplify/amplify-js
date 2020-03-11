@@ -3,7 +3,7 @@ import { I18n, Logger } from '@aws-amplify/core';
 import { Component, Prop, State, h } from '@stencil/core';
 
 import { FormFieldTypes, PhoneNumberInterface } from '../amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState, AuthStateHandler, UsernameAlias } from '../../common/types/auth-types';
+import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
 import {
   NO_AUTH_MODULE_FOUND,
   COUNTRY_DIAL_CODE_DEFAULT,
@@ -13,7 +13,12 @@ import {
 import { Translations } from '../../common/Translations';
 import { CodeDeliveryType } from './amplify-forgot-password-interface';
 
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, composePhoneNumberInput } from '../../common/helpers';
+import {
+  dispatchToastHubEvent,
+  dispatchAuthStateChangeEvent,
+  composePhoneNumberInput,
+  checkUsernameAlias,
+} from '../../common/helpers';
 
 const logger = new Logger('ForgotPassword');
 
@@ -35,7 +40,7 @@ export class AmplifyForgotPassword {
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
-  @Prop() usernameAlias: UsernameAlias = 'username';
+  @Prop() usernameAlias: UsernameAliasStrings = 'username';
 
   @State() username: string;
   @State() password: string;
@@ -49,6 +54,7 @@ export class AmplifyForgotPassword {
   };
 
   componentWillLoad() {
+    checkUsernameAlias(this.usernameAlias);
     switch (this.usernameAlias) {
       case 'email':
         this.formFields = [

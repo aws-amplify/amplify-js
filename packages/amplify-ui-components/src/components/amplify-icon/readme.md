@@ -7,7 +7,7 @@
 
 | Property | Attribute | Description                                                 | Type                                                                                                                                                        | Default     |
 | -------- | --------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `name`   | `name`    | (Required) Name of icon used to determine the icon rendered | `"amazon" \| "auth0" \| "enter-vr" \| "exit-vr" \| "facebook" \| "google" \| "loading" \| "maximize" \| "minimize" \| "sound" \| "sound-mute" \| "warning"` | `undefined` |
+| `name`   | `name`    | (Required) Name of icon used to determine the icon rendered | `"amazon" or "auth0" or "enter-vr" or "exit-vr" or "facebook" or "google" or "loading" or "maximize" or "minimize" or "sound" or "sound-mute" or "warning"` | `undefined` |
 
 
 ## Dependencies

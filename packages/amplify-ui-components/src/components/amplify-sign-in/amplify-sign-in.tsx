@@ -10,7 +10,7 @@ import {
   ChallengeName,
   FederatedConfig,
   AuthStateHandler,
-  UsernameAlias,
+  UsernameAliasStrings,
 } from '../../common/types/auth-types';
 import { Translations } from '../../common/Translations';
 import {
@@ -20,7 +20,12 @@ import {
   PHONE_SUFFIX,
 } from '../../common/constants';
 
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, composePhoneNumberInput } from '../../common/helpers';
+import {
+  dispatchToastHubEvent,
+  dispatchAuthStateChangeEvent,
+  composePhoneNumberInput,
+  checkUsernameAlias,
+} from '../../common/helpers';
 
 const logger = new Logger('SignIn');
 
@@ -43,7 +48,7 @@ export class AmplifySignIn {
   /** Passed from the Authenticator component in order to change Authentication state */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
-  @Prop() usernameAlias: UsernameAlias = 'username';
+  @Prop() usernameAlias: UsernameAliasStrings = 'username';
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing
@@ -179,6 +184,7 @@ export class AmplifySignIn {
     }
   }
   async componentWillLoad() {
+    checkUsernameAlias(this.usernameAlias);
     const formFieldInputs = [];
     switch (this.usernameAlias) {
       case 'email':

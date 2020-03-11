@@ -3,10 +3,10 @@ import { Component, Prop, h, State } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { Translations } from '../../common/Translations';
-import { AuthState, CognitoUserInterface, AuthStateHandler, UsernameAlias } from '../../common/types/auth-types';
+import { AuthState, CognitoUserInterface, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, checkUsernameAlias } from '../../common/helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-up',
@@ -45,13 +45,14 @@ export class AmplifyConfirmSignUp {
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
-  @Prop() usernameAlias: UsernameAlias = 'username';
+  @Prop() usernameAlias: UsernameAliasStrings = 'username';
 
   @State() code: string;
   @State() loading: boolean = false;
   @State() userInput: string = this.user ? this.user.username : null;
 
   componentWillLoad() {
+    checkUsernameAlias(this.usernameAlias);
     this.formFields = [
       {
         type: `${this.usernameAlias}`,

@@ -7,7 +7,7 @@
 
 | Property   | Attribute  | Description | Type                                                       | Default     |
 | ---------- | ---------- | ----------- | ---------------------------------------------------------- | ----------- |
-| `provider` | `provider` |             | `"amazon" \| "auth0" \| "facebook" \| "google" \| "oauth"` | `undefined` |
+| `provider` | `provider` |             | `"amazon" or "auth0" or "facebook" or "google" or "oauth"` | `undefined` |
 
 
 ## Dependencies

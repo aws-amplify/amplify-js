@@ -11,9 +11,14 @@ import {
   COUNTRY_DIAL_CODE_SUFFIX,
   NO_AUTH_MODULE_FOUND,
 } from '../../common/constants';
-import { AuthState, AuthStateHandler, UsernameAlias } from '../../common/types/auth-types';
+import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
 import { AmplifySignUpAttributes } from './amplify-sign-up-interface';
-import { dispatchAuthStateChangeEvent, dispatchToastHubEvent, composePhoneNumberInput } from '../../common/helpers';
+import {
+  dispatchAuthStateChangeEvent,
+  dispatchToastHubEvent,
+  composePhoneNumberInput,
+  checkUsernameAlias,
+} from '../../common/helpers';
 import { Translations } from '../../common/Translations';
 
 @Component({
@@ -56,7 +61,7 @@ export class AmplifySignUp {
    */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
-  @Prop() usernameAlias: UsernameAlias = 'username';
+  @Prop() usernameAlias: UsernameAliasStrings = 'username';
   private userInput: string | PhoneNumberInterface;
 
   @State() loading: boolean = false;
@@ -140,6 +145,7 @@ export class AmplifySignUp {
   }
 
   async componentWillLoad() {
+    checkUsernameAlias(this.usernameAlias);
     switch (this.usernameAlias) {
       case 'email':
         this.formFields = [

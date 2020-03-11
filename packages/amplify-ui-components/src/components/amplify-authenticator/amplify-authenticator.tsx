@@ -1,5 +1,5 @@
 import { Component, State, Prop, h, Host } from '@stencil/core';
-import { AuthState, CognitoUserInterface, FederatedConfig, UsernameAlias } from '../../common/types/auth-types';
+import { AuthState, CognitoUserInterface, FederatedConfig, UsernameAliasStrings } from '../../common/types/auth-types';
 import {
   NO_AUTH_MODULE_FOUND,
   SIGNING_IN_WITH_HOSTEDUI_KEY,
@@ -23,7 +23,7 @@ export class AmplifyAuthenticator {
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
-  @Prop() usernameAlias: UsernameAlias;
+  @Prop() usernameAlias: UsernameAliasStrings;
 
   @State() authState: AuthState = AuthState.Loading;
   @State() authData: CognitoUserInterface;
