@@ -785,6 +785,7 @@ async function clear() {
 
 	await storage.clear();
 
+	initialized = undefined;
 	storage = undefined;
 	sync = undefined;
 }
