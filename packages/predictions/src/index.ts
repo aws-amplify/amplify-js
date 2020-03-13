@@ -19,7 +19,7 @@ import {
 	AmazonAIInterpretPredictionsProvider,
 } from './Providers';
 
-import { InterpretTextCategories } from './types';
+export * from './types';
 
 export {
 	Predictions,
@@ -27,7 +27,6 @@ export {
 	AmazonAIConvertPredictionsProvider,
 	AmazonAIPredictionsProvider,
 	AmazonAIInterpretPredictionsProvider,
-	InterpretTextCategories,
 };
 
 /**

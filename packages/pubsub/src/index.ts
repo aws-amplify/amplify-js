@@ -12,7 +12,8 @@
  */
 import { PubSub } from './PubSub';
 
-export * from './Providers/AWSIotProvider';
+export * from './Providers';
+
 export { PubSub };
 
 /**
