@@ -16,6 +16,11 @@ import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('PubSub');
 
+enum CONTROL_MSG {
+	CONNECTION_CLOSED = 'Connection closed',
+	TIMEOUT_DISCONNECT = 'Timeout disconnect',
+}
+
 let _instance: PubSubClass = null;
 
 if (!_instance) {
@@ -29,4 +34,5 @@ Amplify.register(PubSub);
 export default PubSub;
 
 export * from './Providers/AWSIotProvider';
-export { PubSubClass };
+
+export { PubSubClass, CONTROL_MSG };
