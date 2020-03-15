@@ -95,7 +95,8 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 		public sendCustomChallengeAnswer(
 			answerChallenge: any,
-			callback: IAuthenticationCallback
+			callback: IAuthenticationCallback,
+			clientMetaData?: ClientMetadata
 		): void;
 		public resendConfirmationCode(
 			callback: NodeCallback<Error, 'SUCCESS'>,
@@ -306,7 +307,7 @@ declare module 'amazon-cognito-identity-js' {
 			userAttributes: CognitoUserAttribute[],
 			validationData: CognitoUserAttribute[],
 			callback: NodeCallback<Error, ISignUpResult>,
-           clientMetadata: ClientMetadata
+			clientMetaData?: ClientMetadata
 		): void;
 
 		public getCurrentUser(): CognitoUser | null;
