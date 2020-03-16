@@ -133,7 +133,13 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	};
 
 	CognitoUser.prototype.resendConfirmationCode = callback => {
-		callback(null, 'result');
+		callback(null, {
+			CodeDeliveryDetails: {
+				AttributeName: 'email',
+				DeliveryMedium: 'EMAIL',
+				Destination: 'amplify@*****.com',
+			},
+		});
 	};
 
 	CognitoUser.prototype.changePassword = (
@@ -500,11 +506,14 @@ describe('auth unit test', () => {
 
 			await auth.confirmSignUp('username', code);
 
-			expect(
-				await CognitoUser.prototype.confirmRegistration
-			).toBeCalledWith(code, jasmine.any(Boolean), jasmine.any(Function), {
-				foo: 'bar',
-			});
+			expect(await CognitoUser.prototype.confirmRegistration).toBeCalledWith(
+				code,
+				jasmine.any(Boolean),
+				jasmine.any(Function),
+				{
+					foo: 'bar',
+				}
+			);
 			spyon.mockClear();
 		});
 
@@ -517,11 +526,14 @@ describe('auth unit test', () => {
 				clientMetadata: { custom: 'value' },
 			});
 
-			expect(
-				await CognitoUser.prototype.confirmRegistration
-			).toBeCalledWith(code, jasmine.any(Boolean), jasmine.any(Function), {
-				custom: 'value',
-			});
+			expect(await CognitoUser.prototype.confirmRegistration).toBeCalledWith(
+				code,
+				jasmine.any(Boolean),
+				jasmine.any(Function),
+				{
+					custom: 'value',
+				}
+			);
 			spyon.mockClear();
 		});
 
@@ -594,7 +606,13 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptions);
 
 			expect.assertions(1);
-			expect(await auth.resendSignUp('username')).toBe('result');
+			expect(await auth.resendSignUp('username')).toMatchObject({
+				CodeDeliveryDetails: {
+					AttributeName: 'email',
+					DeliveryMedium: 'EMAIL',
+					Destination: 'amplify@*****.com',
+				},
+			});
 
 			spyon.mockClear();
 		});
@@ -1996,11 +2014,14 @@ describe('auth unit test', () => {
 
 			await auth.changePassword(user, oldPassword, newPassword);
 
-			expect(
-				await CognitoUser.prototype.changePassword
-			).toBeCalledWith(oldPassword, newPassword, jasmine.any(Function), {
-				foo: 'bar',
-			});
+			expect(await CognitoUser.prototype.changePassword).toBeCalledWith(
+				oldPassword,
+				newPassword,
+				jasmine.any(Function),
+				{
+					foo: 'bar',
+				}
+			);
 			spyon.mockClear();
 		});
 
@@ -2018,11 +2039,14 @@ describe('auth unit test', () => {
 				custom: 'value',
 			});
 
-			expect(
-				await CognitoUser.prototype.changePassword
-			).toBeCalledWith(oldPassword, newPassword, jasmine.any(Function), {
-				custom: 'value',
-			});
+			expect(await CognitoUser.prototype.changePassword).toBeCalledWith(
+				oldPassword,
+				newPassword,
+				jasmine.any(Function),
+				{
+					custom: 'value',
+				}
+			);
 			spyon.mockClear();
 		});
 	});

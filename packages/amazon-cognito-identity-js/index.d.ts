@@ -98,7 +98,7 @@ declare module 'amazon-cognito-identity-js' {
 			callback: IAuthenticationCallback
 		): void;
 		public resendConfirmationCode(
-			callback: NodeCallback<Error, 'SUCCESS'>,
+			callback: NodeCallback<Error, any>,
 			clientMetaData?: ClientMetadata
 		): void;
 		public changePassword(
