@@ -250,7 +250,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 		const dataString = JSON.stringify(data);
 		const headerObj = {
-			...graphql_headers(),
 			...(await this._awsRealTimeHeaderBasedAuth({
 				apiKey,
 				appSyncGraphqlEndpoint,
@@ -259,6 +258,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				canonicalUri: '',
 				region,
 			})),
+			...(await graphql_headers()),
 			[USER_AGENT_HEADER]: Constants.userAgent,
 		};
 
