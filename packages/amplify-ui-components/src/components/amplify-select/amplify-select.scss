@@ -1,10 +1,10 @@
 :host {
---color: var(--amplify-secondary-color);
---background-color: var(--amplify-secondary-contrast);
---border-color: var(--amplify-light-grey);
---border-focus: var(--amplify-primary-color);
---background-image: linear-gradient(45deg, transparent 50%, gray 50%),
-linear-gradient(135deg, gray 50%, transparent 50%), linear-gradient(to right, #ccc, #ccc);
+  --color: var(--amplify-secondary-color);
+  --background-color: var(--amplify-secondary-contrast);
+  --border-color: var(--amplify-light-grey);
+  --border-focus: var(--amplify-primary-color);
+  --background-image: linear-gradient(45deg, transparent 50%, gray 50%),
+    linear-gradient(135deg, gray 50%, transparent 50%), linear-gradient(to right, #ccc, #ccc);
 }
 
 .select {

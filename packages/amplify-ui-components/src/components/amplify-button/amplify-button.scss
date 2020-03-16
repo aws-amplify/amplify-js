@@ -1,9 +1,9 @@
 :host {
   --background-color: var(--amplify-primary-color);
   --background-color-active: var(--amplify-primary-shade);
-  --background-color-disable : var(--amplify-primary-tint);
+  --background-color-disable: var(--amplify-primary-tint);
   --color: var(--amplify-primary-contrast);
-  --border-width: initial;
+  --border-width: 0;
   --border-color: initial;
   --border-style: initial;
 }
@@ -35,9 +35,11 @@
     opacity: 1;
     background-color: var(--background-color-active);
   }
+
   &:hover {
     opacity: 0.8;
   }
+
   &:disabled {
     opacity: 0.65;
     cursor: auto;

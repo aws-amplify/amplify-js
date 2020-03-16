@@ -2,87 +2,93 @@
 
 exports[`amplify-form-section spec: Render logic -> should render a form section with a default button of \`Submit\` 1`] = `
 <amplify-form-section>
-  <!---->
-  <form>
-    <amplify-section>
-      <div>
-        <slot-fb name="amplify-form-section-header">
-          <div class="form-section-header">
-            <h3 data-test="form-section-header-section"></h3>
-          </div>
-        </slot-fb>
-      </div>
-      <div>
-        <slot-fb name="amplify-form-section-footer">
-          <div class="form-section-footer">
-            <amplify-button data-test="form-section-form-section-button" type="submit">
-              <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
-              <span style="display: initial;">
-                Submit
-              </span>
-            </amplify-button>
-          </div>
-        </slot-fb>
-      </div>
-    </amplify-section>
-  </form>
+  <mock:shadow-root>
+    <form>
+      <amplify-section>
+        <div>
+          <slot name="amplify-form-section-header">
+            <div class="form-section-header">
+              <h3 data-test="form-section-header-section"></h3>
+            </div>
+          </slot>
+        </div>
+        <slot></slot>
+        <div>
+          <slot name="amplify-form-section-footer">
+            <div class="form-section-footer">
+              <amplify-button data-test="form-section-form-section-button" type="submit">
+                <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
+                <span style="display: initial;">
+                  Submit
+                </span>
+              </amplify-button>
+            </div>
+          </slot>
+        </div>
+      </amplify-section>
+    </form>
+  </mock:shadow-root>
 </amplify-form-section>
 `;
 
 exports[`amplify-form-section spec: Render logic -> should render a form section with a submit button text of \`Go\` 1`] = `
 <amplify-form-section submit-button-text="Go">
-  <!---->
-  <form>
-    <amplify-section>
-      <div>
-        <slot-fb name="amplify-form-section-header">
-          <div class="form-section-header">
-            <h3 data-test="form-section-header-section"></h3>
-          </div>
-        </slot-fb>
-      </div>
-      <div>
-        <slot-fb name="amplify-form-section-footer">
-          <div class="form-section-footer">
-            <amplify-button data-test="form-section-form-section-button" type="submit">
-              <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
-              <span style="display: initial;">
-                Go
-              </span>
-            </amplify-button>
-          </div>
-        </slot-fb>
-      </div>
-    </amplify-section>
-  </form>
+  <mock:shadow-root>
+    <form>
+      <amplify-section>
+        <div>
+          <slot name="amplify-form-section-header">
+            <div class="form-section-header">
+              <h3 data-test="form-section-header-section"></h3>
+            </div>
+          </slot>
+        </div>
+        <slot></slot>
+        <div>
+          <slot name="amplify-form-section-footer">
+            <div class="form-section-footer">
+              <amplify-button data-test="form-section-form-section-button" type="submit">
+                <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
+                <span style="display: initial;">
+                  Go
+                </span>
+              </amplify-button>
+            </div>
+          </slot>
+        </div>
+      </amplify-section>
+    </form>
+  </mock:shadow-root>
 </amplify-form-section>
 `;
 
 exports[`amplify-form-section spec: Render logic -> should render without Emotion CSS classes 1`] = `
 <amplify-form-section>
-  <!---->
-  <form>
-    <amplify-section>
-      <div>
-        <slot-fb name="amplify-form-section-header">
-          <div class="form-section-header">
-            <h3 data-test="form-section-header-section"></h3>
-          </div>
-        </slot-fb>
-      </div>
-      <div>
-        <slot-fb name="amplify-form-section-footer">
-          <div class="form-section-footer">
-            <amplify-button data-test="form-section-form-section-button" type="submit">
-              <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
-              <span style="display: initial;">
-                Submit
-              </span>
-            </amplify-button>
-          </div>
-        </slot-fb>
-      </div>
-    </amplify-section>
-  </form>
+  <mock:shadow-root>
+    <form>
+      <amplify-section>
+        <div>
+          <slot name="amplify-form-section-header">
+            <div class="form-section-header">
+              <h3 data-test="form-section-header-section"></h3>
+            </div>
+          </slot>
+        </div>
+        <slot></slot>
+        <div>
+          <slot name="amplify-form-section-footer">
+            <div class="form-section-footer">
+              <amplify-button data-test="form-section-form-section-button" type="submit">
+                <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
+                <span style="display: initial;">
+                  Submit
+                </span>
+              </amplify-button>
+            </div>
+          </slot>
+        </div>
+      </amplify-section>
+    </form>
+  </mock:shadow-root>
 </amplify-form-section>
 `;

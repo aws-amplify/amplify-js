@@ -1,10 +1,10 @@
 :host {
---background-color: var(--amplify-secondary-tint);
---color: var(--amplify-white);
---font-size: var(--amplify-text-sm);
---font-family: var(--amplify-font-family);
---close-icon-color: var(--amplify-white);
---close-icon-hover: var(--amplify-red)
+  --background-color: var(--amplify-secondary-tint);
+  --color: var(--amplify-white);
+  --font-size: var(--amplify-text-sm);
+  --font-family: var(--amplify-font-family);
+  --close-icon-color: var(--amplify-white);
+  --close-icon-hover: var(--amplify-red)
 }
 
 .toast-icon {
@@ -28,7 +28,7 @@
   border-radius: 5px;
   font-family: var(--font-family);
 
-  > span {
+  >span {
     margin-right: 10px;
   }
 }
@@ -66,6 +66,7 @@
     -o-transform: rotate(45deg);
     transform: rotate(45deg);
   }
+
   &::after {
     -webkit-transform: rotate(-45deg);
     -moz-transform: rotate(-45deg);

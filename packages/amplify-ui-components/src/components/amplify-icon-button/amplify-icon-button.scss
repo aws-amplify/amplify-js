@@ -18,17 +18,21 @@
     transition: all 0.3s ease-in-out;
     color: var(--button-color);
     fill: currentColor;
+
     &:hover {
       background-color: var(--button-background-hover);
       box-shadow: 0.3px 0.3px 0.3px rgba(0, 0, 0, 0.3);
     }
-    &:hover > .tooltip {
+
+    &:hover>.tooltip {
       display: block;
     }
-    &:hover > svg {
+
+    &:hover>svg {
       -webkit-filter: none;
       filter: none;
     }
+
     &:focus {
       outline: none;
     }
