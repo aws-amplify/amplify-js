@@ -2,7 +2,11 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Draft, immerable, produce, setAutoFreeze } from 'immer';
 import { v1 as uuid1, v4 as uuid4 } from 'uuid';
 import Observable from 'zen-observable-ts';
-import { isPredicatesAll, ModelPredicateCreator } from '../predicates';
+import {
+	isPredicatesAll,
+	ModelPredicateCreator,
+	PredicateAll,
+} from '../predicates';
 import Storage from '../storage/storage';
 import { SyncEngine } from '../sync';
 import {
@@ -368,11 +372,11 @@ const remove: {
 	): Promise<T>;
 	<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
-		condition: ProducerModelPredicate<T>
+		condition: ProducerModelPredicate<T> | typeof PredicateAll
 	): Promise<T[]>;
 } = async <T extends PersistentModel>(
 	modelOrConstructor: T | PersistentModelConstructor<T>,
-	idOrCriteria?: string | ProducerModelPredicate<T>
+	idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll
 ) => {
 	await start();
 	let condition: ModelPredicate<T>;
@@ -403,7 +407,11 @@ const remove: {
 		} else {
 			condition = ModelPredicateCreator.createFromExisting(
 				getModelDefinition(modelConstructor),
-				idOrCriteria
+				/**
+				 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
+				 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
+				 */
+				idOrCriteria as ProducerModelPredicate<T>
 			);
 
 			if (!condition || !ModelPredicateCreator.isValidPredicate(condition)) {
@@ -474,7 +482,6 @@ const observe: {
 	modelConstructor?: PersistentModelConstructor<T>,
 	idOrCriteria?: string | ProducerModelPredicate<T>
 ) => {
-	start();
 	let predicate: ModelPredicate<T>;
 
 	if (idOrCriteria !== undefined && modelConstructor === undefined) {
@@ -504,9 +511,24 @@ const observe: {
 			);
 	}
 
-	return storage
-		.observe(modelConstructor, predicate)
-		.filter(({ model }) => namespaceResolver(model) === USER);
+	return new Observable<SubscriptionMessage<any>>(observer => {
+		let handle: ZenObservable.Subscription;
+
+		(async () => {
+			await start();
+
+			handle = storage
+				.observe(modelConstructor, predicate)
+				.filter(({ model }) => namespaceResolver(model) === USER)
+				.subscribe(observer);
+		})();
+
+		return () => {
+			if (handle) {
+				handle.unsubscribe();
+			}
+		};
+	});
 };
 
 const query: {
@@ -516,12 +538,12 @@ const query: {
 	): Promise<T | undefined>;
 	<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
-		criteria?: ProducerModelPredicate<T>,
+		criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
 		pagination?: PaginationInput
 	): Promise<T[]>;
 } = async <T extends PersistentModel>(
 	modelConstructor: PersistentModelConstructor<T>,
-	idOrCriteria?: string | ProducerModelPredicate<T>,
+	idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll,
 	pagination?: PaginationInput
 ) => {
 	await start();
@@ -550,11 +572,17 @@ const query: {
 		return undefined;
 	}
 
+	/**
+	 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
+	 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
+	 */
+	const criteria = idOrCriteria as ProducerModelPredicate<T>;
+
 	// Predicates.ALL means "all records", so no predicate (undefined)
-	const predicate = !isPredicatesAll(idOrCriteria)
+	const predicate = !isPredicatesAll(criteria)
 		? ModelPredicateCreator.createFromExisting(
 				getModelDefinition(modelConstructor),
-				idOrCriteria
+				criteria
 		  )
 		: undefined;
 
@@ -683,21 +711,29 @@ async function checkSchemaVersion(
 			if (storedValue !== version) {
 				await s.clear(false);
 			}
+		} else {
+			await s.save(
+				modelInstanceCreator(Setting, {
+					key: SETTING_SCHEMA_VERSION,
+					value: JSON.stringify(version),
+				})
+			);
 		}
-
-		await s.save(
-			modelInstanceCreator(Setting, {
-				key: SETTING_SCHEMA_VERSION,
-				value: JSON.stringify(version),
-			})
-		);
 	});
 }
 
 let syncSubscription: ZenObservable.Subscription;
 
+let initResolve: Function;
+let initialized: Promise<void>;
 async function start(): Promise<void> {
-	if (storage !== undefined) {
+	if (initialized === undefined) {
+		initialized = new Promise(res => {
+			initResolve = res;
+		});
+	} else {
+		await initialized;
+
 		return;
 	}
 
@@ -709,10 +745,6 @@ async function start(): Promise<void> {
 	);
 
 	await checkSchemaVersion(storage, schema.version);
-
-	if (sync !== undefined) {
-		return;
-	}
 
 	const { aws_appsync_graphqlEndpoint } = amplifyConfig;
 
@@ -738,6 +770,8 @@ async function start(): Promise<void> {
 				},
 			});
 	}
+
+	initResolve();
 }
 
 async function clear() {

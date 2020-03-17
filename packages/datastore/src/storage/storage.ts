@@ -20,15 +20,7 @@ import {
 } from '../types';
 import { isModelConstructor, STORAGE, validatePredicate } from '../util';
 import { Adapter } from './adapter';
-
-const getDefaultAdapter: () => Adapter = () => {
-	if (window.indexedDB) {
-		return require('./adapter/indexeddb').default;
-	}
-	if (process && process.env) {
-		throw new Error('Node is not supported');
-	}
-};
+import getDefaultAdapter from './adapter/getDefaultAdapter';
 
 export type StorageSubscriptionMessage = SubscriptionMessage<any> & {
 	mutator?: Symbol;
@@ -52,7 +44,7 @@ class Storage implements StorageFacade {
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly adapter?: Adapter
 	) {
-		this.adapter = adapter || getDefaultAdapter();
+		this.adapter = getDefaultAdapter();
 		this.pushStream = new PushStream();
 	}
 
