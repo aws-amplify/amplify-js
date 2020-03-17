@@ -8,6 +8,7 @@ import {
 	ErrorHandler,
 	InternalSchema,
 	ModelInit,
+	ModelOrTypeConstructorMap,
 	MutableModel,
 	NamespaceResolver,
 	PersistentModelConstructor,
@@ -79,21 +80,17 @@ export class SyncEngine {
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly namespaceResolver: NamespaceResolver,
-		private readonly modelClasses: Record<
-			string,
-			PersistentModelConstructor<any>
-		>,
-		private readonly userModelClasses: Record<
-			string,
-			PersistentModelConstructor<any>
-		>,
+		private readonly modelClasses: ModelOrTypeConstructorMap,
+		private readonly userModelClasses: ModelOrTypeConstructorMap,
 		private readonly storage: Storage,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly maxRecordsToSync: number,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler
 	) {
-		const MutationEvent = this.modelClasses['MutationEvent'];
+		const MutationEvent = this.modelClasses[
+			'MutationEvent'
+		] as PersistentModelConstructor<any>;
 
 		this.outbox = new MutationEventOutbox(
 			this.schema,
@@ -205,7 +202,7 @@ export class SyncEngine {
 									([_transformerMutationType, modelDefinition, item]) => {
 										const modelConstructor = this.userModelClasses[
 											modelDefinition.name
-										];
+										] as PersistentModelConstructor<any>;
 
 										const model = this.modelInstanceCreator(
 											modelConstructor,
@@ -224,7 +221,7 @@ export class SyncEngine {
 								([_transformerMutationType, modelDefinition, item]) => {
 									const modelConstructor = this.userModelClasses[
 										modelDefinition.name
-									];
+									] as PersistentModelConstructor<any>;
 
 									const model = this.modelInstanceCreator(
 										modelConstructor,
@@ -256,7 +253,7 @@ export class SyncEngine {
 							];
 							const MutationEventConstructor = this.modelClasses[
 								'MutationEvent'
-							];
+							] as PersistentModelConstructor<MutationEvent>;
 							const graphQLCondition = predicateToGraphQLCondition(condition);
 							const mutationEvent = createMutationInstanceFromModelOperation(
 								namespace.relationships,
@@ -340,7 +337,7 @@ export class SyncEngine {
 					const promises = items.map(async item => {
 						const modelConstructor = this.userModelClasses[
 							modelDefinition.name
-						];
+						] as PersistentModelConstructor<any>;
 
 						const model = this.modelInstanceCreator(modelConstructor, item);
 
@@ -358,7 +355,8 @@ export class SyncEngine {
 							modelDefinition.name
 						);
 
-						modelMetadata = this.modelClasses.ModelMetadata.copyOf(
+						modelMetadata = (this.modelClasses
+							.ModelMetadata as PersistentModelConstructor<any>).copyOf(
 							modelMetadata,
 							draft => {
 								draft.lastSync = startedAt;
@@ -473,7 +471,9 @@ export class SyncEngine {
 				);
 			} else {
 				await this.storage.save(
-					this.modelClasses.ModelMetadata.copyOf(modelMetadata, draft => {
+					(this.modelClasses.ModelMetadata as PersistentModelConstructor<
+						any
+					>).copyOf(modelMetadata, draft => {
 						draft.fullSyncInterval = fullSyncInterval;
 					})
 				);
@@ -531,6 +531,7 @@ export class SyncEngine {
 					values: ['CREATE', 'UPDATE', 'DELETE'],
 				},
 			},
+			types: {},
 			models: {
 				MutationEvent: {
 					name: 'MutationEvent',

@@ -8,6 +8,8 @@ import {
 	Blog,
 	Comment,
 	PostAuthorJoin,
+	PostMetadata,
+	Nested,
 } from './model';
 import { USER } from '../src/util';
 let db: idb.IDBPDatabase;
@@ -97,6 +99,35 @@ describe('Indexed db storage test', () => {
 		expect([...Object.keys(blog2).sort(), 'blogOwnerId']).toEqual(
 			expect.arrayContaining(Object.keys(get3).sort())
 		);
+	});
+
+	test('save stores non-model types along the item (including nested)', async () => {
+		const p = new Post({
+			title: 'Avatar',
+			blog,
+			metadata: new PostMetadata({
+				rating: 3,
+				tags: ['a', 'b', 'c'],
+				nested: new Nested({
+					aField: 'Some value',
+				}),
+			}),
+		});
+
+		await DataStore.save(p);
+
+		const postFromDB = await db
+			.transaction(`${USER}_Post`, 'readonly')
+			.objectStore(`${USER}_Post`)
+			.get(p.id);
+
+		expect(postFromDB.metadata).toMatchObject({
+			rating: 3,
+			tags: ['a', 'b', 'c'],
+			nested: new Nested({
+				aField: 'Some value',
+			}),
+		});
 	});
 
 	test('save function 1:M insert', async () => {
