@@ -291,6 +291,7 @@ workflows:
                 - release
                 - master
                 - 1.0-stable
+                - modularization
           requires:
             - build
       - integ_react_predictions:
@@ -300,6 +301,7 @@ workflows:
                 - release
                 - master
                 - 1.0-stable
+                - modularization
           requires:
             - integ_setup
       - integ_react_auth:
@@ -309,6 +311,7 @@ workflows:
                 - release
                 - master
                 - 1.0-stable
+                - modularization
           requires:
             - integ_setup
       - integ_angular_auth:
@@ -318,6 +321,7 @@ workflows:
                 - release
                 - master
                 - 1.0-stable
+                - modularization
           requires:
             - integ_setup
       - integ_vue_auth:
@@ -327,6 +331,7 @@ workflows:
                 - release
                 - master
                 - 1.0-stable
+                - modularization
           requires:
             - integ_setup
       - deploy:
