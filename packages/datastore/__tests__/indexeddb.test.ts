@@ -34,7 +34,6 @@ describe('Indexed db storage test', () => {
 		});
 	});
 	test('setup function', async () => {
-		const namespaceResolver = jest.fn();
 		db = await idb.openDB('amplify-datastore', 1);
 
 		const createdObjStores = db.objectStoreNames;
@@ -368,5 +367,20 @@ describe('Indexed db storage test', () => {
 			.index('postId')
 			.getAll(p1.id);
 		expect(refResult).toHaveLength(0);
+	});
+
+	test('delete non existent', async () => {
+		const author = new Author({ name: 'author1' });
+
+		const deleted = await DataStore.delete(author);
+
+		expect(deleted).toStrictEqual(author);
+
+		const fromDB = await db
+			.transaction(`${USER}_Author`, 'readonly')
+			.objectStore(`${USER}_Author`)
+			.get(author.id);
+
+		expect(fromDB).toBeUndefined();
 	});
 });
