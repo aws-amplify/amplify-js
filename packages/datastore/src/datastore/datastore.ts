@@ -785,6 +785,7 @@ async function clear() {
 
 	await storage.clear();
 
+	initialized = undefined; //Should re-initialize when start() is called.
 	storage = undefined;
 	sync = undefined;
 }
