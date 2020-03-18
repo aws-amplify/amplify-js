@@ -129,16 +129,6 @@ describe('DataStore GraphQL generation', () => {
 			`,
 		],
 		[
-			TransformerMutationType.GET,
-			/* GraphQL */ `
-				subscription operation {
-					onGetPost {
-						${postSelectionSet}
-					}
-				}
-			`,
-		],
-		[
 			TransformerMutationType.UPDATE,
 			/* GraphQL */ `
 				subscription operation {
