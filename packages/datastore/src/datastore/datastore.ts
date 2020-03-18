@@ -219,7 +219,7 @@ function modelInstanceCreator<T extends PersistentModel = PersistentModel>(
 	return <T>new modelConstructor(init);
 }
 
-const _cosa = <T>(
+const initializeInstance = <T>(
 	init: ModelInit<T>,
 	modelDefinition: SchemaModel | SchemaType,
 	draft: Draft<T & ModelInstanceMetadata>
@@ -271,7 +271,7 @@ const createModelClass = <T extends PersistentModel>(
 			const instance = produce(
 				this,
 				(draft: Draft<T & ModelInstanceMetadata>) => {
-					_cosa(init, modelDefinition, draft);
+					initializeInstance(init, modelDefinition, draft);
 
 					const modelInstanceMetadata: ModelInstanceMetadata = instancesMetadata.has(
 						init
@@ -339,7 +339,7 @@ const createTypeClass = <T extends PersistentModel>(
 			const instance = produce(
 				this,
 				(draft: Draft<T & ModelInstanceMetadata>) => {
-					_cosa(init, typeDefinition, draft);
+					initializeInstance(init, typeDefinition, draft);
 				}
 			);
 
