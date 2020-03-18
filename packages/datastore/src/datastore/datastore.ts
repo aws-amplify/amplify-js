@@ -194,7 +194,7 @@ const createModelAndTypeClassses: (
 		modelNamespaceMap.set(clazz, namespace.name);
 	});
 
-	Object.entries(namespace.types || {}).forEach(
+	Object.entries(namespace.nonModels || {}).forEach(
 		([typeName, typeDefinition]) => {
 			const clazz = createTypeClass(typeDefinition);
 			classes[typeName] = clazz;
@@ -837,7 +837,7 @@ function getNamespace(): SchemaNamespace {
 		name: DATASTORE,
 		relationships: {},
 		enums: {},
-		types: {},
+		nonModels: {},
 		models: {
 			Setting: {
 				name: 'Setting',

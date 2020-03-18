@@ -128,7 +128,7 @@ function getNonModelFields(
 
 	Object.values(modelDefinition.fields).forEach(({ name, type }) => {
 		if (isTypeFieldType(type)) {
-			const typeDefinition = namespace.types![type.type];
+			const typeDefinition = namespace.nonModels![type.type];
 			const scalarFields = Object.values(getScalarFields(typeDefinition)).map(
 				({ name }) => name
 			);
@@ -138,7 +138,7 @@ function getNonModelFields(
 				const { type, name } = field;
 
 				if (isTypeFieldType(type)) {
-					const typeDefinition = namespace.types![type.type];
+					const typeDefinition = namespace.nonModels![type.type];
 
 					nested.push(
 						`${name} { ${generateSelectionSet(namespace, typeDefinition)} }`

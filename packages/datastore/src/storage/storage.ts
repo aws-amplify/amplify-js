@@ -54,7 +54,7 @@ class Storage implements StorageFacade {
 			relationships: {},
 			enums: {},
 			models: {},
-			types: {},
+			nonModels: {},
 		};
 
 		return namespace;

@@ -325,7 +325,7 @@ export const newSchema: Schema = {
 		},
 	},
 	enums: {},
-	types: {
+	nonModels: {
 		PostMetadata: {
 			name: 'PostMetadata',
 			fields: {

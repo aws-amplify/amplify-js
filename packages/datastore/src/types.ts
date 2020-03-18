@@ -7,7 +7,7 @@ export type Schema = UserSchema & {
 };
 export type UserSchema = {
 	models: SchemaModels;
-	types?: SchemaNonModels;
+	nonModels: SchemaNonModels;
 	relationships?: RelationshipType;
 	enums: SchemaEnums;
 	modelTopologicalOrdering?: Map<string, string[]>;

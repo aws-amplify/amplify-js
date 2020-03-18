@@ -531,7 +531,7 @@ export class SyncEngine {
 					values: ['CREATE', 'UPDATE', 'DELETE'],
 				},
 			},
-			types: {},
+			nonModels: {},
 			models: {
 				MutationEvent: {
 					name: 'MutationEvent',

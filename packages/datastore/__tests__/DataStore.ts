@@ -311,7 +311,7 @@ function testSchema(): Schema {
 				},
 			},
 		},
-		types: {
+		nonModels: {
 			Metadata: {
 				name: 'Metadata',
 				fields: {
