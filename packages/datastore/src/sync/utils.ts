@@ -17,7 +17,7 @@ import {
 	RelationshipType,
 	SchemaModel,
 	SchemaNamespace,
-	SchemaType,
+	SchemaNonModel,
 } from '../types';
 import { exhaustiveCheck } from '../util';
 import { MutationEvent } from './';
@@ -52,7 +52,7 @@ export function getMetadataFields(): ReadonlyArray<string> {
 
 function generateSelectionSet(
 	namespace: SchemaNamespace,
-	modelDefinition: SchemaModel | SchemaType
+	modelDefinition: SchemaModel | SchemaNonModel
 ): string {
 	const scalarFields = getScalarFields(modelDefinition);
 	const nonModelFields = getNonModelFields(namespace, modelDefinition);
@@ -73,7 +73,7 @@ function generateSelectionSet(
 }
 
 function getScalarFields(
-	modelDefinition: SchemaModel | SchemaType
+	modelDefinition: SchemaModel | SchemaNonModel
 ): ModelFields {
 	const { fields } = modelDefinition;
 
@@ -122,7 +122,7 @@ function getConnectionFields(modelDefinition: SchemaModel): string[] {
 
 function getNonModelFields(
 	namespace: SchemaNamespace,
-	modelDefinition: SchemaModel | SchemaType
+	modelDefinition: SchemaModel | SchemaNonModel
 ): string[] {
 	const result = [];
 

@@ -7,7 +7,7 @@ export type Schema = UserSchema & {
 };
 export type UserSchema = {
 	models: SchemaModels;
-	types?: SchemaTypes;
+	types?: SchemaNonModels;
 	relationships?: RelationshipType;
 	enums: SchemaEnums;
 	modelTopologicalOrdering?: Map<string, string[]>;
@@ -31,8 +31,8 @@ export type SchemaModel = {
 export function isSchemaModel(obj: any): obj is SchemaModel {
 	return obj && (<SchemaModel>obj).pluralName !== undefined;
 }
-export type SchemaTypes = Record<string, SchemaType>;
-export type SchemaType = {
+export type SchemaNonModels = Record<string, SchemaNonModel>;
+export type SchemaNonModel = {
 	name: string;
 	fields: ModelFields;
 };

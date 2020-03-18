@@ -15,7 +15,6 @@ import {
 	GraphQLScalarType,
 	InternalSchema,
 	isGraphQLScalarType,
-	ModelFields,
 	ModelFieldType,
 	ModelInit,
 	ModelInstanceMetadata,
@@ -31,7 +30,7 @@ import {
 	Schema,
 	SchemaModel,
 	SchemaNamespace,
-	SchemaType,
+	SchemaNonModel,
 	SubscriptionMessage,
 	SyncConflict,
 	SyncError,
@@ -221,7 +220,7 @@ function modelInstanceCreator<T extends PersistentModel = PersistentModel>(
 
 const initializeInstance = <T>(
 	init: ModelInit<T>,
-	modelDefinition: SchemaModel | SchemaType,
+	modelDefinition: SchemaModel | SchemaNonModel,
 	draft: Draft<T & ModelInstanceMetadata>
 ) => {
 	Object.entries(init).forEach(([k, v]) => {
@@ -332,7 +331,7 @@ const createModelClass = <T extends PersistentModel>(
 };
 
 const createTypeClass = <T extends PersistentModel>(
-	typeDefinition: SchemaType
+	typeDefinition: SchemaNonModel
 ) => {
 	const clazz = <NonModelTypeConstructor<T>>(<unknown>class Model {
 		constructor(init: ModelInit<T>) {
