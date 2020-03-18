@@ -317,17 +317,6 @@ const createModelClass = <T extends PersistentModel>(
 				throw new Error(msg);
 			}
 
-			const namespaceName = namespaceResolver(modelConstructor);
-			const namespace = schema.namespaces[namespaceName];
-			const nonModelTypes = namespace.types || {};
-
-			const nonModelTypeFields: ModelFields = {};
-			Object.entries(modelDefinition.fields).forEach(([fieldName, field]) => {
-				if (field.type in nonModelTypes) {
-					nonModelTypeFields[fieldName] = field;
-				}
-			});
-
 			return produce(source, draft => {
 				fn(<MutableModel<T>>draft);
 				draft.id = source.id;
