@@ -133,9 +133,9 @@ export function isModelFieldType(obj: any): obj is ModelFieldType {
 	return false;
 }
 
-export type TypeFieldType = { type: string };
-export function isTypeFieldType(obj: any): obj is TypeFieldType {
-	const typeField: keyof TypeFieldType = 'type';
+export type NonModelFieldType = { nonModel: string };
+export function isNonModelFieldType(obj: any): obj is NonModelFieldType {
+	const typeField: keyof NonModelFieldType = 'nonModel';
 	if (obj && obj[typeField]) return true;
 
 	return false;
@@ -154,7 +154,7 @@ type ModelField = {
 	type:
 		| keyof Omit<typeof GraphQLScalarType, 'getJSType'>
 		| ModelFieldType
-		| TypeFieldType
+		| NonModelFieldType
 		| EnumFieldType;
 	isArray: boolean;
 	isRequired?: boolean;

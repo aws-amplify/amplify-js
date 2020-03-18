@@ -284,7 +284,7 @@ function testSchema(): Schema {
 						name: 'metadata',
 						isArray: false,
 						type: {
-							type: 'Metadata',
+							nonModel: 'Metadata',
 						},
 						isRequired: false,
 						attributes: [],

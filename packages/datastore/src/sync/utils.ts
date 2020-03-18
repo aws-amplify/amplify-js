@@ -7,7 +7,7 @@ import {
 	isPredicateObj,
 	isSchemaModel,
 	isTargetNameAssociation,
-	isTypeFieldType,
+	isNonModelFieldType,
 	ModelFields,
 	ModelInstanceMetadata,
 	OpType,
@@ -127,8 +127,8 @@ function getNonModelFields(
 	const result = [];
 
 	Object.values(modelDefinition.fields).forEach(({ name, type }) => {
-		if (isTypeFieldType(type)) {
-			const typeDefinition = namespace.nonModels![type.type];
+		if (isNonModelFieldType(type)) {
+			const typeDefinition = namespace.nonModels![type.nonModel];
 			const scalarFields = Object.values(getScalarFields(typeDefinition)).map(
 				({ name }) => name
 			);
@@ -137,8 +137,8 @@ function getNonModelFields(
 			Object.values(typeDefinition.fields).forEach(field => {
 				const { type, name } = field;
 
-				if (isTypeFieldType(type)) {
-					const typeDefinition = namespace.nonModels![type.type];
+				if (isNonModelFieldType(type)) {
+					const typeDefinition = namespace.nonModels![type.nonModel];
 
 					nested.push(
 						`${name} { ${generateSelectionSet(namespace, typeDefinition)} }`

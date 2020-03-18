@@ -136,7 +136,7 @@ export const newSchema: Schema = {
 					name: 'metadata',
 					isArray: false,
 					type: {
-						type: 'PostMetadata',
+						nonModel: 'PostMetadata',
 					},
 					isRequired: false,
 					attributes: [],
@@ -347,7 +347,7 @@ export const newSchema: Schema = {
 					name: 'nested',
 					isArray: false,
 					type: {
-						type: 'Nested',
+						nonModel: 'Nested',
 					},
 					isRequired: true,
 					attributes: [],
