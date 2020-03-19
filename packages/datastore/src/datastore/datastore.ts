@@ -18,7 +18,6 @@ import {
 	ModelFieldType,
 	ModelInit,
 	ModelInstanceMetadata,
-	ModelOrTypeConstructorMap,
 	ModelPredicate,
 	MutableModel,
 	NamespaceResolver,
@@ -34,6 +33,7 @@ import {
 	SubscriptionMessage,
 	SyncConflict,
 	SyncError,
+	TypeConstructorMap,
 } from '../types';
 import {
 	DATASTORE,
@@ -87,13 +87,13 @@ const isValidModelConstructor = <T extends PersistentModel>(
 const namespaceResolver: NamespaceResolver = modelConstructor =>
 	modelNamespaceMap.get(modelConstructor);
 
-let dataStoreClasses: ModelOrTypeConstructorMap;
+let dataStoreClasses: TypeConstructorMap;
 
-let userClasses: ModelOrTypeConstructorMap;
+let userClasses: TypeConstructorMap;
 
-let syncClasses: ModelOrTypeConstructorMap;
+let syncClasses: TypeConstructorMap;
 
-let storageClasses: ModelOrTypeConstructorMap;
+let storageClasses: TypeConstructorMap;
 
 const initSchema = (userSchema: Schema) => {
 	if (schema !== undefined) {
@@ -184,8 +184,8 @@ const initSchema = (userSchema: Schema) => {
 
 const createModelAndTypeClassses: (
 	namespace: SchemaNamespace
-) => ModelOrTypeConstructorMap = namespace => {
-	const classes: ModelOrTypeConstructorMap = {};
+) => TypeConstructorMap = namespace => {
+	const classes: TypeConstructorMap = {};
 
 	Object.entries(namespace.models).forEach(([modelName, modelDefinition]) => {
 		const clazz = createModelClass(modelDefinition);

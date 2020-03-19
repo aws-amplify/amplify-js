@@ -1,4 +1,5 @@
-import { ConsoleLogger as Logger, Reachability } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable from 'zen-observable-ts';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
@@ -8,14 +9,15 @@ import {
 	ErrorHandler,
 	InternalSchema,
 	ModelInit,
-	ModelOrTypeConstructorMap,
 	MutableModel,
 	NamespaceResolver,
 	PersistentModelConstructor,
 	SchemaModel,
 	SchemaNamespace,
+	TypeConstructorMap,
 } from '../types';
 import { SYNC } from '../util';
+import DataStoreConnectivity from './datastoreConnectivity';
 import { ModelMerger } from './merger';
 import { MutationEventOutbox } from './outbox';
 import { MutationProcessor } from './processors/mutation';
@@ -26,8 +28,6 @@ import {
 	predicateToGraphQLCondition,
 	TransformerMutationType,
 } from './utils';
-import DataStoreConnectivity from './datastoreConnectivity';
-import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 
 const logger = new Logger('DataStore');
 
@@ -80,8 +80,8 @@ export class SyncEngine {
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly namespaceResolver: NamespaceResolver,
-		private readonly modelClasses: ModelOrTypeConstructorMap,
-		private readonly userModelClasses: ModelOrTypeConstructorMap,
+		private readonly modelClasses: TypeConstructorMap,
+		private readonly userModelClasses: TypeConstructorMap,
 		private readonly storage: Storage,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly maxRecordsToSync: number,

@@ -17,11 +17,11 @@ import {
 	isModelFieldType,
 	isTargetNameAssociation,
 	ModelInstanceMetadata,
-	ModelOrTypeConstructorMap,
 	OpType,
 	PersistentModel,
 	PersistentModelConstructor,
 	SchemaModel,
+	TypeConstructorMap,
 } from '../../types';
 import { exhaustiveCheck, USER } from '../../util';
 import { MutationEventOutbox } from '../outbox';
@@ -48,7 +48,7 @@ class MutationProcessor {
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly storage: Storage,
-		private readonly userClasses: ModelOrTypeConstructorMap,
+		private readonly userClasses: TypeConstructorMap,
 		private readonly outbox: MutationEventOutbox,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
