@@ -330,9 +330,7 @@ const createModelClass = <T extends PersistentModel>(
 	return clazz;
 };
 
-const createTypeClass = <T extends PersistentModel>(
-	typeDefinition: SchemaNonModel
-) => {
+const createTypeClass = <T>(typeDefinition: SchemaNonModel) => {
 	const clazz = <NonModelTypeConstructor<T>>(<unknown>class Model {
 		constructor(init: ModelInit<T>) {
 			const instance = produce(
