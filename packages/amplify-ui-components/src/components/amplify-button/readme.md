@@ -9,7 +9,7 @@
 | ------------------- | ---------- | ----------------------------------------------------------- | --------------------------------- | ----------- |
 | `disabled`          | `disabled` | Disabled state of the button                                | `boolean`                         | `false`     |
 | `handleButtonClick` | --         | (Optional) Callback called when a user clicks on the button | `(evt: Event) => void`            | `undefined` |
-| `type`              | `type`     | Type of the button: 'button', 'submit' or 'reset'           | `"button" or "reset" or "submit"` | `'button'`  |
+| `type`              | `type`     | Type of the button: 'button', 'submit' or 'reset'           | `"button" \| "reset" \| "submit"` | `'button'`  |
 
 
 ## Dependencies

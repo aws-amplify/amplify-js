@@ -13,7 +13,7 @@
 | `handleSubmit`          | --                   | The function called when submitting a new password                                        | `(event: Event) => void`                            | `event => this.submit(event)`                |
 | `headerText`            | `header-text`        | The header text of the forgot password section                                            | `string`                                            | `I18n.get(Translations.RESET_YOUR_PASSWORD)` |
 | `submitButtonText`      | `submit-button-text` | The text displayed inside of the submit button for the form                               | `string`                                            | `I18n.get(Translations.SEND_CODE)`           |
-| `usernameAlias`         | `username-alias`     | Username Alias is used to setup authentication with `username`, `email` or `phone_number` | `"email" or "phone_number" or "username"`           | `'username'`                                 |
+| `usernameAlias`         | `username-alias`     | Username Alias is used to setup authentication with `username`, `email` or `phone_number` | `"email" \| "phone_number" \| "username"`           | `'username'`                                 |
 
 
 ## Dependencies
