@@ -196,7 +196,7 @@ const createTypeClasses: (
 
 	Object.entries(namespace.nonModels || {}).forEach(
 		([typeName, typeDefinition]) => {
-			const clazz = createTypeClass(typeDefinition);
+			const clazz = createNonModelClass(typeDefinition);
 			classes[typeName] = clazz;
 		}
 	);
@@ -330,7 +330,7 @@ const createModelClass = <T extends PersistentModel>(
 	return clazz;
 };
 
-const createTypeClass = <T>(typeDefinition: SchemaNonModel) => {
+const createNonModelClass = <T>(typeDefinition: SchemaNonModel) => {
 	const clazz = <NonModelTypeConstructor<T>>(<unknown>class Model {
 		constructor(init: ModelInit<T>) {
 			const instance = produce(
