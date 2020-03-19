@@ -373,7 +373,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 			this.setState(
 				{
 					dialog: [
-						...(!clearOnComplete && this.state.dialog),
+						...(clearOnComplete ? [] : this.state.dialog),
 						message && { from: 'bot', message },
 					].filter(Boolean),
 				},

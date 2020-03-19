@@ -150,6 +150,7 @@ export class APIClass {
 	 * Executes a GraphQL operation
 	 *
 	 * @param {GraphQLOptions} GraphQL Options
+	 * @param {object} additionalHeaders headers to merge in after any `graphql_headers` set in the config
 	 * @returns {Promise<GraphQLResult> | Observable<object>}
 	 */
 	graphql(

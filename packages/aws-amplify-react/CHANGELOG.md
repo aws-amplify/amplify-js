@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.6...aws-amplify-react@3.1.7) (2020-02-28)
+
+**Note:** Version bump only for package aws-amplify-react
+
+## [3.1.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.5...aws-amplify-react@3.1.6) (2020-02-14)
+
+### Bug Fixes
+
+- **aws-amplify-react:** added prop onS3ImageSuccess to the S3Image component to have a clear sepration of concerns ([#4848](https://github.com/aws-amplify/amplify-js/issues/4848)) ([0c336ef](https://github.com/aws-amplify/amplify-js/commit/0c336ef5895401be365b2b22db4aecdbf7f81b8a))
+
 ## [3.1.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.3...aws-amplify-react@3.1.5) (2020-02-07)
 
 ### Bug Fixes

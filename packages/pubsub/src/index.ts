@@ -14,7 +14,12 @@ import { PubSub } from './PubSub';
 
 export * from './Providers';
 
-export { PubSub };
+enum CONTROL_MSG {
+	CONNECTION_CLOSED = 'Connection closed',
+	TIMEOUT_DISCONNECT = 'Timeout disconnect',
+}
+
+export { PubSub, CONTROL_MSG };
 
 /**
  * @deprecated use named import

@@ -10,7 +10,6 @@ import {
 	ModelInit,
 	MutableModel,
 	NamespaceResolver,
-	PersistentModel,
 	PersistentModelConstructor,
 	SchemaModel,
 	SchemaNamespace,
@@ -26,6 +25,8 @@ import {
 	predicateToGraphQLCondition,
 	TransformerMutationType,
 } from './utils';
+import DataStoreConnectivity from './datastoreConnectivity';
+import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 
 const logger = new Logger('DataStore');
 
@@ -130,22 +131,30 @@ export class SyncEngine {
 				try {
 					await this.setupModels(params);
 				} catch (err) {
-					logger.error(
-						"Sync engine stopped. IndexedDB not supported in this browser's private mode"
-					);
+					logger.error('Sync engine error on start', err);
 					return;
 				}
 
-				new Reachability().networkMonitor().subscribe(async ({ online }) => {
-					this.online = online;
-					if (online) {
+				const datastoreConnectivity = new DataStoreConnectivity();
+
+				datastoreConnectivity.status().subscribe(async ({ online }) => {
+					if (online && !this.online) {
+						// From offline to online
+						//#region GraphQL Subscriptions
 						const [
 							ctlSubsObservable,
 							dataSubsObservable,
 						] = this.subscriptionsProcessor.start();
+
+						const errorHandler = this.disconnectionHandler(
+							datastoreConnectivity
+						);
 						try {
 							subscriptions.push(
-								await this.waitForSubscriptionsReady(ctlSubsObservable)
+								await this.waitForSubscriptionsReady(
+									ctlSubsObservable,
+									errorHandler
+								)
 							);
 						} catch (err) {
 							observer.error(err);
@@ -153,6 +162,9 @@ export class SyncEngine {
 						}
 
 						logger.log('Realtime ready');
+						//#endregion
+
+						//#region Base & Sync queries
 						const currentTimeStamp = new Date().getTime();
 
 						const modelLastSync: Map<
@@ -183,8 +195,9 @@ export class SyncEngine {
 							observer.error(err);
 							return;
 						}
+						//#endregion
 
-						// process mutations
+						//#region process mutations
 						subscriptions.push(
 							this.mutationsProcessor
 								.start()
@@ -203,8 +216,9 @@ export class SyncEngine {
 									}
 								)
 						);
+						//#endregion
 
-						// TODO: extract to funciton
+						// TODO: extract to function
 						subscriptions.push(
 							dataSubsObservable.subscribe(
 								([_transformerMutationType, modelDefinition, item]) => {
@@ -221,10 +235,11 @@ export class SyncEngine {
 								}
 							)
 						);
-					} else {
+					} else if (!online) {
 						subscriptions.forEach(sub => sub.unsubscribe());
 						subscriptions = [];
 					}
+					this.online = online;
 				});
 
 				this.storage
@@ -393,8 +408,23 @@ export class SyncEngine {
 		});
 	}
 
+	private disconnectionHandler(
+		datastoreConnectivity: DataStoreConnectivity
+	): (msg: string) => void {
+		return (msg: string) => {
+			// This implementation is tight to AWSAppSyncRealTimeProvider 'Connection closed', 'Timeout disconnect' msg
+			if (
+				PUBSUB_CONTROL_MSG.CONNECTION_CLOSED === msg ||
+				PUBSUB_CONTROL_MSG.TIMEOUT_DISCONNECT === msg
+			) {
+				datastoreConnectivity.socketDisconnected();
+			}
+		};
+	}
+
 	private async waitForSubscriptionsReady(
-		ctlSubsObservable: Observable<CONTROL_MSG>
+		ctlSubsObservable: Observable<CONTROL_MSG>,
+		errorHandler: (msg: string) => void
 	): Promise<ZenObservable.Subscription> {
 		return new Promise((resolve, reject) => {
 			const subscription = ctlSubsObservable.subscribe({
@@ -405,6 +435,7 @@ export class SyncEngine {
 				},
 				error: err => {
 					reject(`subscription failed ${err}`);
+					errorHandler(err);
 				},
 			});
 		});
