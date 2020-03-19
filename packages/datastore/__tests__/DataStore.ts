@@ -30,7 +30,7 @@ beforeEach(() => {
 
 		(<any>mock).getNamespace = () => ({ models: {} });
 
-		return { default: mock };
+		return { ExclusiveStorage: mock };
 	});
 	({ initSchema, DataStore } = require('../src/datastore/datastore'));
 });
@@ -192,7 +192,7 @@ describe('DataStore tests', () => {
 
 	describe('Initialization', () => {
 		test('start is called only once', async () => {
-			Storage = require('../src/storage/storage').default;
+			Storage = require('../src/storage/storage').ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
@@ -211,7 +211,7 @@ describe('DataStore tests', () => {
 		});
 
 		test('It is initialized when observing (no query)', async () => {
-			Storage = require('../src/storage/storage').default;
+			Storage = require('../src/storage/storage').ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
