@@ -11,7 +11,7 @@ import {
 	Schema,
 	NonModelTypeConstructor,
 } from '../src/types';
-import StorageType from '../src/storage/storage';
+import { ExclusiveStorage as StorageType } from '../src/storage/storage';
 import Observable from 'zen-observable-ts';
 
 let initSchema: typeof initSchemaType;
