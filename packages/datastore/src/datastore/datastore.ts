@@ -108,16 +108,16 @@ const initSchema = (userSchema: Schema) => {
 	};
 
 	logger.log('DataStore', 'Init models');
-	userClasses = createModelAndTypeClassses(internalUserNamespace);
+	userClasses = createTypeClasses(internalUserNamespace);
 	logger.log('DataStore', 'Models initialized');
 
 	const dataStoreNamespace = getNamespace();
 	const storageNamespace = Storage.getNamespace();
 	const syncNamespace = SyncEngine.getNamespace();
 
-	dataStoreClasses = createModelAndTypeClassses(dataStoreNamespace);
-	storageClasses = createModelAndTypeClassses(storageNamespace);
-	syncClasses = createModelAndTypeClassses(syncNamespace);
+	dataStoreClasses = createTypeClasses(dataStoreNamespace);
+	storageClasses = createTypeClasses(storageNamespace);
+	syncClasses = createTypeClasses(syncNamespace);
 
 	schema = {
 		namespaces: {
@@ -182,7 +182,7 @@ const initSchema = (userSchema: Schema) => {
 	return userClasses;
 };
 
-const createModelAndTypeClassses: (
+const createTypeClasses: (
 	namespace: SchemaNamespace
 ) => TypeConstructorMap = namespace => {
 	const classes: TypeConstructorMap = {};
