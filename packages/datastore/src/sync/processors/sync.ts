@@ -26,9 +26,11 @@ class SyncProcessor {
 			Object.values(namespace.models)
 				.filter(({ syncable }) => syncable)
 				.forEach(model => {
-					const [
-						[_transformerMutationType, ...opNameQuery],
-					] = buildGraphQLOperation(model, 'LIST');
+					const [[, ...opNameQuery]] = buildGraphQLOperation(
+						namespace,
+						model,
+						'LIST'
+					);
 
 					this.typeQuery.set(model, opNameQuery);
 				});

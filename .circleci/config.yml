@@ -67,6 +67,7 @@ jobs:
             yarn run test --scope @aws-amplify/analytics
             yarn run test --scope @aws-amplify/cache
             yarn run test --scope @aws-amplify/core
+            yarn run test --scope @aws-amplify/datastore
             yarn run test --scope @aws-amplify/interactions
             yarn run test --scope @aws-amplify/pubsub
             yarn run test --scope @aws-amplify/predictions
@@ -311,6 +312,10 @@ jobs:
             cp -rf ~/amplify-js/packages/core/dist ./node_modules/@aws-amplify/core/dist
             cp -rf ~/amplify-js/packages/core/lib ./node_modules/@aws-amplify/core/lib
             cp -rf ~/amplify-js/packages/core/lib-esm ./node_modules/@aws-amplify/core/lib-esm
+
+            cp -rf ~/amplify-js/packages/datastore/dist ./node_modules/@aws-amplify/datastore/dist
+            cp -rf ~/amplify-js/packages/datastore/lib ./node_modules/@aws-amplify/datastore/lib
+            cp -rf ~/amplify-js/packages/datastore/lib-esm ./node_modules/@aws-amplify/datastore/lib-esm
 
             cp -rf ~/amplify-js/packages/interactions/dist ./node_modules/@aws-amplify/interactions/dist
             cp -rf ~/amplify-js/packages/interactions/lib ./node_modules/@aws-amplify/interactions/lib
