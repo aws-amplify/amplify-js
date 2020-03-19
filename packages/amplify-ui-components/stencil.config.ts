@@ -16,6 +16,9 @@ export const config: Config = {
     nodePolyfills(),
     sass(),
   ],
+  nodeResolve: {
+    browser: true,
+  },
   commonjs: {
     namedExports: {
       '@aws-sdk/client-cognito-identity-browser': ['CognitoIdentityClient', 'GetIdCommand'],
