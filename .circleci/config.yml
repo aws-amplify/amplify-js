@@ -313,10 +313,6 @@ jobs:
             cp -rf ~/amplify-js/packages/core/lib ./node_modules/@aws-amplify/core/lib
             cp -rf ~/amplify-js/packages/core/lib-esm ./node_modules/@aws-amplify/core/lib-esm
 
-            cp -rf ~/amplify-js/packages/datastore/dist ./node_modules/@aws-amplify/datastore/dist
-            cp -rf ~/amplify-js/packages/datastore/lib ./node_modules/@aws-amplify/datastore/lib
-            cp -rf ~/amplify-js/packages/datastore/lib-esm ./node_modules/@aws-amplify/datastore/lib-esm
-
             cp -rf ~/amplify-js/packages/interactions/dist ./node_modules/@aws-amplify/interactions/dist
             cp -rf ~/amplify-js/packages/interactions/lib ./node_modules/@aws-amplify/interactions/lib
             cp -rf ~/amplify-js/packages/interactions/lib-esm ./node_modules/@aws-amplify/interactions/lib-esm
