@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import * as uuidValidate from 'uuid-validate';
+import uuidValidate from 'uuid-validate';
 import {
 	initSchema as initSchemaType,
 	DataStore as DataStoreType,
