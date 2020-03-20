@@ -4,7 +4,7 @@ import {
 	jitteredExponentialRetry,
 	NonRetryableError,
 } from '@aws-amplify/core';
-import Observable from 'zen-observable-ts';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 import { MutationEvent } from '../';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ExclusiveStorage as Storage } from '../../storage/storage';

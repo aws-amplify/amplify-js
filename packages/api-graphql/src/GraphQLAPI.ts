@@ -15,7 +15,7 @@ import { GraphQLError } from 'graphql/error/GraphQLError';
 import { OperationDefinitionNode } from 'graphql/language';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable-ts';
 import Amplify, {
 	ConsoleLogger as Logger,
 	Credentials,

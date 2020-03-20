@@ -5,6 +5,9 @@
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
+  "react-native": {
+    "./lib/index": "./lib-esm/index.js"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -57,7 +60,8 @@
             "esnext.asynciterable",
             "es2017.object"
           ],
-          "allowJs": true
+          "allowJs": true,
+          "esModuleInterop": true
         }
       }
     },

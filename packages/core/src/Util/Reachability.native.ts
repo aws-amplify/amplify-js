@@ -1,5 +1,5 @@
 import { default as NetInfo } from '@react-native-community/netinfo';
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable-ts';
 import { ConsoleLogger as Logger } from '../Logger';
 
 const logger = new Logger('Reachability', 'DEBUG');
