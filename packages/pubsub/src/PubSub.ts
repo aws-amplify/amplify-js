@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 // import '../Common/Polyfills';
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable-ts';
 
 import {
 	Amplify,

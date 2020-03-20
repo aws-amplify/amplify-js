@@ -17,7 +17,7 @@ import {
 	GraphQLResult,
 } from '@aws-amplify/api-graphql';
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable-ts';
 
 const logger = new Logger('API');
 /**
