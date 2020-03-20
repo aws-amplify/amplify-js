@@ -1,6 +1,6 @@
 import { Mutex } from '@aws-amplify/core';
-import Observable from 'zen-observable-ts';
-import * as PushStream from 'zen-push';
+import Observable, { ZenObservable } from 'zen-observable-ts';
+import PushStream from 'zen-push';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
 import {
@@ -20,15 +20,7 @@ import {
 } from '../types';
 import { isModelConstructor, STORAGE, validatePredicate } from '../util';
 import { Adapter } from './adapter';
-
-const getDefaultAdapter: () => Adapter = () => {
-	if (window.indexedDB) {
-		return require('./adapter/indexeddb').default;
-	}
-	if (process && process.env) {
-		throw new Error('Node is not supported');
-	}
-};
+import getDefaultAdapter from './adapter/getDefaultAdapter';
 
 export type StorageSubscriptionMessage = SubscriptionMessage<any> & {
 	mutator?: Symbol;
@@ -52,7 +44,7 @@ class Storage implements StorageFacade {
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly adapter?: Adapter
 	) {
-		this.adapter = adapter || getDefaultAdapter();
+		this.adapter = getDefaultAdapter();
 		this.pushStream = new PushStream();
 	}
 
@@ -62,6 +54,7 @@ class Storage implements StorageFacade {
 			relationships: {},
 			enums: {},
 			models: {},
+			nonModels: {},
 		};
 
 		return namespace;

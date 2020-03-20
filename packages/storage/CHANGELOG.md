@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@1.2.4...@aws-amplify/storage@1.3.0) (2020-01-10)
 
 ### Bug Fixes
@@ -20,6 +21,12 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 - Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
 =======
+=======
+## [2.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@2.2.0...@aws-amplify/storage@2.2.1) (2020-02-28)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+>>>>>>> 49d295eee25d287ad705d878facf07bd6a3cfab9
 # [2.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@2.1.3...@aws-amplify/storage@2.2.0) (2020-02-07)
 
 ### Bug Fixes
