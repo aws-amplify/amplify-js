@@ -132,7 +132,7 @@ describe('StorageProvider test', () => {
 			});
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
+			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 
 			expect.assertions(3);
