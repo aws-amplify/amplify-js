@@ -23,7 +23,13 @@ export class AmplifyButton {
       // this button wants to specifically submit a form
       // climb up the dom to see if we're in a <form>
       // and if so, then use JS to submit it
-      const form = this.el.closest('form');
+      let form = this.el.closest('form');
+
+      if (!form) {
+        // Check for form inside of form section's shadow dom
+        const formSection = this.el.closest('amplify-form-section');
+        form = formSection && formSection.shadowRoot.querySelector('form');
+      }
       if (form) {
         ev.preventDefault();
 
