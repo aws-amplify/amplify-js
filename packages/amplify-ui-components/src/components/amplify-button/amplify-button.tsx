@@ -46,7 +46,9 @@ export class AmplifyButton {
   render() {
     return (
       <button
-        class={{
+        class={
+        this.type === "anchor" ? "anchor":
+        {
           button: true,
         }}
         type={this.type}

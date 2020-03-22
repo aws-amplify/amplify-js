@@ -21,7 +21,7 @@ export class AmplifyToast {
         <amplify-icon class="toast-icon" name="warning" />
         {this.message ? <span>{this.message}</span> : null}
         <slot />
-        <a class="toast-close" onClick={this.handleClose} />
+        <button class="toast-close" onClick={this.handleClose} />
       </div>
     );
   }
