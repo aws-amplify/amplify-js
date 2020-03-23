@@ -954,6 +954,100 @@ describe('API test', () => {
 
 			expect(spyon).toBeCalledWith(url, init);
 		});
+
+		test('happy case query with additionalHeaders', async () => {
+			const spyonAuth = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res('cred');
+					});
+				});
+
+			const spyon = jest
+				.spyOn(RestClient.prototype, 'post')
+				.mockImplementationOnce((url, init) => {
+					return new Promise((res, rej) => {
+						res({});
+					});
+				});
+
+			const api = new API(config);
+			const url = 'https://appsync.amazonaws.com',
+				region = 'us-east-2',
+				apiKey = 'secret_api_key',
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+			api.configure({
+				aws_appsync_graphqlEndpoint: url,
+				aws_appsync_region: region,
+				aws_appsync_authenticationType: 'API_KEY',
+				aws_appsync_apiKey: apiKey,
+				graphql_headers: async () =>
+					Promise.resolve({
+						someHeaderSetAtConfigThatWillBeOverridden: 'initialValue',
+						someOtherHeaderSetAtConfig: 'expectedValue',
+					}),
+			});
+			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
+                getEvent(id: $id) {
+                    id
+                    name
+                    where
+                    when
+                    description
+                    comments(nextToken: $nextToken) {
+                      items {
+                        commentId
+                        content
+                        createdAt
+                      }
+                    }
+                  }
+                }`;
+
+			const doc = parse(GetEvent);
+			const query = print(doc);
+
+			const headers = {
+				Authorization: null,
+				'X-Api-Key': apiKey,
+				'x-amz-user-agent': Constants.userAgent,
+			};
+
+			const body = {
+				query,
+				variables,
+			};
+
+			const init = {
+				headers,
+				body,
+				signerServiceInfo: {
+					service: 'appsync',
+					region,
+				},
+			};
+
+			const additionalHeaders = {
+				someAddtionalHeader: 'foo',
+				someHeaderSetAtConfigThatWillBeOverridden: 'expectedValue',
+			};
+
+			await api.graphql(
+				graphqlOperation(GetEvent, variables),
+				additionalHeaders
+			);
+
+			expect(spyon).toBeCalledWith(url, {
+				...init,
+				headers: {
+					someAddtionalHeader: 'foo',
+					someHeaderSetAtConfigThatWillBeOverridden: 'expectedValue',
+					...init.headers,
+					someOtherHeaderSetAtConfig: 'expectedValue',
+				},
+			});
+		});
 	});
 
 	describe('configure test', () => {

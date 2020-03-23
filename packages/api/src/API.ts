@@ -347,9 +347,13 @@ export default class APIClass {
 	 * Executes a GraphQL operation
 	 *
 	 * @param {GraphQLOptions} GraphQL Options
+	 * @param {object} additionalHeaders headers to merge in after any `graphql_headers` set in the config
 	 * @returns {Promise<GraphQLResult> | Observable<object>}
 	 */
-	graphql({ query: paramQuery, variables = {}, authMode }: GraphQLOptions) {
+	graphql(
+		{ query: paramQuery, variables = {}, authMode }: GraphQLOptions,
+		additionalHeaders?: { [key: string]: string }
+	) {
 		const query =
 			typeof paramQuery === 'string'
 				? parse(paramQuery)
@@ -365,7 +369,7 @@ export default class APIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
-				return this._graphql({ query, variables, authMode });
+				return this._graphql({ query, variables, authMode }, additionalHeaders);
 			case 'subscription':
 				return this._graphqlSubscribe({
 					query,
@@ -399,8 +403,8 @@ export default class APIClass {
 				(customEndpointRegion
 					? await this._headerBasedAuth(authMode)
 					: { Authorization: null })),
-			...additionalHeaders,
 			...(await graphql_headers({ query, variables })),
+			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
 				[USER_AGENT_HEADER]: Constants.userAgent,
 			}),

@@ -114,7 +114,17 @@ export default class AWSS3Provider implements StorageProvider {
 		}
 
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, download, track, expires } = opt;
+		const {
+			bucket,
+			download,
+			cacheControl,
+			contentDisposition,
+			contentEncoding,
+			contentLanguage,
+			contentType,
+			expires,
+			track,
+		} = opt;
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		const s3 = this._createS3(opt);
@@ -124,6 +134,14 @@ export default class AWSS3Provider implements StorageProvider {
 			Bucket: bucket,
 			Key: final_key,
 		};
+
+		// See: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
+		if (cacheControl) params.ResponseCacheControl = cacheControl;
+		if (contentDisposition)
+			params.ResponseContentDisposition = contentDisposition;
+		if (contentEncoding) params.ResponseContentEncoding = contentEncoding;
+		if (contentLanguage) params.ResponseContentLanguage = contentLanguage;
+		if (contentType) params.ResponseContentType = contentType;
 
 		if (download === true) {
 			return new Promise<any>((res, rej) => {
@@ -362,7 +380,7 @@ export default class AWSS3Provider implements StorageProvider {
 		}
 
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, track } = opt;
+		const { bucket, track, maxKeys } = opt;
 
 		const prefix = this._prefix(opt);
 		const final_path = prefix + path;
@@ -372,6 +390,7 @@ export default class AWSS3Provider implements StorageProvider {
 		const params = {
 			Bucket: bucket,
 			Prefix: final_path,
+			MaxKeys: maxKeys,
 		};
 
 		return new Promise<any>((res, rej) => {

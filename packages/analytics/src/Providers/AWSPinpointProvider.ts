@@ -372,9 +372,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 			typeof params.resendLimit === 'number' ? params.resendLimit : resendLimit;
 		if (params.resendLimit-- > 0) {
 			logger.debug(
-				`resending event ${params.eventName} with ${
-					params.resendLimit
-				} retry times left`
+				`resending event ${params.eventName} with ${params.resendLimit} retry times left`
 			);
 			this._pinpointPutEvents(params, handlers);
 		} else {
@@ -450,7 +448,9 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		const { message } = err;
 		const { ApplicationId, EndpointRequest } = update_params;
 
-		if (!message.startsWith('Exceeded maximum endpoint per user count')) {
+		if (
+			!String(message).startsWith('Exceeded maximum endpoint per user count')
+		) {
 			return endpointObject.handlers.reject(err);
 		}
 
@@ -491,22 +491,26 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		const { params } = endpointObject;
 
 		// TODO: implement retry with exp back off once exp function is available
+		const {
+			config: { resendLimit },
+		} = params;
+
+		params.resendLimit =
+			typeof params.resendLimit === 'number' ? params.resendLimit : resendLimit;
 
 		if (params.resendLimit-- > 0) {
 			logger.debug(
-				`resending endpoint update ${params.event.eventId} with ${
-					params.resendLimit
-				} retry attempts remaining`
+				`resending endpoint update ${params.event.eventId} with ${params.resendLimit} retry attempts remaining`
 			);
 			// insert at the front of endpointBuffer
-			this._endpointBuffer.unshift(endpointObject);
+			this._endpointBuffer.length
+				? this._endpointBuffer.unshift(endpointObject)
+				: this._updateEndpoint(endpointObject);
 			return;
 		}
 
 		logger.warn(
-			`resending endpoint update ${params.event.eventId} failed after ${
-				params.config.resendLimit
-			} attempts`
+			`resending endpoint update ${params.event.eventId} failed after ${params.config.resendLimit} attempts`
 		);
 
 		if (this._endpointGenerating) {
@@ -516,6 +520,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
 	private async _removeUnusedEndpoints(appId, userId) {
 		return new Promise((res, rej) => {
+			// TODO: re-write with Promise (during refactor pt. 2)
 			this.pinpointClient.getUserEndpoints(
 				{
 					ApplicationId: appId,

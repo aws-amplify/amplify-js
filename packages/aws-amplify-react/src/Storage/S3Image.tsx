@@ -26,6 +26,7 @@ const logger = new Logger('Storage.S3Image');
 
 export interface IS3ImageProps {
 	body?: any;
+	className?: string;
 	contentType?: any;
 	fileToKey?: any;
 	hidden?: any;
@@ -35,6 +36,7 @@ export interface IS3ImageProps {
 	onClick?: any;
 	onError?: any;
 	onLoad?: any;
+	onUploadSuccess?: any;
 	path?: any;
 	picker?: any;
 	selected?: any;
@@ -141,9 +143,16 @@ export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
 	handlePick(data) {
 		const that = this;
 
-		const path = this.props.path || '';
-		const { imgKey, level, fileToKey, track, identityId } = this.props;
-		const { file, name, size, type } = data;
+		const {
+			imgKey,
+			level,
+			fileToKey,
+			track,
+			identityId,
+			path = '',
+			onUploadSuccess,
+		} = this.props;
+		const { file, type } = data;
 		const key = imgKey || path + calcKey(data, fileToKey);
 		if (!Storage || typeof Storage.put !== 'function') {
 			throw new Error(
@@ -158,6 +167,7 @@ export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
 			.then(data => {
 				logger.debug('handle pick data', data);
 				that.getImageSource(key, level, track, identityId);
+				if (onUploadSuccess) onUploadSuccess();
 			})
 			.catch(err => logger.debug('handle pick error', err));
 	}
@@ -194,11 +204,12 @@ export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
 			return null;
 		}
 
-		const { selected } = this.props;
+		const { className, selected } = this.props;
 		const containerStyle: React.CSSProperties = { position: 'relative' };
 		return (
 			<div style={containerStyle} onClick={this.handleClick}>
 				<img
+					className={className}
 					style={theme.photoImg}
 					src={src}
 					onLoad={this.handleOnLoad}
