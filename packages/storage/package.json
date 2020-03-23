@@ -36,10 +36,10 @@
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
     "@aws-amplify/core": "^2.2.5",
-    "@aws-sdk/client-s3": "^1.0.0-alpha.20",
-    "@aws-sdk/s3-request-presigner": "^1.0.0-alpha.17",
-    "@aws-sdk/util-create-request": "^1.0.0-alpha.12",
-    "@aws-sdk/util-format-url": "^1.0.0-alpha.5",
+    "@aws-sdk/client-s3": "1.0.0-alpha.21",
+    "@aws-sdk/s3-request-presigner": "1.0.0-alpha.18",
+    "@aws-sdk/util-create-request": "1.0.0-alpha.13",
+    "@aws-sdk/util-format-url": "1.0.0-alpha.6",
     "events": "^3.1.0",
     "sinon": "^7.5.0"
   },
