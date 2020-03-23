@@ -60,6 +60,7 @@ import {
 	CognitoIdToken,
 	CognitoRefreshToken,
 	CognitoAccessToken,
+	CodeDeliveryDetails,
 } from 'amazon-cognito-identity-js';
 
 import { parse } from 'url';
@@ -388,12 +389,12 @@ export default class AuthClass {
 	 * Resend the verification code
 	 * @param {String} username - The username to be confirmed
 	 * @param {ClientMetadata} clientMetadata - Metadata to be passed to Cognito Lambda triggers
-	 * @return - A promise resolves code delivery details if successful
+	 * @return - A promise resolves the CodeDeliveryDetails if successful
 	 */
 	public resendSignUp(
 		username: string,
 		clientMetadata: ClientMetaData = this._config.clientMetadata
-	): Promise<any> {
+	): Promise<CodeDeliveryDetails> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
