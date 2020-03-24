@@ -1,5 +1,5 @@
 import { Element, Component, Prop, h } from '@stencil/core';
-import { ButtonTypes } from '../../common/types/ui-types';
+import { ButtonTypes, ButtonVariant } from '../../common/types/ui-types';
 import { hasShadowDom } from '../../common/helpers';
 
 @Component({
@@ -12,7 +12,7 @@ export class AmplifyButton {
   /** Type of the button: 'button', 'submit' or 'reset' */
   @Prop() type: ButtonTypes = 'button';
   /** Variant of a button: 'button' | 'anchor' */
-  @Prop() variant = 'button';
+  @Prop() variant: ButtonVariant = 'button';
   /** (Optional) Callback called when a user clicks on the button */
   @Prop() handleButtonClick: (evt: Event) => void;
   /** Disabled state of the button */

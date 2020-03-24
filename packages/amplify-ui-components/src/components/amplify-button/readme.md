@@ -5,12 +5,12 @@
 
 ## Properties
 
-| Property            | Attribute  | Description                                                 | Type                                          | Default     |
-| ------------------- | ---------- | ----------------------------------------------------------- | --------------------------------------------- | ----------- |
-| `disabled`          | `disabled` | Disabled state of the button                                | `boolean`                                     | `false`     |
-| `handleButtonClick` | --         | (Optional) Callback called when a user clicks on the button | `(evt: Event) => void`                        | `undefined` |
-| `type`              | `type`     | Type of the button: 'button', 'submit' or 'reset'           | `"anchor" \| "button" \| "reset" \| "submit"` | `'button'`  |
-| `variant`           | `variant`  | Variant of a button: 'button' \| 'anchor'                   | `string`                                      | `'button'`  |
+| Property            | Attribute  | Description                                                 | Type                              | Default     |
+| ------------------- | ---------- | ----------------------------------------------------------- | --------------------------------- | ----------- |
+| `disabled`          | `disabled` | Disabled state of the button                                | `boolean`                         | `false`     |
+| `handleButtonClick` | --         | (Optional) Callback called when a user clicks on the button | `(evt: Event) => void`            | `undefined` |
+| `type`              | `type`     | Type of the button: 'button', 'submit' or 'reset'           | `"button" \| "reset" \| "submit"` | `'button'`  |
+| `variant`           | `variant`  | Variant of a button: 'button' \| 'anchor'                   | `"anchor" \| "button"`            | `'button'`  |
 
 
 ## Dependencies

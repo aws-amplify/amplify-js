@@ -7,7 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AuthState, AuthStateHandler, CognitoUserInterface, FederatedConfig, MFATypesInterface, UsernameAliasStrings, } from "./common/types/auth-types";
 import { FormFieldTypes, } from "./components/amplify-auth-fields/amplify-auth-fields-interface";
-import { ButtonTypes, TextFieldTypes, } from "./common/types/ui-types";
+import { ButtonTypes, ButtonVariant, TextFieldTypes, } from "./common/types/ui-types";
 import { FunctionalComponent, } from "@stencil/core";
 import { CountryCodeDialOptions, } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { IconNameType, } from "./components/amplify-icon/icons";
@@ -67,7 +67,7 @@ export namespace Components {
         /**
           * Variant of a button: 'button' | 'anchor'
          */
-        "variant": string;
+        "variant": ButtonVariant;
     }
     interface AmplifyCheckbox {
         /**
@@ -1213,7 +1213,7 @@ declare namespace LocalJSX {
         /**
           * Variant of a button: 'button' | 'anchor'
          */
-        "variant"?: string;
+        "variant"?: ButtonVariant;
     }
     interface AmplifyCheckbox {
         /**
