@@ -19,8 +19,16 @@
   font-weight: 300;
   font-size: var(--footer-size);
   color: var(--footer-color);
+  
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+
+  @include md {
   display: flex;
   flex-direction: row-reverse;
   justify-content: space-between;
   align-items: baseline;
+  }
 }

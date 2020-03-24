@@ -131,7 +131,12 @@ export class AmplifyVerifyContact {
         loading={this.loading}
         secondaryFooterContent={
           <span>
-            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}>Skip</amplify-link>
+            <amplify-link
+              onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}
+              style={{ display: 'flex', justifyContent: 'center' }}
+            >
+              Skip
+            </amplify-link>
           </span>
         }
         submitButtonText={

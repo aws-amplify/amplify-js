@@ -213,6 +213,7 @@ export class AmplifyForgotPassword {
           <amplify-link
             onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
             data-test="forgot-password-back-to-sign-in-link"
+            style={{ display: 'flex', justifyContent: 'center' }}
           >
             {I18n.get(Translations.BACK_TO_SIGN_IN)}
           </amplify-link>

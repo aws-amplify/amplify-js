@@ -118,7 +118,10 @@ export class AmplifyConfirmSignIn {
         loading={this.loading}
         secondaryFooterContent={
           <span>
-            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
+            <amplify-link
+              onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
+              style={{ display: 'flex', justifyContent: 'center' }}
+            >
               {I18n.get(Translations.BACK_TO_SIGN_IN)}
             </amplify-link>
           </span>

@@ -6,9 +6,15 @@
   --border-width: 0;
   --border-color: initial;
   --border-style: initial;
+  width: 100%;
+
+  @include md {
+    width: inherit;
+  }
 }
 
 .button {
+  width: 100%;
   min-width: 153px;
   display: inline-block;
   margin-bottom: 0;
