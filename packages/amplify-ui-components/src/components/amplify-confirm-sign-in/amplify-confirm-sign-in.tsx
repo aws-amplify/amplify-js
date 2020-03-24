@@ -118,7 +118,7 @@ export class AmplifyConfirmSignIn {
         loading={this.loading}
         secondaryFooterContent={
           <span>
-            <amplify-button type="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
+            <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
               {I18n.get(Translations.BACK_TO_SIGN_IN)}
             </amplify-button>
           </span>

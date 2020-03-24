@@ -211,7 +211,7 @@ export class AmplifyForgotPassword {
         loading={this.loading}
         secondaryFooterContent={
           <amplify-button
-            type="anchor"
+            variant="anchor"
             onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
             data-test="forgot-password-back-to-sign-in-link"
           >

@@ -226,7 +226,7 @@ export class AmplifySignIn {
         <div>
           {I18n.get(Translations.FORGOT_PASSWORD_TEXT)}{' '}
           <amplify-button
-            type="anchor"
+            variant="anchor"
             onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}
             data-test="sign-in-forgot-password-link"
           >
@@ -255,7 +255,7 @@ export class AmplifySignIn {
           <span>
             {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
             <amplify-button
-              type="anchor"
+              variant="anchor"
               onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
               data-test="sign-in-create-account-link"
             >

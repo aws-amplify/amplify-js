@@ -64,6 +64,10 @@ export namespace Components {
           * Type of the button: 'button', 'submit' or 'reset'
          */
         "type": ButtonTypes;
+        /**
+          * Variant of a button: 'button' | 'anchor'
+         */
+        "variant": string;
     }
     interface AmplifyCheckbox {
         /**
@@ -1206,6 +1210,10 @@ declare namespace LocalJSX {
           * Type of the button: 'button', 'submit' or 'reset'
          */
         "type"?: ButtonTypes;
+        /**
+          * Variant of a button: 'button' | 'anchor'
+         */
+        "variant"?: string;
     }
     interface AmplifyCheckbox {
         /**

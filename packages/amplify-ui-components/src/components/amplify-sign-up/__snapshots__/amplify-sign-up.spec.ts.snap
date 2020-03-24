@@ -8,7 +8,7 @@ exports[`amplify-sign-up spec: Render logic -> should render a \`sign up\` form 
       <div class="sign-up-form-footer" slot="amplify-form-section-footer">
         <span>
           Have an account?
-          <amplify-button data-test="sign-up-sign-in-link" type="anchor">
+          <amplify-button data-test="sign-up-sign-in-link" variant="anchor">
             Sign in
           </amplify-button>
         </span>

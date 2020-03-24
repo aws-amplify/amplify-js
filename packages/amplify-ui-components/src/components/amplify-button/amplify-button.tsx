@@ -11,6 +11,8 @@ export class AmplifyButton {
   @Element() el!: HTMLElement;
   /** Type of the button: 'button', 'submit' or 'reset' */
   @Prop() type: ButtonTypes = 'button';
+  /** Variant of a button: 'button' | 'anchor' */
+  @Prop() variant = 'button';
   /** (Optional) Callback called when a user clicks on the button */
   @Prop() handleButtonClick: (evt: Event) => void;
   /** Disabled state of the button */
@@ -46,10 +48,8 @@ export class AmplifyButton {
   render() {
     return (
       <button
-        class={
-        this.type === "anchor" ? "anchor":
-        {
-          button: true,
+        class={{
+          [this.variant]: true,
         }}
         type={this.type}
         disabled={this.disabled}
