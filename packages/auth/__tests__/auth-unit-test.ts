@@ -500,11 +500,14 @@ describe('auth unit test', () => {
 
 			await auth.confirmSignUp('username', code);
 
-			expect(
-				await CognitoUser.prototype.confirmRegistration
-			).toBeCalledWith(code, jasmine.any(Boolean), jasmine.any(Function), {
-				foo: 'bar',
-			});
+			expect(await CognitoUser.prototype.confirmRegistration).toBeCalledWith(
+				code,
+				jasmine.any(Boolean),
+				jasmine.any(Function),
+				{
+					foo: 'bar',
+				}
+			);
 			spyon.mockClear();
 		});
 
@@ -517,11 +520,14 @@ describe('auth unit test', () => {
 				clientMetadata: { custom: 'value' },
 			});
 
-			expect(
-				await CognitoUser.prototype.confirmRegistration
-			).toBeCalledWith(code, jasmine.any(Boolean), jasmine.any(Function), {
-				custom: 'value',
-			});
+			expect(await CognitoUser.prototype.confirmRegistration).toBeCalledWith(
+				code,
+				jasmine.any(Boolean),
+				jasmine.any(Function),
+				{
+					custom: 'value',
+				}
+			);
 			spyon.mockClear();
 		});
 
@@ -1645,7 +1651,7 @@ describe('auth unit test', () => {
 
 	describe('currentCrendentials', () => {
 		const spyon = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-			return;
+			return Promise.resolve('cred');
 		});
 
 		const auth = new Auth(authOptions);
@@ -1996,11 +2002,14 @@ describe('auth unit test', () => {
 
 			await auth.changePassword(user, oldPassword, newPassword);
 
-			expect(
-				await CognitoUser.prototype.changePassword
-			).toBeCalledWith(oldPassword, newPassword, jasmine.any(Function), {
-				foo: 'bar',
-			});
+			expect(await CognitoUser.prototype.changePassword).toBeCalledWith(
+				oldPassword,
+				newPassword,
+				jasmine.any(Function),
+				{
+					foo: 'bar',
+				}
+			);
 			spyon.mockClear();
 		});
 
@@ -2018,11 +2027,14 @@ describe('auth unit test', () => {
 				custom: 'value',
 			});
 
-			expect(
-				await CognitoUser.prototype.changePassword
-			).toBeCalledWith(oldPassword, newPassword, jasmine.any(Function), {
-				custom: 'value',
-			});
+			expect(await CognitoUser.prototype.changePassword).toBeCalledWith(
+				oldPassword,
+				newPassword,
+				jasmine.any(Function),
+				{
+					custom: 'value',
+				}
+			);
 			spyon.mockClear();
 		});
 	});
