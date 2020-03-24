@@ -10,8 +10,20 @@
   font-size: var(--footer-size);
   color: var(--footer-color);
   margin-bottom: 10px;
+
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: baseline;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: space-around;
+
+  @include md {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  * + * {
+    margin-bottom: 15px;
+  }
 }

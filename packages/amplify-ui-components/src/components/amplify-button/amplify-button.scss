@@ -9,9 +9,15 @@
   --link-color: var(--amplify-primary-color);
   --link-hover: var(--amplify-primary-tint);
   --link-active: var(--amplify-primary-shade);
+  width: 100%;
+
+  @include md {
+    width: inherit;
+  }
 }
 
 .button {
+  width: 100%;
   min-width: 153px;
   display: inline-block;
   margin-bottom: 0;
@@ -56,6 +62,7 @@
   border: none;
   font: inherit;
   cursor: pointer;
+  text-align: center;
 
   &:link {
     color: var(--link-color);
