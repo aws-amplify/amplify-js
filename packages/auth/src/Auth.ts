@@ -14,10 +14,12 @@
 import {
 	AuthOptions,
 	FederatedResponse,
+	ListUsersResponse,
 	SignUpParams,
 	FederatedUser,
 	ConfirmSignUpOptions,
 	SignOutOpts,
+	ListUsersOpts,
 	CurrentUserOpts,
 	GetPreferredMFAOpts,
 	SignInOpts,
@@ -61,6 +63,7 @@ import {
 	CognitoRefreshToken,
 	CognitoAccessToken,
 } from 'amazon-cognito-identity-js';
+import { CognitoIdentityServiceProvider } from 'aws-sdk';
 
 import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
@@ -94,6 +97,7 @@ export default class AuthClass {
 	private _config: AuthOptions;
 	private userPool = null;
 	private user: any = null;
+	private cognitoProvider: CognitoIdentityServiceProvider;
 	private _oAuthHandler: OAuth;
 	private _storage;
 	private _storageSync;
@@ -192,6 +196,17 @@ export default class AuthClass {
 			refreshHandlers,
 			storage: this._storage,
 		});
+
+		Credentials.get()
+			.then(creds => {
+				const credentials = Credentials.shear(creds);
+
+				this.cognitoProvider = new CognitoIdentityServiceProvider({
+					region: identityPoolRegion || region,
+					credentials,
+				});
+			})
+			.catch(err => logger.error(err));
 
 		// initiailize cognitoauth client if hosted ui options provided
 		// to keep backward compatibility:
@@ -1094,6 +1109,38 @@ export default class AuthClass {
 				verified,
 				unverified,
 			};
+		});
+	}
+
+	/**
+	 * List users from user pool
+	 * @return - A promise resolves to array of users if success
+	 */
+	public listPoolUsers(params: ListUsersOpts = {}): Promise<ListUsersResponse> {
+		if (!this.userPool) {
+			return this.rejectNoUserPool();
+		}
+
+		return new Promise((resolve, reject) => {
+			this.cognitoProvider.listUsers(
+				{ UserPoolId: this.userPool.getUserPoolId(), ...params },
+				(err, data) => {
+					if (err) {
+						reject(err);
+					} else {
+						const users = data.Users.map(returnedUser => ({
+							username: returnedUser.Username,
+							attributes: returnedUser.Attributes,
+							enabled: returnedUser.Enabled,
+							status: returnedUser.UserStatus,
+							createdDate: returnedUser.UserCreateDate,
+							lastModifiedDate: returnedUser.UserLastModifiedDate,
+						}));
+
+						resolve({ users, paginationToken: data.PaginationToken });
+					}
+				}
+			);
 		});
 	}
 

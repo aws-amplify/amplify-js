@@ -113,6 +113,34 @@ export interface FederatedResponse {
 	expires_at: number;
 }
 
+export interface ListedUser {
+	// The user name of the user you wish to describe.
+	username?: string;
+
+	// A container with information about the user type attributes.
+	attributes?: object;
+
+	// Specifies whether the user is enabled.
+	enabled?: boolean;
+
+	// The user status.
+	status?: string;
+
+	// The creation date of the user.
+	createdDate?: Date;
+
+	// The last modified date of the user.
+	lastModifiedDate?: Date;
+}
+
+/**
+ * interface for users returned from listPoolUsers
+ */
+export interface ListUsersResponse {
+	users: ListedUser[];
+	paginationToken: string;
+}
+
 /**
  * interface for federatedUser
  */
@@ -163,6 +191,13 @@ export interface ConfirmSignUpOptions {
 
 export interface SignOutOpts {
 	global?: boolean;
+}
+
+export interface ListUsersOpts {
+	filter?: string;
+	limit?: number;
+	attributesToGet?: string[];
+	paginationToken?: string;
 }
 
 export interface CurrentUserOpts {
