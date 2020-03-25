@@ -19,13 +19,8 @@ import PhotoPicker from './PhotoPicker.vue';
 import S3Album from './S3Album.vue';
 import S3Image from './S3Image.vue';
 
-
 Vue.component('amplify-photo-picker', PhotoPicker);
 Vue.component('amplify-s3-album', S3Album);
 Vue.component('amplify-s3-image', S3Image);
 
-export {
-  PhotoPicker,
-  S3Album,
-  S3Image,
-};
+export { PhotoPicker, S3Album, S3Image };

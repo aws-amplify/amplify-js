@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "3.0.15",
+  "version": "3.2.6",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
@@ -24,7 +24,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws/aws-amplify.git"
+    "url": "https://github.com/aws-amplify/amplify-js.git"
   },
   "license": "SEE LICENSE IN LICENSE.txt",
   "licenses": [
@@ -50,7 +50,7 @@
     "doc": "jsdoc src -d docs",
     "lint": "eslint src",
     "lint2": "eslint enhance-rn.js",
-    "test": "jest --passWithNoTests",
+    "test": "jest -w 1 --passWithNoTests",
     "format": "echo \"Not implemented\""
   },
   "main": "lib/index.js",
@@ -63,20 +63,18 @@
   "types": "./index.d.ts",
   "dependencies": {
     "buffer": "4.9.1",
-    "crypto-js": "^3.1.9-1",
+    "crypto-js": "^3.3.0",
     "js-cookie": "^2.1.4"
   },
   "devDependencies": {
-    "babel-cli": "^6.23.0",
-    "babel-core": "^6.13.2",
-    "babel-loader": "^6.2.4",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.23.0",
-    "babel-preset-es2015": "^6.22.0",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
+    "@babel/cli": "^7.7.4",
+    "@babel/core": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "babel-loader": "^8.0.6",
     "cross-env": "^3.1.4",
     "eslint": "^3.19.0",
     "eslint-config-airbnb-base": "^5.0.2",
+    "eslint-config-prettier": "^6.3.0",
     "eslint-import-resolver-webpack": "^0.5.1",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-node": "^5.2.0",

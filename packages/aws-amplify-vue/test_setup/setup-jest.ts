@@ -1,20 +1,22 @@
-window.alert = (msg) => { console.log(msg); };
+window.alert = msg => {
+	console.log(msg);
+};
 
-function noOp () { }
+function noOp() {}
 
 if (typeof window.URL.createObjectURL === 'undefined') {
-  Object.defineProperty(window.URL, 'createObjectURL', { value: noOp})
+	Object.defineProperty(window.URL, 'createObjectURL', { value: noOp });
 }
 
 class Worker {
-    constructor(stringUrl) {
-      this.url = stringUrl;
-      this.onmessage = () => {};
-    }
+	constructor(stringUrl) {
+		this.url = stringUrl;
+		this.onmessage = () => {};
+	}
 
-    postMessage(msg) {
-      this.onmessage(msg);
-    }
+	postMessage(msg) {
+		this.onmessage(msg);
+	}
 }
 
 window.Worker = Worker;

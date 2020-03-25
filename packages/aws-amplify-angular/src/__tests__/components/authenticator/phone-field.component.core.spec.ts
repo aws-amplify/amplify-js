@@ -7,40 +7,38 @@ import { AmplifyService, AmplifyModules } from '../../../providers';
 import { authModule } from '../../../__mocks__/mock_module';
 
 describe('PhoneFieldComponentCore: ', () => {
-    let component: PhoneFieldComponentCore;
-    let fixtureComponent: PhoneFieldComponentCore;
-    let service: AmplifyService;
-    let fixture;
+	let component: PhoneFieldComponentCore;
+	let fixtureComponent: PhoneFieldComponentCore;
+	let service: AmplifyService;
+	let fixture;
 
-    beforeEach(() => { 
-        service = new AmplifyService(authModule);
-        component = new PhoneFieldComponentCore(service);
-        TestBed.configureTestingModule({
-        declarations: [
-            PhoneFieldComponentCore
-        ],
-        imports: [FormsModule],
-        providers: [
-            {
-            provide: AmplifyService,
-            useFactory: () => {
-                return AmplifyModules({
-                ...authModule
-                });
-            }
-            }
-        ]
-        }).compileComponents();
-        fixture = TestBed.createComponent(PhoneFieldComponentCore);
-        fixtureComponent = fixture.componentInstance;
-    });
+	beforeEach(() => {
+		service = new AmplifyService(authModule);
+		component = new PhoneFieldComponentCore(service);
+		TestBed.configureTestingModule({
+			declarations: [PhoneFieldComponentCore],
+			imports: [FormsModule],
+			providers: [
+				{
+					provide: AmplifyService,
+					useFactory: () => {
+						return AmplifyModules({
+							...authModule,
+						});
+					},
+				},
+			],
+		}).compileComponents();
+		fixture = TestBed.createComponent(PhoneFieldComponentCore);
+		fixtureComponent = fixture.componentInstance;
+	});
 
-    afterEach(() => {
-        service = null;
-        component = null;
-    });
+	afterEach(() => {
+		service = null;
+		component = null;
+	});
 
-    it('...should be created', () => {
-        expect(component).toBeTruthy();
-    });
+	it('...should be created', () => {
+		expect(component).toBeTruthy();
+	});
 });

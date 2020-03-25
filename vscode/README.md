@@ -1,4 +1,3 @@
-
 # AWS Amplify Visual Studio Code Extension
 
 Code snippets and completion for the [AWS Amplify](https://aws-amplify.github.io/amplify-js) API.
@@ -7,7 +6,7 @@ Code snippets and completion for the [AWS Amplify](https://aws-amplify.github.io
 
 Visit [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=aws-amplify.aws-amplify-vscode) and click "Install".
 
-Alternatively, go to the *Extension Marketplace* in VS Code and search for AWS Amplify. Click install on the extension with title "AWS Amplify API".
+Alternatively, go to the _Extension Marketplace_ in VS Code and search for AWS Amplify. Click install on the extension with title "AWS Amplify API".
 
 ## Usage
 
@@ -16,9 +15,11 @@ In a JavaScript, TypeScript, or JSX file, start typing an AWS Amplify API comman
 ## Naming convention
 
 The naming convention for code snippets is "Amplify " + action prefix. So, in the code editor, you can type:
+
 ```
 Amplify Update User Attributes
 ```
+
 to output the related code block:
 
 ![Alt Text](gifs/update_endpoint_example.gif)
