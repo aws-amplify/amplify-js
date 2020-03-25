@@ -16,7 +16,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-          registry-url: https://npm.pkg.github.com/
 
       # ! Can't cache without yarn.lock
       # - name: Cache node modules
