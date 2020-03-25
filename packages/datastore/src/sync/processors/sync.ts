@@ -17,7 +17,7 @@ class SyncProcessor {
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly maxRecordsToSync: number = DEFAULT_MAX_RECORDS_TO_SYNC,
-		private readonly paginationLimit: number = DEFAULT_PAGINATION_LIMIT
+		private readonly syncPageSize: number = DEFAULT_PAGINATION_LIMIT
 	) {
 		this.generateQueries();
 	}
@@ -105,9 +105,9 @@ class SyncProcessor {
 				? this.maxRecordsToSync
 				: DEFAULT_MAX_RECORDS_TO_SYNC;
 
-		const paginationLimit =
-			this.paginationLimit !== undefined
-				? this.paginationLimit
+		const syncPageSize =
+			this.syncPageSize !== undefined
+				? this.syncPageSize
 				: DEFAULT_PAGINATION_LIMIT;
 
 		const parentPromises = new Map<string, Promise<void>>();
@@ -153,7 +153,7 @@ class SyncProcessor {
 
 							const limit = Math.min(
 								maxRecordsToSync - recordsReceived,
-								paginationLimit
+								syncPageSize
 							);
 
 							({ items, nextToken, startedAt } = await this.retrievePage(

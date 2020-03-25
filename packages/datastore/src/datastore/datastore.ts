@@ -645,7 +645,7 @@ let amplifyConfig: Record<string, any> = {};
 let conflictHandler: ConflictHandler;
 let errorHandler: (error: SyncError) => void;
 let maxRecordsToSync: number;
-let paginationLimit: number;
+let syncPageSize: number;
 let fullSyncInterval: number;
 
 function configure(config: DataStoreConfig = {}) {
@@ -654,7 +654,7 @@ function configure(config: DataStoreConfig = {}) {
 		conflictHandler: configConflictHandler,
 		errorHandler: configErrorHandler,
 		maxRecordsToSync: configMaxRecordsToSync,
-		paginationLimit: configPaginationLimit,
+		syncPageSize: configSyncPageSize,
 		fullSyncInterval: configFullSyncInterval,
 		...configFromAmplify
 	} = config;
@@ -678,10 +678,10 @@ function configure(config: DataStoreConfig = {}) {
 		maxRecordsToSync ||
 		config.maxRecordsToSync;
 
-	paginationLimit =
-		(configDataStore && configDataStore.paginationLimit) ||
-		paginationLimit ||
-		config.paginationLimit;
+	syncPageSize =
+		(configDataStore && configDataStore.syncPageSize) ||
+		syncPageSize ||
+		config.syncPageSize;
 
 	fullSyncInterval =
 		(configDataStore && configDataStore.fullSyncInterval) ||
@@ -804,7 +804,7 @@ async function start(): Promise<void> {
 			storage,
 			modelInstanceCreator,
 			maxRecordsToSync,
-			paginationLimit,
+			syncPageSize,
 			conflictHandler,
 			errorHandler
 		);

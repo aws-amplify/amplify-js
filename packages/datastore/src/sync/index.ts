@@ -85,7 +85,7 @@ export class SyncEngine {
 		private readonly storage: Storage,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly maxRecordsToSync: number,
-		private readonly paginationLimit: number,
+		private readonly syncPageSize: number,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler
 	) {
@@ -105,7 +105,7 @@ export class SyncEngine {
 		this.syncQueriesProcessor = new SyncProcessor(
 			this.schema,
 			maxRecordsToSync,
-			paginationLimit
+			syncPageSize
 		);
 		this.subscriptionsProcessor = new SubscriptionProcessor(this.schema);
 		this.mutationsProcessor = new MutationProcessor(
