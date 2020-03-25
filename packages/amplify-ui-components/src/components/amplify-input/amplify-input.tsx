@@ -4,7 +4,6 @@ import { TextFieldTypes } from '../../common/types/ui-types';
 @Component({
   tag: 'amplify-input',
   styleUrl: 'amplify-input.scss',
-  scoped: true,
 })
 export class AmplifyInput {
   /** The ID of the field.  Should match with its corresponding input's ID. */
