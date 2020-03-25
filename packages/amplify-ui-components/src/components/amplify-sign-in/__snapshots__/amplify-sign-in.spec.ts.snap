@@ -9,9 +9,9 @@ exports[`amplify-sign-in spec: Render logic -> should render a \`sign in\` form 
       <div class="sign-in-form-footer" slot="amplify-form-section-footer">
         <span>
           No account?
-          <amplify-link data-test="sign-in-create-account-link">
+          <amplify-button data-test="sign-in-create-account-link" variant="anchor">
             Create account
-          </amplify-link>
+          </amplify-button>
         </span>
         <amplify-button data-test="sign-in-sign-in-button" type="submit">
           <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
@@ -34,9 +34,9 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withEmptyFederate
       <div class="sign-in-form-footer" slot="amplify-form-section-footer">
         <span>
           No account?
-          <amplify-link data-test="sign-in-create-account-link">
+          <amplify-button data-test="sign-in-create-account-link" variant="anchor">
             Create account
-          </amplify-link>
+          </amplify-button>
         </span>
         <amplify-button data-test="sign-in-sign-in-button" type="submit">
           <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
@@ -62,9 +62,9 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederated 1`]
       <div class="sign-in-form-footer" slot="amplify-form-section-footer">
         <span>
           No account?
-          <amplify-link data-test="sign-in-create-account-link">
+          <amplify-button data-test="sign-in-create-account-link" variant="anchor">
             Create account
-          </amplify-link>
+          </amplify-button>
         </span>
         <amplify-button data-test="sign-in-sign-in-button" type="submit">
           <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>

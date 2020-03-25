@@ -210,12 +210,13 @@ export class AmplifyForgotPassword {
         handleSubmit={submitFn}
         loading={this.loading}
         secondaryFooterContent={
-          <amplify-link
+          <amplify-button
+            variant="anchor"
             onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
             data-test="forgot-password-back-to-sign-in-link"
           >
             {I18n.get(Translations.BACK_TO_SIGN_IN)}
-          </amplify-link>
+          </amplify-button>
         }
         testDataPrefix={'forgot-password'}
       >

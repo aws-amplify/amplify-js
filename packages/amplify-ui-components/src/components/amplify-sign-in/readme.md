@@ -26,23 +26,21 @@
 
 ### Depends on
 
-- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
 - [amplify-form-section](../amplify-form-section)
 - [amplify-federated-buttons](../amplify-federated-buttons)
 - [amplify-strike](../amplify-strike)
 - [amplify-auth-fields](../amplify-auth-fields)
-- [amplify-button](../amplify-button)
 - [amplify-loading-spinner](../amplify-loading-spinner)
 
 ### Graph
 ```mermaid
 graph TD;
-  amplify-sign-in --> amplify-link
+  amplify-sign-in --> amplify-button
   amplify-sign-in --> amplify-form-section
   amplify-sign-in --> amplify-federated-buttons
   amplify-sign-in --> amplify-strike
   amplify-sign-in --> amplify-auth-fields
-  amplify-sign-in --> amplify-button
   amplify-sign-in --> amplify-loading-spinner
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button

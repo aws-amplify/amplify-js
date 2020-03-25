@@ -6,6 +6,9 @@
   --border-width: 0;
   --border-color: initial;
   --border-style: initial;
+  --link-color: var(--amplify-primary-color);
+  --link-hover: var(--amplify-primary-tint);
+  --link-active: var(--amplify-primary-shade);
 }
 
 .button {
@@ -46,3 +49,27 @@
     background-color: var(--background-color-disable);
   }
 }
+
+.anchor {
+  color: var(--link-color);
+  padding: 0;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+
+  &:link {
+    color: var(--link-color);
+    text-decoration: none;
+  }
+
+  &:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
+  }
+
+  &:active {
+    color: var(--link-active);
+    text-decoration: underline;
+  }
+}
+

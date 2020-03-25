@@ -225,12 +225,13 @@ export class AmplifySignIn {
       hint: (
         <div>
           {I18n.get(Translations.FORGOT_PASSWORD_TEXT)}{' '}
-          <amplify-link
+          <amplify-button
+            variant="anchor"
             onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}
             data-test="sign-in-forgot-password-link"
           >
             {I18n.get(Translations.RESET_PASSWORD_TEXT)}
-          </amplify-link>
+          </amplify-button>
         </div>
       ),
       required: true,
@@ -253,12 +254,13 @@ export class AmplifySignIn {
         <div slot="amplify-form-section-footer" class="sign-in-form-footer">
           <span>
             {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
-            <amplify-link
+            <amplify-button
+              variant="anchor"
               onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
               data-test="sign-in-create-account-link"
             >
               {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
-            </amplify-link>
+            </amplify-button>
           </span>
           <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
             <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
