@@ -11,7 +11,8 @@ jobs:
   preview:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      # https://github.com/lerna/lerna/issues/1769#issuecomment-589589768
+      - uses: actions/checkout@v1
 
       - uses: actions/setup-node@v1
         with:
