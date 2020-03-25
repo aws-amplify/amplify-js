@@ -6,7 +6,7 @@ exports[`amplify-toast spec: Render logic -> should render an empty link tag by 
     <div class="toast">
       <amplify-icon class="toast-icon" name="warning"></amplify-icon>
       <slot></slot>
-      <a class="toast-close"></a>
+      <button class="toast-close"></button>
     </div>
   </mock:shadow-root>
 </amplify-toast>

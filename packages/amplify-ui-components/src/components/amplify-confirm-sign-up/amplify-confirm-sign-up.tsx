@@ -68,9 +68,9 @@ export class AmplifyConfirmSignUp {
         hint: (
           <div>
             {I18n.get(Translations.CONFIRM_SIGN_UP_LOST_CODE)}{' '}
-            <amplify-link onClick={() => this.resendConfirmCode()}>
+            <amplify-button variant="anchor" onClick={() => this.resendConfirmCode()}>
               {I18n.get(Translations.CONFIRM_SIGN_UP_RESEND_CODE)}
-            </amplify-link>
+            </amplify-button>
           </div>
         ),
         handleInputChange: event => this.handleCodeChange(event),
@@ -129,12 +129,13 @@ export class AmplifyConfirmSignUp {
         secondaryFooterContent={
           <div>
             <span>
-              <amplify-link
+              <amplify-button
+                variant="anchor"
                 onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
                 style={{ display: 'flex', justifyContent: 'center' }}
               >
                 {I18n.get(Translations.BACK_TO_SIGN_IN)}
-              </amplify-link>
+              </amplify-button>
             </span>
           </div>
         }
