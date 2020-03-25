@@ -24,7 +24,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-js.git"
+    "url": "https://github.com/aws-amplify/amplify-js.git",
+    "directory": "packages/amazon-cognito-identity-js"
   },
   "license": "SEE LICENSE IN LICENSE.txt",
   "licenses": [
