@@ -30,6 +30,6 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn bootstrap
       - run: yarn build
-      - run: lerna publish 0.0.0 --canary --dist-tag=PR-5187 --no-push --preid=PR --yes
+      - run: yarn publish:pr
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
