@@ -1,5 +1,5 @@
 {
-  "name": "amazon-cognito-identity-js",
+  "name": "@aws-amplify/cognito-identity",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
   "version": "3.2.5",
   "author": {
