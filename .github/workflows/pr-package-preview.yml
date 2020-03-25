@@ -17,13 +17,14 @@ jobs:
         with:
           node-version: 12
 
-      - name: Cache node modules
-        uses: actions/cache@v1
-        with:
-          path: node_modules
-          key: yarn-deps-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            yarn-deps-${{ hashFiles('yarn.lock') }}
+      # ! Can't cache without yarn.lock
+      # - name: Cache node modules
+      #   uses: actions/cache@v1
+      #   with:
+      #     path: node_modules
+      #     key: yarn-deps-${{ hashFiles('yarn.lock') }}
+      #     restore-keys: |
+      #       yarn-deps-${{ hashFiles('yarn.lock') }}
 
       - run: yarn install --frozen-lockfile
       - run: yarn bootstrap
