@@ -17,7 +17,7 @@
 		"url": "https://github.com/aws-amplify/amplify-js.git"
 	},
 	"dependencies": {
-		"@aws-amplify/ui-components": "*"
+		"@aws-amplify/ui-components": "^0.1.0"
 	},
 	"scripts": {
 		"build": "npm run clean && npm run compile",
