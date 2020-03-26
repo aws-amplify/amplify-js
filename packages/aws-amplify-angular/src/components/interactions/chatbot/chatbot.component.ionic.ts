@@ -114,7 +114,7 @@ export class ChatbotComponentIonic extends ChatbotComponentCore {
 	constructor(
 		ref: ChangeDetectorRef,
 		@Inject(AmplifyService)
-		protected amplifyService: AmplifyService
+		public amplifyService: AmplifyService
 	) {
 		super(ref, amplifyService);
 	}

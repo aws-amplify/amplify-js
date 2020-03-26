@@ -37,7 +37,7 @@ export class S3ImageComponentCore implements OnInit {
 	@Output()
 	selected: EventEmitter<string> = new EventEmitter<string>();
 
-	constructor(protected amplifyService: AmplifyService) {
+	constructor(public amplifyService: AmplifyService) {
 		this.logger = this.amplifyService.logger('S3ImageComponent');
 	}
 
