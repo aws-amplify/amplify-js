@@ -37,7 +37,10 @@ export class AmplifyAuthenticator {
           if (payload.message) this.toastMessage = payload.message;
           break;
         case AUTH_STATE_CHANGE_EVENT:
-          if (payload.message) this.onAuthStateChange(payload.message as AuthState, payload.data);
+          if (payload.message) {
+            this.onAuthStateChange(payload.message as AuthState, payload.data);
+            this.toastMessage = '';
+          }
           break;
         default:
           logger.warn('Unhandled Auth Event', payload.event);

@@ -7,7 +7,11 @@ Object {
   "amplify-ui-components/amplify-ui-components.js": "120 KB",
   "amplify-ui-components/index.esm.js": "91 Bytes",
   "amplify-ui-components/p-00ebc875.system.entry.js": "764 Bytes",
+<<<<<<< HEAD
   "amplify-ui-components/p-0296f402.system.entry.js": "118 KB",
+=======
+  "amplify-ui-components/p-0106a0dd.system.entry.js": "118 KB",
+>>>>>>> ui-components/master
   "amplify-ui-components/p-0dcba234.entry.js": "983 Bytes",
   "amplify-ui-components/p-0edba826.system.js": "1 KB",
   "amplify-ui-components/p-135de38f.js": "559 Bytes",
@@ -27,6 +31,7 @@ Object {
   "amplify-ui-components/p-74bf56f1.system.js": "1 KB",
   "amplify-ui-components/p-7855c59e.system.js": "8 KB",
   "amplify-ui-components/p-78ca95ea.system.entry.js": "1 KB",
+  "amplify-ui-components/p-90863ec4.entry.js": "113 KB",
   "amplify-ui-components/p-a9a60b8e.js": "13 KB",
   "amplify-ui-components/p-b2b27dd9.system.entry.js": "705 Bytes",
   "amplify-ui-components/p-c6881755.system.js": "3 KB",
