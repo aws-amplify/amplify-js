@@ -246,6 +246,19 @@ const App = () => {
 };
 ```
 
+Alternatively, you can use the `withAuthenticator` higher-order component (HoC):
+
+```js
+import { withAuthenticator } from '@aws-amplify/ui-react';
+
+...
+
+export default withAuthenticator(App);
+// or
+export default withAuthenticator(App, { /* ...amplifyAuthenticatorSettings */ })
+});
+```
+
 #### Angular
 
 ```html
