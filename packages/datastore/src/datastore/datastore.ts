@@ -354,7 +354,7 @@ const createNonModelClass = <T>(typeDefinition: SchemaNonModel) => {
 const save = async <T extends PersistentModel>(
 	model: T,
 	condition?: ProducerModelPredicate<T>
-) => {
+): Promise<T> => {
 	await start();
 	const modelConstructor: PersistentModelConstructor<T> = model
 		? <PersistentModelConstructor<T>>model.constructor
@@ -374,7 +374,7 @@ const save = async <T extends PersistentModel>(
 		condition
 	);
 
-	const savedModel = await storage.runExclusive(async s => {
+	const [savedModel] = await storage.runExclusive(async s => {
 		await s.save(model, producedCondition);
 
 		return s.query(
