@@ -1,13 +1,15 @@
-import '@aws-amplify/pubsub';
-
-import Observable from 'zen-observable-ts';
-
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
 import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
-
-import { InternalSchema, PersistentModel, SchemaModel } from '../../types';
+import '@aws-amplify/pubsub';
+import Observable from 'zen-observable-ts';
+import {
+	InternalSchema,
+	PersistentModel,
+	SchemaModel,
+	SchemaNamespace,
+} from '../../types';
 import {
 	buildSubscriptionGraphQLOperation,
 	getAuthorizationRules,
@@ -41,6 +43,7 @@ class SubscriptionProcessor {
 	constructor(private readonly schema: InternalSchema) {}
 
 	private buildSubscription(
+		namespace: SchemaNamespace,
 		model: SchemaModel,
 		transformerMutationType: TransformerMutationType,
 		userCredentials: USER_CREDENTIALS,
@@ -65,6 +68,7 @@ class SubscriptionProcessor {
 			) || {};
 
 		const [opType, opName, query] = buildSubscriptionGraphQLOperation(
+			namespace,
 			model,
 			transformerMutationType,
 			isOwner,
@@ -278,6 +282,7 @@ class SubscriptionProcessor {
 								TransformerMutationType.DELETE,
 							].map(op =>
 								this.buildSubscription(
+									namespace,
 									modelDefinition,
 									op,
 									userCredentials,

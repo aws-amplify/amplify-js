@@ -1,7 +1,7 @@
 {
   "$schema": "../../node_modules/ng-packagr/package.schema.json",
   "name": "aws-amplify-angular",
-  "version": "4.1.6",
+  "version": "4.1.8",
   "description": "AWS Amplify Angular Components",
   "main": "dist/bundles/aws-amplify-angular.umd.min.js",
   "module": "dist/fesm5/aws-amplify-angular.js",
@@ -65,7 +65,7 @@
     "@types/node": "^9.4.6",
     "@types/paho-mqtt": "^1.0.3",
     "@types/zen-observable": "^0.5.3",
-    "aws-amplify": "^2.2.5",
+    "aws-amplify": "^2.2.7",
     "css-loader": "^0.28.1",
     "jest-preset-angular": "^7.1.1",
     "json-loader": "^0.5.4",
@@ -85,7 +85,7 @@
     "rollup-plugin-node-builtins": "^2.1.2"
   },
   "dependencies": {
-    "@aws-amplify/ui": "^1.1.5",
+    "@aws-amplify/ui": "^1.1.6",
     "rxjs-compat": "^6.5.2"
   },
   "peerDependencies": {
