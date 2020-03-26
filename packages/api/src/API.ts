@@ -369,9 +369,9 @@ export default class APIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
-				return this._graphql({ query, variables, authMode }, additionalHeaders);
+				return this._graphql<T>({ query, variables, authMode }, additionalHeaders);
 			case 'subscription':
-				return this._graphqlSubscribe({
+				return this._graphqlSubscribe<T>({
 					query,
 					variables,
 					authMode,
