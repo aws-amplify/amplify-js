@@ -15,12 +15,13 @@ import {
 	GraphQLCondition,
 	InternalSchema,
 	isModelFieldType,
+	isTargetNameAssociation,
 	ModelInstanceMetadata,
 	OpType,
 	PersistentModel,
 	PersistentModelConstructor,
 	SchemaModel,
-	isTargetNameAssociation,
+	TypeConstructorMap,
 } from '../../types';
 import { exhaustiveCheck, USER } from '../../util';
 import { MutationEventOutbox } from '../outbox';
@@ -47,9 +48,7 @@ class MutationProcessor {
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly storage: Storage,
-		private readonly userClasses: {
-			[modelName: string]: PersistentModelConstructor<PersistentModel>;
-		},
+		private readonly userClasses: TypeConstructorMap,
 		private readonly outbox: MutationEventOutbox,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
@@ -64,9 +63,21 @@ class MutationProcessor {
 			Object.values(namespace.models)
 				.filter(({ syncable }) => syncable)
 				.forEach(model => {
-					const [createMutation] = buildGraphQLOperation(model, 'CREATE');
-					const [updateMutation] = buildGraphQLOperation(model, 'UPDATE');
-					const [deleteMutation] = buildGraphQLOperation(model, 'DELETE');
+					const [createMutation] = buildGraphQLOperation(
+						namespace,
+						model,
+						'CREATE'
+					);
+					const [updateMutation] = buildGraphQLOperation(
+						namespace,
+						model,
+						'UPDATE'
+					);
+					const [deleteMutation] = buildGraphQLOperation(
+						namespace,
+						model,
+						'DELETE'
+					);
 
 					this.typeQuery.set(model, [
 						createMutation,
@@ -106,16 +117,20 @@ class MutationProcessor {
 
 		this.processing = true;
 		let head: MutationEvent;
+		const namespaceName = USER;
 
 		// start to drain outbox
 		while (this.processing && (head = await this.outbox.peek(this.storage))) {
 			const { model, operation, data, condition } = head;
-			const modelConstructor = this.userClasses[model];
+			const modelConstructor = this.userClasses[
+				model
+			] as PersistentModelConstructor<MutationEvent>;
 			let result: GraphQLResult<Record<string, PersistentModel>>;
 			let opName: string;
 			let modelDefinition: SchemaModel;
 			try {
 				[result, opName, modelDefinition] = await this.jitteredRetry(
+					namespaceName,
 					model,
 					operation,
 					data,
@@ -147,6 +162,7 @@ class MutationProcessor {
 	}
 
 	private async jitteredRetry(
+		namespaceName: string,
 		model: string,
 		operation: TransformerMutationType,
 		data: string,
@@ -173,7 +189,13 @@ class MutationProcessor {
 					graphQLCondition,
 					opName,
 					modelDefinition,
-				] = this.createQueryVariables(model, operation, data, condition);
+				] = this.createQueryVariables(
+					namespaceName,
+					model,
+					operation,
+					data,
+					condition
+				);
 				const tryWith = { query, variables };
 				let attempt = 0;
 
@@ -228,6 +250,7 @@ class MutationProcessor {
 									// Query latest from server and notify merger
 
 									const [[, opName, query]] = buildGraphQLOperation(
+										this.schema.namespaces[namespaceName],
 										modelDefinition,
 										'GET'
 									);
@@ -242,7 +265,7 @@ class MutationProcessor {
 									return [serverData, opName, modelDefinition];
 								}
 
-								const namespace = this.schema.namespaces[USER];
+								const namespace = this.schema.namespaces[namespaceName];
 
 								// convert retry with to tryWith
 								const updatedMutation = createMutationInstanceFromModelOperation(
@@ -305,12 +328,13 @@ class MutationProcessor {
 	}
 
 	private createQueryVariables(
+		namespaceName: string,
 		model: string,
 		operation: TransformerMutationType,
 		data: string,
 		condition: string
 	): [string, Record<string, any>, GraphQLCondition, string, SchemaModel] {
-		const modelDefinition = this.schema.namespaces[USER].models[model];
+		const modelDefinition = this.schema.namespaces[namespaceName].models[model];
 
 		const queriesTuples = this.typeQuery.get(modelDefinition);
 
@@ -322,7 +346,7 @@ class MutationProcessor {
 
 		const filteredData =
 			operation === TransformerMutationType.DELETE
-				? <ModelInstanceMetadata>{ id: parsedData.id }
+				? <ModelInstanceMetadata>{ id: parsedData.id } // For DELETE mutations, only ID is sent
 				: Object.values(modelDefinition.fields)
 						.filter(({ type, association }) => {
 							// connections
@@ -339,7 +363,7 @@ class MutationProcessor {
 								return false;
 							}
 
-							// scalars
+							// scalars and non-model types
 							return true;
 						})
 						.map(({ name, type, association }) => {
@@ -361,6 +385,7 @@ class MutationProcessor {
 							return acc;
 						}, <typeof parsedData>{});
 
+		// Build mutation variables input object
 		const input: ModelInstanceMetadata = {
 			...filteredData,
 			_version,

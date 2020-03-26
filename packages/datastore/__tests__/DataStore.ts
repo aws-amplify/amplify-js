@@ -9,6 +9,7 @@ import {
 	MutableModel,
 	PersistentModelConstructor,
 	Schema,
+	NonModelTypeConstructor,
 } from '../src/types';
 import StorageType from '../src/storage/storage';
 import Observable from 'zen-observable-ts';
@@ -36,12 +37,12 @@ beforeEach(() => {
 
 describe('DataStore tests', () => {
 	describe('initSchema tests', () => {
-		test('Class is created', () => {
+		test('Model class is created', () => {
 			const classes = initSchema(testSchema());
 
 			expect(classes).toHaveProperty('Model');
 
-			const { Model } = classes;
+			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
 
 			let property: keyof PersistentModelConstructor<any> = 'copyOf';
 			expect(Model).toHaveProperty(property);
@@ -49,7 +50,7 @@ describe('DataStore tests', () => {
 			expect(typeof Model.copyOf).toBe('function');
 		});
 
-		test('Class can be instantiated', () => {
+		test('Model class can be instantiated', () => {
 			const { Model } = initSchema(testSchema()) as {
 				Model: PersistentModelConstructor<Model>;
 			};
@@ -91,6 +92,32 @@ describe('DataStore tests', () => {
 			expect(() => {
 				initSchema(testSchema());
 			}).toThrow('The schema has already been initialized');
+		});
+
+		test('Non @model class is created', () => {
+			const classes = initSchema(testSchema());
+
+			expect(classes).toHaveProperty('Metadata');
+
+			const { Metadata } = classes;
+
+			let property: keyof PersistentModelConstructor<any> = 'copyOf';
+			expect(Metadata).not.toHaveProperty(property);
+		});
+
+		test('Non @model class can be instantiated', () => {
+			const { Metadata } = initSchema(testSchema()) as {
+				Metadata: NonModelTypeConstructor<Metadata>;
+			};
+
+			const metadata = new Metadata({
+				author: 'some author',
+				tags: [],
+			});
+
+			expect(metadata).toBeInstanceOf(Metadata);
+
+			expect(metadata).not.toHaveProperty('id');
 		});
 	});
 
@@ -147,6 +174,20 @@ describe('DataStore tests', () => {
 			// ID should be kept the same
 			expect(model1.id).toBe(model2.id);
 		});
+
+		test('Non @model - Field cannot be changed', () => {
+			const { Metadata } = initSchema(testSchema()) as {
+				Metadata: NonModelTypeConstructor<Metadata>;
+			};
+
+			const nonModel = new Metadata({
+				author: 'something',
+			});
+
+			expect(() => {
+				(<any>nonModel).author = 'edit';
+			}).toThrowError("Cannot assign to read only property 'author' of object");
+		});
 	});
 
 	describe('Initialization', () => {
@@ -155,7 +196,7 @@ describe('DataStore tests', () => {
 
 			const classes = initSchema(testSchema());
 
-			const { Model } = classes;
+			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
 
 			const promises = [
 				DataStore.query(Model),
@@ -168,18 +209,33 @@ describe('DataStore tests', () => {
 
 			expect(Storage).toHaveBeenCalledTimes(1);
 		});
+
+		test('It is initialized when observing (no query)', async () => {
+			Storage = require('../src/storage/storage').default;
+
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+
+			DataStore.observe(Model).subscribe(jest.fn());
+
+			expect(Storage).toHaveBeenCalledTimes(1);
+		});
 	});
 
-	test('It is initialized when observing (no query)', async () => {
-		Storage = require('../src/storage/storage').default;
+	test("non-@models can't be saved", async () => {
+		const { Metadata } = initSchema(testSchema()) as {
+			Metadata: NonModelTypeConstructor<Metadata>;
+		};
 
-		const classes = initSchema(testSchema());
+		const metadata = new Metadata({
+			author: 'some author',
+			tags: [],
+		});
 
-		const { Model } = classes;
-
-		DataStore.observe(Model).subscribe(jest.fn());
-
-		expect(Storage).toHaveBeenCalledTimes(1);
+		await expect(DataStore.save(<any>metadata)).rejects.toThrow(
+			'Object is not an instance of a valid model'
+		);
 	});
 });
 
@@ -195,6 +251,12 @@ declare class Model {
 		src: Model,
 		mutator: (draft: MutableModel<Model>) => void | Model
 	): Model;
+}
+
+export declare class Metadata {
+	readonly author: string;
+	readonly tags?: string[];
+	constructor(init: Metadata);
 }
 
 function testSchema(): Schema {
@@ -218,6 +280,15 @@ function testSchema(): Schema {
 						type: 'String',
 						isRequired: true,
 					},
+					metadata: {
+						name: 'metadata',
+						isArray: false,
+						type: {
+							nonModel: 'Metadata',
+						},
+						isRequired: false,
+						attributes: [],
+					},
 				},
 			},
 			LocalModel: {
@@ -236,6 +307,27 @@ function testSchema(): Schema {
 						isArray: false,
 						type: 'String',
 						isRequired: true,
+					},
+				},
+			},
+		},
+		nonModels: {
+			Metadata: {
+				name: 'Metadata',
+				fields: {
+					author: {
+						name: 'author',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					tags: {
+						name: 'tags',
+						isArray: true,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
 					},
 				},
 			},
