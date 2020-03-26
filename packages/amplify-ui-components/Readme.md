@@ -350,7 +350,7 @@ The `amplify-authenticator` component has the ability to sign in or sign up with
 <AmplifyAuthenticator usernameAlias="email" />
 
 // angular, vue or web components
-<amplify-authenticator usernameAlias="phone_number" />
+<amplify-authenticator username-alias="phone_number" />
 ```
 
 ## Migration Guide
