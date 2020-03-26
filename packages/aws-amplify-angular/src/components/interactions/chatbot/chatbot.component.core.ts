@@ -24,7 +24,7 @@ import {
 } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { isUndefined } from 'util';
-require('./aws-lex-audio.js');
+require('../assets/js/aws-lex-audio.js');
 
 const template = `
 <div class="amplify-interactions">

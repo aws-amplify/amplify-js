@@ -4,10 +4,12 @@
   "version": "4.1.8",
   "description": "AWS Amplify Angular Components",
   "main": "dist/bundles/aws-amplify-angular.umd.min.js",
+  "module_ivy_ngcc": "__ivy_ngcc__/dist/fesm5/aws-amplify-angular.js",
   "module": "dist/fesm5/aws-amplify-angular.js",
   "es2015": "dist/fesm2015/aws-amplify-angular.js",
   "esm5": "dist/esm5/aws-amplify-angular.js",
   "esm2015": "dist/esm2015/aws-amplify-angular.js",
+  "fesm5_ivy_ngcc": "__ivy_ngcc__/dist/fesm5/aws-amplify-angular.js",
   "fesm5": "dist/fesm5/aws-amplify-angular.js",
   "fesm2015": "dist/fesm2015/aws-amplify-angular.js",
   "typings": "dist/aws-amplify-angular.d.ts",
@@ -28,7 +30,7 @@
   },
   "ngPackage": {
     "assets": [
-      "src/components/interactions/chatbot/aws-lex-audio.js"
+      "assets/js/aws-lex-audio.js"
     ],
     "lib": {
       "entryFile": "index.ts",
@@ -90,5 +92,10 @@
   },
   "peerDependencies": {
     "aws-amplify": "^2.0.0"
+  },
+  "__processed_by_ivy_ngcc__": {
+    "fesm5": "9.0.7",
+    "module": "9.0.7",
+    "typings": "9.0.7"
   }
 }
