@@ -41,6 +41,8 @@
   height: 18px;
   overflow: hidden;
   cursor: pointer;
+  background: transparent;
+  border: none;
 
   &::before,
   &::after {
@@ -55,7 +57,8 @@
   }
 
   &:hover::before,
-  &:hover::after {
+  &:hover::after
+  {
     background: var(--close-icon-hover);
   }
 

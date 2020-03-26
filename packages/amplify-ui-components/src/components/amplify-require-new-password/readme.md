@@ -24,14 +24,14 @@
 ### Depends on
 
 - [amplify-form-section](../amplify-form-section)
-- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
 - [amplify-auth-fields](../amplify-auth-fields)
 
 ### Graph
 ```mermaid
 graph TD;
   amplify-require-new-password --> amplify-form-section
-  amplify-require-new-password --> amplify-link
+  amplify-require-new-password --> amplify-button
   amplify-require-new-password --> amplify-auth-fields
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button

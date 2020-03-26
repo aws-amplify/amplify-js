@@ -257,9 +257,13 @@ export class AmplifySignUp {
         <div class="sign-up-form-footer" slot="amplify-form-section-footer">
           <span>
             {this.haveAccountText}{' '}
-            <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignIn)} data-test="sign-up-sign-in-link">
+            <amplify-button
+              variant="anchor"
+              onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
+              data-test="sign-up-sign-in-link"
+            >
               {this.signInText}
-            </amplify-link>
+            </amplify-button>
           </span>
           <amplify-button type="submit" data-test="sign-up-create-account-button">
             <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />

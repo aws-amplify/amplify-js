@@ -35,7 +35,7 @@ import * as events from 'events';
 const logger = new Logger('AWSS3Provider');
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
+	typeof Symbol.for === 'function'
 	? Symbol.for('amplify_default')
 	: '@@amplify_default') as Symbol;
 
@@ -189,7 +189,7 @@ export class AWSS3Provider implements StorageProvider {
 			const signer = new S3RequestPresigner({ ...s3.config });
 			const request = await createRequest(s3, new GetObjectCommand(params));
 			const url = formatUrl(
-				(await signer.presignRequest(request, params.Expires)) as any
+				(await signer.presign(request, params.Expires)) as any
 			);
 			dispatchStorageEvent(
 				track,
@@ -295,7 +295,7 @@ export class AWSS3Provider implements StorageProvider {
 					} else {
 						logger.warn(
 							'progressCallback should be a function, not a ' +
-								typeof progressCallback
+							typeof progressCallback
 						);
 					}
 				}

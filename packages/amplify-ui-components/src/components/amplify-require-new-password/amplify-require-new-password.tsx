@@ -108,9 +108,9 @@ export class AmplifyRequireNewPassword {
         handleSubmit={this.handleSubmit}
         loading={this.loading}
         secondaryFooterContent={
-          <amplify-link onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
+          <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
             {I18n.get(Translations.BACK_TO_SIGN_IN)}
-          </amplify-link>
+          </amplify-button>
         }
       >
         <amplify-auth-fields formFields={this.formFields} />

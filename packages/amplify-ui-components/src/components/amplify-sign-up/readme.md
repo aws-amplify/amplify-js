@@ -29,7 +29,6 @@
 
 - [amplify-form-section](../amplify-form-section)
 - [amplify-auth-fields](../amplify-auth-fields)
-- [amplify-link](../amplify-link)
 - [amplify-button](../amplify-button)
 - [amplify-loading-spinner](../amplify-loading-spinner)
 
@@ -38,7 +37,6 @@
 graph TD;
   amplify-sign-up --> amplify-form-section
   amplify-sign-up --> amplify-auth-fields
-  amplify-sign-up --> amplify-link
   amplify-sign-up --> amplify-button
   amplify-sign-up --> amplify-loading-spinner
   amplify-form-section --> amplify-section

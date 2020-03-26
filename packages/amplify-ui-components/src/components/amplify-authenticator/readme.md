@@ -42,12 +42,11 @@ graph TD;
   amplify-authenticator --> amplify-verify-contact
   amplify-authenticator --> amplify-totp-setup
   amplify-authenticator --> amplify-toast
-  amplify-sign-in --> amplify-link
+  amplify-sign-in --> amplify-button
   amplify-sign-in --> amplify-form-section
   amplify-sign-in --> amplify-federated-buttons
   amplify-sign-in --> amplify-strike
   amplify-sign-in --> amplify-auth-fields
-  amplify-sign-in --> amplify-button
   amplify-sign-in --> amplify-loading-spinner
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
@@ -82,26 +81,25 @@ graph TD;
   amplify-phone-field --> amplify-input
   amplify-country-dial-code --> amplify-select
   amplify-confirm-sign-in --> amplify-form-section
-  amplify-confirm-sign-in --> amplify-link
+  amplify-confirm-sign-in --> amplify-button
   amplify-confirm-sign-in --> amplify-auth-fields
   amplify-sign-up --> amplify-form-section
   amplify-sign-up --> amplify-auth-fields
-  amplify-sign-up --> amplify-link
   amplify-sign-up --> amplify-button
   amplify-sign-up --> amplify-loading-spinner
-  amplify-confirm-sign-up --> amplify-link
+  amplify-confirm-sign-up --> amplify-button
   amplify-confirm-sign-up --> amplify-form-section
   amplify-confirm-sign-up --> amplify-auth-fields
   amplify-forgot-password --> amplify-form-section
-  amplify-forgot-password --> amplify-link
+  amplify-forgot-password --> amplify-button
   amplify-forgot-password --> amplify-auth-fields
   amplify-require-new-password --> amplify-form-section
-  amplify-require-new-password --> amplify-link
+  amplify-require-new-password --> amplify-button
   amplify-require-new-password --> amplify-auth-fields
   amplify-verify-contact --> amplify-input
   amplify-verify-contact --> amplify-radio-button
   amplify-verify-contact --> amplify-form-section
-  amplify-verify-contact --> amplify-link
+  amplify-verify-contact --> amplify-button
   amplify-radio-button --> amplify-label
   amplify-totp-setup --> amplify-form-section
   amplify-totp-setup --> amplify-form-field

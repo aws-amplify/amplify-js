@@ -37,7 +37,7 @@ S3Client.prototype.send = jest.fn(async command => {
 	return 'data';
 });
 
-S3RequestPresigner.prototype.presignRequest = jest.fn(
+S3RequestPresigner.prototype.presign = jest.fn(
 	async (request, expires) => {
 		return (Promise as any).resolve();
 	}
@@ -132,7 +132,7 @@ describe('StorageProvider test', () => {
 			});
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
+			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 
 			expect.assertions(3);
@@ -151,7 +151,7 @@ describe('StorageProvider test', () => {
 				});
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
+			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 			expect.assertions(4);
 			expect(
@@ -187,7 +187,7 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
+			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 			const spyon2 = jest.spyOn(Hub, 'dispatch');
 
@@ -274,7 +274,7 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
+			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 
 			expect.assertions(3);
@@ -295,7 +295,7 @@ describe('StorageProvider test', () => {
 			});
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
+			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 			await storage.get('my_key', { customPrefix: { public: '' } });
 			expect(spyon.mock.calls[0][0].path).toEqual('/my_key');
@@ -315,7 +315,7 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
+			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 
 			await storage.get('my_key', { customPrefix: { public: '123/' } });
@@ -334,7 +334,7 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
+			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 
 			expect.assertions(4);
@@ -361,7 +361,7 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
+			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 
 			expect.assertions(4);
@@ -388,7 +388,7 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
+			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 
 			expect.assertions(3);
@@ -425,7 +425,7 @@ describe('StorageProvider test', () => {
 		test('always ask for the current credentials', async () => {
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presignRequest');
+			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValue('url');
 			const curCredSpyOn = jest
 				.spyOn(Credentials, 'get')

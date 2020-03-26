@@ -25,14 +25,14 @@
 
 ### Depends on
 
-- [amplify-link](../amplify-link)
+- [amplify-button](../amplify-button)
 - [amplify-form-section](../amplify-form-section)
 - [amplify-auth-fields](../amplify-auth-fields)
 
 ### Graph
 ```mermaid
 graph TD;
-  amplify-confirm-sign-up --> amplify-link
+  amplify-confirm-sign-up --> amplify-button
   amplify-confirm-sign-up --> amplify-form-section
   amplify-confirm-sign-up --> amplify-auth-fields
   amplify-form-section --> amplify-section
