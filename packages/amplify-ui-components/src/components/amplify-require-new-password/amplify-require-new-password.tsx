@@ -111,7 +111,6 @@ export class AmplifyRequireNewPassword {
           <amplify-button
             variant="anchor"
             onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
-            style={{ display: 'flex', justifyContent: 'center' }}
           >
             {I18n.get(Translations.BACK_TO_SIGN_IN)}
           </amplify-button>
