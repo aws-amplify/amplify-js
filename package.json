@@ -1,90 +1,90 @@
 {
-  "name": "aws-amplify-monorepo",
-  "private": true,
-  "version": "0.1.30",
-  "description": "",
-  "scripts": {
-    "setup-dev": "yarn && yarn bootstrap && yarn link-all && yarn build",
-	"bootstrap": "lerna bootstrap",
-	"test": "lerna run test --stream",
-	"cypress": "lerna run cypress",
-	"cypress:open": "lerna run cypress:open",
-	"coverage": "codecov || exit 0",
-	"docs": "typedoc packages/**/src --name amplify-js --hideGenerator --excludePrivate --ignoreCompilerErrors --mode file --out docs/api --theme docs/amplify-theme/typedoc/ --readme README.md",
-	"build": "lerna run build --stream",
-	"build:esm:watch": "lerna run build:esm:watch --parallel",
-	"build:cjs:watch": "lerna run build:cjs:watch --parallel",
-	"clean": "lerna run clean --parallel",
-	"format": "lerna run format",
-	"lint": "lerna run lint",
-	"link-all": "yarn unlink-all && lerna exec --parallel yarn link",
-	"unlink-all": "lerna exec --parallel --bail=false yarn unlink",
-	"publish:master": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=unstable --preid=unstable --exact",
-	"publish:beta": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=beta --preid=beta --exact",
-	"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]'",
-	"publish:1.0-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-1.0 --message 'chore(release): Publish [ci skip]'",
-	"publish:modularization": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=preview --preid=preview --exact",
-    "publish:ui-components/master": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=ui-preview --preid=ui-preview --exact"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
-  },
-  "workspaces": [
-    "packages/*"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-js.git"
-  },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/aws-amplify/amplify-js/issues"
-  },
-  "homepage": "https://aws-amplify.github.io/",
-  "devDependencies": {
-    "@babel/cli": "^7.0.0",
-    "@babel/core": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "@babel/preset-react": "^7.0.0",
-    "@types/jest": "^24.0.18",
-    "@types/node": "^8.9.5",
-    "@types/puppeteer": "1.12.4",
-    "babel-loader": "^8.0.0",
-    "codecov": "^1.0.1",
-    "compression-webpack-plugin": "^1.1.3",
-    "cypress": "^3.2.0",
-    "husky": "^3.0.5",
-    "jest": "^24.x.x",
-    "jest-config": "24.8.0",
-    "json-loader": "^0.5.7",
-	"lerna": "^3.13.1",
-	"prettier": "^1.19.0",
-    "pretty-quick": "^1.11.1",
-    "rimraf": "^2.6.2",
-    "rollup": "^0.67.4",
-    "rollup-plugin-commonjs": "^9.2.0",
-    "rollup-plugin-json": "^3.1.0",
-    "rollup-plugin-node-resolve": "^4.0.0",
-    "rollup-plugin-sourcemaps": "^0.4.2",
-    "rollup-plugin-typescript": "^1.0.0",
-    "source-map-loader": "^0.2.1",
-    "ts-jest": "^24.x.x",
-    "tslint": "^5.7.0",
-    "tslint-config-airbnb": "^5.8.0",
-    "typedoc": "^0.16.9",
-    "typescript": "~3.6.4",
-	"uglifyjs-webpack-plugin": "^0.4.6",
-	"uuid-validate": "^0.0.3",
-    "webpack": "^4.32.0",
-    "webpack-bundle-analyzer": "^3.3.2",
-    "webpack-cli": "^3.1.0",
-    "winston": "^3.2.1"
-  },
-  "jest": {
-    "resetMocks": true,
-    "verbose": true
-  }
+	"name": "aws-amplify-monorepo",
+	"private": true,
+	"version": "0.1.30",
+	"description": "",
+	"scripts": {
+		"setup-dev": "yarn && yarn bootstrap && yarn link-all && yarn build",
+		"bootstrap": "lerna bootstrap",
+		"test": "lerna run test --stream",
+		"cypress": "lerna run cypress",
+		"cypress:open": "lerna run cypress:open",
+		"coverage": "codecov || exit 0",
+		"docs": "typedoc packages/**/src --name amplify-js --hideGenerator --excludePrivate --ignoreCompilerErrors --mode file --out docs/api --theme docs/amplify-theme/typedoc/ --readme README.md",
+		"build": "lerna run build --stream",
+		"build:esm:watch": "lerna run build:esm:watch --parallel",
+		"build:cjs:watch": "lerna run build:cjs:watch --parallel",
+		"clean": "lerna run clean --parallel",
+		"format": "lerna run format",
+		"lint": "lerna run lint",
+		"link-all": "yarn unlink-all && lerna exec --no-bail --parallel yarn link",
+		"unlink-all": "lerna exec --no-bail --parallel -- yarn unlink; exit 0",
+		"publish:master": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=unstable --preid=unstable --exact",
+		"publish:beta": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=beta --preid=beta --exact",
+		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]'",
+		"publish:1.0-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-1.0 --message 'chore(release): Publish [ci skip]'",
+		"publish:modularization": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=preview --preid=preview --exact",
+		"publish:ui-components/master": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=ui-preview --preid=ui-preview --exact"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "pretty-quick --staged"
+		}
+	},
+	"workspaces": [
+		"packages/*"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git"
+	},
+	"author": "Amazon Web Services",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/aws-amplify/amplify-js/issues"
+	},
+	"homepage": "https://aws-amplify.github.io/",
+	"devDependencies": {
+		"@babel/cli": "^7.0.0",
+		"@babel/core": "^7.0.0",
+		"@babel/preset-env": "^7.0.0",
+		"@babel/preset-react": "^7.0.0",
+		"@types/jest": "^24.0.18",
+		"@types/node": "^8.9.5",
+		"@types/puppeteer": "1.3.0",
+		"babel-loader": "^8.0.0",
+		"codecov": "^3.6.5",
+		"compression-webpack-plugin": "^1.1.3",
+		"cypress": "^3.2.0",
+		"husky": "^3.0.5",
+		"jest": "^24.x.x",
+		"jest-config": "24.8.0",
+		"json-loader": "^0.5.7",
+		"lerna": "^3.13.1",
+		"prettier": "^1.19.0",
+		"pretty-quick": "^1.11.1",
+		"rimraf": "^2.6.2",
+		"rollup": "^0.67.4",
+		"rollup-plugin-commonjs": "^9.2.0",
+		"rollup-plugin-json": "^3.1.0",
+		"rollup-plugin-node-resolve": "^4.0.0",
+		"rollup-plugin-sourcemaps": "^0.4.2",
+		"rollup-plugin-typescript": "^1.0.0",
+		"source-map-loader": "^0.2.1",
+		"ts-jest": "^24.x.x",
+		"tslint": "^5.7.0",
+		"tslint-config-airbnb": "^5.8.0",
+		"typedoc": "^0.16.9",
+		"typescript": "~3.6.4",
+		"uglifyjs-webpack-plugin": "^0.4.6",
+		"uuid-validate": "^0.0.3",
+		"webpack": "^4.32.0",
+		"webpack-bundle-analyzer": "^3.3.2",
+		"webpack-cli": "^3.1.0",
+		"winston": "^3.2.1"
+	},
+	"jest": {
+		"resetMocks": true,
+		"verbose": true
+	}
 }

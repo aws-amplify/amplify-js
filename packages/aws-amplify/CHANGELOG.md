@@ -3,17 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-<<<<<<< HEAD
-# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@1.2.4...aws-amplify@1.3.0) (2020-01-10)
+## [2.2.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.5...aws-amplify@2.2.6) (2020-02-28)
 
-### Features
+**Note:** Version bump only for package aws-amplify
 
-- enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
+## [2.2.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.4...aws-amplify@2.2.5) (2020-02-14)
 
-### Reverts
+**Note:** Version bump only for package aws-amplify
 
-- Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
-=======
 ## [2.2.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.2...aws-amplify@2.2.4) (2020-02-07)
 
 ### Bug Fixes
@@ -42,7 +39,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Features
 
 - enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
->>>>>>> upstream/modularization
 
 ## [1.2.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@1.2.3...aws-amplify@1.2.4) (2019-10-29)
 
