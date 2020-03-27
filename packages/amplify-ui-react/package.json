@@ -30,7 +30,7 @@
 		"typescript": "^3.3.4000"
 	},
 	"dependencies": {
-		"@aws-amplify/ui-components": "*"
+		"@aws-amplify/ui-components": "^0.1.0"
 	},
 	"peerDependencies": {
 		"react": "^16.7.0",
