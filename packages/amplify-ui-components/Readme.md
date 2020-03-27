@@ -221,7 +221,7 @@ Amplify UI Components use [slots](https://developer.mozilla.org/en-US/docs/Web/H
 | `"totp-setup"`           | Content placed inside of the totp-setup workflow for when a user opts to use TOTP MFA                                  |
 | `"greetings"`            | Content placed inside of the greetings navigation for when a user is signed in                                         |
 
-**Framworks**
+**Frameworks**
 
 - [React](#react-1)
 - [Angular](#angular-1)
