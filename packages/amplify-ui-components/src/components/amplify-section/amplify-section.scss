@@ -11,9 +11,16 @@
   padding: 35px 40px;
   text-align: left;
   display: inline-block;
-  min-width: 460px;
   border-radius: 6px;
   box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
   font-family: var(--font-family);
+
+  width: 100%;
+  min-width: 320px;
+
+  @include md {
+    width: auto;
+    min-width: 460px;
+  }
 }
