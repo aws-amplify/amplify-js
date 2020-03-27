@@ -7,6 +7,6 @@ Collection of stories & documentation for `@aws-amplify/ui-components` and relat
 _All commands take place in the monorepo root._
 
 1. `yarn bootstrap`
-1. In another tab, `yarn workspace @aws-amplify/ui-components build:watch`.
+1. In another tab, `yarn lerna run build:watch --parallel --scope="@aws-amplify/ui-*" --stream`.
 1. `yarn workspace @aws-amplify/ui-storybook start`
 1. Check out the stories!
