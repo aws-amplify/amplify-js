@@ -393,7 +393,7 @@ const federated = {
 }
 
 // react
-<amplify-authenticator federated={federated} />
+<AmplifyAuthenticator federated={federated} />
 
 // angular, vue, or web components
 <amplify-authenticator federated={federated} />
