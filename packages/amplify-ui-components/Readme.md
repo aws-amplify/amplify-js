@@ -221,7 +221,7 @@ Amplify UI Components use [slots](https://developer.mozilla.org/en-US/docs/Web/H
 | `"totp-setup"`           | Content placed inside of the totp-setup workflow for when a user opts to use TOTP MFA                                  |
 | `"greetings"`            | Content placed inside of the greetings navigation for when a user is signed in                                         |
 
-**Framworks**
+**Frameworks**
 
 - [React](#react-1)
 - [Angular](#angular-1)
@@ -244,6 +244,19 @@ const App = () => {
     </div>
   </AmplifyAuthenticator>;
 };
+```
+
+Alternatively, you can use the `withAuthenticator` higher-order component (HoC):
+
+```js
+import { withAuthenticator } from '@aws-amplify/ui-react';
+
+...
+
+export default withAuthenticator(App);
+// or
+export default withAuthenticator(App, { /* ...amplifyAuthenticatorSettings */ })
+});
 ```
 
 #### Angular
@@ -339,6 +352,20 @@ Theming for the UI components can be achieved by using [CSS Variables](https://d
 | `--amplify-white`              | #ffffff              |
 | `--amplify-red`                | #dd3f5b              |
 
+## Amplify Authenticator `usernameAlias`
+
+The `amplify-authenticator` component has the ability to sign in or sign up with `email` or `phone_number` instead of default `username`. To achieve this, you first need to setup the userpool to allow email or phone number as the username [using the cli workflow](https://aws-amplify.github.io/docs/cli-toolchain/quickstart#configuring-auth-without-social-providers) or through the [Cognito Console](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-aliases-settings-option-2). To reflect this in the `amplify-authenticator` component, you can use the `usernameAlias` property. It can take one of the three values - `email`, `phone_number` or `username`. Default is set to `username`.
+
+**Usage:**
+
+```js
+// react
+<AmplifyAuthenticator usernameAlias="email" />
+
+// angular, vue or web components
+<amplify-authenticator username-alias="phone_number" />
+```
+
 ## Migration Guide
 
 - [React](#react-2)
@@ -373,6 +400,21 @@ const App = () => (
 - </Authenticator>
 );
 ```
+
+If you're using the [`withAuthenticator`](https://aws-amplify.github.io/docs/js/authentication#using-withauthenticator-hoc) higher-order component (HoC):
+
+```diff
+- import { withAuthenticator } from 'aws-amplify-react';
++ import { withAuthenticator } from '@aws-amplify/ui-react';
+
+...
+
+export default withAuthenticator(App);
+```
+
+**Note:** If you were providing additional options to `withAuthenticator` (e.g. `includeGreetings`, `authenticatorComponents`, `federated`, `theme`), these have changed:
+
+> [amplify-authenticator#properties](src/components/amplify-authenticator/readme.md#properties)
 
 #### Angular
 

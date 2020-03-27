@@ -1,5 +1,9 @@
 import { Auth } from 'aws-amplify';
-import { AmplifyAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
+import {
+	AmplifyAuthenticator,
+	AmplifySignOut,
+	withAuthenticator,
+} from '@aws-amplify/ui-react';
 import { withKnobs, select, text } from '@storybook/addon-knobs';
 import React from 'react';
 
@@ -12,14 +16,20 @@ export default {
 	parameters: { docs: { page } },
 };
 
-export const basic = () => (
-	<AmplifyAuthenticator>
+const App = () => (
+	<>
 		<h1>You are signed in!</h1>
 		<AmplifySignOut />
+	</>
+);
+
+export const basic = () => (
+	<AmplifyAuthenticator>
+		<App />
 	</AmplifyAuthenticator>
 );
 
-export const federatedIdentityProviders = () => (
+export const FederatedIdentityProviders = () => (
 	<AmplifyAuthenticator
 		federated={{
 			amazonClientId: text('Amazon client ID', 'amazon_client_id'),
@@ -37,7 +47,7 @@ export const federatedIdentityProviders = () => (
 );
 
 // Styles from https://developers.google.com/identity/sign-in/web/sign-in
-export const federatedOAuthProviders = () => (
+export const FederatedOAuthProviders = () => (
 	<AmplifyAuthenticator>
 		<div
 			slot="sign-in"
@@ -130,7 +140,7 @@ export const federatedOAuthProviders = () => (
 	</AmplifyAuthenticator>
 );
 
-federatedOAuthProviders.story = {
+FederatedOAuthProviders.story = {
 	name: 'Federated OAuth Providers',
 };
 
@@ -149,4 +159,22 @@ export const initialState = () => {
 			initialAuthState={initialAuthState as any}
 		/>
 	);
+};
+
+export const BasicWithAuthenticator = () => {
+	return withAuthenticator(App);
+};
+
+BasicWithAuthenticator.story = {
+	name: 'Basic withAuthenticator',
+};
+
+export const WithAuthenticatorWithUsernameAlias = () => {
+	return withAuthenticator(App, {
+		usernameAlias: 'email',
+	});
+};
+
+WithAuthenticatorWithUsernameAlias.story = {
+	name: 'withAuthenticator with usernameAlias',
 };
