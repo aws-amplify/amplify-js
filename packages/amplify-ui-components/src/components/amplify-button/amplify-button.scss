@@ -9,9 +9,17 @@
   --link-color: var(--amplify-primary-color);
   --link-hover: var(--amplify-primary-tint);
   --link-active: var(--amplify-primary-shade);
+
+  width: 100%;
+  text-align: center;
+
+  @include md {
+    width: inherit;
+  }
 }
 
 .button {
+  width: 100%;
   min-width: 153px;
   display: inline-block;
   margin-bottom: 0;
@@ -72,4 +80,3 @@
     text-decoration: underline;
   }
 }
-

@@ -163,11 +163,17 @@ export class CredentialsClass {
 			return true;
 		}
 		logger.debug('are these credentials expired?', credentials);
-		const ts = Math.floor(Date.now() / 1000);
-		const delta = 10 * 60; // 10 minutes in seconds
-		const { expiration } = credentials; // returns unix time stamp
+		const ts = Date.now();
+		const delta = 10 * 60 * 1000; // 10 minutes in milli seconds
 
-		if (expiration > ts + delta && ts < this._nextCredentialsRefresh) {
+		/* returns date object.
+			https://github.com/aws/aws-sdk-js-v3/blob/v1.0.0-beta.1/packages/types/src/credentials.ts#L26
+		*/
+		const { expiration } = credentials;
+		if (
+			expiration.getTime() > ts + delta &&
+			ts < this._nextCredentialsRefresh
+		) {
 			return false;
 		}
 		return true;

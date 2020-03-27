@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import * as Observable from 'zen-observable';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 import { GraphQLError } from 'graphql';
 import * as url from 'url';
 import { v4 as uuid } from 'uuid';
@@ -29,6 +29,7 @@ import {
 import Cache from '@aws-amplify/cache';
 import Auth from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from './PubSubProvider';
+import { CONTROL_MSG } from '@aws-amplify/pubsub';
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
@@ -148,6 +149,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	private keepAliveTimeout = DEFAULT_KEEP_ALIVE_TIMEOUT;
 	private subscriptionObserverMap: Map<string, ObserverQuery> = new Map();
 	private promiseArray: Array<{ res: Function; rej: Function }> = [];
+
 	getProviderName() {
 		return 'AWSAppSyncRealTimeProvider';
 	}
@@ -191,17 +193,24 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					try {
 						// Waiting that subscription has been connected before trying to unsubscribe
 						await this._waitForSubscriptionToBeConnected(subscriptionId);
-						const { subscriptionState } = this.subscriptionObserverMap.get(
-							subscriptionId
-						);
+
+						const { subscriptionState } =
+							this.subscriptionObserverMap.get(subscriptionId) || {};
+
+						if (!subscriptionState) {
+							// subscription already unsubscribed
+							return;
+						}
+
 						if (subscriptionState === SUBSCRIPTION_STATUS.CONNECTED) {
 							this._sendUnsubscriptionMessage(subscriptionId);
 						} else {
-							throw new Error('Subscription fail, start removing subscription');
+							throw new Error('Subscription never connected');
 						}
 					} catch (err) {
+						logger.debug(`Error while unsubscribing ${err}`);
+					} finally {
 						this._removeSubscriptionObserver(subscriptionId);
-						return;
 					}
 				};
 			}
@@ -241,7 +250,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 		const dataString = JSON.stringify(data);
 		const headerObj = {
-			...graphql_headers(),
 			...(await this._awsRealTimeHeaderBasedAuth({
 				apiKey,
 				appSyncGraphqlEndpoint,
@@ -250,6 +258,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				canonicalUri: '',
 				region,
 			})),
+			...(await graphql_headers()),
 			[USER_AGENT_HEADER]: Constants.userAgent,
 		};
 
@@ -361,8 +370,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				};
 				const stringToAWSRealTime = JSON.stringify(unsubscribeMessage);
 				this.awsRealTimeSocket.send(stringToAWSRealTime);
-
-				this._removeSubscriptionObserver(subscriptionId);
 			}
 		} catch (err) {
 			// If GQL_STOP is not sent because of disconnection issue, then there is nothing the client can do
@@ -372,23 +379,31 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 	private _removeSubscriptionObserver(subscriptionId) {
 		this.subscriptionObserverMap.delete(subscriptionId);
-		if (this.subscriptionObserverMap.size === 0) {
-			// Socket could be sending data to unsubscribe so is required to wait until is flushed
-			this._closeSocketWhenFlushed();
-		}
+
+		// Verifying 1000ms after removing subscription in case there are new subscription unmount/mount
+		setTimeout(this._closeSocketIfRequired.bind(this), 1000);
 	}
 
-	private _closeSocketWhenFlushed() {
-		logger.debug('closing WebSocket...');
-		clearTimeout(this.keepAliveTimeoutId);
+	private _closeSocketIfRequired() {
+		if (this.subscriptionObserverMap.size > 0) {
+			// Active subscriptions on the WebSocket
+			return;
+		}
+
 		if (!this.awsRealTimeSocket) {
 			this.socketStatus = SOCKET_STATUS.CLOSED;
 			return;
 		}
 		if (this.awsRealTimeSocket.bufferedAmount > 0) {
-			setTimeout(this._closeSocketWhenFlushed.bind(this), 1000);
+			// Still data on the WebSocket
+			setTimeout(this._closeSocketIfRequired.bind(this), 1000);
 		} else {
+			logger.debug('closing WebSocket...');
+			clearTimeout(this.keepAliveTimeoutId);
 			const tempSocket = this.awsRealTimeSocket;
+			// Cleaning callbacks to avoid race condition, socket still exists
+			tempSocket.onclose = undefined;
+			tempSocket.onerror = undefined;
 			tempSocket.close(1000);
 			this.awsRealTimeSocket = null;
 			this.socketStatus = SOCKET_STATUS.CLOSED;
@@ -451,7 +466,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		if (type === MESSAGE_TYPES.GQL_CONNECTION_KEEP_ALIVE) {
 			clearTimeout(this.keepAliveTimeoutId);
 			this.keepAliveTimeoutId = setTimeout(
-				this._timeoutDisconnect.bind(this),
+				this._errorDisconnect.bind(this, CONTROL_MSG.TIMEOUT_DISCONNECT),
 				this.keepAliveTimeout
 			);
 			return;
@@ -487,16 +502,16 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		}
 	}
 
-	private _timeoutDisconnect() {
+	private _errorDisconnect(msg: string) {
+		logger.debug(`Disconnect error: ${msg}`);
 		this.subscriptionObserverMap.forEach(({ observer }) => {
 			if (!observer.closed) {
 				observer.error({
-					errors: [{ ...new GraphQLError(`Timeout disconnect`) }],
+					errors: [{ ...new GraphQLError(msg) }],
 				});
-				observer.complete();
 			}
 		});
-		this.subscriptionObserverMap = new Map();
+		this.subscriptionObserverMap.clear();
 		if (this.awsRealTimeSocket) {
 			this.awsRealTimeSocket.close();
 		}
@@ -632,7 +647,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				return new Promise((res, rej) => {
 					let ackOk = false;
 					this.awsRealTimeSocket.onerror = error => {
-						logger.debug(`WebSocket closed ${JSON.stringify(error)}`);
+						logger.debug(`WebSocket error ${JSON.stringify(error)}`);
 					};
 					this.awsRealTimeSocket.onclose = event => {
 						logger.debug(`WebSocket closed ${event.reason}`);
@@ -656,7 +671,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 							this.awsRealTimeSocket.onmessage = this._handleIncomingSubscriptionMessage.bind(
 								this
 							);
-							this.awsRealTimeSocket.onerror = logger.debug;
+							this.awsRealTimeSocket.onerror = err => {
+								logger.debug(err);
+								this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
+							};
 							res('Cool, connected to AWS AppSyncRealTime');
 							return;
 						}

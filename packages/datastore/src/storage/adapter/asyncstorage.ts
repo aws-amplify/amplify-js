@@ -1,5 +1,5 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import * as idb from 'idb';
+import AsyncStorageDatabase from './AsyncStorageDatabase';
 import { Adapter } from '.';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ModelPredicateCreator } from '../../predicates';
@@ -22,14 +22,11 @@ import {
 	isModelConstructor,
 	traverseModel,
 	validatePredicate,
-	isPrivateMode,
 } from '../../util';
 
 const logger = new Logger('DataStore');
 
-const DB_NAME = 'amplify-datastore';
-
-class IndexedDBAdapter implements Adapter {
+class AsyncStorageAdapter implements Adapter {
 	private schema: InternalSchema;
 	private namespaceResolver: NamespaceResolver;
 	private modelInstanceCreator: ModelInstanceCreator;
@@ -37,24 +34,10 @@ class IndexedDBAdapter implements Adapter {
 		namsespaceName: string,
 		modelName: string
 	) => PersistentModelConstructor<any>;
-	private db: idb.IDBPDatabase;
+	private db: any;
 	private initPromise: Promise<void>;
 	private resolve: (value?: any) => void;
 	private reject: (value?: any) => void;
-
-	private async checkPrivate() {
-		const isPrivate = await isPrivateMode().then(isPrivate => {
-			return isPrivate;
-		});
-		if (isPrivate) {
-			logger.error("IndexedDB not supported in this browser's private mode");
-			return Promise.reject(
-				"IndexedDB not supported in this browser's private mode"
-			);
-		} else {
-			return Promise.resolve();
-		}
-	}
 
 	private getStorenameForModel(
 		modelConstructor: PersistentModelConstructor<any>
@@ -80,7 +63,6 @@ class IndexedDBAdapter implements Adapter {
 			modelName: string
 		) => PersistentModelConstructor<any>
 	) {
-		await this.checkPrivate();
 		if (!this.initPromise) {
 			this.initPromise = new Promise((res, rej) => {
 				this.resolve = res;
@@ -89,31 +71,13 @@ class IndexedDBAdapter implements Adapter {
 		} else {
 			await this.initPromise;
 		}
-
 		this.schema = theSchema;
 		this.namespaceResolver = namespaceResolver;
 		this.modelInstanceCreator = modelInstanceCreator;
 		this.getModelConstructorByModelName = getModelConstructorByModelName;
-
 		try {
 			if (!this.db) {
-				this.db = await idb.openDB(DB_NAME, 1, {
-					upgrade: (db, _oldVersion, _newVersion, _txn) => {
-						const keyPath: string = <string>(<keyof PersistentModel>'id');
-						Object.keys(theSchema.namespaces).forEach(namespaceName => {
-							const namespace = theSchema.namespaces[namespaceName];
-
-							Object.keys(namespace.models).forEach(modelName => {
-								const indexes = this.schema.namespaces[namespaceName]
-									.relationships[modelName].indexes;
-								const storeName = this.getStorename(namespaceName, modelName);
-								const store = db.createObjectStore(storeName, { keyPath });
-								indexes.forEach(index => store.createIndex(index, index));
-							});
-						});
-					},
-				});
-
+				this.db = new AsyncStorageDatabase();
 				this.resolve();
 			}
 		} catch (error) {
@@ -125,7 +89,6 @@ class IndexedDBAdapter implements Adapter {
 		model: T,
 		condition?: ModelPredicate<T>
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
-		await this.checkPrivate();
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
 		const storeName = this.getStorenameForModel(modelConstructor);
@@ -137,7 +100,6 @@ class IndexedDBAdapter implements Adapter {
 			this.getModelConstructorByModelName
 		);
 		const namespaceName = this.namespaceResolver(modelConstructor);
-
 		const set = new Set<string>();
 		const connectionStoreNames = Object.values(connectedModels).map(
 			({ modelName, item, instance }) => {
@@ -146,13 +108,7 @@ class IndexedDBAdapter implements Adapter {
 				return { storeName, item, instance };
 			}
 		);
-		const tx = this.db.transaction(
-			[storeName, ...Array.from(set.values())],
-			'readwrite'
-		);
-		const store = tx.objectStore(storeName);
-
-		const fromDB = await store.get(model.id);
+		const fromDB = await this.db.get(model.id, storeName);
 
 		if (condition) {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
@@ -172,28 +128,25 @@ class IndexedDBAdapter implements Adapter {
 
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
-			const store = tx.objectStore(storeName);
 
 			const { id } = item;
 
-			const opType: OpType =
-				(await store.get(id)) === undefined ? OpType.INSERT : OpType.UPDATE;
+			const opType: OpType = (await this.db.get(id, storeName))
+				? OpType.UPDATE
+				: OpType.INSERT;
 
-			// It is me
 			if (id === model.id) {
-				await store.put(item);
+				await this.db.save(item, storeName);
 
 				result.push([instance, opType]);
 			} else {
 				if (opType === OpType.INSERT) {
-					await store.put(item);
+					await this.db.save(item, storeName);
 
 					result.push([instance, opType]);
 				}
 			}
 		}
-
-		await tx.done;
 
 		return result;
 	}
@@ -219,22 +172,22 @@ class IndexedDBAdapter implements Adapter {
 			);
 		}
 
-		const tx = this.db.transaction([...connectionStoreNames], 'readonly');
-
 		for await (const relation of relations) {
-			const { fieldName, modelName, targetName } = relation;
+			const { fieldName, modelName, targetName, relationType } = relation;
 			const storeName = this.getStorename(namespaceName, modelName);
-			const store = tx.objectStore(storeName);
 			const modelConstructor = this.getModelConstructorByModelName(
 				namespaceName,
 				modelName
 			);
 
-			switch (relation.relationType) {
+			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const recordItem of records) {
 						if (recordItem[fieldName]) {
-							const connectionRecord = await store.get(recordItem[fieldName]);
+							const connectionRecord = await this.db.get(
+								recordItem[fieldName],
+								storeName
+							);
 
 							recordItem[fieldName] =
 								connectionRecord &&
@@ -246,7 +199,10 @@ class IndexedDBAdapter implements Adapter {
 				case 'BELONGS_TO':
 					for await (const recordItem of records) {
 						if (recordItem[targetName]) {
-							const connectionRecord = await store.get(recordItem[targetName]);
+							const connectionRecord = await this.db.get(
+								recordItem[targetName],
+								storeName
+							);
 
 							recordItem[fieldName] =
 								connectionRecord &&
@@ -260,7 +216,7 @@ class IndexedDBAdapter implements Adapter {
 					// TODO: Lazy loading
 					break;
 				default:
-					exhaustiveCheck(relation.relationType);
+					exhaustiveCheck(relationType);
 					break;
 			}
 		}
@@ -275,7 +231,6 @@ class IndexedDBAdapter implements Adapter {
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput
 	): Promise<T[]> {
-		await this.checkPrivate();
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
@@ -292,19 +247,17 @@ class IndexedDBAdapter implements Adapter {
 				if (idPredicate) {
 					const { operand: id } = idPredicate;
 
-					const record = <any>await this.db.get(storeName, id);
+					const record = <any>await this.db.get(id, storeName);
 
 					if (record) {
 						const [x] = await this.load(namespaceName, modelConstructor.name, [
 							record,
 						]);
-
 						return [x];
 					}
 					return [];
 				}
 
-				// TODO: Use indices if possible
 				const all = <T[]>await this.db.getAll(storeName);
 
 				const filtered = predicateObjs
@@ -318,11 +271,12 @@ class IndexedDBAdapter implements Adapter {
 				);
 			}
 		}
+		const all = <T[]>await this.db.getAll(storeName);
 
 		return await this.load(
 			namespaceName,
 			modelConstructor.name,
-			await this.enginePagination(storeName, pagination)
+			this.inMemoryPagination(all, pagination)
 		);
 	}
 
@@ -342,65 +296,12 @@ class IndexedDBAdapter implements Adapter {
 		return records;
 	}
 
-	private async enginePagination<T>(
-		storeName,
-		pagination?: PaginationInput
-	): Promise<T[]> {
-		let result: T[];
-
-		if (pagination) {
-			const { page = 0, limit = 0 } = pagination;
-			const initialRecord = Math.max(0, page * limit) || 0;
-
-			let cursor = await this.db
-				.transaction(storeName)
-				.objectStore(storeName)
-				.openCursor();
-
-			if (initialRecord > 0) {
-				await cursor.advance(initialRecord);
-			}
-
-			const pageResults: T[] = [];
-
-			const hasLimit = typeof limit === 'number' && limit > 0;
-			let moreRecords = true;
-			let itemsLeft = limit;
-			while (moreRecords && cursor.value) {
-				pageResults.push(cursor.value);
-
-				cursor = await cursor.continue();
-
-				if (hasLimit) {
-					itemsLeft--;
-					moreRecords = itemsLeft > 0 && cursor !== null;
-				} else {
-					moreRecords = cursor !== null;
-				}
-			}
-
-			result = pageResults;
-		} else {
-			result = <T[]>await this.db.getAll(storeName);
-		}
-
-		return result;
-	}
-
 	async queryOne<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		firstOrLast: QueryOne = QueryOne.FIRST
 	): Promise<T | undefined> {
-		await this.checkPrivate();
 		const storeName = this.getStorenameForModel(modelConstructor);
-
-		const cursor = await this.db
-			.transaction([storeName], 'readonly')
-			.objectStore(storeName)
-			.openCursor(undefined, firstOrLast === QueryOne.FIRST ? 'next' : 'prev');
-
-		const result = cursor ? <T>cursor.value : undefined;
-
+		const result = <T>await this.db.getOne(firstOrLast, storeName);
 		return result && this.modelInstanceCreator(modelConstructor, result);
 	}
 
@@ -408,16 +309,15 @@ class IndexedDBAdapter implements Adapter {
 		modelOrModelConstructor: T | PersistentModelConstructor<T>,
 		condition?: ModelPredicate<T>
 	): Promise<[T[], T[]]> {
-		await this.checkPrivate();
 		const deleteQueue: { storeName: string; items: T[] }[] = [];
 
 		if (isModelConstructor(modelOrModelConstructor)) {
 			const modelConstructor = modelOrModelConstructor;
 			const nameSpace = this.namespaceResolver(modelConstructor);
 
-			const storeName = this.getStorenameForModel(modelConstructor);
-
+			// models to be deleted.
 			const models = await this.query(modelConstructor, condition);
+			// TODO: refactor this to use a function like getRelations()
 			const relations = this.schema.namespaces[nameSpace].relationships[
 				modelConstructor.name
 			].relationTypes;
@@ -437,7 +337,6 @@ class IndexedDBAdapter implements Adapter {
 					(acc, { items }) => acc.concat(items),
 					<T[]>[]
 				);
-
 				return [models, deletedModels];
 			} else {
 				await this.deleteTraverse(
@@ -448,11 +347,7 @@ class IndexedDBAdapter implements Adapter {
 					deleteQueue
 				);
 
-				// Delete all
-				await this.db
-					.transaction([storeName], 'readwrite')
-					.objectStore(storeName)
-					.clear();
+				await this.deleteItem(deleteQueue);
 
 				const deletedModels = deleteQueue.reduce(
 					(acc, { items }) => acc.concat(items),
@@ -469,32 +364,18 @@ class IndexedDBAdapter implements Adapter {
 			const nameSpace = this.namespaceResolver(modelConstructor);
 
 			const storeName = this.getStorenameForModel(modelConstructor);
-
 			if (condition) {
-				const tx = this.db.transaction([storeName], 'readwrite');
-				const store = tx.objectStore(storeName);
-
-				const fromDB = await store.get(model.id);
-
-				if (fromDB === undefined) {
-					const msg = 'Model instance not found in storage';
-					logger.warn(msg, { model });
-
-					return [[model], []];
-				}
-
+				const fromDB = await this.db.get(model.id, storeName);
 				const predicates = ModelPredicateCreator.getPredicates(condition);
 				const { predicates: predicateObjs, type } = predicates;
 
 				const isValid = validatePredicate(fromDB, type, predicateObjs);
-
 				if (!isValid) {
 					const msg = 'Conditional update failed';
 					logger.error(msg, { model: fromDB, condition: predicateObjs });
 
 					throw new Error(msg);
 				}
-				await tx.done;
 
 				const relations = this.schema.namespaces[nameSpace].relationships[
 					modelConstructor.name
@@ -534,26 +415,27 @@ class IndexedDBAdapter implements Adapter {
 	private async deleteItem<T extends PersistentModel>(
 		deleteQueue?: { storeName: string; items: T[] | IDBValidKey[] }[]
 	) {
-		const connectionStoreNames = deleteQueue.map(({ storeName }) => {
-			return storeName;
-		});
-
-		const tx = this.db.transaction([...connectionStoreNames], 'readwrite');
 		for await (const deleteItem of deleteQueue) {
 			const { storeName, items } = deleteItem;
-			const store = tx.objectStore(storeName);
 
 			for await (const item of items) {
 				if (item) {
 					if (typeof item === 'object') {
-						await store.delete(item['id']);
+						const id = item['id'];
+						await this.db.delete(id, storeName);
 					}
-					await store.delete(item.toString());
 				}
 			}
 		}
 	}
-
+	/**
+	 * Populates the delete Queue with all the items to delete
+	 * @param relations
+	 * @param models
+	 * @param srcModel
+	 * @param nameSpace
+	 * @param deleteQueue
+	 */
 	private async deleteTraverse<T extends PersistentModel>(
 		relations: RelationType[],
 		models: T[],
@@ -562,26 +444,25 @@ class IndexedDBAdapter implements Adapter {
 		deleteQueue: { storeName: string; items: T[] }[]
 	): Promise<void> {
 		for await (const rel of relations) {
-			const { relationType, fieldName, modelName } = rel;
+			const { relationType, modelName } = rel;
 			const storeName = this.getStorename(nameSpace, modelName);
+			const index = getIndex(
+				this.schema.namespaces[nameSpace].relationships[modelName]
+					.relationTypes,
+				srcModel
+			);
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
-						const index = getIndex(
-							this.schema.namespaces[nameSpace].relationships[modelName]
-								.relationTypes,
-							srcModel
+						const allRecords = await this.db.getAll(storeName);
+						const recordToDelete = allRecords.filter(
+							childItem => childItem[index] === model.id
 						);
-						const recordToDelete = <T>await this.db
-							.transaction(storeName, 'readwrite')
-							.objectStore(storeName)
-							.index(index)
-							.get(model.id);
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
 								.relationTypes,
-							recordToDelete ? [recordToDelete] : [],
+							recordToDelete,
 							modelName,
 							nameSpace,
 							deleteQueue
@@ -589,17 +470,11 @@ class IndexedDBAdapter implements Adapter {
 					}
 					break;
 				case 'HAS_MANY':
-					const index = getIndex(
-						this.schema.namespaces[nameSpace].relationships[modelName]
-							.relationTypes,
-						srcModel
-					);
 					for await (const model of models) {
-						const childrenArray = await this.db
-							.transaction(storeName, 'readwrite')
-							.objectStore(storeName)
-							.index(index)
-							.getAll(model['id']);
+						const allRecords = await this.db.getAll(storeName);
+						const childrenArray = allRecords.filter(
+							childItem => childItem[index] === model.id
+						);
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
@@ -632,15 +507,11 @@ class IndexedDBAdapter implements Adapter {
 	}
 
 	async clear(): Promise<void> {
-		await this.checkPrivate();
-
-		this.db.close();
-
-		await idb.deleteDB(DB_NAME);
+		await this.db.clear();
 
 		this.db = undefined;
 		this.initPromise = undefined;
 	}
 }
 
-export default new IndexedDBAdapter();
+export default new AsyncStorageAdapter();

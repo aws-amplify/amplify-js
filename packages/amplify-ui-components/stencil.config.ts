@@ -14,7 +14,11 @@ export const config: Config = {
       include: ['@aws-amplify/auth', '@aws-amplify/core', '@aws-amplify/storage', '@aws-amplify/xr'],
     }),
     nodePolyfills(),
-    sass(),
+    sass({
+      injectGlobalPaths: [ 
+        'src/global/breakpoint.scss'
+      ]
+    }),
   ],
   nodeResolve: {
     browser: true,
