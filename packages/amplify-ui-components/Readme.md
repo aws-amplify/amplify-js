@@ -387,6 +387,21 @@ const App = () => (
 );
 ```
 
+If you're using the [`withAuthenticator`](https://aws-amplify.github.io/docs/js/authentication#using-withauthenticator-hoc) higher-order component (HoC):
+
+```diff
+- import { withAuthenticator } from 'aws-amplify-react';
++ import { withAuthenticator } from '@aws-amplify/ui-react';
+
+...
+
+export default withAuthenticator(App);
+```
+
+**Note:** If you were providing additional options to `withAuthenticator` (e.g. `includeGreetings`, `authenticatorComponents`, `federated`, `theme`), these have changed:
+
+> [amplify-authenticator#properties](src/components/amplify-authenticator/readme.md#properties)
+
 #### Angular
 
 ##### Installation
