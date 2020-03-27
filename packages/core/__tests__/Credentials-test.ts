@@ -47,11 +47,11 @@ describe('Credentials test', () => {
 			Amplify.register(cacheClass);
 			const credentials = new Credentials(null);
 
-			const expiration = new Date().getTime() + 20 * 60 * 1000;
+			const expiration = new Date(new Date().getTime() + 20 * 60 * 1000);
 			credentials['_credentials'] = {
 				expiration,
 			};
-			credentials['_nextCredentialsRefresh'] = expiration + 1;
+			credentials['_nextCredentialsRefresh'] = expiration.getTime() + 1;
 			expect(await credentials.get()).toEqual(credentials['_credentials']);
 		});
 
