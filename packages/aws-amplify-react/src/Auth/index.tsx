@@ -34,6 +34,7 @@ export { default as TOTPSetup } from './TOTPSetup';
 export { default as Loading } from './Loading';
 
 export * from './Provider';
+export * from './common/types';
 
 export function withAuthenticator(
 	Comp,
