@@ -12,6 +12,7 @@
 	},
 	"scripts": {
 		"build": "npm run clean && npm run compile",
+		"build:watch": "tsc -w",
 		"clean": "rm -rf dist",
 		"compile": "npm run tsc",
 		"tsc": "tsc -p ."
