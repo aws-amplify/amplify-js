@@ -36,7 +36,7 @@ export async function retry(
 	try {
 		return await functionToRetry(...args);
 	} catch (err) {
-		logger.debug(`error on ${functionToRetry.name}: ${err} `);
+		logger.debug(`error on ${functionToRetry.name}: ${JSON.stringify(err)} `);
 
 		if (isNonRetryableError(err)) {
 			logger.debug(`${functionToRetry.name} non retryable error ${err}`);
