@@ -458,7 +458,7 @@ export default class APIClass {
 		query,
 		variables,
 		authMode: defaultAuthenticationType,
-	}: GraphQLOptions): Observable<T> & { [key: string]: any] } {
+	}: GraphQLOptions): Observable<T> & { [key: string]: any } {
 		const {
 			aws_appsync_region: region,
 			aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
