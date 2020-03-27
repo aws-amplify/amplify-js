@@ -354,7 +354,7 @@ const createNonModelClass = <T>(typeDefinition: SchemaNonModel) => {
 const save = async <T extends PersistentModel>(
 	model: T,
 	condition?: ProducerModelPredicate<T>
-) => {
+): Promise<T> => {
 	await start();
 	const modelConstructor: PersistentModelConstructor<T> = model
 		? <PersistentModelConstructor<T>>model.constructor
@@ -374,7 +374,7 @@ const save = async <T extends PersistentModel>(
 		condition
 	);
 
-	const savedModel = await storage.runExclusive(async s => {
+	const [savedModel] = await storage.runExclusive(async s => {
 		await s.save(model, producedCondition);
 
 		return s.query(
@@ -645,6 +645,7 @@ let amplifyConfig: Record<string, any> = {};
 let conflictHandler: ConflictHandler;
 let errorHandler: (error: SyncError) => void;
 let maxRecordsToSync: number;
+let syncPageSize: number;
 let fullSyncInterval: number;
 
 function configure(config: DataStoreConfig = {}) {
@@ -653,6 +654,7 @@ function configure(config: DataStoreConfig = {}) {
 		conflictHandler: configConflictHandler,
 		errorHandler: configErrorHandler,
 		maxRecordsToSync: configMaxRecordsToSync,
+		syncPageSize: configSyncPageSize,
 		fullSyncInterval: configFullSyncInterval,
 		...configFromAmplify
 	} = config;
@@ -675,6 +677,11 @@ function configure(config: DataStoreConfig = {}) {
 		(configDataStore && configDataStore.maxRecordsToSync) ||
 		maxRecordsToSync ||
 		config.maxRecordsToSync;
+
+	syncPageSize =
+		(configDataStore && configDataStore.syncPageSize) ||
+		syncPageSize ||
+		config.syncPageSize;
 
 	fullSyncInterval =
 		(configDataStore && configDataStore.fullSyncInterval) ||
@@ -797,6 +804,7 @@ async function start(): Promise<void> {
 			storage,
 			modelInstanceCreator,
 			maxRecordsToSync,
+			syncPageSize,
 			conflictHandler,
 			errorHandler
 		);

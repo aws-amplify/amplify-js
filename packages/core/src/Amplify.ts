@@ -20,6 +20,7 @@ export default class Amplify {
 	static UI = null;
 	static XR = null;
 	static Predictions = null;
+	static DataStore = null;
 
 	static Logger = LoggerClass;
 	static ServiceWorker = null;

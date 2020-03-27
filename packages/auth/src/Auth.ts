@@ -247,8 +247,8 @@ export default class AuthClass {
 	}
 
 	/**
-	 * Sign up with username, password and other attrbutes like phone, email
-	 * @param {String | object} params - The user attirbutes used for signin
+	 * Sign up with username, password and other attributes like phone, email
+	 * @param {String | object} params - The user attributes used for signin
 	 * @param {String[]} restOfAttrs - for the backward compatability
 	 * @return - A promise resolves callback data if success
 	 */

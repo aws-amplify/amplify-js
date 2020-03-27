@@ -28,6 +28,7 @@ import Interactions, { InteractionsClass } from '@aws-amplify/interactions';
 import * as UI from '@aws-amplify/ui';
 import XR, { XRClass } from '@aws-amplify/xr';
 import Predictions from '@aws-amplify/predictions';
+import { DataStore } from '@aws-amplify/datastore';
 
 import Amplify, {
 	ConsoleLogger as Logger,
@@ -54,6 +55,7 @@ Amplify.Interactions = Interactions;
 Amplify.UI = UI;
 Amplify.XR = XR;
 Amplify.Predictions = Predictions;
+Amplify.DataStore = DataStore;
 
 export {
 	Auth,
