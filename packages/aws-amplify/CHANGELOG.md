@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.3.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.7...aws-amplify@2.3.0) (2020-03-30)
+
+
+### Features
+
+* **@aws-amplify/datastore:** Make DataStore available in aws-amplify… ([#5202](https://github.com/aws-amplify/amplify-js/issues/5202)) ([c9c020d](https://github.com/aws-amplify/amplify-js/commit/c9c020d6d13c5678ce15c738f7eaebec39e2b48a))
+
+
+
+
+
 ## [2.2.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.6...aws-amplify@2.2.7) (2020-03-25)
 
 **Note:** Version bump only for package aws-amplify

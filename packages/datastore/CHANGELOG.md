@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@1.1.0...@aws-amplify/datastore@1.2.0) (2020-03-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** Make save return a single model instead of array ([#5199](https://github.com/aws-amplify/amplify-js/issues/5199)) ([1d0b8e1](https://github.com/aws-amplify/amplify-js/commit/1d0b8e13af483b7ab47d9b4bcd6aa00d8e67d9f1)), closes [#5099](https://github.com/aws-amplify/amplify-js/issues/5099)
+
+
+### Features
+
+* **@aws-amplify/datastore:** configurable sync pagination limit ([#5181](https://github.com/aws-amplify/amplify-js/issues/5181)) ([a4f518b](https://github.com/aws-amplify/amplify-js/commit/a4f518b42e192c894300225a4c5608d397eb6816))
+
+
+
+
+
 # [1.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@1.0.8...@aws-amplify/datastore@1.1.0) (2020-03-25)
 
 
