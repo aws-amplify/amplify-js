@@ -71,6 +71,7 @@ export interface CognitoUserInterface {
     email?: string;
     phone_number?: string;
   };
+  [attributes: string]: any;
 }
 
 export type AuthStateHandler = (nextAuthState: AuthState, data?: object) => void;
