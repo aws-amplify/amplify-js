@@ -236,7 +236,7 @@ describe('DataStore tests', () => {
 
 				(<any>mock).getNamespace = () => ({ models: {} });
 
-				return { default: mock };
+				return { ExclusiveStorage: mock };
 			});
 			({ initSchema, DataStore } = require('../src/datastore/datastore'));
 
