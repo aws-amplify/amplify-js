@@ -383,11 +383,13 @@ export type DataStoreConfig = {
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 		errorHandler?: (error: SyncError) => void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
+		syncPageSize?: number;
 		fullSyncInterval?: number;
 	};
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
+	syncPageSize?: number;
 	fullSyncInterval?: number;
 };
 

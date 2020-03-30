@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.1.5...@aws-amplify/ui@1.1.6) (2020-03-25)
+
+### Bug Fixes
+
+- **aws-amplify-react:** Fix Federated icons when using React Bo… ([#5073](https://github.com/aws-amplify/amplify-js/issues/5073)) ([49f8bfe](https://github.com/aws-amplify/amplify-js/commit/49f8bfeebea845779ef232d83295bd33ebb22fb2))
+
 ## [1.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.1.3...@aws-amplify/ui@1.1.5) (2020-02-07)
 
 ### Bug Fixes
