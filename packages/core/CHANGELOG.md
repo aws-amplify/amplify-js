@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@2.2.5...@aws-amplify/core@2.2.6) (2020-03-25)
+
+### Bug Fixes
+
+- **core:** move react-native dependency from dev ([fedf0b3](https://github.com/aws-amplify/amplify-js/commit/fedf0b331cb8e2263f0c7b7ae57bac5d8f69c888))
+- **core:** revert dep addition. Add to peer and devDeps ([b2a22e5](https://github.com/aws-amplify/amplify-js/commit/b2a22e53532663328b200761ce1ecf35495acbd1))
+
 ## [2.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@2.2.4...@aws-amplify/core@2.2.5) (2020-02-28)
 
 **Note:** Version bump only for package @aws-amplify/core
