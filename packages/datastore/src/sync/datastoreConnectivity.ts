@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ConsoleLogger as Logger, Reachability } from '@aws-amplify/core';
+=======
+import * as Observable from 'zen-observable';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import Reachability from './datastoreReachability';
+>>>>>>> Removing the need to install NetInfo in ReactNative Apps when not using DataStore
 
 const logger = new Logger('DataStore');
 

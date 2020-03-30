@@ -1,6 +1,11 @@
 import { default as NetInfo } from '@react-native-community/netinfo';
+<<<<<<< HEAD:packages/core/src/Util/Reachability.native.ts
 import Observable from 'zen-observable-ts';
 import { ConsoleLogger as Logger } from '../Logger';
+=======
+import * as Observable from 'zen-observable';
+import { ConsoleLogger as Logger } from '../../Logger';
+>>>>>>> Removing the need to install NetInfo in ReactNative Apps when not using DataStore:packages/core/src/Util/ReactNative/Reachability.native.ts
 
 const logger = new Logger('Reachability', 'DEBUG');
 
