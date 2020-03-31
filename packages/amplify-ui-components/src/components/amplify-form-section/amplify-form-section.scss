@@ -6,7 +6,6 @@
   --font-family: var(--amplify-font-family);
 }
 
-
 .form-section-header {
   color: var(--header-color);
   margin-bottom: 24px;
@@ -20,7 +19,17 @@
   font-size: var(--footer-size);
   color: var(--footer-color);
   display: flex;
-  flex-direction: row-reverse;
-  justify-content: space-between;
-  align-items: baseline;
+  flex-direction: column;
+  justify-content: space-around;
+
+  @include md {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  * + * {
+    margin-top: 15px;
+  }
 }

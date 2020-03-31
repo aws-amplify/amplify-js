@@ -12,7 +12,7 @@
  */
 import * as Paho from 'paho-mqtt';
 import { v4 as uuid } from 'uuid';
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable-ts';
 
 import { AbstractPubSubProvider } from './PubSubProvider';
 import { ProvidertOptions, SubscriptionObserver } from '../types';

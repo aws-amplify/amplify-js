@@ -152,7 +152,8 @@ declare module 'amazon-cognito-identity-js' {
 				onSuccess: (session: CognitoUserSession) => void;
 				onFailure: (err: any) => void;
 			},
-			mfaType?: string
+			mfaType?: string,
+			clientMetadata?: ClientMetadata
 		): void;
 		public listDevices(
 			limit: number,

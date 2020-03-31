@@ -37,11 +37,9 @@ S3Client.prototype.send = jest.fn(async command => {
 	return 'data';
 });
 
-S3RequestPresigner.prototype.presign = jest.fn(
-	async (request, expires) => {
-		return (Promise as any).resolve();
-	}
-);
+S3RequestPresigner.prototype.presign = jest.fn(async (request, expires) => {
+	return (Promise as any).resolve();
+});
 
 const credentials = {
 	accessKeyId: 'accessKeyId',

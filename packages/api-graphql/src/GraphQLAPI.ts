@@ -15,7 +15,7 @@ import { GraphQLError } from 'graphql/error/GraphQLError';
 import { OperationDefinitionNode } from 'graphql/language';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable-ts';
 import Amplify, {
 	ConsoleLogger as Logger,
 	Credentials,
@@ -174,9 +174,13 @@ export class GraphQLAPIClass {
 	 * Executes a GraphQL operation
 	 *
 	 * @param {GraphQLOptions} GraphQL Options
+	 * @param {object} additionalHeaders headers to merge in after any `graphql_headers` set in the config
 	 * @returns {Promise<GraphQLResult> | Observable<object>}
 	 */
-	graphql({ query: paramQuery, variables = {}, authMode }: GraphQLOptions) {
+	graphql(
+		{ query: paramQuery, variables = {}, authMode }: GraphQLOptions,
+		additionalHeaders?: { [key: string]: string }
+	) {
 		const query =
 			typeof paramQuery === 'string'
 				? parse(paramQuery)
@@ -192,7 +196,7 @@ export class GraphQLAPIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
-				return this._graphql({ query, variables, authMode });
+				return this._graphql({ query, variables, authMode }, additionalHeaders);
 			case 'subscription':
 				return this._graphqlSubscribe({ query, variables, authMode });
 		}
@@ -222,8 +226,8 @@ export class GraphQLAPIClass {
 				(customEndpointRegion
 					? await this._headerBasedAuth(authMode)
 					: { Authorization: null })),
-			...additionalHeaders,
 			...(await graphql_headers({ query, variables })),
+			...additionalHeaders,
 			...(!customGraphqlEndpoint && {
 				[USER_AGENT_HEADER]: Constants.userAgent,
 			}),

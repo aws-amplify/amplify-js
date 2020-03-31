@@ -3,23 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-<<<<<<< HEAD
-# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@1.2.4...@aws-amplify/storage@1.3.0) (2020-01-10)
+## [2.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@2.2.1...@aws-amplify/storage@2.2.2) (2020-03-25)
 
-### Bug Fixes
+**Note:** Version bump only for package @aws-amplify/storage
 
-- **@aws-amplify/storage:** expose tree-shaking for Webpack ([28a34a5](https://github.com/aws-amplify/amplify-js/commit/28a34a5fa7d7cc98343a2f630bb3232e16c0c047))
+## [2.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@2.2.0...@aws-amplify/storage@2.2.1) (2020-02-28)
 
-### Features
+**Note:** Version bump only for package @aws-amplify/storage
 
-- **@aws-amplify/storage:** publish ES2015/ESM artifacts ([bc8610a](https://github.com/aws-amplify/amplify-js/commit/bc8610a3eaeb667ef98e492a41485b14c09312cb))
-- append amplify user agent to all V3 SDK calls ([#4564](https://github.com/aws-amplify/amplify-js/issues/4564)) ([175d4c3](https://github.com/aws-amplify/amplify-js/commit/175d4c34ccb9cd5674c228db14513827d1c80d3f))
-- enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
-
-### Reverts
-
-- Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
-=======
 # [2.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@2.1.3...@aws-amplify/storage@2.2.0) (2020-02-07)
 
 ### Bug Fixes
@@ -50,7 +41,22 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ### Features
 
 - enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
->>>>>>> upstream/modularization
+
+# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@1.2.4...@aws-amplify/storage@1.3.0) (2020-01-10)
+
+### Bug Fixes
+
+- **@aws-amplify/storage:** expose tree-shaking for Webpack ([28a34a5](https://github.com/aws-amplify/amplify-js/commit/28a34a5fa7d7cc98343a2f630bb3232e16c0c047))
+
+### Features
+
+- **@aws-amplify/storage:** publish ES2015/ESM artifacts ([bc8610a](https://github.com/aws-amplify/amplify-js/commit/bc8610a3eaeb667ef98e492a41485b14c09312cb))
+- append amplify user agent to all V3 SDK calls ([#4564](https://github.com/aws-amplify/amplify-js/issues/4564)) ([175d4c3](https://github.com/aws-amplify/amplify-js/commit/175d4c34ccb9cd5674c228db14513827d1c80d3f))
+- enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
+
+### Reverts
+
+- Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
 
 ## [1.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@1.2.3...@aws-amplify/storage@1.2.4) (2019-10-29)
 

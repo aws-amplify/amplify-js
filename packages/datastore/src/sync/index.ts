@@ -1,5 +1,6 @@
-import { ConsoleLogger as Logger, Reachability } from '@aws-amplify/core';
-import Observable from 'zen-observable-ts';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
 import { ExclusiveStorage as Storage } from '../storage/storage';
@@ -10,12 +11,13 @@ import {
 	ModelInit,
 	MutableModel,
 	NamespaceResolver,
-	PersistentModel,
 	PersistentModelConstructor,
 	SchemaModel,
 	SchemaNamespace,
+	TypeConstructorMap,
 } from '../types';
 import { SYNC } from '../util';
+import DataStoreConnectivity from './datastoreConnectivity';
 import { ModelMerger } from './merger';
 import { MutationEventOutbox } from './outbox';
 import { MutationProcessor } from './processors/mutation';
@@ -78,21 +80,18 @@ export class SyncEngine {
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly namespaceResolver: NamespaceResolver,
-		private readonly modelClasses: Record<
-			string,
-			PersistentModelConstructor<any>
-		>,
-		private readonly userModelClasses: Record<
-			string,
-			PersistentModelConstructor<any>
-		>,
+		private readonly modelClasses: TypeConstructorMap,
+		private readonly userModelClasses: TypeConstructorMap,
 		private readonly storage: Storage,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly maxRecordsToSync: number,
+		private readonly syncPageSize: number,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler
 	) {
-		const MutationEvent = this.modelClasses['MutationEvent'];
+		const MutationEvent = this.modelClasses[
+			'MutationEvent'
+		] as PersistentModelConstructor<any>;
 
 		this.outbox = new MutationEventOutbox(
 			this.schema,
@@ -105,7 +104,8 @@ export class SyncEngine {
 
 		this.syncQueriesProcessor = new SyncProcessor(
 			this.schema,
-			maxRecordsToSync
+			maxRecordsToSync,
+			syncPageSize
 		);
 		this.subscriptionsProcessor = new SubscriptionProcessor(this.schema);
 		this.mutationsProcessor = new MutationProcessor(
@@ -130,22 +130,30 @@ export class SyncEngine {
 				try {
 					await this.setupModels(params);
 				} catch (err) {
-					logger.error(
-						"Sync engine stopped. IndexedDB not supported in this browser's private mode"
-					);
+					logger.error('Sync engine error on start', err);
 					return;
 				}
 
-				new Reachability().networkMonitor().subscribe(async ({ online }) => {
-					this.online = online;
-					if (online) {
+				const datastoreConnectivity = new DataStoreConnectivity();
+
+				datastoreConnectivity.status().subscribe(async ({ online }) => {
+					if (online && !this.online) {
+						// From offline to online
+						//#region GraphQL Subscriptions
 						const [
 							ctlSubsObservable,
 							dataSubsObservable,
 						] = this.subscriptionsProcessor.start();
+
+						const errorHandler = this.disconnectionHandler(
+							datastoreConnectivity
+						);
 						try {
 							subscriptions.push(
-								await this.waitForSubscriptionsReady(ctlSubsObservable)
+								await this.waitForSubscriptionsReady(
+									ctlSubsObservable,
+									errorHandler
+								)
 							);
 						} catch (err) {
 							observer.error(err);
@@ -153,6 +161,9 @@ export class SyncEngine {
 						}
 
 						logger.log('Realtime ready');
+						//#endregion
+
+						//#region Base & Sync queries
 						const currentTimeStamp = new Date().getTime();
 
 						const modelLastSync: Map<
@@ -183,8 +194,9 @@ export class SyncEngine {
 							observer.error(err);
 							return;
 						}
+						//#endregion
 
-						// process mutations
+						//#region process mutations
 						subscriptions.push(
 							this.mutationsProcessor
 								.start()
@@ -192,7 +204,7 @@ export class SyncEngine {
 									([_transformerMutationType, modelDefinition, item]) => {
 										const modelConstructor = this.userModelClasses[
 											modelDefinition.name
-										];
+										] as PersistentModelConstructor<any>;
 
 										const model = this.modelInstanceCreator(
 											modelConstructor,
@@ -203,14 +215,15 @@ export class SyncEngine {
 									}
 								)
 						);
+						//#endregion
 
-						// TODO: extract to funciton
+						// TODO: extract to function
 						subscriptions.push(
 							dataSubsObservable.subscribe(
 								([_transformerMutationType, modelDefinition, item]) => {
 									const modelConstructor = this.userModelClasses[
 										modelDefinition.name
-									];
+									] as PersistentModelConstructor<any>;
 
 									const model = this.modelInstanceCreator(
 										modelConstructor,
@@ -221,10 +234,11 @@ export class SyncEngine {
 								}
 							)
 						);
-					} else {
+					} else if (!online) {
 						subscriptions.forEach(sub => sub.unsubscribe());
 						subscriptions = [];
 					}
+					this.online = online;
 				});
 
 				this.storage
@@ -241,7 +255,7 @@ export class SyncEngine {
 							];
 							const MutationEventConstructor = this.modelClasses[
 								'MutationEvent'
-							];
+							] as PersistentModelConstructor<MutationEvent>;
 							const graphQLCondition = predicateToGraphQLCondition(condition);
 							const mutationEvent = createMutationInstanceFromModelOperation(
 								namespace.relationships,
@@ -325,7 +339,7 @@ export class SyncEngine {
 					const promises = items.map(async item => {
 						const modelConstructor = this.userModelClasses[
 							modelDefinition.name
-						];
+						] as PersistentModelConstructor<any>;
 
 						const model = this.modelInstanceCreator(modelConstructor, item);
 
@@ -343,7 +357,8 @@ export class SyncEngine {
 							modelDefinition.name
 						);
 
-						modelMetadata = this.modelClasses.ModelMetadata.copyOf(
+						modelMetadata = (this.modelClasses
+							.ModelMetadata as PersistentModelConstructor<any>).copyOf(
 							modelMetadata,
 							draft => {
 								draft.lastSync = startedAt;
@@ -393,8 +408,23 @@ export class SyncEngine {
 		});
 	}
 
+	private disconnectionHandler(
+		datastoreConnectivity: DataStoreConnectivity
+	): (msg: string) => void {
+		return (msg: string) => {
+			// This implementation is tight to AWSAppSyncRealTimeProvider 'Connection closed', 'Timeout disconnect' msg
+			if (
+				PUBSUB_CONTROL_MSG.CONNECTION_CLOSED === msg ||
+				PUBSUB_CONTROL_MSG.TIMEOUT_DISCONNECT === msg
+			) {
+				datastoreConnectivity.socketDisconnected();
+			}
+		};
+	}
+
 	private async waitForSubscriptionsReady(
-		ctlSubsObservable: Observable<CONTROL_MSG>
+		ctlSubsObservable: Observable<CONTROL_MSG>,
+		errorHandler: (msg: string) => void
 	): Promise<ZenObservable.Subscription> {
 		return new Promise((resolve, reject) => {
 			const subscription = ctlSubsObservable.subscribe({
@@ -405,6 +435,7 @@ export class SyncEngine {
 				},
 				error: err => {
 					reject(`subscription failed ${err}`);
+					errorHandler(err);
 				},
 			});
 		});
@@ -442,7 +473,9 @@ export class SyncEngine {
 				);
 			} else {
 				await this.storage.save(
-					this.modelClasses.ModelMetadata.copyOf(modelMetadata, draft => {
+					(this.modelClasses.ModelMetadata as PersistentModelConstructor<
+						any
+					>).copyOf(modelMetadata, draft => {
 						draft.fullSyncInterval = fullSyncInterval;
 					})
 				);
@@ -500,6 +533,7 @@ export class SyncEngine {
 					values: ['CREATE', 'UPDATE', 'DELETE'],
 				},
 			},
+			nonModels: {},
 			models: {
 				MutationEvent: {
 					name: 'MutationEvent',

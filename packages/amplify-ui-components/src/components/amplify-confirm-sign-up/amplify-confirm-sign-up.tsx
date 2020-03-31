@@ -50,6 +50,7 @@ export class AmplifyConfirmSignUp {
   @State() code: string;
   @State() loading: boolean = false;
   @State() userInput: string = this.user ? this.user.username : null;
+  private _signUpAttrs = this.user && this.user.signUpAttrs ? this.user.signUpAttrs : null;
 
   componentWillLoad() {
     checkUsernameAlias(this.usernameAlias);
@@ -57,8 +58,8 @@ export class AmplifyConfirmSignUp {
       {
         type: `${this.usernameAlias}`,
         required: true,
-        value: this.user ? this.user.username : null,
-        disabled: this.user && this.user.username ? true : false,
+        value: this.userInput,
+        disabled: this.userInput ? true : false,
       },
       {
         type: 'code',
@@ -111,7 +112,9 @@ export class AmplifyConfirmSignUp {
     this.loading = true;
 
     try {
-      const user = await Auth.confirmSignUp(this.userInput, this.code);
+      const confirmSignUpResult = await Auth.confirmSignUp(this.userInput, this.code);
+      const user =
+        confirmSignUpResult && this._signUpAttrs && (await Auth.signIn(this.userInput, this._signUpAttrs.password));
       this.handleAuthStateChange(AuthState.SignedIn, user);
     } catch (error) {
       dispatchToastHubEvent(error);

@@ -366,6 +366,52 @@ The `amplify-authenticator` component has the ability to sign in or sign up with
 <amplify-authenticator username-alias="phone_number" />
 ```
 
+## Amplify Authenticator `federated`
+
+The `amplify-authenticator` component supports Federated Sign In through Cognito Identity Pools (IDP) with external providers like Amazon, Auth0, Facebook, & Google.
+
+The `federated` prop implements the `FederatedConfig`:
+
+```ts
+export interface FederatedConfig {
+  auth0Config?: {
+    audience?: string;
+    clientID: string;
+    domain: string;
+    responseType: string;
+    redirectUri: string;
+    returnTo?: string;
+    scope?: string;
+  };
+  amazonClientId?: string;
+  facebookAppId?: string;
+  googleClientId?: string;
+  oauthConfig?: {
+    [key: string]: any;
+  };
+}
+```
+
+**Usage:**
+
+```js
+const federated = {
+  amazonClientId: "your_amazon_client_id",
+  facebookAppId: "your_facebook_app_id",
+  googleClientId: "your_google_client_id",
+  oauthConfig: {
+    redirectSignIn: "http://localhost:1234/",
+    redirectSignOut: "http://localhost:1234/",
+  }
+}
+
+// react
+<AmplifyAuthenticator federated={federated} />
+
+// angular, vue, or web components
+<amplify-authenticator federated={federated} />
+```
+
 ## Migration Guide
 
 - [React](#react-2)

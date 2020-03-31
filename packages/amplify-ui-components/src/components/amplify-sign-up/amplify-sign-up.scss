@@ -9,8 +9,20 @@
   font-weight: 300;
   font-size: var(--footer-font-size);
   color: var(--footer-color);
+
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: baseline;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: space-around;
+
+  @include md {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  * + * {
+    margin-bottom: 15px;
+  }
 }
