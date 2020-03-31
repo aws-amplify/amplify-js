@@ -16,7 +16,6 @@ import Observable from 'zen-observable-ts';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
-let Storage: typeof StorageType;
 
 beforeEach(() => {
 	jest.resetModules();
@@ -192,7 +191,8 @@ describe('DataStore tests', () => {
 
 	describe('Initialization', () => {
 		test('start is called only once', async () => {
-			Storage = require('../src/storage/storage').ExclusiveStorage;
+			const storage: StorageType = require('../src/storage/storage')
+				.ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
@@ -207,11 +207,12 @@ describe('DataStore tests', () => {
 
 			await Promise.all(promises);
 
-			expect(Storage).toHaveBeenCalledTimes(1);
+			expect(storage).toHaveBeenCalledTimes(1);
 		});
 
 		test('It is initialized when observing (no query)', async () => {
-			Storage = require('../src/storage/storage').ExclusiveStorage;
+			const storage: StorageType = require('../src/storage/storage')
+				.ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
@@ -219,7 +220,37 @@ describe('DataStore tests', () => {
 
 			DataStore.observe(Model).subscribe(jest.fn());
 
-			expect(Storage).toHaveBeenCalledTimes(1);
+			expect(storage).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('Basic operations', () => {
+		test('Save returns the saved model', async () => {
+			let model: Model;
+
+			jest.resetModules();
+			jest.doMock('../src/storage/storage', () => {
+				const mock = jest.fn().mockImplementation(() => ({
+					runExclusive: jest.fn(() => [model]),
+				}));
+
+				(<any>mock).getNamespace = () => ({ models: {} });
+
+				return { ExclusiveStorage: mock };
+			});
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+
+			model = new Model({
+				field1: 'Some value',
+			});
+
+			const result = await DataStore.save(model);
+
+			expect(result).toMatchObject(model);
 		});
 	});
 
@@ -244,6 +275,7 @@ describe('DataStore tests', () => {
 declare class Model {
 	public readonly id: string;
 	public readonly field1: string;
+	public readonly metadata?: Metadata;
 
 	constructor(init: ModelInit<Model>);
 
