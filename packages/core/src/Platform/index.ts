@@ -10,10 +10,9 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-const packageInfo = require('../../package.json');
-
-const Platform = {
-	userAgent: `aws-amplify/${packageInfo.version} js`,
+import { version } from './version';
+export const Platform = {
+	userAgent: `aws-amplify/${version} js`,
 	product: '',
 	navigator: null,
 	isReactNative: false,
@@ -23,13 +22,21 @@ if (typeof navigator !== 'undefined' && navigator.product) {
 	Platform.navigator = navigator || null;
 	switch (navigator.product) {
 		case 'ReactNative':
-			Platform.userAgent = `aws-amplify/${packageInfo.version} react-native`;
+			Platform.userAgent = `aws-amplify/${version} react-native`;
 			Platform.isReactNative = true;
 			break;
 		default:
-			Platform.userAgent = `aws-amplify/${packageInfo.version} js`;
+			Platform.userAgent = `aws-amplify/${version} js`;
 			Platform.isReactNative = false;
 			break;
 	}
 }
+
+export const getAmplifyUserAgent = () => {
+	return Platform.userAgent;
+};
+
+/**
+ * @deprecated use named import
+ */
 export default Platform;

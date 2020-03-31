@@ -18,11 +18,11 @@ import {
 	Credentials,
 } from '@aws-amplify/core';
 
-import { RestClientOptions, AWSCredentials, apiOptions } from './types';
+import { apiOptions } from './types';
 import axios from 'axios';
+import { parse, format } from 'url';
 
-const logger = new Logger('RestClient'),
-	urlLib = require('url');
+const logger = new Logger('RestClient');
 
 /**
 * HTTP Client for REST requests. Send and receive JSON data.
@@ -121,8 +121,8 @@ export class RestClient {
 		};
 
 		// Intentionally discarding search
-		const { search, ...parsedUrl } = urlLib.parse(url, true, true);
-		params.url = urlLib.format({
+		const { search, ...parsedUrl } = parse(url, true, true);
+		params.url = format({
 			...parsedUrl,
 			query: {
 				...parsedUrl.query,
@@ -285,6 +285,7 @@ export class RestClient {
 		logger.debug('Signed Request: ', signed_params);
 
 		delete signed_params.headers['host'];
+
 		return axios(signed_params)
 			.then(response => (isAllResponse ? response : response.data))
 			.catch(error => {

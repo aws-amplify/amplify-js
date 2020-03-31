@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -11,11 +11,8 @@
  * and limitations under the License.
  */
 
-// import * as S3 from 'aws-sdk/clients/s3';
-import * as AWS from 'aws-sdk/global';
-// import * as Pinpoint from 'aws-sdk/clients/pinpoint';
-// import * as Kinesis from 'aws-sdk/clients/kinesis';
-// import * as MobileAnalytics from 'aws-sdk/clients/mobileanalytics';
-
-// export {AWS, S3, Pinpoint, MobileAnalytics, Kinesis };
-export { AWS };
+import { GraphQLAPI } from './GraphQLAPI';
+export { GraphQLResult, GRAPHQL_AUTH_MODE } from './types';
+export { GraphQLAPI, GraphQLAPIClass, graphqlOperation } from './GraphQLAPI';
+export * from './types';
+export default GraphQLAPI;

@@ -7,125 +7,67 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package aws-amplify-react
 
-
-
-
-
 ## [3.1.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.7...aws-amplify-react@3.1.8) (2020-03-25)
 
 **Note:** Version bump only for package aws-amplify-react
-
-
-
-
 
 ## [3.1.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.6...aws-amplify-react@3.1.7) (2020-02-28)
 
 **Note:** Version bump only for package aws-amplify-react
 
-
-
-
-
 ## [3.1.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.5...aws-amplify-react@3.1.6) (2020-02-14)
-
 
 ### Bug Fixes
 
-* **aws-amplify-react:** added prop onS3ImageSuccess to the S3Image component to have a clear sepration of concerns ([#4848](https://github.com/aws-amplify/amplify-js/issues/4848)) ([0c336ef](https://github.com/aws-amplify/amplify-js/commit/0c336ef5895401be365b2b22db4aecdbf7f81b8a))
-
-
-
-
+- **aws-amplify-react:** added prop onS3ImageSuccess to the S3Image component to have a clear sepration of concerns ([#4848](https://github.com/aws-amplify/amplify-js/issues/4848)) ([0c336ef](https://github.com/aws-amplify/amplify-js/commit/0c336ef5895401be365b2b22db4aecdbf7f81b8a))
 
 ## [3.1.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.3...aws-amplify-react@3.1.5) (2020-02-07)
 
-
 ### Bug Fixes
 
-* **aws-amplify-react) fix(aws-amplify-react-native) fix(aws-amplify-angular:** Fix peer dependencies ([#4647](https://github.com/aws-amplify/amplify-js/issues/4647)) ([c4c990e](https://github.com/aws-amplify/amplify-js/commit/c4c990ea62a77625add92e8fe94ba170b0dd2af1))
-
-
-
-
+- **aws-amplify-react) fix(aws-amplify-react-native) fix(aws-amplify-angular:** Fix peer dependencies ([#4647](https://github.com/aws-amplify/amplify-js/issues/4647)) ([c4c990e](https://github.com/aws-amplify/amplify-js/commit/c4c990ea62a77625add92e8fe94ba170b0dd2af1))
 
 ## [3.1.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.2...aws-amplify-react@3.1.3) (2020-01-10)
 
-
 ### Bug Fixes
 
-* [#4311](https://github.com/aws-amplify/amplify-js/issues/4311) Update main entry field to point to CJS builds instead of webpack bundles ([#4678](https://github.com/aws-amplify/amplify-js/issues/4678)) ([54fbdf4](https://github.com/aws-amplify/amplify-js/commit/54fbdf4b1393567735fb7b5f4144db273f1a5f6a))
-
-
-
-
+- [#4311](https://github.com/aws-amplify/amplify-js/issues/4311) Update main entry field to point to CJS builds instead of webpack bundles ([#4678](https://github.com/aws-amplify/amplify-js/issues/4678)) ([54fbdf4](https://github.com/aws-amplify/amplify-js/commit/54fbdf4b1393567735fb7b5f4144db273f1a5f6a))
 
 ## [3.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.1...aws-amplify-react@3.1.2) (2019-12-18)
 
 **Note:** Version bump only for package aws-amplify-react
 
-
-
-
-
 ## [3.1.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.0...aws-amplify-react@3.1.1) (2019-12-03)
 
 **Note:** Version bump only for package aws-amplify-react
 
-
-
-
-
 # [3.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@2.5.4...aws-amplify-react@3.1.0) (2019-11-15)
-
 
 ### Features
 
-* enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
-
-
-
-
+- enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
 
 ## [2.5.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@2.5.3...aws-amplify-react@2.5.4) (2019-10-29)
 
 **Note:** Version bump only for package aws-amplify-react
 
-
-
-
-
 ## [2.5.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@2.5.2...aws-amplify-react@2.5.3) (2019-10-23)
 
 **Note:** Version bump only for package aws-amplify-react
-
-
-
-
 
 ## [2.5.2](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.5.0...aws-amplify-react@2.5.2) (2019-10-10)
 
 **Note:** Version bump only for package aws-amplify-react
 
-
-
-
-
 # [2.5.0](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.4.4...aws-amplify-react@2.5.0) (2019-10-10)
-
 
 ### Bug Fixes
 
-* Pinpoint analytics stopSession event ([422806e](https://github.com/aws/aws-amplify/commit/422806e58525490b0fec28055a818024f2681769)), closes [#3786](https://github.com/aws/aws-amplify/issues/3786) [#3042](https://github.com/aws/aws-amplify/issues/3042)
-
+- Pinpoint analytics stopSession event ([422806e](https://github.com/aws/aws-amplify/commit/422806e58525490b0fec28055a818024f2681769)), closes [#3786](https://github.com/aws/aws-amplify/issues/3786) [#3042](https://github.com/aws/aws-amplify/issues/3042)
 
 ### Features
 
-* Added Prettier formatting ([4dfd9aa](https://github.com/aws/aws-amplify/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
-
-
-
-
+- Added Prettier formatting ([4dfd9aa](https://github.com/aws/aws-amplify/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
 
 ## [2.4.4](https://github.com/aws/aws-amplify/compare/aws-amplify-react@2.4.2...aws-amplify-react@2.4.4) (2019-09-13)
 

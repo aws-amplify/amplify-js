@@ -7,117 +7,61 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package aws-amplify-angular
 
-
-
-
-
 ## [4.1.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@4.1.7...aws-amplify-angular@4.1.8) (2020-03-25)
 
 **Note:** Version bump only for package aws-amplify-angular
-
-
-
-
 
 ## [4.1.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@4.1.6...aws-amplify-angular@4.1.7) (2020-02-28)
 
 **Note:** Version bump only for package aws-amplify-angular
 
-
-
-
-
 ## [4.1.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@4.1.5...aws-amplify-angular@4.1.6) (2020-02-14)
 
 **Note:** Version bump only for package aws-amplify-angular
 
-
-
-
-
 ## [4.1.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@4.1.3...aws-amplify-angular@4.1.5) (2020-02-07)
-
 
 ### Bug Fixes
 
-* **aws-amplify-react) fix(aws-amplify-react-native) fix(aws-amplify-angular:** Fix peer dependencies ([#4647](https://github.com/aws-amplify/amplify-js/issues/4647)) ([c4c990e](https://github.com/aws-amplify/amplify-js/commit/c4c990ea62a77625add92e8fe94ba170b0dd2af1))
-
-
-
-
+- **aws-amplify-react) fix(aws-amplify-react-native) fix(aws-amplify-angular:** Fix peer dependencies ([#4647](https://github.com/aws-amplify/amplify-js/issues/4647)) ([c4c990e](https://github.com/aws-amplify/amplify-js/commit/c4c990ea62a77625add92e8fe94ba170b0dd2af1))
 
 ## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@4.1.2...aws-amplify-angular@4.1.3) (2020-01-10)
 
-
 ### Bug Fixes
 
-* correct Czech Republic phone country code ([#4694](https://github.com/aws-amplify/amplify-js/issues/4694)) ([9f8c7ed](https://github.com/aws-amplify/amplify-js/commit/9f8c7ed8515347bb4a5b6606202d85095406f7b9))
-
-
-
-
+- correct Czech Republic phone country code ([#4694](https://github.com/aws-amplify/amplify-js/issues/4694)) ([9f8c7ed](https://github.com/aws-amplify/amplify-js/commit/9f8c7ed8515347bb4a5b6606202d85095406f7b9))
 
 ## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@4.1.1...aws-amplify-angular@4.1.2) (2019-12-18)
 
 **Note:** Version bump only for package aws-amplify-angular
 
-
-
-
-
 ## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@4.1.0...aws-amplify-angular@4.1.1) (2019-12-03)
 
 **Note:** Version bump only for package aws-amplify-angular
 
-
-
-
-
 # [4.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.1.4...aws-amplify-angular@4.1.0) (2019-11-15)
-
 
 ### Features
 
-* enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
-
-
-
-
+- enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
 
 ## [3.1.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.1.3...aws-amplify-angular@3.1.4) (2019-10-29)
 
 **Note:** Version bump only for package aws-amplify-angular
 
-
-
-
-
 ## [3.1.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.1.2...aws-amplify-angular@3.1.3) (2019-10-23)
 
 **Note:** Version bump only for package aws-amplify-angular
-
-
-
-
 
 ## [3.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.1.0...aws-amplify-angular@3.1.2) (2019-10-10)
 
 **Note:** Version bump only for package aws-amplify-angular
 
-
-
-
-
 # [3.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.15...aws-amplify-angular@3.1.0) (2019-10-10)
-
 
 ### Features
 
-* Added Prettier formatting ([4dfd9aa](https://github.com/aws-amplify/amplify-js/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
-
-
-
-
+- Added Prettier formatting ([4dfd9aa](https://github.com/aws-amplify/amplify-js/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
 
 ## [3.0.15](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@3.0.13...aws-amplify-angular@3.0.15) (2019-09-13)
 

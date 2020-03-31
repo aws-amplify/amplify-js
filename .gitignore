@@ -8,6 +8,8 @@ packages/**/lib/
 packages/**/lib-esm/
 packages/**/dist/
 packages/**/es/
+packages/**/esm/
+packages/**/cjs/
 .DS_Store
 .vscode
 .idea
@@ -15,4 +17,3 @@ packages/**/es/
 .npm/
 packages/**/cypress/videos/
 package-lock.json
-yarn.lock

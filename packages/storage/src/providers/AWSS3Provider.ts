@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -15,9 +15,22 @@ import {
 	Hub,
 	Credentials,
 	Parser,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import * as S3 from 'aws-sdk/clients/s3';
+import {
+	S3Client,
+	GetObjectCommand,
+	DeleteObjectCommand,
+	ListObjectsCommand,
+} from '@aws-sdk/client-s3';
+import { formatUrl } from '@aws-sdk/util-format-url';
+import { createRequest } from '@aws-sdk/util-create-request';
+import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
+import { AxiosHttpHandler } from './axios-http-handler';
+import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
+import { httpHandlerOptions } from './httpHandlerOptions';
+import * as events from 'events';
 
 const logger = new Logger('AWSS3Provider');
 
@@ -52,10 +65,9 @@ const localTestingStorageEndpoint = 'http://localhost:20005';
 /**
  * Provide storage methods to use AWS S3
  */
-export default class AWSS3Provider implements StorageProvider {
+export class AWSS3Provider implements StorageProvider {
 	static CATEGORY = 'Storage';
 	static PROVIDER_NAME = 'AWSS3';
-
 	/**
 	 * @private
 	 */
@@ -103,11 +115,11 @@ export default class AWSS3Provider implements StorageProvider {
 	/**
 	 * Get a presigned URL of the file or the object data when download:true
 	 *
-	 * @param {String} key - key of the object
+	 * @param {string} key - key of the object
 	 * @param {Object} [config] - { level : private|protected|public, download: true|false }
 	 * @return - A promise resolves to Amazon S3 presigned URL on success
 	 */
-	public async get(key: string, config?): Promise<String | Object> {
+	public async get(key: string, config?): Promise<string | Object> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
 			return Promise.reject('No credentials');
@@ -127,7 +139,7 @@ export default class AWSS3Provider implements StorageProvider {
 		} = opt;
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
-		const s3 = this._createS3(opt);
+		const s3 = this._createNewS3Client(opt);
 		logger.debug('get ' + key + ' from ' + final_key);
 
 		const params: any = {
@@ -144,66 +156,65 @@ export default class AWSS3Provider implements StorageProvider {
 		if (contentType) params.ResponseContentType = contentType;
 
 		if (download === true) {
-			return new Promise<any>((res, rej) => {
-				s3.getObject(params, (err, data) => {
-					if (err) {
-						dispatchStorageEvent(
-							track,
-							'download',
-							{
-								method: 'get',
-								result: 'failed',
-							},
-							null,
-							`Download failed with ${err.message}`
-						);
-						rej(err);
-					} else {
-						dispatchStorageEvent(
-							track,
-							'download',
-							{ method: 'get', result: 'success' },
-							{ fileSize: Number(data.Body['length']) },
-							`Download success for ${key}`
-						);
-						res(data);
-					}
-				});
-			});
-		}
-
-		if (expires) {
-			params.Expires = expires;
-		}
-
-		return new Promise<string>((res, rej) => {
+			const getObjectCommand = new GetObjectCommand(params);
 			try {
-				const url = s3.getSignedUrl('getObject', params);
+				const response = await s3.send(getObjectCommand);
 				dispatchStorageEvent(
 					track,
-					'getSignedUrl',
+					'download',
 					{ method: 'get', result: 'success' },
-					null,
-					`Signed URL: ${url}`
+					{ fileSize: Number(response.Body['length']) },
+					`Download success for ${key}`
 				);
-				res(url);
-			} catch (e) {
-				logger.warn('get signed url error', e);
+				return response;
+			} catch (error) {
 				dispatchStorageEvent(
 					track,
-					'getSignedUrl',
-					{ method: 'get', result: 'failed' },
+					'download',
+					{
+						method: 'get',
+						result: 'failed',
+					},
 					null,
-					`Could not get a signed URL for ${key}`
+					`Download failed with ${error.message}`
 				);
-				rej(e);
+				throw error;
 			}
-		});
+		}
+
+		params.Expires = expires || 900; // Default is 15 mins as defined in V2 AWS SDK
+		params.Expires = new Date(Date.now() + params.Expires * 1000); // expires is in secs
+
+		try {
+			const signer = new S3RequestPresigner({ ...s3.config });
+			const request = await createRequest(s3, new GetObjectCommand(params));
+			const url = formatUrl(
+				(await signer.presign(request, params.Expires)) as any
+			);
+			dispatchStorageEvent(
+				track,
+				'getSignedUrl',
+				{ method: 'get', result: 'success' },
+				null,
+				`Signed URL: ${url}`
+			);
+			return url;
+		} catch (error) {
+			logger.warn('get signed url error', error);
+			dispatchStorageEvent(
+				track,
+				'getSignedUrl',
+				{ method: 'get', result: 'failed' },
+				null,
+				`Could not get a signed URL for ${key}`
+			);
+			throw error;
+		}
 	}
 
 	/**
 	 * Put a file in S3 bucket specified to configure method
-	 * @param {String} key - key of the object
+	 * @param {string} key - key of the object
 	 * @param {Object} object - File to be put in Amazon S3 bucket
 	 * @param {Object} [config] - { level : private|protected|public, contentType: MIME Types,
 	 *  progressCallback: function }
@@ -236,7 +247,6 @@ export default class AWSS3Provider implements StorageProvider {
 
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
-		const s3 = this._createS3(opt);
 		logger.debug('put ' + key + ' to ' + final_key);
 
 		const params: any = {
@@ -275,9 +285,10 @@ export default class AWSS3Provider implements StorageProvider {
 				params.SSEKMSKeyId = SSEKMSKeyId;
 			}
 		}
-
+		const emitter = new events.EventEmitter();
+		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
 		try {
-			const upload = s3.upload(params).on('httpUploadProgress', progress => {
+			emitter.on('sendProgress', progress => {
 				if (progressCallback) {
 					if (typeof progressCallback === 'function') {
 						progressCallback(progress);
@@ -289,9 +300,10 @@ export default class AWSS3Provider implements StorageProvider {
 					}
 				}
 			});
-			const data = await upload.promise();
 
-			logger.debug('upload result', data);
+			const response = await uploader.upload();
+
+			logger.debug('upload result', response);
 			dispatchStorageEvent(
 				track,
 				'upload',
@@ -299,12 +311,11 @@ export default class AWSS3Provider implements StorageProvider {
 				null,
 				`Upload success for ${key}`
 			);
-
 			return {
-				key: data.Key.substr(prefix.length),
+				key,
 			};
-		} catch (e) {
-			logger.warn('error uploading', e);
+		} catch (error) {
+			logger.warn('error uploading', error);
 			dispatchStorageEvent(
 				track,
 				'upload',
@@ -312,14 +323,13 @@ export default class AWSS3Provider implements StorageProvider {
 				null,
 				`Error uploading ${key}`
 			);
-
-			throw e;
+			throw error;
 		}
 	}
 
 	/**
 	 * Remove the object for specified key
-	 * @param {String} key - key of the object
+	 * @param {string} key - key of the object
 	 * @param {Object} [config] - { level : private|protected|public }
 	 * @return - Promise resolves upon successful removal of the object
 	 */
@@ -334,7 +344,7 @@ export default class AWSS3Provider implements StorageProvider {
 
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
-		const s3 = this._createS3(opt);
+		const s3 = this._createNewS3Client(opt);
 		logger.debug('remove ' + key + ' from ' + final_key);
 
 		const params = {
@@ -342,34 +352,33 @@ export default class AWSS3Provider implements StorageProvider {
 			Key: final_key,
 		};
 
-		return new Promise<any>((res, rej) => {
-			s3.deleteObject(params, (err, data) => {
-				if (err) {
-					dispatchStorageEvent(
-						track,
-						'delete',
-						{ method: 'remove', result: 'failed' },
-						null,
-						`Deletion of ${key} failed with ${err}`
-					);
-					rej(err);
-				} else {
-					dispatchStorageEvent(
-						track,
-						'delete',
-						{ method: 'remove', result: 'success' },
-						null,
-						`Deleted ${key} successfully`
-					);
-					res(data);
-				}
-			});
-		});
+		const deleteObjectCommand = new DeleteObjectCommand(params);
+
+		try {
+			const response = await s3.send(deleteObjectCommand);
+			dispatchStorageEvent(
+				track,
+				'delete',
+				{ method: 'remove', result: 'success' },
+				null,
+				`Deleted ${key} successfully`
+			);
+			return response;
+		} catch (error) {
+			dispatchStorageEvent(
+				track,
+				'delete',
+				{ method: 'remove', result: 'failed' },
+				null,
+				`Deletion of ${key} failed with ${error}`
+			);
+			throw error;
+		}
 	}
 
 	/**
 	 * List bucket objects relative to the level and prefix specified
-	 * @param {String} path - the path that contains objects
+	 * @param {string} path - the path that contains objects
 	 * @param {Object} [config] - { level : private|protected|public }
 	 * @return - Promise resolves to list of keys for all objects in path
 	 */
@@ -384,7 +393,7 @@ export default class AWSS3Provider implements StorageProvider {
 
 		const prefix = this._prefix(opt);
 		const final_path = prefix + path;
-		const s3 = this._createS3(opt);
+		const s3 = this._createNewS3Client(opt);
 		logger.debug('list ' + path + ' from ' + final_path);
 
 		const params = {
@@ -393,39 +402,38 @@ export default class AWSS3Provider implements StorageProvider {
 			MaxKeys: maxKeys,
 		};
 
-		return new Promise<any>((res, rej) => {
-			s3.listObjects(params, (err, data) => {
-				if (err) {
-					logger.warn('list error', err);
-					dispatchStorageEvent(
-						track,
-						'list',
-						{ method: 'list', result: 'failed' },
-						null,
-						`Listing items failed: ${err.message}`
-					);
-					rej(err);
-				} else {
-					const list = data.Contents.map(item => {
-						return {
-							key: item.Key.substr(prefix.length),
-							eTag: item.ETag,
-							lastModified: item.LastModified,
-							size: item.Size,
-						};
-					});
-					dispatchStorageEvent(
-						track,
-						'list',
-						{ method: 'list', result: 'success' },
-						null,
-						`${list.length} items returned from list operation`
-					);
-					logger.debug('list', list);
-					res(list);
-				}
+		const listObjectsCommand = new ListObjectsCommand(params);
+
+		try {
+			const response = await s3.send(listObjectsCommand);
+			const list = (response as any).Contents.map(item => {
+				return {
+					key: item.Key.substr(prefix.length),
+					eTag: item.ETag,
+					lastModified: item.LastModified,
+					size: item.Size,
+				};
 			});
-		});
+			dispatchStorageEvent(
+				track,
+				'list',
+				{ method: 'list', result: 'success' },
+				null,
+				`${list.length} items returned from list operation`
+			);
+			logger.debug('list', list);
+			return list;
+		} catch (error) {
+			logger.warn('list error', error);
+			dispatchStorageEvent(
+				track,
+				'list',
+				{ method: 'list', result: 'failed' },
+				null,
+				`Listing items failed: ${error.message}`
+			);
+			throw error;
+		}
 	}
 
 	/**
@@ -441,8 +449,8 @@ export default class AWSS3Provider implements StorageProvider {
 
 				return true;
 			})
-			.catch(err => {
-				logger.warn('ensure credentials error', err);
+			.catch(error => {
+				logger.warn('ensure credentials error', error);
 				return false;
 			});
 	}
@@ -479,11 +487,10 @@ export default class AWSS3Provider implements StorageProvider {
 	}
 
 	/**
-	 * @private
+	 * @private creates an S3 client with new V3 aws sdk
 	 */
-	private _createS3(config) {
+	private _createNewS3Client(config, emitter?) {
 		const {
-			bucket,
 			region,
 			credentials,
 			dangerouslyConnectToHttpEndpointForTesting,
@@ -498,13 +505,18 @@ export default class AWSS3Provider implements StorageProvider {
 			};
 		}
 
-		return new S3({
-			apiVersion: '2006-03-01',
-			params: { Bucket: bucket },
-			signatureVersion: 'v4',
+		const s3client = new S3Client({
 			region,
 			credentials,
+			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
+			requestHandler: new AxiosHttpHandler(httpHandlerOptions, emitter),
 		});
+		return s3client;
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AWSS3Provider;

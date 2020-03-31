@@ -1,7 +1,7 @@
-import Auth from '../src/Auth';
+import { AuthClass as Auth } from '../src/Auth';
 
 describe('configure test', () => {
-	test.only('throw error when storage is empty', () => {
+	test('throw error when storage is empty', () => {
 		const opts = {
 			userPoolId: 'awsUserPoolsId',
 			userPoolWebClientId: 'awsUserPoolsWebClientId',

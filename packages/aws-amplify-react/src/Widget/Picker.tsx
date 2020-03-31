@@ -12,7 +12,6 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
@@ -38,7 +37,7 @@ export interface IPickerProps {
 	theme?: any;
 }
 
-export default class Picker extends Component<IPickerProps, {}> {
+export class Picker extends React.Component<IPickerProps, {}> {
 	handleInput(e) {
 		const that = this;
 
@@ -87,3 +86,8 @@ export default class Picker extends Component<IPickerProps, {}> {
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default Picker;

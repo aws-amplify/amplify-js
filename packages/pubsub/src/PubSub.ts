@@ -11,9 +11,10 @@
  * and limitations under the License.
  */
 // import '../Common/Polyfills';
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable-ts';
 
 import {
+	Amplify,
 	ConsoleLogger as Logger,
 	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
@@ -23,7 +24,7 @@ import { AWSAppSyncProvider, AWSAppSyncRealTimeProvider } from './Providers';
 
 const logger = new Logger('PubSub');
 
-export default class PubSub {
+export class PubSubClass {
 	private _options: PubSubOptions;
 
 	private _pluggables: PubSubProvider[];
@@ -70,6 +71,7 @@ export default class PubSub {
 		logger.debug('PubSub Options', this._options);
 		this._pluggables = [];
 		this.subscribe = this.subscribe.bind(this);
+		Amplify.register(this);
 	}
 
 	public getModuleName() {
@@ -174,3 +176,5 @@ export default class PubSub {
 		});
 	}
 }
+
+export const PubSub = new PubSubClass(null);

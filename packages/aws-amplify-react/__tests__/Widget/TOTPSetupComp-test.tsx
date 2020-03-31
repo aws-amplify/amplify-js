@@ -1,6 +1,6 @@
-import Auth from '@aws-amplify/auth';
 import * as React from 'react';
-import TOTPSetupComp from '../../src/Widget/TOTPSetupComp';
+import { Auth } from '@aws-amplify/auth';
+import { TOTPSetupComp } from '../../src/Widget/TOTPSetupComp';
 import { Button } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 describe('TOTPSetupComp test', () => {

@@ -7,117 +7,61 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @aws-amplify/pubsub
 
-
-
-
-
 ## [2.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@2.1.7...@aws-amplify/pubsub@2.1.8) (2020-03-25)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
-
-
-
-
 
 ## [2.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@2.1.6...@aws-amplify/pubsub@2.1.7) (2020-02-28)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
 
-
-
-
-
 ## [2.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@2.1.5...@aws-amplify/pubsub@2.1.6) (2020-02-14)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
 
-
-
-
-
 ## [2.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@2.1.3...@aws-amplify/pubsub@2.1.5) (2020-02-07)
-
 
 ### Bug Fixes
 
-* **cache:** export correct module for RN ([#4786](https://github.com/aws-amplify/amplify-js/issues/4786)) ([a15730c](https://github.com/aws-amplify/amplify-js/commit/a15730cc50692d9d31a0f586c3544b3dcdbea659))
-
-
-
-
+- **cache:** export correct module for RN ([#4786](https://github.com/aws-amplify/amplify-js/issues/4786)) ([a15730c](https://github.com/aws-amplify/amplify-js/commit/a15730cc50692d9d31a0f586c3544b3dcdbea659))
 
 ## [2.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@2.1.2...@aws-amplify/pubsub@2.1.3) (2020-01-10)
 
-
 ### Bug Fixes
 
-* [#4311](https://github.com/aws-amplify/amplify-js/issues/4311) Update main entry field to point to CJS builds instead of webpack bundles ([#4678](https://github.com/aws-amplify/amplify-js/issues/4678)) ([54fbdf4](https://github.com/aws-amplify/amplify-js/commit/54fbdf4b1393567735fb7b5f4144db273f1a5f6a))
-
-
-
-
+- [#4311](https://github.com/aws-amplify/amplify-js/issues/4311) Update main entry field to point to CJS builds instead of webpack bundles ([#4678](https://github.com/aws-amplify/amplify-js/issues/4678)) ([54fbdf4](https://github.com/aws-amplify/amplify-js/commit/54fbdf4b1393567735fb7b5f4144db273f1a5f6a))
 
 ## [2.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@2.1.1...@aws-amplify/pubsub@2.1.2) (2019-12-18)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
 
-
-
-
-
 ## [2.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@2.1.0...@aws-amplify/pubsub@2.1.1) (2019-12-03)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
 
-
-
-
-
 # [2.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@1.2.4...@aws-amplify/pubsub@2.1.0) (2019-11-15)
-
 
 ### Features
 
-* enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
-
-
-
-
+- enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
 
 ## [1.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@1.2.3...@aws-amplify/pubsub@1.2.4) (2019-10-29)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
 
-
-
-
-
 ## [1.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@1.2.2...@aws-amplify/pubsub@1.2.3) (2019-10-23)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
-
-
-
-
 
 ## [1.2.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.2.0...@aws-amplify/pubsub@1.2.2) (2019-10-10)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
 
-
-
-
-
 # [1.2.0](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.1.2...@aws-amplify/pubsub@1.2.0) (2019-10-10)
-
 
 ### Features
 
-* Added Prettier formatting ([4dfd9aa](https://github.com/aws/aws-amplify/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
-
-
-
-
+- Added Prettier formatting ([4dfd9aa](https://github.com/aws/aws-amplify/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
 
 ## [1.1.2](https://github.com/aws/aws-amplify/compare/@aws-amplify/pubsub@1.1.1...@aws-amplify/pubsub@1.1.2) (2019-09-05)
 

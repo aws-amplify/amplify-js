@@ -5,52 +5,29 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [1.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.1.5...@aws-amplify/ui@1.1.6) (2020-03-25)
 
-
 ### Bug Fixes
 
-* **aws-amplify-react:** Fix Federated icons when using React Bo… ([#5073](https://github.com/aws-amplify/amplify-js/issues/5073)) ([49f8bfe](https://github.com/aws-amplify/amplify-js/commit/49f8bfeebea845779ef232d83295bd33ebb22fb2))
-
-
-
-
+- **aws-amplify-react:** Fix Federated icons when using React Bo… ([#5073](https://github.com/aws-amplify/amplify-js/issues/5073)) ([49f8bfe](https://github.com/aws-amplify/amplify-js/commit/49f8bfeebea845779ef232d83295bd33ebb22fb2))
 
 ## [1.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.1.3...@aws-amplify/ui@1.1.5) (2020-02-07)
 
-
 ### Bug Fixes
 
-* **@aws-amplify/ui:** Add padding to caret for SignUp component ([#4757](https://github.com/aws-amplify/amplify-js/issues/4757)) ([34cdc6c](https://github.com/aws-amplify/amplify-js/commit/34cdc6c9841b48c077eff42b21fa2b3fcc9a80be))
-
-
-
-
+- **@aws-amplify/ui:** Add padding to caret for SignUp component ([#4757](https://github.com/aws-amplify/amplify-js/issues/4757)) ([34cdc6c](https://github.com/aws-amplify/amplify-js/commit/34cdc6c9841b48c077eff42b21fa2b3fcc9a80be))
 
 ## [1.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.1.2...@aws-amplify/ui@1.1.3) (2019-10-23)
 
 **Note:** Version bump only for package @aws-amplify/ui
 
-
-
-
-
 ## [1.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.1.0...@aws-amplify/ui@1.1.2) (2019-10-10)
 
 **Note:** Version bump only for package @aws-amplify/ui
 
-
-
-
-
 # [1.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.25...@aws-amplify/ui@1.1.0) (2019-10-10)
-
 
 ### Features
 
-* Added Prettier formatting ([4dfd9aa](https://github.com/aws-amplify/amplify-js/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
-
-
-
-
+- Added Prettier formatting ([4dfd9aa](https://github.com/aws-amplify/amplify-js/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
 
 ## [1.0.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.0.23...@aws-amplify/ui@1.0.25) (2019-09-13)
 

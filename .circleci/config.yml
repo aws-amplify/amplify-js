@@ -42,9 +42,9 @@ jobs:
     steps:
       - checkout
       - run: yarn config set workspaces-experimental true
-      - run: yarn
-      - run: yarn bootstrap
-      - run: yarn build
+      - run: yarn --frozen-lockfile
+      - run: yarn run bootstrap
+      - run: yarn run build
 
       - save_cache:
           key: amplify-ssh-deps-{{ .Branch }}

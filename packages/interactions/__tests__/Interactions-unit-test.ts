@@ -1,66 +1,71 @@
-jest.mock('aws-sdk/clients/lexruntime', () => {
-	const LexRuntime = () => {};
-	LexRuntime.prototype.postText = (params, callback) => {
-		if (params.inputText === 'done') {
-			callback(null, {
-				message: 'echo:' + params.inputText,
+import { InteractionsClass as Interactions } from '../src/Interactions';
+import { AWSLexProvider, AbstractInteractionsProvider } from '../src/Providers';
+import { Credentials } from '@aws-amplify/core';
+import {
+	LexRuntimeServiceClient,
+	PostContentCommand,
+	PostTextCommand,
+} from '@aws-sdk/client-lex-runtime-service';
+
+LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
+	if (command instanceof PostTextCommand) {
+		if (command.input.inputText === 'done') {
+			const result = {
+				message: 'echo:' + command.input.inputText,
 				dialogState: 'ReadyForFulfillment',
 				slots: {
 					m1: 'hi',
 					m2: 'done',
 				},
-			});
+			};
+			return Promise.resolve(result);
 		} else {
-			callback(null, {
-				message: 'echo:' + params.inputText,
+			const result = {
+				message: 'echo:' + command.input.inputText,
 				dialogState: 'ElicitSlot',
-			});
+			};
+			return Promise.resolve(result);
 		}
-	};
-
-	LexRuntime.prototype.postContent = (params, callback) => {
-		if (params.contentType === 'audio/x-l16; sample-rate=16000') {
-			if (params.inputStream === 'voice:done') {
-				callback(null, {
-					message: 'voice:echo:' + params.inputStream,
+	} else if (command instanceof PostContentCommand) {
+		if (command.input.contentType === 'audio/x-l16; sample-rate=16000') {
+			if (command.input.inputStream === 'voice:done') {
+				const result = {
+					message: 'voice:echo:' + command.input.inputStream,
 					dialogState: 'ReadyForFulfillment',
 					slots: {
 						m1: 'voice:hi',
 						m2: 'voice:done',
 					},
-				});
+				};
+				return Promise.resolve(result);
 			} else {
-				callback(null, {
-					message: 'voice:echo:' + params.inputStream,
+				const result = {
+					message: 'voice:echo:' + command.input.inputStream,
 					dialogState: 'ElicitSlot',
-				});
+				};
+				return Promise.resolve(result);
 			}
 		} else {
-			if (params.inputStream === 'done') {
-				callback(null, {
-					message: 'echo:' + params.inputStream,
+			if (command.input.inputStream === 'done') {
+				const result = {
+					message: 'echo:' + command.input.inputStream,
 					dialogState: 'ReadyForFulfillment',
 					slots: {
 						m1: 'hi',
 						m2: 'done',
 					},
-				});
+				};
+				return Promise.resolve(result);
 			} else {
-				callback(null, {
-					message: 'echo:' + params.inputStream,
+				const result = {
+					message: 'echo:' + command.input.inputStream,
 					dialogState: 'ElicitSlot',
-				});
+				};
+				return Promise.resolve(result);
 			}
 		}
-	};
-
-	return LexRuntime;
-});
-
-import Interactions from '../src/Interactions';
-import { findInterfacesAddedToObjectTypes } from 'graphql/utilities/findBreakingChanges';
-import { AWSLexProvider, AbstractInteractionsProvider } from '../src/Providers';
-import { Credentials } from '@aws-amplify/core';
+	}
+}) as any;
 
 class AWSLexProvider2 extends AWSLexProvider {
 	getProviderName() {
@@ -91,6 +96,10 @@ class AWSLexProviderWrong extends AbstractInteractionsProvider {
 		});
 	}
 }
+
+afterEach(() => {
+	jest.restoreAllMocks();
+});
 
 describe('Interactions', () => {
 	describe('constructor test', () => {
@@ -433,10 +442,9 @@ describe('Interactions', () => {
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
-				const onCompleteCallback = jest.fn((err, confirmation) => {
+				function onCompleteCallback(err, confirmation) {
 					expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
-					done();
-				});
+				}
 
 				const configuration = {
 					Interactions: {
@@ -508,15 +516,15 @@ describe('Interactions', () => {
 					},
 				});
 			});
+
 			test('Interactions configuration and send message to existing bot and call onComplete from configure onComplete', async () => {
 				const curCredSpyOn = jest
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 
-				const onCompleteCallback = jest.fn((err, confirmation) => {
+				function onCompleteCallback(err, confirmation) {
 					expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
-					done();
-				});
+				}
 
 				const configuration = {
 					Interactions: {
@@ -767,7 +775,10 @@ describe('Interactions', () => {
 				}
 			});
 
-			test('Adding custom pluggin happy path', async () => {
+			test('Adding custom plugin happy path', async () => {
+				jest
+					.spyOn(Credentials, 'get')
+					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
 				const configuration = {
 					Interactions: {
 						bots: {

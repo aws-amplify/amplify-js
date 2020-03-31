@@ -1,15 +1,7 @@
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 import { Hub } from '@aws-amplify/core';
-import Greetings from '../../src/Auth/Greetings';
 import * as React from 'react';
-import AmplifyTheme from '../../src/AmplifyTheme';
-import AuthPiece from '../../src/Auth/AuthPiece';
-import {
-	Header,
-	Footer,
-	Input,
-	Button,
-} from '../../src/Amplify-UI/Amplify-UI-Components-React';
+import { Greetings } from '../../src/Auth/Greetings';
 
 const acceptedStates = ['signedIn'];
 

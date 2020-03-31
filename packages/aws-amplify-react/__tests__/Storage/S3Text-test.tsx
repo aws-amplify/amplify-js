@@ -1,3 +1,8 @@
+import * as React from 'react';
+import { Storage } from '@aws-amplify/storage';
+import { S3Text } from '../../src/Storage/S3Text';
+import { TextPicker } from '../../src/Widget';
+
 jest.mock('../../src/Storage/Common', () => {
 	const calcKey = () => {
 		return '';
@@ -5,11 +10,6 @@ jest.mock('../../src/Storage/Common', () => {
 
 	return { calcKey };
 });
-import Storage from '@aws-amplify/storage';
-import S3Text from '../../src/Storage/S3Text';
-import { calcKey } from '../../src/Storage/Common';
-import { TextPicker } from '../../src/Widget';
-import * as React from 'react';
 
 describe('S3Text test', () => {
 	describe('render test', () => {

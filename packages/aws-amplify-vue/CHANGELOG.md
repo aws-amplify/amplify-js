@@ -7,66 +7,35 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package aws-amplify-vue
 
-
-
-
-
 ## [1.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@1.1.1...aws-amplify-vue@1.1.2) (2020-01-10)
-
 
 ### Bug Fixes
 
-* correct Czech Republic phone country code ([#4694](https://github.com/aws-amplify/amplify-js/issues/4694)) ([9f8c7ed](https://github.com/aws-amplify/amplify-js/commit/9f8c7ed8515347bb4a5b6606202d85095406f7b9))
-
-
-
-
+- correct Czech Republic phone country code ([#4694](https://github.com/aws-amplify/amplify-js/issues/4694)) ([9f8c7ed](https://github.com/aws-amplify/amplify-js/commit/9f8c7ed8515347bb4a5b6606202d85095406f7b9))
 
 ## [1.1.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@1.1.0...aws-amplify-vue@1.1.1) (2019-12-03)
 
 **Note:** Version bump only for package aws-amplify-vue
 
-
-
-
-
 # [1.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.3.3...aws-amplify-vue@1.1.0) (2019-11-15)
-
 
 ### Features
 
-* enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
-
-
-
-
+- enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
 
 ## [0.3.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.3.2...aws-amplify-vue@0.3.3) (2019-10-23)
 
 **Note:** Version bump only for package aws-amplify-vue
 
-
-
-
-
 ## [0.3.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.3.0...aws-amplify-vue@0.3.2) (2019-10-10)
 
 **Note:** Version bump only for package aws-amplify-vue
 
-
-
-
-
 # [0.3.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.17...aws-amplify-vue@0.3.0) (2019-10-10)
-
 
 ### Features
 
-* Added Prettier formatting ([4dfd9aa](https://github.com/aws-amplify/amplify-js/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
-
-
-
-
+- Added Prettier formatting ([4dfd9aa](https://github.com/aws-amplify/amplify-js/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
 
 ## [0.2.17](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.14...aws-amplify-vue@0.2.17) (2019-09-05)
 

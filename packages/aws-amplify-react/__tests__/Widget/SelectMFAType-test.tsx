@@ -1,14 +1,7 @@
-import Auth from '@aws-amplify/auth';
 import * as React from 'react';
-import SelectMFAType from '../../src/Widget/SelectMFAType';
-import {
-	Header,
-	Footer,
-	Input,
-	Button,
-	Link,
-} from '../../src/Amplify-UI/Amplify-UI-Components-React';
-import AmplifyTheme from '../../src/AmplifyTheme';
+import { Auth } from '@aws-amplify/auth';
+import { SelectMFAType } from '../../src/Widget/SelectMFAType';
+import { Button } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 
 describe('SelectMFAType test', () => {
 	describe('render test', () => {

@@ -1,12 +1,10 @@
-jest.mock('@aws-amplify/core/lib/Signer', () => {
-	return {
-		default: {
-			sign: (request: any, access_info: any, service_info?: any) => {
-				return request;
-			},
-		},
-	};
-});
+import { Signer } from '@aws-amplify/core';
+
+jest
+	.spyOn(Signer, 'sign')
+	.mockImplementation(
+		(request: any, access_info: any, service_info?: any) => request
+	);
 
 jest.mock('axios', () => {
 	return {

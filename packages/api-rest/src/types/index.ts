@@ -10,7 +10,6 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { DocumentNode } from 'graphql/language/ast';
 
 /**
  * RestClient instance options
@@ -64,25 +63,4 @@ export interface apiOptions {
 	headers: object;
 	endpoints: object;
 	credentials?: object;
-}
-
-export interface GraphQLOptions {
-	query: string | DocumentNode;
-	variables?: object;
-	authMode?: GRAPHQL_AUTH_MODE;
-}
-
-export enum GRAPHQL_AUTH_MODE {
-	API_KEY = 'API_KEY',
-	AWS_IAM = 'AWS_IAM',
-	OPENID_CONNECT = 'OPENID_CONNECT',
-	AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
-}
-
-export interface GraphQLResult<T = object> {
-	data?: T;
-	errors?: [object];
-	extensions?: {
-		[key: string]: any;
-	};
 }

@@ -1,4 +1,4 @@
-import * as Observable from 'zen-observable';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ConsoleLogger as Logger, Reachability } from '@aws-amplify/core';
 
 const logger = new Logger('DataStore');

@@ -1,10 +1,11 @@
 {
   "name": "@aws-amplify/analytics",
-  "version": "2.2.8",
+  "version": "3.0.0",
   "description": "Analytics category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
@@ -22,8 +23,8 @@
     "lint": "tslint 'src/**/*.ts'"
   },
   "react-native": {
-    "./index": "./lib/index.js",
-    "./lib/trackers": "./lib/trackers/reactnative.js"
+    "./lib/index": "./lib-esm/index.js",
+    "./lib-esm/trackers": "./lib-esm/trackers/reactnative.js"
   },
   "repository": {
     "type": "git",
@@ -36,8 +37,12 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/cache": "^2.1.8",
-    "@aws-amplify/core": "^2.3.0",
+    "@aws-amplify/cache": "^3.0.0",
+    "@aws-amplify/core": "^3.0.0",
+    "@aws-sdk/client-firehose": "1.0.0-beta.3",
+    "@aws-sdk/client-kinesis": "1.0.0-beta.3",
+    "@aws-sdk/client-personalize-events": "1.0.0-beta.3",
+    "@aws-sdk/client-pinpoint": "1.0.0-beta.3",
     "uuid": "^3.2.1"
   },
   "jest": {
