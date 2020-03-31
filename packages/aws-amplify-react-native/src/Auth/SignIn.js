@@ -23,6 +23,7 @@ import {
 	ErrorRow,
 	Wrapper,
 } from '../AmplifyUI';
+import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('SignIn');
 
@@ -65,7 +66,12 @@ export default class SignIn extends AuthPiece {
 		return (
 			<Wrapper>
 				<View style={theme.section}>
-					<Header theme={theme}>{I18n.get('Sign in to your account')}</Header>
+					<Header
+						theme={theme}
+						testID={TEST_ID.AUTH.SIGN_IN_TO_YOUR_ACCOUNT_TEXT}
+					>
+						{I18n.get('Sign in to your account')}
+					</Header>
 					<View style={theme.sectionBody}>
 						{this.renderUsernameField(theme)}
 						<FormField
@@ -75,22 +81,29 @@ export default class SignIn extends AuthPiece {
 							placeholder={I18n.get('Enter your password')}
 							secureTextEntry={true}
 							required={true}
+							testID={TEST_ID.AUTH.PASSWORD_INPUT}
 						/>
 						<AmplifyButton
 							text={I18n.get('Sign In').toUpperCase()}
 							theme={theme}
 							onPress={this.signIn}
 							disabled={!this.getUsernameFromInput() && this.state.password}
+							testID={TEST_ID.AUTH.SIGN_IN_BUTTON}
 						/>
 					</View>
 					<View style={theme.sectionFooter}>
 						<LinkCell
 							theme={theme}
 							onPress={() => this.changeState('forgotPassword')}
+							testID={TEST_ID.AUTH.FORGOT_PASSWORD_BUTTON}
 						>
 							{I18n.get('Forgot Password')}
 						</LinkCell>
-						<LinkCell theme={theme} onPress={() => this.changeState('signUp')}>
+						<LinkCell
+							theme={theme}
+							onPress={() => this.changeState('signUp')}
+							testID={TEST_ID.AUTH.SIGN_UP_BUTTON}
+						>
 							{I18n.get('Sign Up')}
 						</LinkCell>
 					</View>
