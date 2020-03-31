@@ -3,12 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.0.0...@aws-amplify/core@3.1.0) (2020-03-31)
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@2.3.0...@aws-amplify/core@3.1.0) (2020-03-31)
+
+### Bug Fixes
+
+- **@aws-amplify/core:** expose tree-shaking for Webpack ([d1e5616](https://github.com/aws-amplify/amplify-js/commit/d1e561609e2f1098fc0f12aa2a2411042d7d4e12))
+- **core, auth, aws-amplify-react:** fix tests ([bdd162c](https://github.com/aws-amplify/amplify-js/commit/bdd162c2dd03488168a299f8dd8c554f76ca8a12))
 
 ### Features
 
-- **@aws-amplify/ui-components:** I18n Support ([#4979](https://github.com/aws-amplify/amplify-js/issues/4979)) ([6f3e37c](https://github.com/aws-amplify/amplify-js/commit/6f3e37cf1d764455475bc4aee689bd3fbe71dd3e))
-- **@aws-amplify/ui-components:** User agent tracking for UI component packages ([#4804](https://github.com/aws-amplify/amplify-js/issues/4804)) ([15a0a2f](https://github.com/aws-amplify/amplify-js/commit/15a0a2fadeb96543721a6733faeb509efc26e1e2))
+- **@aws-amplify/core:** [Delivers [#168673137](https://github.com/aws-amplify/amplify-js/issues/168673137)] Migrate core category to aws sdk V3 ([#4077](https://github.com/aws-amplify/amplify-js/issues/4077)) ([beb73a4](https://github.com/aws-amplify/amplify-js/commit/beb73a4b1c051654750f5bdc3b20cde3a3aba37d))
+- **@aws-amplify/core:** publish ES2015/ESM artifacts ([d73d5e1](https://github.com/aws-amplify/amplify-js/commit/d73d5e14b5e6a46b36dc00045029693a229046d4))
+- append amplify user agent to all V3 SDK calls ([#4564](https://github.com/aws-amplify/amplify-js/issues/4564)) ([175d4c3](https://github.com/aws-amplify/amplify-js/commit/175d4c34ccb9cd5674c228db14513827d1c80d3f))
+
+### Reverts
+
+- Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
+
+# [2.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@2.2.6...@aws-amplify/core@2.3.0) (2020-03-30)
+
+### Features
+
+- **@aws-amplify/datastore:** Make DataStore available in aws-amplify… ([#5202](https://github.com/aws-amplify/amplify-js/issues/5202)) ([c9c020d](https://github.com/aws-amplify/amplify-js/commit/c9c020d6d13c5678ce15c738f7eaebec39e2b48a))
 
 ## [2.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@2.2.5...@aws-amplify/core@2.2.6) (2020-03-25)
 

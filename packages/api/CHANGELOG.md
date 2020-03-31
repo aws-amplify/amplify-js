@@ -3,7 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@3.0.0...@aws-amplify/api@3.0.1) (2020-03-31)
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@2.2.1...@aws-amplify/api@3.1.0) (2020-03-31)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api:** expose tree-shaking for Webpack ([768a5f2](https://github.com/aws-amplify/amplify-js/commit/768a5f2bed0b1ecdfc9518c313a4a550a703fea7))
+
+
+### Features
+
+* **@aws-amplify/api:** publish ES2015/ESM artifacts ([68e0870](https://github.com/aws-amplify/amplify-js/commit/68e087056a0798d465b2c16d6f043e2ae8fd5a7c))
+* **@aws-amplify/core:** publish ES2015/ESM artifacts ([d73d5e1](https://github.com/aws-amplify/amplify-js/commit/d73d5e14b5e6a46b36dc00045029693a229046d4))
+
+
+### Reverts
+
+* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
+
+
+
+
+
+## [2.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api@2.2.0...@aws-amplify/api@2.2.1) (2020-03-30)
 
 **Note:** Version bump only for package @aws-amplify/api
 

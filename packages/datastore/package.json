@@ -39,7 +39,7 @@
     "fake-indexeddb": "3.0.0"
   },
   "dependencies": {
-    "@aws-amplify/api": "3.0.1",
+    "@aws-amplify/api": "3.1.0",
     "@aws-amplify/core": "3.1.0",
     "@aws-amplify/pubsub": "3.0.1",
     "idb": "4.0.4",
