@@ -26,7 +26,6 @@
  - [amplify-sign-out](../amplify-sign-out)
  - [amplify-sign-up](../amplify-sign-up)
  - [amplify-verify-contact](../amplify-verify-contact)
- - [rock-paper-scissor](../amplify-examples/rock-paper-scissor)
 
 ### Graph
 ```mermaid
@@ -40,7 +39,6 @@ graph TD;
   amplify-sign-out --> amplify-button
   amplify-sign-up --> amplify-button
   amplify-verify-contact --> amplify-button
-  rock-paper-scissor --> amplify-button
   style amplify-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
