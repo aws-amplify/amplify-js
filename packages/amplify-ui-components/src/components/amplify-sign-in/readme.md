@@ -22,7 +22,6 @@
 ### Used by
 
  - [amplify-authenticator](../amplify-authenticator)
- - [amplify-examples](../amplify-examples)
 
 ### Depends on
 
@@ -75,7 +74,6 @@ graph TD;
   amplify-phone-field --> amplify-input
   amplify-country-dial-code --> amplify-select
   amplify-authenticator --> amplify-sign-in
-  amplify-examples --> amplify-sign-in
   style amplify-sign-in fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

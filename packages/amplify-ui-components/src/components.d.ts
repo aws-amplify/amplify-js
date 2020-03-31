@@ -245,8 +245,6 @@ export namespace Components {
          */
         "value"?: string;
     }
-    interface AmplifyExamples {
-    }
     interface AmplifyFacebookButton {
         /**
           * App-specific client ID from Facebook
@@ -808,9 +806,6 @@ export namespace Components {
          */
         "user": CognitoUserInterface;
     }
-    interface RockPaperScissor {
-        "icon": Function;
-    }
 }
 declare global {
     interface HTMLAmplifyAmazonButtonElement extends Components.AmplifyAmazonButton, HTMLStencilElement {
@@ -878,12 +873,6 @@ declare global {
     var HTMLAmplifyEmailFieldElement: {
         prototype: HTMLAmplifyEmailFieldElement;
         new (): HTMLAmplifyEmailFieldElement;
-    };
-    interface HTMLAmplifyExamplesElement extends Components.AmplifyExamples, HTMLStencilElement {
-    }
-    var HTMLAmplifyExamplesElement: {
-        prototype: HTMLAmplifyExamplesElement;
-        new (): HTMLAmplifyExamplesElement;
     };
     interface HTMLAmplifyFacebookButtonElement extends Components.AmplifyFacebookButton, HTMLStencilElement {
     }
@@ -1101,12 +1090,6 @@ declare global {
         prototype: HTMLAmplifyVerifyContactElement;
         new (): HTMLAmplifyVerifyContactElement;
     };
-    interface HTMLRockPaperScissorElement extends Components.RockPaperScissor, HTMLStencilElement {
-    }
-    var HTMLRockPaperScissorElement: {
-        prototype: HTMLRockPaperScissorElement;
-        new (): HTMLRockPaperScissorElement;
-    };
     interface HTMLElementTagNameMap {
         "amplify-amazon-button": HTMLAmplifyAmazonButtonElement;
         "amplify-auth-fields": HTMLAmplifyAuthFieldsElement;
@@ -1119,7 +1102,6 @@ declare global {
         "amplify-confirm-sign-up": HTMLAmplifyConfirmSignUpElement;
         "amplify-country-dial-code": HTMLAmplifyCountryDialCodeElement;
         "amplify-email-field": HTMLAmplifyEmailFieldElement;
-        "amplify-examples": HTMLAmplifyExamplesElement;
         "amplify-facebook-button": HTMLAmplifyFacebookButtonElement;
         "amplify-federated-buttons": HTMLAmplifyFederatedButtonsElement;
         "amplify-federated-sign-in": HTMLAmplifyFederatedSignInElement;
@@ -1156,7 +1138,6 @@ declare global {
         "amplify-totp-setup": HTMLAmplifyTotpSetupElement;
         "amplify-username-field": HTMLAmplifyUsernameFieldElement;
         "amplify-verify-contact": HTMLAmplifyVerifyContactElement;
-        "rock-paper-scissor": HTMLRockPaperScissorElement;
     }
 }
 declare namespace LocalJSX {
@@ -1390,8 +1371,6 @@ declare namespace LocalJSX {
           * The value of the content inside of the input field
          */
         "value"?: string;
-    }
-    interface AmplifyExamples {
     }
     interface AmplifyFacebookButton {
         /**
@@ -1954,10 +1933,6 @@ declare namespace LocalJSX {
          */
         "user"?: CognitoUserInterface;
     }
-    interface RockPaperScissor {
-        "icon"?: Function;
-        "onIconChange"?: (event: CustomEvent<any>) => void;
-    }
     interface IntrinsicElements {
         "amplify-amazon-button": AmplifyAmazonButton;
         "amplify-auth-fields": AmplifyAuthFields;
@@ -1970,7 +1945,6 @@ declare namespace LocalJSX {
         "amplify-confirm-sign-up": AmplifyConfirmSignUp;
         "amplify-country-dial-code": AmplifyCountryDialCode;
         "amplify-email-field": AmplifyEmailField;
-        "amplify-examples": AmplifyExamples;
         "amplify-facebook-button": AmplifyFacebookButton;
         "amplify-federated-buttons": AmplifyFederatedButtons;
         "amplify-federated-sign-in": AmplifyFederatedSignIn;
@@ -2007,7 +1981,6 @@ declare namespace LocalJSX {
         "amplify-totp-setup": AmplifyTotpSetup;
         "amplify-username-field": AmplifyUsernameField;
         "amplify-verify-contact": AmplifyVerifyContact;
-        "rock-paper-scissor": RockPaperScissor;
     }
 }
 export { LocalJSX as JSX };
@@ -2025,7 +1998,6 @@ declare module "@stencil/core" {
             "amplify-confirm-sign-up": LocalJSX.AmplifyConfirmSignUp & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignUpElement>;
             "amplify-country-dial-code": LocalJSX.AmplifyCountryDialCode & JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement>;
             "amplify-email-field": LocalJSX.AmplifyEmailField & JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement>;
-            "amplify-examples": LocalJSX.AmplifyExamples & JSXBase.HTMLAttributes<HTMLAmplifyExamplesElement>;
             "amplify-facebook-button": LocalJSX.AmplifyFacebookButton & JSXBase.HTMLAttributes<HTMLAmplifyFacebookButtonElement>;
             "amplify-federated-buttons": LocalJSX.AmplifyFederatedButtons & JSXBase.HTMLAttributes<HTMLAmplifyFederatedButtonsElement>;
             "amplify-federated-sign-in": LocalJSX.AmplifyFederatedSignIn & JSXBase.HTMLAttributes<HTMLAmplifyFederatedSignInElement>;
@@ -2062,7 +2034,6 @@ declare module "@stencil/core" {
             "amplify-totp-setup": LocalJSX.AmplifyTotpSetup & JSXBase.HTMLAttributes<HTMLAmplifyTotpSetupElement>;
             "amplify-username-field": LocalJSX.AmplifyUsernameField & JSXBase.HTMLAttributes<HTMLAmplifyUsernameFieldElement>;
             "amplify-verify-contact": LocalJSX.AmplifyVerifyContact & JSXBase.HTMLAttributes<HTMLAmplifyVerifyContactElement>;
-            "rock-paper-scissor": LocalJSX.RockPaperScissor & JSXBase.HTMLAttributes<HTMLRockPaperScissorElement>;
         }
     }
 }

@@ -12,10 +12,6 @@
 
 ## Dependencies
 
-### Used by
-
- - [amplify-examples](../amplify-examples)
-
 ### Depends on
 
 - [amplify-icon-button](../amplify-icon-button)
@@ -28,7 +24,6 @@ graph TD;
   amplify-scene --> amplify-scene-loading
   amplify-icon-button --> amplify-tooltip
   amplify-icon-button --> amplify-icon
-  amplify-examples --> amplify-scene
   style amplify-scene fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

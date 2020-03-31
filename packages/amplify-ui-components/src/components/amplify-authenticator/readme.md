@@ -14,10 +14,6 @@
 
 ## Dependencies
 
-### Used by
-
- - [amplify-examples](../amplify-examples)
-
 ### Depends on
 
 - [amplify-sign-in](../amplify-sign-in)
@@ -104,7 +100,6 @@ graph TD;
   amplify-totp-setup --> amplify-form-section
   amplify-totp-setup --> amplify-form-field
   amplify-toast --> amplify-icon
-  amplify-examples --> amplify-authenticator
   style amplify-authenticator fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

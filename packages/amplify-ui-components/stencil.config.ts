@@ -6,7 +6,14 @@ import nodePolyfills from 'rollup-plugin-node-polyfills';
 import { sass } from '@stencil/sass';
 
 export const config: Config = {
-  excludeSrc: ['**/*.e2e.*', '**/*.spec.*', '**/*.stories.*'],
+  excludeSrc: [
+    '**/*.e2e.*',
+    '**/*.spec.*',
+    '**/*.stories.*',
+    '**/amplify-examples/**',
+    '**/amplify-scene/**',
+    '**/amplify-scene-loading/**'
+  ],
   namespace: 'amplify-ui-components',
   plugins: [
     externals({
@@ -15,7 +22,7 @@ export const config: Config = {
     }),
     nodePolyfills(),
     sass({
-      injectGlobalPaths: [ 
+      injectGlobalPaths: [
         'src/global/breakpoint.scss'
       ]
     }),
