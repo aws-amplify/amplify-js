@@ -1,6 +1,7 @@
 import { Component, State, Prop, h, Host } from '@stencil/core';
 import { AuthState, CognitoUserInterface, FederatedConfig, UsernameAliasStrings } from '../../common/types/auth-types';
 import {
+  AUTH_CHANNEL,
   NO_AUTH_MODULE_FOUND,
   SIGNING_IN_WITH_HOSTEDUI_KEY,
   AUTHENTICATOR_AUTHSTATE,
@@ -30,6 +31,19 @@ export class AmplifyAuthenticator {
   @State() toastMessage: string = '';
 
   async componentWillLoad() {
+    Hub.listen(AUTH_CHANNEL, ({ payload: { event, data } }) => {
+      switch (event) {
+        case 'cognitoHostedUI':
+          return this.onAuthStateChange(AuthState.SignedIn, data);
+
+        case 'cognitoHostedUI_failure':
+        case 'parsingUrl_failure':
+        case 'signOut':
+        case 'customGreetingSignOut':
+          return this.onAuthStateChange(AuthState.SignIn, null);
+      }
+    });
+
     Hub.listen(UI_AUTH_CHANNEL, data => {
       const { payload } = data;
       switch (payload.event) {
