@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.8...@aws-amplify/auth@3.1.0) (2020-03-31)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** expose tree-shaking for Webpack ([7ad2d4e](https://github.com/aws-amplify/amplify-js/commit/7ad2d4e7a2673481ab45b416caed7593b7973f32))
+* **core, auth, aws-amplify-react:** fix tests ([bdd162c](https://github.com/aws-amplify/amplify-js/commit/bdd162c2dd03488168a299f8dd8c554f76ca8a12))
+
+
+### Features
+
+* **@aws-amplify/auth:** publish ES2015/ESM artifacts ([6cf2c22](https://github.com/aws-amplify/amplify-js/commit/6cf2c22b9a9013092fa81ee51ff5f280d6152e1d))
+* **@aws-amplify/core:** [Delivers [#168673137](https://github.com/aws-amplify/amplify-js/issues/168673137)] Migrate core category to aws sdk V3 ([#4077](https://github.com/aws-amplify/amplify-js/issues/4077)) ([beb73a4](https://github.com/aws-amplify/amplify-js/commit/beb73a4b1c051654750f5bdc3b20cde3a3aba37d))
+
+
+### Reverts
+
+* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
+
+
+
+
+
 ## [2.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@2.1.7...@aws-amplify/auth@2.1.8) (2020-03-30)
 
 **Note:** Version bump only for package @aws-amplify/auth

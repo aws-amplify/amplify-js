@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.9...aws-amplify-react@4.1.0) (2020-03-31)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** BREAKING - Remove "import '[@aws-amplify](https://github.com/aws-amplify)… ([#5138](https://github.com/aws-amplify/amplify-js/issues/5138)) ([1cad8b9](https://github.com/aws-amplify/amplify-js/commit/1cad8b9214ff798eedefeee1b07fdfc2e020fc05))
+* **core, auth, aws-amplify-react:** fix tests ([bdd162c](https://github.com/aws-amplify/amplify-js/commit/bdd162c2dd03488168a299f8dd8c554f76ca8a12))
+
+
+### Features
+
+* **aws-amplify-react): publish ES2015/ESM artifacts:** publish ES2015/ESM artifacts ([3a60350](https://github.com/aws-amplify/amplify-js/commit/3a6035028c2b61744bd1154e7125eed38339b140))
+
+
+### Reverts
+
+* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
+
+
+
+
+
 ## [3.1.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@3.1.8...aws-amplify-react@3.1.9) (2020-03-30)
 
 **Note:** Version bump only for package aws-amplify-react

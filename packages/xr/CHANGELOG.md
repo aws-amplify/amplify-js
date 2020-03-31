@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@1.1.8...@aws-amplify/xr@2.1.0) (2020-03-31)
+
+
+### Bug Fixes
+
+* **@aws-amplify/xr:** fix usage of default -> named import ([92bcff5](https://github.com/aws-amplify/amplify-js/commit/92bcff5ff519ef3d1e6719920803f3896a26b95c))
+
+
+### Features
+
+* **@aws-amplify/xr:** publish ES2015/ESM artifacts ([6298193](https://github.com/aws-amplify/amplify-js/commit/62981935836b14591db047b1cda6fb18e882a95b))
+
+
+### Reverts
+
+* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
+
+
+
+
+
 ## [1.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@1.1.7...@aws-amplify/xr@1.1.8) (2020-03-30)
 
 **Note:** Version bump only for package @aws-amplify/xr
