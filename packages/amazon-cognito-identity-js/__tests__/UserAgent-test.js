@@ -1,6 +1,6 @@
 import UserAgent, { appendToCognitoUserAgent } from '../src/UserAgent';
 
-const DEFAULT_USER_AGENT = 'amazon-cognito-identity-js';
+const DEFAULT_USER_AGENT = 'aws-amplify/0.1.x js';
 
 describe('UserAgent test', () => {
 	beforeEach(() => {

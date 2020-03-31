@@ -47,7 +47,7 @@ export class AmplifyAuthenticator {
       }
     });
 
-    appendToCognitoUserAgent('amplify-ui');
+    appendToCognitoUserAgent('amplify-authenticator');
     const byHostedUI = localStorage.getItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
     localStorage.removeItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
     if (byHostedUI !== 'true') await this.checkUser();

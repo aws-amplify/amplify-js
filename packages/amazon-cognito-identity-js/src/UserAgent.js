@@ -1,8 +1,7 @@
-const DEFAULT_USER_AGENT = 'amazon-cognito-identity-js';
 // constructor
 function UserAgent() {}
 // public
-UserAgent.prototype.userAgent = DEFAULT_USER_AGENT;
+UserAgent.prototype.userAgent = 'aws-amplify/0.1.x js';
 
 export const appendToCognitoUserAgent = content => {
 	if (!content) {
