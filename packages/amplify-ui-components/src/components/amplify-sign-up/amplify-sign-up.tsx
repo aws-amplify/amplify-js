@@ -136,9 +136,8 @@ export class AmplifySignUp {
           phone_number: composePhoneNumberInput(this.phoneNumber),
         },
       };
-
       const data = await Auth.signUp(signUpAttrs);
-      this.handleAuthStateChange(AuthState.ConfirmSignUp, data.user);
+      this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs });
     } catch (error) {
       dispatchToastHubEvent(error);
     }
