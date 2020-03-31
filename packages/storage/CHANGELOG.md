@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.0.0...@aws-amplify/storage@3.0.1) (2020-03-31)
+
+### Bug Fixes
+
+- **@aws-amplify/ui-components:** Fix shadow dom form submit ([#5160](https://github.com/aws-amplify/amplify-js/issues/5160)) ([766c5ac](https://github.com/aws-amplify/amplify-js/commit/766c5ac5bdcf22f772340f78f5d45790f3142b71))
+
 ## [2.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@2.2.1...@aws-amplify/storage@2.2.2) (2020-03-25)
 
 **Note:** Version bump only for package @aws-amplify/storage

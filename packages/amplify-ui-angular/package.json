@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/ui-angular",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"description": "Angular specific wrapper for @aws-amplify/ui-components",
 	"publishConfig": {
 		"access": "public"
@@ -31,7 +31,7 @@
 		"dist/"
 	],
 	"dependencies": {
-		"@aws-amplify/ui-components": "^0.1.0"
+		"@aws-amplify/ui-components": "0.2.0"
 	},
 	"devDependencies": {
 		"@angular/compiler-cli": "^7.2.1",
@@ -40,9 +40,9 @@
 		"rollup-plugin-node-resolve": "^4.0.0",
 		"rxjs": "^6.2.0",
 		"tsickle": "^0.34.0",
-		"typescript": "3.2.4",
-		"zone.js": "^0.8.28",
 		"tslib": "^1.9.3",
-		"tslint": "^5.12.1"
+		"tslint": "^5.12.1",
+		"typescript": "3.2.4",
+		"zone.js": "^0.8.28"
 	}
 }

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@2.0.0...aws-amplify-vue@2.0.1) (2020-03-31)
+
+**Note:** Version bump only for package aws-amplify-vue
+
 ## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@1.1.2...aws-amplify-vue@1.1.4) (2020-02-07)
 
 **Note:** Version bump only for package aws-amplify-vue
