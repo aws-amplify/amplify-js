@@ -23,9 +23,17 @@ AWS Amplify provides a declarative and easy-to-use interface across different ca
 
 Our default implementation works with Amazon Web Services (AWS), but AWS Amplify is designed to be open and pluggable for any custom backend or service.
 
-Notice:
+## Notice:
 
-Amplify@1.x.x has structural changes. For details please check [Amplify Modularization](https://github.com/aws/aws-amplify/wiki/Amplify-modularization).
+### Amplify@3.x.x has breaking changes. Please see the breaking changes below: 
+* AWS.credentials and AWS.config don’t exist anymore anywhere in Amplify JS
+  * Both options will not be available to use in version 3. You will not be available to use and set your own credentials. Migration plan on “How to migrate to using Amplify provided credentials” will follow in the coming weeks after GA launch.
+* v2 of AWS SDK JS is not vended as part of Amplify JS. If you rely on v2 of AWS SDK JS, you will need to export it separately. Since AWS SDK JS v3 is exported modularly, only AWS Services that Amplify JS currently supports will be available in v3.
+* If you are using exported paths within your Amplify JS application, (e.g. import from @aws-amplify/analytics/lib/Analytics this will now break and no longer will be supported. You will need to change to regular import statements.
+* If you are using categories as Amplify.<Category>, this will no longer work and we recommend to import the category you are needing to use.
+  * The one exception to this is using aws-amplify-angular package where we are still supplying all instantiated categories. This is subject to change in a later release.
+* For aws-amplify-react for the Authenticator Component, you will need to import the styles yourself.
+  * You will need to import the following: import `@aws-amplify/ui/dist/style.css`;
 
 ### Features / APIs
 
