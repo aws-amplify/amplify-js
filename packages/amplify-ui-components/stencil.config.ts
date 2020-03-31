@@ -9,10 +9,7 @@ export const config: Config = {
   excludeSrc: [
     '**/*.e2e.*',
     '**/*.spec.*',
-    '**/*.stories.*',
-    '**/amplify-examples/**',
-    '**/amplify-scene/**',
-    '**/amplify-scene-loading/**'
+    '**/*.stories.*'
   ],
   namespace: 'amplify-ui-components',
   plugins: [

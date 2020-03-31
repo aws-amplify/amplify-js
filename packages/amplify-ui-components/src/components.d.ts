@@ -11,7 +11,6 @@ import { ButtonTypes, ButtonVariant, TextFieldTypes, } from "./common/types/ui-t
 import { FunctionalComponent, } from "@stencil/core";
 import { CountryCodeDialOptions, } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { IconNameType, } from "./components/amplify-icon/icons";
-import { AmplifySceneError, } from "./components/amplify-scene/amplify-scene-interface";
 import { SelectOptionsNumber, SelectOptionsString, } from "./components/amplify-select/amplify-select-interface";
 export namespace Components {
     interface AmplifyAmazonButton {
@@ -609,14 +608,6 @@ export namespace Components {
          */
         "user": CognitoUserInterface;
     }
-    interface AmplifyScene {
-        "sceneName": string;
-    }
-    interface AmplifySceneLoading {
-        "loadPercentage": number;
-        "sceneError": AmplifySceneError | null;
-        "sceneName": string;
-    }
     interface AmplifySection {
         "role": string;
     }
@@ -1000,18 +991,6 @@ declare global {
         prototype: HTMLAmplifyRequireNewPasswordElement;
         new (): HTMLAmplifyRequireNewPasswordElement;
     };
-    interface HTMLAmplifySceneElement extends Components.AmplifyScene, HTMLStencilElement {
-    }
-    var HTMLAmplifySceneElement: {
-        prototype: HTMLAmplifySceneElement;
-        new (): HTMLAmplifySceneElement;
-    };
-    interface HTMLAmplifySceneLoadingElement extends Components.AmplifySceneLoading, HTMLStencilElement {
-    }
-    var HTMLAmplifySceneLoadingElement: {
-        prototype: HTMLAmplifySceneLoadingElement;
-        new (): HTMLAmplifySceneLoadingElement;
-    };
     interface HTMLAmplifySectionElement extends Components.AmplifySection, HTMLStencilElement {
     }
     var HTMLAmplifySectionElement: {
@@ -1123,8 +1102,6 @@ declare global {
         "amplify-phone-field": HTMLAmplifyPhoneFieldElement;
         "amplify-radio-button": HTMLAmplifyRadioButtonElement;
         "amplify-require-new-password": HTMLAmplifyRequireNewPasswordElement;
-        "amplify-scene": HTMLAmplifySceneElement;
-        "amplify-scene-loading": HTMLAmplifySceneLoadingElement;
         "amplify-section": HTMLAmplifySectionElement;
         "amplify-select": HTMLAmplifySelectElement;
         "amplify-select-mfa-type": HTMLAmplifySelectMfaTypeElement;
@@ -1736,14 +1713,6 @@ declare namespace LocalJSX {
          */
         "user"?: CognitoUserInterface;
     }
-    interface AmplifyScene {
-        "sceneName"?: string;
-    }
-    interface AmplifySceneLoading {
-        "loadPercentage"?: number;
-        "sceneError"?: AmplifySceneError | null;
-        "sceneName"?: string;
-    }
     interface AmplifySection {
         "role"?: string;
     }
@@ -1966,8 +1935,6 @@ declare namespace LocalJSX {
         "amplify-phone-field": AmplifyPhoneField;
         "amplify-radio-button": AmplifyRadioButton;
         "amplify-require-new-password": AmplifyRequireNewPassword;
-        "amplify-scene": AmplifyScene;
-        "amplify-scene-loading": AmplifySceneLoading;
         "amplify-section": AmplifySection;
         "amplify-select": AmplifySelect;
         "amplify-select-mfa-type": AmplifySelectMfaType;
@@ -2019,8 +1986,6 @@ declare module "@stencil/core" {
             "amplify-phone-field": LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
             "amplify-radio-button": LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
             "amplify-require-new-password": LocalJSX.AmplifyRequireNewPassword & JSXBase.HTMLAttributes<HTMLAmplifyRequireNewPasswordElement>;
-            "amplify-scene": LocalJSX.AmplifyScene & JSXBase.HTMLAttributes<HTMLAmplifySceneElement>;
-            "amplify-scene-loading": LocalJSX.AmplifySceneLoading & JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement>;
             "amplify-section": LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
             "amplify-select": LocalJSX.AmplifySelect & JSXBase.HTMLAttributes<HTMLAmplifySelectElement>;
             "amplify-select-mfa-type": LocalJSX.AmplifySelectMfaType & JSXBase.HTMLAttributes<HTMLAmplifySelectMfaTypeElement>;
