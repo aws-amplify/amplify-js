@@ -59,7 +59,6 @@ import {
 	CognitoIdToken,
 	CognitoRefreshToken,
 	CognitoAccessToken,
-	appendToCognitoUserAgent,
 } from 'amazon-cognito-identity-js';
 
 import { parse } from 'url';
@@ -72,7 +71,7 @@ const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
+	typeof Symbol.for === 'function'
 	? Symbol.for('amplify_default')
 	: '@@amplify_default') as Symbol;
 
@@ -232,8 +231,6 @@ export class AuthClass {
 				this._handleAuthResponse(url);
 			});
 		}
-
-		appendToCognitoUserAgent(Platform.userAgent);
 
 		dispatchAuthEvent(
 			'configured',
@@ -1172,7 +1169,7 @@ export class AuthClass {
 						} else {
 							logger.debug(
 								`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
-									`is not in the scopes of the access token`
+								`is not in the scopes of the access token`
 							);
 							return res(user);
 						}
@@ -1223,7 +1220,7 @@ export class AuthClass {
 				if (e === 'No userPool') {
 					logger.error(
 						'Cannot get the current user because the user pool is missing. ' +
-							'Please make sure the Auth module is configured with a valid Cognito User Pool ID'
+						'Please make sure the Auth module is configured with a valid Cognito User Pool ID'
 					);
 				}
 				logger.debug('The user is not authenticated by the error', e);
@@ -1772,7 +1769,7 @@ export class AuthClass {
 					logger.warn(`There is already a signed in user: ${loggedInUser} in your app.
 																	You should not call Auth.federatedSignIn method again as it may cause unexpected behavior.`);
 				}
-			} catch (e) {}
+			} catch (e) { }
 
 			const { token, identity_id, expires_at } = response;
 			// Because Credentials.set would update the user info with identity id
