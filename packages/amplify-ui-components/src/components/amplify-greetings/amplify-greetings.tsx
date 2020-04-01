@@ -11,7 +11,7 @@ export class AmplifyGreetings {
   @Prop() username: string = null;
   /** Logo displayed inside of the header */
   @Prop() logo: FunctionalComponent | null = null;
-  /** Passed from the Authenticator component in order to change Authentication state */
+  /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 
   render() {

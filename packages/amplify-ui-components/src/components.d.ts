@@ -19,7 +19,7 @@ export namespace Components {
          */
         "clientId": FederatedConfig["amazonClientId"];
         /**
-          * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+          * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange": AuthStateHandler;
     }
@@ -138,7 +138,7 @@ export namespace Components {
          */
         "formFields": FormFieldTypes | string[];
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Auth state change handler for this component
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
@@ -164,7 +164,7 @@ export namespace Components {
          */
         "formFields": FormFieldTypes | string[];
         /**
-          * Passed from the Authenticator component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+          * Auth state change handler for this components e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
@@ -242,7 +242,7 @@ export namespace Components {
          */
         "appId": FederatedConfig["facebookAppId"];
         /**
-          * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+          * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange": AuthStateHandler;
     }
@@ -256,7 +256,7 @@ export namespace Components {
          */
         "federated": FederatedConfig;
         /**
-          * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+          * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange": AuthStateHandler;
     }
@@ -276,7 +276,7 @@ export namespace Components {
          */
         "formFields": FormFieldTypes;
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Auth state change handler for this component
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
@@ -382,13 +382,13 @@ export namespace Components {
          */
         "clientId": FederatedConfig["googleClientId"];
         /**
-          * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+          * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange": AuthStateHandler;
     }
     interface AmplifyGreetings {
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Auth state change handler for this component
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
@@ -580,7 +580,7 @@ export namespace Components {
          */
         "formFields": FormFieldTypes;
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Auth state change handler for this component
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
@@ -641,7 +641,7 @@ export namespace Components {
          */
         "formFields": FormFieldTypes | string[];
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Auth state change handler for this component
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
@@ -670,7 +670,7 @@ export namespace Components {
          */
         "buttonText": string;
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Auth state change handler for this component
          */
         "handleAuthStateChange": AuthStateHandler;
     }
@@ -680,7 +680,7 @@ export namespace Components {
          */
         "formFields": FormFieldTypes | string[];
         /**
-          * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+          * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
@@ -733,7 +733,7 @@ export namespace Components {
     }
     interface AmplifyTotpSetup {
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Auth state change handler for this component
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
@@ -1112,7 +1112,7 @@ declare namespace LocalJSX {
          */
         "clientId"?: FederatedConfig["amazonClientId"];
         /**
-          * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+          * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange"?: AuthStateHandler;
     }
@@ -1231,7 +1231,7 @@ declare namespace LocalJSX {
          */
         "formFields"?: FormFieldTypes | string[];
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Auth state change handler for this component
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
@@ -1257,7 +1257,7 @@ declare namespace LocalJSX {
          */
         "formFields"?: FormFieldTypes | string[];
         /**
-          * Passed from the Authenticator component in order to change Authentication states e.g. SignIn -> 'Create Account' link -> SignUp
+          * Auth state change handler for this components e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
@@ -1335,7 +1335,7 @@ declare namespace LocalJSX {
          */
         "appId"?: FederatedConfig["facebookAppId"];
         /**
-          * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+          * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange"?: AuthStateHandler;
     }
@@ -1349,7 +1349,7 @@ declare namespace LocalJSX {
          */
         "federated"?: FederatedConfig;
         /**
-          * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+          * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange"?: AuthStateHandler;
     }
@@ -1369,7 +1369,7 @@ declare namespace LocalJSX {
          */
         "formFields"?: FormFieldTypes;
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Auth state change handler for this component
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
@@ -1475,13 +1475,13 @@ declare namespace LocalJSX {
          */
         "clientId"?: FederatedConfig["googleClientId"];
         /**
-          * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+          * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange"?: AuthStateHandler;
     }
     interface AmplifyGreetings {
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Auth state change handler for this component
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
@@ -1673,7 +1673,7 @@ declare namespace LocalJSX {
          */
         "formFields"?: FormFieldTypes;
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Auth state change handler for this component
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
@@ -1734,7 +1734,7 @@ declare namespace LocalJSX {
          */
         "formFields"?: FormFieldTypes | string[];
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Auth state change handler for this component
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
@@ -1763,7 +1763,7 @@ declare namespace LocalJSX {
          */
         "buttonText"?: string;
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Auth state change handler for this component
          */
         "handleAuthStateChange"?: AuthStateHandler;
     }
@@ -1773,7 +1773,7 @@ declare namespace LocalJSX {
          */
         "formFields"?: FormFieldTypes | string[];
         /**
-          * Passed from the Authenticator component in order to change Authentication state e.g. SignIn -> 'Create Account' link -> SignUp
+          * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
@@ -1826,7 +1826,7 @@ declare namespace LocalJSX {
     }
     interface AmplifyTotpSetup {
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Auth state change handler for this component
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
