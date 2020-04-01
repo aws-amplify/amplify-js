@@ -301,11 +301,47 @@ jobs:
       - restore_cache:
           key: amplify-js-ui
       - run:
-          name: "Start Vue Authenticator Sample server in background"
+          name: "Start React Authenticator UI Sample server in background"
           command: |
             cd amplify-js-samples-staging-ui
             yarn
             yarn ci:test react auth amplify-authenticator
+      - store_artifacts:
+          path: amplify-js-samples-staging-ui/cypress/videos
+      - store_artifacts:
+          path: amplify-js-samples-staging-ui/cypress/screenshots
+  integ_angular_auth_ui:
+    <<: *defaults
+    working_directory: ~/
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-ui
+      - run:
+          name: "Start Angular Authenticator UI Sample server in background"
+          command: |
+            cd amplify-js-samples-staging-ui
+            yarn
+            yarn ci:test angular auth amplify-authenticator
+      - store_artifacts:
+          path: amplify-js-samples-staging-ui/cypress/videos
+      - store_artifacts:
+          path: amplify-js-samples-staging-ui/cypress/screenshots
+  integ_vue_auth_ui:
+    <<: *defaults
+    working_directory: ~/
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-ui
+      - run:
+          name: "Start Vue Authenticator UI Sample server in background"
+          command: |
+            cd amplify-js-samples-staging-ui
+            yarn
+            yarn ci:test vue auth amplify-authenticator
       - store_artifacts:
           path: amplify-js-samples-staging-ui/cypress/videos
       - store_artifacts:
