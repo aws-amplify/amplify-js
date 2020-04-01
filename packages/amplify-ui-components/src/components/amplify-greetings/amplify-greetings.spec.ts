@@ -9,8 +9,8 @@ describe('amplify-greetings spec:', () => {
       greetings = new AmplifyGreetings();
     });
 
-    it('should have user prop set to null by default', () => {
-      expect(greetings.user).toBe(null);
+    it('should have username prop set to null by default', () => {
+      expect(greetings.username).toBe(null);
     });
 
     it('should have logo prop set to null by default', () => {
