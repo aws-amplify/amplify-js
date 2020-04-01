@@ -300,9 +300,11 @@ jobs:
           at: /root
       - restore_cache:
           key: amplify-js-ui
-      - run:
-          name: 'Install React Authenticator sample'
+            - run:
+          name: 'Start Vue Authenticator Sample server in background'
           command: |
+            cd amplify-js-samples-staging-ui
+            yarn
             yarn ci:test react auth amplify-authenticator
       - store_artifacts:
           path: amplify-js-samples-staging-ui/cypress/videos
@@ -439,7 +441,6 @@ workflows:
   version: 2
   build_test_deploy:
     jobs:
-      - build
       - unit_test:
           requires:
             - build
