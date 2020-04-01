@@ -441,6 +441,14 @@ workflows:
   version: 2
   build_test_deploy:
     jobs:
+      - build
+        filters:
+            branches:
+              only:
+                - release
+                - master
+                - ui-components/master
+                - 1.0-stable
       - unit_test:
           requires:
             - build
