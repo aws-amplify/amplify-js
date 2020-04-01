@@ -549,28 +549,40 @@ workflows:
           filters:
             branches:
               only:
-                - ui-components/circle-ci
+                - release
+                - master
+                - ui-components/master
+                - 1.0-stable
           requires:
             - build
       - integ_react_auth_ui:
           filters:
             branches:
               only:
-                - ui-components/circle-ci
+                - release
+                - master
+                - ui-components/master
+                - 1.0-stable
           requires:
             - integ_setup_ui
       - integ_angular_auth_ui:
           filters:
             branches:
               only:
-                - ui-components/circle-ci
+                - release
+                - master
+                - ui-components/master
+                - 1.0-stable
           requires:
             - integ_setup_ui
       - integ_vue_auth_ui:
           filters:
             branches:
               only:
-                - ui-components/circle-ci
+                - release
+                - master
+                - ui-components/master
+                - 1.0-stable
           requires:
             - integ_setup_ui
       - integ_setup:
