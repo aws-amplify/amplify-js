@@ -321,7 +321,7 @@ jobs:
             cd amplify-js-samples-staging-ui/samples/react/auth/amplify-authenticator
             yarn
             yarn link aws-amplify
-            yarn link @aws-amplify/react
+            yarn link @aws-amplify/ui-react
       - run:
           name: "Start React Authenticator UI Sample server in background"
           command: |
@@ -360,7 +360,7 @@ jobs:
             cd amplify-js-samples-staging-ui/samples/angular/auth/amplify-authenticator
             yarn
             yarn link aws-amplify
-            yarn link @aws-amplify/angular
+            yarn link @aws-amplify/ui-angular
       - run:
           name: "Start Angular Authenticator UI Sample server in background"
           command: |
@@ -399,7 +399,7 @@ jobs:
             cd amplify-js-samples-staging-ui/samples/vue/auth/amplify-authenticator
             yarn
             yarn link aws-amplify
-            yarn link @aws-amplify/vue
+            yarn link @aws-amplify/ui-vue
       - run:
           name: "Start Vue Authenticator UI Sample server in background"
           command: |
