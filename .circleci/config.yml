@@ -300,7 +300,7 @@ jobs:
           at: /root
       - restore_cache:
           key: amplify-js-ui
-            - run:
+      - run:
           name: 'Start Vue Authenticator Sample server in background'
           command: |
             cd amplify-js-samples-staging-ui
