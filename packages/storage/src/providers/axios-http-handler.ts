@@ -69,7 +69,7 @@ export class AxiosHttpHandler implements HttpHandler {
 		}
 
 		const raceOfPromises = [
-			axios.request(axiosRequest).then(response => {
+			axios(axiosRequest).then(response => {
 				return {
 					response: new HttpResponse({
 						headers: response.headers,
