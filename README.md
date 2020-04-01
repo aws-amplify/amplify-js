@@ -28,7 +28,9 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
 ### Amplify@3.x.x has breaking changes. Please see the breaking changes below: 
 * `AWS.credentials` and `AWS.config` don’t exist anymore anywhere in Amplify JS
   * Both options will not be available to use in version 3. You will not be able to use and set your own credentials. Migration plan on “How to migrate to using Amplify provided credentials” will follow in the coming weeks after GA launch.
-* v2 of AWS SDK JS has been removed from Amplify JS. If you rely on v2 of AWS SDK JS, you will need to export it separately. Since AWS SDK JS v3 is exported modularly, only AWS Services that Amplify JS currently supports will be available in v3.
+* `aws-sdk@2.x` has been removed from `Amplify@3.x.x` in favor of [version 3 of aws-sdk-js](https://github.com/aws/aws-sdk-js-v3). We recommend to migrate to [aws-sdk-js](https://github.com/aws/aws-sdk-js) if you rely on AWS services that are not supported by Amplify since aws-sdk-js(add hyperlink) is imported modularly.
+
+If you can't migrate to aws-sdk-js(add hyperlink) or rely on aws-sdk@2.x, you will need to import it separately.
 * If you are using exported paths within your Amplify JS application, (e.g. `import from "@aws-amplify/analytics/lib/Analytics"`) this will now break and no longer will be supported. You will need to change to named imports:
 
     ```js
