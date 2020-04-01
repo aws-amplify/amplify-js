@@ -285,7 +285,7 @@ jobs:
             git checkout ui-components/master
             yarn
       - save_cache:
-          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging-ui/yarn.lock" }}
+          key: amplify-js-ui
           paths:
             - ~/.cache ## cache both yarn and Cypress
       - persist_to_workspace:
@@ -299,7 +299,7 @@ jobs:
       - attach_workspace:
           at: /root
       - restore_cache:
-          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging-ui/yarn.lock" }}
+          key: amplify-js-ui
       - run:
           name: 'Install React Authenticator sample'
           command: |
