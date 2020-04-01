@@ -39,9 +39,12 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
     ```js
     import { Auth } from "aws-amplify"
     ```
-  * The one exception to this is using aws-amplify-angular package where we are still supplying all instantiated categories. This is subject to change in a later release.
-* For aws-amplify-react for the Authenticator Component, you will need to import the styles yourself.
-  * You will need to import the following: import `@aws-amplify/ui/dist/style.css`;
+  * The one exception to this is using `aws-amplify-angular` package where we are still supplying all instantiated categories. This is subject to change in a later release.
+* For `aws-amplify-react`'s `Authenticator` Component, you will need to import the styles within your app:
+
+    ```js
+    import `@aws-amplify/ui/dist/style.css`;
+    ```
 
 ### Features / APIs
 
