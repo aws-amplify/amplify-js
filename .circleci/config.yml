@@ -301,10 +301,31 @@ jobs:
       - restore_cache:
           key: amplify-js-ui
       - run:
+          name: "Install React Authenticator sample"
+          command: |
+            cd amplify-js-samples-staging/samples/react/auth/amplify-authenticator
+            yarn
+      - run:
+          name: "Link aws-amplify"
+          command: |
+            cd amplify-js/packages/aws-amplify
+            yarn link
+      - run:
+          name: "Link amplify-ui-react"
+          command: |
+            cd amplify-js/packages/amplify-ui-react
+            yarn link
+      - run:
+          name: "Install React Authenticator sample"
+          command: |
+            cd amplify-js-samples-staging-ui/samples/react/auth/amplify-authenticator
+            yarn
+            yarn link aws-amplify
+            yarn link @aws-amplify/react
+      - run:
           name: "Start React Authenticator UI Sample server in background"
           command: |
             cd amplify-js-samples-staging-ui
-            yarn
             yarn ci:test react auth amplify-authenticator
       - store_artifacts:
           path: amplify-js-samples-staging-ui/cypress/videos
@@ -319,10 +340,31 @@ jobs:
       - restore_cache:
           key: amplify-js-ui
       - run:
+          name: "Install React Authenticator sample"
+          command: |
+            cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
+            yarn
+      - run:
+          name: "Link aws-amplify"
+          command: |
+            cd amplify-js/packages/aws-amplify
+            yarn link
+      - run:
+          name: "Link amplify-ui-angular"
+          command: |
+            cd amplify-js/packages/amplify-ui-angular
+            yarn link
+      - run:
+          name: "Install Angular Authenticator sample"
+          command: |
+            cd amplify-js-samples-staging-ui/samples/angular/auth/amplify-authenticator
+            yarn
+            yarn link aws-amplify
+            yarn link @aws-amplify/angular
+      - run:
           name: "Start Angular Authenticator UI Sample server in background"
           command: |
             cd amplify-js-samples-staging-ui
-            yarn
             yarn ci:test angular auth amplify-authenticator
       - store_artifacts:
           path: amplify-js-samples-staging-ui/cypress/videos
@@ -336,6 +378,28 @@ jobs:
           at: /root
       - restore_cache:
           key: amplify-js-ui
+      - run:
+          name: "Install Vue Authenticator sample"
+          command: |
+            cd amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
+            yarn
+      - run:
+          name: "Link aws-amplify"
+          command: |
+            cd amplify-js/packages/aws-amplify
+            yarn link
+      - run:
+          name: "Link amplify-ui-vue"
+          command: |
+            cd amplify-js/packages/amplify-ui-vue
+            yarn link
+      - run:
+          name: "Install Vue Authenticator sample"
+          command: |
+            cd amplify-js-samples-staging-ui/samples/vue/auth/amplify-authenticator
+            yarn
+            yarn link aws-amplify
+            yarn link @aws-amplify/vue
       - run:
           name: "Start Vue Authenticator UI Sample server in background"
           command: |
@@ -477,14 +541,7 @@ workflows:
   version: 2
   build_test_deploy:
     jobs:
-      - build:
-        filters:
-          branches:
-            only:
-              - release
-              - master
-              - ui-components/master
-              - 1.0-stable
+      - build
       - unit_test:
           requires:
             - build
@@ -493,6 +550,8 @@ workflows:
             branches:
               only:
                 - ui-components/circle-ci
+          requires:
+            - integ_setup_ui
       - integ_react_auth_ui:
           filters:
             branches:
