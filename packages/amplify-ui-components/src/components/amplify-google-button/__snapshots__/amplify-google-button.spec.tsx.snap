@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-google-button stories defaults 1`] = `
+<amplify-google-button>
+  <mock:shadow-root>
+    <amplify-sign-in-button provider="google">
+      <script src="https://apis.google.com/js/api:client.js"></script>
+      Sign in with Google
+    </amplify-sign-in-button>
+  </mock:shadow-root>
+</amplify-google-button>
+`;

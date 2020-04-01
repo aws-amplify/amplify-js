@@ -5,25 +5,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.1.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@3.2.7...amazon-cognito-identity-js@4.1.0) (2020-03-31)
 
-
 ### Bug Fixes
 
-* **amazon-cognito-identity-js:** linting config ([#4097](https://github.com/aws-amplify/amplify-js/issues/4097)) ([7674f96](https://github.com/aws-amplify/amplify-js/commit/7674f96f8a99bcc7b73ee4eb1c2a84db7de28ae3))
-* **amazon-cognito-identity-js:** linting config ([#4097](https://github.com/aws-amplify/amplify-js/issues/4097)) ([173baf5](https://github.com/aws-amplify/amplify-js/commit/173baf5bd14c0e52e61e35ea44b8d3dc4c703c4c))
-
+- **amazon-cognito-identity-js:** linting config ([#4097](https://github.com/aws-amplify/amplify-js/issues/4097)) ([7674f96](https://github.com/aws-amplify/amplify-js/commit/7674f96f8a99bcc7b73ee4eb1c2a84db7de28ae3))
+- **amazon-cognito-identity-js:** linting config ([#4097](https://github.com/aws-amplify/amplify-js/issues/4097)) ([173baf5](https://github.com/aws-amplify/amplify-js/commit/173baf5bd14c0e52e61e35ea44b8d3dc4c703c4c))
 
 ### Features
 
-* **@aws-amplify/core:** [Delivers [#168673137](https://github.com/aws-amplify/amplify-js/issues/168673137)] Migrate core category to aws sdk V3 ([#4077](https://github.com/aws-amplify/amplify-js/issues/4077)) ([beb73a4](https://github.com/aws-amplify/amplify-js/commit/beb73a4b1c051654750f5bdc3b20cde3a3aba37d))
-
+- **@aws-amplify/core:** [Delivers [#168673137](https://github.com/aws-amplify/amplify-js/issues/168673137)] Migrate core category to aws sdk V3 ([#4077](https://github.com/aws-amplify/amplify-js/issues/4077)) ([beb73a4](https://github.com/aws-amplify/amplify-js/commit/beb73a4b1c051654750f5bdc3b20cde3a3aba37d))
 
 ### Reverts
 
-* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
-
-
-
-
+- Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
 
 ## [3.2.7](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@3.2.6...amazon-cognito-identity-js@3.2.7) (2020-03-30)
 

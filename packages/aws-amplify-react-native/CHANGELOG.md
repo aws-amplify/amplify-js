@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package aws-amplify-react-native
 
-
-
-
-
 ## [3.2.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@3.2.2...aws-amplify-react-native@3.2.3) (2020-03-30)
 
 **Note:** Version bump only for package aws-amplify-react-native

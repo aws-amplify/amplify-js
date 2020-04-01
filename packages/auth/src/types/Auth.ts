@@ -119,6 +119,7 @@ export interface FederatedResponse {
 export interface FederatedUser {
 	name: string;
 	email?: string;
+	picture?: string;
 }
 
 export interface AwsCognitoOAuthOpts {

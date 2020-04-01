@@ -11,8 +11,11 @@
  * and limitations under the License.
  */
 import { version } from './version';
+
+const BASE_USER_AGENT = `aws-amplify/${version}`;
+
 export const Platform = {
-	userAgent: `aws-amplify/${version} js`,
+	userAgent: `${BASE_USER_AGENT} js`,
 	product: '',
 	navigator: null,
 	isReactNative: false,
@@ -22,11 +25,11 @@ if (typeof navigator !== 'undefined' && navigator.product) {
 	Platform.navigator = navigator || null;
 	switch (navigator.product) {
 		case 'ReactNative':
-			Platform.userAgent = `aws-amplify/${version} react-native`;
+			Platform.userAgent = `${BASE_USER_AGENT} react-native`;
 			Platform.isReactNative = true;
 			break;
 		default:
-			Platform.userAgent = `aws-amplify/${version} js`;
+			Platform.userAgent = `${BASE_USER_AGENT} js`;
 			Platform.isReactNative = false;
 			break;
 	}

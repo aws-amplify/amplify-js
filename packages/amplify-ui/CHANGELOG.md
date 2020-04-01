@@ -7,10 +7,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @aws-amplify/ui
 
-
-
-
-
 ## [1.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui@1.1.5...@aws-amplify/ui@1.1.6) (2020-03-25)
 
 ### Bug Fixes
