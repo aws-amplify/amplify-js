@@ -13,9 +13,9 @@ const logger = new Logger('AmplifyVerifyContact');
   shadow: true,
 })
 export class AmplifyVerifyContact {
-  /** Passed from the Authenticator component in order to change Authentication state */
+  /** Authentication state handler */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
-  /** Used for the username to be passed to resend code */
+  /** User with unverified contact information  */
   @Prop() user: CognitoUserInterface;
 
   @State() verifyAttr: any;
@@ -131,10 +131,7 @@ export class AmplifyVerifyContact {
         loading={this.loading}
         secondaryFooterContent={
           <span>
-            <amplify-button
-              variant="anchor"
-              onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}
-            >
+            <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}>
               Skip
             </amplify-button>
           </span>

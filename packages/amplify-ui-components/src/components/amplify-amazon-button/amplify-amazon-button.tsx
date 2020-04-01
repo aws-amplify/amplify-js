@@ -16,7 +16,7 @@ const logger = new Logger('amplify-amazon-button');
 export class AmplifyAmazonButton {
   /** App-specific client ID from Google */
   @Prop() clientId: FederatedConfig['amazonClientId'];
-  /** Passed from the Authenticator component in order to change Authentication state
+  /** Auth state change handler for this component
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;

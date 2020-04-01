@@ -7,11 +7,11 @@
 
 ## Properties
 
-| Property                | Attribute | Description                                                                     | Type                                                | Default                        |
-| ----------------------- | --------- | ------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------ |
-| `handleAuthStateChange` | --        | Passed from the Authenticator component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent` |
-| `logo`                  | --        | Logo displayed inside of the header                                             | `FunctionalComponent<{}>`                           | `null`                         |
-| `user`                  | --        | Used for the username to be passed to resend code                               | `CognitoUserInterface`                              | `null`                         |
+| Property                | Attribute  | Description                                  | Type                                                | Default                        |
+| ----------------------- | ---------- | -------------------------------------------- | --------------------------------------------------- | ------------------------------ |
+| `handleAuthStateChange` | --         | Auth state change handler for this component | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent` |
+| `logo`                  | --         | Logo displayed inside of the header          | `FunctionalComponent<{}>`                           | `null`                         |
+| `username`              | `username` | Username displayed in the greetings          | `string`                                            | `null`                         |
 
 
 ## Dependencies

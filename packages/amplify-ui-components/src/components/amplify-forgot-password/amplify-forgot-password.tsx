@@ -37,7 +37,7 @@ export class AmplifyForgotPassword {
   @Prop() handleSend: (event: Event) => void = event => this.send(event);
   /** The function called when submitting a new password */
   @Prop() handleSubmit: (event: Event) => void = event => this.submit(event);
-  /** Passed from the Authenticator component in order to change Authentication state */
+  /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
   @Prop() usernameAlias: UsernameAliasStrings = 'username';

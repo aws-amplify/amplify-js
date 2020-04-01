@@ -23,7 +23,7 @@ export class AmplifyTOTPSetup {
 
   /** Used in order to configure TOTP for a user */
   @Prop() user: CognitoUserInterface;
-  /** Passed from the Authenticator component in order to change Authentication state */
+  /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 
   @State() code: string | null = null;

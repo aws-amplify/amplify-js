@@ -1,5 +1,5 @@
-import { Component, h, Prop, State, Watch, FunctionalComponent } from '@stencil/core';
-import { AuthStateHandler, CognitoUserInterface } from '../../common/types/auth-types';
+import { Component, h, Prop, FunctionalComponent } from '@stencil/core';
+import { AuthStateHandler } from '../../common/types/auth-types';
 import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 @Component({
   tag: 'amplify-greetings',
@@ -7,28 +7,20 @@ import { dispatchAuthStateChangeEvent } from '../../common/helpers';
   shadow: true,
 })
 export class AmplifyGreetings {
-  /** Used for the username to be passed to resend code */
-  @Prop() user: CognitoUserInterface = null;
+  /** Username displayed in the greetings */
+  @Prop() username: string = null;
   /** Logo displayed inside of the header */
   @Prop() logo: FunctionalComponent | null = null;
-  /** Passed from the Authenticator component in order to change Authentication state */
+  /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
-
-  @Watch('user')
-  watchHandler(newUserValue: CognitoUserInterface) {
-    // If the user passed in has a username, show username greeting message
-    if (newUserValue && newUserValue.username) this.showUsernameGreeting = true;
-  }
-
-  @State() showUsernameGreeting: boolean = false;
 
   render() {
     return (
       <header class="greetings">
         {// TODO: user <amplify-logo> instead of <span>
-        this.logo && <span>Logo</span>}
+        this.logo && <span>{this.logo}</span>}
         <amplify-nav>
-          {this.showUsernameGreeting && <span>Hello, {this.user.username}</span>}
+          {this.username && <span slot="greetings-message">Hello, {this.username}</span>}
           <amplify-sign-out handleAuthStateChange={this.handleAuthStateChange} />
         </amplify-nav>
       </header>
