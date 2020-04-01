@@ -305,9 +305,9 @@ jobs:
           command: |
             yarn ci:test react auth amplify-authenticator
       - store_artifacts:
-          path: amplify-js-samples-staging/cypress/videos
+          path: amplify-js-samples-staging-ui/cypress/videos
       - store_artifacts:
-          path: amplify-js-samples-staging/cypress/screenshots
+          path: amplify-js-samples-staging-ui/cypress/screenshots
 
   integ_rn_ios_storage:
     <<: *defaults_rn
