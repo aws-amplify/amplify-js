@@ -3,7 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.0.0...@aws-amplify/pubsub@3.0.1) (2020-03-31)
+## [3.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@2.1.9...@aws-amplify/pubsub@3.0.1) (2020-03-31)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pubsub:** fix ZenObservable import ([#3406](https://github.com/aws-amplify/amplify-js/issues/3406)) ([f25d4c2](https://github.com/aws-amplify/amplify-js/commit/f25d4c2902ec6593dbb8730dd5f5c8219c3d395b))
+
+
+### Reverts
+
+* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
+
+
+
+
+
+## [2.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@2.1.8...@aws-amplify/pubsub@2.1.9) (2020-03-30)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
 

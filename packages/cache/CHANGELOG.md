@@ -3,7 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@3.0.0...@aws-amplify/cache@3.0.1) (2020-03-31)
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@2.1.8...@aws-amplify/cache@3.1.0) (2020-03-31)
+
+
+### Bug Fixes
+
+* **@aws-amplify/cache:** expose tree-shaking for Webpack ([32061ac](https://github.com/aws-amplify/amplify-js/commit/32061ac8cdd16f0b0a675912b29e0dbfc44513fb))
+
+
+### Features
+
+* **@aws-amplify/cache:** publish ES2015/ESM artifacts ([22da40e](https://github.com/aws-amplify/amplify-js/commit/22da40e4a72827bce51059b34fa45e5ea3f2367c))
+
+
+### Reverts
+
+* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
+
+
+
+
+
+## [2.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@2.1.7...@aws-amplify/cache@2.1.8) (2020-03-30)
 
 **Note:** Version bump only for package @aws-amplify/cache
 

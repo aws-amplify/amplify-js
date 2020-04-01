@@ -3,9 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.0.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@2.0.0...aws-amplify-vue@2.0.1) (2020-03-31)
+# [2.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@1.1.4...aws-amplify-vue@2.1.0) (2020-03-31)
 
-**Note:** Version bump only for package aws-amplify-vue
+
+### Features
+
+* **@aws-amplify/storage:** S3 upload progress reporting and multipart upload ([#4558](https://github.com/aws-amplify/amplify-js/issues/4558)) ([64b0bec](https://github.com/aws-amplify/amplify-js/commit/64b0bec958c7d31b1b82208e397b3013a98de625)), closes [#4404](https://github.com/aws-amplify/amplify-js/issues/4404) [#4474](https://github.com/aws-amplify/amplify-js/issues/4474)
+
+
+
+
 
 ## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@1.1.2...aws-amplify-vue@1.1.4) (2020-02-07)
 

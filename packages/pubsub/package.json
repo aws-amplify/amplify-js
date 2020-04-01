@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@aws-amplify/auth": "3.1.0",
-    "@aws-amplify/cache": "3.0.1",
+    "@aws-amplify/cache": "3.1.0",
     "@aws-amplify/core": "3.1.0",
     "graphql": "14.0.0",
     "paho-mqtt": "^1.1.0",

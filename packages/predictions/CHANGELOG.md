@@ -3,7 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.0.0...@aws-amplify/predictions@3.0.1) (2020-03-31)
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@2.1.8...@aws-amplify/predictions@3.1.0) (2020-03-31)
+
+
+### Bug Fixes
+
+* **@aws-amplify/predictions:** Logger should be configured with correct category name ([#4069](https://github.com/aws-amplify/amplify-js/issues/4069)) ([a20f9b7](https://github.com/aws-amplify/amplify-js/commit/a20f9b7d6da6ce5b7651f63e2ddd951106650714))
+
+
+### Features
+
+* append amplify user agent to all V3 SDK calls ([#4564](https://github.com/aws-amplify/amplify-js/issues/4564)) ([175d4c3](https://github.com/aws-amplify/amplify-js/commit/175d4c34ccb9cd5674c228db14513827d1c80d3f))
+
+
+
+
+
+## [2.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@2.1.7...@aws-amplify/predictions@2.1.8) (2020-03-30)
 
 **Note:** Version bump only for package @aws-amplify/predictions
 

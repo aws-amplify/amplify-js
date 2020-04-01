@@ -3,7 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.0.0...@aws-amplify/analytics@3.0.1) (2020-03-31)
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@2.2.8...@aws-amplify/analytics@3.1.0) (2020-03-31)
+
+
+### Features
+
+* **@aws-amplify/core:** [Delivers [#168673137](https://github.com/aws-amplify/amplify-js/issues/168673137)] Migrate core category to aws sdk V3 ([#4077](https://github.com/aws-amplify/amplify-js/issues/4077)) ([beb73a4](https://github.com/aws-amplify/amplify-js/commit/beb73a4b1c051654750f5bdc3b20cde3a3aba37d))
+* append amplify user agent to all V3 SDK calls ([#4564](https://github.com/aws-amplify/amplify-js/issues/4564)) ([175d4c3](https://github.com/aws-amplify/amplify-js/commit/175d4c34ccb9cd5674c228db14513827d1c80d3f))
+
+
+### Reverts
+
+* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
+
+
+
+
+
+## [2.2.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@2.2.7...@aws-amplify/analytics@2.2.8) (2020-03-30)
 
 **Note:** Version bump only for package @aws-amplify/analytics
 

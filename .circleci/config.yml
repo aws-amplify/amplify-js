@@ -89,7 +89,6 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
-            git checkout modularization
             yarn
       - save_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
@@ -484,7 +483,6 @@ workflows:
                 - master
                 - ui-components/master
                 - 1.0-stable
-                - modularization
           requires:
             - build
       - integ_react_predictions:
@@ -495,7 +493,6 @@ workflows:
                 - master
                 - ui-components/master
                 - 1.0-stable
-                - modularization
           requires:
             - integ_setup
       - integ_react_auth:
@@ -506,7 +503,6 @@ workflows:
                 - master
                 - ui-components/master
                 - 1.0-stable
-                - modularization
           requires:
             - integ_setup
       - integ_angular_auth:
@@ -516,7 +512,6 @@ workflows:
                 - release
                 - master
                 - 1.0-stable
-                - modularization
           requires:
             - integ_setup
       - integ_vue_auth:
@@ -526,7 +521,6 @@ workflows:
                 - release
                 - master
                 - 1.0-stable
-                - modularization
           requires:
             - integ_setup
       - integ_rn_ios_storage:
@@ -547,7 +541,6 @@ workflows:
                 - beta
                 - ui-components/master
                 - 1.0-stable
-                - modularization
           requires:
             - unit_test
             - integ_react_predictions

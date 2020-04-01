@@ -3,11 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.0.0...@aws-amplify/storage@3.0.1) (2020-03-31)
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@2.2.3...@aws-amplify/storage@3.1.0) (2020-03-31)
+
 
 ### Bug Fixes
 
-- **@aws-amplify/ui-components:** Fix shadow dom form submit ([#5160](https://github.com/aws-amplify/amplify-js/issues/5160)) ([766c5ac](https://github.com/aws-amplify/amplify-js/commit/766c5ac5bdcf22f772340f78f5d45790f3142b71))
+* **@aws-amplify/storage:** expose tree-shaking for Webpack ([28a34a5](https://github.com/aws-amplify/amplify-js/commit/28a34a5fa7d7cc98343a2f630bb3232e16c0c047))
+
+
+### Features
+
+* **@aws-amplify/storage:** publish ES2015/ESM artifacts ([bc8610a](https://github.com/aws-amplify/amplify-js/commit/bc8610a3eaeb667ef98e492a41485b14c09312cb))
+* append amplify user agent to all V3 SDK calls ([#4564](https://github.com/aws-amplify/amplify-js/issues/4564)) ([175d4c3](https://github.com/aws-amplify/amplify-js/commit/175d4c34ccb9cd5674c228db14513827d1c80d3f))
+* **@aws-amplify/storage:** S3 upload progress reporting and multipart upload ([#4558](https://github.com/aws-amplify/amplify-js/issues/4558)) ([64b0bec](https://github.com/aws-amplify/amplify-js/commit/64b0bec958c7d31b1b82208e397b3013a98de625)), closes [#4404](https://github.com/aws-amplify/amplify-js/issues/4404) [#4474](https://github.com/aws-amplify/amplify-js/issues/4474)
+
+
+### Reverts
+
+* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
+
+
+
+
+
+## [2.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@2.2.2...@aws-amplify/storage@2.2.3) (2020-03-30)
+
+**Note:** Version bump only for package @aws-amplify/storage
 
 ## [2.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@2.2.1...@aws-amplify/storage@2.2.2) (2020-03-25)
 
