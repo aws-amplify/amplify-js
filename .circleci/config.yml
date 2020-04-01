@@ -500,6 +500,20 @@ workflows:
                 - ui-components/circle-ci
           requires:
             - integ_setup_ui
+      - integ_angular_auth_ui:
+          filters:
+            branches:
+              only:
+                - ui-components/circle-ci
+          requires:
+            - integ_setup_ui
+      - integ_vue_auth_ui:
+          filters:
+            branches:
+              only:
+                - ui-components/circle-ci
+          requires:
+            - integ_setup_ui
       - integ_setup:
           filters:
             branches:
