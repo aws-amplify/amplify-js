@@ -13,7 +13,7 @@ const logger = new Logger('amplify-google-button');
   shadow: true,
 })
 export class AmplifyGoogleButton {
-  /** Passed from the Authenticator component in order to change Authentication state
+  /** Auth state change handler for this component
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;

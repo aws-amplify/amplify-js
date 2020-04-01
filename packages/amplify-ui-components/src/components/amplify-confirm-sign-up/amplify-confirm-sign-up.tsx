@@ -15,8 +15,6 @@ import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, checkUsernameAlias
 export class AmplifyConfirmSignUp {
   /** Fires when sign up form is submitted */
   @Prop() handleSubmit: (submitEvent: Event) => void = event => this.confirmSignUp(event);
-  /** Engages when invalid actions occur, such as missing field, etc. */
-  @Prop() validationErrors: string;
   /** Used for header text in confirm sign up component */
   @Prop() headerText: string = I18n.get(Translations.CONFIRM_SIGN_UP_HEADER_TEXT);
   /** Used for the submit button text in confirm sign up component */
@@ -38,7 +36,7 @@ export class AmplifyConfirmSignUp {
    * ```
    */
   @Prop() formFields: FormFieldTypes | string[];
-  /** Passed from the Authenticator component in order to change Authentication states
+  /** Auth state change handler for this components
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;

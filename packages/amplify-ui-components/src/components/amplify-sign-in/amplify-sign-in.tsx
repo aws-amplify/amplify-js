@@ -37,15 +37,13 @@ const logger = new Logger('SignIn');
 export class AmplifySignIn {
   /** Fires when sign in form is submitted */
   @Prop() handleSubmit: (event: Event) => void = event => this.signIn(event);
-  /** Engages when invalid actions occur, such as missing field, etc. */
-  @Prop() validationErrors: string;
   /** Used for header text in sign in component */
   @Prop() headerText: string = I18n.get(Translations.SIGN_IN_HEADER_TEXT);
   /** Used for the submit button text in sign in component */
   @Prop() submitButtonText: string = I18n.get(Translations.SIGN_IN_ACTION);
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
-  /** Passed from the Authenticator component in order to change Authentication state */
+  /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
   @Prop() usernameAlias: UsernameAliasStrings = 'username';

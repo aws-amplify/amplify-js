@@ -157,10 +157,6 @@ export namespace Components {
           * Cognito user signing in
          */
         "user": CognitoUserInterface;
-        /**
-          * Engages when invalid actions occur, such as missing field, etc.
-         */
-        "validationErrors": string;
     }
     interface AmplifyConfirmSignUp {
         /**
@@ -191,10 +187,6 @@ export namespace Components {
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */
         "usernameAlias": UsernameAliasStrings;
-        /**
-          * Engages when invalid actions occur, such as missing field, etc.
-         */
-        "validationErrors": string;
     }
     interface AmplifyCountryDialCode {
         /**
@@ -404,9 +396,9 @@ export namespace Components {
          */
         "logo": FunctionalComponent | null;
         /**
-          * Used for the username to be passed to resend code
+          * Username displayed in the greetings
          */
-        "user": CognitoUserInterface;
+        "username": string;
     }
     interface AmplifyHint {
     }
@@ -668,10 +660,6 @@ export namespace Components {
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */
         "usernameAlias": UsernameAliasStrings;
-        /**
-          * Engages when invalid actions occur, such as missing field, etc.
-         */
-        "validationErrors": string;
     }
     interface AmplifySignInButton {
         "provider": "amazon" | "auth0" | "facebook" | "google" | "oauth";
@@ -789,11 +777,11 @@ export namespace Components {
     }
     interface AmplifyVerifyContact {
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Authentication state handler
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
-          * Used for the username to be passed to resend code
+          * User with unverified contact information
          */
         "user": CognitoUserInterface;
     }
@@ -1262,10 +1250,6 @@ declare namespace LocalJSX {
           * Cognito user signing in
          */
         "user"?: CognitoUserInterface;
-        /**
-          * Engages when invalid actions occur, such as missing field, etc.
-         */
-        "validationErrors"?: string;
     }
     interface AmplifyConfirmSignUp {
         /**
@@ -1296,10 +1280,6 @@ declare namespace LocalJSX {
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */
         "usernameAlias"?: UsernameAliasStrings;
-        /**
-          * Engages when invalid actions occur, such as missing field, etc.
-         */
-        "validationErrors"?: string;
     }
     interface AmplifyCountryDialCode {
         /**
@@ -1509,9 +1489,9 @@ declare namespace LocalJSX {
          */
         "logo"?: FunctionalComponent | null;
         /**
-          * Used for the username to be passed to resend code
+          * Username displayed in the greetings
          */
-        "user"?: CognitoUserInterface;
+        "username"?: string;
     }
     interface AmplifyHint {
     }
@@ -1773,10 +1753,6 @@ declare namespace LocalJSX {
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */
         "usernameAlias"?: UsernameAliasStrings;
-        /**
-          * Engages when invalid actions occur, such as missing field, etc.
-         */
-        "validationErrors"?: string;
     }
     interface AmplifySignInButton {
         "provider"?: "amazon" | "auth0" | "facebook" | "google" | "oauth";
@@ -1894,11 +1870,11 @@ declare namespace LocalJSX {
     }
     interface AmplifyVerifyContact {
         /**
-          * Passed from the Authenticator component in order to change Authentication state
+          * Authentication state handler
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
-          * Used for the username to be passed to resend code
+          * User with unverified contact information
          */
         "user"?: CognitoUserInterface;
     }

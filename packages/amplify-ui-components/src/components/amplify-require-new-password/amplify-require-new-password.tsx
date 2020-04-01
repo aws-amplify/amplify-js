@@ -28,7 +28,7 @@ export class AmplifyRequireNewPassword {
   @Prop() submitButtonText: string = I18n.get(Translations.CHANGE_PASSWORD_ACTION);
   /** The function called when submitting a new password */
   @Prop() handleSubmit: (event: Event) => void = event => this.completeNewPassword(event);
-  /** Passed from the Authenticator component in order to change Authentication state */
+  /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
@@ -108,10 +108,7 @@ export class AmplifyRequireNewPassword {
         handleSubmit={this.handleSubmit}
         loading={this.loading}
         secondaryFooterContent={
-          <amplify-button
-            variant="anchor"
-            onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
-          >
+          <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
             {I18n.get(Translations.BACK_TO_SIGN_IN)}
           </amplify-button>
         }

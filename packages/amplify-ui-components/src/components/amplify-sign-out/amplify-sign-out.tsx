@@ -11,7 +11,7 @@ import { Translations } from '../../common/Translations';
   shadow: true,
 })
 export class AmplifySignOut {
-  /** Passed from the Authenticator component in order to change Authentication state */
+  /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Text inside of the Sign Out button */
   @Prop() buttonText: string = I18n.get(Translations.SIGN_OUT);
@@ -35,7 +35,7 @@ export class AmplifySignOut {
 
   render() {
     return (
-      <amplify-button onClick={event => this.signOut(event)} data-test="sign-out-button">
+      <amplify-button slot="sign-out" onClick={event => this.signOut(event)} data-test="sign-out-button">
         {this.buttonText}
       </amplify-button>
     );

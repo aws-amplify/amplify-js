@@ -5,10 +5,10 @@
 
 ## Properties
 
-| Property                | Attribute | Description                                                                     | Type                                                | Default                        |
-| ----------------------- | --------- | ------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------------------ |
-| `handleAuthStateChange` | --        | Passed from the Authenticator component in order to change Authentication state | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent` |
-| `user`                  | --        | Used for the username to be passed to resend code                               | `CognitoUserInterface`                              | `undefined`                    |
+| Property                | Attribute | Description                              | Type                                                | Default                        |
+| ----------------------- | --------- | ---------------------------------------- | --------------------------------------------------- | ------------------------------ |
+| `handleAuthStateChange` | --        | Authentication state handler             | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent` |
+| `user`                  | --        | User with unverified contact information | `CognitoUserInterface`                              | `undefined`                    |
 
 
 ## Dependencies

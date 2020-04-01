@@ -20,13 +20,11 @@ import { Translations } from '../../common/Translations';
 export class AmplifyConfirmSignIn {
   /** Fires when confirm sign in form is submitted */
   @Prop() handleSubmit: (event: Event) => void = event => this.confirm(event);
-  /** Engages when invalid actions occur, such as missing field, etc. */
-  @Prop() validationErrors: string;
   /** Used for header text in confirm sign in component */
   @Prop() headerText: string = I18n.get(Translations.CONFIRM_SMS_CODE);
   /** Used for the submit button text in confirm sign in component */
   @Prop() submitButtonText: string = I18n.get(Translations.CONFIRM);
-  /** Passed from the Authenticator component in order to change Authentication state */
+  /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
@@ -118,10 +116,7 @@ export class AmplifyConfirmSignIn {
         loading={this.loading}
         secondaryFooterContent={
           <span>
-            <amplify-button
-              variant="anchor"
-              onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
-            >
+            <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
               {I18n.get(Translations.BACK_TO_SIGN_IN)}
             </amplify-button>
           </span>
