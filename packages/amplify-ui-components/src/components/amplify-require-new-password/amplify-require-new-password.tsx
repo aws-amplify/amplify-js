@@ -80,7 +80,6 @@ export class AmplifyRequireNewPassword {
     try {
       const { requiredAttributes } = this.user.challengeParam;
       const user = await Auth.completeNewPassword(this.user, this.password, requiredAttributes);
-      user.challengeParameter;
 
       logger.debug('complete new password', user);
       switch (user.challengeName) {

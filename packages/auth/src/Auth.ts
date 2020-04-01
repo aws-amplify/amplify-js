@@ -41,7 +41,6 @@ import {
 	ICredentials,
 	Parser,
 	JS,
-	Platform,
 } from '@aws-amplify/core';
 import {
 	CookieStorage,
