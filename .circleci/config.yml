@@ -551,7 +551,7 @@ workflows:
               only:
                 - ui-components/circle-ci
           requires:
-            - integ_setup_ui
+            - build
       - integ_react_auth_ui:
           filters:
             branches:
