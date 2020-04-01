@@ -1,7 +1,6 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { EventEmitter } from 'events';
+import axios from 'axios';
 
-import { AxiosHttpHandler } from './axios-http-handler';
+import { AxiosHttpHandler } from '../../src/providers/axios-http-handler';
 
 jest.mock('axios');
 
