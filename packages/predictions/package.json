@@ -35,11 +35,7 @@
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
     "@aws-amplify/core": "3.1.0",
-<<<<<<< HEAD
-    "@aws-amplify/storage": "3.0.1",
-=======
     "@aws-amplify/storage": "3.1.0",
->>>>>>> 8bb1334bc090c44be9916f2fc3e09d0fe15d787d
     "@aws-sdk/client-comprehend": "1.0.0-beta.3",
     "@aws-sdk/client-polly": "1.0.0-beta.3",
     "@aws-sdk/client-rekognition": "1.0.0-beta.3",

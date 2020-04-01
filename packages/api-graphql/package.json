@@ -38,11 +38,7 @@
   "dependencies": {
     "@aws-amplify/api-rest": "1.0.2",
     "@aws-amplify/auth": "3.1.0",
-<<<<<<< HEAD
-    "@aws-amplify/cache": "3.0.1",
-=======
     "@aws-amplify/cache": "3.1.0",
->>>>>>> 8bb1334bc090c44be9916f2fc3e09d0fe15d787d
     "@aws-amplify/core": "3.1.0",
     "graphql": "14.0.0",
     "uuid": "^3.2.1",
