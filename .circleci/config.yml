@@ -303,7 +303,7 @@ jobs:
       - run:
           name: "Install React Authenticator sample"
           command: |
-            cd amplify-js-samples-staging/samples/react/auth/amplify-authenticator
+            cd amplify-js-samples-staging-ui/samples/react/auth/amplify-authenticator
             yarn
       - run:
           name: "Link aws-amplify"
@@ -342,7 +342,7 @@ jobs:
       - run:
           name: "Install React Authenticator sample"
           command: |
-            cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
+            cd amplify-js-samples-staging-ui/samples/angular/auth/amplify-authenticator
             yarn
       - run:
           name: "Link aws-amplify"
@@ -381,7 +381,7 @@ jobs:
       - run:
           name: "Install Vue Authenticator sample"
           command: |
-            cd amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
+            cd amplify-js-samples-staging-ui/samples/vue/auth/amplify-authenticator
             yarn
       - run:
           name: "Link aws-amplify"
