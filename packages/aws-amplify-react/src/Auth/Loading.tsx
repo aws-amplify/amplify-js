@@ -14,7 +14,7 @@
 import * as React from 'react';
 import { I18n } from '@aws-amplify/core';
 
-import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import {
 	FormSection,
 	SectionBody,
@@ -22,10 +22,7 @@ import {
 
 import { auth } from '../Amplify-UI/data-test-attributes';
 
-export default class Loading extends AuthPiece<
-	IAuthPieceProps,
-	IAuthPieceState
-> {
+export class Loading extends AuthPiece<IAuthPieceProps, IAuthPieceState> {
 	constructor(props: IAuthPieceProps) {
 		super(props);
 

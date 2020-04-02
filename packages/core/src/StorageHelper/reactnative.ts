@@ -25,9 +25,11 @@ class MemoryStorage {
 	 * @returns {string} value that was set
 	 */
 	static setItem(key, value) {
-		AsyncStorage.setItem(MEMORY_KEY_PREFIX + key, value);
-		dataMemory[key] = value;
-		return dataMemory[key];
+		if (value) {
+			AsyncStorage.setItem(MEMORY_KEY_PREFIX + key, value);
+			dataMemory[key] = value;
+			return dataMemory[key];
+		}
 	}
 
 	/**
@@ -90,8 +92,7 @@ class MemoryStorage {
 	}
 }
 
-/** @class */
-export default class StorageHelper {
+export class StorageHelper {
 	private storageWindow;
 	/**
 	 * This is used to get a storage object
@@ -109,3 +110,8 @@ export default class StorageHelper {
 		return this.storageWindow;
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default StorageHelper;

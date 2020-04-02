@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-button spec: Render logic -> renders with button text FOO 1`] = `
+<amplify-button>
+  <mock:shadow-root>
+    <button class="button" type="button">
+      <slot></slot>
+    </button>
+  </mock:shadow-root>
+  FOO
+</amplify-button>
+`;
+
+exports[`amplify-button spec: Render logic -> renders with danger class when button type is reset 1`] = `
+<amplify-button type="reset">
+  <mock:shadow-root>
+    <button class="button" type="reset">
+      <slot></slot>
+    </button>
+  </mock:shadow-root>
+  FOO
+</amplify-button>
+`;
+
+exports[`amplify-button spec: Render logic -> renders with no button text 1`] = `
+<amplify-button>
+  <mock:shadow-root>
+    <button class="button" type="button">
+      <slot></slot>
+    </button>
+  </mock:shadow-root>
+</amplify-button>
+`;

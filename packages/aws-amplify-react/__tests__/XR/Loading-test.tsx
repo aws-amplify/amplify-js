@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Loading from '../../src/XR/Loading';
+import { Loading } from '../../src/XR/Loading';
 
 describe('Loading', () => {
 	test('renders successfully with no props', () => {

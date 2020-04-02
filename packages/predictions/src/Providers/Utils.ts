@@ -27,11 +27,11 @@ export function makeCamelCaseArray(objArr: object[], keys?: string[]) {
 /**
  * Converts blob to array buffer
  */
-export function blobToArrayBuffer(blob: Blob): Promise<ArrayBuffer> {
+export function blobToArrayBuffer(blob: Blob): Promise<Uint8Array> {
 	return new Promise((res, rej) => {
 		const reader = new FileReader();
 		reader.onload = _event => {
-			res(reader.result as ArrayBuffer);
+			res(reader.result as Uint8Array);
 		};
 		reader.onerror = err => {
 			rej(err);

@@ -1,4 +1,4 @@
-import Amplify from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import { DataStore, initSchema } from './datastore/datastore';
 import { Predicates } from './predicates';
 

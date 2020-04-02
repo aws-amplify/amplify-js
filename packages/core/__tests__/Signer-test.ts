@@ -1,33 +1,12 @@
-jest.mock('../src/Facet', () => {
-	let ret = { util: { crypto: { lib: {} } } };
-	ret['util']['crypto']['lib']['createHmac'] = () => {
-		const update = () => {
-			return {
-				digest() {
-					return 'encrypt';
-				},
-			};
-		};
-		return { update };
-	};
-	ret['util']['crypto']['createHash'] = () => {
-		const update = () => {
-			return {
-				digest() {
-					return 'hash';
-				},
-			};
-		};
-		return { update };
-	};
-
-	return {
-		AWS: ret,
-	};
-});
-
 import Signer from '../src/Signer';
 import { DateUtils } from '../src';
+
+jest.mock('@aws-sdk/util-hex-encoding', () => ({
+	...jest.requireActual('@aws-sdk/util-hex-encoding'),
+	toHex: () => {
+		return 'encrypt';
+	},
+}));
 
 describe('Signer test', () => {
 	describe('sign test', () => {
@@ -51,14 +30,19 @@ describe('Signer test', () => {
 			const res = {
 				headers: {
 					Authorization:
-						'AWS4-HMAC-SHA256 Credential=undefined/0///aws4_request, SignedHeaders=host;x-amz-date;x-amz-security-token, Signature=encrypt',
+						'AWS4-HMAC-SHA256 Credential=undefined/0/aregion/aservice/aws4_request, SignedHeaders=host;x-amz-date;x-amz-security-token, Signature=encrypt',
 					'X-Amz-Security-Token': 'session_token',
 					host: 'host',
 					'x-amz-date': '0',
 				},
 				url: url,
 			};
-			expect(Signer.sign(request, access_info)).toEqual(res);
+			expect(
+				Signer.sign(request, access_info, {
+					service: 'aservice',
+					region: 'aregion',
+				})
+			).toEqual(res);
 			expect(getDateSpy).toHaveBeenCalledTimes(1);
 
 			spyon.mockClear();

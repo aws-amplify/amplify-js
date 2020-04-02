@@ -115,6 +115,7 @@
 .signInButtonIcon {
 	position: absolute;
 	left: 0;
+	box-sizing: content-box;
 }
 
 .signInButtonContent {
@@ -126,7 +127,9 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	text-align: center;
+  line-height: initial;
 }
+
 .linkButton {
 	border: 0;
 	font-size: inherit;
