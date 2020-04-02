@@ -1,14 +1,10 @@
-import Auth from '@aws-amplify/auth';
-import SignUp from '../../src/Auth/SignUp';
 import * as React from 'react';
+import { Auth } from '@aws-amplify/auth';
+import { SignUp } from '../../src/Auth/SignUp';
 import AmplifyTheme from '../../src/AmplifyTheme';
-import AuthPiece from '../../src/Auth/AuthPiece';
 import {
-	Header,
-	Footer,
 	Input,
 	Button,
-	SelectInput,
 	InputLabel,
 } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 import { PhoneField } from '../../src/Auth/PhoneField';

@@ -12,26 +12,26 @@
  */
 
 import * as React from 'react';
-import Amplify, { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
-import Greetings from './Greetings';
-import SignIn from './SignIn';
-import ConfirmSignIn from './ConfirmSignIn';
-import RequireNewPassword from './RequireNewPassword';
-import SignUp from './SignUp';
-import Loading from './Loading';
-import ConfirmSignUp from './ConfirmSignUp';
-import VerifyContact from './VerifyContact';
-import ForgotPassword from './ForgotPassword';
-import TOTPSetup from './TOTPSetup';
-import Constants from './common/constants';
-import { UsernameAttributes } from './common/types';
+import { Amplify, I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
+import { Greetings } from './Greetings';
+import { SignIn } from './SignIn';
+import { ConfirmSignIn } from './ConfirmSignIn';
+import { RequireNewPassword } from './RequireNewPassword';
+import { SignUp } from './SignUp';
+import { Loading } from './Loading';
+import { ConfirmSignUp } from './ConfirmSignUp';
+import { VerifyContact } from './VerifyContact';
+import { ForgotPassword } from './ForgotPassword';
+import { TOTPSetup } from './TOTPSetup';
+import { Constants } from './common/constants';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import AmplifyMessageMap from '../AmplifyMessageMap';
+import { AmplifyMessageMap } from '../AmplifyMessageMap';
 
 import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
 import { auth } from '../Amplify-UI/data-test-attributes';
+import { UsernameAttributes } from './common/types';
 
 const logger = new Logger('Authenticator');
 const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
@@ -60,7 +60,7 @@ export interface IAuthenticatorState {
 	showToast?: boolean;
 }
 
-export default class Authenticator extends React.Component<
+export class Authenticator extends React.Component<
 	IAuthenticatorProps,
 	IAuthenticatorState
 > {
@@ -315,3 +315,8 @@ export default class Authenticator extends React.Component<
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default Authenticator;

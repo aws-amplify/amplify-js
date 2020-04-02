@@ -281,7 +281,7 @@ export const Hidden = {
 	display: 'none',
 };
 
-const Bootstrap = {
+export const Bootstrap = {
 	container: Container,
 
 	navBar: NavBar,
@@ -325,4 +325,7 @@ const Bootstrap = {
 	hidden: Hidden,
 };
 
+/**
+ * @deprecated use named import
+ */
 export default Bootstrap;

@@ -9,7 +9,7 @@ export interface ISignUpField {
 	type?: string;
 }
 
-export default [
+export const signUpWithUsernameFields = [
 	{
 		label: 'Username',
 		key: 'username',

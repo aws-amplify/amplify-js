@@ -2,8 +2,8 @@
  * Copyright (c) 2017, Philip Walton <philip@philipwalton.com>
  */
 
-import closest from './closest';
-import matches from './matches';
+import { closest } from './closest';
+import { matches } from './matches';
 
 /**
  * Delegates the handling of events for an element matching a selector to an
@@ -17,13 +17,7 @@ import matches from './matches';
  *     - deep<boolean>: If true, delegate into shadow trees.
  * @return {Object} The delegate object. It contains a destroy method.
  */
-export default function delegate(
-	ancestor,
-	eventType,
-	selector,
-	callback,
-	opts = {}
-) {
+export function delegate(ancestor, eventType, selector, callback, opts = {}) {
 	// Defines the event listener.
 	const listener = function(event) {
 		let delegateTarget;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js/core';
 import TypedArrays from 'crypto-js/lib-typedarrays'; // necessary for crypto js
 import Base64 from 'crypto-js/enc-base64';
@@ -70,8 +70,8 @@ import StorageHelper from './StorageHelper';
  * @param {bool=} userConfirmationNecessary User must be confirmed.
  */
 
-const isBrowser = typeof navigator !== "undefined";
-const userAgent = isBrowser ? navigator.userAgent : "nodejs";
+const isBrowser = typeof navigator !== 'undefined';
+const userAgent = isBrowser ? navigator.userAgent : 'nodejs';
 
 /** @class */
 export default class CognitoUser {

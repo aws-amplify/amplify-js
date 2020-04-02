@@ -11,9 +11,8 @@
  * and limitations under the License.
  */
 
-import Hub from '../Hub';
+import { Hub } from '../Hub';
 import { ConsoleLogger as Logger } from '../Logger';
-import JS from '../JS';
 
 const logger = new Logger('ClientDevice_Browser');
 

@@ -3,7 +3,7 @@ import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
 import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import '@aws-amplify/pubsub';
-import Observable from 'zen-observable-ts';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 import {
 	InternalSchema,
 	PersistentModel,

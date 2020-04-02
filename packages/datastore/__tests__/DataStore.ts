@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import * as uuidValidate from 'uuid-validate';
+import uuidValidate from 'uuid-validate';
 import {
 	initSchema as initSchemaType,
 	DataStore as DataStoreType,
@@ -11,7 +11,7 @@ import {
 	Schema,
 	NonModelTypeConstructor,
 } from '../src/types';
-import StorageType from '../src/storage/storage';
+import { ExclusiveStorage as StorageType } from '../src/storage/storage';
 import Observable from 'zen-observable-ts';
 
 let initSchema: typeof initSchemaType;
@@ -29,7 +29,7 @@ beforeEach(() => {
 
 		(<any>mock).getNamespace = () => ({ models: {} });
 
-		return { default: mock };
+		return { ExclusiveStorage: mock };
 	});
 	({ initSchema, DataStore } = require('../src/datastore/datastore'));
 });
@@ -191,7 +191,8 @@ describe('DataStore tests', () => {
 
 	describe('Initialization', () => {
 		test('start is called only once', async () => {
-			const storage: StorageType = require('../src/storage/storage').default;
+			const storage: StorageType = require('../src/storage/storage')
+				.ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
@@ -210,7 +211,8 @@ describe('DataStore tests', () => {
 		});
 
 		test('It is initialized when observing (no query)', async () => {
-			const storage: StorageType = require('../src/storage/storage').default;
+			const storage: StorageType = require('../src/storage/storage')
+				.ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
@@ -234,7 +236,7 @@ describe('DataStore tests', () => {
 
 				(<any>mock).getNamespace = () => ({ models: {} });
 
-				return { default: mock };
+				return { ExclusiveStorage: mock };
 			});
 			({ initSchema, DataStore } = require('../src/datastore/datastore'));
 

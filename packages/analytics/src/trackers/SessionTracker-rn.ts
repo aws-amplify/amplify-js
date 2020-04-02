@@ -26,7 +26,7 @@ const defaultOpts: SessionTrackOpts = {
 
 let initialEventSent = false;
 
-export default class SessionTracker {
+export class SessionTracker {
 	private _tracker;
 	private _hasEnabled;
 	private _config: SessionTrackOpts;
@@ -140,3 +140,8 @@ export default class SessionTracker {
 		return this._config;
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default SessionTracker;

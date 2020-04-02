@@ -1,7 +1,5 @@
 import * as React from 'react';
-import { Component } from 'react';
 import {
-	Container,
 	FormSection,
 	SectionHeader,
 	SectionBody,
@@ -10,8 +8,7 @@ import {
 import { Input, Button } from '../AmplifyTheme';
 
 import { I18n } from '@aws-amplify/core';
-import Interactions from '@aws-amplify/interactions';
-import regeneratorRuntime from 'regenerator-runtime/runtime';
+import { Interactions } from '@aws-amplify/interactions';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('ChatBot');
@@ -95,7 +92,7 @@ export interface IChatBotState {
 	micText: string;
 }
 
-export class ChatBot extends Component<IChatBotProps, IChatBotState> {
+export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 	private listItemsRef: any;
 
 	constructor(props) {
@@ -572,4 +569,7 @@ ChatBot.defaultProps = {
 	textEnabled: true,
 };
 
+/**
+ * @deprecated use named import
+ */
 export default ChatBot;

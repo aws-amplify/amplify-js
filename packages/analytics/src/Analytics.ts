@@ -11,8 +11,13 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Hub, Parser } from '@aws-amplify/core';
-import AWSPinpointProvider from './Providers/AWSPinpointProvider';
+import {
+	Amplify,
+	ConsoleLogger as Logger,
+	Hub,
+	Parser,
+} from '@aws-amplify/core';
+import { AWSPinpointProvider } from './Providers/AWSPinpointProvider';
 
 import {
 	AnalyticsProvider,
@@ -44,10 +49,12 @@ const trackers = {
 	session: SessionTracker,
 };
 
+let _instance = null;
+
 /**
  * Provide mobile analytics client functions
  */
-export default class AnalyticsClass {
+export class AnalyticsClass {
 	private _config;
 	private _pluggables: AnalyticsProvider[];
 	private _disabled;
@@ -62,8 +69,13 @@ export default class AnalyticsClass {
 		this._pluggables = [];
 		this._disabled = false;
 		this._trackers = {};
+		_instance = this;
 
 		this.record = this.record.bind(this);
+		Hub.listen('auth', listener);
+		Hub.listen('storage', listener);
+		Hub.listen('analytics', listener);
+		Amplify.register(this);
 	}
 
 	public getModuleName() {
@@ -300,3 +312,110 @@ export default class AnalyticsClass {
 		return this._config && Object.entries(this._config).length > 0;
 	}
 }
+
+let endpointUpdated = false;
+let authConfigured = false;
+let analyticsConfigured = false;
+const listener = capsule => {
+	const { channel, payload } = capsule;
+	logger.debug('on hub capsule ' + channel, payload);
+
+	switch (channel) {
+		case 'auth':
+			authEvent(payload);
+			break;
+		case 'storage':
+			storageEvent(payload);
+			break;
+		case 'analytics':
+			analyticsEvent(payload);
+			break;
+		default:
+			break;
+	}
+};
+
+const storageEvent = payload => {
+	const {
+		data: { attrs, metrics },
+	} = payload;
+	if (!attrs) return;
+
+	if (analyticsConfigured) {
+		_instance
+			.record({
+				name: 'Storage',
+				attributes: attrs,
+				metrics,
+			})
+			.catch(e => {
+				logger.debug('Failed to send the storage event automatically', e);
+			});
+	}
+};
+
+const authEvent = payload => {
+	const { event } = payload;
+	if (!event) {
+		return;
+	}
+
+	const recordAuthEvent = async eventName => {
+		if (authConfigured && analyticsConfigured) {
+			try {
+				return await _instance.record({ name: `_userauth.${eventName}` });
+			} catch (err) {
+				logger.debug(
+					`Failed to send the ${eventName} event automatically`,
+					err
+				);
+			}
+		}
+	};
+
+	switch (event) {
+		case 'signIn':
+			return recordAuthEvent('sign_in');
+		case 'signUp':
+			return recordAuthEvent('sign_up');
+		case 'signOut':
+			return recordAuthEvent('sign_out');
+		case 'signIn_failure':
+			return recordAuthEvent('auth_fail');
+		case 'configured':
+			authConfigured = true;
+			if (authConfigured && analyticsConfigured) {
+				sendEvents();
+			}
+			break;
+	}
+};
+
+const analyticsEvent = payload => {
+	const { event } = payload;
+	if (!event) return;
+
+	switch (event) {
+		case 'pinpointProvider_configured':
+			analyticsConfigured = true;
+			if (authConfigured && analyticsConfigured) {
+				sendEvents();
+			}
+			break;
+	}
+};
+
+const sendEvents = () => {
+	const config = _instance.configure();
+	if (!endpointUpdated && config['autoSessionRecord']) {
+		_instance.updateEndpoint({ immediate: true }).catch(e => {
+			logger.debug('Failed to update the endpoint', e);
+		});
+		endpointUpdated = true;
+	}
+	_instance.autoTrack('session', {
+		enable: config['autoSessionRecord'],
+	});
+};
+
+export const Analytics = new AnalyticsClass();
