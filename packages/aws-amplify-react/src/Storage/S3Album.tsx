@@ -12,15 +12,20 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
-import { JS, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Storage from '@aws-amplify/storage';
+import {
+	ConsoleLogger as Logger,
+	filenameToContentType,
+	Hub,
+	isTextFile,
+	sortByField,
+} from '@aws-amplify/core';
+import { Storage } from '@aws-amplify/storage';
 
-import Picker from '../Widget/Picker';
+import { Picker } from '../Widget/Picker';
 import AmplifyTheme from '../AmplifyTheme';
-import S3Image from './S3Image';
-import S3Text from './S3Text';
+import { S3Image } from './S3Image';
+import { S3Text } from './S3Text';
 
 const logger = new Logger('Storage.S3Album');
 
@@ -52,7 +57,7 @@ export interface IS3AlbumState {
 	ts: any;
 }
 
-export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
+export class S3Album extends React.Component<IS3AlbumProps, IS3AlbumState> {
 	_isMounted = false;
 	constructor(props) {
 		super(props);
@@ -211,7 +216,7 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
 	}
 
 	contentType(item) {
-		return JS.filenameToContentType(item.key, 'image/*');
+		return filenameToContentType(item.key, 'image/*');
 	}
 
 	marshal(list) {
@@ -257,7 +262,7 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
 			} else {
 				dir = dir === 'desc' ? 'desc' : 'asc';
 			}
-			JS.sortByField(list, field, dir);
+			sortByField(list, field, dir);
 
 			return list;
 		}
@@ -275,7 +280,7 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
 		const theme = this.props.theme || AmplifyTheme;
 
 		const list = items.map(item => {
-			const isText = item.contentType && JS.isTextFile(item.contentType);
+			const isText = item.contentType && isTextFile(item.contentType);
 			return isText ? (
 				<S3Text
 					key={item.key}
@@ -289,18 +294,18 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
 					onClick={() => this.handleClick(item)}
 				/>
 			) : (
-				<S3Image
-					key={item.key}
-					imgKey={item.key}
-					theme={theme}
-					style={theme.albumPhoto}
-					selected={item.selected}
-					translate={translateItem}
-					level={level}
-					identityId={identityId}
-					onClick={() => this.handleClick(item)}
-				/>
-			);
+					<S3Image
+						key={item.key}
+						imgKey={item.key}
+						theme={theme}
+						style={theme.albumPhoto}
+						selected={item.selected}
+						translate={translateItem}
+						level={level}
+						identityId={identityId}
+						onClick={() => this.handleClick(item)}
+					/>
+				);
 		});
 		return (
 			<div>
@@ -318,3 +323,8 @@ export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default S3Album;

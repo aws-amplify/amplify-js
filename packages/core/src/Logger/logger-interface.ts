@@ -18,4 +18,7 @@ export interface Logger {
 	error(msg: string): void;
 }
 
+/**
+ * @deprecated use named import
+ */
 export default Logger;

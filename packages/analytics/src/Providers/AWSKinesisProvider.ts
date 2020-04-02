@@ -11,11 +11,15 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
-import * as Kinesis from 'aws-sdk/clients/kinesis';
+import {
+	ConsoleLogger as Logger,
+	Credentials,
+	getAmplifyUserAgent,
+} from '@aws-amplify/core';
+import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 import { AnalyticsProvider } from '../types';
 
-const logger = new Logger('AWSKineisProvider');
+const logger = new Logger('AWSKinesisProvider');
 
 // events buffer
 const BUFFER_SIZE = 1000;
@@ -23,7 +27,7 @@ const FLUSH_SIZE = 100;
 const FLUSH_INTERVAL = 5 * 1000; // 5s
 const RESEND_LIMIT = 5;
 
-export default class AWSKinesisProvider implements AnalyticsProvider {
+export class AWSKinesisProvider implements AnalyticsProvider {
 	protected _config;
 	private _kinesis;
 	private _buffer;
@@ -97,7 +101,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 		return this._putToBuffer(params);
 	}
 
-	public updateEndpoint(params) {
+	public updateEndpoint() {
 		logger.debug('updateEndpoint is not implemented in Kinesis provider');
 		return Promise.resolve(true);
 	}
@@ -177,21 +181,21 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 			records[streamName].push(record);
 		});
 
-		Object.keys(records).map(streamName => {
+		Object.keys(records).map(async streamName => {
 			logger.debug(
 				'putting records to kinesis with records',
 				records[streamName]
 			);
-			this._kinesis.putRecords(
-				{
+			try {
+				const command: PutRecordsCommand = new PutRecordsCommand({
 					Records: records[streamName],
 					StreamName: streamName,
-				},
-				(err, data) => {
-					if (err) logger.debug('Failed to upload records to Kinesis', err);
-					else logger.debug('Upload records to stream', streamName);
-				}
-			);
+				});
+				await this._kinesis.send(command);
+				logger.debug('Upload records to stream', streamName);
+			} catch (err) {
+				logger.debug('Failed to upload records to Kinesis', err);
+			}
 		});
 	}
 
@@ -216,10 +220,10 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 
 	private _initKinesis(region, credentials) {
 		logger.debug('initialize kinesis with credentials', credentials);
-		this._kinesis = new Kinesis({
-			apiVersion: '2013-12-02',
+		this._kinesis = new KinesisClient({
 			region,
 			credentials,
+			customUserAgent: getAmplifyUserAgent(),
 		});
 		return true;
 	}
@@ -241,3 +245,8 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 			});
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AWSKinesisProvider;

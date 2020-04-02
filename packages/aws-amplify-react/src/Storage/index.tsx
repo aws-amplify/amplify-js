@@ -11,6 +11,6 @@
  * and limitations under the License.
  */
 
-export { default as S3Album } from './S3Album';
-export { default as S3Image } from './S3Image';
-export { default as S3Text } from './S3Text';
+export { S3Album } from './S3Album';
+export { S3Image } from './S3Image';
+export { S3Text } from './S3Text';

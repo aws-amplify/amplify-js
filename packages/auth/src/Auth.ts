@@ -4,7 +4,7 @@
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
  *
- *     http://aws.amazon.com/apache2.0/
+ *	 http://aws.amazon.com/apache2.0/
  *
  * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
@@ -33,16 +33,14 @@ import {
 } from './types';
 
 import {
-	AWS,
+	Amplify,
 	ConsoleLogger as Logger,
-	Constants,
 	Hub,
-	JS,
-	Parser,
 	Credentials,
 	StorageHelper,
 	ICredentials,
-	Platform,
+	Parser,
+	JS,
 } from '@aws-amplify/core';
 import {
 	CookieStorage,
@@ -72,7 +70,7 @@ const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
+	typeof Symbol.for === 'function'
 	? Symbol.for('amplify_default')
 	: '@@amplify_default') as Symbol;
 
@@ -90,7 +88,7 @@ export enum CognitoHostedUIIdentityProvider {
 /**
  * Provide authentication steps
  */
-export default class AuthClass {
+export class AuthClass {
 	private _config: AuthOptions;
 	private userPool = null;
 	private user: any = null;
@@ -106,12 +104,6 @@ export default class AuthClass {
 		this.configure(config);
 		this.currentUserCredentials = this.currentUserCredentials.bind(this);
 
-		if (AWS.config) {
-			AWS.config.update({ customUserAgent: Constants.userAgent });
-		} else {
-			logger.warn('No AWS.config');
-		}
-
 		Hub.listen('auth', ({ payload }) => {
 			const { event } = payload;
 			switch (event) {
@@ -126,6 +118,7 @@ export default class AuthClass {
 					break;
 			}
 		});
+		Amplify.register(this);
 	}
 
 	public getModuleName() {
@@ -156,7 +149,7 @@ export default class AuthClass {
 		} = this._config;
 
 		if (!this._config.storage) {
-			// backward compatbility
+			// backward compatability
 			if (cookieStorage) this._storage = new CookieStorage(cookieStorage);
 			else {
 				this._storage = new StorageHelper().getStorage();
@@ -314,6 +307,10 @@ export default class AuthClass {
 				validationData,
 				(err, data) => {
 					if (err) {
+						if (err.code === 'InvalidParameterException') {
+							err.message =
+								'Username could not be created. Please make sure that the username you have entered is between 1 and 128 characters.';
+						}
 						dispatchAuthEvent(
 							'signUp_failure',
 							err,
@@ -427,6 +424,7 @@ export default class AuthClass {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
+
 		let username = null;
 		let password = null;
 		let validationData = {};
@@ -1170,7 +1168,7 @@ export default class AuthClass {
 						} else {
 							logger.debug(
 								`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
-									`is not in the scopes of the access token`
+								`is not in the scopes of the access token`
 							);
 							return res(user);
 						}
@@ -1221,7 +1219,7 @@ export default class AuthClass {
 				if (e === 'No userPool') {
 					logger.error(
 						'Cannot get the current user because the user pool is missing. ' +
-							'Please make sure the Auth module is configured with a valid Cognito User Pool ID'
+						'Please make sure the Auth module is configured with a valid Cognito User Pool ID'
 					);
 				}
 				logger.debug('The user is not authenticated by the error', e);
@@ -1770,7 +1768,7 @@ export default class AuthClass {
 					logger.warn(`There is already a signed in user: ${loggedInUser} in your app.
 																	You should not call Auth.federatedSignIn method again as it may cause unexpected behavior.`);
 				}
-			} catch (e) {}
+			} catch (e) { }
 
 			const { token, identity_id, expires_at } = response;
 			// Because Credentials.set would update the user info with identity id
@@ -1841,15 +1839,17 @@ export default class AuthClass {
 					logger.debug('AWS credentials', credentials);
 				}
 
-				/*
-                Prior to the request we do sign the custom state along with the state we set. This check will verify
-                if there is a dash indicated when setting custom state from the request. If a dash is contained
-                then there is custom state present on the state string.
-                */
+				/* 
+				Prior to the request we do sign the custom state along with the state we set. This check will verify
+				if there is a dash indicated when setting custom state from the request. If a dash is contained
+				then there is custom state present on the state string.
+				*/
 				const isCustomStateIncluded = /-/.test(state);
 
-				/*The following is to create a user for the Cognito Identity SDK to store the tokens
-                  When we remove this SDK later that logic will have to be centralized in our new version*/
+				/*
+				The following is to create a user for the Cognito Identity SDK to store the tokens
+				When we remove this SDK later that logic will have to be centralized in our new version
+				*/
 				//#region
 				const currentUser = this.createCognitoUser(
 					session.getIdToken().decodePayload()['cognito:username']
@@ -1988,3 +1988,5 @@ export default class AuthClass {
 		return Promise.reject(new NoUserPoolError(type));
 	}
 }
+
+export const Auth = new AuthClass(null);

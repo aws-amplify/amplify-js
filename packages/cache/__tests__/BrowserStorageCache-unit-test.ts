@@ -1,13 +1,8 @@
-import {
-	CacheConfig,
-	CacheItem,
-	CacheItemOptions,
-	ICache,
-} from '../src/types/Cache';
+import { CacheConfig, CacheItem } from '../src/types/Cache';
 import { defaultConfig, getByteLength } from '../src/Utils/CacheUtils';
 import {
-	default as cache,
-	BrowserStorageCache,
+	BrowserStorageCache as cache,
+	BrowserStorageCacheClass,
 } from '../src/BrowserStorageCache';
 
 const config: CacheConfig = {
@@ -442,7 +437,7 @@ describe('BrowserStorageCache', () => {
 	describe('createInstance', () => {
 		test('happy case, return new instance', () => {
 			expect(cache.createInstance({ keyPrefix: 'abc' })).toBeInstanceOf(
-				BrowserStorageCache
+				BrowserStorageCacheClass
 			);
 		});
 	});
