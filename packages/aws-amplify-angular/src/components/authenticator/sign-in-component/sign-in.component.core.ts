@@ -117,6 +117,11 @@ export class SignInComponentCore implements OnInit {
 	set data(data: any) {
 		this.hide = data.hide ? data.hide : this.hide;
 		this._usernameAttributes = data.usernameAttributes;
+		this._authState = data.authState;
+		this._show = includes(
+			['signIn', 'signedOut', 'signedUp'],
+			data.authState.state
+		);
 	}
 
 	@Input() hide: string[] = [];

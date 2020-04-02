@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js/core';
 import TypedArrays from 'crypto-js/lib-typedarrays'; // necessary for crypto js
 import Base64 from 'crypto-js/enc-base64';
@@ -69,6 +69,9 @@ import StorageHelper from './StorageHelper';
  * @param {CognitoUserSession} session The new session.
  * @param {bool=} userConfirmationNecessary User must be confirmed.
  */
+
+const isBrowser = typeof navigator !== 'undefined';
+const userAgent = isBrowser ? navigator.userAgent : 'nodejs';
 
 /** @class */
 export default class CognitoUser {
@@ -544,7 +547,7 @@ export default class CognitoUser {
 						DeviceKey: newDeviceMetadata.DeviceKey,
 						AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 						DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
-						DeviceName: navigator.userAgent,
+						DeviceName: userAgent,
 					},
 					(errConfirm, dataConfirm) => {
 						if (errConfirm) {
@@ -926,7 +929,7 @@ export default class CognitoUser {
 									.getAccessToken()
 									.getJwtToken(),
 								DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
-								DeviceName: navigator.userAgent,
+								DeviceName: userAgent,
 							},
 							(errConfirm, dataConfirm) => {
 								if (errConfirm) {

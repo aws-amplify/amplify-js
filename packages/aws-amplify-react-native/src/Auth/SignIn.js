@@ -44,7 +44,7 @@ export default class SignIn extends AuthPiece {
 		const username = this.getUsernameFromInput() || '';
 		const { password } = this.state;
 		logger.debug('Sign In for ' + username);
-		Auth.signIn(username, password)
+		return Auth.signIn(username, password)
 			.then(user => {
 				logger.debug(user);
 				const requireMFA = user.Session !== null;

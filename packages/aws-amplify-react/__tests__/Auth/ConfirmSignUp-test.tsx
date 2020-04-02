@@ -1,11 +1,8 @@
-import Auth from '@aws-amplify/auth';
-import ConfirmSignUp from '../../src/Auth/ConfirmSignUp';
 import * as React from 'react';
+import { Auth } from '@aws-amplify/auth';
+import { ConfirmSignUp } from '../../src/Auth/ConfirmSignUp';
 import AmplifyTheme from '../../src/AmplifyTheme';
-import AuthPiece from '../../src/Auth/AuthPiece';
 import {
-	Header,
-	Footer,
 	Input,
 	Button,
 	Link,

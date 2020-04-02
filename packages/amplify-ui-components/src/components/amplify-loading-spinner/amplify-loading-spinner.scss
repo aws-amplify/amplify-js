@@ -1,0 +1,15 @@
+.loading-spinner {
+  svg {
+    animation: loading-spinner 1s linear infinite;
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+  @keyframes loading-spinner {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-tooltip spec: Render logic -> should render a normal tooltip by default 1`] = `
+<amplify-tooltip>
+  <mock:shadow-root>
+    <div class="tooltip">
+      <slot></slot>
+    </div>
+  </mock:shadow-root>
+</amplify-tooltip>
+`;
+
+exports[`amplify-tooltip spec: Render logic -> should render an automatically-shown tooltip 1`] = `
+<amplify-tooltip should-auto-show="true">
+  <mock:shadow-root>
+    <div class="auto-show-tooltip tooltip">
+      <slot></slot>
+    </div>
+  </mock:shadow-root>
+</amplify-tooltip>
+`;
+
+exports[`amplify-tooltip spec: Render logic -> should render without Emotion CSS classes 1`] = `
+<amplify-tooltip>
+  <mock:shadow-root>
+    <div class="tooltip">
+      <slot></slot>
+    </div>
+  </mock:shadow-root>
+</amplify-tooltip>
+`;

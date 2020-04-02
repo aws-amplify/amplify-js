@@ -7,6 +7,7 @@ export type Schema = UserSchema & {
 };
 export type UserSchema = {
 	models: SchemaModels;
+	nonModels?: SchemaNonModels;
 	relationships?: RelationshipType;
 	enums: SchemaEnums;
 	modelTopologicalOrdering?: Map<string, string[]>;
@@ -26,6 +27,14 @@ export type SchemaModel = {
 	attributes?: ModelAttributes;
 	fields: ModelFields;
 	syncable?: boolean;
+};
+export function isSchemaModel(obj: any): obj is SchemaModel {
+	return obj && (<SchemaModel>obj).pluralName !== undefined;
+}
+export type SchemaNonModels = Record<string, SchemaNonModel>;
+export type SchemaNonModel = {
+	name: string;
+	fields: ModelFields;
 };
 type SchemaEnums = Record<string, SchemaEnum>;
 type SchemaEnum = {
@@ -101,6 +110,15 @@ export namespace GraphQLScalarType {
 	}
 }
 
+export type AuthorizationRule = {
+	identityClaim: string;
+	ownerField: string;
+	provider: 'userPools' | 'oidc' | 'iam' | 'apiKey';
+	groupClaim: string;
+	groups: [string];
+	authStrategy: 'owner' | 'group' | 'private' | 'public';
+};
+
 export function isGraphQLScalarType(
 	obj: any
 ): obj is keyof Omit<typeof GraphQLScalarType, 'getJSType'> {
@@ -111,6 +129,14 @@ export type ModelFieldType = { model: string };
 export function isModelFieldType(obj: any): obj is ModelFieldType {
 	const modelField: keyof ModelFieldType = 'model';
 	if (obj && obj[modelField]) return true;
+
+	return false;
+}
+
+export type NonModelFieldType = { nonModel: string };
+export function isNonModelFieldType(obj: any): obj is NonModelFieldType {
+	const typeField: keyof NonModelFieldType = 'nonModel';
+	if (obj && obj[typeField]) return true;
 
 	return false;
 }
@@ -128,6 +154,7 @@ type ModelField = {
 	type:
 		| keyof Omit<typeof GraphQLScalarType, 'getJSType'>
 		| ModelFieldType
+		| NonModelFieldType
 		| EnumFieldType;
 	isArray: boolean;
 	isRequired?: boolean;
@@ -137,18 +164,25 @@ type ModelField = {
 //#endregion
 
 //#region Model definition
+export type NonModelTypeConstructor<T> = {
+	new (init: T): T;
+};
 export type PersistentModelConstructor<T extends PersistentModel> = {
 	new (init: ModelInit<T>): T;
 	copyOf(src: T, mutator: (draft: MutableModel<T>) => T | void): T;
 };
+export type TypeConstructorMap = Record<
+	string,
+	PersistentModelConstructor<any> | NonModelTypeConstructor<any>
+>;
 export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
 export type ModelInit<T> = Omit<T, 'id'>;
-export type MutableModel<T> = Omit<
-	{
-		-readonly [P in keyof T]: T[P];
-	},
-	'id'
->;
+type DeepWritable<T> = {
+	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
+		? T[P]
+		: DeepWritable<T[P]>;
+};
+export type MutableModel<T> = Omit<DeepWritable<T>, 'id'>;
 
 export type ModelInstanceMetadata = {
 	id: string;
@@ -349,11 +383,13 @@ export type DataStoreConfig = {
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 		errorHandler?: (error: SyncError) => void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
+		syncPageSize?: number;
 		fullSyncInterval?: number;
 	};
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
+	syncPageSize?: number;
 	fullSyncInterval?: number;
 };
 

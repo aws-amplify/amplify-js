@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Loading renders successfully with no props 1`] = `
-<Loading>
+<Component>
   <div
     className="XR__loadingOverlay___IbqcI"
     data-test="sumerian-scene-loading"
@@ -61,11 +61,11 @@ exports[`Loading renders successfully with no props 1`] = `
       </div>
     </div>
   </div>
-</Loading>
+</Component>
 `;
 
 exports[`Loading renders successfully with percentage 1`] = `
-<Loading
+<Component
   percentage="0"
 >
   <div
@@ -127,5 +127,5 @@ exports[`Loading renders successfully with percentage 1`] = `
       </div>
     </div>
   </div>
-</Loading>
+</Component>
 `;

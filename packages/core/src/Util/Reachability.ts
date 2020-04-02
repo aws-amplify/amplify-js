@@ -1,4 +1,4 @@
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable-ts';
 
 type NetworkStatus = {
 	online: boolean;

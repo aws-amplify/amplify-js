@@ -8,6 +8,8 @@ import {
 	Blog,
 	Comment,
 	PostAuthorJoin,
+	PostMetadata,
+	Nested,
 } from './model';
 import { USER } from '../src/util';
 let db: idb.IDBPDatabase;
@@ -34,7 +36,6 @@ describe('Indexed db storage test', () => {
 		});
 	});
 	test('setup function', async () => {
-		const namespaceResolver = jest.fn();
 		db = await idb.openDB('amplify-datastore', 1);
 
 		const createdObjStores = db.objectStoreNames;
@@ -98,6 +99,35 @@ describe('Indexed db storage test', () => {
 		expect([...Object.keys(blog2).sort(), 'blogOwnerId']).toEqual(
 			expect.arrayContaining(Object.keys(get3).sort())
 		);
+	});
+
+	test('save stores non-model types along the item (including nested)', async () => {
+		const p = new Post({
+			title: 'Avatar',
+			blog,
+			metadata: new PostMetadata({
+				rating: 3,
+				tags: ['a', 'b', 'c'],
+				nested: new Nested({
+					aField: 'Some value',
+				}),
+			}),
+		});
+
+		await DataStore.save(p);
+
+		const postFromDB = await db
+			.transaction(`${USER}_Post`, 'readonly')
+			.objectStore(`${USER}_Post`)
+			.get(p.id);
+
+		expect(postFromDB.metadata).toMatchObject({
+			rating: 3,
+			tags: ['a', 'b', 'c'],
+			nested: new Nested({
+				aField: 'Some value',
+			}),
+		});
 	});
 
 	test('save function 1:M insert', async () => {
@@ -198,7 +228,7 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('query function 1:1', async () => {
-		const [res] = await DataStore.save(blog);
+		const res = await DataStore.save(blog);
 		await DataStore.save(owner);
 		const query = await DataStore.query(Blog, blog.id);
 
@@ -334,8 +364,8 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('delete cascade', async () => {
-		const [a1] = await DataStore.save(new Author({ name: 'author1' }));
-		const [a2] = await DataStore.save(new Author({ name: 'author2' }));
+		const a1 = await DataStore.save(new Author({ name: 'author1' }));
+		const a2 = await DataStore.save(new Author({ name: 'author2' }));
 		const blog = new Blog({
 			name: 'The Blog',
 			owner,
@@ -348,8 +378,8 @@ describe('Indexed db storage test', () => {
 			title: 'Post 2',
 			blog,
 		});
-		const [c1] = await DataStore.save(new Comment({ content: 'c1', post: p1 }));
-		const [c2] = await DataStore.save(new Comment({ content: 'c2', post: p1 }));
+		const c1 = await DataStore.save(new Comment({ content: 'c1', post: p1 }));
+		const c2 = await DataStore.save(new Comment({ content: 'c2', post: p1 }));
 		await DataStore.save(p1);
 		await DataStore.save(p2);
 		await DataStore.save(blog);
@@ -368,5 +398,20 @@ describe('Indexed db storage test', () => {
 			.index('postId')
 			.getAll(p1.id);
 		expect(refResult).toHaveLength(0);
+	});
+
+	test('delete non existent', async () => {
+		const author = new Author({ name: 'author1' });
+
+		const deleted = await DataStore.delete(author);
+
+		expect(deleted).toStrictEqual(author);
+
+		const fromDB = await db
+			.transaction(`${USER}_Author`, 'readonly')
+			.objectStore(`${USER}_Author`)
+			.get(author.id);
+
+		expect(fromDB).toBeUndefined();
 	});
 });

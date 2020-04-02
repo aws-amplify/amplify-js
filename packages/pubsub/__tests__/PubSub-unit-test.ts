@@ -1,4 +1,4 @@
-import PubSub from '../src/PubSub';
+import { PubSubClass as PubSub } from '../src/PubSub';
 import {
 	MqttOverWSProvider,
 	AWSAppSyncProvider,
@@ -6,8 +6,10 @@ import {
 	mqttTopicMatch,
 } from '../src/Providers';
 // import Amplify from '../../src/';
-import { Credentials } from '@aws-amplify/core';
-import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
+import {
+	Credentials,
+	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
+} from '@aws-amplify/core';
 import * as Paho from 'paho-mqtt';
 
 const pahoClientMockCache = {};
@@ -174,12 +176,12 @@ describe('PubSub', () => {
 				value: 'my message',
 				provider: awsIotProvider,
 			};
-			var obs = pubsub.subscribe('topicA').subscribe({
+			const obs = pubsub.subscribe('topicA').subscribe({
 				next: data => {
 					expect(data).toEqual(expectedData);
 					done();
 				},
-				close: () => console.log('done'),
+				complete: () => console.log('done'),
 				error: error => console.log('error', error),
 			});
 
@@ -230,7 +232,7 @@ describe('PubSub', () => {
 			});
 			pubsub.addPluggable(awsIotProvider);
 
-			pubsub.subscribe('topic').subscribe({
+			pubsub.subscribe('topic', { clientId: '123' }).subscribe({
 				error: () => done(),
 			});
 

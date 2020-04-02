@@ -1,5 +1,5 @@
 import * as React from 'react';
-import IconButton from '../../src/XR/IconButton';
+import { IconButton } from '../../src/XR/IconButton';
 
 describe('IconButton', () => {
 	test('renders successfully with no variant', () => {
