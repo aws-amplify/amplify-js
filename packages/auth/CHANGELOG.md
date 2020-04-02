@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.1.2...@aws-amplify/auth@3.2.0) (2020-04-02)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** User agent tracking for UI component packages ([#4804](https://github.com/aws-amplify/amplify-js/issues/4804)) ([15a0a2f](https://github.com/aws-amplify/amplify-js/commit/15a0a2fadeb96543721a6733faeb509efc26e1e2))
+
+
+
+
+
 ## [3.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.1.1...@aws-amplify/auth@3.1.2) (2020-04-01)
 
 **Note:** Version bump only for package @aws-amplify/auth
