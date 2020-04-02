@@ -271,6 +271,145 @@ jobs:
           path: amplify-js-samples-staging/cypress/videos
       - store_artifacts:
           path: amplify-js-samples-staging/cypress/screenshots
+  integ_setup_ui:
+    <<: *defaults
+    working_directory: ~/
+    steps:
+      - run:
+          name: 'Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages'
+          command: |
+            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
+            git clone $AMPLIFY_JS_SAMPLES_STAGING_URL amplify-js-samples-staging-ui
+            cd amplify-js-samples-staging-ui
+            git checkout ui-components/master
+            yarn
+      - save_cache:
+          key: amplify-js-ui
+          paths:
+            - ~/.cache ## cache both yarn and Cypress
+      - persist_to_workspace:
+          root: /root
+          paths: amplify-js-samples-staging-ui
+
+  integ_react_auth_ui:
+    <<: *defaults
+    working_directory: ~/
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-ui
+      - run:
+          name: 'Install React Authenticator sample'
+          command: |
+            cd amplify-js-samples-staging-ui/samples/react/auth/amplify-authenticator
+            yarn
+      - run:
+          name: 'Link aws-amplify'
+          command: |
+            cd amplify-js/packages/aws-amplify
+            yarn link
+      - run:
+          name: 'Link amplify-ui-react'
+          command: |
+            cd amplify-js/packages/amplify-ui-react
+            yarn link
+      - run:
+          name: 'Install React Authenticator sample'
+          command: |
+            cd amplify-js-samples-staging-ui/samples/react/auth/amplify-authenticator
+            yarn
+            yarn link aws-amplify
+            yarn link @aws-amplify/ui-react
+      - run:
+          name: 'Start React Authenticator UI Sample server in background'
+          command: |
+            cd amplify-js-samples-staging-ui
+            yarn ci:test react auth amplify-authenticator
+      - store_artifacts:
+          path: amplify-js-samples-staging-ui/cypress/videos
+      - store_artifacts:
+          path: amplify-js-samples-staging-ui/cypress/screenshots
+  integ_angular_auth_ui:
+    <<: *defaults
+    working_directory: ~/
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-ui
+      - run:
+          name: 'Install React Authenticator sample'
+          command: |
+            cd amplify-js-samples-staging-ui/samples/angular/auth/amplify-authenticator
+            yarn
+      - run:
+          name: 'Link aws-amplify'
+          command: |
+            cd amplify-js/packages/aws-amplify
+            yarn link
+      - run:
+          name: 'Link amplify-ui-angular'
+          command: |
+            cd amplify-js/packages/amplify-ui-angular
+            yarn link
+      - run:
+          name: 'Install Angular Authenticator sample'
+          command: |
+            cd amplify-js-samples-staging-ui/samples/angular/auth/amplify-authenticator
+            yarn
+            yarn link aws-amplify
+            yarn link @aws-amplify/ui-angular
+      - run:
+          name: 'Start Angular Authenticator UI Sample server in background'
+          command: |
+            cd amplify-js-samples-staging-ui
+            yarn ci:test angular auth amplify-authenticator
+      - store_artifacts:
+          path: amplify-js-samples-staging-ui/cypress/videos
+      - store_artifacts:
+          path: amplify-js-samples-staging-ui/cypress/screenshots
+  integ_vue_auth_ui:
+    <<: *defaults
+    working_directory: ~/
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-ui
+      - run:
+          name: 'Install Vue Authenticator sample'
+          command: |
+            cd amplify-js-samples-staging-ui/samples/vue/auth/amplify-authenticator
+            yarn
+      - run:
+          name: 'Link aws-amplify'
+          command: |
+            cd amplify-js/packages/aws-amplify
+            yarn link
+      - run:
+          name: 'Link amplify-ui-vue'
+          command: |
+            cd amplify-js/packages/amplify-ui-vue
+            yarn link
+      - run:
+          name: 'Install Vue Authenticator sample'
+          command: |
+            cd amplify-js-samples-staging-ui/samples/vue/auth/amplify-authenticator
+            yarn
+            yarn link aws-amplify
+            yarn link @aws-amplify/ui-vue
+      - run:
+          name: 'Start Vue Authenticator UI Sample server in background'
+          command: |
+            cd amplify-js-samples-staging-ui
+            yarn
+            yarn ci:test vue auth amplify-authenticator
+      - store_artifacts:
+          path: amplify-js-samples-staging-ui/cypress/videos
+      - store_artifacts:
+          path: amplify-js-samples-staging-ui/cypress/screenshots
 
   integ_rn_ios_storage:
     <<: *defaults_rn
@@ -406,12 +545,53 @@ workflows:
       - unit_test:
           requires:
             - build
+      - integ_setup_ui:
+          filters:
+            branches:
+              only:
+                - release
+                - master
+                - ui-components/master
+                - 1.0-stable
+          requires:
+            - build
+      - integ_react_auth_ui:
+          filters:
+            branches:
+              only:
+                - release
+                - master
+                - ui-components/master
+                - 1.0-stable
+          requires:
+            - integ_setup_ui
+      - integ_angular_auth_ui:
+          filters:
+            branches:
+              only:
+                - release
+                - master
+                - ui-components/master
+                - 1.0-stable
+          requires:
+            - integ_setup_ui
+      - integ_vue_auth_ui:
+          filters:
+            branches:
+              only:
+                - release
+                - master
+                - ui-components/master
+                - 1.0-stable
+          requires:
+            - integ_setup_ui
       - integ_setup:
           filters:
             branches:
               only:
                 - release
                 - master
+                - ui-components/master
                 - 1.0-stable
           requires:
             - build
@@ -421,6 +601,7 @@ workflows:
               only:
                 - release
                 - master
+                - ui-components/master
                 - 1.0-stable
           requires:
             - integ_setup
@@ -430,6 +611,7 @@ workflows:
               only:
                 - release
                 - master
+                - ui-components/master
                 - 1.0-stable
           requires:
             - integ_setup
@@ -467,6 +649,7 @@ workflows:
                 - release
                 - master
                 - beta
+                - ui-components/master
                 - 1.0-stable
           requires:
             - unit_test

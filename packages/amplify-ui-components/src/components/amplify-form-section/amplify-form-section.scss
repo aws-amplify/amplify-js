@@ -1,0 +1,35 @@
+:host {
+  --header-color: var(--amplify-secondary-color);
+  --header-size: var(--amplify-text-md);
+  --footer-color: var(--amplify-grey);
+  --footer-size: var(--amplify-text-sm);
+  --font-family: var(--amplify-font-family);
+}
+
+.form-section-header {
+  color: var(--header-color);
+  margin-bottom: 24px;
+  font-size: var(--header-size);
+  font-weight: 700;
+}
+
+.form-section-footer {
+  font-family: var(--font-family);
+  font-weight: 300;
+  font-size: var(--footer-size);
+  color: var(--footer-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+
+  @include md {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  * + * {
+    margin-top: 15px;
+  }
+}

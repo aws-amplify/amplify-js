@@ -21,19 +21,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [5.0.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@4.1.9...aws-amplify-angular@5.0.1) (2020-03-31)
 
-
 ### Bug Fixes
 
-* **aws-amplify-angular:** declare @aws-amplify/core as rollup external ([20a8bf8](https://github.com/aws-amplify/amplify-js/commit/20a8bf843b7284f0738763b2dcaac0f59d770ef3))
-
+- **aws-amplify-angular:** declare @aws-amplify/core as rollup external ([20a8bf8](https://github.com/aws-amplify/amplify-js/commit/20a8bf843b7284f0738763b2dcaac0f59d770ef3))
 
 ### Reverts
 
-* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
-
-
-
-
+- Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
 
 ## [4.1.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@4.1.8...aws-amplify-angular@4.1.9) (2020-03-30)
 
