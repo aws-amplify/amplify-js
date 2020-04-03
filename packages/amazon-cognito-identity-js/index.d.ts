@@ -377,5 +377,5 @@ declare module 'amazon-cognito-identity-js' {
 		constructor();
 	}
 
-	export const appendToCognitoUserAgent: void;
+	export const appendToCognitoUserAgent: (content: string) => void;
 }
