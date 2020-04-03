@@ -208,12 +208,11 @@ export class CredentialsClass {
 		try {
 			await this._storageSync;
 			identityId = this._storage.getItem('CognitoIdentityId-' + identityPoolId);
+			this._identityId = identityId;
 		} catch (e) {
 			logger.debug('Failed to get the cached identityId', e);
 		}
 
-		// Removing the signature middleware and passing empty credentials and signer
-		// because https://github.com/aws/aws-sdk-js-v3/issues/354
 		const cognitoClient = new CognitoIdentityClient({
 			region,
 			credentials: () => Promise.resolve({} as any),
@@ -297,8 +296,6 @@ export class CredentialsClass {
 			);
 		}
 
-		// Removing the signature middleware and passing empty credentials and signer
-		// because https://github.com/aws/aws-sdk-js-v3/issues/354
 		const cognitoClient = new CognitoIdentityClient({
 			region,
 			credentials: () => Promise.resolve({} as any),
@@ -332,8 +329,6 @@ export class CredentialsClass {
 		const logins = {};
 		logins[key] = idToken;
 
-		// Removing the signature middleware and passing empty credentials and signer
-		// because https://github.com/aws/aws-sdk-js-v3/issues/354
 		const cognitoClient = new CognitoIdentityClient({
 			region,
 			credentials: () => Promise.resolve({} as any),
