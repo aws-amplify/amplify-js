@@ -11,7 +11,9 @@
  * and limitations under the License.
  */
 
-if (typeof document !== 'undefined') {
+import { browserOrNode } from '@aws-amplify/core';
+
+if (browserOrNode().isBrowser) {
   let customStyles = document.createElement('style');
   customStyles.appendChild(
     document.createTextNode(`
