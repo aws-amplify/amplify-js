@@ -11,47 +11,49 @@
  * and limitations under the License.
  */
 
-let customStyles = document.createElement('style');
-customStyles.appendChild(
-  document.createTextNode(`
-  :root {
-    /* Typography */
-    --amplify-font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
+if (typeof document !== 'undefined') {
+  let customStyles = document.createElement('style');
+  customStyles.appendChild(
+    document.createTextNode(`
+    :root {
+      /* Typography */
+      --amplify-font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
 
-    --amplify-text-xxs: 0.75rem;
-    --amplify-text-xs: 0.81rem;
-    --amplify-text-sm: 0.875rem;
-    --amplify-text-md: 1rem;
-    --amplify-text-lg: 1.5rem;
-    --amplify-text-xl: 2rem;
-    --amplify-text-xxl: 2.5rem;
+      --amplify-text-xxs: 0.75rem;
+      --amplify-text-xs: 0.81rem;
+      --amplify-text-sm: 0.875rem;
+      --amplify-text-md: 1rem;
+      --amplify-text-lg: 1.5rem;
+      --amplify-text-xl: 2rem;
+      --amplify-text-xxl: 2.5rem;
 
-    /* Colors */
-    --amplify-primary-color: #ff9900;
-    --amplify-primary-contrast: var(--amplify-white);
-    --amplify-primary-tint: #ffac31;
-    --amplify-primary-shade: #e88b01;
+      /* Colors */
+      --amplify-primary-color: #ff9900;
+      --amplify-primary-contrast: var(--amplify-white);
+      --amplify-primary-tint: #ffac31;
+      --amplify-primary-shade: #e88b01;
 
-    --amplify-secondary-color: #152939;
-    --amplify-secondary-contrast: var(--amplify-white);
-    --amplify-secondary-tint: #31465f;
-    --amplify-secondary-shade: #1F2A37;
+      --amplify-secondary-color: #152939;
+      --amplify-secondary-contrast: var(--amplify-white);
+      --amplify-secondary-tint: #31465f;
+      --amplify-secondary-shade: #1F2A37;
 
-    --amplify-tertiary-color: #5d8aff;
-    --amplify-tertiary-contrast: var(--amplify-white);
-    --amplify-tertiary-tint: #7da1ff;
-    --amplify-tertiary-shade: #537BE5;
+      --amplify-tertiary-color: #5d8aff;
+      --amplify-tertiary-contrast: var(--amplify-white);
+      --amplify-tertiary-tint: #7da1ff;
+      --amplify-tertiary-shade: #537BE5;
 
-    /* Neutral */
-    --amplify-grey: #828282;
-    --amplify-light-grey: #c4c4c4;
-    --amplify-white: #ffffff;
+      /* Neutral */
+      --amplify-grey: #828282;
+      --amplify-light-grey: #c4c4c4;
+      --amplify-white: #ffffff;
 
-    --amplify-red: #dd3f5b;
-  }
-`),
-);
+      --amplify-red: #dd3f5b;
+    }
+  `),
+  );
 
-let parentElement = document.getElementsByTagName('head')[0];
-const firstChild = parentElement.firstChild;
-parentElement.insertBefore(customStyles, firstChild);
+  let parentElement = document.getElementsByTagName('head')[0];
+  const firstChild = parentElement.firstChild;
+  parentElement.insertBefore(customStyles, firstChild);
+}

@@ -32,7 +32,7 @@ export class AmplifyButton {
         const formSection = this.el.closest('amplify-form-section');
         form = formSection && formSection.shadowRoot.querySelector('form');
       }
-      if (form) {
+      if (form && typeof document !== 'undefined') {
         ev.preventDefault();
 
         const fakeButton = document.createElement('button');
