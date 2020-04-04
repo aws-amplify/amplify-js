@@ -1,4 +1,4 @@
-import { Component, Prop, h } from '@stencil/core';
+import { Component, Prop, Host, h } from '@stencil/core';
 import { TextFieldTypes } from '../../common/types/ui-types';
 
 @Component({
@@ -27,18 +27,20 @@ export class AmplifyInput {
 
   render() {
     return (
-      <input
-        id={this.fieldId}
-        aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
-        type={this.type}
-        onChange={this.handleInputChange}
-        placeholder={this.placeholder}
-        name={this.name}
-        class="input"
-        value={this.value}
-        disabled={this.disabled}
-        {...this.inputProps}
-      />
+      <Host class="input-host">
+        <input
+          id={this.fieldId}
+          aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
+          type={this.type}
+          onChange={this.handleInputChange}
+          placeholder={this.placeholder}
+          name={this.name}
+          class="input"
+          value={this.value}
+          disabled={this.disabled}
+          {...this.inputProps}
+        />
+      </Host>
     );
   }
 }
