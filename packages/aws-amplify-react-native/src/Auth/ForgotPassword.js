@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import {
 	FormField,
@@ -20,6 +20,7 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
@@ -105,7 +106,7 @@ export default class ForgotPassword extends AuthPiece {
 
 	showComponent(theme) {
 		return (
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+			<Wrapper>
 				<View style={theme.section}>
 					<Header theme={theme}>{I18n.get('Forgot Password')}</Header>
 					<View style={theme.sectionBody}>
@@ -119,7 +120,7 @@ export default class ForgotPassword extends AuthPiece {
 					</View>
 					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 				</View>
-			</TouchableWithoutFeedback>
+			</Wrapper>
 		);
 	}
 }

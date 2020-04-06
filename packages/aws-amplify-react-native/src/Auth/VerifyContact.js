@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View, Picker, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Picker } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import {
 	AmplifyButton,
@@ -20,6 +20,7 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
@@ -175,7 +176,7 @@ export default class VerifyContact extends AuthPiece {
 
 	showComponent(theme) {
 		return (
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+			<Wrapper>
 				<View style={theme.section}>
 					<Header theme={theme}>{I18n.get('Verify Contact')}</Header>
 					{!this.state.verifyAttr && this.verifyBody(theme)}
@@ -190,7 +191,7 @@ export default class VerifyContact extends AuthPiece {
 					</View>
 					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 				</View>
-			</TouchableWithoutFeedback>
+			</Wrapper>
 		);
 	}
 }

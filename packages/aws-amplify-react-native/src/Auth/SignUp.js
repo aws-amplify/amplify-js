@@ -12,16 +12,7 @@
  */
 
 import React from 'react';
-import {
-	View,
-	Text,
-	TextInput,
-	Button,
-	TouchableWithoutFeedback,
-	Keyboard,
-	Picker,
-	ScrollView,
-} from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import {
 	FormField,
@@ -30,6 +21,7 @@ import {
 	Header,
 	ErrorRow,
 	AmplifyButton,
+	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 import countryDialCodes from '../CountryDialCodes';
@@ -226,7 +218,7 @@ export default class SignUp extends AuthPiece {
 		}
 		this.sortFields();
 		return (
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+			<Wrapper>
 				<ScrollView style={theme.section}>
 					<Header theme={theme}>{I18n.get(this.header)}</Header>
 					<View style={theme.sectionBody}>
@@ -279,7 +271,7 @@ export default class SignUp extends AuthPiece {
 					</View>
 					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 				</ScrollView>
-			</TouchableWithoutFeedback>
+			</Wrapper>
 		);
 	}
 }

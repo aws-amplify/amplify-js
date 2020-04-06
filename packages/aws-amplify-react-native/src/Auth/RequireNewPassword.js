@@ -12,12 +12,7 @@
  */
 
 import React from 'react';
-import {
-	View,
-	TouchableWithoutFeedback,
-	Keyboard,
-	ScrollView,
-} from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import {
 	FormField,
@@ -25,6 +20,7 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
@@ -81,7 +77,7 @@ export default class RequireNewPassword extends AuthPiece {
 		const user = this.props.authData;
 		const { requiredAttributes } = user.challengeParam;
 		return (
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+			<Wrapper>
 				<ScrollView style={theme.section}>
 					<Header theme={theme}>{I18n.get('Change Password')}</Header>
 					<View style={theme.sectionBody}>
@@ -117,7 +113,7 @@ export default class RequireNewPassword extends AuthPiece {
 					</View>
 					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 				</ScrollView>
-			</TouchableWithoutFeedback>
+			</Wrapper>
 		);
 	}
 }
