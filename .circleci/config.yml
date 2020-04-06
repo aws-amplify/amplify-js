@@ -425,55 +425,55 @@ jobs:
       - run:
           name: 'Link aws-amplify'
           command: |
-            cp -rf ~/amplify-js/packages/aws-amplify/dist ./node_modules/aws-amplify/dist
-            cp -rf ~/amplify-js/packages/aws-amplify/lib ./node_modules/aws-amplify/lib
-            cp -rf ~/amplify-js/packages/aws-amplify/lib-esm ./node_modules/aws-amplify/lib-esm
+            cp -rf ~/amplify-js/packages/aws-amplify/dist/ ./node_modules/aws-amplify/dist/
+            cp -rf ~/amplify-js/packages/aws-amplify/lib/ ./node_modules/aws-amplify/lib/
+            cp -rf ~/amplify-js/packages/aws-amplify/lib-esm/ ./node_modules/aws-amplify/lib-esm/
 
-            cp -rf ~/amplify-js/packages/amazon-cognito-identity-js/dist ./node_modules/amazon-cognito-identity-js/dist
-            cp -rf ~/amplify-js/packages/amazon-cognito-identity-js/lib ./node_modules/amazon-cognito-identity-js/lib
+            cp -rf ~/amplify-js/packages/amazon-cognito-identity-js/dist/ ./node_modules/amazon-cognito-identity-js/dist/
+            cp -rf ~/amplify-js/packages/amazon-cognito-identity-js/lib/ ./node_modules/amazon-cognito-identity-js/lib
 
-            cp -rf ~/amplify-js/packages/analytics/dist ./node_modules/@aws-amplify/analytics/dist
-            cp -rf ~/amplify-js/packages/analytics/lib ./node_modules/@aws-amplify/analytics/lib
-            cp -rf ~/amplify-js/packages/analytics/lib-esm ./node_modules/@aws-amplify/analytics/lib-esm
+            cp -rf ~/amplify-js/packages/analytics/dist/ ./node_modules/@aws-amplify/analytics/dist/
+            cp -rf ~/amplify-js/packages/analytics/lib/ ./node_modules/@aws-amplify/analytics/lib/
+            cp -rf ~/amplify-js/packages/analytics/lib-esm/ ./node_modules/@aws-amplify/analytics/lib-esm/
 
-            cp -rf ~/amplify-js/packages/api/dist ./node_modules/@aws-amplify/api/dist
-            cp -rf ~/amplify-js/packages/api/lib ./node_modules/@aws-amplify/api/lib
-            cp -rf ~/amplify-js/packages/api/lib-esm ./node_modules/@aws-amplify/api/lib-esm
+            cp -rf ~/amplify-js/packages/api/dist/ ./node_modules/@aws-amplify/api/dist/
+            cp -rf ~/amplify-js/packages/api/lib/ ./node_modules/@aws-amplify/api/lib/
+            cp -rf ~/amplify-js/packages/api/lib-esm/ ./node_modules/@aws-amplify/api/lib-esm/
 
-            cp -rf ~/amplify-js/packages/auth/dist ./node_modules/@aws-amplify/auth/dist
-            cp -rf ~/amplify-js/packages/auth/lib ./node_modules/@aws-amplify/auth/lib
-            cp -rf ~/amplify-js/packages/auth/lib-esm ./node_modules/@aws-amplify/auth/lib-esm
+            cp -rf ~/amplify-js/packages/auth/dist/ ./node_modules/@aws-amplify/auth/dist/
+            cp -rf ~/amplify-js/packages/auth/lib/ ./node_modules/@aws-amplify/auth/lib/
+            cp -rf ~/amplify-js/packages/auth/lib-esm/ ./node_modules/@aws-amplify/auth/lib-esm/
 
-            cp -rf ~/amplify-js/packages/cache/dist ./node_modules/@aws-amplify/cache/dist
-            cp -rf ~/amplify-js/packages/cache/lib ./node_modules/@aws-amplify/cache/lib
-            cp -rf ~/amplify-js/packages/cache/lib-esm ./node_modules/@aws-amplify/cache/lib-esm
+            cp -rf ~/amplify-js/packages/cache/dist/ ./node_modules/@aws-amplify/cache/dist/
+            cp -rf ~/amplify-js/packages/cache/lib/ ./node_modules/@aws-amplify/cache/lib/
+            cp -rf ~/amplify-js/packages/cache/lib-esm/ ./node_modules/@aws-amplify/cache/lib-esm/
 
-            cp -rf ~/amplify-js/packages/core/dist ./node_modules/@aws-amplify/core/dist
-            cp -rf ~/amplify-js/packages/core/lib ./node_modules/@aws-amplify/core/lib
-            cp -rf ~/amplify-js/packages/core/lib-esm ./node_modules/@aws-amplify/core/lib-esm
+            cp -rf ~/amplify-js/packages/core/dist/ ./node_modules/@aws-amplify/core/dist/
+            cp -rf ~/amplify-js/packages/core/lib/ ./node_modules/@aws-amplify/core/lib/
+            cp -rf ~/amplify-js/packages/core/lib-esm/ ./node_modules/@aws-amplify/core/lib-esm/
 
-            cp -rf ~/amplify-js/packages/interactions/dist ./node_modules/@aws-amplify/interactions/dist
-            cp -rf ~/amplify-js/packages/interactions/lib ./node_modules/@aws-amplify/interactions/lib
-            cp -rf ~/amplify-js/packages/interactions/lib-esm ./node_modules/@aws-amplify/interactions/lib-esm
+            cp -rf ~/amplify-js/packages/interactions/dist/ ./node_modules/@aws-amplify/interactions/dist/
+            cp -rf ~/amplify-js/packages/interactions/lib/ ./node_modules/@aws-amplify/interactions/lib/
+            cp -rf ~/amplify-js/packages/interactions/lib-esm/ ./node_modules/@aws-amplify/interactions/lib-esm/
 
-            cp -rf ~/amplify-js/packages/predictions/dist ./node_modules/@aws-amplify/predictions/dist
-            cp -rf ~/amplify-js/packages/predictions/lib ./node_modules/@aws-amplify/predictions/lib
-            cp -rf ~/amplify-js/packages/predictions/lib-esm ./node_modules/@aws-amplify/predictions/lib-esm
+            cp -rf ~/amplify-js/packages/predictions/dist/ ./node_modules/@aws-amplify/predictions/dist/
+            cp -rf ~/amplify-js/packages/predictions/lib/ ./node_modules/@aws-amplify/predictions/lib/
+            cp -rf ~/amplify-js/packages/predictions/lib-esm/ ./node_modules/@aws-amplify/predictions/lib-esm/
 
-            cp -rf ~/amplify-js/packages/pubsub/dist ./node_modules/@aws-amplify/pubsub/dist
-            cp -rf ~/amplify-js/packages/pubsub/lib ./node_modules/@aws-amplify/pubsub/lib
-            cp -rf ~/amplify-js/packages/pubsub/lib-esm ./node_modules/@aws-amplify/pubsub/lib-esm
+            cp -rf ~/amplify-js/packages/pubsub/dist/ ./node_modules/@aws-amplify/pubsub/dist/
+            cp -rf ~/amplify-js/packages/pubsub/lib/ ./node_modules/@aws-amplify/pubsub/lib/
+            cp -rf ~/amplify-js/packages/pubsub/lib-esm/ ./node_modules/@aws-amplify/pubsub/lib-esm/
 
-            cp -rf ~/amplify-js/packages/storage/dist ./node_modules/@aws-amplify/storage/dist
-            cp -rf ~/amplify-js/packages/storage/lib ./node_modules/@aws-amplify/storage/lib
-            cp -rf ~/amplify-js/packages/storage/lib-esm ./node_modules/@aws-amplify/storage/lib-esm
+            cp -rf ~/amplify-js/packages/storage/dist/ ./node_modules/@aws-amplify/storage/dist/
+            cp -rf ~/amplify-js/packages/storage/lib/ ./node_modules/@aws-amplify/storage/lib/
+            cp -rf ~/amplify-js/packages/storage/lib-esm/ ./node_modules/@aws-amplify/storage/lib-esm/
 
-            cp -rf ~/amplify-js/packages/amplify-ui/dist ./node_modules/@aws-amplify/ui/dist
-            cp -rf ~/amplify-js/packages/amplify-ui/lib ./node_modules/@aws-amplify/ui/lib
+            cp -rf ~/amplify-js/packages/amplify-ui/dist/ ./node_modules/@aws-amplify/ui/dist/
+            cp -rf ~/amplify-js/packages/amplify-ui/lib/ ./node_modules/@aws-amplify/ui/lib/
 
-            cp -rf ~/amplify-js/packages/xr/dist ./node_modules/@aws-amplify/xr/dist
-            cp -rf ~/amplify-js/packages/xr/lib ./node_modules/@aws-amplify/xr/lib
-            cp -rf ~/amplify-js/packages/xr/lib-esm ./node_modules/@aws-amplify/xr/lib-esm
+            cp -rf ~/amplify-js/packages/xr/dist/ ./node_modules/@aws-amplify/xr/dist/
+            cp -rf ~/amplify-js/packages/xr/lib/ ./node_modules/@aws-amplify/xr/lib/
+            cp -rf ~/amplify-js/packages/xr/lib-esm/ ./node_modules/@aws-amplify/xr/lib-esm/
 
       - restore_pods
       - run:
