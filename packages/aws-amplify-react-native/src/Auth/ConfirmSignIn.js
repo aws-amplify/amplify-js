@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View } from 'react-native';
 import { Auth, I18n, Logger, JS } from 'aws-amplify';
 import {
 	AmplifyButton,
@@ -20,6 +20,7 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
@@ -50,7 +51,7 @@ export default class ConfirmSignIn extends AuthPiece {
 
 	showComponent(theme) {
 		return (
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+			<Wrapper>
 				<View style={theme.section}>
 					<Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
 					<View style={theme.sectionBody}>
@@ -75,7 +76,7 @@ export default class ConfirmSignIn extends AuthPiece {
 					</View>
 					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 				</View>
-			</TouchableWithoutFeedback>
+			</Wrapper>
 		);
 	}
 }

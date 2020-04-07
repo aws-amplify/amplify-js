@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View } from 'react-native';
 import { Auth, I18n, Logger, JS } from 'aws-amplify';
 import AuthPiece from './AuthPiece';
 import {
@@ -21,6 +21,7 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	Wrapper,
 } from '../AmplifyUI';
 
 const logger = new Logger('SignIn');
@@ -62,7 +63,7 @@ export default class SignIn extends AuthPiece {
 
 	showComponent(theme) {
 		return (
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+			<Wrapper>
 				<View style={theme.section}>
 					<Header theme={theme}>{I18n.get('Sign in to your account')}</Header>
 					<View style={theme.sectionBody}>
@@ -95,7 +96,7 @@ export default class SignIn extends AuthPiece {
 					</View>
 					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 				</View>
-			</TouchableWithoutFeedback>
+			</Wrapper>
 		);
 	}
 }
