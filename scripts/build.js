@@ -155,7 +155,7 @@ async function buildES5(typeScriptCompiler) {
 		: undefined;
 	// tsconfig for ES5 generating
 	let compilerOptions = {
-		allowSyntheticDefaultImports: true,
+		esModuleInterop: true,
 		noImplicitAny: false,
 		lib: ['dom', 'es2017', 'esnext.asynciterable'],
 		downlevelIteration: true,
@@ -200,7 +200,7 @@ function buildES6(typeScriptCompiler) {
 		: undefined;
 	// tsconfig for ESM generating
 	let compilerOptions = {
-		allowSyntheticDefaultImports: true,
+		esModuleInterop: true,
 		noImplicitAny: false,
 		lib: ['dom', 'es2017', 'esnext.asynciterable'],
 		downlevelIteration: true,
