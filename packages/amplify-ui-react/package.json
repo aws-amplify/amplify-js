@@ -20,9 +20,9 @@
 		"build": "npm run clean && npm run build:cjs && npm run build:esm",
 		"clean": "rimraf lib-esm lib dist"
 	},
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
+	"main": "./lib/index.js",
+	"module": "./lib-esm/index.js",
+	"typings": "./lib-esm/index.d.ts",
 	"files": [
 		"dist/"
 	],
