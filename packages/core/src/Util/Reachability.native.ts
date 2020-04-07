@@ -1,26 +1,27 @@
 import { default as NetInfo } from '@react-native-community/netinfo';
-<<<<<<< HEAD:packages/core/src/Util/Reachability.native.ts
 import Observable from 'zen-observable-ts';
 import { ConsoleLogger as Logger } from '../Logger';
-=======
-import * as Observable from 'zen-observable';
-import { ConsoleLogger as Logger } from '../../Logger';
->>>>>>> Removing the need to install NetInfo in ReactNative Apps when not using DataStore:packages/core/src/Util/ReactNative/Reachability.native.ts
 
-const logger = new Logger('Reachability', 'DEBUG');
+const logger = new Logger('Reachability RN', 'DEBUG');
 
 type NetworkStatus = {
 	online: boolean;
 };
 
 export default class ReachabilityNavigator implements Reachability {
-	networkMonitor(): Observable<NetworkStatus> {
+	networkMonitor(netInfo?: any): Observable<NetworkStatus> {
+		if (!netInfo) {
+			console.warn(
+				'NetInfo must be passed to networkMonitor to enable reachability in React Native'
+			);
+			return;
+		}
 		return new Observable(observer => {
-			logger.log('subscribing to reachability');
+			logger.log('subscribing to reachability React Native');
 
 			let online = false;
 
-			NetInfo.fetch().then(({ isInternetReachable }) => {
+			netInfo.fetch().then(({ isInternetReachable }) => {
 				online = isInternetReachable;
 
 				logger.log('Notifying initial reachability state', online);
@@ -29,7 +30,7 @@ export default class ReachabilityNavigator implements Reachability {
 			});
 
 			const id = setInterval(async () => {
-				const { isInternetReachable } = await NetInfo.fetch();
+				const { isInternetReachable } = await netInfo.fetch();
 
 				if (online !== isInternetReachable) {
 					online = isInternetReachable;
@@ -50,5 +51,5 @@ export default class ReachabilityNavigator implements Reachability {
 }
 
 interface Reachability {
-	networkMonitor(): Observable<NetworkStatus>;
+	networkMonitor(netInfo?: any): Observable<NetworkStatus>;
 }

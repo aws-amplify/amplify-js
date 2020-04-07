@@ -1,3 +1,4 @@
-import Reachability from '@aws-amplify/core/lib/Util/ReactNative/Reachability';
+import { Reachability } from '@aws-amplify/core';
+import { default as NetInfo } from '@react-native-community/netinfo';
 
-export default Reachability;
+export default new Reachability().networkMonitor(NetInfo);

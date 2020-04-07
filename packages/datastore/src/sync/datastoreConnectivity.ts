@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import Observable, { ZenObservable } from 'zen-observable-ts';
-import { ConsoleLogger as Logger, Reachability } from '@aws-amplify/core';
-=======
 import * as Observable from 'zen-observable';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import Reachability from './datastoreReachability';
->>>>>>> Removing the need to install NetInfo in ReactNative Apps when not using DataStore
+import ReachabilityMonitor from './datastoreReachability';
 
 const logger = new Logger('DataStore');
 
@@ -33,15 +28,13 @@ export default class DataStoreConnectivity {
 			this.observer = observer;
 			// Will be used to forward socket connection changes, enhancing Reachability
 
-			const subs = new Reachability()
-				.networkMonitor()
-				.subscribe(({ online }) => {
-					this.connectionStatus.online = online;
+			const subs = ReachabilityMonitor.subscribe(({ online }) => {
+				this.connectionStatus.online = online;
 
-					const observerResult = { ...this.connectionStatus }; // copyOf status
+				const observerResult = { ...this.connectionStatus }; // copyOf status
 
-					observer.next(observerResult);
-				});
+				observer.next(observerResult);
+			});
 
 			return () => {
 				subs.unsubscribe();

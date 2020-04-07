@@ -1,3 +1,3 @@
 import { Reachability } from '@aws-amplify/core';
 
-export default Reachability;
+export default new Reachability().networkMonitor();
