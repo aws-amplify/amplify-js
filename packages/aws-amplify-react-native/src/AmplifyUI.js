@@ -176,13 +176,16 @@ export const Wrapper = props => {
 	const isWeb = Platform.OS === 'web';
 	const WrapperComponent = isWeb ? View : TouchableWithoutFeedback;
 
+	const wrapperProps = {
+		style: AmplifyTheme.section,
+		accessible: false,
+	};
+
+	if (!isWeb) {
+		wrapperProps.onPress = Keyboard.dismiss;
+	}
+
 	return (
-		<WrapperComponent
-			style={AmplifyTheme.section}
-			onPress={isWeb ? undefined : Keyboard.dismiss}
-			accessible={false}
-		>
-			{props.children}
-		</WrapperComponent>
+		<WrapperComponent {...wrapperProps}>{props.children}</WrapperComponent>
 	);
 };
