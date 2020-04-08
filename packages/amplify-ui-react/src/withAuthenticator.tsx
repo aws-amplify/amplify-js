@@ -1,4 +1,8 @@
-import React, { ComponentType, ComponentPropsWithRef } from 'react';
+import React, {
+	ComponentType,
+	ComponentPropsWithRef,
+	FunctionComponent,
+} from 'react';
 
 import { AmplifyAuthenticator } from './';
 
@@ -6,11 +10,11 @@ export function withAuthenticator(
 	Component: ComponentType,
 	authenticatorProps?: ComponentPropsWithRef<typeof AmplifyAuthenticator>
 ) {
-	return function ComponentWithAuthenticator(props) {
-		return (
-			<AmplifyAuthenticator {...authenticatorProps} {...props}>
-				<Component />
-			</AmplifyAuthenticator>
-		);
-	};
+	const ComponentWithAuthenticator: FunctionComponent = props => (
+		<AmplifyAuthenticator {...authenticatorProps} {...props}>
+			<Component />
+		</AmplifyAuthenticator>
+	);
+
+	return ComponentWithAuthenticator;
 }
