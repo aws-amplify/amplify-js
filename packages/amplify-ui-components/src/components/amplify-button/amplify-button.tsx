@@ -1,7 +1,6 @@
 import { Element, Component, Prop, h } from '@stencil/core';
 import { ButtonTypes, ButtonVariant } from '../../common/types/ui-types';
 import { hasShadowDom } from '../../common/helpers';
-import { browserOrNode } from '@aws-amplify/core';
 
 @Component({
   tag: 'amplify-button',
@@ -33,7 +32,7 @@ export class AmplifyButton {
         const formSection = this.el.closest('amplify-form-section');
         form = formSection && formSection.shadowRoot.querySelector('form');
       }
-      if (form && browserOrNode().isBrowser) {
+      if (form) {
         ev.preventDefault();
 
         const fakeButton = document.createElement('button');
