@@ -65,12 +65,13 @@ export default class ConfirmSignUp extends AuthPiece {
 	}
 
 	showComponent(theme) {
+		const username = this.getUsernameFromInput();
 		return (
 			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 				<View style={theme.section}>
 					<Header theme={theme}>{I18n.get('Confirm Sign Up')}</Header>
 					<View style={theme.sectionBody}>
-						{this.renderUsernameField(theme)}
+						{this.renderUsernameField(theme, username)}
 						<FormField
 							theme={theme}
 							onChangeText={text => this.setState({ code: text })}
@@ -82,7 +83,7 @@ export default class ConfirmSignUp extends AuthPiece {
 							theme={theme}
 							text={I18n.get('Confirm')}
 							onPress={this.confirm}
-							disabled={!this.getUsernameFromInput() || !this.state.code}
+							disabled={!username || !this.state.code}
 						/>
 					</View>
 					<View style={theme.sectionFooter}>
