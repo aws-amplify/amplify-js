@@ -11,15 +11,18 @@
 		"url": "https://github.com/aws-amplify/amplify-js.git"
 	},
 	"scripts": {
-		"build": "npm run clean && npm run compile",
-		"build:watch": "tsc -w",
-		"clean": "rm -rf dist",
-		"compile": "npm run tsc",
-		"tsc": "tsc -p ."
+		"build-with-test": "npm test && npm run build",
+		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "node ./build es6",
+		"build:cjs:watch": "node ./build es5 --watch",
+		"build:esm:watch": "node ./build es6 --watch",
+		"build:watch": "npm run build:esm:watch",
+		"build": "npm run clean && npm run build:cjs && npm run build:esm",
+		"clean": "rimraf lib-esm lib dist"
 	},
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
+	"main": "./lib/index.js",
+	"module": "./lib-esm/index.js",
+	"typings": "./lib-esm/index.d.ts",
 	"files": [
 		"dist/"
 	],
