@@ -11,7 +11,8 @@
 		"url": "https://github.com/aws-amplify/amplify-js.git"
 	},
 	"scripts": {
-		"build-with-test": "npm test && npm run build",
+		"test": "jest",
+    "build-with-test": "npm test && npm run build",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm": "node ./build es6",
 		"build:cjs:watch": "node ./build es5 --watch",
@@ -39,13 +40,5 @@
 	"peerDependencies": {
 		"react": "^16.7.0",
 		"react-dom": "^16.7.0"
-	},
-	"jest": {
-		"preset": "ts-jest",
-		"setupTestFrameworkScriptFile": "<rootDir>/jest.setup.js",
-		"testPathIgnorePatterns": [
-			"node_modules",
-			"dist"
-		]
 	}
 }
