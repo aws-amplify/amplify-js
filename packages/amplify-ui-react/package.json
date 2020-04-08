@@ -15,6 +15,7 @@
 		"build:watch": "tsc -w",
 		"clean": "rm -rf dist",
 		"compile": "npm run tsc",
+		"test": "jest",
 		"tsc": "tsc -p ."
 	},
 	"main": "./dist/index.js",
@@ -36,13 +37,5 @@
 	"peerDependencies": {
 		"react": "^16.7.0",
 		"react-dom": "^16.7.0"
-	},
-	"jest": {
-		"preset": "ts-jest",
-		"setupTestFrameworkScriptFile": "<rootDir>/jest.setup.js",
-		"testPathIgnorePatterns": [
-			"node_modules",
-			"dist"
-		]
 	}
 }
