@@ -34,7 +34,13 @@ export class AmplifyButton {
       }
       if (form) {
         ev.preventDefault();
-        form.requestSubmit();
+
+        const fakeButton = document.createElement('button');
+        fakeButton.type = this.type;
+        fakeButton.style.display = 'none';
+        form.appendChild(fakeButton);
+        fakeButton.click();
+        fakeButton.remove();
       }
     }
   };
