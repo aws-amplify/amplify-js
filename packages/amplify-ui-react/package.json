@@ -12,7 +12,7 @@
 	},
 	"scripts": {
 		"test": "jest",
-    "build-with-test": "npm test && npm run build",
+		"build-with-test": "npm test && npm run build",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm": "node ./build es6",
 		"build:cjs:watch": "node ./build es5 --watch",
@@ -24,9 +24,6 @@
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
-	"files": [
-		"dist/"
-	],
 	"devDependencies": {
 		"@types/react": "^16.0.41",
 		"@types/react-dom": "^16.0.11",
