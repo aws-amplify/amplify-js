@@ -4,11 +4,13 @@ import { AmplifyAuthenticator } from './';
 
 export function withAuthenticator(
 	Component: ComponentType,
-	props?: ComponentPropsWithRef<typeof AmplifyAuthenticator>
+	authenticatorProps?: ComponentPropsWithRef<typeof AmplifyAuthenticator>
 ) {
-	return (
-		<AmplifyAuthenticator {...props}>
-			<Component />
-		</AmplifyAuthenticator>
-	);
+	return function ComponentWithAuthenticator(props) {
+		return (
+			<AmplifyAuthenticator {...authenticatorProps} {...props}>
+				<Component />
+			</AmplifyAuthenticator>
+		);
+	};
 }
