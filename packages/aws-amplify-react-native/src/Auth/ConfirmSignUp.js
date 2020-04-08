@@ -41,7 +41,8 @@ export default class ConfirmSignUp extends AuthPiece {
 	}
 
 	confirm() {
-		const { username, code } = this.state;
+		const { code } = this.state;
+		const username = this.getUsernameFromInput();
 		logger.debug('Confirm Sign Up for ' + username);
 		Auth.confirmSignUp(username, code)
 			.then(data => this.changeState('signedUp'))
@@ -49,7 +50,7 @@ export default class ConfirmSignUp extends AuthPiece {
 	}
 
 	resend() {
-		const { username } = this.state;
+		const username = this.getUsernameFromInput();
 		logger.debug('Resend Sign Up for ' + username);
 		Auth.resendSignUp(username)
 			.then(() => logger.debug('code sent'))
@@ -69,14 +70,7 @@ export default class ConfirmSignUp extends AuthPiece {
 				<View style={theme.section}>
 					<Header theme={theme}>{I18n.get('Confirm Sign Up')}</Header>
 					<View style={theme.sectionBody}>
-						<FormField
-							theme={theme}
-							onChangeText={text => this.setState({ username: text })}
-							label={I18n.get(this.getUsernameLabel())}
-							placeholder={I18n.get('Enter your username')}
-							required={true}
-							value={this.state.username}
-						/>
+						{this.renderUsernameField(theme)}
 						<FormField
 							theme={theme}
 							onChangeText={text => this.setState({ code: text })}
@@ -88,7 +82,7 @@ export default class ConfirmSignUp extends AuthPiece {
 							theme={theme}
 							text={I18n.get('Confirm')}
 							onPress={this.confirm}
-							disabled={!this.state.username || !this.state.code}
+							disabled={!this.getUsernameFromInput() || !this.state.code}
 						/>
 					</View>
 					<View style={theme.sectionFooter}>
