@@ -161,15 +161,21 @@ export const initialState = () => {
 	);
 };
 
-export const BasicWithAuthenticator = withAuthenticator(App);
+export const BasicWithAuthenticator = () => {
+	const Wrapped = withAuthenticator(App);
+
+	return <Wrapped />;
+};
 
 BasicWithAuthenticator.story = {
 	name: 'Basic withAuthenticator',
 };
 
-export const WithAuthenticatorWithUsernameAlias = withAuthenticator(App, {
-	usernameAlias: 'email',
-});
+export const WithAuthenticatorWithUsernameAlias = () => {
+	const Wrapped = withAuthenticator(App, { usernameAlias: 'email' });
+
+	return <Wrapped />;
+};
 
 WithAuthenticatorWithUsernameAlias.story = {
 	name: 'withAuthenticator with usernameAlias',
