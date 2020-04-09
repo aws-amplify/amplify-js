@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.1...@aws-amplify/ui-storybook@0.2.2) (2020-04-08)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-react:** withAuthenticator returns Component ([#5327](https://github.com/aws-amplify/amplify-js/issues/5327)) ([01e21ef](https://github.com/aws-amplify/amplify-js/commit/01e21ef07ab5ba60f1f7a0bab73dbb83228b7987))
+
+
+
+
+
 ## [0.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.0...@aws-amplify/ui-storybook@0.2.1) (2020-04-07)
 
 **Note:** Version bump only for package @aws-amplify/ui-storybook
