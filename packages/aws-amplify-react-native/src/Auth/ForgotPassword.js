@@ -37,6 +37,16 @@ export default class ForgotPassword extends AuthPiece {
 		this.submit = this.submit.bind(this);
 	}
 
+	static getDerivedStateFromProps(props, state) {
+		const username = props.authData;
+
+		if (username && !state.username) {
+			return { username };
+		}
+
+		return null;
+	}
+
 	send() {
 		const username = this.getUsernameFromInput();
 		if (!username) {
@@ -108,7 +118,7 @@ export default class ForgotPassword extends AuthPiece {
 		return (
 			<Wrapper>
 				<View style={theme.section}>
-					<Header theme={theme}>{I18n.get('Forgot Password')}</Header>
+					<Header theme={theme}>{I18n.get('Reset your password')}</Header>
 					<View style={theme.sectionBody}>
 						{!this.state.delivery && this.forgotBody(theme)}
 						{this.state.delivery && this.submitBody(theme)}
