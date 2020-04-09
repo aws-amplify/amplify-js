@@ -176,7 +176,7 @@ class SubscriptionProcessor {
 			if (ownerValue) {
 				result = {
 					authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-					isOwner: true,
+					isOwner: ownerAuthRule.areSubscriptionsPublic ? false : true,
 					ownerField: ownerAuthRule.ownerField,
 					ownerValue,
 				};
@@ -198,7 +198,7 @@ class SubscriptionProcessor {
 			if (ownerValue) {
 				result = {
 					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-					isOwner: true,
+					isOwner: ownerAuthRule.areSubscriptionsPublic ? false : true,
 					ownerField: ownerAuthRule.ownerField,
 					ownerValue,
 				};
