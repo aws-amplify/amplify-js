@@ -28,7 +28,6 @@ import {
 	AbortMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
 import { AxiosHttpHandler, SEND_PROGRESS_EVENT } from './axios-http-handler';
-import { fromString } from '@aws-sdk/util-buffer-from';
 import * as events from 'events';
 import { parseUrl } from '@aws-sdk/url-parser-node';
 import { httpHandlerOptions } from './httpHandlerOptions.native';
