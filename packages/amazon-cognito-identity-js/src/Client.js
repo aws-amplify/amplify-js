@@ -8,7 +8,6 @@ export default class Client {
 	 */
 	constructor(region, endpoint) {
 		this.endpoint = endpoint || `https://cognito-idp.${region}.amazonaws.com/`;
-		this.userAgent = UserAgent.prototype.userAgent || 'aws-amplify/0.1.x js';
 	}
 
 	/**
@@ -23,7 +22,7 @@ export default class Client {
 		const headers = {
 			'Content-Type': 'application/x-amz-json-1.1',
 			'X-Amz-Target': `AWSCognitoIdentityProviderService.${operation}`,
-			'X-Amz-User-Agent': this.userAgent,
+			'X-Amz-User-Agent': UserAgent.prototype.userAgent,
 		};
 
 		const options = {

@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-const dict = {
+export const dict = {
 	de: {
 		'Sign In': 'Anmelden',
 		'Sign Up': 'Registrieren',
@@ -231,5 +231,3 @@ Utilice el formato de número de teléfono +12345678900`,
 		'Invalid phone number format': '电话格式错误，请使用格式 +12345678900',
 	},
 };
-
-export default dict;

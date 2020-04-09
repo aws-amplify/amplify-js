@@ -5,7 +5,7 @@ const DB_NAME = '@AmplifyDatastore';
 const COLLECTION = 'Collection';
 const DATA = 'Data';
 
-//TODO: Consider refactoring to a batch save operation.
+// TODO: Consider refactoring to a batch save operation.
 class AsyncStorageDatabase {
 	async save<T extends PersistentModel>(item: T, storeName: string) {
 		const itemKey = this.getKeyForItem(storeName, item.id);

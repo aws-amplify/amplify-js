@@ -12,28 +12,24 @@
  */
 
 import * as React from 'react';
-
-import Authenticator from './Authenticator';
-
-export { default as Authenticator } from './Authenticator';
-export { default as AuthPiece } from './AuthPiece';
-export { default as SignIn } from './SignIn';
-export { default as ConfirmSignIn } from './ConfirmSignIn';
-export { default as SignOut } from './SignOut';
-export { default as RequireNewPassword } from './RequireNewPassword';
-export { default as SignUp } from './SignUp';
-export { default as ConfirmSignUp } from './ConfirmSignUp';
-export { default as VerifyContact } from './VerifyContact';
-export { default as ForgotPassword } from './ForgotPassword';
-export { default as Greetings } from './Greetings';
-export {
-	default as FederatedSignIn,
-	FederatedButtons,
-} from './FederatedSignIn';
-export { default as TOTPSetup } from './TOTPSetup';
-export { default as Loading } from './Loading';
+import { Authenticator } from './Authenticator';
+export { Authenticator } from './Authenticator';
+export { AuthPiece } from './AuthPiece';
+export { SignIn } from './SignIn';
+export { ConfirmSignIn } from './ConfirmSignIn';
+export { SignOut } from './SignOut';
+export { RequireNewPassword } from './RequireNewPassword';
+export { SignUp } from './SignUp';
+export { ConfirmSignUp } from './ConfirmSignUp';
+export { VerifyContact } from './VerifyContact';
+export { ForgotPassword } from './ForgotPassword';
+export { Greetings } from './Greetings';
+export { FederatedSignIn, FederatedButtons } from './FederatedSignIn';
+export { TOTPSetup } from './TOTPSetup';
+export { Loading } from './Loading';
 
 export * from './Provider';
+export * from './common/types';
 
 export function withAuthenticator(
 	Comp,
@@ -45,7 +41,6 @@ export function withAuthenticator(
 ) {
 	return class extends React.Component<any, any> {
 		public authConfig: any;
-
 		constructor(props) {
 			super(props);
 
@@ -77,8 +72,8 @@ export function withAuthenticator(
 
 		render() {
 			const { authState, authData } = this.state;
-			const signedIn = authState === 'signedIn';
-			if (signedIn) {
+
+			if (authState === 'signedIn') {
 				return (
 					<React.Fragment>
 						{this.authConfig.includeGreetings ? (

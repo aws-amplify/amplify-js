@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-select spec: Render logic -> should render an empty \`placeholder\` label and value of \`1\` by default 1`] = `
+<amplify-select>
+  <mock:shadow-root>
+    <select class="select">
+      <option value="1"></option>
+    </select>
+  </mock:shadow-root>
+</amplify-select>
+`;
