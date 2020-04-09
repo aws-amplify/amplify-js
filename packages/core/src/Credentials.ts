@@ -268,7 +268,7 @@ export class CredentialsClass {
 	}
 
 	private _setCredentialsFromFederation(params) {
-		const { provider, token, identity_id, user, expires_at } = params;
+		const { provider, token, identity_id } = params;
 		const domains = {
 			google: 'accounts.google.com',
 			facebook: 'graph.facebook.com',
