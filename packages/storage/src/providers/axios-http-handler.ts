@@ -69,15 +69,22 @@ export class AxiosHttpHandler implements HttpHandler {
 		}
 
 		const raceOfPromises = [
-			axios.request(axiosRequest).then(response => {
-				return {
-					response: new HttpResponse({
-						headers: response.headers,
-						statusCode: response.status,
-						body: response.data,
-					}),
-				};
-			}),
+			axios
+				.request(axiosRequest)
+				.then(response => {
+					return {
+						response: new HttpResponse({
+							headers: response.headers,
+							statusCode: response.status,
+							body: response.data,
+						}),
+					};
+				})
+				.catch(error => {
+					// Error
+					logger.error(error);
+					throw error;
+				}),
 			requestTimeout(requestTimeoutInMs),
 		];
 		return Promise.race(raceOfPromises);
