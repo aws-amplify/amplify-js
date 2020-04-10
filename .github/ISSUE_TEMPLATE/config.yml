@@ -3,6 +3,3 @@ contact_links:
   - name: Usage Question
     url: https://github.com/aws-amplify/amplify-js/discussions
     about: Ask a question about AWS Amplify usage
-  - name: Feature Request
-    url: https://github.com/aws-amplify/amplify-js/discussions
-    about: Suggest an idea for this project
