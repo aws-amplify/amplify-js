@@ -104,8 +104,7 @@ export class CredentialsClass {
 	public refreshFederatedToken(federatedInfo) {
 		logger.debug('Getting federated credentials');
 		const { provider, user } = federatedInfo;
-		let token = federatedInfo.token;
-		let expires_at = federatedInfo.expires_at;
+		let { token, expires_at, identity_id } = federatedInfo;
 
 		// Make sure expires_at is in millis
 		expires_at =
@@ -122,6 +121,7 @@ export class CredentialsClass {
 				provider,
 				token,
 				user,
+				identity_id,
 				expires_at,
 			});
 		} else {
@@ -135,12 +135,14 @@ export class CredentialsClass {
 					.then(data => {
 						logger.debug('refresh federated token sucessfully', data);
 						token = data.token;
+						identity_id = data.identity_id;
 						expires_at = data.expires_at;
 
 						return that._setCredentialsFromFederation({
 							provider,
 							token,
 							user,
+							identity_id,
 							expires_at,
 						});
 					})
@@ -215,12 +217,11 @@ export class CredentialsClass {
 
 		const cognitoClient = new CognitoIdentityClient({
 			region,
-			credentials: () => Promise.resolve({} as any),
 			customUserAgent: getAmplifyUserAgent(),
 		});
 
 		let credentials = undefined;
-		if (identityId && identityId !== 'undefined') {
+		if (identityId !== undefined) {
 			const cognitoIdentityParams: FromCognitoIdentityParameters = {
 				identityId,
 				client: cognitoClient,
@@ -267,7 +268,7 @@ export class CredentialsClass {
 	}
 
 	private _setCredentialsFromFederation(params) {
-		const { provider, token } = params;
+		const { provider, token, identity_id } = params;
 		const domains = {
 			google: 'accounts.google.com',
 			facebook: 'graph.facebook.com',
@@ -298,16 +299,25 @@ export class CredentialsClass {
 
 		const cognitoClient = new CognitoIdentityClient({
 			region,
-			credentials: () => Promise.resolve({} as any),
 			customUserAgent: getAmplifyUserAgent(),
 		});
-		const cognitoIdentityParams: FromCognitoIdentityPoolParameters = {
-			logins,
-			identityPoolId,
-			client: cognitoClient,
-		};
-		const credentials = fromCognitoIdentityPool(cognitoIdentityParams)();
 
+		let credentials = undefined;
+		if (identity_id !== undefined) {
+			const cognitoIdentityParams: FromCognitoIdentityParameters = {
+				identityId: identity_id,
+				logins,
+				client: cognitoClient,
+			};
+			credentials = fromCognitoIdentity(cognitoIdentityParams)();
+		} else {
+			const cognitoIdentityParams: FromCognitoIdentityPoolParameters = {
+				logins,
+				identityPoolId,
+				client: cognitoClient,
+			};
+			credentials = fromCognitoIdentityPool(cognitoIdentityParams)();
+		}
 		return this._loadCredentials(credentials, 'federated', true, params);
 	}
 
@@ -331,7 +341,6 @@ export class CredentialsClass {
 
 		const cognitoClient = new CognitoIdentityClient({
 			region,
-			credentials: () => Promise.resolve({} as any),
 			customUserAgent: getAmplifyUserAgent(),
 		});
 
@@ -391,8 +400,11 @@ export class CredentialsClass {
 					that._credentials_source = source;
 					that._nextCredentialsRefresh = new Date().getTime() + CREDENTIALS_TTL;
 					if (source === 'federated') {
-						const user = info.user;
-						const { provider, token, expires_at } = info;
+						const user = Object.assign(
+							{ id: this._credentials.identityId },
+							info.user
+						);
+						const { provider, token, expires_at, identity_id } = info;
 						try {
 							this._storage.setItem(
 								'aws-amplify-federatedInfo',
@@ -401,6 +413,7 @@ export class CredentialsClass {
 									token,
 									user,
 									expires_at,
+									identity_id,
 								})
 							);
 						} catch (e) {
