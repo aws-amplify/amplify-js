@@ -25,7 +25,6 @@ import {
 } from '@aws-sdk/client-s3';
 import * as events from 'events';
 import * as sinon from 'sinon';
-import { fromString } from '@aws-sdk/util-buffer-from';
 
 jest.useRealTimers();
 
@@ -179,17 +178,14 @@ describe('multi part upload tests', () => {
 
 		// Next two upload parts call
 		expect(s3ServiceCallSpy.mock.calls[1][0].input).toStrictEqual({
-			Body: fromString(testParams.Body).slice(0, testMinPartSize),
+			Body: testParams.Body.slice(0, testMinPartSize),
 			Bucket: testParams.Bucket,
 			Key: testParams.Key,
 			PartNumber: 1,
 			UploadId: testUploadId,
 		});
 		expect(s3ServiceCallSpy.mock.calls[2][0].input).toStrictEqual({
-			Body: fromString(testParams.Body).slice(
-				testMinPartSize,
-				testParams.Body.length
-			),
+			Body: testParams.Body.slice(testMinPartSize, testParams.Body.length),
 			Bucket: testParams.Bucket,
 			Key: testParams.Key,
 			PartNumber: 2,
@@ -306,7 +302,7 @@ describe('multi part upload tests', () => {
 
 		// First call succeeds
 		expect(s3ServiceCallSpy.mock.calls[1][0].input).toStrictEqual({
-			Body: fromString(testParams.Body).slice(0, testMinPartSize),
+			Body: testParams.Body.slice(0, testMinPartSize),
 			Bucket: testParams.Bucket,
 			Key: testParams.Key,
 			PartNumber: 1,
@@ -315,10 +311,7 @@ describe('multi part upload tests', () => {
 
 		// Second call fails
 		expect(s3ServiceCallSpy.mock.calls[2][0].input).toStrictEqual({
-			Body: fromString(testParams.Body).slice(
-				testMinPartSize,
-				testParams.Body.length
-			),
+			Body: testParams.Body.slice(testMinPartSize, testParams.Body.length),
 			Bucket: testParams.Bucket,
 			Key: testParams.Key,
 			PartNumber: 2,
