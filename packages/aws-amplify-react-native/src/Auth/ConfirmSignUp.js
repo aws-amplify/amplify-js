@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import {
 	FormField,
@@ -20,6 +20,7 @@ import {
 	Header,
 	ErrorRow,
 	AmplifyButton,
+	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
 
@@ -57,17 +58,20 @@ export default class ConfirmSignUp extends AuthPiece {
 			.catch(err => this.error(err));
 	}
 
-	componentWillReceiveProps(nextProps) {
-		const username = nextProps.authData;
-		if (username && !this.state.username) {
-			this.setState({ username });
+	static getDerivedStateFromProps(props, state) {
+		const username = props.authData;
+
+		if (username && !state.username) {
+			return { username };
 		}
+
+		return null;
 	}
 
 	showComponent(theme) {
 		const username = this.getUsernameFromInput();
 		return (
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+			<Wrapper>
 				<View style={theme.section}>
 					<Header theme={theme}>{I18n.get('Confirm Sign Up')}</Header>
 					<View style={theme.sectionBody}>
@@ -100,7 +104,7 @@ export default class ConfirmSignUp extends AuthPiece {
 					</View>
 					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 				</View>
-			</TouchableWithoutFeedback>
+			</Wrapper>
 		);
 	}
 }

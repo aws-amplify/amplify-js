@@ -13,12 +13,15 @@
 
 import React, { Component } from 'react';
 import {
-	View,
+	Keyboard,
+	Picker,
+	Platform,
 	Text,
 	TextInput,
 	TouchableHighlight,
 	TouchableOpacity,
-	Picker,
+	TouchableWithoutFeedback,
+	View,
 } from 'react-native';
 import { I18n } from 'aws-amplify';
 import AmplifyTheme, {
@@ -166,5 +169,23 @@ export const AmplifyButton = props => {
 		<TouchableOpacity {...props} style={style}>
 			<Text style={theme.buttonText}>{props.text}</Text>
 		</TouchableOpacity>
+	);
+};
+
+export const Wrapper = props => {
+	const isWeb = Platform.OS === 'web';
+	const WrapperComponent = isWeb ? View : TouchableWithoutFeedback;
+
+	const wrapperProps = {
+		style: AmplifyTheme.section,
+		accessible: false,
+	};
+
+	if (!isWeb) {
+		wrapperProps.onPress = Keyboard.dismiss;
+	}
+
+	return (
+		<WrapperComponent {...wrapperProps}>{props.children}</WrapperComponent>
 	);
 };

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.1...@aws-amplify/ui-react@0.2.2) (2020-04-08)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-react:** Exclude files via .npmignore rather… ([#5338](https://github.com/aws-amplify/amplify-js/issues/5338)) ([5fd7f24](https://github.com/aws-amplify/amplify-js/commit/5fd7f24f70aa4e30c2fe91afeacedfd80eba0578))
+* **@aws-amplify/ui-react:** Export CJS ([#5324](https://github.com/aws-amplify/amplify-js/issues/5324)) ([767025f](https://github.com/aws-amplify/amplify-js/commit/767025f82986f550866d06a5183497f82c0d31b9)), closes [/github.com/kulshekhar/ts-jest/issues/146#issuecomment-442871767](https://github.com//github.com/kulshekhar/ts-jest/issues/146/issues/issuecomment-442871767)
+* **@aws-amplify/ui-react:** withAuthenticator returns Component ([#5327](https://github.com/aws-amplify/amplify-js/issues/5327)) ([01e21ef](https://github.com/aws-amplify/amplify-js/commit/01e21ef07ab5ba60f1f7a0bab73dbb83228b7987))
+
+
+
+
+
 ## [0.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.0...@aws-amplify/ui-react@0.2.1) (2020-04-07)
 
 **Note:** Version bump only for package @aws-amplify/ui-react
