@@ -1,10 +1,3 @@
-<!--
-
-Temporarily removed/hidden from GitHub's New Issue Chooser while we pilot Discussions:
-> https://github.com/aws-amplify/amplify-js/pull/5361
-
--->
-
 ---
 name: Feature request
 about: Suggest an idea for this project
