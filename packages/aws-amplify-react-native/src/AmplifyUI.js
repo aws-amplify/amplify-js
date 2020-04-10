@@ -13,17 +13,21 @@
 
 import React, { Component } from 'react';
 import {
-	View,
+	Keyboard,
+	Picker,
+	Platform,
 	Text,
 	TextInput,
 	TouchableHighlight,
 	TouchableOpacity,
-	Picker,
+	TouchableWithoutFeedback,
+	View,
 } from 'react-native';
 import { I18n } from 'aws-amplify';
 import AmplifyTheme, {
 	linkUnderlayColor,
 	errorIconColor,
+	placeholderColor,
 } from './AmplifyTheme';
 import { Icon } from 'react-native-elements';
 import countryDialCodes from './CountryDialCodes';
@@ -39,6 +43,7 @@ export const FormField = props => {
 				style={theme.input}
 				autoCapitalize="none"
 				autoCorrect={false}
+				placeholderTextColor={placeholderColor}
 				{...props}
 			/>
 		</View>
@@ -90,6 +95,7 @@ export class PhoneField extends Component {
 						style={theme.phoneInput}
 						autoCapitalize="none"
 						autoCorrect={false}
+						placeholderTextColor={placeholderColor}
 						{...this.props}
 						onChangeText={phone => {
 							this.setState({ phone }, () => {
@@ -166,5 +172,23 @@ export const AmplifyButton = props => {
 		<TouchableOpacity {...props} style={style}>
 			<Text style={theme.buttonText}>{props.text}</Text>
 		</TouchableOpacity>
+	);
+};
+
+export const Wrapper = props => {
+	const isWeb = Platform.OS === 'web';
+	const WrapperComponent = isWeb ? View : TouchableWithoutFeedback;
+
+	const wrapperProps = {
+		style: AmplifyTheme.section,
+		accessible: false,
+	};
+
+	if (!isWeb) {
+		wrapperProps.onPress = Keyboard.dismiss;
+	}
+
+	return (
+		<WrapperComponent {...wrapperProps}>{props.children}</WrapperComponent>
 	);
 };

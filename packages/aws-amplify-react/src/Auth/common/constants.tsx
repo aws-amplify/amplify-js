@@ -1,4 +1,4 @@
-const constants = {
+export const Constants = {
 	AUTH_SOURCE_KEY: 'amplify-react-auth-source',
 	AUTH0: 'auth0',
 	GOOGLE: 'google',
@@ -6,4 +6,3 @@ const constants = {
 	AMAZON: 'amazon',
 	REDIRECTED_FROM_HOSTED_UI: 'amplify-redirected-from-hosted-ui',
 };
-export default constants;

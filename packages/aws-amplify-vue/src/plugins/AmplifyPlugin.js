@@ -15,7 +15,7 @@
   This plugin is a mechanism for avoiding the importation of Amplify into Amplify-Vue,
   while also making Amplify available to the entire host application.
 */
-const requiredModules = ['Auth', 'AuthClass', 'I18n', 'Logger'];
+const requiredModules = ['Auth', 'I18n', 'Logger'];
 
 const AmplifyPlugin = {
 	install(Vue, AmplifyModules) {

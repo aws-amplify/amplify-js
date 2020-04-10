@@ -4,7 +4,6 @@ about: Create a report to help us improve
 title: ''
 labels: to-be-reproduced
 assignees: ''
-
 ---
 
 **Describe the bug**
@@ -32,12 +31,12 @@ If applicable, add screenshots to help explain your problem.
   <summary><strong>Environment</strong></summary>
 
 <!-- Please run the following command inside your project and copy/paste the output into the codeblock: -->
+
 ```
 npx envinfo --system --binaries --browsers --npmPackages --npmGlobalPackages
 ```
 
 </details>
-
 
 **Smartphone (please complete the following information):**
 

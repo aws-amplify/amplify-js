@@ -1,7 +1,7 @@
-import Auth from '@aws-amplify/auth';
 import * as React from 'react';
-import Authenticator, { EmptyContainer } from '../../src/Auth/Authenticator';
-import SignIn from '../../src/Auth/SignIn';
+import { Auth } from '@aws-amplify/auth';
+import { Authenticator, EmptyContainer } from '../../src/Auth/Authenticator';
+import { SignIn } from '../../src/Auth/SignIn';
 import AmplifyTheme from '../../src/AmplifyTheme';
 import {
 	Button,

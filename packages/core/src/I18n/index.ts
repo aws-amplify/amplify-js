@@ -14,7 +14,7 @@
 import { I18n as I18nClass } from './I18n';
 
 import { ConsoleLogger as Logger } from '../Logger';
-import Amplify from '../Amplify';
+import { Amplify } from '../Amplify';
 
 const logger = new Logger('I18n');
 
@@ -24,7 +24,7 @@ let _i18n = null;
 /**
  * Export I18n APIs
  */
-class I18n {
+export class I18n {
 	/**
 	 * @static
 	 * @method
@@ -122,4 +122,8 @@ class I18n {
 }
 
 Amplify.register(I18n);
+
+/**
+ * @deprecated use named import
+ */
 export default I18n;

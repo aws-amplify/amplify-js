@@ -23,9 +23,30 @@ AWS Amplify provides a declarative and easy-to-use interface across different ca
 
 Our default implementation works with Amazon Web Services (AWS), but AWS Amplify is designed to be open and pluggable for any custom backend or service.
 
-Notice:
+## Notice:
 
-Amplify@1.x.x has structural changes. For details please check [Amplify Modularization](https://github.com/aws/aws-amplify/wiki/Amplify-modularization).
+### Amplify@3.x.x has breaking changes. Please see the breaking changes below: 
+* `AWS.credentials` and `AWS.config` don’t exist anymore anywhere in Amplify JS
+  * Both options will not be available to use in version 3. You will not be able to use and set your own credentials. Migration plan on “How to migrate to using Amplify provided credentials” will follow in the coming weeks after GA launch.
+* `aws-sdk@2.x` has been removed from `Amplify@3.x.x` in favor of [version 3 of aws-sdk-js](https://github.com/aws/aws-sdk-js-v3). We recommend to migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) if you rely on AWS services that are not supported by Amplify, since [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) is imported modularly.
+
+If you can't migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) or rely on aws-sdk@2.x, you will need to import it separately.
+* If you are using exported paths within your Amplify JS application, (e.g. `import from "@aws-amplify/analytics/lib/Analytics"`) this will now break and no longer will be supported. You will need to change to named imports:
+
+    ```js
+    import { Analytics } from "aws-amplify"
+    ```
+* If you are using categories as `Amplify.<Category>`, this will no longer work and we recommend to import the category you are needing to use:
+
+    ```js
+    import { Auth } from "aws-amplify"
+    ```
+  * The one exception to this is using `aws-amplify-angular` package where we are still supplying all instantiated categories. This is subject to change in a later release.
+* For `aws-amplify-react`'s `Authenticator` Component, you will need to import the styles within your app:
+
+    ```js
+    import `@aws-amplify/ui/dist/style.css`;
+    ```
 
 ### Features / APIs
 

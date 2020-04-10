@@ -1,0 +1,15 @@
+__mocks__/**
+__tests__/**
+coverage/**
+docs/**
+node_modules/**
+.vscode/**
+.DS_Store
+*.log
+prepend-license.js
+prettier.config.json
+tsconfig.json
+tsfmt.json
+tslint.json
+typeDoc.js
+webpack.config.js

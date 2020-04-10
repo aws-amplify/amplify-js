@@ -476,6 +476,13 @@ class IndexedDBAdapter implements Adapter {
 
 				const fromDB = await store.get(model.id);
 
+				if (fromDB === undefined) {
+					const msg = 'Model instance not found in storage';
+					logger.warn(msg, { model });
+
+					return [[model], []];
+				}
+
 				const predicates = ModelPredicateCreator.getPredicates(condition);
 				const { predicates: predicateObjs, type } = predicates;
 

@@ -30,6 +30,10 @@ export const validatePredicate = <T extends PersistentModel>(
 	let filterType: keyof Pick<any[], 'every' | 'some'>;
 	let isNegation = false;
 
+	if (predicatesOrGroups.length === 0) {
+		return true;
+	}
+
 	switch (groupType) {
 		case 'not':
 			filterType = 'every';
@@ -43,10 +47,6 @@ export const validatePredicate = <T extends PersistentModel>(
 			break;
 		default:
 			exhaustiveCheck(groupType);
-	}
-
-	if (predicatesOrGroups.length === 0) {
-		return true;
 	}
 
 	const result: boolean = predicatesOrGroups[filterType](predicateOrGroup => {
