@@ -27,6 +27,7 @@ import { I18n } from 'aws-amplify';
 import AmplifyTheme, {
 	linkUnderlayColor,
 	errorIconColor,
+	placeholderColor,
 } from './AmplifyTheme';
 import { Icon } from 'react-native-elements';
 import countryDialCodes from './CountryDialCodes';
@@ -42,6 +43,7 @@ export const FormField = props => {
 				style={theme.input}
 				autoCapitalize="none"
 				autoCorrect={false}
+				placeholderTextColor={placeholderColor}
 				{...props}
 			/>
 		</View>
@@ -93,6 +95,7 @@ export class PhoneField extends Component {
 						style={theme.phoneInput}
 						autoCapitalize="none"
 						autoCorrect={false}
+						placeholderTextColor={placeholderColor}
 						{...this.props}
 						onChangeText={phone => {
 							this.setState({ phone }, () => {
