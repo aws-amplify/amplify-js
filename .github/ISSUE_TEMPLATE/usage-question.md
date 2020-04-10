@@ -1,3 +1,8 @@
+<!--
+
+Temporarily removed/hidden from GitHub's New Issue Chooser while we pilot Discussions:
+> https://github.com/aws-amplify/amplify-js/pull/5361
+
 ---
 name: Usage Question
 about: Ask a question about AWS Amplify usage
@@ -12,3 +17,5 @@ E.g. Auth, Predictions, Storage, etc.
 E.g. Cognito, AWS AppSync, etc.
 ** Provide additional details e.g. code snippets **
 E.g. Sample code, versions of Amplify you are using
+
+-->
