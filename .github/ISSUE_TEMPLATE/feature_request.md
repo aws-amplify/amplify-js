@@ -3,6 +3,8 @@
 Temporarily removed/hidden from GitHub's New Issue Chooser while we pilot Discussions:
 > https://github.com/aws-amplify/amplify-js/pull/5361
 
+-->
+
 ---
 name: Feature request
 about: Suggest an idea for this project
@@ -22,5 +24,3 @@ A clear and concise description of any alternative solutions or features you've 
 
 **Additional context**
 Add any other context, an idea of the implementation or screenshots about the feature request here.
-
--->
