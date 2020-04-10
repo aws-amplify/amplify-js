@@ -217,6 +217,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		});
 	}
 
+	protected get isSSLEnabled() {
+		return !this.options
+			.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
+	}
 	private async _startSubscriptionWithAWSAppSyncRealTime({
 		options,
 		observer,
@@ -567,8 +571,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				try {
 					this.socketStatus = SOCKET_STATUS.CONNECTING;
 					// Creating websocket url with required query strings
+					const protocol = this.isSSLEnabled ? 'wss://' : 'ws://';
 					const discoverableEndpoint = appSyncGraphqlEndpoint
-						.replace('https://', 'wss://')
+						.replace('https://', protocol)
+						.replace('http://', protocol)
 						.replace('appsync-api', 'appsync-realtime-api')
 						.replace('gogi-beta', 'grt-beta');
 
