@@ -3,7 +3,7 @@ import {
 	AmazonAIConvertPredictionsProvider,
 	AmazonAIInterpretPredictionsProvider,
 	AmazonAIIdentifyPredictionsProvider,
-} from '.';
+} from './index';
 import {
 	TranslateTextInput,
 	TextToSpeechInput,
