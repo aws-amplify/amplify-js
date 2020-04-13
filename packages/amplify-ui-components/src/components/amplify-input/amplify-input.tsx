@@ -30,6 +30,7 @@ export class AmplifyInput {
       <Host class="input-host">
         <input
           id={this.fieldId}
+          aria-label={this.fieldId}
           aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
           type={this.type}
           onChange={this.handleInputChange}
