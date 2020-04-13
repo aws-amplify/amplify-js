@@ -52,7 +52,7 @@ export default class AuthPiece extends React.Component {
 		}
 	}
 
-	renderUsernameField(theme) {
+	renderUsernameField(theme, value) {
 		const { usernameAttributes = [] } = this.props;
 		if (usernameAttributes === 'email') {
 			return (
@@ -62,6 +62,7 @@ export default class AuthPiece extends React.Component {
 					label={I18n.get('Email')}
 					placeholder={I18n.get('Enter your email')}
 					required={true}
+					value={value}
 				/>
 			);
 		} else if (usernameAttributes === 'phone_number') {
@@ -74,6 +75,7 @@ export default class AuthPiece extends React.Component {
 					placeholder={I18n.get('Enter your phone number')}
 					keyboardType="phone-pad"
 					required={true}
+					value={value}
 				/>
 			);
 		} else {
@@ -84,6 +86,7 @@ export default class AuthPiece extends React.Component {
 					label={I18n.get(this.getUsernameLabel())}
 					placeholder={I18n.get('Enter your username')}
 					required={true}
+					value={value}
 				/>
 			);
 		}
