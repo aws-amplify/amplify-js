@@ -18,6 +18,7 @@ import { Auth, Logger, JS, I18n } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 import { FormField, PhoneField } from '../AmplifyUI';
+import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('AuthPiece');
 
@@ -62,6 +63,7 @@ export default class AuthPiece extends React.Component {
 					label={I18n.get('Email')}
 					placeholder={I18n.get('Enter your email')}
 					required={true}
+					testID={TEST_ID.AUTH.EMAIL_INPUT}
 					value={value}
 				/>
 			);
@@ -75,6 +77,7 @@ export default class AuthPiece extends React.Component {
 					placeholder={I18n.get('Enter your phone number')}
 					keyboardType="phone-pad"
 					required={true}
+					testID={TEST_ID.AUTH.PHONE_INPUT}
 					value={value}
 				/>
 			);
@@ -86,6 +89,7 @@ export default class AuthPiece extends React.Component {
 					label={I18n.get(this.getUsernameLabel())}
 					placeholder={I18n.get('Enter your username')}
 					required={true}
+					testID={TEST_ID.AUTH.USERNAME_INPUT}
 					value={value}
 				/>
 			);

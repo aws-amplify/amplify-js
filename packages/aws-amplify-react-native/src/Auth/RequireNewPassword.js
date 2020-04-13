@@ -23,6 +23,7 @@ import {
 	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
+import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('RequireNewPassword');
 
@@ -79,7 +80,9 @@ export default class RequireNewPassword extends AuthPiece {
 		return (
 			<Wrapper>
 				<ScrollView style={theme.section}>
-					<Header theme={theme}>{I18n.get('Change Password')}</Header>
+					<Header theme={theme} testID={TEST_ID.AUTH.CHANGE_PASSWORD_TEXT}>
+						{I18n.get('Change Password')}
+					</Header>
 					<View style={theme.sectionBody}>
 						<FormField
 							theme={theme}
@@ -107,7 +110,11 @@ export default class RequireNewPassword extends AuthPiece {
 						/>
 					</View>
 					<View style={theme.sectionFooter}>
-						<LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+						<LinkCell
+							theme={theme}
+							onPress={() => this.changeState('signIn')}
+							testID={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
+						>
 							{I18n.get('Back to Sign In')}
 						</LinkCell>
 					</View>
