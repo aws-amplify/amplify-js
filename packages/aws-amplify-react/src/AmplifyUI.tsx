@@ -102,7 +102,7 @@ export const SectionFooter = props => {
 	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<div {...p} className="amplify-section-footer" style={style}>
-			<SectionFooterContent>{props.children}</SectionFooterContent>
+			<SectionFooterContent theme={theme}>{props.children}</SectionFooterContent>
 		</div>
 	);
 };
