@@ -221,7 +221,7 @@ export class CredentialsClass {
 		});
 
 		let credentials = undefined;
-		if (identityId !== undefined) {
+		if (identityId) {
 			const cognitoIdentityParams: FromCognitoIdentityParameters = {
 				identityId,
 				client: cognitoClient,
@@ -303,7 +303,7 @@ export class CredentialsClass {
 		});
 
 		let credentials = undefined;
-		if (identity_id !== undefined) {
+		if (identity_id) {
 			const cognitoIdentityParams: FromCognitoIdentityParameters = {
 				identityId: identity_id,
 				logins,
