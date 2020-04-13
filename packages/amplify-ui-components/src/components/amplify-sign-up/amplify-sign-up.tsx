@@ -131,11 +131,13 @@ export class AmplifySignUp {
       const signUpAttrs: AmplifySignUpAttributes = {
         username: this.userInput,
         password: this.password,
-        attributes: {
-          email: this.email,
-          phone_number: composePhoneNumberInput(this.phoneNumber),
-        },
       };
+      if (this.email) {
+        signUpAttrs.attributes['email'] = this.email;
+      }
+      if (this.phoneNumber.phoneNumberValue) {
+        signUpAttrs.attributes['phone_number'] = composePhoneNumberInput(this.phoneNumber);
+      }
       const data = await Auth.signUp(signUpAttrs);
       this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs });
     } catch (error) {
@@ -145,107 +147,109 @@ export class AmplifySignUp {
 
   async componentWillLoad() {
     checkUsernameAlias(this.usernameAlias);
-    switch (this.usernameAlias) {
-      case 'email':
-        this.formFields = [
-          {
-            type: 'email',
-            placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
-            required: true,
-            handleInputChange: event => this.handleEmailChange(event),
-            inputProps: {
-              'data-test': 'sign-up-email-input',
+    if (this.formFields.length === 0) {
+      switch (this.usernameAlias) {
+        case 'email':
+          this.formFields = [
+            {
+              type: 'email',
+              placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
+              required: true,
+              handleInputChange: event => this.handleEmailChange(event),
+              inputProps: {
+                'data-test': 'sign-up-email-input',
+              },
             },
-          },
-          {
-            type: 'password',
-            placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
-            required: true,
-            handleInputChange: event => this.handlePasswordChange(event),
-            inputProps: {
-              'data-test': 'sign-up-password-input',
+            {
+              type: 'password',
+              placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
+              required: true,
+              handleInputChange: event => this.handlePasswordChange(event),
+              inputProps: {
+                'data-test': 'sign-up-password-input',
+              },
             },
-          },
-          {
-            type: 'phone_number',
-            required: true,
-            handleInputChange: event => this.handlePhoneNumberChange(event),
-            inputProps: {
-              'data-test': 'sign-up-phone-number-input',
+            {
+              type: 'phone_number',
+              required: true,
+              handleInputChange: event => this.handlePhoneNumberChange(event),
+              inputProps: {
+                'data-test': 'sign-up-phone-number-input',
+              },
             },
-          },
-        ];
-        break;
-      case 'phone_number':
-        this.formFields = [
-          {
-            type: 'phone_number',
-            required: true,
-            handleInputChange: event => this.handlePhoneNumberChange(event),
-            inputProps: {
-              'data-test': 'sign-up-phone-number-input',
+          ];
+          break;
+        case 'phone_number':
+          this.formFields = [
+            {
+              type: 'phone_number',
+              required: true,
+              handleInputChange: event => this.handlePhoneNumberChange(event),
+              inputProps: {
+                'data-test': 'sign-up-phone-number-input',
+              },
             },
-          },
-          {
-            type: 'password',
-            placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
-            required: true,
-            handleInputChange: event => this.handlePasswordChange(event),
-            inputProps: {
-              'data-test': 'sign-up-password-input',
+            {
+              type: 'password',
+              placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
+              required: true,
+              handleInputChange: event => this.handlePasswordChange(event),
+              inputProps: {
+                'data-test': 'sign-up-password-input',
+              },
             },
-          },
-          {
-            type: 'email',
-            placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
-            required: true,
-            handleInputChange: event => this.handleEmailChange(event),
-            inputProps: {
-              'data-test': 'sign-up-email-input',
+            {
+              type: 'email',
+              placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
+              required: true,
+              handleInputChange: event => this.handleEmailChange(event),
+              inputProps: {
+                'data-test': 'sign-up-email-input',
+              },
             },
-          },
-        ];
-        break;
-      case 'username':
-      default:
-        this.formFields = [
-          {
-            type: 'username',
-            placeholder: I18n.get(Translations.SIGN_UP_USERNAME_PLACEHOLDER),
-            required: true,
-            handleInputChange: event => this.handleUsernameChange(event),
-            inputProps: {
-              'data-test': 'sign-up-username-input',
+          ];
+          break;
+        case 'username':
+        default:
+          this.formFields = [
+            {
+              type: 'username',
+              placeholder: I18n.get(Translations.SIGN_UP_USERNAME_PLACEHOLDER),
+              required: true,
+              handleInputChange: event => this.handleUsernameChange(event),
+              inputProps: {
+                'data-test': 'sign-up-username-input',
+              },
             },
-          },
-          {
-            type: 'password',
-            placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
-            required: true,
-            handleInputChange: event => this.handlePasswordChange(event),
-            inputProps: {
-              'data-test': 'sign-up-password-input',
+            {
+              type: 'password',
+              placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
+              required: true,
+              handleInputChange: event => this.handlePasswordChange(event),
+              inputProps: {
+                'data-test': 'sign-up-password-input',
+              },
             },
-          },
-          {
-            type: 'email',
-            placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
-            required: true,
-            handleInputChange: event => this.handleEmailChange(event),
-            inputProps: {
-              'data-test': 'sign-up-email-input',
+            {
+              type: 'email',
+              placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
+              required: true,
+              handleInputChange: event => this.handleEmailChange(event),
+              inputProps: {
+                'data-test': 'sign-up-email-input',
+              },
             },
-          },
-          {
-            type: 'phone_number',
-            required: true,
-            handleInputChange: event => this.handlePhoneNumberChange(event),
-            inputProps: {
-              'data-test': 'sign-up-phone-number-input',
+            {
+              type: 'phone_number',
+              required: true,
+              handleInputChange: event => this.handlePhoneNumberChange(event),
+              inputProps: {
+                'data-test': 'sign-up-phone-number-input',
+              },
             },
-          },
-        ];
-        break;
+          ];
+          break;
+      }
     }
   }
 
