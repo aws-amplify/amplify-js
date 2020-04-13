@@ -23,6 +23,7 @@ import {
 	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
+import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('ConfirmSignUp');
 
@@ -73,7 +74,9 @@ export default class ConfirmSignUp extends AuthPiece {
 		return (
 			<Wrapper>
 				<View style={theme.section}>
-					<Header theme={theme}>{I18n.get('Confirm Sign Up')}</Header>
+					<Header theme={theme} testID={TEST_ID.AUTH.CONFIRM_SIGN_UP_TEXT}>
+						{I18n.get('Confirm Sign Up')}
+					</Header>
 					<View style={theme.sectionBody}>
 						{this.renderUsernameField(theme, username)}
 						<FormField
@@ -82,12 +85,14 @@ export default class ConfirmSignUp extends AuthPiece {
 							label={I18n.get('Confirmation Code')}
 							placeholder={I18n.get('Enter your confirmation code')}
 							required={true}
+							testID={TEST_ID.AUTH.CONFIRMATION_CODE_INPUT}
 						/>
 						<AmplifyButton
 							theme={theme}
 							text={I18n.get('Confirm')}
 							onPress={this.confirm}
 							disabled={!username || !this.state.code}
+							testID={TEST_ID.AUTH.CONFIRM_BUTTON}
 						/>
 					</View>
 					<View style={theme.sectionFooter}>
@@ -95,10 +100,15 @@ export default class ConfirmSignUp extends AuthPiece {
 							theme={theme}
 							onPress={this.resend}
 							disabled={!this.state.username}
+							testID={TEST_ID.AUTH.RESEND_CODE_BUTTON}
 						>
 							{I18n.get('Resend code')}
 						</LinkCell>
-						<LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+						<LinkCell
+							theme={theme}
+							onPress={() => this.changeState('signIn')}
+							testID={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
+						>
 							{I18n.get('Back to Sign In')}
 						</LinkCell>
 					</View>
