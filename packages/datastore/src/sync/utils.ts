@@ -193,7 +193,7 @@ export function getAuthorizationRules(
 				areSubscriptionsPublic: false,
 			};
 
-			if (authStrategy === 'owner' || authStrategy === 'groups') {
+			if (authStrategy === 'owner') {
 				// look for the subscription level override
 				// only pay attention to the public level
 				const modelConfig = []
