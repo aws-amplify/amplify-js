@@ -4,20 +4,15 @@ Thank you for your interest in contributing to our project! <3 Whether it's a bu
 
 - Our History and Ethos
 - Our Design
-- Getting Started
-	- Other tips
-- Tools
-	- Yarn
-	- Lerna
-	- nvm
-	- Jest
-- Workflows
-- Adding a dependency to a package
+- Development Process
+	- Setting up for local development
+	- Architecture of the codebase
+	- Steps towards contributions
 - Pull Requests
-- Troubleshooting
 - Debugging
-- Related Repositories
+- Release
 - Finding contributions to work on
+- Related Repositories
 - Code of Conduct
 - Security issue notifications
 - Licensing
@@ -207,6 +202,12 @@ To give the bird's eye view of the release cycle,
 - Every merge into the `master` ends up as `unstable` package in the npm
 - The core team will cut a release out to `stable` from `unstable` bi-weekly
 
+## Finding contributions to work on
+
+Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any ['help wanted'](https://github.com/aws-amplify/amplify-ios/labels/help%20wanted) or ['good first issue'](https://github.com/aws-amplify/amplify-ios/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) is a great place to start.
+
+You could also contribute by reporting bugs, reproduction of bugs with sample code, documentation and test improvements.
+
 ## Related Repositories
 
 The Amplify Framework runs on Android, iOS, and numerous JavaScript-based web platforms. T
@@ -221,10 +222,6 @@ toolkit for interacting with AWS backend resources.
 1. [AWS SDK for Android](https://github.com/aws-amplify/aws-sdk-android)
 2. [AWS SDK for iOS](https://github.com/aws-amplify/aws-sdk-ios)
 3. [AWS SDK for JavaScript](https://github.com/aws/aws-sdk-js)
-
-## Finding contributions to work on
-
-Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any ['help wanted'](https://github.com/aws-amplify/amplify-ios/labels/help%20wanted) or ['good first'](https://github.com/aws-amplify/amplify-ios/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) issues is a great place to start.
 
 ## Code of Conduct
 
