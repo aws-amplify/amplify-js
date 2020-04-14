@@ -59,7 +59,14 @@ export default class SignIn extends AuthPiece {
 					this.checkContact(user);
 				}
 			})
-			.catch(err => this.error(err));
+			.catch(err => {
+				if (err.code === 'PasswordResetRequiredException') {
+					logger.debug('the user requires a new password');
+					this.changeState('forgotPassword', username);
+				} else {
+					this.error(err);
+				}
+			});
 	}
 
 	showComponent(theme) {
