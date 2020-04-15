@@ -17,6 +17,7 @@ describe('aws-amplify', () => {
 			  "API",
 			  "APIClass",
 			  "graphqlOperation",
+			  "DataStore",
 			  "PubSub",
 			  "Cache",
 			  "Interactions",
