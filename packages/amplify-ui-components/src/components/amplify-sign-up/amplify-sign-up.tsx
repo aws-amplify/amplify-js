@@ -21,6 +21,15 @@ import {
 } from '../../common/helpers';
 import { Translations } from '../../common/Translations';
 
+export interface SignUpAttributes {
+  username?: string;
+  password?: string;
+  attributes?: {
+    email?: string;
+    phone_number?: string;
+  };
+}
+
 @Component({
   tag: 'amplify-sign-up',
   styleUrl: 'amplify-sign-up.scss',
@@ -62,28 +71,54 @@ export class AmplifySignUp {
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
   @Prop() usernameAlias: UsernameAliasStrings = 'username';
-  private userInput: string | PhoneNumberInterface;
-
-  @State() loading: boolean = false;
-  @State() username: string;
-  @State() password: string;
-  @State() email: string;
-
-  @State() phoneNumber: PhoneNumberInterface = {
+  // private userInput: string | PhoneNumberInterface;
+  private newFormFields = [];
+  private phoneNumber: PhoneNumberInterface = {
     countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
     phoneNumberValue: null,
   };
 
-  handleUsernameChange(event) {
-    this.username = event.target.value;
+  @State() loading: boolean = false;
+  @State() signUpAttributes: SignUpAttributes = {
+    attributes: {},
+  };
+
+  handleFormfieldInputChange(fieldType) {
+    switch (fieldType) {
+      case 'username':
+        return event => (this.signUpAttributes.username = event.target.value);
+      case 'password':
+        return event => (this.signUpAttributes.password = event.target.value);
+      case 'email':
+        return event => (this.signUpAttributes.attributes.email = event.target.value);
+      case 'phone_number':
+        return event => this.handlePhoneNumberChange(event);
+      default:
+        break;
+    }
   }
 
-  handlePasswordChange(event) {
-    this.password = event.target.value;
-  }
-
-  handleEmailChange(event) {
-    this.email = event.target.value;
+  handleFormFieldInputWithCallback(event, field) {
+    let fnToCall;
+    let callback;
+    switch (field.type) {
+      case 'username':
+        return event => (this.signUpAttributes.username = event.target.value);
+      case 'password':
+        fnToCall = field['handleInputChange'];
+        callback = event => (this.signUpAttributes.password = event.target.value);
+        fnToCall(event, callback.bind(this));
+        break;
+      case 'email':
+        fnToCall = field['handleInputChange'];
+        callback = event => (this.signUpAttributes.attributes.email = event.target.value);
+        fnToCall(event, callback.bind(this));
+        break;
+      case 'phone_number':
+        return event => this.handlePhoneNumberChange(event);
+      default:
+        break;
+    }
   }
 
   handlePhoneNumberChange(event) {
@@ -116,27 +151,25 @@ export class AmplifySignUp {
 
     switch (this.usernameAlias) {
       case 'email':
-        this.userInput = this.email;
+        this.signUpAttributes.username = this.signUpAttributes.attributes.email;
         break;
       case 'phone_number':
-        this.userInput = composePhoneNumberInput(this.phoneNumber);
+        this.signUpAttributes.username = composePhoneNumberInput(this.phoneNumber);
         break;
       case 'username':
       default:
-        this.userInput = this.username;
+        this.signUpAttributes.username = this.signUpAttributes.username;
         break;
     }
 
     try {
       const signUpAttrs: AmplifySignUpAttributes = {
-        username: this.userInput,
-        password: this.password,
+        username: this.signUpAttributes.username,
+        password: this.signUpAttributes.password,
+        attributes: this.signUpAttributes.attributes,
       };
-      if (this.email) {
-        signUpAttrs.attributes['email'] = this.email;
-      }
       if (this.phoneNumber.phoneNumberValue) {
-        signUpAttrs.attributes['phone_number'] = composePhoneNumberInput(this.phoneNumber);
+        signUpAttrs.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
       }
       const data = await Auth.signUp(signUpAttrs);
       this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs });
@@ -155,7 +188,7 @@ export class AmplifySignUp {
               type: 'email',
               placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
               required: true,
-              handleInputChange: event => this.handleEmailChange(event),
+              handleInputChange: this.handleFormfieldInputChange('email'),
               inputProps: {
                 'data-test': 'sign-up-email-input',
               },
@@ -164,7 +197,7 @@ export class AmplifySignUp {
               type: 'password',
               placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
               required: true,
-              handleInputChange: event => this.handlePasswordChange(event),
+              handleInputChange: this.handleFormfieldInputChange('password'),
               inputProps: {
                 'data-test': 'sign-up-password-input',
               },
@@ -172,7 +205,7 @@ export class AmplifySignUp {
             {
               type: 'phone_number',
               required: true,
-              handleInputChange: event => this.handlePhoneNumberChange(event),
+              handleInputChange: this.handleFormfieldInputChange('phone_number'),
               inputProps: {
                 'data-test': 'sign-up-phone-number-input',
               },
@@ -184,7 +217,7 @@ export class AmplifySignUp {
             {
               type: 'phone_number',
               required: true,
-              handleInputChange: event => this.handlePhoneNumberChange(event),
+              handleInputChange: this.handleFormfieldInputChange('phone_number'),
               inputProps: {
                 'data-test': 'sign-up-phone-number-input',
               },
@@ -193,7 +226,7 @@ export class AmplifySignUp {
               type: 'password',
               placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
               required: true,
-              handleInputChange: event => this.handlePasswordChange(event),
+              handleInputChange: this.handleFormfieldInputChange('password'),
               inputProps: {
                 'data-test': 'sign-up-password-input',
               },
@@ -202,7 +235,7 @@ export class AmplifySignUp {
               type: 'email',
               placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
               required: true,
-              handleInputChange: event => this.handleEmailChange(event),
+              handleInputChange: this.handleFormfieldInputChange('email'),
               inputProps: {
                 'data-test': 'sign-up-email-input',
               },
@@ -216,7 +249,7 @@ export class AmplifySignUp {
               type: 'username',
               placeholder: I18n.get(Translations.SIGN_UP_USERNAME_PLACEHOLDER),
               required: true,
-              handleInputChange: event => this.handleUsernameChange(event),
+              handleInputChange: this.handleFormfieldInputChange('username'),
               inputProps: {
                 'data-test': 'sign-up-username-input',
               },
@@ -225,7 +258,7 @@ export class AmplifySignUp {
               type: 'password',
               placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
               required: true,
-              handleInputChange: event => this.handlePasswordChange(event),
+              handleInputChange: this.handleFormfieldInputChange('password'),
               inputProps: {
                 'data-test': 'sign-up-password-input',
               },
@@ -234,7 +267,7 @@ export class AmplifySignUp {
               type: 'email',
               placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
               required: true,
-              handleInputChange: event => this.handleEmailChange(event),
+              handleInputChange: this.handleFormfieldInputChange('email'),
               inputProps: {
                 'data-test': 'sign-up-email-input',
               },
@@ -242,7 +275,7 @@ export class AmplifySignUp {
             {
               type: 'phone_number',
               required: true,
-              handleInputChange: event => this.handlePhoneNumberChange(event),
+              handleInputChange: this.handleFormfieldInputChange('phone_number'),
               inputProps: {
                 'data-test': 'sign-up-phone-number-input',
               },
@@ -250,13 +283,20 @@ export class AmplifySignUp {
           ];
           break;
       }
+      this.newFormFields = [...this.formFields];
+    } else {
+      this.formFields.forEach(field => {
+        const newField = { ...field };
+        newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
+        this.newFormFields.push(newField);
+      });
     }
   }
 
   render() {
     return (
       <amplify-form-section headerText={this.headerText} handleSubmit={this.handleSubmit} testDataPrefix={'sign-up'}>
-        <amplify-auth-fields formFields={this.formFields} />
+        <amplify-auth-fields formFields={this.newFormFields} />
         <div class="sign-up-form-footer" slot="amplify-form-section-footer">
           <span>
             {this.haveAccountText}{' '}
