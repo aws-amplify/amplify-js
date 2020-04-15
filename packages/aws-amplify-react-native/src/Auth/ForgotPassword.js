@@ -38,6 +38,16 @@ export default class ForgotPassword extends AuthPiece {
 		this.submit = this.submit.bind(this);
 	}
 
+	static getDerivedStateFromProps(props, state) {
+		const username = props.authData;
+
+		if (username && !state.username) {
+			return { username };
+		}
+
+		return null;
+	}
+
 	send() {
 		const username = this.getUsernameFromInput();
 		if (!username) {
@@ -64,9 +74,10 @@ export default class ForgotPassword extends AuthPiece {
 	}
 
 	forgotBody(theme) {
+		const username = this.getUsernameFromInput();
 		return (
 			<View style={theme.sectionBody}>
-				{this.renderUsernameField(theme)}
+				{this.renderUsernameField(theme, username)}
 				<AmplifyButton
 					text={I18n.get('Send').toUpperCase()}
 					theme={theme}
@@ -114,7 +125,7 @@ export default class ForgotPassword extends AuthPiece {
 			<Wrapper>
 				<View style={theme.section}>
 					<Header theme={theme} testID={TEST_ID.AUTH.FORGOT_PASSWORD_TEXT}>
-						{I18n.get('Forgot Password')}
+						{I18n.get('Reset your password')}
 					</Header>
 					<View style={theme.sectionBody}>
 						{!this.state.delivery && this.forgotBody(theme)}
