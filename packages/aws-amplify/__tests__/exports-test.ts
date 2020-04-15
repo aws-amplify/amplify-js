@@ -1,7 +1,7 @@
 import * as exported from '../src';
 
 describe('aws-amplify', () => {
-	describe('import * as exported', () => {
+	describe('import * keys', () => {
 		it('should match snapshot', () => {
 			expect(Object.keys(exported)).toMatchInlineSnapshot(`
 			Array [
@@ -18,6 +18,7 @@ describe('aws-amplify', () => {
 			  "APIClass",
 			  "graphqlOperation",
 			  "DataStore",
+			  "Predicates",
 			  "PubSub",
 			  "Cache",
 			  "Interactions",
