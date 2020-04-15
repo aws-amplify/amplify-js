@@ -21,15 +21,6 @@ import {
 } from '../../common/helpers';
 import { Translations } from '../../common/Translations';
 
-export interface SignUpAttributes {
-  username?: string;
-  password?: string;
-  attributes?: {
-    email?: string;
-    phone_number?: string;
-  };
-}
-
 @Component({
   tag: 'amplify-sign-up',
   styleUrl: 'amplify-sign-up.scss',
@@ -79,7 +70,9 @@ export class AmplifySignUp {
   };
 
   @State() loading: boolean = false;
-  @State() signUpAttributes: SignUpAttributes = {
+  @State() signUpAttributes: AmplifySignUpAttributes = {
+    username: '',
+    password: '',
     attributes: {},
   };
 
@@ -94,31 +87,17 @@ export class AmplifySignUp {
       case 'phone_number':
         return event => this.handlePhoneNumberChange(event);
       default:
-        break;
+        return event => (this.signUpAttributes.attributes[fieldType] = event.target.value);
     }
   }
 
   handleFormFieldInputWithCallback(event, field) {
-    let fnToCall;
-    let callback;
-    switch (field.type) {
-      case 'username':
-        return event => (this.signUpAttributes.username = event.target.value);
-      case 'password':
-        fnToCall = field['handleInputChange'];
-        callback = event => (this.signUpAttributes.password = event.target.value);
-        fnToCall(event, callback.bind(this));
-        break;
-      case 'email':
-        fnToCall = field['handleInputChange'];
-        callback = event => (this.signUpAttributes.attributes.email = event.target.value);
-        fnToCall(event, callback.bind(this));
-        break;
-      case 'phone_number':
-        return event => this.handlePhoneNumberChange(event);
-      default:
-        break;
-    }
+    let fnToCall = field['handleInputChange'];
+    let callback =
+      field.type === 'phone_number'
+        ? event => (this.signUpAttributes.attributes.phone_number = event.target.value)
+        : this.handleFormfieldInputChange(field.type);
+    fnToCall(event, callback.bind(this));
   }
 
   handlePhoneNumberChange(event) {
