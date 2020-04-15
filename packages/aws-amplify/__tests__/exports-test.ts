@@ -1,4 +1,4 @@
-import * as exported from '..';
+import * as exported from '../src';
 
 describe('aws-amplify', () => {
 	describe('import * as exported', () => {
