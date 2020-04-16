@@ -108,6 +108,7 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
         // If notification ID is not provided by the user for push notification, generate one at random
         if (bundle.getString("id") == null) {
             SecureRandom randomNumberGenerator = new SecureRandom();
+            randomNumberGenerator.setSeed(System.currentTimeMillis());
             bundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
         }
 
