@@ -46,7 +46,7 @@ export class AmplifySignUp {
    * ```
    * [
    *  {
-   *    type: 'username'|'password'|'email'|'code'|'default',
+   *    type: string,
    *    label: string,
    *    placeholder: string,
    *    hint: string | Functional Component | null,
