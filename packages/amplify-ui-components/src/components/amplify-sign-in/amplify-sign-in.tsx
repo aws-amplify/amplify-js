@@ -73,7 +73,7 @@ export class AmplifySignIn {
     countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
     phoneNumberValue: null,
   };
-  private newFormFields = [];
+  private newFormFields: FormFieldTypes | string[] = [];
 
   @State() signInAttributes: SignInAttributes = {
     userInput: '',

@@ -63,7 +63,7 @@ export class AmplifySignUp {
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
   @Prop() usernameAlias: UsernameAliasStrings = 'username';
   // private userInput: string | PhoneNumberInterface;
-  private newFormFields = [];
+  private newFormFields: FormFieldTypes | string[] = [];
   private phoneNumber: PhoneNumberInterface = {
     countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
     phoneNumberValue: null,
@@ -142,16 +142,11 @@ export class AmplifySignUp {
     }
 
     try {
-      const signUpAttrs: AmplifySignUpAttributes = {
-        username: this.signUpAttributes.username,
-        password: this.signUpAttributes.password,
-        attributes: this.signUpAttributes.attributes,
-      };
       if (this.phoneNumber.phoneNumberValue) {
-        signUpAttrs.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
+        this.signUpAttributes.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
       }
-      const data = await Auth.signUp(signUpAttrs);
-      this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs });
+      const data = await Auth.signUp(this.signUpAttributes);
+      this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
     } catch (error) {
       dispatchToastHubEvent(error);
     }
