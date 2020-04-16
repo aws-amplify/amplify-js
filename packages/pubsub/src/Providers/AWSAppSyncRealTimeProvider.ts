@@ -29,7 +29,7 @@ import {
 import Cache from '@aws-amplify/cache';
 import Auth from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from './PubSubProvider';
-import { CONTROL_MSG } from '@aws-amplify/pubsub';
+import { CONTROL_MSG } from '../index';
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
