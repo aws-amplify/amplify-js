@@ -10,3 +10,8 @@ export interface AmplifySignInFormFooterProps {
   createAccountText: string;
   onAuthStateChange?: any;
 }
+
+export interface SignInAttributes {
+  userInput: string;
+  password: string;
+}

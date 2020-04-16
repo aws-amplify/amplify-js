@@ -11,5 +11,6 @@ export interface AmplifySignUpAttributes {
   attributes?: {
     email?: string;
     phone_number?: string;
+    [userAttributes: string]: string;
   };
 }
