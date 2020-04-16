@@ -33,12 +33,10 @@ export class AmplifyAuthFields {
     formFields.forEach((formField: FormFieldType | string) => {
       if (typeof formField === 'string') {
         content.push(componentFieldMapping[formField](formField));
+      } else if (Object.keys(componentFieldMapping).includes(formField.type)) {
+        content.push(componentFieldMapping[formField.type](formField));
       } else {
-        if (Object.keys(componentFieldMapping).includes(formField.type)) {
-          content.push(componentFieldMapping[formField.type](formField));
-        } else {
-          content.push(componentFieldMapping['default'](formField));
-        }
+        content.push(componentFieldMapping['default'](formField));
       }
     });
 

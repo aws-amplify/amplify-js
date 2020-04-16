@@ -92,8 +92,8 @@ export class AmplifySignUp {
   }
 
   handleFormFieldInputWithCallback(event, field) {
-    let fnToCall = field['handleInputChange'];
-    let callback =
+    const fnToCall = field['handleInputChange'];
+    const callback =
       field.type === 'phone_number'
         ? event => (this.signUpAttributes.attributes.phone_number = event.target.value)
         : this.handleFormFieldInputChange(field.type);
@@ -127,24 +127,20 @@ export class AmplifySignUp {
     if (!Auth || typeof Auth.signUp !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
-
+    if (this.phoneNumber.phoneNumberValue) {
+      this.signUpAttributes.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
+    }
     switch (this.usernameAlias) {
       case 'email':
-        this.signUpAttributes.username = this.signUpAttributes.attributes.email;
-        break;
       case 'phone_number':
-        this.signUpAttributes.username = composePhoneNumberInput(this.phoneNumber);
+        this.signUpAttributes.username = this.signUpAttributes.attributes[this.usernameAlias];
         break;
       case 'username':
       default:
-        this.signUpAttributes.username = this.signUpAttributes.username;
         break;
     }
 
     try {
-      if (this.phoneNumber.phoneNumberValue) {
-        this.signUpAttributes.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
-      }
       const data = await Auth.signUp(this.signUpAttributes);
       this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
     } catch (error) {
@@ -157,7 +153,7 @@ export class AmplifySignUp {
     if (this.formFields.length === 0) {
       switch (this.usernameAlias) {
         case 'email':
-          this.formFields = [
+          this.newFormFields = [
             {
               type: 'email',
               placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
@@ -187,7 +183,7 @@ export class AmplifySignUp {
           ];
           break;
         case 'phone_number':
-          this.formFields = [
+          this.newFormFields = [
             {
               type: 'phone_number',
               required: true,
@@ -218,7 +214,7 @@ export class AmplifySignUp {
           break;
         case 'username':
         default:
-          this.formFields = [
+          this.newFormFields = [
             {
               type: 'username',
               placeholder: I18n.get(Translations.SIGN_UP_USERNAME_PLACEHOLDER),
@@ -257,7 +253,6 @@ export class AmplifySignUp {
           ];
           break;
       }
-      this.newFormFields = [...this.formFields];
     } else {
       this.formFields.forEach(field => {
         const newField = { ...field };

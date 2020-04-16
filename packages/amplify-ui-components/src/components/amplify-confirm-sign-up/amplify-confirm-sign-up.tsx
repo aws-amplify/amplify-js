@@ -54,7 +54,7 @@ export class AmplifyConfirmSignUp {
   componentWillLoad() {
     checkUsernameAlias(this.usernameAlias);
     if (this.formFields.length === 0) {
-      this.formFields = [
+      this.newFormFields = [
         {
           type: `${this.usernameAlias}`,
           required: true,
@@ -78,7 +78,6 @@ export class AmplifyConfirmSignUp {
           handleInputChange: this.handleFormFieldInputChange('code'),
         },
       ];
-      this.newFormFields = [...this.formFields];
     } else {
       this.formFields.forEach(field => {
         const newField = { ...field };
@@ -102,8 +101,8 @@ export class AmplifyConfirmSignUp {
   }
 
   handleFormFieldInputWithCallback(event, field) {
-    let fnToCall = field['handleInputChange'];
-    let callback = this.handleFormFieldInputChange(field.type);
+    const fnToCall = field['handleInputChange'];
+    const callback = this.handleFormFieldInputChange(field.type);
     fnToCall(event, callback.bind(this));
   }
 

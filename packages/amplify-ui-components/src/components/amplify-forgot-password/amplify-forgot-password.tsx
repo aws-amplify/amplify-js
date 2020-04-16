@@ -61,7 +61,7 @@ export class AmplifyForgotPassword {
     if (this.formFields.length === 0) {
       switch (this.usernameAlias) {
         case 'email':
-          this.formFields = [
+          this.newFormFields = [
             {
               type: 'email',
               required: true,
@@ -73,7 +73,7 @@ export class AmplifyForgotPassword {
           ];
           break;
         case 'phone_number':
-          this.formFields = [
+          this.newFormFields = [
             {
               type: 'phone_number',
               required: true,
@@ -86,7 +86,7 @@ export class AmplifyForgotPassword {
           break;
         case 'username':
         default:
-          this.formFields = [
+          this.newFormFields = [
             {
               type: 'username',
               required: true,
@@ -98,7 +98,6 @@ export class AmplifyForgotPassword {
           ];
           break;
       }
-      this.newFormFields = [...this.formFields];
     } else {
       this.formFields.forEach(field => {
         const newField = { ...field };
@@ -124,8 +123,8 @@ export class AmplifyForgotPassword {
   }
 
   handleFormFieldInputWithCallback(event, field) {
-    let fnToCall = field['handleInputChange'];
-    let callback =
+    const fnToCall = field['handleInputChange'];
+    const callback =
       field.type === 'phone_number'
         ? event => (this.forgotPasswordAttrs.userInput = event.target.value)
         : this.handleFormFieldInput(field.type);
@@ -170,7 +169,7 @@ export class AmplifyForgotPassword {
     try {
       const data = await Auth.forgotPassword(this.forgotPasswordAttrs.userInput);
       logger.debug(data);
-      this.formFields = [
+      this.newFormFields = [
         {
           type: 'code',
           required: true,
@@ -187,7 +186,6 @@ export class AmplifyForgotPassword {
           placeholder: 'Enter your new password',
         },
       ];
-      this.newFormFields = [...this.formFields];
       this.delivery = data.CodeDeliveryDetails;
     } catch (error) {
       dispatchToastHubEvent(error);
