@@ -17,6 +17,7 @@ import { Auth, I18n, Logger } from 'aws-amplify';
 import { AmplifyButton } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 import AuthPiece from './AuthPiece';
+import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('Greetings');
 
@@ -67,16 +68,27 @@ export default class Greetings extends AuthPiece {
 
 		const content = signedIn ? (
 			<View style={theme.navBar}>
-				<Text style={theme.greetingMessage}>{message}</Text>
+				<Text
+					style={theme.greetingMessage}
+					testID={TEST_ID.AUTH.GREETING_SIGNED_IN_TEXT}
+				>
+					{message}
+				</Text>
 				<AmplifyButton
 					theme={theme}
 					text={I18n.get('Sign Out')}
 					onPress={this.signOut}
 					style={theme.navButton}
+					testID={TEST_ID.AUTH.SIGN_OUT_BUTTON}
 				/>
 			</View>
 		) : (
-			<Text style={theme.greetingMessage}>{message}</Text>
+			<Text
+				style={theme.greetingMessage}
+				testID={TEST_ID.AUTH.GREETING_SIGNED_OUT_TEXT}
+			>
+				{message}
+			</Text>
 		);
 
 		return content;
