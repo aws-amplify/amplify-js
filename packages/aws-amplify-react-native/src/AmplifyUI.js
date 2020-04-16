@@ -27,9 +27,11 @@ import { I18n } from 'aws-amplify';
 import AmplifyTheme, {
 	linkUnderlayColor,
 	errorIconColor,
+	placeholderColor,
 } from './AmplifyTheme';
 import { Icon } from 'react-native-elements';
 import countryDialCodes from './CountryDialCodes';
+import TEST_ID from './AmplifyTestIDs';
 
 export const FormField = props => {
 	const theme = props.theme || AmplifyTheme;
@@ -42,6 +44,7 @@ export const FormField = props => {
 				style={theme.input}
 				autoCapitalize="none"
 				autoCorrect={false}
+				placeholderTextColor={placeholderColor}
 				{...props}
 			/>
 		</View>
@@ -93,6 +96,7 @@ export class PhoneField extends Component {
 						style={theme.phoneInput}
 						autoCapitalize="none"
 						autoCorrect={false}
+						placeholderTextColor={placeholderColor}
 						{...this.props}
 						onChangeText={phone => {
 							this.setState({ phone }, () => {
@@ -110,10 +114,18 @@ export const SectionFooter = props => {
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.sectionFooter}>
-			<LinkCell theme={theme} onPress={() => onStateChange('confirmSignUp')}>
+			<LinkCell
+				theme={theme}
+				onPress={() => onStateChange('confirmSignUp')}
+				testID={TEST_ID.AUTH.CONFIRM_A_CODE_BUTTON}
+			>
 				{I18n.get('Confirm a Code')}
 			</LinkCell>
-			<LinkCell theme={theme} onPress={() => onStateChange('signIn')}>
+			<LinkCell
+				theme={theme}
+				onPress={() => onStateChange('signIn')}
+				testID={TEST_ID.AUTH.SIGN_IN_BUTTON}
+			>
 				{I18n.get('Sign In')}
 			</LinkCell>
 		</View>
@@ -127,6 +139,7 @@ export const LinkCell = props => {
 			<TouchableHighlight
 				onPress={props.onPress}
 				underlayColor={linkUnderlayColor}
+				testID={props.testID}
 			>
 				<Text style={theme.sectionFooterLink}>{props.children}</Text>
 			</TouchableHighlight>
@@ -138,7 +151,9 @@ export const Header = props => {
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.sectionHeader}>
-			<Text style={theme.sectionHeaderText}>{props.children}</Text>
+			<Text style={theme.sectionHeaderText} testID={props.testID}>
+				{props.children}
+			</Text>
 		</View>
 	);
 };
@@ -149,7 +164,9 @@ export const ErrorRow = props => {
 	return (
 		<View style={theme.errorRow}>
 			<Icon name="warning" color={errorIconColor} />
-			<Text style={theme.errorRowText}>{props.children}</Text>
+			<Text style={theme.errorRowText} testID={TEST_ID.AUTH.ERROR_ROW_TEXT}>
+				{props.children}
+			</Text>
 		</View>
 	);
 };
