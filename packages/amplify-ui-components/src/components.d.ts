@@ -274,7 +274,7 @@ export namespace Components {
         /**
           * The form fields displayed inside of the forgot password form
          */
-        "formFields": FormFieldTypes;
+        "formFields": FormFieldTypes | string[];
         /**
           * Auth state change handler for this component
          */
@@ -1367,7 +1367,7 @@ declare namespace LocalJSX {
         /**
           * The form fields displayed inside of the forgot password form
          */
-        "formFields"?: FormFieldTypes;
+        "formFields"?: FormFieldTypes | string[];
         /**
           * Auth state change handler for this component
          */
