@@ -329,17 +329,7 @@ const createModelClass = <T extends PersistentModel>(
 				return json.map(init => this.fromJSON(init));
 			}
 
-			const { id, ...init } = json;
-
-			// ! This is a double-init because `id` can't be provided via `new`.
-			return produce(
-				new clazz(init as ModelInit<T>),
-				(draft: Draft<T & ModelInstanceMetadata>) => {
-					initializeInstance(init, modelDefinition, draft);
-
-					draft.id = id;
-				}
-			);
+			return modelInstanceCreator(clazz, json);
 		}
 	});
 
