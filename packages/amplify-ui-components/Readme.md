@@ -11,13 +11,6 @@
 | **Vue**            | [`@aws-amplify/ui-vue`](https://www.npmjs.com/package/@aws-amplify/ui-vue)               | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-vue/ui-preview.svg)](https://www.npmjs.com/package/@aws-amplify/ui-vue)               |   [`README.md`](../amplify-ui-vue/README.md)   | [`Vue`](#vue)                       |
 | **Web Components** | [`@aws-amplify/ui-components`](https://www.npmjs.com/package/@aws-amplify/ui-components) | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-components/ui-preview.svg)](https://www.npmjs.com/package/@aws-amplify/ui-components) |            [`README.md`](README.md)            | [`Web Components`](#web-components) |
 
-| Framework          | Package                                                                                  | Version                                                                                                                                        |
-| ------------------ | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **React**          | [`@aws-amplify/ui-react`](https://www.npmjs.com/package/@aws-amplify/ui-react)           | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-react/ui-preview.svg)](https://www.npmjs.com/package/@aws-amplify/ui-react)           |
-| **Angular**        | [`@aws-amplify/ui-angular`](https://www.npmjs.com/package/@aws-amplify/ui-angular)       | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-angular/ui-preview.svg)](https://www.npmjs.com/package/@aws-amplify/ui-angular)       |
-| **Vue**            | [`@aws-amplify/ui-vue`](https://www.npmjs.com/package/@aws-amplify/ui-vue)               | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-vue/ui-preview.svg)](https://www.npmjs.com/package/@aws-amplify/ui-vue)               |
-| **Web Components** | [`@aws-amplify/ui-components`](https://www.npmjs.com/package/@aws-amplify/ui-components) | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-components/ui-preview.svg)](https://www.npmjs.com/package/@aws-amplify/ui-components) |
-
 ## Quick Start
 
 In this Quick Start guide you will set up an Authenticator component and the cloud resources required to use it inside of your app.
@@ -228,7 +221,7 @@ Amplify UI Components use [slots](https://developer.mozilla.org/en-US/docs/Web/H
 | `"totp-setup"`           | Content placed inside of the totp-setup workflow for when a user opts to use TOTP MFA                                  |
 | `"greetings"`            | Content placed inside of the greetings navigation for when a user is signed in                                         |
 
-**Framworks**
+**Frameworks**
 
 - [React](#react-1)
 - [Angular](#angular-1)
@@ -251,6 +244,19 @@ const App = () => {
     </div>
   </AmplifyAuthenticator>;
 };
+```
+
+Alternatively, you can use the `withAuthenticator` higher-order component (HoC):
+
+```js
+import { withAuthenticator } from '@aws-amplify/ui-react';
+
+...
+
+export default withAuthenticator(App);
+// or
+export default withAuthenticator(App, { /* ...amplifyAuthenticatorSettings */ })
+});
 ```
 
 #### Angular
@@ -297,7 +303,114 @@ const App = () => {
 
 ## Theming
 
-TODO
+Theming for the UI components can be achieved by using [CSS Variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties). You can enable theming in your app by overriding the below mentioned CSS variable values. To do that, add the following code in root css file.
+
+```
+:root{
+
+  --amplify-primary-color: #ff6347;
+  --amplify-primary-tint: #ff7359;
+  --amplify-primary-shade: #e0573e;
+
+  }
+
+```
+
+### Supported CSS Custom properties
+
+#### For Typography
+
+| Custom Properties       | Default Value                                                                                |
+| ----------------------- | -------------------------------------------------------------------------------------------- |
+| `--amplify-font-family` | 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif' |
+| `--amplify-text-xxs`    | 0.75rem                                                                                      |
+| `--amplify-text-xs`     | 0.81rem                                                                                      |
+| `--amplify-text-sm`     | 0.875rem                                                                                     |
+| `--amplify-text-md`     | 1rem                                                                                         |
+| `--amplify-text-lg`     | 1.5rem                                                                                       |
+| `--amplify-text-xl`     | 2rem                                                                                         |
+| `--amplify-text-xxl`    | 2.5rem                                                                                       |
+
+#### For Colors
+
+| Custom Properties              | Default Value        |
+| ------------------------------ | -------------------- |
+| `--amplify-primary-color`      | #ff9900              |
+| `--amplify-primary-contrast`   | var(--amplify-white) |
+| `--amplify-primary-tint`       | #ffac31              |
+| `--amplify-primary-shade`      | #e88b01              |
+| `--amplify-secondary-color`    | #152939              |
+| `--amplify-secondary-contrast` | var(--amplify-white) |
+| `--amplify-secondary-tint`     | #31465f              |
+| `--amplify-secondary-shade`    | #1F2A37              |
+| `--amplify-tertiary-color`     | #5d8aff              |
+| `--amplify-tertiary-contrast`  | var(--amplify-white) |
+| `--amplify-tertiary-tint`      | #7da1ff              |
+| `--amplify-tertiary-shade`     | #537BE5              |
+| `--amplify-grey`               | #828282              |
+| `--amplify-light-grey`         | #c4c4c4              |
+| `--amplify-white`              | #ffffff              |
+| `--amplify-red`                | #dd3f5b              |
+
+## Amplify Authenticator `usernameAlias`
+
+The `amplify-authenticator` component has the ability to sign in or sign up with `email` or `phone_number` instead of default `username`. To achieve this, you first need to setup the userpool to allow email or phone number as the username [using the cli workflow](https://aws-amplify.github.io/docs/cli-toolchain/quickstart#configuring-auth-without-social-providers) or through the [Cognito Console](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-aliases-settings-option-2). To reflect this in the `amplify-authenticator` component, you can use the `usernameAlias` property. It can take one of the three values - `email`, `phone_number` or `username`. Default is set to `username`.
+
+**Usage:**
+
+```js
+// react
+<AmplifyAuthenticator usernameAlias="email" />
+
+// angular, vue or web components
+<amplify-authenticator username-alias="phone_number" />
+```
+
+## Amplify Authenticator `federated`
+
+The `amplify-authenticator` component supports Federated Sign In through Cognito Identity Pools (IDP) with external providers like Amazon, Auth0, Facebook, & Google.
+
+The `federated` prop implements the `FederatedConfig`:
+
+```ts
+export interface FederatedConfig {
+  auth0Config?: {
+    audience?: string;
+    clientID: string;
+    domain: string;
+    responseType: string;
+    redirectUri: string;
+    returnTo?: string;
+    scope?: string;
+  };
+  amazonClientId?: string;
+  facebookAppId?: string;
+  googleClientId?: string;
+  oauthConfig?: {
+    [key: string]: any;
+  };
+}
+```
+
+**Usage:**
+
+```js
+const federated = {
+  amazonClientId: "your_amazon_client_id",
+  facebookAppId: "your_facebook_app_id",
+  googleClientId: "your_google_client_id",
+  oauthConfig: {
+    redirectSignIn: "http://localhost:1234/",
+    redirectSignOut: "http://localhost:1234/",
+  }
+}
+
+// react
+<AmplifyAuthenticator federated={federated} />
+
+// angular, vue, or web components
+<amplify-authenticator federated={federated} />
+```
 
 ## Migration Guide
 
@@ -333,6 +446,21 @@ const App = () => (
 - </Authenticator>
 );
 ```
+
+If you're using the [`withAuthenticator`](https://aws-amplify.github.io/docs/js/authentication#using-withauthenticator-hoc) higher-order component (HoC):
+
+```diff
+- import { withAuthenticator } from 'aws-amplify-react';
++ import { withAuthenticator } from '@aws-amplify/ui-react';
+
+...
+
+export default withAuthenticator(App);
+```
+
+**Note:** If you were providing additional options to `withAuthenticator` (e.g. `includeGreetings`, `authenticatorComponents`, `federated`, `theme`), these have changed:
+
+> [amplify-authenticator#properties](src/components/amplify-authenticator/readme.md#properties)
 
 #### Angular
 
