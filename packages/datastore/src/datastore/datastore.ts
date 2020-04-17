@@ -886,6 +886,10 @@ function getNamespace(): SchemaNamespace {
 	return namespace;
 }
 
+const toJSON = <T extends PersistentModel>(model: T | T[]): JSON => {
+	return JSON.parse(JSON.stringify(model));
+};
+
 class DataStore {
 	static getModuleName() {
 		return 'DataStore';
@@ -896,6 +900,7 @@ class DataStore {
 	static observe = observe;
 	static configure = configure;
 	static clear = clear;
+	static toJSON = toJSON;
 }
 
 export { initSchema, DataStore };
