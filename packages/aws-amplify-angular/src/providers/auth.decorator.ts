@@ -94,11 +94,25 @@ function decorateSignOut(authState: Subject<AuthState>, Auth) {
 function decorateSignUp(authState: Subject<AuthState>, Auth) {
 	const _signUp = Auth.signUp;
 	Auth.signUp = (
-		username: string,
-		password: string,
-		email: string,
-		phone_number: string
+		params: string | { username: string },
+		...restOfAttrs: string[]
 	): Promise<any> => {
+
+		let username: string = null;
+		let password: string = null;
+		let email: string = null;
+		let phone_number: string = null;
+
+		if (params && typeof params === 'string') {
+			username = params;
+			password = restOfAttrs ? restOfAttrs[0] : null;
+			email = restOfAttrs ? restOfAttrs[1] : null;
+			phone_number = restOfAttrs ? restOfAttrs[2] : null;
+		} else if (params && typeof params === 'object') {
+			username = params['username'];
+			password = params['password'];
+		}
+
 		return _signUp
 			.call(Auth, username, password, email, phone_number)
 			.then(data => {
