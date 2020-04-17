@@ -28,6 +28,7 @@ import {
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
 import Auth from '@aws-amplify/auth';
+import WebSocket from 'isomorphic-ws';
 import { AbstractPubSubProvider } from './PubSubProvider';
 import { CONTROL_MSG } from '../index';
 

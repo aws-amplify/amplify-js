@@ -44,7 +44,9 @@
     "fake-indexeddb": "3.0.0",
     "idb": "4.0.4",
     "immer": "6.0.1",
+    "isomorphic-ws": "^4.0.1",
     "uuid": "3.3.2",
+    "ws": "^7.2.3",
     "zen-observable-ts": "0.8.19",
     "zen-push": "0.2.1"
   },
