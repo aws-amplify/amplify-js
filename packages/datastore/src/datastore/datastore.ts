@@ -97,7 +97,9 @@ let storageClasses: TypeConstructorMap;
 
 const initSchema = (userSchema: Schema) => {
 	if (schema !== undefined) {
-		throw new Error('The schema has already been initialized');
+		console.warn('The schema has already been initialized');
+
+		return userClasses;
 	}
 
 	logger.log('validating schema', { schema: userSchema });
