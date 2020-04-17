@@ -34,6 +34,7 @@
 		"@aws-amplify/ui-components": "^0.3.2"
 	},
 	"devDependencies": {
+		"@types/node": "^12.6.3",
 		"@angular/compiler-cli": "^7.2.1",
 		"@angular/core": "^7.2.1",
 		"rollup": "^1.1.2",
