@@ -58,7 +58,10 @@ export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 				evt.partitionKey || `partition-${credentials.identityId}`;
 
 			Object.assign(evt.data, { PartitionKey });
-			const Data = Buffer.from(JSON.stringify(evt.data));
+
+			const data =
+				typeof evt.data === 'string' ? evt.data : JSON.stringify(evt.data);
+			const Data = Buffer.from(data);
 			const record = { Data };
 			records[streamName].push(record);
 		});
