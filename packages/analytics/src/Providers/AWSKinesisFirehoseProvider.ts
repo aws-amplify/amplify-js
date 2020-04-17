@@ -54,7 +54,9 @@ export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 				records[streamName] = [];
 			}
 
-			const bufferData = typeof data === 'string' ? data : JSON.stringify(data);
+			const bufferData =
+				data && typeof data !== 'string' ? JSON.stringify(data) : data;
+
 			const Data = Buffer.from(bufferData);
 			const record = { Data };
 			records[streamName].push(record);
