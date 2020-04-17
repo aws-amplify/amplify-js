@@ -46,7 +46,7 @@ export class AmplifySignUp {
    * ```
    * [
    *  {
-   *    type: 'username'|'password'|'email'|'code'|'default',
+   *    type: string,
    *    label: string,
    *    placeholder: string,
    *    hint: string | Functional Component | null,
@@ -62,28 +62,42 @@ export class AmplifySignUp {
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
   @Prop() usernameAlias: UsernameAliasStrings = 'username';
-  private userInput: string | PhoneNumberInterface;
-
-  @State() loading: boolean = false;
-  @State() username: string;
-  @State() password: string;
-  @State() email: string;
-
-  @State() phoneNumber: PhoneNumberInterface = {
+  // private userInput: string | PhoneNumberInterface;
+  private newFormFields: FormFieldTypes | string[] = [];
+  private phoneNumber: PhoneNumberInterface = {
     countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
     phoneNumberValue: null,
   };
 
-  handleUsernameChange(event) {
-    this.username = event.target.value;
+  @State() loading: boolean = false;
+  @State() signUpAttributes: AmplifySignUpAttributes = {
+    username: '',
+    password: '',
+    attributes: {},
+  };
+
+  handleFormFieldInputChange(fieldType) {
+    switch (fieldType) {
+      case 'username':
+        return event => (this.signUpAttributes.username = event.target.value);
+      case 'password':
+        return event => (this.signUpAttributes.password = event.target.value);
+      case 'email':
+        return event => (this.signUpAttributes.attributes.email = event.target.value);
+      case 'phone_number':
+        return event => this.handlePhoneNumberChange(event);
+      default:
+        return event => (this.signUpAttributes.attributes[fieldType] = event.target.value);
+    }
   }
 
-  handlePasswordChange(event) {
-    this.password = event.target.value;
-  }
-
-  handleEmailChange(event) {
-    this.email = event.target.value;
+  handleFormFieldInputWithCallback(event, field) {
+    const fnToCall = field['handleInputChange'];
+    const callback =
+      field.type === 'phone_number'
+        ? event => (this.signUpAttributes.attributes.phone_number = event.target.value)
+        : this.handleFormFieldInputChange(field.type);
+    fnToCall(event, callback.bind(this));
   }
 
   handlePhoneNumberChange(event) {
@@ -113,31 +127,22 @@ export class AmplifySignUp {
     if (!Auth || typeof Auth.signUp !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
-
+    if (this.phoneNumber.phoneNumberValue) {
+      this.signUpAttributes.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
+    }
     switch (this.usernameAlias) {
       case 'email':
-        this.userInput = this.email;
-        break;
       case 'phone_number':
-        this.userInput = composePhoneNumberInput(this.phoneNumber);
+        this.signUpAttributes.username = this.signUpAttributes.attributes[this.usernameAlias];
         break;
       case 'username':
       default:
-        this.userInput = this.username;
         break;
     }
 
     try {
-      const signUpAttrs: AmplifySignUpAttributes = {
-        username: this.userInput,
-        password: this.password,
-        attributes: {
-          email: this.email,
-          phone_number: composePhoneNumberInput(this.phoneNumber),
-        },
-      };
-      const data = await Auth.signUp(signUpAttrs);
-      this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs });
+      const data = await Auth.signUp(this.signUpAttributes);
+      this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
     } catch (error) {
       dispatchToastHubEvent(error);
     }
@@ -145,114 +150,122 @@ export class AmplifySignUp {
 
   async componentWillLoad() {
     checkUsernameAlias(this.usernameAlias);
-    switch (this.usernameAlias) {
-      case 'email':
-        this.formFields = [
-          {
-            type: 'email',
-            placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
-            required: true,
-            handleInputChange: event => this.handleEmailChange(event),
-            inputProps: {
-              'data-test': 'sign-up-email-input',
+    if (this.formFields.length === 0) {
+      switch (this.usernameAlias) {
+        case 'email':
+          this.newFormFields = [
+            {
+              type: 'email',
+              placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
+              required: true,
+              handleInputChange: this.handleFormFieldInputChange('email'),
+              inputProps: {
+                'data-test': 'sign-up-email-input',
+              },
             },
-          },
-          {
-            type: 'password',
-            placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
-            required: true,
-            handleInputChange: event => this.handlePasswordChange(event),
-            inputProps: {
-              'data-test': 'sign-up-password-input',
+            {
+              type: 'password',
+              placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
+              required: true,
+              handleInputChange: this.handleFormFieldInputChange('password'),
+              inputProps: {
+                'data-test': 'sign-up-password-input',
+              },
             },
-          },
-          {
-            type: 'phone_number',
-            required: true,
-            handleInputChange: event => this.handlePhoneNumberChange(event),
-            inputProps: {
-              'data-test': 'sign-up-phone-number-input',
+            {
+              type: 'phone_number',
+              required: true,
+              handleInputChange: this.handleFormFieldInputChange('phone_number'),
+              inputProps: {
+                'data-test': 'sign-up-phone-number-input',
+              },
             },
-          },
-        ];
-        break;
-      case 'phone_number':
-        this.formFields = [
-          {
-            type: 'phone_number',
-            required: true,
-            handleInputChange: event => this.handlePhoneNumberChange(event),
-            inputProps: {
-              'data-test': 'sign-up-phone-number-input',
+          ];
+          break;
+        case 'phone_number':
+          this.newFormFields = [
+            {
+              type: 'phone_number',
+              required: true,
+              handleInputChange: this.handleFormFieldInputChange('phone_number'),
+              inputProps: {
+                'data-test': 'sign-up-phone-number-input',
+              },
             },
-          },
-          {
-            type: 'password',
-            placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
-            required: true,
-            handleInputChange: event => this.handlePasswordChange(event),
-            inputProps: {
-              'data-test': 'sign-up-password-input',
+            {
+              type: 'password',
+              placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
+              required: true,
+              handleInputChange: this.handleFormFieldInputChange('password'),
+              inputProps: {
+                'data-test': 'sign-up-password-input',
+              },
             },
-          },
-          {
-            type: 'email',
-            placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
-            required: true,
-            handleInputChange: event => this.handleEmailChange(event),
-            inputProps: {
-              'data-test': 'sign-up-email-input',
+            {
+              type: 'email',
+              placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
+              required: true,
+              handleInputChange: this.handleFormFieldInputChange('email'),
+              inputProps: {
+                'data-test': 'sign-up-email-input',
+              },
             },
-          },
-        ];
-        break;
-      case 'username':
-      default:
-        this.formFields = [
-          {
-            type: 'username',
-            placeholder: I18n.get(Translations.SIGN_UP_USERNAME_PLACEHOLDER),
-            required: true,
-            handleInputChange: event => this.handleUsernameChange(event),
-            inputProps: {
-              'data-test': 'sign-up-username-input',
+          ];
+          break;
+        case 'username':
+        default:
+          this.newFormFields = [
+            {
+              type: 'username',
+              placeholder: I18n.get(Translations.SIGN_UP_USERNAME_PLACEHOLDER),
+              required: true,
+              handleInputChange: this.handleFormFieldInputChange('username'),
+              inputProps: {
+                'data-test': 'sign-up-username-input',
+              },
             },
-          },
-          {
-            type: 'password',
-            placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
-            required: true,
-            handleInputChange: event => this.handlePasswordChange(event),
-            inputProps: {
-              'data-test': 'sign-up-password-input',
+            {
+              type: 'password',
+              placeholder: I18n.get(Translations.SIGN_UP_PASSWORD_PLACEHOLDER),
+              required: true,
+              handleInputChange: this.handleFormFieldInputChange('password'),
+              inputProps: {
+                'data-test': 'sign-up-password-input',
+              },
             },
-          },
-          {
-            type: 'email',
-            placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
-            required: true,
-            handleInputChange: event => this.handleEmailChange(event),
-            inputProps: {
-              'data-test': 'sign-up-email-input',
+            {
+              type: 'email',
+              placeholder: I18n.get(Translations.SIGN_UP_EMAIL_PLACEHOLDER),
+              required: true,
+              handleInputChange: this.handleFormFieldInputChange('email'),
+              inputProps: {
+                'data-test': 'sign-up-email-input',
+              },
             },
-          },
-          {
-            type: 'phone_number',
-            required: true,
-            handleInputChange: event => this.handlePhoneNumberChange(event),
-            inputProps: {
-              'data-test': 'sign-up-phone-number-input',
+            {
+              type: 'phone_number',
+              required: true,
+              handleInputChange: this.handleFormFieldInputChange('phone_number'),
+              inputProps: {
+                'data-test': 'sign-up-phone-number-input',
+              },
             },
-          },
-        ];
-        break;
+          ];
+          break;
+      }
+    } else {
+      this.formFields.forEach(field => {
+        const newField = { ...field };
+        newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
+        this.newFormFields.push(newField);
+      });
     }
   }
 
   render() {
     return (
       <amplify-form-section headerText={this.headerText} handleSubmit={this.handleSubmit} testDataPrefix={'sign-up'}>
-        <amplify-auth-fields formFields={this.formFields} />
+        <amplify-auth-fields formFields={this.newFormFields} />
         <div class="sign-up-form-footer" slot="amplify-form-section-footer">
           <span>
             {this.haveAccountText}{' '}
