@@ -47,21 +47,15 @@ export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 		const records = {};
 
 		group.map(params => {
-			// spit by streamName
+			// split by streamName
 			const evt = params.event;
-			const { streamName } = evt;
+			const { streamName, data } = evt;
 			if (records[streamName] === undefined) {
 				records[streamName] = [];
 			}
 
-			const PartitionKey =
-				evt.partitionKey || `partition-${credentials.identityId}`;
-
-			Object.assign(evt.data, { PartitionKey });
-
-			const data =
-				typeof evt.data === 'string' ? evt.data : JSON.stringify(evt.data);
-			const Data = Buffer.from(data);
+			const bufferData = typeof data === 'string' ? data : JSON.stringify(data);
+			const Data = Buffer.from(bufferData);
 			const record = { Data };
 			records[streamName].push(record);
 		});
