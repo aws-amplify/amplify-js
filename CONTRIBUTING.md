@@ -27,7 +27,7 @@ Opinionated implementations: There are many ways to interface with AWS Services.
 
 Declarative actions: Amplify will provide you a reference to a generic client object and ability to perform common actions. “RegisterUser”, “Login”, “SendObject”, “UpdateObject”, “StreamData”. By default you should not need to worry about AWS Service specific API operations like putItem() with a unique hash or even HTTP verbs.
 
-Cascading service interactions: Certain actions in a declarative style can have overlapping or ambiguous AWS Service implementations. With an opinionated implementation we can decide which Services are "primary" and which are "secondary" depending on what is configured. For instance sending an image will prefer S3 over API Gateway..
+Cascading service interactions: Certain actions in a declarative style can have overlapping or ambiguous AWS Service implementations. With an opinionated implementation we can decide which Services are "primary" and which are "secondary" depending on what is configured. For instance sending an image will prefer S3 over API Gateway.
 
 Simple, standard data objects: Sending & Receiving data to AWS Services can have many parameters, which tend to show up in the SDKs. These are abstracted and inferred, where possible, with simple JSON that the implementation can reason about. Standard parameters (bucket names, stream names, partition keys, etc.) that are part of the implementation are extracted from a simplified configuration file and dynamically generated/updated in order to further allow focus on state and data types only.
 
@@ -141,7 +141,7 @@ In you sample project, you can now link specific packages
 $ yarn link @aws-amplify/auth
 ```
 
-    These tests are only necessary if you’re looking to contribute a PR. If you’re just playing locally you don’t need them. However if you’re contributing a PR for anything other than bug fixes it would be best to validate that first because depending on the scope of the change.
+These tests are only necessary if you’re looking to contribute a PR. If you’re just playing locally you don’t need them. However if you’re contributing a PR for anything other than bug fixes it would be best to validate that first because depending on the scope of the change.
 
 #### Verdaccio
 
@@ -210,7 +210,7 @@ You could also contribute by reporting bugs, reproduction of bugs with sample co
 
 ## Related Repositories
 
-The Amplify Framework runs on Android, iOS, and numerous JavaScript-based web platforms. T
+The Amplify Framework runs on Android, iOS, and numerous JavaScript-based web platforms.
 
 1. [AWS Amplify for iOS](https://github.com/aws-amplify/amplify-ios)
 2. [AWS Amplify for Android](https://github.com/aws-amplify/amplify-android)
@@ -237,4 +237,4 @@ If you discover a potential security issue in this project we ask that you notif
 
 See the [LICENSE](https://github.com/aws-amplify/amplify-ios/blob/master/LICENSE) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
 
-We may ask you to sign a [Contributor License Agreement (CLA)](http://en.wikipedia.org/wiki/Contributor_License_Agreement) for larger changes..
+We may ask you to sign a [Contributor License Agreement (CLA)](http://en.wikipedia.org/wiki/Contributor_License_Agreement) for larger changes.
