@@ -26,7 +26,7 @@ export class AmplifyConfirmSignUp {
    * ```
    * [
    *  {
-   *    type: 'username'|'password'|'email'|'code'|'default',
+   *    type: string,
    *    label: string,
    *    placeholder: string,
    *    hint: string | Functional Component | null,
@@ -35,7 +35,7 @@ export class AmplifyConfirmSignUp {
    * ]
    * ```
    */
-  @Prop() formFields: FormFieldTypes | string[];
+  @Prop() formFields: FormFieldTypes | string[] = [];
   /** Auth state change handler for this components
    * e.g. SignIn -> 'Create Account' link -> SignUp
    */
@@ -49,36 +49,61 @@ export class AmplifyConfirmSignUp {
   @State() loading: boolean = false;
   @State() userInput: string = this.user ? this.user.username : null;
   private _signUpAttrs = this.user && this.user.signUpAttrs ? this.user.signUpAttrs : null;
+  private newFormFields: FormFieldTypes | string[] = [];
 
   componentWillLoad() {
     checkUsernameAlias(this.usernameAlias);
-    this.formFields = [
-      {
-        type: `${this.usernameAlias}`,
-        required: true,
-        value: this.userInput,
-        disabled: this.userInput ? true : false,
-      },
-      {
-        type: 'code',
-        label: I18n.get(Translations.CONFIRM_SIGN_UP_CODE_LABEL),
-        placeholder: I18n.get(Translations.CONFIRM_SIGN_UP_CODE_PLACEHOLDER),
-        required: true,
-        hint: (
-          <div>
-            {I18n.get(Translations.CONFIRM_SIGN_UP_LOST_CODE)}{' '}
-            <amplify-button variant="anchor" onClick={() => this.resendConfirmCode()}>
-              {I18n.get(Translations.CONFIRM_SIGN_UP_RESEND_CODE)}
-            </amplify-button>
-          </div>
-        ),
-        handleInputChange: event => this.handleCodeChange(event),
-      },
-    ];
+    if (this.formFields.length === 0) {
+      this.newFormFields = [
+        {
+          type: `${this.usernameAlias}`,
+          required: true,
+          handleInputChange: this.handleFormFieldInputChange(`${this.usernameAlias}`),
+          value: this.userInput,
+          disabled: this.userInput ? true : false,
+        },
+        {
+          type: 'code',
+          label: I18n.get(Translations.CONFIRM_SIGN_UP_CODE_LABEL),
+          placeholder: I18n.get(Translations.CONFIRM_SIGN_UP_CODE_PLACEHOLDER),
+          required: true,
+          hint: (
+            <div>
+              {I18n.get(Translations.CONFIRM_SIGN_UP_LOST_CODE)}{' '}
+              <amplify-button variant="anchor" onClick={() => this.resendConfirmCode()}>
+                {I18n.get(Translations.CONFIRM_SIGN_UP_RESEND_CODE)}
+              </amplify-button>
+            </div>
+          ),
+          handleInputChange: this.handleFormFieldInputChange('code'),
+        },
+      ];
+    } else {
+      this.formFields.forEach(field => {
+        const newField = { ...field };
+        newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
+        this.newFormFields.push(newField);
+      });
+    }
   }
 
-  handleCodeChange(event) {
-    this.code = event.target.value;
+  handleFormFieldInputChange(fieldType) {
+    switch (fieldType) {
+      case 'username':
+      case 'email':
+      case 'phone_number':
+        return event => (this.userInput = event.target.value);
+      case 'code':
+        return event => (this.code = event.target.value);
+      default:
+        return;
+    }
+  }
+
+  handleFormFieldInputWithCallback(event, field) {
+    const fnToCall = field['handleInputChange'];
+    const callback = this.handleFormFieldInputChange(field.type);
+    fnToCall(event, callback.bind(this));
   }
 
   async resendConfirmCode() {
@@ -137,7 +162,7 @@ export class AmplifyConfirmSignUp {
           </div>
         }
       >
-        <amplify-auth-fields formFields={this.formFields} />
+        <amplify-auth-fields formFields={this.newFormFields} />
       </amplify-form-section>
     );
   }
