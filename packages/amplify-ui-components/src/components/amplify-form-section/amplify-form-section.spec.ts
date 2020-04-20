@@ -12,6 +12,11 @@ describe('amplify-form-section spec:', () => {
     it('should render `Submit` for the button text', () => {
       expect(formSection.submitButtonText).toEqual('Submit');
     });
+
+    it('`handleKeyDown` should be defined', () => {
+      expect(formSection.handleKeyDown).toBeDefined();
+    })
+
   });
   describe('Render logic ->', () => {
     it('should render a form section with a submit button text of `Go`', async () => {
