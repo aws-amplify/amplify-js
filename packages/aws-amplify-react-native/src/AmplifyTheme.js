@@ -20,6 +20,8 @@ export const errorIconColor = '#DD3F5B';
 export const textInputColor = '#000000';
 export const textInputBorderColor = '#C4C4C4';
 export const placeholderColor = '#C7C7CD';
+export const buttonColor = '#ff9900';
+export const disabledButtonColor = '#ff990080';
 
 // Theme
 export default StyleSheet.create({
@@ -56,7 +58,13 @@ export default StyleSheet.create({
 	},
 	sectionFooterLink: {
 		fontSize: 14,
-		color: '#ff9900',
+		color: buttonColor,
+		alignItems: 'baseline',
+		textAlign: 'center',
+	},
+	sectionFooterLinkDisabled: {
+		fontSize: 14,
+		color: disabledButtonColor,
 		alignItems: 'baseline',
 		textAlign: 'center',
 	},
@@ -89,12 +97,12 @@ export default StyleSheet.create({
 		width: '100%',
 	},
 	button: {
-		backgroundColor: '#ff9900',
+		backgroundColor: buttonColor,
 		alignItems: 'center',
 		padding: 16,
 	},
 	buttonDisabled: {
-		backgroundColor: '#ff990080',
+		backgroundColor: disabledButtonColor,
 		alignItems: 'center',
 		padding: 16,
 	},
