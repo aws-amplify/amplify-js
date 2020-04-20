@@ -69,8 +69,11 @@ export class PhoneField extends Component {
 	}
 
 	render() {
-		const { label, required } = this.props;
+		const { label, required, value } = this.props;
+		const { dialCode } = this.state;
 		const theme = this.props.theme || AmplifyTheme;
+
+		const phoneValue = value ? value.replace(dialCode, '') : undefined;
 
 		return (
 			<View style={theme.formField}>
@@ -98,6 +101,7 @@ export class PhoneField extends Component {
 						autoCorrect={false}
 						placeholderTextColor={placeholderColor}
 						{...this.props}
+						value={phoneValue}
 						onChangeText={phone => {
 							this.setState({ phone }, () => {
 								this.onChangeText();
