@@ -508,7 +508,7 @@ const observe: {
 			? modelOrConstructor
 			: undefined;
 
-	if (modelConstructor === undefined) {
+	if (modelOrConstructor && modelConstructor === undefined) {
 		const model = <T>modelOrConstructor;
 		const modelConstructor =
 			model && (<Object>Object.getPrototypeOf(model)).constructor;
