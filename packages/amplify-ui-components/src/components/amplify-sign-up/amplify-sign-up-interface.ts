@@ -9,8 +9,8 @@ export interface AmplifySignUpAttributes {
   username: string;
   password: string;
   attributes?: {
-    email?: string;
-    phone_number?: string;
+    email?: string | undefined;
+    phone_number?: string | undefined;
     [userAttributes: string]: string;
   };
 }
