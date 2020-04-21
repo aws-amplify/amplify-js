@@ -51,7 +51,7 @@ describe('Util', () => {
 		};
 
 		function subscribeWithNetInfo() {
-			//Pass an object that has a fetch (imitate NetInfo)
+			// Pass an object that has a fetch attribute (imitate NetInfo)
 			subscribe({ fetch: {} });
 		}
 

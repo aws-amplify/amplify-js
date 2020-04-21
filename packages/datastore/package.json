@@ -35,6 +35,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
+    "@react-native-community/netinfo": "4.7.0",
     "@types/uuid": "3.4.5",
     "fake-indexeddb": "3.0.0"
   },
@@ -42,6 +43,7 @@
     "@aws-amplify/api": "^3.1.6",
     "@aws-amplify/core": "^3.2.3",
     "@aws-amplify/pubsub": "^3.0.7",
+    "@react-native-community/netinfo": "^5.5.0",
     "idb": "4.0.4",
     "immer": "6.0.1",
     "uuid": "3.3.2",
