@@ -1,4 +1,3 @@
-import { default as NetInfo } from '@react-native-community/netinfo';
 import Observable from 'zen-observable-ts';
 import { ConsoleLogger as Logger } from '../Logger';
 
