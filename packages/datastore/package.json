@@ -43,12 +43,14 @@
     "@aws-amplify/api": "^3.1.6",
     "@aws-amplify/core": "^3.2.3",
     "@aws-amplify/pubsub": "^3.0.7",
-    "@react-native-community/netinfo": "^5.5.0",
     "idb": "4.0.4",
     "immer": "6.0.1",
     "uuid": "3.3.2",
     "zen-observable-ts": "0.8.19",
     "zen-push": "0.2.1"
+  },
+  "peerDependencies": {
+    "@react-native-community/netinfo": "^5.5.0"
   },
   "jest": {
     "globals": {
