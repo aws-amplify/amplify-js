@@ -53,7 +53,8 @@ export default class AuthPiece extends React.Component {
 		}
 	}
 
-	renderUsernameField(theme, value) {
+	renderUsernameField(theme) {
+		const value = this.getUsernameFromInput();
 		const { usernameAttributes = [] } = this.props;
 		if (usernameAttributes === 'email') {
 			return (
