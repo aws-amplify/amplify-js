@@ -1,18 +1,20 @@
 import 'fake-indexeddb/auto';
 import uuidValidate from 'uuid-validate';
+import Observable from 'zen-observable-ts';
 import {
-	initSchema as initSchemaType,
 	DataStore as DataStoreType,
+	initSchema as initSchemaType,
 } from '../src/datastore/datastore';
+import { Predicates } from '../src/predicates';
+import { ExclusiveStorage as StorageType } from '../src/storage/storage';
 import {
 	ModelInit,
 	MutableModel,
+	NonModelTypeConstructor,
+	PersistentModel,
 	PersistentModelConstructor,
 	Schema,
-	NonModelTypeConstructor,
 } from '../src/types';
-import { ExclusiveStorage as StorageType } from '../src/storage/storage';
-import Observable from 'zen-observable-ts';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -34,6 +36,13 @@ beforeEach(() => {
 	({ initSchema, DataStore } = require('../src/datastore/datastore'));
 });
 
+const nameOf = <T>(name: keyof T) => name;
+
+/**
+ * Does nothing intentionally, we care only about type checking
+ */
+const expectType: <T>(param: T) => void = () => {};
+
 describe('DataStore tests', () => {
 	describe('initSchema tests', () => {
 		test('Model class is created', () => {
@@ -43,8 +52,9 @@ describe('DataStore tests', () => {
 
 			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
 
-			let property: keyof PersistentModelConstructor<any> = 'copyOf';
-			expect(Model).toHaveProperty(property);
+			expect(Model).toHaveProperty(
+				nameOf<PersistentModelConstructor<any>>('copyOf')
+			);
 
 			expect(typeof Model.copyOf).toBe('function');
 		});
@@ -79,7 +89,10 @@ describe('DataStore tests', () => {
 
 			expect(model.id).toBeDefined();
 
-			// local models use something like a uuid v1, see https://github.com/kelektiv/node-uuid/issues/75#issuecomment-483756623
+			/**
+			 * local models use something like a uuid v1
+			 * see https://github.com/kelektiv/node-uuid/issues/75#issuecomment-483756623
+			 */
 			expect(
 				uuidValidate(model.id.replace(/^(.{4})-(.{4})-(.{8})/, '$3-$2-$1'), 1)
 			).toBe(true);
@@ -100,8 +113,9 @@ describe('DataStore tests', () => {
 
 			const { Metadata } = classes;
 
-			let property: keyof PersistentModelConstructor<any> = 'copyOf';
-			expect(Metadata).not.toHaveProperty(property);
+			expect(Metadata).not.toHaveProperty(
+				nameOf<PersistentModelConstructor<any>>('copyOf')
+			);
 		});
 
 		test('Non @model class can be instantiated', () => {
@@ -267,6 +281,178 @@ describe('DataStore tests', () => {
 		await expect(DataStore.save(<any>metadata)).rejects.toThrow(
 			'Object is not an instance of a valid model'
 		);
+	});
+
+	describe('Type definitions', () => {
+		let Model: PersistentModelConstructor<Model>;
+
+		beforeEach(() => {
+			let model: Model;
+
+			jest.resetModules();
+			jest.doMock('../src/storage/storage', () => {
+				const mock = jest.fn().mockImplementation(() => ({
+					runExclusive: jest.fn(() => [model]),
+					query: jest.fn(() => [model]),
+					observe: jest.fn(() => Observable.from([])),
+				}));
+
+				(<any>mock).getNamespace = () => ({ models: {} });
+
+				return { ExclusiveStorage: mock };
+			});
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			({ Model } = classes as { Model: PersistentModelConstructor<Model> });
+
+			model = new Model({
+				field1: 'Some value',
+			});
+		});
+
+		describe('Query', () => {
+			test('all', async () => {
+				const allModels = await DataStore.query(Model);
+				expectType<Model[]>(allModels);
+				const [one] = allModels;
+				expect(one.field1).toBeDefined();
+				expect(one).toBeInstanceOf(Model);
+			});
+			test('one by id', async () => {
+				const oneModelById = await DataStore.query(Model, 'someid');
+				expectType<Model>(oneModelById);
+				expect(oneModelById.field1).toBeDefined();
+				expect(oneModelById).toBeInstanceOf(Model);
+			});
+			test('with criteria', async () => {
+				const multiModelWithCriteria = await DataStore.query(Model, c =>
+					c.field1('contains', 'something')
+				);
+				expectType<Model[]>(multiModelWithCriteria);
+				const [one] = multiModelWithCriteria;
+				expect(one.field1).toBeDefined();
+				expect(one).toBeInstanceOf(Model);
+			});
+			test('with pagination', async () => {
+				const allModelsPaginated = await DataStore.query(
+					Model,
+					Predicates.ALL,
+					{ page: 0, limit: 20 }
+				);
+				expectType<Model[]>(allModelsPaginated);
+				const [one] = allModelsPaginated;
+				expect(one.field1).toBeDefined();
+				expect(one).toBeInstanceOf(Model);
+			});
+		});
+
+		describe('Query with generic type', () => {
+			test('all', async () => {
+				const allModels = await DataStore.query<Model>(Model);
+				expectType<Model[]>(allModels);
+				const [one] = allModels;
+				expect(one.field1).toBeDefined();
+				expect(one).toBeInstanceOf(Model);
+			});
+			test('one by id', async () => {
+				const oneModelById = await DataStore.query<Model>(Model, 'someid');
+				expectType<Model>(oneModelById);
+				expect(oneModelById.field1).toBeDefined();
+				expect(oneModelById).toBeInstanceOf(Model);
+			});
+			test('with criteria', async () => {
+				const multiModelWithCriteria = await DataStore.query<Model>(Model, c =>
+					c.field1('contains', 'something')
+				);
+				expectType<Model[]>(multiModelWithCriteria);
+				const [one] = multiModelWithCriteria;
+				expect(one.field1).toBeDefined();
+				expect(one).toBeInstanceOf(Model);
+			});
+			test('with pagination', async () => {
+				const allModelsPaginated = await DataStore.query<Model>(
+					Model,
+					Predicates.ALL,
+					{ page: 0, limit: 20 }
+				);
+				expectType<Model[]>(allModelsPaginated);
+				const [one] = allModelsPaginated;
+				expect(one.field1).toBeDefined();
+				expect(one).toBeInstanceOf(Model);
+			});
+		});
+
+		describe('Observe', () => {
+			test('subscribe to all models', async () => {
+				DataStore.observe().subscribe(({ element, model }) => {
+					expectType<PersistentModelConstructor<PersistentModel>>(model);
+					expectType<PersistentModel>(element);
+				});
+			});
+			test('subscribe to model instance', async () => {
+				const model = new Model({ field1: 'somevalue' });
+
+				DataStore.observe(model).subscribe(({ element, model }) => {
+					expectType<PersistentModelConstructor<Model>>(model);
+					expectType<Model>(element);
+				});
+			});
+			test('subscribe to model', async () => {
+				DataStore.observe(Model).subscribe(({ element, model }) => {
+					expectType<PersistentModelConstructor<Model>>(model);
+					expectType<Model>(element);
+				});
+			});
+			test('subscribe to model instance by id', async () => {
+				DataStore.observe(Model, 'some id').subscribe(({ element, model }) => {
+					expectType<PersistentModelConstructor<Model>>(model);
+					expectType<Model>(element);
+				});
+			});
+			test('subscribe to model with criteria', async () => {
+				DataStore.observe(Model, c => c.field1('ne', 'somevalue')).subscribe(
+					({ element, model }) => {
+						expectType<PersistentModelConstructor<Model>>(model);
+						expectType<Model>(element);
+					}
+				);
+			});
+		});
+
+		describe('Observe with generic type', () => {
+			test('subscribe to model instance', async () => {
+				const model = new Model({ field1: 'somevalue' });
+
+				DataStore.observe<Model>(model).subscribe(({ element, model }) => {
+					expectType<PersistentModelConstructor<Model>>(model);
+					expectType<Model>(element);
+				});
+			});
+			test('subscribe to model', async () => {
+				DataStore.observe<Model>(Model).subscribe(({ element, model }) => {
+					expectType<PersistentModelConstructor<Model>>(model);
+					expectType<Model>(element);
+				});
+			});
+			test('subscribe to model instance by id', async () => {
+				DataStore.observe<Model>(Model, 'some id').subscribe(
+					({ element, model }) => {
+						expectType<PersistentModelConstructor<Model>>(model);
+						expectType<Model>(element);
+					}
+				);
+			});
+			test('subscribe to model with criteria', async () => {
+				DataStore.observe<Model>(Model, c =>
+					c.field1('ne', 'somevalue')
+				).subscribe(({ element, model }) => {
+					expectType<PersistentModelConstructor<Model>>(model);
+					expectType<Model>(element);
+				});
+			});
+		});
 	});
 });
 
