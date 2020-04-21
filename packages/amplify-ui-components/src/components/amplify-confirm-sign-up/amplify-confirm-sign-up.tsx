@@ -101,7 +101,11 @@ export class AmplifyConfirmSignUp {
   }
 
   handleFormFieldInputWithCallback(event, field) {
-    const fnToCall = field['handleInputChange'];
+    const fnToCall = field['handleInputChange']
+      ? field['handleInputChange']
+      : (event, cb) => {
+          cb(event);
+        };
     const callback = this.handleFormFieldInputChange(field.type);
     fnToCall(event, callback.bind(this));
   }
