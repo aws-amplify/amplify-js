@@ -28,10 +28,10 @@ import {
 	AbortMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
 import { AxiosHttpHandler, SEND_PROGRESS_EVENT } from './axios-http-handler';
-import { fromString } from '@aws-sdk/util-buffer-from';
 import * as events from 'events';
 import { parseUrl } from '@aws-sdk/url-parser-node';
 import { httpHandlerOptions } from './httpHandlerOptions.native';
+import { streamCollector } from '@aws-sdk/stream-collector-native';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
 
@@ -70,9 +70,11 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	public async upload() {
-		this.body = this.validateAndSanitizeBody(this.params.Body);
+		this.body = await this.validateAndSanitizeBody(this.params.Body);
 		this.totalBytesToUpload = this.byteLength(this.body);
 		if (this.totalBytesToUpload <= this.minPartSize) {
+			// Multipart upload is not required. Upload the sanitized body as is
+			this.params.Body = this.body;
 			const putObjectCommand = new PutObjectCommand(this.params);
 			const s3 = this._createNewS3Client(this.opts, this.emitter);
 			return s3.send(putObjectCommand);
@@ -195,8 +197,17 @@ export class AWSS3ProviderManagedUpload {
 		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
 		const s3 = this._createNewS3Client(this.opts);
 		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
-		const data = await s3.send(completeUploadCommand);
-		return data.Key;
+		try {
+			const data = await s3.send(completeUploadCommand);
+			return data.Key;
+		} catch (error) {
+			logger.error(
+				'error happened while finishing the upload. Cancelling the multipart upload',
+				error
+			);
+			this.cancelUpload();
+			return;
+		}
 	}
 
 	private async checkIfUploadCancelled(uploadId: string) {
@@ -260,42 +271,63 @@ export class AWSS3ProviderManagedUpload {
 		});
 	}
 
-	private byteLength(inputString: any) {
-		if (inputString === null || inputString === undefined) return 0;
-		if (typeof inputString.byteLength === 'number') {
-			return inputString.byteLength;
-		} else if (typeof inputString.length === 'number') {
-			return inputString.length;
-		} else if (typeof inputString.size === 'number') {
-			return inputString.size;
-		} else if (typeof inputString.path === 'string') {
+	private byteLength(input: any) {
+		if (input === null || input === undefined) return 0;
+		if (typeof input.byteLength === 'number') {
+			return input.byteLength;
+		} else if (typeof input.length === 'number') {
+			return input.length;
+		} else if (typeof input.size === 'number') {
+			return input.size;
+		} else if (typeof input.path === 'string') {
 			/* NodeJs Support
-			return require('fs').lstatSync(inputString.path).size;
+			return require('fs').lstatSync(input.path).size;
 			*/
 		} else {
-			throw new Error('Cannot determine length of ' + inputString);
+			throw new Error('Cannot determine length of ' + input);
 		}
 	}
 
-	private validateAndSanitizeBody(body: any): any {
-		if (typeof File !== 'undefined' && body instanceof File) {
-			// Browser file
+	private async validateAndSanitizeBody(body: any): Promise<any> {
+		if (this.isGenericObject(body)) {
+			// Any javascript object
+			return JSON.stringify(body);
+		} else if (this.isBlob(body)) {
+			// If it's a blob, we need to convert it to an array buffer as axios has issues
+			// with correctly identifying blobs in *react native* environment. For more
+			// details see https://github.com/aws-amplify/amplify-js/issues/5311
+			if (httpHandlerOptions.bufferBody) {
+				return await streamCollector(body);
+			}
 			return body;
-		} /* NodeJS Support else if (
+		} else {
+			// Files, arrayBuffer etc
+			return body;
+		}
+		/* TODO: streams and files for nodejs 
+		if (
 			typeof body.path === 'string' &&
 			require('fs').lstatSync(body.path).size > 0
 		) {
 			return body;
-		} */ else if (
-			typeof body === 'string'
-		) {
-			// String blob
-			return fromString(body);
-		} else {
-			// Any javascript object
-			return fromString(JSON.stringify(body));
+		} */
+	}
+
+	private isBlob(body: any) {
+		return typeof Blob !== 'undefined' && body instanceof Blob;
+	}
+
+	private isGenericObject(body: any) {
+		if (body !== null && typeof body === 'object') {
+			try {
+				return !(this.byteLength(body) >= 0);
+			} catch (error) {
+				// If we cannot determine the length of the body, consider it
+				// as a generic object and upload a stringified version of it
+				return true;
+			}
 		}
-		// TODO: streams for nodejs
+		return false;
 	}
 
 	/**
