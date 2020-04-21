@@ -10,11 +10,10 @@ type NetworkStatus = {
 
 export default class ReachabilityNavigator implements Reachability {
 	networkMonitor(netInfo?: any): Observable<NetworkStatus> {
-		if (!netInfo) {
-			console.warn(
+		if (!(netInfo && netInfo.fetch)) {
+			throw new Error(
 				'NetInfo must be passed to networkMonitor to enable reachability in React Native'
 			);
-			return;
 		}
 		return new Observable(observer => {
 			logger.log('subscribing to reachability React Native');

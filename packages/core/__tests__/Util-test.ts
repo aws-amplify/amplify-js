@@ -1,6 +1,8 @@
 'use strict';
 
 import { jitteredExponentialRetry, NonRetryableError } from '../src/Util';
+import ReachabilityNative from '../src/Util/Reachability.native';
+import Reachability from '../src/Util/Reachability';
 import { ConsoleLogger as Logger } from '../src/Logger';
 Logger.LOG_LEVEL = 'DEBUG';
 describe('Util', () => {
@@ -42,5 +44,29 @@ describe('Util', () => {
 		}
 
 		expect(testFunc).toBeCalledTimes(1);
+	});
+	test('Should throw Error when NetInfo is not passed to networkMonitor', () => {
+		const subscribe = netInfo => {
+			new ReachabilityNative().networkMonitor(netInfo);
+		};
+
+		function subscribeWithNetInfo() {
+			subscribe({ fetch: {} });
+		}
+		expect(subscribe).toThrowError(
+			'NetInfo must be passed to networkMonitor to enable reachability in React Native'
+		);
+		expect(subscribeWithNetInfo).not.toThrowError();
+	});
+	test('Should not throw Error when NetInfo is not passed to networkMonitor in Web Reachability', () => {
+		const subscribe = () => {
+			new Reachability().networkMonitor();
+		};
+
+		function subscribeWithNetInfo() {
+			new Reachability().networkMonitor({ fetch: {} });
+		}
+		expect(subscribe).not.toThrowError();
+		expect(subscribeWithNetInfo).not.toThrowError();
 	});
 });
