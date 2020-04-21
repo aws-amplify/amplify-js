@@ -1,17 +1,34 @@
 {
-  "presets": [
-    [
-      "es2015", {
-        "loose": true,
-        "modules": false
-      }
-    ]
-  ],
-  "env": {
-    "commonjs": {
-      "plugins": [
-        ["transform-es2015-modules-commonjs", { "loose": true }]
-      ]
-    }
-  }
+	"presets": [
+		[
+			"@babel/preset-env",
+			{
+				"loose": true,
+				"modules": false
+			}
+		]
+	],
+	"env": {
+		"commonjs": {
+			"presets": [
+				[
+					"@babel/preset-env",
+					{
+						"loose": true,
+						"modules": "commonjs"
+					}
+				]
+			]
+		},
+		"test": {
+			"presets": [
+				[
+					"@babel/preset-env",
+					{
+						"loose": true
+					}
+				]
+			]
+		}
+	}
 }
