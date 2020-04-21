@@ -488,26 +488,48 @@ const remove: {
 		return deleted;
 	}
 };
-
 const observe: {
-	(): Observable<SubscriptionMessage<any>>;
-	<T extends PersistentModel>(obj: T): Observable<SubscriptionMessage<T>>;
+	(): Observable<SubscriptionMessage<PersistentModel>>;
+
+	<T extends PersistentModel>(model: T): Observable<SubscriptionMessage<T>>;
+
 	<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
-		id: string
+		criteria?: string | ProducerModelPredicate<T>
 	): Observable<SubscriptionMessage<T>>;
-	<T extends PersistentModel>(
-		modelConstructor: PersistentModelConstructor<T>
-	): Observable<SubscriptionMessage<T>>;
-	<T extends PersistentModel>(
-		modelConstructor: PersistentModelConstructor<T>,
-		criteria: ProducerModelPredicate<T>
-	): Observable<SubscriptionMessage<T>>;
-} = <T extends PersistentModel>(
-	modelConstructor?: PersistentModelConstructor<T>,
+} = <T extends PersistentModel = PersistentModel>(
+	modelOrConstructor?: T | PersistentModelConstructor<T>,
 	idOrCriteria?: string | ProducerModelPredicate<T>
-) => {
+): Observable<SubscriptionMessage<T>> => {
 	let predicate: ModelPredicate<T>;
+
+	const modelConstructor: PersistentModelConstructor<T> =
+		modelOrConstructor && isValidModelConstructor(modelOrConstructor)
+			? modelOrConstructor
+			: undefined;
+
+	if (modelOrConstructor && modelConstructor === undefined) {
+		const model = <T>modelOrConstructor;
+		const modelConstructor =
+			model && (<Object>Object.getPrototypeOf(model)).constructor;
+
+		if (isValidModelConstructor<T>(modelConstructor)) {
+			if (idOrCriteria) {
+				logger.warn('idOrCriteria is ignored when using a model instance', {
+					model,
+					idOrCriteria,
+				});
+			}
+
+			return observe(modelConstructor, model.id);
+		} else {
+			const msg =
+				'The model is not an instance of a PersistentModelConstructor';
+			logger.error(msg, { model });
+
+			throw new Error(msg);
+		}
+	}
 
 	if (idOrCriteria !== undefined && modelConstructor === undefined) {
 		const msg = 'Cannot provide criteria without a modelConstructor';
@@ -530,13 +552,13 @@ const observe: {
 	} else {
 		predicate =
 			modelConstructor &&
-			ModelPredicateCreator.createFromExisting(
+			ModelPredicateCreator.createFromExisting<T>(
 				getModelDefinition(modelConstructor),
 				idOrCriteria
 			);
 	}
 
-	return new Observable<SubscriptionMessage<any>>(observer => {
+	return new Observable<SubscriptionMessage<T>>(observer => {
 		let handle: ZenObservable.Subscription;
 
 		(async () => {
@@ -570,7 +592,7 @@ const query: {
 	modelConstructor: PersistentModelConstructor<T>,
 	idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll,
 	pagination?: PaginationInput
-) => {
+): Promise<T | T[] | undefined> => {
 	await start();
 	if (!isValidModelConstructor(modelConstructor)) {
 		const msg = 'Constructor is not for a valid model';
