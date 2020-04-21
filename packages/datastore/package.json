@@ -35,6 +35,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
+    "@react-native-community/netinfo": "4.7.0",
     "@types/uuid": "3.4.5",
     "fake-indexeddb": "3.0.0"
   },
@@ -47,6 +48,9 @@
     "uuid": "3.3.2",
     "zen-observable-ts": "0.8.19",
     "zen-push": "0.2.1"
+  },
+  "peerDependencies": {
+    "@react-native-community/netinfo": "^5.5.0"
   },
   "jest": {
     "globals": {
