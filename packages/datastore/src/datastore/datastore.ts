@@ -498,7 +498,7 @@ const observe: {
 		criteria?: string | ProducerModelPredicate<T>
 	): Observable<SubscriptionMessage<T>>;
 } = <T extends PersistentModel = PersistentModel>(
-	modelOrConstructor?: PersistentModelConstructor<T>,
+	modelOrConstructor?: T | PersistentModelConstructor<T>,
 	idOrCriteria?: string | ProducerModelPredicate<T>
 ): Observable<SubscriptionMessage<T>> => {
 	let predicate: ModelPredicate<T>;
@@ -507,6 +507,29 @@ const observe: {
 		modelOrConstructor && isValidModelConstructor(modelOrConstructor)
 			? modelOrConstructor
 			: undefined;
+
+	if (modelConstructor === undefined) {
+		const model = <T>modelOrConstructor;
+		const modelConstructor =
+			model && (<Object>Object.getPrototypeOf(model)).constructor;
+
+		if (isValidModelConstructor<T>(modelConstructor)) {
+			if (idOrCriteria) {
+				logger.warn('idOrCriteria is ignored when using a model instance', {
+					model,
+					idOrCriteria,
+				});
+			}
+
+			return observe(modelConstructor, model.id);
+		} else {
+			const msg =
+				'The model is not an instance of a PersistentModelConstructor';
+			logger.error(msg, { model });
+
+			throw new Error(msg);
+		}
+	}
 
 	if (idOrCriteria !== undefined && modelConstructor === undefined) {
 		const msg = 'Cannot provide criteria without a modelConstructor';
