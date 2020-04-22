@@ -5,9 +5,9 @@
 
 ## Properties
 
-| Property   | Attribute  | Description | Type                                                       | Default     |
-| ---------- | ---------- | ----------- | ---------------------------------------------------------- | ----------- |
-| `provider` | `provider` |             | `"amazon" \| "auth0" \| "facebook" \| "google" \| "oauth"` | `undefined` |
+| Property   | Attribute  | Description                        | Type                                                       | Default     |
+| ---------- | ---------- | ---------------------------------- | ---------------------------------------------------------- | ----------- |
+| `provider` | `provider` | Specifies the federation provider. | `"amazon" \| "auth0" \| "facebook" \| "google" \| "oauth"` | `undefined` |
 
 
 ## Dependencies

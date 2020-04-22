@@ -5,11 +5,11 @@
 
 ## Properties
 
-| Property          | Attribute           | Description | Type                                                                                                                                                        | Default     |
-| ----------------- | ------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `autoShowTooltip` | `auto-show-tooltip` |             | `boolean`                                                                                                                                                   | `false`     |
-| `name`            | `name`              |             | `"amazon" \| "auth0" \| "enter-vr" \| "exit-vr" \| "facebook" \| "google" \| "loading" \| "maximize" \| "minimize" \| "sound" \| "sound-mute" \| "warning"` | `undefined` |
-| `tooltip`         | `tooltip`           |             | `string`                                                                                                                                                    | `null`      |
+| Property          | Attribute           | Description                                                  | Type                                                                                                                                                        | Default     |
+| ----------------- | ------------------- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `autoShowTooltip` | `auto-show-tooltip` | (Optional) Whether or not to show the tooltip automatically  | `boolean`                                                                                                                                                   | `false`     |
+| `name`            | `name`              | The name of the icon used inside of the button               | `"amazon" \| "auth0" \| "enter-vr" \| "exit-vr" \| "facebook" \| "google" \| "loading" \| "maximize" \| "minimize" \| "sound" \| "sound-mute" \| "warning"` | `undefined` |
+| `tooltip`         | `tooltip`           | (Optional) The tooltip that will show on hover of the button | `string`                                                                                                                                                    | `null`      |
 
 
 ## Dependencies

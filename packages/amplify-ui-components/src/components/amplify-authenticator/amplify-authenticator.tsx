@@ -67,7 +67,7 @@ export class AmplifyAuthenticator {
     if (byHostedUI !== 'true') await this.checkUser();
   }
 
-  async checkUser() {
+  private async checkUser() {
     if (!Auth || typeof Auth.currentAuthenticatedUser !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
@@ -93,7 +93,7 @@ export class AmplifyAuthenticator {
     }
   }
 
-  onAuthStateChange = (nextAuthState: AuthState, data?: CognitoUserInterface) => {
+  private onAuthStateChange = (nextAuthState: AuthState, data?: CognitoUserInterface) => {
     if (nextAuthState === undefined) return logger.info('nextAuthState cannot be undefined');
 
     logger.info('Inside onAuthStateChange Method current authState:', this.authState);
@@ -110,7 +110,7 @@ export class AmplifyAuthenticator {
     logger.info(`authState has been updated to ${this.authState}`);
   };
 
-  renderAuthComponent(authState: AuthState) {
+  private renderAuthComponent(authState: AuthState) {
     switch (authState) {
       case AuthState.SignIn:
         return (
@@ -173,7 +173,8 @@ export class AmplifyAuthenticator {
     }
   }
 
-  async componentDidUnload() {
+  // eslint-disable-next-line
+  componentDidUnload() {
     Hub.remove(UI_AUTH_CHANNEL, data => {
       const { payload } = data;
       if (payload.event === TOAST_AUTH_ERROR_EVENT && payload.message) {
