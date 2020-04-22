@@ -3,10 +3,11 @@ import {
 	USER_CREDENTIALS,
 } from '../src/sync/processors/subscription';
 import { TransformerMutationType } from '../src/sync/utils';
+import { SchemaModel } from '../src/types';
 
 describe('sync engine subscription module', () => {
 	test('owner authorization', () => {
-		const model = {
+		const model: SchemaModel = {
 			syncable: true,
 			name: 'Post',
 			pluralName: 'Posts',
@@ -75,6 +76,7 @@ describe('sync engine subscription module', () => {
 		};
 
 		expect(
+			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				TransformerMutationType.CREATE,
@@ -84,7 +86,7 @@ describe('sync engine subscription module', () => {
 		).toEqual(authInfo);
 	});
 	test('group authorization', () => {
-		const model = {
+		const model: SchemaModel = {
 			syncable: true,
 			name: 'Post',
 			pluralName: 'Posts',
@@ -152,6 +154,7 @@ describe('sync engine subscription module', () => {
 		};
 
 		expect(
+			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				TransformerMutationType.CREATE,
@@ -161,7 +164,7 @@ describe('sync engine subscription module', () => {
 		).toEqual(authInfo);
 	});
 	test('public iam authorization for unauth user', () => {
-		const model = {
+		const model: SchemaModel = {
 			syncable: true,
 			name: 'Post',
 			pluralName: 'Posts',
@@ -210,6 +213,7 @@ describe('sync engine subscription module', () => {
 		};
 
 		expect(
+			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				TransformerMutationType.CREATE,
@@ -218,7 +222,7 @@ describe('sync engine subscription module', () => {
 		).toEqual(authInfo);
 	});
 	test('private iam authorization for unauth user', () => {
-		const model = {
+		const model: SchemaModel = {
 			syncable: true,
 			name: 'Post',
 			pluralName: 'Posts',
@@ -267,6 +271,7 @@ describe('sync engine subscription module', () => {
 		};
 
 		expect(
+			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				TransformerMutationType.CREATE,
@@ -275,7 +280,7 @@ describe('sync engine subscription module', () => {
 		).toEqual(null);
 	});
 	test('private iam authorization for auth user', () => {
-		const model = {
+		const model: SchemaModel = {
 			syncable: true,
 			name: 'Post',
 			pluralName: 'Posts',
@@ -324,6 +329,7 @@ describe('sync engine subscription module', () => {
 		};
 
 		expect(
+			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				TransformerMutationType.CREATE,
@@ -332,7 +338,7 @@ describe('sync engine subscription module', () => {
 		).toEqual(authInfo);
 	});
 	test('public apiKey authorization without credentials', () => {
-		const model = {
+		const model: SchemaModel = {
 			syncable: true,
 			name: 'Post',
 			pluralName: 'Posts',
@@ -381,6 +387,7 @@ describe('sync engine subscription module', () => {
 		};
 
 		expect(
+			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				TransformerMutationType.CREATE,

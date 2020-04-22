@@ -343,7 +343,7 @@ class IndexedDBAdapter implements Adapter {
 	}
 
 	private async enginePagination<T>(
-		storeName,
+		storeName: string,
 		pagination?: PaginationInput
 	): Promise<T[]> {
 		let result: T[];
@@ -366,7 +366,7 @@ class IndexedDBAdapter implements Adapter {
 			const hasLimit = typeof limit === 'number' && limit > 0;
 			let moreRecords = true;
 			let itemsLeft = limit;
-			while (moreRecords && cursor.value) {
+			while (moreRecords && cursor && cursor.value) {
 				pageResults.push(cursor.value);
 
 				cursor = await cursor.continue();
