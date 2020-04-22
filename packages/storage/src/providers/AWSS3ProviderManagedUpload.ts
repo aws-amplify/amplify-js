@@ -30,7 +30,7 @@ import {
 import { AxiosHttpHandler, SEND_PROGRESS_EVENT } from './axios-http-handler';
 import * as events from 'events';
 import { parseUrl } from '@aws-sdk/url-parser-node';
-import { httpHandlerOptions } from './httpHandlerOptions.native';
+import { httpHandlerOptions } from './httpHandlerOptions';
 import { streamCollector } from '@aws-sdk/stream-collector-native';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
@@ -135,10 +135,9 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	private async createMultiPartUpload() {
-		const createMultiPartUploadCommand = new CreateMultipartUploadCommand({
-			Bucket: this.params.Bucket,
-			Key: this.params.Key,
-		});
+		const createMultiPartUploadCommand = new CreateMultipartUploadCommand(
+			this.params
+		);
 		const s3 = this._createNewS3Client(this.opts);
 		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		const response = await s3.send(createMultiPartUploadCommand);
