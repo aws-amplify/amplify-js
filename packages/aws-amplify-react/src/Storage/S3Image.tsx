@@ -12,14 +12,13 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import Storage from '@aws-amplify/storage';
+import { Storage } from '@aws-amplify/storage';
 
 import AmplifyTheme from '../AmplifyTheme';
 import { transparent1X1 } from '../AmplifyUI';
-import PhotoPicker from '../Widget/PhotoPicker';
+import { PhotoPicker } from '../Widget/PhotoPicker';
 import { calcKey } from './Common';
 
 const logger = new Logger('Storage.S3Image');
@@ -36,6 +35,7 @@ export interface IS3ImageProps {
 	onClick?: any;
 	onError?: any;
 	onLoad?: any;
+	onUploadSuccess?: any;
 	path?: any;
 	picker?: any;
 	selected?: any;
@@ -52,7 +52,7 @@ export interface IS3ImageState {
 	src;
 }
 
-export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
+export class S3Image extends React.Component<IS3ImageProps, IS3ImageState> {
 	_isMounted = false;
 	constructor(props) {
 		super(props);
@@ -142,9 +142,16 @@ export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
 	handlePick(data) {
 		const that = this;
 
-		const path = this.props.path || '';
-		const { imgKey, level, fileToKey, track, identityId } = this.props;
-		const { file, name, size, type } = data;
+		const {
+			imgKey,
+			level,
+			fileToKey,
+			track,
+			identityId,
+			path = '',
+			onUploadSuccess,
+		} = this.props;
+		const { file, type } = data;
 		const key = imgKey || path + calcKey(data, fileToKey);
 		if (!Storage || typeof Storage.put !== 'function') {
 			throw new Error(
@@ -159,6 +166,7 @@ export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
 			.then(data => {
 				logger.debug('handle pick data', data);
 				that.getImageSource(key, level, track, identityId);
+				if (onUploadSuccess) onUploadSuccess();
 			})
 			.catch(err => logger.debug('handle pick error', err));
 	}
@@ -245,3 +253,8 @@ export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default S3Image;

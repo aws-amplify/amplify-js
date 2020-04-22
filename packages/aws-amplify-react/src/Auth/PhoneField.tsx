@@ -6,7 +6,7 @@ import {
 	SelectInput,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import countryDialCodes from './common/country-dial-codes';
+import { countryDialCodes } from './common/country-dial-codes';
 import { I18n } from '@aws-amplify/core';
 import { auth } from '../Amplify-UI/data-test-attributes';
 
@@ -19,7 +19,7 @@ interface IPhoneFieldProps {
 	theme?: any;
 }
 
-interface IPhoneFieldState {}
+interface IPhoneFieldState { }
 
 class PhoneField extends React.Component<IPhoneFieldProps, IPhoneFieldState> {
 	private inputs: any;
@@ -67,8 +67,8 @@ class PhoneField extends React.Component<IPhoneFieldProps, IPhoneFieldState> {
 				{required ? (
 					<InputLabel theme={theme}>{I18n.get(label)} *</InputLabel>
 				) : (
-					<InputLabel theme={theme}>{I18n.get(label)}</InputLabel>
-				)}
+						<InputLabel theme={theme}>{I18n.get(label)}</InputLabel>
+					)}
 				<SelectInput theme={theme}>
 					<select
 						name="dial_code"
@@ -99,4 +99,8 @@ class PhoneField extends React.Component<IPhoneFieldProps, IPhoneFieldState> {
 }
 
 export { PhoneField };
+
+/**
+ * @deprecated use named import
+ */
 export default PhoneField;

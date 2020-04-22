@@ -14,7 +14,7 @@ exports[`SumerianScene renders successfully 1`] = `
       data-test="sumerian-scene"
       id="scene-dom-id"
     >
-      <Loading
+      <Component
         percentage={0}
         sceneError={null}
         sceneName="TestSceneName"
@@ -80,7 +80,7 @@ exports[`SumerianScene renders successfully 1`] = `
             </div>
           </div>
         </div>
-      </Loading>
+      </Component>
     </div>
     <div
       className="XR__sceneBar___2ShrP"

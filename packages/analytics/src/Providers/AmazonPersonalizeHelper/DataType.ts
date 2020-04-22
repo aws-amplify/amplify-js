@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { AWS } from '@aws-amplify/core';
+import { ICredentials } from '@aws-amplify/core';
 
 interface BasePayload {
 	userId: string;
@@ -31,7 +31,7 @@ export interface RequestParams {
 	sessionInfo: SessionInfo;
 	config: Config;
 	sentAt: number;
-	credentials: AWS.Credentials & AWS.CognitoIdentityCredentials;
+	credentials: ICredentials;
 }
 
 export interface EventData {
@@ -49,11 +49,11 @@ export interface RecordEventPayload {
 	eventId: string;
 	eventType: string;
 	sentAt: number;
-	properties?: Properties;
+	properties?: string;
 }
 
 export interface RecordEventListPayload extends BasePayload {
 	eventList: RecordEventPayload[];
 	config?: Config;
-	credentials?: AWS.Credentials & AWS.CognitoIdentityCredentials;
+	credentials?: ICredentials;
 }
