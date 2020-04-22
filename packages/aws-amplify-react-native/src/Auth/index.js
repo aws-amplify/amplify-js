@@ -65,11 +65,11 @@ export function withAuthenticator(
 			if (typeof includeGreetings === 'object' && includeGreetings !== null) {
 				this.authConfig = Object.assign(this.authConfig, includeGreetings);
 			} else {
-				this.authConfig = {
+				this.authConfig = {...signUpConfig.authConfig, ...{
 					includeGreetings,
 					authenticatorComponents,
-					signUpConfig,
-				};
+					signUpConfig
+				}};
 			}
 		}
 
