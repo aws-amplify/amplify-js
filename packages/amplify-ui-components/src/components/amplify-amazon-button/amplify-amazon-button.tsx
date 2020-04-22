@@ -21,7 +21,7 @@ export class AmplifyAmazonButton {
    */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 
-  federatedSignIn = response => {
+  private federatedSignIn = response => {
     const { access_token, expires_in } = response;
 
     if (!access_token) {
@@ -56,7 +56,7 @@ export class AmplifyAmazonButton {
   /**
    * @see https://developer.amazon.com/docs/login-with-amazon/install-sdk-javascript.html
    */
-  signInWithAmazon(event) {
+  private signInWithAmazon(event) {
     event.preventDefault();
 
     window['amazon'].Login.setClientId(this.clientId);

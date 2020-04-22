@@ -107,7 +107,7 @@ export class AmplifyForgotPassword {
     }
   }
 
-  handleFormFieldInput(fieldType) {
+  private handleFormFieldInput(fieldType) {
     switch (fieldType) {
       case 'username':
       case 'email':
@@ -122,7 +122,7 @@ export class AmplifyForgotPassword {
     }
   }
 
-  handleFormFieldInputWithCallback(event, field) {
+  private handleFormFieldInputWithCallback(event, field) {
     const fnToCall = field['handleInputChange']
       ? field['handleInputChange']
       : (event, cb) => {
@@ -135,7 +135,7 @@ export class AmplifyForgotPassword {
     fnToCall(event, callback.bind(this));
   }
 
-  handlePhoneNumberChange(event) {
+  private handlePhoneNumberChange(event) {
     const name = event.target.name;
     const value = event.target.value;
 
@@ -153,7 +153,7 @@ export class AmplifyForgotPassword {
     }
   }
 
-  async send(event) {
+  private async send(event) {
     if (event) {
       event.preventDefault();
     }
@@ -198,7 +198,7 @@ export class AmplifyForgotPassword {
     }
   }
 
-  async submit(event: Event) {
+  private async submit(event: Event) {
     if (event) {
       event.preventDefault();
     }
