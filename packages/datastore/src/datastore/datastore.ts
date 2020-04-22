@@ -1,4 +1,4 @@
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Draft, immerable, produce, setAutoFreeze } from 'immer';
 import { v1 as uuid1, v4 as uuid4 } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
@@ -899,15 +899,20 @@ function getNamespace(): SchemaNamespace {
 }
 
 class DataStore {
-	static getModuleName() {
+	constructor() {
+		Amplify.register(this);
+	}
+	getModuleName() {
 		return 'DataStore';
 	}
-	static query = query;
-	static save = save;
-	static delete = remove;
-	static observe = observe;
-	static configure = configure;
-	static clear = clear;
+	query = query;
+	save = save;
+	delete = remove;
+	observe = observe;
+	configure = configure;
+	clear = clear;
 }
 
-export { initSchema, DataStore };
+const instance = new DataStore();
+
+export { initSchema, instance as DataStore };
