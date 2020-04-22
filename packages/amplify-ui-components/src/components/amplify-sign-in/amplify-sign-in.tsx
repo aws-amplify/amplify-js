@@ -93,7 +93,11 @@ export class AmplifySignIn {
   }
 
   handleFormFieldInputWithCallback(event, field) {
-    const fnToCall = field['handleInputChange'];
+    const fnToCall = field['handleInputChange']
+      ? field['handleInputChange']
+      : (event, cb) => {
+          cb(event);
+        };
     const callback =
       field.type === 'phone_number'
         ? event => (this.signInAttributes.userInput = event.target.value)

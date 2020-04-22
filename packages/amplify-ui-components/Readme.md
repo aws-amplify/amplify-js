@@ -1,6 +1,6 @@
-# Amplify UI Components (Preview)
+# Amplify UI Components
 
-[Amplify UI Components (Preview)](#) is an open-source UI component library that encapsulates cloud-connected workflows inside of framework-agnostic UI components.
+[Amplify UI Components](#) is an open-source UI component library that encapsulates cloud-connected workflows inside of framework-agnostic UI components.
 
 ## Frameworks
 
