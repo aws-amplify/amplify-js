@@ -17,8 +17,8 @@ describe('amplify-email-field spec:', () => {
       expect(emailField.label).toEqual('Email Address *');
     });
 
-    it('should have `placeholder` render to `amplify@example.com` by default', () => {
-      expect(emailField.placeholder).toEqual('amplify@example.com');
+    it('should have `placeholder` render to `Enter your email address` by default', () => {
+      expect(emailField.placeholder).toEqual('Enter your email address');
     });
 
     it('should have `required` set to `false` by default', () => {
