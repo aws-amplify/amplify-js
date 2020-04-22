@@ -169,7 +169,7 @@ export type NonModelTypeConstructor<T> = {
 };
 export type PersistentModelConstructor<T extends PersistentModel> = {
 	new (init: ModelInit<T>): T;
-	copyOf(src: T, mutator: (draft: MutableModel<T>) => T | void): T;
+	copyOf(src: T, mutator: (draft: MutableModel<T>) => void): T;
 };
 export type TypeConstructorMap = Record<
 	string,
