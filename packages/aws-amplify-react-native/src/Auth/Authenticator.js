@@ -28,7 +28,9 @@ import Greetings from './Greetings';
 
 const logger = new Logger('Authenticator');
 
-const EmptyContainer = ({ children }) => <>{children}</>;
+const EmptyContainer = ({ children }) => (
+	<React.Fragment>{children}</React.Fragment>
+);
 
 class AuthDecorator {
 	constructor(onStateChange) {
