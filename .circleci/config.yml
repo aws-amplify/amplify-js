@@ -19,7 +19,6 @@ executors:
   ios-executor:
     macos:
       xcode: '11.4.1'
-    resource_class: large
 
 test_env_vars: &test_env_vars
   environment:
@@ -144,7 +143,9 @@ commands:
       - run:
           name: Run Verdaccio
           background: true
-          command: verdaccio
+          command: |
+            cd ~
+            verdaccio
 
   integ_test_rn:
     steps:
@@ -447,9 +448,9 @@ workflows:
             <<: *releasable_branches
           requires:
             - unit_test
-            # - integ_react_predictions
+            - integ_react_predictions
             - integ_react_auth
-            # - integ_angular_auth
+            - integ_angular_auth
             - integ_vue_auth
             - integ_react_auth_ui
             - integ_angular_auth_ui
