@@ -396,16 +396,15 @@ workflows:
   build_test_deploy:
     jobs:
       - build
+      - integ_setup:
+          filters:
+            <<: *releasable_branches
+      - integ_setup_ui:
+          filters:
+            <<: *releasable_branches
       - unit_test:
           requires:
             - build
-      - integ_setup:
-          filters:
-            branches:
-              only:
-                # <<: *releasable_branches
-                # TODO: remove before merging
-                - verdaccio-ci
       - integ_react_auth:
           requires:
             - build
@@ -426,13 +425,6 @@ workflows:
           requires:
             - build
             - integ_setup
-      - integ_setup_ui:
-          filters:
-            branches:
-              only:
-                # <<: *releasable_branches
-                # TODO: remove before merging
-                - verdaccio-ci
       - integ_react_auth_ui:
           requires:
             - build
