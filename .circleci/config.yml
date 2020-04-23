@@ -599,18 +599,17 @@ workflows:
                 # <<: *releasable_branches
                 # TODO: remove before merging
                 - verdaccio-ci
-          requires:
-            - build
-      # - integ_react_predictions:
-      #     requires:
-      #       - integ_setup
       - integ_react_auth:
           requires:
+            - build
             - integ_setup
       # - integ_angular_auth:
       #     requires:
       #       - integ_setup
       # - integ_vue_auth:
+      #     requires:
+      #       - integ_setup
+      # - integ_react_predictions:
       #     requires:
       #       - integ_setup
       # - integ_rn_ios_storage:
