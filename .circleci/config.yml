@@ -8,15 +8,10 @@ executors:
   build-executor:
     docker:
       - image: cypress/base:10
-        environment:
-          # put this in a project-level env var
-          TERM: xterm
 
   js-test-executor:
     docker:
       - image: cypress/base:10
-        environment:
-          TERM: xterm
       - image: verdaccio/verdaccio
 
   rn-test-executor:
@@ -100,12 +95,12 @@ commands:
       - run:
           name: 'Run cypress tests for << parameters.test_name >> Sample'
           command: |
-            cd amplify-js-samples-staging
+            cd ~/amplify-js-samples-staging
             yarn cypress:react --spec "cypress/integration/<< parameters.spec >>"
       - store_artifacts:
-          path: amplify-js-samples-staging/cypress/videos
+          path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
-          path: amplify-js-samples-staging/cypress/screenshots
+          path: ~/amplify-js-samples-staging/cypress/screenshots
 
 jobs:
   build:
@@ -568,7 +563,7 @@ releasable_branches: &releasable_branches
     only:
       - release
       - master
-      - ui-components/master
+      - ui-components/master #TODO: can we remove this?
       - 1.0-stable
 
 workflows:
