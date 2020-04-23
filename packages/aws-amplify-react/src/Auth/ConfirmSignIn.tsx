@@ -13,10 +13,10 @@
 
 import * as React from 'react';
 
-import { I18n, JS } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { I18n, isEmpty } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import {
 	FormSection,
 	FormField,
@@ -37,7 +37,7 @@ export interface IConfirmSignInState extends IAuthPieceState {
 	mfaType: string;
 }
 
-export default class ConfirmSignIn extends AuthPiece<
+export class ConfirmSignIn extends AuthPiece<
 	IAuthPieceProps,
 	IConfirmSignInState
 > {
@@ -60,7 +60,7 @@ export default class ConfirmSignIn extends AuthPiece<
 		}
 
 		Auth.verifiedContact(user).then(data => {
-			if (!JS.isEmpty(data.verified)) {
+			if (!isEmpty(data.verified)) {
 				this.changeState('signedIn', user);
 			} else {
 				const newUser = Object.assign(user, data);
@@ -155,3 +155,8 @@ export default class ConfirmSignIn extends AuthPiece<
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default ConfirmSignIn;

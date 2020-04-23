@@ -1,9 +1,7 @@
-import Auth from '@aws-amplify/auth';
-import TOTPSetup from '../../src/Auth/TOTPSetup';
 import * as React from 'react';
+import { Auth } from '@aws-amplify/auth';
+import { TOTPSetup } from '../../src/Auth/TOTPSetup';
 import AmplifyTheme from '../../src/AmplifyTheme';
-import AuthPiece from '../../src/Auth/AuthPiece';
-import { Header, Footer, InputRow, ButtonRow, Link } from '../../src/AmplifyUI';
 
 const acceptedStates = ['TOTPSetup'];
 

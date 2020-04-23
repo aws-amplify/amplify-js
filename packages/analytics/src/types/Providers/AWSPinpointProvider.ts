@@ -38,12 +38,12 @@ export type EndpointBuffer = Array<EventObject>;
 
 export type PutEventsResponse = {
 	EventsResponse: {
-		Results: {
+		Results?: {
 			[endpointId: string]: {
-				EventsItemResponse: {
+				EventsItemResponse?: {
 					[eventId: string]: {
-						StatusCode: number;
-						Message: string;
+						StatusCode?: number;
+						Message?: string;
 					};
 				};
 			};

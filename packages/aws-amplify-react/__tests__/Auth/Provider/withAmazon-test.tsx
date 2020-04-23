@@ -1,17 +1,15 @@
-import Auth from '@aws-amplify/auth';
 import * as React from 'react';
-import { Component } from 'react';
-import withAmazon, {
+import { Auth } from '@aws-amplify/auth';
+import {
+	withAmazon,
 	AmazonButton,
 } from '../../../src/Auth/Provider/withAmazon';
-import { SignInButton, Button } from '../../../src/AmplifyUI';
-import { Logger } from '@aws-amplify/core';
 
 describe('withAmazon test', () => {
 	describe('render test', () => {
 		test('render correctly', () => {
 			window.amazon = 'amz';
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -24,7 +22,7 @@ describe('withAmazon test', () => {
 
 	describe('signIn test', () => {
 		test('happy case with connected response', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -56,7 +54,7 @@ describe('withAmazon test', () => {
 		});
 
 		test('directly return if error happened in response', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -80,7 +78,7 @@ describe('withAmazon test', () => {
 
 	describe('federatedSignIn', () => {
 		test('happy case', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -135,7 +133,7 @@ describe('withAmazon test', () => {
 		});
 
 		test('happy case with onStateChange exists', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -195,7 +193,7 @@ describe('withAmazon test', () => {
 		});
 
 		test('directly return if access_token is null', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -232,7 +230,7 @@ describe('withAmazon test', () => {
 		});
 
 		test('directly return if getting userinfo failed', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -276,7 +274,7 @@ describe('withAmazon test', () => {
 
 	describe('initAmazon test', () => {
 		test('happy case', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -304,7 +302,7 @@ describe('withAmazon test', () => {
 
 	describe('amazon signOut', () => {
 		test('happy case', () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -327,7 +325,7 @@ describe('withAmazon test', () => {
 		});
 
 		test('return if no amazon sdk', () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
