@@ -6,8 +6,8 @@ import { Component, Element, Prop, h } from '@stencil/core';
   shadow: true,
 })
 export class AmplifySection {
-  @Element() el: HTMLElement;
-
+  @Element() el: HTMLAmplifySectionElement;
+  /** Equivalent to html section role */
   @Prop() role: string = 'application';
 
   render() {

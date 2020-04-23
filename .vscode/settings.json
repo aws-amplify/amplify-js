@@ -2,5 +2,6 @@
 	"editor.formatOnSave": true,
 	"editor.insertSpaces": false,
 	"typescript.tsdk": "node_modules/typescript/lib",
-	"prettier.requireConfig": true
+	"prettier.requireConfig": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode"
 }
