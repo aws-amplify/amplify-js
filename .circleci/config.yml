@@ -16,12 +16,10 @@ executors:
       - image: verdaccio/verdaccio
     resource_class: large
 
-  rn-test-executor:
+  ios-executor:
     macos:
       xcode: '11.4.1'
-      resource_class: large
-    docker:
-      - image: verdaccio/verdaccio
+    resource_class: large
 
 test_env_vars: &test_env_vars
   environment:
@@ -138,10 +136,21 @@ commands:
       - store_artifacts:
           path: ~/amplify-js-samples-staging-ui/cypress/screenshots
 
+  ios_install_verdaccio:
+    steps:
+      - run:
+          name: Install Verdaccio
+          command: npm i -g verdaccio
+      - run:
+          name: Run Verdaccio
+          background: true
+          command: verdaccio
+
   integ_test_rn:
     steps:
       - attach_workspace:
           at: ~/
+      - ios_install_verdaccio
       - publish_to_verdaccio
       - run:
           name: Yarn Install
@@ -342,7 +351,7 @@ jobs:
           spec: 'auth amplify-authenticator'
 
   integ_rn_ios_storage:
-    executor: rn-test-executor
+    executor: ios-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
@@ -445,4 +454,4 @@ workflows:
             - integ_react_auth_ui
             - integ_angular_auth_ui
             - integ_vue_auth_ui
-            # - integ_rn_ios_storage
+            - integ_rn_ios_storage
