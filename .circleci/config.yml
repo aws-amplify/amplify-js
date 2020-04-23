@@ -8,15 +8,18 @@ executors:
   build-executor:
     docker:
       - image: cypress/base:10
+    resource_class: large
 
   js-test-executor:
     docker:
       - image: cypress/base:10
       - image: verdaccio/verdaccio
+    resource_class: large
 
   rn-test-executor:
     macos:
       xcode: '11.4.1'
+      resource_class: large
     docker:
       - image: verdaccio/verdaccio
 
@@ -67,6 +70,8 @@ commands:
           name: 'Publish to Verdaccio'
           command: |
             cd ~/amplify-js
+            yarn config set registry $NPM_REGISTRY
+            yarn config get registry
             git config --global user.email $NPM_EMAIL
             git config --global user.name $NPM_USER
             git status
@@ -83,11 +88,14 @@ commands:
       - attach_workspace:
           at: /root
       - restore_cache:
-          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
+          key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
       - publish_to_verdaccio
       - run:
           name: 'Install << parameters.test_name >> sample'
-          command: yarn
+          command: |
+            yarn config set registry $NPM_REGISTRY
+            yarn config get registry
+            yarn
       - run:
           name: 'Start << parameters.test_name >> Sample server in background'
           command: yarn start
@@ -106,7 +114,6 @@ jobs:
   build:
     executor: build-executor
     working_directory: ~/amplify-js
-    resource_class: large
     steps:
       - checkout
       - run: yarn config set workspaces-experimental true
