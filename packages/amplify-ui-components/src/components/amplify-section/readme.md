@@ -5,9 +5,9 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type     | Default         |
-| -------- | --------- | ----------- | -------- | --------------- |
-| `role`   | `role`    |             | `string` | `'application'` |
+| Property | Attribute | Description                     | Type     | Default         |
+| -------- | --------- | ------------------------------- | -------- | --------------- |
+| `role`   | `role`    | Equivalent to html section role | `string` | `'application'` |
 
 
 ## Dependencies

@@ -7,6 +7,7 @@ import { icons, IconNameType } from '../amplify-icon/icons';
   scoped: true,
 })
 export class AmplifySignInButton {
+  /** Specifies the federation provider.*/
   @Prop() provider: 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
 
   render() {

@@ -7,7 +7,7 @@
 
 | Property                | Attribute            | Description                                                                               | Type                                                | Default                                      |
 | ----------------------- | -------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------- | -------------------------------------------- |
-| `formFields`            | --                   | The form fields displayed inside of the forgot password form                              | `FormFieldTypes`                                    | `undefined`                                  |
+| `formFields`            | --                   | The form fields displayed inside of the forgot password form                              | `FormFieldTypes \| string[]`                        | `[]`                                         |
 | `handleAuthStateChange` | --                   | Auth state change handler for this component                                              | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent`               |
 | `handleSend`            | --                   | The function called when making a request to reset password                               | `(event: Event) => void`                            | `event => this.send(event)`                  |
 | `handleSubmit`          | --                   | The function called when submitting a new password                                        | `(event: Event) => void`                            | `event => this.submit(event)`                |
