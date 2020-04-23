@@ -209,8 +209,8 @@ export type SignInOpts = UsernamePasswordOpts;
 
 export type ClientMetaData =
 	| {
-		[key: string]: string;
-	}
+			[key: string]: string;
+	  }
 	| undefined;
 
 export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
