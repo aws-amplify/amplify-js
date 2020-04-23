@@ -127,6 +127,8 @@ export interface AwsCognitoOAuthOpts {
 	scope: Array<string>;
 	redirectSignIn: string;
 	redirectSignOut: string;
+	disableRedirectAfterSignIn?: boolean;
+	redirectAfterSignIn?: string;
 	responseType: string;
 	options?: object;
 	urlOpener?: (url: string, redirectUrl: string) => Promise<any>;
@@ -207,8 +209,8 @@ export type SignInOpts = UsernamePasswordOpts;
 
 export type ClientMetaData =
 	| {
-			[key: string]: string;
-	  }
+		[key: string]: string;
+	}
 	| undefined;
 
 export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
