@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`IconButton renders successfully with no variant 1`] = `
-<IconButton>
-  <Tooltip>
+<Component>
+  <Component>
     <div
       className="XR__tooltip___UYyhn"
     >
@@ -10,15 +10,15 @@ exports[`IconButton renders successfully with no variant 1`] = `
         className="XR__actionButton___2poIM"
       />
     </div>
-  </Tooltip>
-</IconButton>
+  </Component>
+</Component>
 `;
 
 exports[`IconButton renders successfully with variant 1`] = `
-<IconButton
+<Component
   variant="maximize"
 >
-  <Tooltip>
+  <Component>
     <div
       className="XR__tooltip___UYyhn"
     >
@@ -46,6 +46,6 @@ exports[`IconButton renders successfully with variant 1`] = `
         </svg>
       </button>
     </div>
-  </Tooltip>
-</IconButton>
+  </Component>
+</Component>
 `;

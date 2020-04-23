@@ -80,6 +80,19 @@ export const newSchema: Schema = {
 					isRequired: true,
 					attributes: [],
 				},
+				reference: {
+					name: 'reference',
+					isArray: false,
+					type: {
+						model: 'Post',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'BELONGS_TO',
+						targetName: 'referencePostId',
+					},
+				},
 				blog: {
 					name: 'blog',
 					isArray: false,
@@ -118,6 +131,15 @@ export const newSchema: Schema = {
 						connectionType: 'HAS_MANY',
 						associatedWith: 'post',
 					},
+				},
+				metadata: {
+					name: 'metadata',
+					isArray: false,
+					type: {
+						nonModel: 'PostMetadata',
+					},
+					isRequired: false,
+					attributes: [],
 				},
 			},
 		},
@@ -303,5 +325,47 @@ export const newSchema: Schema = {
 		},
 	},
 	enums: {},
+	nonModels: {
+		PostMetadata: {
+			name: 'PostMetadata',
+			fields: {
+				author: {
+					name: 'rating',
+					isArray: false,
+					type: 'Int',
+					isRequired: true,
+					attributes: [],
+				},
+				tags: {
+					name: 'tags',
+					isArray: true,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+				nested: {
+					name: 'nested',
+					isArray: false,
+					type: {
+						nonModel: 'Nested',
+					},
+					isRequired: true,
+					attributes: [],
+				},
+			},
+		},
+		Nested: {
+			name: 'Nested',
+			fields: {
+				aField: {
+					name: 'aField',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+			},
+		},
+	},
 	version: 'a66372d29356c40e7cd29e41527cead7',
 };

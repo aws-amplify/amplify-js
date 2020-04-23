@@ -1,4 +1,4 @@
-import Storage from '../storage/storage';
+import { ExclusiveStorage as Storage } from '../storage/storage';
 import { ModelInstanceMetadata } from '../types';
 import { MutationEventOutbox } from './outbox';
 

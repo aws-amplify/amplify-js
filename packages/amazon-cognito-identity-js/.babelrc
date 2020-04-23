@@ -19,6 +19,16 @@
 					}
 				]
 			]
+		},
+		"test": {
+			"presets": [
+				[
+					"@babel/preset-env",
+					{
+						"loose": true
+					}
+				]
+			]
 		}
 	}
 }

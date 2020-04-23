@@ -1,0 +1,5 @@
+node_modules
+dist
+www
+.stencil
+src/components/amplify-examples/src/aws-exports.js
