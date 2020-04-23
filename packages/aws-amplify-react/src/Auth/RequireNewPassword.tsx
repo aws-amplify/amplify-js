@@ -13,10 +13,10 @@
 
 import * as React from 'react';
 
-import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { I18n, ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState  } from './AuthPiece';
 import {
 	FormSection,
 	SectionHeader,
@@ -33,7 +33,7 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('RequireNewPassword');
 
-export default class RequireNewPassword extends AuthPiece<
+export class RequireNewPassword extends AuthPiece<
 	IAuthPieceProps,
 	IAuthPieceState
 > {
@@ -52,7 +52,7 @@ export default class RequireNewPassword extends AuthPiece<
 			);
 		}
 		Auth.verifiedContact(user).then(data => {
-			if (!JS.isEmpty(data.verified)) {
+			if (!isEmpty(data.verified)) {
 				this.changeState('signedIn', user);
 			} else {
 				user = Object.assign(user, data);
@@ -171,3 +171,8 @@ function objectWithProperties(obj, keys) {
 	}
 	return target;
 }
+
+/**
+ * @deprecated use named import
+ */
+export default RequireNewPassword;
