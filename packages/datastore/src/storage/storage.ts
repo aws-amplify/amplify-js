@@ -1,6 +1,6 @@
 import { Mutex } from '@aws-amplify/core';
-import Observable from 'zen-observable-ts';
-import * as PushStream from 'zen-push';
+import Observable, { ZenObservable } from 'zen-observable-ts';
+import PushStream from 'zen-push';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
 import {
@@ -338,4 +338,4 @@ class ExclusiveStorage implements StorageFacade {
 	}
 }
 
-export default ExclusiveStorage;
+export { ExclusiveStorage };

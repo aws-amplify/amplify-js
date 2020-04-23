@@ -169,7 +169,7 @@ export type NonModelTypeConstructor<T> = {
 };
 export type PersistentModelConstructor<T extends PersistentModel> = {
 	new (init: ModelInit<T>): T;
-	copyOf(src: T, mutator: (draft: MutableModel<T>) => T | void): T;
+	copyOf(src: T, mutator: (draft: MutableModel<T>) => void): T;
 };
 export type TypeConstructorMap = Record<
 	string,
@@ -383,11 +383,13 @@ export type DataStoreConfig = {
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 		errorHandler?: (error: SyncError) => void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
+		syncPageSize?: number;
 		fullSyncInterval?: number;
 	};
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
+	syncPageSize?: number;
 	fullSyncInterval?: number;
 };
 

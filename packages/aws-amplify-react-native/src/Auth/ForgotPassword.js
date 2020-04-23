@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import {
 	FormField,
@@ -20,8 +20,10 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
+import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('ForgotPassword');
 
@@ -34,6 +36,16 @@ export default class ForgotPassword extends AuthPiece {
 
 		this.send = this.send.bind(this);
 		this.submit = this.submit.bind(this);
+	}
+
+	static getDerivedStateFromProps(props, state) {
+		const username = props.authData;
+
+		if (username && !state.username) {
+			return { username };
+		}
+
+		return null;
 	}
 
 	send() {
@@ -70,6 +82,7 @@ export default class ForgotPassword extends AuthPiece {
 					theme={theme}
 					onPress={this.send}
 					disabled={!this.getUsernameFromInput()}
+					testID={TEST_ID.AUTH.SEND_BUTTON}
 				/>
 			</View>
 		);
@@ -84,6 +97,7 @@ export default class ForgotPassword extends AuthPiece {
 					label={I18n.get('Confirmation Code')}
 					placeholder={I18n.get('Enter your confirmation code')}
 					required={true}
+					testID={TEST_ID.AUTH.CONFIRMATION_CODE_INPUT}
 				/>
 				<FormField
 					theme={theme}
@@ -92,12 +106,14 @@ export default class ForgotPassword extends AuthPiece {
 					placeholder={I18n.get('Enter your new password')}
 					secureTextEntry={true}
 					required={true}
+					testID={TEST_ID.AUTH.PASSWORD_INPUT}
 				/>
 				<AmplifyButton
 					text={I18n.get('Submit')}
 					theme={theme}
 					onPress={this.submit}
 					disabled={!(this.state.code && this.state.password)}
+					testID={TEST_ID.AUTH.SUBMIT_BUTTON}
 				/>
 			</View>
 		);
@@ -105,21 +121,27 @@ export default class ForgotPassword extends AuthPiece {
 
 	showComponent(theme) {
 		return (
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+			<Wrapper>
 				<View style={theme.section}>
-					<Header theme={theme}>{I18n.get('Forgot Password')}</Header>
+					<Header theme={theme} testID={TEST_ID.AUTH.FORGOT_PASSWORD_TEXT}>
+						{I18n.get('Reset your password')}
+					</Header>
 					<View style={theme.sectionBody}>
 						{!this.state.delivery && this.forgotBody(theme)}
 						{this.state.delivery && this.submitBody(theme)}
 					</View>
 					<View style={theme.sectionFooter}>
-						<LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+						<LinkCell
+							theme={theme}
+							onPress={() => this.changeState('signIn')}
+							testID={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
+						>
 							{I18n.get('Back to Sign In')}
 						</LinkCell>
 					</View>
 					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 				</View>
-			</TouchableWithoutFeedback>
+			</Wrapper>
 		);
 	}
 }
