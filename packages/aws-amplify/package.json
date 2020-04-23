@@ -46,5 +46,47 @@
     "@aws-amplify/storage": "^3.1.6",
     "@aws-amplify/ui": "^2.0.2",
     "@aws-amplify/xr": "^2.1.6"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false,
+        "tsConfig": {
+          "lib": [
+            "es5",
+            "es2015",
+            "dom",
+            "esnext.asynciterable",
+            "es2017.object"
+          ],
+          "allowJs": true
+        }
+      }
+    },
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+    },
+    "preset": "ts-jest",
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json",
+      "jsx"
+    ],
+    "testEnvironment": "jsdom",
+    "testURL": "http://localhost/",
+    "coverageThreshold": {
+      "global": {
+        "branches": 0,
+        "functions": 0,
+        "lines": 0,
+        "statements": 0
+      }
+    },
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }

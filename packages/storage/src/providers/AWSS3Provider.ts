@@ -61,7 +61,6 @@ const dispatchStorageEvent = (
 };
 
 const localTestingStorageEndpoint = 'http://localhost:20005';
-
 /**
  * Provide storage methods to use AWS S3
  */
