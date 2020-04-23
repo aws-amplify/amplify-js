@@ -35,7 +35,7 @@ import * as events from 'events';
 const logger = new Logger('AWSS3Provider');
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-	typeof Symbol.for === 'function'
+typeof Symbol.for === 'function'
 	? Symbol.for('amplify_default')
 	: '@@amplify_default') as Symbol;
 
@@ -235,6 +235,7 @@ export class AWSS3Provider implements StorageProvider {
 			expires,
 			metadata,
 			tagging,
+			acl,
 		} = opt;
 		const {
 			serverSideEncryption,
@@ -285,8 +286,14 @@ export class AWSS3Provider implements StorageProvider {
 				params.SSEKMSKeyId = SSEKMSKeyId;
 			}
 		}
+
 		const emitter = new events.EventEmitter();
 		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
+
+		if (acl) {
+			params.ACL = acl;
+		}
+
 		try {
 			emitter.on('sendProgress', progress => {
 				if (progressCallback) {
@@ -295,7 +302,7 @@ export class AWSS3Provider implements StorageProvider {
 					} else {
 						logger.warn(
 							'progressCallback should be a function, not a ' +
-							typeof progressCallback
+								typeof progressCallback
 						);
 					}
 				}
