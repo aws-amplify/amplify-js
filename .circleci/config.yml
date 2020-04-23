@@ -76,7 +76,7 @@ commands:
             git config --global user.name $NPM_USER
             git status
             git --no-pager diff
-            ./node_modules/lerna/cli.js publish --no-push --canary --yes --dist-tag=unstable --preid=unstable --exact
+            ./node_modules/lerna/cli.js publish --no-push --canary --yes --dist-tag=unstable --preid=unstable --exact --force-publish
 
   integ_test_js:
     parameters:
