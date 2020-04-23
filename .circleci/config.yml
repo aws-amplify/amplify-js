@@ -407,36 +407,36 @@ workflows:
             - build
       - integ_react_auth:
           requires:
-            - build
             - integ_setup
+            - build
       - integ_angular_auth:
           requires:
-            - build
             - integ_setup
+            - build
       - integ_vue_auth:
           requires:
-            - build
             - integ_setup
+            - build
       - integ_react_predictions:
           requires:
-            - build
             - integ_setup
+            - build
       - integ_rn_ios_storage:
           requires:
-            - build
             - integ_setup
+            - build
       - integ_react_auth_ui:
           requires:
-            - build
             - integ_setup_ui
+            - build
       - integ_angular_auth_ui:
           requires:
-            - build
             - integ_setup_ui
+            - build
       - integ_vue_auth_ui:
           requires:
-            - build
             - integ_setup_ui
+            - build
       - deploy:
           filters:
             <<: *releasable_branches
