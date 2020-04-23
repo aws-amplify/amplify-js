@@ -37,7 +37,7 @@ const logger = new Logger('AWSS3ProviderManagedUpload');
 
 const localTestingStorageEndpoint = 'http://localhost:20005';
 
-const SET_CONTENT_LENGTH_HEADER = 'SET_CONTENT_LENGTH';
+const SET_CONTENT_LENGTH_HEADER = 'contentLengthMiddleware';
 export declare interface Part {
 	bodyPart: any;
 	partNumber: number;
@@ -139,7 +139,6 @@ export class AWSS3ProviderManagedUpload {
 			this.params
 		);
 		const s3 = this._createNewS3Client(this.opts);
-		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		const response = await s3.send(createMultiPartUploadCommand);
 		logger.debug(response.UploadId);
 		return response.UploadId;
@@ -162,7 +161,6 @@ export class AWSS3ProviderManagedUpload {
 			};
 			const uploadPartCommand = new UploadPartCommand(uploadPartCommandInput);
 			const s3 = this._createNewS3Client(this.opts, part.emitter);
-			s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 			promises.push(s3.send(uploadPartCommand));
 		}
 		try {
@@ -195,7 +193,6 @@ export class AWSS3ProviderManagedUpload {
 		};
 		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
 		const s3 = this._createNewS3Client(this.opts);
-		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		try {
 			const data = await s3.send(completeUploadCommand);
 			return data.Key;
@@ -239,7 +236,6 @@ export class AWSS3ProviderManagedUpload {
 		};
 
 		const s3 = this._createNewS3Client(this.opts);
-		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		await s3.send(new AbortMultipartUploadCommand(input));
 
 		// verify that all parts are removed.
@@ -357,6 +353,7 @@ export class AWSS3ProviderManagedUpload {
 			customUserAgent: getAmplifyUserAgent(),
 			urlParser: parseUrl,
 		});
+		client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		return client;
 	}
 }
