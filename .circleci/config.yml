@@ -70,8 +70,6 @@ commands:
           name: 'Publish to Verdaccio'
           command: |
             cd ~/amplify-js
-            yarn config set registry $NPM_REGISTRY
-            yarn config get registry
             git config --global user.email $NPM_EMAIL
             git config --global user.name $NPM_USER
             git status
@@ -93,7 +91,6 @@ commands:
       - run:
           name: 'Install << parameters.test_name >> sample'
           command: |
-            yarn config set registry $NPM_REGISTRY
             yarn config get registry
             yarn
       - run:
