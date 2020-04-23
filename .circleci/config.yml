@@ -430,7 +430,6 @@ workflows:
               only:
                 # <<: *releasable_branches
                 # TODO: remove before merging
-
                 - verdaccio-ci
       - integ_react_auth_ui:
           requires:
@@ -449,9 +448,9 @@ workflows:
             <<: *releasable_branches
           requires:
             - unit_test
-            - integ_react_predictions
+            # - integ_react_predictions
             - integ_react_auth
-            - integ_angular_auth
+            # - integ_angular_auth
             - integ_vue_auth
             - integ_react_auth_ui
             - integ_angular_auth_ui
