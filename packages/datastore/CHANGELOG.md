@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.0.8...@aws-amplify/datastore@2.0.9) (2020-04-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** Improve query and observe typings ([#5468](https://github.com/aws-amplify/amplify-js/issues/5468)) ([84286be](https://github.com/aws-amplify/amplify-js/commit/84286be109d7f50eac83a9694e75b61500cc8a83))
+
+
+
+
+
 ## [2.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.0.7...@aws-amplify/datastore@2.0.8) (2020-04-14)
 
 **Note:** Version bump only for package @aws-amplify/datastore
