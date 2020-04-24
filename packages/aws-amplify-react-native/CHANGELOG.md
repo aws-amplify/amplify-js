@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.0.3...aws-amplify-react-native@4.0.4) (2020-04-14)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Replace legacy lifecycle method componentWillReceiveProps ([#5343](https://github.com/aws-amplify/amplify-js/issues/5343)) ([50f9971](https://github.com/aws-amplify/amplify-js/commit/50f99713572a4c692c3f4bd9da3a4859093bd9e9))
+
+
+
+
+
 ## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.0.2...aws-amplify-react-native@4.0.3) (2020-04-08)
 
 
