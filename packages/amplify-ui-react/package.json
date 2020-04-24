@@ -1,7 +1,7 @@
 {
 	"name": "@aws-amplify/ui-react",
 	"sideEffects": false,
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "React specific wrapper for @aws-amplify/ui-components",
 	"publishConfig": {
 		"access": "public"

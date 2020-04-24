@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.3...@aws-amplify/core@3.2.4) (2020-04-14)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api-graphql:** Add missing @aws-amplify/pubsub… ([#5352](https://github.com/aws-amplify/amplify-js/issues/5352)) ([ffb6514](https://github.com/aws-amplify/amplify-js/commit/ffb6514ab2aa14e09d2aa0df0da110585b5a713f))
+
+
+
+
+
 ## [3.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.2...@aws-amplify/core@3.2.3) (2020-04-08)
 
 **Note:** Version bump only for package @aws-amplify/core
