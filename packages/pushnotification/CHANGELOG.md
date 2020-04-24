@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.0.8...@aws-amplify/pushnotification@3.0.9) (2020-04-24)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Use SecureRandom instead of Random for better security. ([#5418](https://github.com/aws-amplify/amplify-js/issues/5418)) ([4f3ba81](https://github.com/aws-amplify/amplify-js/commit/4f3ba811a422159d7d8db821963c3381cfaac571))
+
+
+
+
+
 ## [3.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.0.7...@aws-amplify/pushnotification@3.0.8) (2020-04-14)
 
 **Note:** Version bump only for package @aws-amplify/pushnotification
