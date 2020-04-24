@@ -20,7 +20,7 @@ export class AmplifyGreetings {
         {// TODO: user <amplify-logo> instead of <span>
         this.logo && <span>{this.logo}</span>}
         <amplify-nav>
-          {this.username && <span slot="greetings-message">Hello, {this.username}</span>}
+          {this.username && <span class="message">Hello, {this.username}</span>}
           <amplify-sign-out handleAuthStateChange={this.handleAuthStateChange} />
         </amplify-nav>
       </header>
