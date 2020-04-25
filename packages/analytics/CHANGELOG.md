@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.7...@aws-amplify/analytics@3.1.8) (2020-04-24)
+
+
+### Bug Fixes
+
+* **analytics:** fix Firehose data encoding ([#5451](https://github.com/aws-amplify/amplify-js/issues/5451)) ([48baa1a](https://github.com/aws-amplify/amplify-js/commit/48baa1a45dba3c309ed8cf17747744d6f20ad170))
+
+
+
+
+
 ## [3.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.6...@aws-amplify/analytics@3.1.7) (2020-04-14)
 
 **Note:** Version bump only for package @aws-amplify/analytics
