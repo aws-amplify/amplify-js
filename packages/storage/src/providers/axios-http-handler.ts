@@ -56,6 +56,18 @@ export class AxiosHttpHandler implements HttpHandler {
 		axiosRequest.url = url;
 		axiosRequest.method = request.method as Method;
 		axiosRequest.headers = request.headers;
+
+		// The host header is automatically added by the browser and adding it explicitly in the
+		// axios request throws an error https://github.com/aws-amplify/amplify-js/issues/5376
+		// This is because the host header is a forbidden header for the http client to set
+		// see https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name and
+		// https://fetch.spec.whatwg.org/#forbidden-header-name
+		// The reason we are removing this header here instead of in the aws-sdk's client
+		// middleware is that the host header is required to be in the request signature and if
+		// we remove it from the middlewares, then the request fails because the header is added
+		// by the browser but is absent from the signature.
+		delete axiosRequest.headers['host'];
+
 		if (request.body) {
 			axiosRequest.data = request.body;
 		} else {
