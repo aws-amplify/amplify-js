@@ -171,10 +171,7 @@ describe('multi part upload tests', () => {
 		expect(s3ServiceCallSpy).toBeCalledTimes(4);
 
 		// Create multipart upload call
-		expect(s3ServiceCallSpy.mock.calls[0][0].input).toStrictEqual({
-			Bucket: testParams.Bucket,
-			Key: testParams.Key,
-		});
+		expect(s3ServiceCallSpy.mock.calls[0][0].input).toStrictEqual(testParams);
 
 		// Next two upload parts call
 		expect(s3ServiceCallSpy.mock.calls[1][0].input).toStrictEqual({
@@ -295,10 +292,7 @@ describe('multi part upload tests', () => {
 		expect(s3ServiceCallSpy).toBeCalledTimes(5);
 
 		// Create multipart upload call
-		expect(s3ServiceCallSpy.mock.calls[0][0].input).toStrictEqual({
-			Bucket: testParams.Bucket,
-			Key: testParams.Key,
-		});
+		expect(s3ServiceCallSpy.mock.calls[0][0].input).toStrictEqual(testParams);
 
 		// First call succeeds
 		expect(s3ServiceCallSpy.mock.calls[1][0].input).toStrictEqual({

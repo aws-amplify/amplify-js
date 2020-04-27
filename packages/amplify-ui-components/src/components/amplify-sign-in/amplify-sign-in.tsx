@@ -80,7 +80,7 @@ export class AmplifySignIn {
     password: '',
   };
 
-  handleFormFieldInput(fieldType) {
+  private handleFormFieldInput(fieldType) {
     switch (fieldType) {
       case 'username':
       case 'email':
@@ -92,8 +92,12 @@ export class AmplifySignIn {
     }
   }
 
-  handleFormFieldInputWithCallback(event, field) {
-    const fnToCall = field['handleInputChange'];
+  private handleFormFieldInputWithCallback(event, field) {
+    const fnToCall = field['handleInputChange']
+      ? field['handleInputChange']
+      : (event, cb) => {
+          cb(event);
+        };
     const callback =
       field.type === 'phone_number'
         ? event => (this.signInAttributes.userInput = event.target.value)
@@ -101,7 +105,7 @@ export class AmplifySignIn {
     fnToCall(event, callback.bind(this));
   }
 
-  handlePhoneNumberChange(event) {
+  private handlePhoneNumberChange(event) {
     const name = event.target.name;
     const value = event.target.value;
 
@@ -119,7 +123,7 @@ export class AmplifySignIn {
     }
   }
 
-  checkContact(user) {
+  private checkContact(user) {
     if (!Auth || typeof Auth.verifiedContact !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
@@ -133,7 +137,7 @@ export class AmplifySignIn {
     });
   }
 
-  async signIn(event: Event) {
+  private async signIn(event: Event) {
     // avoid submitting the form
     if (event) {
       event.preventDefault();

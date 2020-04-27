@@ -78,7 +78,7 @@ export default class ConfirmSignUp extends AuthPiece {
 						{I18n.get('Confirm Sign Up')}
 					</Header>
 					<View style={theme.sectionBody}>
-						{this.renderUsernameField(theme, username)}
+						{this.renderUsernameField(theme)}
 						<FormField
 							theme={theme}
 							onChangeText={text => this.setState({ code: text })}
