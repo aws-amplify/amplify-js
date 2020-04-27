@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.8...aws-amplify@3.0.9) (2020-04-24)
+
+
+### Bug Fixes
+
+* **aws-amplify:** add DataStore export ([#5421](https://github.com/aws-amplify/amplify-js/issues/5421)) ([7cab470](https://github.com/aws-amplify/amplify-js/commit/7cab47085520534327f30b531d3fb0400cc07dac))
+
+
+
+
+
 ## [3.0.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.7...aws-amplify@3.0.8) (2020-04-14)
 
 **Note:** Version bump only for package aws-amplify

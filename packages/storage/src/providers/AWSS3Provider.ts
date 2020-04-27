@@ -405,14 +405,17 @@ export class AWSS3Provider implements StorageProvider {
 
 		try {
 			const response = await s3.send(listObjectsCommand);
-			const list = (response as any).Contents.map(item => {
-				return {
-					key: item.Key.substr(prefix.length),
-					eTag: item.ETag,
-					lastModified: item.LastModified,
-					size: item.Size,
-				};
-			});
+			let list = [];
+			if (response && response.Contents) {
+				list = response.Contents.map(item => {
+					return {
+						key: item.Key.substr(prefix.length),
+						eTag: item.ETag,
+						lastModified: item.LastModified,
+						size: item.Size,
+					};
+				});
+			}
 			dispatchStorageEvent(
 				track,
 				'list',
