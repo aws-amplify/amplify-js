@@ -296,7 +296,7 @@ jobs:
     working_directory: ~/amplify-js-samples-staging/samples/react/predictions/multi-user-translation
     steps:
       - integ_test_js:
-          test_name: 'Vue Predictions'
+          test_name: 'React Predictions'
           framework: react
           spec: predictions/multiuser-translation.spec.js
 
