@@ -1,4 +1,4 @@
-export default [
+export const countryDialCodes = [
 	'+1',
 	'+7',
 	'+20',

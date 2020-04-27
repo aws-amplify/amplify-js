@@ -12,11 +12,10 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import AmplifyTheme from '../AmplifyTheme';
-import Picker from './Picker';
+import { Picker } from './Picker';
 
 const Container = {};
 
@@ -39,7 +38,7 @@ export interface ITextPickerState {
 	previewText: string;
 }
 
-export default class TextPicker extends Component<
+export class TextPicker extends React.Component<
 	ITextPickerProps,
 	ITextPickerState
 > {
@@ -109,3 +108,8 @@ export default class TextPicker extends Component<
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default TextPicker;

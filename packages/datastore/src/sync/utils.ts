@@ -5,7 +5,9 @@ import {
 	isEnumFieldType,
 	isGraphQLScalarType,
 	isPredicateObj,
+	isSchemaModel,
 	isTargetNameAssociation,
+	isNonModelFieldType,
 	ModelFields,
 	ModelInstanceMetadata,
 	OpType,
@@ -14,6 +16,8 @@ import {
 	PredicatesGroup,
 	RelationshipType,
 	SchemaModel,
+	SchemaNamespace,
+	SchemaNonModel,
 } from '../types';
 import { exhaustiveCheck } from '../util';
 import { MutationEvent } from './';
@@ -46,21 +50,31 @@ export function getMetadataFields(): ReadonlyArray<string> {
 	return metadataFields;
 }
 
-// TODO: Ask for parent/children ids
-function generateSelectionSet(modelDefinition: SchemaModel): string {
+function generateSelectionSet(
+	namespace: SchemaNamespace,
+	modelDefinition: SchemaModel | SchemaNonModel
+): string {
 	const scalarFields = getScalarFields(modelDefinition);
+	const nonModelFields = getNonModelFields(namespace, modelDefinition);
 
-	const scalarAndMetadataFields = Object.values(scalarFields)
+	let scalarAndMetadataFields = Object.values(scalarFields)
 		.map(({ name }) => name)
-		.concat(getMetadataFields())
-		.concat(getConnectionFields(modelDefinition));
+		.concat(nonModelFields);
+
+	if (isSchemaModel(modelDefinition)) {
+		scalarAndMetadataFields = scalarAndMetadataFields
+			.concat(getMetadataFields())
+			.concat(getConnectionFields(modelDefinition));
+	}
 
 	const result = scalarAndMetadataFields.join('\n');
 
 	return result;
 }
 
-function getScalarFields(modelDefinition: SchemaModel): ModelFields {
+function getScalarFields(
+	modelDefinition: SchemaModel | SchemaNonModel
+): ModelFields {
 	const { fields } = modelDefinition;
 
 	const result = Object.values(fields)
@@ -102,6 +116,39 @@ function getConnectionFields(modelDefinition: SchemaModel): string[] {
 					exhaustiveCheck(connectionType);
 			}
 		});
+
+	return result;
+}
+
+function getNonModelFields(
+	namespace: SchemaNamespace,
+	modelDefinition: SchemaModel | SchemaNonModel
+): string[] {
+	const result = [];
+
+	Object.values(modelDefinition.fields).forEach(({ name, type }) => {
+		if (isNonModelFieldType(type)) {
+			const typeDefinition = namespace.nonModels![type.nonModel];
+			const scalarFields = Object.values(getScalarFields(typeDefinition)).map(
+				({ name }) => name
+			);
+
+			const nested = [];
+			Object.values(typeDefinition.fields).forEach(field => {
+				const { type, name } = field;
+
+				if (isNonModelFieldType(type)) {
+					const typeDefinition = namespace.nonModels![type.nonModel];
+
+					nested.push(
+						`${name} { ${generateSelectionSet(namespace, typeDefinition)} }`
+					);
+				}
+			});
+
+			result.push(`${name} { ${scalarFields.join(' ')} ${nested.join(' ')} }`);
+		}
+	});
 
 	return result;
 }
@@ -158,12 +205,13 @@ export function getAuthorizationRules(
 }
 
 export function buildSubscriptionGraphQLOperation(
+	namespace: SchemaNamespace,
 	modelDefinition: SchemaModel,
 	transformerMutationType: TransformerMutationType,
 	isOwnerAuthorization: boolean,
 	ownerField: string
 ): [TransformerMutationType, string, string] {
-	const selectionSet = generateSelectionSet(modelDefinition);
+	const selectionSet = generateSelectionSet(namespace, modelDefinition);
 
 	const { name: typeName, pluralName: pluralTypeName } = modelDefinition;
 
@@ -188,10 +236,11 @@ export function buildSubscriptionGraphQLOperation(
 }
 
 export function buildGraphQLOperation(
+	namespace: SchemaNamespace,
 	modelDefinition: SchemaModel,
 	graphQLOpType: keyof typeof GraphQLOperationType
 ): [TransformerMutationType, string, string][] {
-	let selectionSet = generateSelectionSet(modelDefinition);
+	let selectionSet = generateSelectionSet(namespace, modelDefinition);
 
 	const { name: typeName, pluralName: pluralTypeName } = modelDefinition;
 

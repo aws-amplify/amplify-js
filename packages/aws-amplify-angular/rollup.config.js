@@ -34,6 +34,7 @@ export default {
 		'@angular/common',
 		'aws-amplify',
 		'@ionic/angular',
+		'@aws-amplify/core',
 	],
 	plugins: [
 		nodeResolve({ preferBuiltins: false, modulesOnly: true }),

@@ -17,7 +17,7 @@ export interface StorageProvider {
 	configure(config: object): object;
 
 	// get object/pre-signed url from storage
-	get(key: string, options?): Promise<String | Object>;
+	get(key: string, options?): Promise<string | Object>;
 
 	// upload storage object
 	put(key: string, object, options?): Promise<Object>;

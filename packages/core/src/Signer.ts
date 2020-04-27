@@ -12,29 +12,27 @@
  */
 
 import { ConsoleLogger as Logger } from './Logger';
+import { Sha256 as jsSha256 } from '@aws-crypto/sha256-js';
+import { toHex } from '@aws-sdk/util-hex-encoding';
+import { parse, format } from 'url';
 import { DateUtils } from './Util';
-import { AWS } from './Facet';
 
-const logger = new Logger('Signer'),
-	url = require('url'),
-	crypto = AWS['util'].crypto;
+const logger = new Logger('Signer');
 
 const DEFAULT_ALGORITHM = 'AWS4-HMAC-SHA256';
 const IOT_SERVICE_NAME = 'iotdevicegateway';
 
-const encrypt = function(key, src, encoding?) {
-	return crypto.lib
-		.createHmac('sha256', key)
-		.update(src, 'utf8')
-		.digest(encoding);
+const encrypt = function(key, src) {
+	const hash = new jsSha256(key);
+	hash.update(src);
+	return hash.digestSync();
 };
 
 const hash = function(src) {
 	const arg = src || '';
-	return crypto
-		.createHash('sha256')
-		.update(arg, 'utf8')
-		.digest('hex');
+	const hash = new jsSha256();
+	hash.update(arg);
+	return toHex(hash.digestSync());
 };
 
 /**
@@ -151,7 +149,7 @@ CanonicalRequest =
 </pre>
 */
 const canonical_request = function(request) {
-	const url_info = url.parse(request.url);
+	const url_info = parse(request.url);
 
 	return [
 		request.method || '/',
@@ -164,7 +162,7 @@ const canonical_request = function(request) {
 };
 
 const parse_service_info = function(request) {
-	const url_info = url.parse(request.url),
+	const url_info = parse(request.url),
 		host = url_info.host;
 
 	const matched = host.match(/([^\.]+)\.(?:([^\.]*)\.)?amazonaws\.com$/);
@@ -229,7 +227,7 @@ const get_signing_key = function(secret_key, d_str, service_info) {
 };
 
 const get_signature = function(signing_key, str_to_sign) {
-	return encrypt(signing_key, str_to_sign, 'hex');
+	return toHex(encrypt(signing_key, str_to_sign));
 };
 
 /**
@@ -252,14 +250,7 @@ const get_authorization_header = function(
 	].join(', ');
 };
 
-/**
- * AWS request signer.
- * Refer to {@link http://docs.aws.amazon.com/general/latest/gr/sigv4_signing.html|Signature Version 4}
- *
- * @class Signer
- */
-
-export default class Signer {
+export class Signer {
 	/**
     * Sign a HTTP request, add 'Authorization' header to request param
     * @method sign
@@ -304,7 +295,7 @@ export default class Signer {
 			dt_str = dt.toISOString().replace(/[:\-]|\.\d{3}/g, ''),
 			d_str = dt_str.substr(0, 8);
 
-		const url_info = url.parse(request.url);
+		const url_info = parse(request.url);
 		request.headers['host'] = url_info.host;
 		request.headers['x-amz-date'] = dt_str;
 		if (access_info.session_token) {
@@ -376,12 +367,12 @@ export default class Signer {
 			.replace(/[:\-]|\.\d{3}/g, '');
 		const today = now.substr(0, 8);
 		// Intentionally discarding search
-		const { search, ...parsedUrl } = url.parse(urlToSign, true, true);
+		const { search, ...parsedUrl } = parse(urlToSign, true, true);
 		const { host } = parsedUrl;
 		const signedHeaders = { host };
 
 		const { region, service } =
-			serviceInfo || parse_service_info({ url: url.format(parsedUrl) });
+			serviceInfo || parse_service_info({ url: format(parsedUrl) });
 		const credentialScope = credential_scope(today, region, service);
 
 		// IoT service does not allow the session token in the canonical request
@@ -401,7 +392,7 @@ export default class Signer {
 
 		const canonicalRequest = canonical_request({
 			method,
-			url: url.format({
+			url: format({
 				...parsedUrl,
 				query: {
 					...parsedUrl.query,
@@ -432,7 +423,7 @@ export default class Signer {
 			}),
 		};
 
-		const result = url.format({
+		const result = format({
 			protocol: parsedUrl.protocol,
 			slashes: true,
 			hostname: parsedUrl.hostname,
@@ -448,3 +439,8 @@ export default class Signer {
 		return result;
 	}
 }
+
+/**
+ * @deprecated use per-function import
+ */
+export default Signer;

@@ -1,6 +1,12 @@
 import OAuth from '../src/OAuth/OAuth';
 import * as oauthStorage from '../src/OAuth/oauthStorage';
 
+jest.mock('crypto-js/sha256', () => {
+	return {
+		default: jest.fn(() => ''),
+	};
+});
+
 jest.mock('../src/OAuth/oauthStorage', () => {
 	return {
 		clearAll: jest.fn(),
@@ -213,7 +219,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 });
 
 import { AuthOptions, SignUpParams, AwsCognitoOAuthOpts } from '../src/types';
-import Auth from '../src/Auth';
+import { AuthClass as Auth } from '../src/Auth';
 import Cache from '@aws-amplify/cache';
 import {
 	CookieStorage,
@@ -223,8 +229,12 @@ import {
 	CognitoIdToken,
 	CognitoAccessToken,
 } from 'amazon-cognito-identity-js';
-import { CognitoIdentityCredentials } from 'aws-sdk';
-import { Credentials, GoogleOAuth, StorageHelper } from '@aws-amplify/core';
+import {
+	Credentials,
+	GoogleOAuth,
+	StorageHelper,
+	ICredentials,
+} from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
 import { AuthErrorTypes } from '../src/types/Auth';
 
@@ -1455,13 +1465,15 @@ describe('auth unit test', () => {
 		test('happy case with source federation', async () => {
 			const spyon = jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementation(() => {
+				.mockImplementationOnce(() => {
 					return {
+						setItem() {},
 						getItem() {
 							return JSON.stringify({
 								user: 'federated_user',
 							});
 						},
+						removeItem() {},
 					};
 				});
 
@@ -1538,14 +1550,16 @@ describe('auth unit test', () => {
 		test('with federated info', async () => {
 			const spyon = jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementation(() => {
+				.mockImplementationOnce(() => {
 					return {
+						setItem() {},
 						getItem() {
 							return JSON.stringify({
 								provider: 'google',
 								token: 'token',
 							});
 						},
+						removeItem() {},
 					};
 				});
 
@@ -1567,11 +1581,13 @@ describe('auth unit test', () => {
 		test('with cognito session', async () => {
 			const spyon = jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementation(() => {
+				.mockImplementationOnce(() => {
 					return {
+						setItem() {},
 						getItem() {
 							return null;
 						},
+						removeItem() {},
 					};
 				});
 			const auth = new Auth(authOptions);
@@ -1599,11 +1615,13 @@ describe('auth unit test', () => {
 		test('with guest', async () => {
 			const spyon = jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementation(() => {
+				.mockImplementationOnce(() => {
 					return {
+						setItem() {},
 						getItem() {
 							return null;
 						},
+						removeItem() {},
 					};
 				});
 			const auth = new Auth(authOptions);
@@ -1631,11 +1649,13 @@ describe('auth unit test', () => {
 		test('json parse error', async () => {
 			const spyon = jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementation(() => {
+				.mockImplementationOnce(() => {
 					return {
+						setItem() {},
 						getItem() {
 							return undefined;
 						},
+						removeItem() {},
 					};
 				});
 			const auth = new Auth(authOptions);
@@ -1687,7 +1707,7 @@ describe('auth unit test', () => {
 			});
 
 			expect.assertions(1);
-			await auth.verifyUserAttribute(user, { email: 'xxx@xxx.com' });
+			await auth.verifyUserAttribute(user, 'email');
 			expect(spyon).toBeCalled();
 
 			spyon.mockClear();
@@ -1708,7 +1728,7 @@ describe('auth unit test', () => {
 
 			expect.assertions(1);
 			try {
-				await auth.verifyUserAttribute(user, {});
+				await auth.verifyUserAttribute(user, 'email');
 			} catch (e) {
 				expect(e).toBe('err');
 			}
@@ -1750,7 +1770,7 @@ describe('auth unit test', () => {
 
 			expect.assertions(1);
 			try {
-				await auth.verifyUserAttributeSubmit(user, {}, 'code');
+				await auth.verifyUserAttributeSubmit(user, 'email', 'code');
 			} catch (e) {
 				expect(e).toBe('err');
 			}
@@ -1768,10 +1788,10 @@ describe('auth unit test', () => {
 
 			expect.assertions(2);
 			expect(
-				auth.verifyUserAttributeSubmit(user, {}, null).then()
+				auth.verifyUserAttributeSubmit(user, 'email', null).then()
 			).rejects.toThrow(AuthError);
 			expect(
-				auth.verifyUserAttributeSubmit(user, {}, null).then()
+				auth.verifyUserAttributeSubmit(user, 'email', null).then()
 			).rejects.toEqual(errorMessage);
 		});
 	});
@@ -1847,6 +1867,18 @@ describe('auth unit test', () => {
 	});
 
 	describe('signOut test', () => {
+		beforeAll(() => {
+			jest
+				.spyOn(StorageHelper.prototype, 'getStorage')
+				.mockImplementationOnce(() => {
+					return {
+						setItem() {},
+						getItem() {},
+						removeItem() {},
+					};
+				});
+		});
+
 		test('happy case', async () => {
 			const auth = new Auth(authOptions);
 
@@ -1883,9 +1915,9 @@ describe('auth unit test', () => {
 				Pool: userPool,
 			});
 			auth['credentials_source'] = 'aws';
-			auth['credentials'] = new CognitoIdentityCredentials({
+			auth['credentials'] = {
 				IdentityPoolId: 'identityPoolId',
-			});
+			};
 
 			const spyonAuth = jest
 				.spyOn(Auth.prototype, 'currentUserCredentials')
@@ -1964,15 +1996,7 @@ describe('auth unit test', () => {
 		test('get guest credentials failed', async () => {
 			const auth = new Auth(authOptionsWithNoUserPoolId);
 
-			const cognitoCredentialSpyon = jest
-				.spyOn(CognitoIdentityCredentials.prototype, 'get')
-				.mockImplementation(callback => {
-					callback(null);
-				});
-
 			expect(await auth.signOut()).toBeUndefined();
-
-			cognitoCredentialSpyon.mockClear();
 		});
 	});
 
@@ -2327,10 +2351,10 @@ describe('auth unit test', () => {
 			const spyon2 = jest
 				.spyOn(Auth.prototype, 'userAttributes')
 				.mockImplementationOnce(() => {
-					auth['credentials'] = new CognitoIdentityCredentials({
+					auth['credentials'] = {
 						IdentityPoolId: 'identityPoolId',
 						IdentityId: 'identityId',
-					});
+					};
 					auth['credentials']['identityId'] = 'identityId';
 					return new Promise((res, rej) => {
 						res([
