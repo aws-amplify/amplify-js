@@ -12,10 +12,9 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Picker from './Picker';
+import { Picker } from './Picker';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import {
 	FormSection,
@@ -45,7 +44,7 @@ export interface IPhotoPickerState {
 	previewSrc?: string;
 }
 
-export default class PhotoPicker extends Component<
+export class PhotoPicker extends React.Component<
 	IPhotoPickerProps,
 	IPhotoPickerState
 > {
@@ -122,3 +121,8 @@ export default class PhotoPicker extends Component<
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default PhotoPicker;

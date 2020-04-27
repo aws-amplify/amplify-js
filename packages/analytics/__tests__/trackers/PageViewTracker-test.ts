@@ -1,5 +1,5 @@
-import PageViewTracker from '../../src/trackers/PageViewTracker';
-import MethodEmbed from '../../src/utils/MethodEmbed';
+import { PageViewTracker } from '../../src/trackers/PageViewTracker';
+import { MethodEmbed } from '../../src/utils/MethodEmbed';
 
 const tracker = jest.fn().mockImplementation(() => {
 	return Promise.resolve();

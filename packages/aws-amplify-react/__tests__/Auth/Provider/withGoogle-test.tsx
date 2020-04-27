@@ -1,16 +1,15 @@
-import Auth from '@aws-amplify/auth';
 import * as React from 'react';
-import { Component } from 'react';
-import withGoogle, {
+import { Auth } from '@aws-amplify/auth';
+import {
+	withGoogle,
 	GoogleButton,
 } from '../../../src/Auth/Provider/withGoogle';
-import { SignInButton, Button } from '../../../src/AmplifyUI';
 
 describe('withGoogle test', () => {
 	describe('render test', () => {
 		test('render correctly', () => {
 			window.gapi = null;
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -23,7 +22,7 @@ describe('withGoogle test', () => {
 
 	describe('signIn test', () => {
 		test('happy case with connected response', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -63,7 +62,7 @@ describe('withGoogle test', () => {
 		test('with an onError handler', async () => {
 			const onErrorMock = jest.fn();
 
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -95,7 +94,7 @@ describe('withGoogle test', () => {
 		});
 
 		test('without an onError handler', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -125,7 +124,7 @@ describe('withGoogle test', () => {
 
 	describe('federatedSignIn', () => {
 		test('happy case', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -184,7 +183,7 @@ describe('withGoogle test', () => {
 		});
 
 		test('happy case with onStateChange exists', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -251,7 +250,7 @@ describe('withGoogle test', () => {
 
 	describe('initGapi test', () => {
 		test('happy case', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -289,7 +288,7 @@ describe('withGoogle test', () => {
 
 	describe.skip('refreshGoogleToken test', () => {
 		test('happy case', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -358,7 +357,7 @@ describe('withGoogle test', () => {
 		});
 
 		test('not signed in', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -400,7 +399,7 @@ describe('withGoogle test', () => {
 		});
 
 		test('no auth2', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -415,7 +414,7 @@ describe('withGoogle test', () => {
 		});
 
 		test('no googleAuth instance', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -441,7 +440,7 @@ describe('withGoogle test', () => {
 
 	describe('google signOut test', () => {
 		test('happy case', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -469,7 +468,7 @@ describe('withGoogle test', () => {
 
 		test('no auth2', async () => {
 			window.gapi = null;
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
