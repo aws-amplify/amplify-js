@@ -101,11 +101,13 @@ export function withAuth0(Comp, options?) {
 					this._auth0.client.userInfo(authResult.accessToken, (err, user) => {
 						let username = undefined;
 						let email = undefined;
+						let picture = undefined;
 						if (err) {
 							logger.debug('Failed to get the user info', err);
 						} else {
 							username = user.name;
 							email = user.email;
+							picture = user.picture;
 						}
 
 						Auth.federatedSignIn(
@@ -114,7 +116,11 @@ export function withAuth0(Comp, options?) {
 								token: authResult.idToken,
 								expires_at: authResult.expiresIn * 1000 + new Date().getTime(),
 							},
-							{ name: username, email }
+							{
+								name: username,
+								email,
+								picture,
+							}
 						)
 							.then(() => {
 								if (onStateChange) {
