@@ -152,7 +152,8 @@ declare module 'amazon-cognito-identity-js' {
 				onSuccess: (session: CognitoUserSession) => void;
 				onFailure: (err: any) => void;
 			},
-			mfaType?: string
+			mfaType?: string,
+			clientMetadata?: ClientMetadata
 		): void;
 		public listDevices(
 			limit: number,
@@ -305,7 +306,8 @@ declare module 'amazon-cognito-identity-js' {
 			password: string,
 			userAttributes: CognitoUserAttribute[],
 			validationData: CognitoUserAttribute[],
-			callback: NodeCallback<Error, ISignUpResult>
+			callback: NodeCallback<Error, ISignUpResult>,
+			clientMetadata?: ClientMetadata
 		): void;
 
 		public getCurrentUser(): CognitoUser | null;
@@ -371,4 +373,10 @@ declare module 'amazon-cognito-identity-js' {
 		removeItem(key: string): void;
 		clear(): void;
 	}
+
+	export class UserAgent {
+		constructor();
+	}
+
+	export const appendToCognitoUserAgent: (content: string) => void;
 }

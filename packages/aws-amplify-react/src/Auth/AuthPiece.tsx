@@ -21,7 +21,7 @@ import {
 import { UsernameAttributes } from './common/types';
 import { PhoneField } from './PhoneField';
 import { auth } from '../Amplify-UI/data-test-attributes';
-import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
+import AmplifyTheme from '../AmplifyTheme';
 
 const labelMap = {
 	[UsernameAttributes.EMAIL]: 'Email',
@@ -45,7 +45,7 @@ export interface IAuthPieceState {
 	requestPending?: boolean;
 }
 
-export default class AuthPiece<
+export class AuthPiece<
 	Props extends IAuthPieceProps,
 	State extends IAuthPieceState
 > extends React.Component<Props, State> {
@@ -227,3 +227,8 @@ export default class AuthPiece<
 		throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AuthPiece;

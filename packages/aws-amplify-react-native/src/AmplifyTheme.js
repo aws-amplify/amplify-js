@@ -17,6 +17,9 @@ import { StyleSheet } from 'react-native';
 export const deepSquidInk = '#152939';
 export const linkUnderlayColor = '#FFF';
 export const errorIconColor = '#DD3F5B';
+export const textInputColor = '#000000';
+export const textInputBorderColor = '#C4C4C4';
+export const placeholderColor = '#C7C7CD';
 
 // Theme
 export default StyleSheet.create({
@@ -107,7 +110,8 @@ export default StyleSheet.create({
 		padding: 16,
 		borderWidth: 1,
 		borderRadius: 3,
-		borderColor: '#C4C4C4',
+		borderColor: textInputBorderColor,
+		color: textInputColor,
 	},
 	inputLabel: {
 		marginBottom: 8,
@@ -122,7 +126,8 @@ export default StyleSheet.create({
 		padding: 16,
 		borderWidth: 1,
 		borderRadius: 3,
-		borderColor: '#C4C4C4',
+		borderColor: textInputBorderColor,
+		color: textInputColor,
 	},
 	picker: {
 		flex: 1,

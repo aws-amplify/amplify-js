@@ -1,4 +1,4 @@
-import SessionTracker from './SessionTracker-rn';
+import { SessionTracker } from './SessionTracker-rn';
 
 class EventTracker {
 	constructor(tracker, opts) {}

@@ -1,4 +1,4 @@
-import { default as cache, InMemoryCache } from '../src/InMemoryCache';
+import { default as cache, InMemoryCacheClass } from '../src/InMemoryCache';
 import { defaultConfig, getByteLength } from '../src/Utils/CacheUtils';
 import { CacheConfig, CacheItem, CacheItemOptions } from '../src/types/Cache';
 
@@ -365,7 +365,7 @@ describe('InMemoryCache', () => {
 	describe('createInstance', () => {
 		test('happy case, return new instance', () => {
 			expect(cache.createInstance({ keyPrefix: 'abc' })).toBeInstanceOf(
-				InMemoryCache
+				InMemoryCacheClass
 			);
 		});
 	});

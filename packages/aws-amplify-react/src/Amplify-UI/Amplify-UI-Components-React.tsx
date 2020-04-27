@@ -1,8 +1,7 @@
 import * as React from 'react';
 
-import { JS } from '@aws-amplify/core';
+import { objectLessAttributes } from '@aws-amplify/core';
 
-import '@aws-amplify/ui/dist/style.css';
 import * as AmplifyUI from '@aws-amplify/ui';
 
 import AmplifyTheme from './Amplify-UI-Theme';
@@ -10,7 +9,7 @@ import AmplifyTheme from './Amplify-UI-Theme';
 export const Container = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.container);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 
 	return beforeAfter(
 		<div {...p} className={AmplifyUI.container} style={style}>
@@ -45,7 +44,7 @@ export const FormSection = props => {
 export const SectionHeader = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.sectionHeader);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<div {...p} className={AmplifyUI.sectionHeader} style={style}>
 			<SectionHeaderContent theme={theme}>
@@ -71,7 +70,7 @@ export const SectionHeaderContent = props => {
 export const SectionFooter = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.sectionFooter);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<div {...p} className={AmplifyUI.sectionFooter} style={style}>
 			{props.children}
@@ -102,7 +101,7 @@ export const SectionFooterSecondaryContent = props => {
 export const SectionBody = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.sectionBody);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<div {...p} className={AmplifyUI.sectionBody} style={style}>
 			{props.children}
@@ -113,7 +112,7 @@ export const SectionBody = props => {
 export const ActionRow = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.actionRow);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<div {...p} className="amplify-action-row" style={style}>
 			{props.children}
@@ -143,7 +142,7 @@ export const StrikeContent = props => {
 export const FormRow = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.formRow);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<div {...p} className={AmplifyUI.formRow} style={style}>
 			{props.children}
@@ -167,7 +166,7 @@ export const RadioRow = props => {
 export const Radio = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.radio);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<input {...p} type="radio" className={AmplifyUI.radio} style={style} />
 	);
@@ -176,7 +175,7 @@ export const Radio = props => {
 export const InputRow = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.input);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return (
 		<FormRow theme={theme}>
 			{beforeAfter(<input {...p} className={AmplifyUI.input} style={style} />)}
@@ -187,7 +186,7 @@ export const InputRow = props => {
 export const Input = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.input);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return <input {...p} className={AmplifyUI.input} style={style} />;
 };
 
@@ -204,7 +203,7 @@ export const SelectInput = props => {
 export const FormField = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.formField);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<div {...p} className={AmplifyUI.formField} style={style}>
 			{props.children}
@@ -216,7 +215,7 @@ export const Button = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.button);
 	const disabled = props.disabled || false;
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<button
 			{...p}
@@ -232,7 +231,7 @@ export const Button = props => {
 export const PhotoPickerButton = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.photoPickerButton);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return (
 		<button
 			{...p}
@@ -247,7 +246,7 @@ export const PhotoPickerButton = props => {
 export const SignInButton = props => {
 	const theme = props.theme || AmplifyTheme;
 	const styles = Object.assign({}, theme.signInButton, theme[props.variant]);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 
 	return beforeAfter(
 		<button {...p} className={AmplifyUI.signInButton} style={styles}>
@@ -259,7 +258,7 @@ export const SignInButton = props => {
 export const SignInButtonIcon = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.signInButtonIcon);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<span {...p} className={AmplifyUI.signInButtonIcon} style={style}>
 			{props.children}
@@ -280,7 +279,7 @@ export const SignInButtonContent = props => {
 export const Link = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.a);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<a {...p} className={AmplifyUI.a} style={style}>
 			{props.children}
@@ -291,7 +290,7 @@ export const Link = props => {
 export const Label = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.label);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<label {...p} className={AmplifyUI.label} style={style}>
 			{props.children}
@@ -322,7 +321,7 @@ export const InputLabel = props => {
 export const NavBar = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.navBar);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<div {...p} className={AmplifyUI.navBar} style={style}>
 			{props.children}
@@ -333,7 +332,7 @@ export const NavBar = props => {
 export const Nav = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.nav);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<div {...p} className={AmplifyUI.nav} style={style}>
 			{props.children}
@@ -344,7 +343,7 @@ export const Nav = props => {
 export const NavRight = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.navRight);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<div {...p} className={AmplifyUI.navRight} style={style}>
 			{props.children}
@@ -355,7 +354,7 @@ export const NavRight = props => {
 export const NavItem = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.navItem);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<div {...p} className={AmplifyUI.navItem} style={style}>
 			{props.children}
@@ -366,7 +365,7 @@ export const NavItem = props => {
 export const NavButton = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.navButton);
-	const p = JS.objectLessAttributes(props, 'theme');
+	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<button {...p} className={AmplifyUI.button} style={style}>
 			{beforeAfter(<span>{props.children}</span>)}

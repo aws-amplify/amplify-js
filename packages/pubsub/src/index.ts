@@ -10,29 +10,18 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import PubSubClass from './PubSub';
+import { PubSub } from './PubSub';
 
-import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
-
-const logger = new Logger('PubSub');
+export * from './Providers';
 
 enum CONTROL_MSG {
 	CONNECTION_CLOSED = 'Connection closed',
 	TIMEOUT_DISCONNECT = 'Timeout disconnect',
 }
 
-let _instance: PubSubClass = null;
+export { PubSub, CONTROL_MSG };
 
-if (!_instance) {
-	logger.debug('Create PubSub Instance');
-	_instance = new PubSubClass(null);
-}
-
-const PubSub = _instance;
-Amplify.register(PubSub);
-
+/**
+ * @deprecated use named import
+ */
 export default PubSub;
-
-export * from './Providers/AWSIotProvider';
-
-export { PubSubClass, CONTROL_MSG };
