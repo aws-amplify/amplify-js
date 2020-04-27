@@ -306,7 +306,8 @@ declare module 'amazon-cognito-identity-js' {
 			password: string,
 			userAttributes: CognitoUserAttribute[],
 			validationData: CognitoUserAttribute[],
-			callback: NodeCallback<Error, ISignUpResult>
+			callback: NodeCallback<Error, ISignUpResult>,
+			clientMetadata?: ClientMetadata
 		): void;
 
 		public getCurrentUser(): CognitoUser | null;
