@@ -12,10 +12,10 @@
  */
 
 import React from 'react';
-import { SafeAreaView } from 'react-native';
 import { Auth, Analytics, Logger, Hub, JS } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
+import { Container } from '../AmplifyUI';
 import Loading from './Loading';
 import SignIn from './SignIn';
 import ConfirmSignIn from './ConfirmSignIn';
@@ -27,6 +27,10 @@ import RequireNewPassword from './RequireNewPassword';
 import Greetings from './Greetings';
 
 const logger = new Logger('Authenticator');
+
+const EmptyContainer = ({ children }) => (
+	<React.Fragment>{children}</React.Fragment>
+);
 
 class AuthDecorator {
 	constructor(onStateChange) {
@@ -154,6 +158,13 @@ export default class Authenticator extends React.Component {
 		const { authState, authData } = this.state;
 		const theme = this.props.theme || AmplifyTheme;
 		const messageMap = this.props.errorMessage || AmplifyMessageMap;
+		// If container prop is undefined, default to AWS Amplify UI Container (SafeAreaView)
+		// otherwise if truthy, use the supplied render prop
+		// otherwise if falsey, use EmptyContainer
+		const ContainerWrapper =
+			this.props.container === undefined
+				? Container
+				: this.props.container || EmptyContainer;
 
 		const { hideDefault, signUpConfig, usernameAttributes } = this.props;
 		const props_children = this.props.children || [];
@@ -182,6 +193,6 @@ export default class Authenticator extends React.Component {
 					usernameAttributes,
 				});
 			});
-		return <SafeAreaView style={theme.container}>{children}</SafeAreaView>;
+		return <ContainerWrapper theme={theme}>{children}</ContainerWrapper>;
 	}
 }

@@ -1,1 +1,3 @@
-export const httpHandlerOptions = {};
+export const httpHandlerOptions = {
+	bufferBody: false,
+};
