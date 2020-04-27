@@ -21,8 +21,8 @@ export class AmplifyFormSection {
 
   // eslint-disable-next-line
   @Listen('keydown')
-  handleKeyDown(ev: KeyboardEvent) {
-    if (ev.key === 'Enter') {
+  handleKeyDown(ev) {
+    if (ev.key === 'Enter' && ev.composedPath()[0].tagName === "INPUT") {
       this.handleSubmit(ev);
     }
   }
