@@ -10,7 +10,7 @@ import { Input, Button } from '../AmplifyTheme';
 import { I18n } from '@aws-amplify/core';
 import { Interactions } from '@aws-amplify/interactions';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-
+import { chatBot } from '../Amplify-UI/data-test-attributes';
 const logger = new Logger('ChatBot');
 
 // @ts-ignore
@@ -299,19 +299,31 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 		return this.state.dialog.map((m, i) => {
 			if (m.from === 'me') {
 				return (
-					<div key={i} style={styles.itemMe}>
+					<div
+						key={i}
+						style={styles.itemMe}
+						data-test={`${chatBot.dialog}-${i}`}
+					>
 						{m.message}
 					</div>
 				);
 			} else if (m.from === 'system') {
 				return (
-					<div key={i} style={styles.itemBot}>
+					<div
+						key={i}
+						style={styles.itemBot}
+						data-test={`${chatBot.dialog}-${i}`}
+					>
 						{m.message}
 					</div>
 				);
 			} else {
 				return (
-					<div key={i} style={styles.itemBot}>
+					<div
+						key={i}
+						style={styles.itemBot}
+						data-test={`${chatBot.dialog}-${i}`}
+					>
 						{m.message}
 					</div>
 				);
@@ -418,7 +430,9 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 		return (
 			<FormSection theme={theme}>
 				{title && (
-					<SectionHeader theme={theme}>{I18n.get(title)}</SectionHeader>
+					<SectionHeader theme={theme} data-test={chatBot.title}>
+						{I18n.get(title)}
+					</SectionHeader>
 				)}
 				<SectionBody theme={theme}>
 					<div ref={this.listItemsRef} style={styles.list}>
@@ -438,7 +452,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 						micButtonDisabled={this.state.micButtonDisabled}
 						handleMicButton={this.micButtonHandler}
 						currentVoiceState={this.state.currentVoiceState}
-					></ChatBotInputs>
+					/>
 				</SectionFooter>
 			</FormSection>
 		);
@@ -460,7 +474,8 @@ function ChatBotTextInput(props) {
 			onChange={onChange}
 			value={inputText}
 			disabled={inputDisabled}
-		></input>
+			data-test={chatBot.messageInput}
+		/>
 	);
 }
 
@@ -496,7 +511,12 @@ function ChatBotTextButton(props) {
 	}
 
 	return (
-		<button type="submit" style={styles.button} disabled={inputDisabled}>
+		<button
+			type="submit"
+			style={styles.button}
+			disabled={inputDisabled}
+			data-test={chatBot.sendMessageButton}
+		>
 			{I18n.get('Send')}
 		</button>
 	);
