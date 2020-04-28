@@ -23,6 +23,9 @@ import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 
 S3Client.prototype.send = jest.fn(async command => {
 	if (command instanceof ListObjectsCommand) {
+		if (command.input.Prefix === 'public/emptyListResultsPath') {
+			return {};
+		}
 		return {
 			Contents: [
 				{
@@ -725,6 +728,28 @@ describe('StorageProvider test', () => {
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
 				Prefix: 'public/path',
+			});
+			spyon.mockClear();
+		});
+
+		test('list objects with zero results', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res({});
+				});
+			});
+
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const spyon = jest.spyOn(S3Client.prototype, 'send');
+
+			expect.assertions(2);
+			expect(
+				await storage.list('emptyListResultsPath', { level: 'public' })
+			).toEqual([]);
+			expect(spyon.mock.calls[0][0].input).toEqual({
+				Bucket: 'bucket',
+				Prefix: 'public/emptyListResultsPath',
 			});
 			spyon.mockClear();
 		});

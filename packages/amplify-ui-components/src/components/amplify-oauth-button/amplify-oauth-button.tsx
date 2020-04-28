@@ -10,9 +10,10 @@ import { Translations } from '../../common/Translations';
   shadow: true,
 })
 export class AmplifyOAuthButton {
+  /** Federated credentials & configuration. */
   @Prop() config: FederatedConfig['oauthConfig'] = {};
 
-  signInWithOAuth(event) {
+  private signInWithOAuth(event) {
     event.preventDefault();
     Auth.federatedSignIn();
   }
