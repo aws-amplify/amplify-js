@@ -81,8 +81,7 @@ export default class Authenticator extends React.Component {
 
 	onHubCapsule(capsule) {
 		const {
-			payload: { event },
-			data,
+			payload: { event, data }
 		} = capsule;
 		switch (event) {
 			case 'cognitoHostedUI':
