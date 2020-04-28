@@ -183,7 +183,7 @@ commands:
       - run:
           name: Configure Detox
           environment:
-            HOMEBREW_NO_AUTO_UPDATE: 1
+            HOMEBREW_NO_AUTO_UPDATE: '1'
           command: |
             brew tap wix/brew
             brew install applesimutils
@@ -219,7 +219,8 @@ jobs:
             - ~/.ssh
       - persist_to_workspace:
           root: /root
-          paths: amplify-js
+          paths:
+            - ~/amplify-js
 
   unit_test:
     executor: build-executor
@@ -265,7 +266,8 @@ jobs:
             - ~/.cache ## cache both yarn and Cypress
       - persist_to_workspace:
           root: /root
-          paths: amplify-js-samples-staging
+          paths:
+            - ~/amplify-js-samples-staging
 
   integ_react_auth:
     executor: js-test-executor
@@ -326,7 +328,8 @@ jobs:
             - ~/.cache ## cache both yarn and Cypress
       - persist_to_workspace:
           root: /root
-          paths: amplify-js-samples-staging-ui
+          paths:
+            - ~/amplify-js-samples-staging-ui
 
   integ_react_auth_ui:
     executor: js-test-executor
@@ -403,7 +406,6 @@ releasable_branches: &releasable_branches
       - verdaccio-ci #TODO: remove after testing
 
 workflows:
-  version: 2.1
   build_test_deploy:
     jobs:
       - build
