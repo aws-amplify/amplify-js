@@ -220,7 +220,7 @@ jobs:
       - persist_to_workspace:
           root: /root
           paths:
-            - ~/amplify-js
+            - amplify-js
 
   unit_test:
     executor: build-executor
@@ -267,7 +267,7 @@ jobs:
       - persist_to_workspace:
           root: /root
           paths:
-            - ~/amplify-js-samples-staging
+            - amplify-js-samples-staging
 
   integ_react_auth:
     executor: js-test-executor
@@ -329,7 +329,7 @@ jobs:
       - persist_to_workspace:
           root: /root
           paths:
-            - ~/amplify-js-samples-staging-ui
+            - amplify-js-samples-staging-ui
 
   integ_react_auth_ui:
     executor: js-test-executor
