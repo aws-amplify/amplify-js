@@ -112,8 +112,15 @@ commands:
         type: string
       framework:
         type: string
-      spec:
+      category:
         type: string
+      sample_name:
+        type: string
+      spec:
+        # optional
+        # the script will use sample_name by default
+        type: string
+        default: ''
     steps:
       - attach_workspace:
           at: /root
@@ -129,7 +136,7 @@ commands:
           name: 'Run << parameters.test_name >> UI tests'
           command: |
             cd ~/amplify-js-samples-staging-ui
-            yarn ci:test << parameters.framework >> << parameters.spec >>
+            ci:test  << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>
       - store_artifacts:
           path: ~/amplify-js-samples-staging-ui/cypress/videos
       - store_artifacts:
@@ -329,7 +336,8 @@ jobs:
       - integ_test_ui:
           test_name: 'React Authenticator'
           framework: react
-          spec: 'auth amplify-authenticator'
+          category: auth
+          sample_name: amplify-authenticator
 
   integ_angular_auth_ui:
     executor: js-test-executor
@@ -339,7 +347,8 @@ jobs:
       - integ_test_ui:
           test_name: 'Angular Authenticator'
           framework: angular
-          spec: 'auth amplify-authenticator'
+          category: auth
+          sample_name: amplify-authenticator
 
   integ_vue_auth_ui:
     executor: js-test-executor
@@ -349,7 +358,8 @@ jobs:
       - integ_test_ui:
           test_name: 'Vue Authenticator'
           framework: vue
-          spec: 'auth amplify-authenticator'
+          category: auth
+          sample_name: amplify-authenticator
 
   integ_rn_ios_storage:
     executor: ios-executor
