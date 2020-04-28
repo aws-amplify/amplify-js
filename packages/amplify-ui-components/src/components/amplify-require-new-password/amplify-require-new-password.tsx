@@ -46,11 +46,11 @@ export class AmplifyRequireNewPassword {
   @State() password: string;
   @State() loading: boolean = false;
 
-  handlePasswordChange(event) {
+  private handlePasswordChange(event) {
     this.password = event.target.value;
   }
 
-  async checkContact(user) {
+  private async checkContact(user) {
     if (!Auth || typeof Auth.verifiedContact !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
@@ -67,7 +67,7 @@ export class AmplifyRequireNewPassword {
     }
   }
 
-  async completeNewPassword(event: Event) {
+  private async completeNewPassword(event: Event) {
     if (event) {
       event.preventDefault();
     }

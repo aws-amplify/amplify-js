@@ -6,8 +6,8 @@ import { Component, Element, Prop, h } from '@stencil/core';
   shadow: true,
 })
 export class AmplifyLink {
-  @Element() el: HTMLElement;
-
+  @Element() el: HTMLAmplifyLinkElement;
+  /** The link role is used to identify an element that creates a hyperlink to a resource that is in the application or external */
   @Prop() role: string = 'navigation';
 
   render() {

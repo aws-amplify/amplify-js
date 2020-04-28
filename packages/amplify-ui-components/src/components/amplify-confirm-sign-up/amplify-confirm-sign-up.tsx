@@ -87,7 +87,7 @@ export class AmplifyConfirmSignUp {
     }
   }
 
-  handleFormFieldInputChange(fieldType) {
+  private handleFormFieldInputChange(fieldType) {
     switch (fieldType) {
       case 'username':
       case 'email':
@@ -100,7 +100,7 @@ export class AmplifyConfirmSignUp {
     }
   }
 
-  handleFormFieldInputWithCallback(event, field) {
+  private handleFormFieldInputWithCallback(event, field) {
     const fnToCall = field['handleInputChange']
       ? field['handleInputChange']
       : (event, cb) => {
@@ -110,7 +110,7 @@ export class AmplifyConfirmSignUp {
     fnToCall(event, callback.bind(this));
   }
 
-  async resendConfirmCode() {
+  private async resendConfirmCode() {
     if (event) {
       event.preventDefault();
     }
@@ -128,7 +128,7 @@ export class AmplifyConfirmSignUp {
 
   // TODO: Add validation
   // TODO: Prefix
-  async confirmSignUp(event: Event) {
+  private async confirmSignUp(event: Event) {
     if (event) {
       event.preventDefault();
     }
