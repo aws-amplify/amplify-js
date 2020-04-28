@@ -96,10 +96,10 @@ export default class Authenticator extends React.Component {
 	}
 
 	handleStateChange(state, data) {
-		if (state === undefined) return logger.info('state cannot be undefined');
+		if (state === undefined) return logger.info('Auth state cannot be undefined');
 
 		logger.info(
-			'Inside handleStateChange Method current authState:',
+			'Inside handleStateChange method current authState:',
 			this.state.authState
 		);
 		let nextAuthState;
