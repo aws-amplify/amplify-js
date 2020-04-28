@@ -136,7 +136,7 @@ commands:
           name: 'Run << parameters.test_name >> UI tests'
           command: |
             cd ~/amplify-js-samples-staging-ui
-            ci:test  << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>
+            ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>
       - store_artifacts:
           path: ~/amplify-js-samples-staging-ui/cypress/videos
       - store_artifacts:
