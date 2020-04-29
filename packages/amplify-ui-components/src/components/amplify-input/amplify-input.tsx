@@ -1,5 +1,5 @@
 import { Component, Prop, Host, h,Listen, Event, EventEmitter} from '@stencil/core';
-import { TextFieldTypes } from '../../common/types/ui-types';
+import { TextFieldTypes, InputEvent } from '../../common/types/ui-types';
 
 @Component({
   tag: 'amplify-input',
@@ -13,7 +13,7 @@ export class AmplifyInput {
   /** The input type.  Can be any HTML input type. */
   @Prop() type?: TextFieldTypes = 'text';
   /** The callback, called when the input is modified by the user. */
-  @Prop() handleInputChange?: (inputEvent) => void;
+  @Prop() handleInputChange?: (inputEvent: InputEvent) => void;
   /** (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. */
   @Prop() placeholder?: string = '';
   /** (Optional) String value for the name of the input. */

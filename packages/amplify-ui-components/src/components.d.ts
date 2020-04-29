@@ -7,7 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AuthState, AuthStateHandler, CognitoUserInterface, FederatedConfig, MFATypesInterface, UsernameAliasStrings, } from "./common/types/auth-types";
 import { FormFieldTypes, } from "./components/amplify-auth-fields/amplify-auth-fields-interface";
-import { ButtonTypes, ButtonVariant, TextFieldTypes, } from "./common/types/ui-types";
+import { ButtonTypes, ButtonVariant, InputEvent, TextFieldTypes, } from "./common/types/ui-types";
 import { FunctionalComponent, } from "@stencil/core";
 import { CountryCodeDialOptions, } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { IconNameType, } from "./components/amplify-icon/icons";
@@ -441,7 +441,7 @@ export namespace Components {
         /**
           * The callback, called when the input is modified by the user.
          */
-        "handleInputChange"?: (inputEvent) => void;
+        "handleInputChange"?: (inputEvent: InputEvent) => void;
         /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
@@ -1564,7 +1564,7 @@ declare namespace LocalJSX {
         /**
           * The callback, called when the input is modified by the user.
          */
-        "handleInputChange"?: (inputEvent) => void;
+        "handleInputChange"?: (inputEvent: InputEvent) => void;
         /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
