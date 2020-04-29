@@ -441,7 +441,7 @@ export namespace Components {
         /**
           * The callback, called when the input is modified by the user.
          */
-        "handleInputChange"?: (inputEvent: Event) => void;
+        "handleInputChange"?: (inputEvent) => void;
         /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
@@ -1564,7 +1564,7 @@ declare namespace LocalJSX {
         /**
           * The callback, called when the input is modified by the user.
          */
-        "handleInputChange"?: (inputEvent: Event) => void;
+        "handleInputChange"?: (inputEvent) => void;
         /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
@@ -1573,6 +1573,10 @@ declare namespace LocalJSX {
           * (Optional) String value for the name of the input.
          */
         "name"?: string;
+        /**
+          * Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form
+         */
+        "onFormSubmit"?: (event: CustomEvent<any>) => void;
         /**
           * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
          */

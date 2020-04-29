@@ -20,11 +20,9 @@ export class AmplifyFormSection {
   @Prop() secondaryFooterContent: string | FunctionalComponent | null = null;
 
   // eslint-disable-next-line
-  @Listen('keydown')
-  handleKeyDown(ev) {
-    if (ev.key === 'Enter' && ev.composedPath()[0].tagName === "INPUT") {
-      this.handleSubmit(ev);
-    }
+  @Listen('formSubmit')
+  handleFormSubmit(ev) {
+    this.handleSubmit(ev.detail);
   }
 
   render() {
