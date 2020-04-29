@@ -7,12 +7,12 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: cypress/base:10
+      - image: cypress/base:12.16.1
     resource_class: large
 
   js-test-executor:
     docker:
-      - image: cypress/base:10
+      - image: cypress/base:12.16.1
       - image: verdaccio/verdaccio
     resource_class: large
 
@@ -424,7 +424,7 @@ releasable_branches: &releasable_branches
     only:
       - release
       - master
-      - ui-components/master #TODO: can we remove this?
+      - ui-components/master
       - 1.0-stable
 
 workflows:
