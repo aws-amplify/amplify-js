@@ -1,3 +1,5 @@
+import TEST_ID from '../../AmplifyTestIDs';
+
 export default [
 	{
 		label: 'Username',
@@ -5,6 +7,7 @@ export default [
 		required: true,
 		placeholder: 'Username',
 		displayOrder: 1,
+		testID: TEST_ID.AUTH.USERNAME_INPUT,
 	},
 	{
 		label: 'Password',
@@ -13,6 +16,7 @@ export default [
 		placeholder: 'Password',
 		type: 'password',
 		displayOrder: 2,
+		testID: TEST_ID.AUTH.PASSWORD_INPUT,
 	},
 	{
 		label: 'Email',
@@ -21,6 +25,7 @@ export default [
 		placeholder: 'Email',
 		type: 'email',
 		displayOrder: 3,
+		testID: TEST_ID.AUTH.EMAIL_INPUT,
 	},
 	{
 		label: 'Phone Number',
@@ -28,6 +33,7 @@ export default [
 		placeholder: 'Phone Number',
 		required: true,
 		displayOrder: 4,
+		testID: TEST_ID.AUTH.PHONE_INPUT,
 	},
 ];
 
@@ -39,6 +45,7 @@ export const signUpWithEmailFields = [
 		placeholder: 'Email',
 		type: 'email',
 		displayOrder: 1,
+		testID: TEST_ID.AUTH.EMAIL_INPUT,
 	},
 	{
 		label: 'Password',
@@ -47,6 +54,7 @@ export const signUpWithEmailFields = [
 		placeholder: 'Password',
 		type: 'password',
 		displayOrder: 2,
+		testID: TEST_ID.AUTH.PASSWORD_INPUT,
 	},
 	{
 		label: 'Phone Number',
@@ -54,6 +62,7 @@ export const signUpWithEmailFields = [
 		placeholder: 'Phone Number',
 		required: true,
 		displayOrder: 3,
+		testID: TEST_ID.AUTH.PHONE_INPUT,
 	},
 ];
 
@@ -64,6 +73,7 @@ export const signUpWithPhoneNumberFields = [
 		placeholder: 'Phone Number',
 		required: true,
 		displayOrder: 1,
+		testID: TEST_ID.AUTH.PHONE_INPUT,
 	},
 	{
 		label: 'Password',
@@ -72,6 +82,7 @@ export const signUpWithPhoneNumberFields = [
 		placeholder: 'Password',
 		type: 'password',
 		displayOrder: 2,
+		testID: TEST_ID.AUTH.PASSWORD_INPUT,
 	},
 	{
 		label: 'Email',
@@ -80,5 +91,6 @@ export const signUpWithPhoneNumberFields = [
 		placeholder: 'Email',
 		type: 'email',
 		displayOrder: 3,
+		testID: TEST_ID.AUTH.EMAIL_INPUT,
 	},
 ];

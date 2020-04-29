@@ -8,6 +8,7 @@ import { Component, Prop, h } from '@stencil/core';
 export class AmplifyToast {
   /** Used in order to add a dismissable `x` for the Toast component */
   @Prop() handleClose: () => void;
+  /** Message to be displayed inside the toast*/
   @Prop() message: string = '';
 
   /* 

@@ -150,8 +150,8 @@ export default class EventsBuffer {
 	}
 
 	private _handlePutEventsFailure(err, eventMap: EventMap) {
-		logger.debug('_putEvents Failed:', err);
-		const { statusCode } = err;
+		logger.error('_putEvents Failed: ', err);
+		const statusCode = err.$metadata && err.$metadata.httpStatusCode;
 
 		if (RETRYABLE_CODES.includes(statusCode)) {
 			const retryableEvents = Object.values(eventMap);
