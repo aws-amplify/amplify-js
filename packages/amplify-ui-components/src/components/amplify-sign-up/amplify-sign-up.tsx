@@ -76,7 +76,7 @@ export class AmplifySignUp {
     attributes: {},
   };
 
-  handleFormFieldInputChange(fieldType) {
+  private handleFormFieldInputChange(fieldType) {
     switch (fieldType) {
       case 'username':
         return event => (this.signUpAttributes.username = event.target.value);
@@ -91,16 +91,17 @@ export class AmplifySignUp {
     }
   }
 
-  handleFormFieldInputWithCallback(event, field) {
-    const fnToCall = field['handleInputChange'];
-    const callback =
-      field.type === 'phone_number'
-        ? event => (this.signUpAttributes.attributes.phone_number = event.target.value)
-        : this.handleFormFieldInputChange(field.type);
+  private handleFormFieldInputWithCallback(event, field) {
+    const fnToCall = field['handleInputChange']
+      ? field['handleInputChange']
+      : (event, cb) => {
+          cb(event);
+        };
+    const callback = this.handleFormFieldInputChange(field.type);
     fnToCall(event, callback.bind(this));
   }
 
-  handlePhoneNumberChange(event) {
+  private handlePhoneNumberChange(event) {
     const name = event.target.name;
     const value = event.target.value;
 
@@ -120,7 +121,7 @@ export class AmplifySignUp {
 
   // TODO: Add validation
   // TODO: Prefix
-  async signUp(event: Event) {
+  private async signUp(event: Event) {
     if (event) {
       event.preventDefault();
     }

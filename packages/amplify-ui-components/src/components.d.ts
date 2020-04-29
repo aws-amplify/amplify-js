@@ -34,6 +34,9 @@ export namespace Components {
           * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
          */
         "config": FederatedConfig["auth0Config"];
+        /**
+          * Auth state change handler for this component
+         */
         "handleAuthStateChange": AuthStateHandler;
     }
     interface AmplifyAuthenticator {
@@ -409,8 +412,17 @@ export namespace Components {
         "name": IconNameType;
     }
     interface AmplifyIconButton {
+        /**
+          * (Optional) Whether or not to show the tooltip automatically
+         */
         "autoShowTooltip": boolean;
+        /**
+          * The name of the icon used inside of the button
+         */
         "name": IconNameType;
+        /**
+          * (Optional) The tooltip that will show on hover of the button
+         */
         "tooltip": string | null;
     }
     interface AmplifyInput {
@@ -452,9 +464,15 @@ export namespace Components {
         "value": string;
     }
     interface AmplifyLabel {
+        /**
+          * Reflects the value of the for content property of html element
+         */
         "htmlFor": string;
     }
     interface AmplifyLink {
+        /**
+          * The link role is used to identify an element that creates a hyperlink to a resource that is in the application or external
+         */
         "role": string;
     }
     interface AmplifyLoadingSpinner {
@@ -462,6 +480,9 @@ export namespace Components {
     interface AmplifyNav {
     }
     interface AmplifyOauthButton {
+        /**
+          * Federated credentials & configuration.
+         */
         "config": FederatedConfig["oauthConfig"];
     }
     interface AmplifyPasswordField {
@@ -601,6 +622,9 @@ export namespace Components {
         "user": CognitoUserInterface;
     }
     interface AmplifySection {
+        /**
+          * Equivalent to html section role
+         */
         "role": string;
     }
     interface AmplifySelect {
@@ -662,6 +686,9 @@ export namespace Components {
         "usernameAlias": UsernameAliasStrings;
     }
     interface AmplifySignInButton {
+        /**
+          * Specifies the federation provider.
+         */
         "provider": "amazon" | "auth0" | "facebook" | "google" | "oauth";
     }
     interface AmplifySignOut {
@@ -719,6 +746,9 @@ export namespace Components {
           * Used in order to add a dismissable `x` for the Toast component
          */
         "handleClose": () => void;
+        /**
+          * Message to be displayed inside the toast
+         */
         "message": string;
     }
     interface AmplifyTooltip {
@@ -1127,6 +1157,9 @@ declare namespace LocalJSX {
           * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
          */
         "config"?: FederatedConfig["auth0Config"];
+        /**
+          * Auth state change handler for this component
+         */
         "handleAuthStateChange"?: AuthStateHandler;
     }
     interface AmplifyAuthenticator {
@@ -1502,8 +1535,17 @@ declare namespace LocalJSX {
         "name"?: IconNameType;
     }
     interface AmplifyIconButton {
+        /**
+          * (Optional) Whether or not to show the tooltip automatically
+         */
         "autoShowTooltip"?: boolean;
+        /**
+          * The name of the icon used inside of the button
+         */
         "name"?: IconNameType;
+        /**
+          * (Optional) The tooltip that will show on hover of the button
+         */
         "tooltip"?: string | null;
     }
     interface AmplifyInput {
@@ -1545,9 +1587,15 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     interface AmplifyLabel {
+        /**
+          * Reflects the value of the for content property of html element
+         */
         "htmlFor"?: string;
     }
     interface AmplifyLink {
+        /**
+          * The link role is used to identify an element that creates a hyperlink to a resource that is in the application or external
+         */
         "role"?: string;
     }
     interface AmplifyLoadingSpinner {
@@ -1555,6 +1603,9 @@ declare namespace LocalJSX {
     interface AmplifyNav {
     }
     interface AmplifyOauthButton {
+        /**
+          * Federated credentials & configuration.
+         */
         "config"?: FederatedConfig["oauthConfig"];
     }
     interface AmplifyPasswordField {
@@ -1694,6 +1745,9 @@ declare namespace LocalJSX {
         "user"?: CognitoUserInterface;
     }
     interface AmplifySection {
+        /**
+          * Equivalent to html section role
+         */
         "role"?: string;
     }
     interface AmplifySelect {
@@ -1755,6 +1809,9 @@ declare namespace LocalJSX {
         "usernameAlias"?: UsernameAliasStrings;
     }
     interface AmplifySignInButton {
+        /**
+          * Specifies the federation provider.
+         */
         "provider"?: "amazon" | "auth0" | "facebook" | "google" | "oauth";
     }
     interface AmplifySignOut {
@@ -1812,6 +1869,9 @@ declare namespace LocalJSX {
           * Used in order to add a dismissable `x` for the Toast component
          */
         "handleClose"?: () => void;
+        /**
+          * Message to be displayed inside the toast
+         */
         "message"?: string;
     }
     interface AmplifyTooltip {

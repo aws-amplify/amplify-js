@@ -1330,7 +1330,7 @@ export class AuthClass {
 	}
 
 	public currentCredentials(): Promise<ICredentials> {
-		logger.debug('getting current credntials');
+		logger.debug('getting current credentials');
 		return Credentials.get();
 	}
 

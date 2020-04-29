@@ -1,15 +1,13 @@
 # amplify-label
 
-
-
 <!-- Auto Generated Below -->
 
 
 ## Properties
 
-| Property  | Attribute  | Description | Type     | Default     |
-| --------- | ---------- | ----------- | -------- | ----------- |
-| `htmlFor` | `html-for` |             | `string` | `undefined` |
+| Property  | Attribute  | Description                                                    | Type     | Default     |
+| --------- | ---------- | -------------------------------------------------------------- | -------- | ----------- |
+| `htmlFor` | `html-for` | Reflects the value of the for content property of html element | `string` | `undefined` |
 
 
 ## Dependencies

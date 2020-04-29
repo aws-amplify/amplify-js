@@ -6,6 +6,7 @@ import { Component, Prop, h } from '@stencil/core';
   shadow: true,
 })
 export class AmplifyLabel {
+  /** Reflects the value of the for content property of html element */
   @Prop() htmlFor: string;
 
   render() {
