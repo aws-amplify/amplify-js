@@ -80,7 +80,7 @@ export class AmplifySignIn {
     password: '',
   };
 
-  private handleFormFieldInput(fieldType) {
+  private handleFormFieldInputChange(fieldType) {
     switch (fieldType) {
       case 'username':
       case 'email':
@@ -98,10 +98,7 @@ export class AmplifySignIn {
       : (event, cb) => {
           cb(event);
         };
-    const callback =
-      field.type === 'phone_number'
-        ? event => (this.signInAttributes.userInput = event.target.value)
-        : this.handleFormFieldInput(field.type);
+    const callback = this.handleFormFieldInputChange(field.type);
     fnToCall(event, callback.bind(this));
   }
 
@@ -200,7 +197,7 @@ export class AmplifySignIn {
           formFieldInputs.push({
             type: 'email',
             required: true,
-            handleInputChange: this.handleFormFieldInput('email'),
+            handleInputChange: this.handleFormFieldInputChange('email'),
             inputProps: {
               'data-test': 'sign-in-email-input',
             },
@@ -210,7 +207,7 @@ export class AmplifySignIn {
           formFieldInputs.push({
             type: 'phone_number',
             required: true,
-            handleInputChange: this.handleFormFieldInput('phone_number'),
+            handleInputChange: this.handleFormFieldInputChange('phone_number'),
             inputProps: {
               'data-test': 'sign-in-phone-number-input',
             },
@@ -221,7 +218,7 @@ export class AmplifySignIn {
           formFieldInputs.push({
             type: 'username',
             required: true,
-            handleInputChange: this.handleFormFieldInput('username'),
+            handleInputChange: this.handleFormFieldInputChange('username'),
             inputProps: {
               'data-test': 'sign-in-username-input',
             },
@@ -244,7 +241,7 @@ export class AmplifySignIn {
           </div>
         ),
         required: true,
-        handleInputChange: this.handleFormFieldInput('password'),
+        handleInputChange: this.handleFormFieldInputChange('password'),
         inputProps: {
           'data-test': 'sign-in-password-input',
         },
