@@ -21,6 +21,7 @@ import {
 	Header,
 	ErrorRow,
 	AmplifyButton,
+	SignedOutMessage,
 	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
@@ -220,7 +221,7 @@ export default class SignUp extends AuthPiece {
 		this.sortFields();
 		return (
 			<Wrapper>
-				<ScrollView style={theme.section}>
+				<ScrollView style={theme.sectionScroll}>
 					<Header theme={theme} testID={TEST_ID.AUTH.SIGN_UP_TEXT}>
 						{I18n.get(this.header)}
 					</Header>
@@ -281,6 +282,7 @@ export default class SignUp extends AuthPiece {
 						</LinkCell>
 					</View>
 					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+					<SignedOutMessage {...this.props} />
 				</ScrollView>
 			</Wrapper>
 		);
