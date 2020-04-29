@@ -28,11 +28,16 @@ import countryDialCodes from '../CountryDialCodes';
 import signUpWithUsernameFields, {
 	signUpWithEmailFields,
 	signUpWithPhoneNumberFields,
+	ISignUpField,
 } from './common/default-sign-up-fields';
 import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('SignUp');
 export default class SignUp extends AuthPiece {
+	header: string;
+	defaultSignUpFields: ISignUpField[];
+	signUpFields: ISignUpField[];
+
 	constructor(props) {
 		super(props);
 
@@ -59,7 +64,7 @@ export default class SignUp extends AuthPiece {
 	}
 
 	isValid() {
-		for (const el in this.signUpFields) {
+		for (const el of this.signUpFields) {
 			if (el.required && !this.state[el.key]) return false;
 		}
 		return true;
@@ -145,7 +150,7 @@ export default class SignUp extends AuthPiece {
 			this.props.signUpConfig.defaultCountryCode &&
 			countryDialCodes.indexOf(
 				`+${this.props.signUpConfig.defaultCountryCode}`
-			) !== '-1'
+			) !== -1
 			? `+${this.props.signUpConfig.defaultCountryCode}`
 			: '+1';
 	}
@@ -208,6 +213,7 @@ export default class SignUp extends AuthPiece {
 		logger.debug('Signing up with', signup_info);
 		Auth.signUp(signup_info)
 			.then(data => {
+				// @ts-ignore
 				this.changeState('confirmSignUp', data.user.username);
 			})
 			.catch(err => this.error(err));
@@ -234,6 +240,7 @@ export default class SignUp extends AuthPiece {
 									secureTextEntry={field.type === 'password'}
 									onChangeText={text => {
 										const stateObj = this.state;
+										//@ts-ignore
 										stateObj[field.key] = text;
 										this.setState(stateObj);
 									}}

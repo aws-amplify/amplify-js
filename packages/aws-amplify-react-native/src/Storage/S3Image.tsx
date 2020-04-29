@@ -18,7 +18,7 @@ import AmplifyTheme from '../AmplifyTheme';
 
 const logger = new Logger('Storage.S3Image');
 
-export default class S3Image extends Component {
+export default class S3Image extends Component<any, any> {
 	constructor(props) {
 		super(props);
 

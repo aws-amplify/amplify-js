@@ -33,6 +33,8 @@ const EmptyContainer = ({ children }) => (
 );
 
 class AuthDecorator {
+	onStateChange: (state: string) => void;
+
 	constructor(onStateChange) {
 		this.onStateChange = onStateChange;
 	}
@@ -53,7 +55,10 @@ class AuthDecorator {
 	}
 }
 
-export default class Authenticator extends React.Component {
+export default class Authenticator extends React.Component<any, any> {
+	_initialAuthState: string;
+	_isMounted: boolean;
+
 	constructor(props) {
 		super(props);
 		this._initialAuthState = this.props.authState || 'signIn';
@@ -172,7 +177,7 @@ export default class Authenticator extends React.Component {
 						.then(() => {
 							this.handleStateChange(this._initialAuthState, null);
 						})
-						.catch(err => this.error(err));
+						.catch(err => logger.warn('Failed to sign out', err));
 				}
 			});
 	}
@@ -190,7 +195,7 @@ export default class Authenticator extends React.Component {
 				: this.props.container || EmptyContainer;
 
 		const { hideDefault, signUpConfig, usernameAttributes } = this.props;
-		const props_children = this.props.children || [];
+		const props_children: any = this.props.children || [];
 		const default_children = [
 			<Loading />,
 			<SignIn />,

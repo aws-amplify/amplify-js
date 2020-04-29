@@ -78,7 +78,9 @@ const MIC_BUTTON_TEXT = {
 
 let timer = null;
 
-export class ChatBot extends Component {
+export class ChatBot extends Component<any, any> {
+	listItemsRef: React.RefObject<any>;
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -204,7 +206,10 @@ export class ChatBot extends Component {
 				dialog: [
 					...this.state.dialog,
 					response &&
-						response.message && { from: 'bot', message: response.message },
+						response.message && {
+							from: 'bot',
+							message: response.message,
+						},
 				].filter(Boolean),
 				inputText: '',
 				inputEditable: true,
@@ -273,6 +278,7 @@ export class ChatBot extends Component {
 		const { onComplete, botName } = this.props;
 
 		if (onComplete && botName) {
+			// @ts-ignore
 			Interactions.onComplete(botName, this.getOnComplete(onComplete, this));
 		}
 	}
@@ -281,6 +287,7 @@ export class ChatBot extends Component {
 		const { onComplete, botName } = this.props;
 
 		if (botName !== prevProps.botName || onComplete !== prevProps.onComplete) {
+			// @ts-ignore
 			Interactions.onComplete(botName, this.getOnComplete(onComplete, this));
 		}
 	}
@@ -407,15 +414,18 @@ function ChatBotInputs(props) {
 	const submit = props.submit;
 
 	if (voiceEnabled && textEnabled) {
+		// @ts-ignore
 		placeholder = 'Type your message or tap 🎤';
 	}
 
 	if (voiceEnabled && !textEnabled) {
+		// @ts-ignore
 		placeholder = 'Tap the mic button';
 		editable = false;
 	}
 
 	if (!voiceEnabled && textEnabled) {
+		// @ts-ignore
 		placeholder = 'Type your message here';
 	}
 
@@ -433,6 +443,7 @@ function ChatBotInputs(props) {
 			<ChatBotTextInput
 				styles={styles}
 				overrideStyles={overrideStyles}
+				// @ts-ignore
 				placeholder={I18n.get(placeholder)}
 				onChangeText={onChangeText}
 				inputText={inputText}
@@ -523,6 +534,7 @@ function ChatBotMicButton(props) {
 	);
 }
 
+// @ts-ignore
 ChatBot.defaultProps = {
 	botName: undefined,
 	onComplete: undefined,

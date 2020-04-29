@@ -19,7 +19,7 @@ import S3Image from './S3Image';
 
 const logger = new Logger('Storage.S3Album');
 
-export default class S3Album extends Component {
+export default class S3Album extends Component<any, any> {
 	constructor(props) {
 		super(props);
 

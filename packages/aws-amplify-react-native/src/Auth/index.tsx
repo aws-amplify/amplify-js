@@ -52,7 +52,9 @@ export function withAuthenticator(
 	theme = null,
 	signUpConfig = {}
 ) {
-	class Wrapper extends React.Component {
+	class Wrapper extends React.Component<any, any> {
+		authConfig: any;
+
 		constructor(props) {
 			super(props);
 

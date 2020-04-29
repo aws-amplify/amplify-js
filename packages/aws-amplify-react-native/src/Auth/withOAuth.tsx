@@ -24,7 +24,10 @@ const logger = new Logger('withOAuth');
 export default Comp => {
 	let listeners = [];
 
-	return class WithOAuth extends React.Component {
+	return class WithOAuth extends React.Component<any, any> {
+		_isMounted: boolean;
+		urlOpener: any;
+
 		constructor(props) {
 			super(props);
 			this._isMounted = false;
@@ -110,11 +113,14 @@ export default Comp => {
 				);
 			}
 
+			// @ts-ignore
 			const { oauth = undefined } = Auth.configure();
 
 			// to keep backward compatibility
 			const cognitoHostedUIConfig =
+				// @ts-ignore
 				oauth && (oauth.domain ? oauth : oauth.awsCognito);
+			// @ts-ignore
 			const config = this.props.oauth_config || cognitoHostedUIConfig;
 
 			return config;

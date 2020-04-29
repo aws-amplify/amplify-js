@@ -1,5 +1,17 @@
 import TEST_ID from '../../AmplifyTestIDs';
 
+export interface ISignUpField {
+	label: string;
+	key: string;
+	required: boolean;
+	placeholder: string;
+	type?: string;
+	displayOrder: number;
+	testID?: string;
+	invalid?: boolean;
+	custom?: boolean;
+}
+
 export default [
 	{
 		label: 'Username',
@@ -37,7 +49,7 @@ export default [
 	},
 ];
 
-export const signUpWithEmailFields = [
+export const signUpWithEmailFields: ISignUpField[] = [
 	{
 		label: 'Email',
 		key: 'email',
@@ -66,7 +78,7 @@ export const signUpWithEmailFields = [
 	},
 ];
 
-export const signUpWithPhoneNumberFields = [
+export const signUpWithPhoneNumberFields: ISignUpField[] = [
 	{
 		label: 'Phone Number',
 		key: 'phone_number',

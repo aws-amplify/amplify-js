@@ -28,7 +28,10 @@ const labelMap = {
 	username: 'Username',
 };
 
-export default class AuthPiece extends React.Component {
+export default class AuthPiece extends React.Component<any, any> {
+	_isHidden: boolean;
+	_validAuthStates: String[];
+
 	constructor(props) {
 		super(props);
 
@@ -102,7 +105,7 @@ export default class AuthPiece extends React.Component {
 		return labelMap[usernameAttributes] || usernameAttributes;
 	}
 
-	changeState(state, data) {
+	changeState(state, data?) {
 		if (this.props.onStateChange) {
 			this.props.onStateChange(state, data);
 		}
@@ -153,7 +156,7 @@ export default class AuthPiece extends React.Component {
 		return this.showComponent(this.props.theme || AmplifyTheme);
 	}
 
-	showComponent(theme) {
+	showComponent(theme): any {
 		throw "You must implement showComponent(theme) and don't forget to set this._validAuthStates.";
 	}
 }

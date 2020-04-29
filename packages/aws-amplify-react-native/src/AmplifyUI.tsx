@@ -32,6 +32,7 @@ import AmplifyTheme, {
 } from './AmplifyTheme';
 import { Icon } from 'react-native-elements';
 import countryDialCodes from './CountryDialCodes';
+// @ts-ignore
 import TEST_ID from './AmplifyTestIDs';
 
 export const Container = props => {
@@ -57,7 +58,7 @@ export const FormField = props => {
 	);
 };
 
-export class PhoneField extends Component {
+export class PhoneField extends Component<any, any> {
 	constructor(props) {
 		super(props);
 
@@ -120,28 +121,6 @@ export class PhoneField extends Component {
 	}
 }
 
-export const SectionFooter = props => {
-	const theme = props.theme || AmplifyTheme;
-	return (
-		<View style={theme.sectionFooter}>
-			<LinkCell
-				theme={theme}
-				onPress={() => onStateChange('confirmSignUp')}
-				testID={TEST_ID.AUTH.CONFIRM_A_CODE_BUTTON}
-			>
-				{I18n.get('Confirm a Code')}
-			</LinkCell>
-			<LinkCell
-				theme={theme}
-				onPress={() => onStateChange('signIn')}
-				testID={TEST_ID.AUTH.SIGN_IN_BUTTON}
-			>
-				{I18n.get('Sign In')}
-			</LinkCell>
-		</View>
-	);
-};
-
 export const LinkCell = props => {
 	const theme = props.theme || AmplifyTheme;
 	return (
@@ -201,9 +180,11 @@ export const AmplifyButton = props => {
 
 export const Wrapper = props => {
 	const isWeb = Platform.OS === 'web';
-	const WrapperComponent = isWeb ? View : TouchableWithoutFeedback;
+	const WrapperComponent: React.ElementType = isWeb
+		? View
+		: TouchableWithoutFeedback;
 
-	const wrapperProps = {
+	const wrapperProps: any = {
 		style: AmplifyTheme.section,
 		accessible: false,
 	};

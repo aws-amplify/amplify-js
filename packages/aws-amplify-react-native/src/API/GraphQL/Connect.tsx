@@ -13,7 +13,9 @@ const getOperationType = operation => {
 	return operationType;
 };
 
-export default class Connect extends Component {
+export default class Connect extends Component<any, any> {
+	subSubscription: any;
+
 	constructor(props) {
 		super(props);
 
@@ -45,7 +47,9 @@ export default class Connect extends Component {
 		this.setState({ loading: true });
 
 		const {
+			// @ts-ignore
 			query: { query, variables = {} } = {},
+			// @ts-ignore
 			mutation: { query: mutation, mutationVariables = {} } = {},
 			subscription,
 			onSubscriptionMsg = prevData => prevData,
@@ -67,8 +71,12 @@ export default class Connect extends Component {
 			try {
 				data = null;
 
-				const response = await API.graphql({ query, variables });
+				const response = await API.graphql({
+					query,
+					variables,
+				});
 
+				// @ts-ignore
 				data = response.data;
 			} catch (err) {
 				data = err.data;
@@ -77,8 +85,12 @@ export default class Connect extends Component {
 		}
 
 		if (hasValidMutation) {
+			// @ts-ignore
 			mutationProp = async variables => {
-				const result = await API.graphql({ query: mutation, variables });
+				const result = await API.graphql({
+					query: mutation,
+					variables,
+				});
 
 				this.forceUpdate();
 				return result;
@@ -94,6 +106,7 @@ export default class Connect extends Component {
 					variables: subsVars,
 				});
 
+				// @ts-ignore
 				this.subSubscription = observable.subscribe({
 					next: ({ value: { data } }) => {
 						const { data: prevData } = this.state;
@@ -107,7 +120,12 @@ export default class Connect extends Component {
 			}
 		}
 
-		this.setState({ data, errors, mutation: mutationProp, loading: false });
+		this.setState({
+			data,
+			errors,
+			mutation: mutationProp,
+			loading: false,
+		});
 	}
 
 	_unsubscribe() {
@@ -156,6 +174,14 @@ export default class Connect extends Component {
 	render() {
 		const { data, loading, mutation, errors } = this.state;
 
-		return this.props.children({ data, errors, loading, mutation }) || null;
+		return (
+			// @ts-ignore
+			this.props.children({
+				data,
+				errors,
+				loading,
+				mutation,
+			}) || null
+		);
 	}
 }
