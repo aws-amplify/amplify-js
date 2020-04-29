@@ -736,7 +736,9 @@ describe('AnalyticsProvider test', () => {
 			test('Exceeded maximum endpoint per user count', async () => {
 				const analytics = new AnalyticsProvider();
 				const mockExceededMaxError = {
-					statusCode: 400,
+					$metadata: {
+						httpStatusCode: 400,
+					},
 					message: 'Exceeded maximum endpoint per user count 10',
 				};
 
