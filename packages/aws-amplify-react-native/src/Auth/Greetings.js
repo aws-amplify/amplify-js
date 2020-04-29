@@ -13,7 +13,7 @@
 
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Auth, I18n, Logger } from 'aws-amplify';
+import { Auth, I18n } from 'aws-amplify';
 import { AmplifyButton } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 import AuthPiece from './AuthPiece';
