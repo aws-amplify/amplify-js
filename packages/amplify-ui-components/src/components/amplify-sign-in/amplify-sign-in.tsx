@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger, isEmpty } from '@aws-amplify/core';
-import { Component, Prop, State, Host, h } from '@stencil/core';
+import { Component, Prop, State, h } from '@stencil/core';
 import {
   FormFieldTypes,
   PhoneNumberInterface,
