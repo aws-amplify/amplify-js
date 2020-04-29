@@ -265,37 +265,35 @@ export class AmplifySignIn {
 
   render() {
     return (
-      <Host>
-        <amplify-form-section headerText={this.headerText} handleSubmit={this.handleSubmit} testDataPrefix={'sign-in'}>
-          <amplify-federated-buttons handleAuthStateChange={this.handleAuthStateChange} federated={this.federated} />
+      <amplify-form-section headerText={this.headerText} handleSubmit={this.handleSubmit} testDataPrefix={'sign-in'}>
+        <amplify-federated-buttons handleAuthStateChange={this.handleAuthStateChange} federated={this.federated} />
 
-          {!isEmpty(this.federated) && <amplify-strike>or</amplify-strike>}
+        {!isEmpty(this.federated) && <amplify-strike>or</amplify-strike>}
 
-          <amplify-auth-fields formFields={this.newFormFields} />
-          <div slot="amplify-form-section-footer" class="sign-in-form-footer">
-            <slot name="footer">
-              <slot name="secondary-footer-content">
-                <span>
-                  {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
-                  <amplify-button
-                    variant="anchor"
-                    onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
-                    data-test="sign-in-create-account-link"
-                  >
-                    {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
-                  </amplify-button>
-                </span>
-              </slot>
-              <slot name="primary-footer-content">
-                <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
-                  <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
-                  <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
+        <amplify-auth-fields formFields={this.newFormFields} />
+        <div slot="amplify-form-section-footer" class="sign-in-form-footer">
+          <slot name="footer">
+            <slot name="secondary-footer-content">
+              <span>
+                {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
+                <amplify-button
+                  variant="anchor"
+                  onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
+                  data-test="sign-in-create-account-link"
+                >
+                  {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
                 </amplify-button>
-              </slot>
+              </span>
             </slot>
-          </div>
-        </amplify-form-section>
-      </Host>
+            <slot name="primary-footer-content">
+              <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
+                <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
+                <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
+              </amplify-button>
+            </slot>
+          </slot>
+        </div>
+      </amplify-form-section>
     );
   }
 }
