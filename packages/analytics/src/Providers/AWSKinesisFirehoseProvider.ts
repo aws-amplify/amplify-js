@@ -17,6 +17,7 @@ import {
 	PutRecordBatchCommand,
 	FirehoseClient,
 } from '@aws-sdk/client-firehose';
+import { fromUtf8 } from '@aws-sdk/util-utf8-browser';
 
 const logger = new Logger('AWSKineisFirehoseProvider');
 
@@ -56,8 +57,7 @@ export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 
 			const bufferData =
 				data && typeof data !== 'string' ? JSON.stringify(data) : data;
-
-			const Data = Buffer.from(bufferData);
+			const Data = fromUtf8(bufferData);
 			const record = { Data };
 			records[streamName].push(record);
 		});
