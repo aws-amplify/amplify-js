@@ -8,7 +8,7 @@ import { hasShadowDom } from '../../common/helpers';
   shadow: true,
 })
 export class AmplifyButton {
-  @Element() el!: HTMLElement;
+  @Element() el!: HTMLAmplifyButtonElement;
   /** Type of the button: 'button', 'submit' or 'reset' */
   @Prop() type: ButtonTypes = 'button';
   /** Variant of a button: 'button' | 'anchor' */
@@ -34,7 +34,13 @@ export class AmplifyButton {
       }
       if (form) {
         ev.preventDefault();
-        form.requestSubmit();
+
+        const fakeButton = document.createElement('button');
+        fakeButton.type = this.type;
+        fakeButton.style.display = 'none';
+        form.appendChild(fakeButton);
+        fakeButton.click();
+        fakeButton.remove();
       }
     }
   };

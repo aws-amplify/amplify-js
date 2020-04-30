@@ -3,7 +3,7 @@
 		"annotateForClosureCompiler": true,
 		"strictMetadataEmit": true,
 		"flatModuleOutFile": "core.js",
-		"flatModuleId": "@ionic/angular",
+		"flatModuleId": "@aws-amplify/ui-angular",
 		"skipTemplateCodegen": true,
 		"fullTemplateTypeCheck": false
 	},

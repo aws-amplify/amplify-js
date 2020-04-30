@@ -26,9 +26,14 @@ import {
   composePhoneNumberInput,
   checkUsernameAlias,
 } from '../../common/helpers';
+import { SignInAttributes } from './amplify-sign-in-interface';
 
 const logger = new Logger('SignIn');
-
+/**
+ * @slot footer - Content is place in the footer of the component
+ * @slot primary-footer-content - Content placed on the right side of the footer
+ * @slot secondary-footer-content - Content placed on the left side of the footer
+ */
 @Component({
   tag: 'amplify-sign-in',
   styleUrl: 'amplify-sign-in.scss',
@@ -54,7 +59,7 @@ export class AmplifySignIn {
    * ```
    * [
    *  {
-   *    type: 'username'|'password'|'email'|'code'|'default',
+   *    type: string,
    *    label: string,
    *    placeholder: string,
    *    hint: string | Functional Component | null,
@@ -67,30 +72,41 @@ export class AmplifySignIn {
 
   /* Whether or not the sign-in component is loading */
   @State() loading: boolean = false;
-  /* The username value in the sign-in form */
-  @State() username: string = '';
-  /* The password value in the sign-in form */
-  @State() password: string = '';
-  @State() email: string;
-  @State() phoneNumber: PhoneNumberInterface = {
+
+  private phoneNumber: PhoneNumberInterface = {
     countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
     phoneNumberValue: null,
   };
-  @State() userInput = this.username;
+  private newFormFields: FormFieldTypes | string[] = [];
 
-  handleUsernameChange(event) {
-    this.username = event.target.value;
+  @State() signInAttributes: SignInAttributes = {
+    userInput: '',
+    password: '',
+  };
+
+  private handleFormFieldInputChange(fieldType) {
+    switch (fieldType) {
+      case 'username':
+      case 'email':
+        return event => (this.signInAttributes.userInput = event.target.value);
+      case 'phone_number':
+        return event => this.handlePhoneNumberChange(event);
+      case 'password':
+        return event => (this.signInAttributes.password = event.target.value);
+    }
   }
 
-  handlePasswordChange(event) {
-    this.password = event.target.value;
+  private handleFormFieldInputWithCallback(event, field) {
+    const fnToCall = field['handleInputChange']
+      ? field['handleInputChange']
+      : (event, cb) => {
+          cb(event);
+        };
+    const callback = this.handleFormFieldInputChange(field.type);
+    fnToCall(event, callback.bind(this));
   }
 
-  handleEmailChange(event) {
-    this.email = event.target.value;
-  }
-
-  handlePhoneNumberChange(event) {
+  private handlePhoneNumberChange(event) {
     const name = event.target.name;
     const value = event.target.value;
 
@@ -108,7 +124,7 @@ export class AmplifySignIn {
     }
   }
 
-  checkContact(user) {
+  private checkContact(user) {
     if (!Auth || typeof Auth.verifiedContact !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
@@ -122,7 +138,7 @@ export class AmplifySignIn {
     });
   }
 
-  async signIn(event: Event) {
+  private async signIn(event: Event) {
     // avoid submitting the form
     if (event) {
       event.preventDefault();
@@ -134,20 +150,14 @@ export class AmplifySignIn {
     this.loading = true;
 
     switch (this.usernameAlias) {
-      case 'email':
-        this.userInput = this.email;
-        break;
       case 'phone_number':
-        this.userInput = composePhoneNumberInput(this.phoneNumber);
-        break;
-      case 'username':
+        this.signInAttributes.userInput = composePhoneNumberInput(this.phoneNumber);
       default:
-        this.userInput = this.username;
         break;
     }
 
     try {
-      const user = await Auth.signIn(this.userInput, this.password);
+      const user = await Auth.signIn(this.signInAttributes.userInput, this.signInAttributes.password);
       logger.debug(user);
       if (user.challengeName === ChallengeName.SMSMFA || user.challengeName === ChallengeName.SoftwareTokenMFA) {
         logger.debug('confirm user with ' + user.challengeName);
@@ -172,73 +182,82 @@ export class AmplifySignIn {
       dispatchToastHubEvent(error);
       if (error.code === 'UserNotConfirmedException') {
         logger.debug('the user is not confirmed');
-        this.handleAuthStateChange(AuthState.ConfirmSignUp, { username: this.userInput });
+        this.handleAuthStateChange(AuthState.ConfirmSignUp, { username: this.signInAttributes.userInput });
       } else if (error.code === 'PasswordResetRequiredException') {
         logger.debug('the user requires a new password');
-        this.handleAuthStateChange(AuthState.ForgotPassword, { username: this.userInput });
+        this.handleAuthStateChange(AuthState.ForgotPassword, { username: this.signInAttributes.userInput });
       }
     } finally {
       this.loading = false;
     }
   }
+
   async componentWillLoad() {
     checkUsernameAlias(this.usernameAlias);
-    const formFieldInputs = [];
-    switch (this.usernameAlias) {
-      case 'email':
-        formFieldInputs.push({
-          type: 'email',
-          required: true,
-          handleInputChange: event => this.handleEmailChange(event),
-          inputProps: {
-            'data-test': 'sign-in-email-input',
-          },
-        });
-        break;
-      case 'phone_number':
-        formFieldInputs.push({
-          type: 'phone_number',
-          required: true,
-          handleInputChange: event => this.handlePhoneNumberChange(event),
-          inputProps: {
-            'data-test': 'sign-in-phone-number-input',
-          },
-        });
-        break;
-      case 'username':
-      default:
-        formFieldInputs.push({
-          type: 'username',
-          required: true,
-          handleInputChange: event => this.handleUsernameChange(event),
-          inputProps: {
-            'data-test': 'sign-in-username-input',
-          },
-        });
-        break;
-    }
+    if (this.formFields.length === 0) {
+      const formFieldInputs = [];
+      switch (this.usernameAlias) {
+        case 'email':
+          formFieldInputs.push({
+            type: 'email',
+            required: true,
+            handleInputChange: this.handleFormFieldInputChange('email'),
+            inputProps: {
+              'data-test': 'sign-in-email-input',
+            },
+          });
+          break;
+        case 'phone_number':
+          formFieldInputs.push({
+            type: 'phone_number',
+            required: true,
+            handleInputChange: this.handleFormFieldInputChange('phone_number'),
+            inputProps: {
+              'data-test': 'sign-in-phone-number-input',
+            },
+          });
+          break;
+        case 'username':
+        default:
+          formFieldInputs.push({
+            type: 'username',
+            required: true,
+            handleInputChange: this.handleFormFieldInputChange('username'),
+            inputProps: {
+              'data-test': 'sign-in-username-input',
+            },
+          });
+          break;
+      }
 
-    formFieldInputs.push({
-      type: 'password',
-      hint: (
-        <div>
-          {I18n.get(Translations.FORGOT_PASSWORD_TEXT)}{' '}
-          <amplify-button
-            variant="anchor"
-            onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}
-            data-test="sign-in-forgot-password-link"
-          >
-            {I18n.get(Translations.RESET_PASSWORD_TEXT)}
-          </amplify-button>
-        </div>
-      ),
-      required: true,
-      handleInputChange: event => this.handlePasswordChange(event),
-      inputProps: {
-        'data-test': 'sign-in-password-input',
-      },
-    });
-    this.formFields = formFieldInputs;
+      formFieldInputs.push({
+        type: 'password',
+        hint: (
+          <div>
+            {I18n.get(Translations.FORGOT_PASSWORD_TEXT)}{' '}
+            <amplify-button
+              variant="anchor"
+              onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}
+              data-test="sign-in-forgot-password-link"
+            >
+              {I18n.get(Translations.RESET_PASSWORD_TEXT)}
+            </amplify-button>
+          </div>
+        ),
+        required: true,
+        handleInputChange: this.handleFormFieldInputChange('password'),
+        inputProps: {
+          'data-test': 'sign-in-password-input',
+        },
+      });
+      this.newFormFields = [...formFieldInputs];
+    } else {
+      this.formFields.forEach(field => {
+        const newField = { ...field };
+        newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
+        this.newFormFields.push(newField);
+      });
+    }
   }
 
   render() {
@@ -248,22 +267,28 @@ export class AmplifySignIn {
 
         {!isEmpty(this.federated) && <amplify-strike>or</amplify-strike>}
 
-        <amplify-auth-fields formFields={this.formFields} />
+        <amplify-auth-fields formFields={this.newFormFields} />
         <div slot="amplify-form-section-footer" class="sign-in-form-footer">
-          <span>
-            {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
-            <amplify-button
-              variant="anchor"
-              onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
-              data-test="sign-in-create-account-link"
-            >
-              {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
-            </amplify-button>
-          </span>
-          <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
-            <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
-            <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
-          </amplify-button>
+          <slot name="footer">
+            <slot name="secondary-footer-content">
+              <span>
+                {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
+                <amplify-button
+                  variant="anchor"
+                  onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
+                  data-test="sign-in-create-account-link"
+                >
+                  {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
+                </amplify-button>
+              </span>
+            </slot>
+            <slot name="primary-footer-content">
+              <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
+                <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
+                <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
+              </amplify-button>
+            </slot>
+          </slot>
         </div>
       </amplify-form-section>
     );

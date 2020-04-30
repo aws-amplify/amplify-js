@@ -162,7 +162,9 @@ export const initialState = () => {
 };
 
 export const BasicWithAuthenticator = () => {
-	return withAuthenticator(App);
+	const Wrapped = withAuthenticator(App);
+
+	return <Wrapped />;
 };
 
 BasicWithAuthenticator.story = {
@@ -170,9 +172,9 @@ BasicWithAuthenticator.story = {
 };
 
 export const WithAuthenticatorWithUsernameAlias = () => {
-	return withAuthenticator(App, {
-		usernameAlias: 'email',
-	});
+	const Wrapped = withAuthenticator(App, { usernameAlias: 'email' });
+
+	return <Wrapped />;
 };
 
 WithAuthenticatorWithUsernameAlias.story = {

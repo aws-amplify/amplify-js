@@ -16,6 +16,7 @@ import { View, Text } from 'react-native';
 import { I18n } from 'aws-amplify';
 import AuthPiece from './AuthPiece';
 import { Header } from '../AmplifyUI';
+import TEST_ID from '../AmplifyTestIDs';
 
 export default class Loading extends AuthPiece {
 	constructor(props) {
@@ -27,7 +28,9 @@ export default class Loading extends AuthPiece {
 	showComponent(theme) {
 		return (
 			<View style={theme.section}>
-				<Header theme={theme}>{I18n.get('Loading...')}</Header>
+				<Header theme={theme} testID={TEST_ID.AUTH.LOADING_TEXT}>
+					{I18n.get('Loading...')}
+				</Header>
 			</View>
 		);
 	}

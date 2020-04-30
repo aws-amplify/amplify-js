@@ -1,7 +1,7 @@
 {
 	"name": "@aws-amplify/ui-react",
 	"sideEffects": false,
-	"version": "0.2.1",
+	"version": "0.2.4",
 	"description": "React specific wrapper for @aws-amplify/ui-components",
 	"publishConfig": {
 		"access": "public"
@@ -11,18 +11,19 @@
 		"url": "https://github.com/aws-amplify/amplify-js.git"
 	},
 	"scripts": {
-		"build": "npm run clean && npm run compile",
-		"build:watch": "tsc -w",
-		"clean": "rm -rf dist",
-		"compile": "npm run tsc",
-		"tsc": "tsc -p ."
+		"test": "jest",
+		"build-with-test": "npm test && npm run build",
+		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "node ./build es6",
+		"build:cjs:watch": "node ./build es5 --watch",
+		"build:esm:watch": "node ./build es6 --watch",
+		"build:watch": "npm run build:esm:watch",
+		"build": "npm run clean && npm run build:cjs && npm run build:esm",
+		"clean": "rimraf lib-esm lib dist"
 	},
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"files": [
-		"dist/"
-	],
+	"main": "./lib/index.js",
+	"module": "./lib-esm/index.js",
+	"typings": "./lib-esm/index.d.ts",
 	"devDependencies": {
 		"@types/react": "^16.0.41",
 		"@types/react-dom": "^16.0.11",
@@ -31,18 +32,10 @@
 		"typescript": "^3.3.4000"
 	},
 	"dependencies": {
-		"@aws-amplify/ui-components": "^0.3.1"
+		"@aws-amplify/ui-components": "^0.3.3"
 	},
 	"peerDependencies": {
 		"react": "^16.7.0",
 		"react-dom": "^16.7.0"
-	},
-	"jest": {
-		"preset": "ts-jest",
-		"setupTestFrameworkScriptFile": "<rootDir>/jest.setup.js",
-		"testPathIgnorePatterns": [
-			"node_modules",
-			"dist"
-		]
 	}
 }

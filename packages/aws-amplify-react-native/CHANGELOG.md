@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.0.4...aws-amplify-react-native@4.1.0) (2020-04-24)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Remove dialCode from phone input value ([#5420](https://github.com/aws-amplify/amplify-js/issues/5420)) ([45ce88b](https://github.com/aws-amplify/amplify-js/commit/45ce88bdd6a0900d5b635af1a2ce99db9efdafc8))
+
+
+### Features
+
+* **aws-amplify-react-native:** Customise authenticator wrapper component ([#5375](https://github.com/aws-amplify/amplify-js/issues/5375)) ([ee185e1](https://github.com/aws-amplify/amplify-js/commit/ee185e15e0e77983d4697c56b9569ca4bd560a6a))
+
+
+
+
+
+## [4.0.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.0.3...aws-amplify-react-native@4.0.4) (2020-04-14)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Replace legacy lifecycle method componentWillReceiveProps ([#5343](https://github.com/aws-amplify/amplify-js/issues/5343)) ([50f9971](https://github.com/aws-amplify/amplify-js/commit/50f99713572a4c692c3f4bd9da3a4859093bd9e9))
+
+
+
+
+
+## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.0.2...aws-amplify-react-native@4.0.3) (2020-04-08)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** focus fix for expo web ([#5305](https://github.com/aws-amplify/amplify-js/issues/5305)) ([f295209](https://github.com/aws-amplify/amplify-js/commit/f2952090d00453355761774913b976536d211676))
+
+
+
+
+
 ## [4.0.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.0.1...aws-amplify-react-native@4.0.2) (2020-04-02)
 
 **Note:** Version bump only for package aws-amplify-react-native

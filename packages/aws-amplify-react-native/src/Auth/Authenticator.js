@@ -12,10 +12,10 @@
  */
 
 import React from 'react';
-import { SafeAreaView } from 'react-native';
 import { Auth, Analytics, Logger, Hub, JS } from 'aws-amplify';
 import AmplifyTheme from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
+import { Container } from '../AmplifyUI';
 import Loading from './Loading';
 import SignIn from './SignIn';
 import ConfirmSignIn from './ConfirmSignIn';
@@ -27,6 +27,10 @@ import RequireNewPassword from './RequireNewPassword';
 import Greetings from './Greetings';
 
 const logger = new Logger('Authenticator');
+
+const EmptyContainer = ({ children }) => (
+	<React.Fragment>{children}</React.Fragment>
+);
 
 class AuthDecorator {
 	constructor(onStateChange) {
@@ -76,34 +80,57 @@ export default class Authenticator extends React.Component {
 	}
 
 	onHubCapsule(capsule) {
-		const { channel, payload, source } = capsule;
-		if (channel === 'auth') {
-			this.checkUser();
+		const {
+			payload: { event, data },
+		} = capsule;
+		switch (event) {
+			case 'cognitoHostedUI':
+				return this.handleStateChange('signedIn', data);
+
+			case 'cognitoHostedUI_failure':
+			case 'parsingUrl_failure':
+			case 'signOut':
+			case 'customGreetingSignOut':
+				return this.handleStateChange('signIn', null);
 		}
 	}
 
 	handleStateChange(state, data) {
-		logger.debug('authenticator state change ' + state);
-		if (!this._isMounted) return;
-		if (state === this.state.authState) {
-			return;
+		if (state === undefined)
+			return logger.info('Auth state cannot be undefined');
+
+		logger.info(
+			'Inside handleStateChange method current authState:',
+			this.state.authState
+		);
+
+		const nextAuthState =
+			state === 'signedOut' ? this._initialAuthState : state;
+		const nextAuthData = data !== undefined ? data : this.state.authData;
+
+		if (this._isMounted) {
+			this.setState({
+				authState: nextAuthState,
+				authData: nextAuthData,
+				error: null,
+			});
+			logger.log('Auth Data was set:', nextAuthData);
+			logger.info(`authState has been updated to ${nextAuthState}`);
 		}
 
-		if (state === 'signedOut') {
-			state = 'signIn';
-		}
-		this.setState({ authState: state, authData: data, error: null });
 		if (this.props.onStateChange) {
 			this.props.onStateChange(state, data);
 		}
 
-		switch (state) {
-			case 'signedIn':
-				Analytics.record('_userauth.sign_in');
-				break;
-			case 'signedUp':
-				Analytics.record('_userauth.sign_up');
-				break;
+		if (Analytics._config && Object.entries(Analytics._config).length > 0) {
+			switch (state) {
+				case 'signedIn':
+					Analytics.record('_userauth.sign_in');
+					break;
+				case 'signedUp':
+					Analytics.record('_userauth.sign_up');
+					break;
+			}
 		}
 	}
 
@@ -154,6 +181,13 @@ export default class Authenticator extends React.Component {
 		const { authState, authData } = this.state;
 		const theme = this.props.theme || AmplifyTheme;
 		const messageMap = this.props.errorMessage || AmplifyMessageMap;
+		// If container prop is undefined, default to AWS Amplify UI Container (SafeAreaView)
+		// otherwise if truthy, use the supplied render prop
+		// otherwise if falsey, use EmptyContainer
+		const ContainerWrapper =
+			this.props.container === undefined
+				? Container
+				: this.props.container || EmptyContainer;
 
 		const { hideDefault, signUpConfig, usernameAttributes } = this.props;
 		const props_children = this.props.children || [];
@@ -182,6 +216,6 @@ export default class Authenticator extends React.Component {
 					usernameAttributes,
 				});
 			});
-		return <SafeAreaView style={theme.container}>{children}</SafeAreaView>;
+		return <ContainerWrapper theme={theme}>{children}</ContainerWrapper>;
 	}
 }
