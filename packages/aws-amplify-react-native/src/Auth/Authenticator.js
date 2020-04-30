@@ -80,23 +80,44 @@ export default class Authenticator extends React.Component {
 	}
 
 	onHubCapsule(capsule) {
-		const { channel, payload, source } = capsule;
-		if (channel === 'auth') {
-			this.checkUser();
+		const {
+			payload: { event, data },
+		} = capsule;
+		switch (event) {
+			case 'cognitoHostedUI':
+				return this.handleStateChange('signedIn', data);
+
+			case 'cognitoHostedUI_failure':
+			case 'parsingUrl_failure':
+			case 'signOut':
+			case 'customGreetingSignOut':
+				return this.handleStateChange('signIn', null);
 		}
 	}
 
 	handleStateChange(state, data) {
-		logger.debug('authenticator state change ' + state);
-		if (!this._isMounted) return;
-		if (state === this.state.authState) {
-			return;
+		if (state === undefined)
+			return logger.info('Auth state cannot be undefined');
+
+		logger.info(
+			'Inside handleStateChange method current authState:',
+			this.state.authState
+		);
+
+		const nextAuthState =
+			state === 'signedOut' ? this._initialAuthState : state;
+		const nextAuthData = data !== undefined ? data : this.state.authData;
+
+		if (this._isMounted) {
+			this.setState({
+				authState: nextAuthState,
+				authData: nextAuthData,
+				error: null,
+			});
+			logger.log('Auth Data was set:', nextAuthData);
+			logger.info(`authState has been updated to ${nextAuthState}`);
 		}
 
-		if (state === 'signedOut') {
-			state = 'signIn';
-		}
-		this.setState({ authState: state, authData: data, error: null });
 		if (this.props.onStateChange) {
 			this.props.onStateChange(state, data);
 		}
