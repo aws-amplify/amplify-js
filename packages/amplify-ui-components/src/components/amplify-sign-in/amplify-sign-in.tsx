@@ -29,7 +29,11 @@ import {
 import { SignInAttributes } from './amplify-sign-in-interface';
 
 const logger = new Logger('SignIn');
-
+/**
+ * @slot footer - Content is place in the footer of the component
+ * @slot primary-footer-content - Content placed on the right side of the footer
+ * @slot secondary-footer-content - Content placed on the left side of the footer
+ */
 @Component({
   tag: 'amplify-sign-in',
   styleUrl: 'amplify-sign-in.scss',
@@ -265,20 +269,26 @@ export class AmplifySignIn {
 
         <amplify-auth-fields formFields={this.newFormFields} />
         <div slot="amplify-form-section-footer" class="sign-in-form-footer">
-          <span>
-            {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
-            <amplify-button
-              variant="anchor"
-              onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
-              data-test="sign-in-create-account-link"
-            >
-              {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
-            </amplify-button>
-          </span>
-          <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
-            <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
-            <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
-          </amplify-button>
+          <slot name="footer">
+            <slot name="secondary-footer-content">
+              <span>
+                {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
+                <amplify-button
+                  variant="anchor"
+                  onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
+                  data-test="sign-in-create-account-link"
+                >
+                  {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
+                </amplify-button>
+              </span>
+            </slot>
+            <slot name="primary-footer-content">
+              <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
+                <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
+                <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
+              </amplify-button>
+            </slot>
+          </slot>
         </div>
       </amplify-form-section>
     );
