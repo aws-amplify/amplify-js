@@ -81,7 +81,7 @@ export default class Authenticator extends React.Component {
 
 	onHubCapsule(capsule) {
 		const {
-			payload: { event, data }
+			payload: { event, data },
 		} = capsule;
 		switch (event) {
 			case 'cognitoHostedUI':
@@ -96,23 +96,17 @@ export default class Authenticator extends React.Component {
 	}
 
 	handleStateChange(state, data) {
-		if (state === undefined) return logger.info('Auth state cannot be undefined');
+		if (state === undefined)
+			return logger.info('Auth state cannot be undefined');
 
 		logger.info(
 			'Inside handleStateChange method current authState:',
 			this.state.authState
 		);
-		let nextAuthState;
-		if (state === 'signedOut') {
-			nextAuthState = this._initialAuthState;
-		} else {
-			nextAuthState = state;
-		}
 
-		let nextAuthData = this.state.authData;
-		if (data !== undefined) {
-			nextAuthData = data;
-		}
+		const nextAuthState =
+			state === 'signedOut' ? this._initialAuthState : state;
+		const nextAuthData = data !== undefined ? data : this.state.authData;
 
 		if (this._isMounted) {
 			this.setState({
