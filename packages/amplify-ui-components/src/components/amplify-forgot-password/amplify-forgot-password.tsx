@@ -65,7 +65,7 @@ export class AmplifyForgotPassword {
             {
               type: 'email',
               required: true,
-              handleInputChange: this.handleFormFieldInput('email'),
+              handleInputChange: this.handleFormFieldInputChange('email'),
               inputProps: {
                 'data-test': 'forgot-password-email-input',
               },
@@ -77,7 +77,7 @@ export class AmplifyForgotPassword {
             {
               type: 'phone_number',
               required: true,
-              handleInputChange: this.handleFormFieldInput('phone_number'),
+              handleInputChange: this.handleFormFieldInputChange('phone_number'),
               inputProps: {
                 'data-test': 'forgot-password-phone-number-input',
               },
@@ -90,7 +90,7 @@ export class AmplifyForgotPassword {
             {
               type: 'username',
               required: true,
-              handleInputChange: this.handleFormFieldInput('username'),
+              handleInputChange: this.handleFormFieldInputChange('username'),
               inputProps: {
                 'data-test': 'forgot-password-username-input',
               },
@@ -107,7 +107,7 @@ export class AmplifyForgotPassword {
     }
   }
 
-  private handleFormFieldInput(fieldType) {
+  private handleFormFieldInputChange(fieldType) {
     switch (fieldType) {
       case 'username':
       case 'email':
@@ -128,10 +128,7 @@ export class AmplifyForgotPassword {
       : (event, cb) => {
           cb(event);
         };
-    const callback =
-      field.type === 'phone_number'
-        ? event => (this.forgotPasswordAttrs.userInput = event.target.value)
-        : this.handleFormFieldInput(field.type);
+    const callback = this.handleFormFieldInputChange(field.type);
     fnToCall(event, callback.bind(this));
   }
 
@@ -177,7 +174,7 @@ export class AmplifyForgotPassword {
         {
           type: 'code',
           required: true,
-          handleInputChange: this.handleFormFieldInput('code'),
+          handleInputChange: this.handleFormFieldInputChange('code'),
           inputProps: {
             'data-test': 'forgot-password-code-input',
           },
@@ -185,7 +182,7 @@ export class AmplifyForgotPassword {
         {
           type: 'password',
           required: true,
-          handleInputChange: this.handleFormFieldInput('password'),
+          handleInputChange: this.handleFormFieldInputChange('password'),
           label: 'New password',
           placeholder: 'Enter your new password',
         },
