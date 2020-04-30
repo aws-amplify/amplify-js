@@ -18,6 +18,15 @@
 | `validationErrors`      | `validation-errors`  | Engages when invalid actions occur, such as missing field, etc.                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | `string`                                            | `undefined`                                         |
 
 
+## Slots
+
+| Slot                         | Description                                     |
+| ---------------------------- | ----------------------------------------------- |
+| `"footer"`                   | Content is place in the footer of the component |
+| `"primary-footer-content"`   | Content placed on the right side of the footer  |
+| `"secondary-footer-content"` | Content placed on the left side of the footer   |
+
+
 ## Dependencies
 
 ### Used by
