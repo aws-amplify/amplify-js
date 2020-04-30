@@ -101,13 +101,15 @@ export default class Authenticator extends React.Component {
 			this.props.onStateChange(state, data);
 		}
 
-		switch (state) {
-			case 'signedIn':
-				Analytics.record('_userauth.sign_in');
-				break;
-			case 'signedUp':
-				Analytics.record('_userauth.sign_up');
-				break;
+		if (Analytics._config && Object.entries(Analytics._config).length > 0) {
+			switch (state) {
+				case 'signedIn':
+					Analytics.record('_userauth.sign_in');
+					break;
+				case 'signedUp':
+					Analytics.record('_userauth.sign_up');
+					break;
+			}
 		}
 	}
 
