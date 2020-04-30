@@ -29,9 +29,10 @@
 			"pre-commit": "pretty-quick --staged"
 		}
 	},
-	"workspaces": [
-		"packages/*"
-	],
+	"workspaces": {
+  		"packages": ["packages/*"],
+  		"nohoist": ["**/@types/react-native", "**/@types/react-native/**"]
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aws-amplify/amplify-js.git"
