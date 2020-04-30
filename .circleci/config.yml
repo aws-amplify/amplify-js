@@ -406,7 +406,6 @@ jobs:
           keys:
             - amplify-ssh-deps-{{ .Branch }}
             - amplify-ssh-deps
-      - run: yarn && yarn build
       - run:
           name: 'Post-release steps'
           command: |
@@ -417,7 +416,7 @@ jobs:
             git add ./packages/core/src/Platform/version.ts
             git commit -m "chore(release): update version.ts [ci skip]"
             git push origin release
-            git push origin master
+            git push origin release:master
 
 releasable_branches: &releasable_branches
   branches:
