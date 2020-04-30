@@ -22,13 +22,22 @@ import {
 	AmplifyButton,
 	Wrapper,
 } from '../AmplifyUI';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('ConfirmSignUp');
 
-export default class ConfirmSignUp extends AuthPiece {
-	constructor(props) {
+interface IConfirmSignUpProps extends IAuthPieceProps {}
+
+interface IConfirmSignUpState extends IAuthPieceState {
+	code: string | null;
+}
+
+export default class ConfirmSignUp extends AuthPiece<
+	IConfirmSignUpProps,
+	IConfirmSignUpState
+> {
+	constructor(props: IConfirmSignUpProps) {
 		super(props);
 
 		this._validAuthStates = ['confirmSignUp'];

@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import React, { Component, FC } from 'react';
 import {
 	Keyboard,
 	Picker,
@@ -23,24 +23,36 @@ import {
 	TouchableWithoutFeedback,
 	View,
 	SafeAreaView,
+	TextInputProperties,
+	TouchableOpacityProps,
 } from 'react-native';
 import { I18n } from 'aws-amplify';
 import AmplifyTheme, {
+	AmplifyThemeType,
 	linkUnderlayColor,
 	errorIconColor,
 	placeholderColor,
 } from './AmplifyTheme';
 import { Icon } from 'react-native-elements';
 import countryDialCodes from './CountryDialCodes';
-// @ts-ignore
 import TEST_ID from './AmplifyTestIDs';
 
-export const Container = props => {
+interface IContainerProps {
+	theme: AmplifyThemeType;
+}
+
+export const Container: FC<IContainerProps> = props => {
 	const theme = props.theme || AmplifyTheme;
 	return <SafeAreaView style={theme.container}>{props.children}</SafeAreaView>;
 };
 
-export const FormField = props => {
+interface IFormFieldProps extends TextInputProperties {
+	label: string;
+	required?: boolean;
+	theme: AmplifyThemeType;
+}
+
+export const FormField: FC<IFormFieldProps> = props => {
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.formField}>
@@ -58,8 +70,22 @@ export const FormField = props => {
 	);
 };
 
-export class PhoneField extends Component<any, any> {
-	constructor(props) {
+interface IPhoneProps extends TextInputProperties {
+	defaultDialCode?: string;
+	label: string;
+	onChangeText: (phoneNumber: string) => void;
+	required?: boolean;
+	theme?: AmplifyThemeType;
+	value?: string;
+}
+
+interface IPhoneState {
+	dialCode: string;
+	phone: string;
+}
+
+export class PhoneField extends Component<IPhoneProps, IPhoneState> {
+	constructor(props: IPhoneProps) {
 		super(props);
 
 		this.state = {
@@ -121,7 +147,14 @@ export class PhoneField extends Component<any, any> {
 	}
 }
 
-export const LinkCell = props => {
+interface ILinkCellProps {
+	disabled?: boolean;
+	onPress: () => void;
+	testID?: string;
+	theme: AmplifyThemeType;
+}
+
+export const LinkCell: FC<ILinkCellProps> = props => {
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.cell}>
@@ -136,7 +169,12 @@ export const LinkCell = props => {
 	);
 };
 
-export const Header = props => {
+interface IHeaderProps {
+	testID?: string;
+	theme: AmplifyThemeType;
+}
+
+export const Header: FC<IHeaderProps> = props => {
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.sectionHeader}>
@@ -147,7 +185,11 @@ export const Header = props => {
 	);
 };
 
-export const ErrorRow = props => {
+interface IErrorRowProps {
+	theme: AmplifyThemeType;
+}
+
+export const ErrorRow: FC<IErrorRowProps> = props => {
 	const theme = props.theme || AmplifyTheme;
 	if (!props.children) return null;
 	return (
@@ -160,7 +202,14 @@ export const ErrorRow = props => {
 	);
 };
 
-export const AmplifyButton = props => {
+interface IAmplifyButtonProps extends TouchableOpacityProps {
+	disabled?: boolean;
+	style?: object;
+	text: string;
+	theme?: AmplifyThemeType;
+}
+
+export const AmplifyButton: FC<IAmplifyButtonProps> = props => {
 	const theme = props.theme || AmplifyTheme;
 	let style = theme.button;
 	if (props.disabled) {
@@ -178,7 +227,9 @@ export const AmplifyButton = props => {
 	);
 };
 
-export const Wrapper = props => {
+interface IWrapperProps {}
+
+export const Wrapper: FC<IWrapperProps> = props => {
 	const isWeb = Platform.OS === 'web';
 	const WrapperComponent: React.ElementType = isWeb
 		? View

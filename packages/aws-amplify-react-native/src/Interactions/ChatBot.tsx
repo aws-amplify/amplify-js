@@ -78,7 +78,31 @@ const MIC_BUTTON_TEXT = {
 
 let timer = null;
 
-export class ChatBot extends Component<any, any> {
+interface IChatBotProps {
+	botName?: string;
+	clearOnComplete?: boolean;
+	conversationModeOn?: boolean;
+	onComplete?: Function;
+	styles?: any;
+	textEnabled?: boolean;
+	voiceEnabled?: boolean;
+	voiceLibs?: { Voice: any; Sound: any; RNFS: any };
+	welcomeMessage?: string;
+}
+
+interface IChatBotState {
+	conversationOngoing: boolean;
+	currentConversationState?: string;
+	dialog: any[];
+	error?: string;
+	inputText: string;
+	inputEditable: boolean;
+	micText: string;
+	silenceDelay?: number;
+	voice: boolean;
+}
+
+export class ChatBot extends Component<IChatBotProps, IChatBotState> {
 	listItemsRef: React.RefObject<any>;
 
 	constructor(props) {
@@ -507,6 +531,7 @@ function ChatBotTextButton(props) {
 	return (
 		<AmplifyButton
 			onPress={submit}
+			// @ts-ignore
 			type="submit"
 			style={[styles.button, overrideStyles.button]}
 			text={I18n.get('Send')}

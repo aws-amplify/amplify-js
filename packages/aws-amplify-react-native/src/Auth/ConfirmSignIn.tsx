@@ -22,13 +22,23 @@ import {
 	ErrorRow,
 	Wrapper,
 } from '../AmplifyUI';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('ConfirmSignIn');
 
-export default class ConfirmSignIn extends AuthPiece {
-	constructor(props) {
+interface IConfirmSignInProps extends IAuthPieceProps {}
+
+interface IConfirmSignInState extends IAuthPieceState {
+	code: string | null;
+}
+
+export default class ConfirmSignIn extends AuthPiece<
+	IConfirmSignInProps,
+	IConfirmSignInState
+> {
+	constructor(props: IConfirmSignInProps) {
 		super(props);
 
 		this._validAuthStates = ['confirmSignIn'];
@@ -50,7 +60,7 @@ export default class ConfirmSignIn extends AuthPiece {
 			.catch(err => this.error(err));
 	}
 
-	showComponent(theme) {
+	showComponent(theme: AmplifyThemeType) {
 		return (
 			<Wrapper>
 				<View style={theme.section}>

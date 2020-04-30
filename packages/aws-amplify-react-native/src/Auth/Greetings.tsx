@@ -16,13 +16,23 @@ import { View, Text, Button } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import { AmplifyButton } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('Greetings');
 
-export default class Greetings extends AuthPiece {
-	constructor(props) {
+interface IGreetingsProps extends IAuthPieceProps {
+	signedInMessage?: string;
+	signedOutMessage?: string;
+}
+
+interface IGreetingsState extends IAuthPieceState {}
+
+export default class Greetings extends AuthPiece<
+	IGreetingsProps,
+	IGreetingsState
+> {
+	constructor(props: IGreetingsProps) {
 		super(props);
 
 		this.signOut = this.signOut.bind(this);
@@ -58,7 +68,7 @@ export default class Greetings extends AuthPiece {
 			}
 		}
 
-		let message;
+		let message: string;
 		if (signedIn) {
 			message = this.props.signedInMessage || defaultMessage;
 		} else {

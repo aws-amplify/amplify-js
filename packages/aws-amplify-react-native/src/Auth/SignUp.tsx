@@ -23,22 +23,39 @@ import {
 	AmplifyButton,
 	Wrapper,
 } from '../AmplifyUI';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import countryDialCodes from '../CountryDialCodes';
 import signUpWithUsernameFields, {
 	signUpWithEmailFields,
 	signUpWithPhoneNumberFields,
-	ISignUpField,
 } from './common/default-sign-up-fields';
 import TEST_ID from '../AmplifyTestIDs';
+import { ISignUpField } from '../../types';
 
 const logger = new Logger('SignUp');
-export default class SignUp extends AuthPiece {
+
+interface ISignUpConfig {
+	defaultCountryCode?: string;
+	header?: string;
+	hideAllDefaults?: boolean;
+	hiddenDefaults?: string[];
+	signUpFields?: ISignUpField[];
+}
+
+interface ISignUpProps extends IAuthPieceProps {
+	signUpConfig: ISignUpConfig;
+}
+
+interface ISignUpState extends IAuthPieceState {
+	password?: string | null;
+}
+
+export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 	header: string;
 	defaultSignUpFields: ISignUpField[];
 	signUpFields: ISignUpField[];
 
-	constructor(props) {
+	constructor(props: ISignUpProps) {
 		super(props);
 
 		this._validAuthStates = ['signUp'];
@@ -236,11 +253,11 @@ export default class SignUp extends AuthPiece {
 								<FormField
 									key={field.key}
 									theme={theme}
+									// @ts-ignore
 									type={field.type}
 									secureTextEntry={field.type === 'password'}
 									onChangeText={text => {
 										const stateObj = this.state;
-										//@ts-ignore
 										stateObj[field.key] = text;
 										this.setState(stateObj);
 									}}

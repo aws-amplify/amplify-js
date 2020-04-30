@@ -13,10 +13,24 @@ const getOperationType = operation => {
 	return operationType;
 };
 
-export default class Connect extends Component<any, any> {
+interface IConnectProps {
+	mutation?: any;
+	onSubscriptionMsg?: (prevData: any, data?: any) => any;
+	query?: any;
+	subscription?: any;
+}
+
+interface IConnectState {
+	loading: boolean;
+	data: any;
+	errors: any[];
+	mutation: any;
+}
+
+export default class Connect extends Component<IConnectProps, IConnectState> {
 	subSubscription: any;
 
-	constructor(props) {
+	constructor(props: IConnectProps) {
 		super(props);
 
 		this.state = this.getInitialState();
@@ -47,9 +61,7 @@ export default class Connect extends Component<any, any> {
 		this.setState({ loading: true });
 
 		const {
-			// @ts-ignore
 			query: { query, variables = {} } = {},
-			// @ts-ignore
 			mutation: { query: mutation, mutationVariables = {} } = {},
 			subscription,
 			onSubscriptionMsg = prevData => prevData,
@@ -142,7 +154,7 @@ export default class Connect extends Component<any, any> {
 		this._unsubscribe();
 	}
 
-	componentDidUpdate(prevProps) {
+	componentDidUpdate(prevProps: IConnectProps) {
 		const { loading } = this.state;
 
 		const { query: newQueryObj, mutation: newMutationObj } = this.props;
