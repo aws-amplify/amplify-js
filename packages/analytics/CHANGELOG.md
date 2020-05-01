@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.8...@aws-amplify/analytics@3.1.9) (2020-04-30)
+
+
+### Bug Fixes
+
+* **analytics:** correctly extract statusCode from failed request ([#5618](https://github.com/aws-amplify/amplify-js/issues/5618)) ([e11e938](https://github.com/aws-amplify/amplify-js/commit/e11e938184fbb935374ca8f19b96365a7d6af7ce))
+
+
+### Reverts
+
+* Revert "Upgrade aws-sdk clients to beta4 (#5575)" (#5577) ([f2dcabb](https://github.com/aws-amplify/amplify-js/commit/f2dcabb78110c0bab84780d045d046fabf97b6f4)), closes [#5575](https://github.com/aws-amplify/amplify-js/issues/5575) [#5577](https://github.com/aws-amplify/amplify-js/issues/5577)
+
+
+
+
+
 ## [3.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.7...@aws-amplify/analytics@3.1.8) (2020-04-24)
 
 
