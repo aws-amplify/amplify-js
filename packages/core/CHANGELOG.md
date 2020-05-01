@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.5...@aws-amplify/core@3.2.6) (2020-04-30)
+
+
+### Reverts
+
+* Revert "Upgrade aws-sdk clients to beta4 (#5575)" (#5577) ([f2dcabb](https://github.com/aws-amplify/amplify-js/commit/f2dcabb78110c0bab84780d045d046fabf97b6f4)), closes [#5575](https://github.com/aws-amplify/amplify-js/issues/5575) [#5577](https://github.com/aws-amplify/amplify-js/issues/5577)
+
+
+
+
+
 ## [3.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.4...@aws-amplify/core@3.2.5) (2020-04-24)
 
 **Note:** Version bump only for package @aws-amplify/core
