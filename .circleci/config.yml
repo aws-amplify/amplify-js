@@ -45,7 +45,6 @@ commands:
 
   publish_to_verdaccio:
     steps:
-      - run: echo publish_to_verdaccio $CIRCLE_JOB
       - run:
           name: 'Set registry to Verdaccio and verify'
           # If the registry isn't set correctly, fail the job
@@ -110,6 +109,10 @@ commands:
 
   integ_test_ui:
     parameters:
+      publish:
+        description: include publish to verdaccio step (only needed for first invocation of this command)
+        type: boolean
+        default: false
       test_name:
         type: string
       framework:
@@ -128,8 +131,10 @@ commands:
           at: /root
       - restore_cache:
           key: amplify-js-ui
-      - run: echo $CIRCLE_JOB
-      - publish_to_verdaccio
+      - when:
+          condition: << parameters.publish >>
+          steps:
+            - publish_to_verdaccio
       - run:
           name: 'Install << parameters.test_name >> sample'
           command: |
@@ -163,7 +168,7 @@ commands:
       - attach_workspace:
           at: ~/
       - ios_install_verdaccio
-      - publish_to_verdaccio
+      - run: publish_to_verdaccio
       - run:
           name: Yarn Install
           command: |
@@ -339,6 +344,7 @@ jobs:
     working_directory: ~/amplify-js-samples-staging-ui/samples
     steps:
       - integ_test_ui:
+          publish: true
           test_name: 'React Authenticator'
           framework: react
           category: auth
