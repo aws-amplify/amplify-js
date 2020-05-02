@@ -30,10 +30,9 @@ const REMOTE_NOTIFICATION_OPENED = 'remoteNotificationOpened';
 
 export default class PushNotification {
 	private _config;
-	private handlers;
 	private _currentState;
-	private _androidInitialized;
-	private _iosInitialized;
+	private _androidInitialized: boolean;
+	private _iosInitialized: boolean;
 
 	constructor(config) {
 		if (config) {
@@ -41,17 +40,24 @@ export default class PushNotification {
 		} else {
 			this._config = {};
 		}
-		this.handlers = [];
 		this.updateEndpoint = this.updateEndpoint.bind(this);
-		this.handleCampaignPush = this.handleCampaignPush.bind(this);
-		this.handleCampaignOpened = this.handleCampaignOpened.bind(this);
-		this._checkIfOpenedByCampaign = this._checkIfOpenedByCampaign.bind(this);
+		this.handleNotificationReceived = this.handleNotificationReceived.bind(
+			this
+		);
+		this.handleNotificationOpened = this.handleNotificationOpened.bind(this);
+		this._checkIfOpenedByNotification = this._checkIfOpenedByNotification.bind(
+			this
+		);
 		this._currentState = AppState.currentState;
 		this._androidInitialized = false;
 		this._iosInitialized = false;
 
 		if (Platform.OS === 'ios') {
-			AppState.addEventListener('change', this._checkIfOpenedByCampaign, false);
+			AppState.addEventListener(
+				'change',
+				this._checkIfOpenedByNotification,
+				false
+			);
 		}
 		Amplify.register(this);
 	}
@@ -122,11 +128,11 @@ export default class PushNotification {
 		this.addEventListenerForAndroid(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
 		this.addEventListenerForAndroid(
 			REMOTE_NOTIFICATION_OPENED,
-			this.handleCampaignOpened
+			this.handleNotificationOpened
 		);
 		this.addEventListenerForAndroid(
 			REMOTE_NOTIFICATION_RECEIVED,
-			this.handleCampaignPush
+			this.handleNotificationReceived
 		);
 		RNPushNotification.initialize();
 
@@ -163,11 +169,16 @@ export default class PushNotification {
 		this.addEventListenerForIOS(REMOTE_TOKEN_RECEIVED, this.updateEndpoint);
 		this.addEventListenerForIOS(
 			REMOTE_NOTIFICATION_RECEIVED,
-			this.handleCampaignPush
+			this.handleNotificationReceived
 		);
 	}
 
-	_checkIfOpenedByCampaign(nextAppState) {
+	/**
+	 * This function handles the React Native AppState change event
+	 * And checks if the app was launched by a Push Notification
+	 * @param nextAppState The next state the app is changing to as part of the event
+	 */
+	_checkIfOpenedByNotification(nextAppState) {
 		// the app is turned from background to foreground
 		if (
 			this._currentState.match(/inactive|background/) &&
@@ -176,7 +187,7 @@ export default class PushNotification {
 			PushNotificationIOS.getInitialNotification()
 				.then(data => {
 					if (data) {
-						this.handleCampaignOpened(data);
+						this.handleNotificationOpened(data);
 					}
 				})
 				.catch(e => {
@@ -186,39 +197,70 @@ export default class PushNotification {
 		this._currentState = nextAppState;
 	}
 
-	handleCampaignPush(rawMessage) {
-		let message = rawMessage;
-		let campaign = null;
+	parseMessageData = rawMessage => {
+		let eventSource = null;
+		let eventSourceAttributes = {};
+
 		if (Platform.OS === 'ios') {
-			message = this.parseMessageFromIOS(rawMessage);
-			campaign =
-				message && message.data && message.data.pinpoint
-					? message.data.pinpoint.campaign
-					: null;
+			const message = this.parseMessageFromIOS(rawMessage);
+			const pinpointData =
+				message && message.data ? message.data.pinpoint : null;
+			if (pinpointData.campaign) {
+				eventSource = 'campaign';
+				eventSourceAttributes = pinpointData.campaign;
+			} else if (pinpointData.journey) {
+				eventSource = 'journey';
+				eventSourceAttributes = pinpointData.journey;
+			}
 		} else if (Platform.OS === 'android') {
 			const { data } = rawMessage;
-			campaign = {
-				campaign_id: data['pinpoint.campaign.campaign_id'],
-				campaign_activity_id: data['pinpoint.campaign.campaign_activity_id'],
-				treatment_id: data['pinpoint.campaign.treatment_id'],
-			};
+
+			// Check if it is a campaign in Android by looking for the ID key
+			// Android campaign payload is flat and differs from iOS & Journey
+			// TODO: The service should provide data in a consistent format similar to iOS
+			if (data && data['pinpoint.campaign.campaign_id']) {
+				eventSource = 'campaign';
+				eventSourceAttributes = {
+					campaign_id: data['pinpoint.campaign.campaign_id'],
+					campaign_activity_id: data['pinpoint.campaign.campaign_activity_id'],
+					treatment_id: data['pinpoint.campaign.treatment_id'],
+				};
+			} else if (data && data.pinpoint && data.pinpoint.journey) {
+				eventSource = 'journey';
+				eventSourceAttributes = data.pinpoint.journey;
+			}
 		}
 
-		if (!campaign) {
-			logger.debug('no message received for campaign push');
+		return {
+			eventSource,
+			eventSourceAttributes,
+		};
+	};
+
+	handleNotificationReceived(rawMessage) {
+		logger.debug('handleNotificationReceived, raw data', rawMessage);
+		const { eventSource, eventSourceAttributes } = this.parseMessageData(
+			rawMessage
+		);
+
+		if (!eventSource) {
+			logger.debug('message received is not from a pinpoint eventSource');
 			return;
 		}
 
+		const isAppInForeground =
+			Platform.OS === 'ios'
+				? this._currentState === 'active'
+				: rawMessage.foreground;
+
 		const attributes = {
-			campaign_activity_id: campaign['campaign_activity_id'],
-			isAppInForeground: message.foreground ? 'true' : 'false',
-			treatment_id: campaign['treatment_id'],
-			campaign_id: campaign['campaign_id'],
+			...eventSourceAttributes,
+			isAppInForeground,
 		};
 
-		const eventType = message.foreground
-			? '_campaign.received_foreground'
-			: '_campaign.received_background';
+		const eventType = isAppInForeground
+			? `_${eventSource}.received_foreground`
+			: `_${eventSource}.received_background`;
 
 		if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
 			Amplify.Analytics.record({
@@ -231,36 +273,22 @@ export default class PushNotification {
 		}
 	}
 
-	handleCampaignOpened(rawMessage) {
-		logger.debug('handleCampaignOpened, raw data', rawMessage);
-		let campaign = null;
-		if (Platform.OS === 'ios') {
-			const message = this.parseMessageFromIOS(rawMessage);
-			campaign =
-				message && message.data && message.data.pinpoint
-					? message.data.pinpoint.campaign
-					: null;
-		} else if (Platform.OS === 'android') {
-			const data = rawMessage;
-			campaign = {
-				campaign_id: data['pinpoint.campaign.campaign_id'],
-				campaign_activity_id: data['pinpoint.campaign.campaign_activity_id'],
-				treatment_id: data['pinpoint.campaign.treatment_id'],
-			};
-		}
+	handleNotificationOpened(rawMessage) {
+		logger.debug('handleNotificationOpened, raw data', rawMessage);
+		const { eventSource, eventSourceAttributes } = this.parseMessageData(
+			rawMessage
+		);
 
-		if (!campaign) {
-			logger.debug('no message received for campaign opened');
+		if (!eventSource) {
+			logger.debug('message received is not from a pinpoint eventSource');
 			return;
 		}
 
 		const attributes = {
-			campaign_activity_id: campaign['campaign_activity_id'],
-			treatment_id: campaign['treatment_id'],
-			campaign_id: campaign['campaign_id'],
+			...eventSourceAttributes,
 		};
 
-		const eventType = '_campaign.opened_notification';
+		const eventType = `_${eventSource}.opened_notification`;
 
 		if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
 			Amplify.Analytics.record({
@@ -337,7 +365,6 @@ export default class PushNotification {
 	}
 
 	addEventListenerForIOS(event, handler) {
-		const that = this;
 		if (event === REMOTE_TOKEN_RECEIVED) {
 			PushNotificationIOS.addEventListener('register', data => {
 				handler(data);
@@ -366,8 +393,10 @@ export default class PushNotification {
 			return dataObj;
 		}
 
-		let ret = null;
+		let ret = dataObj;
 		const dataPayload = dataObj.data || {};
+
+		// Consider removing this logic as title and body attributes are not used
 		if (dataPayload['pinpoint.campaign.campaign_id']) {
 			ret = {
 				title: dataPayload['pinpoint.notification.title'],
