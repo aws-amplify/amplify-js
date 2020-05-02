@@ -515,18 +515,18 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      # - integ_angular_auth_ui:
-      #     requires:
-      #       - integ_setup_ui
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_vue_auth_ui:
-      #     requires:
-      #       - integ_setup_ui
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
+      - integ_angular_auth_ui:
+          requires:
+            - integ_setup_ui
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_vue_auth_ui:
+          requires:
+            - integ_setup_ui
+            - build
+          filters:
+            <<: *releasable_branches
       # - deploy:
       #     filters:
       #       <<: *releasable_branches
