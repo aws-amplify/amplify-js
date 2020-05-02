@@ -7,12 +7,13 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: cypress/base:10
+      - image: cypress/base:12.16.1
     resource_class: large
+    working_directory: ~/amplify-js
 
   js-test-executor:
     docker:
-      - image: cypress/base:10
+      - image: cypress/base:12.16.1
       - image: verdaccio/verdaccio
     resource_class: large
 
@@ -44,6 +45,7 @@ commands:
 
   publish_to_verdaccio:
     steps:
+      - run: echo publish_to_verdaccio $CIRCLE_JOB
       - run:
           name: 'Set registry to Verdaccio and verify'
           # If the registry isn't set correctly, fail the job
@@ -126,10 +128,12 @@ commands:
           at: /root
       - restore_cache:
           key: amplify-js-ui
+      - run: echo $CIRCLE_JOB
       - publish_to_verdaccio
       - run:
           name: 'Install << parameters.test_name >> sample'
           command: |
+            cd << parameters.framework >>/<< parameters.category >>/<< parameters.sample_name >>
             echo "Current NPM registry: " $(yarn config get registry)
             yarn
       - run:
@@ -205,7 +209,6 @@ commands:
 jobs:
   build:
     executor: build-executor
-    working_directory: ~/amplify-js
     steps:
       - checkout
       - run: yarn config set workspaces-experimental true
@@ -224,7 +227,6 @@ jobs:
 
   unit_test:
     executor: build-executor
-    working_directory: ~/amplify-js
     steps:
       - attach_workspace:
           at: /root
@@ -334,18 +336,36 @@ jobs:
   integ_react_auth_ui:
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging-ui/samples/react/auth/amplify-authenticator
+    working_directory: ~/amplify-js-samples-staging-ui/samples
     steps:
       - integ_test_ui:
           test_name: 'React Authenticator'
           framework: react
           category: auth
           sample_name: amplify-authenticator
+      - integ_test_ui:
+          test_name: 'React Typescript Authenticator'
+          framework: react
+          category: auth
+          sample_name: typescript-amplify-authenticator
+          spec: amplify-authenticator
+      - integ_test_ui:
+          test_name: 'React Custom Authenticator'
+          framework: react
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
+      - integ_test_ui:
+          test_name: 'React Custom Authenticator'
+          framework: react
+          category: auth
+          sample_name: with-authenticator
+          spec: amplify-authenticator
 
   integ_angular_auth_ui:
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging-ui/samples/angular/auth/amplify-authenticator
+    working_directory: ~/amplify-js-samples-staging-ui/samples/angular/auth
     steps:
       - integ_test_ui:
           test_name: 'Angular Authenticator'
@@ -356,7 +376,7 @@ jobs:
   integ_vue_auth_ui:
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging-ui/samples/vue/auth/amplify-authenticator
+    working_directory: ~/amplify-js-samples-staging-ui/samples/vue/auth
     steps:
       - integ_test_ui:
           test_name: 'Vue Authenticator'
@@ -398,7 +418,6 @@ jobs:
 
   post_release:
     executor: build-executor
-    working_directory: ~/amplify-js
     steps:
       - attach_workspace:
           at: /root
@@ -406,7 +425,6 @@ jobs:
           keys:
             - amplify-ssh-deps-{{ .Branch }}
             - amplify-ssh-deps
-      - run: yarn && yarn build
       - run:
           name: 'Post-release steps'
           command: |
@@ -417,94 +435,95 @@ jobs:
             git add ./packages/core/src/Platform/version.ts
             git commit -m "chore(release): update version.ts [ci skip]"
             git push origin release
-            git push origin master
+            git push origin release:master
 
 releasable_branches: &releasable_branches
   branches:
     only:
       - release
       - master
-      - ui-components/master #TODO: can we remove this?
+      - ui-components/master
       - 1.0-stable
+      - verdaccio-ci
 
 workflows:
   build_test_deploy:
     jobs:
       - build
-      - integ_setup:
-          filters:
-            <<: *releasable_branches
+      # - integ_setup:
+      #     filters:
+      #       <<: *releasable_branches
       - integ_setup_ui:
           filters:
             <<: *releasable_branches
-      - unit_test:
-          requires:
-            - build
-      - integ_react_auth:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_angular_auth:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_vue_auth:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_react_predictions:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_rn_ios_storage:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
+      # - unit_test:
+      #     requires:
+      #       - build
+      # - integ_react_auth:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_angular_auth:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_vue_auth:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_react_predictions:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_rn_ios_storage:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
       - integ_react_auth_ui:
           requires:
             - integ_setup_ui
             - build
           filters:
             <<: *releasable_branches
-      - integ_angular_auth_ui:
-          requires:
-            - integ_setup_ui
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_vue_auth_ui:
-          requires:
-            - integ_setup_ui
-            - build
-          filters:
-            <<: *releasable_branches
-      - deploy:
-          filters:
-            <<: *releasable_branches
-          requires:
-            - unit_test
-            - integ_react_predictions
-            - integ_react_auth
-            - integ_angular_auth
-            - integ_vue_auth
-            - integ_react_auth_ui
-            - integ_angular_auth_ui
-            - integ_vue_auth_ui
-            - integ_rn_ios_storage
-      - post_release:
-          filters:
-            branches:
-              only:
-                - release
-          requires:
-            - deploy
+      # - integ_angular_auth_ui:
+      #     requires:
+      #       - integ_setup_ui
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - integ_vue_auth_ui:
+      #     requires:
+      #       - integ_setup_ui
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      # - deploy:
+      #     filters:
+      #       <<: *releasable_branches
+      #     requires:
+      #       - unit_test
+      #       - integ_react_predictions
+      #       - integ_react_auth
+      #       - integ_angular_auth
+      #       - integ_vue_auth
+      #       - integ_react_auth_ui
+      #       - integ_angular_auth_ui
+      #       - integ_vue_auth_ui
+      #       - integ_rn_ios_storage
+      # - post_release:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #     requires:
+      #       - deploy
