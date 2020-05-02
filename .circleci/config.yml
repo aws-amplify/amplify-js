@@ -128,7 +128,7 @@ commands:
         default: ''
     steps:
       - when:
-          condition: << parameters.first >>
+          condition: << parameters.setup >>
           steps:
             - attach_workspace:
               at: /root
