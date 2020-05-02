@@ -131,7 +131,7 @@ commands:
           condition: << parameters.setup >>
           steps:
             - attach_workspace:
-              at: /root
+                at: /root
             - restore_cache:
                 key: amplify-js-ui
             - publish_to_verdaccio
