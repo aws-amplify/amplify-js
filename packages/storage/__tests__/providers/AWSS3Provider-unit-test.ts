@@ -471,8 +471,12 @@ describe('StorageProvider test', () => {
 			const spyon = jest.spyOn(S3Client.prototype, 'send');
 
 			expect.assertions(2);
-			expect(await storage.put('key', 'object', {})).toEqual({ key: 'key' });
+			expect(await storage.put('key', 'object', { acl: 'public' })).toEqual({
+				key: 'key',
+			});
+
 			expect(spyon.mock.calls[0][0].input).toEqual({
+				ACL: 'public',
 				Body: 'object',
 				Bucket: 'bucket',
 				ContentType: 'binary/octet-stream',
