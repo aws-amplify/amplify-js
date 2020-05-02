@@ -109,8 +109,8 @@ commands:
 
   integ_test_ui:
     parameters:
-      publish:
-        description: include publish to verdaccio step (only needed for first invocation of this command)
+      setup:
+        description: set up and verdaccio publish steps (only needed for first invocation of this command)
         type: boolean
         default: false
       test_name:
@@ -127,13 +127,13 @@ commands:
         type: string
         default: ''
     steps:
-      - attach_workspace:
-          at: /root
-      - restore_cache:
-          key: amplify-js-ui
       - when:
-          condition: << parameters.publish >>
+          condition: << parameters.first >>
           steps:
+            - attach_workspace:
+              at: /root
+            - restore_cache:
+                key: amplify-js-ui
             - publish_to_verdaccio
       - run:
           name: 'Install << parameters.test_name >> sample'
@@ -344,7 +344,7 @@ jobs:
     working_directory: ~/amplify-js-samples-staging-ui/samples
     steps:
       - integ_test_ui:
-          publish: true
+          setup: true
           test_name: 'React Authenticator'
           framework: react
           category: auth
@@ -371,24 +371,38 @@ jobs:
   integ_angular_auth_ui:
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging-ui/samples/angular/auth
+    working_directory: ~/amplify-js-samples-staging-ui/samples
     steps:
       - integ_test_ui:
+          setup: true
           test_name: 'Angular Authenticator'
           framework: angular
           category: auth
           sample_name: amplify-authenticator
+      - integ_test_ui:
+          test_name: 'Angular Custom Authenticator'
+          framework: angular
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
 
   integ_vue_auth_ui:
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging-ui/samples/vue/auth
+    working_directory: ~/amplify-js-samples-staging-ui/samples
     steps:
       - integ_test_ui:
+          setup: true
           test_name: 'Vue Authenticator'
           framework: vue
           category: auth
           sample_name: amplify-authenticator
+      - integ_test_ui:
+          test_name: 'Vue Custom Authenticator'
+          framework: vue
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
 
   integ_rn_ios_storage:
     executor: ios-executor
