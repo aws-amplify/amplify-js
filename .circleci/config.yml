@@ -74,6 +74,22 @@ commands:
             git --no-pager diff
             ./node_modules/lerna/cli.js publish --no-push --canary --yes --dist-tag=unstable --preid=unstable --exact --force-publish
 
+  prepare_test_env:
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
+      - publish_to_verdaccio
+
+  prepare_ui_test_env:
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-ui
+      - publish_to_verdaccio
+
   integ_test_js:
     parameters:
       test_name:
@@ -83,11 +99,6 @@ commands:
       spec:
         type: string
     steps:
-      - attach_workspace:
-          at: /root
-      - restore_cache:
-          key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
-      - publish_to_verdaccio
       - run:
           name: 'Install << parameters.test_name >> sample'
           command: |
@@ -109,10 +120,6 @@ commands:
 
   integ_test_ui:
     parameters:
-      setup:
-        description: set up and verdaccio publish steps (only needed for first invocation of this command)
-        type: boolean
-        default: false
       test_name:
         type: string
       framework:
@@ -127,14 +134,6 @@ commands:
         type: string
         default: ''
     steps:
-      - when:
-          condition: << parameters.setup >>
-          steps:
-            - attach_workspace:
-                at: /root
-            - restore_cache:
-                key: amplify-js-ui
-            - publish_to_verdaccio
       - run:
           name: 'Install << parameters.test_name >> sample'
           command: |
@@ -281,6 +280,7 @@ jobs:
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/auth/with-authenticator
     steps:
+      - prepare_test_env
       - integ_test_js:
           test_name: 'React Authenticator'
           framework: react
@@ -291,6 +291,7 @@ jobs:
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
     steps:
+      - prepare_test_env
       - integ_test_js:
           test_name: 'Angular Authenticator'
           framework: angular
@@ -301,6 +302,7 @@ jobs:
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
     steps:
+      - prepare_test_env
       - integ_test_js:
           test_name: 'Vue Authenticator'
           framework: vue
@@ -311,6 +313,7 @@ jobs:
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/predictions/multi-user-translation
     steps:
+      - prepare_test_env
       - integ_test_js:
           test_name: 'React Predictions'
           framework: react
@@ -343,8 +346,8 @@ jobs:
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging-ui/samples
     steps:
+      - prepare_ui_test_env
       - integ_test_ui:
-          setup: true
           test_name: 'React Authenticator'
           framework: react
           category: auth
@@ -373,8 +376,8 @@ jobs:
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging-ui/samples
     steps:
+      - prepare_ui_test_env
       - integ_test_ui:
-          setup: true
           test_name: 'Angular Authenticator'
           framework: angular
           category: auth
@@ -391,8 +394,8 @@ jobs:
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging-ui/samples
     steps:
+      - prepare_ui_test_env
       - integ_test_ui:
-          setup: true
           test_name: 'Vue Authenticator'
           framework: vue
           category: auth
