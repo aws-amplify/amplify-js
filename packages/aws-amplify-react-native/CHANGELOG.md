@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.1.0...aws-amplify-react-native@4.1.1) (2020-04-30)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Update Hub listener for sign out events ([#5587](https://github.com/aws-amplify/amplify-js/issues/5587)) ([b8d2c4d](https://github.com/aws-amplify/amplify-js/commit/b8d2c4dbc0aaa34256943343d100f0e2896b7087))
+
+
+
+
+
 # [4.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.0.4...aws-amplify-react-native@4.1.0) (2020-04-24)
 
 

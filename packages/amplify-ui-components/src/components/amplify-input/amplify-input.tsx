@@ -1,5 +1,5 @@
-import { Component, Prop, Host, h } from '@stencil/core';
-import { TextFieldTypes } from '../../common/types/ui-types';
+import { Component, Prop, Host, h,Listen, Event, EventEmitter} from '@stencil/core';
+import { TextFieldTypes, InputEvent } from '../../common/types/ui-types';
 
 @Component({
   tag: 'amplify-input',
@@ -13,7 +13,7 @@ export class AmplifyInput {
   /** The input type.  Can be any HTML input type. */
   @Prop() type?: TextFieldTypes = 'text';
   /** The callback, called when the input is modified by the user. */
-  @Prop() handleInputChange?: (inputEvent: Event) => void;
+  @Prop() handleInputChange?: (inputEvent: InputEvent) => void;
   /** (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. */
   @Prop() placeholder?: string = '';
   /** (Optional) String value for the name of the input. */
@@ -24,6 +24,21 @@ export class AmplifyInput {
   @Prop() inputProps?: object;
   /** Will disable the input if set to true */
   @Prop() disabled?: boolean;
+  /** Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form */
+  @Event({
+    eventName: 'formSubmit',
+    composed: true,
+    cancelable: true,
+    bubbles: true,
+  }) formSubmit: EventEmitter;
+
+   // eslint-disable-next-line
+   @Listen('keydown')
+   handleKeyDown(ev) {
+     if (ev.key === 'Enter') {
+       this.formSubmit.emit(ev);
+     }
+   }
 
   render() {
     return (
