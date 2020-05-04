@@ -218,15 +218,7 @@ export class AuthClass {
 			});
 
 			// **NOTE** - Remove this in a future major release as it is a breaking change
-			// Prevents _handleAuthResponse from being called multiple times in Expo
-			// See https://github.com/aws-amplify/amplify-js/issues/4388
-			const usedResponseUrls = {};
 			urlListener(({ url }) => {
-				if (usedResponseUrls[url]) {
-					return;
-				}
-
-				usedResponseUrls[url] = true;
 				this._handleAuthResponse(url);
 			});
 		}
