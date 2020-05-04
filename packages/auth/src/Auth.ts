@@ -1744,6 +1744,8 @@ export class AuthClass {
 					? this._config.oauth.redirectSignIn
 					: this._config.oauth.redirectUri;
 
+				this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
+
 				this._oAuthHandler.oauthSignIn(
 					this._config.oauth.responseType,
 					this._config.oauth.domain,
@@ -1813,8 +1815,12 @@ export class AuthClass {
 			.map(entry => entry.split('='))
 			.find(([k]) => k === 'access_token' || k === 'error');
 
-		if (hasCodeOrError || hasTokenOrError) {
-			this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
+		if (
+			this._storage.getItem('amplify-redirected-from-hosted-ui') &&
+			(hasCodeOrError || hasTokenOrError)
+		) {
+			this._storage.removeItem('amplify-redirected-from-hosted-ui');
+
 			try {
 				const {
 					accessToken,
@@ -1835,7 +1841,7 @@ export class AuthClass {
 					logger.debug('AWS credentials', credentials);
 				}
 
-				/* 
+				/*
 				Prior to the request we do sign the custom state along with the state we set. This check will verify
 				if there is a dash indicated when setting custom state from the request. If a dash is contained
 				then there is custom state present on the state string.
