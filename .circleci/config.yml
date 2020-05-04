@@ -72,7 +72,7 @@ commands:
             git config --global user.name $NPM_USER
             git status
             git --no-pager diff
-            ./node_modules/lerna/cli.js publish --no-push --canary major --yes --dist-tag=unstable --preid=unstable --exact --force-publish
+            ./node_modules/lerna/cli.js publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes
 
   prepare_test_env:
     steps:
@@ -129,8 +129,7 @@ commands:
       sample_name:
         type: string
       spec:
-        # optional
-        # the script will use sample_name by default
+        # optional - the script will use sample_name by default
         type: string
         default: ''
     steps:
@@ -473,45 +472,45 @@ workflows:
   build_test_deploy:
     jobs:
       - build
-      # - integ_setup:
-      #     filters:
-      #       <<: *releasable_branches
+      - integ_setup:
+          filters:
+            <<: *releasable_branches
       - integ_setup_ui:
           filters:
             <<: *releasable_branches
-      # - unit_test:
-      #     requires:
-      #       - build
-      # - integ_react_auth:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_angular_auth:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_vue_auth:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_react_predictions:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_rn_ios_storage:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
+      - unit_test:
+          requires:
+            - build
+      - integ_react_auth:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_angular_auth:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_vue_auth:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_predictions:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_ios_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_react_auth_ui:
           requires:
             - integ_setup_ui
