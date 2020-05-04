@@ -9,6 +9,7 @@ executors:
     docker:
       - image: cypress/base:12.16.1
     resource_class: large
+    working_directory: ~/amplify-js
 
   js-test-executor:
     docker:
@@ -71,7 +72,23 @@ commands:
             git config --global user.name $NPM_USER
             git status
             git --no-pager diff
-            ./node_modules/lerna/cli.js publish --no-push --canary --yes --dist-tag=unstable --preid=unstable --exact --force-publish
+            ./node_modules/lerna/cli.js publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes
+
+  prepare_test_env:
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
+      - publish_to_verdaccio
+
+  prepare_ui_test_env:
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-ui
+      - publish_to_verdaccio
 
   integ_test_js:
     parameters:
@@ -82,11 +99,6 @@ commands:
       spec:
         type: string
     steps:
-      - attach_workspace:
-          at: /root
-      - restore_cache:
-          key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
-      - publish_to_verdaccio
       - run:
           name: 'Install << parameters.test_name >> sample'
           command: |
@@ -117,19 +129,14 @@ commands:
       sample_name:
         type: string
       spec:
-        # optional
-        # the script will use sample_name by default
+        # optional - the script will use sample_name by default
         type: string
         default: ''
     steps:
-      - attach_workspace:
-          at: /root
-      - restore_cache:
-          key: amplify-js-ui
-      - publish_to_verdaccio
       - run:
           name: 'Install << parameters.test_name >> sample'
           command: |
+            cd << parameters.framework >>/<< parameters.category >>/<< parameters.sample_name >>
             echo "Current NPM registry: " $(yarn config get registry)
             yarn
       - run:
@@ -205,7 +212,6 @@ commands:
 jobs:
   build:
     executor: build-executor
-    working_directory: ~/amplify-js
     steps:
       - checkout
       - run: yarn config set workspaces-experimental true
@@ -224,7 +230,6 @@ jobs:
 
   unit_test:
     executor: build-executor
-    working_directory: ~/amplify-js
     steps:
       - attach_workspace:
           at: /root
@@ -274,6 +279,7 @@ jobs:
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/auth/with-authenticator
     steps:
+      - prepare_test_env
       - integ_test_js:
           test_name: 'React Authenticator'
           framework: react
@@ -284,6 +290,7 @@ jobs:
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
     steps:
+      - prepare_test_env
       - integ_test_js:
           test_name: 'Angular Authenticator'
           framework: angular
@@ -294,6 +301,7 @@ jobs:
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
     steps:
+      - prepare_test_env
       - integ_test_js:
           test_name: 'Vue Authenticator'
           framework: vue
@@ -304,6 +312,7 @@ jobs:
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/predictions/multi-user-translation
     steps:
+      - prepare_test_env
       - integ_test_js:
           test_name: 'React Predictions'
           framework: react
@@ -334,35 +343,68 @@ jobs:
   integ_react_auth_ui:
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging-ui/samples/react/auth/amplify-authenticator
+    working_directory: ~/amplify-js-samples-staging-ui/samples
     steps:
+      - prepare_ui_test_env
       - integ_test_ui:
           test_name: 'React Authenticator'
           framework: react
           category: auth
           sample_name: amplify-authenticator
+      - integ_test_ui:
+          test_name: 'React Typescript Authenticator'
+          framework: react
+          category: auth
+          sample_name: typescript-amplify-authenticator
+          spec: amplify-authenticator
+      - integ_test_ui:
+          test_name: 'React Custom Authenticator'
+          framework: react
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
+      - integ_test_ui:
+          test_name: 'React Custom Authenticator'
+          framework: react
+          category: auth
+          sample_name: with-authenticator
+          spec: amplify-authenticator
 
   integ_angular_auth_ui:
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging-ui/samples/angular/auth/amplify-authenticator
+    working_directory: ~/amplify-js-samples-staging-ui/samples
     steps:
+      - prepare_ui_test_env
       - integ_test_ui:
           test_name: 'Angular Authenticator'
           framework: angular
           category: auth
           sample_name: amplify-authenticator
+      - integ_test_ui:
+          test_name: 'Angular Custom Authenticator'
+          framework: angular
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
 
   integ_vue_auth_ui:
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging-ui/samples/vue/auth/amplify-authenticator
+    working_directory: ~/amplify-js-samples-staging-ui/samples
     steps:
+      - prepare_ui_test_env
       - integ_test_ui:
           test_name: 'Vue Authenticator'
           framework: vue
           category: auth
           sample_name: amplify-authenticator
+      - integ_test_ui:
+          test_name: 'Vue Custom Authenticator'
+          framework: vue
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
 
   integ_rn_ios_storage:
     executor: ios-executor
@@ -398,7 +440,6 @@ jobs:
 
   post_release:
     executor: build-executor
-    working_directory: ~/amplify-js
     steps:
       - attach_workspace:
           at: /root
