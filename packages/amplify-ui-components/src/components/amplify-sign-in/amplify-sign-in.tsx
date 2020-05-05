@@ -248,7 +248,7 @@ export class AmplifySignIn {
         'data-test': 'sign-in-password-input',
       },
     });
-    return [...formFieldInputs];
+    this.newFormFields = [...formFieldInputs];
   }
 
   buildFormFields() {
