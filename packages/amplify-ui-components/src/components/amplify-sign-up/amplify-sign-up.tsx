@@ -154,7 +154,7 @@ export class AmplifySignUp {
     }
   }
 
-  buildDefaultFormFields() {
+  private buildDefaultFormFields() {
     switch (this.usernameAlias) {
       case 'email':
         this.newFormFields = [
@@ -259,7 +259,7 @@ export class AmplifySignUp {
     }
   }
 
-  buildFormFields() {
+  private buildFormFields() {
     if (this.formFields.length === 0) {
       this.buildDefaultFormFields();
     } else {

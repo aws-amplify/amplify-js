@@ -68,7 +68,7 @@ export class AmplifySignIn {
    * ]
    * ```
    */
-  @Prop() formFields: FormFieldTypes = [];
+  @Prop() formFields: FormFieldTypes | string[] = [];
   private newFormFields: FormFieldTypes | string[] = [];
 
   /* Whether or not the sign-in component is loading */
