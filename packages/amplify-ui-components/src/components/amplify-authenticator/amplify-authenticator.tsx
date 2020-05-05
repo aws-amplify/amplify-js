@@ -3,6 +3,7 @@ import { AuthState, CognitoUserInterface, FederatedConfig, UsernameAliasStrings 
 import {
   AUTH_CHANNEL,
   NO_AUTH_MODULE_FOUND,
+  SIGNING_IN_WITH_HOSTEDUI_KEY,
   AUTHENTICATOR_AUTHSTATE,
   UI_AUTH_CHANNEL,
   TOAST_AUTH_ERROR_EVENT,
@@ -61,7 +62,9 @@ export class AmplifyAuthenticator {
     });
 
     appendToCognitoUserAgent('amplify-authenticator');
-    await this.checkUser();
+    const byHostedUI = localStorage.getItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
+    localStorage.removeItem(SIGNING_IN_WITH_HOSTEDUI_KEY);
+    if (byHostedUI !== 'true') await this.checkUser();
   }
 
   private async checkUser() {
