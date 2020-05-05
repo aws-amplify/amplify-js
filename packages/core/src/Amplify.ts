@@ -33,6 +33,14 @@ export class Amplify {
 		} else {
 			logger.debug('no getModuleName method for component', comp);
 		}
+
+		// Finally configure this new component(category) loaded
+		// With the new modularization changes in Amplify V3, all the Amplify
+		// component are not loaded/registered right away but when they are
+		// imported (and hence instantiated) in the client's app. This ensures
+		// that all new components imported get correctly configured with the
+		// configuration that Amplify.configure() was called with.
+		comp.configure(this._config);
 	}
 
 	static configure(config) {
