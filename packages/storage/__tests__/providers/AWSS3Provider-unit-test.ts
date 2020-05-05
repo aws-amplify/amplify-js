@@ -15,6 +15,7 @@ import { Hub, Credentials } from '@aws-amplify/core';
 import * as formatURL from '@aws-sdk/util-format-url';
 import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
+import { RequestPresigningArguments } from '@aws-sdk/types';
 
 /**
  * NOTE - These test cases use Hub.dispatch but they should
@@ -349,7 +350,7 @@ describe('StorageProvider test', () => {
 			// was created in the source vs in the test.
 			const diff =
 				new Date(Date.now() + 1200 * 1000).getMilliseconds() -
-				(spyon.mock.calls[0][1] as Date).getMilliseconds();
+				(spyon.mock.calls[0][1] as RequestPresigningArguments).expiresIn * 1000;
 			expect(diff).toBeLessThan(100);
 		});
 
@@ -376,7 +377,7 @@ describe('StorageProvider test', () => {
 			// was created in the source vs in the test. 900 secs is default
 			const diff =
 				new Date(Date.now() + 900 * 1000).getMilliseconds() -
-				(spyon.mock.calls[0][1] as Date).getMilliseconds();
+				(spyon.mock.calls[0][1] as RequestPresigningArguments).expiresIn * 1000;
 			expect(diff).toBeLessThan(100);
 		});
 
