@@ -251,6 +251,10 @@ jobs:
             yarn run test --scope aws-amplify-react
             yarn run test --scope aws-amplify-angular
             yarn run test --scope aws-amplify-vue
+            yarn run test --scope @aws-amplify/ui-components
+            yarn run test --scope @aws-amplify/ui-react
+            yarn run test --scope @aws-amplify/ui-angular
+            yarn run test --scope @aws-amplify/ui-vue
             yarn run coverage
 
   integ_setup:
