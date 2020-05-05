@@ -2799,9 +2799,30 @@ describe('auth unit test', () => {
 
 			(oauthStorage.getState as jest.Mock<any>).mockReturnValueOnce(state);
 
+			const oauthSignInSpy = jest
+				.spyOn(OAuth.prototype, 'oauthSignIn')
+				.mockImplementationOnce(() => null);
+
 			await auth.federatedSignIn();
+
+			expect(
+				auth._storage.getItem('amplify-redirected-from-hosted-ui')
+			).toEqual('true');
+
+			expect(oauthSignInSpy).toBeCalledWith(
+				'code', // oauth.responseType
+				'mydomain.auth.us-east-1.amazoncognito.com', // oauth.domain
+				'http://localhost:3000/', // oauth.redirectSignIn
+				undefined, // client_id
+				'COGNITO', // provider
+				undefined // customState
+			);
+
 			await (auth as any)._handleAuthResponse(url);
 
+			expect(
+				auth._storage.getItem('amplify-redirected-from-hosted-ui')
+			).toBeUndefined();
 			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
 			expect(replaceStateSpy).toHaveBeenCalledWith(
 				{},
