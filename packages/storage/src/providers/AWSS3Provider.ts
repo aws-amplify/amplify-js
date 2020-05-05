@@ -234,6 +234,7 @@ export class AWSS3Provider implements StorageProvider {
 			expires,
 			metadata,
 			tagging,
+			acl,
 		} = opt;
 		const {
 			serverSideEncryption,
@@ -284,8 +285,14 @@ export class AWSS3Provider implements StorageProvider {
 				params.SSEKMSKeyId = SSEKMSKeyId;
 			}
 		}
+
 		const emitter = new events.EventEmitter();
 		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
+
+		if (acl) {
+			params.ACL = acl;
+		}
+
 		try {
 			emitter.on('sendProgress', progress => {
 				if (progressCallback) {

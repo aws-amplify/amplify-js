@@ -7,7 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AuthState, AuthStateHandler, CognitoUserInterface, FederatedConfig, MFATypesInterface, UsernameAliasStrings, } from "./common/types/auth-types";
 import { FormFieldTypes, } from "./components/amplify-auth-fields/amplify-auth-fields-interface";
-import { ButtonTypes, ButtonVariant, TextFieldTypes, } from "./common/types/ui-types";
+import { ButtonTypes, ButtonVariant, InputEvent, TextFieldTypes, } from "./common/types/ui-types";
 import { FunctionalComponent, } from "@stencil/core";
 import { CountryCodeDialOptions, } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { IconNameType, } from "./components/amplify-icon/icons";
@@ -441,7 +441,7 @@ export namespace Components {
         /**
           * The callback, called when the input is modified by the user.
          */
-        "handleInputChange"?: (inputEvent: Event) => void;
+        "handleInputChange"?: (inputEvent: InputEvent) => void;
         /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
@@ -1564,7 +1564,7 @@ declare namespace LocalJSX {
         /**
           * The callback, called when the input is modified by the user.
          */
-        "handleInputChange"?: (inputEvent: Event) => void;
+        "handleInputChange"?: (inputEvent: InputEvent) => void;
         /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
@@ -1573,6 +1573,10 @@ declare namespace LocalJSX {
           * (Optional) String value for the name of the input.
          */
         "name"?: string;
+        /**
+          * Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form
+         */
+        "onFormSubmit"?: (event: CustomEvent<any>) => void;
         /**
           * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
          */

@@ -10,12 +10,19 @@
 | `description`       | `description` | The text of the description.  Goes just below the label.                                                                                           | `string`                                                                                        | `undefined` |
 | `disabled`          | `disabled`    | Will disable the input if set to true                                                                                                              | `boolean`                                                                                       | `undefined` |
 | `fieldId`           | `field-id`    | The ID of the field.  Should match with its corresponding input's ID.                                                                              | `string`                                                                                        | `undefined` |
-| `handleInputChange` | --            | The callback, called when the input is modified by the user.                                                                                       | `(inputEvent: Event) => void`                                                                   | `undefined` |
+| `handleInputChange` | --            | The callback, called when the input is modified by the user.                                                                                       | `(inputEvent: InputEvent) => void`                                                              | `undefined` |
 | `inputProps`        | --            | Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes                                 | `object`                                                                                        | `undefined` |
 | `name`              | `name`        | (Optional) String value for the name of the input.                                                                                                 | `string`                                                                                        | `undefined` |
 | `placeholder`       | `placeholder` | (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users. | `string`                                                                                        | `''`        |
 | `type`              | `type`        | The input type.  Can be any HTML input type.                                                                                                       | `"date" \| "email" \| "number" \| "password" \| "search" \| "tel" \| "text" \| "time" \| "url"` | `'text'`    |
 | `value`             | `value`       | The value of the content inside of the input field                                                                                                 | `string`                                                                                        | `undefined` |
+
+
+## Events
+
+| Event        | Description                                                                                        | Type               |
+| ------------ | -------------------------------------------------------------------------------------------------- | ------------------ |
+| `formSubmit` | Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form | `CustomEvent<any>` |
 
 
 ## Dependencies
