@@ -2786,6 +2786,8 @@ describe('auth unit test', () => {
 			}?code=${code}&state=${state}`;
 
 			(oauthStorage.getState as jest.Mock<any>).mockReturnValueOnce(state);
+
+			await auth.federatedSignIn();
 			await (auth as any)._handleAuthResponse(url);
 
 			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
@@ -2832,6 +2834,7 @@ describe('auth unit test', () => {
 				(options.oauth as AwsCognitoOAuthOpts).redirectSignIn
 			}#access_token=${token}&state=${state}`;
 
+			await auth.federatedSignIn();
 			await (auth as any)._handleAuthResponse(url);
 
 			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
@@ -2896,6 +2899,8 @@ describe('auth unit test', () => {
 			const url = `${
 				(options.oauth as AwsCognitoOAuthOpts).redirectSignIn
 			}?code=${code}`;
+
+			await auth.federatedSignIn();
 			await (auth as any)._handleAuthResponse(url);
 
 			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
