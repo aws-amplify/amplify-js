@@ -63,3 +63,12 @@ export const onAuthUIStateChange = (authStateHandler: AuthStateHandler) => {
   Hub.listen(UI_AUTH_CHANNEL, authUIStateHandler);
   return () => Hub.remove(UI_AUTH_CHANNEL, authUIStateHandler);
 }
+
+export const handleAuthFormFieldHint = (field) => {
+  if(field["hint"] === null || typeof field["hint"] === "string"){
+    return false;
+  }
+  else{
+    return true;
+  }
+}
