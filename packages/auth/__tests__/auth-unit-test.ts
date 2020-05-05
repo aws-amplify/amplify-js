@@ -2731,7 +2731,7 @@ describe('auth unit test', () => {
 	});
 
 	describe('handleAuthResponse test', () => {
-		beforeAll(() => {
+		beforeEach(() => {
 			jest
 				.spyOn(Auth.prototype, 'currentAuthenticatedUser')
 				.mockImplementation(() => {
@@ -2741,11 +2741,23 @@ describe('auth unit test', () => {
 			jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
 				.mockImplementation(() => {
-					return {
-						setItem() {
-							return null;
-						},
-					};
+					class InMemoryStore {
+						db = {};
+
+						getItem = key => {
+							return this.db[key];
+						};
+
+						removeItem = key => {
+							delete this.db[key];
+						};
+
+						setItem = (key, value) => {
+							this.db[key] = value;
+						};
+					}
+
+					return new InMemoryStore();
 				});
 		});
 
