@@ -254,6 +254,25 @@ export class AmplifySignIn {
     } else {
       this.formFields.forEach(field => {
         const newField = { ...field };
+        // TODO: handle hint better
+        if(newField.type === "password") {
+          if(newField["hint"] === null || typeof newField["hint"] === "string"){
+          }
+          else {
+          newField["hint"] = (
+            <div>
+              {I18n.get(Translations.FORGOT_PASSWORD_TEXT)}{' '}
+              <amplify-button
+                variant="anchor"
+                onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}
+                data-test="sign-in-forgot-password-link"
+              >
+                {I18n.get(Translations.RESET_PASSWORD_TEXT)}
+              </amplify-button>
+            </div>
+          );
+          }
+        }
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
         this.newFormFields.push(newField);
       });

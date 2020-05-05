@@ -81,6 +81,16 @@ export class AmplifyConfirmSignUp {
     } else {
       this.formFields.forEach(field => {
         const newField = { ...field };
+        if (newField.type === "code") {
+          newField["hint"] = (
+            <div>
+              {I18n.get(Translations.CONFIRM_SIGN_UP_LOST_CODE)}{' '}
+              <amplify-button variant="anchor" onClick={() => this.resendConfirmCode()}>
+                {I18n.get(Translations.CONFIRM_SIGN_UP_RESEND_CODE)}
+              </amplify-button>
+            </div>
+          );
+        }
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
         this.newFormFields.push(newField);
       });
