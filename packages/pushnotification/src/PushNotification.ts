@@ -214,20 +214,22 @@ export default class PushNotification {
 			}
 		} else if (Platform.OS === 'android') {
 			const { data } = rawMessage;
-
-			// Check if it is a campaign in Android by looking for the ID key
-			// Android campaign payload is flat and differs from iOS & Journey
+			const pinpointData =
+				data && data.pinpoint ? JSON.parse(data.pinpoint) : null;
+			if (pinpointData && pinpointData.journey) {
+				eventSource = 'journey';
+				eventSourceAttributes = pinpointData.journey;
+			}
+			// Check if it is a campaign in Android by looking for the Campaign ID key
+			// Android campaign payload is flat and differs from Journey and iOS payloads
 			// TODO: The service should provide data in a consistent format similar to iOS
-			if (data && data['pinpoint.campaign.campaign_id']) {
+			else if (data && data['pinpoint.campaign.campaign_id']) {
 				eventSource = 'campaign';
 				eventSourceAttributes = {
 					campaign_id: data['pinpoint.campaign.campaign_id'],
 					campaign_activity_id: data['pinpoint.campaign.campaign_activity_id'],
 					treatment_id: data['pinpoint.campaign.treatment_id'],
 				};
-			} else if (data && data.pinpoint && data.pinpoint.journey) {
-				eventSource = 'journey';
-				eventSourceAttributes = data.pinpoint.journey;
 			}
 		}
 
@@ -389,8 +391,14 @@ export default class PushNotification {
 			return dataObj;
 		}
 
+		// In the case of opened notifications,
+		// the message object should be nested under the 'data' key
+		// so as to have the same format as received notifications
+		// before it is parsed further in parseMessageData()
 		if (from === 'opened') {
-			return dataObj;
+			return {
+				data: dataObj,
+			};
 		}
 
 		let ret = dataObj;
