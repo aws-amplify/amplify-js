@@ -1453,7 +1453,7 @@ describe('auth unit test', () => {
 		test('happy case with source federation', async () => {
 			const spyon = jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementationOnce(() => {
+				.mockImplementation(() => {
 					return {
 						setItem() {},
 						getItem() {
@@ -1538,7 +1538,7 @@ describe('auth unit test', () => {
 		test('with federated info', async () => {
 			const spyon = jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementationOnce(() => {
+				.mockImplementation(() => {
 					return {
 						setItem() {},
 						getItem() {
@@ -1569,7 +1569,7 @@ describe('auth unit test', () => {
 		test('with cognito session', async () => {
 			const spyon = jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementationOnce(() => {
+				.mockImplementation(() => {
 					return {
 						setItem() {},
 						getItem() {
@@ -1603,7 +1603,7 @@ describe('auth unit test', () => {
 		test('with guest', async () => {
 			const spyon = jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementationOnce(() => {
+				.mockImplementation(() => {
 					return {
 						setItem() {},
 						getItem() {
@@ -1637,7 +1637,7 @@ describe('auth unit test', () => {
 		test('json parse error', async () => {
 			const spyon = jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementationOnce(() => {
+				.mockImplementation(() => {
 					return {
 						setItem() {},
 						getItem() {
@@ -1858,7 +1858,7 @@ describe('auth unit test', () => {
 		beforeAll(() => {
 			jest
 				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementationOnce(() => {
+				.mockImplementation(() => {
 					return {
 						setItem() {},
 						getItem() {},
