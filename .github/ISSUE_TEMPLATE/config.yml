@@ -1,5 +1,0 @@
-blank_issues_enabled: false
-contact_links:
-  - name: Usage Question
-    url: https://github.com/aws-amplify/amplify-js/discussions
-    about: Ask a question about AWS Amplify usage
