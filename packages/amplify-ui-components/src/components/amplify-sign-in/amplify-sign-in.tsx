@@ -29,7 +29,11 @@ import {
 import { SignInAttributes } from './amplify-sign-in-interface';
 
 const logger = new Logger('SignIn');
-
+/**
+ * @slot footer - Content is place in the footer of the component
+ * @slot primary-footer-content - Content placed on the right side of the footer
+ * @slot secondary-footer-content - Content placed on the left side of the footer
+ */
 @Component({
   tag: 'amplify-sign-in',
   styleUrl: 'amplify-sign-in.scss',
@@ -80,7 +84,7 @@ export class AmplifySignIn {
     password: '',
   };
 
-  private handleFormFieldInput(fieldType) {
+  private handleFormFieldInputChange(fieldType) {
     switch (fieldType) {
       case 'username':
       case 'email':
@@ -98,10 +102,7 @@ export class AmplifySignIn {
       : (event, cb) => {
           cb(event);
         };
-    const callback =
-      field.type === 'phone_number'
-        ? event => (this.signInAttributes.userInput = event.target.value)
-        : this.handleFormFieldInput(field.type);
+    const callback = this.handleFormFieldInputChange(field.type);
     fnToCall(event, callback.bind(this));
   }
 
@@ -200,7 +201,7 @@ export class AmplifySignIn {
           formFieldInputs.push({
             type: 'email',
             required: true,
-            handleInputChange: this.handleFormFieldInput('email'),
+            handleInputChange: this.handleFormFieldInputChange('email'),
             inputProps: {
               'data-test': 'sign-in-email-input',
             },
@@ -210,7 +211,7 @@ export class AmplifySignIn {
           formFieldInputs.push({
             type: 'phone_number',
             required: true,
-            handleInputChange: this.handleFormFieldInput('phone_number'),
+            handleInputChange: this.handleFormFieldInputChange('phone_number'),
             inputProps: {
               'data-test': 'sign-in-phone-number-input',
             },
@@ -221,7 +222,7 @@ export class AmplifySignIn {
           formFieldInputs.push({
             type: 'username',
             required: true,
-            handleInputChange: this.handleFormFieldInput('username'),
+            handleInputChange: this.handleFormFieldInputChange('username'),
             inputProps: {
               'data-test': 'sign-in-username-input',
             },
@@ -244,7 +245,7 @@ export class AmplifySignIn {
           </div>
         ),
         required: true,
-        handleInputChange: this.handleFormFieldInput('password'),
+        handleInputChange: this.handleFormFieldInputChange('password'),
         inputProps: {
           'data-test': 'sign-in-password-input',
         },
@@ -268,20 +269,26 @@ export class AmplifySignIn {
 
         <amplify-auth-fields formFields={this.newFormFields} />
         <div slot="amplify-form-section-footer" class="sign-in-form-footer">
-          <span>
-            {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
-            <amplify-button
-              variant="anchor"
-              onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
-              data-test="sign-in-create-account-link"
-            >
-              {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
-            </amplify-button>
-          </span>
-          <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
-            <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
-            <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
-          </amplify-button>
+          <slot name="footer">
+            <slot name="secondary-footer-content">
+              <span>
+                {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
+                <amplify-button
+                  variant="anchor"
+                  onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
+                  data-test="sign-in-create-account-link"
+                >
+                  {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
+                </amplify-button>
+              </span>
+            </slot>
+            <slot name="primary-footer-content">
+              <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
+                <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
+                <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
+              </amplify-button>
+            </slot>
+          </slot>
         </div>
       </amplify-form-section>
     );
