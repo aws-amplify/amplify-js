@@ -29,7 +29,7 @@ export async function retry(
 	}
 	logger.debug(
 		`${
-		functionToRetry.name
+			functionToRetry.name
 		} attempt #${attempt} with this vars: ${JSON.stringify(args)}`
 	);
 
