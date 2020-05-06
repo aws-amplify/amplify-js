@@ -482,22 +482,6 @@ describe('Rest API test', () => {
 			await api.get('apiName', 'path', 'init');
 			expect(spyon4).toBeCalled();
 		});
-
-		test('no restclient instance', async () => {
-			const api = new API(config);
-			const spyon = jest
-				.spyOn(API.prototype, 'createInstance')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
-
-			expect.assertions(1);
-			try {
-				await api.get('apiName', 'path', 'init');
-			} catch (e) {
-				expect(e).toBe('err');
-			}
-		});
 	});
 
 	describe('post test', () => {
@@ -588,22 +572,6 @@ describe('Rest API test', () => {
 			await api.post('apiName', 'path', 'init');
 			expect(spyon4).toBeCalled();
 		});
-
-		test('no restclient instance', async () => {
-			const api = new API(config);
-			const spyon = jest
-				.spyOn(API.prototype, 'createInstance')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
-
-			expect.assertions(1);
-			try {
-				await api.post('apiName', 'path', 'init');
-			} catch (e) {
-				expect(e).toBe('err');
-			}
-		});
 	});
 
 	describe('put test', () => {
@@ -685,22 +653,6 @@ describe('Rest API test', () => {
 			expect.assertions(1);
 			await api.put('apiName', 'path', 'init');
 			expect(spyon4).toBeCalled();
-		});
-
-		test('no restclient instance', async () => {
-			const api = new API(config);
-			const spyon = jest
-				.spyOn(API.prototype, 'createInstance')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
-
-			expect.assertions(1);
-			try {
-				await api.put('apiName', 'path', 'init');
-			} catch (e) {
-				expect(e).toBe('err');
-			}
 		});
 	});
 
@@ -784,22 +736,6 @@ describe('Rest API test', () => {
 			await api.patch('apiName', 'path', 'init');
 			expect(spyon4).toBeCalled();
 		});
-
-		test('no restclient instance', async () => {
-			const api = new API(config);
-			const spyon = jest
-				.spyOn(API.prototype, 'createInstance')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
-
-			expect.assertions(1);
-			try {
-				await api.patch('apiName', 'path', 'init');
-			} catch (e) {
-				expect(e).toBe('err');
-			}
-		});
 	});
 
 	describe('del test', () => {
@@ -881,22 +817,6 @@ describe('Rest API test', () => {
 			expect.assertions(1);
 			await api.del('apiName', 'path', 'init');
 			expect(spyon4).toBeCalled();
-		});
-
-		test('no restclient instance', async () => {
-			const api = new API(config);
-			const spyon = jest
-				.spyOn(API.prototype, 'createInstance')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
-
-			expect.assertions(1);
-			try {
-				await api.del('apiName', 'path', 'init');
-			} catch (e) {
-				expect(e).toBe('err');
-			}
 		});
 	});
 
@@ -980,22 +900,6 @@ describe('Rest API test', () => {
 			await api.head('apiName', 'path', 'init');
 			expect(spyon4).toBeCalled();
 		});
-
-		test('no restclient instance', async () => {
-			const api = new API(config);
-			const spyon = jest
-				.spyOn(API.prototype, 'createInstance')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
-
-			expect.assertions(1);
-			try {
-				await api.head('apiName', 'path', 'init');
-			} catch (e) {
-				expect(e).toBe('err');
-			}
-		});
 	});
 
 	describe('endpoint test', () => {
@@ -1010,22 +914,6 @@ describe('Rest API test', () => {
 			await api.endpoint('apiName');
 
 			expect(spyon).toBeCalledWith('apiName');
-		});
-
-		test('no restclient instance', async () => {
-			const api = new API(config);
-			const spyon = jest
-				.spyOn(API.prototype, 'createInstance')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
-
-			expect.assertions(1);
-			try {
-				await api.endpoint('apiName');
-			} catch (e) {
-				expect(e).toBe('err');
-			}
 		});
 	});
 });
