@@ -29,17 +29,17 @@ export async function retry(
 	}
 	logger.debug(
 		`${
-			functionToRetry.name
+		functionToRetry.name
 		} attempt #${attempt} with this vars: ${JSON.stringify(args)}`
 	);
 
 	try {
 		return await functionToRetry(...args);
 	} catch (err) {
-		logger.debug(`error on ${functionToRetry.name}: ${err} `);
+		logger.debug(`error on ${functionToRetry.name}`, err);
 
 		if (isNonRetryableError(err)) {
-			logger.debug(`${functionToRetry.name} non retryable error ${err}`);
+			logger.debug(`${functionToRetry.name} non retryable error`, err);
 			throw err;
 		}
 
