@@ -263,13 +263,13 @@ export class AmplifySignUp {
     if (this.formFields.length === 0) {
       this.buildDefaultFormFields();
     } else {
-      const fields = [];
+      const newFields = [];
       this.formFields.forEach(field => {
         const newField = { ...field };
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
-        fields.push(newField);
+        newFields.push(newField);
       });
-      this.newFormFields = fields;
+      this.newFormFields = newFields;
     }
   }
 
