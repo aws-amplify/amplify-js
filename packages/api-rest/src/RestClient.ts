@@ -46,7 +46,6 @@ export class RestClient {
 	 * @param {RestClientOptions} [options] - Instance options
 	 */
 	constructor(options: apiOptions) {
-		const { endpoints } = options;
 		this._options = options;
 		logger.debug('API Options', this._options);
 	}
