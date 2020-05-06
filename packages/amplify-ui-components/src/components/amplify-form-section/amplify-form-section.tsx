@@ -1,4 +1,4 @@
-import { Component, Prop, h, FunctionalComponent } from '@stencil/core';
+import { Component, Prop, h, FunctionalComponent, Listen } from '@stencil/core';
 
 @Component({
   tag: 'amplify-form-section',
@@ -18,6 +18,12 @@ export class AmplifyFormSection {
   @Prop() loading?: boolean = false;
   /** Secondary footer component or text */
   @Prop() secondaryFooterContent: string | FunctionalComponent | null = null;
+
+  // eslint-disable-next-line
+  @Listen('formSubmit')
+  handleFormSubmit(ev) {
+    this.handleSubmit(ev.detail);
+  }
 
   render() {
     return (

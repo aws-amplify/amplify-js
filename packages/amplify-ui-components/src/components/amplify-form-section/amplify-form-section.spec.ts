@@ -12,6 +12,7 @@ describe('amplify-form-section spec:', () => {
     it('should render `Submit` for the button text', () => {
       expect(formSection.submitButtonText).toEqual('Submit');
     });
+    
   });
   describe('Render logic ->', () => {
     it('should render a form section with a submit button text of `Go`', async () => {
@@ -32,7 +33,7 @@ describe('amplify-form-section spec:', () => {
       expect(page.root).toMatchSnapshot();
     });
 
-    it('should render without Emotion CSS classes', async () => {
+    it('should render form section', async () => {
       const page = await newSpecPage({
         components: [AmplifyFormSection],
         html: `<amplify-form-section></amplify-form-section>`,

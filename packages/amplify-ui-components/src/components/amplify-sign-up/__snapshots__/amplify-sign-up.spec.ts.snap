@@ -6,18 +6,24 @@ exports[`amplify-sign-up spec: Render logic -> should render a \`sign up\` form 
     <amplify-form-section headertext="Create a new account" testdataprefix="sign-up">
       <amplify-auth-fields></amplify-auth-fields>
       <div class="sign-up-form-footer" slot="amplify-form-section-footer">
-        <span>
-          Have an account?
-          <amplify-button data-test="sign-up-sign-in-link" variant="anchor">
-            Sign in
-          </amplify-button>
-        </span>
-        <amplify-button data-test="sign-up-create-account-button" type="submit">
-          <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
-          <span style="display: initial;">
-            Create Account
-          </span>
-        </amplify-button>
+        <slot name="footer">
+          <slot name="secondary-footer-content">
+            <span>
+              Have an account?
+              <amplify-button data-test="sign-up-sign-in-link" variant="anchor">
+                Sign in
+              </amplify-button>
+            </span>
+          </slot>
+          <slot name="primary-footer-content">
+            <amplify-button data-test="sign-up-create-account-button" type="submit">
+              <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
+              <span style="display: initial;">
+                Create Account
+              </span>
+            </amplify-button>
+          </slot>
+        </slot>
       </div>
     </amplify-form-section>
   </mock:shadow-root>

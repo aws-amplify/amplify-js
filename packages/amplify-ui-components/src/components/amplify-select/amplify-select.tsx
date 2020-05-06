@@ -21,7 +21,7 @@ export class AmplifySelect {
   /** The callback, called when the select is modified by the user. */
   @Prop() handleInputChange?: (inputEvent: Event) => void;
 
-  contructSelectOptions(opts: SelectOptionsString | SelectOptionsNumber) {
+  private contructSelectOptions(opts: SelectOptionsString | SelectOptionsNumber) {
     let content = [];
     opts.forEach((opt: SelectOptionString | SelectOptionNumber) =>
       content.push(<option value={opt.value}>{opt.label}</option>),
