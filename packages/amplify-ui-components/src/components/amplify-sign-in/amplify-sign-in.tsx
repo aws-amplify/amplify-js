@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger, isEmpty } from '@aws-amplify/core';
-import { Component, Prop, State, h } from '@stencil/core';
+import { Component, Prop, State, h, Watch } from '@stencil/core';
 import {
   FormFieldTypes,
   PhoneNumberInterface,
@@ -69,6 +69,7 @@ export class AmplifySignIn {
    * ```
    */
   @Prop() formFields: FormFieldTypes | string[] = [];
+  private newFormFields: FormFieldTypes | string[] = [];
 
   /* Whether or not the sign-in component is loading */
   @State() loading: boolean = false;
@@ -77,7 +78,6 @@ export class AmplifySignIn {
     countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
     phoneNumberValue: null,
   };
-  private newFormFields: FormFieldTypes | string[] = [];
 
   @State() signInAttributes: SignInAttributes = {
     userInput: '',
@@ -192,72 +192,87 @@ export class AmplifySignIn {
     }
   }
 
-  async componentWillLoad() {
-    checkUsernameAlias(this.usernameAlias);
-    if (this.formFields.length === 0) {
-      const formFieldInputs = [];
-      switch (this.usernameAlias) {
-        case 'email':
-          formFieldInputs.push({
-            type: 'email',
-            required: true,
-            handleInputChange: this.handleFormFieldInputChange('email'),
-            inputProps: {
-              'data-test': 'sign-in-email-input',
-            },
-          });
-          break;
-        case 'phone_number':
-          formFieldInputs.push({
-            type: 'phone_number',
-            required: true,
-            handleInputChange: this.handleFormFieldInputChange('phone_number'),
-            inputProps: {
-              'data-test': 'sign-in-phone-number-input',
-            },
-          });
-          break;
-        case 'username':
-        default:
-          formFieldInputs.push({
-            type: 'username',
-            required: true,
-            handleInputChange: this.handleFormFieldInputChange('username'),
-            inputProps: {
-              'data-test': 'sign-in-username-input',
-            },
-          });
-          break;
-      }
+  buildDefaultFormFields() {
+    const formFieldInputs = [];
+    switch (this.usernameAlias) {
+      case 'email':
+        formFieldInputs.push({
+          type: 'email',
+          required: true,
+          handleInputChange: this.handleFormFieldInputChange('email'),
+          inputProps: {
+            'data-test': 'sign-in-email-input',
+          },
+        });
+        break;
+      case 'phone_number':
+        formFieldInputs.push({
+          type: 'phone_number',
+          required: true,
+          handleInputChange: this.handleFormFieldInputChange('phone_number'),
+          inputProps: {
+            'data-test': 'sign-in-phone-number-input',
+          },
+        });
+        break;
+      case 'username':
+      default:
+        formFieldInputs.push({
+          type: 'username',
+          required: true,
+          handleInputChange: this.handleFormFieldInputChange('username'),
+          inputProps: {
+            'data-test': 'sign-in-username-input',
+          },
+        });
+        break;
+    }
 
-      formFieldInputs.push({
-        type: 'password',
-        hint: (
-          <div>
-            {I18n.get(Translations.FORGOT_PASSWORD_TEXT)}{' '}
-            <amplify-button
-              variant="anchor"
-              onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}
-              data-test="sign-in-forgot-password-link"
-            >
-              {I18n.get(Translations.RESET_PASSWORD_TEXT)}
-            </amplify-button>
-          </div>
-        ),
-        required: true,
-        handleInputChange: this.handleFormFieldInputChange('password'),
-        inputProps: {
-          'data-test': 'sign-in-password-input',
-        },
-      });
-      this.newFormFields = [...formFieldInputs];
+    formFieldInputs.push({
+      type: 'password',
+      hint: (
+        <div>
+          {I18n.get(Translations.FORGOT_PASSWORD_TEXT)}{' '}
+          <amplify-button
+            variant="anchor"
+            onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}
+            data-test="sign-in-forgot-password-link"
+          >
+            {I18n.get(Translations.RESET_PASSWORD_TEXT)}
+          </amplify-button>
+        </div>
+      ),
+      required: true,
+      handleInputChange: this.handleFormFieldInputChange('password'),
+      inputProps: {
+        'data-test': 'sign-in-password-input',
+      },
+    });
+    this.newFormFields = [...formFieldInputs];
+  }
+
+  buildFormFields() {
+    if (this.formFields.length === 0) {
+      this.buildDefaultFormFields();
     } else {
+      const newFields = [];
       this.formFields.forEach(field => {
         const newField = { ...field };
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
-        this.newFormFields.push(newField);
+        newFields.push(newField);
       });
+      this.newFormFields = newFields;
     }
+  }
+
+  componentWillLoad() {
+    checkUsernameAlias(this.usernameAlias);
+    this.buildFormFields();
+  }
+
+  @Watch('formFields')
+  formFieldsHandler() {
+    this.buildFormFields();
   }
 
   render() {
