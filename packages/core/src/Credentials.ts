@@ -15,6 +15,13 @@ import {
 	CognitoIdentityClient,
 	GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
+
+// TODO: can remove CognitoIdentityClient config overrides once
+//  https://github.com/aws/aws-sdk-js-v3/pull/1121 or
+//  https://github.com/aws/aws-sdk-js-v3/pull/1123 is merged
+import { FetchHttpHandler } from '@aws-sdk/fetch-http-handler';
+import { streamCollector } from '@aws-sdk/stream-collector-native';
+
 import { CredentialProvider } from '@aws-sdk/types';
 
 const logger = new Logger('Credentials');
@@ -181,9 +188,25 @@ export class CredentialsClass {
 		return true;
 	}
 
+	private _getCognitoIdentityClient(): CognitoIdentityClient {
+		const { region } = this._config;
+
+		if (!region) {
+			logger.debug('region is not configured for getting the credentials');
+			throw new Error('region is not configured for getting the credentials');
+		}
+
+		return new CognitoIdentityClient({
+			customUserAgent: getAmplifyUserAgent(),
+			region,
+			requestHandler: new FetchHttpHandler({ bufferBody: true }),
+			streamCollector,
+		});
+	}
+
 	private async _setCredentialsForGuest() {
 		logger.debug('setting credentials for guest');
-		const { identityPoolId, region, mandatorySignIn } = this._config;
+		const { identityPoolId, mandatorySignIn } = this._config;
 		if (mandatorySignIn) {
 			return Promise.reject(
 				'cannot get guest credentials when mandatory signin enabled'
@@ -199,13 +222,6 @@ export class CredentialsClass {
 			);
 		}
 
-		if (!region) {
-			logger.debug('region is not configured for getting the credentials');
-			return Promise.reject(
-				'region is not configured for getting the credentials'
-			);
-		}
-
 		let identityId = undefined;
 		try {
 			await this._storageSync;
@@ -215,10 +231,7 @@ export class CredentialsClass {
 			logger.debug('Failed to get the cached identityId', e);
 		}
 
-		const cognitoClient = new CognitoIdentityClient({
-			region,
-			customUserAgent: getAmplifyUserAgent(),
-		});
+		const cognitoClient = this._getCognitoIdentityClient();
 
 		let credentials = undefined;
 		if (identityId) {
@@ -267,7 +280,7 @@ export class CredentialsClass {
 			});
 	}
 
-	private _setCredentialsFromFederation(params) {
+	private async _setCredentialsFromFederation(params): Promise<ICredentials> {
 		const { provider, token, identity_id } = params;
 		const domains = {
 			google: 'accounts.google.com',
@@ -285,22 +298,13 @@ export class CredentialsClass {
 		const logins = {};
 		logins[domain] = token;
 
-		const { identityPoolId, region } = this._config;
+		const { identityPoolId } = this._config;
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
 		}
-		if (!region) {
-			logger.debug('region is not configured for getting the credentials');
-			return Promise.reject(
-				'region is not configured for getting the credentials'
-			);
-		}
 
-		const cognitoClient = new CognitoIdentityClient({
-			region,
-			customUserAgent: getAmplifyUserAgent(),
-		});
+		const cognitoClient = this._getCognitoIdentityClient();
 
 		let credentials = undefined;
 		if (identity_id) {
@@ -321,7 +325,7 @@ export class CredentialsClass {
 		return this._loadCredentials(credentials, 'federated', true, params);
 	}
 
-	private _setCredentialsFromSession(session): Promise<ICredentials> {
+	private async _setCredentialsFromSession(session): Promise<ICredentials> {
 		logger.debug('set credentials from session');
 		const idToken = session.getIdToken().getJwtToken();
 		const { region, userPoolId, identityPoolId } = this._config;
@@ -339,10 +343,7 @@ export class CredentialsClass {
 		const logins = {};
 		logins[key] = idToken;
 
-		const cognitoClient = new CognitoIdentityClient({
-			region,
-			customUserAgent: getAmplifyUserAgent(),
-		});
+		const cognitoClient = this._getCognitoIdentityClient();
 
 		/* 
 			Retreiving identityId with GetIdCommand to mimic the behavior in the following code in aws-sdk-v3:
