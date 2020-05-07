@@ -53,7 +53,7 @@ export default class Connect extends Component<IConnectProps, IConnectState> {
 			data: {},
 			errors: [],
 			mutation: () => console.warn('Not implemented'),
-		};
+		} as IConnectState;
 	}
 
 	async _fetchData() {
@@ -97,7 +97,6 @@ export default class Connect extends Component<IConnectProps, IConnectState> {
 		}
 
 		if (hasValidMutation) {
-			// @ts-ignore
 			mutationProp = async variables => {
 				const result = await API.graphql({
 					query: mutation,

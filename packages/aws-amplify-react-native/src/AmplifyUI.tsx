@@ -227,7 +227,11 @@ export const AmplifyButton: FC<IAmplifyButtonProps> = props => {
 	);
 };
 
-interface IWrapperProps {}
+interface IWrapperProps {
+	style?: AmplifyThemeType;
+	accessible?: boolean;
+	onPress?: Function;
+}
 
 export const Wrapper: FC<IWrapperProps> = props => {
 	const isWeb = Platform.OS === 'web';
@@ -235,7 +239,7 @@ export const Wrapper: FC<IWrapperProps> = props => {
 		? View
 		: TouchableWithoutFeedback;
 
-	const wrapperProps: any = {
+	const wrapperProps: IWrapperProps = {
 		style: AmplifyTheme.section,
 		accessible: false,
 	};
