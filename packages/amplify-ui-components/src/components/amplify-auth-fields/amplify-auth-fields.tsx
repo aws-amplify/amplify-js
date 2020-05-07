@@ -25,7 +25,7 @@ export class AmplifyAuthFields {
    */
   @Prop() formFields: FormFieldTypes | string[];
 
-  constructFormFieldOptions(formFields: FormFieldTypes | string[]) {
+  private constructFormFieldOptions(formFields: FormFieldTypes | string[]) {
     let content = [];
 
     if (formFields === undefined) return '';

@@ -22,6 +22,7 @@ import {
 	TouchableOpacity,
 	TouchableWithoutFeedback,
 	View,
+	SafeAreaView,
 } from 'react-native';
 import { I18n } from 'aws-amplify';
 import AmplifyTheme, {
@@ -32,6 +33,11 @@ import AmplifyTheme, {
 import { Icon } from 'react-native-elements';
 import countryDialCodes from './CountryDialCodes';
 import TEST_ID from './AmplifyTestIDs';
+
+export const Container = props => {
+	const theme = props.theme || AmplifyTheme;
+	return <SafeAreaView style={theme.container}>{props.children}</SafeAreaView>;
+};
 
 export const FormField = props => {
 	const theme = props.theme || AmplifyTheme;

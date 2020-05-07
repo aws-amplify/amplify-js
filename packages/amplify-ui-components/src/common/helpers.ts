@@ -48,3 +48,18 @@ export const checkUsernameAlias = (usernameAlias: any) => {
     throw new Error(`Invalid username Alias - ${usernameAlias}. Instead use ${Object.values(UsernameAlias)}`);
   }
 };
+
+export const onAuthUIStateChange = (authStateHandler: AuthStateHandler) => {
+  const authUIStateHandler = data => {
+    const { payload } = data;
+    switch (payload.event) {
+      case AUTH_STATE_CHANGE_EVENT:
+        if (payload.message) {
+          authStateHandler(payload.message as AuthState, payload.data);
+        }
+        break;
+    }
+  }
+  Hub.listen(UI_AUTH_CHANNEL, authUIStateHandler);
+  return () => Hub.remove(UI_AUTH_CHANNEL, authUIStateHandler);
+}

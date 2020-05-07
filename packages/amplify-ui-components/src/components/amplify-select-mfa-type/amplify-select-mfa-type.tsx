@@ -32,7 +32,7 @@ export class AmplifySelectMFAType {
   @State() isSMS: boolean = false;
   @State() loading: boolean = false;
 
-  handleRadioButtonChange(event) {
+  private handleRadioButtonChange(event) {
     this.TOTPSetup = false;
     this.selectMessage = null;
 
@@ -57,7 +57,7 @@ export class AmplifySelectMFAType {
     }
   }
 
-  async verify(event: Event) {
+  private async verify(event: Event) {
     // avoid submitting the form
     if (event) {
       event.preventDefault();
@@ -103,7 +103,7 @@ export class AmplifySelectMFAType {
     }
   }
 
-  contentBuilder() {
+  private contentBuilder() {
     if (!this.MFATypes || Object.keys(this.MFATypes).length < 2) {
       logger.debug(I18n.get(Translations.LESS_THAN_TWO_MFA_VALUES_MESSAGE));
       return (
