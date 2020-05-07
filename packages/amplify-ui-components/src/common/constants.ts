@@ -13,7 +13,7 @@ export const COUNTRY_DIAL_CODE_DEFAULT = '+1';
 
 // Auth Keys
 export const AUTH_SOURCE_KEY = 'amplify-auth-source';
-export const SIGNING_IN_WITH_HOSTEDUI_KEY = 'amplify-signin-with-hostedUI';
+export const REDIRECTED_FROM_HOSTED_UI = 'amplify-redirected-from-hosted-ui';
 export const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
 
 // Error message Common Constants

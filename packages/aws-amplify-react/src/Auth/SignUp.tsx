@@ -203,7 +203,7 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 		);
 	}
 
-	signUp() {
+	async signUp() {
 		this.setState({ requestPending: true });
 		if (!this.inputs.dial_code) {
 			this.inputs.dial_code = this.getDefaultDialCode();
@@ -265,16 +265,15 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 				`Couldn't find the label: ${this.getUsernameLabel()}, in sign up fields according to usernameAttributes!`
 			);
 		}
-		Auth.signUp(signup_info)
-			.then(data => {
-				this.setState({ requestPending: false });
-				// @ts-ignore
-				this.changeState('confirmSignUp', data.user.username);
-			})
-			.catch(err => {
-				this.setState({ requestPending: false });
-				return this.error(err);
-			});
+		try {
+			const data = await Auth.signUp(signup_info);
+			// @ts-ignore
+			this.changeState('confirmSignUp', data.user.username);
+		} catch (err) {
+			this.error(err);
+		} finally {
+			this.setState({ requestPending: false });
+		}
 	}
 
 	showComponent(theme): React.ReactNode {

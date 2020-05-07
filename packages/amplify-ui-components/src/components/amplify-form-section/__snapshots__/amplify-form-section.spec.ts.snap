@@ -62,7 +62,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
 </amplify-form-section>
 `;
 
-exports[`amplify-form-section spec: Render logic -> should render without Emotion CSS classes 1`] = `
+exports[`amplify-form-section spec: Render logic -> should render form section 1`] = `
 <amplify-form-section>
   <mock:shadow-root>
     <form>
