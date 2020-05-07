@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
-import { Component, Prop, State, h } from '@stencil/core';
+import { Component, Prop, State, h, Watch } from '@stencil/core';
 
 import { FormFieldTypes, PhoneNumberInterface } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
@@ -58,52 +58,65 @@ export class AmplifyForgotPassword {
 
   componentWillLoad() {
     checkUsernameAlias(this.usernameAlias);
+    this.buildFormFields();
+  }
+
+  @Watch('formFields')
+  formFieldsHandler() {
+    this.buildFormFields();
+  }
+
+  private buildFormFields() {
     if (this.formFields.length === 0) {
-      switch (this.usernameAlias) {
-        case 'email':
-          this.newFormFields = [
-            {
-              type: 'email',
-              required: true,
-              handleInputChange: this.handleFormFieldInputChange('email'),
-              inputProps: {
-                'data-test': 'forgot-password-email-input',
-              },
-            },
-          ];
-          break;
-        case 'phone_number':
-          this.newFormFields = [
-            {
-              type: 'phone_number',
-              required: true,
-              handleInputChange: this.handleFormFieldInputChange('phone_number'),
-              inputProps: {
-                'data-test': 'forgot-password-phone-number-input',
-              },
-            },
-          ];
-          break;
-        case 'username':
-        default:
-          this.newFormFields = [
-            {
-              type: 'username',
-              required: true,
-              handleInputChange: this.handleFormFieldInputChange('username'),
-              inputProps: {
-                'data-test': 'forgot-password-username-input',
-              },
-            },
-          ];
-          break;
-      }
+      this.buildDefaultFormFields();
     } else {
       this.formFields.forEach(field => {
         const newField = { ...field };
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
         this.newFormFields.push(newField);
       });
+    }
+  }
+
+  private buildDefaultFormFields() {
+    switch (this.usernameAlias) {
+      case 'email':
+        this.newFormFields = [
+          {
+            type: 'email',
+            required: true,
+            handleInputChange: this.handleFormFieldInputChange('email'),
+            inputProps: {
+              'data-test': 'forgot-password-email-input',
+            },
+          },
+        ];
+        break;
+      case 'phone_number':
+        this.newFormFields = [
+          {
+            type: 'phone_number',
+            required: true,
+            handleInputChange: this.handleFormFieldInputChange('phone_number'),
+            inputProps: {
+              'data-test': 'forgot-password-phone-number-input',
+            },
+          },
+        ];
+        break;
+      case 'username':
+      default:
+        this.newFormFields = [
+          {
+            type: 'username',
+            required: true,
+            handleInputChange: this.handleFormFieldInputChange('username'),
+            inputProps: {
+              'data-test': 'forgot-password-username-input',
+            },
+          },
+        ];
+        break;
     }
   }
 
