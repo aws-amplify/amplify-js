@@ -12,8 +12,7 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
-import Analytics from '@aws-amplify/analytics';
+import { Analytics } from '@aws-amplify/analytics';
 
 const Default_Track_Events = [
 	'componentDidMount',
@@ -28,7 +27,7 @@ export function trackLifecycle(
 	trackerName,
 	events = Default_Track_Events
 ) {
-	return class WithTrackLifecycle extends Component<any, {}> {
+	return class WithTrackLifecycle extends React.Component<any, {}> {
 		public trackerName: string;
 		public trackEvents: string[];
 

@@ -14,9 +14,9 @@
 import * as React from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import {
 	FormSection,
 	SectionHeader,
@@ -33,8 +33,9 @@ import {
 
 import { auth } from '../Amplify-UI/data-test-attributes';
 
-import countryDialCodes from './common/country-dial-codes';
-import signUpWithUsernameFields, {
+import { countryDialCodes } from './common/country-dial-codes';
+import {
+	signUpWithUsernameFields,
 	signUpWithEmailFields,
 	signUpWithPhoneNumberFields,
 	ISignUpField,
@@ -56,7 +57,7 @@ export interface ISignUpProps extends IAuthPieceProps {
 	signUpConfig?: ISignUpConfig;
 }
 
-export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
+export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 	public defaultSignUpFields: ISignUpField[];
 	public header: string;
 	public signUpFields: ISignUpField[];
@@ -202,7 +203,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 		);
 	}
 
-	signUp() {
+	async signUp() {
 		this.setState({ requestPending: true });
 		if (!this.inputs.dial_code) {
 			this.inputs.dial_code = this.getDefaultDialCode();
@@ -264,16 +265,15 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 				`Couldn't find the label: ${this.getUsernameLabel()}, in sign up fields according to usernameAttributes!`
 			);
 		}
-		Auth.signUp(signup_info)
-			.then(data => {
-				this.setState({ requestPending: false });
-				// @ts-ignore
-				this.changeState('confirmSignUp', data.user.username);
-			})
-			.catch(err => {
-				this.setState({ requestPending: false });
-				return this.error(err);
-			});
+		try {
+			const data = await Auth.signUp(signup_info);
+			// @ts-ignore
+			this.changeState('confirmSignUp', data.user.username);
+		} catch (err) {
+			this.error(err);
+		} finally {
+			this.setState({ requestPending: false });
+		}
 	}
 
 	showComponent(theme): React.ReactNode {
@@ -303,11 +303,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 								)}
 								<Input
 									autoFocus={
-										this.signUpFields.findIndex(f => {
-											return f.key === field.key;
-										}) === 0
-											? true
-											: false
+										this.signUpFields.findIndex(f => f.key === field.key) === 0
 									}
 									placeholder={I18n.get(field.placeholder)}
 									theme={theme}
@@ -357,3 +353,8 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default SignUp;
