@@ -1,3 +1,5 @@
+import 'isomorphic-unfetch';
+
 import UserAgent from './UserAgent';
 /** @class */
 export default class Client {
