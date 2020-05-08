@@ -148,9 +148,10 @@ export const LinkCell = props => {
 	return (
 		<View style={theme.cell}>
 			<TouchableHighlight
-				onPress={disabled ? () => {} : props.onPress}
+				onPress={props.onPress}
 				underlayColor={linkUnderlayColor}
 				testID={props.testID}
+				disabled={disabled}
 			>
 				<Text
 					style={
