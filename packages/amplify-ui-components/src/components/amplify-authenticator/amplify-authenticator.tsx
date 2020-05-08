@@ -11,6 +11,7 @@ import {
 } from '../../common/constants';
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
 import { Hub, Logger } from '@aws-amplify/core';
+import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 const logger = new Logger('Authenticator');
 
@@ -74,7 +75,7 @@ export class AmplifyAuthenticator {
 
     try {
       const user = await Auth.currentAuthenticatedUser();
-      this.onAuthStateChange(AuthState.SignedIn, user);
+      dispatchAuthStateChangeEvent(AuthState.SignedIn, user);
     } catch (error) {
       let cachedAuthState = null;
       try {
@@ -86,7 +87,7 @@ export class AmplifyAuthenticator {
         if (cachedAuthState === AuthState.SignedIn) {
           await Auth.signOut();
         }
-        this.onAuthStateChange(this.initialAuthState);
+        dispatchAuthStateChangeEvent(this.initialAuthState);
       } catch (error) {
         logger.debug('Failed to sign out', error);
       }
