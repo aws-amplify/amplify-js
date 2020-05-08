@@ -4,7 +4,7 @@ import React, {
 	FunctionComponent,
 } from 'react';
 
-import { AmplifyAuthenticator } from './';
+import { AmplifyContainer, AmplifyAuthenticator } from './';
 import { onAuthUIStateChange, AuthState } from '@aws-amplify/ui-components';
 
 export function withAuthenticator(
@@ -26,17 +26,9 @@ export function withAuthenticator(
 
 		if (!signedIn) {
 			return (
-				<div
-					className="amplify-authenticator-wrapper"
-					style={{
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-						height: '100vh',
-					}}
-				>
+				<AmplifyContainer>
 					<AmplifyAuthenticator {...authenticatorProps} {...props} />
-				</div>
+				</AmplifyContainer>
 			);
 		}
 		return <Component />;
