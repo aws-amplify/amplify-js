@@ -25,7 +25,19 @@ export function withAuthenticator(
 		}, []);
 
 		if (!signedIn) {
-			return <AmplifyAuthenticator {...authenticatorProps} {...props} />;
+			return (
+				<div
+					className="amplify-authenticator-wrapper"
+					style={{
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						height: '100vh',
+					}}
+				>
+					<AmplifyAuthenticator {...authenticatorProps} {...props} />
+				</div>
+			);
 		}
 		return <Component />;
 	};
