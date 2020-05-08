@@ -154,9 +154,10 @@ export class APIClass {
 	 * @returns {Promise<GraphQLResult> | Observable<object>}
 	 */
 	graphql(
-		options: GraphQLOptions
+		options: GraphQLOptions,
+		additionalHeaders?: { [key: string]: string }
 	): Promise<GraphQLResult> | Observable<object> {
-		return this._graphqlApi.graphql(options);
+		return this._graphqlApi.graphql(options, additionalHeaders);
 	}
 }
 

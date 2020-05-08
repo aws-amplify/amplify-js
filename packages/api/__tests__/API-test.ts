@@ -6,10 +6,10 @@ describe('API test', () => {
 	test('configure', () => {
 		jest
 			.spyOn(RestAPIClass.prototype, 'configure')
-			.mockReturnValueOnce({ restapi: 'configured' });
+			.mockReturnValue({ restapi: 'configured' });
 		jest
 			.spyOn(GraphQLAPIClass.prototype, 'configure')
-			.mockReturnValueOnce({ graphqlapi: 'configured' });
+			.mockReturnValue({ graphqlapi: 'configured' });
 		const api = new API(null);
 		expect(api.configure(null)).toStrictEqual({
 			graphqlapi: 'configured',
