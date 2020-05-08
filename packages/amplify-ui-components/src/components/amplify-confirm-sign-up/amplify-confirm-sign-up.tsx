@@ -6,7 +6,12 @@ import { Translations } from '../../common/Translations';
 import { AuthState, CognitoUserInterface, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, checkUsernameAlias, handleAuthFormFieldHint } from '../../common/helpers';
+import {
+  dispatchToastHubEvent,
+  dispatchAuthStateChangeEvent,
+  checkUsernameAlias,
+  isHintValid,
+} from '../../common/helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-up',
@@ -95,15 +100,17 @@ export class AmplifyConfirmSignUp {
       const newFields = [];
       this.formFields.forEach(field => {
         const newField = { ...field };
-        if (newField.type === "code") {
-          newField["hint"] = handleAuthFormFieldHint(newField) ? (
+        if (newField.type === 'code') {
+          newField['hint'] = isHintValid(newField) ? (
             <div>
               {I18n.get(Translations.CONFIRM_SIGN_UP_LOST_CODE)}{' '}
               <amplify-button variant="anchor" onClick={() => this.resendConfirmCode()}>
                 {I18n.get(Translations.CONFIRM_SIGN_UP_RESEND_CODE)}
               </amplify-button>
             </div>
-          ) : newField["hint"];
+          ) : (
+            newField['hint']
+          );
         }
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
         newFields.push(newField);
