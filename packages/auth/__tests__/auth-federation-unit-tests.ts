@@ -249,6 +249,8 @@ function expiredCreds(provider) {
 	};
 }
 
+const DEFAULT_RETRY_TIMEOUT = 60000;
+
 import { AuthOptions } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
 import {
@@ -267,116 +269,124 @@ const authOptions: AuthOptions = {
 
 describe('auth federation unit test', () => {
 	describe('currentUserCredentials test', () => {
-		test('with google federated info - network error retries', async () => {
-			const maxRetries = 5;
-			let count = 0;
+		test(
+			'with google federated info - network error retries',
+			async () => {
+				const maxRetries = 4;
+				let count = 0;
 
-			const reloadAuthResponse = () =>
-				new Promise((res, rej) => {
+				const reloadAuthResponse = () =>
+					new Promise((res, rej) => {
+						count++;
+						if (count < maxRetries) {
+							rej({
+								error: 'network_error',
+							});
+						} else {
+							res({
+								id_token: 'token',
+								expires_at: new Date().getTime(),
+							});
+						}
+					});
+				mockGAPI({ reloadAuthResponse });
+
+				const getAuthInstanceSpy = jest.spyOn(
+					(global as any).window.gapi.auth2,
+					'getAuthInstance'
+				);
+
+				const storageSpy = jest
+					.spyOn(StorageHelper.prototype, 'getStorage')
+					.mockImplementation(() => {
+						return {
+							setItem() {},
+							getItem() {
+								return JSON.stringify(expiredCreds('google'));
+							},
+							removeItem() {},
+						};
+					});
+
+				const credsSpy = jest
+					.spyOn(Credentials, <any>'_setCredentialsFromFederation')
+					.mockImplementationOnce(() => {
+						return Promise.resolve('cred');
+					});
+
+				const auth = new Auth(authOptions);
+
+				expect.assertions(2);
+				expect(await auth.currentUserCredentials()).toBe('cred');
+				expect(getAuthInstanceSpy).toHaveBeenCalledTimes(maxRetries);
+
+				storageSpy.mockClear();
+				credsSpy.mockClear();
+				getAuthInstanceSpy.mockClear();
+				clearMockGAPI();
+			},
+			DEFAULT_RETRY_TIMEOUT
+		);
+
+		test(
+			'with facebook federated info - network error retries',
+			async () => {
+				const maxRetries = 4;
+				let count = 0;
+
+				const getLoginStatus = (callback: Function) => {
 					count++;
 					if (count < maxRetries) {
-						rej({
-							error: 'network_error',
+						callback({
+							authResponse: null,
 						});
 					} else {
-						res({
-							id_token: 'token',
-							expires_at: new Date().getTime(),
+						callback({
+							authResponse: {
+								accessToken: 'token',
+								expiresIn: new Date().getTime(),
+							},
 						});
 					}
-				});
-			mockGAPI({ reloadAuthResponse });
+				};
+				mockFB({ getLoginStatus });
 
-			const getAuthInstanceSpy = jest.spyOn(
-				(global as any).window.gapi.auth2,
-				'getAuthInstance'
-			);
+				const getAuthInstanceSpy = jest.spyOn(
+					(global as any).window.FB,
+					'getLoginStatus'
+				);
 
-			const storageSpy = jest
-				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementation(() => {
-					return {
-						setItem() {},
-						getItem() {
-							return JSON.stringify(expiredCreds('google'));
-						},
-						removeItem() {},
-					};
-				});
-
-			const credsSpy = jest
-				.spyOn(Credentials, <any>'_setCredentialsFromFederation')
-				.mockImplementationOnce(() => {
-					return Promise.resolve('cred');
-				});
-
-			const auth = new Auth(authOptions);
-
-			expect.assertions(2);
-			expect(await auth.currentUserCredentials()).toBe('cred');
-			expect(getAuthInstanceSpy).toHaveBeenCalledTimes(maxRetries);
-
-			storageSpy.mockClear();
-			credsSpy.mockClear();
-			getAuthInstanceSpy.mockClear();
-			clearMockGAPI();
-		});
-
-		test('with facebook federated info - network error retries', async () => {
-			const maxRetries = 5;
-			let count = 0;
-
-			const getLoginStatus = (callback: Function) => {
-				count++;
-				if (count < maxRetries) {
-					callback({
-						authResponse: null,
+				const spyon = jest
+					.spyOn(StorageHelper.prototype, 'getStorage')
+					.mockImplementation(() => {
+						return {
+							setItem() {},
+							getItem() {
+								return JSON.stringify(expiredCreds('facebook'));
+							},
+							removeItem() {},
+						};
 					});
-				} else {
-					callback({
-						authResponse: {
-							accessToken: 'token',
-							expiresIn: new Date().getTime(),
-						},
+
+				const spyon2 = jest
+					.spyOn(Credentials, <any>'_setCredentialsFromFederation')
+					.mockImplementationOnce(() => {
+						return Promise.resolve('cred');
 					});
-				}
-			};
-			mockFB({ getLoginStatus });
 
-			const getAuthInstanceSpy = jest.spyOn(
-				(global as any).window.FB,
-				'getLoginStatus'
-			);
+				const auth = new Auth(authOptions);
 
-			const spyon = jest
-				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementation(() => {
-					return {
-						setItem() {},
-						getItem() {
-							return JSON.stringify(expiredCreds('facebook'));
-						},
-						removeItem() {},
-					};
-				});
+				expect.assertions(2);
+				expect(await auth.currentUserCredentials()).toBe('cred');
+				expect(getAuthInstanceSpy).toHaveBeenCalledTimes(maxRetries);
 
-			const spyon2 = jest
-				.spyOn(Credentials, <any>'_setCredentialsFromFederation')
-				.mockImplementationOnce(() => {
-					return Promise.resolve('cred');
-				});
-
-			const auth = new Auth(authOptions);
-
-			expect.assertions(2);
-			expect(await auth.currentUserCredentials()).toBe('cred');
-			expect(getAuthInstanceSpy).toHaveBeenCalledTimes(maxRetries);
-
-			spyon.mockClear();
-			spyon2.mockClear();
-			getAuthInstanceSpy.mockClear();
-			clearMockFB();
-		});
+				spyon.mockClear();
+				spyon2.mockClear();
+				getAuthInstanceSpy.mockClear();
+				clearMockFB();
+			},
+			DEFAULT_RETRY_TIMEOUT
+		);
 
 		test('with google federated info - clear creds if invalid response from provider', async () => {
 			const reloadAuthResponse = () =>
