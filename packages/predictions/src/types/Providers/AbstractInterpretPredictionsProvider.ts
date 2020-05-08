@@ -1,4 +1,4 @@
-import { AbstractPredictionsProvider } from '.';
+import { AbstractPredictionsProvider } from './AbstractPredictionsProvider';
 import {
 	InterpretTextInput,
 	InterpretTextOutput,
