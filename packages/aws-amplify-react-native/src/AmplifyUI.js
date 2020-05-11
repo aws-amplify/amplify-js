@@ -143,6 +143,7 @@ export const SectionFooter = props => {
 };
 
 export const LinkCell = props => {
+	const { disabled } = props;
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.cell}>
@@ -150,8 +151,15 @@ export const LinkCell = props => {
 				onPress={props.onPress}
 				underlayColor={linkUnderlayColor}
 				testID={props.testID}
+				disabled={disabled}
 			>
-				<Text style={theme.sectionFooterLink}>{props.children}</Text>
+				<Text
+					style={
+						disabled ? theme.sectionFooterLinkDisabled : theme.sectionFooterLink
+					}
+				>
+					{props.children}
+				</Text>
 			</TouchableHighlight>
 		</View>
 	);
