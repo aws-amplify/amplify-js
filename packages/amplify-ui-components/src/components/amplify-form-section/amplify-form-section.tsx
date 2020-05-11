@@ -19,11 +19,10 @@ export class AmplifyFormSection {
   /** Secondary footer component or text */
   @Prop() secondaryFooterContent: string | FunctionalComponent | null = null;
 
-  @Listen('keydown')
-  handleKeyDown(ev: KeyboardEvent) {
-    if (ev.key === 'Enter') {
-      this.handleSubmit(ev);
-    }
+  // eslint-disable-next-line
+  @Listen('formSubmit')
+  handleFormSubmit(ev) {
+    this.handleSubmit(ev.detail);
   }
 
   render() {

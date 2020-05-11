@@ -15,7 +15,7 @@ export enum Translations {
   CONFIRM = 'Confirm',
   CREATE_ACCOUNT_TEXT = 'Create account',
   EMAIL_LABEL = 'Email Address *',
-  EMAIL_PLACEHOLDER = 'amplify@example.com',
+  EMAIL_PLACEHOLDER = 'Enter your email address',
   FORGOT_PASSWORD_TEXT = 'Forgot your password?',
   LESS_THAN_TWO_MFA_VALUES_MESSAGE = 'Less than two mfa types available',
   NEW_PASSWORD_LABEL = 'New password',

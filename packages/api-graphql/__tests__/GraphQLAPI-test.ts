@@ -858,6 +858,62 @@ describe('API test', () => {
 			expect(observable).not.toBe(undefined);
 		});
 
+		test('happy case subscription with additionalHeaders', async done => {
+			jest
+				.spyOn(RestClient.prototype, 'post')
+				.mockImplementation(async (url, init) => ({
+					extensions: {
+						subscription: {
+							newSubscriptions: {},
+						},
+					},
+				}));
+
+			const api = new API(config);
+			const url = 'https://appsync.amazonaws.com',
+				region = 'us-east-2',
+				apiKey = 'secret_api_key',
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+
+			api.configure({
+				aws_appsync_graphqlEndpoint: url,
+				aws_appsync_region: region,
+				aws_appsync_authenticationType: 'API_KEY',
+				aws_appsync_apiKey: apiKey,
+			});
+
+			PubSub.subscribe = jest.fn(() => Observable.of({}));
+
+			const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {
+				subscribeToEventComments(eventId: $eventId) {
+					eventId
+					commentId
+					content
+				}
+			}`;
+
+			const doc = parse(SubscribeToEventComments);
+			const query = print(doc);
+
+			const additionalHeaders = {
+				'x-custom-header': 'value',
+			};
+
+			const observable = (api.graphql(
+				graphqlOperation(query, variables),
+				additionalHeaders
+			) as Observable<object>).subscribe({
+				next: () => {
+					expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
+					const subscribeOptions = (PubSub.subscribe as any).mock.calls[0][1];
+					expect(subscribeOptions.additionalHeaders).toBe(additionalHeaders);
+					done();
+				},
+			});
+
+			expect(observable).not.toBe(undefined);
+		});
+
 		test('happy case mutation', async () => {
 			const spyonAuth = jest
 				.spyOn(Credentials, 'get')

@@ -22,6 +22,7 @@ import {
 	TouchableOpacity,
 	TouchableWithoutFeedback,
 	View,
+	SafeAreaView,
 } from 'react-native';
 import { I18n } from 'aws-amplify';
 import AmplifyTheme, {
@@ -32,6 +33,11 @@ import AmplifyTheme, {
 import { Icon } from 'react-native-elements';
 import countryDialCodes from './CountryDialCodes';
 import TEST_ID from './AmplifyTestIDs';
+
+export const Container = props => {
+	const theme = props.theme || AmplifyTheme;
+	return <SafeAreaView style={theme.container}>{props.children}</SafeAreaView>;
+};
 
 export const FormField = props => {
 	const theme = props.theme || AmplifyTheme;
@@ -137,6 +143,7 @@ export const SectionFooter = props => {
 };
 
 export const LinkCell = props => {
+	const { disabled } = props;
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.cell}>
@@ -144,8 +151,15 @@ export const LinkCell = props => {
 				onPress={props.onPress}
 				underlayColor={linkUnderlayColor}
 				testID={props.testID}
+				disabled={disabled}
 			>
-				<Text style={theme.sectionFooterLink}>{props.children}</Text>
+				<Text
+					style={
+						disabled ? theme.sectionFooterLinkDisabled : theme.sectionFooterLink
+					}
+				>
+					{props.children}
+				</Text>
 			</TouchableHighlight>
 		</View>
 	);
@@ -208,5 +222,19 @@ export const Wrapper = props => {
 
 	return (
 		<WrapperComponent {...wrapperProps}>{props.children}</WrapperComponent>
+	);
+};
+
+export const SignedOutMessage = props => {
+	const theme = props.theme || AmplifyTheme;
+	const message =
+		props.signedOutMessage || I18n.get('Please Sign In / Sign Up');
+	return (
+		<Text
+			style={theme.signedOutMessage}
+			testID={TEST_ID.AUTH.GREETING_SIGNED_OUT_TEXT}
+		>
+			{message}
+		</Text>
 	);
 };

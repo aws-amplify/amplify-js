@@ -431,7 +431,8 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 	private async _handleEndpointUpdateFailure(failureData: EndpointFailureData) {
 		const { err, endpointObject } = failureData;
-		const { statusCode } = err;
+		const statusCode = err.$metadata && err.$metadata.httpStatusCode;
+
 		logger.debug('updateEndpoint failed', err);
 
 		switch (statusCode) {
@@ -482,6 +483,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 	private _handleEndpointUpdateForbidden(failureData: EndpointFailureData) {
 		const { err, endpointObject } = failureData;
+
 		const { code, retryable } = err;
 
 		if (code !== EXPIRED_TOKEN_CODE && !retryable) {
