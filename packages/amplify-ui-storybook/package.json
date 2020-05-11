@@ -17,7 +17,7 @@
     "react-scripts": "3.4.1"
   },
   "scripts": {
-    "test": "react-scripts test",
+    "test": "react-scripts test --passWithNoTests",
     "start": "start-storybook -p 3000 -s public",
     "prebuild": "rimraf dist",
     "build": "build-storybook -s public -o dist --quiet"

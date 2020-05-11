@@ -92,12 +92,8 @@ export class RestAPIClass {
 	 */
 	createInstance() {
 		logger.debug('create Rest API instance');
-		if (this._options) {
-			this._api = new RestClient(this._options);
-			return true;
-		} else {
-			return Promise.reject('API not configured');
-		}
+		this._api = new RestClient(this._options);
+		return true;
 	}
 
 	/**
@@ -108,14 +104,6 @@ export class RestAPIClass {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	async get(apiName, path, init) {
-		if (!this._api) {
-			try {
-				await this.createInstance();
-			} catch (error) {
-				return Promise.reject(error);
-			}
-		}
-
 		const endpoint = this._api.endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
@@ -131,14 +119,6 @@ export class RestAPIClass {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	async post(apiName, path, init) {
-		if (!this._api) {
-			try {
-				await this.createInstance();
-			} catch (error) {
-				return Promise.reject(error);
-			}
-		}
-
 		const endpoint = this._api.endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
@@ -154,14 +134,6 @@ export class RestAPIClass {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	async put(apiName, path, init) {
-		if (!this._api) {
-			try {
-				await this.createInstance();
-			} catch (error) {
-				return Promise.reject(error);
-			}
-		}
-
 		const endpoint = this._api.endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
@@ -177,14 +149,6 @@ export class RestAPIClass {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	async patch(apiName, path, init) {
-		if (!this._api) {
-			try {
-				await this.createInstance();
-			} catch (error) {
-				return Promise.reject(error);
-			}
-		}
-
 		const endpoint = this._api.endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
@@ -200,14 +164,6 @@ export class RestAPIClass {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	async del(apiName, path, init) {
-		if (!this._api) {
-			try {
-				await this.createInstance();
-			} catch (error) {
-				return Promise.reject(error);
-			}
-		}
-
 		const endpoint = this._api.endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
@@ -223,14 +179,6 @@ export class RestAPIClass {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	async head(apiName, path, init) {
-		if (!this._api) {
-			try {
-				await this.createInstance();
-			} catch (error) {
-				return Promise.reject(error);
-			}
-		}
-
 		const endpoint = this._api.endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
@@ -244,13 +192,6 @@ export class RestAPIClass {
 	 * @return {string} - The endpoint of the api
 	 */
 	async endpoint(apiName) {
-		if (!this._api) {
-			try {
-				await this.createInstance();
-			} catch (error) {
-				return Promise.reject(error);
-			}
-		}
 		return this._api.endpoint(apiName);
 	}
 }
