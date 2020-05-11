@@ -59,7 +59,11 @@ export const onAuthUIStateChange = (authStateHandler: AuthStateHandler) => {
         }
         break;
     }
-  }
+  };
   Hub.listen(UI_AUTH_CHANNEL, authUIStateHandler);
   return () => Hub.remove(UI_AUTH_CHANNEL, authUIStateHandler);
-}
+};
+
+export const isHintValid = field => {
+  return !(field['hint'] === null || typeof field['hint'] === 'string');
+};
