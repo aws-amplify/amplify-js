@@ -6,6 +6,8 @@ node_modules/**
 .vscode/**
 .DS_Store
 *.log
+lib/.tsbuildinfo
+lib-esm/.tsbuildinfo
 prepend-license.js
 prettier.config.json
 tsconfig.json

@@ -9,6 +9,7 @@ module.exports = {
 		library: 'aws_amplify_cache',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
+		globalObject: 'this',
 		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils')
 			.devtoolModuleFilenameTemplate,
 	},

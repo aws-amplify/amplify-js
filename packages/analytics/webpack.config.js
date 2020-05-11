@@ -8,6 +8,7 @@ module.exports = {
 		'@aws-amplify/core',
 		'aws-sdk/clients/pinpoint',
 		'aws-sdk/clients/kinesis',
+		'aws-sdk/clients/firehose',
 	],
 	output: {
 		filename: '[name].js',
@@ -15,6 +16,7 @@ module.exports = {
 		library: 'aws_amplify_analytics',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
+		globalObject: 'this',
 		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils')
 			.devtoolModuleFilenameTemplate,
 	},

@@ -13,20 +13,31 @@
 
 import React, { Component } from 'react';
 import {
-	View,
+	Keyboard,
+	Picker,
+	Platform,
 	Text,
 	TextInput,
 	TouchableHighlight,
 	TouchableOpacity,
-	Picker,
+	TouchableWithoutFeedback,
+	View,
+	SafeAreaView,
 } from 'react-native';
 import { I18n } from 'aws-amplify';
 import AmplifyTheme, {
 	linkUnderlayColor,
 	errorIconColor,
+	placeholderColor,
 } from './AmplifyTheme';
 import { Icon } from 'react-native-elements';
 import countryDialCodes from './CountryDialCodes';
+import TEST_ID from './AmplifyTestIDs';
+
+export const Container = props => {
+	const theme = props.theme || AmplifyTheme;
+	return <SafeAreaView style={theme.container}>{props.children}</SafeAreaView>;
+};
 
 export const FormField = props => {
 	const theme = props.theme || AmplifyTheme;
@@ -39,6 +50,7 @@ export const FormField = props => {
 				style={theme.input}
 				autoCapitalize="none"
 				autoCorrect={false}
+				placeholderTextColor={placeholderColor}
 				{...props}
 			/>
 		</View>
@@ -63,8 +75,11 @@ export class PhoneField extends Component {
 	}
 
 	render() {
-		const { label, required } = this.props;
+		const { label, required, value } = this.props;
+		const { dialCode } = this.state;
 		const theme = this.props.theme || AmplifyTheme;
+
+		const phoneValue = value ? value.replace(dialCode, '') : undefined;
 
 		return (
 			<View style={theme.formField}>
@@ -90,7 +105,9 @@ export class PhoneField extends Component {
 						style={theme.phoneInput}
 						autoCapitalize="none"
 						autoCorrect={false}
+						placeholderTextColor={placeholderColor}
 						{...this.props}
+						value={phoneValue}
 						onChangeText={phone => {
 							this.setState({ phone }, () => {
 								this.onChangeText();
@@ -107,10 +124,18 @@ export const SectionFooter = props => {
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.sectionFooter}>
-			<LinkCell theme={theme} onPress={() => onStateChange('confirmSignUp')}>
+			<LinkCell
+				theme={theme}
+				onPress={() => onStateChange('confirmSignUp')}
+				testID={TEST_ID.AUTH.CONFIRM_A_CODE_BUTTON}
+			>
 				{I18n.get('Confirm a Code')}
 			</LinkCell>
-			<LinkCell theme={theme} onPress={() => onStateChange('signIn')}>
+			<LinkCell
+				theme={theme}
+				onPress={() => onStateChange('signIn')}
+				testID={TEST_ID.AUTH.SIGN_IN_BUTTON}
+			>
 				{I18n.get('Sign In')}
 			</LinkCell>
 		</View>
@@ -118,14 +143,23 @@ export const SectionFooter = props => {
 };
 
 export const LinkCell = props => {
+	const { disabled } = props;
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.cell}>
 			<TouchableHighlight
 				onPress={props.onPress}
 				underlayColor={linkUnderlayColor}
+				testID={props.testID}
+				disabled={disabled}
 			>
-				<Text style={theme.sectionFooterLink}>{props.children}</Text>
+				<Text
+					style={
+						disabled ? theme.sectionFooterLinkDisabled : theme.sectionFooterLink
+					}
+				>
+					{props.children}
+				</Text>
 			</TouchableHighlight>
 		</View>
 	);
@@ -135,7 +169,9 @@ export const Header = props => {
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.sectionHeader}>
-			<Text style={theme.sectionHeaderText}>{props.children}</Text>
+			<Text style={theme.sectionHeaderText} testID={props.testID}>
+				{props.children}
+			</Text>
 		</View>
 	);
 };
@@ -146,7 +182,9 @@ export const ErrorRow = props => {
 	return (
 		<View style={theme.errorRow}>
 			<Icon name="warning" color={errorIconColor} />
-			<Text style={theme.errorRowText}>{props.children}</Text>
+			<Text style={theme.errorRowText} testID={TEST_ID.AUTH.ERROR_ROW_TEXT}>
+				{props.children}
+			</Text>
 		</View>
 	);
 };
@@ -166,5 +204,37 @@ export const AmplifyButton = props => {
 		<TouchableOpacity {...props} style={style}>
 			<Text style={theme.buttonText}>{props.text}</Text>
 		</TouchableOpacity>
+	);
+};
+
+export const Wrapper = props => {
+	const isWeb = Platform.OS === 'web';
+	const WrapperComponent = isWeb ? View : TouchableWithoutFeedback;
+
+	const wrapperProps = {
+		style: AmplifyTheme.section,
+		accessible: false,
+	};
+
+	if (!isWeb) {
+		wrapperProps.onPress = Keyboard.dismiss;
+	}
+
+	return (
+		<WrapperComponent {...wrapperProps}>{props.children}</WrapperComponent>
+	);
+};
+
+export const SignedOutMessage = props => {
+	const theme = props.theme || AmplifyTheme;
+	const message =
+		props.signedOutMessage || I18n.get('Please Sign In / Sign Up');
+	return (
+		<Text
+			style={theme.signedOutMessage}
+			testID={TEST_ID.AUTH.GREETING_SIGNED_OUT_TEXT}
+		>
+			{message}
+		</Text>
 	);
 };

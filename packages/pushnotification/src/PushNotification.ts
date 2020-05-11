@@ -15,11 +15,11 @@ import {
 	NativeModules,
 	DeviceEventEmitter,
 	AsyncStorage,
-	PushNotificationIOS,
 	Platform,
 	AppState,
 } from 'react-native';
-import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Notification');
 
@@ -53,6 +53,7 @@ export default class PushNotification {
 		if (Platform.OS === 'ios') {
 			AppState.addEventListener('change', this._checkIfOpenedByCampaign, false);
 		}
+		Amplify.register(this);
 	}
 
 	getModuleName() {

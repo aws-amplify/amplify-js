@@ -12,9 +12,8 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import {
@@ -30,7 +29,7 @@ import {
 
 import { totpQrcode } from '@aws-amplify/ui';
 
-const QRCode = require('qrcode.react');
+import QRCode from 'qrcode.react';
 
 const logger = new Logger('TOTPSetupComp');
 
@@ -45,7 +44,7 @@ export interface ITOTPSetupCompState {
 	setupMessage: string | null;
 }
 
-export default class TOTPSetupComp extends Component<
+export class TOTPSetupComp extends React.Component<
 	ITOTPSetupCompProps,
 	ITOTPSetupCompState
 > {
@@ -128,13 +127,19 @@ export default class TOTPSetupComp extends Component<
 				'No Auth module found, please ensure @aws-amplify/auth is imported'
 			);
 		}
-		Auth.verifyTotpToken(user, totpCode)
+		return Auth.verifyTotpToken(user, totpCode)
 			.then(() => {
 				// set it to preferred mfa
-				Auth.setPreferredMFA(user, 'TOTP');
-				this.setState({ setupMessage: 'Setup TOTP successfully!' });
-				logger.debug('set up totp success!');
-				this.triggerTOTPEvent('Setup TOTP', 'SUCCESS', user);
+				return Auth.setPreferredMFA(user, 'TOTP')
+					.then(() => {
+						this.setState({ setupMessage: 'Setup TOTP successfully!' });
+						logger.debug('set up totp success!');
+						this.triggerTOTPEvent('Setup TOTP', 'SUCCESS', user);
+					})
+					.catch(err => {
+						this.setState({ setupMessage: 'Setup TOTP failed!' });
+						logger.error(err);
+					});
 			})
 			.catch(err => {
 				this.setState({ setupMessage: 'Setup TOTP failed!' });
@@ -193,3 +198,8 @@ export default class TOTPSetupComp extends Component<
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default TOTPSetupComp;

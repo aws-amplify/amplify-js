@@ -87,16 +87,26 @@ export default class CognitoUserPool {
 	 * @param {string} password Plain-text initial password entered by user.
 	 * @param {(AttributeArg[])=} userAttributes New user attributes.
 	 * @param {(AttributeArg[])=} validationData Application metadata.
+	 * @param {(AttributeArg[])=} clientMetadata Client metadata.
 	 * @param {nodeCallback<SignUpResult>} callback Called on error or with the new user.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	signUp(username, password, userAttributes, validationData, callback) {
+	signUp(
+		username,
+		password,
+		userAttributes,
+		validationData,
+		callback,
+		clientMetadata
+	) {
 		const jsonReq = {
 			ClientId: this.clientId,
 			Username: username,
 			Password: password,
 			UserAttributes: userAttributes,
 			ValidationData: validationData,
+			ClientMetadata: clientMetadata,
 		};
 		if (this.getUserContextData(username)) {
 			jsonReq.UserContextData = this.getUserContextData(username);

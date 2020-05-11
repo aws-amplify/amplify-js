@@ -45,6 +45,7 @@ const template = `
         (keyup)="setCode(code.value)"
         class="amplify-form-input"
         type="text"
+        autocomplete="off"
         placeholder="{{ this.amplifyService.i18n().get('Enter code') }}"
         data-test="${auth.forgotPassword.codeInput}"
       />
@@ -58,6 +59,7 @@ const template = `
         (keyup.enter)="onSubmit()"
         class="amplify-form-input"
         type="password"
+        autocomplete="off"
         placeholder="{{ this.amplifyService.i18n().get('Password') }}"
         data-test="${auth.forgotPassword.newPasswordInput}"
       />
