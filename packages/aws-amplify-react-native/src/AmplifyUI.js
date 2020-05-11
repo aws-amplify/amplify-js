@@ -224,3 +224,17 @@ export const Wrapper = props => {
 		<WrapperComponent {...wrapperProps}>{props.children}</WrapperComponent>
 	);
 };
+
+export const SignedOutMessage = props => {
+	const theme = props.theme || AmplifyTheme;
+	const message =
+		props.signedOutMessage || I18n.get('Please Sign In / Sign Up');
+	return (
+		<Text
+			style={theme.signedOutMessage}
+			testID={TEST_ID.AUTH.GREETING_SIGNED_OUT_TEXT}
+		>
+			{message}
+		</Text>
+	);
+};

@@ -13,7 +13,7 @@
 
 import React from 'react';
 import { View } from 'react-native';
-import { Auth, I18n, Logger, JS } from 'aws-amplify';
+import { Auth, I18n, Logger } from 'aws-amplify';
 import AuthPiece from './AuthPiece';
 import {
 	AmplifyButton,
@@ -21,6 +21,7 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	SignedOutMessage,
 	Wrapper,
 } from '../AmplifyUI';
 import TEST_ID from '../AmplifyTestIDs';
@@ -73,48 +74,53 @@ export default class SignIn extends AuthPiece {
 		return (
 			<Wrapper>
 				<View style={theme.section}>
-					<Header
-						theme={theme}
-						testID={TEST_ID.AUTH.SIGN_IN_TO_YOUR_ACCOUNT_TEXT}
-					>
-						{I18n.get('Sign in to your account')}
-					</Header>
-					<View style={theme.sectionBody}>
-						{this.renderUsernameField(theme)}
-						<FormField
+					<View>
+						<Header
 							theme={theme}
-							onChangeText={text => this.setState({ password: text })}
-							label={I18n.get('Password')}
-							placeholder={I18n.get('Enter your password')}
-							secureTextEntry={true}
-							required={true}
-							testID={TEST_ID.AUTH.PASSWORD_INPUT}
-						/>
-						<AmplifyButton
-							text={I18n.get('Sign In').toUpperCase()}
-							theme={theme}
-							onPress={this.signIn}
-							disabled={!!(!this.getUsernameFromInput() && this.state.password)}
-							testID={TEST_ID.AUTH.SIGN_IN_BUTTON}
-						/>
-					</View>
-					<View style={theme.sectionFooter}>
-						<LinkCell
-							theme={theme}
-							onPress={() => this.changeState('forgotPassword')}
-							testID={TEST_ID.AUTH.FORGOT_PASSWORD_BUTTON}
+							testID={TEST_ID.AUTH.SIGN_IN_TO_YOUR_ACCOUNT_TEXT}
 						>
-							{I18n.get('Forgot Password')}
-						</LinkCell>
-						<LinkCell
-							theme={theme}
-							onPress={() => this.changeState('signUp')}
-							testID={TEST_ID.AUTH.SIGN_UP_BUTTON}
-						>
-							{I18n.get('Sign Up')}
-						</LinkCell>
+							{I18n.get('Sign in to your account')}
+						</Header>
+						<View style={theme.sectionBody}>
+							{this.renderUsernameField(theme)}
+							<FormField
+								theme={theme}
+								onChangeText={text => this.setState({ password: text })}
+								label={I18n.get('Password')}
+								placeholder={I18n.get('Enter your password')}
+								secureTextEntry={true}
+								required={true}
+								testID={TEST_ID.AUTH.PASSWORD_INPUT}
+							/>
+							<AmplifyButton
+								text={I18n.get('Sign In').toUpperCase()}
+								theme={theme}
+								onPress={this.signIn}
+								disabled={
+									!!(!this.getUsernameFromInput() && this.state.password)
+								}
+								testID={TEST_ID.AUTH.SIGN_IN_BUTTON}
+							/>
+						</View>
+						<View style={theme.sectionFooter}>
+							<LinkCell
+								theme={theme}
+								onPress={() => this.changeState('forgotPassword')}
+								testID={TEST_ID.AUTH.FORGOT_PASSWORD_BUTTON}
+							>
+								{I18n.get('Forgot Password')}
+							</LinkCell>
+							<LinkCell
+								theme={theme}
+								onPress={() => this.changeState('signUp')}
+								testID={TEST_ID.AUTH.SIGN_UP_BUTTON}
+							>
+								{I18n.get('Sign Up')}
+							</LinkCell>
+						</View>
+						<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 					</View>
-					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+					<SignedOutMessage {...this.props} />
 				</View>
 			</Wrapper>
 		);

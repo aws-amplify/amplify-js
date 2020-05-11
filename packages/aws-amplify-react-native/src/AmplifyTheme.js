@@ -37,11 +37,18 @@ export default StyleSheet.create({
 	section: {
 		flex: 1,
 		width: '100%',
-		padding: 20,
+		justifyContent: 'space-between',
+		paddingHorizontal: 20,
+	},
+	sectionScroll: {
+		flex: 1,
+		width: '100%',
+		paddingHorizontal: 20,
 	},
 	sectionHeader: {
 		width: '100%',
 		marginBottom: 32,
+		paddingTop: 20,
 	},
 	sectionHeaderText: {
 		color: deepSquidInk,
@@ -143,5 +150,9 @@ export default StyleSheet.create({
 	},
 	pickerItem: {
 		height: 44,
+	},
+	signedOutMessage: {
+		textAlign: 'center',
+		padding: 20,
 	},
 });
