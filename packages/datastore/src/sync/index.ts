@@ -1,9 +1,9 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
-import Observable from 'zen-observable-ts';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
-import Storage from '../storage/storage';
+import { ExclusiveStorage as Storage } from '../storage/storage';
 import {
 	ConflictHandler,
 	ErrorHandler,
@@ -85,6 +85,7 @@ export class SyncEngine {
 		private readonly storage: Storage,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly maxRecordsToSync: number,
+		private readonly syncPageSize: number,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler
 	) {
@@ -103,7 +104,8 @@ export class SyncEngine {
 
 		this.syncQueriesProcessor = new SyncProcessor(
 			this.schema,
-			maxRecordsToSync
+			maxRecordsToSync,
+			syncPageSize
 		);
 		this.subscriptionsProcessor = new SubscriptionProcessor(this.schema);
 		this.mutationsProcessor = new MutationProcessor(

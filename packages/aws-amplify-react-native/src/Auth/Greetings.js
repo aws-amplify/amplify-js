@@ -12,19 +12,19 @@
  */
 
 import React from 'react';
-import { View, Text, Button } from 'react-native';
-import { Auth, I18n, Logger } from 'aws-amplify';
+import { View, Text } from 'react-native';
+import { Auth, I18n } from 'aws-amplify';
 import { AmplifyButton } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 import AuthPiece from './AuthPiece';
-
-const logger = new Logger('Greetings');
+import TEST_ID from '../AmplifyTestIDs';
 
 export default class Greetings extends AuthPiece {
 	constructor(props) {
 		super(props);
-
+		this._validAuthStates = ['signedIn'];
 		this.signOut = this.signOut.bind(this);
+		this.getMessage = this.getMessage.bind(this);
 	}
 
 	signOut() {
@@ -33,11 +33,8 @@ export default class Greetings extends AuthPiece {
 			.catch(err => this.error(err));
 	}
 
-	render() {
-		const { authState, authData } = this.props;
-		const signedIn = authState === 'signedIn';
-		const theme = this.props.theme || AmplifyTheme;
-
+	getMessage() {
+		const { authData } = this.props;
 		let defaultMessage = '';
 		const user = authData;
 		if (user) {
@@ -56,29 +53,27 @@ export default class Greetings extends AuthPiece {
 				defaultMessage = `${I18n.get('Hello')} ${name}`;
 			}
 		}
+		return this.props.signedInMessage || defaultMessage;
+	}
 
-		let message;
-		if (signedIn) {
-			message = this.props.signedInMessage || defaultMessage;
-		} else {
-			message =
-				this.props.signedOutMessage || I18n.get('Please Sign In / Sign Up');
-		}
-
-		const content = signedIn ? (
+	showComponent() {
+		const theme = this.props.theme || AmplifyTheme;
+		return (
 			<View style={theme.navBar}>
-				<Text style={theme.greetingMessage}>{message}</Text>
+				<Text
+					style={theme.greetingMessage}
+					testID={TEST_ID.AUTH.GREETING_SIGNED_IN_TEXT}
+				>
+					{this.getMessage()}
+				</Text>
 				<AmplifyButton
 					theme={theme}
 					text={I18n.get('Sign Out')}
 					onPress={this.signOut}
 					style={theme.navButton}
+					testID={TEST_ID.AUTH.SIGN_OUT_BUTTON}
 				/>
 			</View>
-		) : (
-			<Text style={theme.greetingMessage}>{message}</Text>
 		);
-
-		return content;
 	}
 }

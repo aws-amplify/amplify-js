@@ -12,11 +12,10 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
-import Analytics from '@aws-amplify/analytics';
+import { Analytics } from '@aws-amplify/analytics';
 
 export function trackUpdate(Comp, trackerName) {
-	return class extends Component<any, {}> {
+	return class extends React.Component<any, {}> {
 		public trackerName: string;
 
 		constructor(props) {

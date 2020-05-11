@@ -1,6 +1,6 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import * as idb from 'idb';
-import { Adapter } from '.';
+import { Adapter } from './index';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ModelPredicateCreator } from '../../predicates';
 import {
@@ -343,7 +343,7 @@ class IndexedDBAdapter implements Adapter {
 	}
 
 	private async enginePagination<T>(
-		storeName,
+		storeName: string,
 		pagination?: PaginationInput
 	): Promise<T[]> {
 		let result: T[];
@@ -366,7 +366,7 @@ class IndexedDBAdapter implements Adapter {
 			const hasLimit = typeof limit === 'number' && limit > 0;
 			let moreRecords = true;
 			let itemsLeft = limit;
-			while (moreRecords && cursor.value) {
+			while (moreRecords && cursor && cursor.value) {
 				pageResults.push(cursor.value);
 
 				cursor = await cursor.continue();

@@ -12,14 +12,13 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import Storage from '@aws-amplify/storage';
+import { Storage } from '@aws-amplify/storage';
 
 import AmplifyTheme from '../AmplifyTheme';
 import { transparent1X1 } from '../AmplifyUI';
-import PhotoPicker from '../Widget/PhotoPicker';
+import { PhotoPicker } from '../Widget/PhotoPicker';
 import { calcKey } from './Common';
 
 const logger = new Logger('Storage.S3Image');
@@ -53,7 +52,7 @@ export interface IS3ImageState {
 	src;
 }
 
-export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
+export class S3Image extends React.Component<IS3ImageProps, IS3ImageState> {
 	_isMounted = false;
 	constructor(props) {
 		super(props);
@@ -254,3 +253,8 @@ export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default S3Image;

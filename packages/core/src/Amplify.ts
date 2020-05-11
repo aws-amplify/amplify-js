@@ -2,7 +2,7 @@ import { ConsoleLogger as LoggerClass } from './Logger';
 
 const logger = new LoggerClass('Amplify');
 
-export default class Amplify {
+export class Amplify {
 	private static _components = [];
 	private static _config = {};
 
@@ -20,6 +20,7 @@ export default class Amplify {
 	static UI = null;
 	static XR = null;
 	static Predictions = null;
+	static DataStore = null;
 
 	static Logger = LoggerClass;
 	static ServiceWorker = null;
@@ -32,6 +33,14 @@ export default class Amplify {
 		} else {
 			logger.debug('no getModuleName method for component', comp);
 		}
+
+		// Finally configure this new component(category) loaded
+		// With the new modularization changes in Amplify V3, all the Amplify
+		// component are not loaded/registered right away but when they are
+		// imported (and hence instantiated) in the client's app. This ensures
+		// that all new components imported get correctly configured with the
+		// configuration that Amplify.configure() was called with.
+		comp.configure(this._config);
 	}
 
 	static configure(config) {
@@ -63,3 +72,8 @@ export default class Amplify {
 		}
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default Amplify;

@@ -11,12 +11,12 @@
  * and limitations under the License.
  */
 import { ConsoleLogger as Logger } from '../Logger';
-import JS from '../JS';
+import { browserOrNode } from '../JS';
 
 const logger = new Logger('CognitoCredentials');
 
 const waitForInit = new Promise((res, rej) => {
-	if (!JS.browserOrNode().isBrowser) {
+	if (!browserOrNode().isBrowser) {
 		logger.debug('not in the browser, directly resolved');
 		return res();
 	}
@@ -31,7 +31,7 @@ const waitForInit = new Promise((res, rej) => {
 	}
 });
 
-export default class FacebookOAuth {
+export class FacebookOAuth {
 	public initialized = false;
 
 	constructor() {
@@ -52,7 +52,7 @@ export default class FacebookOAuth {
 
 	private _refreshFacebookTokenImpl() {
 		let fb = null;
-		if (JS.browserOrNode().isBrowser) fb = window['FB'];
+		if (browserOrNode().isBrowser) fb = window['FB'];
 		if (!fb) {
 			logger.debug('no fb sdk available');
 			return Promise.reject('no fb sdk available');
@@ -83,3 +83,8 @@ export default class FacebookOAuth {
 		});
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default FacebookOAuth;
