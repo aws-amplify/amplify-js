@@ -47,13 +47,13 @@ export default class Connect extends Component<IConnectProps, IConnectState> {
 		};
 	}
 
-	getDefaultState() {
+	getDefaultState(): IConnectState {
 		return {
 			loading: false,
 			data: {},
 			errors: [],
 			mutation: () => console.warn('Not implemented'),
-		} as IConnectState;
+		};
 	}
 
 	async _fetchData() {

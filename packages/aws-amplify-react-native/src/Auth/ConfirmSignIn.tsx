@@ -32,7 +32,7 @@ const logger = new Logger('ConfirmSignIn');
 interface IConfirmSignInProps extends IAuthPieceProps {}
 
 interface IConfirmSignInState extends IAuthPieceState {
-	code: string | null;
+	code?: string;
 }
 
 export default class ConfirmSignIn extends AuthPiece<

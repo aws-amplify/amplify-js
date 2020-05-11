@@ -68,8 +68,8 @@ interface IAuthenticatorProps {
 	errorMessage?: string;
 	hideDefault?: boolean;
 	signUpConfig?: ISignUpConfig;
-	usernameAttributes: UsernameAttributesType;
-	onStateChange: OnStateChangeType;
+	usernameAttributes?: UsernameAttributesType;
+	onStateChange?: OnStateChangeType;
 	theme?: AmplifyThemeType;
 }
 

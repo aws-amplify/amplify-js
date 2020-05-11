@@ -37,7 +37,7 @@ export interface ISignUpField {
 	label: string;
 	key: string;
 	required: boolean;
-	placeholder: string;
+	placeholder?: string;
 	type?: string;
 	displayOrder: number;
 	testID?: string;

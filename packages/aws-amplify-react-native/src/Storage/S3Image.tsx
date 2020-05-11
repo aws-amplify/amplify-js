@@ -29,7 +29,7 @@ interface IS3ImageProps {
 }
 
 interface IS3ImageState {
-	src: any;
+	src?: any;
 }
 
 export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {

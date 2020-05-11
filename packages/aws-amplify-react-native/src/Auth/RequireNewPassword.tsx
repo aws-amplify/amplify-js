@@ -32,9 +32,9 @@ const logger = new Logger('RequireNewPassword');
 interface IRequireNewPasswordProps extends IAuthPieceProps {}
 
 interface IRequireNewPasswordState extends IAuthPieceState {
-	password: string | null;
+	password?: string;
 	// TODO: Add required attributes keys
-	requiredAttributes: { [key: string]: any };
+	requiredAttributes: Record<string, any>;
 }
 
 export default class RequireNewPassword extends AuthPiece<

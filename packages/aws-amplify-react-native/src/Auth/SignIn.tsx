@@ -32,7 +32,7 @@ const logger = new Logger('SignIn');
 interface ISignInProps extends IAuthPieceProps {}
 
 interface ISignInState extends IAuthPieceState {
-	password: string | null;
+	password?: string;
 }
 
 export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {

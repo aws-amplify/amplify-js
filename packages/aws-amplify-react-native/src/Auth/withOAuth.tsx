@@ -22,16 +22,16 @@ import {
 const logger = new Logger('withOAuth');
 
 interface IOAuthProps {
-	loading: boolean;
+	loading?: boolean;
 	oAuthUser?: any;
 	oAuthError?: any;
 	// TODO: Type these functions
-	hostedUISignIn: Function;
-	facebookSignIn: Function;
-	amazonSignIn: Function;
-	googleSignIn: Function;
-	customProviderSignIn: Function;
-	signOut: Function;
+	hostedUISignIn?: Function;
+	facebookSignIn?: Function;
+	amazonSignIn?: Function;
+	googleSignIn?: Function;
+	customProviderSignIn?: Function;
+	signOut?: Function;
 }
 
 interface IWithOAuthProps {
@@ -41,7 +41,7 @@ interface IWithOAuthProps {
 interface IWithOAuthState {
 	error?: string;
 	loading: boolean;
-	user: any;
+	user?: any;
 }
 
 export default function withOAuth<Props extends object>(

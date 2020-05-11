@@ -33,7 +33,7 @@ interface IForgotPasswordProps extends IAuthPieceProps {}
 
 interface IForgotPasswordState extends IAuthPieceState {
 	code?: string;
-	delivery: any;
+	delivery?: any;
 	password?: string;
 }
 

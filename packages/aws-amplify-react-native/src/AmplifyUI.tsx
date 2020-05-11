@@ -38,7 +38,7 @@ import countryDialCodes from './CountryDialCodes';
 import TEST_ID from './AmplifyTestIDs';
 
 interface IContainerProps {
-	theme: AmplifyThemeType;
+	theme?: AmplifyThemeType;
 }
 
 export const Container: FC<IContainerProps> = props => {
@@ -49,7 +49,7 @@ export const Container: FC<IContainerProps> = props => {
 interface IFormFieldProps extends TextInputProperties {
 	label: string;
 	required?: boolean;
-	theme: AmplifyThemeType;
+	theme?: AmplifyThemeType;
 }
 
 export const FormField: FC<IFormFieldProps> = props => {
@@ -151,7 +151,7 @@ interface ILinkCellProps {
 	disabled?: boolean;
 	onPress: () => void;
 	testID?: string;
-	theme: AmplifyThemeType;
+	theme?: AmplifyThemeType;
 }
 
 export const LinkCell: FC<ILinkCellProps> = props => {
@@ -179,7 +179,7 @@ export const LinkCell: FC<ILinkCellProps> = props => {
 
 interface IHeaderProps {
 	testID?: string;
-	theme: AmplifyThemeType;
+	theme?: AmplifyThemeType;
 }
 
 export const Header: FC<IHeaderProps> = props => {
@@ -194,7 +194,7 @@ export const Header: FC<IHeaderProps> = props => {
 };
 
 interface IErrorRowProps {
-	theme: AmplifyThemeType;
+	theme?: AmplifyThemeType;
 }
 
 export const ErrorRow: FC<IErrorRowProps> = props => {

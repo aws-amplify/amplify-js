@@ -13,9 +13,9 @@
 
 import { I18n } from 'aws-amplify';
 
-type IMapEntry = [string, RegExp, string?];
+type MapEntry = [string, RegExp, string?];
 
-export const MapEntries: IMapEntry[] = [
+export const MapEntries: MapEntry[] = [
 	['User does not exist', /user.*not.*exist/i],
 	['User already exists', /user.*already.*exist/i],
 	['Incorrect username or password', /incorrect.*username.*password/i],

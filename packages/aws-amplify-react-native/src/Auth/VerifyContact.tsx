@@ -32,9 +32,9 @@ const logger = new Logger('VerifyContact');
 interface IVerifyContactProps extends IAuthPieceProps {}
 
 interface IVerifyContactState extends IAuthPieceState {
-	code?: string | null;
-	pickAttr?: string | null;
-	verifyAttr: string | null;
+	code?: string;
+	pickAttr?: string;
+	verifyAttr?: string;
 }
 
 export default class VerifyContact extends AuthPiece<

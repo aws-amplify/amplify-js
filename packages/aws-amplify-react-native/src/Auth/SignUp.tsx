@@ -44,7 +44,7 @@ interface ISignUpConfig {
 }
 
 interface ISignUpProps extends IAuthPieceProps {
-	signUpConfig: ISignUpConfig;
+	signUpConfig?: ISignUpConfig;
 }
 
 interface ISignUpState extends IAuthPieceState {
