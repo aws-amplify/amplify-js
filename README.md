@@ -4,8 +4,8 @@
   <img src="https://nodei.co/npm/aws-amplify.svg?downloads=true&downloadRank=true&stars=true">
 </a>
 <p>
-  <a href="https://gitter.im/AWS-Amplify/Lobby?utm_source=share-link&utm_medium=link&utm_campaign=share-link" target="_blank">
-    <img src="https://badges.gitter.im/aws/aws-amplify.png" alt="Gitter Chat" />  
+  <a href="https://discord.gg/jWVbPfC" target="_blank">
+    <img src="https://img.shields.io/discord/308323056592486420?logo=discord"" alt="Discord Chat" />  
   </a>
   <a href="https://codecov.io/gh/aws-amplify/amplify-js">
     <img src="https://codecov.io/gh/aws-amplify/amplify-js/branch/master/graph/badge.svg" />

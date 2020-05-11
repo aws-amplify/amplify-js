@@ -68,11 +68,11 @@ export class AmplifyConfirmSignIn {
     }
   }
 
-  handleCodeChange(event) {
+  private handleCodeChange(event) {
     this.code = event.target.value;
   }
 
-  checkContact(user) {
+  private checkContact(user) {
     if (!Auth || typeof Auth.verifiedContact !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
@@ -86,7 +86,7 @@ export class AmplifyConfirmSignIn {
     });
   }
 
-  async confirm(event: Event) {
+  private async confirm(event: Event) {
     if (event) {
       event.preventDefault();
     }

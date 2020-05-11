@@ -17,7 +17,7 @@ const logger = new Logger('TOTP');
   shadow: true,
 })
 export class AmplifyTOTPSetup {
-  inputProps: object = {
+  private inputProps: object = {
     autoFocus: true,
   };
 
@@ -36,11 +36,11 @@ export class AmplifyTOTPSetup {
     this.setup();
   }
 
-  buildOtpAuthPath(user: CognitoUserInterface, issuer: string, secretKey: string) {
+  private buildOtpAuthPath(user: CognitoUserInterface, issuer: string, secretKey: string) {
     return `otpauth://totp/${issuer}:${user.username}?secret=${secretKey}&issuer=${issuer}`;
   }
 
-  async checkContact(user: CognitoUserInterface) {
+  private async checkContact(user: CognitoUserInterface) {
     if (!Auth || typeof Auth.verifiedContact !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
@@ -57,7 +57,7 @@ export class AmplifyTOTPSetup {
     }
   }
 
-  onTOTPEvent(event: TOTPSetupEventType, data: any, user: CognitoUserInterface) {
+  private onTOTPEvent(event: TOTPSetupEventType, data: any, user: CognitoUserInterface) {
     logger.debug('on totp event', event, data);
 
     if (event === SETUP_TOTP && data === SUCCESS) {
@@ -65,12 +65,12 @@ export class AmplifyTOTPSetup {
     }
   }
 
-  handleTotpInputChange(event) {
+  private handleTotpInputChange(event) {
     this.setupMessage = null;
     this.qrCodeInput = event.target.value;
   }
 
-  async generateQRCode(codeFromTotp: string) {
+  private async generateQRCode(codeFromTotp: string) {
     try {
       this.qrCodeImageSource = await QRCode.toDataURL(codeFromTotp);
     } catch (error) {
@@ -78,7 +78,7 @@ export class AmplifyTOTPSetup {
     }
   }
 
-  async setup() {
+  private async setup() {
     this.setupMessage = null;
     const issuer = encodeURI('AWSCognito');
 
@@ -102,7 +102,7 @@ export class AmplifyTOTPSetup {
     }
   }
 
-  async verifyTotpToken(event: Event) {
+  private async verifyTotpToken(event: Event) {
     if (event) {
       event.preventDefault();
     }

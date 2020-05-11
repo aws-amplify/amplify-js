@@ -4,6 +4,7 @@ import componentFieldMapping from './component-field-mapping';
 
 @Component({
   tag: 'amplify-auth-fields',
+  styleUrl: 'amplify-auth-fields.scss',
   shadow: true,
 })
 export class AmplifyAuthFields {
@@ -25,7 +26,7 @@ export class AmplifyAuthFields {
    */
   @Prop() formFields: FormFieldTypes | string[];
 
-  constructFormFieldOptions(formFields: FormFieldTypes | string[]) {
+  private constructFormFieldOptions(formFields: FormFieldTypes | string[]) {
     let content = [];
 
     if (formFields === undefined) return '';
@@ -44,6 +45,6 @@ export class AmplifyAuthFields {
   }
 
   render() {
-    return <div>{this.constructFormFieldOptions(this.formFields)}</div>;
+    return <div class="auth-fields">{this.constructFormFieldOptions(this.formFields)}</div>;
   }
 }
