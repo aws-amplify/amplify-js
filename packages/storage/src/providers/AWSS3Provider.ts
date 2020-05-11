@@ -182,13 +182,12 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		params.Expires = expires || 900; // Default is 15 mins as defined in V2 AWS SDK
-		params.Expires = new Date(Date.now() + params.Expires * 1000); // expires is in secs
 
 		try {
 			const signer = new S3RequestPresigner({ ...s3.config });
 			const request = await createRequest(s3, new GetObjectCommand(params));
 			const url = formatUrl(
-				(await signer.presign(request, params.Expires)) as any
+				(await signer.presign(request, { expiresIn: params.Expires })) as any
 			);
 			dispatchStorageEvent(
 				track,
@@ -234,6 +233,7 @@ export class AWSS3Provider implements StorageProvider {
 			expires,
 			metadata,
 			tagging,
+			acl,
 		} = opt;
 		const {
 			serverSideEncryption,
@@ -284,8 +284,14 @@ export class AWSS3Provider implements StorageProvider {
 				params.SSEKMSKeyId = SSEKMSKeyId;
 			}
 		}
+
 		const emitter = new events.EventEmitter();
 		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
+
+		if (acl) {
+			params.ACL = acl;
+		}
+
 		try {
 			emitter.on('sendProgress', progress => {
 				if (progressCallback) {

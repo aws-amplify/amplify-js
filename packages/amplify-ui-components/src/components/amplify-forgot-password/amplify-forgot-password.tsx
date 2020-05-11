@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
-import { Component, Prop, State, h } from '@stencil/core';
+import { Component, Prop, State, h, Watch } from '@stencil/core';
 
 import { FormFieldTypes, PhoneNumberInterface } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
@@ -58,46 +58,17 @@ export class AmplifyForgotPassword {
 
   componentWillLoad() {
     checkUsernameAlias(this.usernameAlias);
+    this.buildFormFields();
+  }
+
+  @Watch('formFields')
+  formFieldsHandler() {
+    this.buildFormFields();
+  }
+
+  private buildFormFields() {
     if (this.formFields.length === 0) {
-      switch (this.usernameAlias) {
-        case 'email':
-          this.newFormFields = [
-            {
-              type: 'email',
-              required: true,
-              handleInputChange: this.handleFormFieldInput('email'),
-              inputProps: {
-                'data-test': 'forgot-password-email-input',
-              },
-            },
-          ];
-          break;
-        case 'phone_number':
-          this.newFormFields = [
-            {
-              type: 'phone_number',
-              required: true,
-              handleInputChange: this.handleFormFieldInput('phone_number'),
-              inputProps: {
-                'data-test': 'forgot-password-phone-number-input',
-              },
-            },
-          ];
-          break;
-        case 'username':
-        default:
-          this.newFormFields = [
-            {
-              type: 'username',
-              required: true,
-              handleInputChange: this.handleFormFieldInput('username'),
-              inputProps: {
-                'data-test': 'forgot-password-username-input',
-              },
-            },
-          ];
-          break;
-      }
+      this.buildDefaultFormFields();
     } else {
       this.formFields.forEach(field => {
         const newField = { ...field };
@@ -107,7 +78,49 @@ export class AmplifyForgotPassword {
     }
   }
 
-  private handleFormFieldInput(fieldType) {
+  private buildDefaultFormFields() {
+    switch (this.usernameAlias) {
+      case 'email':
+        this.newFormFields = [
+          {
+            type: 'email',
+            required: true,
+            handleInputChange: this.handleFormFieldInputChange('email'),
+            inputProps: {
+              'data-test': 'forgot-password-email-input',
+            },
+          },
+        ];
+        break;
+      case 'phone_number':
+        this.newFormFields = [
+          {
+            type: 'phone_number',
+            required: true,
+            handleInputChange: this.handleFormFieldInputChange('phone_number'),
+            inputProps: {
+              'data-test': 'forgot-password-phone-number-input',
+            },
+          },
+        ];
+        break;
+      case 'username':
+      default:
+        this.newFormFields = [
+          {
+            type: 'username',
+            required: true,
+            handleInputChange: this.handleFormFieldInputChange('username'),
+            inputProps: {
+              'data-test': 'forgot-password-username-input',
+            },
+          },
+        ];
+        break;
+    }
+  }
+
+  private handleFormFieldInputChange(fieldType) {
     switch (fieldType) {
       case 'username':
       case 'email':
@@ -128,10 +141,7 @@ export class AmplifyForgotPassword {
       : (event, cb) => {
           cb(event);
         };
-    const callback =
-      field.type === 'phone_number'
-        ? event => (this.forgotPasswordAttrs.userInput = event.target.value)
-        : this.handleFormFieldInput(field.type);
+    const callback = this.handleFormFieldInputChange(field.type);
     fnToCall(event, callback.bind(this));
   }
 
@@ -177,7 +187,7 @@ export class AmplifyForgotPassword {
         {
           type: 'code',
           required: true,
-          handleInputChange: this.handleFormFieldInput('code'),
+          handleInputChange: this.handleFormFieldInputChange('code'),
           inputProps: {
             'data-test': 'forgot-password-code-input',
           },
@@ -185,7 +195,7 @@ export class AmplifyForgotPassword {
         {
           type: 'password',
           required: true,
-          handleInputChange: this.handleFormFieldInput('password'),
+          handleInputChange: this.handleFormFieldInputChange('password'),
           label: 'New password',
           placeholder: 'Enter your new password',
         },
