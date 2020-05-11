@@ -25,6 +25,7 @@ import {
   dispatchAuthStateChangeEvent,
   composePhoneNumberInput,
   checkUsernameAlias,
+  isHintValid,
 } from '../../common/helpers';
 import { SignInAttributes } from './amplify-sign-in-interface';
 
@@ -258,6 +259,23 @@ export class AmplifySignIn {
       const newFields = [];
       this.formFields.forEach(field => {
         const newField = { ...field };
+        // TODO: handle hint better
+        if (newField.type === 'password') {
+          newField['hint'] = isHintValid(newField) ? (
+            <div>
+              {I18n.get(Translations.FORGOT_PASSWORD_TEXT)}{' '}
+              <amplify-button
+                variant="anchor"
+                onClick={() => this.handleAuthStateChange(AuthState.ForgotPassword)}
+                data-test="sign-in-forgot-password-link"
+              >
+                {I18n.get(Translations.RESET_PASSWORD_TEXT)}
+              </amplify-button>
+            </div>
+          ) : (
+            newField['hint']
+          );
+        }
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
         newFields.push(newField);
       });
