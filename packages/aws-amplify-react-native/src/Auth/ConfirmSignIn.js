@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View } from 'react-native';
 import { Auth, I18n, Logger, JS } from 'aws-amplify';
 import {
 	AmplifyButton,
@@ -20,8 +20,11 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	SignedOutMessage,
+	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
+import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('ConfirmSignIn');
 
@@ -50,32 +53,43 @@ export default class ConfirmSignIn extends AuthPiece {
 
 	showComponent(theme) {
 		return (
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+			<Wrapper>
 				<View style={theme.section}>
-					<Header theme={theme}>{I18n.get('Confirm Sign In')}</Header>
-					<View style={theme.sectionBody}>
-						<FormField
-							theme={theme}
-							onChangeText={text => this.setState({ code: text })}
-							label={I18n.get('Confirmation Code')}
-							placeholder={I18n.get('Enter your confirmation code')}
-							required={true}
-						/>
-						<AmplifyButton
-							theme={theme}
-							text={I18n.get('Confirm')}
-							onPress={this.confirm}
-							disabled={!this.state.code}
-						/>
+					<View>
+						<Header theme={theme} testID={TEST_ID.AUTH.CONFIRM_SIGN_IN_TEXT}>
+							{I18n.get('Confirm Sign In')}
+						</Header>
+						<View style={theme.sectionBody}>
+							<FormField
+								theme={theme}
+								onChangeText={text => this.setState({ code: text })}
+								label={I18n.get('Confirmation Code')}
+								placeholder={I18n.get('Enter your confirmation code')}
+								required={true}
+								testID={TEST_ID.AUTH.CONFIRMATION_CODE_INPUT}
+							/>
+							<AmplifyButton
+								theme={theme}
+								text={I18n.get('Confirm')}
+								onPress={this.confirm}
+								disabled={!this.state.code}
+								testID={TEST_ID.AUTH.CONFIRM_BUTTON}
+							/>
+						</View>
+						<View style={theme.sectionFooter}>
+							<LinkCell
+								theme={theme}
+								onPress={() => this.changeState('signIn')}
+								testID={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
+							>
+								{I18n.get('Back to Sign In')}
+							</LinkCell>
+						</View>
+						<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 					</View>
-					<View style={theme.sectionFooter}>
-						<LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
-							{I18n.get('Back to Sign In')}
-						</LinkCell>
-					</View>
-					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+					<SignedOutMessage {...this.props} />
 				</View>
-			</TouchableWithoutFeedback>
+			</Wrapper>
 		);
 	}
 }

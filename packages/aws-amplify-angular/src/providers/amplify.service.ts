@@ -14,11 +14,19 @@
 // tslint:enable
 
 import { Injectable, Optional, Inject } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
+import { Observable, Subject } from 'rxjs';
 import Amplify, { Logger, I18n } from '@aws-amplify/core';
 import { AuthState } from './auth.state';
 import { authDecorator } from './auth.decorator';
+
+import { Analytics } from '@aws-amplify/analytics';
+
+import { Auth } from '@aws-amplify/auth';
+import { Storage } from '@aws-amplify/storage';
+import { API } from '@aws-amplify/api';
+import { PubSub } from '@aws-amplify/pubsub';
+import { Interactions } from '@aws-amplify/interactions';
+import { XR } from '@aws-amplify/xr';
 
 @Injectable()
 export class AmplifyService {
@@ -59,31 +67,31 @@ export class AmplifyService {
 	}
 
 	auth(): any {
-		return this._auth;
+		return this._auth || Auth;
 	}
 	analytics(): any {
-		return this._analytics;
+		return this._analytics || Analytics;
 	}
 	storage(): any {
-		return this._storage;
+		return this._storage || Storage;
 	}
 	api(): any {
-		return this._api;
+		return this._api || API;
 	}
 	interactions(): any {
-		return this._interactions;
+		return this._interactions || Interactions;
 	}
 	cache(): any {
 		return this._cache;
 	}
 	pubsub(): any {
-		return this._pubsub;
+		return this._pubsub || PubSub;
 	}
 	logger(name, level?): Logger {
 		return new this._logger(name, level);
 	}
 	xr(): any {
-		return this._xr;
+		return this._xr || XR;
 	}
 	i18n(): any {
 		return this._i18n;

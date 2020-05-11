@@ -11,10 +11,10 @@
  * and limitations under the License.
  */
 import * as React from 'react';
-import XR from '@aws-amplify/xr';
+import { XR } from '@aws-amplify/xr';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import IconButton from './IconButton';
-import Loading from './Loading';
+import { IconButton } from './IconButton';
+import { Loading } from './Loading';
 import * as AmplifyUI from '@aws-amplify/ui';
 
 import { sumerianScene } from '../Amplify-UI/data-test-attributes';
@@ -38,10 +38,10 @@ interface ISumerianSceneState {
 	isVRPresentationActive: boolean;
 }
 
-class SumerianScene extends React.Component<
+export class SumerianScene extends React.Component<
 	ISumerianSceneProps,
 	ISumerianSceneState
-> {
+	> {
 	constructor(props) {
 		super(props);
 
@@ -145,7 +145,7 @@ class SumerianScene extends React.Component<
 		}
 
 		XR.setMuted(this.props.sceneName, muted);
-		this.setState({ muted: muted });
+		this.setState({ muted });
 	}
 
 	onFullscreenChange() {
@@ -293,4 +293,7 @@ class SumerianScene extends React.Component<
 	}
 }
 
+/**
+ * @deprecated use named import
+ */
 export default SumerianScene;

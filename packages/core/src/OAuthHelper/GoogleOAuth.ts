@@ -11,12 +11,12 @@
  * and limitations under the License.
  */
 import { ConsoleLogger as Logger } from '../Logger';
-import JS from '../JS';
+import { browserOrNode } from '../JS';
 
 const logger = new Logger('CognitoCredentials');
 
 const waitForInit = new Promise((res, rej) => {
-	if (!JS.browserOrNode().isBrowser) {
+	if (!browserOrNode().isBrowser) {
 		logger.debug('not in the browser, directly resolved');
 		return res();
 	}
@@ -32,7 +32,7 @@ const waitForInit = new Promise((res, rej) => {
 	}
 });
 
-export default class GoogleOAuth {
+export class GoogleOAuth {
 	public initialized = false;
 
 	constructor() {
@@ -53,7 +53,7 @@ export default class GoogleOAuth {
 
 	private _refreshGoogleTokenImpl() {
 		let ga = null;
-		if (JS.browserOrNode().isBrowser)
+		if (browserOrNode().isBrowser)
 			ga = window['gapi'] && window['gapi'].auth2 ? window['gapi'].auth2 : null;
 		if (!ga) {
 			logger.debug('no gapi auth2 available');
@@ -93,3 +93,8 @@ export default class GoogleOAuth {
 		});
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default GoogleOAuth;

@@ -228,7 +228,7 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('query function 1:1', async () => {
-		const [res] = await DataStore.save(blog);
+		const res = await DataStore.save(blog);
 		await DataStore.save(owner);
 		const query = await DataStore.query(Blog, blog.id);
 
@@ -364,8 +364,8 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('delete cascade', async () => {
-		const [a1] = await DataStore.save(new Author({ name: 'author1' }));
-		const [a2] = await DataStore.save(new Author({ name: 'author2' }));
+		const a1 = await DataStore.save(new Author({ name: 'author1' }));
+		const a2 = await DataStore.save(new Author({ name: 'author2' }));
 		const blog = new Blog({
 			name: 'The Blog',
 			owner,
@@ -378,8 +378,8 @@ describe('Indexed db storage test', () => {
 			title: 'Post 2',
 			blog,
 		});
-		const [c1] = await DataStore.save(new Comment({ content: 'c1', post: p1 }));
-		const [c2] = await DataStore.save(new Comment({ content: 'c2', post: p1 }));
+		const c1 = await DataStore.save(new Comment({ content: 'c1', post: p1 }));
+		const c2 = await DataStore.save(new Comment({ content: 'c2', post: p1 }));
 		await DataStore.save(p1);
 		await DataStore.save(p2);
 		await DataStore.save(blog);
