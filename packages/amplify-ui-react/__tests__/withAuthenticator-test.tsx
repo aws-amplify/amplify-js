@@ -9,7 +9,7 @@ describe('withAuthenticator', () => {
 		const Wrapped = withAuthenticator(App);
 
 		expect(renderToStaticMarkup(<Wrapped />)).toMatchInlineSnapshot(
-			`"<amplify-authenticator></amplify-authenticator>"`
+			`"<amplify-container><amplify-authenticator></amplify-authenticator></amplify-container>"`
 		);
 	});
 });
