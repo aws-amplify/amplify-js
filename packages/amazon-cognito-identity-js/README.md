@@ -88,6 +88,7 @@ migration.
   Package Manager, which is installed with Node.js):
 
   ```
+  > npm install --save-dev webpack-cli
   > npm install --save amazon-cognito-identity-js
   ```
 
