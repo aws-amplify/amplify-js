@@ -1,12 +1,17 @@
 import { I18n } from '@aws-amplify/core';
-import { Component, Prop, h, State } from '@stencil/core';
+import { Component, Prop, h, State, Watch } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { Translations } from '../../common/Translations';
 import { AuthState, CognitoUserInterface, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, checkUsernameAlias } from '../../common/helpers';
+import {
+  dispatchToastHubEvent,
+  dispatchAuthStateChangeEvent,
+  checkUsernameAlias,
+  isHintValid,
+} from '../../common/helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-up',
@@ -53,41 +58,68 @@ export class AmplifyConfirmSignUp {
 
   componentWillLoad() {
     checkUsernameAlias(this.usernameAlias);
+    this.buildFormFields();
+  }
+
+  @Watch('formFields')
+  formFieldsHandler() {
+    this.buildFormFields();
+  }
+
+  private buildDefaultFormFields() {
+    this.newFormFields = [
+      {
+        type: `${this.usernameAlias}`,
+        required: true,
+        handleInputChange: this.handleFormFieldInputChange(`${this.usernameAlias}`),
+        value: this.userInput,
+        disabled: this.userInput ? true : false,
+      },
+      {
+        type: 'code',
+        label: I18n.get(Translations.CONFIRM_SIGN_UP_CODE_LABEL),
+        placeholder: I18n.get(Translations.CONFIRM_SIGN_UP_CODE_PLACEHOLDER),
+        required: true,
+        hint: (
+          <div>
+            {I18n.get(Translations.CONFIRM_SIGN_UP_LOST_CODE)}{' '}
+            <amplify-button variant="anchor" onClick={() => this.resendConfirmCode()}>
+              {I18n.get(Translations.CONFIRM_SIGN_UP_RESEND_CODE)}
+            </amplify-button>
+          </div>
+        ),
+        handleInputChange: this.handleFormFieldInputChange('code'),
+      },
+    ];
+  }
+
+  private buildFormFields() {
     if (this.formFields.length === 0) {
-      this.newFormFields = [
-        {
-          type: `${this.usernameAlias}`,
-          required: true,
-          handleInputChange: this.handleFormFieldInputChange(`${this.usernameAlias}`),
-          value: this.userInput,
-          disabled: this.userInput ? true : false,
-        },
-        {
-          type: 'code',
-          label: I18n.get(Translations.CONFIRM_SIGN_UP_CODE_LABEL),
-          placeholder: I18n.get(Translations.CONFIRM_SIGN_UP_CODE_PLACEHOLDER),
-          required: true,
-          hint: (
+      this.buildDefaultFormFields();
+    } else {
+      const newFields = [];
+      this.formFields.forEach(field => {
+        const newField = { ...field };
+        if (newField.type === 'code') {
+          newField['hint'] = isHintValid(newField) ? (
             <div>
               {I18n.get(Translations.CONFIRM_SIGN_UP_LOST_CODE)}{' '}
               <amplify-button variant="anchor" onClick={() => this.resendConfirmCode()}>
                 {I18n.get(Translations.CONFIRM_SIGN_UP_RESEND_CODE)}
               </amplify-button>
             </div>
-          ),
-          handleInputChange: this.handleFormFieldInputChange('code'),
-        },
-      ];
-    } else {
-      this.formFields.forEach(field => {
-        const newField = { ...field };
+          ) : (
+            newField['hint']
+          );
+        }
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
-        this.newFormFields.push(newField);
+        newFields.push(newField);
       });
+      this.newFormFields = newFields;
     }
   }
 
-  handleFormFieldInputChange(fieldType) {
+  private handleFormFieldInputChange(fieldType) {
     switch (fieldType) {
       case 'username':
       case 'email':
@@ -100,7 +132,7 @@ export class AmplifyConfirmSignUp {
     }
   }
 
-  handleFormFieldInputWithCallback(event, field) {
+  private handleFormFieldInputWithCallback(event, field) {
     const fnToCall = field['handleInputChange']
       ? field['handleInputChange']
       : (event, cb) => {
@@ -110,7 +142,7 @@ export class AmplifyConfirmSignUp {
     fnToCall(event, callback.bind(this));
   }
 
-  async resendConfirmCode() {
+  private async resendConfirmCode() {
     if (event) {
       event.preventDefault();
     }
@@ -128,7 +160,7 @@ export class AmplifyConfirmSignUp {
 
   // TODO: Add validation
   // TODO: Prefix
-  async confirmSignUp(event: Event) {
+  private async confirmSignUp(event: Event) {
     if (event) {
       event.preventDefault();
     }

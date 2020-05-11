@@ -8,7 +8,7 @@ import { hasShadowDom } from '../../common/helpers';
   shadow: true,
 })
 export class AmplifyButton {
-  @Element() el!: HTMLElement;
+  @Element() el!: HTMLAmplifyButtonElement;
   /** Type of the button: 'button', 'submit' or 'reset' */
   @Prop() type: ButtonTypes = 'button';
   /** Variant of a button: 'button' | 'anchor' */

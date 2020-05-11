@@ -20,7 +20,7 @@ export class AmplifyGoogleButton {
   /** App-specific client ID from Google */
   @Prop() clientId: FederatedConfig['googleClientId'];
 
-  getAuthInstance() {
+  private getAuthInstance() {
     if (window['gapi'] && window['gapi'].auth2) {
       return (
         window['gapi'].auth2.getAuthInstance() ||
@@ -35,7 +35,7 @@ export class AmplifyGoogleButton {
     return null;
   }
 
-  signInWithGoogle(event) {
+  private signInWithGoogle(event) {
     event.preventDefault();
 
     this.getAuthInstance()
@@ -44,18 +44,18 @@ export class AmplifyGoogleButton {
       .catch(this.handleError);
   }
 
-  handleError = error => {
+  private handleError = error => {
     console.error(error);
   };
 
   /**
    * @see https://developers.google.com/identity/sign-in/web/build-button#building_a_button_with_a_custom_graphic
    */
-  handleLoad = () => {
+  private handleLoad = () => {
     window['gapi'].load('auth2');
   };
 
-  handleUser = async user => {
+  private handleUser = async user => {
     if (!Auth || typeof Auth.federatedSignIn !== 'function' || typeof Auth.currentAuthenticatedUser !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
