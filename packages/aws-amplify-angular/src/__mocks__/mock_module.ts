@@ -5,7 +5,7 @@ const authModule = {
 				resolve(1);
 			});
 		},
-		signUp: (...args: any[])=> {
+		signUp: () => {
 			return new Promise((resolve, reject) => {
 				resolve({ username: 'fakename' });
 			});
