@@ -103,12 +103,17 @@ export class RestAPIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async get(apiName, path, init) {
+	get(apiName, path, init): Promise<any> {
 		const endpoint = this._api.endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
 		}
-		return this._api.get(endpoint + path, init);
+		const cancellableToken = this._api.getCancellableToken();
+		const initParams = Object.assign({}, init);
+		initParams.cancellableToken = cancellableToken;
+		const responsePromise = this._api.get(endpoint + path, initParams);
+		this._api.updateRequestToBeCancellable(responsePromise, cancellableToken);
+		return responsePromise;
 	}
 
 	/**
@@ -118,12 +123,17 @@ export class RestAPIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async post(apiName, path, init) {
+	post(apiName, path, init): Promise<any> {
 		const endpoint = this._api.endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
 		}
-		return this._api.post(endpoint + path, init);
+		const cancellableToken = this._api.getCancellableToken();
+		const initParams = Object.assign({}, init);
+		initParams.cancellableToken = cancellableToken;
+		const responsePromise = this._api.post(endpoint + path, initParams);
+		this._api.updateRequestToBeCancellable(responsePromise, cancellableToken);
+		return responsePromise;
 	}
 
 	/**
@@ -133,12 +143,17 @@ export class RestAPIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async put(apiName, path, init) {
+	put(apiName, path, init): Promise<any> {
 		const endpoint = this._api.endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
 		}
-		return this._api.put(endpoint + path, init);
+		const cancellableToken = this._api.getCancellableToken();
+		const initParams = Object.assign({}, init);
+		initParams.cancellableToken = cancellableToken;
+		const responsePromise = this._api.put(endpoint + path, initParams);
+		this._api.updateRequestToBeCancellable(responsePromise, cancellableToken);
+		return responsePromise;
 	}
 
 	/**
@@ -148,12 +163,17 @@ export class RestAPIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async patch(apiName, path, init) {
+	patch(apiName, path, init): Promise<any> {
 		const endpoint = this._api.endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
 		}
-		return this._api.patch(endpoint + path, init);
+		const cancellableToken = this._api.getCancellableToken();
+		const initParams = Object.assign({}, init);
+		initParams.cancellableToken = cancellableToken;
+		const responsePromise = this._api.patch(endpoint + path, initParams);
+		this._api.updateRequestToBeCancellable(responsePromise, cancellableToken);
+		return responsePromise;
 	}
 
 	/**
@@ -163,12 +183,17 @@ export class RestAPIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async del(apiName, path, init) {
+	del(apiName, path, init): Promise<any> {
 		const endpoint = this._api.endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
 		}
-		return this._api.del(endpoint + path, init);
+		const cancellableToken = this._api.getCancellableToken();
+		const initParams = Object.assign({}, init);
+		initParams.cancellableToken = cancellableToken;
+		const responsePromise = this._api.del(endpoint + path, initParams);
+		this._api.updateRequestToBeCancellable(responsePromise, cancellableToken);
+		return responsePromise;
 	}
 
 	/**
@@ -178,12 +203,35 @@ export class RestAPIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async head(apiName, path, init) {
+	head(apiName, path, init): Promise<any> {
 		const endpoint = this._api.endpoint(apiName);
 		if (endpoint.length === 0) {
 			return Promise.reject('API ' + apiName + ' does not exist');
 		}
-		return this._api.head(endpoint + path, init);
+		const cancellableToken = this._api.getCancellableToken();
+		const initParams = Object.assign({}, init);
+		initParams.cancellableToken = cancellableToken;
+		const responsePromise = this._api.head(endpoint + path, initParams);
+		this._api.updateRequestToBeCancellable(responsePromise, cancellableToken);
+		return responsePromise;
+	}
+
+	/**
+	 * Checks to see if an error thrown is from an api request cancellation
+	 * @param {any} error - Any error
+	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
+	 */
+	isCancel(error) {
+		return this._api.isCancel(error);
+	}
+
+	/**
+	 * Cancels an inflight request
+	 * @param {any} request - request to cancel
+	 * @return {boolean} - A boolean indicating if the request was cancelled
+	 */
+	cancel(request: Promise<any>, message?: string) {
+		return this._api.cancel(request, message);
 	}
 
 	/**
