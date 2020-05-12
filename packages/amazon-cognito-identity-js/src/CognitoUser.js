@@ -1211,7 +1211,7 @@ export default class CognitoUser {
 	 * be directly called by the consumers.
 	 */
 	createGetUserRequest() {
-		return this.client.promisableRequest('GetUser', {
+		return this.client.promisifyRequest('GetUser', {
 			AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 		});
 	}
