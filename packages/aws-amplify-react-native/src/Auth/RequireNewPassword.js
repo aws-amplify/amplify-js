@@ -20,6 +20,7 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	SignedOutMessage,
 	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
@@ -79,7 +80,7 @@ export default class RequireNewPassword extends AuthPiece {
 		const { requiredAttributes } = user.challengeParam;
 		return (
 			<Wrapper>
-				<ScrollView style={theme.section}>
+				<ScrollView style={theme.sectionScroll}>
 					<Header theme={theme} testID={TEST_ID.AUTH.CHANGE_PASSWORD_TEXT}>
 						{I18n.get('Change Password')}
 					</Header>
@@ -119,6 +120,7 @@ export default class RequireNewPassword extends AuthPiece {
 						</LinkCell>
 					</View>
 					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+					<SignedOutMessage {...this.props} />
 				</ScrollView>
 			</Wrapper>
 		);
