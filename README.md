@@ -25,46 +25,51 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
 
 ## Notice:
 
-### Amplify@3.x.x has breaking changes. Please see the breaking changes below: 
-* `AWS.credentials` and `AWS.config` don’t exist anymore anywhere in Amplify JS
-  * Both options will not be available to use in version 3. You will not be able to use and set your own credentials. Migration plan on “How to migrate to using Amplify provided credentials” will follow in the coming weeks after GA launch.
-* `aws-sdk@2.x` has been removed from `Amplify@3.x.x` in favor of [version 3 of aws-sdk-js](https://github.com/aws/aws-sdk-js-v3). We recommend to migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) if you rely on AWS services that are not supported by Amplify, since [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) is imported modularly.
+### Amplify@3.x.x has breaking changes. Please see the breaking changes below:
+
+- `AWS.credentials` and `AWS.config` don’t exist anymore anywhere in Amplify JS
+  - Both options will not be available to use in version 3. You will not be able to use and set your own credentials. Migration plan on “How to migrate to using Amplify provided credentials” will follow in the coming weeks after GA launch.
+- `aws-sdk@2.x` has been removed from `Amplify@3.x.x` in favor of [version 3 of aws-sdk-js](https://github.com/aws/aws-sdk-js-v3). We recommend to migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) if you rely on AWS services that are not supported by Amplify, since [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) is imported modularly.
 
 If you can't migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) or rely on aws-sdk@2.x, you will need to import it separately.
-* If you are using exported paths within your Amplify JS application, (e.g. `import from "@aws-amplify/analytics/lib/Analytics"`) this will now break and no longer will be supported. You will need to change to named imports:
 
-    ```js
-    import { Analytics } from "aws-amplify"
-    ```
-* If you are using categories as `Amplify.<Category>`, this will no longer work and we recommend to import the category you are needing to use:
+- If you are using exported paths within your Amplify JS application, (e.g. `import from "@aws-amplify/analytics/lib/Analytics"`) this will now break and no longer will be supported. You will need to change to named imports:
 
-    ```js
-    import { Auth } from "aws-amplify"
-    ```
-  * The one exception to this is using `aws-amplify-angular` package where we are still supplying all instantiated categories. This is subject to change in a later release.
-* For `aws-amplify-react`'s `Authenticator` Component, you will need to import the styles within your app:
+  ```js
+  import { Analytics } from 'aws-amplify';
+  ```
 
-    ```js
-    import `@aws-amplify/ui/dist/style.css`;
-    ```
+- If you are using categories as `Amplify.<Category>`, this will no longer work and we recommend to import the category you are needing to use:
+
+  ```js
+  import { Auth } from 'aws-amplify';
+  ```
+
+  - The one exception to this is using `aws-amplify-angular` package where we are still supplying all instantiated categories. This is subject to change in a later release.
+
+- For `aws-amplify-react`'s `Authenticator` Component, you will need to import the styles within your app:
+
+  ```js
+  import `@aws-amplify/ui/dist/style.css`;
+  ```
 
 ### Features / APIs
 
-- [**Authentication**](https://aws.github.io/aws-amplify/media/authentication_guide): APIs and building blocks for developers who want to create user authentication experiences.
-- [**Analytics**](https://aws.github.io/aws-amplify/media/analytics_guide): Easily collect analytics data for your app. Analytics data includes user sessions and other custom events that you want to track in your app.
-- [**API**](https://aws.github.io/aws-amplify/media/api_guide): Provides a simple solution when making HTTP requests. It provides an automatic, lightweight signing process which complies with AWS Signature Version 4.
-- [**GraphQL Client**](https://aws.github.io/aws-amplify/media/api_guide#configuration-for-graphql-server): Interact with your GraphQL server or AWS AppSync API with an easy-to-use & configured GraphQL client.
-- [**Storage**](https://aws.github.io/aws-amplify/media/storage_guide): Provides a simple mechanism for managing user content for your app in public, protected or private storage buckets.
-- [**Push Notifications**](https://aws.github.io/aws-amplify/media/push_notifications_setup): Allows you to integrate push notifications in your app with Amazon Pinpoint targeting and campaign management support.
-- [**Interactions**](https://aws.github.io/aws-amplify/media/interactions_guide): Create conversational bots powered by deep learning technologies.
-- [**PubSub**](https://aws.github.io/aws-amplify/media/pub_sub_guide): Provides connectivity with cloud-based message-oriented middleware.
-- [**Internationalization**](https://aws.github.io/aws-amplify/media/i18n_guide): A lightweight internationalization solution.
-- [**Cache**](https://aws.github.io/aws-amplify/media/cache_guide): Provides a generic LRU cache for JavaScript developers to store data with priority and expiration settings.
-- [**Predictions**](https://aws-amplify.github.io/docs/js/predictions): Provides a solution for using AI and ML cloud services to enhance your application.
+- [**Authentication**](https://docs.amplify.aws/lib/auth/getting-started/q/platform/js): APIs and building blocks for developers who want to create user authentication experiences.
+- [**Analytics**](https://docs.amplify.aws/lib/analytics/getting-started/q/platform/js): Easily collect analytics data for your app. Analytics data includes user sessions and other custom events that you want to track in your app.
+- [**REST API**](https://docs.amplify.aws/lib/restapi/getting-started/q/platform/js): Provides a simple solution when making HTTP requests. It provides an automatic, lightweight signing process which complies with AWS Signature Version 4.
+- [**GraphQL API**](https://docs.amplify.aws/lib/graphqlapi/getting-started/q/platform/js): Interact with your GraphQL server or AWS AppSync API with an easy-to-use & configured GraphQL client.
+- [**Storage**](https://docs.amplify.aws/lib/storage/getting-started/q/platform/js): Provides a simple mechanism for managing user content for your app in public, protected or private storage buckets.
+- [**Push Notifications**](https://docs.amplify.aws/lib/push-notifications/getting-started/q/platform/js): Allows you to integrate push notifications in your app with Amazon Pinpoint targeting and campaign management support.
+- [**Interactions**](https://docs.amplify.aws/lib/interactions/getting-started/q/platform/js#interactions-with-aws): Create conversational bots powered by deep learning technologies.
+- [**PubSub**](https://docs.amplify.aws/lib/pubsub/getting-started/q/platform/js): Provides connectivity with cloud-based message-oriented middleware.
+- [**Internationalization**](https://docs.amplify.aws/lib/utilities/i18n/q/platform/js): A lightweight internationalization solution.
+- [**Cache**](https://docs.amplify.aws/lib/utilities/cache/q/platform/js): Provides a generic LRU cache for JavaScript developers to store data with priority and expiration settings.
+- [**Predictions**](https://docs.amplify.aws/lib/predictions/getting-started/q/platform/js): Provides a solution for using AI and ML cloud services to enhance your application.
 
-#### Visit our [Web Site](https://aws.github.io/aws-amplify) to learn more about AWS Amplify.
+#### Visit our [Web Site](https://docs.amplify.aws/) to learn more about AWS Amplify.
 
-- [Documentation](https://aws.github.io/aws-amplify)
+- [Documentation](https://docs.amplify.aws/)
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Examples](#examples)
@@ -97,14 +102,14 @@ $ npm install aws-amplify-react --save
 
 **Angular**
 
-If you are developing an [Angular](https://github.com/angular/angular) app, you can install an additional package `aws-amplify-angular`. This package contains an [Angular module](https://angular.io/guide/architecture-modules) with a [provider and components](https://aws.github.io/aws-amplify/media/angular_guide):
+If you are developing an [Angular](https://github.com/angular/angular) app, you can install an additional package `aws-amplify-angular`. This package contains an [Angular module](https://angular.io/guide/architecture-modules) with a [provider and components](https://docs.amplify.aws/start/q/integration/angular):
 
 ```bash
 $ npm install aws-amplify --save
 $ npm install aws-amplify-angular --save
 ```
 
-Visit our [Installation Guide for Web](https://aws.github.io/aws-amplify/media/install_n_config?platform=javascript) to start building your web app.
+Visit our [Installation Guide for Web](https://docs.amplify.aws/start) to start building your web app.
 
 **Vue**
 
@@ -115,7 +120,7 @@ $ npm install aws-amplify --save
 $ npm install aws-amplify-vue --save
 ```
 
-Visit our [Installation Guide for Web](https://aws-amplify.github.io/amplify-js/media/vue_guide#vue) to start building your Vue app.
+Visit our [Installation Guide for Web](https://docs.amplify.aws/start/q/integration/vue) to start building your Vue app.
 
 **React Native**
 
@@ -131,7 +136,7 @@ If you are developing a [React Native](https://github.com/facebook/react-native)
 $ npm install aws-amplify-react-native --save
 ```
 
-Visit our [Installation Guide for React Native](https://aws.github.io/aws-amplify/media/install_n_config?platform=react-native) to start building your web app.
+Visit our [Installation Guide for React Native](https://docs.amplify.aws/start/q/integration/react) to start building your web app.
 
 ## Configuration
 
@@ -166,7 +171,7 @@ Amplify.configure({
 
 ## Examples
 
-AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](https://aws.github.io/aws-amplify/media/developer_guide). A couple of samples are below:
+AWS Amplify supports many category scenarios such as Auth, Analytics, APIs and Storage as outlined in the [Developer Guide](https://docs.amplify.aws/start). A couple of samples are below:
 
 ### 1. Collect user session metrics
 
@@ -178,11 +183,11 @@ import Analytics from '@aws-amplify/analytics';
 Analytics.record('myCustomEvent');
 ```
 
-See our [Analytics Developer Guide](https://aws.github.io/aws-amplify/media/analytics_guide) for detailed information.
+See our [Analytics Developer Guide](https://docs.amplify.aws/lib/analytics/getting-started/q/platform/js) for detailed information.
 
 ### 2. Add Authentication to your App
 
-Add user sign up and sign in using two of the many methods available to the [Auth class](https://aws.github.io/aws-amplify/api/classes/authclass.html):
+Add user sign up and sign in using two of the many methods available to the [Auth class](https://aws-amplify.github.io/amplify-js/api/classes/authclass.html):
 
 ```js
 import Auth from '@aws-amplify/auth';
@@ -200,7 +205,7 @@ Auth.signIn(username, password)
 	.catch(err => console.log(err));
 ```
 
-See our [Authentication Developer Guide](https://aws.github.io/aws-amplify/media/authentication_guide) for detailed information.
+See our [Authentication Developer Guide](https://docs.amplify.aws/lib/auth/getting-started/q/platform/js) for detailed information.
 
 **React / React Native**
 
@@ -244,7 +249,7 @@ constructor( public amplify:AmplifyService ) {
 
 ```
 
-See our [Angular Guide](https://aws.github.io/aws-amplify/media/angular_guide) for more details on Angular setup and usage.
+See our [Angular Guide](https://docs.amplify.aws/start/q/integration/angular) for more details on Angular setup and usage.
 
 ### 3. Sign HTTP requests
 
@@ -263,7 +268,7 @@ API.get(apiName, path, options).then(response => {
 });
 ```
 
-See our [API Developer Guide](https://aws.github.io/aws-amplify/media/api_guide) for detailed information.
+See our [REST API Developer Guide](https://docs.amplify.aws/lib/restapi/getting-started/q/platform/js) for detailed information.
 
 ### 4. GraphQL API Operations
 
@@ -353,7 +358,7 @@ const subscription = API.graphql(
 });
 ```
 
-See our [GraphQL API Developer Guide](https://aws.github.io/aws-amplify/media/api_guide#configuration-for-graphql-server) for detailed information.
+See our [GraphQL API Developer Guide](https://docs.amplify.aws/lib/graphqlapi/getting-started/q/platform/js) for detailed information.
 
 ### 5. Upload and Download public or private content
 
@@ -373,4 +378,4 @@ Storage.put(key, fileObj, {
 	.catch(err => console.log(err));
 ```
 
-See our [Storage Developer Guide](https://aws.github.io/aws-amplify/media/storage_guide) for detailed information.
+See our [Storage Developer Guide](https://docs.amplify.aws/lib/storage/getting-started/q/platform/js) for detailed information.
