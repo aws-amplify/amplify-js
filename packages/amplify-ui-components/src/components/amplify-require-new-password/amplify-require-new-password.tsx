@@ -62,18 +62,20 @@ export class AmplifyRequireNewPassword {
   }
 
   componentWillLoad() {
-    const userRequiredAttributes = this.user.challengeParam.requiredAttributes;
+    if (this.user && this.user.challengeParam.requiredAttributes) {
+      const userRequiredAttributes = this.user.challengeParam.requiredAttributes;
 
-    userRequiredAttributes.forEach(attribute => {
-      const formField = {
-        type: attribute,
-        required: true,
-        label: requiredAttributesMap[attribute].label,
-        placeholder: requiredAttributesMap[attribute].placeholder,
-        handleInputChange: event => this.handleRequiredAttributeInputChange(attribute, event),
-      };
-      this.formFields.push(formField);
-    });
+      userRequiredAttributes.forEach(attribute => {
+        const formField = {
+          type: attribute,
+          required: true,
+          label: requiredAttributesMap[attribute].label,
+          placeholder: requiredAttributesMap[attribute].placeholder,
+          handleInputChange: event => this.handleRequiredAttributeInputChange(attribute, event),
+        };
+        this.formFields.push(formField);
+      });
+    }
   }
 
   private handlePasswordChange(event) {
