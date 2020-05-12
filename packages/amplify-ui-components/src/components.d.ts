@@ -44,6 +44,7 @@ export namespace Components {
           * Federated credentials & configuration.
          */
         "federated": FederatedConfig;
+        "handleSignedIn": (user: CognitoUserInterface) => void;
         /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
@@ -598,10 +599,6 @@ export namespace Components {
         "value"?: string;
     }
     interface AmplifyRequireNewPassword {
-        /**
-          * The form fields displayed inside of the forgot password form
-         */
-        "formFields": FormFieldTypes;
         /**
           * Auth state change handler for this component
          */
@@ -1176,6 +1173,7 @@ declare namespace LocalJSX {
           * Federated credentials & configuration.
          */
         "federated"?: FederatedConfig;
+        "handleSignedIn"?: (user: CognitoUserInterface) => void;
         /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
@@ -1734,10 +1732,6 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     interface AmplifyRequireNewPassword {
-        /**
-          * The form fields displayed inside of the forgot password form
-         */
-        "formFields"?: FormFieldTypes;
         /**
           * Auth state change handler for this component
          */

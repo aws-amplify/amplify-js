@@ -11,6 +11,7 @@ import {
 } from '../../common/constants';
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
 import { Hub, Logger } from '@aws-amplify/core';
+// import { dispatchAuthStateChangeEvent, dispatchToastHubEvent, ToastError } from '../../common/helpers';
 import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 const logger = new Logger('Authenticator');
@@ -26,6 +27,8 @@ export class AmplifyAuthenticator {
   @Prop() federated: FederatedConfig;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
   @Prop() usernameAlias: UsernameAliasStrings;
+
+  @Prop() handleSignedIn: (user: CognitoUserInterface) => void;
 
   @State() authState: AuthState = AuthState.Loading;
   @State() authData: CognitoUserInterface;
@@ -94,10 +97,28 @@ export class AmplifyAuthenticator {
     }
   }
 
-  private onAuthStateChange = (nextAuthState: AuthState, data?: CognitoUserInterface) => {
-    if (nextAuthState === undefined) return logger.info('nextAuthState cannot be undefined');
+  private onAuthStateChange = async (nextAuthState: AuthState, data?: CognitoUserInterface) => {
+    if (nextAuthState === undefined) return logger.error('nextAuthState cannot be undefined');
 
     logger.info('Inside onAuthStateChange Method current authState:', this.authState);
+
+    try {
+      const user = await Auth.currentAuthenticatedUser();
+      console.log(user);
+    } catch (error) {
+      console.log(error);
+    }
+
+    // if (nextAuthState === AuthState.SignedIn && data) {
+    //   const user = await Auth.currentAuthenticatedUser();
+    //   if (!user) {
+    //     return dispatchToastHubEvent({
+    //       message: 'Invalid Auth State',
+    //     } as ToastError);
+    //   }
+    //   this.handleSignedIn(user);
+    // }
+
     if (nextAuthState === AuthState.SignedOut) {
       this.authState = this.initialAuthState;
     } else {

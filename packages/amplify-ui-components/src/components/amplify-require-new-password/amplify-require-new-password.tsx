@@ -13,7 +13,7 @@ import { Translations } from '../../common/Translations';
 
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, requiredAttributesMap } from '../../common/helpers';
 
 const logger = new Logger('amplify-require-new-password');
 
@@ -33,7 +33,21 @@ export class AmplifyRequireNewPassword {
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
   /** The form fields displayed inside of the forgot password form */
-  @Prop() formFields: FormFieldTypes = [
+  // @Prop() formFields: FormFieldTypes = [
+  //   {
+  //     type: AuthFormField.Password,
+  //     required: true,
+  //     handleInputChange: event => this.handlePasswordChange(event),
+  //     label: I18n.get(Translations.NEW_PASSWORD_LABEL),
+  //     placeholder: I18n.get(Translations.NEW_PASSWORD_PLACEHOLDER),
+  //   },
+  // ];
+
+  @State() password: string;
+  @State() loading: boolean = false;
+  private requiredAttributes: object = {};
+
+  private formFields: FormFieldTypes = [
     {
       type: AuthFormField.Password,
       required: true,
@@ -43,8 +57,24 @@ export class AmplifyRequireNewPassword {
     },
   ];
 
-  @State() password: string;
-  @State() loading: boolean = false;
+  private handleRequiredAttributeInputChange(attribute, event) {
+    this.requiredAttributes[attribute] = event.target.value;
+  }
+
+  componentWillLoad() {
+    const userRequiredAttributes = this.user.challengeParam.requiredAttributes;
+
+    userRequiredAttributes.forEach(attribute => {
+      const formField = {
+        type: attribute,
+        required: true,
+        label: requiredAttributesMap[attribute].label,
+        placeholder: requiredAttributesMap[attribute].placeholder,
+        handleInputChange: event => this.handleRequiredAttributeInputChange(attribute, event),
+      };
+      this.formFields.push(formField);
+    });
+  }
 
   private handlePasswordChange(event) {
     this.password = event.target.value;
@@ -78,8 +108,8 @@ export class AmplifyRequireNewPassword {
 
     this.loading = true;
     try {
-      const { requiredAttributes } = this.user.challengeParam;
-      const user = await Auth.completeNewPassword(this.user, this.password, requiredAttributes);
+      // const { requiredAttributes } = this.user.challengeParam;
+      const user = await Auth.completeNewPassword(this.user, this.password, this.requiredAttributes);
 
       logger.debug('complete new password', user);
       switch (user.challengeName) {
