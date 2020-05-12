@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 import { Amplify, Logger, Hub } from '@aws-amplify/core';
 import { AuthState } from './auth.state';
 import * as _ from 'lodash';
@@ -76,9 +76,9 @@ function decorateSignIn(authState: Subject<AuthState>, Auth) {
 
 function decorateSignOut(authState: Subject<AuthState>, Auth) {
 	const _signOut = Auth.signOut;
-	Auth.signOut = (): Promise<any> => {
+	Auth.signOut = (opts: { global: boolean } | undefined): Promise<any> => {
 		return _signOut
-			.call(Amplify.Auth)
+			.call(Auth, opts)
 			.then(data => {
 				logger.debug('signOut success');
 				authState.next({ state: 'signedOut', user: null });
@@ -94,11 +94,25 @@ function decorateSignOut(authState: Subject<AuthState>, Auth) {
 function decorateSignUp(authState: Subject<AuthState>, Auth) {
 	const _signUp = Auth.signUp;
 	Auth.signUp = (
-		username: string,
-		password: string,
-		email: string,
-		phone_number: string
+		params: string | { username: string },
+		...restOfAttrs: string[]
 	): Promise<any> => {
+
+		let username: string = null;
+		let password: string = null;
+		let email: string = null;
+		let phone_number: string = null;
+
+		if (params && typeof params === 'string') {
+			username = params;
+			password = restOfAttrs ? restOfAttrs[0] : null;
+			email = restOfAttrs ? restOfAttrs[1] : null;
+			phone_number = restOfAttrs ? restOfAttrs[2] : null;
+		} else if (params && typeof params === 'object') {
+			username = params['username'];
+			password = params['password'];
+		}
+
 		return _signUp
 			.call(Auth, username, password, email, phone_number)
 			.then(data => {

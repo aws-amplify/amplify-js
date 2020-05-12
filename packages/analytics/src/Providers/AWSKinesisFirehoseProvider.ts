@@ -12,7 +12,7 @@
  */
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { AWSKinesisProvider } from './index';
+import { AWSKinesisProvider } from './AWSKinesisProvider';
 import {
 	PutRecordBatchCommand,
 	FirehoseClient,
