@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import {
 	FormField,
@@ -20,8 +20,11 @@ import {
 	Header,
 	ErrorRow,
 	AmplifyButton,
+	SignedOutMessage,
+	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
+import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('ConfirmSignUp');
 
@@ -41,7 +44,8 @@ export default class ConfirmSignUp extends AuthPiece {
 	}
 
 	confirm() {
-		const { username, code } = this.state;
+		const { code } = this.state;
+		const username = this.getUsernameFromInput();
 		logger.debug('Confirm Sign Up for ' + username);
 		Auth.confirmSignUp(username, code)
 			.then(data => this.changeState('signedUp'))
@@ -49,63 +53,72 @@ export default class ConfirmSignUp extends AuthPiece {
 	}
 
 	resend() {
-		const { username } = this.state;
+		const username = this.getUsernameFromInput();
 		logger.debug('Resend Sign Up for ' + username);
 		Auth.resendSignUp(username)
 			.then(() => logger.debug('code sent'))
 			.catch(err => this.error(err));
 	}
 
-	componentWillReceiveProps(nextProps) {
-		const username = nextProps.authData;
-		if (username && !this.state.username) {
-			this.setState({ username });
+	static getDerivedStateFromProps(props, state) {
+		const username = props.authData;
+
+		if (username && !state.username) {
+			return { username };
 		}
+
+		return null;
 	}
 
 	showComponent(theme) {
+		const username = this.getUsernameFromInput();
 		return (
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+			<Wrapper>
 				<View style={theme.section}>
-					<Header theme={theme}>{I18n.get('Confirm Sign Up')}</Header>
-					<View style={theme.sectionBody}>
-						<FormField
-							theme={theme}
-							onChangeText={text => this.setState({ username: text })}
-							label={I18n.get(this.getUsernameLabel())}
-							placeholder={I18n.get('Enter your username')}
-							required={true}
-							value={this.state.username}
-						/>
-						<FormField
-							theme={theme}
-							onChangeText={text => this.setState({ code: text })}
-							label={I18n.get('Confirmation Code')}
-							placeholder={I18n.get('Enter your confirmation code')}
-							required={true}
-						/>
-						<AmplifyButton
-							theme={theme}
-							text={I18n.get('Confirm')}
-							onPress={this.confirm}
-							disabled={!this.state.username || !this.state.code}
-						/>
+					<View>
+						<Header theme={theme} testID={TEST_ID.AUTH.CONFIRM_SIGN_UP_TEXT}>
+							{I18n.get('Confirm Sign Up')}
+						</Header>
+						<View style={theme.sectionBody}>
+							{this.renderUsernameField(theme)}
+							<FormField
+								theme={theme}
+								onChangeText={text => this.setState({ code: text })}
+								label={I18n.get('Confirmation Code')}
+								placeholder={I18n.get('Enter your confirmation code')}
+								required={true}
+								testID={TEST_ID.AUTH.CONFIRMATION_CODE_INPUT}
+							/>
+							<AmplifyButton
+								theme={theme}
+								text={I18n.get('Confirm')}
+								onPress={this.confirm}
+								disabled={!username || !this.state.code}
+								testID={TEST_ID.AUTH.CONFIRM_BUTTON}
+							/>
+						</View>
+						<View style={theme.sectionFooter}>
+							<LinkCell
+								theme={theme}
+								onPress={this.resend}
+								disabled={!this.state.username}
+								testID={TEST_ID.AUTH.RESEND_CODE_BUTTON}
+							>
+								{I18n.get('Resend code')}
+							</LinkCell>
+							<LinkCell
+								theme={theme}
+								onPress={() => this.changeState('signIn')}
+								testID={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
+							>
+								{I18n.get('Back to Sign In')}
+							</LinkCell>
+						</View>
+						<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 					</View>
-					<View style={theme.sectionFooter}>
-						<LinkCell
-							theme={theme}
-							onPress={this.resend}
-							disabled={!this.state.username}
-						>
-							{I18n.get('Resend code')}
-						</LinkCell>
-						<LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
-							{I18n.get('Back to Sign In')}
-						</LinkCell>
-					</View>
-					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+					<SignedOutMessage {...this.props} />
 				</View>
-			</TouchableWithoutFeedback>
+			</Wrapper>
 		);
 	}
 }

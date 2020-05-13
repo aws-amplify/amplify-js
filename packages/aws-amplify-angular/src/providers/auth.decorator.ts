@@ -1,5 +1,5 @@
-import { Subject } from 'rxjs/Subject';
-import Amplify, { Logger, Hub } from '@aws-amplify/core';
+import { Subject } from 'rxjs';
+import { Amplify, Logger, Hub } from '@aws-amplify/core';
 import { AuthState } from './auth.state';
 import * as _ from 'lodash';
 
@@ -76,9 +76,9 @@ function decorateSignIn(authState: Subject<AuthState>, Auth) {
 
 function decorateSignOut(authState: Subject<AuthState>, Auth) {
 	const _signOut = Auth.signOut;
-	Auth.signOut = (): Promise<any> => {
+	Auth.signOut = (opts: { global: boolean } | undefined): Promise<any> => {
 		return _signOut
-			.call(Amplify.Auth)
+			.call(Auth, opts)
 			.then(data => {
 				logger.debug('signOut success');
 				authState.next({ state: 'signedOut', user: null });

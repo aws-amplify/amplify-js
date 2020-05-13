@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-import { View, Picker, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Picker } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import {
 	AmplifyButton,
@@ -20,8 +20,11 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	SignedOutMessage,
+	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
+import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('VerifyContact');
 
@@ -104,6 +107,7 @@ export default class VerifyContact extends AuthPiece {
 				<Picker
 					selectedValue={this.state.pickAttr}
 					onValueChange={(value, index) => this.setState({ pickAttr: value })}
+					testID={TEST_ID.AUTH.VERIFY_CONTACT_PICKER}
 				>
 					<Picker.Item label={I18n.get('Email')} value="email" />
 					<Picker.Item label={I18n.get('Phone Number')} value="phone_number" />
@@ -114,6 +118,7 @@ export default class VerifyContact extends AuthPiece {
 				<Picker
 					selectedValue={this.state.pickAttr}
 					onValueChange={(value, index) => this.setState({ pickAttr: value })}
+					testID={TEST_ID.AUTH.VERIFY_CONTACT_PICKER}
 				>
 					<Picker.Item label={I18n.get('Email')} value="email" />
 				</Picker>
@@ -123,6 +128,7 @@ export default class VerifyContact extends AuthPiece {
 				<Picker
 					selectedValue={this.state.pickAttr}
 					onValueChange={(value, index) => this.setState({ pickAttr: value })}
+					testID={TEST_ID.AUTH.VERIFY_CONTACT_PICKER}
 				>
 					<Picker.Item label={I18n.get('Phone Number')} value="phone_number" />
 				</Picker>
@@ -148,6 +154,7 @@ export default class VerifyContact extends AuthPiece {
 					text={I18n.get('Verify')}
 					onPress={this.verify}
 					disabled={!this.state.pickAttr}
+					testID={TEST_ID.AUTH.VERIFY_BUTTON}
 				/>
 			</View>
 		);
@@ -162,12 +169,14 @@ export default class VerifyContact extends AuthPiece {
 					label={I18n.get('Confirmation Code')}
 					placeholder={I18n.get('Enter your confirmation code')}
 					required={true}
+					testID={TEST_ID.AUTH.CONFIRMATION_CODE_INPUT}
 				/>
 				<AmplifyButton
 					theme={theme}
 					text={I18n.get('Submit')}
 					onPress={this.submit}
 					disabled={!this.state.code}
+					testID={TEST_ID.AUTH.SUBMIT_BUTTON}
 				/>
 			</View>
 		);
@@ -175,22 +184,28 @@ export default class VerifyContact extends AuthPiece {
 
 	showComponent(theme) {
 		return (
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+			<Wrapper>
 				<View style={theme.section}>
-					<Header theme={theme}>{I18n.get('Verify Contact')}</Header>
-					{!this.state.verifyAttr && this.verifyBody(theme)}
-					{this.state.verifyAttr && this.submitBody(theme)}
-					<View style={theme.sectionFooter}>
-						<LinkCell
-							theme={theme}
-							onPress={() => this.changeState('signedIn')}
-						>
-							{I18n.get('Skip')}
-						</LinkCell>
+					<View>
+						<Header theme={theme} testID={TEST_ID.AUTH.VERIFY_CONTACT_TEXT}>
+							{I18n.get('Verify Contact')}
+						</Header>
+						{!this.state.verifyAttr && this.verifyBody(theme)}
+						{this.state.verifyAttr && this.submitBody(theme)}
+						<View style={theme.sectionFooter}>
+							<LinkCell
+								theme={theme}
+								onPress={() => this.changeState('signedIn')}
+								testID={TEST_ID.AUTH.SKIP_BUTTON}
+							>
+								{I18n.get('Skip')}
+							</LinkCell>
+						</View>
+						<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 					</View>
-					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+					<SignedOutMessage {...this.props} />
 				</View>
-			</TouchableWithoutFeedback>
+			</Wrapper>
 		);
 	}
 }

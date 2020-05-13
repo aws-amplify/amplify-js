@@ -5,14 +5,13 @@ jest.mock('../src/vendor/dom-utils', () => {
 });
 
 import {
-	AWS,
 	ClientDevice,
 	Parser,
 	ConsoleLogger as Logger,
 	Credentials,
 } from '@aws-amplify/core';
 import { AnalyticsOptions, EventAttributes, EventMetrics } from '../src/types';
-import { default as Analytics } from '../src/Analytics';
+import { AnalyticsClass as Analytics } from '../src/Analytics';
 import AWSAnalyticsProvider from '../src/Providers/AWSPinpointProvider';
 
 const options: AnalyticsOptions = {
@@ -86,16 +85,6 @@ describe('Analytics test', () => {
 			await analytics.startSession();
 			expect(record_spyon).toBeCalled();
 		});
-		test('analytics not configured', async () => {
-			const analytics = new Analytics();
-
-			try {
-				await analytics.startSession();
-			} catch (e) {
-				expect(e.message).toBe('Analytics has not been configured');
-			}
-			expect.assertions(1);
-		});
 	});
 
 	describe('stopSession test', () => {
@@ -107,16 +96,6 @@ describe('Analytics test', () => {
 
 			await analytics.stopSession();
 			expect(record_spyon).toBeCalled();
-		});
-		test('analytics not configured', async () => {
-			const analytics = new Analytics();
-
-			try {
-				await analytics.stopSession();
-			} catch (e) {
-				expect(e.message).toBe('Analytics has not been configured');
-			}
-			expect.assertions(1);
 		});
 	});
 
@@ -134,16 +113,6 @@ describe('Analytics test', () => {
 			});
 			expect(record_spyon).toBeCalled();
 		});
-		test('analytics not configured', async () => {
-			const analytics = new Analytics();
-
-			try {
-				await analytics.record({});
-			} catch (e) {
-				expect(e.message).toBe('Analytics has not been configured');
-			}
-			expect.assertions(1);
-		});
 	});
 
 	describe('updateEndpoint test', () => {
@@ -157,16 +126,6 @@ describe('Analytics test', () => {
 				UserId: 'id',
 			});
 			expect(record_spyon).toBeCalled();
-		});
-		test('analytics not configured', async () => {
-			const analytics = new Analytics();
-
-			try {
-				await analytics.updateEndpoint({});
-			} catch (e) {
-				expect(e.message).toBe('Analytics has not been configured');
-			}
-			expect.assertions(1);
 		});
 	});
 
@@ -199,8 +158,9 @@ describe('Analytics test', () => {
 		test('happy case', () => {
 			const analytics = new Analytics();
 
+			// this provider is added by default in the configure method
+			// of analytics when initialized. No need to add it again here.
 			const provider = new AWSAnalyticsProvider();
-			analytics.addPluggable(provider);
 
 			analytics.removePluggable(provider.getProviderName());
 

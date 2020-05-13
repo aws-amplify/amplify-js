@@ -17,6 +17,11 @@ import { StyleSheet } from 'react-native';
 export const deepSquidInk = '#152939';
 export const linkUnderlayColor = '#FFF';
 export const errorIconColor = '#DD3F5B';
+export const textInputColor = '#000000';
+export const textInputBorderColor = '#C4C4C4';
+export const placeholderColor = '#C7C7CD';
+export const buttonColor = '#ff9900';
+export const disabledButtonColor = '#ff990080';
 
 // Theme
 export default StyleSheet.create({
@@ -32,11 +37,18 @@ export default StyleSheet.create({
 	section: {
 		flex: 1,
 		width: '100%',
-		padding: 20,
+		justifyContent: 'space-between',
+		paddingHorizontal: 20,
+	},
+	sectionScroll: {
+		flex: 1,
+		width: '100%',
+		paddingHorizontal: 20,
 	},
 	sectionHeader: {
 		width: '100%',
 		marginBottom: 32,
+		paddingTop: 20,
 	},
 	sectionHeaderText: {
 		color: deepSquidInk,
@@ -53,7 +65,13 @@ export default StyleSheet.create({
 	},
 	sectionFooterLink: {
 		fontSize: 14,
-		color: '#ff9900',
+		color: buttonColor,
+		alignItems: 'baseline',
+		textAlign: 'center',
+	},
+	sectionFooterLinkDisabled: {
+		fontSize: 14,
+		color: disabledButtonColor,
 		alignItems: 'baseline',
 		textAlign: 'center',
 	},
@@ -86,12 +104,12 @@ export default StyleSheet.create({
 		width: '100%',
 	},
 	button: {
-		backgroundColor: '#ff9900',
+		backgroundColor: buttonColor,
 		alignItems: 'center',
 		padding: 16,
 	},
 	buttonDisabled: {
-		backgroundColor: '#ff990080',
+		backgroundColor: disabledButtonColor,
 		alignItems: 'center',
 		padding: 16,
 	},
@@ -107,7 +125,8 @@ export default StyleSheet.create({
 		padding: 16,
 		borderWidth: 1,
 		borderRadius: 3,
-		borderColor: '#C4C4C4',
+		borderColor: textInputBorderColor,
+		color: textInputColor,
 	},
 	inputLabel: {
 		marginBottom: 8,
@@ -122,7 +141,8 @@ export default StyleSheet.create({
 		padding: 16,
 		borderWidth: 1,
 		borderRadius: 3,
-		borderColor: '#C4C4C4',
+		borderColor: textInputBorderColor,
+		color: textInputColor,
 	},
 	picker: {
 		flex: 1,
@@ -130,5 +150,9 @@ export default StyleSheet.create({
 	},
 	pickerItem: {
 		height: 44,
+	},
+	signedOutMessage: {
+		textAlign: 'center',
+		padding: 20,
 	},
 });

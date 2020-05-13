@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-hint spec: Render logic -> renders with hint text FOO 1`] = `
+<amplify-hint>
+  <mock:shadow-root>
+    <div class="hint">
+      <slot></slot>
+    </div>
+  </mock:shadow-root>
+  FOO
+</amplify-hint>
+`;
+
+exports[`amplify-hint spec: Render logic -> renders with no hint text 1`] = `
+<amplify-hint>
+  <mock:shadow-root>
+    <div class="hint">
+      <slot></slot>
+    </div>
+  </mock:shadow-root>
+</amplify-hint>
+`;

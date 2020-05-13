@@ -4,7 +4,7 @@
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
  *
- *     http://aws.amazon.com/apache2.0/
+ *	 http://aws.amazon.com/apache2.0/
  *
  * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
@@ -33,16 +33,14 @@ import {
 } from './types';
 
 import {
-	AWS,
+	Amplify,
 	ConsoleLogger as Logger,
-	Constants,
 	Hub,
-	JS,
-	Parser,
 	Credentials,
 	StorageHelper,
 	ICredentials,
-	Platform,
+	Parser,
+	JS,
 } from '@aws-amplify/core';
 import {
 	CookieStorage,
@@ -90,7 +88,7 @@ export enum CognitoHostedUIIdentityProvider {
 /**
  * Provide authentication steps
  */
-export default class AuthClass {
+export class AuthClass {
 	private _config: AuthOptions;
 	private userPool = null;
 	private user: any = null;
@@ -106,12 +104,6 @@ export default class AuthClass {
 		this.configure(config);
 		this.currentUserCredentials = this.currentUserCredentials.bind(this);
 
-		if (AWS.config) {
-			AWS.config.update({ customUserAgent: Constants.userAgent });
-		} else {
-			logger.warn('No AWS.config');
-		}
-
 		Hub.listen('auth', ({ payload }) => {
 			const { event } = payload;
 			switch (event) {
@@ -126,6 +118,7 @@ export default class AuthClass {
 					break;
 			}
 		});
+		Amplify.register(this);
 	}
 
 	public getModuleName() {
@@ -156,7 +149,7 @@ export default class AuthClass {
 		} = this._config;
 
 		if (!this._config.storage) {
-			// backward compatbility
+			// backward compatability
 			if (cookieStorage) this._storage = new CookieStorage(cookieStorage);
 			else {
 				this._storage = new StorageHelper().getStorage();
@@ -225,7 +218,15 @@ export default class AuthClass {
 			});
 
 			// **NOTE** - Remove this in a future major release as it is a breaking change
+			// Prevents _handleAuthResponse from being called multiple times in Expo
+			// See https://github.com/aws-amplify/amplify-js/issues/4388
+			const usedResponseUrls = {};
 			urlListener(({ url }) => {
+				if (usedResponseUrls[url]) {
+					return;
+				}
+
+				usedResponseUrls[url] = true;
 				this._handleAuthResponse(url);
 			});
 		}
@@ -239,8 +240,8 @@ export default class AuthClass {
 	}
 
 	/**
-	 * Sign up with username, password and other attrbutes like phone, email
-	 * @param {String | object} params - The user attirbutes used for signin
+	 * Sign up with username, password and other attributes like phone, email
+	 * @param {String | object} params - The user attributes used for signin
 	 * @param {String[]} restOfAttrs - for the backward compatability
 	 * @return - A promise resolves callback data if success
 	 */
@@ -419,6 +420,7 @@ export default class AuthClass {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
+
 		let username = null;
 		let password = null;
 		let validationData = {};
@@ -1328,7 +1330,7 @@ export default class AuthClass {
 	}
 
 	public currentCredentials(): Promise<ICredentials> {
-		logger.debug('getting current credntials');
+		logger.debug('getting current credentials');
 		return Credentials.get();
 	}
 
@@ -1812,6 +1814,7 @@ export default class AuthClass {
 			.find(([k]) => k === 'access_token' || k === 'error');
 
 		if (hasCodeOrError || hasTokenOrError) {
+			this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
 			try {
 				const {
 					accessToken,
@@ -1833,14 +1836,16 @@ export default class AuthClass {
 				}
 
 				/* 
-                Prior to the request we do sign the custom state along with the state we set. This check will verify
-                if there is a dash indicated when setting custom state from the request. If a dash is contained
-                then there is custom state present on the state string.
-                */
+				Prior to the request we do sign the custom state along with the state we set. This check will verify
+				if there is a dash indicated when setting custom state from the request. If a dash is contained
+				then there is custom state present on the state string.
+				*/
 				const isCustomStateIncluded = /-/.test(state);
 
-				/*The following is to create a user for the Cognito Identity SDK to store the tokens
-                  When we remove this SDK later that logic will have to be centralized in our new version*/
+				/*
+				The following is to create a user for the Cognito Identity SDK to store the tokens
+				When we remove this SDK later that logic will have to be centralized in our new version
+				*/
 				//#region
 				const currentUser = this.createCognitoUser(
 					session.getIdToken().decodePayload()['cognito:username']
@@ -1899,7 +1904,6 @@ export default class AuthClass {
 					err,
 					`A failure occurred when returning state`
 				);
-				throw err;
 			}
 		}
 	}
@@ -1980,3 +1984,5 @@ export default class AuthClass {
 		return Promise.reject(new NoUserPoolError(type));
 	}
 }
+
+export const Auth = new AuthClass(null);

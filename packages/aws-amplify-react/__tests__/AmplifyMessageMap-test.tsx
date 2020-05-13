@@ -1,7 +1,4 @@
-import {
-	MapEntries,
-	default as AmplifyMessageMap,
-} from '../src/AmplifyMessageMap';
+import { MapEntries, AmplifyMessageMap } from '../src/AmplifyMessageMap';
 
 test('MapEntries', () => {
 	expect(MapEntries).toEqual([

@@ -2,22 +2,10 @@ module.exports = {
 	entry: {
 		'aws-amplify.min': './lib-esm/index.js',
 	},
-	externals: [
-		'@aws-amplify/analytics',
-		'@aws-amplify/api',
-		'@aws-amplify/auth',
-		'@aws-amplify/cache',
-		'@aws-amplify/core',
-		'@aws-amplify/interactions',
-		'@aws-amplify/pubsub',
-		'@aws-amplify/storage',
-		'@aws-amplify/ui',
-		'@aws-amplify/xr',
-	],
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',
-		library: 'aws-amplify',
+		library: 'aws_amplify',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
 		globalObject: 'this',
@@ -27,7 +15,7 @@ module.exports = {
 	// Enable sourcemaps for debugging webpack's output.
 	devtool: 'source-map',
 	resolve: {
-		extensions: ['.js', '.json'],
+		extensions: ['.mjs', '.js', '.json'],
 	},
 	mode: 'production',
 	module: {

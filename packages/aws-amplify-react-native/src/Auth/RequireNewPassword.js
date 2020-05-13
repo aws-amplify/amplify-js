@@ -12,12 +12,7 @@
  */
 
 import React from 'react';
-import {
-	View,
-	TouchableWithoutFeedback,
-	Keyboard,
-	ScrollView,
-} from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import {
 	FormField,
@@ -25,8 +20,11 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	SignedOutMessage,
+	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
+import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('RequireNewPassword');
 
@@ -81,9 +79,11 @@ export default class RequireNewPassword extends AuthPiece {
 		const user = this.props.authData;
 		const { requiredAttributes } = user.challengeParam;
 		return (
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-				<ScrollView style={theme.section}>
-					<Header theme={theme}>{I18n.get('Change Password')}</Header>
+			<Wrapper>
+				<ScrollView style={theme.sectionScroll}>
+					<Header theme={theme} testID={TEST_ID.AUTH.CHANGE_PASSWORD_TEXT}>
+						{I18n.get('Change Password')}
+					</Header>
 					<View style={theme.sectionBody}>
 						<FormField
 							theme={theme}
@@ -111,13 +111,18 @@ export default class RequireNewPassword extends AuthPiece {
 						/>
 					</View>
 					<View style={theme.sectionFooter}>
-						<LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+						<LinkCell
+							theme={theme}
+							onPress={() => this.changeState('signIn')}
+							testID={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
+						>
 							{I18n.get('Back to Sign In')}
 						</LinkCell>
 					</View>
 					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+					<SignedOutMessage {...this.props} />
 				</ScrollView>
-			</TouchableWithoutFeedback>
+			</Wrapper>
 		);
 	}
 }
