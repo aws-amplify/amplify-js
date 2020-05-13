@@ -94,7 +94,7 @@ export class AmplifyAuthenticator {
     }
   }
 
-  private onAuthStateChange = async (nextAuthState: AuthState, data?: CognitoUserInterface) => {
+  private onAuthStateChange = (nextAuthState: AuthState, data?: CognitoUserInterface) => {
     if (nextAuthState === undefined) return logger.error('nextAuthState cannot be undefined');
 
     logger.info('Inside onAuthStateChange Method current authState:', this.authState);
