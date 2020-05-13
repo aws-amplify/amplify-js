@@ -143,6 +143,7 @@ export const SectionFooter = props => {
 };
 
 export const LinkCell = props => {
+	const { disabled } = props;
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.cell}>
@@ -150,8 +151,15 @@ export const LinkCell = props => {
 				onPress={props.onPress}
 				underlayColor={linkUnderlayColor}
 				testID={props.testID}
+				disabled={disabled}
 			>
-				<Text style={theme.sectionFooterLink}>{props.children}</Text>
+				<Text
+					style={
+						disabled ? theme.sectionFooterLinkDisabled : theme.sectionFooterLink
+					}
+				>
+					{props.children}
+				</Text>
 			</TouchableHighlight>
 		</View>
 	);
@@ -214,5 +222,19 @@ export const Wrapper = props => {
 
 	return (
 		<WrapperComponent {...wrapperProps}>{props.children}</WrapperComponent>
+	);
+};
+
+export const SignedOutMessage = props => {
+	const theme = props.theme || AmplifyTheme;
+	const message =
+		props.signedOutMessage || I18n.get('Please Sign In / Sign Up');
+	return (
+		<Text
+			style={theme.signedOutMessage}
+			testID={TEST_ID.AUTH.GREETING_SIGNED_OUT_TEXT}
+		>
+			{message}
+		</Text>
 	);
 };
