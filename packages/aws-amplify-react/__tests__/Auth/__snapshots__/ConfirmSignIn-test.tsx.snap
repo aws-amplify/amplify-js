@@ -1235,7 +1235,6 @@ exports[`ConfirmSignIn render test render correctly with Props confirmSignIn 1`]
            *
         </Component>
         <Component
-          autoComplete="off"
           autoFocus={true}
           data-test="confirm-sign-in-code-input"
           key="code"

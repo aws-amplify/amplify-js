@@ -106,7 +106,6 @@ export class ForgotPassword extends AuthPiece<
 						theme={theme}
 						key="code"
 						name="code"
-						autoComplete="off"
 						onChange={this.handleInputChange}
 					/>
 				</FormField>
@@ -118,7 +117,6 @@ export class ForgotPassword extends AuthPiece<
 						type="password"
 						key="password"
 						name="password"
-						autoComplete="off"
 						onChange={this.handleInputChange}
 					/>
 				</FormField>

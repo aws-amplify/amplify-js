@@ -125,7 +125,6 @@ export class ConfirmSignIn extends AuthPiece<
 								theme={theme}
 								key="code"
 								name="code"
-								autoComplete="off"
 								onChange={this.handleInputChange}
 								data-test={auth.confirmSignIn.codeInput}
 							/>

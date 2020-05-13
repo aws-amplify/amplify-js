@@ -35,7 +35,6 @@ exports[`VerifyContent test render test render submitView if verifyAttr is set 1
   >
     <div>
       <Component
-        autoComplete="off"
         key="code"
         name="code"
         onChange={[Function]}

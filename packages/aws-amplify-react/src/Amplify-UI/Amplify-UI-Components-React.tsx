@@ -186,8 +186,15 @@ export const InputRow = props => {
 export const Input = props => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.input);
-	const p = objectLessAttributes(props, 'theme');
-	return <input {...p} className={AmplifyUI.input} style={style} />;
+	const p = objectLessAttributes(props, ['autoComplete', 'theme']);
+	return (
+		<input
+			{...p}
+			className={AmplifyUI.input}
+			style={style}
+			autoComplete="off"
+		/>
+	);
 };
 
 export const SelectInput = props => {

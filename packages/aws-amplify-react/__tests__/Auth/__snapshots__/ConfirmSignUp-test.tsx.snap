@@ -1973,7 +1973,6 @@ exports[`ConfirmSignIn normal case render correctly with Props confirmSignUp 1`]
          *
       </Component>
       <Component
-        autoComplete="off"
         autoFocus={true}
         data-test="confirm-sign-up-confirmation-code-input"
         key="code"

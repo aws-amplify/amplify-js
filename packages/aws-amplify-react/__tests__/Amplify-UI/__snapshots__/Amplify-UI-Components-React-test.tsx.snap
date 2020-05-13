@@ -22,6 +22,7 @@ exports[`AmplifyUi test render FormRow correctly 1`] = `
 
 exports[`AmplifyUi test render Input correctly 1`] = `
 <input
+  autoComplete="off"
   className="Input__input___3e_bf"
   style={Object {}}
 />
