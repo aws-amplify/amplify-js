@@ -19,6 +19,7 @@ import {
 import {
 	exhaustiveCheck,
 	getIndex,
+	getIndexFromAssociation,
 	isModelConstructor,
 	traverseModel,
 	validatePredicate,
@@ -499,6 +500,7 @@ class IndexedDBAdapter implements Adapter {
 				const relations = this.schema.namespaces[nameSpace].relationships[
 					modelConstructor.name
 				].relationTypes;
+
 				await this.deleteTraverse(
 					relations,
 					[model],
@@ -564,6 +566,7 @@ class IndexedDBAdapter implements Adapter {
 		for await (const rel of relations) {
 			const { relationType, fieldName, modelName } = rel;
 			const storeName = this.getStorename(nameSpace, modelName);
+
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
@@ -589,11 +592,23 @@ class IndexedDBAdapter implements Adapter {
 					}
 					break;
 				case 'HAS_MANY':
-					const index = getIndex(
+					let index = getIndex(
 						this.schema.namespaces[nameSpace].relationships[modelName]
 							.relationTypes,
 						srcModel
 					);
+
+					if (!index) {
+						// if we were unable to find an index via relationTypes
+						// i.e. for keyName connections, attempt to find one by the
+						// associatedWith property
+						index = getIndexFromAssociation(
+							this.schema.namespaces[nameSpace].relationships[modelName]
+								.indexes,
+							rel.associatedWith
+						);
+					}
+
 					for await (const model of models) {
 						const childrenArray = await this.db
 							.transaction(storeName, 'readwrite')
