@@ -14,7 +14,20 @@ import {
 import PubSub from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
 import * as Observable from 'zen-observable';
+import axios, { CancelTokenStatic } from 'axios';
 
+axios.CancelToken = <CancelTokenStatic>{
+	source: () => ({ token: null, cancel: null }),
+};
+axios.isCancel = (value: any): boolean => {
+	return false;
+};
+
+let isCancelSpy = null;
+let cancelTokenSpy = null;
+let cancelMock = null;
+let tokenMock = null;
+let mockCancellableToken = null;
 jest.mock('axios');
 
 const config = {
@@ -29,6 +42,17 @@ afterEach(() => {
 });
 
 describe('API test', () => {
+	beforeEach(() => {
+		cancelMock = jest.fn();
+		tokenMock = jest.fn();
+		mockCancellableToken = { token: tokenMock, cancel: cancelMock };
+		isCancelSpy = jest.spyOn(axios, 'isCancel').mockReturnValue(true);
+		cancelTokenSpy = jest
+			.spyOn(axios.CancelToken, 'source')
+			.mockImplementation(() => {
+				return mockCancellableToken;
+			});
+	});
 	describe('graphql test', () => {
 		test('happy-case-query', async () => {
 			const spyonAuth = jest
@@ -96,10 +120,98 @@ describe('API test', () => {
 					service: 'appsync',
 					region,
 				},
+				cancellableToken: mockCancellableToken,
 			};
 
 			await api.graphql(graphqlOperation(GetEvent, variables));
 
+			expect(spyon).toBeCalledWith(url, init);
+		});
+
+		test('cancel-graphql-query', async () => {
+			const spyonAuth = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res('cred');
+					});
+				});
+
+			const spyon = jest
+				.spyOn(RestClient.prototype, 'post')
+				.mockImplementationOnce((url, init) => {
+					return new Promise((res, rej) => {
+						rej('error cancelled');
+					});
+				});
+
+			const api = new API(config);
+			const url = 'https://appsync.amazonaws.com',
+				region = 'us-east-2',
+				apiKey = 'secret_api_key',
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+			api.configure({
+				aws_appsync_graphqlEndpoint: url,
+				aws_appsync_region: region,
+				aws_appsync_authenticationType: 'API_KEY',
+				aws_appsync_apiKey: apiKey,
+			});
+			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
+				getEvent(id: $id) {
+					id
+					name
+					where
+					when
+					description
+					comments(nextToken: $nextToken) {
+						items {
+						commentId
+						content
+						createdAt
+						}
+					}
+				}
+			}`;
+
+			const doc = parse(GetEvent);
+			const query = print(doc);
+
+			const headers = {
+				Authorization: null,
+				'X-Api-Key': apiKey,
+				'x-amz-user-agent': Constants.userAgent,
+			};
+
+			const body = {
+				query,
+				variables,
+			};
+
+			const init = {
+				headers,
+				body,
+				signerServiceInfo: {
+					service: 'appsync',
+					region,
+				},
+				cancellableToken: mockCancellableToken,
+			};
+
+			const promiseResponse = api.graphql(
+				graphqlOperation(GetEvent, variables)
+			);
+			api.cancel(promiseResponse as Promise<any>, 'testmessage');
+
+			expect.assertions(5);
+
+			expect(cancelTokenSpy).toBeCalledTimes(1);
+			expect(cancelMock).toBeCalledWith('testmessage');
+			try {
+				await promiseResponse;
+			} catch (err) {
+				expect(err).toEqual('error cancelled');
+				expect(api.isCancel(err)).toBeTruthy();
+			}
 			expect(spyon).toBeCalledWith(url, init);
 		});
 
@@ -169,6 +281,7 @@ describe('API test', () => {
 					service: 'appsync',
 					region,
 				},
+				cancellableToken: mockCancellableToken,
 			};
 
 			await api.graphql(graphqlOperation(doc, variables));
@@ -258,6 +371,7 @@ describe('API test', () => {
 					service: 'appsync',
 					region,
 				},
+				cancellableToken: mockCancellableToken,
 			};
 
 			await api.graphql(graphqlOperation(GetEvent, variables));
@@ -334,6 +448,7 @@ describe('API test', () => {
 					service: 'appsync',
 					region,
 				},
+				cancellableToken: mockCancellableToken,
 			};
 
 			await api.graphql({
@@ -344,6 +459,7 @@ describe('API test', () => {
 
 			expect(spyon).toBeCalledWith(url, init);
 		});
+
 		test('multi-auth default case api-key, using AWS_IAM as auth mode', async () => {
 			expect.assertions(1);
 			jest.spyOn(Credentials, 'get').mockReturnValue(Promise.resolve('cred'));
@@ -397,6 +513,7 @@ describe('API test', () => {
 					service: 'appsync',
 					region,
 				},
+				cancellableToken: mockCancellableToken,
 			};
 
 			await api.graphql({
@@ -407,6 +524,7 @@ describe('API test', () => {
 
 			expect(spyon).toBeCalledWith(url, init);
 		});
+
 		test('multi-auth default case api-key, using OIDC as auth mode', async () => {
 			expect.assertions(1);
 			const cache_config = {
@@ -474,6 +592,7 @@ describe('API test', () => {
 					service: 'appsync',
 					region,
 				},
+				cancellableToken: mockCancellableToken,
 			};
 
 			await api.graphql({
@@ -484,6 +603,7 @@ describe('API test', () => {
 
 			expect(spyon).toBeCalledWith(url, init);
 		});
+
 		test('multi-auth using OIDC as auth mode, but no federatedSign', async () => {
 			expect.assertions(1);
 
@@ -536,6 +656,7 @@ describe('API test', () => {
 				})
 			).rejects.toThrowError('No federated jwt');
 		});
+
 		test('multi-auth using CUP as auth mode, but no userpool', async () => {
 			expect.assertions(1);
 
@@ -624,6 +745,7 @@ describe('API test', () => {
 				})
 			).rejects.toThrowError('No api-key configured');
 		});
+
 		test('multi-auth using AWS_IAM as auth mode, but no credentials', async () => {
 			expect.assertions(1);
 
@@ -726,6 +848,7 @@ describe('API test', () => {
 					service: 'appsync',
 					region,
 				},
+				cancellableToken: mockCancellableToken,
 			};
 
 			await api.graphql({
@@ -974,6 +1097,7 @@ describe('API test', () => {
 					service: 'appsync',
 					region,
 				},
+				cancellableToken: mockCancellableToken,
 			};
 
 			await api.graphql(graphqlOperation(AddComment, variables));
@@ -1052,6 +1176,7 @@ describe('API test', () => {
 					service: 'appsync',
 					region,
 				},
+				cancellableToken: mockCancellableToken,
 			};
 
 			const additionalHeaders = {
