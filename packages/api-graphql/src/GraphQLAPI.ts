@@ -196,7 +196,18 @@ export class GraphQLAPIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
-				return this._graphql({ query, variables, authMode }, additionalHeaders);
+				const cancellableToken = this._api.getCancellableToken();
+				const initParams = { cancellableToken };
+				const responsePromise = this._graphql(
+					{ query, variables, authMode },
+					additionalHeaders,
+					initParams
+				);
+				this._api.updateRequestToBeCancellable(
+					responsePromise,
+					cancellableToken
+				);
+				return responsePromise;
 			case 'subscription':
 				return this._graphqlSubscribe(
 					{ query, variables, authMode },
@@ -209,7 +220,8 @@ export class GraphQLAPIClass {
 
 	private async _graphql(
 		{ query, variables, authMode }: GraphQLOptions,
-		additionalHeaders = {}
+		additionalHeaders = {},
+		initParams = {}
 	): Promise<GraphQLResult> {
 		if (!this._api) {
 			await this.createInstance();
@@ -241,14 +253,17 @@ export class GraphQLAPIClass {
 			variables,
 		};
 
-		const init = {
-			headers,
-			body,
-			signerServiceInfo: {
-				service: !customGraphqlEndpoint ? 'appsync' : 'execute-api',
-				region: !customGraphqlEndpoint ? region : customEndpointRegion,
+		const init = Object.assign(
+			{
+				headers,
+				body,
+				signerServiceInfo: {
+					service: !customGraphqlEndpoint ? 'appsync' : 'execute-api',
+					region: !customGraphqlEndpoint ? region : customEndpointRegion,
+				},
 			},
-		};
+			initParams
+		);
 
 		const endpoint = customGraphqlEndpoint || appSyncGraphqlEndpoint;
 
@@ -265,6 +280,12 @@ export class GraphQLAPIClass {
 		try {
 			response = await this._api.post(endpoint, init);
 		} catch (err) {
+			// If the exception is because user intentionally
+			// cancelled the request, do not modify the exception
+			// so that clients can identify the exception correctly.
+			if (this._api.isCancel(err)) {
+				throw err;
+			}
 			response = {
 				data: {},
 				errors: [new GraphQLError(err.message)],
@@ -278,6 +299,24 @@ export class GraphQLAPIClass {
 		}
 
 		return response;
+	}
+
+	/**
+	 * Checks to see if an error thrown is from an api request cancellation
+	 * @param {any} error - Any error
+	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
+	 */
+	isCancel(error) {
+		return this._api.isCancel(error);
+	}
+
+	/**
+	 * Cancels an inflight request. Only applicable for graphql queries and mutations
+	 * @param {any} request - request to cancel
+	 * @return {boolean} - A boolean indicating if the request was cancelled
+	 */
+	cancel(request: Promise<any>, message?: string) {
+		return this._api.cancel(request, message);
 	}
 
 	private _graphqlSubscribe(
