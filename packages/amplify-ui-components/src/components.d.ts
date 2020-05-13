@@ -44,7 +44,6 @@ export namespace Components {
           * Federated credentials & configuration.
          */
         "federated": FederatedConfig;
-        "handleSignedIn": (user: CognitoUserInterface) => void;
         /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
@@ -1173,7 +1172,6 @@ declare namespace LocalJSX {
           * Federated credentials & configuration.
          */
         "federated"?: FederatedConfig;
-        "handleSignedIn"?: (user: CognitoUserInterface) => void;
         /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */

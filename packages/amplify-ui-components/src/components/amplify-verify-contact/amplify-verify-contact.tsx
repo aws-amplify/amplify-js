@@ -3,7 +3,7 @@ import { I18n, Logger } from '@aws-amplify/core';
 import { Component, h, Prop, State } from '@stencil/core';
 import { AuthState, AuthStateHandler, CognitoUserInterface } from '../../common/types/auth-types';
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
-import { dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { dispatchAuthStateChangeEvent, dispatchToastHubEvent } from '../../common/helpers';
 import { Translations } from '../../common/Translations';
 
 const logger = new Logger('AmplifyVerifyContact');
@@ -20,13 +20,13 @@ export class AmplifyVerifyContact {
 
   @State() verifyAttr: any;
   @State() loading: boolean = false;
+  @State() code: string;
+  @State() contact: 'email' | 'phone_number';
 
   private handleSubmit(event) {
     event.preventDefault();
 
-    const form = event.target as HTMLFormElement;
-
-    this.verifyAttr ? this.submit(form.code.value) : this.verify(form.contact.value);
+    this.verifyAttr ? this.submit(this.code) : this.verify(this.contact);
   }
 
   private async submit(code) {
@@ -36,6 +36,7 @@ export class AmplifyVerifyContact {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
+    this.loading = true;
     try {
       const data = await Auth.verifyCurrentUserAttributeSubmit(attr, code);
 
@@ -43,7 +44,10 @@ export class AmplifyVerifyContact {
       this.handleAuthStateChange(AuthState.SignedIn, this.user);
       this.verifyAttr = null;
     } catch (error) {
+      dispatchToastHubEvent(error);
       logger.error(error);
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -64,9 +68,19 @@ export class AmplifyVerifyContact {
       logger.debug(data);
       this.verifyAttr = contact;
     } catch (error) {
+      dispatchToastHubEvent(error);
       logger.error(error);
     } finally {
       this.loading = false;
+    }
+  }
+
+  private handleInputChange(event) {
+    const inputName = event.target.name;
+    if (inputName === 'code') {
+      this.code = event.target.value;
+    } else if (inputName === 'contact') {
+      this.contact = event.target.value;
     }
   }
 
@@ -79,6 +93,7 @@ export class AmplifyVerifyContact {
           }}
           name="code"
           placeholder={I18n.get(Translations.CODE_PLACEHOLDER)}
+          handleInputChange={event => this.handleInputChange(event)}
         />
       </div>
     );
@@ -108,6 +123,7 @@ export class AmplifyVerifyContact {
             key="email"
             name="contact"
             value="email"
+            handleInputChange={event => this.handleInputChange(event)}
           />
         )}
 
@@ -117,6 +133,7 @@ export class AmplifyVerifyContact {
             key="phone_number"
             name="contact"
             value="phone_number"
+            handleInputChange={event => this.handleInputChange(event)}
           />
         )}
       </div>
