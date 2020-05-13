@@ -19,7 +19,7 @@ import {
 } from '@aws-amplify/core';
 
 import { apiOptions } from './types';
-import axios, { CancelTokenSource, CancelToken } from 'axios';
+import axios, { CancelTokenSource } from 'axios';
 import { parse, format } from 'url';
 
 const logger = new Logger('RestClient');
