@@ -1326,7 +1326,7 @@ export default class CognitoUser {
 
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
 			this.username
-		}`;
+			}`;
 		const idTokenKey = `${keyPrefix}.idToken`;
 		const accessTokenKey = `${keyPrefix}.accessToken`;
 		const refreshTokenKey = `${keyPrefix}.refreshToken`;
@@ -1487,7 +1487,7 @@ export default class CognitoUser {
 	cacheDeviceKeyAndPassword() {
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
 			this.username
-		}`;
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1504,7 +1504,7 @@ export default class CognitoUser {
 	getCachedDeviceKeyAndPassword() {
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
 			this.username
-		}`;
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1523,7 +1523,7 @@ export default class CognitoUser {
 	clearCachedDeviceKeyAndPassword() {
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
 			this.username
-		}`;
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1835,24 +1835,28 @@ export default class CognitoUser {
 	 * This is used to list all devices for a user
 	 *
 	 * @param {int} limit the number of devices returned in a call
-	 * @param {string} paginationToken the pagination token in case any was returned before
+	 * @param {string | undefined} paginationToken the pagination token in case any was returned before
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<*>} callback.onSuccess Called on success with device list.
 	 * @returns {void}
 	 */
-	listDevices(limit, paginationToken, callback) {
+	listDevices(limit, callback, paginationToken) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback.onFailure(new Error('User is not authenticated'));
 		}
 
+		const listDevicesReq = {
+			AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+			Limit: limit
+		};
+
+		if (paginationToken) {
+			listDevicesReq.PaginationToken = paginationToken
+		}
+
 		this.client.request(
-			'ListDevices',
-			{
-				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
-				Limit: limit,
-				PaginationToken: paginationToken,
-			},
+			'ListDevices', listDevicesReq,
 			(err, data) => {
 				if (err) {
 					return callback.onFailure(err);
