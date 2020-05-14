@@ -33,21 +33,7 @@ export class AmplifyRequireNewPassword {
   /** Used for the username to be passed to resend code */
   @Prop() user: CognitoUserInterface;
   /** The form fields displayed inside of the forgot password form */
-  // @Prop() formFields: FormFieldTypes = [
-  //   {
-  //     type: AuthFormField.Password,
-  //     required: true,
-  //     handleInputChange: event => this.handlePasswordChange(event),
-  //     label: I18n.get(Translations.NEW_PASSWORD_LABEL),
-  //     placeholder: I18n.get(Translations.NEW_PASSWORD_PLACEHOLDER),
-  //   },
-  // ];
-
-  @State() password: string;
-  @State() loading: boolean = false;
-  private requiredAttributes: object = {};
-
-  private formFields: FormFieldTypes = [
+  @Prop() formFields: FormFieldTypes = [
     {
       type: AuthFormField.Password,
       required: true,
@@ -56,6 +42,12 @@ export class AmplifyRequireNewPassword {
       placeholder: I18n.get(Translations.NEW_PASSWORD_PLACEHOLDER),
     },
   ];
+
+  @State() password: string;
+  @State() loading: boolean = false;
+  private requiredAttributes: object = {};
+
+  private newFormFields: FormFieldTypes = this.formFields;
 
   private handleRequiredAttributeInputChange(attribute, event) {
     this.requiredAttributes[attribute] = event.target.value;
@@ -73,7 +65,7 @@ export class AmplifyRequireNewPassword {
           placeholder: requiredAttributesMap[attribute].placeholder,
           handleInputChange: event => this.handleRequiredAttributeInputChange(attribute, event),
         };
-        this.formFields.push(formField);
+        this.newFormFields.push(formField);
       });
     }
   }
@@ -143,7 +135,7 @@ export class AmplifyRequireNewPassword {
           </amplify-button>
         }
       >
-        <amplify-auth-fields formFields={this.formFields} />
+        <amplify-auth-fields formFields={this.newFormFields} />
       </amplify-form-section>
     );
   }

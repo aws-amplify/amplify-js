@@ -599,6 +599,10 @@ export namespace Components {
     }
     interface AmplifyRequireNewPassword {
         /**
+          * The form fields displayed inside of the forgot password form
+         */
+        "formFields": FormFieldTypes;
+        /**
           * Auth state change handler for this component
          */
         "handleAuthStateChange": AuthStateHandler;
@@ -1730,6 +1734,10 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     interface AmplifyRequireNewPassword {
+        /**
+          * The form fields displayed inside of the forgot password form
+         */
+        "formFields"?: FormFieldTypes;
         /**
           * Auth state change handler for this component
          */
