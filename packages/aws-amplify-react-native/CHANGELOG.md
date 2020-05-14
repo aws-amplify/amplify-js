@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.1.1...aws-amplify-react-native@4.1.2) (2020-05-14)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** android text display with keyboard ([#5620](https://github.com/aws-amplify/amplify-js/issues/5620)) ([44f2f0c](https://github.com/aws-amplify/amplify-js/commit/44f2f0cf7077f4e50dbe944cd04465ec148e652c))
+* **aws-amplify-react-native:** fix button disabled logic ([#5469](https://github.com/aws-amplify/amplify-js/issues/5469)) ([4e40512](https://github.com/aws-amplify/amplify-js/commit/4e40512ace51748dd413b59850b5d9f0eaa0c66b))
+
+
+
+
+
 ## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.1.0...aws-amplify-react-native@4.1.1) (2020-04-30)
 
 

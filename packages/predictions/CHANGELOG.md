@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.1.9...@aws-amplify/predictions@3.1.10) (2020-05-14)
+
+
+### Bug Fixes
+
+* require cycles in various packages ([#5372](https://github.com/aws-amplify/amplify-js/issues/5372)) ([b48c26d](https://github.com/aws-amplify/amplify-js/commit/b48c26d198cc25dd92f1515ddf2a97deec5c9783))
+
+
+
+
+
 ## [3.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.1.8...@aws-amplify/predictions@3.1.9) (2020-04-30)
 
 
