@@ -369,6 +369,7 @@ export type RelationType = {
 	modelName: string;
 	relationType: 'HAS_ONE' | 'HAS_MANY' | 'BELONGS_TO';
 	targetName?: string;
+	associatedWith?: string;
 };
 
 export type RelationshipType = {

@@ -23,21 +23,21 @@ AWS Amplify aims to enhance the development experience using JavaScript with AWS
 
 First and foremost Amplify exposes to you WHAT things do and then HOW best to do them. The WHAT is at a functional use case with HOW being an opinionated implementation that you can override with “escape hatches.” This will allow you to have higher velocity and build better applications by focusing less on implementation choices. Secondly, Amplify should be a manifestation of The Rule of Least Power when developing against AWS. This means it encourages architectural and programmatic best practices and the ability to start quickly. This shows by encouraging certain services (API Gateway usage vs. direct DynamoDB interaction) or certain connection patterns (Circuit breaker, retry counts and throttle up/down).
 
-Opinionated implementations: There are many ways to interface with AWS Services. Certain service interactions are favored over others. For instance if sending and receiving JSON we would prefer an API Gateway endpoint to other mechanisms. Amplify will programmatically help optimize for cost and performance through library decisions.
+Opinionated implementations: There are many ways to interface with AWS Services. Certain service interactions are favored over others. For instance, if sending and receiving JSON, we would prefer an API Gateway endpoint to other mechanisms. Amplify will programmatically help optimize for cost and performance through library decisions.
 
-Declarative actions: Amplify will provide you a reference to a generic client object and ability to perform common actions. “RegisterUser”, “Login”, “SendObject”, “UpdateObject”, “StreamData”. By default you should not need to worry about AWS Service specific API operations like putItem() with a unique hash or even HTTP verbs.
+Declarative actions: Amplify will provide you a reference to a generic client object and the ability to perform common actions. “RegisterUser”, “Login”, “SendObject”, “UpdateObject”, “StreamData”. By default you should not need to worry about AWS Service specific API operations like putItem() with a unique hash or even HTTP verbs.
 
-Cascading service interactions: Certain actions in a declarative style can have overlapping or ambiguous AWS Service implementations. With an opinionated implementation we can decide which Services are "primary" and which are "secondary" depending on what is configured. For instance sending an image will prefer S3 over API Gateway.
+Cascading service interactions: Certain actions in a declarative style can have overlapping or ambiguous AWS Service implementations. With an opinionated implementation, we can decide which Services are "primary" and which are "secondary" depending on what is configured. For instance, sending an image will prefer S3 over API Gateway.
 
-Simple, standard data objects: Sending & Receiving data to AWS Services can have many parameters, which tend to show up in the SDKs. These are abstracted and inferred, where possible, with simple JSON that the implementation can reason about. Standard parameters (bucket names, stream names, partition keys, etc.) that are part of the implementation are extracted from a simplified configuration file and dynamically generated/updated in order to further allow focus on state and data types only.
+Simple, standard data objects: Sending & receiving data to AWS Services can have many parameters, which tend to show up in the SDKs. These are abstracted and inferred, where possible, with simple JSON that the implementation can reason about. Standard parameters (bucket names, stream names, partition keys, etc.) that are part of the implementation are extracted from a simplified configuration file and dynamically generated/updated in order to further allow focus on state and data types only.
 
 # Our Design
 
-As more and more modules are introduced to AWS Amplify, it became a necessity to modularize the library into smaller pieces so that users could avoid importing unnecessary parts into their app. The goal of this design is to make AWS Amplify modularized and also keep it backward compatible to avoid breaking changes.
+As more and more modules were introduced to AWS Amplify, it became necessary to modularize the library into smaller pieces so that users could avoid importing unnecessary parts into their app. The goal of this design is to make AWS Amplify modularized and also keep it backward-compatible to avoid breaking changes.
 
-Modular import prevents unnecessary code dependencies are included with the app, and thus decreases the bundle size and enables adding new functionality without the risk of introducing errors related to the unused code.
+Modular import prevents unnecessary code dependencies from being included with the app, and thus decreases the bundle size while enabling added new functionality without the risk of introducing errors related to unused code.
 
-Amplify has established the concepts of categories and plugins. A category is a collection of api calls that are exposed to the client to do things inside that category. For example, in the storage category generally one wants to upload and download objects from storage so the apis exposed to the client will represent that functionality. Because Amplify is pluggable, a plugin of your choosing will provide the actual implementation behind that api interface. Using the same example of Storage, the plugin we choose might be AWSStoragePlugin which would then implement each api call from the category with a service call or set of service calls to S3, the underlying storage provider of the AWS plugin.
+Amplify has established the concepts of categories and plugins. A category is a collection of api calls that are exposed to the client to do things inside that category. For example, in the storage category, generally one wants to upload and download objects from storage so the apis exposed to the client will represent that functionality. Because Amplify is pluggable, a plugin of your choosing will provide the actual implementation behind that api interface. Using the same example of Storage, the plugin we choose might be AWSStoragePlugin which would then implement each api call from the category with a service call or set of service calls to S3, the underlying storage provider of the AWS plugin.
 
 # Development Process
 
@@ -62,7 +62,7 @@ $ yarn build
 
 ## Architecture of the codebase 
 
-Amplify JS is a monorepo built with `Yarn` and `Lerna`. All the categories of amplify lives within `packages` directory in the root. Each category inside packages has its own `src/` and `package.json`.
+Amplify JS is a monorepo built with `Yarn` and `Lerna`. All the categories of Amplify live within the `packages` directory in the root. Each category inside packages has its own `src/` and `package.json`.
 
 #### Packages inside Amplify JS
 
@@ -113,7 +113,7 @@ $ yarn run test --scope @aws-amplify/auth
 $ yarn run test --scope aws-amplify-react
 ```
 
-> Note: There is a commit hook that will run the tests prior to committing. Please make sure if you are going to provide a pull request to be sure you include unit tests with your functionality and that all tests are passing.
+> Note: There is a commit hook that will run the tests prior to committing. Please make sure if you are going to provide a pull request to be sure you include unit tests with your functionality and that all tests pass.
 
 #### Test in a local sample app
 
@@ -147,21 +147,21 @@ These tests are only necessary if you’re looking to contribute a Pull Request.
 
 Verdaccio is a lightweight private npm proxy registry built in Node.js. Install [Verdaccio](https://verdaccio.org/docs/en/installation). You can setup veradaccio to publish packages locally to test the changes.
 
-To Publish in verdaccio, start a verdaccio instance and then,
+To publish in Verdaccio, start a verdaccio instance and then,
 
 ```
 npm set registry http://localhost:4873/
 yarn lerna publish --skip-git --force-publish
 ```
 
-To Publish a local version of a specific package,
+To publish a local version of a specific package,
 
 ```
 cd packages/<category>
 npm publish --registry http://localhost:4873 (http://localhost:4873/)
 ```
 
-Once you are done with verdaccio, you can reset to npm registry by doing
+Once you are done with Verdaccio, you can reset to npm registry by doing,
 
 ```
 npm set registry https://registry.npmjs.com/
@@ -197,7 +197,7 @@ Sometimes the issue can be solved by doing a clean and fresh build. To do this, 
 
 # Release
 
-To give the bird's eye view of the release cycle,
+To give a bird's eye view of the release cycle,
 - We follow semantic versioning for our releases
 - Every merge into the `master` ends up as `unstable` package in the npm
 - The core team will cut a release out to `stable` from `unstable` bi-weekly

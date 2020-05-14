@@ -18,6 +18,7 @@ import {
 } from '@aws-amplify/core';
 import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 import { AnalyticsProvider } from '../types';
+import { fromUtf8 } from '@aws-sdk/util-utf8-browser';
 
 const logger = new Logger('AWSKinesisProvider');
 
@@ -174,7 +175,11 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 				records[streamName] = [];
 			}
 
-			const Data = JSON.stringify(evt.data);
+			const bufferData =
+				evt.data && typeof evt.data !== 'string'
+					? JSON.stringify(evt.data)
+					: evt.data;
+			const Data = fromUtf8(bufferData);
 			const PartitionKey =
 				evt.partitionKey || 'partition-' + credentials.identityId;
 			const record = { Data, PartitionKey };
