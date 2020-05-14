@@ -153,6 +153,14 @@ describe('withFacebook test', () => {
 			const fbResponse = {
 				name: 'username',
 				email: 'user@example.com',
+				picture: {
+					data: {
+						url: 'https://domain.tld/image.jpg',
+						width: 50,
+						height: 50,
+						is_silhouette: false,
+					},
+				},
 			};
 
 			window.FB = {
@@ -188,7 +196,11 @@ describe('withFacebook test', () => {
 			expect(spyon).toBeCalledWith(
 				'facebook',
 				{ token: 'accessToken', expires_at: 0 },
-				{ name: 'username', email: 'user@example.com' }
+				{
+					name: 'username',
+					email: 'user@example.com',
+					picture: 'https://domain.tld/image.jpg',
+				}
 			);
 
 			spyon.mockClear();
@@ -205,6 +217,14 @@ describe('withFacebook test', () => {
 			const fbResponse = {
 				name: 'username',
 				email: 'user@example.com',
+				picture: {
+					data: {
+						url: 'https://domain.tld/image.jpg',
+						width: 50,
+						height: 50,
+						is_silhouette: false,
+					},
+				},
 			};
 
 			window.FB = {
@@ -246,7 +266,11 @@ describe('withFacebook test', () => {
 			expect(spyon).toBeCalledWith(
 				'facebook',
 				{ token: 'accessToken', expires_at: 0 },
-				{ name: 'username', email: 'user@example.com' }
+				{
+					name: 'username',
+					email: 'user@example.com',
+					picture: 'https://domain.tld/image.jpg',
+				}
 			);
 
 			spyon.mockClear();
