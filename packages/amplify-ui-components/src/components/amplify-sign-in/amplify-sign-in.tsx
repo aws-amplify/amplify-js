@@ -80,7 +80,7 @@ export class AmplifySignIn {
     password: '',
   };
 
-  handleFormFieldInput(fieldType) {
+  private handleFormFieldInputChange(fieldType) {
     switch (fieldType) {
       case 'username':
       case 'email':
@@ -92,16 +92,17 @@ export class AmplifySignIn {
     }
   }
 
-  handleFormFieldInputWithCallback(event, field) {
-    const fnToCall = field['handleInputChange'];
-    const callback =
-      field.type === 'phone_number'
-        ? event => (this.signInAttributes.userInput = event.target.value)
-        : this.handleFormFieldInput(field.type);
+  private handleFormFieldInputWithCallback(event, field) {
+    const fnToCall = field['handleInputChange']
+      ? field['handleInputChange']
+      : (event, cb) => {
+          cb(event);
+        };
+    const callback = this.handleFormFieldInputChange(field.type);
     fnToCall(event, callback.bind(this));
   }
 
-  handlePhoneNumberChange(event) {
+  private handlePhoneNumberChange(event) {
     const name = event.target.name;
     const value = event.target.value;
 
@@ -119,7 +120,7 @@ export class AmplifySignIn {
     }
   }
 
-  checkContact(user) {
+  private checkContact(user) {
     if (!Auth || typeof Auth.verifiedContact !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
@@ -133,7 +134,7 @@ export class AmplifySignIn {
     });
   }
 
-  async signIn(event: Event) {
+  private async signIn(event: Event) {
     // avoid submitting the form
     if (event) {
       event.preventDefault();
@@ -196,7 +197,7 @@ export class AmplifySignIn {
           formFieldInputs.push({
             type: 'email',
             required: true,
-            handleInputChange: this.handleFormFieldInput('email'),
+            handleInputChange: this.handleFormFieldInputChange('email'),
             inputProps: {
               'data-test': 'sign-in-email-input',
             },
@@ -206,7 +207,7 @@ export class AmplifySignIn {
           formFieldInputs.push({
             type: 'phone_number',
             required: true,
-            handleInputChange: this.handleFormFieldInput('phone_number'),
+            handleInputChange: this.handleFormFieldInputChange('phone_number'),
             inputProps: {
               'data-test': 'sign-in-phone-number-input',
             },
@@ -217,7 +218,7 @@ export class AmplifySignIn {
           formFieldInputs.push({
             type: 'username',
             required: true,
-            handleInputChange: this.handleFormFieldInput('username'),
+            handleInputChange: this.handleFormFieldInputChange('username'),
             inputProps: {
               'data-test': 'sign-in-username-input',
             },
@@ -240,7 +241,7 @@ export class AmplifySignIn {
           </div>
         ),
         required: true,
-        handleInputChange: this.handleFormFieldInput('password'),
+        handleInputChange: this.handleFormFieldInputChange('password'),
         inputProps: {
           'data-test': 'sign-in-password-input',
         },

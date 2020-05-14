@@ -21,7 +21,7 @@ export class AmplifyVerifyContact {
   @State() verifyAttr: any;
   @State() loading: boolean = false;
 
-  handleSubmit(event) {
+  private handleSubmit(event) {
     event.preventDefault();
 
     const form = event.target as HTMLFormElement;
@@ -29,7 +29,7 @@ export class AmplifyVerifyContact {
     this.verifyAttr ? this.submit(form.code.value) : this.verify(form.contact.value);
   }
 
-  async submit(code) {
+  private async submit(code) {
     const attr = this.verifyAttr;
 
     if (!Auth || typeof Auth.verifyCurrentUserAttributeSubmit !== 'function') {
@@ -47,7 +47,7 @@ export class AmplifyVerifyContact {
     }
   }
 
-  async verify(contact: keyof CognitoUserInterface['unverified']) {
+  private async verify(contact: keyof CognitoUserInterface['unverified']) {
     if (!contact) {
       logger.error('Neither Email nor Phone Number selected');
       return;
@@ -70,7 +70,7 @@ export class AmplifyVerifyContact {
     }
   }
 
-  renderSubmit() {
+  private renderSubmit() {
     return (
       <div>
         <amplify-input
@@ -84,7 +84,7 @@ export class AmplifyVerifyContact {
     );
   }
 
-  renderVerify() {
+  private renderVerify() {
     const user = this.user;
 
     if (!user) {
