@@ -70,7 +70,7 @@ export class APIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async get(apiName, path, init) {
+	get(apiName, path, init): Promise<any> {
 		return this._restApi.get(apiName, path, init);
 	}
 
@@ -81,7 +81,7 @@ export class APIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async post(apiName, path, init) {
+	post(apiName, path, init): Promise<any> {
 		return this._restApi.post(apiName, path, init);
 	}
 
@@ -92,7 +92,7 @@ export class APIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async put(apiName, path, init) {
+	put(apiName, path, init): Promise<any> {
 		return this._restApi.put(apiName, path, init);
 	}
 
@@ -103,7 +103,7 @@ export class APIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async patch(apiName, path, init) {
+	patch(apiName, path, init): Promise<any> {
 		return this._restApi.patch(apiName, path, init);
 	}
 
@@ -114,7 +114,7 @@ export class APIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async del(apiName, path, init) {
+	del(apiName, path, init): Promise<any> {
 		return this._restApi.del(apiName, path, init);
 	}
 
@@ -125,8 +125,25 @@ export class APIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async head(apiName, path, init) {
+	head(apiName, path, init): Promise<any> {
 		return this._restApi.head(apiName, path, init);
+	}
+
+	/**
+	 * Checks to see if an error thrown is from an api request cancellation
+	 * @param {any} error - Any error
+	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
+	 */
+	isCancel(error) {
+		return this._restApi.isCancel(error);
+	}
+	/**
+	 * Cancels an inflight request
+	 * @param {any} request - request to cancel
+	 * @return {boolean} - A boolean indicating if the request was cancelled
+	 */
+	cancel(request: Promise<any>, message?: string) {
+		return this._restApi.cancel(request, message);
 	}
 
 	/**
