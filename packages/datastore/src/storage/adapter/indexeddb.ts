@@ -567,14 +567,23 @@ class IndexedDBAdapter implements Adapter {
 			const { relationType, fieldName, modelName } = rel;
 			const storeName = this.getStorename(nameSpace, modelName);
 
+			const index: string =
+				getIndex(
+					this.schema.namespaces[nameSpace].relationships[modelName]
+						.relationTypes,
+					srcModel
+				) ||
+				// if we were unable to find an index via relationTypes
+				// i.e. for keyName connections, attempt to find one by the
+				// associatedWith property
+				getIndexFromAssociation(
+					this.schema.namespaces[nameSpace].relationships[modelName].indexes,
+					rel.associatedWith
+				);
+
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
-						const index = getIndex(
-							this.schema.namespaces[nameSpace].relationships[modelName]
-								.relationTypes,
-							srcModel
-						);
 						const recordToDelete = <T>await this.db
 							.transaction(storeName, 'readwrite')
 							.objectStore(storeName)
@@ -592,23 +601,6 @@ class IndexedDBAdapter implements Adapter {
 					}
 					break;
 				case 'HAS_MANY':
-					let index = getIndex(
-						this.schema.namespaces[nameSpace].relationships[modelName]
-							.relationTypes,
-						srcModel
-					);
-
-					if (!index) {
-						// if we were unable to find an index via relationTypes
-						// i.e. for keyName connections, attempt to find one by the
-						// associatedWith property
-						index = getIndexFromAssociation(
-							this.schema.namespaces[nameSpace].relationships[modelName]
-								.indexes,
-							rel.associatedWith
-						);
-					}
-
 					for await (const model of models) {
 						const childrenArray = await this.db
 							.transaction(storeName, 'readwrite')
