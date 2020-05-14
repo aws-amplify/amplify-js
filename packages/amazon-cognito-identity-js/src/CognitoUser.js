@@ -1211,7 +1211,7 @@ export default class CognitoUser {
 	 * be directly called by the consumers.
 	 */
 	createGetUserRequest() {
-		return this.client.promisableRequest('GetUser', {
+		return this.client.promisifyRequest('GetUser', {
 			AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 		});
 	}
@@ -1244,28 +1244,17 @@ export default class CognitoUser {
 			return callback(new Error('User is not authenticated'), null);
 		}
 
-		const { bypassCache = false } = params || {};
-
-		// get the cached user data
-		const userData = this.storage.getItem(this.userDataKey);
-
-		// Get Data from Cognito
-		if (!userData) {
-			this.createGetUserRequest
+		if (!this.isUserDataCached()) {
+			this.fetchUserData()
 				.then(data => {
-					this.cacheUserData(data);
 					callback(null, data);
 				})
 				.catch(callback);
 			return;
 		}
 
-		if (bypassCache) {
-			this.createGetUserRequest
-				.then(data => {
-					this.cacheUserData(data);
-					return data;
-				})
+		if (this.isFetchUserDataAndTokenRequired(params)) {
+			this.fetchUserData()
 				.then(data => {
 					return this.refreshSessionIfPossible().then(() => data);
 				})
@@ -1280,6 +1269,39 @@ export default class CognitoUser {
 			this.clearCachedUserData();
 			return callback(err, null);
 		}
+	}
+
+	/**
+	 *
+	 * PRIVATE ONLY: This is an internal only method and should not
+	 * be directly called by the consumers.
+	 */
+	isUserDataCached() {
+		const userData = this.storage.getItem(this.userDataKey);
+
+		return userData != false;
+	}
+
+	/**
+	 *
+	 * PRIVATE ONLY: This is an internal only method and should not
+	 * be directly called by the consumers.
+	 */
+	isFetchUserDataAndTokenRequired(params) {
+		const { bypassCache = false } = params || {};
+
+		return bypassCache;
+	}
+	/**
+	 *
+	 * PRIVATE ONLY: This is an internal only method and should not
+	 * be directly called by the consumers.
+	 */
+	fetchUserData() {
+		return this.createGetUserRequest().then(data => {
+			this.cacheUserData(data);
+			return data;
+		});
 	}
 
 	/**
