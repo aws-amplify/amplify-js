@@ -51,6 +51,8 @@ export class AmplifySignIn {
   @Prop() federated: FederatedConfig;
   /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
+  /** Show the Create Account section */
+  @Prop() showCreateAccount: boolean = true;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
   @Prop() usernameAlias: UsernameAliasStrings = 'username';
   /**
@@ -303,18 +305,20 @@ export class AmplifySignIn {
         <amplify-auth-fields formFields={this.newFormFields} />
         <div slot="amplify-form-section-footer" class="sign-in-form-footer">
           <slot name="footer">
-            <slot name="secondary-footer-content">
-              <span>
-                {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
-                <amplify-button
-                  variant="anchor"
-                  onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
-                  data-test="sign-in-create-account-link"
-                >
-                  {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
-                </amplify-button>
-              </span>
-            </slot>
+            {this.showCreateAccount && (
+              <slot name="secondary-footer-content">
+                <span>
+                  {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
+                  <amplify-button
+                    variant="anchor"
+                    onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
+                    data-test="sign-in-create-account-link"
+                  >
+                    {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
+                  </amplify-button>
+                </span>
+              </slot>
+            )}
             <slot name="primary-footer-content">
               <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
                 <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />

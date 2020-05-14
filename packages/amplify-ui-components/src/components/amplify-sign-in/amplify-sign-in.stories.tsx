@@ -24,3 +24,5 @@ export const withFederated = () => (
     }}
   />
 );
+
+export const withoutCreateAccountSection = () => <amplify-sign-in showCreateAccount={false} />;

@@ -679,6 +679,10 @@ export namespace Components {
          */
         "headerText": string;
         /**
+          * Show the Create Account section
+         */
+        "showCreateAccount": boolean;
+        /**
           * Used for the submit button text in sign in component
          */
         "submitButtonText": string;
@@ -1814,6 +1818,10 @@ declare namespace LocalJSX {
           * Used for header text in sign in component
          */
         "headerText"?: string;
+        /**
+          * Show the Create Account section
+         */
+        "showCreateAccount"?: boolean;
         /**
           * Used for the submit button text in sign in component
          */
