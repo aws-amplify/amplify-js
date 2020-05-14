@@ -1244,7 +1244,9 @@ export default class CognitoUser {
 			return callback(new Error('User is not authenticated'), null);
 		}
 
-		if (!this.isUserDataCached()) {
+		const userData = this.getUserDataFromCache();
+
+		if (!userData) {
 			this.fetchUserData()
 				.then(data => {
 					callback(null, data);
@@ -1276,10 +1278,10 @@ export default class CognitoUser {
 	 * PRIVATE ONLY: This is an internal only method and should not
 	 * be directly called by the consumers.
 	 */
-	isUserDataCached() {
+	getUserDataFromCache() {
 		const userData = this.storage.getItem(this.userDataKey);
 
-		return userData != false;
+		return userData;
 	}
 
 	/**
