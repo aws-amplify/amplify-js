@@ -345,12 +345,7 @@ describe('StorageProvider test', () => {
 				options.bucket + '.s3.' + options.region + '.amazonaws.com'
 			);
 
-			// For test to be deterministic, let's assume a 100 ms difference between when the date
-			// was created in the source vs in the test.
-			const diff =
-				new Date(Date.now() + 1200 * 1000).getMilliseconds() -
-				(spyon.mock.calls[0][1] as Date).getMilliseconds();
-			expect(diff).toBeLessThan(100);
+			expect(spyon.mock.calls[0][1].expiresIn).toBe(1200);
 		});
 
 		test('get object with default expires option', async () => {
@@ -372,12 +367,7 @@ describe('StorageProvider test', () => {
 				options.bucket + '.s3.' + options.region + '.amazonaws.com'
 			);
 
-			// For test to be deterministic, let's assume a 100 ms difference between when the date
-			// was created in the source vs in the test. 900 secs is default
-			const diff =
-				new Date(Date.now() + 900 * 1000).getMilliseconds() -
-				(spyon.mock.calls[0][1] as Date).getMilliseconds();
-			expect(diff).toBeLessThan(100);
+			expect(spyon.mock.calls[0][1].expiresIn).toBe(900);
 		});
 
 		test('get object with identityId option', async () => {

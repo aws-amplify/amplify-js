@@ -1,4 +1,14 @@
 import UserAgent from './UserAgent';
+
+class CognitoError extends Error {
+	constructor(message, code, name, statusCode) {
+		super(message);
+		this.code = code;
+		this.name = name;
+		this.statusCode = statusCode;
+	}
+}
+
 /** @class */
 export default class Client {
 	/**
@@ -8,6 +18,27 @@ export default class Client {
 	 */
 	constructor(region, endpoint) {
 		this.endpoint = endpoint || `https://cognito-idp.${region}.amazonaws.com/`;
+	}
+
+	/**
+	 * Makes an unauthenticated request on AWS Cognito Identity Provider API
+	 * using fetch
+	 * @param {string} operation API operation
+	 * @param {object} params Input parameters
+	 * @returns Promise<object>
+	 */
+	promisifyRequest(operation, params) {
+		return new Promise((resolve, reject) => {
+			this.request(operation, params, (err, data) => {
+				if (err) {
+					reject(
+						new CognitoError(err.message, err.code, err.name, err.statusCode)
+					);
+				} else {
+					resolve(data);
+				}
+			});
+		});
 	}
 
 	/**

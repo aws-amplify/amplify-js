@@ -8,6 +8,9 @@ const authClass = {
 	currentUserCredentials() {
 		return Promise.resolve('cred');
 	},
+	configure(config: any) {
+		return config;
+	},
 };
 
 const cacheClass = {
@@ -16,6 +19,9 @@ const cacheClass = {
 	},
 	getItem() {
 		return null;
+	},
+	configure(config: any) {
+		return config;
 	},
 };
 

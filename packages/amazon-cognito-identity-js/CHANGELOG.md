@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.4](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.2.3...amazon-cognito-identity-js@4.2.4) (2020-05-14)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** Not refresh token immediately after sign in ([#5747](https://github.com/aws-amplify/amplify-js/issues/5747)) ([466a14d](https://github.com/aws-amplify/amplify-js/commit/466a14d958a07519d5a59cf330771f744c8db8f6)), closes [#5397](https://github.com/aws-amplify/amplify-js/issues/5397)
+
+
+
+
+
 ## [4.2.3](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.2.2...amazon-cognito-identity-js@4.2.3) (2020-04-30)
 
 
