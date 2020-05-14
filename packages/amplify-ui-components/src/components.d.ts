@@ -769,6 +769,10 @@ export namespace Components {
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
+          * Used for header text in totp setup component
+         */
+        "headerText": string;
+        /**
           * Used in order to configure TOTP for a user
          */
         "user": CognitoUserInterface;
@@ -1904,6 +1908,10 @@ declare namespace LocalJSX {
           * Auth state change handler for this component
          */
         "handleAuthStateChange"?: AuthStateHandler;
+        /**
+          * Used for header text in totp setup component
+         */
+        "headerText"?: string;
         /**
           * Used in order to configure TOTP for a user
          */
