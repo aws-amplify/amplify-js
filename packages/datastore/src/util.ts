@@ -154,7 +154,9 @@ export const establishRelation = (
 						fields.forEach(field => {
 							// only add index if it hasn't already been added
 							const exists = relationship[mKey].indexes.includes(field);
-							!exists && relationship[mKey].indexes.push(field);
+							if (!exists) {
+								relationship[mKey].indexes.push(field);
+							}
 						});
 					}
 				}
