@@ -433,7 +433,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		const { err, endpointObject } = failureData;
 		const statusCode = err.$metadata && err.$metadata.httpStatusCode;
 
-		logger.error('updateEndpoint failed', err);
+		logger.debug('updateEndpoint failed', err);
 
 		switch (statusCode) {
 			case BAD_REQUEST_CODE:
