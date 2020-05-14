@@ -9,7 +9,8 @@ export default class Client {
 	 */
 	constructor(region, endpoint, fetchOptions) {
 		this.endpoint = endpoint || `https://cognito-idp.${region}.amazonaws.com/`;
-		this.fetchOptions = fetchOptions || {};
+		const { credentials } = fetchOptions || {};
+		this.fetchOptions = credentials ? { credentials } : {};
 	}
 
 	/**
@@ -27,14 +28,13 @@ export default class Client {
 			'X-Amz-User-Agent': UserAgent.prototype.userAgent,
 		};
 
-		const options = {
+		const options = Object.assign({}, this.fetchOptions, {
 			headers,
 			method: 'POST',
 			mode: 'cors',
 			cache: 'no-cache',
-			credentials: this.fetchOptions.credentials,
 			body: JSON.stringify(params),
-		};
+		});
 
 		let response;
 		let responseJsonData;
