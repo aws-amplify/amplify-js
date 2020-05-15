@@ -66,6 +66,7 @@ export class SessionTracker {
 				{
 					name: '_session.start',
 					attributes,
+					immediate: false,
 				},
 				this._config.provider
 			).catch(e => {
@@ -83,7 +84,7 @@ export class SessionTracker {
 				{
 					name: '_session.stop',
 					attributes,
-					immediate: true,
+					immediate: false,
 				},
 				this._config.provider
 			).catch(e => {
@@ -113,6 +114,7 @@ export class SessionTracker {
 			{
 				name: '_session.start',
 				attributes,
+				immediate: false,
 			},
 			this._config.provider
 		).catch(e => {
