@@ -201,10 +201,10 @@ export default class PushNotification {
 			const message = this.parseMessageFromIOS(rawMessage);
 			const pinpointData =
 				message && message.data ? message.data.pinpoint : null;
-			if (pinpointData.campaign) {
+			if (pinpointData && pinpointData.campaign) {
 				eventSource = 'campaign';
 				eventSourceAttributes = pinpointData.campaign;
-			} else if (pinpointData.journey) {
+			} else if (pinpointData && pinpointData.journey) {
 				eventSource = 'journey';
 				eventSourceAttributes = pinpointData.journey;
 			}
