@@ -53,11 +53,7 @@ export default class PushNotification {
 		this._iosInitialized = false;
 
 		if (Platform.OS === 'ios') {
-			AppState.addEventListener(
-				'change',
-				this._checkIfOpenedByNotification,
-				false
-			);
+			AppState.addEventListener('change', this._checkIfOpenedByNotification);
 		}
 		Amplify.register(this);
 	}
@@ -268,7 +264,7 @@ export default class PushNotification {
 			Amplify.Analytics.record({
 				name: eventType,
 				attributes,
-				immediate: true,
+				immediate: false,
 			});
 		} else {
 			logger.debug('Analytics module is not registered into Amplify');
@@ -296,7 +292,7 @@ export default class PushNotification {
 			Amplify.Analytics.record({
 				name: eventType,
 				attributes,
-				immediate: true,
+				immediate: false,
 			});
 		} else {
 			logger.debug('Analytics module is not registered into Amplify');
