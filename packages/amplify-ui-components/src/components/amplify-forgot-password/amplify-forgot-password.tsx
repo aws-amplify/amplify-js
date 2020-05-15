@@ -196,8 +196,8 @@ export class AmplifyForgotPassword {
           type: 'password',
           required: true,
           handleInputChange: this.handleFormFieldInputChange('password'),
-          label: 'New password',
-          placeholder: 'Enter your new password',
+          label: I18n.get(Translations.NEW_PASSWORD_LABEL),
+          placeholder: I18n.get(Translations.NEW_PASSWORD_PLACEHOLDER),
         },
       ];
       this.delivery = data.CodeDeliveryDetails;
@@ -246,6 +246,7 @@ export class AmplifyForgotPassword {
           </amplify-button>
         }
         testDataPrefix={'forgot-password'}
+        submitButtonText={I18n.get(Translations.SEND_CODE)}
       >
         <amplify-auth-fields formFields={this.newFormFields} />
       </amplify-form-section>

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.6...@aws-amplify/core@3.2.7) (2020-05-14)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** Correctly log retry error object ([#5699](https://github.com/aws-amplify/amplify-js/issues/5699)) ([825ed73](https://github.com/aws-amplify/amplify-js/commit/825ed73218ae3074c536da2d3e444bb965506a97))
+
+
+
+
+
 ## [3.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.2.5...@aws-amplify/core@3.2.6) (2020-04-30)
 
 

@@ -20,6 +20,7 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	SignedOutMessage,
 	Wrapper,
 } from '../AmplifyUI';
 import AuthPiece from './AuthPiece';
@@ -185,21 +186,24 @@ export default class VerifyContact extends AuthPiece {
 		return (
 			<Wrapper>
 				<View style={theme.section}>
-					<Header theme={theme} testID={TEST_ID.AUTH.VERIFY_CONTACT_TEXT}>
-						{I18n.get('Verify Contact')}
-					</Header>
-					{!this.state.verifyAttr && this.verifyBody(theme)}
-					{this.state.verifyAttr && this.submitBody(theme)}
-					<View style={theme.sectionFooter}>
-						<LinkCell
-							theme={theme}
-							onPress={() => this.changeState('signedIn')}
-							testID={TEST_ID.AUTH.SKIP_BUTTON}
-						>
-							{I18n.get('Skip')}
-						</LinkCell>
+					<View>
+						<Header theme={theme} testID={TEST_ID.AUTH.VERIFY_CONTACT_TEXT}>
+							{I18n.get('Verify Contact')}
+						</Header>
+						{!this.state.verifyAttr && this.verifyBody(theme)}
+						{this.state.verifyAttr && this.submitBody(theme)}
+						<View style={theme.sectionFooter}>
+							<LinkCell
+								theme={theme}
+								onPress={() => this.changeState('signedIn')}
+								testID={TEST_ID.AUTH.SKIP_BUTTON}
+							>
+								{I18n.get('Skip')}
+							</LinkCell>
+						</View>
+						<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 					</View>
-					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+					<SignedOutMessage {...this.props} />
 				</View>
 			</Wrapper>
 		);
