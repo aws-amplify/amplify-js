@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.4.0...@aws-amplify/ui-components@0.4.1) (2020-05-14)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:**  keypress on form ([#5586](https://github.com/aws-amplify/amplify-js/issues/5586)) ([0f17ddd](https://github.com/aws-amplify/amplify-js/commit/0f17ddd4052d329c40efa1d1ea4ac2b9c82fb0f9))
+* **@aws-amplify/ui-components:** amplify-container component, use dispatch auth event on check user ([#5727](https://github.com/aws-amplify/amplify-js/issues/5727)) ([31709c0](https://github.com/aws-amplify/amplify-js/commit/31709c0a75f11e085f7fd8729653451d9cc9d488))
+* **@aws-amplify/ui-components:** Check for 'amplify-redirected-from-hosted-ui' instead of 'amplify-signin-with-hostedUI' ([#5678](https://github.com/aws-amplify/amplify-js/issues/5678)) ([af7c9ef](https://github.com/aws-amplify/amplify-js/commit/af7c9ef10285bc682bee0e95532c829c72d0929d)), closes [#4258](https://github.com/aws-amplify/amplify-js/issues/4258)
+* **@aws-amplify/ui-components:** formFields hint handle ([#5682](https://github.com/aws-amplify/amplify-js/issues/5682)) ([7ba5647](https://github.com/aws-amplify/amplify-js/commit/7ba56478f8da4ce538198615d73474da618c8b31))
+* **@aws-amplify/ui-components:** Styling fixes ([#5725](https://github.com/aws-amplify/amplify-js/issues/5725)) ([4914145](https://github.com/aws-amplify/amplify-js/commit/491414523cf81d3fe07f4b86aaf5c0e3540be561))
+* **@aws-amplify/ui-components:** Watch for formFields changes ([#5691](https://github.com/aws-amplify/amplify-js/issues/5691)) ([b67c6d0](https://github.com/aws-amplify/amplify-js/commit/b67c6d0a78aead904c90ca930c245ffb15a51afd))
+
+
+
+
+
 # [0.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.3.3...@aws-amplify/ui-components@0.4.0) (2020-04-30)
 
 
