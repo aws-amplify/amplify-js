@@ -15,9 +15,12 @@ export default class Client {
 	 * Constructs a new AWS Cognito Identity Provider client object
 	 * @param {string} region AWS region
 	 * @param {string} endpoint endpoint
+	 * @param {object} fetchOptions options for fetch API (only credentials is supported)
 	 */
-	constructor(region, endpoint) {
+	constructor(region, endpoint, fetchOptions) {
 		this.endpoint = endpoint || `https://cognito-idp.${region}.amazonaws.com/`;
+		const { credentials } = fetchOptions || {};
+		this.fetchOptions = credentials ? { credentials } : {};
 	}
 
 	/**
@@ -56,13 +59,13 @@ export default class Client {
 			'X-Amz-User-Agent': UserAgent.prototype.userAgent,
 		};
 
-		const options = {
+		const options = Object.assign({}, this.fetchOptions, {
 			headers,
 			method: 'POST',
 			mode: 'cors',
 			cache: 'no-cache',
 			body: JSON.stringify(params),
-		};
+		});
 
 		let response;
 		let responseJsonData;

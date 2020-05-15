@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.1.9...@aws-amplify/storage@3.2.0) (2020-05-14)
+
+
+### Features
+
+* **@aws-amplify/storage:** AWSS3Provider.ts supports ACL ([#5520](https://github.com/aws-amplify/amplify-js/issues/5520)) ([cc1f981](https://github.com/aws-amplify/amplify-js/commit/cc1f981f65889562949095000f79c58ac7a88388))
+
+
+
+
+
 ## [3.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.1.8...@aws-amplify/storage@3.1.9) (2020-04-30)
 
 
