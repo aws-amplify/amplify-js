@@ -16,11 +16,21 @@ import { View, Text } from 'react-native';
 import { Auth, I18n } from 'aws-amplify';
 import { AmplifyButton } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import TEST_ID from '../AmplifyTestIDs';
 
-export default class Greetings extends AuthPiece {
-	constructor(props) {
+interface IGreetingsProps extends IAuthPieceProps {
+	signedInMessage?: string;
+	signedOutMessage?: string;
+}
+
+interface IGreetingsState extends IAuthPieceState {}
+
+export default class Greetings extends AuthPiece<
+	IGreetingsProps,
+	IGreetingsState
+> {
+	constructor(props: IGreetingsProps) {
 		super(props);
 		this._validAuthStates = ['signedIn'];
 		this.signOut = this.signOut.bind(this);
