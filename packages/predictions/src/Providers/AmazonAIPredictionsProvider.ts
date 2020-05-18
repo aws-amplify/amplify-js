@@ -1,9 +1,7 @@
 import { AbstractPredictionsProvider } from '../types/Providers';
-import {
-	AmazonAIConvertPredictionsProvider,
-	AmazonAIInterpretPredictionsProvider,
-	AmazonAIIdentifyPredictionsProvider,
-} from '.';
+import { AmazonAIConvertPredictionsProvider } from './AmazonAIConvertPredictionsProvider';
+import { AmazonAIInterpretPredictionsProvider } from './AmazonAIInterpretPredictionsProvider';
+import { AmazonAIIdentifyPredictionsProvider } from './AmazonAIIdentifyPredictionsProvider';
 import {
 	TranslateTextInput,
 	TextToSpeechInput,
