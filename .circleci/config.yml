@@ -72,15 +72,7 @@ commands:
             git config --global user.name $NPM_USER
             git status
             git --no-pager diff
-            n=0
-            until [ "$n" -ge 5 ]
-            do
-              ./node_modules/lerna/cli.js publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes && break
-              git reset --hard
-              n=$((n+1))
-              sleep 5
-              echo "Retry $n of 5"
-            done
+            ./.circleci/retry-publish.sh publish:verdaccio
 
   prepare_test_env:
     steps:
@@ -427,15 +419,7 @@ jobs:
               git config --global user.name $GITHUB_USER
               git status
               git --no-pager diff
-              n=0
-              until [ "$n" -ge 5 ]
-              do
-                yarn run publish:$CIRCLE_BRANCH && break
-                git reset --hard
-                n=$((n+1))
-                sleep 5
-                echo "Retry $n of 5"
-              done
+              ./.circleci/retry-publish.sh publish:$CIRCLE_BRANCH
             else
               echo "Skipping deploy."
             fi
