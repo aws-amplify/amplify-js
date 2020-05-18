@@ -21,18 +21,42 @@ import {
 	Header,
 	ErrorRow,
 	AmplifyButton,
+	SignedOutMessage,
 	Wrapper,
 } from '../AmplifyUI';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import countryDialCodes from '../CountryDialCodes';
 import signUpWithUsernameFields, {
 	signUpWithEmailFields,
 	signUpWithPhoneNumberFields,
 } from './common/default-sign-up-fields';
+import TEST_ID from '../AmplifyTestIDs';
+import { ISignUpField } from '../../types';
 
 const logger = new Logger('SignUp');
-export default class SignUp extends AuthPiece {
-	constructor(props) {
+
+interface ISignUpConfig {
+	defaultCountryCode?: string;
+	header?: string;
+	hideAllDefaults?: boolean;
+	hiddenDefaults?: string[];
+	signUpFields?: ISignUpField[];
+}
+
+interface ISignUpProps extends IAuthPieceProps {
+	signUpConfig?: ISignUpConfig;
+}
+
+interface ISignUpState extends IAuthPieceState {
+	password?: string | null;
+}
+
+export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
+	header: string;
+	defaultSignUpFields: ISignUpField[];
+	signUpFields: ISignUpField[];
+
+	constructor(props: ISignUpProps) {
 		super(props);
 
 		this._validAuthStates = ['signUp'];
@@ -58,7 +82,7 @@ export default class SignUp extends AuthPiece {
 	}
 
 	isValid() {
-		for (const el in this.signUpFields) {
+		for (const el of this.signUpFields) {
 			if (el.required && !this.state[el.key]) return false;
 		}
 		return true;
@@ -144,7 +168,7 @@ export default class SignUp extends AuthPiece {
 			this.props.signUpConfig.defaultCountryCode &&
 			countryDialCodes.indexOf(
 				`+${this.props.signUpConfig.defaultCountryCode}`
-			) !== '-1'
+			) !== -1
 			? `+${this.props.signUpConfig.defaultCountryCode}`
 			: '+1';
 	}
@@ -207,6 +231,7 @@ export default class SignUp extends AuthPiece {
 		logger.debug('Signing up with', signup_info);
 		Auth.signUp(signup_info)
 			.then(data => {
+				// @ts-ignore
 				this.changeState('confirmSignUp', data.user.username);
 			})
 			.catch(err => this.error(err));
@@ -219,14 +244,17 @@ export default class SignUp extends AuthPiece {
 		this.sortFields();
 		return (
 			<Wrapper>
-				<ScrollView style={theme.section}>
-					<Header theme={theme}>{I18n.get(this.header)}</Header>
+				<ScrollView style={theme.sectionScroll}>
+					<Header theme={theme} testID={TEST_ID.AUTH.SIGN_UP_TEXT}>
+						{I18n.get(this.header)}
+					</Header>
 					<View style={theme.sectionBody}>
 						{this.signUpFields.map(field => {
 							return field.key !== 'phone_number' ? (
 								<FormField
 									key={field.key}
 									theme={theme}
+									// @ts-ignore
 									type={field.type}
 									secureTextEntry={field.type === 'password'}
 									onChangeText={text => {
@@ -237,6 +265,7 @@ export default class SignUp extends AuthPiece {
 									label={I18n.get(field.label)}
 									placeholder={I18n.get(field.placeholder)}
 									required={field.required}
+									testID={field.testID}
 								/>
 							) : (
 								<PhoneField
@@ -248,6 +277,7 @@ export default class SignUp extends AuthPiece {
 									keyboardType="phone-pad"
 									required={field.required}
 									defaultDialCode={this.getDefaultDialCode()}
+									testID={field.testID}
 								/>
 							);
 						})}
@@ -255,21 +285,28 @@ export default class SignUp extends AuthPiece {
 							text={I18n.get('Sign Up').toUpperCase()}
 							theme={theme}
 							onPress={this.signUp}
-							disabled={!this.isValid}
+							disabled={!this.isValid()}
+							testID={TEST_ID.AUTH.SIGN_UP_BUTTON}
 						/>
 					</View>
 					<View style={theme.sectionFooter}>
 						<LinkCell
 							theme={theme}
 							onPress={() => this.changeState('confirmSignUp')}
+							testID={TEST_ID.AUTH.CONFIRM_A_CODE_BUTTON}
 						>
 							{I18n.get('Confirm a Code')}
 						</LinkCell>
-						<LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
+						<LinkCell
+							theme={theme}
+							onPress={() => this.changeState('signIn')}
+							testID={TEST_ID.AUTH.SIGN_IN_BUTTON}
+						>
 							{I18n.get('Sign In')}
 						</LinkCell>
 					</View>
 					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+					<SignedOutMessage {...this.props} />
 				</ScrollView>
 			</Wrapper>
 		);

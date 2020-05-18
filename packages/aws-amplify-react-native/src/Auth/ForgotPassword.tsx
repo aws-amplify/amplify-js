@@ -20,14 +20,28 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	SignedOutMessage,
 	Wrapper,
 } from '../AmplifyUI';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { AmplifyThemeType } from '../AmplifyTheme';
+import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('ForgotPassword');
 
-export default class ForgotPassword extends AuthPiece {
-	constructor(props) {
+interface IForgotPasswordProps extends IAuthPieceProps {}
+
+interface IForgotPasswordState extends IAuthPieceState {
+	code?: string;
+	delivery?: any;
+	password?: string;
+}
+
+export default class ForgotPassword extends AuthPiece<
+	IForgotPasswordProps,
+	IForgotPasswordState
+> {
+	constructor(props: IForgotPasswordProps) {
 		super(props);
 
 		this._validAuthStates = ['forgotPassword'];
@@ -35,6 +49,16 @@ export default class ForgotPassword extends AuthPiece {
 
 		this.send = this.send.bind(this);
 		this.submit = this.submit.bind(this);
+	}
+
+	static getDerivedStateFromProps(props, state) {
+		const username = props.authData;
+
+		if (username && !state.username) {
+			return { username };
+		}
+
+		return null;
 	}
 
 	send() {
@@ -62,7 +86,7 @@ export default class ForgotPassword extends AuthPiece {
 			.catch(err => this.error(err));
 	}
 
-	forgotBody(theme) {
+	forgotBody(theme: AmplifyThemeType) {
 		return (
 			<View style={theme.sectionBody}>
 				{this.renderUsernameField(theme)}
@@ -71,12 +95,13 @@ export default class ForgotPassword extends AuthPiece {
 					theme={theme}
 					onPress={this.send}
 					disabled={!this.getUsernameFromInput()}
+					testID={TEST_ID.AUTH.SEND_BUTTON}
 				/>
 			</View>
 		);
 	}
 
-	submitBody(theme) {
+	submitBody(theme: AmplifyThemeType) {
 		return (
 			<View style={theme.sectionBody}>
 				<FormField
@@ -85,6 +110,7 @@ export default class ForgotPassword extends AuthPiece {
 					label={I18n.get('Confirmation Code')}
 					placeholder={I18n.get('Enter your confirmation code')}
 					required={true}
+					testID={TEST_ID.AUTH.CONFIRMATION_CODE_INPUT}
 				/>
 				<FormField
 					theme={theme}
@@ -93,32 +119,43 @@ export default class ForgotPassword extends AuthPiece {
 					placeholder={I18n.get('Enter your new password')}
 					secureTextEntry={true}
 					required={true}
+					testID={TEST_ID.AUTH.PASSWORD_INPUT}
 				/>
 				<AmplifyButton
 					text={I18n.get('Submit')}
 					theme={theme}
 					onPress={this.submit}
 					disabled={!(this.state.code && this.state.password)}
+					testID={TEST_ID.AUTH.SUBMIT_BUTTON}
 				/>
 			</View>
 		);
 	}
 
-	showComponent(theme) {
+	showComponent(theme: AmplifyThemeType) {
 		return (
 			<Wrapper>
 				<View style={theme.section}>
-					<Header theme={theme}>{I18n.get('Forgot Password')}</Header>
-					<View style={theme.sectionBody}>
-						{!this.state.delivery && this.forgotBody(theme)}
-						{this.state.delivery && this.submitBody(theme)}
+					<View>
+						<Header theme={theme} testID={TEST_ID.AUTH.FORGOT_PASSWORD_TEXT}>
+							{I18n.get('Reset your password')}
+						</Header>
+						<View style={theme.sectionBody}>
+							{!this.state.delivery && this.forgotBody(theme)}
+							{this.state.delivery && this.submitBody(theme)}
+						</View>
+						<View style={theme.sectionFooter}>
+							<LinkCell
+								theme={theme}
+								onPress={() => this.changeState('signIn')}
+								testID={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
+							>
+								{I18n.get('Back to Sign In')}
+							</LinkCell>
+						</View>
+						<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 					</View>
-					<View style={theme.sectionFooter}>
-						<LinkCell theme={theme} onPress={() => this.changeState('signIn')}>
-							{I18n.get('Back to Sign In')}
-						</LinkCell>
-					</View>
-					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+					<SignedOutMessage {...this.props} />
 				</View>
 			</Wrapper>
 		);

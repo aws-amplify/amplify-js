@@ -21,7 +21,7 @@ export class AmplifyFacebookButton {
    */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 
-  federatedSignIn = authResponse => {
+  private federatedSignIn = authResponse => {
     const { accessToken, expiresIn } = authResponse;
 
     if (!accessToken) {
@@ -50,7 +50,7 @@ export class AmplifyFacebookButton {
     });
   };
 
-  getLoginStatus = () => {
+  private getLoginStatus = () => {
     window['FB'].getLoginStatus(response => {
       try {
         window.localStorage.setItem(AUTH_SOURCE_KEY, JSON.stringify({ provider: 'facebook' }));
@@ -69,7 +69,7 @@ export class AmplifyFacebookButton {
   /**
    * @see https://developers.facebook.com/docs/javascript/reference/FB.init/v5.0
    */
-  signInWithFacebook(event) {
+  private signInWithFacebook(event) {
     event.preventDefault();
 
     window['FB'].init({
@@ -82,7 +82,7 @@ export class AmplifyFacebookButton {
     this.getLoginStatus();
   }
 
-  login = () => {
+  private login = () => {
     const scope = 'public_profile,email';
 
     window['FB'].login(

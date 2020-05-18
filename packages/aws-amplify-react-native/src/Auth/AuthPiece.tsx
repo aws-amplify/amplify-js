@@ -15,9 +15,11 @@ import React from 'react';
 
 import { Auth, Logger, JS, I18n } from 'aws-amplify';
 
-import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme, { AmplifyThemeType } from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 import { FormField, PhoneField } from '../AmplifyUI';
+import TEST_ID from '../AmplifyTestIDs';
+import { OnStateChangeType, UsernameAttributesType } from '../../types';
 
 const logger = new Logger('AuthPiece');
 
@@ -27,7 +29,31 @@ const labelMap = {
 	username: 'Username',
 };
 
-export default class AuthPiece extends React.Component {
+export interface IAuthPieceProps {
+	authData?: any;
+	authState?: string;
+	errorMessage?: string;
+	messageMap?: any;
+	onStateChange?: OnStateChangeType;
+	theme?: AmplifyThemeType;
+	track?: () => void;
+	usernameAttributes?: UsernameAttributesType;
+}
+
+export interface IAuthPieceState {
+	email?: string;
+	error?: string | null;
+	phone_number?: string;
+	username?: string;
+}
+
+export default class AuthPiece<
+	Props extends IAuthPieceProps,
+	State extends IAuthPieceState
+> extends React.Component<Props, State> {
+	_isHidden: boolean;
+	_validAuthStates: String[];
+
 	constructor(props) {
 		super(props);
 
@@ -52,7 +78,8 @@ export default class AuthPiece extends React.Component {
 		}
 	}
 
-	renderUsernameField(theme) {
+	renderUsernameField(theme: AmplifyThemeType) {
+		const value = this.getUsernameFromInput();
 		const { usernameAttributes = [] } = this.props;
 		if (usernameAttributes === 'email') {
 			return (
@@ -62,6 +89,8 @@ export default class AuthPiece extends React.Component {
 					label={I18n.get('Email')}
 					placeholder={I18n.get('Enter your email')}
 					required={true}
+					testID={TEST_ID.AUTH.EMAIL_INPUT}
+					value={value}
 				/>
 			);
 		} else if (usernameAttributes === 'phone_number') {
@@ -74,6 +103,8 @@ export default class AuthPiece extends React.Component {
 					placeholder={I18n.get('Enter your phone number')}
 					keyboardType="phone-pad"
 					required={true}
+					testID={TEST_ID.AUTH.PHONE_INPUT}
+					value={value}
 				/>
 			);
 		} else {
@@ -84,6 +115,8 @@ export default class AuthPiece extends React.Component {
 					label={I18n.get(this.getUsernameLabel())}
 					placeholder={I18n.get('Enter your username')}
 					required={true}
+					testID={TEST_ID.AUTH.USERNAME_INPUT}
+					value={value}
 				/>
 			);
 		}
@@ -94,13 +127,13 @@ export default class AuthPiece extends React.Component {
 		return labelMap[usernameAttributes] || usernameAttributes;
 	}
 
-	changeState(state, data) {
+	changeState(state: string, data?: any) {
 		if (this.props.onStateChange) {
 			this.props.onStateChange(state, data);
 		}
 	}
 
-	checkContact(user) {
+	checkContact(user: any) {
 		Auth.verifiedContact(user).then(data => {
 			logger.debug('verified user attributes', data);
 			if (!JS.isEmpty(data.verified)) {
@@ -112,7 +145,7 @@ export default class AuthPiece extends React.Component {
 		});
 	}
 
-	error(err) {
+	error(err: any) {
 		logger.debug(err);
 
 		let msg = '';
@@ -145,7 +178,7 @@ export default class AuthPiece extends React.Component {
 		return this.showComponent(this.props.theme || AmplifyTheme);
 	}
 
-	showComponent(theme) {
+	showComponent(theme): any {
 		throw "You must implement showComponent(theme) and don't forget to set this._validAuthStates.";
 	}
 }

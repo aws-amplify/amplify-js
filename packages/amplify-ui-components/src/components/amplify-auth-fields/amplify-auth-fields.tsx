@@ -4,6 +4,7 @@ import componentFieldMapping from './component-field-mapping';
 
 @Component({
   tag: 'amplify-auth-fields',
+  styleUrl: 'amplify-auth-fields.scss',
   shadow: true,
 })
 export class AmplifyAuthFields {
@@ -14,7 +15,7 @@ export class AmplifyAuthFields {
    * ```
    * [
    *  {
-   *    type: 'username'|'password'|'email'|'code'|'default',
+   *    type: string,
    *    label: string,
    *    placeholder: string,
    *    hint: string | Functional Component | null,
@@ -25,19 +26,25 @@ export class AmplifyAuthFields {
    */
   @Prop() formFields: FormFieldTypes | string[];
 
-  constructFormFieldOptions(formFields: FormFieldTypes | string[]) {
+  private constructFormFieldOptions(formFields: FormFieldTypes | string[]) {
     let content = [];
 
     if (formFields === undefined) return '';
 
-    formFields.forEach((formField: FormFieldType | string) =>
-      content.push(componentFieldMapping[typeof formField === 'string' ? formField : formField.type](formField)),
-    );
+    formFields.forEach((formField: FormFieldType | string) => {
+      if (typeof formField === 'string') {
+        content.push(componentFieldMapping[formField](formField));
+      } else if (Object.keys(componentFieldMapping).includes(formField.type)) {
+        content.push(componentFieldMapping[formField.type](formField));
+      } else {
+        content.push(componentFieldMapping['default'](formField));
+      }
+    });
 
     return content;
   }
 
   render() {
-    return <div>{this.constructFormFieldOptions(this.formFields)}</div>;
+    return <div class="auth-fields">{this.constructFormFieldOptions(this.formFields)}</div>;
   }
 }

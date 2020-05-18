@@ -12,11 +12,12 @@
  */
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { AWSKinesisProvider } from './index';
+import { AWSKinesisProvider } from './AWSKinesisProvider';
 import {
 	PutRecordBatchCommand,
 	FirehoseClient,
 } from '@aws-sdk/client-firehose';
+import { fromUtf8 } from '@aws-sdk/util-utf8-browser';
 
 const logger = new Logger('AWSKineisFirehoseProvider');
 
@@ -47,18 +48,16 @@ export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 		const records = {};
 
 		group.map(params => {
-			// spit by streamName
+			// split by streamName
 			const evt = params.event;
-			const { streamName } = evt;
+			const { streamName, data } = evt;
 			if (records[streamName] === undefined) {
 				records[streamName] = [];
 			}
 
-			const PartitionKey =
-				evt.partitionKey || `partition-${credentials.identityId}`;
-
-			Object.assign(evt.data, { PartitionKey });
-			const Data = JSON.stringify(evt.data);
+			const bufferData =
+				data && typeof data !== 'string' ? JSON.stringify(data) : data;
+			const Data = fromUtf8(bufferData);
 			const record = { Data };
 			records[streamName].push(record);
 		});

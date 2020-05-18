@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import React, { Component } from 'react';
+import React, { Component, FC } from 'react';
 import {
 	Keyboard,
 	Picker,
@@ -22,17 +22,37 @@ import {
 	TouchableOpacity,
 	TouchableWithoutFeedback,
 	View,
+	SafeAreaView,
+	TextInputProperties,
+	TouchableOpacityProps,
 } from 'react-native';
 import { I18n } from 'aws-amplify';
 import AmplifyTheme, {
+	AmplifyThemeType,
 	linkUnderlayColor,
 	errorIconColor,
 	placeholderColor,
 } from './AmplifyTheme';
 import { Icon } from 'react-native-elements';
 import countryDialCodes from './CountryDialCodes';
+import TEST_ID from './AmplifyTestIDs';
 
-export const FormField = props => {
+interface IContainerProps {
+	theme?: AmplifyThemeType;
+}
+
+export const Container: FC<IContainerProps> = props => {
+	const theme = props.theme || AmplifyTheme;
+	return <SafeAreaView style={theme.container}>{props.children}</SafeAreaView>;
+};
+
+interface IFormFieldProps extends TextInputProperties {
+	label: string;
+	required?: boolean;
+	theme?: AmplifyThemeType;
+}
+
+export const FormField: FC<IFormFieldProps> = props => {
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.formField}>
@@ -50,8 +70,22 @@ export const FormField = props => {
 	);
 };
 
-export class PhoneField extends Component {
-	constructor(props) {
+interface IPhoneProps extends TextInputProperties {
+	defaultDialCode?: string;
+	label: string;
+	onChangeText: (phoneNumber: string) => void;
+	required?: boolean;
+	theme?: AmplifyThemeType;
+	value?: string;
+}
+
+interface IPhoneState {
+	dialCode: string;
+	phone: string;
+}
+
+export class PhoneField extends Component<IPhoneProps, IPhoneState> {
+	constructor(props: IPhoneProps) {
 		super(props);
 
 		this.state = {
@@ -68,8 +102,11 @@ export class PhoneField extends Component {
 	}
 
 	render() {
-		const { label, required } = this.props;
+		const { label, required, value } = this.props;
+		const { dialCode } = this.state;
 		const theme = this.props.theme || AmplifyTheme;
+
+		const phoneValue = value ? value.replace(dialCode, '') : undefined;
 
 		return (
 			<View style={theme.formField}>
@@ -97,6 +134,7 @@ export class PhoneField extends Component {
 						autoCorrect={false}
 						placeholderTextColor={placeholderColor}
 						{...this.props}
+						value={phoneValue}
 						onChangeText={phone => {
 							this.setState({ phone }, () => {
 								this.onChangeText();
@@ -109,55 +147,77 @@ export class PhoneField extends Component {
 	}
 }
 
-export const SectionFooter = props => {
-	const theme = props.theme || AmplifyTheme;
-	return (
-		<View style={theme.sectionFooter}>
-			<LinkCell theme={theme} onPress={() => onStateChange('confirmSignUp')}>
-				{I18n.get('Confirm a Code')}
-			</LinkCell>
-			<LinkCell theme={theme} onPress={() => onStateChange('signIn')}>
-				{I18n.get('Sign In')}
-			</LinkCell>
-		</View>
-	);
-};
+interface ILinkCellProps {
+	disabled?: boolean;
+	onPress: () => void;
+	testID?: string;
+	theme?: AmplifyThemeType;
+}
 
-export const LinkCell = props => {
+export const LinkCell: FC<ILinkCellProps> = props => {
+	const { disabled } = props;
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.cell}>
 			<TouchableHighlight
 				onPress={props.onPress}
 				underlayColor={linkUnderlayColor}
+				testID={props.testID}
+				disabled={disabled}
 			>
-				<Text style={theme.sectionFooterLink}>{props.children}</Text>
+				<Text
+					style={
+						disabled ? theme.sectionFooterLinkDisabled : theme.sectionFooterLink
+					}
+				>
+					{props.children}
+				</Text>
 			</TouchableHighlight>
 		</View>
 	);
 };
 
-export const Header = props => {
+interface IHeaderProps {
+	testID?: string;
+	theme?: AmplifyThemeType;
+}
+
+export const Header: FC<IHeaderProps> = props => {
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.sectionHeader}>
-			<Text style={theme.sectionHeaderText}>{props.children}</Text>
+			<Text style={theme.sectionHeaderText} testID={props.testID}>
+				{props.children}
+			</Text>
 		</View>
 	);
 };
 
-export const ErrorRow = props => {
+interface IErrorRowProps {
+	theme?: AmplifyThemeType;
+}
+
+export const ErrorRow: FC<IErrorRowProps> = props => {
 	const theme = props.theme || AmplifyTheme;
 	if (!props.children) return null;
 	return (
 		<View style={theme.errorRow}>
 			<Icon name="warning" color={errorIconColor} />
-			<Text style={theme.errorRowText}>{props.children}</Text>
+			<Text style={theme.errorRowText} testID={TEST_ID.AUTH.ERROR_ROW_TEXT}>
+				{props.children}
+			</Text>
 		</View>
 	);
 };
 
-export const AmplifyButton = props => {
+interface IAmplifyButtonProps extends TouchableOpacityProps {
+	disabled?: boolean;
+	style?: object;
+	text: string;
+	theme?: AmplifyThemeType;
+}
+
+export const AmplifyButton: FC<IAmplifyButtonProps> = props => {
 	const theme = props.theme || AmplifyTheme;
 	let style = theme.button;
 	if (props.disabled) {
@@ -175,11 +235,19 @@ export const AmplifyButton = props => {
 	);
 };
 
-export const Wrapper = props => {
-	const isWeb = Platform.OS === 'web';
-	const WrapperComponent = isWeb ? View : TouchableWithoutFeedback;
+interface IWrapperProps {
+	style?: AmplifyThemeType;
+	accessible?: boolean;
+	onPress?: Function;
+}
 
-	const wrapperProps = {
+export const Wrapper: FC<IWrapperProps> = props => {
+	const isWeb = Platform.OS === 'web';
+	const WrapperComponent: React.ElementType = isWeb
+		? View
+		: TouchableWithoutFeedback;
+
+	const wrapperProps: IWrapperProps = {
 		style: AmplifyTheme.section,
 		accessible: false,
 	};
@@ -190,5 +258,19 @@ export const Wrapper = props => {
 
 	return (
 		<WrapperComponent {...wrapperProps}>{props.children}</WrapperComponent>
+	);
+};
+
+export const SignedOutMessage = props => {
+	const theme = props.theme || AmplifyTheme;
+	const message =
+		props.signedOutMessage || I18n.get('Please Sign In / Sign Up');
+	return (
+		<Text
+			style={theme.signedOutMessage}
+			testID={TEST_ID.AUTH.GREETING_SIGNED_OUT_TEXT}
+		>
+			{message}
+		</Text>
 	);
 };

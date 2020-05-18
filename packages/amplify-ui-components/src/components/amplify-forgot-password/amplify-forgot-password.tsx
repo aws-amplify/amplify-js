@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
-import { Component, Prop, State, h } from '@stencil/core';
+import { Component, Prop, State, h, Watch } from '@stencil/core';
 
 import { FormFieldTypes, PhoneNumberInterface } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
@@ -11,7 +11,7 @@ import {
   COUNTRY_DIAL_CODE_SUFFIX,
 } from '../../common/constants';
 import { Translations } from '../../common/Translations';
-import { CodeDeliveryType } from './amplify-forgot-password-interface';
+import { CodeDeliveryType, ForgotPasswordAttributes } from './amplify-forgot-password-interface';
 
 import {
   dispatchToastHubEvent,
@@ -32,7 +32,7 @@ export class AmplifyForgotPassword {
   /** The text displayed inside of the submit button for the form */
   @Prop() submitButtonText: string = I18n.get(Translations.SEND_CODE);
   /** The form fields displayed inside of the forgot password form */
-  @Prop() formFields: FormFieldTypes;
+  @Prop() formFields: FormFieldTypes | string[] = [];
   /** The function called when making a request to reset password */
   @Prop() handleSend: (event: Event) => void = event => this.send(event);
   /** The function called when submitting a new password */
@@ -41,27 +41,51 @@ export class AmplifyForgotPassword {
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
   @Prop() usernameAlias: UsernameAliasStrings = 'username';
-
-  @State() username: string;
-  @State() password: string;
-  @State() code: string;
   @State() delivery: CodeDeliveryType | null = null;
   @State() loading: boolean = false;
-  @State() email: string;
-  @State() phoneNumber: PhoneNumberInterface = {
+
+  private phoneNumber: PhoneNumberInterface = {
     countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
     phoneNumberValue: null,
+  };
+  private newFormFields: FormFieldTypes | string[] = [];
+
+  @State() forgotPasswordAttrs: ForgotPasswordAttributes = {
+    userInput: '',
+    password: '',
+    code: '',
   };
 
   componentWillLoad() {
     checkUsernameAlias(this.usernameAlias);
+    this.buildFormFields();
+  }
+
+  @Watch('formFields')
+  formFieldsHandler() {
+    this.buildFormFields();
+  }
+
+  private buildFormFields() {
+    if (this.formFields.length === 0) {
+      this.buildDefaultFormFields();
+    } else {
+      this.formFields.forEach(field => {
+        const newField = { ...field };
+        newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
+        this.newFormFields.push(newField);
+      });
+    }
+  }
+
+  private buildDefaultFormFields() {
     switch (this.usernameAlias) {
       case 'email':
-        this.formFields = [
+        this.newFormFields = [
           {
             type: 'email',
             required: true,
-            handleInputChange: event => this.handleEmailChange(event),
+            handleInputChange: this.handleFormFieldInputChange('email'),
             inputProps: {
               'data-test': 'forgot-password-email-input',
             },
@@ -69,11 +93,11 @@ export class AmplifyForgotPassword {
         ];
         break;
       case 'phone_number':
-        this.formFields = [
+        this.newFormFields = [
           {
             type: 'phone_number',
             required: true,
-            handleInputChange: event => this.handlePhoneNumberChange(event),
+            handleInputChange: this.handleFormFieldInputChange('phone_number'),
             inputProps: {
               'data-test': 'forgot-password-phone-number-input',
             },
@@ -82,12 +106,11 @@ export class AmplifyForgotPassword {
         break;
       case 'username':
       default:
-        this.formFields = [
+        this.newFormFields = [
           {
             type: 'username',
             required: true,
-            handleInputChange: event => this.handleUsernameChange(event),
-            value: this.username,
+            handleInputChange: this.handleFormFieldInputChange('username'),
             inputProps: {
               'data-test': 'forgot-password-username-input',
             },
@@ -97,15 +120,32 @@ export class AmplifyForgotPassword {
     }
   }
 
-  handleUsernameChange(event) {
-    this.username = event.target.value;
+  private handleFormFieldInputChange(fieldType) {
+    switch (fieldType) {
+      case 'username':
+      case 'email':
+        return event => (this.forgotPasswordAttrs.userInput = event.target.value);
+      case 'phone_number':
+        return event => this.handlePhoneNumberChange(event);
+      case 'password':
+      case 'code':
+        return event => (this.forgotPasswordAttrs[fieldType] = event.target.value);
+      default:
+        return;
+    }
   }
 
-  handleEmailChange(event) {
-    this.email = event.target.value;
+  private handleFormFieldInputWithCallback(event, field) {
+    const fnToCall = field['handleInputChange']
+      ? field['handleInputChange']
+      : (event, cb) => {
+          cb(event);
+        };
+    const callback = this.handleFormFieldInputChange(field.type);
+    fnToCall(event, callback.bind(this));
   }
 
-  handlePhoneNumberChange(event) {
+  private handlePhoneNumberChange(event) {
     const name = event.target.name;
     const value = event.target.value;
 
@@ -123,15 +163,7 @@ export class AmplifyForgotPassword {
     }
   }
 
-  handlePasswordChange(event) {
-    this.password = event.target.value;
-  }
-
-  handleCodeChange(event) {
-    this.code = event.target.value;
-  }
-
-  async send(event) {
+  private async send(event) {
     if (event) {
       event.preventDefault();
     }
@@ -141,26 +173,21 @@ export class AmplifyForgotPassword {
     this.loading = true;
 
     switch (this.usernameAlias) {
-      case 'email':
-        this.username = this.email;
-        break;
       case 'phone_number':
-        this.username = composePhoneNumberInput(this.phoneNumber);
+        this.forgotPasswordAttrs.userInput = composePhoneNumberInput(this.phoneNumber);
         break;
-      case 'username':
       default:
         break;
     }
 
     try {
-      const data = await Auth.forgotPassword(this.username);
+      const data = await Auth.forgotPassword(this.forgotPasswordAttrs.userInput);
       logger.debug(data);
-      this.formFields = [
+      this.newFormFields = [
         {
           type: 'code',
           required: true,
-          handleInputChange: event => this.handleCodeChange(event),
-          value: this.code,
+          handleInputChange: this.handleFormFieldInputChange('code'),
           inputProps: {
             'data-test': 'forgot-password-code-input',
           },
@@ -168,10 +195,9 @@ export class AmplifyForgotPassword {
         {
           type: 'password',
           required: true,
-          handleInputChange: event => this.handlePasswordChange(event),
-          label: 'New password',
-          placeholder: 'Enter your new password',
-          value: this.password,
+          handleInputChange: this.handleFormFieldInputChange('password'),
+          label: I18n.get(Translations.NEW_PASSWORD_LABEL),
+          placeholder: I18n.get(Translations.NEW_PASSWORD_PLACEHOLDER),
         },
       ];
       this.delivery = data.CodeDeliveryDetails;
@@ -182,7 +208,7 @@ export class AmplifyForgotPassword {
     }
   }
 
-  async submit(event: Event) {
+  private async submit(event: Event) {
     if (event) {
       event.preventDefault();
     }
@@ -191,7 +217,8 @@ export class AmplifyForgotPassword {
     }
     this.loading = true;
     try {
-      const data = await Auth.forgotPasswordSubmit(this.username, this.code, this.password);
+      const { userInput, code, password } = this.forgotPasswordAttrs;
+      const data = await Auth.forgotPasswordSubmit(userInput, code, password);
       logger.debug(data);
       this.handleAuthStateChange(AuthState.SignIn);
       this.delivery = null;
@@ -219,8 +246,9 @@ export class AmplifyForgotPassword {
           </amplify-button>
         }
         testDataPrefix={'forgot-password'}
+        submitButtonText={I18n.get(Translations.SEND_CODE)}
       >
-        <amplify-auth-fields formFields={this.formFields} />
+        <amplify-auth-fields formFields={this.newFormFields} />
       </amplify-form-section>
     );
   }

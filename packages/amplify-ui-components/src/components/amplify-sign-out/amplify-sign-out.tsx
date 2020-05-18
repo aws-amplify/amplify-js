@@ -16,7 +16,7 @@ export class AmplifySignOut {
   /** Text inside of the Sign Out button */
   @Prop() buttonText: string = I18n.get(Translations.SIGN_OUT);
 
-  async signOut(event) {
+  private async signOut(event) {
     if (event) event.preventDefault();
 
     // TODO: Federated Sign Out

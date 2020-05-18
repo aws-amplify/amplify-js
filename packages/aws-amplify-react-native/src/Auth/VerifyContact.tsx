@@ -20,14 +20,28 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	SignedOutMessage,
 	Wrapper,
 } from '../AmplifyUI';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { AmplifyThemeType } from '../AmplifyTheme';
+import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('VerifyContact');
 
-export default class VerifyContact extends AuthPiece {
-	constructor(props) {
+interface IVerifyContactProps extends IAuthPieceProps {}
+
+interface IVerifyContactState extends IAuthPieceState {
+	code?: string;
+	pickAttr?: string;
+	verifyAttr?: string;
+}
+
+export default class VerifyContact extends AuthPiece<
+	IVerifyContactProps,
+	IVerifyContactState
+> {
+	constructor(props: IVerifyContactProps) {
 		super(props);
 
 		this._validAuthStates = ['verifyContact'];
@@ -98,13 +112,14 @@ export default class VerifyContact extends AuthPiece {
 	}
 
 	// Have to do it in this way to avoid null or undefined element in React.createElement()
-	createPicker(unverified) {
+	createPicker(unverified: { email?: string; phone_number?: string }) {
 		const { email, phone_number } = unverified;
 		if (email && phone_number) {
 			return (
 				<Picker
 					selectedValue={this.state.pickAttr}
 					onValueChange={(value, index) => this.setState({ pickAttr: value })}
+					testID={TEST_ID.AUTH.VERIFY_CONTACT_PICKER}
 				>
 					<Picker.Item label={I18n.get('Email')} value="email" />
 					<Picker.Item label={I18n.get('Phone Number')} value="phone_number" />
@@ -115,6 +130,7 @@ export default class VerifyContact extends AuthPiece {
 				<Picker
 					selectedValue={this.state.pickAttr}
 					onValueChange={(value, index) => this.setState({ pickAttr: value })}
+					testID={TEST_ID.AUTH.VERIFY_CONTACT_PICKER}
 				>
 					<Picker.Item label={I18n.get('Email')} value="email" />
 				</Picker>
@@ -124,6 +140,7 @@ export default class VerifyContact extends AuthPiece {
 				<Picker
 					selectedValue={this.state.pickAttr}
 					onValueChange={(value, index) => this.setState({ pickAttr: value })}
+					testID={TEST_ID.AUTH.VERIFY_CONTACT_PICKER}
 				>
 					<Picker.Item label={I18n.get('Phone Number')} value="phone_number" />
 				</Picker>
@@ -133,7 +150,7 @@ export default class VerifyContact extends AuthPiece {
 		}
 	}
 
-	verifyBody(theme) {
+	verifyBody(theme: AmplifyThemeType) {
 		const { unverified } = this.props.authData;
 		if (!unverified) {
 			logger.debug('no unverified contact');
@@ -149,12 +166,13 @@ export default class VerifyContact extends AuthPiece {
 					text={I18n.get('Verify')}
 					onPress={this.verify}
 					disabled={!this.state.pickAttr}
+					testID={TEST_ID.AUTH.VERIFY_BUTTON}
 				/>
 			</View>
 		);
 	}
 
-	submitBody(theme) {
+	submitBody(theme: AmplifyThemeType) {
 		return (
 			<View style={theme.sectionBody}>
 				<FormField
@@ -163,33 +181,41 @@ export default class VerifyContact extends AuthPiece {
 					label={I18n.get('Confirmation Code')}
 					placeholder={I18n.get('Enter your confirmation code')}
 					required={true}
+					testID={TEST_ID.AUTH.CONFIRMATION_CODE_INPUT}
 				/>
 				<AmplifyButton
 					theme={theme}
 					text={I18n.get('Submit')}
 					onPress={this.submit}
 					disabled={!this.state.code}
+					testID={TEST_ID.AUTH.SUBMIT_BUTTON}
 				/>
 			</View>
 		);
 	}
 
-	showComponent(theme) {
+	showComponent(theme: AmplifyThemeType) {
 		return (
 			<Wrapper>
 				<View style={theme.section}>
-					<Header theme={theme}>{I18n.get('Verify Contact')}</Header>
-					{!this.state.verifyAttr && this.verifyBody(theme)}
-					{this.state.verifyAttr && this.submitBody(theme)}
-					<View style={theme.sectionFooter}>
-						<LinkCell
-							theme={theme}
-							onPress={() => this.changeState('signedIn')}
-						>
-							{I18n.get('Skip')}
-						</LinkCell>
+					<View>
+						<Header theme={theme} testID={TEST_ID.AUTH.VERIFY_CONTACT_TEXT}>
+							{I18n.get('Verify Contact')}
+						</Header>
+						{!this.state.verifyAttr && this.verifyBody(theme)}
+						{this.state.verifyAttr && this.submitBody(theme)}
+						<View style={theme.sectionFooter}>
+							<LinkCell
+								theme={theme}
+								onPress={() => this.changeState('signedIn')}
+								testID={TEST_ID.AUTH.SKIP_BUTTON}
+							>
+								{I18n.get('Skip')}
+							</LinkCell>
+						</View>
+						<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
 					</View>
-					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+					<SignedOutMessage {...this.props} />
 				</View>
 			</Wrapper>
 		);

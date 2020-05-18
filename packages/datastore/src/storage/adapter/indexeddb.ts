@@ -1,6 +1,6 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import * as idb from 'idb';
-import { Adapter } from '.';
+import { Adapter } from './index';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ModelPredicateCreator } from '../../predicates';
 import {
@@ -19,6 +19,7 @@ import {
 import {
 	exhaustiveCheck,
 	getIndex,
+	getIndexFromAssociation,
 	isModelConstructor,
 	traverseModel,
 	validatePredicate,
@@ -343,7 +344,7 @@ class IndexedDBAdapter implements Adapter {
 	}
 
 	private async enginePagination<T>(
-		storeName,
+		storeName: string,
 		pagination?: PaginationInput
 	): Promise<T[]> {
 		let result: T[];
@@ -366,7 +367,7 @@ class IndexedDBAdapter implements Adapter {
 			const hasLimit = typeof limit === 'number' && limit > 0;
 			let moreRecords = true;
 			let itemsLeft = limit;
-			while (moreRecords && cursor.value) {
+			while (moreRecords && cursor && cursor.value) {
 				pageResults.push(cursor.value);
 
 				cursor = await cursor.continue();
@@ -499,6 +500,7 @@ class IndexedDBAdapter implements Adapter {
 				const relations = this.schema.namespaces[nameSpace].relationships[
 					modelConstructor.name
 				].relationTypes;
+
 				await this.deleteTraverse(
 					relations,
 					[model],
@@ -564,14 +566,24 @@ class IndexedDBAdapter implements Adapter {
 		for await (const rel of relations) {
 			const { relationType, fieldName, modelName } = rel;
 			const storeName = this.getStorename(nameSpace, modelName);
+
+			const index: string =
+				getIndex(
+					this.schema.namespaces[nameSpace].relationships[modelName]
+						.relationTypes,
+					srcModel
+				) ||
+				// if we were unable to find an index via relationTypes
+				// i.e. for keyName connections, attempt to find one by the
+				// associatedWith property
+				getIndexFromAssociation(
+					this.schema.namespaces[nameSpace].relationships[modelName].indexes,
+					rel.associatedWith
+				);
+
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
-						const index = getIndex(
-							this.schema.namespaces[nameSpace].relationships[modelName]
-								.relationTypes,
-							srcModel
-						);
 						const recordToDelete = <T>await this.db
 							.transaction(storeName, 'readwrite')
 							.objectStore(storeName)
@@ -589,11 +601,6 @@ class IndexedDBAdapter implements Adapter {
 					}
 					break;
 				case 'HAS_MANY':
-					const index = getIndex(
-						this.schema.namespaces[nameSpace].relationships[modelName]
-							.relationTypes,
-						srcModel
-					);
 					for await (const model of models) {
 						const childrenArray = await this.db
 							.transaction(storeName, 'readwrite')
