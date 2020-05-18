@@ -40,6 +40,9 @@ export class AmplifyRequireNewPassword {
       handleInputChange: event => this.handlePasswordChange(event),
       label: I18n.get(Translations.NEW_PASSWORD_LABEL),
       placeholder: I18n.get(Translations.NEW_PASSWORD_PLACEHOLDER),
+      inputProps: {
+        'data-test': 'require-new-password-password-input',
+      },
     },
   ];
 
@@ -64,6 +67,9 @@ export class AmplifyRequireNewPassword {
           label: requiredAttributesMap[attribute].label,
           placeholder: requiredAttributesMap[attribute].placeholder,
           handleInputChange: event => this.handleRequiredAttributeInputChange(attribute, event),
+          inputProps: {
+            'data-test': `require-new-password-${attribute}-input`,
+          },
         };
         this.newFormFields.push(formField);
       });
