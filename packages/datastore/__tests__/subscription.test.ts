@@ -86,7 +86,7 @@ describe('sync engine subscription module', () => {
 		).toEqual(authInfo);
 	});
 	test('owner authorization with public subscription', () => {
-		const model = {
+		const model: SchemaModel = {
 			syncable: true,
 			name: 'Post',
 			pluralName: 'Posts',
@@ -162,6 +162,7 @@ describe('sync engine subscription module', () => {
 		};
 
 		expect(
+			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				TransformerMutationType.CREATE,
