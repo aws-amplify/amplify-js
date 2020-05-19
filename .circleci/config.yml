@@ -23,7 +23,7 @@ executors:
 
 test_env_vars: &test_env_vars
   environment:
-    NPM_REGISTRY: http://localhost:4873/
+    NPM_REGISTRY: http://0.0.0.0:4873/
     NPM_USER: circleci
     NPM_PASS: circleci
     NPM_EMAIL: circleci@amplify.js
@@ -72,7 +72,7 @@ commands:
             git config --global user.name $NPM_USER
             git status
             git --no-pager diff
-            ./node_modules/lerna/cli.js publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes
+            ./.circleci/retry-publish.sh publish:verdaccio
 
   prepare_test_env:
     steps:
@@ -419,7 +419,7 @@ jobs:
               git config --global user.name $GITHUB_USER
               git status
               git --no-pager diff
-              yarn run publish:$CIRCLE_BRANCH
+              ./.circleci/retry-publish.sh publish:$CIRCLE_BRANCH
             else
               echo "Skipping deploy."
             fi
