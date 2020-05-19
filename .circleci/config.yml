@@ -7,13 +7,13 @@ version: 2.1
 executors:
   build-executor:
     docker:
-      - image: cypress/base:12.16.1
+      - image: cypress/base:12
     resource_class: large
     working_directory: ~/amplify-js
 
   js-test-executor:
     docker:
-      - image: cypress/base:12.16.1
+      - image: cypress/base:12
       - image: verdaccio/verdaccio
     resource_class: large
 
