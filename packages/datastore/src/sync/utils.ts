@@ -196,11 +196,11 @@ export function getAuthorizationRules(
 			if (authStrategy === 'owner') {
 				// look for the subscription level override
 				// only pay attention to the public level
-				const modelConfig = []
+				const modelConfig = (<typeof modelDefinition.attributes>[])
 					.concat(modelDefinition.attributes)
 					.find(attr => attr && attr.type === 'model');
 
-				// find the subscriptions level. ON is defeault
+				// find the subscriptions level. ON is default
 				const { properties: { subscriptions: { level = 'on' } = {} } = {} } =
 					modelConfig || {};
 
