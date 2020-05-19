@@ -3,9 +3,12 @@ import React, {
 	ComponentPropsWithRef,
 	FunctionComponent,
 } from 'react';
-
-import { AmplifyAuthenticator } from './';
+import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
+import { AmplifyContainer, AmplifyAuthenticator } from './';
 import { onAuthUIStateChange, AuthState } from '@aws-amplify/ui-components';
+import { Logger } from '@aws-amplify/core';
+
+const logger = new Logger('withAuthenticator');
 
 export function withAuthenticator(
 	Component: ComponentType,
@@ -15,6 +18,15 @@ export function withAuthenticator(
 		const [signedIn, setSignedIn] = React.useState(false);
 
 		React.useEffect(() => {
+			appendToCognitoUserAgent('withAuthenticator');
+			async () => {
+				try {
+					const user = await Auth.currentAuthenticatedUser();
+					if (user) setSignedIn(true);
+				} catch (err) {
+					logger.debug(err);
+				}
+			};
 			return onAuthUIStateChange(authState => {
 				if (authState === AuthState.SignedIn) {
 					setSignedIn(true);
@@ -25,7 +37,11 @@ export function withAuthenticator(
 		}, []);
 
 		if (!signedIn) {
-			return <AmplifyAuthenticator {...authenticatorProps} {...props} />;
+			return (
+				<AmplifyContainer>
+					<AmplifyAuthenticator {...authenticatorProps} {...props} />
+				</AmplifyContainer>
+			);
 		}
 		return <Component />;
 	};

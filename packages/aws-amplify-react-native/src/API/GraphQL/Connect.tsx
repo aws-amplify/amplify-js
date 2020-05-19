@@ -13,8 +13,24 @@ const getOperationType = operation => {
 	return operationType;
 };
 
-export default class Connect extends Component {
-	constructor(props) {
+interface IConnectProps {
+	mutation?: any;
+	onSubscriptionMsg?: (prevData: any, data?: any) => any;
+	query?: any;
+	subscription?: any;
+}
+
+interface IConnectState {
+	loading: boolean;
+	data: any;
+	errors: any[];
+	mutation: any;
+}
+
+export default class Connect extends Component<IConnectProps, IConnectState> {
+	subSubscription: any;
+
+	constructor(props: IConnectProps) {
 		super(props);
 
 		this.state = this.getInitialState();
@@ -31,7 +47,7 @@ export default class Connect extends Component {
 		};
 	}
 
-	getDefaultState() {
+	getDefaultState(): IConnectState {
 		return {
 			loading: false,
 			data: {},
@@ -67,8 +83,12 @@ export default class Connect extends Component {
 			try {
 				data = null;
 
-				const response = await API.graphql({ query, variables });
+				const response = await API.graphql({
+					query,
+					variables,
+				});
 
+				// @ts-ignore
 				data = response.data;
 			} catch (err) {
 				data = err.data;
@@ -78,7 +98,10 @@ export default class Connect extends Component {
 
 		if (hasValidMutation) {
 			mutationProp = async variables => {
-				const result = await API.graphql({ query: mutation, variables });
+				const result = await API.graphql({
+					query: mutation,
+					variables,
+				});
 
 				this.forceUpdate();
 				return result;
@@ -94,6 +117,7 @@ export default class Connect extends Component {
 					variables: subsVars,
 				});
 
+				// @ts-ignore
 				this.subSubscription = observable.subscribe({
 					next: ({ value: { data } }) => {
 						const { data: prevData } = this.state;
@@ -107,7 +131,12 @@ export default class Connect extends Component {
 			}
 		}
 
-		this.setState({ data, errors, mutation: mutationProp, loading: false });
+		this.setState({
+			data,
+			errors,
+			mutation: mutationProp,
+			loading: false,
+		});
 	}
 
 	_unsubscribe() {
@@ -124,7 +153,7 @@ export default class Connect extends Component {
 		this._unsubscribe();
 	}
 
-	componentDidUpdate(prevProps) {
+	componentDidUpdate(prevProps: IConnectProps) {
 		const { loading } = this.state;
 
 		const { query: newQueryObj, mutation: newMutationObj } = this.props;
@@ -156,6 +185,14 @@ export default class Connect extends Component {
 	render() {
 		const { data, loading, mutation, errors } = this.state;
 
-		return this.props.children({ data, errors, loading, mutation }) || null;
+		return (
+			// @ts-ignore
+			this.props.children({
+				data,
+				errors,
+				loading,
+				mutation,
+			}) || null
+		);
 	}
 }

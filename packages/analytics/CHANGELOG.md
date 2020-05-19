@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.9...@aws-amplify/analytics@3.1.10) (2020-05-14)
+
+
+### Bug Fixes
+
+* require cycles in various packages ([#5372](https://github.com/aws-amplify/amplify-js/issues/5372)) ([b48c26d](https://github.com/aws-amplify/amplify-js/commit/b48c26d198cc25dd92f1515ddf2a97deec5c9783))
+* **@aws-amplify/analytics:** change logger.error back to debug [#5722](https://github.com/aws-amplify/amplify-js/issues/5722) ([160244b](https://github.com/aws-amplify/amplify-js/commit/160244bf805b3065b6b297cb4469291d4aa67631))
+
+
+
+
+
 ## [3.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.8...@aws-amplify/analytics@3.1.9) (2020-04-30)
 
 

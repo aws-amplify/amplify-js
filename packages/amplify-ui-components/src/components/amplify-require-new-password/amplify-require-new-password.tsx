@@ -13,7 +13,7 @@ import { Translations } from '../../common/Translations';
 
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, requiredAttributesMap } from '../../common/helpers';
 
 const logger = new Logger('amplify-require-new-password');
 
@@ -45,6 +45,30 @@ export class AmplifyRequireNewPassword {
 
   @State() password: string;
   @State() loading: boolean = false;
+  private requiredAttributes: object = {};
+
+  private newFormFields: FormFieldTypes = this.formFields;
+
+  private handleRequiredAttributeInputChange(attribute, event) {
+    this.requiredAttributes[attribute] = event.target.value;
+  }
+
+  componentWillLoad() {
+    if (this.user && this.user.challengeParam.requiredAttributes) {
+      const userRequiredAttributes = this.user.challengeParam.requiredAttributes;
+
+      userRequiredAttributes.forEach(attribute => {
+        const formField = {
+          type: attribute,
+          required: true,
+          label: requiredAttributesMap[attribute].label,
+          placeholder: requiredAttributesMap[attribute].placeholder,
+          handleInputChange: event => this.handleRequiredAttributeInputChange(attribute, event),
+        };
+        this.newFormFields.push(formField);
+      });
+    }
+  }
 
   private handlePasswordChange(event) {
     this.password = event.target.value;
@@ -78,8 +102,7 @@ export class AmplifyRequireNewPassword {
 
     this.loading = true;
     try {
-      const { requiredAttributes } = this.user.challengeParam;
-      const user = await Auth.completeNewPassword(this.user, this.password, requiredAttributes);
+      const user = await Auth.completeNewPassword(this.user, this.password, this.requiredAttributes);
 
       logger.debug('complete new password', user);
       switch (user.challengeName) {
@@ -112,7 +135,7 @@ export class AmplifyRequireNewPassword {
           </amplify-button>
         }
       >
-        <amplify-auth-fields formFields={this.formFields} />
+        <amplify-auth-fields formFields={this.newFormFields} />
       </amplify-form-section>
     );
   }

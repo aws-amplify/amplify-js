@@ -183,14 +183,29 @@ export function getAuthorizationRules(
 		);
 
 		if (isOperationAuthorized) {
-			const rule = {
+			const rule: AuthorizationRule = {
 				identityClaim,
 				ownerField,
 				provider,
 				groupClaim,
 				authStrategy,
 				groups,
+				areSubscriptionsPublic: false,
 			};
+
+			if (authStrategy === 'owner') {
+				// look for the subscription level override
+				// only pay attention to the public level
+				const modelConfig = (<typeof modelDefinition.attributes>[])
+					.concat(modelDefinition.attributes)
+					.find(attr => attr && attr.type === 'model');
+
+				// find the subscriptions level. ON is default
+				const { properties: { subscriptions: { level = 'on' } = {} } = {} } =
+					modelConfig || {};
+
+				rule.areSubscriptionsPublic = level === 'public';
+			}
 
 			// owner rules has least priority
 			if (authStrategy === 'owner') {
