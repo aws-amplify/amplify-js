@@ -9,7 +9,6 @@
   font-weight: 300;
   font-size: var(--footer-size);
   color: var(--footer-color);
-  margin-bottom: 10px;
 
   display: flex;
   flex-direction: column-reverse;
@@ -23,7 +22,7 @@
     align-items: baseline;
   }
 
-  * + * {
-    margin-bottom: 15px;
+  * {
+    margin-bottom: 10px;
   }
 }
