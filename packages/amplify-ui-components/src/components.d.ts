@@ -277,6 +277,10 @@ export namespace Components {
     }
     interface AmplifyForgotPassword {
         /**
+          * Used for form description in sign up component
+         */
+        "description": string;
+        /**
           * The form fields displayed inside of the forgot password form
          */
         "formFields": FormFieldTypes | string[];
@@ -356,6 +360,10 @@ export namespace Components {
         "value": string;
     }
     interface AmplifyFormSection {
+        /**
+          * Used for form section description
+         */
+        "description": string;
         /**
           * (Required) Function called upon submission of form
          */
@@ -659,6 +667,10 @@ export namespace Components {
     }
     interface AmplifySignIn {
         /**
+          * Used for form description in sign in component
+         */
+        "description": string;
+        /**
           * Federated credentials & configuration.
          */
         "federated": FederatedConfig;
@@ -704,6 +716,10 @@ export namespace Components {
         "handleAuthStateChange": AuthStateHandler;
     }
     interface AmplifySignUp {
+        /**
+          * Used for form description in sign up component
+         */
+        "description": string;
         /**
           * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: string,     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
          */
@@ -1413,6 +1429,10 @@ declare namespace LocalJSX {
     }
     interface AmplifyForgotPassword {
         /**
+          * Used for form description in sign up component
+         */
+        "description"?: string;
+        /**
           * The form fields displayed inside of the forgot password form
          */
         "formFields"?: FormFieldTypes | string[];
@@ -1492,6 +1512,10 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     interface AmplifyFormSection {
+        /**
+          * Used for form section description
+         */
+        "description"?: string;
         /**
           * (Required) Function called upon submission of form
          */
@@ -1799,6 +1823,10 @@ declare namespace LocalJSX {
     }
     interface AmplifySignIn {
         /**
+          * Used for form description in sign in component
+         */
+        "description"?: string;
+        /**
           * Federated credentials & configuration.
          */
         "federated"?: FederatedConfig;
@@ -1844,6 +1872,10 @@ declare namespace LocalJSX {
         "handleAuthStateChange"?: AuthStateHandler;
     }
     interface AmplifySignUp {
+        /**
+          * Used for form description in sign up component
+         */
+        "description"?: string;
         /**
           * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: string,     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
          */

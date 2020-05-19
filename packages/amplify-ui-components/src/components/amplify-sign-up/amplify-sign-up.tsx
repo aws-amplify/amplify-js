@@ -38,6 +38,8 @@ export class AmplifySignUp {
   @Prop() validationErrors: string;
   /** Used for header text in sign up component */
   @Prop() headerText: string = I18n.get(Translations.SIGN_UP_HEADER_TEXT);
+  /** Used for form description in sign up component */
+  @Prop() description: string;
   /** Used for the submit button text in sign up component */
   @Prop() submitButtonText: string = I18n.get(Translations.SIGN_UP_SUBMIT_BUTTON_TEXT);
   /** Used for the submit button text in sign up component */
@@ -285,7 +287,12 @@ export class AmplifySignUp {
 
   render() {
     return (
-      <amplify-form-section headerText={this.headerText} handleSubmit={this.handleSubmit} testDataPrefix={'sign-up'}>
+      <amplify-form-section
+        headerText={this.headerText}
+        description={this.description}
+        handleSubmit={this.handleSubmit}
+        testDataPrefix={'sign-up'}
+      >
         <amplify-auth-fields formFields={this.newFormFields} />
         <div class="sign-up-form-footer" slot="amplify-form-section-footer">
           <slot name="footer">

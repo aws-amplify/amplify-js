@@ -12,6 +12,8 @@ export class AmplifyFormSection {
   @Prop() submitButtonText?: string = 'Submit';
   /** Used for form section header */
   @Prop() headerText: string;
+  /** Used for form section description */
+  @Prop() description: string;
   /** String prefix for the data-test attributes in this component primarily used for testing purposes */
   @Prop() testDataPrefix?: string = 'form-section';
   /** Loading state for the form */
@@ -33,6 +35,7 @@ export class AmplifyFormSection {
             <slot name="amplify-form-section-header">
               <div class="form-section-header">
                 <h3 data-test={this.testDataPrefix + '-header-section'}>{this.headerText}</h3>
+                {this.description && <span>{this.description}</span>}
               </div>
             </slot>
           </div>

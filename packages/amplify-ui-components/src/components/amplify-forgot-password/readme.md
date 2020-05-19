@@ -7,6 +7,7 @@
 
 | Property                | Attribute            | Description                                                                               | Type                                                | Default                                      |
 | ----------------------- | -------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------- | -------------------------------------------- |
+| `description`           | `description`        | Used for form description in sign up component                                            | `string`                                            | `undefined`                                  |
 | `formFields`            | --                   | The form fields displayed inside of the forgot password form                              | `FormFieldTypes \| string[]`                        | `[]`                                         |
 | `handleAuthStateChange` | --                   | Auth state change handler for this component                                              | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent`               |
 | `handleSend`            | --                   | The function called when making a request to reset password                               | `(event: Event) => void`                            | `event => this.send(event)`                  |

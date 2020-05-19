@@ -29,6 +29,8 @@ const logger = new Logger('ForgotPassword');
 export class AmplifyForgotPassword {
   /** The header text of the forgot password section */
   @Prop() headerText: string = I18n.get(Translations.RESET_YOUR_PASSWORD);
+  /** Used for form description in sign up component */
+  @Prop() description: string;
   /** The text displayed inside of the submit button for the form */
   @Prop() submitButtonText: string = I18n.get(Translations.SEND_CODE);
   /** The form fields displayed inside of the forgot password form */
@@ -235,6 +237,7 @@ export class AmplifyForgotPassword {
       <amplify-form-section
         headerText={this.headerText}
         handleSubmit={submitFn}
+        description={this.description}
         loading={this.loading}
         secondaryFooterContent={
           <amplify-button

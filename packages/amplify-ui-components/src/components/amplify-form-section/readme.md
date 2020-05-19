@@ -7,6 +7,7 @@
 
 | Property                 | Attribute                  | Description                                                                                      | Type                                | Default          |
 | ------------------------ | -------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------- | ---------------- |
+| `description`            | `description`              | Used for form section description                                                                | `string`                            | `undefined`      |
 | `handleSubmit`           | --                         | (Required) Function called upon submission of form                                               | `(event: Event) => void`            | `undefined`      |
 | `headerText`             | `header-text`              | Used for form section header                                                                     | `string`                            | `undefined`      |
 | `loading`                | `loading`                  | Loading state for the form                                                                       | `boolean`                           | `false`          |

@@ -11,6 +11,16 @@
   margin-bottom: 24px;
   font-size: var(--header-size);
   font-weight: 700;
+  word-wrap: anywhere;
+
+  h3 {
+    margin: 10px 0 10px 0;
+  }
+
+  span {
+    font-size: var(--amplify-text-sm);
+    font-weight: 300;
+  }
 }
 
 .form-section-footer {

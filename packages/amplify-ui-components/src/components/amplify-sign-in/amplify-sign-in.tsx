@@ -45,6 +45,8 @@ export class AmplifySignIn {
   @Prop() handleSubmit: (event: Event) => void = event => this.signIn(event);
   /** Used for header text in sign in component */
   @Prop() headerText: string = I18n.get(Translations.SIGN_IN_HEADER_TEXT);
+  /** Used for form description in sign in component */
+  @Prop() description: string;
   /** Used for the submit button text in sign in component */
   @Prop() submitButtonText: string = I18n.get(Translations.SIGN_IN_ACTION);
   /** Federated credentials & configuration. */
@@ -295,7 +297,12 @@ export class AmplifySignIn {
 
   render() {
     return (
-      <amplify-form-section headerText={this.headerText} handleSubmit={this.handleSubmit} testDataPrefix={'sign-in'}>
+      <amplify-form-section
+        headerText={this.headerText}
+        description={this.description}
+        handleSubmit={this.handleSubmit}
+        testDataPrefix={'sign-in'}
+      >
         <amplify-federated-buttons handleAuthStateChange={this.handleAuthStateChange} federated={this.federated} />
 
         {!isEmpty(this.federated) && <amplify-strike>or</amplify-strike>}
