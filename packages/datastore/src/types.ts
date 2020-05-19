@@ -117,6 +117,7 @@ export type AuthorizationRule = {
 	groupClaim: string;
 	groups: [string];
 	authStrategy: 'owner' | 'group' | 'private' | 'public';
+	areSubscriptionsPublic: boolean;
 };
 
 export function isGraphQLScalarType(
