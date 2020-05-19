@@ -48,13 +48,11 @@ export default class PushNotification {
 		this._checkIfOpenedByNotification = this._checkIfOpenedByNotification.bind(
 			this
 		);
+		this.addEventListenerForIOS = this.addEventListenerForIOS.bind(this);
 		this._currentState = AppState.currentState;
 		this._androidInitialized = false;
 		this._iosInitialized = false;
 
-		if (Platform.OS === 'ios') {
-			AppState.addEventListener('change', this._checkIfOpenedByNotification);
-		}
 		Amplify.register(this);
 	}
 
@@ -105,6 +103,8 @@ export default class PushNotification {
 			// check platform
 			if (Platform.OS === 'android') {
 				this.addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, handler);
+			} else {
+				this.addEventListenerForIOS(REMOTE_NOTIFICATION_OPENED, handler);
 			}
 		}
 	}
@@ -167,6 +167,10 @@ export default class PushNotification {
 			REMOTE_NOTIFICATION_RECEIVED,
 			this.handleNotificationReceived
 		);
+		this.addEventListenerForIOS(
+			REMOTE_NOTIFICATION_OPENED,
+			this.handleNotificationOpened
+		);
 	}
 
 	/**
@@ -174,7 +178,7 @@ export default class PushNotification {
 	 * And checks if the app was launched by a Push Notification
 	 * @param nextAppState The next state the app is changing to as part of the event
 	 */
-	_checkIfOpenedByNotification(nextAppState) {
+	_checkIfOpenedByNotification(nextAppState, handler) {
 		// the app is turned from background to foreground
 		if (
 			this._currentState.match(/inactive|background/) &&
@@ -183,7 +187,7 @@ export default class PushNotification {
 			PushNotificationIOS.getInitialNotification()
 				.then(data => {
 					if (data) {
-						this.handleNotificationOpened(data);
+						handler(data);
 					}
 				})
 				.catch(e => {
@@ -370,6 +374,12 @@ export default class PushNotification {
 		}
 		if (event === REMOTE_NOTIFICATION_RECEIVED) {
 			PushNotificationIOS.addEventListener('notification', handler);
+		}
+		if (event === REMOTE_NOTIFICATION_OPENED) {
+			PushNotificationIOS.addEventListener('localNotification', handler);
+			AppState.addEventListener('change', nextAppState =>
+				this._checkIfOpenedByNotification(nextAppState, handler)
+			);
 		}
 	}
 
