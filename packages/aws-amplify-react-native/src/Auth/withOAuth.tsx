@@ -21,11 +21,42 @@ import {
 
 const logger = new Logger('withOAuth');
 
-export default Comp => {
+interface IOAuthProps {
+	loading?: boolean;
+	oAuthUser?: any;
+	oAuthError?: any;
+	// TODO: Type these functions
+	hostedUISignIn?: Function;
+	facebookSignIn?: Function;
+	amazonSignIn?: Function;
+	googleSignIn?: Function;
+	customProviderSignIn?: Function;
+	signOut?: Function;
+}
+
+interface IWithOAuthProps {
+	oauth_config?: any;
+}
+
+interface IWithOAuthState {
+	error?: string;
+	loading: boolean;
+	user?: any;
+}
+
+export default function withOAuth<Props extends object>(
+	Comp: React.ComponentType<IWithOAuthProps & IOAuthProps>
+) {
 	let listeners = [];
 
-	return class WithOAuth extends React.Component {
-		constructor(props) {
+	return class WithOAuth extends React.Component<
+		Props & IWithOAuthProps,
+		IWithOAuthState
+	> {
+		_isMounted: boolean;
+		urlOpener: any;
+
+		constructor(props: Props & IWithOAuthProps) {
 			super(props);
 			this._isMounted = false;
 			const config = this._getOAuthConfig();
@@ -78,13 +109,21 @@ export default Comp => {
 					case 'cognitoHostedUI': {
 						Auth.currentAuthenticatedUser().then(user => {
 							logger.debug('signed in');
-							this.setState({ user, error: null, loading: false });
+							this.setState({
+								user,
+								error: null,
+								loading: false,
+							});
 						});
 						break;
 					}
 					case 'signOut': {
 						logger.debug('signed out');
-						this.setState({ user: null, error: null, loading: false });
+						this.setState({
+							user: null,
+							error: null,
+							loading: false,
+						});
 						break;
 					}
 					case 'signIn_failure':
@@ -110,10 +149,12 @@ export default Comp => {
 				);
 			}
 
+			// @ts-ignore
 			const { oauth = undefined } = Auth.configure();
 
 			// to keep backward compatibility
 			const cognitoHostedUIConfig =
+				// @ts-ignore
 				oauth && (oauth.domain ? oauth : oauth.awsCognito);
 			const config = this.props.oauth_config || cognitoHostedUIConfig;
 
@@ -134,7 +175,7 @@ export default Comp => {
 			const { user: oAuthUser, error: oAuthError, loading } = this.state;
 			const { oauth_config: _, ...otherProps } = this.props;
 
-			const oAuthProps = {
+			const oAuthProps: IOAuthProps = {
 				loading,
 				oAuthUser,
 				oAuthError,
@@ -161,7 +202,7 @@ export default Comp => {
 			return <Comp {...oAuthProps} {...otherProps} />;
 		}
 	};
-};
+}
 
 const defaultUrlOpener = (url, redirectUrl) => {
 	logger.debug(`opening url: ${url}, redirectUrl: ${redirectUrl}`);
