@@ -86,7 +86,7 @@ export default class OAuth {
 			response_type: responseType,
 			client_id: clientId,
 			identity_provider: provider,
-			scopes: this._scopes,
+			scope: this._scopes,
 			state,
 			...(responseType === 'code' ? { code_challenge } : {}),
 			...(responseType === 'code' ? { code_challenge_method } : {}),
