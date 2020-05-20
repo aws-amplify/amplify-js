@@ -8,11 +8,7 @@ type NetworkStatus = {
 export default class ReachabilityNavigator implements Reachability {
 	networkMonitor(): Observable<NetworkStatus> {
 		if (JS.browserOrNode().isNode) {
-			return new Observable(observer => {
-				observer.next({ online: true });
-
-				return () => {};
-			});
+			return Observable.from({ online: true });
 		}
 
 		return new Observable(observer => {
