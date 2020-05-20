@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.5...@aws-amplify/ui-react@0.2.6) (2020-05-14)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** amplify-container component, use dispatch auth event on check user ([#5727](https://github.com/aws-amplify/amplify-js/issues/5727)) ([31709c0](https://github.com/aws-amplify/amplify-js/commit/31709c0a75f11e085f7fd8729653451d9cc9d488))
+
+
+
+
+
 ## [0.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.4...@aws-amplify/ui-react@0.2.5) (2020-04-30)
 
 **Note:** Version bump only for package @aws-amplify/ui-react
