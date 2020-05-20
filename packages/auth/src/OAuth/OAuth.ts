@@ -56,8 +56,15 @@ export default class OAuth {
 		this._config = config;
 		this._cognitoClientId = cognitoClientId;
 
-		if (!Array.isArray(scopes)) throw Error('scopes must be a String Array');
+		if (!this.isValidScopes(scopes))
+			throw Error('scopes must be a String Array');
 		this._scopes = scopes;
+	}
+
+	private isValidScopes(scopes: string[]) {
+		return (
+			Array.isArray(scopes) && scopes.every(scope => typeof scope === 'string')
+		);
 	}
 
 	public oauthSignIn(
