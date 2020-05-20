@@ -589,6 +589,10 @@ export namespace Components {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+         */
+        "inputProps"?: object;
+        /**
           * Label for the radio button
          */
         "label": string;
@@ -1744,6 +1748,10 @@ declare namespace LocalJSX {
           * The callback, called when the input is modified by the user.
          */
         "handleInputChange"?: (inputEvent: Event) => void;
+        /**
+          * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+         */
+        "inputProps"?: object;
         /**
           * Label for the radio button
          */
