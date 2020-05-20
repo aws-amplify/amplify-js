@@ -17,6 +17,7 @@ import { buildQueryString } from '@aws-sdk/querystring-builder';
 import axios, { AxiosRequestConfig, Method } from 'axios';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { BrowserHttpOptions } from '@aws-sdk/fetch-http-handler';
+import { isReactNative } from './detectReactNative';
 
 const logger = new Logger('axios-http-handler');
 export const SEND_PROGRESS_EVENT = 'sendProgress';
@@ -90,7 +91,7 @@ export class AxiosHttpHandler implements HttpHandler {
 			};
 		}
 
-		if (this.httpOptions.bufferBody) {
+		if (isReactNative) {
 			axiosRequest.responseType = 'blob';
 		}
 

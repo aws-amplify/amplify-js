@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import { AxiosHttpHandler } from '../../src/providers/axios-http-handler';
+import * as detectReactNative from '../../src/providers/detectReactNative';
 
 jest.mock('axios');
 
@@ -24,6 +25,8 @@ describe('AxiosHttpHandler', () => {
 			headers: {},
 			clone: null,
 		};
+		// @ts-ignore overriding a const property for test
+		detectReactNative.isReactNative = false;
 	});
 
 	describe('.handle', () => {
@@ -39,8 +42,10 @@ describe('AxiosHttpHandler', () => {
 			});
 		});
 
-		it('should add responseType: "blob" when bufferBody is true', async () => {
-			const handler = new AxiosHttpHandler({ bufferBody: true });
+		it('should add responseType: "blob" when running in react native', async () => {
+			// @ts-ignore overriding a const property for test
+			detectReactNative.isReactNative = true;
+			const handler = new AxiosHttpHandler({});
 			await handler.handle(request, options);
 
 			expect(axios.request).toHaveBeenLastCalledWith({
