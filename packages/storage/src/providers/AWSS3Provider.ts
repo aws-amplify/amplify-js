@@ -161,7 +161,9 @@ export class AWSS3Provider implements StorageProvider {
 					track,
 					'download',
 					{ method: 'get', result: 'success' },
-					{ fileSize: Number(response.Body['length']) },
+					{
+						fileSize: Number(response.Body['size'] || response.Body['length']),
+					},
 					`Download success for ${key}`
 				);
 				return response;
