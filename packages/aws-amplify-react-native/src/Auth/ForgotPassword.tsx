@@ -23,13 +23,25 @@ import {
 	SignedOutMessage,
 	Wrapper,
 } from '../AmplifyUI';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('ForgotPassword');
 
-export default class ForgotPassword extends AuthPiece {
-	constructor(props) {
+interface IForgotPasswordProps extends IAuthPieceProps {}
+
+interface IForgotPasswordState extends IAuthPieceState {
+	code?: string;
+	delivery?: any;
+	password?: string;
+}
+
+export default class ForgotPassword extends AuthPiece<
+	IForgotPasswordProps,
+	IForgotPasswordState
+> {
+	constructor(props: IForgotPasswordProps) {
 		super(props);
 
 		this._validAuthStates = ['forgotPassword'];
@@ -74,7 +86,7 @@ export default class ForgotPassword extends AuthPiece {
 			.catch(err => this.error(err));
 	}
 
-	forgotBody(theme) {
+	forgotBody(theme: AmplifyThemeType) {
 		return (
 			<View style={theme.sectionBody}>
 				{this.renderUsernameField(theme)}
@@ -89,7 +101,7 @@ export default class ForgotPassword extends AuthPiece {
 		);
 	}
 
-	submitBody(theme) {
+	submitBody(theme: AmplifyThemeType) {
 		return (
 			<View style={theme.sectionBody}>
 				<FormField
@@ -120,7 +132,7 @@ export default class ForgotPassword extends AuthPiece {
 		);
 	}
 
-	showComponent(theme) {
+	showComponent(theme: AmplifyThemeType) {
 		return (
 			<Wrapper>
 				<View style={theme.section}>

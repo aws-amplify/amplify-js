@@ -19,7 +19,7 @@ import {
 } from '@aws-amplify/core';
 
 import { apiOptions } from './types';
-import axios from 'axios';
+import axios, { CancelTokenSource } from 'axios';
 import { parse, format } from 'url';
 
 const logger = new Logger('RestClient');
@@ -42,12 +42,32 @@ export class RestClient {
 	private _region: string = 'us-east-1'; // this will be updated by endpoint function
 	private _service: string = 'execute-api'; // this can be updated by endpoint function
 	private _custom_header = undefined; // this can be updated by endpoint function
+
+	/**
+	 * This weak map provides functionality to let clients cancel
+	 * in-flight axios requests. https://github.com/axios/axios#cancellation
+	 *
+	 * 1. For every axios request, a unique cancel token is generated and added in the request.
+	 * 2. Promise for fulfilling the request is then mapped to that unique cancel token.
+	 * 3. The promise is returned to the client.
+	 * 4. Clients can either wait for the promise to fulfill or call `API.cancel(promise)` to cancel the request.
+	 * 5. If `API.cancel(promise)` is called, then the corresponding cancel token is retrieved from the map below.
+	 * 6. Promise returned to the client will be in rejected state with the error provided during cancel.
+	 * 7. Clients can check if the error is because of cancelling by calling `API.isCancel(error)`.
+	 *
+	 * For more details, see https://github.com/aws-amplify/amplify-js/pull/3769#issuecomment-552660025
+	 */
+	private _cancelTokenMap: WeakMap<any, CancelTokenSource> = null;
+
 	/**
 	 * @param {RestClientOptions} [options] - Instance options
 	 */
 	constructor(options: apiOptions) {
 		this._options = options;
 		logger.debug('API Options', this._options);
+		if (this._cancelTokenMap == null) {
+			this._cancelTokenMap = new WeakMap();
+		}
 	}
 
 	/**
@@ -79,6 +99,7 @@ export class RestClient {
 			data: null,
 			responseType: 'json',
 			timeout: 0,
+			cancelToken: null,
 		};
 
 		let libraryHeaders = {};
@@ -104,6 +125,9 @@ export class RestClient {
 		}
 		if (initParams.timeout) {
 			params.timeout = initParams.timeout;
+		}
+		if (initParams.cancellableToken) {
+			params.cancelToken = initParams.cancellableToken.token;
 		}
 
 		params['signerServiceInfo'] = initParams.signerServiceInfo;
@@ -210,6 +234,48 @@ export class RestClient {
 	 */
 	head(url: string, init) {
 		return this.ajax(url, 'HEAD', init);
+	}
+
+	/**
+	 * Cancel an inflight API request
+	 * @param {Promise<any>} request - The request promise to cancel
+	 * @param {string} [message] - A message to include in the cancelation exception
+	 */
+	cancel(request: Promise<any>, message?: string) {
+		const source = this._cancelTokenMap.get(request);
+		if (source) {
+			source.cancel(message);
+		}
+		return true;
+	}
+
+	/**
+	 * Checks to see if an error thrown is from an api request cancellation
+	 * @param {any} error - Any error
+	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
+	 */
+	isCancel(error): boolean {
+		return axios.isCancel(error);
+	}
+
+	/**
+	 * Retrieves a new and unique cancel token which can be
+	 * provided in an axios request to be cancelled later.
+	 */
+	getCancellableToken(): CancelTokenSource {
+		return axios.CancelToken.source();
+	}
+
+	/**
+	 * Updates the weakmap with a response promise and its
+	 * cancel token such that the cancel token can be easily
+	 * retrieved (and used for cancelling the request)
+	 */
+	updateRequestToBeCancellable(
+		promise: Promise<any>,
+		cancelTokenSource: CancelTokenSource
+	) {
+		this._cancelTokenMap.set(promise, cancelTokenSource);
 	}
 
 	/**

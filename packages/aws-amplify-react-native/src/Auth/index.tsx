@@ -26,6 +26,8 @@ import RequireNewPassword from './RequireNewPassword';
 import VerifyContact from './VerifyContact';
 import Greetings from './Greetings';
 import withOAuth from './withOAuth';
+import { AmplifyThemeType } from '../AmplifyTheme';
+import { ISignUpConfig, OnStateChangeType } from '../../types';
 
 const logger = new Logger('auth components');
 
@@ -44,16 +46,31 @@ export {
 	withOAuth,
 };
 
-export function withAuthenticator(
-	Comp,
+interface IWithAuthenticatorProps {
+	authState?: string;
+	onStateChange?: OnStateChangeType;
+}
+
+interface IWithAuthenticatorState {
+	authData?: any;
+	authState: string;
+}
+
+export function withAuthenticator<Props extends object>(
+	Comp: React.ComponentType<Props>,
 	includeGreetings = false,
 	authenticatorComponents = [],
 	federated = null,
-	theme = null,
-	signUpConfig = {}
+	theme: AmplifyThemeType = null,
+	signUpConfig: ISignUpConfig = {}
 ) {
-	class Wrapper extends React.Component {
-		constructor(props) {
+	class Wrapper extends React.Component<
+		Props & IWithAuthenticatorProps,
+		IWithAuthenticatorState
+	> {
+		authConfig: any;
+
+		constructor(props: Props & IWithAuthenticatorProps) {
 			super(props);
 
 			this.handleAuthStateChange = this.handleAuthStateChange.bind(this);
@@ -73,7 +90,7 @@ export function withAuthenticator(
 			}
 		}
 
-		handleAuthStateChange(state, data) {
+		handleAuthStateChange(state: string, data?: any) {
 			this.setState({ authState: state, authData: data });
 			if (this.props.onStateChange) {
 				this.props.onStateChange(state, data);
