@@ -34,6 +34,8 @@ export default class PushNotification {
 	private _androidInitialized: boolean;
 	private _iosInitialized: boolean;
 
+	private _notificationOpenedHandlers: Function[];
+
 	constructor(config) {
 		if (config) {
 			this.configure(config);
@@ -52,6 +54,8 @@ export default class PushNotification {
 		this._currentState = AppState.currentState;
 		this._androidInitialized = false;
 		this._iosInitialized = false;
+
+		this._notificationOpenedHandlers = [];
 
 		Amplify.register(this);
 	}
@@ -100,12 +104,10 @@ export default class PushNotification {
 
 	onNotificationOpened(handler) {
 		if (typeof handler === 'function') {
-			// check platform
-			if (Platform.OS === 'android') {
-				this.addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, handler);
-			} else {
-				this.addEventListenerForIOS(REMOTE_NOTIFICATION_OPENED, handler);
-			}
+			this._notificationOpenedHandlers = [
+				...this._notificationOpenedHandlers,
+				handler,
+			];
 		}
 	}
 
@@ -276,6 +278,10 @@ export default class PushNotification {
 	}
 
 	handleNotificationOpened(rawMessage) {
+		this._notificationOpenedHandlers.forEach(handler => {
+			handler(rawMessage);
+		});
+
 		logger.debug('handleNotificationOpened, raw data', rawMessage);
 		const { eventSource, eventSourceAttributes } = this.parseMessageData(
 			rawMessage
