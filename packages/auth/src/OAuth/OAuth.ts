@@ -55,7 +55,16 @@ export default class OAuth {
 		this._urlOpener = config.urlOpener || launchUri;
 		this._config = config;
 		this._cognitoClientId = cognitoClientId;
+
+		if (!this.isValidScopes(scopes))
+			throw Error('scopes must be a String Array');
 		this._scopes = scopes;
+	}
+
+	private isValidScopes(scopes: string[]) {
+		return (
+			Array.isArray(scopes) && scopes.every(scope => typeof scope === 'string')
+		);
 	}
 
 	public oauthSignIn(
@@ -81,12 +90,14 @@ export default class OAuth {
 		const code_challenge = this._generateChallenge(pkce_key);
 		const code_challenge_method = 'S256';
 
+		const scopesString = this._scopes.join(' ');
+
 		const queryString = Object.entries({
 			redirect_uri: redirectSignIn,
 			response_type: responseType,
 			client_id: clientId,
 			identity_provider: provider,
-			scope: this._scopes,
+			scope: scopesString,
 			state,
 			...(responseType === 'code' ? { code_challenge } : {}),
 			...(responseType === 'code' ? { code_challenge_method } : {}),
