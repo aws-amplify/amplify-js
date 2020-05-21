@@ -134,7 +134,9 @@ export const establishRelation = (
 					modelName: fieldAttribute.type.model,
 					relationType: connectionType,
 					targetName: fieldAttribute.association['targetName'],
+					associatedWith: fieldAttribute.association['associatedWith'],
 				});
+
 				if (connectionType === 'BELONGS_TO') {
 					relationship[mKey].indexes.push(
 						fieldAttribute.association['targetName']
@@ -142,6 +144,24 @@ export const establishRelation = (
 				}
 			}
 		});
+
+		// create indexes from key fields
+		if (model.attributes) {
+			model.attributes.forEach(attribute => {
+				if (attribute.type === 'key') {
+					const { fields } = attribute.properties;
+					if (fields) {
+						fields.forEach(field => {
+							// only add index if it hasn't already been added
+							const exists = relationship[mKey].indexes.includes(field);
+							if (!exists) {
+								relationship[mKey].indexes.push(field);
+							}
+						});
+					}
+				}
+			});
+		}
 	});
 
 	return relationship;
@@ -279,6 +299,14 @@ export const getIndex = (rel: RelationType[], src: string): string => {
 			index = relItem.targetName;
 		}
 	});
+	return index;
+};
+
+export const getIndexFromAssociation = (
+	indexes: string[],
+	src: string
+): string => {
+	const index = indexes.find(idx => idx === src);
 	return index;
 };
 

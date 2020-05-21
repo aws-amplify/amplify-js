@@ -24,17 +24,39 @@ import {
 	SignedOutMessage,
 	Wrapper,
 } from '../AmplifyUI';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import countryDialCodes from '../CountryDialCodes';
 import signUpWithUsernameFields, {
 	signUpWithEmailFields,
 	signUpWithPhoneNumberFields,
 } from './common/default-sign-up-fields';
 import TEST_ID from '../AmplifyTestIDs';
+import { ISignUpField } from '../../types';
 
 const logger = new Logger('SignUp');
-export default class SignUp extends AuthPiece {
-	constructor(props) {
+
+interface ISignUpConfig {
+	defaultCountryCode?: string;
+	header?: string;
+	hideAllDefaults?: boolean;
+	hiddenDefaults?: string[];
+	signUpFields?: ISignUpField[];
+}
+
+interface ISignUpProps extends IAuthPieceProps {
+	signUpConfig?: ISignUpConfig;
+}
+
+interface ISignUpState extends IAuthPieceState {
+	password?: string | null;
+}
+
+export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
+	header: string;
+	defaultSignUpFields: ISignUpField[];
+	signUpFields: ISignUpField[];
+
+	constructor(props: ISignUpProps) {
 		super(props);
 
 		this._validAuthStates = ['signUp'];
@@ -146,7 +168,7 @@ export default class SignUp extends AuthPiece {
 			this.props.signUpConfig.defaultCountryCode &&
 			countryDialCodes.indexOf(
 				`+${this.props.signUpConfig.defaultCountryCode}`
-			) !== '-1'
+			) !== -1
 			? `+${this.props.signUpConfig.defaultCountryCode}`
 			: '+1';
 	}
@@ -209,6 +231,7 @@ export default class SignUp extends AuthPiece {
 		logger.debug('Signing up with', signup_info);
 		Auth.signUp(signup_info)
 			.then(data => {
+				// @ts-ignore
 				this.changeState('confirmSignUp', data.user.username);
 			})
 			.catch(err => this.error(err));
@@ -231,6 +254,7 @@ export default class SignUp extends AuthPiece {
 								<FormField
 									key={field.key}
 									theme={theme}
+									// @ts-ignore
 									type={field.type}
 									secureTextEntry={field.type === 'password'}
 									onChangeText={text => {

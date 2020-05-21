@@ -581,6 +581,10 @@ export namespace Components {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+         */
+        "inputProps"?: object;
+        /**
           * Label for the radio button
          */
         "label": string;
@@ -768,6 +772,10 @@ export namespace Components {
           * Auth state change handler for this component
          */
         "handleAuthStateChange": AuthStateHandler;
+        /**
+          * Used for header text in totp setup component
+         */
+        "headerText": string;
         /**
           * Used in order to configure TOTP for a user
          */
@@ -1717,6 +1725,10 @@ declare namespace LocalJSX {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+         */
+        "inputProps"?: object;
+        /**
           * Label for the radio button
          */
         "label"?: string;
@@ -1904,6 +1916,10 @@ declare namespace LocalJSX {
           * Auth state change handler for this component
          */
         "handleAuthStateChange"?: AuthStateHandler;
+        /**
+          * Used for header text in totp setup component
+         */
+        "headerText"?: string;
         /**
           * Used in order to configure TOTP for a user
          */

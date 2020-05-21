@@ -23,13 +23,25 @@ import {
 	SignedOutMessage,
 	Wrapper,
 } from '../AmplifyUI';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('VerifyContact');
 
-export default class VerifyContact extends AuthPiece {
-	constructor(props) {
+interface IVerifyContactProps extends IAuthPieceProps {}
+
+interface IVerifyContactState extends IAuthPieceState {
+	code?: string;
+	pickAttr?: string;
+	verifyAttr?: string;
+}
+
+export default class VerifyContact extends AuthPiece<
+	IVerifyContactProps,
+	IVerifyContactState
+> {
+	constructor(props: IVerifyContactProps) {
 		super(props);
 
 		this._validAuthStates = ['verifyContact'];
@@ -100,7 +112,7 @@ export default class VerifyContact extends AuthPiece {
 	}
 
 	// Have to do it in this way to avoid null or undefined element in React.createElement()
-	createPicker(unverified) {
+	createPicker(unverified: { email?: string; phone_number?: string }) {
 		const { email, phone_number } = unverified;
 		if (email && phone_number) {
 			return (
@@ -138,7 +150,7 @@ export default class VerifyContact extends AuthPiece {
 		}
 	}
 
-	verifyBody(theme) {
+	verifyBody(theme: AmplifyThemeType) {
 		const { unverified } = this.props.authData;
 		if (!unverified) {
 			logger.debug('no unverified contact');
@@ -160,7 +172,7 @@ export default class VerifyContact extends AuthPiece {
 		);
 	}
 
-	submitBody(theme) {
+	submitBody(theme: AmplifyThemeType) {
 		return (
 			<View style={theme.sectionBody}>
 				<FormField
@@ -182,7 +194,7 @@ export default class VerifyContact extends AuthPiece {
 		);
 	}
 
-	showComponent(theme) {
+	showComponent(theme: AmplifyThemeType) {
 		return (
 			<Wrapper>
 				<View style={theme.section}>
