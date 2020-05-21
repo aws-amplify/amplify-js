@@ -129,7 +129,7 @@ export class ChatbotComponentCore implements OnInit {
 
 	constructor(
 		ref: ChangeDetectorRef,
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
+		@Inject(AmplifyService) public amplifyService: AmplifyService
 	) {
 		this.ref = ref;
 		this.continueConversation = false;
