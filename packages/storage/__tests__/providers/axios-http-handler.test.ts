@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 import { AxiosHttpHandler } from '../../src/providers/axios-http-handler';
-import * as detectReactNative from '../../src/providers/detectReactNative';
 
 jest.mock('axios');
 
@@ -25,38 +24,9 @@ describe('AxiosHttpHandler', () => {
 			headers: {},
 			clone: null,
 		};
-		// @ts-ignore overriding a const property for test
-		detectReactNative.isReactNative = false;
 	});
 
 	describe('.handle', () => {
-		it('should not set responseType by default', async () => {
-			const handler = new AxiosHttpHandler({});
-			await handler.handle(request, options);
-
-			expect(axios.request).toHaveBeenLastCalledWith({
-				data: undefined,
-				headers: {},
-				method: 'get',
-				url: 'http://localhost:3000/',
-			});
-		});
-
-		it('should add responseType: "blob" when running in react native', async () => {
-			// @ts-ignore overriding a const property for test
-			detectReactNative.isReactNative = true;
-			const handler = new AxiosHttpHandler({});
-			await handler.handle(request, options);
-
-			expect(axios.request).toHaveBeenLastCalledWith({
-				data: undefined,
-				headers: {},
-				method: 'get',
-				responseType: 'blob',
-				url: 'http://localhost:3000/',
-			});
-		});
-
 		it('should remove unsafe header host', async () => {
 			const handler = new AxiosHttpHandler();
 			request.headers['host'] = 'badheader';
@@ -67,6 +37,7 @@ describe('AxiosHttpHandler', () => {
 				data: undefined,
 				headers: { SafeHeader: 'goodHeader' },
 				method: 'get',
+				responseType: 'blob',
 				url: 'http://localhost:3000/',
 			});
 		});
@@ -80,6 +51,7 @@ describe('AxiosHttpHandler', () => {
 				data: null,
 				headers: { 'Content-Type': 'amazing/content' },
 				method: 'get',
+				responseType: 'blob',
 				url: 'http://localhost:3000/',
 			});
 		});

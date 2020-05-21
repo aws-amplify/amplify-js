@@ -341,7 +341,7 @@ export class AWSS3ProviderManagedUpload {
 			localTestingConfig = {
 				endpoint: localTestingStorageEndpoint,
 				tls: false,
-				bucketEndpoint: true,
+				bucketEndpoint: false,
 				forcePathStyle: true,
 			};
 		}

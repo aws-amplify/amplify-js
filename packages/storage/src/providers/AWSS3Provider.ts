@@ -508,7 +508,7 @@ export class AWSS3Provider implements StorageProvider {
 			localTestingConfig = {
 				endpoint: localTestingStorageEndpoint,
 				tls: false,
-				bucketEndpoint: true,
+				bucketEndpoint: false,
 				forcePathStyle: true,
 			};
 		}
