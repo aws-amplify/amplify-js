@@ -14,6 +14,7 @@
 import {
 	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
+	Platform,
 } from '@aws-amplify/core';
 import {
 	S3Client,
@@ -30,7 +31,6 @@ import {
 import { AxiosHttpHandler, SEND_PROGRESS_EVENT } from './axios-http-handler';
 import * as events from 'events';
 import { parseUrl } from '@aws-sdk/url-parser-node';
-import { isReactNative } from './detectReactNative';
 import { streamCollector } from '@aws-sdk/fetch-http-handler';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
@@ -291,7 +291,7 @@ export class AWSS3ProviderManagedUpload {
 			// If it's a blob, we need to convert it to an array buffer as axios has issues
 			// with correctly identifying blobs in *react native* environment. For more
 			// details see https://github.com/aws-amplify/amplify-js/issues/5311
-			if (isReactNative) {
+			if (Platform.isReactNative) {
 				return await streamCollector(body);
 			}
 			return body;
