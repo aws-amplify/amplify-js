@@ -34,6 +34,8 @@ export default class PushNotification {
 	private _androidInitialized: boolean;
 	private _iosInitialized: boolean;
 
+	private _notificationOpenedHandlers: Function[];
+
 	constructor(config) {
 		if (config) {
 			this.configure(config);
@@ -48,13 +50,13 @@ export default class PushNotification {
 		this._checkIfOpenedByNotification = this._checkIfOpenedByNotification.bind(
 			this
 		);
+		this.addEventListenerForIOS = this.addEventListenerForIOS.bind(this);
 		this._currentState = AppState.currentState;
 		this._androidInitialized = false;
 		this._iosInitialized = false;
 
-		if (Platform.OS === 'ios') {
-			AppState.addEventListener('change', this._checkIfOpenedByNotification);
-		}
+		this._notificationOpenedHandlers = [];
+
 		Amplify.register(this);
 	}
 
@@ -102,10 +104,10 @@ export default class PushNotification {
 
 	onNotificationOpened(handler) {
 		if (typeof handler === 'function') {
-			// check platform
-			if (Platform.OS === 'android') {
-				this.addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, handler);
-			}
+			this._notificationOpenedHandlers = [
+				...this._notificationOpenedHandlers,
+				handler,
+			];
 		}
 	}
 
@@ -167,6 +169,10 @@ export default class PushNotification {
 			REMOTE_NOTIFICATION_RECEIVED,
 			this.handleNotificationReceived
 		);
+		this.addEventListenerForIOS(
+			REMOTE_NOTIFICATION_OPENED,
+			this.handleNotificationOpened
+		);
 	}
 
 	/**
@@ -174,7 +180,7 @@ export default class PushNotification {
 	 * And checks if the app was launched by a Push Notification
 	 * @param nextAppState The next state the app is changing to as part of the event
 	 */
-	_checkIfOpenedByNotification(nextAppState) {
+	_checkIfOpenedByNotification(nextAppState, handler) {
 		// the app is turned from background to foreground
 		if (
 			this._currentState.match(/inactive|background/) &&
@@ -183,7 +189,7 @@ export default class PushNotification {
 			PushNotificationIOS.getInitialNotification()
 				.then(data => {
 					if (data) {
-						this.handleNotificationOpened(data);
+						handler(data);
 					}
 				})
 				.catch(e => {
@@ -272,6 +278,10 @@ export default class PushNotification {
 	}
 
 	handleNotificationOpened(rawMessage) {
+		this._notificationOpenedHandlers.forEach(handler => {
+			handler(rawMessage);
+		});
+
 		logger.debug('handleNotificationOpened, raw data', rawMessage);
 		const { eventSource, eventSourceAttributes } = this.parseMessageData(
 			rawMessage
@@ -370,6 +380,12 @@ export default class PushNotification {
 		}
 		if (event === REMOTE_NOTIFICATION_RECEIVED) {
 			PushNotificationIOS.addEventListener('notification', handler);
+		}
+		if (event === REMOTE_NOTIFICATION_OPENED) {
+			PushNotificationIOS.addEventListener('localNotification', handler);
+			AppState.addEventListener('change', nextAppState =>
+				this._checkIfOpenedByNotification(nextAppState, handler)
+			);
 		}
 	}
 
