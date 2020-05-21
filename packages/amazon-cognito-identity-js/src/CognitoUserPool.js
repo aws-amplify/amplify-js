@@ -26,6 +26,9 @@ export default class CognitoUserPool {
 	 * @param {object} data Creation options.
 	 * @param {string} data.UserPoolId Cognito user pool id.
 	 * @param {string} data.ClientId User pool application client id.
+	 * @param {string} data.endpoint Optional custom service endpoint.
+	 * @param {object} data.fetchOptions Optional options for fetch API.
+	 *        (only credentials option is supported)
 	 * @param {object} data.Storage Optional storage object.
 	 * @param {boolean} data.AdvancedSecurityDataCollectionFlag Optional:
 	 *        boolean flag indicating if the data collection is enabled
@@ -37,6 +40,7 @@ export default class CognitoUserPool {
 			UserPoolId,
 			ClientId,
 			endpoint,
+			fetchOptions,
 			AdvancedSecurityDataCollectionFlag,
 		} = data || {};
 		if (!UserPoolId || !ClientId) {
@@ -50,7 +54,7 @@ export default class CognitoUserPool {
 		this.userPoolId = UserPoolId;
 		this.clientId = ClientId;
 
-		this.client = new Client(region, endpoint);
+		this.client = new Client(region, endpoint, fetchOptions);
 
 		/**
 		 * By default, AdvancedSecurityDataCollectionFlag is set to true,
@@ -89,6 +93,7 @@ export default class CognitoUserPool {
 	 * @param {(AttributeArg[])=} validationData Application metadata.
 	 * @param {(AttributeArg[])=} clientMetadata Client metadata.
 	 * @param {nodeCallback<SignUpResult>} callback Called on error or with the new user.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	signUp(
@@ -138,7 +143,9 @@ export default class CognitoUserPool {
 	 * @returns {CognitoUser} the user retrieved from storage
 	 */
 	getCurrentUser() {
-		const lastUserKey = `CognitoIdentityServiceProvider.${this.clientId}.LastAuthUser`;
+		const lastUserKey = `CognitoIdentityServiceProvider.${
+			this.clientId
+		}.LastAuthUser`;
 
 		const lastAuthUser = this.storage.getItem(lastUserKey);
 		if (lastAuthUser) {

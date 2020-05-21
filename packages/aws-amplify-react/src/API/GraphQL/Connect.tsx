@@ -1,6 +1,5 @@
-import regeneratorRuntime from 'regenerator-runtime/runtime';
-import { Component } from 'react';
-import API from '@aws-amplify/api';
+import * as React from 'react';
+import { API } from '@aws-amplify/api';
 
 export interface IConnectProps {
 	mutation?: any;
@@ -16,7 +15,7 @@ export interface IConnectState {
 	mutation: any;
 }
 
-export default class Connect extends Component<IConnectProps, IConnectState> {
+export class Connect extends React.Component<IConnectProps, IConnectState> {
 	public subSubscription;
 	private mounted: boolean;
 
@@ -191,3 +190,8 @@ export default class Connect extends Component<IConnectProps, IConnectState> {
 		return this.props.children({ data, errors, loading, mutation }) || null;
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default Connect;
