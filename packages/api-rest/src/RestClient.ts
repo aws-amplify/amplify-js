@@ -13,6 +13,7 @@
 
 import {
 	ConsoleLogger as Logger,
+	DateUtils,
 	Signer,
 	Platform,
 	Credentials,
@@ -168,7 +169,27 @@ export class RestClient {
 
 		// Signing the request in case there credentials are available
 		return Credentials.get().then(
-			credentials => this._signed({ ...params }, credentials, isAllResponse),
+			credentials => {
+				return this._signed({ ...params }, credentials, isAllResponse).catch(
+					error => {
+						if (
+							error.response.headers['x-amzn-errortype'] ===
+								'BadRequestException' &&
+							DateUtils.getClockOffset() === 0
+						) {
+							const responseDate = new Date(error.response.headers.date);
+							const requestDate = DateUtils.getDateFromHeaderString(
+								params.headers['x-amz-date']
+							);
+							const offset = responseDate.getTime() - requestDate.getTime();
+
+							DateUtils.setClockOffset(offset);
+
+							return this.ajax(url, method, init);
+						}
+					}
+				);
+			},
 			err => {
 				logger.debug('No credentials available, the request will be unsigned');
 				return this._request(params, isAllResponse);
