@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.2.7...@aws-amplify/auth@3.2.8) (2020-05-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Fix OAuth multiple scopes ([#5850](https://github.com/aws-amplify/amplify-js/issues/5850)) ([f89e545](https://github.com/aws-amplify/amplify-js/commit/f89e545a93f370f0ce91b437514f833b03c6202b))
+* **@aws-amplify/auth:** Fix OAuth scopes ([#5844](https://github.com/aws-amplify/amplify-js/issues/5844)) ([e71fee5](https://github.com/aws-amplify/amplify-js/commit/e71fee58bdd940f5fbcd4268f08f53e2b85168bd))
+
+
+
+
+
 ## [3.2.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.2.6...@aws-amplify/auth@3.2.7) (2020-05-14)
 
 **Note:** Version bump only for package @aws-amplify/auth

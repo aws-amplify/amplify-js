@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.1.0...@aws-amplify/datastore@2.1.1) (2020-05-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** Fix subscription creation with model subscription level is public ([#5390](https://github.com/aws-amplify/amplify-js/issues/5390)) ([fff7daa](https://github.com/aws-amplify/amplify-js/commit/fff7daa25cab50933a149e88a7b67a4d83be0089))
+
+
+
+
+
 # [2.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.0.10...@aws-amplify/datastore@2.1.0) (2020-05-14)
 
 
