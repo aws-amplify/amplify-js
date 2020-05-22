@@ -90,9 +90,8 @@ export class AxiosHttpHandler implements HttpHandler {
 			};
 		}
 
-		if (this.httpOptions.bufferBody) {
-			axiosRequest.responseType = 'blob';
-		}
+		// From gamma release, aws-sdk now expects all response type to be of blob or streams
+		axiosRequest.responseType = 'blob';
 
 		const raceOfPromises = [
 			axios
