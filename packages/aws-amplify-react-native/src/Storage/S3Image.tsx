@@ -12,14 +12,28 @@
  */
 
 import React, { Component } from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, ImageResizeMode } from 'react-native';
 import { Storage, Logger } from 'aws-amplify';
-import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme, { AmplifyThemeType } from '../AmplifyTheme';
 
 const logger = new Logger('Storage.S3Image');
 
-export default class S3Image extends Component {
-	constructor(props) {
+interface IS3ImageProps {
+	body?: any;
+	contentType?: string;
+	imgKey?: string;
+	level?: string;
+	style?: any;
+	resizeMode?: ImageResizeMode;
+	theme?: AmplifyThemeType;
+}
+
+interface IS3ImageState {
+	src?: any;
+}
+
+export default class S3Image extends Component<IS3ImageProps, IS3ImageState> {
+	constructor(props: IS3ImageProps) {
 		super(props);
 
 		this.state = { src: null };
@@ -68,7 +82,7 @@ export default class S3Image extends Component {
 		this.load();
 	}
 
-	componentDidUpdate(prevProps) {
+	componentDidUpdate(prevProps: IS3ImageProps) {
 		if (
 			prevProps.imgKey !== this.props.imgKey ||
 			prevProps.body !== this.props.body

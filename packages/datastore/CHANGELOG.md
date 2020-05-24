@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.1.0...@aws-amplify/datastore@2.1.1) (2020-05-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** Fix subscription creation with model subscription level is public ([#5390](https://github.com/aws-amplify/amplify-js/issues/5390)) ([fff7daa](https://github.com/aws-amplify/amplify-js/commit/fff7daa25cab50933a149e88a7b67a4d83be0089))
+
+
+
+
+
+# [2.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.0.10...@aws-amplify/datastore@2.1.0) (2020-05-14)
+
+
+### Bug Fixes
+
+* require cycles in various packages ([#5372](https://github.com/aws-amplify/amplify-js/issues/5372)) ([b48c26d](https://github.com/aws-amplify/amplify-js/commit/b48c26d198cc25dd92f1515ddf2a97deec5c9783))
+
+
+### Features
+
+* **@aws-amplify/datastore:** enable keyName relations ([#5778](https://github.com/aws-amplify/amplify-js/issues/5778)) ([9019acf](https://github.com/aws-amplify/amplify-js/commit/9019acfd180d3e569e64c999fd216b16a9d6b799))
+
+
+
+
+
+## [2.0.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.0.9...@aws-amplify/datastore@2.0.10) (2020-04-30)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
 ## [2.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.0.8...@aws-amplify/datastore@2.0.9) (2020-04-24)
 
 

@@ -16,6 +16,15 @@
 | `usernameAlias`         | `username-alias`     | Username Alias is used to setup authentication with `username`, `email` or `phone_number`                                                                                                                                                                                                                                                                                                                                                                                                                                             | `"email" \| "phone_number" \| "username"`           | `'username'`                                 |
 
 
+## Slots
+
+| Slot                         | Description                                     |
+| ---------------------------- | ----------------------------------------------- |
+| `"footer"`                   | Content is place in the footer of the component |
+| `"primary-footer-content"`   | Content placed on the right side of the footer  |
+| `"secondary-footer-content"` | Content placed on the left side of the footer   |
+
+
 ## Dependencies
 
 ### Used by

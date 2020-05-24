@@ -12,20 +12,24 @@
  */
 
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { I18n } from 'aws-amplify';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { Header } from '../AmplifyUI';
+import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
 
-export default class Loading extends AuthPiece {
-	constructor(props) {
+export default class Loading extends AuthPiece<
+	IAuthPieceProps,
+	IAuthPieceState
+> {
+	constructor(props: IAuthPieceProps) {
 		super(props);
 
 		this._validAuthStates = ['loading'];
 	}
 
-	showComponent(theme) {
+	showComponent(theme: AmplifyThemeType) {
 		return (
 			<View style={theme.section}>
 				<Header theme={theme} testID={TEST_ID.AUTH.LOADING_TEXT}>

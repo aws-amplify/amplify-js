@@ -27,31 +27,6 @@ describe('AxiosHttpHandler', () => {
 	});
 
 	describe('.handle', () => {
-		it('should not set responseType by default', async () => {
-			const handler = new AxiosHttpHandler({});
-			await handler.handle(request, options);
-
-			expect(axios.request).toHaveBeenLastCalledWith({
-				data: undefined,
-				headers: {},
-				method: 'get',
-				url: 'http://localhost:3000/',
-			});
-		});
-
-		it('should add responseType: "blob" when bufferBody is true', async () => {
-			const handler = new AxiosHttpHandler({ bufferBody: true });
-			await handler.handle(request, options);
-
-			expect(axios.request).toHaveBeenLastCalledWith({
-				data: undefined,
-				headers: {},
-				method: 'get',
-				responseType: 'blob',
-				url: 'http://localhost:3000/',
-			});
-		});
-
 		it('should remove unsafe header host', async () => {
 			const handler = new AxiosHttpHandler();
 			request.headers['host'] = 'badheader';
@@ -62,6 +37,7 @@ describe('AxiosHttpHandler', () => {
 				data: undefined,
 				headers: { SafeHeader: 'goodHeader' },
 				method: 'get',
+				responseType: 'blob',
 				url: 'http://localhost:3000/',
 			});
 		});
@@ -75,6 +51,7 @@ describe('AxiosHttpHandler', () => {
 				data: null,
 				headers: { 'Content-Type': 'amazing/content' },
 				method: 'get',
+				responseType: 'blob',
 				url: 'http://localhost:3000/',
 			});
 		});
