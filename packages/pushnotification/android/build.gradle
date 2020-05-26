@@ -26,11 +26,11 @@ def getExtOrIntegerDefault(name, default) {
 apply plugin: "com.android.library"
 
 android {
+    compileSdkVersion getExtOrIntegerDefault('compileSdkVersion', 28) 
+    buildToolsVersion getExtOrDefault('buildToolsVersion', "28.0.3") 
     defaultConfig {
-        compileSdkVersion getExtOrIntegerDefault('compileSdkVersion', 28)
-        buildToolsVersion getExtOrDefault('buildToolsVersion', "28.0.3")
-        minSdkVersion getExtOrDefault('minSdkVersion', 16)
-        targetSdkVersion getExtOrDefault('targetSdkVersion', 28)
+        minSdkVersion getExtOrDefault('minSdkVersion', 16) 
+        targetSdkVersion getExtOrDefault('targetSdkVersion', 28) 
         versionCode 1
         versionName "1.0"
         ndk {
