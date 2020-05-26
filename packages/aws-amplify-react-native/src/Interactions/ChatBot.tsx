@@ -78,7 +78,33 @@ const MIC_BUTTON_TEXT = {
 
 let timer = null;
 
-export class ChatBot extends Component {
+interface IChatBotProps {
+	botName?: string;
+	clearOnComplete?: boolean;
+	conversationModeOn?: boolean;
+	onComplete?: Function;
+	styles?: any;
+	textEnabled?: boolean;
+	voiceEnabled?: boolean;
+	voiceLibs?: { Voice: any; Sound: any; RNFS: any };
+	welcomeMessage?: string;
+}
+
+interface IChatBotState {
+	conversationOngoing: boolean;
+	currentConversationState?: string;
+	dialog: any[];
+	error?: string;
+	inputText: string;
+	inputEditable: boolean;
+	micText: string;
+	silenceDelay?: number;
+	voice: boolean;
+}
+
+export class ChatBot extends Component<IChatBotProps, IChatBotState> {
+	listItemsRef: React.RefObject<any>;
+
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -204,7 +230,10 @@ export class ChatBot extends Component {
 				dialog: [
 					...this.state.dialog,
 					response &&
-						response.message && { from: 'bot', message: response.message },
+						response.message && {
+							from: 'bot',
+							message: response.message,
+						},
 				].filter(Boolean),
 				inputText: '',
 				inputEditable: true,
@@ -273,6 +302,7 @@ export class ChatBot extends Component {
 		const { onComplete, botName } = this.props;
 
 		if (onComplete && botName) {
+			// @ts-ignore
 			Interactions.onComplete(botName, this.getOnComplete(onComplete, this));
 		}
 	}
@@ -281,6 +311,7 @@ export class ChatBot extends Component {
 		const { onComplete, botName } = this.props;
 
 		if (botName !== prevProps.botName || onComplete !== prevProps.onComplete) {
+			// @ts-ignore
 			Interactions.onComplete(botName, this.getOnComplete(onComplete, this));
 		}
 	}
@@ -407,15 +438,18 @@ function ChatBotInputs(props) {
 	const submit = props.submit;
 
 	if (voiceEnabled && textEnabled) {
+		// @ts-ignore
 		placeholder = 'Type your message or tap 🎤';
 	}
 
 	if (voiceEnabled && !textEnabled) {
+		// @ts-ignore
 		placeholder = 'Tap the mic button';
 		editable = false;
 	}
 
 	if (!voiceEnabled && textEnabled) {
+		// @ts-ignore
 		placeholder = 'Type your message here';
 	}
 
@@ -433,6 +467,7 @@ function ChatBotInputs(props) {
 			<ChatBotTextInput
 				styles={styles}
 				overrideStyles={overrideStyles}
+				// @ts-ignore
 				placeholder={I18n.get(placeholder)}
 				onChangeText={onChangeText}
 				inputText={inputText}
@@ -496,6 +531,7 @@ function ChatBotTextButton(props) {
 	return (
 		<AmplifyButton
 			onPress={submit}
+			// @ts-ignore
 			type="submit"
 			style={[styles.button, overrideStyles.button]}
 			text={I18n.get('Send')}
@@ -523,6 +559,7 @@ function ChatBotMicButton(props) {
 	);
 }
 
+// @ts-ignore
 ChatBot.defaultProps = {
 	botName: undefined,
 	onComplete: undefined,

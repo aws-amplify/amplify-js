@@ -11,9 +11,9 @@
  * and limitations under the License.
  */
 
-import React from 'react';
+import React, { FC, ReactNode } from 'react';
 import { Auth, Analytics, Logger, Hub, JS } from 'aws-amplify';
-import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme, { AmplifyThemeType } from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 import { Container } from '../AmplifyUI';
 import Loading from './Loading';
@@ -25,19 +25,27 @@ import ConfirmSignUp from './ConfirmSignUp';
 import ForgotPassword from './ForgotPassword';
 import RequireNewPassword from './RequireNewPassword';
 import Greetings from './Greetings';
+import {
+	HubCapsule,
+	OnStateChangeType,
+	ISignUpConfig,
+	UsernameAttributesType,
+} from '../../types';
 
 const logger = new Logger('Authenticator');
 
-const EmptyContainer = ({ children }) => (
+const EmptyContainer: FC<{}> = ({ children }) => (
 	<React.Fragment>{children}</React.Fragment>
 );
 
 class AuthDecorator {
-	constructor(onStateChange) {
+	onStateChange: (state: string) => void;
+
+	constructor(onStateChange: OnStateChangeType) {
 		this.onStateChange = onStateChange;
 	}
 
-	signIn(username, password) {
+	signIn(username: string, password: string) {
 		const that = this;
 		return Auth.signIn(username, password).then(data => {
 			that.onStateChange('signedIn');
@@ -53,8 +61,32 @@ class AuthDecorator {
 	}
 }
 
-export default class Authenticator extends React.Component {
-	constructor(props) {
+interface IAuthenticatorProps {
+	authData?: any;
+	authState?: string;
+	container?: ReactNode;
+	errorMessage?: string;
+	hideDefault?: boolean;
+	signUpConfig?: ISignUpConfig;
+	usernameAttributes?: UsernameAttributesType;
+	onStateChange?: OnStateChangeType;
+	theme?: AmplifyThemeType;
+}
+
+interface IAuthenticatorState {
+	authData?: any;
+	authState: string;
+	error?: string;
+}
+
+export default class Authenticator extends React.Component<
+	IAuthenticatorProps,
+	IAuthenticatorState
+> {
+	_initialAuthState: string;
+	_isMounted: boolean;
+
+	constructor(props: IAuthenticatorProps) {
 		super(props);
 		this._initialAuthState = this.props.authState || 'signIn';
 		this.state = {
@@ -79,39 +111,63 @@ export default class Authenticator extends React.Component {
 		this._isMounted = false;
 	}
 
-	onHubCapsule(capsule) {
-		const { channel, payload, source } = capsule;
-		if (channel === 'auth') {
-			this.checkUser();
+	onHubCapsule(capsule: HubCapsule) {
+		const {
+			payload: { event, data },
+		} = capsule;
+		switch (event) {
+			case 'cognitoHostedUI':
+				return this.handleStateChange('signedIn', data);
+
+			case 'cognitoHostedUI_failure':
+			case 'parsingUrl_failure':
+			case 'signOut':
+			case 'customGreetingSignOut':
+				return this.handleStateChange('signIn', null);
 		}
 	}
 
-	handleStateChange(state, data) {
-		logger.debug('authenticator state change ' + state);
-		if (!this._isMounted) return;
-		if (state === this.state.authState) {
-			return;
+	handleStateChange(state: string, data?: any) {
+		if (state === undefined)
+			return logger.info('Auth state cannot be undefined');
+
+		logger.info(
+			'Inside handleStateChange method current authState:',
+			this.state.authState
+		);
+
+		const nextAuthState =
+			state === 'signedOut' ? this._initialAuthState : state;
+		const nextAuthData = data !== undefined ? data : this.state.authData;
+
+		if (this._isMounted) {
+			this.setState({
+				authState: nextAuthState,
+				authData: nextAuthData,
+				error: null,
+			});
+			logger.log('Auth Data was set:', nextAuthData);
+			logger.info(`authState has been updated to ${nextAuthState}`);
 		}
 
-		if (state === 'signedOut') {
-			state = 'signIn';
-		}
-		this.setState({ authState: state, authData: data, error: null });
 		if (this.props.onStateChange) {
 			this.props.onStateChange(state, data);
 		}
 
-		switch (state) {
-			case 'signedIn':
-				Analytics.record('_userauth.sign_in');
-				break;
-			case 'signedUp':
-				Analytics.record('_userauth.sign_up');
-				break;
+		// @ts-ignore
+		if (Analytics._config && Object.entries(Analytics._config).length > 0) {
+			switch (state) {
+				case 'signedIn':
+					Analytics.record('_userauth.sign_in');
+					break;
+				case 'signedUp':
+					Analytics.record('_userauth.sign_up');
+					break;
+			}
 		}
 	}
 
-	async checkContact(user) {
+	async checkContact(user: any) {
 		try {
 			const data = await Auth.verifiedContact(user);
 			logger.debug('verified user attributes', data);
@@ -149,7 +205,7 @@ export default class Authenticator extends React.Component {
 						.then(() => {
 							this.handleStateChange(this._initialAuthState, null);
 						})
-						.catch(err => this.error(err));
+						.catch(err => logger.warn('Failed to sign out', err));
 				}
 			});
 	}
@@ -161,13 +217,13 @@ export default class Authenticator extends React.Component {
 		// If container prop is undefined, default to AWS Amplify UI Container (SafeAreaView)
 		// otherwise if truthy, use the supplied render prop
 		// otherwise if falsey, use EmptyContainer
-		const ContainerWrapper =
+		const ContainerWrapper: any =
 			this.props.container === undefined
 				? Container
 				: this.props.container || EmptyContainer;
 
 		const { hideDefault, signUpConfig, usernameAttributes } = this.props;
-		const props_children = this.props.children || [];
+		const props_children: any = this.props.children || [];
 		const default_children = [
 			<Loading />,
 			<SignIn />,

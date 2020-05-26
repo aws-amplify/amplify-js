@@ -14,13 +14,24 @@
 import React, { Component } from 'react';
 import { ScrollView, Dimensions, StyleSheet } from 'react-native';
 import { Storage, Logger } from 'aws-amplify';
-import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme, { AmplifyThemeType } from '../AmplifyTheme';
 import S3Image from './S3Image';
 
 const logger = new Logger('Storage.S3Album');
 
-export default class S3Album extends Component {
-	constructor(props) {
+interface IS3AlbumProps {
+	path?: string;
+	level?: string;
+	filter?: Function;
+	theme?: AmplifyThemeType;
+}
+
+interface IS3AlbumState {
+	images: any[];
+}
+
+export default class S3Album extends Component<IS3AlbumProps, IS3AlbumState> {
+	constructor(props: IS3AlbumProps) {
 		super(props);
 
 		this.state = { images: [] };

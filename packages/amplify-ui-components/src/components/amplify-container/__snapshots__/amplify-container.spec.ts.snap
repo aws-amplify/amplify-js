@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-container spec: Render logic -> should render with an empty slot 1`] = `
+<amplify-container>
+  <mock:shadow-root>
+    <slot></slot>
+  </mock:shadow-root>
+</amplify-container>
+`;
+
+exports[`amplify-container spec: Render logic -> should render with contained content when content is passed in 1`] = `
+<amplify-container>
+  <mock:shadow-root>
+    <slot></slot>
+  </mock:shadow-root>
+  <div>
+    My App
+  </div>
+</amplify-container>
+`;

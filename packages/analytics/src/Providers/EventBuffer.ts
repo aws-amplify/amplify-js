@@ -10,6 +10,7 @@ import {
 	PutEventsCommand,
 	PutEventsCommandOutput,
 } from '@aws-sdk/client-pinpoint';
+import { isAppInForeground } from '../utils/AppUtils';
 
 const logger = new Logger('EventsBuffer');
 const RETRYABLE_CODES = [429, 500];
@@ -87,7 +88,11 @@ export default class EventsBuffer {
 			clearInterval(this._interval);
 		}
 
-		if (this._pause || !bufferLength) {
+		// Do not send the batch of events if
+		// the Buffer is paused or is empty or the App is not in the foreground
+		// Apps should be in the foreground since
+		// the OS may restrict access to the network in the background
+		if (this._pause || !bufferLength || !isAppInForeground()) {
 			return;
 		}
 
@@ -150,7 +155,7 @@ export default class EventsBuffer {
 	}
 
 	private _handlePutEventsFailure(err, eventMap: EventMap) {
-		logger.error('_putEvents Failed: ', err);
+		logger.debug('_putEvents Failed: ', err);
 		const statusCode = err.$metadata && err.$metadata.httpStatusCode;
 
 		if (RETRYABLE_CODES.includes(statusCode)) {
