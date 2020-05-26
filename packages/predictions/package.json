@@ -36,11 +36,11 @@
   "dependencies": {
     "@aws-amplify/core": "^3.2.8",
     "@aws-amplify/storage": "^3.2.1",
-    "@aws-sdk/client-comprehend": "1.0.0-gamma.1",
-    "@aws-sdk/client-polly": "1.0.0-gamma.1",
-    "@aws-sdk/client-rekognition": "1.0.0-gamma.1",
-    "@aws-sdk/client-textract": "1.0.0-gamma.1",
-    "@aws-sdk/client-translate": "1.0.0-gamma.1",
+    "@aws-sdk/client-comprehend": "1.0.0-gamma.2",
+    "@aws-sdk/client-polly": "1.0.0-gamma.2",
+    "@aws-sdk/client-rekognition": "1.0.0-gamma.2",
+    "@aws-sdk/client-textract": "1.0.0-gamma.2",
+    "@aws-sdk/client-translate": "1.0.0-gamma.2",
     "@aws-sdk/eventstream-marshaller": "1.0.0-gamma.1",
     "@aws-sdk/util-utf8-node": "1.0.0-gamma.1",
     "uuid": "^3.2.1"
