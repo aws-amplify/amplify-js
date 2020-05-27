@@ -1887,7 +1887,7 @@ export default class CognitoUser {
 	 * This is used to list all devices for a user
 	 *
 	 * @param {int} limit the number of devices returned in a call
-	 * @param {string | undefined} paginationToken the pagination token in case any was returned before
+	 * @param {string | null} paginationToken the pagination token in case any was returned before
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<*>} callback.onSuccess Called on success with device list.
