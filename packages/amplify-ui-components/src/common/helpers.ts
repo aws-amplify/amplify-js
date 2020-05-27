@@ -1,4 +1,4 @@
-import { Hub } from '@aws-amplify/core';
+import { Hub, I18n } from '@aws-amplify/core';
 import {
   UI_AUTH_CHANNEL,
   TOAST_AUTH_ERROR_EVENT,
@@ -7,8 +7,9 @@ import {
 } from './constants';
 import { AuthState, AuthStateHandler, UsernameAlias } from '../common/types/auth-types';
 import { PhoneNumberInterface } from '../components/amplify-auth-fields/amplify-auth-fields-interface';
+import { Translations } from './Translations';
 
-interface ToastError {
+export interface ToastError {
   code: string;
   name: string;
   message: string;
@@ -66,4 +67,76 @@ export const onAuthUIStateChange = (authStateHandler: AuthStateHandler) => {
 
 export const isHintValid = field => {
   return !(field['hint'] === null || typeof field['hint'] === 'string');
+};
+
+// Required attributes come from https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
+export const requiredAttributesMap = {
+  address: {
+    label: I18n.get(Translations.ADDRESS_LABEL),
+    placeholder: I18n.get(Translations.ADDRESS_PLACEHOLDER),
+  },
+  nickname: {
+    label: I18n.get(Translations.NICKNAME_LABEL),
+    placeholder: I18n.get(Translations.NICKNAME_PLACEHOLDER),
+  },
+  birthdate: {
+    label: I18n.get(Translations.BIRTHDATE_LABEL),
+    placeholder: I18n.get(Translations.BIRTHDATE_PLACEHOLDER),
+  },
+  phone_number: {
+    label: I18n.get(Translations.PHONE_LABEL),
+    placeholder: I18n.get(Translations.PHONE_PLACEHOLDER),
+  },
+  email: {
+    lable: I18n.get(Translations.EMAIL_LABEL),
+    placeholder: I18n.get(Translations.EMAIL_PLACEHOLDER),
+  },
+  picture: {
+    label: I18n.get(Translations.PICTURE_LABEL),
+    placeholder: I18n.get(Translations.PICTURE_PLACEHOLDER),
+  },
+  family_name: {
+    label: I18n.get(Translations.FAMILY_NAME_LABEL),
+    placeholder: I18n.get(Translations.FAMILY_NAME_PLACEHOLDER),
+  },
+  preferred_username: {
+    label: I18n.get(Translations.PREFERRED_USERNAME_LABEL),
+    placeholder: I18n.get(Translations.PREFERRED_USERNAME_PLACEHOLDER),
+  },
+  gender: {
+    label: I18n.get(Translations.GENDER_LABEL),
+    placeholder: I18n.get(Translations.GENDER_PLACEHOLDER),
+  },
+  profile: {
+    label: I18n.get(Translations.PROFILE_LABEL),
+    placeholder: I18n.get(Translations.PROFILE_PLACEHOLDER),
+  },
+  given_name: {
+    label: I18n.get(Translations.GIVEN_NAME_LABEL),
+    placeholder: I18n.get(Translations.GIVEN_NAME_LABEL),
+  },
+  zoneinfo: {
+    label: I18n.get(Translations.ZONEINFO_LABEL),
+    placeholder: I18n.get(Translations.ZONEINFO_PLACEHOLDER),
+  },
+  locale: {
+    label: I18n.get(Translations.LOCALE_LABEL),
+    placeholder: I18n.get(Translations.LOCALE_PLACEHOLDER),
+  },
+  updated_at: {
+    label: I18n.get(Translations.UPDATED_AT_LABEL),
+    placeholder: I18n.get(Translations.UPDATED_AT_PLACEHOLDER),
+  },
+  middle_name: {
+    label: I18n.get(Translations.MIDDLE_NAME_LABEL),
+    placeholder: I18n.get(Translations.MIDDLE_NAME_PLACEHOLDER),
+  },
+  website: {
+    label: I18n.get(Translations.WEBSITE_LABEL),
+    placeholder: I18n.get(Translations.WEBSITE_PLACEHOLDER),
+  },
+  name: {
+    label: I18n.get(Translations.NAME_LABEL),
+    placeholder: I18n.get(Translations.NAME_PLACEHOLDER),
+  },
 };

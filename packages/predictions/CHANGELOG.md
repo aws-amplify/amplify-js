@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.1.11...@aws-amplify/predictions@3.1.12) (2020-05-26)
+
+
+### Bug Fixes
+
+* **core:** bump SDK verion to gamma.2 ([#5909](https://github.com/aws-amplify/amplify-js/issues/5909)) ([3bd2d25](https://github.com/aws-amplify/amplify-js/commit/3bd2d2509c2db59cffd7ac81c08ac4f9ef298198))
+
+
+
+
+
+## [3.1.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.1.10...@aws-amplify/predictions@3.1.11) (2020-05-22)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.1.9...@aws-amplify/predictions@3.1.10) (2020-05-14)
+
+
+### Bug Fixes
+
+* require cycles in various packages ([#5372](https://github.com/aws-amplify/amplify-js/issues/5372)) ([b48c26d](https://github.com/aws-amplify/amplify-js/commit/b48c26d198cc25dd92f1515ddf2a97deec5c9783))
+
+
+
+
+
 ## [3.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.1.8...@aws-amplify/predictions@3.1.9) (2020-04-30)
 
 

@@ -224,7 +224,7 @@ export class AnalyticsClass {
 	/**
 	 * Record one analytic event and send it to Pinpoint
 	 * @param {String} name - The name of the event
-	 * @param {Object} [attributs] - Attributes of the event
+	 * @param {Object} [attributes] - Attributes of the event
 	 * @param {Object} [metrics] - Event metrics
 	 * @return - A promise which resolves if buffer doesn't overflow
 	 */
