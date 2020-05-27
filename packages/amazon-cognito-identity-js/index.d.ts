@@ -158,11 +158,11 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 		public listDevices(
 			limit: number,
+			paginationToken: string | null,
 			callbacks: {
 				onSuccess: (data: any) => void;
 				onFailure: (err: Error) => void;
-			},
-			paginationToken?: string
+			}
 		): void;
 		public completeNewPasswordChallenge(
 			newPassword: string,
