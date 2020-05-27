@@ -1893,29 +1893,25 @@ export default class CognitoUser {
 	 * @param {onSuccess<*>} callback.onSuccess Called on success with device list.
 	 * @returns {void}
 	 */
-	listDevices(limit, callback, paginationToken) {
+	listDevices(limit, paginationToken, callback) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback.onFailure(new Error('User is not authenticated'));
 		}
-
-		const listDevicesReq = {
+		const requestParams = {
 			AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
-			Limit: limit
+			Limit: limit,
 		};
 
-		if (paginationToken) {
-			listDevicesReq.PaginationToken = paginationToken
+		if (!paginationToken) {
+			requestParams.PaginationToken = paginationToken;
 		}
 
-		this.client.request(
-			'ListDevices', listDevicesReq,
-			(err, data) => {
-				if (err) {
-					return callback.onFailure(err);
-				}
-				return callback.onSuccess(data);
+		this.client.request('ListDevices', requestParams, (err, data) => {
+			if (err) {
+				return callback.onFailure(err);
 			}
-		);
+			return callback.onSuccess(data);
+		});
 		return undefined;
 	}
 
