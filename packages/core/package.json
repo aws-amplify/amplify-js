@@ -57,7 +57,7 @@
 		"zen-observable-ts": "0.8.19"
 	},
 	"peerDependencies": {
-    	"@react-native-community/netinfo": "^5.5.0"
+		"@react-native-community/netinfo": "^5.5.0"
 	},
 	"peerDependenciesMeta": {
 		"@react-native-community/netinfo": {
