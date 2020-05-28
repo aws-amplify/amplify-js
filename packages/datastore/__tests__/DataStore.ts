@@ -1,4 +1,5 @@
 import 'fake-indexeddb/auto';
+import { decodeTime } from 'ulid';
 import uuidValidate from 'uuid-validate';
 import Observable from 'zen-observable-ts';
 import {
@@ -24,8 +25,9 @@ beforeEach(() => {
 
 	jest.doMock('../src/storage/storage', () => {
 		const mock = jest.fn().mockImplementation(() => ({
+			init: jest.fn(),
 			runExclusive: jest.fn(),
-			query: jest.fn(),
+			query: jest.fn(() => []),
 			observe: jest.fn(() => Observable.of()),
 		}));
 
@@ -76,11 +78,12 @@ describe('DataStore tests', () => {
 			expect(uuidValidate(model.id, 4)).toBe(true);
 		});
 
-		test('Non-syncable models get a uuid v1', () => {
+		test('Non-syncable models get a ulid', () => {
 			const { LocalModel } = initSchema(testSchema()) as {
 				LocalModel: PersistentModelConstructor<Model>;
 			};
 
+			const t = Date.now();
 			const model = new LocalModel({
 				field1: 'something',
 			});
@@ -89,13 +92,11 @@ describe('DataStore tests', () => {
 
 			expect(model.id).toBeDefined();
 
-			/**
-			 * local models use something like a uuid v1
-			 * see https://github.com/kelektiv/node-uuid/issues/75#issuecomment-483756623
-			 */
-			expect(
-				uuidValidate(model.id.replace(/^(.{4})-(.{4})-(.{8})/, '$3-$2-$1'), 1)
-			).toBe(true);
+			const decodedTime = decodeTime(model.id);
+
+			const diff = Math.abs(decodedTime - t);
+
+			expect(diff).toBeLessThan(1000);
 		});
 
 		test('initSchema is executed only once', () => {
@@ -245,6 +246,7 @@ describe('DataStore tests', () => {
 			jest.resetModules();
 			jest.doMock('../src/storage/storage', () => {
 				const mock = jest.fn().mockImplementation(() => ({
+					init: jest.fn(),
 					runExclusive: jest.fn(() => [model]),
 				}));
 
@@ -292,6 +294,7 @@ describe('DataStore tests', () => {
 			jest.resetModules();
 			jest.doMock('../src/storage/storage', () => {
 				const mock = jest.fn().mockImplementation(() => ({
+					init: jest.fn(),
 					runExclusive: jest.fn(() => [model]),
 					query: jest.fn(() => [model]),
 					observe: jest.fn(() => Observable.from([])),

@@ -159,6 +159,8 @@ export class HubClass {
 				callback: cb,
 			});
 		}
+
+		return cb;
 	}
 
 	private _toListeners(capsule: HubCapsule) {

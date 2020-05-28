@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AsyncStorage tests Internal AsyncStorage key schema changes Keys are migrated to the new format with ulid 1`] = `
+Array [
+  "@AmplifyDatastore::datastore_Setting::Data::01E8A91A5TYW2N83S5JVVRZ6ZP::11ea-9555-bb149af0-bd99-91dc40efda36",
+  "@AmplifyDatastore::user_BlogOwner::Data::01E8A91A5T8KNN1RJF6SFHER40::526a24a6-3ee5-43b5-80e0-19742733c109",
+  "@AmplifyDatastore::user_Blog::Data::01E8A91A5TEQW108SR4YNK65T3::9b70f2ad-2963-45df-b357-97804eac37f4",
+  "@AmplifyDatastore::user_BlogOwner::Data::01E8A91A5T8H6TWCQMFE38898F::74491d7a-6f4d-4e30-ba5b-492d631fdc37",
+  "@AmplifyDatastore::user_Blog::Data::01E8A91A5T3VS625H87HX4QSF9::78e63f8e-df04-46ed-b99b-44e3ee8f58e5",
+  "@AmplifyDatastore::user_BlogOwner::Data::01E8A91A5TWKF5AWYPZTD7WM93::55fd1422-d32e-4c84-8771-110a9829706e",
+  "@AmplifyDatastore::user_Blog::Data::01E8A91A5T1FJD5TJMRW88AX52::43e80c63-c1b3-4303-83ab-ba32e55370ae",
+  "@AmplifyDatastore::datastore_Setting::Data::01E8A91A5TSH1PCSFVNN7NTYY8::01E8A91A5TC9XK4Y443YF0KBS5",
+]
+`;

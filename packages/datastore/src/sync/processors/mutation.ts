@@ -35,10 +35,15 @@ const MAX_ATTEMPTS = 10;
 
 const logger = new Logger('DataStore');
 
+type MutationProcessorEvent = {
+	operation: TransformerMutationType;
+	modelDefinition: SchemaModel;
+	model: PersistentModel;
+	hasMore: boolean;
+};
+
 class MutationProcessor {
-	private observer: ZenObservable.Observer<
-		[TransformerMutationType, SchemaModel, PersistentModel]
-	>;
+	private observer: ZenObservable.Observer<MutationProcessorEvent>;
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
 		[TransformerMutationType, string, string][]
@@ -92,12 +97,8 @@ class MutationProcessor {
 		return this.observer !== undefined;
 	}
 
-	public start(): Observable<
-		[TransformerMutationType, SchemaModel, PersistentModel]
-	> {
-		const observable = new Observable<
-			[TransformerMutationType, SchemaModel, PersistentModel]
-		>(observer => {
+	public start(): Observable<MutationProcessorEvent> {
+		const observable = new Observable<MutationProcessorEvent>(observer => {
 			this.observer = observer;
 
 			this.resume();
@@ -116,11 +117,11 @@ class MutationProcessor {
 		}
 
 		this.processing = true;
-		let head: MutationEvent;
+		let head = await this.outbox.peek(this.storage);
 		const namespaceName = USER;
 
 		// start to drain outbox
-		while (this.processing && (head = await this.outbox.peek(this.storage))) {
+		while (this.processing && head !== undefined) {
 			const { model, operation, data, condition } = head;
 			const modelConstructor = this.userClasses[
 				model
@@ -154,7 +155,16 @@ class MutationProcessor {
 			const record = result.data[opName];
 			await this.outbox.dequeue(this.storage);
 
-			this.observer.next([operation, modelDefinition, record]);
+			head = await this.outbox.peek(this.storage);
+
+			const hasMore = head !== undefined;
+
+			this.observer.next({
+				operation,
+				modelDefinition,
+				model: record,
+				hasMore,
+			});
 		}
 
 		// pauses itself
