@@ -68,6 +68,7 @@ import { AuthErrorTypes } from './types/Auth';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
+const OAUTH_FLOW_MS_TIMEOUT = 30000;
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
 typeof Symbol.for === 'function'
@@ -109,9 +110,11 @@ export class AuthClass {
 			switch (event) {
 				case 'signIn':
 					this._storage.setItem('amplify-signin-with-hostedUI', 'false');
+					this._storage.removeItem('amplify-redirected-from-hosted-ui');
 					break;
 				case 'signOut':
 					this._storage.removeItem('amplify-signin-with-hostedUI');
+					this._storage.removeItem('amplify-redirected-from-hosted-ui');
 					break;
 				case 'cognitoHostedUI':
 					this._storage.setItem('amplify-signin-with-hostedUI', 'true');
@@ -1104,8 +1107,26 @@ export class AuthClass {
 		const that = this;
 		return new Promise((res, rej) => {
 			this._storageSync
-				.then(() => {
-					const user = that.userPool.getCurrentUser();
+				.then(async () => {
+					let user = that.userPool.getCurrentUser();
+
+					if (this.isOAuthInProgress(user)) {
+						await new Promise((res, rej) => {
+							const timeoutId = setTimeout(rej, OAUTH_FLOW_MS_TIMEOUT);
+
+							Hub.listen('auth', ({ payload }) => {
+								const { event } = payload;
+
+								if (event === 'cognitoHostedUI') {
+									clearTimeout(timeoutId);
+									res();
+								}
+							});
+						});
+
+						user = that.userPool.getCurrentUser();
+					}
+
 					if (!user) {
 						logger.debug('Failed to get user from user pool');
 						rej('No current user');
@@ -1175,6 +1196,13 @@ export class AuthClass {
 					return rej(e);
 				});
 		});
+	}
+
+	private isOAuthInProgress(user?: CognitoUser): boolean {
+		const fromHostedUI = this._storage.getItem(
+			'amplify-redirected-from-hosted-ui'
+		);
+		return !user && fromHostedUI;
 	}
 
 	/**
@@ -1850,6 +1878,10 @@ export class AuthClass {
 				const currentUser = this.createCognitoUser(
 					session.getIdToken().decodePayload()['cognito:username']
 				);
+
+				// This calls cacheTokens() in Cognito SDK
+				currentUser.setSignInUserSession(session);
+
 				dispatchAuthEvent(
 					'signIn',
 					currentUser,
@@ -1873,9 +1905,6 @@ export class AuthClass {
 						`State for user ${currentUser.getUsername()}`
 					);
 				}
-
-				// This calls cacheTokens() in Cognito SDK
-				currentUser.setSignInUserSession(session);
 				//#endregion
 
 				if (window && typeof window.history !== 'undefined') {

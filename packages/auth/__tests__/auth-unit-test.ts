@@ -228,6 +228,8 @@ import {
 	GoogleOAuth,
 	StorageHelper,
 	ICredentials,
+	MemoryStorage,
+	Hub,
 } from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
 import { AuthErrorTypes } from '../src/types/Auth';
@@ -2983,7 +2985,7 @@ describe('auth unit test', () => {
 
 	describe('currentUserPoolUser test', () => {
 		test('happy case', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth({ ...authOptions, storage: MemoryStorage });
 			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
@@ -3040,7 +3042,7 @@ describe('auth unit test', () => {
 		});
 
 		test('no current user', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth({ ...authOptions, storage: MemoryStorage });
 			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
@@ -3078,7 +3080,7 @@ describe('auth unit test', () => {
 		});
 
 		test('get session error', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth({ ...authOptions, storage: MemoryStorage });
 			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
@@ -3111,7 +3113,7 @@ describe('auth unit test', () => {
 		});
 
 		test('get user data error because of user is deleted or disabled', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth({ ...authOptions, storage: MemoryStorage });
 			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
@@ -3167,7 +3169,7 @@ describe('auth unit test', () => {
 		});
 
 		test('bypass the error if the user is not deleted or disabled', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth({ ...authOptions, storage: MemoryStorage });
 			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
@@ -3218,7 +3220,7 @@ describe('auth unit test', () => {
 		});
 
 		test('directly return the user if no permission(scope) to get the user data', async () => {
-			const auth = new Auth(authOptions);
+			const auth = new Auth({ ...authOptions, storage: MemoryStorage });
 			const user = new CognitoUser({
 				Username: 'username',
 				Pool: userPool,
@@ -3266,6 +3268,67 @@ describe('auth unit test', () => {
 			spyon3.mockClear();
 			spyon4.mockClear();
 			spyon5.mockClear();
+		});
+
+		test.skip('hosted UI in progress, signIn success', done => {
+			const auth = new Auth({ ...authOptions, storage: MemoryStorage });
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+			const spyon = jest
+				.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+				.mockImplementationOnce(() => {
+					return null;
+				})
+				.mockImplementationOnce(() => {
+					return user;
+				});
+			const spyon2 = jest
+				.spyOn(CognitoUser.prototype, 'getSession')
+				.mockImplementation(callback => {
+					return callback(null, session);
+				});
+
+			const spyon3 = jest
+				.spyOn(CognitoUser.prototype, 'getUserData')
+				.mockImplementationOnce(callback => {
+					const data = {
+						PreferredMfaSetting: 'SMS',
+						UserAttributes: [{ Name: 'address', Value: 'xxxx' }],
+					};
+					callback(null, data);
+				});
+
+			const spyon4 = jest
+				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
+				.mockImplementationOnce(() => {
+					return new CognitoAccessToken({ AccessToken: 'accessToken' });
+				});
+
+			const spyon5 = jest
+				.spyOn(CognitoAccessToken.prototype, 'decodePayload')
+				.mockImplementation(() => {
+					return { scope: '' };
+				});
+
+			expect.assertions(2);
+
+			MemoryStorage.setItem('amplify-redirected-from-hosted-ui', true);
+
+			auth.currentUserPoolUser().then(resUser => {
+				expect(resUser).toEqual(user);
+				expect(spyon).toBeCalledTimes(2);
+				MemoryStorage.removeItem('amplify-redirected-from-hosted-ui');
+				spyon.mockClear();
+				done();
+			});
+
+			setTimeout(() => {
+				Hub.dispatch('auth', {
+					event: 'cognitoHostedUI',
+				});
+			}, 0);
 		});
 	});
 
