@@ -1850,6 +1850,19 @@ export class AuthClass {
 				const currentUser = this.createCognitoUser(
 					session.getIdToken().decodePayload()['cognito:username']
 				);
+
+				// This calls cacheTokens() in Cognito SDK
+				currentUser.setSignInUserSession(session);
+				//#endregion
+
+				if (window && typeof window.history !== 'undefined') {
+					window.history.replaceState(
+						{},
+						null,
+						(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
+					);
+				}
+
 				dispatchAuthEvent(
 					'signIn',
 					currentUser,
@@ -1871,18 +1884,6 @@ export class AuthClass {
 						'customOAuthState',
 						customState,
 						`State for user ${currentUser.getUsername()}`
-					);
-				}
-
-				// This calls cacheTokens() in Cognito SDK
-				currentUser.setSignInUserSession(session);
-				//#endregion
-
-				if (window && typeof window.history !== 'undefined') {
-					window.history.replaceState(
-						{},
-						null,
-						(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
 					);
 				}
 
