@@ -23,6 +23,7 @@
 		"build": "npm run clean && npm run compile",
 		"clean": "rm -rf dist",
 		"compile": "npm run tsc",
-		"tsc": "tsc -p ."
+		"tsc": "tsc -p .",
+		"watch": "tsc -w -p ."
 	}
 }
