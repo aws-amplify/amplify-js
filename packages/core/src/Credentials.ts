@@ -1,8 +1,9 @@
+import Observable from 'zen-observable-ts';
 import { ConsoleLogger as Logger } from './Logger';
 import { StorageHelper } from './StorageHelper';
 import { makeQuerablePromise } from './JS';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
-import { jitteredExponentialRetry } from './Util';
+import { jitteredExponentialRetry, ReachabilityMonitor } from './Util';
 import { ICredentials } from './types';
 import { getAmplifyUserAgent } from './Platform';
 import { Amplify } from './Amplify';
@@ -32,11 +33,13 @@ export class CredentialsClass {
 	private _storageSync;
 	private _identityId;
 	private _nextCredentialsRefresh: Number;
+	private _online: boolean;
 
 	constructor(config) {
 		this.configure(config);
 		this._refreshHandlers['google'] = GoogleOAuth.refreshGoogleToken;
 		this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
+		this._online = false;
 	}
 
 	public getCredSource() {
@@ -51,7 +54,10 @@ export class CredentialsClass {
 		// If the developer has provided an object of refresh handlers,
 		// then we can merge the provided handlers with the current handlers.
 		if (refreshHandlers) {
-			this._refreshHandlers = { ...this._refreshHandlers, ...refreshHandlers };
+			this._refreshHandlers = {
+				...this._refreshHandlers,
+				...refreshHandlers,
+			};
 		}
 
 		this._storage = this._config.storage;
@@ -64,12 +70,28 @@ export class CredentialsClass {
 			this._storageSync = this._storage['sync']();
 		}
 
+		this._reachabilityStatusInit().subscribe(online => {
+			this._online = online;
+		});
+
 		return this._config;
 	}
 
 	public get() {
 		logger.debug('getting credentials');
 		return this._pickupCredentials();
+	}
+
+	private _reachabilityStatusInit(): Observable<boolean> {
+		return new Observable(observer => {
+			const subs = ReachabilityMonitor.subscribe(({ online }) => {
+				observer.next(online);
+			});
+
+			return () => {
+				subs.unsubscribe();
+			};
+		});
 	}
 
 	private _pickupCredentials() {
@@ -127,8 +149,14 @@ export class CredentialsClass {
 				expires_at,
 			});
 		} else {
+			if (!this._online) {
+				const message =
+					'no network detected when attempting to refresh jwt token from federation provider';
+				logger.debug(message);
+				return Promise.reject(message);
+			}
 			// if refresh handler exists
-			if (
+			else if (
 				that._refreshHandlers[provider] &&
 				typeof that._refreshHandlers[provider] === 'function'
 			) {
@@ -147,9 +175,10 @@ export class CredentialsClass {
 	}
 
 	private _providerRefreshWithRetry({ refreshHandler, provider, user }) {
+		const MAX_DELAY_MS = 10 * 1000;
 		// refreshHandler will retry network errors, otherwise it will
 		// return NonRetryableError to break out of jitteredExponentialRetry
-		return jitteredExponentialRetry(refreshHandler, [])
+		return jitteredExponentialRetry(refreshHandler, [], MAX_DELAY_MS)
 			.then(data => {
 				logger.debug('refresh federated token sucessfully', data);
 				return this._setCredentialsFromFederation({
@@ -161,8 +190,15 @@ export class CredentialsClass {
 				});
 			})
 			.catch(e => {
+				const isNetworkError =
+					typeof e === 'string' &&
+					e.toLowerCase().lastIndexOf('network error', e.length) === 0;
+
+				if (!isNetworkError) {
+					this.clear();
+				}
+
 				logger.debug('refresh federated token failed', e);
-				this.clear();
 				return Promise.reject('refreshing federation token failed: ' + e);
 			});
 	}
@@ -444,7 +480,7 @@ export class CredentialsClass {
 				})
 				.catch(err => {
 					if (err) {
-						logger.debug('Failed to load credentials', credentials);
+						logger.debug('Failed to load credentials', err);
 						rej(err);
 						return;
 					}
@@ -468,6 +504,7 @@ export class CredentialsClass {
 	public async clear() {
 		this._credentials = null;
 		this._credentials_source = null;
+		logger.debug('removing aws-amplify-federatedInfo from storage');
 		this._storage.removeItem('aws-amplify-federatedInfo');
 	}
 

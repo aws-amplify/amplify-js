@@ -67,8 +67,9 @@ export class FacebookOAuth {
 						const errorMessage =
 							'no response from facebook when refreshing the jwt token';
 						logger.debug(errorMessage);
-						// Not using NonRetryableError so handler will be retried
-						rej(errorMessage);
+						// There is no definitive indication for a network error in
+						// fbResponse, so we are treating it as an invalid token.
+						rej(new NonRetryableError(errorMessage));
 					} else {
 						const response = fbResponse.authResponse;
 						const { accessToken, expiresIn } = response;

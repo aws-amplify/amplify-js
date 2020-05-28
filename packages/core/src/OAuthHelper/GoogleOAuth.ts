@@ -66,7 +66,7 @@ export class GoogleOAuth {
 				.then(googleAuth => {
 					if (!googleAuth) {
 						console.log('google Auth undefiend');
-						rej('google Auth undefiend');
+						rej(new NonRetryableError('google Auth undefiend'));
 					}
 
 					const googleUser = googleAuth.currentUser.get();

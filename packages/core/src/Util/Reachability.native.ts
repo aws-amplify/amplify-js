@@ -12,9 +12,6 @@ export default class ReachabilityNavigator implements Reachability {
 		/**
 		 * Here netinfo refers to @react-native-community/netinfo
 		 * This is needed in React Native to enable network detection
-		 * We do not import it in Core so that Apps that do not use DataStore
-		 * Do not need to install and link this dependency
-		 * When using Reachability in React Native, pass NetInfo as a param to networkMonitor
 		 */
 		if (!(netInfo && netInfo.fetch)) {
 			throw new Error(
