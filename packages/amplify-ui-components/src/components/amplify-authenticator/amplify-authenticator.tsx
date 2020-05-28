@@ -17,6 +17,7 @@ const logger = new Logger('Authenticator');
 
 @Component({
   tag: 'amplify-authenticator',
+  styleUrl: 'amplify-authenticator.scss',
   shadow: true,
 })
 export class AmplifyAuthenticator {
