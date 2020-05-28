@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.11...@aws-amplify/analytics@3.1.12) (2020-05-26)
+
+
+### Bug Fixes
+
+* **core:** bump SDK verion to gamma.2 ([#5909](https://github.com/aws-amplify/amplify-js/issues/5909)) ([3bd2d25](https://github.com/aws-amplify/amplify-js/commit/3bd2d2509c2db59cffd7ac81c08ac4f9ef298198))
+
+
+
+
+
 ## [3.1.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.10...@aws-amplify/analytics@3.1.11) (2020-05-22)
 
 **Note:** Version bump only for package @aws-amplify/analytics
