@@ -191,6 +191,8 @@ export namespace Components {
          */
         "usernameAlias": UsernameAliasStrings;
     }
+    interface AmplifyContainer {
+    }
     interface AmplifyCountryDialCode {
         /**
           * The ID of the field.  Should match with its corresponding input's ID.
@@ -579,6 +581,10 @@ export namespace Components {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+         */
+        "inputProps"?: object;
+        /**
           * Label for the radio button
          */
         "label": string;
@@ -767,6 +773,10 @@ export namespace Components {
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
+          * Used for header text in totp setup component
+         */
+        "headerText": string;
+        /**
           * Used in order to configure TOTP for a user
          */
         "user": CognitoUserInterface;
@@ -870,6 +880,12 @@ declare global {
     var HTMLAmplifyConfirmSignUpElement: {
         prototype: HTMLAmplifyConfirmSignUpElement;
         new (): HTMLAmplifyConfirmSignUpElement;
+    };
+    interface HTMLAmplifyContainerElement extends Components.AmplifyContainer, HTMLStencilElement {
+    }
+    var HTMLAmplifyContainerElement: {
+        prototype: HTMLAmplifyContainerElement;
+        new (): HTMLAmplifyContainerElement;
     };
     interface HTMLAmplifyCountryDialCodeElement extends Components.AmplifyCountryDialCode, HTMLStencilElement {
     }
@@ -1097,6 +1113,7 @@ declare global {
         "amplify-code-field": HTMLAmplifyCodeFieldElement;
         "amplify-confirm-sign-in": HTMLAmplifyConfirmSignInElement;
         "amplify-confirm-sign-up": HTMLAmplifyConfirmSignUpElement;
+        "amplify-container": HTMLAmplifyContainerElement;
         "amplify-country-dial-code": HTMLAmplifyCountryDialCodeElement;
         "amplify-email-field": HTMLAmplifyEmailFieldElement;
         "amplify-facebook-button": HTMLAmplifyFacebookButtonElement;
@@ -1313,6 +1330,8 @@ declare namespace LocalJSX {
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */
         "usernameAlias"?: UsernameAliasStrings;
+    }
+    interface AmplifyContainer {
     }
     interface AmplifyCountryDialCode {
         /**
@@ -1706,6 +1725,10 @@ declare namespace LocalJSX {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+         */
+        "inputProps"?: object;
+        /**
           * Label for the radio button
          */
         "label"?: string;
@@ -1894,6 +1917,10 @@ declare namespace LocalJSX {
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
+          * Used for header text in totp setup component
+         */
+        "headerText"?: string;
+        /**
           * Used in order to configure TOTP for a user
          */
         "user"?: CognitoUserInterface;
@@ -1952,6 +1979,7 @@ declare namespace LocalJSX {
         "amplify-code-field": AmplifyCodeField;
         "amplify-confirm-sign-in": AmplifyConfirmSignIn;
         "amplify-confirm-sign-up": AmplifyConfirmSignUp;
+        "amplify-container": AmplifyContainer;
         "amplify-country-dial-code": AmplifyCountryDialCode;
         "amplify-email-field": AmplifyEmailField;
         "amplify-facebook-button": AmplifyFacebookButton;
@@ -2003,6 +2031,7 @@ declare module "@stencil/core" {
             "amplify-code-field": LocalJSX.AmplifyCodeField & JSXBase.HTMLAttributes<HTMLAmplifyCodeFieldElement>;
             "amplify-confirm-sign-in": LocalJSX.AmplifyConfirmSignIn & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignInElement>;
             "amplify-confirm-sign-up": LocalJSX.AmplifyConfirmSignUp & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignUpElement>;
+            "amplify-container": LocalJSX.AmplifyContainer & JSXBase.HTMLAttributes<HTMLAmplifyContainerElement>;
             "amplify-country-dial-code": LocalJSX.AmplifyCountryDialCode & JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement>;
             "amplify-email-field": LocalJSX.AmplifyEmailField & JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement>;
             "amplify-facebook-button": LocalJSX.AmplifyFacebookButton & JSXBase.HTMLAttributes<HTMLAmplifyFacebookButtonElement>;

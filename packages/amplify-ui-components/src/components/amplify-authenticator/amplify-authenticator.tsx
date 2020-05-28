@@ -11,11 +11,13 @@ import {
 } from '../../common/constants';
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
 import { Hub, Logger } from '@aws-amplify/core';
+import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 
 const logger = new Logger('Authenticator');
 
 @Component({
   tag: 'amplify-authenticator',
+  styleUrl: 'amplify-authenticator.scss',
   shadow: true,
 })
 export class AmplifyAuthenticator {
@@ -74,7 +76,7 @@ export class AmplifyAuthenticator {
 
     try {
       const user = await Auth.currentAuthenticatedUser();
-      this.onAuthStateChange(AuthState.SignedIn, user);
+      dispatchAuthStateChangeEvent(AuthState.SignedIn, user);
     } catch (error) {
       let cachedAuthState = null;
       try {
@@ -86,7 +88,7 @@ export class AmplifyAuthenticator {
         if (cachedAuthState === AuthState.SignedIn) {
           await Auth.signOut();
         }
-        this.onAuthStateChange(this.initialAuthState);
+        dispatchAuthStateChangeEvent(this.initialAuthState);
       } catch (error) {
         logger.debug('Failed to sign out', error);
       }
@@ -94,9 +96,10 @@ export class AmplifyAuthenticator {
   }
 
   private onAuthStateChange = (nextAuthState: AuthState, data?: CognitoUserInterface) => {
-    if (nextAuthState === undefined) return logger.info('nextAuthState cannot be undefined');
+    if (nextAuthState === undefined) return logger.error('nextAuthState cannot be undefined');
 
     logger.info('Inside onAuthStateChange Method current authState:', this.authState);
+
     if (nextAuthState === AuthState.SignedOut) {
       this.authState = this.initialAuthState;
     } else {

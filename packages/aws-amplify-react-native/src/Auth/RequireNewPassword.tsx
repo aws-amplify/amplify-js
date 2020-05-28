@@ -20,15 +20,28 @@ import {
 	LinkCell,
 	Header,
 	ErrorRow,
+	SignedOutMessage,
 	Wrapper,
 } from '../AmplifyUI';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('RequireNewPassword');
 
-export default class RequireNewPassword extends AuthPiece {
-	constructor(props) {
+interface IRequireNewPasswordProps extends IAuthPieceProps {}
+
+interface IRequireNewPasswordState extends IAuthPieceState {
+	password?: string;
+	// TODO: Add required attributes keys
+	requiredAttributes: Record<string, any>;
+}
+
+export default class RequireNewPassword extends AuthPiece<
+	IRequireNewPasswordProps,
+	IRequireNewPasswordState
+> {
+	constructor(props: IRequireNewPasswordProps) {
 		super(props);
 
 		this._validAuthStates = ['requireNewPassword'];
@@ -56,7 +69,7 @@ export default class RequireNewPassword extends AuthPiece {
 			.catch(err => this.error(err));
 	}
 
-	generateForm(attribute, theme) {
+	generateForm(attribute: string, theme: AmplifyThemeType) {
 		return (
 			<FormField
 				theme={theme}
@@ -74,12 +87,12 @@ export default class RequireNewPassword extends AuthPiece {
 		);
 	}
 
-	showComponent(theme) {
+	showComponent(theme: AmplifyThemeType) {
 		const user = this.props.authData;
 		const { requiredAttributes } = user.challengeParam;
 		return (
 			<Wrapper>
-				<ScrollView style={theme.section}>
+				<ScrollView style={theme.sectionScroll}>
 					<Header theme={theme} testID={TEST_ID.AUTH.CHANGE_PASSWORD_TEXT}>
 						{I18n.get('Change Password')}
 					</Header>
@@ -119,13 +132,14 @@ export default class RequireNewPassword extends AuthPiece {
 						</LinkCell>
 					</View>
 					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+					<SignedOutMessage {...this.props} />
 				</ScrollView>
 			</Wrapper>
 		);
 	}
 }
 
-function convertToPlaceholder(str) {
+function convertToPlaceholder(str: string) {
 	return str
 		.split('_')
 		.map(part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase())

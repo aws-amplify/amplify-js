@@ -13,7 +13,9 @@
 
 import { I18n } from 'aws-amplify';
 
-export const MapEntries = [
+type MapEntry = [string, RegExp, string?];
+
+export const MapEntries: MapEntry[] = [
 	['User does not exist', /user.*not.*exist/i],
 	['User already exists', /user.*already.*exist/i],
 	['Incorrect username or password', /incorrect.*username.*password/i],
@@ -25,7 +27,7 @@ export const MapEntries = [
 	],
 ];
 
-export default message => {
+export default (message: string) => {
 	const match = MapEntries.filter(entry => entry[1].test(message));
 	if (match.length === 0) {
 		return message;
