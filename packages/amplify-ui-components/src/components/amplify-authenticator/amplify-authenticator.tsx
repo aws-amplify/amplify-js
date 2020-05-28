@@ -1,5 +1,11 @@
 import { Component, State, Prop, h, Host } from '@stencil/core';
-import { AuthState, CognitoUserInterface, FederatedConfig, UsernameAliasStrings } from '../../common/types/auth-types';
+import {
+  AuthState,
+  CognitoUserInterface,
+  FederatedConfig,
+  UsernameAliasStrings,
+  AuthStateHandler,
+} from '../../common/types/auth-types';
 import {
   AUTH_CHANNEL,
   NO_AUTH_MODULE_FOUND,
@@ -26,6 +32,8 @@ export class AmplifyAuthenticator {
   @Prop() federated: FederatedConfig;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
   @Prop() usernameAlias: UsernameAliasStrings;
+  /** Callback for Authenticator state machine changes */
+  @Prop() handleAuthStateChange: AuthStateHandler = () => void 1;
 
   @State() authState: AuthState = AuthState.Loading;
   @State() authData: CognitoUserInterface;
@@ -36,12 +44,11 @@ export class AmplifyAuthenticator {
       switch (event) {
         case 'cognitoHostedUI':
           return this.onAuthStateChange(AuthState.SignedIn, data);
-
         case 'cognitoHostedUI_failure':
         case 'parsingUrl_failure':
         case 'signOut':
         case 'customGreetingSignOut':
-          return this.onAuthStateChange(AuthState.SignIn, null);
+          return this.onAuthStateChange(this.initialAuthState, null);
       }
     });
 
@@ -94,23 +101,35 @@ export class AmplifyAuthenticator {
     }
   }
 
-  private onAuthStateChange = (nextAuthState: AuthState, data?: CognitoUserInterface) => {
+  private async onAuthStateChange(nextAuthState: AuthState, data?: CognitoUserInterface) {
     if (nextAuthState === undefined) return logger.error('nextAuthState cannot be undefined');
 
     logger.info('Inside onAuthStateChange Method current authState:', this.authState);
 
     if (nextAuthState === AuthState.SignedOut) {
       this.authState = this.initialAuthState;
+    } else if (nextAuthState === AuthState.SignedIn) {
+      try {
+        // Verify user is authenticated
+        const user = await Auth.currentAuthenticatedUser();
+        this.authState = AuthState.SignedIn;
+        this.authData = user;
+      } catch (e) {
+        // User is not authenticated, don't change Authenticator authState
+        logger.error('User is not authenticated');
+      }
     } else {
+      if (data !== undefined) {
+        this.authData = data;
+        logger.log('Auth Data was set:', this.authData);
+      }
       this.authState = nextAuthState;
     }
-
-    if (data !== undefined) {
-      this.authData = data;
-      logger.log('Auth Data was set:', this.authData);
+    if (this.authState === nextAuthState) {
+      this.handleAuthStateChange(this.authState, this.authData);
+      logger.info(`authState has been updated to ${this.authState}`);
     }
-    logger.info(`authState has been updated to ${this.authState}`);
-  };
+  }
 
   private renderAuthComponent(authState: AuthState) {
     switch (authState) {
