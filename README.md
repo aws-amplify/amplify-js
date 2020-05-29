@@ -29,9 +29,9 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
 
 - `AWS.credentials` and `AWS.config` don’t exist anymore anywhere in Amplify JS
   - Both options will not be available to use in version 3. You will not be able to use and set your own credentials. Migration plan on “How to migrate to using Amplify provided credentials” will follow in the coming weeks after GA launch.
-- `aws-sdk@2.x` has been removed from `Amplify@3.x.x` in favor of [version 3 of aws-sdk-js](https://github.com/aws/aws-sdk-js-v3). We recommend to migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) if you rely on AWS services that are not supported by Amplify, since [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) is imported modularly.
+- `aws-sdk@2.x` has been removed from `Amplify@3.x.x` in favor of [version 3 of aws-sdk-js](https://github.com/aws/aws-sdk-js-v3), since [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) is imported modularly.
 
-If you can't migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) or rely on aws-sdk@2.x, you will need to import it separately.
+If you rely on aws-sdk@2.x, you will need to import it separately. You can use [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) too, but be aware that [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) is not production-ready for direct dependency.
 
 - If you are using exported paths within your Amplify JS application, (e.g. `import from "@aws-amplify/analytics/lib/Analytics"`) this will now break and no longer will be supported. You will need to change to named imports:
 
@@ -137,6 +137,8 @@ $ npm install aws-amplify-react-native --save
 ```
 
 Visit our [Installation Guide for React Native](https://docs.amplify.aws/start/q/integration/react) to start building your web app.
+
+Installation results in updates or creation of a [lock file](https://docs.npmjs.com/configuring-npm/package-locks.html), `yarn.lock` or `package-lock.json` for example. It's **a common best practice** to commit your lock file along with your code to avoid potential breaking changes.
 
 ## Configuration
 
