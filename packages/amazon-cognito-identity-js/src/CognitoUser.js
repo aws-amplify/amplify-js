@@ -1902,7 +1902,7 @@ export default class CognitoUser {
 			Limit: limit,
 		};
 
-		if (!paginationToken) {
+		if (paginationToken) {
 			requestParams.PaginationToken = paginationToken;
 		}
 
