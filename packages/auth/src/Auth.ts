@@ -1830,7 +1830,10 @@ export class AuthClass {
 	 * @param {String} URL - optional parameter for customers to pass in the response URL
 	 */
 	private async _handleAuthResponse(URL?: string) {
-		if (this.oAuthFlowInProgress) return;
+		if (this.oAuthFlowInProgress) {
+			logger.debug(`Skipping URL ${URL} current flow in progress`);
+			return;
+		}
 
 		try {
 			this.oAuthFlowInProgress = true;
@@ -1956,8 +1959,6 @@ export class AuthClass {
 					);
 				}
 			}
-		} catch (err) {
-			throw err;
 		} finally {
 			this.oAuthFlowInProgress = false;
 		}

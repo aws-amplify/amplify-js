@@ -18,7 +18,6 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 		return {
 			username: 'username',
 			getSession: callback => {
-				// throw 3;
 				callback(null, {
 					getAccessToken: () => {
 						return {
@@ -54,7 +53,6 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	};
 
 	CognitoUser.prototype.getSession = callback => {
-		// throw 3;
 		callback(null, 'session');
 	};
 
