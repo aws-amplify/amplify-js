@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.1.2...aws-amplify-react-native@4.2.0) (2020-05-22)
+
+
+### Features
+
+* **aws-amplify-react-native:** convert RN to TypeScript ([#5626](https://github.com/aws-amplify/amplify-js/issues/5626)) ([2514581](https://github.com/aws-amplify/amplify-js/commit/2514581061110bc5c661aed83fc1edd57c50a8df))
+
+
+
+
+
 ## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.1.1...aws-amplify-react-native@4.1.2) (2020-05-14)
 
 

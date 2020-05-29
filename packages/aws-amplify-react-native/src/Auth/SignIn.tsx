@@ -14,7 +14,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
-import AuthPiece from './AuthPiece';
+import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import {
 	AmplifyButton,
 	FormField,
@@ -24,12 +24,19 @@ import {
 	SignedOutMessage,
 	Wrapper,
 } from '../AmplifyUI';
+import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('SignIn');
 
-export default class SignIn extends AuthPiece {
-	constructor(props) {
+interface ISignInProps extends IAuthPieceProps {}
+
+interface ISignInState extends IAuthPieceState {
+	password?: string;
+}
+
+export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
+	constructor(props: ISignInProps) {
 		super(props);
 
 		this._validAuthStates = ['signIn', 'signedOut', 'signedUp'];
@@ -70,7 +77,7 @@ export default class SignIn extends AuthPiece {
 			});
 	}
 
-	showComponent(theme) {
+	showComponent(theme: AmplifyThemeType) {
 		return (
 			<Wrapper>
 				<View style={theme.section}>

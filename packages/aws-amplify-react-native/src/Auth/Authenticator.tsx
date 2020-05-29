@@ -11,9 +11,9 @@
  * and limitations under the License.
  */
 
-import React from 'react';
+import React, { FC, ReactNode } from 'react';
 import { Auth, Analytics, Logger, Hub, JS } from 'aws-amplify';
-import AmplifyTheme from '../AmplifyTheme';
+import AmplifyTheme, { AmplifyThemeType } from '../AmplifyTheme';
 import AmplifyMessageMap from '../AmplifyMessageMap';
 import { Container } from '../AmplifyUI';
 import Loading from './Loading';
@@ -25,19 +25,27 @@ import ConfirmSignUp from './ConfirmSignUp';
 import ForgotPassword from './ForgotPassword';
 import RequireNewPassword from './RequireNewPassword';
 import Greetings from './Greetings';
+import {
+	HubCapsule,
+	OnStateChangeType,
+	ISignUpConfig,
+	UsernameAttributesType,
+} from '../../types';
 
 const logger = new Logger('Authenticator');
 
-const EmptyContainer = ({ children }) => (
+const EmptyContainer: FC<{}> = ({ children }) => (
 	<React.Fragment>{children}</React.Fragment>
 );
 
 class AuthDecorator {
-	constructor(onStateChange) {
+	onStateChange: (state: string) => void;
+
+	constructor(onStateChange: OnStateChangeType) {
 		this.onStateChange = onStateChange;
 	}
 
-	signIn(username, password) {
+	signIn(username: string, password: string) {
 		const that = this;
 		return Auth.signIn(username, password).then(data => {
 			that.onStateChange('signedIn');
@@ -53,8 +61,32 @@ class AuthDecorator {
 	}
 }
 
-export default class Authenticator extends React.Component {
-	constructor(props) {
+interface IAuthenticatorProps {
+	authData?: any;
+	authState?: string;
+	container?: ReactNode;
+	errorMessage?: string;
+	hideDefault?: boolean;
+	signUpConfig?: ISignUpConfig;
+	usernameAttributes?: UsernameAttributesType;
+	onStateChange?: OnStateChangeType;
+	theme?: AmplifyThemeType;
+}
+
+interface IAuthenticatorState {
+	authData?: any;
+	authState: string;
+	error?: string;
+}
+
+export default class Authenticator extends React.Component<
+	IAuthenticatorProps,
+	IAuthenticatorState
+> {
+	_initialAuthState: string;
+	_isMounted: boolean;
+
+	constructor(props: IAuthenticatorProps) {
 		super(props);
 		this._initialAuthState = this.props.authState || 'signIn';
 		this.state = {
@@ -79,7 +111,7 @@ export default class Authenticator extends React.Component {
 		this._isMounted = false;
 	}
 
-	onHubCapsule(capsule) {
+	onHubCapsule(capsule: HubCapsule) {
 		const {
 			payload: { event, data },
 		} = capsule;
@@ -95,7 +127,7 @@ export default class Authenticator extends React.Component {
 		}
 	}
 
-	handleStateChange(state, data) {
+	handleStateChange(state: string, data?: any) {
 		if (state === undefined)
 			return logger.info('Auth state cannot be undefined');
 
@@ -122,6 +154,7 @@ export default class Authenticator extends React.Component {
 			this.props.onStateChange(state, data);
 		}
 
+		// @ts-ignore
 		if (Analytics._config && Object.entries(Analytics._config).length > 0) {
 			switch (state) {
 				case 'signedIn':
@@ -134,7 +167,7 @@ export default class Authenticator extends React.Component {
 		}
 	}
 
-	async checkContact(user) {
+	async checkContact(user: any) {
 		try {
 			const data = await Auth.verifiedContact(user);
 			logger.debug('verified user attributes', data);
@@ -172,7 +205,7 @@ export default class Authenticator extends React.Component {
 						.then(() => {
 							this.handleStateChange(this._initialAuthState, null);
 						})
-						.catch(err => this.error(err));
+						.catch(err => logger.warn('Failed to sign out', err));
 				}
 			});
 	}
@@ -184,13 +217,13 @@ export default class Authenticator extends React.Component {
 		// If container prop is undefined, default to AWS Amplify UI Container (SafeAreaView)
 		// otherwise if truthy, use the supplied render prop
 		// otherwise if falsey, use EmptyContainer
-		const ContainerWrapper =
+		const ContainerWrapper: any =
 			this.props.container === undefined
 				? Container
 				: this.props.container || EmptyContainer;
 
 		const { hideDefault, signUpConfig, usernameAttributes } = this.props;
-		const props_children = this.props.children || [];
+		const props_children: any = this.props.children || [];
 		const default_children = [
 			<Loading />,
 			<SignIn />,

@@ -13,6 +13,9 @@
 
 import { StyleSheet } from 'react-native';
 
+// TODO: Add more specific theme object with keys
+export type AmplifyThemeType = Record<string, any>;
+
 // Colors
 export const deepSquidInk = '#152939';
 export const linkUnderlayColor = '#FFF';
