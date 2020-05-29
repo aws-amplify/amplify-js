@@ -674,13 +674,7 @@ const query: {
 		pagination,
 	});
 
-	const normalQueryPromise = new Promise<T | T[]>(async resolve => {
-		const result = await storage.query(modelConstructor, predicate, pagination);
-
-		resolve(result);
-	});
-
-	const result = await Promise.race([normalQueryPromise]);
+	const result = await storage.query(modelConstructor, predicate, pagination);
 
 	return isQueryOne(idOrCriteria) ? result[0] : result;
 };
