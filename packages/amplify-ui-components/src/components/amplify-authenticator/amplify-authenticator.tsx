@@ -13,11 +13,10 @@ import {
   AUTHENTICATOR_AUTHSTATE,
   UI_AUTH_CHANNEL,
   TOAST_AUTH_ERROR_EVENT,
-  AUTH_STATE_CHANGE_EVENT,
 } from '../../common/constants';
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
 import { Hub, Logger } from '@aws-amplify/core';
-import { dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { dispatchAuthStateChangeEvent, onAuthUIStateChange } from '../../common/helpers';
 
 const logger = new Logger('Authenticator');
 
@@ -39,35 +38,33 @@ export class AmplifyAuthenticator {
   @State() authData: CognitoUserInterface;
   @State() toastMessage: string = '';
 
-  async componentWillLoad() {
-    Hub.listen(AUTH_CHANNEL, ({ payload: { event, data } }) => {
-      switch (event) {
-        case 'cognitoHostedUI':
-          return this.onAuthStateChange(AuthState.SignedIn, data);
-        case 'cognitoHostedUI_failure':
-        case 'parsingUrl_failure':
-        case 'signOut':
-        case 'customGreetingSignOut':
-          return this.onAuthStateChange(this.initialAuthState, null);
-      }
-    });
+  private handleExternalAuthEvent = ({ payload }) => {
+    switch (payload.event) {
+      case 'cognitoHostedUI':
+        return dispatchAuthStateChangeEvent(AuthState.SignedIn, payload.data);
+      case 'cognitoHostedUI_failure':
+      case 'parsingUrl_failure':
+      case 'signOut':
+      case 'customGreetingSignOut':
+        return dispatchAuthStateChangeEvent(this.initialAuthState);
+    }
+  };
 
-    Hub.listen(UI_AUTH_CHANNEL, data => {
-      const { payload } = data;
-      switch (payload.event) {
-        case TOAST_AUTH_ERROR_EVENT:
-          if (payload.message) this.toastMessage = payload.message;
-          break;
-        case AUTH_STATE_CHANGE_EVENT:
-          if (payload.message) {
-            this.onAuthStateChange(payload.message as AuthState, payload.data);
-            this.toastMessage = '';
-          }
-          break;
-        default:
-          logger.warn('Unhandled Auth Event', payload.event);
-      }
+  private handleToastEvent = ({ payload }) => {
+    switch (payload.event) {
+      case TOAST_AUTH_ERROR_EVENT:
+        if (payload.message) this.toastMessage = payload.message;
+        break;
+    }
+  };
+
+  async componentWillLoad() {
+    onAuthUIStateChange((authState, authData) => {
+      this.onAuthStateChange(authState, authData as CognitoUserInterface);
+      this.toastMessage = '';
     });
+    Hub.listen(UI_AUTH_CHANNEL, this.handleToastEvent);
+    Hub.listen(AUTH_CHANNEL, this.handleExternalAuthEvent);
 
     appendToCognitoUserAgent('amplify-authenticator');
     const byHostedUI = localStorage.getItem(REDIRECTED_FROM_HOSTED_UI);
@@ -108,23 +105,13 @@ export class AmplifyAuthenticator {
 
     if (nextAuthState === AuthState.SignedOut) {
       this.authState = this.initialAuthState;
-    } else if (nextAuthState === AuthState.SignedIn) {
-      try {
-        // Verify user is authenticated
-        const user = await Auth.currentAuthenticatedUser();
-        this.authState = AuthState.SignedIn;
-        this.authData = user;
-      } catch (e) {
-        // User is not authenticated, don't change Authenticator authState
-        logger.error('User is not authenticated');
-      }
     } else {
-      if (data !== undefined) {
-        this.authData = data;
-        logger.log('Auth Data was set:', this.authData);
-      }
       this.authState = nextAuthState;
     }
+
+    this.authData = data;
+    if (this.authData) logger.log('Auth Data was set:', this.authData);
+
     if (this.authState === nextAuthState) {
       this.handleAuthStateChange(this.authState, this.authData);
       logger.info(`authState has been updated to ${this.authState}`);
@@ -194,14 +181,10 @@ export class AmplifyAuthenticator {
     }
   }
 
-  // eslint-disable-next-line
-  componentDidUnload() {
-    Hub.remove(UI_AUTH_CHANNEL, data => {
-      const { payload } = data;
-      if (payload.event === TOAST_AUTH_ERROR_EVENT && payload.message) {
-        this.toastMessage = payload.message;
-      }
-    });
+  componentWillUnload() {
+    Hub.remove(AUTH_CHANNEL, this.handleExternalAuthEvent);
+    Hub.remove(UI_AUTH_CHANNEL, this.handleToastEvent);
+    return onAuthUIStateChange;
   }
 
   render() {
