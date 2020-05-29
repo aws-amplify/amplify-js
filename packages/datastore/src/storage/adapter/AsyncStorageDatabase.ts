@@ -38,8 +38,6 @@ class AsyncStorageDatabase {
 	}
 
 	async init(): Promise<void> {
-		const startTime = Date.now();
-
 		this._collectionInMemoryIndex.clear();
 
 		const allKeys: string[] = await AsyncStorage.getAllKeys();
