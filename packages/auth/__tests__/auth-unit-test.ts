@@ -228,7 +228,6 @@ import {
 	GoogleOAuth,
 	StorageHelper,
 	ICredentials,
-	Hub,
 } from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
 import { AuthErrorTypes } from '../src/types/Auth';
@@ -3032,6 +3031,7 @@ describe('auth unit test', () => {
 					preferredMFA: 'SMS',
 				})
 			);
+
 			spyon.mockClear();
 			spyon2.mockClear();
 			spyon3.mockClear();
