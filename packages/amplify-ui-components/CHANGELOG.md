@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.4.1...@aws-amplify/ui-components@0.5.0) (2020-05-22)
+
+
+### Features
+
+* **@aws-amplify/ui-react:** Export more types ([#5792](https://github.com/aws-amplify/amplify-js/issues/5792)) ([e8b63af](https://github.com/aws-amplify/amplify-js/commit/e8b63af76498ff88c0c2be43024487adaef6fe42))
+
+
+
+
+
 ## [0.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.4.0...@aws-amplify/ui-components@0.4.1) (2020-05-14)
 
 

@@ -34,6 +34,8 @@ export default class PushNotification {
 	private _androidInitialized: boolean;
 	private _iosInitialized: boolean;
 
+	private _notificationOpenedHandlers: Function[];
+
 	constructor(config) {
 		if (config) {
 			this.configure(config);
@@ -48,13 +50,13 @@ export default class PushNotification {
 		this._checkIfOpenedByNotification = this._checkIfOpenedByNotification.bind(
 			this
 		);
+		this.addEventListenerForIOS = this.addEventListenerForIOS.bind(this);
 		this._currentState = AppState.currentState;
 		this._androidInitialized = false;
 		this._iosInitialized = false;
 
-		if (Platform.OS === 'ios') {
-			AppState.addEventListener('change', this._checkIfOpenedByNotification);
-		}
+		this._notificationOpenedHandlers = [];
+
 		Amplify.register(this);
 	}
 
@@ -102,10 +104,10 @@ export default class PushNotification {
 
 	onNotificationOpened(handler) {
 		if (typeof handler === 'function') {
-			// check platform
-			if (Platform.OS === 'android') {
-				this.addEventListenerForAndroid(REMOTE_NOTIFICATION_OPENED, handler);
-			}
+			this._notificationOpenedHandlers = [
+				...this._notificationOpenedHandlers,
+				handler,
+			];
 		}
 	}
 
@@ -167,23 +169,32 @@ export default class PushNotification {
 			REMOTE_NOTIFICATION_RECEIVED,
 			this.handleNotificationReceived
 		);
+		this.addEventListenerForIOS(
+			REMOTE_NOTIFICATION_OPENED,
+			this.handleNotificationOpened
+		);
 	}
 
 	/**
 	 * This function handles the React Native AppState change event
 	 * And checks if the app was launched by a Push Notification
+	 * Note: Current AppState will be null or 'unknown' if the app is coming from killed state to active
 	 * @param nextAppState The next state the app is changing to as part of the event
 	 */
-	_checkIfOpenedByNotification(nextAppState) {
-		// the app is turned from background to foreground
+	_checkIfOpenedByNotification(nextAppState, handler) {
+		// the App state changes from killed state to active
 		if (
-			this._currentState.match(/inactive|background/) &&
+			(!this._currentState || this._currentState === 'unknown') &&
 			nextAppState === 'active'
 		) {
+			// If the app was launched with a notification (launched means from killed state)
+			// getInitialNotification() returns the notification object data every time its called
+			// Thus calling it when moving from background to foreground subsequently will lead to extra
+			// events being logged with the payload of the initial notification that launched the app
 			PushNotificationIOS.getInitialNotification()
 				.then(data => {
 					if (data) {
-						this.handleNotificationOpened(data);
+						handler(data);
 					}
 				})
 				.catch(e => {
@@ -272,6 +283,10 @@ export default class PushNotification {
 	}
 
 	handleNotificationOpened(rawMessage) {
+		this._notificationOpenedHandlers.forEach(handler => {
+			handler(rawMessage);
+		});
+
 		logger.debug('handleNotificationOpened, raw data', rawMessage);
 		const { eventSource, eventSourceAttributes } = this.parseMessageData(
 			rawMessage
@@ -370,6 +385,12 @@ export default class PushNotification {
 		}
 		if (event === REMOTE_NOTIFICATION_RECEIVED) {
 			PushNotificationIOS.addEventListener('notification', handler);
+		}
+		if (event === REMOTE_NOTIFICATION_OPENED) {
+			PushNotificationIOS.addEventListener('localNotification', handler);
+			AppState.addEventListener('change', nextAppState =>
+				this._checkIfOpenedByNotification(nextAppState, handler)
+			);
 		}
 	}
 
