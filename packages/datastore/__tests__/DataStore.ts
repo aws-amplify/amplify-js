@@ -244,14 +244,12 @@ describe('DataStore tests', () => {
 		let Metadata: NonModelTypeConstructor<Metadata>;
 
 		beforeEach(() => {
-			let model: Model;
-
 			jest.resetModules();
 			jest.doMock('../src/storage/storage', () => {
 				const mock = jest.fn().mockImplementation(() => ({
 					init: jest.fn(),
-					runExclusive: jest.fn(() => [model]),
-					query: jest.fn(() => [model]),
+					runExclusive: jest.fn(() => []),
+					query: jest.fn(() => []),
 					observe: jest.fn(() => Observable.from([])),
 				}));
 
