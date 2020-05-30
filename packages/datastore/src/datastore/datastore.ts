@@ -812,12 +812,14 @@ async function checkSchemaVersion(
 let syncSubscription: ZenObservable.Subscription;
 
 let initResolve: Function;
+let initReject: Function;
 let initialized: Promise<void>;
 async function start(): Promise<void> {
 	if (initialized === undefined) {
 		logger.debug('Starting DataStore');
-		initialized = new Promise(res => {
+		initialized = new Promise((res, rej) => {
 			initResolve = res;
+			initReject = rej;
 		});
 	} else {
 		await initialized;
@@ -870,6 +872,7 @@ async function start(): Promise<void> {
 				},
 				error: err => {
 					logger.warn('Sync error', err);
+					initReject();
 				},
 			});
 	} else {
