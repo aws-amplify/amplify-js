@@ -258,4 +258,40 @@ describe('Hub', () => {
 
 		expect(listener).not.toHaveBeenCalled();
 	});
+
+	test('Remove listener with unsubscribe function', () => {
+		const listener = jest.fn(() => {});
+
+		const unsubscribe = Hub.listen('auth', listener);
+
+		Hub.dispatch(
+			'auth',
+			{
+				event: 'signOut',
+				data: 'the user has been signed out',
+				message: 'User singout has taken place',
+			},
+			'Auth',
+			Symbol.for('amplify_default')
+		);
+
+		expect(listener).toHaveBeenCalled();
+
+		listener.mockReset();
+
+		unsubscribe();
+
+		Hub.dispatch(
+			'auth',
+			{
+				event: 'signOut2',
+				data: 'the user has been signed out',
+				message: 'User singout has taken place',
+			},
+			'Auth',
+			Symbol.for('amplify_default')
+		);
+
+		expect(listener).not.toHaveBeenCalled();
+	});
 });
