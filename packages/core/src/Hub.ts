@@ -160,7 +160,9 @@ export class HubClass {
 			});
 		}
 
-		return cb;
+		return () => {
+			this.remove(channel, cb);
+		};
 	}
 
 	private _toListeners(capsule: HubCapsule) {
