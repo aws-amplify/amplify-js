@@ -83,7 +83,7 @@ describe('DataStore tests', () => {
 				LocalModel: PersistentModelConstructor<Model>;
 			};
 
-			const t = Date.now();
+			const now = Date.now();
 			const model = new LocalModel({
 				field1: 'something',
 			});
@@ -94,7 +94,7 @@ describe('DataStore tests', () => {
 
 			const decodedTime = decodeTime(model.id);
 
-			const diff = Math.abs(decodedTime - t);
+			const diff = Math.abs(decodedTime - now);
 
 			expect(diff).toBeLessThan(1000);
 		});
