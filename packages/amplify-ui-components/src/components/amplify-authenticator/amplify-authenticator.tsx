@@ -32,7 +32,7 @@ export class AmplifyAuthenticator {
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
   @Prop() usernameAlias: UsernameAliasStrings;
   /** Callback for Authenticator state machine changes */
-  @Prop() handleAuthStateChange: AuthStateHandler = () => void 1;
+  @Prop() handleAuthStateChange: AuthStateHandler = () => {};
 
   @State() authState: AuthState = AuthState.Loading;
   @State() authData: CognitoUserInterface;
