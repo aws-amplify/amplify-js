@@ -1,0 +1,42 @@
+[
+	[
+		"@AmplifyDatastore::datastore_Setting::Collection",
+		"[\"@AmplifyDatastore::datastore_Setting::Data::11ea-9555-bb149af0-bd99-91dc40efda36\"]"
+	],
+	[
+		"@AmplifyDatastore::datastore_Setting::Data::11ea-9555-bb149af0-bd99-91dc40efda36",
+		"{\"key\":\"schemaVersion\",\"value\":\"\\\"a66372d29356c40e7cd29e41527cead7\\\"\",\"id\":\"11ea-9555-bb149af0-bd99-91dc40efda36\"}"
+	],
+	[
+		"@AmplifyDatastore::user_BlogOwner::Collection",
+		"[\"@AmplifyDatastore::user_BlogOwner::Data::526a24a6-3ee5-43b5-80e0-19742733c109\",\"@AmplifyDatastore::user_BlogOwner::Data::74491d7a-6f4d-4e30-ba5b-492d631fdc37\",\"@AmplifyDatastore::user_BlogOwner::Data::55fd1422-d32e-4c84-8771-110a9829706e\"]"
+	],
+	[
+		"@AmplifyDatastore::user_BlogOwner::Data::526a24a6-3ee5-43b5-80e0-19742733c109",
+		"{\"name\":\"Owner 1\",\"id\":\"526a24a6-3ee5-43b5-80e0-19742733c109\"}"
+	],
+	[
+		"@AmplifyDatastore::user_Blog::Collection",
+		"[\"@AmplifyDatastore::user_Blog::Data::9b70f2ad-2963-45df-b357-97804eac37f4\",\"@AmplifyDatastore::user_Blog::Data::78e63f8e-df04-46ed-b99b-44e3ee8f58e5\",\"@AmplifyDatastore::user_Blog::Data::43e80c63-c1b3-4303-83ab-ba32e55370ae\"]"
+	],
+	[
+		"@AmplifyDatastore::user_Blog::Data::9b70f2ad-2963-45df-b357-97804eac37f4",
+		"{\"name\":\"Avatar: Last Airbender\",\"id\":\"9b70f2ad-2963-45df-b357-97804eac37f4\",\"blogOwnerId\":\"526a24a6-3ee5-43b5-80e0-19742733c109\"}"
+	],
+	[
+		"@AmplifyDatastore::user_BlogOwner::Data::74491d7a-6f4d-4e30-ba5b-492d631fdc37",
+		"{\"name\":\"Owner 2\",\"id\":\"74491d7a-6f4d-4e30-ba5b-492d631fdc37\"}"
+	],
+	[
+		"@AmplifyDatastore::user_Blog::Data::78e63f8e-df04-46ed-b99b-44e3ee8f58e5",
+		"{\"name\":\"blog2\",\"id\":\"78e63f8e-df04-46ed-b99b-44e3ee8f58e5\",\"blogOwnerId\":\"74491d7a-6f4d-4e30-ba5b-492d631fdc37\"}"
+	],
+	[
+		"@AmplifyDatastore::user_BlogOwner::Data::55fd1422-d32e-4c84-8771-110a9829706e",
+		"{\"name\":\"owner 3\",\"id\":\"55fd1422-d32e-4c84-8771-110a9829706e\"}"
+	],
+	[
+		"@AmplifyDatastore::user_Blog::Data::43e80c63-c1b3-4303-83ab-ba32e55370ae",
+		"{\"name\":\"Avatar 101\",\"id\":\"43e80c63-c1b3-4303-83ab-ba32e55370ae\",\"blogOwnerId\":\"55fd1422-d32e-4c84-8771-110a9829706e\"}"
+	]
+]

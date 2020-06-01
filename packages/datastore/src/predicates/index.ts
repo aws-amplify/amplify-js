@@ -12,7 +12,9 @@ import { exhaustiveCheck } from '../util';
 
 const predicatesAllSet = new WeakSet<ProducerModelPredicate<any>>();
 
-export function isPredicatesAll(predicate: any) {
+export function isPredicatesAll(
+	predicate: any
+): predicate is typeof PredicateAll {
 	return predicatesAllSet.has(predicate);
 }
 

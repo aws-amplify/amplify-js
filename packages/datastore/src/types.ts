@@ -362,6 +362,11 @@ export type NamespaceResolver = (
 	modelConstructor: PersistentModelConstructor<any>
 ) => string;
 
+export type ControlMessageType<T> = {
+	type: T;
+	data?: any;
+};
+
 //#endregion
 
 //#region Relationship types
