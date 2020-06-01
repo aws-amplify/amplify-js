@@ -28,12 +28,10 @@ export const DateUtils = {
 		return DateUtils.clockOffset;
 	},
 
-	// TODO Write test using Date.getDateWithClockOffset()
 	getHeaderStringFromDate(date: Date = DateUtils.getDateWithClockOffset()) {
 		return date.toISOString().replace(/[:\-]|\.\d{3}/g, '');
 	},
 
-	// TODO Using getHeaderStringFromDate, write test expecting the same data (minus milliseconds)
 	getDateFromHeaderString(header: string) {
 		const [, year, month, day, hour, minute, second] = header.match(
 			/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2}).+/
