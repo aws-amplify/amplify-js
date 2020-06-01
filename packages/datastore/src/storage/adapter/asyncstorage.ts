@@ -6,15 +6,16 @@ import { ModelPredicateCreator } from '../../predicates';
 import {
 	InternalSchema,
 	isPredicateObj,
+	ModelInstanceMetadata,
 	ModelPredicate,
 	NamespaceResolver,
 	OpType,
+	PaginationInput,
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicateObject,
 	QueryOne,
 	RelationType,
-	PaginationInput,
 } from '../../types';
 import {
 	exhaustiveCheck,
@@ -35,7 +36,7 @@ class AsyncStorageAdapter implements Adapter {
 		namsespaceName: string,
 		modelName: string
 	) => PersistentModelConstructor<any>;
-	private db: any;
+	private db: AsyncStorageDatabase;
 	private initPromise: Promise<void>;
 	private resolve: (value?: any) => void;
 	private reject: (value?: any) => void;
@@ -71,6 +72,7 @@ class AsyncStorageAdapter implements Adapter {
 			});
 		} else {
 			await this.initPromise;
+			return;
 		}
 		this.schema = theSchema;
 		this.namespaceResolver = namespaceResolver;
@@ -79,6 +81,7 @@ class AsyncStorageAdapter implements Adapter {
 		try {
 			if (!this.db) {
 				this.db = new AsyncStorageDatabase();
+				await this.db.init();
 				this.resolve();
 			}
 		} catch (error) {
@@ -111,7 +114,7 @@ class AsyncStorageAdapter implements Adapter {
 		);
 		const fromDB = await this.db.get(model.id, storeName);
 
-		if (condition) {
+		if (condition && fromDB) {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
 			const { predicates: predicateObjs, type } = predicates;
 
@@ -272,13 +275,10 @@ class AsyncStorageAdapter implements Adapter {
 				);
 			}
 		}
-		const all = <T[]>await this.db.getAll(storeName);
 
-		return await this.load(
-			namespaceName,
-			modelConstructor.name,
-			this.inMemoryPagination(all, pagination)
-		);
+		const all = <T[]>await this.db.getAll(storeName, pagination);
+
+		return await this.load(namespaceName, modelConstructor.name, all);
 	}
 
 	private inMemoryPagination<T>(
@@ -367,6 +367,14 @@ class AsyncStorageAdapter implements Adapter {
 			const storeName = this.getStorenameForModel(modelConstructor);
 			if (condition) {
 				const fromDB = await this.db.get(model.id, storeName);
+
+				if (fromDB === undefined) {
+					const msg = 'Model instance not found in storage';
+					logger.warn(msg, { model });
+
+					return [[model], []];
+				}
+
 				const predicates = ModelPredicateCreator.getPredicates(condition);
 				const { predicates: predicateObjs, type } = predicates;
 
@@ -522,6 +530,17 @@ class AsyncStorageAdapter implements Adapter {
 
 		this.db = undefined;
 		this.initPromise = undefined;
+	}
+
+	async batchSave<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<any>,
+		items: ModelInstanceMetadata[]
+	): Promise<[T, OpType][]> {
+		const { name: modelName } = modelConstructor;
+		const namespaceName = this.namespaceResolver(modelConstructor);
+		const storeName = this.getStorename(namespaceName, modelName);
+
+		return await this.db.batchSave(storeName, items);
 	}
 }
 
