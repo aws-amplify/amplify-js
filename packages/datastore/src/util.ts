@@ -1,3 +1,7 @@
+import { Buffer } from 'buffer';
+import CryptoJS from 'crypto-js/core';
+import { monotonicFactory, ULID } from 'ulid';
+import { v4 as uuid } from 'uuid';
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
 	AllOperators,
@@ -13,8 +17,6 @@ import {
 	RelationType,
 	SchemaNamespace,
 } from './types';
-
-import { v4 as uuid } from 'uuid';
 
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
@@ -364,3 +366,35 @@ export const isPrivateMode = () => {
 		db.onsuccess = isNotPrivate;
 	});
 };
+
+const randomBytes = function(nBytes: number): Buffer {
+	return Buffer.from(CryptoJS.lib.WordArray.random(nBytes).toString(), 'hex');
+};
+const prng = () => randomBytes(1).readUInt8(0) / 0xff;
+export function monotonicUlidFactory(seed?: number): ULID {
+	const ulid = monotonicFactory(prng);
+
+	return () => {
+		return ulid(seed);
+	};
+}
+
+/**
+ * Uses performance.now() if available, otherwise, uses Date.now() (e.g. react native without a polyfill)
+ *
+ * The values returned by performance.now() always increase at a constant rate,
+ * independent of the system clock (which might be adjusted manually or skewed
+ * by software like NTP).
+ *
+ * Otherwise, performance.timing.navigationStart + performance.now() will be
+ * approximately equal to Date.now()
+ *
+ * See: https://developer.mozilla.org/en-US/docs/Web/API/Performance/now#Example
+ */
+export function getNow() {
+	if (performance && typeof performance.now === 'function') {
+		return performance.now() | 0; // convert to integer
+	} else {
+		return Date.now();
+	}
+}
