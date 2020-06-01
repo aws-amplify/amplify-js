@@ -3,35 +3,7 @@ import { RestAPIClass as API } from '../src/';
 import { RestClient } from '../src/RestClient';
 import { Signer, Credentials, DateUtils } from '@aws-amplify/core';
 
-jest.mock('axios', () => {
-	return {
-		default: signed_params => {
-			return new Promise((res, rej) => {
-				const withCredentialsSuffix =
-					signed_params && signed_params.withCredentials
-						? '-withCredentials'
-						: '';
-				if (
-					signed_params &&
-					signed_params.headers &&
-					signed_params.headers.reject
-				) {
-					rej({
-						data: 'error' + withCredentialsSuffix,
-					});
-				} else if (signed_params && signed_params.responseType === 'blob') {
-					res({
-						data: 'blob' + withCredentialsSuffix,
-					});
-				} else {
-					res({
-						data: 'data' + withCredentialsSuffix,
-					});
-				}
-			});
-		},
-	};
-});
+jest.mock('axios');
 
 axios.CancelToken = <CancelTokenStatic>{
 	source: () => ({ token: null, cancel: null }),
@@ -586,7 +558,9 @@ describe('Rest API test', () => {
 				.spyOn(RestClient.prototype as any, '_signed')
 				.mockRejectedValueOnce(clockSkewError);
 
-			await expect(api.post('url', 'path', init)).resolves.toBe('data');
+			await expect(api.post('url', 'path', init)).resolves.toEqual([
+				{ name: 'Bob' },
+			]);
 
 			// With a clock skew error, the clock will get offset with the difference
 			expect(DateUtils.getClockOffset()).toBe(
