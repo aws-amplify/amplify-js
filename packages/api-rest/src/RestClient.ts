@@ -172,15 +172,18 @@ export class RestClient {
 			credentials => {
 				return this._signed({ ...params }, credentials, isAllResponse).catch(
 					error => {
-						if (
-							error.response.headers['x-amzn-errortype'] ===
-								'BadRequestException' &&
-							DateUtils.getClockOffset() === 0
-						) {
-							const responseDate = new Date(error.response.headers.date);
-							const requestDate = DateUtils.getDateFromHeaderString(
-								params.headers['x-amz-date']
-							);
+						if (!DateUtils.isClockSkewError(error)) {
+							throw error;
+						}
+
+						const { headers } = error.response;
+						const dateHeader = headers && (headers.date || headers.Date);
+						const responseDate = new Date(dateHeader);
+						const requestDate = DateUtils.getDateFromHeaderString(
+							params.headers['x-amz-date']
+						);
+
+						if (DateUtils.isClockSkewed(requestDate, responseDate)) {
 							const offset = responseDate.getTime() - requestDate.getTime();
 
 							DateUtils.setClockOffset(offset);

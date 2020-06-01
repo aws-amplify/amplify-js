@@ -5,6 +5,8 @@
  * @see https://github.com/aws/aws-sdk-js/blob/6edf586dcc1de7fe8fbfbbd9a0d2b1847921e6e1/lib/util.js#L262
  */
 
+const FIVE_MINUTES_IN_MS = 1000 * 60 * 5;
+
 export const DateUtils = {
 	/**
 	 * Milliseconds to offset the date to compensate for clock skew between device & services
@@ -46,6 +48,27 @@ export const DateUtils = {
 				Number(minute),
 				Number(second)
 			)
+		);
+	},
+
+	isClockSkewed(serverDate: Date) {
+		return (
+			Math.abs(
+				serverDate.getTime() - DateUtils.getDateWithClockOffset().getTime()
+			) >= FIVE_MINUTES_IN_MS
+		);
+	},
+
+	isClockSkewError(error: any) {
+		if (!error.response || !error.response.headers) {
+			return false;
+		}
+
+		const { headers } = error.response;
+
+		return Boolean(
+			headers['x-amzn-errortype'] === 'BadRequestException' &&
+				(headers.date || headers.Date)
 		);
 	},
 
