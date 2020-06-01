@@ -46,6 +46,8 @@ if (browserOrNode().isBrowser) {
       --amplify-tertiary-tint: #7da1ff;
       --amplify-tertiary-shade: #537BE5;
 
+      --amplify-background-color: var(--amplify-white);
+
       /* Neutral */
       --amplify-grey: #828282;
       --amplify-light-grey: #c4c4c4;

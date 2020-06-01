@@ -29,7 +29,6 @@ import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
-import { httpHandlerOptions } from './httpHandlerOptions';
 import * as events from 'events';
 
 const logger = new Logger('AWSS3Provider');
@@ -162,7 +161,9 @@ export class AWSS3Provider implements StorageProvider {
 					track,
 					'download',
 					{ method: 'get', result: 'success' },
-					{ fileSize: Number(response.Body['length']) },
+					{
+						fileSize: Number(response.Body['size'] || response.Body['length']),
+					},
 					`Download success for ${key}`
 				);
 				return response;
@@ -508,8 +509,9 @@ export class AWSS3Provider implements StorageProvider {
 		if (dangerouslyConnectToHttpEndpointForTesting) {
 			localTestingConfig = {
 				endpoint: localTestingStorageEndpoint,
-				s3BucketEndpoint: true,
-				s3ForcePathStyle: true,
+				tls: false,
+				bucketEndpoint: false,
+				forcePathStyle: true,
 			};
 		}
 
@@ -518,7 +520,7 @@ export class AWSS3Provider implements StorageProvider {
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler(httpHandlerOptions, emitter),
+			requestHandler: new AxiosHttpHandler({}, emitter),
 		});
 		return s3client;
 	}
