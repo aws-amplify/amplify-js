@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-s3-image spec: Render logic -> should render no img element without 'imgKey' or 'path' 1`] = `<amplify-s3-image></amplify-s3-image>`;
