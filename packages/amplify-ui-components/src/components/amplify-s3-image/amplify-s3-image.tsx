@@ -1,4 +1,4 @@
-import { Component, Element, Prop, h, State, Host, Watch } from '@stencil/core';
+import { Component, Prop, h, State, Host, Watch } from '@stencil/core';
 import { NO_STORAGE_MODULE_FOUND } from '../../common/constants';
 import { AccessLevel } from '../../common/types/storage-types';
 import { Storage } from '@aws-amplify/storage';

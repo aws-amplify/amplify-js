@@ -11,6 +11,7 @@ import { ButtonTypes, ButtonVariant, InputEvent, TextFieldTypes, } from "./commo
 import { FunctionalComponent, } from "@stencil/core";
 import { CountryCodeDialOptions, } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { IconNameType, } from "./components/amplify-icon/icons";
+import { AccessLevel, } from "./common/types/storage-types";
 import { SelectOptionsNumber, SelectOptionsString, } from "./components/amplify-select/amplify-select-interface";
 export namespace Components {
     interface AmplifyAmazonButton {
@@ -627,6 +628,30 @@ export namespace Components {
          */
         "user": CognitoUserInterface;
     }
+    interface AmplifyS3Image {
+        "body": object;
+        "contentType": string;
+        "fileToKey": (data: object) => string;
+        "handleOnError": (event: Event) => void;
+        "handleOnLoad": (event: Event) => void;
+        "identityId": string;
+        "imgKey": string;
+        "level": AccessLevel;
+        "path": string;
+        "track": boolean;
+    }
+    interface AmplifyS3ImagePicker {
+        "buttonText"?: string;
+        "contentType": string;
+        "fileToKey": (data: object) => string;
+        "headerHint"?: string;
+        "headerTitle"?: string;
+        "identityId": string;
+        "level": AccessLevel;
+        "path": string;
+        "placeholderHint"?: string;
+        "track": boolean;
+    }
     interface AmplifySection {
         /**
           * Equivalent to html section role
@@ -1025,6 +1050,18 @@ declare global {
         prototype: HTMLAmplifyRequireNewPasswordElement;
         new (): HTMLAmplifyRequireNewPasswordElement;
     };
+    interface HTMLAmplifyS3ImageElement extends Components.AmplifyS3Image, HTMLStencilElement {
+    }
+    var HTMLAmplifyS3ImageElement: {
+        prototype: HTMLAmplifyS3ImageElement;
+        new (): HTMLAmplifyS3ImageElement;
+    };
+    interface HTMLAmplifyS3ImagePickerElement extends Components.AmplifyS3ImagePicker, HTMLStencilElement {
+    }
+    var HTMLAmplifyS3ImagePickerElement: {
+        prototype: HTMLAmplifyS3ImagePickerElement;
+        new (): HTMLAmplifyS3ImagePickerElement;
+    };
     interface HTMLAmplifySectionElement extends Components.AmplifySection, HTMLStencilElement {
     }
     var HTMLAmplifySectionElement: {
@@ -1137,6 +1174,8 @@ declare global {
         "amplify-phone-field": HTMLAmplifyPhoneFieldElement;
         "amplify-radio-button": HTMLAmplifyRadioButtonElement;
         "amplify-require-new-password": HTMLAmplifyRequireNewPasswordElement;
+        "amplify-s3-image": HTMLAmplifyS3ImageElement;
+        "amplify-s3-image-picker": HTMLAmplifyS3ImagePickerElement;
         "amplify-section": HTMLAmplifySectionElement;
         "amplify-select": HTMLAmplifySelectElement;
         "amplify-select-mfa-type": HTMLAmplifySelectMfaTypeElement;
@@ -1771,6 +1810,30 @@ declare namespace LocalJSX {
          */
         "user"?: CognitoUserInterface;
     }
+    interface AmplifyS3Image {
+        "body"?: object;
+        "contentType"?: string;
+        "fileToKey"?: (data: object) => string;
+        "handleOnError"?: (event: Event) => void;
+        "handleOnLoad"?: (event: Event) => void;
+        "identityId"?: string;
+        "imgKey"?: string;
+        "level"?: AccessLevel;
+        "path"?: string;
+        "track"?: boolean;
+    }
+    interface AmplifyS3ImagePicker {
+        "buttonText"?: string;
+        "contentType"?: string;
+        "fileToKey"?: (data: object) => string;
+        "headerHint"?: string;
+        "headerTitle"?: string;
+        "identityId"?: string;
+        "level"?: AccessLevel;
+        "path"?: string;
+        "placeholderHint"?: string;
+        "track"?: boolean;
+    }
     interface AmplifySection {
         /**
           * Equivalent to html section role
@@ -2003,6 +2066,8 @@ declare namespace LocalJSX {
         "amplify-phone-field": AmplifyPhoneField;
         "amplify-radio-button": AmplifyRadioButton;
         "amplify-require-new-password": AmplifyRequireNewPassword;
+        "amplify-s3-image": AmplifyS3Image;
+        "amplify-s3-image-picker": AmplifyS3ImagePicker;
         "amplify-section": AmplifySection;
         "amplify-select": AmplifySelect;
         "amplify-select-mfa-type": AmplifySelectMfaType;
@@ -2055,6 +2120,8 @@ declare module "@stencil/core" {
             "amplify-phone-field": LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
             "amplify-radio-button": LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
             "amplify-require-new-password": LocalJSX.AmplifyRequireNewPassword & JSXBase.HTMLAttributes<HTMLAmplifyRequireNewPasswordElement>;
+            "amplify-s3-image": LocalJSX.AmplifyS3Image & JSXBase.HTMLAttributes<HTMLAmplifyS3ImageElement>;
+            "amplify-s3-image-picker": LocalJSX.AmplifyS3ImagePicker & JSXBase.HTMLAttributes<HTMLAmplifyS3ImagePickerElement>;
             "amplify-section": LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
             "amplify-select": LocalJSX.AmplifySelect & JSXBase.HTMLAttributes<HTMLAmplifySelectElement>;
             "amplify-select-mfa-type": LocalJSX.AmplifySelectMfaType & JSXBase.HTMLAttributes<HTMLAmplifySelectMfaTypeElement>;
