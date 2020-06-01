@@ -38,7 +38,6 @@ export class AmplifyS3Text {
   }
 
   async load() {
-    debugger;
     const { path, textKey, body, contentType, level, track, identityId } = this;
     if (!textKey && !path) {
       logger.debug('empty textKey and path');
