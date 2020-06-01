@@ -304,6 +304,17 @@ jobs:
           framework: react
           spec: predictions/multiuser-translation.spec.js
 
+  integ_react_datastore:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/many-to-many
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore'
+          framework: react
+          spec: datastore/many-to-many.spec.js
+
   integ_setup_ui:
     executor: build-executor
     working_directory: ~/
@@ -490,6 +501,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_react_datastore:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_rn_ios_storage:
           requires:
             - integ_setup
@@ -520,6 +537,7 @@ workflows:
           requires:
             - unit_test
             - integ_react_predictions
+            - integ_react_datastore
             - integ_react_auth
             - integ_angular_auth
             - integ_vue_auth
