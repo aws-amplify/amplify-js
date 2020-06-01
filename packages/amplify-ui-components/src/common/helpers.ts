@@ -4,10 +4,12 @@ import {
   TOAST_AUTH_ERROR_EVENT,
   AUTH_STATE_CHANGE_EVENT,
   PHONE_EMPTY_ERROR_MESSAGE,
+  NO_STORAGE_MODULE_FOUND,
 } from './constants';
 import { AuthState, AuthStateHandler, UsernameAlias } from '../common/types/auth-types';
 import { PhoneNumberInterface } from '../components/amplify-auth-fields/amplify-auth-fields-interface';
 import { Translations } from './Translations';
+import { Storage } from '@aws-amplify/storage';
 
 export interface ToastError {
   code: string;
@@ -139,4 +141,38 @@ export const requiredAttributesMap = {
     label: I18n.get(Translations.NAME_LABEL),
     placeholder: I18n.get(Translations.NAME_PLACEHOLDER),
   },
+};
+
+export const calcKey = (file, fileToKey) => {
+  const { name, size, type } = file;
+  let key = encodeURI(name);
+  if (fileToKey) {
+    const callback_type = typeof fileToKey;
+    if (callback_type === 'string') {
+      key = fileToKey;
+    } else if (callback_type === 'function') {
+      key = fileToKey({ name, size, type });
+    } else {
+      key = encodeURI(JSON.stringify(fileToKey));
+    }
+    if (!key) {
+      key = 'empty_key';
+    }
+  }
+
+  return key.replace(/\s/g, '_');
+};
+
+export const getStorageObject = async (key, level, track, identityId, logger) => {
+  if (!Storage || typeof Storage.get !== 'function') {
+    throw new Error(NO_STORAGE_MODULE_FOUND);
+  }
+
+  try {
+    const src = await Storage.get(key, { level, track, identityId });
+    return src;
+  } catch (error) {
+    logger.error(error);
+    throw new Error(error);
+  }
 };
