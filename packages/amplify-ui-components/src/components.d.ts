@@ -667,6 +667,23 @@ export namespace Components {
         "placeholderHint"?: string;
         "track": boolean;
     }
+    interface AmplifyS3Text {
+        "body": object;
+        "contentType": string;
+        "identityId": string;
+        "level": AccessLevel;
+        "path": string;
+        "textKey": string;
+        "track": boolean;
+    }
+    interface AmplifyS3TextPicker {
+        "contentType": string;
+        "fileToKey": (data: object) => string;
+        "identityId": string;
+        "level": AccessLevel;
+        "path": string;
+        "track": boolean;
+    }
     interface AmplifySection {
         /**
           * Equivalent to html section role
@@ -1095,6 +1112,18 @@ declare global {
         prototype: HTMLAmplifyS3ImagePickerElement;
         new (): HTMLAmplifyS3ImagePickerElement;
     };
+    interface HTMLAmplifyS3TextElement extends Components.AmplifyS3Text, HTMLStencilElement {
+    }
+    var HTMLAmplifyS3TextElement: {
+        prototype: HTMLAmplifyS3TextElement;
+        new (): HTMLAmplifyS3TextElement;
+    };
+    interface HTMLAmplifyS3TextPickerElement extends Components.AmplifyS3TextPicker, HTMLStencilElement {
+    }
+    var HTMLAmplifyS3TextPickerElement: {
+        prototype: HTMLAmplifyS3TextPickerElement;
+        new (): HTMLAmplifyS3TextPickerElement;
+    };
     interface HTMLAmplifySectionElement extends Components.AmplifySection, HTMLStencilElement {
     }
     var HTMLAmplifySectionElement: {
@@ -1212,6 +1241,8 @@ declare global {
         "amplify-require-new-password": HTMLAmplifyRequireNewPasswordElement;
         "amplify-s3-image": HTMLAmplifyS3ImageElement;
         "amplify-s3-image-picker": HTMLAmplifyS3ImagePickerElement;
+        "amplify-s3-text": HTMLAmplifyS3TextElement;
+        "amplify-s3-text-picker": HTMLAmplifyS3TextPickerElement;
         "amplify-section": HTMLAmplifySectionElement;
         "amplify-select": HTMLAmplifySelectElement;
         "amplify-select-mfa-type": HTMLAmplifySelectMfaTypeElement;
@@ -1885,6 +1916,23 @@ declare namespace LocalJSX {
         "placeholderHint"?: string;
         "track"?: boolean;
     }
+    interface AmplifyS3Text {
+        "body"?: object;
+        "contentType"?: string;
+        "identityId"?: string;
+        "level"?: AccessLevel;
+        "path"?: string;
+        "textKey"?: string;
+        "track"?: boolean;
+    }
+    interface AmplifyS3TextPicker {
+        "contentType"?: string;
+        "fileToKey"?: (data: object) => string;
+        "identityId"?: string;
+        "level"?: AccessLevel;
+        "path"?: string;
+        "track"?: boolean;
+    }
     interface AmplifySection {
         /**
           * Equivalent to html section role
@@ -2122,6 +2170,8 @@ declare namespace LocalJSX {
         "amplify-require-new-password": AmplifyRequireNewPassword;
         "amplify-s3-image": AmplifyS3Image;
         "amplify-s3-image-picker": AmplifyS3ImagePicker;
+        "amplify-s3-text": AmplifyS3Text;
+        "amplify-s3-text-picker": AmplifyS3TextPicker;
         "amplify-section": AmplifySection;
         "amplify-select": AmplifySelect;
         "amplify-select-mfa-type": AmplifySelectMfaType;
@@ -2179,6 +2229,8 @@ declare module "@stencil/core" {
             "amplify-require-new-password": LocalJSX.AmplifyRequireNewPassword & JSXBase.HTMLAttributes<HTMLAmplifyRequireNewPasswordElement>;
             "amplify-s3-image": LocalJSX.AmplifyS3Image & JSXBase.HTMLAttributes<HTMLAmplifyS3ImageElement>;
             "amplify-s3-image-picker": LocalJSX.AmplifyS3ImagePicker & JSXBase.HTMLAttributes<HTMLAmplifyS3ImagePickerElement>;
+            "amplify-s3-text": LocalJSX.AmplifyS3Text & JSXBase.HTMLAttributes<HTMLAmplifyS3TextElement>;
+            "amplify-s3-text-picker": LocalJSX.AmplifyS3TextPicker & JSXBase.HTMLAttributes<HTMLAmplifyS3TextPickerElement>;
             "amplify-section": LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
             "amplify-select": LocalJSX.AmplifySelect & JSXBase.HTMLAttributes<HTMLAmplifySelectElement>;
             "amplify-select-mfa-type": LocalJSX.AmplifySelectMfaType & JSXBase.HTMLAttributes<HTMLAmplifySelectMfaTypeElement>;

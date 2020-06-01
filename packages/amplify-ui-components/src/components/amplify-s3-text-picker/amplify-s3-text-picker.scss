@@ -1,0 +1,20 @@
+.text-container {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+pre {
+  display: block;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  font-size: var(--amplify-text-md);
+  line-height: 1rem;
+  color: #333;
+  word-break: break-all;
+  word-wrap: break-word;
+  max-height: 700px;
+  overflow-y: scroll;
+  overflow-x: auto;
+}
