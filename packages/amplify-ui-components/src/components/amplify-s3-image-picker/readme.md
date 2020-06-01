@@ -21,6 +21,24 @@
 | `track`           | `track`            |             | `boolean`                                                            | `undefined`                                               |
 
 
+## Dependencies
+
+### Depends on
+
+- [amplify-photo-picker](../amplify-photo-picker)
+
+### Graph
+```mermaid
+graph TD;
+  amplify-s3-image-picker --> amplify-photo-picker
+  amplify-photo-picker --> amplify-section
+  amplify-photo-picker --> amplify-picker
+  amplify-photo-picker --> amplify-photo-placeholder
+  amplify-photo-picker --> amplify-button
+  amplify-picker --> amplify-button
+  style amplify-s3-image-picker fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

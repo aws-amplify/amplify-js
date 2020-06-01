@@ -564,6 +564,21 @@ export namespace Components {
          */
         "value": string;
     }
+    interface AmplifyPhotoPicker {
+        "buttonText"?: string;
+        "headerHint"?: string;
+        "headerTitle"?: string;
+        "onClickHandler"?: (file: File) => void;
+        "placeholderHint"?: string;
+        "previewSrc"?: string | object;
+    }
+    interface AmplifyPhotoPlaceholder {
+    }
+    interface AmplifyPicker {
+        "acceptValue": string;
+        "inputHandler": (e: Event) => void;
+        "pickerText": string;
+    }
     interface AmplifyRadioButton {
         /**
           * If `true`, the radio button is selected.
@@ -1038,6 +1053,24 @@ declare global {
         prototype: HTMLAmplifyPhoneFieldElement;
         new (): HTMLAmplifyPhoneFieldElement;
     };
+    interface HTMLAmplifyPhotoPickerElement extends Components.AmplifyPhotoPicker, HTMLStencilElement {
+    }
+    var HTMLAmplifyPhotoPickerElement: {
+        prototype: HTMLAmplifyPhotoPickerElement;
+        new (): HTMLAmplifyPhotoPickerElement;
+    };
+    interface HTMLAmplifyPhotoPlaceholderElement extends Components.AmplifyPhotoPlaceholder, HTMLStencilElement {
+    }
+    var HTMLAmplifyPhotoPlaceholderElement: {
+        prototype: HTMLAmplifyPhotoPlaceholderElement;
+        new (): HTMLAmplifyPhotoPlaceholderElement;
+    };
+    interface HTMLAmplifyPickerElement extends Components.AmplifyPicker, HTMLStencilElement {
+    }
+    var HTMLAmplifyPickerElement: {
+        prototype: HTMLAmplifyPickerElement;
+        new (): HTMLAmplifyPickerElement;
+    };
     interface HTMLAmplifyRadioButtonElement extends Components.AmplifyRadioButton, HTMLStencilElement {
     }
     var HTMLAmplifyRadioButtonElement: {
@@ -1172,6 +1205,9 @@ declare global {
         "amplify-oauth-button": HTMLAmplifyOauthButtonElement;
         "amplify-password-field": HTMLAmplifyPasswordFieldElement;
         "amplify-phone-field": HTMLAmplifyPhoneFieldElement;
+        "amplify-photo-picker": HTMLAmplifyPhotoPickerElement;
+        "amplify-photo-placeholder": HTMLAmplifyPhotoPlaceholderElement;
+        "amplify-picker": HTMLAmplifyPickerElement;
         "amplify-radio-button": HTMLAmplifyRadioButtonElement;
         "amplify-require-new-password": HTMLAmplifyRequireNewPasswordElement;
         "amplify-s3-image": HTMLAmplifyS3ImageElement;
@@ -1746,6 +1782,21 @@ declare namespace LocalJSX {
          */
         "value"?: string;
     }
+    interface AmplifyPhotoPicker {
+        "buttonText"?: string;
+        "headerHint"?: string;
+        "headerTitle"?: string;
+        "onClickHandler"?: (file: File) => void;
+        "placeholderHint"?: string;
+        "previewSrc"?: string | object;
+    }
+    interface AmplifyPhotoPlaceholder {
+    }
+    interface AmplifyPicker {
+        "acceptValue"?: string;
+        "inputHandler"?: (e: Event) => void;
+        "pickerText"?: string;
+    }
     interface AmplifyRadioButton {
         /**
           * If `true`, the radio button is selected.
@@ -2064,6 +2115,9 @@ declare namespace LocalJSX {
         "amplify-oauth-button": AmplifyOauthButton;
         "amplify-password-field": AmplifyPasswordField;
         "amplify-phone-field": AmplifyPhoneField;
+        "amplify-photo-picker": AmplifyPhotoPicker;
+        "amplify-photo-placeholder": AmplifyPhotoPlaceholder;
+        "amplify-picker": AmplifyPicker;
         "amplify-radio-button": AmplifyRadioButton;
         "amplify-require-new-password": AmplifyRequireNewPassword;
         "amplify-s3-image": AmplifyS3Image;
@@ -2118,6 +2172,9 @@ declare module "@stencil/core" {
             "amplify-oauth-button": LocalJSX.AmplifyOauthButton & JSXBase.HTMLAttributes<HTMLAmplifyOauthButtonElement>;
             "amplify-password-field": LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
             "amplify-phone-field": LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
+            "amplify-photo-picker": LocalJSX.AmplifyPhotoPicker & JSXBase.HTMLAttributes<HTMLAmplifyPhotoPickerElement>;
+            "amplify-photo-placeholder": LocalJSX.AmplifyPhotoPlaceholder & JSXBase.HTMLAttributes<HTMLAmplifyPhotoPlaceholderElement>;
+            "amplify-picker": LocalJSX.AmplifyPicker & JSXBase.HTMLAttributes<HTMLAmplifyPickerElement>;
             "amplify-radio-button": LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
             "amplify-require-new-password": LocalJSX.AmplifyRequireNewPassword & JSXBase.HTMLAttributes<HTMLAmplifyRequireNewPasswordElement>;
             "amplify-s3-image": LocalJSX.AmplifyS3Image & JSXBase.HTMLAttributes<HTMLAmplifyS3ImageElement>;
