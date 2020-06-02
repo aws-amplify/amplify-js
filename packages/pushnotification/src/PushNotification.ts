@@ -70,8 +70,8 @@ export default class PushNotification {
 
 		if (config && config['aws_mobile_analytics_app_id']) {
 			conf = {
-				...conf,
 				appId: config['aws_mobile_analytics_app_id'],
+				...conf,
 			};
 		}
 
