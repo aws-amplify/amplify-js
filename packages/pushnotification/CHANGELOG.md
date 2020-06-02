@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.0.13...@aws-amplify/pushnotification@3.1.0) (2020-06-02)
+
+
+### Features
+
+* **@aws-amplify/pushnotification:** inherit compileSdkVersion from project ([#5475](https://github.com/aws-amplify/amplify-js/issues/5475)) ([8744976](https://github.com/aws-amplify/amplify-js/commit/874497611cb69ba7272e216fb688cac0934c9cb8))
+
+
+
+
+
 ## [3.0.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.0.12...@aws-amplify/pushnotification@3.0.13) (2020-05-26)
 
 **Note:** Version bump only for package @aws-amplify/pushnotification
