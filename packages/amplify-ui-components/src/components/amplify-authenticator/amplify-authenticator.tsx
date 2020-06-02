@@ -1,5 +1,11 @@
 import { Component, State, Prop, h, Host } from '@stencil/core';
-import { AuthState, CognitoUserInterface, FederatedConfig, UsernameAliasStrings } from '../../common/types/auth-types';
+import {
+  AuthState,
+  CognitoUserInterface,
+  FederatedConfig,
+  UsernameAliasStrings,
+  AuthStateHandler,
+} from '../../common/types/auth-types';
 import {
   AUTH_CHANNEL,
   NO_AUTH_MODULE_FOUND,
@@ -7,11 +13,10 @@ import {
   AUTHENTICATOR_AUTHSTATE,
   UI_AUTH_CHANNEL,
   TOAST_AUTH_ERROR_EVENT,
-  AUTH_STATE_CHANGE_EVENT,
 } from '../../common/constants';
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
 import { Hub, Logger } from '@aws-amplify/core';
-import { dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { dispatchAuthStateChangeEvent, onAuthUIStateChange } from '../../common/helpers';
 
 const logger = new Logger('Authenticator');
 
@@ -27,41 +32,40 @@ export class AmplifyAuthenticator {
   @Prop() federated: FederatedConfig;
   /** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
   @Prop() usernameAlias: UsernameAliasStrings;
+  /** Callback for Authenticator state machine changes */
+  @Prop() handleAuthStateChange: AuthStateHandler = () => {};
 
   @State() authState: AuthState = AuthState.Loading;
   @State() authData: CognitoUserInterface;
   @State() toastMessage: string = '';
 
+  private handleExternalAuthEvent = ({ payload }) => {
+    switch (payload.event) {
+      case 'cognitoHostedUI':
+        return dispatchAuthStateChangeEvent(AuthState.SignedIn, payload.data);
+      case 'cognitoHostedUI_failure':
+      case 'parsingUrl_failure':
+      case 'signOut':
+      case 'customGreetingSignOut':
+        return dispatchAuthStateChangeEvent(this.initialAuthState);
+    }
+  };
+
+  private handleToastEvent = ({ payload }) => {
+    switch (payload.event) {
+      case TOAST_AUTH_ERROR_EVENT:
+        if (payload.message) this.toastMessage = payload.message;
+        break;
+    }
+  };
+
   async componentWillLoad() {
-    Hub.listen(AUTH_CHANNEL, ({ payload: { event, data } }) => {
-      switch (event) {
-        case 'cognitoHostedUI':
-          return this.onAuthStateChange(AuthState.SignedIn, data);
-
-        case 'cognitoHostedUI_failure':
-        case 'parsingUrl_failure':
-        case 'signOut':
-        case 'customGreetingSignOut':
-          return this.onAuthStateChange(AuthState.SignIn, null);
-      }
+    onAuthUIStateChange((authState, authData) => {
+      this.onAuthStateChange(authState, authData as CognitoUserInterface);
+      this.toastMessage = '';
     });
-
-    Hub.listen(UI_AUTH_CHANNEL, data => {
-      const { payload } = data;
-      switch (payload.event) {
-        case TOAST_AUTH_ERROR_EVENT:
-          if (payload.message) this.toastMessage = payload.message;
-          break;
-        case AUTH_STATE_CHANGE_EVENT:
-          if (payload.message) {
-            this.onAuthStateChange(payload.message as AuthState, payload.data);
-            this.toastMessage = '';
-          }
-          break;
-        default:
-          logger.warn('Unhandled Auth Event', payload.event);
-      }
-    });
+    Hub.listen(UI_AUTH_CHANNEL, this.handleToastEvent);
+    Hub.listen(AUTH_CHANNEL, this.handleExternalAuthEvent);
 
     appendToCognitoUserAgent('amplify-authenticator');
     const byHostedUI = localStorage.getItem(REDIRECTED_FROM_HOSTED_UI);
@@ -95,7 +99,7 @@ export class AmplifyAuthenticator {
     }
   }
 
-  private onAuthStateChange = (nextAuthState: AuthState, data?: CognitoUserInterface) => {
+  private async onAuthStateChange(nextAuthState: AuthState, data?: CognitoUserInterface) {
     if (nextAuthState === undefined) return logger.error('nextAuthState cannot be undefined');
 
     logger.info('Inside onAuthStateChange Method current authState:', this.authState);
@@ -106,12 +110,14 @@ export class AmplifyAuthenticator {
       this.authState = nextAuthState;
     }
 
-    if (data !== undefined) {
-      this.authData = data;
-      logger.log('Auth Data was set:', this.authData);
+    this.authData = data;
+    if (this.authData) logger.log('Auth Data was set:', this.authData);
+
+    if (this.authState === nextAuthState) {
+      this.handleAuthStateChange(this.authState, this.authData);
+      logger.info(`authState has been updated to ${this.authState}`);
     }
-    logger.info(`authState has been updated to ${this.authState}`);
-  };
+  }
 
   private renderAuthComponent(authState: AuthState) {
     switch (authState) {
@@ -176,14 +182,10 @@ export class AmplifyAuthenticator {
     }
   }
 
-  // eslint-disable-next-line
-  componentDidUnload() {
-    Hub.remove(UI_AUTH_CHANNEL, data => {
-      const { payload } = data;
-      if (payload.event === TOAST_AUTH_ERROR_EVENT && payload.message) {
-        this.toastMessage = payload.message;
-      }
-    });
+  componentWillUnload() {
+    Hub.remove(AUTH_CHANNEL, this.handleExternalAuthEvent);
+    Hub.remove(UI_AUTH_CHANNEL, this.handleToastEvent);
+    return onAuthUIStateChange;
   }
 
   render() {
