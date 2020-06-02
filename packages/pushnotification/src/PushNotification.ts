@@ -68,7 +68,7 @@ export default class PushNotification {
 		if (JS.isEmpty(config)) return this._config;
 		let conf = config ? config.PushNotification || config : {};
 
-		if (config && config['aws_mobile_analytics_app_id']) {
+		if (config['aws_mobile_analytics_app_id']) {
 			conf = {
 				appId: config['aws_mobile_analytics_app_id'],
 				...conf,
