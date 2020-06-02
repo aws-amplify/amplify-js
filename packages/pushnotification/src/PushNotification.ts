@@ -19,7 +19,7 @@ import {
 	AppState,
 } from 'react-native';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
 
 const logger = new Logger('Notification');
 
@@ -65,10 +65,12 @@ export default class PushNotification {
 	}
 
 	configure(config) {
+		if (JS.isEmpty(config)) return this._config;
 		let conf = config ? config.PushNotification || config : {};
 
 		if (conf['aws_mobile_analytics_app_id']) {
 			conf = {
+				...conf,
 				appId: conf['aws_mobile_analytics_app_id'],
 			};
 		}
@@ -89,6 +91,7 @@ export default class PushNotification {
 			this.initializeIOS();
 			this._iosInitialized = true;
 		}
+		return this._config;
 	}
 
 	onNotification(handler) {
