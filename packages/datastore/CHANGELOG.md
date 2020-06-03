@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.0...@aws-amplify/datastore@2.2.1) (2020-06-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** Fix performance undefined variable in RN ([#5984](https://github.com/aws-amplify/amplify-js/issues/5984)) ([da2726d](https://github.com/aws-amplify/amplify-js/commit/da2726d029c63d7472a32deffd1431322ec628ad))
+* **@aws-amplify/datastore:** Fix potential NPE ([#5993](https://github.com/aws-amplify/amplify-js/issues/5993)) ([ccb6906](https://github.com/aws-amplify/amplify-js/commit/ccb69065a3d92ec4ec79184b0d55f069bb652980))
+
+
+
+
+
 # [2.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.1.2...@aws-amplify/datastore@2.2.0) (2020-06-02)
 
 
