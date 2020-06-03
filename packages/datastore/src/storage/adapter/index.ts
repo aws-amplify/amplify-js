@@ -1,4 +1,5 @@
 import {
+	ModelInstanceMetadata,
 	ModelPredicate,
 	OpType,
 	PaginationInput,
@@ -27,4 +28,8 @@ export interface Adapter extends SystemComponent {
 		modelConstructor: PersistentModelConstructor<T>,
 		firstOrLast: QueryOne
 	): Promise<T | undefined>;
+	batchSave<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<any>,
+		items: ModelInstanceMetadata[]
+	): Promise<[T, OpType][]>;
 }

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.2.9...@aws-amplify/auth@3.2.10) (2020-06-02)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Race condition fixes for OAuth flow ([#5929](https://github.com/aws-amplify/amplify-js/issues/5929)) ([4b6fd33](https://github.com/aws-amplify/amplify-js/commit/4b6fd33c88636bbe9aea81532857003ab52bc1be))
+
+
+
+
+
 ## [3.2.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.2.8...@aws-amplify/auth@3.2.9) (2020-05-26)
 
 **Note:** Version bump only for package @aws-amplify/auth
