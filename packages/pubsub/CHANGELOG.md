@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.0.13...@aws-amplify/pubsub@3.0.14) (2020-06-02)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** Allow partial subscriptions. ([#5968](https://github.com/aws-amplify/amplify-js/issues/5968)) ([3331e9a](https://github.com/aws-amplify/amplify-js/commit/3331e9a713b38bb672aca5dc667ecef30b8820ce))
+
+
+
+
+
 ## [3.0.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.0.12...@aws-amplify/pubsub@3.0.13) (2020-05-26)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
