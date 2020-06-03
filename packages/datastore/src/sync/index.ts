@@ -483,10 +483,14 @@ export class SyncEngine {
 										const opTypeCount: [any, OpType][] = [];
 
 										for (const item of oneByOne) {
-											opTypeCount.push([
-												item,
-												await this.modelMerger.merge(storage, item),
-											]);
+											const opType = await this.modelMerger.merge(
+												storage,
+												item
+											);
+
+											if (opType !== undefined) {
+												opTypeCount.push([item, opType]);
+											}
 										}
 
 										opTypeCount.push(
