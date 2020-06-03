@@ -158,7 +158,7 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 		public listDevices(
 			limit: number,
-			paginationToken: string,
+			paginationToken: string | null,
 			callbacks: {
 				onSuccess: (data: any) => void;
 				onFailure: (err: Error) => void;
