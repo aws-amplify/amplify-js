@@ -392,7 +392,11 @@ export function monotonicUlidFactory(seed?: number): ULID {
  * See: https://developer.mozilla.org/en-US/docs/Web/API/Performance/now#Example
  */
 export function getNow() {
-	if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+	if (
+		typeof performance !== 'undefined' &&
+		performance &&
+		typeof performance.now === 'function'
+	) {
 		return performance.now() | 0; // convert to integer
 	} else {
 		return Date.now();
