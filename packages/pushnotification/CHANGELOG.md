@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.1.0...@aws-amplify/pushnotification@3.1.1) (2020-06-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pushnotification:** only initialize push notifications when config is present ([#5975](https://github.com/aws-amplify/amplify-js/issues/5975)) ([c2692c3](https://github.com/aws-amplify/amplify-js/commit/c2692c34c78f436f273dfcb22d2384484ced4e70))
+
+
+
+
+
 # [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.0.13...@aws-amplify/pushnotification@3.1.0) (2020-06-02)
 
 
