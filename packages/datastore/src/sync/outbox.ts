@@ -117,6 +117,16 @@ class MutationEventOutbox {
 
 		return mutationEvents;
 	}
+
+	public async getModelIds(storage: StorageFacade): Promise<Set<string>> {
+		const mutationEvents = await storage.query(this.MutationEvent);
+
+		const result = new Set<string>();
+
+		mutationEvents.forEach(({ modelId }) => result.add(modelId));
+
+		return result;
+	}
 }
 
 export { MutationEventOutbox };

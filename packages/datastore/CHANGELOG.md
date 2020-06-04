@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.1...@aws-amplify/datastore@2.2.2) (2020-06-04)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** Fix count when there is a mutation in the outbox ([#6001](https://github.com/aws-amplify/amplify-js/issues/6001)) ([d2fc76e](https://github.com/aws-amplify/amplify-js/commit/d2fc76e789ee1bcaf6c112e7b661089d746ac355))
+
+
+
+
+
+## [2.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.0...@aws-amplify/datastore@2.2.1) (2020-06-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** Fix performance undefined variable in RN ([#5984](https://github.com/aws-amplify/amplify-js/issues/5984)) ([da2726d](https://github.com/aws-amplify/amplify-js/commit/da2726d029c63d7472a32deffd1431322ec628ad))
+* **@aws-amplify/datastore:** Fix potential NPE ([#5993](https://github.com/aws-amplify/amplify-js/issues/5993)) ([ccb6906](https://github.com/aws-amplify/amplify-js/commit/ccb69065a3d92ec4ec79184b0d55f069bb652980))
+
+
+
+
+
+# [2.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.1.2...@aws-amplify/datastore@2.2.0) (2020-06-02)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** Allow partial subscriptions. ([#5968](https://github.com/aws-amplify/amplify-js/issues/5968)) ([3331e9a](https://github.com/aws-amplify/amplify-js/commit/3331e9a713b38bb672aca5dc667ecef30b8820ce))
+
+
+### Features
+
+* **@aws-amplify/datastore:** Sync Status Notification. Performance Improvements. ([#5942](https://github.com/aws-amplify/amplify-js/issues/5942)) ([67fac50](https://github.com/aws-amplify/amplify-js/commit/67fac50cd734338ac76797d06111fc5ca911bd48))
+
+
+
+
+
 ## [2.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.1.1...@aws-amplify/datastore@2.1.2) (2020-05-26)
 
 **Note:** Version bump only for package @aws-amplify/datastore
