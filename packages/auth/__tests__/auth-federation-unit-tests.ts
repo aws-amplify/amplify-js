@@ -468,46 +468,5 @@ describe('auth federation unit test', () => {
 				clearMockFB();
 			}
 		});
-
-		test('with expired federated info - keep creds if no network detected', async () => {
-			const onLine = (global as any).window.navigator.onLine;
-			Object.defineProperty(window.navigator, 'onLine', {
-				value: false,
-				configurable: true,
-			});
-
-			const storageSpy = jest
-				.spyOn(StorageHelper.prototype, 'getStorage')
-				.mockImplementation(() => {
-					return {
-						setItem() {},
-						getItem() {
-							return JSON.stringify(expiredCreds('google'));
-						},
-						removeItem() {},
-					};
-				});
-			const credsClearSpy = jest
-				.spyOn(Credentials, 'clear')
-				.mockImplementation();
-			const providerRefreshSpy = jest
-				.spyOn(Credentials, <any>'_providerRefreshWithRetry')
-				.mockImplementation();
-
-			const auth = new Auth(authOptions);
-
-			try {
-				await auth.currentUserCredentials();
-			} catch {
-				expect.assertions(2);
-				expect(credsClearSpy).toHaveBeenCalledTimes(0);
-				expect(providerRefreshSpy).toHaveBeenCalledTimes(0);
-				storageSpy.mockClear();
-				credsClearSpy.mockClear();
-				providerRefreshSpy.mockClear();
-				clearMockGAPI();
-				Object.defineProperty(window.navigator, 'onLine', { value: onLine });
-			}
-		});
 	});
 });

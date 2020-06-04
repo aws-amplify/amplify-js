@@ -39,7 +39,6 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
-		"@react-native-community/netinfo": "^5.5.0",
 		"find": "^0.2.7",
 		"genversion": "^2.2.0",
 		"prepend-file": "^1.3.1",
@@ -55,15 +54,7 @@
 		"@aws-sdk/util-user-agent-browser": "1.0.0-gamma.1",
 		"url": "^0.11.0",
 		"zen-observable-ts": "0.8.19"
-	},
-	"peerDependencies": {
-		"@react-native-community/netinfo": "^5.5.0"
-	},
-	"peerDependenciesMeta": {
-		"@react-native-community/netinfo": {
-			"optional": true
-		}
-	},  
+	}, 
 	"jest": {
 		"globals": {
 			"ts-jest": {

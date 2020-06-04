@@ -1,9 +1,8 @@
-import Observable from 'zen-observable-ts';
 import { ConsoleLogger as Logger } from './Logger';
 import { StorageHelper } from './StorageHelper';
 import { makeQuerablePromise } from './JS';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
-import { jitteredExponentialRetry, ReachabilityMonitor } from './Util';
+import { jitteredExponentialRetry } from './Util';
 import { ICredentials } from './types';
 import { getAmplifyUserAgent } from './Platform';
 import { Amplify } from './Amplify';
@@ -33,13 +32,11 @@ export class CredentialsClass {
 	private _storageSync;
 	private _identityId;
 	private _nextCredentialsRefresh: Number;
-	private _online: boolean;
 
 	constructor(config) {
 		this.configure(config);
 		this._refreshHandlers['google'] = GoogleOAuth.refreshGoogleToken;
 		this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
-		this._online = false;
 	}
 
 	public getCredSource() {
@@ -70,28 +67,12 @@ export class CredentialsClass {
 			this._storageSync = this._storage['sync']();
 		}
 
-		this._reachabilityStatusInit().subscribe(online => {
-			this._online = online;
-		});
-
 		return this._config;
 	}
 
 	public get() {
 		logger.debug('getting credentials');
 		return this._pickupCredentials();
-	}
-
-	private _reachabilityStatusInit(): Observable<boolean> {
-		return new Observable(observer => {
-			const subs = ReachabilityMonitor.subscribe(({ online }) => {
-				observer.next(online);
-			});
-
-			return () => {
-				subs.unsubscribe();
-			};
-		});
 	}
 
 	private _pickupCredentials() {
@@ -148,14 +129,8 @@ export class CredentialsClass {
 				expires_at,
 			});
 		} else {
-			if (!this._online) {
-				const message =
-					'no network detected when attempting to refresh jwt token from federation provider';
-				logger.debug(message);
-				return Promise.reject(message);
-			}
 			// if refresh handler exists
-			else if (
+			if (
 				that._refreshHandlers[provider] &&
 				typeof that._refreshHandlers[provider] === 'function'
 			) {
