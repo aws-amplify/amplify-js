@@ -65,8 +65,8 @@ export class GoogleOAuth {
 			ga.getAuthInstance()
 				.then(googleAuth => {
 					if (!googleAuth) {
-						console.log('google Auth undefiend');
-						rej(new NonRetryableError('google Auth undefiend'));
+						logger.debug('google Auth undefined');
+						rej(new NonRetryableError('google Auth undefined'));
 					}
 
 					const googleUser = googleAuth.currentUser.get();

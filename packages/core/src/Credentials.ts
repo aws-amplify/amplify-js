@@ -126,8 +126,7 @@ export class CredentialsClass {
 
 	public refreshFederatedToken(federatedInfo) {
 		logger.debug('Getting federated credentials');
-		const { provider, user } = federatedInfo;
-		const { token, identity_id } = federatedInfo;
+		const { provider, user, token, identity_id } = federatedInfo;
 		let { expires_at } = federatedInfo;
 
 		// Make sure expires_at is in millis
