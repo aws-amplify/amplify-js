@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.16](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.15...aws-amplify-angular@5.0.16) (2020-06-04)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [5.0.15](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.14...aws-amplify-angular@5.0.15) (2020-06-03)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [5.0.14](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.13...aws-amplify-angular@5.0.14) (2020-06-02)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [5.0.13](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.12...aws-amplify-angular@5.0.13) (2020-05-26)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [5.0.12](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.11...aws-amplify-angular@5.0.12) (2020-05-22)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [5.0.11](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.10...aws-amplify-angular@5.0.11) (2020-05-14)
+
+
+### Bug Fixes
+
+* **aws-amplify-angular:** decorateSignUp matches Auth.signUp ([b569399](https://github.com/aws-amplify/amplify-js/commit/b569399fe73a2b0b4cd0aa1373b862e779ee7e0c))
+* **aws-amplify-angular:** pass signout options object in auth decorator ([#4185](https://github.com/aws-amplify/amplify-js/issues/4185)) ([ad4367a](https://github.com/aws-amplify/amplify-js/commit/ad4367a3d96eb3a4bb3b84ec7e31df0845957b36))
+
+
+
+
+
+## [5.0.10](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.9...aws-amplify-angular@5.0.10) (2020-04-30)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
 ## [5.0.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.8...aws-amplify-angular@5.0.9) (2020-04-24)
 
 **Note:** Version bump only for package aws-amplify-angular

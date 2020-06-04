@@ -158,7 +158,7 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 		public listDevices(
 			limit: number,
-			paginationToken: string,
+			paginationToken: string | null,
 			callbacks: {
 				onSuccess: (data: any) => void;
 				onFailure: (err: Error) => void;
@@ -218,7 +218,7 @@ declare module 'amazon-cognito-identity-js' {
 		public enableMFA(callback: NodeCallback<Error, string>): void;
 		public disableMFA(callback: NodeCallback<Error, string>): void;
 		public getMFAOptions(callback: NodeCallback<Error, MFAOption[]>): void;
-		public getUserData(callback: NodeCallback<Error, UserData>): void;
+		public getUserData(callback: NodeCallback<Error, UserData>, params?: any): void;
 		public associateSoftwareToken(callbacks: {
 			associateSecretCode: (secretCode: string) => void;
 			onFailure: (err: any) => void;
@@ -294,6 +294,7 @@ declare module 'amazon-cognito-identity-js' {
 		ClientId: string;
 		endpoint?: string;
 		Storage?: ICognitoStorage;
+		AdvancedSecurityDataCollectionFlag?: boolean;
 	}
 
 	export class CognitoUserPool {

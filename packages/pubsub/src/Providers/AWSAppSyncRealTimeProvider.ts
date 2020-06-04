@@ -234,6 +234,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			apiKey,
 			region,
 			graphql_headers = () => ({}),
+			additionalHeaders = {},
 		} = options;
 
 		const subscriptionState: SUBSCRIPTION_STATUS = SUBSCRIPTION_STATUS.PENDING;
@@ -263,6 +264,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				region,
 			})),
 			...(await graphql_headers()),
+			...additionalHeaders,
 			[USER_AGENT_HEADER]: Constants.userAgent,
 		};
 
@@ -448,7 +450,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			}
 			clearTimeout(startAckTimeoutId);
 			dispatchApiEvent(
-				'connected',
+				CONTROL_MSG.SUBSCRIPTION_ACK,
 				{ query, variables },
 				'Connection established for subscription'
 			);
@@ -613,6 +615,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					}
 					this.awsRealTimeSocket = null;
 					this.socketStatus = SOCKET_STATUS.CLOSED;
+
+					throw err;
 				}
 			}
 		});

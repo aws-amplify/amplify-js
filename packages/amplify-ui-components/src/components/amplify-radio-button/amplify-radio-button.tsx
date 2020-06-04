@@ -21,6 +21,8 @@ export class AmplifyRadioButton {
   @Prop() checked: boolean = false;
   /** If `true`, the checkbox is disabled */
   @Prop() disabled: boolean = false;
+  /** Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes */
+  @Prop() inputProps?: object;
 
   render() {
     return (
@@ -34,6 +36,7 @@ export class AmplifyRadioButton {
           id={this.fieldId}
           checked={this.checked}
           disabled={this.disabled}
+          {...this.inputProps}
         />
         <amplify-label htmlFor={this.fieldId}>{this.label}</amplify-label>
       </span>

@@ -29,7 +29,6 @@ import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
-import { httpHandlerOptions } from './httpHandlerOptions';
 import * as events from 'events';
 
 const logger = new Logger('AWSS3Provider');
@@ -162,7 +161,9 @@ export class AWSS3Provider implements StorageProvider {
 					track,
 					'download',
 					{ method: 'get', result: 'success' },
-					{ fileSize: Number(response.Body['length']) },
+					{
+						fileSize: Number(response.Body['size'] || response.Body['length']),
+					},
 					`Download success for ${key}`
 				);
 				return response;
@@ -182,13 +183,12 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		params.Expires = expires || 900; // Default is 15 mins as defined in V2 AWS SDK
-		params.Expires = new Date(Date.now() + params.Expires * 1000); // expires is in secs
 
 		try {
 			const signer = new S3RequestPresigner({ ...s3.config });
 			const request = await createRequest(s3, new GetObjectCommand(params));
 			const url = formatUrl(
-				(await signer.presign(request, params.Expires)) as any
+				(await signer.presign(request, { expiresIn: params.Expires })) as any
 			);
 			dispatchStorageEvent(
 				track,
@@ -234,6 +234,7 @@ export class AWSS3Provider implements StorageProvider {
 			expires,
 			metadata,
 			tagging,
+			acl,
 		} = opt;
 		const {
 			serverSideEncryption,
@@ -284,8 +285,14 @@ export class AWSS3Provider implements StorageProvider {
 				params.SSEKMSKeyId = SSEKMSKeyId;
 			}
 		}
+
 		const emitter = new events.EventEmitter();
 		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
+
+		if (acl) {
+			params.ACL = acl;
+		}
+
 		try {
 			emitter.on('sendProgress', progress => {
 				if (progressCallback) {
@@ -502,8 +509,9 @@ export class AWSS3Provider implements StorageProvider {
 		if (dangerouslyConnectToHttpEndpointForTesting) {
 			localTestingConfig = {
 				endpoint: localTestingStorageEndpoint,
-				s3BucketEndpoint: true,
-				s3ForcePathStyle: true,
+				tls: false,
+				bucketEndpoint: false,
+				forcePathStyle: true,
 			};
 		}
 
@@ -512,7 +520,7 @@ export class AWSS3Provider implements StorageProvider {
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler(httpHandlerOptions, emitter),
+			requestHandler: new AxiosHttpHandler({}, emitter),
 		});
 		return s3client;
 	}
