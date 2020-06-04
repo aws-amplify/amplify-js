@@ -54,7 +54,7 @@
 		"@aws-sdk/util-user-agent-browser": "1.0.0-gamma.1",
 		"url": "^0.11.0",
 		"zen-observable-ts": "0.8.19"
-	}, 
+	},
 	"jest": {
 		"globals": {
 			"ts-jest": {
