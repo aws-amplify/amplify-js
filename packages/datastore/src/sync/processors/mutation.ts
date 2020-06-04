@@ -117,11 +117,14 @@ class MutationProcessor {
 		}
 
 		this.processing = true;
-		let head = await this.outbox.peek(this.storage);
+		let head: MutationEvent;
 		const namespaceName = USER;
 
 		// start to drain outbox
-		while (this.processing && head !== undefined) {
+		while (
+			this.processing &&
+			(head = await this.outbox.peek(this.storage)) !== undefined
+		) {
 			const { model, operation, data, condition } = head;
 			const modelConstructor = this.userClasses[
 				model
@@ -155,9 +158,7 @@ class MutationProcessor {
 			const record = result.data[opName];
 			await this.outbox.dequeue(this.storage);
 
-			head = await this.outbox.peek(this.storage);
-
-			const hasMore = head !== undefined;
+			const hasMore = (await this.outbox.peek(this.storage)) !== undefined;
 
 			this.observer.next({
 				operation,
