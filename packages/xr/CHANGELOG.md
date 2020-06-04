@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.1.14...@aws-amplify/xr@2.1.15) (2020-06-04)
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+
+
+
+
 ## [2.1.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.1.13...@aws-amplify/xr@2.1.14) (2020-06-03)
 
 **Note:** Version bump only for package @aws-amplify/xr
