@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.1...@aws-amplify/datastore@2.2.2) (2020-06-04)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** Fix count when there is a mutation in the outbox ([#6001](https://github.com/aws-amplify/amplify-js/issues/6001)) ([d2fc76e](https://github.com/aws-amplify/amplify-js/commit/d2fc76e789ee1bcaf6c112e7b661089d746ac355))
+
+
+
+
+
 ## [2.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.0...@aws-amplify/datastore@2.2.1) (2020-06-03)
 
 
