@@ -2,18 +2,12 @@
 
 Thank you for your interest in contributing to our project! <3 Whether it's a bug report, new feature, correction, or additional documentation, we greatly value feedback and contributions from our community. Please read through these guidelines carefully before submitting a PR or issue and let us know if it's not up-to-date (or even better, submit a PR with your corrections ;)).
 
-- [Contributing Guidelines](#contributing-guidelines)
 - [Our History and Ethos](#our-history-and-ethos)
 - [Our Design](#our-design)
 - [Development Process](#development-process)
   * [Setting up for local development](#setting-up-for-local-development)
   * [Architecture of the codebase](#architecture-of-the-codebase)
-      - [Packages inside Amplify JS](#packages-inside-amplify-js)
   * [Steps towards contributions](#steps-towards-contributions)
-      - [Build step:](#build-step-)
-      - [Testing:](#testing-)
-      - [Test in a local sample app](#test-in-a-local-sample-app)
-      - [Verdaccio](#verdaccio)
 - [Pull Requests](#pull-requests)
 - [Debugging:](#debugging-)
 - [Release](#release)
