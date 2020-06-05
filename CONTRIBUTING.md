@@ -9,7 +9,7 @@ Thank you for your interest in contributing to our project! <3 Whether it's a bu
   * [Architecture of the codebase](#architecture-of-the-codebase)
   * [Steps towards contributions](#steps-towards-contributions)
 - [Pull Requests](#pull-requests)
-- [Debugging:](#debugging-)
+- [Debugging](#debugging)
 - [Release](#release)
   * [Finding contributions to work on](#finding-contributions-to-work-on)
   * [Related Repositories](#related-repositories)
@@ -191,7 +191,7 @@ _[Skip step 1 to 3 if you have already done this]_
 8. Finally, the Amplify JS team will review your PR. Add reviewers based on the core member who is tracking the issue with you or code owners.
    _In the meantime, address any automated check that fail (such as linting, unit tests, etc. in CI)_
 
-# Debugging:
+# Debugging
 
 Sometimes the issue can be solved by doing a clean and fresh build. To do this, make sure to remove your node modules and clean your packages. You can run `git clean -xdf` in the repository root to achieve this.
 
