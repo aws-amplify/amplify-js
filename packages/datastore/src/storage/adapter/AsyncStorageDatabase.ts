@@ -110,7 +110,7 @@ class AsyncStorageDatabase {
 		const keysToDelete = new Set<string>();
 		const keysToSave = new Set<string>();
 		const allItemsKeys = [];
-		const itemsMap: Record<string, T> = {};
+		const itemsMap: Record<string, { ulid: string; model: T }> = {};
 		for (const item of items) {
 			const { id, _deleted } = item;
 			const ulid = collection.get(id) || this.getMonotonicFactory(storeName)();
@@ -118,7 +118,7 @@ class AsyncStorageDatabase {
 			const key = this.getKeyForItem(storeName, id, ulid);
 
 			allItemsKeys.push(key);
-			itemsMap[key] = <T>(<unknown>item);
+			itemsMap[key] = { ulid, model: <T>(<unknown>item) };
 
 			if (_deleted) {
 				keysToDelete.add(key);
@@ -142,7 +142,9 @@ class AsyncStorageDatabase {
 
 			const keysToDeleteArray = Array.from(keysToDelete);
 
-			keysToDeleteArray.forEach(key => collection.delete(itemsMap[key].id));
+			keysToDeleteArray.forEach(key =>
+				collection.delete(itemsMap[key].model.id)
+			);
 
 			AsyncStorage.multiRemove(keysToDeleteArray, (errors?: Error[]) => {
 				if (errors && errors.length > 0) {
@@ -161,13 +163,14 @@ class AsyncStorageDatabase {
 
 			const entriesToSet = Array.from(keysToSave).map(key => [
 				key,
-				JSON.stringify(itemsMap[key]),
+				JSON.stringify(itemsMap[key].model),
 			]);
 
 			keysToSave.forEach(key => {
-				const id = itemsMap[key].id;
-				const ulid =
-					collection.get(id) || this.getMonotonicFactory(storeName)();
+				const {
+					model: { id },
+					ulid,
+				} = itemsMap[key];
 
 				collection.set(id, ulid);
 			});
@@ -183,10 +186,10 @@ class AsyncStorageDatabase {
 
 		for (const key of allItemsKeys) {
 			if (keysToDelete.has(key) && existingRecordsKeys.has(key)) {
-				result.push([itemsMap[key], OpType.DELETE]);
+				result.push([itemsMap[key].model, OpType.DELETE]);
 			} else if (keysToSave.has(key)) {
 				result.push([
-					itemsMap[key],
+					itemsMap[key].model,
 					existingRecordsKeys.has(key) ? OpType.UPDATE : OpType.INSERT,
 				]);
 			}
