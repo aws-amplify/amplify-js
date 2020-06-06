@@ -540,7 +540,25 @@ class AsyncStorageAdapter implements Adapter {
 		const namespaceName = this.namespaceResolver(modelConstructor);
 		const storeName = this.getStorename(namespaceName, modelName);
 
-		return await this.db.batchSave(storeName, items);
+		const batch: ModelInstanceMetadata[] = [];
+
+		for (const item of items) {
+			const connectedModels = traverseModel(
+				modelConstructor.name,
+				this.modelInstanceCreator(modelConstructor, item),
+				this.schema.namespaces[this.namespaceResolver(modelConstructor)],
+				this.modelInstanceCreator,
+				this.getModelConstructorByModelName
+			);
+
+			Object.values(connectedModels)
+				.map(({ item }) => item)
+				.forEach(item => {
+					batch.push(item);
+				});
+		}
+
+		return await this.db.batchSave(storeName, batch);
 	}
 }
 
