@@ -543,6 +543,8 @@ class AsyncStorageAdapter implements Adapter {
 		const batch: ModelInstanceMetadata[] = [];
 
 		for (const item of items) {
+			const { id } = item;
+
 			const connectedModels = traverseModel(
 				modelConstructor.name,
 				this.modelInstanceCreator(modelConstructor, item),
@@ -551,11 +553,11 @@ class AsyncStorageAdapter implements Adapter {
 				this.getModelConstructorByModelName
 			);
 
-			Object.values(connectedModels)
-				.map(({ item }) => item)
-				.forEach(item => {
-					batch.push(item);
-				});
+			const { instance } = connectedModels.find(
+				({ instance }) => instance.id === id
+			);
+
+			batch.push(instance);
 		}
 
 		return await this.db.batchSave(storeName, batch);
