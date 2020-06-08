@@ -757,14 +757,26 @@ class IndexedDBAdapter implements Adapter {
 		const store = txn.store;
 
 		for (const item of items) {
+			const connectedModels = traverseModel(
+				modelConstructor.name,
+				this.modelInstanceCreator(modelConstructor, item),
+				this.schema.namespaces[this.namespaceResolver(modelConstructor)],
+				this.modelInstanceCreator,
+				this.getModelConstructorByModelName
+			);
+
 			const { id, _deleted } = item;
 			const index = store.index('byId');
 			const key = await index.getKey(id);
 
 			if (!_deleted) {
-				result.push([<T>(<unknown>item), key ? OpType.UPDATE : OpType.INSERT]);
-
-				await store.put(item, key);
+				for (const { item } of Object.values(connectedModels)) {
+					result.push([
+						<T>(<unknown>item),
+						key ? OpType.UPDATE : OpType.INSERT,
+					]);
+					await store.put(item, key);
+				}
 			} else {
 				result.push([<T>(<unknown>item), OpType.DELETE]);
 
