@@ -1,4 +1,4 @@
-import { Hub, I18n } from '@aws-amplify/core';
+import { Hub, I18n, Logger } from '@aws-amplify/core';
 import {
   UI_AUTH_CHANNEL,
   TOAST_AUTH_ERROR_EVENT,
@@ -10,6 +10,9 @@ import { AuthState, AuthStateHandler, UsernameAlias } from '../common/types/auth
 import { PhoneNumberInterface } from '../components/amplify-auth-fields/amplify-auth-fields-interface';
 import { Translations } from './Translations';
 import { Storage } from '@aws-amplify/storage';
+import Auth from '@aws-amplify/auth';
+
+const logger = new Logger('helpers');
 
 export interface ToastError {
   code: string;
@@ -53,12 +56,22 @@ export const checkUsernameAlias = (usernameAlias: any) => {
 };
 
 export const onAuthUIStateChange = (authStateHandler: AuthStateHandler) => {
-  const authUIStateHandler = data => {
+  const authUIStateHandler = async data => {
     const { payload } = data;
     switch (payload.event) {
       case AUTH_STATE_CHANGE_EVENT:
         if (payload.message) {
-          authStateHandler(payload.message as AuthState, payload.data);
+          if (payload.message === AuthState.SignedIn) {
+            // for AuthState.SignedIn, use an Auth Guard
+            try {
+              const user = await Auth.currentAuthenticatedUser();
+              authStateHandler(payload.message as AuthState, user);
+            } catch (e) {
+              logger.error('User is not authenticated');
+            }
+          } else {
+            authStateHandler(payload.message as AuthState, payload.data);
+          }
         }
         break;
     }

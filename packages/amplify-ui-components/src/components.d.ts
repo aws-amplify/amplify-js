@@ -46,6 +46,10 @@ export namespace Components {
          */
         "federated": FederatedConfig;
         /**
+          * Callback for Authenticator state machine changes
+         */
+        "handleAuthStateChange": AuthStateHandler;
+        /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
         "initialAuthState": AuthState.SignIn | AuthState.SignUp;
@@ -1306,6 +1310,10 @@ declare namespace LocalJSX {
           * Federated credentials & configuration.
          */
         "federated"?: FederatedConfig;
+        /**
+          * Callback for Authenticator state machine changes
+         */
+        "handleAuthStateChange"?: AuthStateHandler;
         /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
