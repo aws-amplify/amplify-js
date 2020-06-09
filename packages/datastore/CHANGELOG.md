@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.2...@aws-amplify/datastore@2.2.3) (2020-06-09)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** AsyncStorage - Save connections when doing batchSave ([#6027](https://github.com/aws-amplify/amplify-js/issues/6027)) ([d9a5b3e](https://github.com/aws-amplify/amplify-js/commit/d9a5b3ee2309f1703a349a8d39b2a65dcaac5f61))
+* **@aws-amplify/datastore:** IndexedDB - Save connections when doing batchSave ([#6029](https://github.com/aws-amplify/amplify-js/issues/6029)) ([1a6e0ec](https://github.com/aws-amplify/amplify-js/commit/1a6e0ecff70556559d8fef6028ec4011775f5b95)), closes [#6027](https://github.com/aws-amplify/amplify-js/issues/6027)
+* **@aws-amplify/datastore:** RN - fix queries don't do anything on the first load of the application ([#6010](https://github.com/aws-amplify/amplify-js/issues/6010)) ([b5347ab](https://github.com/aws-amplify/amplify-js/commit/b5347ab620763551060741a1b78e47c1abf7ee6a)), closes [#5991](https://github.com/aws-amplify/amplify-js/issues/5991)
+* **@aws-amplify/datastore:** Save parent model with flattened ids for relations when batch saving results from GraphQL ([#6035](https://github.com/aws-amplify/amplify-js/issues/6035)) ([084b265](https://github.com/aws-amplify/amplify-js/commit/084b2653219d5b8cc0f952ebb74039b2a97e6261))
+
+
+
+
+
 ## [2.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.1...@aws-amplify/datastore@2.2.2) (2020-06-04)
 
 
