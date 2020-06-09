@@ -1,12 +1,15 @@
-import Observable from 'zen-observable-ts';
+import Observable, { Observer } from 'zen-observable-ts';
 
 type NetworkStatus = {
 	online: boolean;
 };
 
 export default class ReachabilityNavigator implements Reachability {
+	// expose observer for integration testing
+	private static _observer: Observer<any>;
 	networkMonitor(netInfo?: any): Observable<NetworkStatus> {
 		return new Observable(observer => {
+			ReachabilityNavigator._observer = observer;
 			observer.next({ online: window.navigator.onLine });
 
 			const notifyOnline = () => observer.next({ online: true });
@@ -25,4 +28,5 @@ export default class ReachabilityNavigator implements Reachability {
 
 interface Reachability {
 	networkMonitor(netInfo?: any): Observable<NetworkStatus>;
+	_observer?: Observer<NetworkStatus>;
 }
