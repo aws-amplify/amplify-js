@@ -1,11 +1,13 @@
-import Observable, { Observer } from 'zen-observable-ts';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 
 type NetworkStatus = {
 	online: boolean;
 };
 
 export default class ReachabilityNavigator implements Reachability {
-	private static _observers: Array<Observer<NetworkStatus>> = [];
+	private static _observers: Array<
+		ZenObservable.SubscriptionObserver<NetworkStatus>
+	> = [];
 
 	networkMonitor(netInfo?: any): Observable<NetworkStatus> {
 		return new Observable(observer => {
@@ -33,7 +35,7 @@ export default class ReachabilityNavigator implements Reachability {
 	// expose observers to simulate offline mode for integration testing
 	private static _observerOverride(status: NetworkStatus): void {
 		for (const observer of ReachabilityNavigator._observers) {
-			if (observer.complete) {
+			if (observer.closed) {
 				ReachabilityNavigator._observers = ReachabilityNavigator._observers.filter(
 					_observer => _observer !== observer
 				);
