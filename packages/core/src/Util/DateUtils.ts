@@ -50,6 +50,7 @@ export const DateUtils = {
 	},
 
 	isClockSkewed(serverDate: Date) {
+		// API gateway permits client calls that are off by no more than ±5 minutes
 		return (
 			Math.abs(
 				serverDate.getTime() - DateUtils.getDateWithClockOffset().getTime()
