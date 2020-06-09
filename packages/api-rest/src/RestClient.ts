@@ -172,24 +172,24 @@ export class RestClient {
 			credentials => {
 				return this._signed({ ...params }, credentials, isAllResponse).catch(
 					error => {
-						if (!DateUtils.isClockSkewError(error)) {
-							throw error;
+						if (DateUtils.isClockSkewError(error)) {
+							const { headers } = error.response;
+							const dateHeader = headers && (headers.date || headers.Date);
+							const responseDate = new Date(dateHeader);
+							const requestDate = DateUtils.getDateFromHeaderString(
+								params.headers['x-amz-date']
+							);
+
+							if (DateUtils.isClockSkewed(requestDate, responseDate)) {
+								const offset = responseDate.getTime() - requestDate.getTime();
+
+								DateUtils.setClockOffset(offset);
+
+								return this.ajax(url, method, init);
+							}
 						}
 
-						const { headers } = error.response;
-						const dateHeader = headers && (headers.date || headers.Date);
-						const responseDate = new Date(dateHeader);
-						const requestDate = DateUtils.getDateFromHeaderString(
-							params.headers['x-amz-date']
-						);
-
-						if (DateUtils.isClockSkewed(requestDate, responseDate)) {
-							const offset = responseDate.getTime() - requestDate.getTime();
-
-							DateUtils.setClockOffset(offset);
-
-							return this.ajax(url, method, init);
-						}
+						throw error;
 					}
 				);
 			},
