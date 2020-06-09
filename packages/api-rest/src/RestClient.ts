@@ -181,9 +181,9 @@ export class RestClient {
 							);
 
 							if (DateUtils.isClockSkewed(requestDate, responseDate)) {
-								const offset = responseDate.getTime() - requestDate.getTime();
-
-								DateUtils.setClockOffset(offset);
+								DateUtils.setClockOffset(
+									responseDate.getTime() - requestDate.getTime()
+								);
 
 								return this.ajax(url, method, init);
 							}
