@@ -168,14 +168,11 @@ export class SyncEngine {
 								dataSubsObservable,
 							] = this.subscriptionsProcessor.start();
 
-							const errorHandler = this.disconnectionHandler(
-								datastoreConnectivity
-							);
 							try {
 								subscriptions.push(
 									await this.waitForSubscriptionsReady(
 										ctlSubsObservable,
-										errorHandler
+										datastoreConnectivity
 									)
 								);
 							} catch (err) {
@@ -486,10 +483,14 @@ export class SyncEngine {
 										const opTypeCount: [any, OpType][] = [];
 
 										for (const item of oneByOne) {
-											opTypeCount.push([
-												item,
-												await this.modelMerger.merge(storage, item),
-											]);
+											const opType = await this.modelMerger.merge(
+												storage,
+												item
+											);
+
+											if (opType !== undefined) {
+												opTypeCount.push([item, opType]);
+											}
 										}
 
 										opTypeCount.push(
@@ -640,7 +641,7 @@ export class SyncEngine {
 
 	private async waitForSubscriptionsReady(
 		ctlSubsObservable: Observable<CONTROL_MSG>,
-		errorHandler: (msg: string) => void
+		datastoreConnectivity: DataStoreConnectivity
 	): Promise<ZenObservable.Subscription> {
 		return new Promise((resolve, reject) => {
 			const subscription = ctlSubsObservable.subscribe({
@@ -650,8 +651,8 @@ export class SyncEngine {
 					}
 				},
 				error: err => {
-					reject(`subscription failed ${err}`);
-					errorHandler(err);
+					reject(err);
+					this.disconnectionHandler(datastoreConnectivity);
 				},
 			});
 		});

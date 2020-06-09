@@ -218,17 +218,18 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 		}
 
 		this._config.credentials = credentials;
-		const { region } = config;
+		const { region, endpoint } = config;
 
-		return this._initKinesis(region, credentials);
+		return this._initKinesis(region, endpoint, credentials);
 	}
 
-	private _initKinesis(region, credentials) {
+	private _initKinesis(region, endpoint, credentials) {
 		logger.debug('initialize kinesis with credentials', credentials);
 		this._kinesis = new KinesisClient({
 			region,
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
+			endpoint,
 		});
 		return true;
 	}
