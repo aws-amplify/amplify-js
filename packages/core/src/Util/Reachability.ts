@@ -6,7 +6,6 @@ type NetworkStatus = {
 
 export default class ReachabilityNavigator implements Reachability {
 	private static _observers: Array<Observer<NetworkStatus>> = [];
-	private _observer: Observer<NetworkStatus> = null;
 
 	networkMonitor(netInfo?: any): Observable<NetworkStatus> {
 		return new Observable(observer => {
@@ -18,14 +17,14 @@ export default class ReachabilityNavigator implements Reachability {
 			window.addEventListener('online', notifyOnline);
 			window.addEventListener('offline', notifyOffline);
 
-			this._observer = observer;
 			ReachabilityNavigator._observers.push(observer);
 
 			return () => {
 				window.removeEventListener('online', notifyOnline);
 				window.removeEventListener('offline', notifyOffline);
+
 				ReachabilityNavigator._observers = ReachabilityNavigator._observers.filter(
-					_observer => _observer !== this._observer
+					_observer => _observer !== observer
 				);
 			};
 		});
@@ -33,11 +32,14 @@ export default class ReachabilityNavigator implements Reachability {
 
 	// expose observers to simulate offline mode for integration testing
 	private static _observerOverride(status: NetworkStatus): void {
-		for (const _observer of ReachabilityNavigator._observers) {
-			if (!(_observer.next && typeof _observer.next === 'function')) {
+		for (const observer of ReachabilityNavigator._observers) {
+			if (observer.complete) {
+				ReachabilityNavigator._observers = ReachabilityNavigator._observers.filter(
+					_observer => _observer !== observer
+				);
 				continue;
 			}
-			_observer.next(status);
+			observer.next(status);
 		}
 	}
 }
