@@ -7,7 +7,6 @@ case $1 in
 	echo 'export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"' >> $BASH_ENV
 	echo 'export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/platform-tools:$PATH"' >> $BASH_ENV
 	echo 'export QEMU_AUDIO_DRV=none' >> $BASH_ENV
-	echo 'export JAVA_HOME=/Library/Java/Home' >> $BASH_ENV
 	source $BASH_ENV
     ;;
   sdkmanager)
