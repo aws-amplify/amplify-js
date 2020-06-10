@@ -569,6 +569,7 @@ releasable_branches: &releasable_branches
       - master
       - ui-components/master
       - 1.0-stable
+      - android-circleci-config # TODO: Remove after testing
 
 workflows:
   build_test_deploy:
@@ -619,6 +620,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_rn_android_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_react_auth_ui:
           requires:
             - integ_setup_ui
@@ -637,24 +644,25 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      - deploy:
-          filters:
-            <<: *releasable_branches
-          requires:
-            - unit_test
-            - integ_react_predictions
-            - integ_react_datastore
-            - integ_react_auth
-            - integ_angular_auth
-            - integ_vue_auth
-            - integ_react_auth_ui
-            - integ_angular_auth_ui
-            - integ_vue_auth_ui
-            - integ_rn_ios_storage
-      - post_release:
-          filters:
-            branches:
-              only:
-                - release
-          requires:
-            - deploy
+      # - deploy:
+      #     filters:
+      #       <<: *releasable_branches
+      #     requires:
+      #       - unit_test
+      #       - integ_react_predictions
+      #       - integ_react_datastore
+      #       - integ_react_auth
+      #       - integ_angular_auth
+      #       - integ_vue_auth
+      #       - integ_react_auth_ui
+      #       - integ_angular_auth_ui
+      #       - integ_vue_auth_ui
+      #       - integ_rn_ios_storage
+      #       - integ_rn_android_storage
+      # - post_release:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #     requires:
+      #       - deploy
