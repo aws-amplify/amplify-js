@@ -474,6 +474,7 @@ releasable_branches: &releasable_branches
       - master
       - ui-components/master
       - 1.0-stable
+      - integ-tests
 
 workflows:
   build_test_deploy:
@@ -548,6 +549,7 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+<<<<<<< HEAD
       - deploy:
           filters:
             <<: *releasable_branches
@@ -570,3 +572,5 @@ workflows:
                 - release
           requires:
             - deploy
+=======
+>>>>>>> Add storage integ test to pipeline
