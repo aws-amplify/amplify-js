@@ -255,27 +255,16 @@ commands:
       - run:
           background: true
           command: >
-            /usr/local/share/android-sdk/emulator/emulator
+            ${ANDROID_SDK_HOME}/emulator/emulator
             TestingAVD -version
-            /usr/local/share/android-sdk/emulator/emulator
+            ${ANDROID_SDK_HOME}/emulator/emulator
             TestingAVD -skin 470x860 -cores 1 -gpu auto -accel on
             -memory 1024 -no-audio -no-snapshot -no-boot-anim -no-window
           name: Start Android Emulator (background)
       - run:
-          command: >
-            export BOOT=""
-            echo "Waiting for AVD to finish booting"
-            export PATH=$(dirname $(dirname $(command -v
-            android)))/platform-tools:$PATH
-            until [[ "$BOOT" =~ "1" ]]; do
-              sleep 5
-              export BOOT=$(adb -e shell getprop sys.boot_completed 2>&1)
-            done
-            sleep 15
-            adb shell settings put global window_animation_scale 0
-            adb shell settings put global transition_animation_scale 0
-            adb shell settings put global animator_duration_scale 0
-            echo "Android Virtual Device is now ready."
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh wait-for-avd
           name: Wait for AVD to be ready
           no_output_timeout: 5m
       - run:
