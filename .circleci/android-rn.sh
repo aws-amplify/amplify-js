@@ -32,7 +32,9 @@ case $1 in
 	adb shell settings put global transition_animation_scale 0
 	adb shell settings put global animator_duration_scale 0
 	echo "Android Virtual Device is now ready."
+	;;
   start-emulator)
     ${ANDROID_SDK_HOME}/emulator/emulator @TestingAVD -version
     ${ANDROID_SDK_HOME}/emulator/emulator @TestingAVD -skin 470x860 -cores 1 -gpu auto -accel on -memory 1024 -no-audio -no-snapshot -no-boot-anim -no-window
+	;;
 esac
