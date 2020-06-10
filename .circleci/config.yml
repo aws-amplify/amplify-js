@@ -17,6 +17,12 @@ executors:
       - image: verdaccio/verdaccio
     resource_class: large
 
+  android-executor:
+    docker:
+      - image: reactnativecommunity/react-native-android
+      - image: verdaccio/verdaccio
+    resource_class: large
+
   ios-executor:
     macos:
       xcode: 11.4.1
@@ -149,7 +155,7 @@ commands:
       - store_artifacts:
           path: ~/amplify-js-samples-staging-ui/cypress/screenshots
 
-  ios_install_verdaccio:
+  install_verdaccio:
     steps:
       - run:
           name: Install Verdaccio
@@ -161,11 +167,11 @@ commands:
             cd ~
             verdaccio
 
-  integ_test_rn:
+  integ_test_rn_ios:
     steps:
       - attach_workspace:
           at: ~/
-      - ios_install_verdaccio
+      - install_verdaccio
       - publish_to_verdaccio
       - run:
           name: Yarn Install
@@ -204,6 +210,140 @@ commands:
             JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
           name: Detox Test
           command: detox test -c ios.sim.debug -u
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
+
+  integ_test_rn_android:
+    steps:
+      - attach_workspace:
+          at: ~/
+      - install_verdaccio
+      - publish_to_verdaccio
+      - run:
+        command: >
+          echo 'export
+          PATH="$PATH:/usr/local/opt/node@8/bin:~/.yarn/bin:~/project/node_modules/.bin:~/project/example/node_modules/.bin"'
+          >> $BASH_ENV
+
+          echo 'export ANDROID_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
+
+          echo 'export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"' >>
+          $BASH_ENV
+
+          echo 'export
+          PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/platform-tools:$PATH"'
+          >> $BASH_ENV
+
+          echo 'export QEMU_AUDIO_DRV=none' >> $BASH_ENV
+
+          echo 'export JAVA_HOME=/Library/Java/Home' >> $BASH_ENV
+
+          source $BASH_ENV
+        name: Configure Environment Variables
+      - restore_cache:
+        key: |
+          brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
+      - run:
+          name: Configure Detox
+          environment:
+            HOMEBREW_NO_AUTO_UPDATE: '1'
+          command: |
+            brew tap wix/brew
+            brew tap homebrew/cask
+            brew cask install android-sdk
+            yarn global add detox-cli
+      - save_cache:
+        key: |
+          brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
+        paths:
+          - /usr/local/Homebrew
+          - ~/Library/Caches/Homebrew
+      - run:
+          name: Yarn Install
+          command: |
+            echo "Current NPM registry: " $(yarn config get registry)
+            yarn install --frozen-lockfile --non-interactive
+      - run:
+        command: >
+          yes | sdkmanager "platform-tools" "tools" >/dev/null
+
+          yes | sdkmanager "platforms;android-29"
+          "system-images;android-29;google_apis;x86"
+          >/dev/null
+
+          yes | sdkmanager "emulator" --channel=3 >/dev/null
+
+          yes | sdkmanager "build-tools;29.0.0"
+          >/dev/null
+
+          yes | sdkmanager --licenses >/dev/null
+
+          yes | sdkmanager --list
+        name: Install Android Emulator
+        shell: /bin/bash -e
+      - run:
+        command: |
+          adb start-server
+          adb devices
+          adb kill-server
+          ls -la ~/.android
+        name: ADB Start Stop
+      - run:
+        command: >-
+          avdmanager create avd --force -n TestingAVD -k
+          "system-images;android-29;google_apis;x86" -g
+          google_apis -d "Nexus 4"
+        name: Create Android Emulator
+      - run:
+        background: true
+        command: >
+          /usr/local/share/android-sdk/emulator/emulator
+          TestingAVD -version
+
+          /usr/local/share/android-sdk/emulator/emulator
+          TestingAVD -skin 470x860 -cores 1 -gpu auto -accel on
+          -memory 1024 -no-audio -no-snapshot -no-boot-anim -no-window
+        name: Start Android Emulator (background)
+      - run:
+        command: >
+          export BOOT=""
+
+          echo "Waiting for AVD to finish booting"
+
+          export PATH=$(dirname $(dirname $(command -v
+          android)))/platform-tools:$PATH
+
+          until [[ "$BOOT" =~ "1" ]]; do
+            sleep 5
+            export BOOT=$(adb -e shell getprop sys.boot_completed 2>&1)
+          done
+
+          sleep 15
+
+          adb shell settings put global window_animation_scale 0
+
+          adb shell settings put global transition_animation_scale 0
+
+          adb shell settings put global animator_duration_scale 0
+
+          echo "Android Virtual Device is now ready."
+        name: Wait for AVD to be ready
+        no_output_timeout: 5m
+      - run:
+          background: true
+          command: yarn start
+          name: Start Metro Packager (background)
+      - run:
+          name: Detox Build
+          command: detox build -c android.emu.debug
+      - run:
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
+            JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
+          name: Detox Test
+          command: detox test -c android.emu.debug -u
       - store_test_results:
           path: reports/junit
       - store_artifacts:
@@ -408,7 +548,14 @@ jobs:
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
-      - integ_test_rn
+      - integ_test_rn_ios
+
+  integ_rn_android_storage:
+    executor: android-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+    steps:
+      - integ_test_rn_android
 
   deploy:
     executor: build-executor
