@@ -219,10 +219,11 @@ commands:
     steps:
       - attach_workspace:
           at: ~/
-      - install_verdaccio
       - publish_to_verdaccio
       - run:
-          command: ./.circleci/android-rn.sh export-env
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh export-env
           name: Configure Environment Variables
       - restore_cache:
           key: |
@@ -248,7 +249,9 @@ commands:
             echo "Current NPM registry: " $(yarn config get registry)
             yarn install --frozen-lockfile --non-interactive
       - run:
-          command: ./.circleci/android-rn.sh sdkmanager
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh sdkmanager
           name: Install Android Emulator
           shell: /bin/bash -e
       - run:
