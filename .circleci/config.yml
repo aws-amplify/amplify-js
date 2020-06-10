@@ -225,24 +225,9 @@ commands:
             cd ~/amplify-js
             ./.circleci/android-rn.sh export-env
           name: Configure Environment Variables
-      - restore_cache:
-          key: |
-            brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
       - run:
           name: Configure Detox
-          environment:
-            HOMEBREW_NO_AUTO_UPDATE: '1'
-          command: |
-            brew tap wix/brew
-            brew tap homebrew/cask
-            brew cask install android-sdk
-            yarn global add detox-cli
-      - save_cache:
-          key: |
-            brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
-          paths:
-            - /usr/local/Homebrew
-            - ~/Library/Caches/Homebrew
+          command: yarn global add detox-cli
       - run:
           name: Yarn Install
           command: |
