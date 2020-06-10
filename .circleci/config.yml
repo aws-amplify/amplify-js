@@ -112,7 +112,7 @@ commands:
           name: 'Run cypress tests for << parameters.test_name >> Sample'
           command: |
             cd ~/amplify-js-samples-staging
-            yarn cypress:<< parameters.framework >> --spec "cypress/integration/<< parameters.spec >>"
+            sleep 30 && yarn cypress:<< parameters.framework >> --spec "cypress/integration/<< parameters.spec >>"
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
