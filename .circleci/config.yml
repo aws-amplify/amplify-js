@@ -250,7 +250,7 @@ commands:
           command: >-
             avdmanager create avd --force -n TestingAVD -k
             "system-images;android-24;default;armeabi-v7a" -g
-            google_apis -d "Nexus 4"
+            default -d "Nexus 4"
           name: Create Android Emulator
       - run:
           background: true
