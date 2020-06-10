@@ -2,10 +2,10 @@
 
 case $1 in
   export-env)
-    echo 'export PATH="$PATH:/usr/local/opt/node@8/bin:~/.yarn/bin:~/project/node_modules/.bin:~/project/example/node_modules/.bin"' >> $BASH_ENV
-	echo 'export ANDROID_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
-	echo 'export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"' >> $BASH_ENV
-	echo 'export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/platform-tools:$PATH"' >> $BASH_ENV
+    # echo 'export PATH="$PATH:/usr/local/opt/node@8/bin:~/.yarn/bin:~/project/node_modules/.bin:~/project/example/node_modules/.bin"' >> $BASH_ENV
+	# echo 'export ANDROID_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
+	# echo 'export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"' >> $BASH_ENV
+	echo 'export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"' >> $BASH_ENV
 	echo 'export QEMU_AUDIO_DRV=none' >> $BASH_ENV
 	source $BASH_ENV
     ;;

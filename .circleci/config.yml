@@ -249,8 +249,8 @@ commands:
       - run:
           command: >-
             avdmanager create avd --force -n TestingAVD -k
-            "system-images;android-24;default;armeabi-v7a" -g
-            default -d "Nexus 4"
+            "system-images;android-24;default;armeabi-v7a" -g default
+            -d "Nexus 4" -p ${ANDROID_SDK_HOME}/avd/TestingAVD.ini
           name: Create Android Emulator
       - run:
           background: true
