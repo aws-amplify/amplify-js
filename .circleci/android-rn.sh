@@ -12,7 +12,7 @@ case $1 in
     ;;
   sdkmanager)
     yes | sdkmanager "platform-tools" "tools" >/dev/null
-	yes | sdkmanager "platforms;android-29"
+	yes | sdkmanager "platforms;android-29" >/dev/null
 	yes | sdkmanager "system-images;android-29;google_apis;x86" >/dev/null
 	yes | sdkmanager "emulator" --channel=3 >/dev/null
 	yes | sdkmanager "build-tools;29.0.0" >/dev/null
