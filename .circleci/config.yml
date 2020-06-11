@@ -18,10 +18,8 @@ executors:
     resource_class: large
 
   android-executor:
-    docker:
-      - image: reactnativecommunity/react-native-android
-      - image: verdaccio/verdaccio
-    resource_class: large
+    macos:
+      xcode: 11.4.1
 
   ios-executor:
     macos:
@@ -219,15 +217,54 @@ commands:
     steps:
       - attach_workspace:
           at: ~/
+      - install_verdaccio
       - publish_to_verdaccio
       - run:
           command: |
             cd ~/amplify-js
             ./.circleci/android-rn.sh export-env
           name: Configure Environment Variables
+      - restore_cache:
+          key: |
+            brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
       - run:
-          name: Configure Detox
-          command: yarn global add detox-cli
+          command: >
+            set +e
+
+            curl -o-
+            https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh |
+            bash
+
+            echo 'export NVM_DIR=$HOME/.nvm' >> $BASH_ENV
+
+            echo 'source $NVM_DIR/nvm.sh' >> $BASH_ENV
+
+            source ~/.bashrc
+
+            command -v nvm
+
+            nvm install 10
+
+            nvm alias default 10
+          name: Install node@10
+      - run:
+          command: node --version
+          name: Verify node version
+      - run:
+          command: |
+            HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
+            HOMEBREW_NO_AUTO_UPDATE=1 brew tap homebrew/cask >/dev/null
+            HOMEBREW_NO_AUTO_UPDATE=1 brew cask install android-sdk >/dev/null
+            yarn global add detox-cli
+            touch .watchmanconfig
+            node -v
+          name: Configure Detox Environment
+      - save_cache:
+          key: |
+            brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
+          paths:
+            - /usr/local/Homebrew
+            - ~/Library/Caches/Homebrew
       - run:
           name: Yarn Install
           command: |
@@ -248,9 +285,9 @@ commands:
           name: ADB Start Stop
       - run:
           command: >-
-            avdmanager create avd --force -n TestingAVD -k
-            "system-images;android-24;default;armeabi-v7a" -g default
-            -d "Nexus 4" -p ${ANDROID_SDK_HOME}/avd/TestingAVD.ini
+            avdmanager create avd --force --name TestingAVD
+            --package "system-images;android-29;default;x86_64"
+            --tag default --device pixel
           name: Create Android Emulator
       - run:
           background: true

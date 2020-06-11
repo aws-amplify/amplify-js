@@ -2,17 +2,17 @@
 
 case $1 in
   export-env)
-    # echo 'export PATH="$PATH:/usr/local/opt/node@8/bin:~/.yarn/bin:~/project/node_modules/.bin:~/project/example/node_modules/.bin"' >> $BASH_ENV
-	# echo 'export ANDROID_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
-	echo 'export ANDROID_SDK_ROOT="$ANDROID_HOME"' >> $BASH_ENV
-	echo 'export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"' >> $BASH_ENV
-	echo 'export QEMU_AUDIO_DRV=none' >> $BASH_ENV
-	source $BASH_ENV
+    echo 'export PATH="$PATH:/usr/local/opt/node@10/bin:~/.yarn/bin:~/project/node_modules/.bin:~/project/example/node_modules/.bin"' >> $BASH_ENV
+    echo 'export ANDROID_HOME="/usr/local/share/android-sdk"' >> $BASH_ENV
+    echo 'export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"' >> $BASH_ENV
+    echo 'export PATH="$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools:$ANDROID_SDK_ROOT/platform-tools:$PATH"' >> $BASH_ENV
+    echo 'export QEMU_AUDIO_DRV=none' >> $BASH_ENV
+    echo 'export JAVA_HOME=$(/usr/libexec/java_home)' >> $BASH_ENV
+    source $BASH_ENV
     ;;
   sdkmanager)
-    yes | sdkmanager "platform-tools" "tools" >/dev/null
-	yes | sdkmanager "platforms;android-24" >/dev/null
-	yes | sdkmanager "system-images;android-24;default;armeabi-v7a" >/dev/null
+	yes | sdkmanager "platform-tools" "tools" >/dev/null
+	yes | sdkmanager "platforms;android-29" "system-images;android-29;default;x86_64" >/dev/null
 	yes | sdkmanager "emulator" --channel=3 >/dev/null
 	yes | sdkmanager "build-tools;29.0.0" >/dev/null
 	yes | sdkmanager --licenses >/dev/null
@@ -34,7 +34,7 @@ case $1 in
 	echo "Android Virtual Device is now ready."
 	;;
   start-emulator)
-    ${ANDROID_SDK_HOME}/emulator/emulator @TestingAVD -version
-    ${ANDROID_SDK_HOME}/emulator/emulator @TestingAVD -skin 470x860 -cores 1 -gpu auto -accel on -memory 1024 -no-audio -no-snapshot -no-boot-anim -no-window
+    $ANDROID_HOME/emulator/emulator @TestingAVD -version
+	$ANDROID_HOME/emulator/emulator @TestingAVD -cores 1 -gpu auto -accel on -memory 1024 -no-audio -no-snapshot -no-boot-anim -no-window
 	;;
 esac
