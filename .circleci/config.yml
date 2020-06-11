@@ -112,7 +112,7 @@ commands:
           name: 'Run cypress tests for << parameters.test_name >> Sample'
           command: |
             cd ~/amplify-js-samples-staging
-            sleep 30 && yarn cypress:<< parameters.framework >> --spec "cypress/integration/<< parameters.spec >>"
+            yarn cypress:<< parameters.framework >> --spec "cypress/integration/<< parameters.spec >>"
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -136,7 +136,6 @@ commands:
       - run:
           name: 'Install << parameters.test_name >> sample'
           command: |
-            cd ~/amplify-js-samples-staging-ui/samples
             cd << parameters.framework >>/<< parameters.category >>/<< parameters.sample_name >>
             echo "Current NPM registry: " $(yarn config get registry)
             yarn
@@ -319,15 +318,13 @@ jobs:
   integ_react_storage:
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging-ui/samples/react/storage/storageApp
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageApp
     steps:
       - prepare_test_env
-      - integ_test_ui:
+      - integ_test_js:
           test_name: 'React Storage'
           framework: react
-          category: storage
-          sample_name: storageApp
-          spec: storage
+          spec: storage/storage.spec.js
 
   integ_setup_ui:
     executor: build-executor
@@ -477,7 +474,6 @@ releasable_branches: &releasable_branches
       - master
       - ui-components/master
       - 1.0-stable
-      - integ-tests
 
 workflows:
   build_test_deploy:
@@ -552,3 +548,24 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - deploy:
+          filters:
+            <<: *releasable_branches
+          requires:
+            - unit_test
+            - integ_react_predictions
+            - integ_react_datastore
+            - integ_react_auth
+            - integ_angular_auth
+            - integ_vue_auth
+            - integ_react_auth_ui
+            - integ_angular_auth_ui
+            - integ_vue_auth_ui
+            - integ_rn_ios_storage
+      - post_release:
+          filters:
+            branches:
+              only:
+                - release
+          requires:
+            - deploy
