@@ -220,6 +220,7 @@ commands:
       - install_verdaccio
       - publish_to_verdaccio
       - run:
+          # https://reactnative.dev/docs/environment-setup
           command: |
             cd ~/amplify-js
             ./.circleci/android-rn.sh export-env
@@ -228,11 +229,14 @@ commands:
           key: |
             brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
       - run:
+          # React Native Android can have issues with later versions of Node:
+          # https://github.com/facebook/react-native/issues/26808
           command: |
             cd ~/amplify-js
             ./.circleci/android-rn.sh install-node
           name: Install node@10
       - run:
+          # https://reactnative.dev/docs/environment-setup
           environment:
             HOMEBREW_NO_AUTO_UPDATE: '1'
           command: |
@@ -255,12 +259,14 @@ commands:
             echo "Current NPM registry: " $(yarn config get registry)
             yarn install --frozen-lockfile --non-interactive
       - run:
+          # Install Android Emulator without Android Studio
           command: |
             cd ~/amplify-js
             ./.circleci/android-rn.sh sdkmanager
           name: Install Android Emulator
           shell: /bin/bash -e
       - run:
+          # Force ssh key generation for emulators
           command: |
             adb start-server
             adb devices
@@ -268,6 +274,7 @@ commands:
             ls -la ~/.android
           name: ADB Start Stop
       - run:
+          # Create Android Emulator without Android Studio
           command: >-
             avdmanager create avd --force --name TestingAVD
             --package "system-images;android-29;default;x86_64"
