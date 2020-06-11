@@ -454,7 +454,8 @@ export class CredentialsClass {
 				})
 				.catch(err => {
 					if (err) {
-						logger.debug('Failed to load credentials', err);
+						logger.debug('Failed to load credentials', credentials);
+						logger.debug('Error loading credentials', err);
 						rej(err);
 						return;
 					}
