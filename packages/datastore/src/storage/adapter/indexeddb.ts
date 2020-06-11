@@ -26,6 +26,7 @@ import {
 	validatePredicate,
 } from '../../util';
 import { Adapter } from './index';
+import { tsIndexSignature } from '@babel/types';
 
 const logger = new Logger('DataStore');
 
@@ -757,14 +758,28 @@ class IndexedDBAdapter implements Adapter {
 		const store = txn.store;
 
 		for (const item of items) {
+			const connectedModels = traverseModel(
+				modelConstructor.name,
+				this.modelInstanceCreator(modelConstructor, item),
+				this.schema.namespaces[this.namespaceResolver(modelConstructor)],
+				this.modelInstanceCreator,
+				this.getModelConstructorByModelName
+			);
+
 			const { id, _deleted } = item;
 			const index = store.index('byId');
 			const key = await index.getKey(id);
 
 			if (!_deleted) {
-				result.push([<T>(<unknown>item), key ? OpType.UPDATE : OpType.INSERT]);
+				const { instance } = connectedModels.find(
+					({ instance }) => instance.id === id
+				);
 
-				await store.put(item, key);
+				result.push([
+					<T>(<unknown>instance),
+					key ? OpType.UPDATE : OpType.INSERT,
+				]);
+				await store.put(instance, key);
 			} else {
 				result.push([<T>(<unknown>item), OpType.DELETE]);
 

@@ -315,6 +315,17 @@ jobs:
           framework: react
           spec: datastore/many-to-many.spec.js
 
+  integ_react_storage:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageApp
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Storage'
+          framework: react
+          spec: storage/storage.spec.js
+
   integ_setup_ui:
     executor: build-executor
     working_directory: ~/
@@ -502,6 +513,12 @@ workflows:
           filters:
             <<: *releasable_branches
       - integ_react_datastore:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_storage:
           requires:
             - integ_setup
             - build
