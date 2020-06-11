@@ -318,7 +318,7 @@ jobs:
   integ_react_storage:
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/storage
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageApp
     steps:
       - prepare_test_env
       - integ_test_js:
