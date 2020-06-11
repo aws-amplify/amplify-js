@@ -10,6 +10,16 @@ case $1 in
     echo 'export JAVA_HOME=$(/usr/libexec/java_home)' >> $BASH_ENV
     source $BASH_ENV
     ;;
+  install-node)
+    set +e
+	curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.35.3/install.sh | bash
+	echo 'export NVM_DIR=$HOME/.nvm' >> $BASH_ENV
+	echo 'source $NVM_DIR/nvm.sh' >> $BASH_ENV
+	source ~/.bashrc
+	command -v nvm
+	nvm install 10
+	nvm alias default 10
+	;;
   sdkmanager)
 	yes | sdkmanager "platform-tools" "tools" >/dev/null
 	yes | sdkmanager "platforms;android-29" "system-images;android-29;default;x86_64" >/dev/null
