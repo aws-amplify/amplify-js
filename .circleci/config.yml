@@ -136,6 +136,7 @@ commands:
       - run:
           name: 'Install << parameters.test_name >> sample'
           command: |
+            cd ~/amplify-js-samples-staging-ui/samples
             cd << parameters.framework >>/<< parameters.category >>/<< parameters.sample_name >>
             echo "Current NPM registry: " $(yarn config get registry)
             yarn
@@ -318,7 +319,7 @@ jobs:
   integ_react_storage:
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging-ui/samples
+    working_directory: ~/amplify-js-samples-staging-ui/samples/react/storage/storageApp
     steps:
       - prepare_test_env
       - integ_test_ui:
