@@ -326,18 +326,18 @@ jobs:
           framework: react
           spec: storage/storage.spec.js
 
-   integ_react_storage_ui:
-     executor: js-test-executor
-     <<: *test_env_vars
-     working_directory: ~/amplify-js-samples-staging-ui/samples
-     steps:
-       - prepare_test_env
-       - integ_test_ui:
-           test_name: 'React Storage'
-           framework: react
-           category: storage
-           sample_name: storageApp
-           spec: storage
+  integ_react_storage_ui:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging-ui/samples
+    steps:
+      - prepare_test_env
+      - integ_test_ui:
+          test_name: 'React Storage'
+          framework: react
+          category: storage
+          sample_name: storageApp
+          spec: storage/storage.spec.js
 
   integ_setup_ui:
     executor: build-executor
