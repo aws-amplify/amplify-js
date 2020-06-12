@@ -1906,6 +1906,14 @@ export class AuthClass {
 					// This calls cacheTokens() in Cognito SDK
 					currentUser.setSignInUserSession(session);
 
+					if (window && typeof window.history !== 'undefined') {
+						window.history.replaceState(
+							{},
+							null,
+							(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
+						);
+					}
+
 					dispatchAuthEvent(
 						'signIn',
 						currentUser,
@@ -1930,14 +1938,6 @@ export class AuthClass {
 						);
 					}
 					//#endregion
-
-					if (window && typeof window.history !== 'undefined') {
-						window.history.replaceState(
-							{},
-							null,
-							(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
-						);
-					}
 
 					return credentials;
 				} catch (err) {
