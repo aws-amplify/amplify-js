@@ -49,7 +49,7 @@ declare module 'amazon-cognito-identity-js' {
 
 	export interface ICognitoStorage {
 		setItem(key: string, value: string): void;
-		getItem(key: string): string;
+		getItem(key: string): string | null;
 		removeItem(key: string): void;
 		clear(): void;
 	}
