@@ -1,4 +1,5 @@
 import 'fake-indexeddb/auto';
+import { decodeTime } from 'ulid';
 import uuidValidate from 'uuid-validate';
 import Observable from 'zen-observable-ts';
 import {
@@ -24,8 +25,9 @@ beforeEach(() => {
 
 	jest.doMock('../src/storage/storage', () => {
 		const mock = jest.fn().mockImplementation(() => ({
+			init: jest.fn(),
 			runExclusive: jest.fn(),
-			query: jest.fn(),
+			query: jest.fn(() => []),
 			observe: jest.fn(() => Observable.of()),
 		}));
 
@@ -76,11 +78,12 @@ describe('DataStore tests', () => {
 			expect(uuidValidate(model.id, 4)).toBe(true);
 		});
 
-		test('Non-syncable models get a uuid v1', () => {
+		test('Non-syncable models get a ulid', () => {
 			const { LocalModel } = initSchema(testSchema()) as {
 				LocalModel: PersistentModelConstructor<Model>;
 			};
 
+			const now = Date.now();
 			const model = new LocalModel({
 				field1: 'something',
 			});
@@ -89,13 +92,11 @@ describe('DataStore tests', () => {
 
 			expect(model.id).toBeDefined();
 
-			/**
-			 * local models use something like a uuid v1
-			 * see https://github.com/kelektiv/node-uuid/issues/75#issuecomment-483756623
-			 */
-			expect(
-				uuidValidate(model.id.replace(/^(.{4})-(.{4})-(.{8})/, '$3-$2-$1'), 1)
-			).toBe(true);
+			const decodedTime = decodeTime(model.id);
+
+			const diff = Math.abs(decodedTime - now);
+
+			expect(diff).toBeLessThan(1000);
 		});
 
 		test('initSchema is executed only once', () => {
@@ -239,12 +240,40 @@ describe('DataStore tests', () => {
 	});
 
 	describe('Basic operations', () => {
+		let Model: PersistentModelConstructor<Model>;
+		let Metadata: NonModelTypeConstructor<Metadata>;
+
+		beforeEach(() => {
+			jest.resetModules();
+			jest.doMock('../src/storage/storage', () => {
+				const mock = jest.fn().mockImplementation(() => ({
+					init: jest.fn(),
+					runExclusive: jest.fn(() => []),
+					query: jest.fn(() => []),
+					observe: jest.fn(() => Observable.from([])),
+				}));
+
+				(<any>mock).getNamespace = () => ({ models: {} });
+
+				return { ExclusiveStorage: mock };
+			});
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			({ Model, Metadata } = classes as {
+				Model: PersistentModelConstructor<Model>;
+				Metadata: NonModelTypeConstructor<Metadata>;
+			});
+		});
+
 		test('Save returns the saved model', async () => {
 			let model: Model;
 
 			jest.resetModules();
 			jest.doMock('../src/storage/storage', () => {
 				const mock = jest.fn().mockImplementation(() => ({
+					init: jest.fn(),
 					runExclusive: jest.fn(() => [model]),
 				}));
 
@@ -265,6 +294,110 @@ describe('DataStore tests', () => {
 			const result = await DataStore.save(model);
 
 			expect(result).toMatchObject(model);
+		});
+
+		test('Instantiation validations', async () => {
+			expect(() => {
+				new Model({ field1: undefined });
+			}).toThrowError('Field field1 is required');
+
+			expect(() => {
+				new Model({ field1: null });
+			}).toThrowError('Field field1 is required');
+
+			expect(() => {
+				new Model({ field1: <any>1234 });
+			}).toThrowError(
+				'Field field1 should be of type string, number received. 1234'
+			);
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						tags: undefined,
+					}),
+				});
+			}).toThrowError(
+				'Field tags should be of type string[], undefined received. undefined'
+			);
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						tags: [<any>1234],
+					}),
+				});
+			}).toThrowError(
+				'All elements in the tags array should be of type string, [number] received. 1234'
+			);
+
+			expect(
+				new Model(<any>{ extraAttribute: 'some value', field1: 'some value' })
+			).toHaveProperty('extraAttribute');
+
+			expect(() => {
+				Model.copyOf(<any>undefined, d => d);
+			}).toThrow('The source object is not a valid model');
+		});
+
+		test('Delete params', async () => {
+			await expect(DataStore.delete(<any>undefined)).rejects.toThrow(
+				'Model or Model Constructor required'
+			);
+
+			await expect(DataStore.delete(<any>Model)).rejects.toThrow(
+				'Id to delete or criteria required. Do you want to delete all? Pass Predicates.ALL'
+			);
+
+			await expect(DataStore.delete(Model, <any>(() => {}))).rejects.toThrow(
+				'Criteria required. Do you want to delete all? Pass Predicates.ALL'
+			);
+
+			await expect(DataStore.delete(Model, <any>(() => {}))).rejects.toThrow(
+				'Criteria required. Do you want to delete all? Pass Predicates.ALL'
+			);
+
+			await expect(DataStore.delete(<any>{})).rejects.toThrow(
+				'Object is not an instance of a valid model'
+			);
+
+			await expect(
+				DataStore.delete(new Model({ field1: 'somevalue' }), <any>{})
+			).rejects.toThrow('Invalid criteria');
+		});
+
+		test('Query params', async () => {
+			await expect(DataStore.query(<any>undefined)).rejects.toThrow(
+				'Constructor is not for a valid model'
+			);
+
+			await expect(DataStore.query(<any>undefined)).rejects.toThrow(
+				'Constructor is not for a valid model'
+			);
+
+			await expect(
+				DataStore.query(Model, <any>'someid', { page: 0 })
+			).rejects.toThrow('Limit is required when requesting a page');
+
+			await expect(
+				DataStore.query(Model, <any>'someid', { page: <any>'a', limit: 10 })
+			).rejects.toThrow('Page should be a number');
+
+			await expect(
+				DataStore.query(Model, <any>'someid', { page: -1, limit: 10 })
+			).rejects.toThrow("Page can't be negative");
+
+			await expect(
+				DataStore.query(Model, <any>'someid', { page: 0, limit: <any>'avalue' })
+			).rejects.toThrow('Limit should be a number');
+
+			await expect(
+				DataStore.query(Model, <any>'someid', { page: 0, limit: -1 })
+			).rejects.toThrow("Limit can't be negative");
 		});
 	});
 
@@ -292,6 +425,7 @@ describe('DataStore tests', () => {
 			jest.resetModules();
 			jest.doMock('../src/storage/storage', () => {
 				const mock = jest.fn().mockImplementation(() => ({
+					init: jest.fn(),
 					runExclusive: jest.fn(() => [model]),
 					query: jest.fn(() => [model]),
 					observe: jest.fn(() => Observable.from([])),

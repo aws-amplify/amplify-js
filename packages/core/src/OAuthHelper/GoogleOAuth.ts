@@ -12,6 +12,7 @@
  */
 import { ConsoleLogger as Logger } from '../Logger';
 import { browserOrNode } from '../JS';
+import { NonRetryableError } from '../Util';
 
 const logger = new Logger('CognitoCredentials');
 
@@ -64,31 +65,39 @@ export class GoogleOAuth {
 			ga.getAuthInstance()
 				.then(googleAuth => {
 					if (!googleAuth) {
-						console.log('google Auth undefiend');
-						rej('google Auth undefiend');
+						logger.debug('google Auth undefined');
+						rej(new NonRetryableError('google Auth undefined'));
 					}
 
 					const googleUser = googleAuth.currentUser.get();
 					// refresh the token
 					if (googleUser.isSignedIn()) {
 						logger.debug('refreshing the google access token');
-						googleUser.reloadAuthResponse().then(authResponse => {
-							const { id_token, expires_at } = authResponse;
-							const profile = googleUser.getBasicProfile();
-							const user = {
-								email: profile.getEmail(),
-								name: profile.getName(),
-							};
-
-							res({ token: id_token, expires_at });
-						});
+						googleUser
+							.reloadAuthResponse()
+							.then(authResponse => {
+								const { id_token, expires_at } = authResponse;
+								res({ token: id_token, expires_at });
+							})
+							.catch(err => {
+								if (err && err.error === 'network_error') {
+									// Not using NonRetryableError so handler will be retried
+									rej('Network error reloading google auth response');
+								} else {
+									rej(
+										new NonRetryableError(
+											'Failed to reload google auth response'
+										)
+									);
+								}
+							});
 					} else {
-						rej('User is not signed in with Google');
+						rej(new NonRetryableError('User is not signed in with Google'));
 					}
 				})
 				.catch(err => {
 					logger.debug('Failed to refresh google token', err);
-					rej('Failed to refresh google token');
+					rej(new NonRetryableError('Failed to refresh google token'));
 				});
 		});
 	}

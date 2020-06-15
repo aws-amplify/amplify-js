@@ -17,6 +17,7 @@ export * from './Providers';
 enum CONTROL_MSG {
 	CONNECTION_CLOSED = 'Connection closed',
 	TIMEOUT_DISCONNECT = 'Timeout disconnect',
+	SUBSCRIPTION_ACK = 'Subscription ack',
 }
 
 export { PubSub, CONTROL_MSG };
