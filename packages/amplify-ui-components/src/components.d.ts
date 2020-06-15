@@ -45,6 +45,10 @@ export namespace Components {
          */
         "federated": FederatedConfig;
         /**
+          * Callback for Authenticator state machine changes
+         */
+        "handleAuthStateChange": AuthStateHandler;
+        /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
         "initialAuthState": AuthState.SignIn | AuthState.SignUp;
@@ -581,6 +585,10 @@ export namespace Components {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+         */
+        "inputProps"?: object;
+        /**
           * Label for the radio button
          */
         "label": string;
@@ -768,6 +776,10 @@ export namespace Components {
           * Auth state change handler for this component
          */
         "handleAuthStateChange": AuthStateHandler;
+        /**
+          * Used for header text in totp setup component
+         */
+        "headerText": string;
         /**
           * Used in order to configure TOTP for a user
          */
@@ -1176,6 +1188,10 @@ declare namespace LocalJSX {
           * Federated credentials & configuration.
          */
         "federated"?: FederatedConfig;
+        /**
+          * Callback for Authenticator state machine changes
+         */
+        "handleAuthStateChange"?: AuthStateHandler;
         /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
@@ -1717,6 +1733,10 @@ declare namespace LocalJSX {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+         */
+        "inputProps"?: object;
+        /**
           * Label for the radio button
          */
         "label"?: string;
@@ -1904,6 +1924,10 @@ declare namespace LocalJSX {
           * Auth state change handler for this component
          */
         "handleAuthStateChange"?: AuthStateHandler;
+        /**
+          * Used for header text in totp setup component
+         */
+        "headerText"?: string;
         /**
           * Used in order to configure TOTP for a user
          */

@@ -2,20 +2,20 @@
 
 Thank you for your interest in contributing to our project! <3 Whether it's a bug report, new feature, correction, or additional documentation, we greatly value feedback and contributions from our community. Please read through these guidelines carefully before submitting a PR or issue and let us know if it's not up-to-date (or even better, submit a PR with your corrections ;)).
 
-- Our History and Ethos
-- Our Design
-- Development Process
-	- Setting up for local development
-	- Architecture of the codebase
-	- Steps towards contributions
-- Pull Requests
-- Debugging
-- Release
-- Finding contributions to work on
-- Related Repositories
-- Code of Conduct
-- Security issue notifications
-- Licensing
+- [Our History and Ethos](#our-history-and-ethos)
+- [Our Design](#our-design)
+- [Development Process](#development-process)
+  * [Setting up for local development](#setting-up-for-local-development)
+  * [Architecture of the codebase](#architecture-of-the-codebase)
+  * [Steps towards contributions](#steps-towards-contributions)
+- [Pull Requests](#pull-requests)
+- [Debugging](#debugging)
+- [Release](#release)
+  * [Finding contributions to work on](#finding-contributions-to-work-on)
+  * [Related Repositories](#related-repositories)
+  * [Code of Conduct](#code-of-conduct)
+  * [Security issue notifications](#security-issue-notifications)
+  * [Licensing](#licensing)
 
 # Our History and Ethos
 
@@ -191,7 +191,7 @@ _[Skip step 1 to 3 if you have already done this]_
 8. Finally, the Amplify JS team will review your PR. Add reviewers based on the core member who is tracking the issue with you or code owners.
    _In the meantime, address any automated check that fail (such as linting, unit tests, etc. in CI)_
 
-# Debugging:
+# Debugging
 
 Sometimes the issue can be solved by doing a clean and fresh build. To do this, make sure to remove your node modules and clean your packages. You can run `git clean -xdf` in the repository root to achieve this.
 

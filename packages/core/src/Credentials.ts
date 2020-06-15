@@ -2,6 +2,7 @@ import { ConsoleLogger as Logger } from './Logger';
 import { StorageHelper } from './StorageHelper';
 import { makeQuerablePromise } from './JS';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
+import { jitteredExponentialRetry } from './Util';
 import { ICredentials } from './types';
 import { getAmplifyUserAgent } from './Platform';
 import { Amplify } from './Amplify';
@@ -50,7 +51,10 @@ export class CredentialsClass {
 		// If the developer has provided an object of refresh handlers,
 		// then we can merge the provided handlers with the current handlers.
 		if (refreshHandlers) {
-			this._refreshHandlers = { ...this._refreshHandlers, ...refreshHandlers };
+			this._refreshHandlers = {
+				...this._refreshHandlers,
+				...refreshHandlers,
+			};
 		}
 
 		this._storage = this._config.storage;
@@ -103,8 +107,8 @@ export class CredentialsClass {
 
 	public refreshFederatedToken(federatedInfo) {
 		logger.debug('Getting federated credentials');
-		const { provider, user } = federatedInfo;
-		let { token, expires_at, identity_id } = federatedInfo;
+		const { provider, user, token, identity_id } = federatedInfo;
+		let { expires_at } = federatedInfo;
 
 		// Make sure expires_at is in millis
 		expires_at =
@@ -131,32 +135,46 @@ export class CredentialsClass {
 				typeof that._refreshHandlers[provider] === 'function'
 			) {
 				logger.debug('getting refreshed jwt token from federation provider');
-				return that._refreshHandlers[provider]()
-					.then(data => {
-						logger.debug('refresh federated token sucessfully', data);
-						token = data.token;
-						identity_id = data.identity_id;
-						expires_at = data.expires_at;
-
-						return that._setCredentialsFromFederation({
-							provider,
-							token,
-							user,
-							identity_id,
-							expires_at,
-						});
-					})
-					.catch(e => {
-						logger.debug('refresh federated token failed', e);
-						this.clear();
-						return Promise.reject('refreshing federation token failed: ' + e);
-					});
+				return this._providerRefreshWithRetry({
+					refreshHandler: that._refreshHandlers[provider],
+					provider,
+					user,
+				});
 			} else {
 				logger.debug('no refresh handler for provider:', provider);
 				this.clear();
 				return Promise.reject('no refresh handler for provider');
 			}
 		}
+	}
+
+	private _providerRefreshWithRetry({ refreshHandler, provider, user }) {
+		const MAX_DELAY_MS = 10 * 1000;
+		// refreshHandler will retry network errors, otherwise it will
+		// return NonRetryableError to break out of jitteredExponentialRetry
+		return jitteredExponentialRetry(refreshHandler, [], MAX_DELAY_MS)
+			.then(data => {
+				logger.debug('refresh federated token sucessfully', data);
+				return this._setCredentialsFromFederation({
+					provider,
+					token: data.token,
+					user,
+					identity_id: data.identity_id,
+					expires_at: data.expires_at,
+				});
+			})
+			.catch(e => {
+				const isNetworkError =
+					typeof e === 'string' &&
+					e.toLowerCase().lastIndexOf('network error', e.length) === 0;
+
+				if (!isNetworkError) {
+					this.clear();
+				}
+
+				logger.debug('refresh federated token failed', e);
+				return Promise.reject('refreshing federation token failed: ' + e);
+			});
 	}
 
 	private _isExpired(credentials): boolean {
@@ -437,6 +455,7 @@ export class CredentialsClass {
 				.catch(err => {
 					if (err) {
 						logger.debug('Failed to load credentials', credentials);
+						logger.debug('Error loading credentials', err);
 						rej(err);
 						return;
 					}
@@ -460,6 +479,7 @@ export class CredentialsClass {
 	public async clear() {
 		this._credentials = null;
 		this._credentials_source = null;
+		logger.debug('removing aws-amplify-federatedInfo from storage');
 		this._storage.removeItem('aws-amplify-federatedInfo');
 	}
 
