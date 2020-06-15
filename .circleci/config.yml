@@ -17,6 +17,10 @@ executors:
       - image: verdaccio/verdaccio
     resource_class: large
 
+  android-executor:
+    macos:
+      xcode: 11.4.1
+
   ios-executor:
     macos:
       xcode: 11.4.1
@@ -149,7 +153,7 @@ commands:
       - store_artifacts:
           path: ~/amplify-js-samples-staging-ui/cypress/screenshots
 
-  ios_install_verdaccio:
+  install_verdaccio:
     steps:
       - run:
           name: Install Verdaccio
@@ -161,11 +165,11 @@ commands:
             cd ~
             verdaccio
 
-  integ_test_rn:
+  integ_test_rn_ios:
     steps:
       - attach_workspace:
           at: ~/
-      - ios_install_verdaccio
+      - install_verdaccio
       - publish_to_verdaccio
       - run:
           name: Yarn Install
@@ -204,6 +208,103 @@ commands:
             JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
           name: Detox Test
           command: detox test -c ios.sim.debug -u
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
+
+  integ_test_rn_android:
+    steps:
+      - attach_workspace:
+          at: ~/
+      - install_verdaccio
+      - publish_to_verdaccio
+      - run:
+          # https://reactnative.dev/docs/environment-setup
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh export-env
+          name: Configure Environment Variables
+      - restore_cache:
+          key: |
+            brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
+      - run:
+          # React Native Android can have issues with later versions of Node:
+          # https://github.com/facebook/react-native/issues/26808
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh install-node
+          name: Install node@10
+      - run:
+          # https://reactnative.dev/docs/environment-setup
+          environment:
+            HOMEBREW_NO_AUTO_UPDATE: '1'
+          command: |
+            brew tap wix/brew >/dev/null
+            brew tap homebrew/cask >/dev/null
+            brew cask install android-sdk >/dev/null
+            yarn global add detox-cli
+            touch .watchmanconfig
+            node -v
+          name: Configure Detox Environment
+      - save_cache:
+          key: |
+            brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
+          paths:
+            - /usr/local/Homebrew
+            - ~/Library/Caches/Homebrew
+      - run:
+          name: Yarn Install
+          command: |
+            echo "Current NPM registry: " $(yarn config get registry)
+            yarn install --frozen-lockfile --non-interactive
+      - run:
+          # Install Android Emulator without Android Studio
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh sdkmanager
+          name: Install Android Emulator
+          shell: /bin/bash -e
+      - run:
+          # Force ssh key generation for emulators
+          command: |
+            adb start-server
+            adb devices
+            adb kill-server
+            ls -la ~/.android
+          name: ADB Start Stop
+      - run:
+          # Create Android Emulator without Android Studio
+          command: >-
+            avdmanager create avd --force --name TestingAVD
+            --package "system-images;android-29;default;x86_64"
+            --tag default --device pixel
+          name: Create Android Emulator
+      - run:
+          background: true
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh start-emulator
+          name: Start Android Emulator (background)
+      - run:
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh wait-for-avd
+          name: Wait for AVD to be ready
+          no_output_timeout: 5m
+      - run:
+          background: true
+          command: yarn start
+          name: Start Metro Packager (background)
+      - run:
+          name: Detox Build
+          command: detox build -c android.emu.debug
+      - run:
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
+            JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
+          name: Detox Test
+          command: detox test -c android.emu.debug -u
       - store_test_results:
           path: reports/junit
       - store_artifacts:
@@ -315,6 +416,17 @@ jobs:
           framework: react
           spec: datastore/many-to-many.spec.js
 
+  integ_react_storage:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageApp
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Storage'
+          framework: react
+          spec: storage/storage.spec.js
+
   integ_setup_ui:
     executor: build-executor
     working_directory: ~/
@@ -408,7 +520,14 @@ jobs:
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
-      - integ_test_rn
+      - integ_test_rn_ios
+
+  integ_rn_android_storage:
+    executor: android-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+    steps:
+      - integ_test_rn_android
 
   deploy:
     executor: build-executor
@@ -507,7 +626,19 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_react_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_rn_ios_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_android_storage:
           requires:
             - integ_setup
             - build
@@ -545,6 +676,7 @@ workflows:
             - integ_angular_auth_ui
             - integ_vue_auth_ui
             - integ_rn_ios_storage
+            - integ_rn_android_storage
       - post_release:
           filters:
             branches:
