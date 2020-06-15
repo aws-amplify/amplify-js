@@ -78,7 +78,7 @@ declare module 'amazon-cognito-identity-js' {
 		public refreshSession(
 			refreshToken: CognitoRefreshToken,
 			callback: NodeCallback<any, any>,
-            clientMetadata?: ClientMetadata
+			clientMetadata?: ClientMetadata
 		): void;
 		public authenticateUser(
 			authenticationDetails: AuthenticationDetails,
