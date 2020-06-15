@@ -22,9 +22,9 @@ case $1 in
 	;;
   sdkmanager)
 	yes | sdkmanager "platform-tools" "tools" >/dev/null
-	yes | sdkmanager "platforms;android-29" "system-images;android-29;default;x86_64" >/dev/null
+	yes | sdkmanager "platforms;android-28" "system-images;android-28;default;x86_64" >/dev/null
 	yes | sdkmanager "emulator" --channel=3 >/dev/null
-	yes | sdkmanager "build-tools;29.0.0" >/dev/null
+	yes | sdkmanager "build-tools;28.0.3" >/dev/null
 	yes | sdkmanager --licenses >/dev/null
 	yes | sdkmanager --list
 	;;
