@@ -22,7 +22,7 @@ const template = `
           #code
           type="text"
           class="amplify-form-input"
-          (keyup)="setCode(code.value)"
+          (input)="setCode(code.value)"
           (keyup.enter)="onConfirm()"
           data-test="${auth.confirmSignIn.codeInput}"
         ></ion-input>
@@ -60,9 +60,7 @@ export class ConfirmSignInComponentIonic extends ConfirmSignInComponentCore {
 	code: string;
 	errorMessage: string;
 
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		super(amplifyService);
 	}
 }

@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.5...@aws-amplify/storage@3.2.6) (2020-06-09)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [3.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.4...@aws-amplify/storage@3.2.5) (2020-06-04)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [3.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.3...@aws-amplify/storage@3.2.4) (2020-06-03)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [3.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.2...@aws-amplify/storage@3.2.3) (2020-06-02)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [3.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.1...@aws-amplify/storage@3.2.2) (2020-05-26)
+
+
+### Bug Fixes
+
+* **core:** bump SDK verion to gamma.2 ([#5909](https://github.com/aws-amplify/amplify-js/issues/5909)) ([3bd2d25](https://github.com/aws-amplify/amplify-js/commit/3bd2d2509c2db59cffd7ac81c08ac4f9ef298198))
+
+
+
+
+
+## [3.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.0...@aws-amplify/storage@3.2.1) (2020-05-22)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.1.9...@aws-amplify/storage@3.2.0) (2020-05-14)
+
+
+### Features
+
+* **@aws-amplify/storage:** AWSS3Provider.ts supports ACL ([#5520](https://github.com/aws-amplify/amplify-js/issues/5520)) ([cc1f981](https://github.com/aws-amplify/amplify-js/commit/cc1f981f65889562949095000f79c58ac7a88388))
+
+
+
+
+
 ## [3.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.1.8...@aws-amplify/storage@3.1.9) (2020-04-30)
 
 
