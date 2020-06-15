@@ -19,7 +19,7 @@ import {
 	AppState,
 } from 'react-native';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
 
 const logger = new Logger('Notification');
 
@@ -65,11 +65,13 @@ export default class PushNotification {
 	}
 
 	configure(config) {
+		if (JS.isEmpty(config)) return this._config;
 		let conf = config ? config.PushNotification || config : {};
 
-		if (conf['aws_mobile_analytics_app_id']) {
+		if (config['aws_mobile_analytics_app_id']) {
 			conf = {
-				appId: conf['aws_mobile_analytics_app_id'],
+				appId: config['aws_mobile_analytics_app_id'],
+				...conf,
 			};
 		}
 
@@ -89,6 +91,7 @@ export default class PushNotification {
 			this.initializeIOS();
 			this._iosInitialized = true;
 		}
+		return this._config;
 	}
 
 	onNotification(handler) {
@@ -178,14 +181,19 @@ export default class PushNotification {
 	/**
 	 * This function handles the React Native AppState change event
 	 * And checks if the app was launched by a Push Notification
+	 * Note: Current AppState will be null or 'unknown' if the app is coming from killed state to active
 	 * @param nextAppState The next state the app is changing to as part of the event
 	 */
 	_checkIfOpenedByNotification(nextAppState, handler) {
-		// the app is turned from background to foreground
+		// the App state changes from killed state to active
 		if (
-			this._currentState.match(/inactive|background/) &&
+			(!this._currentState || this._currentState === 'unknown') &&
 			nextAppState === 'active'
 		) {
+			// If the app was launched with a notification (launched means from killed state)
+			// getInitialNotification() returns the notification object data every time its called
+			// Thus calling it when moving from background to foreground subsequently will lead to extra
+			// events being logged with the payload of the initial notification that launched the app
 			PushNotificationIOS.getInitialNotification()
 				.then(data => {
 					if (data) {

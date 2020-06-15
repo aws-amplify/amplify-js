@@ -19,15 +19,18 @@ allprojects {
     }
 }
 
+def getExtOrDefault(name, fallback) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : fallback
+}
+
 apply plugin: "com.android.library"
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.3"
-
+    compileSdkVersion getExtOrDefault('compileSdkVersion', 28) 
+    buildToolsVersion getExtOrDefault('buildToolsVersion', "28.0.3") 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 26
+        minSdkVersion getExtOrDefault('minSdkVersion', 16) 
+        targetSdkVersion getExtOrDefault('targetSdkVersion', 28) 
         versionCode 1
         versionName "1.0"
         ndk {
@@ -47,7 +50,6 @@ dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
     compile "com.android.support:appcompat-v7:23.0.1"
     compile "com.facebook.react:react-native:+"  // From node_modules
-
     compile 'com.google.firebase:firebase-messaging:12.0.1'
     compile 'com.google.firebase:firebase-core:12.0.1'
     compile 'com.firebase:firebase-jobdispatcher:0.6.0'

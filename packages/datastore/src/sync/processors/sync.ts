@@ -8,7 +8,7 @@ import {
 import { buildGraphQLOperation } from '../utils';
 import { jitteredExponentialRetry } from '@aws-amplify/core';
 
-const DEFAULT_PAGINATION_LIMIT = 100;
+const DEFAULT_PAGINATION_LIMIT = 1000;
 const DEFAULT_MAX_RECORDS_TO_SYNC = 10000;
 
 class SyncProcessor {
@@ -54,7 +54,6 @@ class SyncProcessor {
 			lastSync,
 		};
 
-		// TODO: Use retryStartegy from core
 		const { data } = <
 			GraphQLResult<{
 				[opName: string]: {

@@ -1,9 +1,10 @@
 import axios, { CancelTokenStatic } from 'axios';
 import { RestAPIClass as API } from '../src/';
 import { RestClient } from '../src/RestClient';
-import { Signer, Credentials } from '@aws-amplify/core';
+import { Signer, Credentials, DateUtils } from '@aws-amplify/core';
 
 jest.mock('axios');
+
 axios.CancelToken = <CancelTokenStatic>{
 	source: () => ({ token: null, cancel: null }),
 };
@@ -508,6 +509,65 @@ describe('Rest API test', () => {
 			expect(spyon4).toBeCalled();
 		});
 
+		test('clock skew', async () => {
+			const api = new API(config);
+			const normalError = new Error('Response Error');
+
+			// Server is always "correct"
+			const serverDate = new Date();
+			// Local machine is ahead by 1 hour
+			const requestDate = new Date();
+			requestDate.setHours(requestDate.getHours() + 1);
+
+			const clockSkewError: any = new Error('BadRequestException');
+			const init = {
+				headers: {
+					'x-amz-date': DateUtils.getHeaderStringFromDate(requestDate),
+				},
+			};
+
+			clockSkewError.response = {
+				headers: {
+					'x-amzn-errortype': 'BadRequestException',
+					date: serverDate.toString(),
+				},
+			};
+
+			// Clock should not be skewed yet
+			expect(DateUtils.getClockOffset()).toBe(0);
+			// Ensure the errors are the correct type for gating
+			expect(DateUtils.isClockSkewError(normalError)).toBe(false);
+			expect(DateUtils.isClockSkewError(clockSkewError)).toBe(true);
+
+			jest
+				.spyOn(RestClient.prototype as any, 'endpoint')
+				.mockImplementation(() => 'endpoint');
+
+			jest.spyOn(Credentials, 'get').mockResolvedValue('creds');
+
+			jest
+				.spyOn(RestClient.prototype as any, '_signed')
+				.mockRejectedValueOnce(normalError);
+
+			await expect(api.post('url', 'path', init)).rejects.toThrow(normalError);
+
+			// Clock should not be skewed from normal errors
+			expect(DateUtils.getClockOffset()).toBe(0);
+
+			jest
+				.spyOn(RestClient.prototype as any, '_signed')
+				.mockRejectedValueOnce(clockSkewError);
+
+			await expect(api.post('url', 'path', init)).resolves.toEqual([
+				{ name: 'Bob' },
+			]);
+
+			// With a clock skew error, the clock will get offset with the difference
+			expect(DateUtils.getClockOffset()).toBe(
+				serverDate.getTime() - requestDate.getTime()
+			);
+		});
+
 		test('cancel request', async () => {
 			const api = new API(config);
 			const spyon = jest
@@ -1000,5 +1060,4 @@ describe('Rest API test', () => {
 			expect(spyon).toBeCalledWith('apiName');
 		});
 	});
-
 });

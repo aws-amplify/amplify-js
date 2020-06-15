@@ -450,7 +450,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			}
 			clearTimeout(startAckTimeoutId);
 			dispatchApiEvent(
-				'connected',
+				CONTROL_MSG.SUBSCRIPTION_ACK,
 				{ query, variables },
 				'Connection established for subscription'
 			);
@@ -615,6 +615,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					}
 					this.awsRealTimeSocket = null;
 					this.socketStatus = SOCKET_STATUS.CLOSED;
+
+					throw err;
 				}
 			}
 		});
