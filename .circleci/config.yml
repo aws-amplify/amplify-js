@@ -277,7 +277,7 @@ commands:
           # Create Android Emulator without Android Studio
           command: >-
             avdmanager create avd --force --name TestingAVD
-            --package "system-images;android-29;default;x86_64"
+            --package "system-images;android-28;default;x86_64"
             --tag default --device pixel
           name: Create Android Emulator
       - run:
