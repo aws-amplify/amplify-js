@@ -58,9 +58,12 @@ export class AmplifyS3Text {
       });
 
       logger.debug(data);
+    }
+    try {
       this.src = await getTextSource(key, level, track, identityId, logger);
-    } else {
-      this.src = await getTextSource(key, level, track, identityId, logger);
+    } catch (err) {
+      logger.debug(err);
+      throw new Error(err);
     }
   }
 

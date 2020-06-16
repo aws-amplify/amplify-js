@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-s3-image spec: Render logic -> should render no pre tag without 'path' 1`] = `
+<amplify-s3-text-picker>
+  <div class="text-container">
+    <pre>
+      PICK A FILE
+    </pre>
+  </div>
+  <amplify-picker></amplify-picker>
+</amplify-s3-text-picker>
+`;
