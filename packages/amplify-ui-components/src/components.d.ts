@@ -5,19 +5,19 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { AuthState, AuthStateHandler, CognitoUserInterface, FederatedConfig, MFATypesInterface, UsernameAliasStrings, } from "./common/types/auth-types";
-import { FormFieldTypes, } from "./components/amplify-auth-fields/amplify-auth-fields-interface";
-import { ButtonTypes, ButtonVariant, InputEvent, TextFieldTypes, } from "./common/types/ui-types";
-import { FunctionalComponent, } from "@stencil/core";
-import { CountryCodeDialOptions, } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
-import { IconNameType, } from "./components/amplify-icon/icons";
-import { SelectOptionsNumber, SelectOptionsString, } from "./components/amplify-select/amplify-select-interface";
+import { AuthState, AuthStateHandler, CognitoUserInterface, FederatedConfig, MFATypesInterface, UsernameAliasStrings } from "./common/types/auth-types";
+import { FormFieldTypes } from "./components/amplify-auth-fields/amplify-auth-fields-interface";
+import { ButtonTypes, ButtonVariant, InputEvent, TextFieldTypes } from "./common/types/ui-types";
+import { FunctionalComponent } from "@stencil/core";
+import { CountryCodeDialOptions } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
+import { IconNameType } from "./components/amplify-icon/icons";
+import { SelectOptionsNumber, SelectOptionsString } from "./components/amplify-select/amplify-select-interface";
 export namespace Components {
     interface AmplifyAmazonButton {
         /**
           * App-specific client ID from Google
          */
-        "clientId": FederatedConfig["amazonClientId"];
+        "clientId": FederatedConfig['amazonClientId'];
         /**
           * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
@@ -33,7 +33,7 @@ export namespace Components {
         /**
           * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
          */
-        "config": FederatedConfig["auth0Config"];
+        "config": FederatedConfig['auth0Config'];
         /**
           * Auth state change handler for this component
          */
@@ -249,7 +249,7 @@ export namespace Components {
         /**
           * App-specific client ID from Facebook
          */
-        "appId": FederatedConfig["facebookAppId"];
+        "appId": FederatedConfig['facebookAppId'];
         /**
           * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
@@ -389,7 +389,7 @@ export namespace Components {
         /**
           * App-specific client ID from Google
          */
-        "clientId": FederatedConfig["googleClientId"];
+        "clientId": FederatedConfig['googleClientId'];
         /**
           * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
@@ -489,7 +489,7 @@ export namespace Components {
         /**
           * Federated credentials & configuration.
          */
-        "config": FederatedConfig["oauthConfig"];
+        "config": FederatedConfig['oauthConfig'];
     }
     interface AmplifyPasswordField {
         /**
@@ -687,6 +687,10 @@ export namespace Components {
          */
         "headerText": string;
         /**
+          * Hides the sign up link
+         */
+        "hideSignUp": boolean;
+        /**
           * Used for the submit button text in sign in component
          */
         "submitButtonText": string;
@@ -699,7 +703,7 @@ export namespace Components {
         /**
           * Specifies the federation provider.
          */
-        "provider": "amazon" | "auth0" | "facebook" | "google" | "oauth";
+        "provider": 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
     }
     interface AmplifySignOut {
         /**
@@ -1161,7 +1165,7 @@ declare namespace LocalJSX {
         /**
           * App-specific client ID from Google
          */
-        "clientId"?: FederatedConfig["amazonClientId"];
+        "clientId"?: FederatedConfig['amazonClientId'];
         /**
           * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
@@ -1177,7 +1181,7 @@ declare namespace LocalJSX {
         /**
           * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
          */
-        "config"?: FederatedConfig["auth0Config"];
+        "config"?: FederatedConfig['auth0Config'];
         /**
           * Auth state change handler for this component
          */
@@ -1393,7 +1397,7 @@ declare namespace LocalJSX {
         /**
           * App-specific client ID from Facebook
          */
-        "appId"?: FederatedConfig["facebookAppId"];
+        "appId"?: FederatedConfig['facebookAppId'];
         /**
           * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
@@ -1533,7 +1537,7 @@ declare namespace LocalJSX {
         /**
           * App-specific client ID from Google
          */
-        "clientId"?: FederatedConfig["googleClientId"];
+        "clientId"?: FederatedConfig['googleClientId'];
         /**
           * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
@@ -1637,7 +1641,7 @@ declare namespace LocalJSX {
         /**
           * Federated credentials & configuration.
          */
-        "config"?: FederatedConfig["oauthConfig"];
+        "config"?: FederatedConfig['oauthConfig'];
     }
     interface AmplifyPasswordField {
         /**
@@ -1835,6 +1839,10 @@ declare namespace LocalJSX {
          */
         "headerText"?: string;
         /**
+          * Hides the sign up link
+         */
+        "hideSignUp"?: boolean;
+        /**
           * Used for the submit button text in sign in component
          */
         "submitButtonText"?: string;
@@ -1847,7 +1855,7 @@ declare namespace LocalJSX {
         /**
           * Specifies the federation provider.
          */
-        "provider"?: "amazon" | "auth0" | "facebook" | "google" | "oauth";
+        "provider"?: 'amazon' | 'auth0' | 'facebook' | 'google' | 'oauth';
     }
     interface AmplifySignOut {
         /**
