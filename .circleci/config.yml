@@ -522,6 +522,13 @@ jobs:
     steps:
       - integ_test_rn_ios
 
+  integ_rn_ios_push_notifications:
+    executor: ios-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/push-notifications/PushNotificationApp
+    steps:
+      - integ_test_rn_ios
+
   integ_rn_android_storage:
     executor: android-executor
     <<: *test_env_vars
@@ -638,6 +645,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_rn_ios_push_notifications:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_rn_android_storage:
           requires:
             - integ_setup
@@ -676,6 +689,7 @@ workflows:
             - integ_angular_auth_ui
             - integ_vue_auth_ui
             - integ_rn_ios_storage
+            - integ_rn_ios_push_notifications
             - integ_rn_android_storage
       - post_release:
           filters:
