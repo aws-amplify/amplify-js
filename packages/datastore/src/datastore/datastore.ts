@@ -1,4 +1,4 @@
-import { Amplify, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
 import { Draft, immerable, produce, setAutoFreeze } from 'immer';
 import { v4 as uuid4 } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
@@ -52,6 +52,7 @@ setAutoFreeze(true);
 const logger = new Logger('DataStore');
 
 const ulid = monotonicUlidFactory(Date.now());
+const { isNode } = JS.browserOrNode();
 
 declare class Setting {
 	constructor(init: ModelInit<Setting>);
@@ -871,7 +872,13 @@ async function start(): Promise<void> {
 			.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
 			.subscribe({
 				next: ({ type, data }) => {
-					if (type === ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED) {
+					// In Node, we need to wait for queries to be synced to prevent returning empty arrays.
+					// In the Browser, we can begin returning data once subscriptions are in place.
+					const readyType = isNode
+						? ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
+						: ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED;
+
+					if (type === readyType) {
 						initResolve();
 					}
 
