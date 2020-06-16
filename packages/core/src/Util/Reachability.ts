@@ -1,12 +1,16 @@
 import { JS } from '@aws-amplify/core';
-import Observable from 'zen-observable-ts';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 
 type NetworkStatus = {
 	online: boolean;
 };
 
 export default class ReachabilityNavigator implements Reachability {
-	networkMonitor(): Observable<NetworkStatus> {
+	private static _observers: Array<
+		ZenObservable.SubscriptionObserver<NetworkStatus>
+	> = [];
+
+	networkMonitor(netInfo?: any): Observable<NetworkStatus> {
 		if (JS.browserOrNode().isNode) {
 			return Observable.from({ online: true });
 		}
@@ -20,14 +24,33 @@ export default class ReachabilityNavigator implements Reachability {
 			window.addEventListener('online', notifyOnline);
 			window.addEventListener('offline', notifyOffline);
 
+			ReachabilityNavigator._observers.push(observer);
+
 			return () => {
 				window.removeEventListener('online', notifyOnline);
 				window.removeEventListener('offline', notifyOffline);
+
+				ReachabilityNavigator._observers = ReachabilityNavigator._observers.filter(
+					_observer => _observer !== observer
+				);
 			};
 		});
+	}
+
+	// expose observers to simulate offline mode for integration testing
+	private static _observerOverride(status: NetworkStatus): void {
+		for (const observer of ReachabilityNavigator._observers) {
+			if (observer.closed) {
+				ReachabilityNavigator._observers = ReachabilityNavigator._observers.filter(
+					_observer => _observer !== observer
+				);
+				continue;
+			}
+			observer.next(status);
+		}
 	}
 }
 
 interface Reachability {
-	networkMonitor(): Observable<NetworkStatus>;
+	networkMonitor(netInfo?: any): Observable<NetworkStatus>;
 }

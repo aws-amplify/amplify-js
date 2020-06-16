@@ -117,6 +117,7 @@ export type AuthorizationRule = {
 	groupClaim: string;
 	groups: [string];
 	authStrategy: 'owner' | 'group' | 'private' | 'public';
+	areSubscriptionsPublic: boolean;
 };
 
 export function isGraphQLScalarType(
@@ -169,7 +170,7 @@ export type NonModelTypeConstructor<T> = {
 };
 export type PersistentModelConstructor<T extends PersistentModel> = {
 	new (init: ModelInit<T>): T;
-	copyOf(src: T, mutator: (draft: MutableModel<T>) => T | void): T;
+	copyOf(src: T, mutator: (draft: MutableModel<T>) => void): T;
 };
 export type TypeConstructorMap = Record<
 	string,
@@ -361,6 +362,11 @@ export type NamespaceResolver = (
 	modelConstructor: PersistentModelConstructor<any>
 ) => string;
 
+export type ControlMessageType<T> = {
+	type: T;
+	data?: any;
+};
+
 //#endregion
 
 //#region Relationship types
@@ -369,6 +375,7 @@ export type RelationType = {
 	modelName: string;
 	relationType: 'HAS_ONE' | 'HAS_MANY' | 'BELONGS_TO';
 	targetName?: string;
+	associatedWith?: string;
 };
 
 export type RelationshipType = {

@@ -3,6 +3,7 @@ import { Adapter } from '..';
 
 const getDefaultAdapter: () => Adapter = () => {
 	const { isBrowser, isNode } = JS.browserOrNode();
+
 	if (isNode) {
 		require('fake-indexeddb/auto');
 		return require('../indexeddb').default;

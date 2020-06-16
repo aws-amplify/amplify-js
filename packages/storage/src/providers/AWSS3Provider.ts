@@ -29,13 +29,12 @@ import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
-import { httpHandlerOptions } from './httpHandlerOptions';
 import * as events from 'events';
 
 const logger = new Logger('AWSS3Provider');
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-	typeof Symbol.for === 'function'
+typeof Symbol.for === 'function'
 	? Symbol.for('amplify_default')
 	: '@@amplify_default') as Symbol;
 
@@ -61,7 +60,6 @@ const dispatchStorageEvent = (
 };
 
 const localTestingStorageEndpoint = 'http://localhost:20005';
-
 /**
  * Provide storage methods to use AWS S3
  */
@@ -163,7 +161,9 @@ export class AWSS3Provider implements StorageProvider {
 					track,
 					'download',
 					{ method: 'get', result: 'success' },
-					{ fileSize: Number(response.Body['length']) },
+					{
+						fileSize: Number(response.Body['size'] || response.Body['length']),
+					},
 					`Download success for ${key}`
 				);
 				return response;
@@ -183,13 +183,12 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		params.Expires = expires || 900; // Default is 15 mins as defined in V2 AWS SDK
-		params.Expires = new Date(Date.now() + params.Expires * 1000); // expires is in secs
 
 		try {
 			const signer = new S3RequestPresigner({ ...s3.config });
 			const request = await createRequest(s3, new GetObjectCommand(params));
 			const url = formatUrl(
-				(await signer.presign(request, params.Expires)) as any
+				(await signer.presign(request, { expiresIn: params.Expires })) as any
 			);
 			dispatchStorageEvent(
 				track,
@@ -235,6 +234,7 @@ export class AWSS3Provider implements StorageProvider {
 			expires,
 			metadata,
 			tagging,
+			acl,
 		} = opt;
 		const {
 			serverSideEncryption,
@@ -285,8 +285,14 @@ export class AWSS3Provider implements StorageProvider {
 				params.SSEKMSKeyId = SSEKMSKeyId;
 			}
 		}
+
 		const emitter = new events.EventEmitter();
 		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
+
+		if (acl) {
+			params.ACL = acl;
+		}
+
 		try {
 			emitter.on('sendProgress', progress => {
 				if (progressCallback) {
@@ -295,7 +301,7 @@ export class AWSS3Provider implements StorageProvider {
 					} else {
 						logger.warn(
 							'progressCallback should be a function, not a ' +
-							typeof progressCallback
+								typeof progressCallback
 						);
 					}
 				}
@@ -406,14 +412,17 @@ export class AWSS3Provider implements StorageProvider {
 
 		try {
 			const response = await s3.send(listObjectsCommand);
-			const list = (response as any).Contents.map(item => {
-				return {
-					key: item.Key.substr(prefix.length),
-					eTag: item.ETag,
-					lastModified: item.LastModified,
-					size: item.Size,
-				};
-			});
+			let list = [];
+			if (response && response.Contents) {
+				list = response.Contents.map(item => {
+					return {
+						key: item.Key.substr(prefix.length),
+						eTag: item.ETag,
+						lastModified: item.LastModified,
+						size: item.Size,
+					};
+				});
+			}
 			dispatchStorageEvent(
 				track,
 				'list',
@@ -500,8 +509,9 @@ export class AWSS3Provider implements StorageProvider {
 		if (dangerouslyConnectToHttpEndpointForTesting) {
 			localTestingConfig = {
 				endpoint: localTestingStorageEndpoint,
-				s3BucketEndpoint: true,
-				s3ForcePathStyle: true,
+				tls: false,
+				bucketEndpoint: false,
+				forcePathStyle: true,
 			};
 		}
 
@@ -510,7 +520,7 @@ export class AWSS3Provider implements StorageProvider {
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler(httpHandlerOptions, emitter),
+			requestHandler: new AxiosHttpHandler({}, emitter),
 		});
 		return s3client;
 	}

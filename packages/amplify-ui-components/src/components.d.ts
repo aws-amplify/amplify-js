@@ -7,7 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AuthState, AuthStateHandler, CognitoUserInterface, FederatedConfig, MFATypesInterface, UsernameAliasStrings, } from "./common/types/auth-types";
 import { FormFieldTypes, } from "./components/amplify-auth-fields/amplify-auth-fields-interface";
-import { ButtonTypes, ButtonVariant, TextFieldTypes, } from "./common/types/ui-types";
+import { ButtonTypes, ButtonVariant, InputEvent, TextFieldTypes, } from "./common/types/ui-types";
 import { FunctionalComponent, } from "@stencil/core";
 import { CountryCodeDialOptions, } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { IconNameType, } from "./components/amplify-icon/icons";
@@ -34,6 +34,9 @@ export namespace Components {
           * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
          */
         "config": FederatedConfig["auth0Config"];
+        /**
+          * Auth state change handler for this component
+         */
         "handleAuthStateChange": AuthStateHandler;
     }
     interface AmplifyAuthenticator {
@@ -41,6 +44,10 @@ export namespace Components {
           * Federated credentials & configuration.
          */
         "federated": FederatedConfig;
+        /**
+          * Callback for Authenticator state machine changes
+         */
+        "handleAuthStateChange": AuthStateHandler;
         /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
@@ -187,6 +194,8 @@ export namespace Components {
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */
         "usernameAlias": UsernameAliasStrings;
+    }
+    interface AmplifyContainer {
     }
     interface AmplifyCountryDialCode {
         /**
@@ -409,8 +418,17 @@ export namespace Components {
         "name": IconNameType;
     }
     interface AmplifyIconButton {
+        /**
+          * (Optional) Whether or not to show the tooltip automatically
+         */
         "autoShowTooltip": boolean;
+        /**
+          * The name of the icon used inside of the button
+         */
         "name": IconNameType;
+        /**
+          * (Optional) The tooltip that will show on hover of the button
+         */
         "tooltip": string | null;
     }
     interface AmplifyInput {
@@ -429,7 +447,7 @@ export namespace Components {
         /**
           * The callback, called when the input is modified by the user.
          */
-        "handleInputChange"?: (inputEvent: Event) => void;
+        "handleInputChange"?: (inputEvent: InputEvent) => void;
         /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
@@ -452,9 +470,15 @@ export namespace Components {
         "value": string;
     }
     interface AmplifyLabel {
+        /**
+          * Reflects the value of the for content property of html element
+         */
         "htmlFor": string;
     }
     interface AmplifyLink {
+        /**
+          * The link role is used to identify an element that creates a hyperlink to a resource that is in the application or external
+         */
         "role": string;
     }
     interface AmplifyLoadingSpinner {
@@ -462,6 +486,9 @@ export namespace Components {
     interface AmplifyNav {
     }
     interface AmplifyOauthButton {
+        /**
+          * Federated credentials & configuration.
+         */
         "config": FederatedConfig["oauthConfig"];
     }
     interface AmplifyPasswordField {
@@ -558,6 +585,10 @@ export namespace Components {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+         */
+        "inputProps"?: object;
+        /**
           * Label for the radio button
          */
         "label": string;
@@ -601,6 +632,9 @@ export namespace Components {
         "user": CognitoUserInterface;
     }
     interface AmplifySection {
+        /**
+          * Equivalent to html section role
+         */
         "role": string;
     }
     interface AmplifySelect {
@@ -662,6 +696,9 @@ export namespace Components {
         "usernameAlias": UsernameAliasStrings;
     }
     interface AmplifySignInButton {
+        /**
+          * Specifies the federation provider.
+         */
         "provider": "amazon" | "auth0" | "facebook" | "google" | "oauth";
     }
     interface AmplifySignOut {
@@ -719,6 +756,9 @@ export namespace Components {
           * Used in order to add a dismissable `x` for the Toast component
          */
         "handleClose": () => void;
+        /**
+          * Message to be displayed inside the toast
+         */
         "message": string;
     }
     interface AmplifyTooltip {
@@ -736,6 +776,10 @@ export namespace Components {
           * Auth state change handler for this component
          */
         "handleAuthStateChange": AuthStateHandler;
+        /**
+          * Used for header text in totp setup component
+         */
+        "headerText": string;
         /**
           * Used in order to configure TOTP for a user
          */
@@ -840,6 +884,12 @@ declare global {
     var HTMLAmplifyConfirmSignUpElement: {
         prototype: HTMLAmplifyConfirmSignUpElement;
         new (): HTMLAmplifyConfirmSignUpElement;
+    };
+    interface HTMLAmplifyContainerElement extends Components.AmplifyContainer, HTMLStencilElement {
+    }
+    var HTMLAmplifyContainerElement: {
+        prototype: HTMLAmplifyContainerElement;
+        new (): HTMLAmplifyContainerElement;
     };
     interface HTMLAmplifyCountryDialCodeElement extends Components.AmplifyCountryDialCode, HTMLStencilElement {
     }
@@ -1067,6 +1117,7 @@ declare global {
         "amplify-code-field": HTMLAmplifyCodeFieldElement;
         "amplify-confirm-sign-in": HTMLAmplifyConfirmSignInElement;
         "amplify-confirm-sign-up": HTMLAmplifyConfirmSignUpElement;
+        "amplify-container": HTMLAmplifyContainerElement;
         "amplify-country-dial-code": HTMLAmplifyCountryDialCodeElement;
         "amplify-email-field": HTMLAmplifyEmailFieldElement;
         "amplify-facebook-button": HTMLAmplifyFacebookButtonElement;
@@ -1127,6 +1178,9 @@ declare namespace LocalJSX {
           * See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters
          */
         "config"?: FederatedConfig["auth0Config"];
+        /**
+          * Auth state change handler for this component
+         */
         "handleAuthStateChange"?: AuthStateHandler;
     }
     interface AmplifyAuthenticator {
@@ -1134,6 +1188,10 @@ declare namespace LocalJSX {
           * Federated credentials & configuration.
          */
         "federated"?: FederatedConfig;
+        /**
+          * Callback for Authenticator state machine changes
+         */
+        "handleAuthStateChange"?: AuthStateHandler;
         /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
@@ -1280,6 +1338,8 @@ declare namespace LocalJSX {
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */
         "usernameAlias"?: UsernameAliasStrings;
+    }
+    interface AmplifyContainer {
     }
     interface AmplifyCountryDialCode {
         /**
@@ -1502,8 +1562,17 @@ declare namespace LocalJSX {
         "name"?: IconNameType;
     }
     interface AmplifyIconButton {
+        /**
+          * (Optional) Whether or not to show the tooltip automatically
+         */
         "autoShowTooltip"?: boolean;
+        /**
+          * The name of the icon used inside of the button
+         */
         "name"?: IconNameType;
+        /**
+          * (Optional) The tooltip that will show on hover of the button
+         */
         "tooltip"?: string | null;
     }
     interface AmplifyInput {
@@ -1522,7 +1591,7 @@ declare namespace LocalJSX {
         /**
           * The callback, called when the input is modified by the user.
          */
-        "handleInputChange"?: (inputEvent: Event) => void;
+        "handleInputChange"?: (inputEvent: InputEvent) => void;
         /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
@@ -1531,6 +1600,10 @@ declare namespace LocalJSX {
           * (Optional) String value for the name of the input.
          */
         "name"?: string;
+        /**
+          * Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form
+         */
+        "onFormSubmit"?: (event: CustomEvent<any>) => void;
         /**
           * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
          */
@@ -1545,9 +1618,15 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     interface AmplifyLabel {
+        /**
+          * Reflects the value of the for content property of html element
+         */
         "htmlFor"?: string;
     }
     interface AmplifyLink {
+        /**
+          * The link role is used to identify an element that creates a hyperlink to a resource that is in the application or external
+         */
         "role"?: string;
     }
     interface AmplifyLoadingSpinner {
@@ -1555,6 +1634,9 @@ declare namespace LocalJSX {
     interface AmplifyNav {
     }
     interface AmplifyOauthButton {
+        /**
+          * Federated credentials & configuration.
+         */
         "config"?: FederatedConfig["oauthConfig"];
     }
     interface AmplifyPasswordField {
@@ -1651,6 +1733,10 @@ declare namespace LocalJSX {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+         */
+        "inputProps"?: object;
+        /**
           * Label for the radio button
          */
         "label"?: string;
@@ -1694,6 +1780,9 @@ declare namespace LocalJSX {
         "user"?: CognitoUserInterface;
     }
     interface AmplifySection {
+        /**
+          * Equivalent to html section role
+         */
         "role"?: string;
     }
     interface AmplifySelect {
@@ -1755,6 +1844,9 @@ declare namespace LocalJSX {
         "usernameAlias"?: UsernameAliasStrings;
     }
     interface AmplifySignInButton {
+        /**
+          * Specifies the federation provider.
+         */
         "provider"?: "amazon" | "auth0" | "facebook" | "google" | "oauth";
     }
     interface AmplifySignOut {
@@ -1812,6 +1904,9 @@ declare namespace LocalJSX {
           * Used in order to add a dismissable `x` for the Toast component
          */
         "handleClose"?: () => void;
+        /**
+          * Message to be displayed inside the toast
+         */
         "message"?: string;
     }
     interface AmplifyTooltip {
@@ -1829,6 +1924,10 @@ declare namespace LocalJSX {
           * Auth state change handler for this component
          */
         "handleAuthStateChange"?: AuthStateHandler;
+        /**
+          * Used for header text in totp setup component
+         */
+        "headerText"?: string;
         /**
           * Used in order to configure TOTP for a user
          */
@@ -1888,6 +1987,7 @@ declare namespace LocalJSX {
         "amplify-code-field": AmplifyCodeField;
         "amplify-confirm-sign-in": AmplifyConfirmSignIn;
         "amplify-confirm-sign-up": AmplifyConfirmSignUp;
+        "amplify-container": AmplifyContainer;
         "amplify-country-dial-code": AmplifyCountryDialCode;
         "amplify-email-field": AmplifyEmailField;
         "amplify-facebook-button": AmplifyFacebookButton;
@@ -1939,6 +2039,7 @@ declare module "@stencil/core" {
             "amplify-code-field": LocalJSX.AmplifyCodeField & JSXBase.HTMLAttributes<HTMLAmplifyCodeFieldElement>;
             "amplify-confirm-sign-in": LocalJSX.AmplifyConfirmSignIn & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignInElement>;
             "amplify-confirm-sign-up": LocalJSX.AmplifyConfirmSignUp & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignUpElement>;
+            "amplify-container": LocalJSX.AmplifyContainer & JSXBase.HTMLAttributes<HTMLAmplifyContainerElement>;
             "amplify-country-dial-code": LocalJSX.AmplifyCountryDialCode & JSXBase.HTMLAttributes<HTMLAmplifyCountryDialCodeElement>;
             "amplify-email-field": LocalJSX.AmplifyEmailField & JSXBase.HTMLAttributes<HTMLAmplifyEmailFieldElement>;
             "amplify-facebook-button": LocalJSX.AmplifyFacebookButton & JSXBase.HTMLAttributes<HTMLAmplifyFacebookButtonElement>;

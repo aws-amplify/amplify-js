@@ -5,9 +5,9 @@
 
 ## Properties
 
-| Property | Attribute | Description | Type                      | Default |
-| -------- | --------- | ----------- | ------------------------- | ------- |
-| `config` | --        |             | `{ [key: string]: any; }` | `{}`    |
+| Property | Attribute | Description                            | Type                      | Default |
+| -------- | --------- | -------------------------------------- | ------------------------- | ------- |
+| `config` | --        | Federated credentials & configuration. | `{ [key: string]: any; }` | `{}`    |
 
 
 ## Dependencies

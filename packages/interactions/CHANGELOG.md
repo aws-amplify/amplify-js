@@ -3,6 +3,92 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.1.15...@aws-amplify/interactions@3.1.16) (2020-06-09)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.1.14...@aws-amplify/interactions@3.1.15) (2020-06-04)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.1.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.1.13...@aws-amplify/interactions@3.1.14) (2020-06-03)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.1.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.1.12...@aws-amplify/interactions@3.1.13) (2020-06-02)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.1.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.1.11...@aws-amplify/interactions@3.1.12) (2020-05-26)
+
+
+### Bug Fixes
+
+* **core:** bump SDK verion to gamma.2 ([#5909](https://github.com/aws-amplify/amplify-js/issues/5909)) ([3bd2d25](https://github.com/aws-amplify/amplify-js/commit/3bd2d2509c2db59cffd7ac81c08ac4f9ef298198))
+
+
+
+
+
+## [3.1.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.1.10...@aws-amplify/interactions@3.1.11) (2020-05-22)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.1.9...@aws-amplify/interactions@3.1.10) (2020-05-14)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.1.8...@aws-amplify/interactions@3.1.9) (2020-04-30)
+
+
+### Reverts
+
+* Revert "Upgrade aws-sdk clients to beta4 (#5575)" (#5577) ([f2dcabb](https://github.com/aws-amplify/amplify-js/commit/f2dcabb78110c0bab84780d045d046fabf97b6f4)), closes [#5575](https://github.com/aws-amplify/amplify-js/issues/5575) [#5577](https://github.com/aws-amplify/amplify-js/issues/5577)
+
+
+
+
+
+## [3.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.1.7...@aws-amplify/interactions@3.1.8) (2020-04-24)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.1.6...@aws-amplify/interactions@3.1.7) (2020-04-14)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
 ## [3.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.1.5...@aws-amplify/interactions@3.1.6) (2020-04-08)
 
 **Note:** Version bump only for package @aws-amplify/interactions

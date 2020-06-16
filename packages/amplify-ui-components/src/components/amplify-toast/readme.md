@@ -1,7 +1,5 @@
 # amplify-toast
 
-
-
 <!-- Auto Generated Below -->
 
 
@@ -10,7 +8,7 @@
 | Property      | Attribute | Description                                                    | Type         | Default     |
 | ------------- | --------- | -------------------------------------------------------------- | ------------ | ----------- |
 | `handleClose` | --        | Used in order to add a dismissable `x` for the Toast component | `() => void` | `undefined` |
-| `message`     | `message` |                                                                | `string`     | `''`        |
+| `message`     | `message` | Message to be displayed inside the toast                       | `string`     | `''`        |
 
 
 ## Dependencies

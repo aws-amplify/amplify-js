@@ -17,7 +17,7 @@ import { Platform } from './Platform';
 export { ClientDevice } from './ClientDevice';
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
 export * from './Errors';
-export { Hub } from './Hub';
+export { Hub, HubCapsule, HubCallback, HubPayload } from './Hub';
 export { I18n } from './I18n';
 export * from './JS';
 export { Signer } from './Signer';

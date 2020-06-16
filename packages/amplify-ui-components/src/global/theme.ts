@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  * Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -44,6 +45,8 @@ if (browserOrNode().isBrowser) {
       --amplify-tertiary-contrast: var(--amplify-white);
       --amplify-tertiary-tint: #7da1ff;
       --amplify-tertiary-shade: #537BE5;
+
+      --amplify-background-color: var(--amplify-white);
 
       /* Neutral */
       --amplify-grey: #828282;

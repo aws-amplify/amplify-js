@@ -3,18 +3,48 @@ import React, {
 	ComponentPropsWithRef,
 	FunctionComponent,
 } from 'react';
+import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
+import { AmplifyContainer, AmplifyAuthenticator } from './';
+import { onAuthUIStateChange, AuthState } from '@aws-amplify/ui-components';
+import { Logger } from '@aws-amplify/core';
 
-import { AmplifyAuthenticator } from './';
+const logger = new Logger('withAuthenticator');
 
 export function withAuthenticator(
 	Component: ComponentType,
 	authenticatorProps?: ComponentPropsWithRef<typeof AmplifyAuthenticator>
 ) {
-	const ComponentWithAuthenticator: FunctionComponent = props => (
-		<AmplifyAuthenticator {...authenticatorProps} {...props}>
-			<Component />
-		</AmplifyAuthenticator>
-	);
+	const AppWithAuthenticator: FunctionComponent = props => {
+		const [signedIn, setSignedIn] = React.useState(false);
 
-	return ComponentWithAuthenticator;
+		React.useEffect(() => {
+			appendToCognitoUserAgent('withAuthenticator');
+			async () => {
+				try {
+					const user = await Auth.currentAuthenticatedUser();
+					if (user) setSignedIn(true);
+				} catch (err) {
+					logger.debug(err);
+				}
+			};
+			return onAuthUIStateChange(authState => {
+				if (authState === AuthState.SignedIn) {
+					setSignedIn(true);
+				} else if (authState === AuthState.SignedOut) {
+					setSignedIn(false);
+				}
+			});
+		}, []);
+
+		if (!signedIn) {
+			return (
+				<AmplifyContainer>
+					<AmplifyAuthenticator {...authenticatorProps} {...props} />
+				</AmplifyContainer>
+			);
+		}
+		return <Component />;
+	};
+
+	return AppWithAuthenticator;
 }
