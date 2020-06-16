@@ -12,7 +12,9 @@ export default class ReachabilityNavigator implements Reachability {
 
 	networkMonitor(netInfo?: any): Observable<NetworkStatus> {
 		if (JS.browserOrNode().isNode) {
-			return Observable.from({ online: true });
+			return new Observable(observer => {
+				observer.next({ online: true });
+			});
 		}
 
 		return new Observable(observer => {
