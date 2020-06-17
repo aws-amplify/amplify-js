@@ -2,8 +2,9 @@ import { Component, Prop, h, State, Host } from '@stencil/core';
 import { NO_STORAGE_MODULE_FOUND } from '../../common/constants';
 import { AccessLevel } from '../../common/types/storage-types';
 import { Storage } from '@aws-amplify/storage';
-import { Logger } from '@aws-amplify/core';
+import { Logger, I18n } from '@aws-amplify/core';
 import { calcKey, getStorageObject } from '../../common/helpers';
+import { Translations } from '../../common/Translations';
 
 const logger = new Logger('S3ImagePicker');
 
@@ -23,10 +24,14 @@ export class AmplifyS3ImagePicker {
   @Prop() identityId: string;
   /* Callback used to generate custom key value */
   @Prop() fileToKey: (data: object) => string;
-  @Prop() headerTitle?: string = 'Add Profile Photos';
-  @Prop() headerHint?: string = 'Ancilliary text or content may occupy this space here';
-  @Prop() placeholderHint?: string = 'Placeholder hint';
-  @Prop() buttonText?: string = 'Upload';
+  /* Title string value */
+  @Prop() headerTitle?: string = I18n.get(Translations.IMAGE_PICKER_TITLE);
+  /* Header Hint value in string */
+  @Prop() headerHint?: string = I18n.get(Translations.IMAGE_PICKER_HINT);
+  /* Placeholder hint that goes under the placeholder image */
+  @Prop() placeholderHint?: string = I18n.get(Translations.IMAGE_PICKER_PLAEHOLDER_HINT);
+  /* Upload Button Text as string */
+  @Prop() buttonText?: string = I18n.get(Translations.IMAGE_PICKER_BUTTON_TEXT);
 
   @State() src: string | object;
 
