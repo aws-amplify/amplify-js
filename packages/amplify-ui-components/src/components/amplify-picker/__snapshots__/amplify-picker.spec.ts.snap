@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-picker spec: Render logic -> should render a picker by default 1`] = `
+<amplify-picker>
+  <mock:shadow-root>
+    <div class="picker">
+      <slot name="picker">
+        <amplify-button>
+          Pick a file
+        </amplify-button>
+      </slot>
+      <input accept="*/*" title="Pick a file" type="file">
+    </div>
+  </mock:shadow-root>
+</amplify-picker>
+`;

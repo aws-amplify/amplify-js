@@ -45,7 +45,7 @@ describe('amplify-s3-image spec:', () => {
     });
 
     it('`placeholderHint` should have value by default', () => {
-      expect(amplifyS3ImagePicker.placeholderHint).toBe(I18n.get(Translations.IMAGE_PICKER_PLAEHOLDER_HINT));
+      expect(amplifyS3ImagePicker.placeholderHint).toBe(I18n.get(Translations.IMAGE_PICKER_PLACEHOLDER_HINT));
     });
 
     it('`buttonText` should have value by default', () => {
