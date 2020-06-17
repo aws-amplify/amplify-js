@@ -1,0 +1,60 @@
+:host {
+  --object-fit: cover;
+}
+
+.photo-picker-container {
+  max-width: 700px;
+}
+
+.header {
+  color: var(--amplify-secondary-color);
+  margin-bottom: 24px;
+  font-size: var(--amplify-text-lg);
+  font-weight: bold;
+}
+
+.header-hint {
+  color: var(--amplify-grey);
+  font-size: var(--amplify-text-md);
+  margin-bottom: 24px;
+  word-break: break-word;
+}
+
+.body {
+  position: relative;
+  width: 380px;
+  height: 220px;
+  border: 2px dotted var(--amplify-grey);
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+img {
+  object-fit: var(--object-fit);
+  width: 100%;
+  height: 100%;
+}
+
+.placeholder-hint {
+  color: var(--amplify-grey);
+  font-family: Helvetica;
+  font-style: italic;
+  font-size: var(--amplify-text-sm);
+  margin-bottom: 30px;
+  word-break: break-word;
+}
+
+input[type='file'] {
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  cursor: pointer;
+}

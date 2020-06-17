@@ -29,7 +29,7 @@ export class AmplifyS3ImagePicker {
   /* Header Hint value in string */
   @Prop() headerHint?: string = I18n.get(Translations.IMAGE_PICKER_HINT);
   /* Placeholder hint that goes under the placeholder image */
-  @Prop() placeholderHint?: string = I18n.get(Translations.IMAGE_PICKER_PLAEHOLDER_HINT);
+  @Prop() placeholderHint?: string = I18n.get(Translations.IMAGE_PICKER_PLACEHOLDER_HINT);
   /* Upload Button Text as string */
   @Prop() buttonText?: string = I18n.get(Translations.IMAGE_PICKER_BUTTON_TEXT);
 

@@ -19,19 +19,6 @@
 | `track`         | `track`        |             | `boolean`                                                            | `undefined`             |
 
 
-## Dependencies
-
-### Used by
-
- - [amplify-s3-album](../amplify-s3-album)
-
-### Graph
-```mermaid
-graph TD;
-  amplify-s3-album --> amplify-s3-image
-  style amplify-s3-image fill:#f9f,stroke:#333,stroke-width:4px
-```
-
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*
