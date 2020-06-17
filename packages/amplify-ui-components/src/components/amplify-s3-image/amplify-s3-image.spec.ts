@@ -1,5 +1,6 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyS3Image } from './amplify-s3-image';
+import { AccessLevel } from '../../common/types/storage-types';
 
 describe('amplify-s3-image spec:', () => {
   describe('Component logic ->', () => {
@@ -26,7 +27,7 @@ describe('amplify-s3-image spec:', () => {
     });
 
     it('`level` should be set to `public` by default', () => {
-      expect(amplifyS3Image.level).toBe('public');
+      expect(amplifyS3Image.level).toBe(AccessLevel.Public);
     });
 
     it('`track` should be undefined by default', () => {
@@ -45,12 +46,24 @@ describe('amplify-s3-image spec:', () => {
       expect(amplifyS3Image.handleOnError).toBeUndefined();
     });
   });
+
   describe('Render logic ->', () => {
     it(`should render no img element without 'imgKey' or 'path'`, async () => {
       const page = await newSpecPage({
         components: [AmplifyS3Image],
         html: `<amplify-s3-image />`,
       });
+      expect(page.root).toMatchSnapshot();
+    });
+
+    it(`should render img element with 'imgKey' or 'path'`, async () => {
+      const page = await newSpecPage({
+        components: [AmplifyS3Image],
+        html: `<amplify-s3-image/>`,
+      });
+      page.rootInstance.imgKey = 'abc.jpg';
+      await page.waitForChanges();
+
       expect(page.root).toMatchSnapshot();
     });
   });
