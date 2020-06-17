@@ -90,6 +90,7 @@ export class AmplifyVerifyContact {
         <amplify-input
           inputProps={{
             autocomplete: 'off',
+            'data-test': 'verify-contact-code-input',
           }}
           name="code"
           placeholder={I18n.get(Translations.CODE_PLACEHOLDER)}
@@ -124,6 +125,9 @@ export class AmplifyVerifyContact {
             name="contact"
             value="email"
             handleInputChange={event => this.handleInputChange(event)}
+            inputProps={{
+              'data-test': 'verify-contact-email-radio',
+            }}
           />
         )}
 
@@ -134,6 +138,9 @@ export class AmplifyVerifyContact {
             name="contact"
             value="phone_number"
             handleInputChange={event => this.handleInputChange(event)}
+            inputProps={{
+              'data-test': 'verify-contact-email-radio',
+            }}
           />
         )}
       </div>

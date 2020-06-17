@@ -47,6 +47,7 @@ import {
 	AmplifyToast,
 	AmplifyTooltip,
 	AmplifyUsernameField,
+	AmplifyContainer,
 } from './directives/proxies';
 
 defineCustomElements(window);
@@ -97,6 +98,7 @@ const DECLARATIONS = [
 	AmplifyToast,
 	AmplifyTooltip,
 	AmplifyUsernameField,
+	AmplifyContainer,
 ];
 
 @NgModule({
@@ -105,4 +107,4 @@ const DECLARATIONS = [
 	imports: [],
 	providers: [],
 })
-export class AmplifyUIAngularModule { }
+export class AmplifyUIAngularModule {}

@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.15...@aws-amplify/analytics@3.2.0) (2020-06-09)
+
+
+### Features
+
+* **@aws-amplify/analytics:** add KinesisClient endpoint configuration ([#5818](https://github.com/aws-amplify/amplify-js/issues/5818)) ([5745490](https://github.com/aws-amplify/amplify-js/commit/57454907249703f77f77c921162acdb3179f89b9))
+
+
+
+
+
+## [3.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.14...@aws-amplify/analytics@3.1.15) (2020-06-04)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [3.1.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.13...@aws-amplify/analytics@3.1.14) (2020-06-03)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [3.1.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.12...@aws-amplify/analytics@3.1.13) (2020-06-02)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [3.1.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.11...@aws-amplify/analytics@3.1.12) (2020-05-26)
+
+
+### Bug Fixes
+
+* **core:** bump SDK verion to gamma.2 ([#5909](https://github.com/aws-amplify/amplify-js/issues/5909)) ([3bd2d25](https://github.com/aws-amplify/amplify-js/commit/3bd2d2509c2db59cffd7ac81c08ac4f9ef298198))
+
+
+
+
+
+## [3.1.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.10...@aws-amplify/analytics@3.1.11) (2020-05-22)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
 ## [3.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.9...@aws-amplify/analytics@3.1.10) (2020-05-14)
 
 

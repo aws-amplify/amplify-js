@@ -13,6 +13,7 @@
 
 import {
 	ConsoleLogger as Logger,
+	DateUtils,
 	Signer,
 	Platform,
 	Credentials,
@@ -168,7 +169,30 @@ export class RestClient {
 
 		// Signing the request in case there credentials are available
 		return Credentials.get().then(
-			credentials => this._signed({ ...params }, credentials, isAllResponse),
+			credentials => {
+				return this._signed({ ...params }, credentials, isAllResponse).catch(
+					error => {
+						if (DateUtils.isClockSkewError(error)) {
+							const { headers } = error.response;
+							const dateHeader = headers && (headers.date || headers.Date);
+							const responseDate = new Date(dateHeader);
+							const requestDate = DateUtils.getDateFromHeaderString(
+								params.headers['x-amz-date']
+							);
+
+							if (DateUtils.isClockSkewed(requestDate, responseDate)) {
+								DateUtils.setClockOffset(
+									responseDate.getTime() - requestDate.getTime()
+								);
+
+								return this.ajax(url, method, init);
+							}
+						}
+
+						throw error;
+					}
+				);
+			},
 			err => {
 				logger.debug('No credentials available, the request will be unsigned');
 				return this._request(params, isAllResponse);

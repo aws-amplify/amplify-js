@@ -45,6 +45,10 @@ export namespace Components {
          */
         "federated": FederatedConfig;
         /**
+          * Callback for Authenticator state machine changes
+         */
+        "handleAuthStateChange": AuthStateHandler;
+        /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
         "initialAuthState": AuthState.SignIn | AuthState.SignUp;
@@ -580,6 +584,10 @@ export namespace Components {
           * The callback, called when the input is modified by the user.
          */
         "handleInputChange"?: (inputEvent: Event) => void;
+        /**
+          * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+         */
+        "inputProps"?: object;
         /**
           * Label for the radio button
          */
@@ -1181,6 +1189,10 @@ declare namespace LocalJSX {
          */
         "federated"?: FederatedConfig;
         /**
+          * Callback for Authenticator state machine changes
+         */
+        "handleAuthStateChange"?: AuthStateHandler;
+        /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
         "initialAuthState"?: AuthState.SignIn | AuthState.SignUp;
@@ -1720,6 +1732,10 @@ declare namespace LocalJSX {
           * The callback, called when the input is modified by the user.
          */
         "handleInputChange"?: (inputEvent: Event) => void;
+        /**
+          * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
+         */
+        "inputProps"?: object;
         /**
           * Label for the radio button
          */

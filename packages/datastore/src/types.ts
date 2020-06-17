@@ -117,6 +117,7 @@ export type AuthorizationRule = {
 	groupClaim: string;
 	groups: [string];
 	authStrategy: 'owner' | 'group' | 'private' | 'public';
+	areSubscriptionsPublic: boolean;
 };
 
 export function isGraphQLScalarType(
@@ -360,6 +361,11 @@ export type SystemComponent = {
 export type NamespaceResolver = (
 	modelConstructor: PersistentModelConstructor<any>
 ) => string;
+
+export type ControlMessageType<T> = {
+	type: T;
+	data?: any;
+};
 
 //#endregion
 

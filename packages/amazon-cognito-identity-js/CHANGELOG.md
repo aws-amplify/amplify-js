@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.1](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.3.0...amazon-cognito-identity-js@4.3.1) (2020-06-03)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+
+
+
+
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.2.4...amazon-cognito-identity-js@4.3.0) (2020-05-22)
+
+
+### Features
+
+* **amazon-cognito-identity-js:** Add support for fetch options ([#3017](https://github.com/aws-amplify/amplify-js/issues/3017)) ([45a649d](https://github.com/aws-amplify/amplify-js/commit/45a649d6e9b80eeef4cc7badcbb86ece10686996))
+
+
+
+
+
 ## [4.2.4](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.2.3...amazon-cognito-identity-js@4.2.4) (2020-05-14)
 
 

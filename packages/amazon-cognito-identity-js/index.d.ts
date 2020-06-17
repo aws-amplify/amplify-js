@@ -49,7 +49,7 @@ declare module 'amazon-cognito-identity-js' {
 
 	export interface ICognitoStorage {
 		setItem(key: string, value: string): void;
-		getItem(key: string): string;
+		getItem(key: string): string | null;
 		removeItem(key: string): void;
 		clear(): void;
 	}
@@ -77,7 +77,8 @@ declare module 'amazon-cognito-identity-js' {
 		public getSession(callback: Function): any;
 		public refreshSession(
 			refreshToken: CognitoRefreshToken,
-			callback: NodeCallback<any, any>
+			callback: NodeCallback<any, any>,
+			clientMetadata?: ClientMetadata
 		): void;
 		public authenticateUser(
 			authenticationDetails: AuthenticationDetails,
@@ -158,7 +159,7 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 		public listDevices(
 			limit: number,
-			paginationToken: string,
+			paginationToken: string | null,
 			callbacks: {
 				onSuccess: (data: any) => void;
 				onFailure: (err: Error) => void;
