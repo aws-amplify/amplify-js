@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@1.0.18...@aws-amplify/api-graphql@1.1.0) (2020-06-18)
+
+
+### Features
+
+* Automatically handle clock drift/skew for API calls ([#5869](https://github.com/aws-amplify/amplify-js/issues/5869)) ([6218ff6](https://github.com/aws-amplify/amplify-js/commit/6218ff62269056f46d65760c3ec61baadb3742f4))
+
+
+
+
+
 ## [1.0.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@1.0.17...@aws-amplify/api-graphql@1.0.18) (2020-06-09)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql
