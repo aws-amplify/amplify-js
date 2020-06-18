@@ -8,12 +8,12 @@
     <img src="https://img.shields.io/discord/308323056592486420?logo=discord"" alt="Discord Chat" />  
   </a>
   <a href="https://codecov.io/gh/aws-amplify/amplify-js">
-    <img src="https://codecov.io/gh/aws-amplify/amplify-js/branch/master/graph/badge.svg" />
+    <img src="https://codecov.io/gh/aws-amplify/amplify-js/branch/main/graph/badge.svg" />
   </a>
   <a href="https://lgtm.com/projects/g/aws-amplify/amplify-js/context:javascript"><img alt="Language grade: JavaScript" src="https://img.shields.io/lgtm/grade/javascript/g/aws-amplify/amplify-js.svg?logo=lgtm&logoWidth=18"/>
   </a>
   <a href="https://circleci.com/gh/aws-amplify/amplify-js">
-    <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-js/master.svg" alt="build:started">
+    <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-js/main.svg" alt="build:started">
   </a>
 </p>
 
@@ -73,7 +73,7 @@ If you can't migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) or
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Examples](#examples)
-- [Contributing](https://github.com/aws/aws-amplify/blob/master/CONTRIBUTING.md)
+- [Contributing](https://github.com/aws-amplify/amplify-js/blob/main/CONTRIBUTING.md)
 
 ## Installation
 

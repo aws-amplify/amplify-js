@@ -580,13 +580,13 @@ jobs:
             git add ./packages/core/src/Platform/version.ts
             git commit -m "chore(release): update version.ts [ci skip]"
             git push origin release
-            git push origin release:master
+            git push origin release:main
 
 releasable_branches: &releasable_branches
   branches:
     only:
       - release
-      - master
+      - main
       - ui-components/master
       - 1.0-stable
 
