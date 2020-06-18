@@ -682,6 +682,7 @@ workflows:
             - unit_test
             - integ_react_predictions
             - integ_react_datastore
+            - integ_react_storage
             - integ_react_auth
             - integ_angular_auth
             - integ_vue_auth
