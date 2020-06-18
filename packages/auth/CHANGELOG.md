@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.2.13...@aws-amplify/auth@3.2.14) (2020-06-18)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Call replaceState before dispatchAuthEvent ([#5937](https://github.com/aws-amplify/amplify-js/issues/5937)) ([1e8d4ed](https://github.com/aws-amplify/amplify-js/commit/1e8d4ed9cdecf8b91d5032ae6125afe6b9048873))
+* **@aws-amplify/core:** retry federation refresh token on network error ([#5728](https://github.com/aws-amplify/amplify-js/issues/5728)) ([bd07ee8](https://github.com/aws-amplify/amplify-js/commit/bd07ee8e8b987021e58b9c25d5e1ef524aa4abbc))
+
+
+
+
+
 ## [3.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.2.12...@aws-amplify/auth@3.2.13) (2020-06-09)
 
 **Note:** Version bump only for package @aws-amplify/auth
