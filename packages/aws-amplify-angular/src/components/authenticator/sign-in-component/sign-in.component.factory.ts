@@ -27,7 +27,6 @@ import { SignInClass } from './sign-in.class';
 import { SignInComponentIonic } from './sign-in.component.ionic';
 import { SignInComponentCore } from './sign-in.component.core';
 import { AuthState } from '../../../providers';
-import { authDecorator } from '../../../providers/auth.decorator';
 
 @Component({
 	selector: 'amplify-auth-sign-in',

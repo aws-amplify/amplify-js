@@ -106,9 +106,7 @@ export class SignInComponentCore implements OnInit {
 	signInUsername = '';
 	protected logger: any;
 
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		this.logger = this.amplifyService.logger('SignInComponent');
 		this.onUsernameFieldChanged = this.onUsernameFieldChanged.bind(this);
 	}
@@ -203,11 +201,11 @@ export class SignInComponentCore implements OnInit {
 		const user =
 			this.username || this.email || this.local_phone_number
 				? {
-					username: this.username,
-					email: this.email,
-					local_phone_number: this.local_phone_number,
-					courtry_code: this.country_code,
-				}
+						username: this.username,
+						email: this.email,
+						local_phone_number: this.local_phone_number,
+						courtry_code: this.country_code,
+				  }
 				: null;
 
 		return user;

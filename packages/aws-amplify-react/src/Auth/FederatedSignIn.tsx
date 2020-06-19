@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import { JS, I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { isEmpty, I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import {
@@ -143,7 +143,7 @@ export class FederatedButtons extends React.Component<
 			federated.auth0 = Object.assign({}, federated.auth0, oauth.auth0);
 		}
 
-		if (JS.isEmpty(federated)) {
+		if (isEmpty(federated)) {
 			return null;
 		}
 
@@ -169,7 +169,7 @@ export class FederatedButtons extends React.Component<
 	}
 }
 
-export default class FederatedSignIn extends React.Component<any, any> {
+export class FederatedSignIn extends React.Component<any, any> {
 	render() {
 		const { authState, onStateChange } = this.props;
 		const federated = this.props.federated || {};
@@ -229,3 +229,8 @@ export default class FederatedSignIn extends React.Component<any, any> {
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default FederatedSignIn;

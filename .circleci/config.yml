@@ -1,28 +1,322 @@
-# Javascript Node CircleCI 2.0 configuration file
+# Javascript Node CircleCI 2.1 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2
-machine:
-  environment:
-    PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
+version: 2.1
 
-defaults: &defaults
-  docker:
-    - image: cypress/base:10
-      environment:
-        ## this enables colors in the output
-        TERM: xterm
+executors:
+  build-executor:
+    docker:
+      - image: cypress/base:12
+    resource_class: large
+    working_directory: ~/amplify-js
+
+  js-test-executor:
+    docker:
+      - image: cypress/base:12
+      - image: verdaccio/verdaccio
+    resource_class: large
+
+  android-executor:
+    macos:
+      xcode: 11.4.1
+
+  ios-executor:
+    macos:
+      xcode: 11.4.1
+
+test_env_vars: &test_env_vars
+  environment:
+    NPM_REGISTRY: http://0.0.0.0:4873/
+    NPM_USER: circleci
+    NPM_PASS: circleci
+    NPM_EMAIL: circleci@amplify.js
+
+commands:
+  restore_pods:
+    steps:
+      - restore_cache:
+          keys:
+            - v1-storage-app-pods-{{ checksum "ios/Podfile.lock" }}
+            - v1-storage-app-pods-
+
+  save_pods:
+    steps:
+      - save_cache:
+          key: v1-storage-app-pods-{{ checksum "ios/Podfile.lock" }}
+          paths:
+            - ios/Pods
+
+  publish_to_verdaccio:
+    steps:
+      - run:
+          name: 'Set registry to Verdaccio and verify'
+          # If the registry isn't set correctly, fail the job
+          command: |
+            yarn config set registry $NPM_REGISTRY
+            npm set registry $NPM_REGISTRY
+            CURRENT_REGISTRY=$(yarn config get registry)
+            if [ "$CURRENT_REGISTRY" = "$NPM_REGISTRY" ]; then
+              exit 0
+            fi
+            exit 1
+      - run:
+          # npm-cli-login allows us to log in to verdaccio in a noninteractive way
+          # logs in with NPM_USER, NPM_PASS, and NPM_EMAIL env vars
+          name: 'Install and run npm-cli-login'
+          command: |
+            npm i -g npm-cli-adduser
+            npm-cli-adduser
+            sleep 1
+      - run:
+          name: 'Publish to Verdaccio'
+          command: |
+            cd ~/amplify-js
+            git config --global user.email $NPM_EMAIL
+            git config --global user.name $NPM_USER
+            git status
+            git --no-pager diff
+            ./.circleci/retry-publish.sh publish:verdaccio
+
+  prepare_test_env:
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
+      - publish_to_verdaccio
+
+  prepare_ui_test_env:
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-ui
+      - publish_to_verdaccio
+
+  integ_test_js:
+    parameters:
+      test_name:
+        type: string
+      framework:
+        type: string
+      spec:
+        type: string
+    steps:
+      - run:
+          name: 'Install << parameters.test_name >> sample'
+          command: |
+            echo "Current NPM registry: " $(yarn config get registry)
+            yarn
+      - run:
+          name: 'Start << parameters.test_name >> Sample server in background'
+          command: yarn start
+          background: true
+      - run:
+          name: 'Run cypress tests for << parameters.test_name >> Sample'
+          command: |
+            cd ~/amplify-js-samples-staging
+            yarn cypress:<< parameters.framework >> --spec "cypress/integration/<< parameters.spec >>"
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/videos
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/screenshots
+
+  integ_test_ui:
+    parameters:
+      test_name:
+        type: string
+      framework:
+        type: string
+      category:
+        type: string
+      sample_name:
+        type: string
+      spec:
+        # optional - the script will use sample_name by default
+        type: string
+        default: ''
+    steps:
+      - run:
+          name: 'Install << parameters.test_name >> sample'
+          command: |
+            cd << parameters.framework >>/<< parameters.category >>/<< parameters.sample_name >>
+            echo "Current NPM registry: " $(yarn config get registry)
+            yarn
+      - run:
+          name: 'Run << parameters.test_name >> UI tests'
+          command: |
+            cd ~/amplify-js-samples-staging-ui
+            yarn ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging-ui/cypress/videos
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging-ui/cypress/screenshots
+
+  install_verdaccio:
+    steps:
+      - run:
+          name: Install Verdaccio
+          command: npm i -g verdaccio
+      - run:
+          name: Run Verdaccio
+          background: true
+          command: |
+            cd ~
+            verdaccio
+
+  integ_test_rn_ios:
+    steps:
+      - attach_workspace:
+          at: ~/
+      - install_verdaccio
+      - publish_to_verdaccio
+      - run:
+          name: Yarn Install
+          command: |
+            echo "Current NPM registry: " $(yarn config get registry)
+            yarn install --frozen-lockfile --non-interactive
+      - restore_pods
+      - run:
+          name: Install CocoaPods
+          command: |
+            cd ios
+            pod install
+      - save_pods
+      - run:
+          background: true
+          command: xcrun simctl boot "iPhone 11" || true
+          name: Start iOS simulator (background)
+      - run:
+          background: true
+          command: yarn start
+          name: Start Metro Packager (background)
+      - run:
+          name: Configure Detox
+          environment:
+            HOMEBREW_NO_AUTO_UPDATE: '1'
+          command: |
+            brew tap wix/brew
+            brew install applesimutils
+            yarn global add detox-cli
+      - run:
+          name: Detox Build
+          command: detox build -c ios.sim.debug
+      - run:
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
+            JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
+          name: Detox Test
+          command: detox test -c ios.sim.debug -u
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
+
+  integ_test_rn_android:
+    steps:
+      - attach_workspace:
+          at: ~/
+      - install_verdaccio
+      - publish_to_verdaccio
+      - run:
+          # https://reactnative.dev/docs/environment-setup
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh export-env
+          name: Configure Environment Variables
+      - restore_cache:
+          key: |
+            brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
+      - run:
+          # React Native Android can have issues with later versions of Node:
+          # https://github.com/facebook/react-native/issues/26808
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh install-node
+          name: Install node@10
+      - run:
+          # https://reactnative.dev/docs/environment-setup
+          environment:
+            HOMEBREW_NO_AUTO_UPDATE: '1'
+          command: |
+            brew tap wix/brew >/dev/null
+            brew tap homebrew/cask >/dev/null
+            brew cask install android-sdk >/dev/null
+            yarn global add detox-cli
+            touch .watchmanconfig
+            node -v
+          name: Configure Detox Environment
+      - save_cache:
+          key: |
+            brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
+          paths:
+            - /usr/local/Homebrew
+            - ~/Library/Caches/Homebrew
+      - run:
+          name: Yarn Install
+          command: |
+            echo "Current NPM registry: " $(yarn config get registry)
+            yarn install --frozen-lockfile --non-interactive
+      - run:
+          # Install Android Emulator without Android Studio
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh sdkmanager
+          name: Install Android Emulator
+          shell: /bin/bash -e
+      - run:
+          # Force ssh key generation for emulators
+          command: |
+            adb start-server
+            adb devices
+            adb kill-server
+            ls -la ~/.android
+          name: ADB Start Stop
+      - run:
+          # Create Android Emulator without Android Studio
+          command: >-
+            avdmanager create avd --force --name TestingAVD
+            --package "system-images;android-28;default;x86_64"
+            --tag default --device pixel
+          name: Create Android Emulator
+      - run:
+          background: true
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh start-emulator
+          name: Start Android Emulator (background)
+      - run:
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh wait-for-avd
+          name: Wait for AVD to be ready
+          no_output_timeout: 5m
+      - run:
+          background: true
+          command: yarn start
+          name: Start Metro Packager (background)
+      - run:
+          name: Detox Build
+          command: detox build -c android.emu.debug
+      - run:
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
+            JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
+          name: Detox Test
+          command: detox test -c android.emu.debug -u
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
 
 jobs:
   build:
-    <<: *defaults
-    working_directory: ~/amplify-js
-    resource_class: large
+    executor: build-executor
     steps:
       - checkout
       - run: yarn config set workspaces-experimental true
-      - run: yarn
+      - run: yarn --frozen-lockfile
       - run: yarn run bootstrap
       - run: yarn run build
 
@@ -32,33 +326,22 @@ jobs:
             - ~/.ssh
       - persist_to_workspace:
           root: /root
-          paths: amplify-js
+          paths:
+            - amplify-js
+
   unit_test:
-    <<: *defaults
-    working_directory: ~/amplify-js
+    executor: build-executor
     steps:
       - attach_workspace:
           at: /root
       - run:
           name: 'Run Amplify JS unit tests'
           command: |
-            yarn run test --scope @aws-amplify/auth
-            yarn run test --scope @aws-amplify/api
-            yarn run test --scope @aws-amplify/analytics
-            yarn run test --scope @aws-amplify/cache
-            yarn run test --scope @aws-amplify/core
-            yarn run test --scope @aws-amplify/interactions
-            yarn run test --scope @aws-amplify/pubsub
-            yarn run test --scope @aws-amplify/predictions
-            yarn run test --scope @aws-amplify/storage
-            yarn run test --scope @aws-amplify/xr
-            yarn run test --scope amazon-cognito-identity-js
-            yarn run test --scope aws-amplify-react
-            yarn run test --scope aws-amplify-angular
-            yarn run test --scope aws-amplify-vue
+            yarn run test
             yarn run coverage
+
   integ_setup:
-    <<: *defaults
+    executor: build-executor
     working_directory: ~/
     steps:
       - run:
@@ -75,183 +358,186 @@ jobs:
             - ~/.cache ## cache both yarn and Cypress
       - persist_to_workspace:
           root: /root
-          paths: amplify-js-samples-staging
-  integ_react_predictions:
-    <<: *defaults
-    working_directory: ~/
-    steps:
-      - attach_workspace:
-          at: /root
-      - restore_cache:
-          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
-      - run:
-          name: 'Link aws-amplify'
-          command: |
-            cd amplify-js/packages/aws-amplify
-            yarn link
-      - run:
-          name: 'Link predictions'
-          command: |
-            cd amplify-js/packages/predictions
-            yarn link
-      - run:
-          name: 'Install Predictions React sample'
-          command: |
-            cd amplify-js-samples-staging/samples/react/predictions/multi-user-translation
-            yarn
-            yarn link aws-amplify
-            yarn link @aws-amplify/predictions
-      - run:
-          name: 'Start Predictions React Sample server in background'
-          command: |
-            cd amplify-js-samples-staging/samples/react/predictions/multi-user-translation
-            yarn start
-          background: true
-      - run:
-          name: 'Run cypress tests for Predictions React Sample'
-          command: |
-            cd amplify-js-samples-staging
-            yarn cypress:react --spec "cypress/integration/predictions/multiuser-translation.spec.js"
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/videos
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/screenshots
+          paths:
+            - amplify-js-samples-staging
+
   integ_react_auth:
-    <<: *defaults
-    working_directory: ~/
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/with-authenticator
     steps:
-      - attach_workspace:
-          at: /root
-      - restore_cache:
-          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
-      - run:
-          name: 'Install React Authenticator sample'
-          command: |
-            cd amplify-js-samples-staging/samples/react/auth/with-authenticator
-            yarn
-      - run:
-          name: 'Link aws-amplify'
-          command: |
-            cd amplify-js/packages/aws-amplify
-            yarn link
-      - run:
-          name: 'Link aws-amplify-react'
-          command: |
-            cd amplify-js/packages/aws-amplify-react
-            yarn link
-      - run:
-          name: 'Install React Authenticator sample'
-          command: |
-            cd amplify-js-samples-staging/samples/react/auth/with-authenticator
-            yarn
-            yarn link aws-amplify
-            yarn link aws-amplify-react
-      - run:
-          name: 'Start React Authenticator Sample server in background'
-          command: |
-            cd amplify-js-samples-staging/samples/react/auth/with-authenticator
-            yarn start
-          background: true
-      - run:
-          name: 'Run cypress tests for React Authenticator Sample'
-          command: |
-            cd amplify-js-samples-staging
-            yarn cypress:react --spec "cypress/integration/auth/authenticator.spec.js"
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/videos
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/screenshots
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Authenticator'
+          framework: react
+          spec: auth/authenticator.spec.js
+
   integ_angular_auth:
-    <<: *defaults
-    working_directory: ~/
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
     steps:
-      - attach_workspace:
-          at: /root
-      - restore_cache:
-          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
-      - run:
-          name: 'Install Angular Authenticator sample'
-          command: |
-            cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
-            yarn
-      - run:
-          name: 'Link aws-amplify'
-          command: |
-            cd amplify-js/packages/aws-amplify
-            yarn link
-      - run:
-          name: 'Link aws-amplify-angular'
-          command: |
-            cd amplify-js/packages/aws-amplify-angular
-            yarn link
-      - run:
-          name: 'Link @aws-amplify/analytics'
-          command: |
-            cd amplify-js/packages/analytics
-            yarn link
-      - run:
-          name: 'Install Angular Authenticator sample'
-          command: |
-            cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
-            yarn
-            yarn link aws-amplify
-            yarn link aws-amplify-angular
-            yarn link @aws-amplify/analytics
-      - run:
-          name: 'Start Angular Authenticator Sample server in background'
-          command: |
-            cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
-            yarn start
-          background: true
-      - run:
-          name: 'Run cypress tests for Angular Authenticator Sample'
-          command: |
-            cd amplify-js-samples-staging
-            yarn cypress:angular --spec "cypress/integration/auth/authenticator.spec.js"
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/videos
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/screenshots
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Angular Authenticator'
+          framework: angular
+          spec: auth/authenticator.spec.js
+
   integ_vue_auth:
-    <<: *defaults
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Vue Authenticator'
+          framework: vue
+          spec: auth/authenticator.spec.js
+
+  integ_react_predictions:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/predictions/multi-user-translation
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Predictions'
+          framework: react
+          spec: predictions/multiuser-translation.spec.js
+
+  integ_react_datastore:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/many-to-many
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore'
+          framework: react
+          spec: datastore/many-to-many.spec.js
+
+  integ_react_storage:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageApp
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Storage'
+          framework: react
+          spec: storage/storage.spec.js
+
+  integ_setup_ui:
+    executor: build-executor
     working_directory: ~/
     steps:
-      - attach_workspace:
-          at: /root
-      - restore_cache:
-          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
       - run:
-          name: 'Install Vue Authenticator sample'
+          name: 'Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages'
           command: |
-            cd amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
+            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
+            git clone $AMPLIFY_JS_SAMPLES_STAGING_URL amplify-js-samples-staging-ui
+            cd amplify-js-samples-staging-ui
+            git checkout ui-components/master
             yarn
-      - run:
-          name: 'Link aws-amplify'
-          command: |
-            cd amplify-js/packages/aws-amplify
-            yarn link
-      - run:
-          name: 'Link aws-amplify-vue'
-          command: |
-            cd amplify-js/packages/aws-amplify-vue
-            yarn link
-      - run:
-          name: 'Start Vue Authenticator Sample server in background'
-          command: |
-            cd amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
-            yarn start
-          background: true
-      - run:
-          name: 'Run cypress tests for Vue Authenticator Sample'
-          command: |
-            cd amplify-js-samples-staging
-            yarn cypress:vue --spec "cypress/integration/auth/authenticator.spec.js"
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/videos
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/screenshots
+      - save_cache:
+          key: amplify-js-ui
+          paths:
+            - ~/.cache ## cache both yarn and Cypress
+      - persist_to_workspace:
+          root: /root
+          paths:
+            - amplify-js-samples-staging-ui
+
+  integ_react_auth_ui:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging-ui/samples
+    steps:
+      - prepare_ui_test_env
+      - integ_test_ui:
+          test_name: 'React Authenticator'
+          framework: react
+          category: auth
+          sample_name: amplify-authenticator
+      - integ_test_ui:
+          test_name: 'React Typescript Authenticator'
+          framework: react
+          category: auth
+          sample_name: typescript-amplify-authenticator
+          spec: amplify-authenticator
+      - integ_test_ui:
+          test_name: 'React Custom Authenticator'
+          framework: react
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
+      - integ_test_ui:
+          test_name: 'React Custom Authenticator'
+          framework: react
+          category: auth
+          sample_name: with-authenticator
+          spec: amplify-authenticator
+
+  integ_angular_auth_ui:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging-ui/samples
+    steps:
+      - prepare_ui_test_env
+      - integ_test_ui:
+          test_name: 'Angular Authenticator'
+          framework: angular
+          category: auth
+          sample_name: amplify-authenticator
+      - integ_test_ui:
+          test_name: 'Angular Custom Authenticator'
+          framework: angular
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
+
+  integ_vue_auth_ui:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging-ui/samples
+    steps:
+      - prepare_ui_test_env
+      - integ_test_ui:
+          test_name: 'Vue Authenticator'
+          framework: vue
+          category: auth
+          sample_name: amplify-authenticator
+      - integ_test_ui:
+          test_name: 'Vue Custom Authenticator'
+          framework: vue
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
+
+  integ_rn_ios_storage:
+    executor: ios-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+    steps:
+      - integ_test_rn_ios
+
+  integ_rn_ios_push_notifications:
+    executor: ios-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/push-notifications/PushNotificationApp
+    steps:
+      - integ_test_rn_ios
+
+  integ_rn_android_storage:
+    executor: android-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+    steps:
+      - integ_test_rn_android
+
   deploy:
-    <<: *defaults
+    executor: build-executor
     working_directory: ~/amplify-js
     steps:
       - attach_workspace:
@@ -270,75 +556,146 @@ jobs:
               git config --global user.name $GITHUB_USER
               git status
               git --no-pager diff
-              yarn run publish:$CIRCLE_BRANCH
+              ./.circleci/retry-publish.sh publish:$CIRCLE_BRANCH
             else
               echo "Skipping deploy."
             fi
 
+  post_release:
+    executor: build-executor
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          keys:
+            - amplify-ssh-deps-{{ .Branch }}
+            - amplify-ssh-deps
+      - run:
+          name: 'Post-release steps'
+          command: |
+            git config --global user.email $GITHUB_EMAIL
+            git config --global user.name $GITHUB_USER
+            git pull origin release
+            yarn && yarn build
+            git add ./packages/core/src/Platform/version.ts
+            git commit -m "chore(release): update version.ts [ci skip]"
+            git push origin release
+            git push origin release:main
+
+releasable_branches: &releasable_branches
+  branches:
+    only:
+      - release
+      - main
+      - ui-components/master
+      - 1.0-stable
+
 workflows:
-  version: 2
   build_test_deploy:
     jobs:
       - build
+      - integ_setup:
+          filters:
+            <<: *releasable_branches
+      - integ_setup_ui:
+          filters:
+            <<: *releasable_branches
       - unit_test:
           requires:
             - build
-      - integ_setup:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
-          requires:
-            - build
-      - integ_react_predictions:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
-          requires:
-            - integ_setup
       - integ_react_auth:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
           requires:
             - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_angular_auth:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
           requires:
             - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_vue_auth:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
           requires:
             - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_predictions:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_datastore:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_ios_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_ios_push_notifications:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_android_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_auth_ui:
+          requires:
+            - integ_setup_ui
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_angular_auth_ui:
+          requires:
+            - integ_setup_ui
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_vue_auth_ui:
+          requires:
+            - integ_setup_ui
+            - build
+          filters:
+            <<: *releasable_branches
       - deploy:
           filters:
-            branches:
-              only:
-                - release
-                - master
-                - beta
-                - 1.0-stable
+            <<: *releasable_branches
           requires:
             - unit_test
             - integ_react_predictions
+            - integ_react_datastore
+            - integ_react_storage
             - integ_react_auth
             - integ_angular_auth
             - integ_vue_auth
+            - integ_react_auth_ui
+            - integ_angular_auth_ui
+            - integ_vue_auth_ui
+            - integ_rn_ios_storage
+            - integ_rn_ios_push_notifications
+            - integ_rn_android_storage
+      - post_release:
+          filters:
+            branches:
+              only:
+                - release
+          requires:
+            - deploy

@@ -1,0 +1,558 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DB versions migration Migration from v1 to v2: v2-schema 1`] = `
+Object {
+  "data": Object {
+    "data": Array [
+      Object {
+        "inbound": false,
+        "rows": Array [
+          Array [
+            1,
+            Object {
+              "id": "094a722a-4f00-4723-928a-536aa04b3470",
+              "key": "schemaVersion",
+              "value": "\\"a66372d29356c40e7cd29e41527cead7\\"",
+            },
+          ],
+        ],
+        "tableName": "datastore_Setting",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "sync_ModelMetadata",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "sync_MutationEvent",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [
+          Object {
+            "$": Array [
+              1,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "2c1d760f-c24f-4805-b5c9-9c76b65ff371",
+                "name": "author2",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              2,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "e81717d2-420c-4df9-a752-43c06dfe3652",
+                "name": "author1",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+        ],
+        "tableName": "user_Author",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [
+          Object {
+            "$": Array [
+              1,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "blogOwnerId": "1a232e28-14ed-43e7-b39c-beba80e62a1d",
+                "id": "7649de35-1602-4a60-8d3e-4aecae73ebc6",
+                "name": "blog2",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              2,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "844724fe-373c-4505-b202-2852580058e3",
+                "name": "B1",
+                "owner": Object {
+                  "_deleted": null,
+                  "_lastChangedAt": null,
+                  "_version": null,
+                  "id": "d3b11bac-699a-4ff5-8626-10cb6bda634a",
+                  "name": "O1",
+                },
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+                "1.owner._deleted": "undef",
+                "1.owner._lastChangedAt": "undef",
+                "1.owner._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              3,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "91e67f1e-aba4-497d-a2c1-f2d3133468c0",
+                "name": "Avatar: Last Airbender",
+                "owner": Object {
+                  "_deleted": null,
+                  "_lastChangedAt": null,
+                  "_version": null,
+                  "id": "210bd12c-8ca3-4c3c-b67c-911d84a875b8",
+                  "name": "Owner 1",
+                },
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+                "1.owner._deleted": "undef",
+                "1.owner._lastChangedAt": "undef",
+                "1.owner._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              4,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "blogOwnerId": "fdda1b48-6a3d-4d94-9156-6118ecc15aff",
+                "id": "d4512a1c-ee69-4610-81a0-c00c637294a8",
+                "name": "The Blog",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              5,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "d5e7eb84-2aa1-4bb2-8e2a-21ccc06d2d69",
+                "name": "Avatar: Last Airbender",
+                "owner": Object {
+                  "_deleted": null,
+                  "_lastChangedAt": null,
+                  "_version": null,
+                  "id": "8619a3a0-2c6b-4e02-8cdb-db3b7f938d4a",
+                  "name": "Owner 1",
+                },
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+                "1.owner._deleted": "undef",
+                "1.owner._lastChangedAt": "undef",
+                "1.owner._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              6,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "blogOwnerId": "0abe1eec-022b-41aa-9d13-46dccd42ce32",
+                "id": "dd83c7af-c316-4e75-8725-f64ffe3055c5",
+                "name": "blog2",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+        ],
+        "tableName": "user_Blog",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [
+          Object {
+            "$": Array [
+              1,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "0abe1eec-022b-41aa-9d13-46dccd42ce32",
+                "name": "Owner 2",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              2,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "1a232e28-14ed-43e7-b39c-beba80e62a1d",
+                "name": "Owner 2",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              3,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "349cbc01-9efe-4411-82b0-4581852be264",
+                "name": "Owner 1",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              4,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "434a78a8-99b9-47b5-8df8-5e191b8c73c4",
+                "name": "owner 3",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              5,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "a39c1f9c-b24a-4345-9be7-459e816ae375",
+                "name": "owner 3",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              6,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "ce6e25c1-a78c-4b2d-b7ce-f8288054b729",
+                "name": "Owner 1",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              7,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "d537aed5-22cf-48d5-9966-c8693ef09250",
+                "name": "Owner 1",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              8,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "e364cbb7-fa9a-4077-97a2-93e2090da5d4",
+                "name": "Owner 1",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              9,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "fdda1b48-6a3d-4d94-9156-6118ecc15aff",
+                "name": "Owner 1",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+        ],
+        "tableName": "user_BlogOwner",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [
+          Object {
+            "$": Array [
+              1,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "commentPostId": "d129800d-679f-4df2-92cd-2b96573a618e",
+                "content": "c2",
+                "id": "007ea314-6645-486f-88a9-d1aaa4fddb9e",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              2,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "commentPostId": "d129800d-679f-4df2-92cd-2b96573a618e",
+                "content": "c1",
+                "id": "13c99f5f-1fbb-4088-aaf9-63b789e68574",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+        ],
+        "tableName": "user_Comment",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [
+          Object {
+            "$": Array [
+              1,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "1d5aac5b-9016-4f27-a63e-434b8be13c8a",
+                "postBlogId": "d4512a1c-ee69-4610-81a0-c00c637294a8",
+                "referencePostId": null,
+                "title": "Post 2",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+          Object {
+            "$": Array [
+              2,
+              Object {
+                "_deleted": null,
+                "_lastChangedAt": null,
+                "_version": null,
+                "id": "d129800d-679f-4df2-92cd-2b96573a618e",
+                "postBlogId": "d4512a1c-ee69-4610-81a0-c00c637294a8",
+                "referencePostId": null,
+                "title": "Post 1",
+              },
+            ],
+            "$types": Object {
+              "$": Object {
+                "1._deleted": "undef",
+                "1._lastChangedAt": "undef",
+                "1._version": "undef",
+              },
+            },
+          },
+        ],
+        "tableName": "user_Post",
+      },
+      Object {
+        "inbound": false,
+        "rows": Array [],
+        "tableName": "user_PostAuthorJoin",
+      },
+    ],
+    "databaseName": "amplify-datastore",
+    "databaseVersion": 0.2,
+    "tables": Array [
+      Object {
+        "name": "datastore_Setting",
+        "rowCount": 1,
+        "schema": "++,&id",
+      },
+      Object {
+        "name": "sync_ModelMetadata",
+        "rowCount": 0,
+        "schema": "++,&id",
+      },
+      Object {
+        "name": "sync_MutationEvent",
+        "rowCount": 0,
+        "schema": "++,&id",
+      },
+      Object {
+        "name": "user_Author",
+        "rowCount": 2,
+        "schema": "++,&id",
+      },
+      Object {
+        "name": "user_Blog",
+        "rowCount": 6,
+        "schema": "++,&id",
+      },
+      Object {
+        "name": "user_BlogOwner",
+        "rowCount": 9,
+        "schema": "++,&id",
+      },
+      Object {
+        "name": "user_Comment",
+        "rowCount": 2,
+        "schema": "++,&id",
+      },
+      Object {
+        "name": "user_Post",
+        "rowCount": 2,
+        "schema": "++,&id",
+      },
+      Object {
+        "name": "user_PostAuthorJoin",
+        "rowCount": 0,
+        "schema": "++,&id",
+      },
+    ],
+  },
+  "formatName": "dexie",
+  "formatVersion": 1,
+}
+`;

@@ -26,7 +26,7 @@ const defaultOpts: SessionTrackOpts = {
 
 let initialEventSent = false;
 
-export default class SessionTracker {
+export class SessionTracker {
 	private _tracker;
 	private _hasEnabled;
 	private _config: SessionTrackOpts;
@@ -66,6 +66,7 @@ export default class SessionTracker {
 				{
 					name: '_session.start',
 					attributes,
+					immediate: false,
 				},
 				this._config.provider
 			).catch(e => {
@@ -83,7 +84,7 @@ export default class SessionTracker {
 				{
 					name: '_session.stop',
 					attributes,
-					immediate: true,
+					immediate: false,
 				},
 				this._config.provider
 			).catch(e => {
@@ -113,6 +114,7 @@ export default class SessionTracker {
 			{
 				name: '_session.start',
 				attributes,
+				immediate: false,
 			},
 			this._config.provider
 		).catch(e => {
@@ -140,3 +142,8 @@ export default class SessionTracker {
 		return this._config;
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default SessionTracker;
