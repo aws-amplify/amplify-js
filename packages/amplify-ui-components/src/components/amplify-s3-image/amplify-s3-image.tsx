@@ -80,12 +80,9 @@ export class AmplifyS3Image {
   }
 
   render() {
-    console.log('calling render');
     return (
       <Host>
-        {this.src && (
-          <img src={this.src as string} onLoad={this.handleOnLoad} onError={this.handleOnError} style={{}} />
-        )}
+        {this.src && <img src={this.src as string} onLoad={this.handleOnLoad} onError={this.handleOnError} />}
       </Host>
     );
   }
