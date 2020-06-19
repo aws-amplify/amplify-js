@@ -35,7 +35,7 @@ export class AmplifyS3ImagePicker {
 
   @State() src: string | object;
 
-  async handlePick(file) {
+  handlePick = async (file: File) => {
     const { path = '', level, track, identityId, fileToKey } = this;
     const key = path + calcKey(file, fileToKey);
 
@@ -55,7 +55,7 @@ export class AmplifyS3ImagePicker {
       logger.error(error);
       throw new Error(error);
     }
-  }
+  };
 
   render() {
     return (
