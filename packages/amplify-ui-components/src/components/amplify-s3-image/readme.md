@@ -9,7 +9,6 @@
 | --------------- | -------------- | ----------- | -------------------------------------------------------------------- | ----------------------- |
 | `body`          | --             |             | `object`                                                             | `undefined`             |
 | `contentType`   | `content-type` |             | `string`                                                             | `'binary/octet-stream'` |
-| `fileToKey`     | --             |             | `(data: object) => string`                                           | `undefined`             |
 | `handleOnError` | --             |             | `(event: Event) => void`                                             | `undefined`             |
 | `handleOnLoad`  | --             |             | `(event: Event) => void`                                             | `undefined`             |
 | `identityId`    | `identity-id`  |             | `string`                                                             | `undefined`             |

@@ -189,3 +189,24 @@ export const getStorageObject = async (key, level, track, identityId, logger) =>
     throw new Error(error);
   }
 };
+
+export const getTextSource = async (key, level, track, identityId, logger) => {
+  if (!Storage || typeof Storage.get !== 'function') {
+    throw new Error(NO_STORAGE_MODULE_FOUND);
+  }
+  try {
+    const textSrc = await Storage.get(key, {
+      download: true,
+      level,
+      track,
+      identityId,
+    });
+    logger.debug(textSrc);
+    // @ts-ignore
+    const text = textSrc.Body.text();
+    return text;
+  } catch (error) {
+    logger.error(error);
+    throw new Error(error);
+  }
+};

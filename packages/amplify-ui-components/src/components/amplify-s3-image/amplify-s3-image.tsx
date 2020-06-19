@@ -26,8 +26,6 @@ export class AmplifyS3Image {
   @Prop() track: boolean;
   /* Cognito identity id of the another user's image */
   @Prop() identityId: string;
-  /* Callback used to generate custom key value */
-  @Prop() fileToKey: (data: object) => string;
   /* Function executed when image loads */
   @Prop() handleOnLoad: (event: Event) => void;
   /* Function executed when error occurs for the image */

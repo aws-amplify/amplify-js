@@ -17,6 +17,7 @@
 ### Used by
 
  - [amplify-photo-picker](../amplify-photo-picker)
+ - [amplify-s3-text-picker](../amplify-s3-text-picker)
 
 ### Depends on
 
@@ -27,6 +28,7 @@
 graph TD;
   amplify-picker --> amplify-button
   amplify-photo-picker --> amplify-picker
+  amplify-s3-text-picker --> amplify-picker
   style amplify-picker fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
