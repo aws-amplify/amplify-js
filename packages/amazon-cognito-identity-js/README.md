@@ -758,9 +758,6 @@ cognitoUser.initiateAuth(authenticationDetails, {
 
 **Use case 26.** Using cookies to store cognito tokens
 
-```javascript
-```
-
 To use the CookieStorage you have to pass it in the constructor map of CognitoUserPool and CognitoUser (when constructed directly):
 
 ```js
