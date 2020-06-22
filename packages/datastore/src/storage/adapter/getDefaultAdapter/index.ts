@@ -1,11 +1,16 @@
+import { JS } from '@aws-amplify/core';
 import { Adapter } from '..';
 
 const getDefaultAdapter: () => Adapter = () => {
-	if (window.indexedDB) {
+	const { isBrowser, isNode } = JS.browserOrNode();
+
+	if (isNode) {
+		require('fake-indexeddb/auto');
 		return require('../indexeddb').default;
 	}
-	if (process && process.env) {
-		throw new Error('Node is not supported');
+
+	if (isBrowser && window.indexedDB) {
+		return require('../indexeddb').default;
 	}
 };
 
