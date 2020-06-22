@@ -4,7 +4,7 @@ exports[`amplify-s3-image spec: Render logic -> should render no pre tag without
 <amplify-s3-text-picker>
   <div class="text-container">
     <pre>
-      PICK A FILE
+      Pick a file
     </pre>
   </div>
   <amplify-picker acceptvalue="text/*"></amplify-picker>
