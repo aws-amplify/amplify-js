@@ -95,7 +95,7 @@ export enum Translations {
   PHOTO_PICKER_HINT = 'Ancilliary text or content may occupy this space here',
   PHOTO_PICKER_PLACEHOLDER_HINT = 'Placeholder hint',
   PHOTO_PICKER_BUTTON_TEXT = 'Button',
-  IMAGE_PICKER_TITLE = 'Add Profile Photos',
+  IMAGE_PICKER_TITLE = 'Add Profile Photo',
   IMAGE_PICKER_HINT = 'Preview the image before upload',
   IMAGE_PICKER_PLACEHOLDER_HINT = 'Tap to image select',
   IMAGE_PICKER_BUTTON_TEXT = 'Upload',
