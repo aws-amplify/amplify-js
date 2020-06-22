@@ -1,3 +1,5 @@
+import 'isomorphic-unfetch';
+
 import UserAgent from './UserAgent';
 
 class CognitoError extends Error {
