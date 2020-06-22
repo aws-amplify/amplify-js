@@ -2,8 +2,6 @@
 
 exports[`amplify-s3-image spec: Render logic -> should render no pre tag without 'textKey' or 'path' 1`] = `
 <amplify-s3-text>
-  <div class="text-container">
-    <pre></pre>
-  </div>
+  <div></div>
 </amplify-s3-text>
 `;
