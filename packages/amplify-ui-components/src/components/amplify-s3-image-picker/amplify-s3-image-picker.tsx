@@ -32,7 +32,7 @@ export class AmplifyS3ImagePicker {
   @Prop() placeholderHint?: string = I18n.get(Translations.IMAGE_PICKER_PLACEHOLDER_HINT);
   /* Upload Button Text as string */
   @Prop() buttonText?: string = I18n.get(Translations.IMAGE_PICKER_BUTTON_TEXT);
-
+  /* Source for the image */
   @State() src: string | object;
 
   handlePick = async (file: File) => {
