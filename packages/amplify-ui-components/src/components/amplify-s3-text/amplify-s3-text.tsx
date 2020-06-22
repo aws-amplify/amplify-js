@@ -26,7 +26,7 @@ export class AmplifyS3Text {
   @Prop() track: boolean;
   /* Cognito identity id of the another user's image */
   @Prop() identityId: string;
-
+  /* Source content of text */
   @State() src: string;
 
   @Watch('body')

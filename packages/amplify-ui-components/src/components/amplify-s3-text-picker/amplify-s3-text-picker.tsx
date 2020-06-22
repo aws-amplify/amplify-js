@@ -1,9 +1,10 @@
 import { Component, Prop, h, State, Host } from '@stencil/core';
 import { AccessLevel } from '../../common/types/storage-types';
 import { Storage } from '@aws-amplify/storage';
-import { Logger } from '@aws-amplify/core';
+import { Logger, I18n } from '@aws-amplify/core';
 import { NO_STORAGE_MODULE_FOUND } from '../../common/constants';
 import { calcKey, getTextSource } from '../../common/helpers';
+import { Translations } from '../../common/Translations';
 
 const logger = new Logger('S3TextPicker');
 
@@ -24,11 +25,11 @@ export class AmplifyS3TextPicker {
   @Prop() identityId: string;
   /* Callback used to generate custom key value */
   @Prop() fileToKey: (data: object) => string;
+  /* Source content of text */
+  @State() src: string = I18n.get(Translations.PICKER_TEXT);
 
-  @State() src: string = 'PICK A FILE';
-
-  async handleInput(event) {
-    const file = event.target.files[0];
+  async handleInput(event: Event) {
+    const file = (event.target as HTMLInputElement).files[0];
 
     if (!file) {
       throw new Error('No file was selected');
