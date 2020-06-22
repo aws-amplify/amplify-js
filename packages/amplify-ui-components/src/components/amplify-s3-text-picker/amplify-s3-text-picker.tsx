@@ -60,7 +60,7 @@ export class AmplifyS3TextPicker {
         <div class="text-container">
           <pre>{this.src}</pre>
         </div>
-        <amplify-picker inputHandler={e => this.handleInput(e)}></amplify-picker>
+        <amplify-picker inputHandler={e => this.handleInput(e)} acceptValue={'text/*'}></amplify-picker>
       </Host>
     );
   }
