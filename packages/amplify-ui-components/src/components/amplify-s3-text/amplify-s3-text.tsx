@@ -70,8 +70,12 @@ export class AmplifyS3Text {
 
   render() {
     return (
-      <div class="text-container">
-        <pre>{this.src}</pre>
+      <div>
+        {this.src && (
+          <div class="text-container">
+            <pre>{this.src}</pre>
+          </div>
+        )}
       </div>
     );
   }
