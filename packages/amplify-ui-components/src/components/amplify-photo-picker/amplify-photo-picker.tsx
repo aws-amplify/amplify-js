@@ -7,27 +7,33 @@ import { Translations } from '../../common/Translations';
   styleUrl: 'amplify-photo-picker.scss',
 })
 export class AmplifyPhotoPicker {
+  /* Title string value */
   @Prop() headerTitle?: string = I18n.get(Translations.PHOTO_PICKER_TITLE);
+  /* Header Hint value in string */
   @Prop() headerHint?: string = I18n.get(Translations.PHOTO_PICKER_HINT);
+  /* Placeholder hint that goes under the placeholder image */
   @Prop() placeholderHint?: string = I18n.get(Translations.PHOTO_PICKER_PLACEHOLDER_HINT);
+  /* Picker button text as string */
   @Prop() buttonText?: string = I18n.get(Translations.PHOTO_PICKER_BUTTON_TEXT);
+  /* Source of the image to be previewed */
   @Prop() previewSrc?: string | object;
+  /* Function that handles file pick onClick */
   @Prop() onClickHandler?: (file: File) => void = () => {};
-
+  /* Preview State tracks the change in preview source */
   @State() previewState: string;
-
+  /* File slected through picker */
   @State() file: File;
 
   componentWillLoad() {
     this.previewState = this.previewSrc as string;
   }
 
-  private handleInput = ev => {
-    this.file = ev.target.files[0];
+  private handleInput = (ev: Event) => {
+    this.file = (ev.target as HTMLInputElement).files[0];
 
     const reader = new FileReader();
-    reader.onload = e => {
-      const url = e.target.result;
+    reader.onload = (_e: Event) => {
+      const url = reader.result;
       this.previewState = url as string;
     };
     reader.readAsDataURL(this.file);
@@ -42,7 +48,7 @@ export class AmplifyPhotoPicker {
 
           <amplify-picker acceptValue={'image/*'} inputHandler={this.handleInput}>
             <div class="body" slot="picker">
-              {this.previewState ? <img src={`${this.previewState}`} /> : <amplify-photo-placeholder />}
+              {this.previewState ? <img src={`${this.previewState}`} /> : <amplify-icon name="photoPlaceholder" />}
             </div>
           </amplify-picker>
 

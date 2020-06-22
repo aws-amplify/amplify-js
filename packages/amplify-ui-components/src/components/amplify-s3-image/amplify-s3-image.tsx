@@ -32,7 +32,7 @@ export class AmplifyS3Image {
   @Prop() handleOnLoad: (event: Event) => void;
   /* Function executed when error occurs for the image */
   @Prop() handleOnError: (event: Event) => void;
-
+  /* Source for the image */
   @State() src: string | object;
 
   @Watch('body')
