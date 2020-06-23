@@ -645,6 +645,15 @@ export namespace Components {
          */
         "user": CognitoUserInterface;
     }
+    interface AmplifyS3Album {
+        "contentType": string;
+        "filter": any;
+        "identityId": string;
+        "level": AccessLevel;
+        "path": string;
+        "sort": any;
+        "track": boolean;
+    }
     interface AmplifyS3Image {
         "body": object;
         "contentType": string;
@@ -1083,6 +1092,12 @@ declare global {
         prototype: HTMLAmplifyRequireNewPasswordElement;
         new (): HTMLAmplifyRequireNewPasswordElement;
     };
+    interface HTMLAmplifyS3AlbumElement extends Components.AmplifyS3Album, HTMLStencilElement {
+    }
+    var HTMLAmplifyS3AlbumElement: {
+        prototype: HTMLAmplifyS3AlbumElement;
+        new (): HTMLAmplifyS3AlbumElement;
+    };
     interface HTMLAmplifyS3ImageElement extends Components.AmplifyS3Image, HTMLStencilElement {
     }
     var HTMLAmplifyS3ImageElement: {
@@ -1209,6 +1224,7 @@ declare global {
         "amplify-picker": HTMLAmplifyPickerElement;
         "amplify-radio-button": HTMLAmplifyRadioButtonElement;
         "amplify-require-new-password": HTMLAmplifyRequireNewPasswordElement;
+        "amplify-s3-album": HTMLAmplifyS3AlbumElement;
         "amplify-s3-image": HTMLAmplifyS3ImageElement;
         "amplify-s3-image-picker": HTMLAmplifyS3ImagePickerElement;
         "amplify-section": HTMLAmplifySectionElement;
@@ -1862,6 +1878,15 @@ declare namespace LocalJSX {
          */
         "user"?: CognitoUserInterface;
     }
+    interface AmplifyS3Album {
+        "contentType"?: string;
+        "filter"?: any;
+        "identityId"?: string;
+        "level"?: AccessLevel;
+        "path"?: string;
+        "sort"?: any;
+        "track"?: boolean;
+    }
     interface AmplifyS3Image {
         "body"?: object;
         "contentType"?: string;
@@ -2124,6 +2149,7 @@ declare namespace LocalJSX {
         "amplify-picker": AmplifyPicker;
         "amplify-radio-button": AmplifyRadioButton;
         "amplify-require-new-password": AmplifyRequireNewPassword;
+        "amplify-s3-album": AmplifyS3Album;
         "amplify-s3-image": AmplifyS3Image;
         "amplify-s3-image-picker": AmplifyS3ImagePicker;
         "amplify-section": AmplifySection;
@@ -2180,6 +2206,7 @@ declare module "@stencil/core" {
             "amplify-picker": LocalJSX.AmplifyPicker & JSXBase.HTMLAttributes<HTMLAmplifyPickerElement>;
             "amplify-radio-button": LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
             "amplify-require-new-password": LocalJSX.AmplifyRequireNewPassword & JSXBase.HTMLAttributes<HTMLAmplifyRequireNewPasswordElement>;
+            "amplify-s3-album": LocalJSX.AmplifyS3Album & JSXBase.HTMLAttributes<HTMLAmplifyS3AlbumElement>;
             "amplify-s3-image": LocalJSX.AmplifyS3Image & JSXBase.HTMLAttributes<HTMLAmplifyS3ImageElement>;
             "amplify-s3-image-picker": LocalJSX.AmplifyS3ImagePicker & JSXBase.HTMLAttributes<HTMLAmplifyS3ImagePickerElement>;
             "amplify-section": LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
