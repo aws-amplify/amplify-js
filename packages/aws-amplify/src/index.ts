@@ -52,6 +52,7 @@ export {
 } from '@aws-amplify/core';
 
 export { Amplify };
+export { withServerContext } from './withServerContext';
 
 /**
  * @deprecated use named import

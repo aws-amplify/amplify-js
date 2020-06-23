@@ -980,4 +980,4 @@ class DataStore {
 
 const instance = new DataStore();
 
-export { initSchema, instance as DataStore };
+export { DataStore as DataStoreClass, initSchema, instance as DataStore };
