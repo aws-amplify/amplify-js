@@ -5,7 +5,7 @@ import Observable from 'zen-observable-ts';
 import {
 	DataStore as DataStoreType,
 	initSchema as initSchemaType,
-} from '../src/datastore/datastore';
+} from '../src/DataStore';
 import { Predicates } from '../src/predicates';
 import { ExclusiveStorage as StorageType } from '../src/storage/storage';
 import {
@@ -35,7 +35,7 @@ beforeEach(() => {
 
 		return { ExclusiveStorage: mock };
 	});
-	({ initSchema, DataStore } = require('../src/datastore/datastore'));
+	({ initSchema, DataStore } = require('../src/DataStore'));
 });
 
 const nameOf = <T>(name: keyof T) => name;
@@ -257,7 +257,7 @@ describe('DataStore tests', () => {
 
 				return { ExclusiveStorage: mock };
 			});
-			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+			({ initSchema, DataStore } = require('../src/DataStore'));
 
 			const classes = initSchema(testSchema());
 
@@ -281,7 +281,7 @@ describe('DataStore tests', () => {
 
 				return { ExclusiveStorage: mock };
 			});
-			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+			({ initSchema, DataStore } = require('../src/DataStore'));
 
 			const classes = initSchema(testSchema());
 
@@ -435,7 +435,7 @@ describe('DataStore tests', () => {
 
 				return { ExclusiveStorage: mock };
 			});
-			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+			({ initSchema, DataStore } = require('../src/DataStore'));
 
 			const classes = initSchema(testSchema());
 

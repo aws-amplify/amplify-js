@@ -2,8 +2,8 @@ import { NonModelTypeConstructor, PersistentModelConstructor } from '../src';
 import {
 	DataStore as DataStoreType,
 	initSchema as initSchemaType,
-} from '../src/datastore/datastore';
-import { default as AsyncStorageAdapterType } from '../src/storage/adapter/asyncstorage';
+} from '../src/DataStore';
+import { default as AsyncStorageAdapterType } from '../src/storage/adapter/AsyncStorageAdapter';
 import { DATASTORE, USER } from '../src/util';
 import {
 	Author as AuthorType,
@@ -84,7 +84,7 @@ function setUpSchema(beforeSetUp?: Function) {
 		default: AsyncStorageAdapter,
 	} = require('../src/storage/adapter/asyncstorage'));
 
-	({ initSchema, DataStore } = require('../src/datastore/datastore'));
+	({ initSchema, DataStore } = require('../src/DataStore'));
 
 	({
 		Author,

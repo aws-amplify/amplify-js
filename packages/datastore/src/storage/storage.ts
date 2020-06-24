@@ -1,7 +1,7 @@
 import { Logger, Mutex } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import PushStream from 'zen-push';
-import { ModelInstanceCreator } from '../datastore/datastore';
+import { ModelInstanceCreator } from '../DataStore';
 import { ModelPredicateCreator } from '../predicates';
 import {
 	InternalSchema,

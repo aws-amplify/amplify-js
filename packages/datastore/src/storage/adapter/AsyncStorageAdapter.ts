@@ -1,7 +1,7 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import AsyncStorageDatabase from './AsyncStorageDatabase';
 import { Adapter } from './index';
-import { ModelInstanceCreator } from '../../datastore/datastore';
+import { ModelInstanceCreator } from '../../DataStore';
 import { ModelPredicateCreator } from '../../predicates';
 import {
 	InternalSchema,
