@@ -6,13 +6,13 @@ import {
 } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { MutationEvent } from '../';
-import { ModelInstanceCreator } from '../../DataStore';
 import { ExclusiveStorage as Storage } from '../../storage/storage';
 import {
 	ConflictHandler,
 	DISCARD,
 	ErrorHandler,
 	GraphQLCondition,
+	ModelInstanceCreator,
 	InternalSchema,
 	isModelFieldType,
 	isTargetNameAssociation,

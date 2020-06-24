@@ -1,10 +1,10 @@
 import { Logger, Mutex } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import PushStream from 'zen-push';
-import { ModelInstanceCreator } from '../DataStore';
 import { ModelPredicateCreator } from '../predicates';
 import {
 	InternalSchema,
+	ModelInstanceCreator,
 	ModelInstanceMetadata,
 	ModelPredicate,
 	NamespaceResolver,
@@ -86,6 +86,7 @@ class StorageClass implements StorageFacade {
 				this.schema,
 				this.namespaceResolver,
 				this.modelInstanceCreator,
+				// @ts-ignore Expected 3 arguments, but got 4.ts(2554)
 				this.getModelConstructorByModelName
 			)
 			.then(resolve, reject);

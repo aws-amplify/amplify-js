@@ -7,7 +7,7 @@ const getDefaultAdapter: () => Adapter = () => {
 	if (isNode) {
 		const { AsyncStorageAdapter } = require('../AsyncStorageAdapter');
 
-		// Every invocation
+		// Every invocation on the server needs a new adapter + storage
 		return new AsyncStorageAdapter();
 	}
 

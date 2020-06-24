@@ -2,11 +2,11 @@ import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js/core';
 import { monotonicFactory, ULID } from 'ulid';
 import { v4 as uuid } from 'uuid';
-import { ModelInstanceCreator } from './DataStore';
 import {
 	AllOperators,
 	isPredicateGroup,
 	isPredicateObj,
+	ModelInstanceCreator,
 	ModelInstanceMetadata,
 	PersistentModel,
 	PersistentModelConstructor,
@@ -323,8 +323,9 @@ const DATASTORE = NAMESPACES.DATASTORE;
 const USER = NAMESPACES.USER;
 const SYNC = NAMESPACES.SYNC;
 const STORAGE = NAMESPACES.STORAGE;
+const SETTING_SCHEMA_VERSION = 'schemaVersion';
 
-export { USER, SYNC, STORAGE, DATASTORE };
+export { USER, SYNC, STORAGE, DATASTORE, SETTING_SCHEMA_VERSION };
 
 let privateModeCheckResult;
 
