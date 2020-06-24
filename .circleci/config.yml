@@ -386,7 +386,7 @@ jobs:
           test_name: 'Angular Authenticator'
           framework: angular
           category: auth
-          sample_name: with-authenticator
+          sample_name: amplify-authenticator
           spec: authenticator
 
   integ_vue_auth:
@@ -399,7 +399,7 @@ jobs:
           test_name: 'Vue Authenticator'
           framework: vue
           category: auth
-          sample_name: with-authenticator
+          sample_name: amplify-authenticator
           spec: authenticator
 
   integ_react_predictions:
