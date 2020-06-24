@@ -5,12 +5,14 @@ const getDefaultAdapter: () => Adapter = () => {
 	const { isBrowser, isNode } = JS.browserOrNode();
 
 	if (isNode) {
-		require('fake-indexeddb/auto');
-		return require('../indexeddb').default;
+		const { AsyncStorageAdapter } = require('../AsyncStorageAdapter');
+
+		// Every invocation
+		return new AsyncStorageAdapter();
 	}
 
 	if (isBrowser && window.indexedDB) {
-		return require('../indexeddb').default;
+		return require('../IndexedDBAdapter').default;
 	}
 };
 

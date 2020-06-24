@@ -28,7 +28,7 @@ import {
 
 const logger = new Logger('DataStore');
 
-class AsyncStorageAdapter implements Adapter {
+export class AsyncStorageAdapter implements Adapter {
 	private schema: InternalSchema;
 	private namespaceResolver: NamespaceResolver;
 	private modelInstanceCreator: ModelInstanceCreator;
