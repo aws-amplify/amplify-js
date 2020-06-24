@@ -100,8 +100,14 @@ commands:
         type: string
       framework:
         type: string
-      spec:
+      category:
         type: string
+      sample_name:
+        type: string
+      spec:
+        # optional - the script will use sample_name by default
+        type: string
+        default: ''
     steps:
       - run:
           name: 'Install << parameters.test_name >> sample'
@@ -109,14 +115,10 @@ commands:
             echo "Current NPM registry: " $(yarn config get registry)
             yarn
       - run:
-          name: 'Start << parameters.test_name >> Sample server in background'
-          command: yarn start
-          background: true
-      - run:
           name: 'Run cypress tests for << parameters.test_name >> Sample'
           command: |
             cd ~/amplify-js-samples-staging
-            yarn cypress:<< parameters.framework >> --spec "cypress/integration/<< parameters.spec >>"
+            yarn ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -370,7 +372,9 @@ jobs:
       - integ_test_js:
           test_name: 'React Authenticator'
           framework: react
-          spec: auth/authenticator.spec.js
+          category: auth
+          sample_name: with-authenticator
+          spec: authenticator
 
   integ_angular_auth:
     executor: js-test-executor
@@ -381,7 +385,9 @@ jobs:
       - integ_test_js:
           test_name: 'Angular Authenticator'
           framework: angular
-          spec: auth/authenticator.spec.js
+          category: auth
+          sample_name: amplify-authenticator
+          spec: authenticator
 
   integ_vue_auth:
     executor: js-test-executor
@@ -392,7 +398,9 @@ jobs:
       - integ_test_js:
           test_name: 'Vue Authenticator'
           framework: vue
-          spec: auth/authenticator.spec.js
+          category: auth
+          sample_name: amplify-authenticator
+          spec: authenticator
 
   integ_react_predictions:
     executor: js-test-executor
@@ -403,7 +411,9 @@ jobs:
       - integ_test_js:
           test_name: 'React Predictions'
           framework: react
-          spec: predictions/multiuser-translation.spec.js
+          category: predictions
+          sample_name: multi-user-translation
+          spec: multiuser-translation
 
   integ_react_datastore:
     executor: js-test-executor
@@ -414,7 +424,8 @@ jobs:
       - integ_test_js:
           test_name: 'React DataStore'
           framework: react
-          spec: datastore/many-to-many.spec.js
+          category: datastore
+          sample_name: many-to-many
 
   integ_react_storage:
     executor: js-test-executor
@@ -425,7 +436,9 @@ jobs:
       - integ_test_js:
           test_name: 'React Storage'
           framework: react
-          spec: storage/storage.spec.js
+          category: storage
+          sample_name: storageApp
+          spec: storage
 
   integ_setup_ui:
     executor: build-executor
