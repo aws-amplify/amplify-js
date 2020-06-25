@@ -1,6 +1,6 @@
+import { ModelInstanceCreator } from '../DataStore';
 import {
 	AuthorizationRule,
-	ModelInstanceCreator,
 	GraphQLCondition,
 	isEnumFieldType,
 	isGraphQLScalarType,

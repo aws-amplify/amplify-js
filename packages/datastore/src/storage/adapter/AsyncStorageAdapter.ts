@@ -1,9 +1,11 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import AsyncStorageDatabase from './AsyncStorageDatabase';
+import { Adapter } from './index';
+import { ModelInstanceCreator } from '../../DataStore';
 import { ModelPredicateCreator } from '../../predicates';
 import {
 	InternalSchema,
 	isPredicateObj,
-	ModelInstanceCreator,
 	ModelInstanceMetadata,
 	ModelPredicate,
 	NamespaceResolver,
@@ -23,8 +25,6 @@ import {
 	traverseModel,
 	validatePredicate,
 } from '../../util';
-import AsyncStorageDatabase from './AsyncStorageDatabase';
-import { Adapter } from './index';
 
 const logger = new Logger('DataStore');
 
@@ -56,8 +56,6 @@ export class AsyncStorageAdapter implements Adapter {
 		return storeName;
 	}
 
-	// @ts-ignore Property 'setUp' in type 'IndexedDBAdapter' is not assignable to the same property in base type 'Adapter'.
-	// Type '(theSchema: InternalSchema, namespaceResolver: NamespaceResolver, modelInstanceCreator: <T extends Readonly<{ id: string; } & Record<string, any>> = Readonly<{ ...; } & Record<...>>>(modelConstructor: PersistentModelConstructor<...>, init: Pick<...> & Partial<...>) => T, getModelConstructorByModelName: (namsespaceNa...' is not assignable to type '(schema: InternalSchema, namespaceResolver: NamespaceResolver, getModelConstructorByModelName: (namsespaceName: string, modelName: string) => PersistentModelConstructor<any>) => Promise<...>'.
 	async setUp(
 		theSchema: InternalSchema,
 		namespaceResolver: NamespaceResolver,
@@ -383,10 +381,7 @@ export class AsyncStorageAdapter implements Adapter {
 				const isValid = validatePredicate(fromDB, type, predicateObjs);
 				if (!isValid) {
 					const msg = 'Conditional update failed';
-					logger.error(msg, {
-						model: fromDB,
-						condition: predicateObjs,
-					});
+					logger.error(msg, { model: fromDB, condition: predicateObjs });
 
 					throw new Error(msg);
 				}

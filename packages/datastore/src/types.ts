@@ -1,4 +1,4 @@
-import { modelInstanceCreator } from './DataStore/modelInstanceCreator';
+import { ModelInstanceCreator } from './DataStore';
 import { exhaustiveCheck } from './util';
 
 //#region Schema types
@@ -177,7 +177,6 @@ export type TypeConstructorMap = Record<
 	PersistentModelConstructor<any> | NonModelTypeConstructor<any>
 >;
 export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
-
 export type ModelInit<T> = Omit<T, 'id'>;
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
@@ -185,7 +184,7 @@ type DeepWritable<T> = {
 		: DeepWritable<T[P]>;
 };
 export type MutableModel<T> = Omit<DeepWritable<T>, 'id'>;
-export type ModelInstanceCreator = typeof modelInstanceCreator;
+
 export type ModelInstanceMetadata = {
 	id: string;
 	_version: number;
@@ -351,6 +350,7 @@ export type SystemComponent = {
 	setUp(
 		schema: InternalSchema,
 		namespaceResolver: NamespaceResolver,
+		modelInstanceCreator: ModelInstanceCreator,
 		getModelConstructorByModelName: (
 			namsespaceName: string,
 			modelName: string
