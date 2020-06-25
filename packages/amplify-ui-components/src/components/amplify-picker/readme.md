@@ -2,6 +2,7 @@
 
 <!-- Auto Generated Below -->
 
+
 ## Properties
 
 | Property       | Attribute      | Description | Type                 | Default                              |
@@ -10,29 +11,29 @@
 | `inputHandler` | --             |             | `(e: Event) => void` | `undefined`                          |
 | `pickerText`   | `picker-text`  |             | `string`             | `I18n.get(Translations.PICKER_TEXT)` |
 
+
 ## Dependencies
 
 ### Used by
 
-- [amplify-photo-picker](../amplify-photo-picker)
-- [amplify-s3-text-picker](../amplify-s3-text-picker)
-- [amplify-s3-album](../amplify-s3-album)
+ - [amplify-photo-picker](../amplify-photo-picker)
+ - [amplify-s3-album](../amplify-s3-album)
+ - [amplify-s3-text-picker](../amplify-s3-text-picker)
 
 ### Depends on
 
 - [amplify-button](../amplify-button)
 
 ### Graph
-
 ```mermaid
 graph TD;
   amplify-picker --> amplify-button
   amplify-photo-picker --> amplify-picker
-  amplify-s3-text-picker --> amplify-picker
   amplify-s3-album --> amplify-picker
+  amplify-s3-text-picker --> amplify-picker
   style amplify-picker fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
----
+----------------------------------------------
 
-_Built with [StencilJS](https://stenciljs.com/)_
+*Built with [StencilJS](https://stenciljs.com/)*

@@ -3,7 +3,7 @@ import { AccessLevel } from '../../common/types/storage-types';
 import { Storage } from '@aws-amplify/storage';
 import { Logger, I18n } from '@aws-amplify/core';
 import { NO_STORAGE_MODULE_FOUND } from '../../common/constants';
-import { calcKey, getTextSource } from '../../common/helpers';
+import { calcKey, getTextSource } from '../../common/storage-helper';
 import { Translations } from '../../common/Translations';
 
 const logger = new Logger('S3TextPicker');
@@ -24,7 +24,7 @@ export class AmplifyS3TextPicker {
   /* Cognito identity id of the another user's image */
   @Prop() identityId: string;
   /* Callback used to generate custom key value */
-  @Prop() fileToKey: (data: object) => string;
+  @Prop() fileToKey: (data: object) => string | string;
   /* Source content of text */
   @State() src: string = I18n.get(Translations.PICKER_TEXT);
 

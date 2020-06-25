@@ -1,5 +1,5 @@
 import { Component, Prop, h, State } from '@stencil/core';
-import { AccessLevel } from '../../common/types/storage-types';
+import { AccessLevel, StorageObject } from '../../common/types/storage-types';
 import { Storage } from '@aws-amplify/storage';
 import { Logger, filenameToContentType } from '@aws-amplify/core';
 import { NO_STORAGE_MODULE_FOUND } from '../../common/constants';
@@ -8,13 +8,6 @@ import { v4 as uuid } from 'uuid';
 
 const logger = new Logger('S3Album');
 
-interface StorageObject {
-  key: string;
-  contentType?: string;
-  eTag?: string;
-  lastModified?: Date;
-  size?: number;
-}
 @Component({
   tag: 'amplify-s3-album',
   styleUrl: 'amplify-s3-album.scss',
@@ -140,7 +133,6 @@ export class AmplifyS3Album {
                     level={this.level}
                     path={this.path}
                     identityId={this.identityId}
-                    fileToKey={this.fileToKey}
                     track={this.track}
                   ></amplify-s3-image>
                   <span class="img-overlay"></span>

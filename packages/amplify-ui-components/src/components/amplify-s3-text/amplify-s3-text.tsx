@@ -2,7 +2,7 @@ import { Component, Prop, h, State, Watch } from '@stencil/core';
 import { AccessLevel } from '../../common/types/storage-types';
 import { Storage } from '@aws-amplify/storage';
 import { Logger } from '@aws-amplify/core';
-import { getTextSource } from '../../common/helpers';
+import { getTextSource } from '../../common/storage-helper';
 import { NO_STORAGE_MODULE_FOUND } from '../../common/constants';
 
 const logger = new Logger('S3Text');

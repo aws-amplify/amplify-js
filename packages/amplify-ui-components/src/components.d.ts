@@ -11,7 +11,7 @@ import { ButtonTypes, ButtonVariant, InputEvent, TextFieldTypes } from "./common
 import { FunctionalComponent } from "@stencil/core";
 import { CountryCodeDialOptions } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { IconNameType } from "./components/amplify-icon/icons";
-import { AccessLevel } from "./common/types/storage-types";
+import { AccessLevel, StorageObject } from "./common/types/storage-types";
 import { SelectOptionsNumber, SelectOptionsString } from "./components/amplify-select/amplify-select-interface";
 export namespace Components {
     interface AmplifyAmazonButton {
@@ -647,13 +647,13 @@ export namespace Components {
     }
     interface AmplifyS3Album {
         "contentType": string;
-        "fileToKey": (data: object) => string;
-        "filter": any;
+        "fileToKey": (data: object) => string | string;
+        "filter": (list: StorageObject[]) => StorageObject[];
         "identityId": string;
         "level": AccessLevel;
         "path": string;
         "picker": boolean;
-        "sort": any;
+        "sort": (list: StorageObject[]) => StorageObject[];
         "track": boolean;
     }
     interface AmplifyS3Image {
@@ -670,7 +670,7 @@ export namespace Components {
     interface AmplifyS3ImagePicker {
         "buttonText"?: string;
         "contentType": string;
-        "fileToKey": (data: object) => string;
+        "fileToKey": (data: object) => string | string;
         "headerHint"?: string;
         "headerTitle"?: string;
         "identityId": string;
@@ -690,7 +690,7 @@ export namespace Components {
     }
     interface AmplifyS3TextPicker {
         "contentType": string;
-        "fileToKey": (data: object) => string;
+        "fileToKey": (data: object) => string | string;
         "identityId": string;
         "level": AccessLevel;
         "path": string;
@@ -1912,13 +1912,13 @@ declare namespace LocalJSX {
     }
     interface AmplifyS3Album {
         "contentType"?: string;
-        "fileToKey"?: (data: object) => string;
-        "filter"?: any;
+        "fileToKey"?: (data: object) => string | string;
+        "filter"?: (list: StorageObject[]) => StorageObject[];
         "identityId"?: string;
         "level"?: AccessLevel;
         "path"?: string;
         "picker"?: boolean;
-        "sort"?: any;
+        "sort"?: (list: StorageObject[]) => StorageObject[];
         "track"?: boolean;
     }
     interface AmplifyS3Image {
@@ -1935,7 +1935,7 @@ declare namespace LocalJSX {
     interface AmplifyS3ImagePicker {
         "buttonText"?: string;
         "contentType"?: string;
-        "fileToKey"?: (data: object) => string;
+        "fileToKey"?: (data: object) => string | string;
         "headerHint"?: string;
         "headerTitle"?: string;
         "identityId"?: string;
@@ -1955,7 +1955,7 @@ declare namespace LocalJSX {
     }
     interface AmplifyS3TextPicker {
         "contentType"?: string;
-        "fileToKey"?: (data: object) => string;
+        "fileToKey"?: (data: object) => string | string;
         "identityId"?: string;
         "level"?: AccessLevel;
         "path"?: string;

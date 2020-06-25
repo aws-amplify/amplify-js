@@ -11,12 +11,12 @@
 | ------------- | -------------- | ----------- | -------------------------------------------------------------------- | ----------------------- |
 | `contentType` | `content-type` |             | `string`                                                             | `'binary/octet-stream'` |
 | `fileToKey`   | --             |             | `(data: object) => string`                                           | `undefined`             |
-| `filter`      | `filter`       |             | `any`                                                                | `undefined`             |
+| `filter`      | --             |             | `(list: StorageObject[]) => StorageObject[]`                         | `undefined`             |
 | `identityId`  | `identity-id`  |             | `string`                                                             | `undefined`             |
 | `level`       | `level`        |             | `AccessLevel.Private \| AccessLevel.Protected \| AccessLevel.Public` | `AccessLevel.Public`    |
 | `path`        | `path`         |             | `string`                                                             | `undefined`             |
 | `picker`      | `picker`       |             | `boolean`                                                            | `true`                  |
-| `sort`        | `sort`         |             | `any`                                                                | `undefined`             |
+| `sort`        | --             |             | `(list: StorageObject[]) => StorageObject[]`                         | `undefined`             |
 | `track`       | `track`        |             | `boolean`                                                            | `undefined`             |
 
 

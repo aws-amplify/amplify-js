@@ -3,7 +3,7 @@ import { NO_STORAGE_MODULE_FOUND } from '../../common/constants';
 import { AccessLevel } from '../../common/types/storage-types';
 import { Storage } from '@aws-amplify/storage';
 import { Logger, I18n } from '@aws-amplify/core';
-import { calcKey, getStorageObject } from '../../common/helpers';
+import { calcKey, getStorageObject } from '../../common/storage-helper';
 import { Translations } from '../../common/Translations';
 
 const logger = new Logger('S3ImagePicker');

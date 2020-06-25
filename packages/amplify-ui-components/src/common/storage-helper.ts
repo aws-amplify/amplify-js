@@ -1,6 +1,7 @@
 import { Storage } from '@aws-amplify/storage';
 import { NO_STORAGE_MODULE_FOUND } from './constants';
 import { Logger } from '@aws-amplify/core';
+import { AccessLevel } from './types/storage-types';
 
 export const imageFileType = [
   'apng',
@@ -41,7 +42,7 @@ export const calcKey = (file: File, fileToKey: string | Function) => {
 
 export const getStorageObject = async (
   key: string,
-  level: string,
+  level: AccessLevel,
   track: boolean,
   identityId: string,
   logger: Logger,
@@ -53,6 +54,33 @@ export const getStorageObject = async (
   try {
     const src = await Storage.get(key, { level, track, identityId });
     return src;
+  } catch (error) {
+    logger.error(error);
+    throw new Error(error);
+  }
+};
+
+export const getTextSource = async (
+  key: string,
+  level: AccessLevel,
+  track: boolean,
+  identityId: string,
+  logger: Logger,
+) => {
+  if (!Storage || typeof Storage.get !== 'function') {
+    throw new Error(NO_STORAGE_MODULE_FOUND);
+  }
+  try {
+    const textSrc = await Storage.get(key, {
+      download: true,
+      level,
+      track,
+      identityId,
+    });
+    logger.debug(textSrc);
+    // @ts-ignore
+    const text = textSrc.Body.text();
+    return text;
   } catch (error) {
     logger.error(error);
     throw new Error(error);
