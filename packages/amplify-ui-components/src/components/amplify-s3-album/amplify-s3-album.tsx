@@ -3,27 +3,18 @@ import { AccessLevel } from '../../common/types/storage-types';
 import { Storage } from '@aws-amplify/storage';
 import { Logger, filenameToContentType } from '@aws-amplify/core';
 import { NO_STORAGE_MODULE_FOUND } from '../../common/constants';
-import { calcKey } from '../../common/helpers';
+import { calcKey, imageFileType } from '../../common/storage-helper';
 import { v4 as uuid } from 'uuid';
 
 const logger = new Logger('S3Album');
-const imageFileType = [
-  'apng',
-  'bmp',
-  'gif',
-  'ico',
-  'cur',
-  'jpg',
-  'jpeg',
-  'jfif',
-  'pjpeg',
-  'pjp',
-  'png',
-  'svg',
-  'tif',
-  'tiff',
-  'webp',
-];
+
+interface StorageObject {
+  key: string;
+  contentType?: string;
+  eTag?: string;
+  lastModified?: Date;
+  size?: number;
+}
 @Component({
   tag: 'amplify-s3-album',
   styleUrl: 'amplify-s3-album.scss',
@@ -41,15 +32,15 @@ export class AmplifyS3Album {
   /* Cognito identity id of the another user's image */
   @Prop() identityId: string;
   /* Callback used to generate custom key value */
-  @Prop() fileToKey: (data: object) => string;
+  @Prop() fileToKey: (data: object) => string | string;
   /* Filter to be applied on album list */
-  @Prop() filter;
+  @Prop() filter: (list: StorageObject[]) => StorageObject[];
   /* Sort to be applied on album list */
-  @Prop() sort;
+  @Prop() sort: (list: StorageObject[]) => StorageObject[];
   /* Boolean to enable or disable picker */
   @Prop() picker: boolean = true;
 
-  @State() albumItems = [];
+  @State() albumItems: StorageObject[] = [];
 
   private imgArr = {};
 
@@ -72,8 +63,8 @@ export class AmplifyS3Album {
     }
   };
 
-  private marshal = list => {
-    list.forEach(item => {
+  private marshal = (list: StorageObject[]) => {
+    list.forEach((item: StorageObject) => {
       const name = item.key.toLowerCase();
       const ext = name.split('.')[1];
       if (imageFileType.includes(ext)) {
@@ -82,8 +73,7 @@ export class AmplifyS3Album {
         }
       }
     });
-    logger.debug('sanitized album list', list);
-    const filtered = list.filter(item => item.contentType && item.contentType.startsWith('image/'));
+    const filtered = list.filter((item: StorageObject) => item.contentType && item.contentType.startsWith('image/'));
     let items = this.filter ? this.filter(filtered) : filtered;
     items = this.sort ? this.sort(items) : items;
     this.albumItems = items;
@@ -91,7 +81,7 @@ export class AmplifyS3Album {
     this.constructImgArray(this.albumItems);
   };
 
-  getContentType(item) {
+  getContentType(item: StorageObject) {
     return filenameToContentType(item.key, 'image/*');
   }
 
@@ -99,7 +89,7 @@ export class AmplifyS3Album {
     this.list();
   }
 
-  constructImgArray = list => {
+  constructImgArray = (list: StorageObject[]) => {
     list.map(item => {
       this.imgArr[`${item['key']}`] = item['key'];
     });
@@ -121,17 +111,18 @@ export class AmplifyS3Album {
         contentType: file['type'],
         track,
       });
-      logger.debug(data);
-      if (Object.keys(this.imgArr).includes(key)) {
-        this.albumItems = [...this.albumItems];
-        this.imgArr[key] = `${key}-${uuid()}`;
-      } else {
-        this.albumItems = [...this.albumItems, { key }];
-        this.imgArr[key] = key;
-      }
+      logger.debug('Upload data', data);
     } catch (error) {
       logger.error(error);
       throw new Error(error);
+    }
+
+    if (Object.keys(this.imgArr).includes(key)) {
+      this.albumItems = [...this.albumItems];
+      this.imgArr[key] = `${key}-${uuid()}`;
+    } else {
+      const filtered = [...this.albumItems, ...(this.filter ? this.filter([{ key }]) : [{ key }])];
+      this.albumItems = this.sort ? this.sort(filtered) : filtered;
     }
   };
 

@@ -4,7 +4,6 @@ import {
   TOAST_AUTH_ERROR_EVENT,
   AUTH_STATE_CHANGE_EVENT,
   PHONE_EMPTY_ERROR_MESSAGE,
-  NO_STORAGE_MODULE_FOUND,
 } from './constants';
 import { AuthState, AuthStateHandler, UsernameAlias } from '../common/types/auth-types';
 import { PhoneNumberInterface } from '../components/amplify-auth-fields/amplify-auth-fields-interface';

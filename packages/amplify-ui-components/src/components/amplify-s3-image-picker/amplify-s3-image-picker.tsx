@@ -23,7 +23,7 @@ export class AmplifyS3ImagePicker {
   /* Cognito identity id of the another user's image */
   @Prop() identityId: string;
   /* Callback used to generate custom key value */
-  @Prop() fileToKey: (data: object) => string;
+  @Prop() fileToKey: (data: object) => string | string;
   /* Title string value */
   @Prop() headerTitle?: string = I18n.get(Translations.IMAGE_PICKER_TITLE);
   /* Header Hint value in string */
