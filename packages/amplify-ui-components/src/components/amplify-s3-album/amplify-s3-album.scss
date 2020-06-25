@@ -1,47 +1,43 @@
 .album-container {
   box-sizing: border-box;
-  max-width: 1335px;
+  max-width: 100%;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
+  padding: 0 2rem;
 }
 
 .grid-row {
   display: flex;
-  margin-bottom: 14px;
-  flex-direction: row;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
+  flex-wrap: wrap;
+  margin: -1rem -1rem;
+  padding-bottom: 3rem;
 }
 
 .grid-item {
-  flex: 1 0 0%;
-  -webkit-box-flex: 1;
-  -webkit-flex: 1 0 0%;
-  -ms-flex: 1 0 0%;
-
-  display: block;
   position: relative;
-  width: 100%;
-  margin-right: 14px;
+  flex: 1 0 22rem;
+  flex-grow: 1;
+  margin: 1rem;
+  color: #fff;
+  border: solid red 2px;
+  display: flex;
+  justify-content: center;
 }
 
-img {
-  width: 100%;
+amplify-s3-image {
   border-radius: 5px;
-  height: 294px;
+  width: 22rem !important;
+  height: 300px !important;
   object-fit: cover;
 }
 
 .img-overlay {
   display: none;
-  height: 294px;
-  position: relative;
-  background-color: rgba(0, 0, 0, 0.3);
-  bottom: 297px;
-  margin-bottom: -297px;
+  width: 100% !important;
+  height: 304px !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.15);
 }
 
 .grid-item:hover .img-overlay {
