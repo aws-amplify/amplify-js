@@ -647,10 +647,12 @@ export namespace Components {
     }
     interface AmplifyS3Album {
         "contentType": string;
+        "fileToKey": (data: object) => string;
         "filter": any;
         "identityId": string;
         "level": AccessLevel;
         "path": string;
+        "picker": boolean;
         "sort": any;
         "track": boolean;
     }
@@ -1880,10 +1882,12 @@ declare namespace LocalJSX {
     }
     interface AmplifyS3Album {
         "contentType"?: string;
+        "fileToKey"?: (data: object) => string;
         "filter"?: any;
         "identityId"?: string;
         "level"?: AccessLevel;
         "path"?: string;
+        "picker"?: boolean;
         "sort"?: any;
         "track"?: boolean;
     }
