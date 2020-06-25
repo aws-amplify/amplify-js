@@ -129,7 +129,6 @@ export class AmplifyS3Album {
         this.albumItems = [...this.albumItems, { key }];
         this.imgArr[key] = key;
       }
-      console.log('updated', this.albumItems);
     } catch (error) {
       logger.error(error);
       throw new Error(error);
@@ -137,7 +136,6 @@ export class AmplifyS3Album {
   };
 
   render() {
-    console.log(this.albumItems);
     return (
       <div>
         <div class="album-container">
