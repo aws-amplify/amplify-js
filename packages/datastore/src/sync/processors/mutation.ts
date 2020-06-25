@@ -6,7 +6,7 @@ import {
 } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { MutationEvent } from '../';
-import { ModelInstanceCreator } from '../../DataStore';
+import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ExclusiveStorage as Storage } from '../../storage/storage';
 import {
 	ConflictHandler,

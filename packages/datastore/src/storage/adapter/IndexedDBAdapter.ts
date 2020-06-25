@@ -1,6 +1,6 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import * as idb from 'idb';
-import { ModelInstanceCreator } from '../../DataStore';
+import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ModelPredicateCreator } from '../../predicates';
 import {
 	InternalSchema,

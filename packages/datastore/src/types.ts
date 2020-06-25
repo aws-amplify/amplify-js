@@ -1,4 +1,4 @@
-import { ModelInstanceCreator } from './DataStore';
+import { ModelInstanceCreator } from './datastore/datastore';
 import { exhaustiveCheck } from './util';
 
 //#region Schema types
