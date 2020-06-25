@@ -460,10 +460,6 @@ async function checkSchemaVersion(
 
 let syncSubscription: ZenObservable.Subscription;
 
-let initResolve: Function;
-let initReject: Function;
-let initialized: Promise<void>;
-
 function getNamespace(): SchemaNamespace {
 	const namespace: SchemaNamespace = {
 		name: DATASTORE,
@@ -503,6 +499,10 @@ function getNamespace(): SchemaNamespace {
 }
 
 class DataStore {
+	private initialized: Promise<void>;
+	private initReject: Function;
+	private initResolve: Function;
+
 	private storage: Storage;
 
 	constructor() {
@@ -514,14 +514,14 @@ class DataStore {
 	}
 
 	start = async (): Promise<void> => {
-		if (initialized === undefined) {
+		if (this.initialized === undefined) {
 			logger.debug('Starting DataStore');
-			initialized = new Promise((res, rej) => {
-				initResolve = res;
-				initReject = rej;
+			this.initialized = new Promise((res, rej) => {
+				this.initResolve = res;
+				this.initReject = rej;
 			});
 		} else {
-			await initialized;
+			await this.initialized;
 
 			return;
 		}
@@ -567,7 +567,7 @@ class DataStore {
 							: ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED;
 
 						if (type === readyType) {
-							initResolve();
+							this.initResolve();
 						}
 
 						Hub.dispatch('datastore', {
@@ -577,7 +577,7 @@ class DataStore {
 					},
 					error: err => {
 						logger.warn('Sync error', err);
-						initReject();
+						this.initReject();
 					},
 				});
 		} else {
@@ -588,10 +588,10 @@ class DataStore {
 				}
 			);
 
-			initResolve();
+			this.initResolve();
 		}
 
-		await initialized;
+		await this.initialized;
 	};
 
 	query: {
@@ -972,7 +972,7 @@ class DataStore {
 
 		await this.storage.clear();
 
-		initialized = undefined; // Should re-initialize when start() is called.
+		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.storage = undefined;
 		sync = undefined;
 	};
