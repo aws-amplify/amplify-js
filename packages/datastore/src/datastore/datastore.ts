@@ -67,7 +67,6 @@ declare class Setting {
 
 const SETTING_SCHEMA_VERSION = 'schemaVersion';
 
-let storage: Storage;
 let schema: InternalSchema;
 const modelNamespaceMap = new WeakMap<
 	PersistentModelConstructor<any>,
@@ -436,6 +435,7 @@ async function checkSchemaVersion(
 		const [schemaVersionSetting] = await s.query(
 			Setting,
 			ModelPredicateCreator.createFromExisting(modelDefinition, c =>
+				// @ts-ignore Argument of type '"eq"' is not assignable to parameter of type 'never'.
 				c.key('eq', SETTING_SCHEMA_VERSION)
 			),
 			{ page: 0, limit: 1 }
@@ -503,6 +503,8 @@ function getNamespace(): SchemaNamespace {
 }
 
 class DataStore {
+	private storage: Storage;
+
 	constructor() {
 		Amplify.register(this);
 	}
@@ -524,16 +526,16 @@ class DataStore {
 			return;
 		}
 
-		storage = new Storage(
+		this.storage = new Storage(
 			schema,
 			namespaceResolver,
 			getModelConstructorByModelName,
 			modelInstanceCreator
 		);
 
-		await storage.init();
+		await this.storage.init();
 
-		await checkSchemaVersion(storage, schema.version);
+		await checkSchemaVersion(this.storage, schema.version);
 
 		const { aws_appsync_graphqlEndpoint } = amplifyConfig;
 
@@ -545,7 +547,7 @@ class DataStore {
 				namespaceResolver,
 				syncClasses,
 				userClasses,
-				storage,
+				this.storage,
 				modelInstanceCreator,
 				maxRecordsToSync,
 				syncPageSize,
@@ -678,7 +680,11 @@ class DataStore {
 			pagination,
 		});
 
-		const result = await storage.query(modelConstructor, predicate, pagination);
+		const result = await this.storage.query(
+			modelConstructor,
+			predicate,
+			pagination
+		);
 
 		return isQueryOne(idOrCriteria) ? result[0] : result;
 	};
@@ -707,7 +713,7 @@ class DataStore {
 			condition
 		);
 
-		const [savedModel] = await storage.runExclusive(async s => {
+		const [savedModel] = await this.storage.runExclusive(async s => {
 			await s.save(model, producedCondition);
 
 			return s.query(
@@ -782,7 +788,7 @@ class DataStore {
 				}
 			}
 
-			const [deleted] = await storage.delete(modelConstructor, condition);
+			const [deleted] = await this.storage.delete(modelConstructor, condition);
 
 			return deleted;
 		} else {
@@ -817,7 +823,7 @@ class DataStore {
 				condition = idPredicate;
 			}
 
-			const [[deleted]] = await storage.delete(model, condition);
+			const [[deleted]] = await this.storage.delete(model, condition);
 
 			return deleted;
 		}
@@ -899,7 +905,7 @@ class DataStore {
 			(async () => {
 				await this.start();
 
-				handle = storage
+				handle = this.storage
 					.observe(modelConstructor, predicate)
 					.filter(({ model }) => namespaceResolver(model) === USER)
 					.subscribe(observer);
@@ -956,7 +962,7 @@ class DataStore {
 	};
 
 	clear = async function clear() {
-		if (storage === undefined) {
+		if (this.storage === undefined) {
 			return;
 		}
 
@@ -964,10 +970,10 @@ class DataStore {
 			syncSubscription.unsubscribe();
 		}
 
-		await storage.clear();
+		await this.storage.clear();
 
 		initialized = undefined; // Should re-initialize when start() is called.
-		storage = undefined;
+		this.storage = undefined;
 		sync = undefined;
 	};
 
