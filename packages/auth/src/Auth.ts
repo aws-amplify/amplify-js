@@ -1987,7 +1987,8 @@ export class AuthClass {
 					attribute.Name === 'email_verified' ||
 					attribute.Name === 'phone_number_verified'
 				) {
-					obj[attribute.Name] = attribute.Value === 'true';
+					obj[attribute.Name] =
+						attribute.Value === 'true' || attribute.Value === true;
 				} else {
 					obj[attribute.Name] = attribute.Value;
 				}
