@@ -1,9 +1,7 @@
 import { Component, Prop, h, State, Host } from '@stencil/core';
-import { NO_STORAGE_MODULE_FOUND } from '../../common/constants';
-import { AccessLevel } from '../../common/types/storage-types';
-import { Storage } from '@aws-amplify/storage';
 import { Logger, I18n } from '@aws-amplify/core';
-import { calcKey, getStorageObject } from '../../common/storage-helper';
+import { AccessLevel } from '../../common/types/storage-types';
+import { calcKey, getStorageObject, putStorageObject } from '../../common/storage-helper';
 import { Translations } from '../../common/Translations';
 
 const logger = new Logger('S3ImagePicker');
@@ -35,21 +33,13 @@ export class AmplifyS3ImagePicker {
   /* Source for the image */
   @State() src: string | object;
 
-  handlePick = async (file: File) => {
+  private handlePick = async (file: File) => {
     const { path = '', level, track, identityId, fileToKey } = this;
     const key = path + calcKey(file, fileToKey);
 
-    if (!Storage || typeof Storage.put !== 'function') {
-      throw new Error(NO_STORAGE_MODULE_FOUND);
-    }
-
     try {
-      const data = await Storage.put(key, file, {
-        level,
-        contentType: file['type'],
-        track,
-      });
-      logger.debug(data);
+      await putStorageObject(key, file, level, track, file['type'], logger);
+
       this.src = await getStorageObject(key, level, track, identityId, logger);
     } catch (error) {
       logger.error(error);

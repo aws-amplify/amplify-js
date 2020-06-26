@@ -1,9 +1,7 @@
 import { Component, Prop, h, State, Watch } from '@stencil/core';
-import { AccessLevel } from '../../common/types/storage-types';
-import { Storage } from '@aws-amplify/storage';
 import { Logger } from '@aws-amplify/core';
-import { getTextSource } from '../../common/storage-helper';
-import { NO_STORAGE_MODULE_FOUND } from '../../common/constants';
+import { AccessLevel } from '../../common/types/storage-types';
+import { getTextSource, putStorageObject } from '../../common/storage-helper';
 
 const logger = new Logger('S3Text');
 
@@ -38,7 +36,7 @@ export class AmplifyS3Text {
     await this.load();
   }
 
-  async load() {
+  private async load() {
     const { path, textKey, body, contentType, level, track, identityId } = this;
     if (!textKey && !path) {
       logger.debug('empty textKey and path');
@@ -49,16 +47,7 @@ export class AmplifyS3Text {
     logger.debug('loading ' + key + '...');
 
     if (body) {
-      if (!Storage || typeof Storage.put !== 'function') {
-        throw new Error(NO_STORAGE_MODULE_FOUND);
-      }
-      const data = await Storage.put(key, body, {
-        contentType,
-        level,
-        track,
-      });
-
-      logger.debug(data);
+      await putStorageObject(textKey, body, level, track, contentType, logger);
     }
     try {
       this.src = await getTextSource(key, level, track, identityId, logger);

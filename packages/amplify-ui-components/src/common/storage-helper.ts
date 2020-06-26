@@ -53,9 +53,9 @@ export const getStorageObject = async (
 
   try {
     const src = await Storage.get(key, { level, track, identityId });
+    logger.debug('Storage image get', src);
     return src;
   } catch (error) {
-    logger.error(error);
     throw new Error(error);
   }
 };
@@ -82,7 +82,30 @@ export const getTextSource = async (
     const text = textSrc.Body.text();
     return text;
   } catch (error) {
-    logger.error(error);
+    throw new Error(error);
+  }
+};
+
+export const putStorageObject = async (
+  key: string,
+  body: object,
+  level: AccessLevel,
+  track: boolean,
+  contentType: string,
+  logger: Logger,
+) => {
+  if (!Storage || typeof Storage.put !== 'function') {
+    throw new Error(NO_STORAGE_MODULE_FOUND);
+  }
+
+  try {
+    const data = await Storage.put(key, body, {
+      contentType,
+      level,
+      track,
+    });
+    logger.debug('Upload data', data);
+  } catch (error) {
     throw new Error(error);
   }
 };

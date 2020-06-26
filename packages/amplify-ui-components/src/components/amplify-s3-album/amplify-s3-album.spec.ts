@@ -1,6 +1,8 @@
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyS3Album } from './amplify-s3-album';
 import { AccessLevel } from '../../common/types/storage-types';
+import { I18n } from '@aws-amplify/core';
+import { Translations } from '../../common/Translations';
 
 describe('amplify-s3-album spec:', () => {
   describe('Component logic ->', () => {
@@ -44,6 +46,18 @@ describe('amplify-s3-album spec:', () => {
 
     it('`picker` should be true by default', () => {
       expect(amplifyS3Album.picker).toBe(true);
+    });
+
+    it('`handleOnLoad` should be undefined by default', () => {
+      expect(amplifyS3Album.handleOnLoad).toBeUndefined();
+    });
+
+    it('`handleOnError` should be undefined by default', () => {
+      expect(amplifyS3Album.handleOnError).toBeUndefined();
+    });
+
+    it('`pickerText` should be defined by default', () => {
+      expect(amplifyS3Album.pickerText).toBe(I18n.get(Translations.PICKER_TEXT));
     });
   });
 

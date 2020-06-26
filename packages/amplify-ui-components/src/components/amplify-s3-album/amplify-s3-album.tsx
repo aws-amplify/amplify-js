@@ -1,10 +1,11 @@
 import { Component, Prop, h, State } from '@stencil/core';
 import { AccessLevel, StorageObject } from '../../common/types/storage-types';
 import { Storage } from '@aws-amplify/storage';
-import { Logger, filenameToContentType } from '@aws-amplify/core';
+import { Logger, filenameToContentType, I18n } from '@aws-amplify/core';
 import { NO_STORAGE_MODULE_FOUND } from '../../common/constants';
-import { calcKey, imageFileType } from '../../common/storage-helper';
+import { calcKey, imageFileType, putStorageObject } from '../../common/storage-helper';
 import { v4 as uuid } from 'uuid';
+import { Translations } from '../../common/Translations';
 
 const logger = new Logger('S3Album');
 
@@ -32,6 +33,12 @@ export class AmplifyS3Album {
   @Prop() sort: (list: StorageObject[]) => StorageObject[];
   /* Boolean to enable or disable picker */
   @Prop() picker: boolean = true;
+  /* Function executed when s3-image loads */
+  @Prop() handleOnLoad: (event: Event) => void;
+  /* Function executed when error occurs for the s3-image */
+  @Prop() handleOnError: (event: Event) => void;
+  /* Picker button text */
+  @Prop() pickerText: string = I18n.get(Translations.PICKER_TEXT);
 
   @State() albumItems: StorageObject[] = [];
 
@@ -74,7 +81,7 @@ export class AmplifyS3Album {
     this.constructImgArray(this.albumItems);
   };
 
-  getContentType(item: StorageObject) {
+  private getContentType(item: StorageObject) {
     return filenameToContentType(item.key, 'image/*');
   }
 
@@ -82,29 +89,20 @@ export class AmplifyS3Album {
     this.list();
   }
 
-  constructImgArray = (list: StorageObject[]) => {
+  private constructImgArray = (list: StorageObject[]) => {
     list.map(item => {
       this.imgArr[`${item['key']}`] = item['key'];
     });
     console.log(this.imgArr);
   };
 
-  handlePick = async (event: Event) => {
+  private handlePick = async (event: Event) => {
     const file = (event.target as HTMLInputElement).files[0];
     const { path = '', level, track, fileToKey } = this;
     const key = path + calcKey(file, fileToKey);
 
-    if (!Storage || typeof Storage.put !== 'function') {
-      throw new Error(NO_STORAGE_MODULE_FOUND);
-    }
-
     try {
-      const data = await Storage.put(key, file, {
-        level,
-        contentType: file['type'],
-        track,
-      });
-      logger.debug('Upload data', data);
+      await putStorageObject(key, file, level, track, file['type'], logger);
     } catch (error) {
       logger.error(error);
       throw new Error(error);
@@ -134,6 +132,8 @@ export class AmplifyS3Album {
                     path={this.path}
                     identityId={this.identityId}
                     track={this.track}
+                    handleOnError={this.handleOnError}
+                    handleOnLoad={this.handleOnLoad}
                   ></amplify-s3-image>
                   <span class="img-overlay"></span>
                 </div>

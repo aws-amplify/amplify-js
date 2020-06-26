@@ -649,10 +649,13 @@ export namespace Components {
         "contentType": string;
         "fileToKey": (data: object) => string | string;
         "filter": (list: StorageObject[]) => StorageObject[];
+        "handleOnError": (event: Event) => void;
+        "handleOnLoad": (event: Event) => void;
         "identityId": string;
         "level": AccessLevel;
         "path": string;
         "picker": boolean;
+        "pickerText": string;
         "sort": (list: StorageObject[]) => StorageObject[];
         "track": boolean;
     }
@@ -1914,10 +1917,13 @@ declare namespace LocalJSX {
         "contentType"?: string;
         "fileToKey"?: (data: object) => string | string;
         "filter"?: (list: StorageObject[]) => StorageObject[];
+        "handleOnError"?: (event: Event) => void;
+        "handleOnLoad"?: (event: Event) => void;
         "identityId"?: string;
         "level"?: AccessLevel;
         "path"?: string;
         "picker"?: boolean;
+        "pickerText"?: string;
         "sort"?: (list: StorageObject[]) => StorageObject[];
         "track"?: boolean;
     }
