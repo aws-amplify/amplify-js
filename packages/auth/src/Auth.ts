@@ -1983,10 +1983,12 @@ export class AuthClass {
 		const obj = {};
 		if (attributes) {
 			attributes.map(attribute => {
-				if (attribute.Value === 'true') {
-					obj[attribute.Name] = true;
-				} else if (attribute.Value === 'false') {
-					obj[attribute.Name] = false;
+				if (
+					attribute.Name === 'email_verified' ||
+					attribute.Name === 'phone_number_verified'
+				) {
+					obj[attribute.Name] =
+						attribute.Value === 'true' || attribute.Value === true;
 				} else {
 					obj[attribute.Name] = attribute.Value;
 				}
