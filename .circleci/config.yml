@@ -76,7 +76,7 @@ commands:
             git config --global user.name $NPM_USER
             git status
             git --no-pager diff
-            ./.circleci/retry-yarn-script.sh publish:verdaccio 5 git_reset
+            ~/amplify-js/.circleci/retry-yarn-script.sh publish:verdaccio 5 git_reset
 
   prepare_test_env:
     steps:
@@ -118,7 +118,7 @@ commands:
           name: 'Run cypress tests for << parameters.test_name >> Sample'
           command: |
             cd ~/amplify-js-samples-staging
-            ./.circleci/retry-yarn-script.sh 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>' 3
+            ~/amplify-js/.circleci/retry-yarn-script.sh 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>' 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -149,7 +149,7 @@ commands:
           name: 'Run << parameters.test_name >> UI tests'
           command: |
             cd ~/amplify-js-samples-staging-ui
-            ./.circleci/retry-yarn-script.sh 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>' 3
+            ~/amplify-js/.circleci/retry-yarn-script.sh 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>' 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging-ui/cypress/videos
       - store_artifacts:
