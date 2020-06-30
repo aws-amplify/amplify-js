@@ -1,18 +1,29 @@
 #!/bin/bash
 
 # usage example: 
-# ./retry-command.sh 3 publish:verdaccio
+# ./retry-command.sh -s publish:verdaccio -n 3
+# ./retry-command.sh -s publish:verdaccio -n 3 -r true
+
+while getopts s:n:r: option
+do
+	case "${option}"
+	in
+		s) SCRIPT=${OPTARG};;
+		n) N=${OPTARG};;
+		r) GIT_RESET=${OPTARG};;
+	esac
+done
 
 # initialize counter
 n=0
 # loop until n >= first param
-until [ "$n" -ge $2 ]
+until [ "$n" -ge $N ]
 do
 	# $1 is the argument passed in, e.g. publish:verdaccio
 	# if the publish command succeeds, `break` exits the loop
-	yarn $1 && break
+	yarn $SCRIPT && break
 	
-	if [[ $3 = 'git_reset' ]]
+	if [[ $GIT_RESET ]]
 	then
 	# reset git HEAD (remove the package.json changes made by lerna)
   	echo "Resetting git HEAD"
@@ -23,5 +34,5 @@ do
 	n=$((n+1))
 	# wait 5 seconds
 	sleep 5
-	echo "Retry $n of $2"
+	echo "Retry $n of $N"
 done
