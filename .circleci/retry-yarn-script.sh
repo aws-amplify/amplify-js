@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# flags:
+# -s = script name
+# -n = how many times to retry
+# -r (optional) = run git reset in between retries
+
 # usage example: 
 # ./retry-command.sh -s publish:verdaccio -n 3
 # ./retry-command.sh -s publish:verdaccio -n 3 -r true
