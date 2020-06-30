@@ -76,7 +76,7 @@ commands:
             git config --global user.name $NPM_USER
             git status
             git --no-pager diff
-            ./.circleci/retry-publish.sh publish:verdaccio
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s publish:verdaccio -n 5 -r true
 
   prepare_test_env:
     steps:
@@ -118,7 +118,7 @@ commands:
           name: 'Run cypress tests for << parameters.test_name >> Sample'
           command: |
             cd ~/amplify-js-samples-staging
-            yarn ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -149,7 +149,7 @@ commands:
           name: 'Run << parameters.test_name >> UI tests'
           command: |
             cd ~/amplify-js-samples-staging-ui
-            yarn ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging-ui/cypress/videos
       - store_artifacts:
@@ -209,7 +209,8 @@ commands:
             JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
             JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
           name: Detox Test
-          command: detox test -c ios.sim.debug -u
+          command: |
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
       - store_test_results:
           path: reports/junit
       - store_artifacts:
@@ -306,7 +307,8 @@ commands:
             JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
             JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
           name: Detox Test
-          command: detox test -c android.emu.debug -u
+          command: |
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'detox test -c android.emu.debug -u' 3
       - store_test_results:
           path: reports/junit
       - store_artifacts:
@@ -569,7 +571,7 @@ jobs:
               git config --global user.name $GITHUB_USER
               git status
               git --no-pager diff
-              ./.circleci/retry-publish.sh publish:$CIRCLE_BRANCH
+              yarn publish:$CIRCLE_BRANCH
             else
               echo "Skipping deploy."
             fi
