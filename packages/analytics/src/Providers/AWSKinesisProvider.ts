@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -11,12 +11,16 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
-import * as Kinesis from 'aws-sdk/clients/kinesis';
-import Cache from '@aws-amplify/cache';
+import {
+	ConsoleLogger as Logger,
+	Credentials,
+	getAmplifyUserAgent,
+} from '@aws-amplify/core';
+import { KinesisClient, PutRecordsCommand } from '@aws-sdk/client-kinesis';
 import { AnalyticsProvider } from '../types';
+import { fromUtf8 } from '@aws-sdk/util-utf8-browser';
 
-const logger = new Logger('AWSKineisProvider');
+const logger = new Logger('AWSKinesisProvider');
 
 // events buffer
 const BUFFER_SIZE = 1000;
@@ -24,24 +28,20 @@ const FLUSH_SIZE = 100;
 const FLUSH_INTERVAL = 5 * 1000; // 5s
 const RESEND_LIMIT = 5;
 
-export default class AWSKinesisProvider implements AnalyticsProvider {
-	private _config;
+export class AWSKinesisProvider implements AnalyticsProvider {
+	protected _config;
 	private _kinesis;
 	private _buffer;
 	private _timer;
 
 	constructor(config?) {
 		this._buffer = [];
-		this._config = config ? config : {};
+		this._config = config || {};
 		this._config.bufferSize = this._config.bufferSize || BUFFER_SIZE;
 		this._config.flushSize = this._config.flushSize || FLUSH_SIZE;
 		this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
 		this._config.resendLimit = this._config.resendLimit || RESEND_LIMIT;
 
-		// events batch
-		const that = this;
-
-		// flush event buffer
 		this._setupTimer();
 	}
 
@@ -50,7 +50,6 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 			clearInterval(this._timer);
 		}
 		const { flushSize, flushInterval } = this._config;
-		const that = this;
 		this._timer = setInterval(() => {
 			const size =
 				this._buffer.length < flushSize ? this._buffer.length : flushSize;
@@ -59,7 +58,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 				const params = this._buffer.shift();
 				events.push(params);
 			}
-			that._sendFromBuffer(events);
+			this._sendFromBuffer(events);
 		}, flushInterval);
 	}
 
@@ -83,7 +82,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 	 */
 	public configure(config): object {
 		logger.debug('configure Analytics', config);
-		const conf = config ? config : {};
+		const conf = config || {};
 		this._config = Object.assign({}, this._config, conf);
 
 		this._setupTimer();
@@ -103,7 +102,7 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 		return this._putToBuffer(params);
 	}
 
-	public updateEndpoint(params) {
+	public updateEndpoint() {
 		logger.debug('updateEndpoint is not implemented in Kinesis provider');
 		return Promise.resolve(true);
 	}
@@ -156,9 +155,8 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 		});
 	}
 
-	private _sendEvents(group) {
+	protected _sendEvents(group) {
 		if (group.length === 0) {
-			// logger.debug('events array is empty, directly return');
 			return;
 		}
 
@@ -177,32 +175,36 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 				records[streamName] = [];
 			}
 
-			const Data = JSON.stringify(evt.data);
+			const bufferData =
+				evt.data && typeof evt.data !== 'string'
+					? JSON.stringify(evt.data)
+					: evt.data;
+			const Data = fromUtf8(bufferData);
 			const PartitionKey =
 				evt.partitionKey || 'partition-' + credentials.identityId;
 			const record = { Data, PartitionKey };
 			records[streamName].push(record);
 		});
 
-		Object.keys(records).map(streamName => {
+		Object.keys(records).map(async streamName => {
 			logger.debug(
 				'putting records to kinesis with records',
 				records[streamName]
 			);
-			this._kinesis.putRecords(
-				{
+			try {
+				const command: PutRecordsCommand = new PutRecordsCommand({
 					Records: records[streamName],
 					StreamName: streamName,
-				},
-				(err, data) => {
-					if (err) logger.debug('Failed to upload records to Kinesis', err);
-					else logger.debug('Upload records to stream', streamName);
-				}
-			);
+				});
+				await this._kinesis.send(command);
+				logger.debug('Upload records to stream', streamName);
+			} catch (err) {
+				logger.debug('Failed to upload records to Kinesis', err);
+			}
 		});
 	}
 
-	private _init(config, credentials) {
+	protected _init(config, credentials) {
 		logger.debug('init clients');
 
 		if (
@@ -216,14 +218,19 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 		}
 
 		this._config.credentials = credentials;
-		const { region } = config;
+		const { region, endpoint } = config;
+
+		return this._initKinesis(region, endpoint, credentials);
+	}
+
+	private _initKinesis(region, endpoint, credentials) {
 		logger.debug('initialize kinesis with credentials', credentials);
-		this._kinesis = new Kinesis({
-			apiVersion: '2013-12-02',
+		this._kinesis = new KinesisClient({
 			region,
 			credentials,
+			customUserAgent: getAmplifyUserAgent(),
+			endpoint,
 		});
-
 		return true;
 	}
 
@@ -232,11 +239,10 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 	 * check if current credentials exists
 	 */
 	private _getCredentials() {
-		const that = this;
 		return Credentials.get()
 			.then(credentials => {
 				if (!credentials) return null;
-				logger.debug('set credentials for analytics', that._config.credentials);
+				logger.debug('set credentials for analytics', this._config.credentials);
 				return Credentials.shear(credentials);
 			})
 			.catch(err => {
@@ -245,3 +251,8 @@ export default class AWSKinesisProvider implements AnalyticsProvider {
 			});
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AWSKinesisProvider;

@@ -12,10 +12,9 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
 // import auth0 from 'auth0-js';
 import { auth0SignInButton } from '@aws-amplify/ui';
@@ -24,12 +23,12 @@ import {
 	SignInButtonIcon,
 	SignInButtonContent,
 } from '../../Amplify-UI/Amplify-UI-Components-React';
-import Constants from '../common/constants';
+import { Constants } from '../common/constants';
 
 const logger = new Logger('withAuth0');
 
-export default function withAuth0(Comp, options) {
-	return class extends Component<any, any> {
+export function withAuth0(Comp, options?) {
+	return class extends React.Component<any, any> {
 		public _auth0;
 
 		constructor(props: any) {
@@ -62,7 +61,7 @@ export default function withAuth0(Comp, options) {
 			const { oauth = {} } = Auth.configure();
 			// @ts-ignore
 			const config = this.props.auth0 || options || oauth.auth0;
-			const { onError, onStateChange, authState, onAuthEvent } = this.props;
+			const { onError, onStateChange, authState } = this.props;
 			if (!config) {
 				logger.debug('Auth0 is not configured');
 				return;
@@ -102,11 +101,13 @@ export default function withAuth0(Comp, options) {
 					this._auth0.client.userInfo(authResult.accessToken, (err, user) => {
 						let username = undefined;
 						let email = undefined;
+						let picture = undefined;
 						if (err) {
 							logger.debug('Failed to get the user info', err);
 						} else {
 							username = user.name;
 							email = user.email;
+							picture = user.picture;
 						}
 
 						Auth.federatedSignIn(
@@ -115,9 +116,13 @@ export default function withAuth0(Comp, options) {
 								token: authResult.idToken,
 								expires_at: authResult.expiresIn * 1000 + new Date().getTime(),
 							},
-							{ name: username, email }
+							{
+								name: username,
+								email,
+								picture,
+							}
 						)
-							.then(cred => {
+							.then(() => {
 								if (onStateChange) {
 									Auth.currentAuthenticatedUser().then(user => {
 										onStateChange('signedIn', user);
@@ -155,7 +160,7 @@ export default function withAuth0(Comp, options) {
 			});
 		}
 
-		render() {
+		render(): React.ReactNode {
 			return (
 				<Comp
 					{...this.props}
@@ -194,5 +199,9 @@ const Button = props => (
 	</SignInButton>
 );
 
-// @ts-ignore
 export const Auth0Button = withAuth0(Button);
+
+/**
+ * @deprecated use named import
+ */
+export default withAuth0;

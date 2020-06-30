@@ -22,6 +22,29 @@ exports[`S3Image render test render null if no test and no picker 1`] = `
 </div>
 `;
 
+exports[`S3Image render test render with className 1`] = `
+<div
+  style={Object {}}
+>
+  <div
+    onClick={[Function]}
+    style={
+      Object {
+        "position": "relative",
+      }
+    }
+  >
+    <img
+      className="shadow"
+      onError={[Function]}
+      onLoad={[Function]}
+      src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+    />
+    <div />
+  </div>
+</div>
+`;
+
 exports[`S3Image render test render with picker true 1`] = `
 <div
   style={Object {}}

@@ -26,9 +26,16 @@ export default class AuthenticationDetails {
 	 * @param {(AttributeArg[])?} data.AuthParamaters Authentication paramaters for custom auth.
 	 */
 	constructor(data) {
-		const { ValidationData, Username, Password, AuthParameters } = data || {};
+		const {
+			ValidationData,
+			Username,
+			Password,
+			AuthParameters,
+			ClientMetadata,
+		} = data || {};
 		this.validationData = ValidationData || {};
 		this.authParameters = AuthParameters || {};
+		this.clientMetadata = ClientMetadata || {};
 		this.username = Username;
 		this.password = Password;
 	}
@@ -59,5 +66,12 @@ export default class AuthenticationDetails {
 	 */
 	getAuthParameters() {
 		return this.authParameters;
+	}
+
+	/**
+	 * @returns {ClientMetadata} the clientMetadata for a Lambda trigger
+	 */
+	getClientMetadata() {
+		return this.clientMetadata;
 	}
 }

@@ -1,13 +1,14 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "1.4.2",
+  "version": "3.2.14",
   "description": "Auth category of aws-amplify",
-  "main": "./index.js",
+  "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
-    "./index": "./lib-esm/index.js"
+    "./lib/index": "./lib-esm/index.js"
   },
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
@@ -16,6 +17,8 @@
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
+    "build:cjs:watch": "node ./build es5 --watch",
+    "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
@@ -32,10 +35,10 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/cache": "^1.1.2",
-    "@aws-amplify/core": "^1.2.2",
-    "amazon-cognito-identity-js": "^3.1.2",
-    "crypto-js": "^3.1.9-1"
+    "@aws-amplify/cache": "^3.1.17",
+    "@aws-amplify/core": "^3.4.0",
+    "amazon-cognito-identity-js": "^4.3.2",
+    "crypto-js": "^3.3.0"
   },
   "jest": {
     "globals": {

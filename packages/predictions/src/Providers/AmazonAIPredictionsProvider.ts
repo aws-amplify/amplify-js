@@ -1,9 +1,7 @@
 import { AbstractPredictionsProvider } from '../types/Providers';
-import {
-	AmazonAIConvertPredictionsProvider,
-	AmazonAIInterpretPredictionsProvider,
-	AmazonAIIdentifyPredictionsProvider,
-} from '.';
+import { AmazonAIConvertPredictionsProvider } from './AmazonAIConvertPredictionsProvider';
+import { AmazonAIInterpretPredictionsProvider } from './AmazonAIInterpretPredictionsProvider';
+import { AmazonAIIdentifyPredictionsProvider } from './AmazonAIIdentifyPredictionsProvider';
 import {
 	TranslateTextInput,
 	TextToSpeechInput,
@@ -15,21 +13,14 @@ import {
 	IdentifyLabelsOutput,
 	IdentifyEntitiesInput,
 	IdentifyEntitiesOutput,
-	isIdentifyTextInput,
-	isIdentifyLabelsInput,
-	isIdentifyEntitiesInput,
 	TranslateTextOutput,
 	TextToSpeechOutput,
-	isTranslateTextInput,
 	SpeechToTextOutput,
-	isTextToSpeechInput,
-	isSpeechToTextInput,
 	InterpretTextInput,
 	InterpretTextOutput,
-	isInterpretTextInput,
 } from '../types';
 
-export default class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
+export class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
 	private convertProvider: AmazonAIConvertPredictionsProvider;
 	private identifyProvider: AmazonAIIdentifyPredictionsProvider;
 	private interpretProvider: AmazonAIInterpretPredictionsProvider;
@@ -74,3 +65,8 @@ export default class AmazonAIPredictionsProvider extends AbstractPredictionsProv
 		return this.identifyProvider.identify(input);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AmazonAIPredictionsProvider;

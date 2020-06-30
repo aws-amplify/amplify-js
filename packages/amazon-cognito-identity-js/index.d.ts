@@ -9,6 +9,8 @@ declare module 'amazon-cognito-identity-js' {
 		Destination: string;
 	}
 
+	export type ClientMetadata = { [key: string]: string } | undefined;
+
 	export interface IAuthenticationCallback {
 		onSuccess: (
 			session: CognitoUserSession,
@@ -34,6 +36,7 @@ declare module 'amazon-cognito-identity-js' {
 		Username: string;
 		Password?: string;
 		ValidationData?: { [key: string]: any };
+		ClientMetadata?: ClientMetadata;
 	}
 
 	export class AuthenticationDetails {
@@ -46,7 +49,7 @@ declare module 'amazon-cognito-identity-js' {
 
 	export interface ICognitoStorage {
 		setItem(key: string, value: string): void;
-		getItem(key: string): string;
+		getItem(key: string): string | null;
 		removeItem(key: string): void;
 		clear(): void;
 	}
@@ -74,7 +77,8 @@ declare module 'amazon-cognito-identity-js' {
 		public getSession(callback: Function): any;
 		public refreshSession(
 			refreshToken: CognitoRefreshToken,
-			callback: NodeCallback<any, any>
+			callback: NodeCallback<any, any>,
+			clientMetadata?: ClientMetadata
 		): void;
 		public authenticateUser(
 			authenticationDetails: AuthenticationDetails,
@@ -87,32 +91,39 @@ declare module 'amazon-cognito-identity-js' {
 		public confirmRegistration(
 			code: string,
 			forceAliasCreation: boolean,
-			callback: NodeCallback<any, any>
+			callback: NodeCallback<any, any>,
+			clientMetadata?: ClientMetadata
 		): void;
 		public sendCustomChallengeAnswer(
 			answerChallenge: any,
-			callback: IAuthenticationCallback
+			callback: IAuthenticationCallback,
+			clientMetaData?: ClientMetadata
 		): void;
 		public resendConfirmationCode(
-			callback: NodeCallback<Error, 'SUCCESS'>
+			callback: NodeCallback<Error, 'SUCCESS'>,
+			clientMetaData?: ClientMetadata
 		): void;
 		public changePassword(
 			oldPassword: string,
 			newPassword: string,
 			callback: NodeCallback<Error, 'SUCCESS'>
 		): void;
-		public forgotPassword(callbacks: {
-			onSuccess: (data: any) => void;
-			onFailure: (err: Error) => void;
-			inputVerificationCode?: (data: any) => void;
-		}): void;
+		public forgotPassword(
+			callbacks: {
+				onSuccess: (data: any) => void;
+				onFailure: (err: Error) => void;
+				inputVerificationCode?: (data: any) => void;
+			},
+			clientMetaData?: ClientMetadata
+		): void;
 		public confirmPassword(
 			verificationCode: string,
 			newPassword: string,
 			callbacks: {
 				onSuccess: () => void;
 				onFailure: (err: Error) => void;
-			}
+			},
+			clientMetaData?: ClientMetadata
 		): void;
 		public setDeviceStatusRemembered(callbacks: {
 			onSuccess: (success: string) => void;
@@ -143,11 +154,12 @@ declare module 'amazon-cognito-identity-js' {
 				onSuccess: (session: CognitoUserSession) => void;
 				onFailure: (err: any) => void;
 			},
-			mfaType?: string
+			mfaType?: string,
+			clientMetadata?: ClientMetadata
 		): void;
 		public listDevices(
 			limit: number,
-			paginationToken: string,
+			paginationToken: string | null,
 			callbacks: {
 				onSuccess: (data: any) => void;
 				onFailure: (err: Error) => void;
@@ -168,7 +180,8 @@ declare module 'amazon-cognito-identity-js' {
 					challengeName: any,
 					challengeParameters: any
 				) => void;
-			}
+			},
+			clientMetadata?: ClientMetadata
 		): void;
 		public signOut(): void;
 		public globalSignOut(callbacks: {
@@ -187,7 +200,7 @@ declare module 'amazon-cognito-identity-js' {
 			callback: NodeCallback<Error, CognitoUserAttribute[]>
 		): void;
 		public updateAttributes(
-			attributes: ICognitoUserAttributeData[],
+			attributes: (CognitoUserAttribute | ICognitoUserAttributeData)[],
 			callback: NodeCallback<Error, string>
 		): void;
 		public deleteAttributes(
@@ -206,7 +219,7 @@ declare module 'amazon-cognito-identity-js' {
 		public enableMFA(callback: NodeCallback<Error, string>): void;
 		public disableMFA(callback: NodeCallback<Error, string>): void;
 		public getMFAOptions(callback: NodeCallback<Error, MFAOption[]>): void;
-		public getUserData(callback: NodeCallback<Error, UserData>): void;
+		public getUserData(callback: NodeCallback<Error, UserData>, params?: any): void;
 		public associateSoftwareToken(callbacks: {
 			associateSecretCode: (secretCode: string) => void;
 			onFailure: (err: any) => void;
@@ -282,6 +295,7 @@ declare module 'amazon-cognito-identity-js' {
 		ClientId: string;
 		endpoint?: string;
 		Storage?: ICognitoStorage;
+		AdvancedSecurityDataCollectionFlag?: boolean;
 	}
 
 	export class CognitoUserPool {
@@ -295,7 +309,8 @@ declare module 'amazon-cognito-identity-js' {
 			password: string,
 			userAttributes: CognitoUserAttribute[],
 			validationData: CognitoUserAttribute[],
-			callback: NodeCallback<Error, ISignUpResult>
+			callback: NodeCallback<Error, ISignUpResult>,
+			clientMetadata?: ClientMetadata
 		): void;
 
 		public getCurrentUser(): CognitoUser | null;
@@ -361,4 +376,10 @@ declare module 'amazon-cognito-identity-js' {
 		removeItem(key: string): void;
 		clear(): void;
 	}
+
+	export class UserAgent {
+		constructor();
+	}
+
+	export const appendToCognitoUserAgent: (content: string) => void;
 }

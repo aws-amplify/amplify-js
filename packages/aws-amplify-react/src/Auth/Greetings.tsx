@@ -13,26 +13,18 @@
 
 import * as React from 'react';
 import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
-import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { Auth } from '@aws-amplify/auth';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import {
 	NavBar,
 	Nav,
 	NavRight,
 	NavItem,
-	NavButton,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 import { auth } from '../Amplify-UI/data-test-attributes';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import Constants from './common/constants';
-import SignOut from './SignOut';
-import {
-	withGoogle,
-	withAmazon,
-	withFacebook,
-	withOAuth,
-	withAuth0,
-} from './Provider';
+import { SignOut } from './SignOut';
+import { withGoogle, withAmazon, withFacebook, withAuth0 } from './Provider';
 import { UsernameAttributes } from './common/types';
 
 const logger = new Logger('Greetings');
@@ -49,10 +41,7 @@ export interface IGreetingsState extends IAuthPieceState {
 	stateFromStorage?: boolean;
 }
 
-export default class Greetings extends AuthPiece<
-	IGreetingsProps,
-	IGreetingsState
-> {
+export class Greetings extends AuthPiece<IGreetingsProps, IGreetingsState> {
 	private _isMounted: boolean;
 
 	constructor(props: IGreetingsProps) {
@@ -89,7 +78,7 @@ export default class Greetings extends AuthPiece<
 
 	onHubCapsule(capsule) {
 		if (this._isMounted) {
-			const { channel, payload, source } = capsule;
+			const { channel, payload } = capsule;
 			if (channel === 'auth' && payload.event === 'signIn') {
 				this.setState({
 					authState: 'signedIn',
@@ -149,7 +138,6 @@ export default class Greetings extends AuthPiece<
 		}
 
 		const message = typeof greeting === 'function' ? greeting(name) : greeting;
-		const { federated } = this.props;
 
 		return (
 			<span>
@@ -228,3 +216,8 @@ export default class Greetings extends AuthPiece<
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default Greetings;
