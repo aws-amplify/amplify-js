@@ -209,7 +209,7 @@ commands:
             JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
             JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
           name: Detox Test
-          command: command: ~/amplify-js/.circleci/retry-yarn-script.sh 'detox test -c ios.sim.debug -u' 3
+          command: ~/amplify-js/.circleci/retry-yarn-script.sh 'detox test -c ios.sim.debug -u' 3
       - store_test_results:
           path: reports/junit
       - store_artifacts:
