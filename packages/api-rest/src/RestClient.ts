@@ -13,6 +13,7 @@
 
 import {
 	ConsoleLogger as Logger,
+	CredentialsClass,
 	DateUtils,
 	Signer,
 	Platform,
@@ -22,7 +23,6 @@ import {
 import { apiOptions } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { parse, format } from 'url';
-import { CredentialsClass } from '@aws-amplify/core';
 
 const logger = new Logger('RestClient');
 
