@@ -2,6 +2,8 @@
 
 exports[`amplify-s3-image spec: Render logic -> should render no pre tag without 'textKey' or 'path' 1`] = `
 <amplify-s3-text>
-  <div></div>
+  <mock:shadow-root>
+    <div></div>
+  </mock:shadow-root>
 </amplify-s3-text>
 `;
