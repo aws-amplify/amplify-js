@@ -20,12 +20,20 @@ export class AmplifySelect {
   @Prop() fieldId: string;
   /** The callback, called when the select is modified by the user. */
   @Prop() handleInputChange?: (inputEvent: Event) => void;
+  /** Default selected option */
+  @Prop() selected?: string | number;
 
   private contructSelectOptions(opts: SelectOptionsString | SelectOptionsNumber) {
     let content = [];
-    opts.forEach((opt: SelectOptionString | SelectOptionNumber) =>
-      content.push(<option value={opt.value}>{opt.label}</option>),
-    );
+
+    opts.forEach((opt: SelectOptionString | SelectOptionNumber) => {
+      console.log(opt);
+      content.push(
+        <option value={opt.value} selected={opt.value === this.selected}>
+          {opt.label}
+        </option>,
+      );
+    });
 
     return content;
   }

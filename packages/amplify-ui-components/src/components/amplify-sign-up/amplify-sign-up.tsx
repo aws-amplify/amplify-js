@@ -147,6 +147,7 @@ export class AmplifySignUp {
     }
 
     try {
+      console.log(this.signUpAttributes);
       const data = await Auth.signUp(this.signUpAttributes);
       this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
     } catch (error) {
@@ -268,6 +269,24 @@ export class AmplifySignUp {
         const newField = { ...field };
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
         newFields.push(newField);
+
+        if (field.value) {
+          switch (field.type) {
+            case 'username':
+              this.signUpAttributes.username = field.value;
+            case 'password':
+              this.signUpAttributes.password = field.value;
+            case 'email':
+              this.signUpAttributes.attributes.email = field.value;
+            case 'phone_number':
+              if (field.dialCode) this.phoneNumber.countryDialCodeValue = field.dialCode;
+              this.phoneNumber.phoneNumberValue = field.value;
+            // this.signUpAttributes.attributes. = field.dialCode;
+            // return event => this.handlePhoneNumberChange(event);
+            default:
+              this.signUpAttributes.attributes[field.type] = field.value;
+          }
+        }
       });
       this.newFormFields = newFields;
     }

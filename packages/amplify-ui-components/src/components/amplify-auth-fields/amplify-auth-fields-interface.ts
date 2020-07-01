@@ -12,6 +12,10 @@ export interface FormFieldType {
   disabled?: boolean;
 }
 
+export interface PhoneFormFieldType extends FormFieldType {
+  dialCode?: string;
+}
+
 export interface FormFieldTypes extends Array<FormFieldType> {}
 
 export interface PhoneNumberInterface {

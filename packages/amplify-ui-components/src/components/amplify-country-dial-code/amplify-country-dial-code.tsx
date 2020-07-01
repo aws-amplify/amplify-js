@@ -14,8 +14,21 @@ export class AmplifyCountryDialCode {
   @Prop() options: CountryCodeDialOptions = countryDialCodes;
   /** The callback, called when the input is modified by the user. */
   @Prop() handleInputChange?: (inputEvent: Event) => void;
+  /** Default selected dial code */
+  @Prop() dialCode?: string | number;
 
   render() {
-    return <amplify-select fieldId={this.fieldId} options={this.options} handleInputChange={this.handleInputChange} />;
+    let selectedDialCode = this.dialCode;
+    if (typeof this.dialCode === 'number') {
+      selectedDialCode = `+${this.dialCode}`;
+    }
+    return (
+      <amplify-select
+        fieldId={this.fieldId}
+        options={this.options}
+        handleInputChange={this.handleInputChange}
+        selected={selectedDialCode}
+      />
+    );
   }
 }
