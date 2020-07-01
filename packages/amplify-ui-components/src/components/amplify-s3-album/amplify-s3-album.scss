@@ -17,7 +17,7 @@
   flex: 1 0 22rem;
   flex-grow: 1;
   margin: 1rem;
-  color: #fff;
+  color: var(--amplify-white);
   display: flex;
   justify-content: center;
 }
@@ -25,14 +25,14 @@
 amplify-s3-image {
   border-radius: 5px;
   width: 22rem !important;
-  height: 300px !important;
+  height: 20rem !important;
   object-fit: cover;
 }
 
 .img-overlay {
   display: none;
   width: 100% !important;
-  height: 304px !important;
+  height: 21rem !important;
   position: absolute;
   top: 0;
   left: 0;
