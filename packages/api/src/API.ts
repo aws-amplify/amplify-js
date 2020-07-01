@@ -42,7 +42,6 @@ export class APIClass {
 		this._options = options;
 		this._restApi = new RestAPIClass(options);
 		this._graphqlApi = new GraphQLAPIClass(options);
-		Amplify.register(this);
 		logger.debug('API Options', this._options);
 	}
 
@@ -179,3 +178,4 @@ export class APIClass {
 }
 
 export const API = new APIClass(null);
+Amplify.register(API);

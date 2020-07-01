@@ -52,7 +52,6 @@ export class GraphQLAPIClass {
 	 */
 	constructor(options) {
 		this._options = options;
-		Amplify.register(this);
 		logger.debug('API Options', this._options);
 	}
 
@@ -371,3 +370,4 @@ export class GraphQLAPIClass {
 }
 
 export const GraphQLAPI = new GraphQLAPIClass(null);
+Amplify.register(GraphQLAPI);

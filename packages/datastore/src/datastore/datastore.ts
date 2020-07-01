@@ -505,10 +505,6 @@ class DataStore {
 
 	private storage: Storage;
 
-	constructor() {
-		Amplify.register(this);
-	}
-
 	getModuleName() {
 		return 'DataStore';
 	}
@@ -983,5 +979,6 @@ class DataStore {
 }
 
 const instance = new DataStore();
+Amplify.register(instance);
 
 export { DataStore as DataStoreClass, initSchema, instance as DataStore };

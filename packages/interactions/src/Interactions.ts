@@ -34,7 +34,6 @@ export class InteractionsClass {
 		this._options = options;
 		logger.debug('Interactions Options', this._options);
 		this._pluggables = {};
-		Amplify.register(this);
 	}
 
 	public getModuleName() {
@@ -132,3 +131,4 @@ export class InteractionsClass {
 }
 
 export const Interactions = new InteractionsClass(null);
+Amplify.register(Interactions);
