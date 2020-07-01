@@ -100,4 +100,5 @@ export enum Translations {
   IMAGE_PICKER_PLACEHOLDER_HINT = 'Tap to image select',
   IMAGE_PICKER_BUTTON_TEXT = 'Upload',
   PICKER_TEXT = 'Pick a file',
+  TEXT_FALLBACK_CONTENT = 'Fallback Content',
 }
