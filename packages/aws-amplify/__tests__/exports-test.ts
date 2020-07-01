@@ -88,6 +88,7 @@ describe('aws-amplify', () => {
 			  "Signer",
 			  "I18n",
 			  "ServiceWorker",
+			  "withServerContext",
 			  "default",
 			]
 		`);

@@ -48,7 +48,6 @@ export {
 	Signer,
 	I18n,
 	ServiceWorker,
-	UniversalStorage,
 } from '@aws-amplify/core';
 export { withServerContext } from './withServerContext';
 
