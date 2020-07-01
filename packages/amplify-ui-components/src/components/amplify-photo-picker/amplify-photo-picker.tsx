@@ -5,6 +5,7 @@ import { Translations } from '../../common/Translations';
 @Component({
   tag: 'amplify-photo-picker',
   styleUrl: 'amplify-photo-picker.scss',
+  shadow: true,
 })
 export class AmplifyPhotoPicker {
   /* Title string value */
@@ -47,7 +48,7 @@ export class AmplifyPhotoPicker {
           <div class="header-hint">{this.headerHint}</div>
 
           <amplify-picker acceptValue={'image/*'} inputHandler={this.handleInput}>
-            <div class="body" slot="picker">
+            <div class="picker-body" slot="picker">
               {this.previewState ? <img src={`${this.previewState}`} /> : <amplify-icon name="photoPlaceholder" />}
             </div>
           </amplify-picker>
