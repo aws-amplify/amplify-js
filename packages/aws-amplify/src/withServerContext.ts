@@ -1,20 +1,41 @@
-import { AuthClass } from '@aws-amplify/auth';
-import { DataStoreClass } from '@aws-amplify/datastore';
+import { AmplifyClass, UniversalStorage } from '@aws-amplify/core';
 import { NextPageContext } from 'next';
 
-// TODO Export all public categories
-type Instances = {
-	Auth: AuthClass;
-	DataStore: DataStoreClass;
-};
+// ! We have to use this exact reference, since it gets mutated with Amplify.Auth
+import { Amplify } from './index';
 
-export function withServerContext(
-	context: Pick<NextPageContext, 'req'>
-): Instances {
-	return {
-		// TODO Use UniversalStorage
-		Auth: new AuthClass(null),
-		// TODO Store models in their own namespace
-		DataStore: new DataStoreClass(),
-	};
+export function withServerContext(context?: Pick<NextPageContext, 'req'>) {
+	const previousConfig = Amplify.configure();
+	const amplify = new AmplifyClass();
+	const previousModules = Object.keys(Amplify)
+		.map(
+			property =>
+				Amplify[property] &&
+				Amplify[property].getModuleName &&
+				Amplify[property]
+		)
+		.filter(Boolean);
+
+	previousModules
+		.map(module => {
+			switch (module.getModuleName()) {
+				case 'API':
+				case 'Auth':
+				case 'DataStore':
+					return new module.constructor();
+
+				default:
+					return module;
+			}
+		})
+		.forEach(instance => {
+			amplify.register(instance);
+		});
+
+	amplify.configure({
+		...previousConfig,
+		storage: new UniversalStorage(),
+	});
+
+	return amplify;
 }

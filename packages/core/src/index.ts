@@ -14,6 +14,7 @@
 import { Amplify } from './Amplify';
 import { Platform } from './Platform';
 
+export { AmplifyClass } from './Amplify';
 export { ClientDevice } from './ClientDevice';
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
 export * from './Errors';
