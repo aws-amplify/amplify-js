@@ -671,6 +671,7 @@ export namespace Components {
     interface AmplifyS3Text {
         "body": object;
         "contentType": string;
+        "fallbackText": string;
         "identityId": string;
         "level": AccessLevel;
         "path": string;
@@ -1918,6 +1919,7 @@ declare namespace LocalJSX {
     interface AmplifyS3Text {
         "body"?: object;
         "contentType"?: string;
+        "fallbackText"?: string;
         "identityId"?: string;
         "level"?: AccessLevel;
         "path"?: string;
