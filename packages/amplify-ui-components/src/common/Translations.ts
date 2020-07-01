@@ -91,4 +91,13 @@ export enum Translations {
   WEBSITE_PLACEHOLDER = 'Enter your website',
   NAME_LABEL = 'Full Name',
   NAME_PLACEHOLDER = 'Enter your full name',
+  PHOTO_PICKER_TITLE = 'Picker Title',
+  PHOTO_PICKER_HINT = 'Ancilliary text or content may occupy this space here',
+  PHOTO_PICKER_PLACEHOLDER_HINT = 'Placeholder hint',
+  PHOTO_PICKER_BUTTON_TEXT = 'Button',
+  IMAGE_PICKER_TITLE = 'Add Profile Photo',
+  IMAGE_PICKER_HINT = 'Preview the image before upload',
+  IMAGE_PICKER_PLACEHOLDER_HINT = 'Tap to image select',
+  IMAGE_PICKER_BUTTON_TEXT = 'Upload',
+  PICKER_TEXT = 'Pick a file',
 }
