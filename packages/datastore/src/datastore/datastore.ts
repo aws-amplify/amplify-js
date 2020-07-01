@@ -369,14 +369,6 @@ function isQueryOne(obj: any): obj is string {
 	return typeof obj === 'string';
 }
 
-let sync: SyncEngine;
-let amplifyConfig: Record<string, any> = {};
-let conflictHandler: ConflictHandler;
-let errorHandler: (error: SyncError) => void;
-let maxRecordsToSync: number;
-let syncPageSize: number;
-let fullSyncInterval: number;
-
 function defaultConflictHandler(conflictData: SyncConflict): PersistentModel {
 	const { localModel, modelConstructor, remoteModel } = conflictData;
 	const { _version } = remoteModel;
@@ -499,11 +491,17 @@ function getNamespace(): SchemaNamespace {
 }
 
 class DataStore {
+	private amplifyConfig: Record<string, any> = {};
+	private conflictHandler: ConflictHandler;
+	private errorHandler: (error: SyncError) => void;
+	private fullSyncInterval: number;
 	private initialized: Promise<void>;
 	private initReject: Function;
 	private initResolve: Function;
-
+	private maxRecordsToSync: number;
 	private storage: Storage;
+	private sync: SyncEngine;
+	private syncPageSize: number;
 
 	getModuleName() {
 		return 'DataStore';
@@ -533,26 +531,26 @@ class DataStore {
 
 		await checkSchemaVersion(this.storage, schema.version);
 
-		const { aws_appsync_graphqlEndpoint } = amplifyConfig;
+		const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
 
 		if (aws_appsync_graphqlEndpoint) {
 			logger.debug('GraphQL endpoint available', aws_appsync_graphqlEndpoint);
 
-			sync = new SyncEngine(
+			this.sync = new SyncEngine(
 				schema,
 				namespaceResolver,
 				syncClasses,
 				userClasses,
 				this.storage,
 				modelInstanceCreator,
-				maxRecordsToSync,
-				syncPageSize,
-				conflictHandler,
-				errorHandler
+				this.maxRecordsToSync,
+				this.syncPageSize,
+				this.conflictHandler,
+				this.errorHandler
 			);
 
-			const fullSyncIntervalInMilliseconds = fullSyncInterval * 1000 * 60; // fullSyncInterval from param is in minutes
-			syncSubscription = sync
+			const fullSyncIntervalInMilliseconds = this.fullSyncInterval * 1000 * 60; // fullSyncInterval from param is in minutes
+			syncSubscription = this.sync
 				.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
 				.subscribe({
 					next: ({ type, data }) => {
@@ -580,7 +578,7 @@ class DataStore {
 			logger.info(
 				"Data won't be synchronized. No GraphQL endpoint configured.",
 				{
-					config: amplifyConfig,
+					config: this.amplifyConfig,
 				}
 			);
 
@@ -926,31 +924,31 @@ class DataStore {
 			...configFromAmplify
 		} = config;
 
-		amplifyConfig = { ...configFromAmplify, ...amplifyConfig };
+		this.amplifyConfig = { ...configFromAmplify, ...this.amplifyConfig };
 
-		conflictHandler =
+		this.conflictHandler =
 			(configDataStore && configDataStore.conflictHandler) ||
-			conflictHandler ||
+			this.conflictHandler ||
 			config.conflictHandler ||
 			defaultConflictHandler;
 
-		errorHandler =
+		this.errorHandler =
 			(configDataStore && configDataStore.errorHandler) ||
-			errorHandler ||
+			this.errorHandler ||
 			config.errorHandler ||
 			defaultErrorHandler;
 
-		maxRecordsToSync =
+		this.maxRecordsToSync =
 			(configDataStore && configDataStore.maxRecordsToSync) ||
-			maxRecordsToSync ||
+			this.maxRecordsToSync ||
 			config.maxRecordsToSync;
 
-		syncPageSize =
+		this.syncPageSize =
 			(configDataStore && configDataStore.syncPageSize) ||
-			syncPageSize ||
+			this.syncPageSize ||
 			config.syncPageSize;
 
-		fullSyncInterval =
+		this.fullSyncInterval =
 			(configDataStore && configDataStore.fullSyncInterval) ||
 			configFullSyncInterval ||
 			config.fullSyncInterval ||
@@ -970,7 +968,7 @@ class DataStore {
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.storage = undefined;
-		sync = undefined;
+		this.sync = undefined;
 	};
 
 	toJSON = <T extends PersistentModel>(model: T | T[]): JSON => {
