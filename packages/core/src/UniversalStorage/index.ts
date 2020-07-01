@@ -5,9 +5,14 @@ import { browserOrNode } from '../JS';
 type Store = Record<string, string>;
 
 const { isBrowser } = browserOrNode();
+type Context = Parameters<typeof nookies.get>[0];
 
 export class UniversalStorage implements Storage {
 	store: Store = isBrowser ? window.localStorage : Object.create(null);
+
+	constructor(context?: Context) {
+		Object.assign(this.store, nookies.get(context));
+	}
 
 	get length() {
 		return Object.entries(this.store).length;
@@ -58,11 +63,6 @@ export class UniversalStorage implements Storage {
 		nookies.destroy(this.store, key);
 	}
 
-	setServerContext(ctx: Parameters<typeof nookies.get>[0]) {
-		this.clear();
-		Object.assign(this.store, nookies.get(ctx));
-	}
-
 	setItem(key: keyof Store, value: string) {
 		this.setLocalItem(key, value);
 
@@ -101,9 +101,6 @@ export class UniversalStorage implements Storage {
 	protected setUniversalItem(key: keyof Store, value: string) {
 		// @ts-ignore Argument of type 'Record<string, string>' is not assignable to parameter of type 'Pick<any, "res"> | { res: any; }'.
 		// Property 'res' is missing in type 'Record<string, string>' but required in type '{ res: any; }'.ts(2345)
-		nookies.set(this.store, key, value, {
-			maxAge: 30 * 24 * 60 * 60,
-			path: '/',
-		});
+		nookies.set(this.store, key, value);
 	}
 }

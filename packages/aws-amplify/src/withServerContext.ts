@@ -34,7 +34,7 @@ export function withServerContext(context?: Pick<NextPageContext, 'req'>) {
 
 	amplify.configure({
 		...previousConfig,
-		storage: new UniversalStorage(),
+		storage: new UniversalStorage(context),
 	});
 
 	return amplify;
