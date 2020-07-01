@@ -8,6 +8,7 @@ const logger = new Logger('S3Text');
 @Component({
   tag: 'amplify-s3-text',
   styleUrl: 'amplify-s3-text.scss',
+  shadow: true,
 })
 export class AmplifyS3Text {
   /* The key of the text object in S3 */

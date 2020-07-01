@@ -9,6 +9,7 @@ const logger = new Logger('S3TextPicker');
 @Component({
   tag: 'amplify-s3-text-picker',
   styleUrl: 'amplify-s3-text-picker.scss',
+  shadow: true,
 })
 export class AmplifyS3TextPicker {
   /* String representing directory location to text file */
