@@ -101,6 +101,12 @@ export class UniversalStorage implements Storage {
 	protected setUniversalItem(key: keyof Store, value: string) {
 		// @ts-ignore Argument of type 'Record<string, string>' is not assignable to parameter of type 'Pick<any, "res"> | { res: any; }'.
 		// Property 'res' is missing in type 'Record<string, string>' but required in type '{ res: any; }'.ts(2345)
-		nookies.set(this.store, key, value);
+		nookies.set(this.store, key, value, {
+			// See: https://github.com/jshttp/cookie#options-1
+			httpOnly: true,
+			sameSite: true,
+			// Allow unsecure requests to localhost when in development.
+			secure: process.env.NODE_ENV === 'development' ? false : true,
+		});
 	}
 }
