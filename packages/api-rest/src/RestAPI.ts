@@ -48,6 +48,10 @@ export class RestAPIClass {
 		let opt = { ...otherOptions, ...API };
 		logger.debug('configure Rest API', { opt });
 
+		if (opt['Credentials']) {
+			this._api.Credentials = opt['Credentials'];
+		}
+
 		if (opt['aws_project_region']) {
 			if (opt['aws_cloud_logic_custom']) {
 				const custom = opt['aws_cloud_logic_custom'];

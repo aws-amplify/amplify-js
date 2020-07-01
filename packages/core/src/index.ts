@@ -25,7 +25,7 @@ export { Signer } from './Signer';
 export * from './Parser';
 export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export * from './RNComponents';
-export { Credentials } from './Credentials';
+export { Credentials, CredentialsClass } from './Credentials';
 export { ServiceWorker } from './ServiceWorker';
 export { ICredentials } from './types';
 export { StorageHelper, MemoryStorage } from './StorageHelper';

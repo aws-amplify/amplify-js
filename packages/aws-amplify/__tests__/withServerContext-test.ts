@@ -1,4 +1,4 @@
-import { Amplify, UniversalStorage } from '@aws-amplify/core';
+import { Amplify, Credentials, UniversalStorage } from '@aws-amplify/core';
 
 import { withServerContext } from '../src/withServerContext';
 
@@ -21,6 +21,7 @@ describe('withServerContext', () => {
 		const amplify = withServerContext();
 		expect(amplify.configure()).toEqual(
 			expect.objectContaining({
+				Credentials: expect.any(Credentials.constructor),
 				storage: expect.any(UniversalStorage),
 				TEST_VALUE: true,
 			})
@@ -30,6 +31,21 @@ describe('withServerContext', () => {
 	describe('API', () => {
 		it('should be a different instance than Amplify.Auth', () => {
 			expect(withServerContext().API).not.toBe(Amplify.API);
+		});
+
+		it('should use different Credentials than Amplify', () => {
+			const amplify = withServerContext();
+			const config = amplify.configure();
+
+			// GraphQLAPI uses Credentials internally
+			expect(amplify.API._graphqlApi.Credentials).toBe(config.Credentials);
+			expect(Amplify.API._graphqlApi.Credentials).not.toBe(config.Credentials);
+
+			// RestAPI._api is a RestClient with Credentials
+			expect(amplify.API._restApi._api.Credentials).toBe(config.Credentials);
+			expect(Amplify.API._restApi._api.Credentials).not.toBe(
+				config.Credentials
+			);
 		});
 	});
 

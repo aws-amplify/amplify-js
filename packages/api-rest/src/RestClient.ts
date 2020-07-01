@@ -22,6 +22,7 @@ import {
 import { apiOptions } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { parse, format } from 'url';
+import { CredentialsClass } from '@aws-amplify/core/lib-esm/Credentials';
 
 const logger = new Logger('RestClient');
 
@@ -60,14 +61,20 @@ export class RestClient {
 	 */
 	private _cancelTokenMap: WeakMap<any, CancelTokenSource> = null;
 
+	Credentials = Credentials;
+
 	/**
 	 * @param {RestClientOptions} [options] - Instance options
 	 */
-	constructor(options: apiOptions) {
+	constructor(options: apiOptions & { Credentials?: CredentialsClass }) {
 		this._options = options;
 		logger.debug('API Options', this._options);
 		if (this._cancelTokenMap == null) {
 			this._cancelTokenMap = new WeakMap();
+		}
+
+		if (options.Credentials) {
+			this.Credentials = options.Credentials;
 		}
 	}
 
@@ -168,7 +175,7 @@ export class RestClient {
 		}
 
 		// Signing the request in case there credentials are available
-		return Credentials.get().then(
+		return this.Credentials.get().then(
 			credentials => {
 				return this._signed({ ...params }, credentials, isAllResponse).catch(
 					error => {

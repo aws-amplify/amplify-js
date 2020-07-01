@@ -1,4 +1,8 @@
-import { AmplifyClass, UniversalStorage } from '@aws-amplify/core';
+import {
+	AmplifyClass,
+	CredentialsClass,
+	UniversalStorage,
+} from '@aws-amplify/core';
 import { NextPageContext } from 'next';
 
 // ! We have to use this exact reference, since it gets mutated with Amplify.Auth
@@ -34,6 +38,7 @@ export function withServerContext(context?: Pick<NextPageContext, 'req'>) {
 
 	amplify.configure({
 		...previousConfig,
+		Credentials: new CredentialsClass(null),
 		storage: new UniversalStorage(context),
 	});
 

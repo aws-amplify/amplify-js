@@ -46,6 +46,8 @@ export class GraphQLAPIClass {
 	private _options;
 	private _api = null;
 
+	Credentials = Credentials;
+
 	/**
 	 * Initialize GraphQL API with AWS configuration
 	 * @param {Object} options - Configuration object for API
@@ -68,6 +70,10 @@ export class GraphQLAPIClass {
 		const { API = {}, ...otherOptions } = options || {};
 		let opt = { ...otherOptions, ...API };
 		logger.debug('configure GraphQL API', { opt });
+
+		if (opt['Credentials']) {
+			this.Credentials = opt['Credentials'];
+		}
 
 		if (opt['aws_project_region']) {
 			opt = Object.assign({}, opt, {
@@ -354,10 +360,10 @@ export class GraphQLAPIClass {
 	 * @private
 	 */
 	_ensureCredentials() {
-		return Credentials.get()
+		return this.Credentials.get()
 			.then(credentials => {
 				if (!credentials) return false;
-				const cred = Credentials.shear(credentials);
+				const cred = this.Credentials.shear(credentials);
 				logger.debug('set credentials for api', cred);
 
 				return true;
