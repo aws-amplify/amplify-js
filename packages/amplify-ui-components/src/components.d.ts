@@ -576,8 +576,6 @@ export namespace Components {
         "placeholderHint"?: string;
         "previewSrc"?: string | object;
     }
-    interface AmplifyPhotoPlaceholder {
-    }
     interface AmplifyPicker {
         "acceptValue": string;
         "inputHandler": (e: Event) => void;
@@ -1083,12 +1081,6 @@ declare global {
         prototype: HTMLAmplifyPhotoPickerElement;
         new (): HTMLAmplifyPhotoPickerElement;
     };
-    interface HTMLAmplifyPhotoPlaceholderElement extends Components.AmplifyPhotoPlaceholder, HTMLStencilElement {
-    }
-    var HTMLAmplifyPhotoPlaceholderElement: {
-        prototype: HTMLAmplifyPhotoPlaceholderElement;
-        new (): HTMLAmplifyPhotoPlaceholderElement;
-    };
     interface HTMLAmplifyPickerElement extends Components.AmplifyPicker, HTMLStencilElement {
     }
     var HTMLAmplifyPickerElement: {
@@ -1242,7 +1234,6 @@ declare global {
         "amplify-password-field": HTMLAmplifyPasswordFieldElement;
         "amplify-phone-field": HTMLAmplifyPhoneFieldElement;
         "amplify-photo-picker": HTMLAmplifyPhotoPickerElement;
-        "amplify-photo-placeholder": HTMLAmplifyPhotoPlaceholderElement;
         "amplify-picker": HTMLAmplifyPickerElement;
         "amplify-radio-button": HTMLAmplifyRadioButtonElement;
         "amplify-require-new-password": HTMLAmplifyRequireNewPasswordElement;
@@ -1832,8 +1823,6 @@ declare namespace LocalJSX {
         "placeholderHint"?: string;
         "previewSrc"?: string | object;
     }
-    interface AmplifyPhotoPlaceholder {
-    }
     interface AmplifyPicker {
         "acceptValue"?: string;
         "inputHandler"?: (e: Event) => void;
@@ -2178,7 +2167,6 @@ declare namespace LocalJSX {
         "amplify-password-field": AmplifyPasswordField;
         "amplify-phone-field": AmplifyPhoneField;
         "amplify-photo-picker": AmplifyPhotoPicker;
-        "amplify-photo-placeholder": AmplifyPhotoPlaceholder;
         "amplify-picker": AmplifyPicker;
         "amplify-radio-button": AmplifyRadioButton;
         "amplify-require-new-password": AmplifyRequireNewPassword;
@@ -2237,7 +2225,6 @@ declare module "@stencil/core" {
             "amplify-password-field": LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
             "amplify-phone-field": LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
             "amplify-photo-picker": LocalJSX.AmplifyPhotoPicker & JSXBase.HTMLAttributes<HTMLAmplifyPhotoPickerElement>;
-            "amplify-photo-placeholder": LocalJSX.AmplifyPhotoPlaceholder & JSXBase.HTMLAttributes<HTMLAmplifyPhotoPlaceholderElement>;
             "amplify-picker": LocalJSX.AmplifyPicker & JSXBase.HTMLAttributes<HTMLAmplifyPickerElement>;
             "amplify-radio-button": LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
             "amplify-require-new-password": LocalJSX.AmplifyRequireNewPassword & JSXBase.HTMLAttributes<HTMLAmplifyRequireNewPasswordElement>;

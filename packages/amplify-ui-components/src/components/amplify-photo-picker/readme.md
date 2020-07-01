@@ -25,7 +25,7 @@
 
 - [amplify-section](../amplify-section)
 - [amplify-picker](../amplify-picker)
-- [amplify-photo-placeholder](../amplify-photo-placeholder)
+- [amplify-icon](../amplify-icon)
 - [amplify-button](../amplify-button)
 
 ### Graph
@@ -33,7 +33,7 @@
 graph TD;
   amplify-photo-picker --> amplify-section
   amplify-photo-picker --> amplify-picker
-  amplify-photo-picker --> amplify-photo-placeholder
+  amplify-photo-picker --> amplify-icon
   amplify-photo-picker --> amplify-button
   amplify-picker --> amplify-button
   amplify-s3-image-picker --> amplify-photo-picker

@@ -12,7 +12,7 @@ exports[`amplify-photo-picker spec: Render logic -> should render a picker by de
       </div>
       <amplify-picker acceptvalue="image/*">
         <div class="body" slot="picker">
-          <amplify-photo-placeholder></amplify-photo-placeholder>
+          <amplify-icon name="photoPlaceholder"></amplify-icon>
         </div>
       </amplify-picker>
       <div class="placeholder-hint">
