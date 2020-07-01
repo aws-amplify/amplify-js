@@ -11,6 +11,9 @@ import { Amplify } from './index';
 export function withServerContext(context?: Pick<NextPageContext, 'req'>) {
 	const previousConfig = Amplify.configure();
 	const amplify = new AmplifyClass();
+	const Credentials = new CredentialsClass(null);
+	const storage = new UniversalStorage(context);
+
 	const previousModules = Object.keys(Amplify)
 		.map(
 			property =>
@@ -33,14 +36,17 @@ export function withServerContext(context?: Pick<NextPageContext, 'req'>) {
 			}
 		})
 		.forEach(instance => {
+			// Dependency Injection via property-setting.
+			// This avoids introducing a public method/interface/setter that's difficult to remove later.
+			// Plus, it reduces `if` statements within the `constructor` and `configure`
+			if (instance.hasOwnProperty('Credentials')) {
+				instance.Credentials = Credentials;
+			}
+
 			amplify.register(instance);
 		});
 
-	amplify.configure({
-		...previousConfig,
-		Credentials: new CredentialsClass(null),
-		storage: new UniversalStorage(context),
-	});
+	amplify.configure({ ...previousConfig, Credentials, storage });
 
 	return amplify;
 }

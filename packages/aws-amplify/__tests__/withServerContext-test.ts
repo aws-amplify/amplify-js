@@ -1,4 +1,4 @@
-import { Amplify, Credentials, UniversalStorage } from '@aws-amplify/core';
+import { Amplify, CredentialsClass, UniversalStorage } from '@aws-amplify/core';
 
 import { withServerContext } from '../src/withServerContext';
 
@@ -21,7 +21,7 @@ describe('withServerContext', () => {
 		const amplify = withServerContext();
 		expect(amplify.configure()).toEqual(
 			expect.objectContaining({
-				Credentials: expect.any(Credentials.constructor),
+				Credentials: expect.any(CredentialsClass),
 				storage: expect.any(UniversalStorage),
 				TEST_VALUE: true,
 			})
@@ -58,6 +58,14 @@ describe('withServerContext', () => {
 			expect(withServerContext().Auth._storage).toBeInstanceOf(
 				UniversalStorage
 			);
+		});
+
+		it('should use different Credentials than Amplify', () => {
+			const amplify = withServerContext();
+			const config = amplify.configure();
+
+			expect(Amplify.Auth.Credentials).not.toBe(config.Credentials);
+			expect(amplify.Auth.Credentials).toBe(config.Credentials);
 		});
 	});
 
