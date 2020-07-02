@@ -30,6 +30,8 @@ if (browserOrNode().isBrowser) {
       --amplify-text-xl: 2rem;
       --amplify-text-xxl: 2.5rem;
 
+      --amplify-font-weight: 400;
+
       /* Colors */
       --amplify-primary-color: #ff9900;
       --amplify-primary-contrast: var(--amplify-white);
