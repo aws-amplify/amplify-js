@@ -223,48 +223,57 @@ function modelInstanceCreator<T extends PersistentModel = PersistentModel>(
 	return <T>new modelConstructor(init);
 }
 
+const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
+	k: string,
+	v: any
+) => {
+	const fieldDefinition = modelDefinition.fields[k];
+
+	if (fieldDefinition !== undefined) {
+		const { type, isRequired, name, isArray } = fieldDefinition;
+
+		if (isRequired && (v === null || v === undefined)) {
+			throw new Error(`Field ${name} is required`);
+		}
+
+		if (isGraphQLScalarType(type)) {
+			const jsType = GraphQLScalarType.getJSType(type);
+
+			if (isArray) {
+				if (!Array.isArray(v)) {
+					throw new Error(
+						`Field ${name} should be of type ${jsType}[], ${typeof v} received. ${v}`
+					);
+				}
+
+				if ((<[]>v).some(e => typeof e !== jsType)) {
+					const elemTypes = (<[]>v).map(e => typeof e).join(',');
+
+					throw new Error(
+						`All elements in the ${name} array should be of type ${jsType}, [${elemTypes}] received. ${v}`
+					);
+				}
+			} else if (typeof v !== jsType && v !== null) {
+				throw new Error(
+					`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`
+				);
+			}
+		}
+	}
+};
+
+
 const initializeInstance = <T>(
 	init: ModelInit<T>,
 	modelDefinition: SchemaModel | SchemaNonModel,
 	draft: Draft<T & ModelInstanceMetadata>
 ) => {
+	const modelValidator = validateModelFields(modelDefinition)
 	Object.entries(init).forEach(([k, v]) => {
-		const fieldDefinition = modelDefinition.fields[k];
-
-		if (fieldDefinition !== undefined) {
-			const { type, isRequired, name, isArray } = fieldDefinition;
-
-			if (isRequired && (v === null || v === undefined)) {
-				throw new Error(`Field ${name} is required`);
-			}
-
-			if (isGraphQLScalarType(type)) {
-				const jsType = GraphQLScalarType.getJSType(type);
-
-				if (isArray) {
-					if (!Array.isArray(v)) {
-						throw new Error(
-							`Field ${name} should be of type ${jsType}[], ${typeof v} received. ${v}`
-						);
-					}
-
-					if ((<[]>v).some((e) => typeof e !== jsType)) {
-						const elemTypes = (<[]>v).map((e) => typeof e).join(',');
-
-						throw new Error(
-							`All elements in the ${name} array should be of type ${jsType}, [${elemTypes}] received. ${v}`
-						);
-					}
-				} else if (typeof v !== jsType && v !== null) {
-					throw new Error(
-						`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`
-					);
-				}
-			}
-		}
-
+		modelValidator(k,v);
 		(<any>draft)[k] = v;
 	});
+
 };
 
 const createModelClass = <T extends PersistentModel>(
@@ -318,46 +327,14 @@ const createModelClass = <T extends PersistentModel>(
 				logger.error(msg, { source });
 				throw new Error(msg);
 			}
-			const temp = produce(source, (draft) => {
+			return produce(source, draft => {
 				fn(<MutableModel<T>>draft);
-				logger.debug(JSON.stringify(draft));
 				draft.id = source.id;
+				const modelValidator = validateModelFields(modelDefinition)
+				Object.entries(draft).forEach(([k, v]) => {
+					modelValidator(k, v);
+				});
 			});
-
-			Object.entries(temp).forEach(([k, v]) => {
-				const fieldDefinition = modelDefinition.fields[k];
-				if (fieldDefinition !== undefined) {
-					const { type, isRequired, name, isArray } = fieldDefinition;
-					if (isRequired && (v === null || v === undefined)) {
-						throw new Error(`Field ${name} is required`);
-					}
-
-					if (isGraphQLScalarType(type)) {
-						const jsType = GraphQLScalarType.getJSType(type);
-
-						if (isArray) {
-							if (!Array.isArray(v)) {
-								throw new Error(
-									`Field ${name} should be of type ${jsType}[], ${typeof v} received. ${v}`
-								);
-							}
-
-							if ((<[]>v).some((e) => typeof e !== jsType)) {
-								const elemTypes = (<[]>v).map((e) => typeof e).join(',');
-
-								throw new Error(
-									`All elements in the ${name} array should be of type ${jsType}, [${elemTypes}] received. ${v}`
-								);
-							}
-						} else if (typeof v !== jsType && v !== null) {
-							throw new Error(
-								`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`
-							);
-						}
-					}
-				}
-			});
-			return temp;
 		}
 	});
 
