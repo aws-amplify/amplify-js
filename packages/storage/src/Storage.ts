@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { Amplify, ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
 import { AWSS3Provider } from './providers';
 import { StorageProvider } from './types';
 
