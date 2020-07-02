@@ -196,6 +196,23 @@ export const getStorageObject = async (
   }
 };
 
+const readFileAsync = (blob: Blob) => {
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader();
+
+    reader.onload = () => {
+      resolve(reader.result as string);
+    };
+
+    reader.onerror = () => {
+      reject('Failed to read file!');
+      reader.abort();
+    };
+
+    reader.readAsText(blob);
+  });
+};
+
 export const getTextSource = async (
   key: string,
   level: AccessLevel,
@@ -214,11 +231,9 @@ export const getTextSource = async (
       identityId,
     });
     logger.debug(textSrc);
-    // @ts-ignore
-    const text = textSrc.Body.text();
+    let text = (await readFileAsync(textSrc['Body'])) as string;
     return text;
   } catch (error) {
-    logger.error(error);
     throw new Error(error);
   }
 };
