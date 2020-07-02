@@ -268,7 +268,7 @@ const initializeInstance = <T>(
 	modelDefinition: SchemaModel | SchemaNonModel,
 	draft: Draft<T & ModelInstanceMetadata>
 ) => {
-	const modelValidator = validateModelFields(modelDefinition)
+	const modelValidator = validateModelFields(modelDefinition);
 	Object.entries(init).forEach(([k, v]) => {
 		modelValidator(k,v);
 		(<any>draft)[k] = v;
@@ -329,7 +329,7 @@ const createModelClass = <T extends PersistentModel>(
 			return produce(source, draft => {
 				fn(<MutableModel<T>>draft);
 				draft.id = source.id;
-				const modelValidator = validateModelFields(modelDefinition)
+				const modelValidator = validateModelFields(modelDefinition);
 				Object.entries(draft).forEach(([k, v]) => {
 					modelValidator(k, v);
 				});
