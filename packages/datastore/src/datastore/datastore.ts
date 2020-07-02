@@ -321,7 +321,6 @@ const createModelClass = <T extends PersistentModel>(
 
 		static copyOf(source: T, fn: (draft: MutableModel<T>) => T) {
 			const modelConstructor = Object.getPrototypeOf(source || {}).constructor;
-			const modelDefinition = getModelDefinition(modelConstructor);
 			if (!isValidModelConstructor(modelConstructor)) {
 				const msg = 'The source object is not a valid model';
 				logger.error(msg, { source });
