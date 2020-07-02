@@ -93,7 +93,6 @@ export class AmplifyS3Album {
     list.map(item => {
       this.imgArr[`${item['key']}`] = item['key'];
     });
-    console.log(this.imgArr);
   };
 
   private handlePick = async (event: Event) => {
