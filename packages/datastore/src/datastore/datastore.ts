@@ -87,7 +87,7 @@ const isValidModelConstructor = <T extends PersistentModel>(
 	return isModelConstructor(obj) && modelNamespaceMap.has(obj);
 };
 
-const namespaceResolver: NamespaceResolver = modelConstructor =>
+const namespaceResolver: NamespaceResolver = (modelConstructor) =>
 	modelNamespaceMap.get(modelConstructor);
 
 let dataStoreClasses: TypeConstructorMap;
@@ -132,24 +132,24 @@ const initSchema = (userSchema: Schema) => {
 		version: userSchema.version,
 	};
 
-	Object.keys(schema.namespaces).forEach(namespace => {
+	Object.keys(schema.namespaces).forEach((namespace) => {
 		schema.namespaces[namespace].relationships = establishRelation(
 			schema.namespaces[namespace]
 		);
 
 		const modelAssociations = new Map<string, string[]>();
 
-		Object.values(schema.namespaces[namespace].models).forEach(model => {
+		Object.values(schema.namespaces[namespace].models).forEach((model) => {
 			const connectedModels: string[] = [];
 
 			Object.values(model.fields)
 				.filter(
-					field =>
+					(field) =>
 						field.association &&
 						field.association.connectionType === 'BELONGS_TO' &&
 						(<ModelFieldType>field.type).model !== model.name
 				)
-				.forEach(field =>
+				.forEach((field) =>
 					connectedModels.push((<ModelFieldType>field.type).model)
 				);
 
@@ -173,12 +173,12 @@ const initSchema = (userSchema: Schema) => {
 			for (const modelName of Array.from(modelAssociations.keys())) {
 				const parents = modelAssociations.get(modelName);
 
-				if (parents.every(x => result.has(x))) {
+				if (parents.every((x) => result.has(x))) {
 					result.set(modelName, parents);
 				}
 			}
 
-			Array.from(result.keys()).forEach(x => modelAssociations.delete(x));
+			Array.from(result.keys()).forEach((x) => modelAssociations.delete(x));
 		}
 
 		schema.namespaces[namespace].modelTopologicalOrdering = result;
@@ -187,9 +187,9 @@ const initSchema = (userSchema: Schema) => {
 	return userClasses;
 };
 
-const createTypeClasses: (
-	namespace: SchemaNamespace
-) => TypeConstructorMap = namespace => {
+const createTypeClasses: (namespace: SchemaNamespace) => TypeConstructorMap = (
+	namespace
+) => {
 	const classes: TypeConstructorMap = {};
 
 	Object.entries(namespace.models).forEach(([modelName, modelDefinition]) => {
@@ -248,8 +248,8 @@ const initializeInstance = <T>(
 						);
 					}
 
-					if ((<[]>v).some(e => typeof e !== jsType)) {
-						const elemTypes = (<[]>v).map(e => typeof e).join(',');
+					if ((<[]>v).some((e) => typeof e !== jsType)) {
+						const elemTypes = (<[]>v).map((e) => typeof e).join(',');
 
 						throw new Error(
 							`All elements in the ${name} array should be of type ${jsType}, [${elemTypes}] received. ${v}`
@@ -312,18 +312,52 @@ const createModelClass = <T extends PersistentModel>(
 
 		static copyOf(source: T, fn: (draft: MutableModel<T>) => T) {
 			const modelConstructor = Object.getPrototypeOf(source || {}).constructor;
-
+			const modelDefinition = getModelDefinition(modelConstructor);
 			if (!isValidModelConstructor(modelConstructor)) {
 				const msg = 'The source object is not a valid model';
 				logger.error(msg, { source });
-
 				throw new Error(msg);
 			}
-
-			return produce(source, draft => {
+			const temp = produce(source, (draft) => {
 				fn(<MutableModel<T>>draft);
+				logger.debug(JSON.stringify(draft));
 				draft.id = source.id;
 			});
+
+			Object.entries(temp).forEach(([k, v]) => {
+				const fieldDefinition = modelDefinition.fields[k];
+				if (fieldDefinition !== undefined) {
+					const { type, isRequired, name, isArray } = fieldDefinition;
+					if (isRequired && (v === null || v === undefined)) {
+						throw new Error(`Field ${name} is required`);
+					}
+
+					if (isGraphQLScalarType(type)) {
+						const jsType = GraphQLScalarType.getJSType(type);
+
+						if (isArray) {
+							if (!Array.isArray(v)) {
+								throw new Error(
+									`Field ${name} should be of type ${jsType}[], ${typeof v} received. ${v}`
+								);
+							}
+
+							if ((<[]>v).some((e) => typeof e !== jsType)) {
+								const elemTypes = (<[]>v).map((e) => typeof e).join(',');
+
+								throw new Error(
+									`All elements in the ${name} array should be of type ${jsType}, [${elemTypes}] received. ${v}`
+								);
+							}
+						} else if (typeof v !== jsType && v !== null) {
+							throw new Error(
+								`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`
+							);
+						}
+					}
+				}
+			});
+			return temp;
 		}
 	});
 
@@ -379,7 +413,7 @@ const save = async <T extends PersistentModel>(
 		condition
 	);
 
-	const [savedModel] = await storage.runExclusive(async s => {
+	const [savedModel] = await storage.runExclusive(async (s) => {
 		await s.save(model, producedCondition);
 
 		return s.query(
@@ -564,7 +598,7 @@ const observe: {
 			);
 	}
 
-	return new Observable<SubscriptionMessage<T>>(observer => {
+	return new Observable<SubscriptionMessage<T>>((observer) => {
 		let handle: ZenObservable.Subscription;
 
 		(async () => {
@@ -783,10 +817,10 @@ async function checkSchemaVersion(
 
 	const modelDefinition = schema.namespaces[DATASTORE].models.Setting;
 
-	await storage.runExclusive(async s => {
+	await storage.runExclusive(async (s) => {
 		const [schemaVersionSetting] = await s.query(
 			Setting,
-			ModelPredicateCreator.createFromExisting(modelDefinition, c =>
+			ModelPredicateCreator.createFromExisting(modelDefinition, (c) =>
 				c.key('eq', SETTING_SCHEMA_VERSION)
 			),
 			{ page: 0, limit: 1 }
@@ -870,7 +904,7 @@ async function start(): Promise<void> {
 						data,
 					});
 				},
-				error: err => {
+				error: (err) => {
 					logger.warn('Sync error', err);
 					initReject();
 				},
