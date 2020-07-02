@@ -680,6 +680,7 @@ export namespace Components {
     }
     interface AmplifyS3TextPicker {
         "contentType": string;
+        "fallbackText": string;
         "fileToKey": (data: object) => string;
         "identityId": string;
         "level": AccessLevel;
@@ -1928,6 +1929,7 @@ declare namespace LocalJSX {
     }
     interface AmplifyS3TextPicker {
         "contentType"?: string;
+        "fallbackText"?: string;
         "fileToKey"?: (data: object) => string;
         "identityId"?: string;
         "level"?: AccessLevel;
