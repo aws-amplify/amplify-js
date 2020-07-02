@@ -70,7 +70,7 @@ describe('withServerContext', () => {
 	});
 
 	describe('DataStore', () => {
-		it('should be a different instance than Amplify.Auth', () => {
+		it('should be a different instance than Amplify.DataStore', () => {
 			expect(withServerContext().DataStore).not.toBe(Amplify.DataStore);
 		});
 	});
