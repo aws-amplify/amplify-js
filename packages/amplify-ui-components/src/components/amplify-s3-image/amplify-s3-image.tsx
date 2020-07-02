@@ -8,6 +8,7 @@ const logger = new Logger('S3Image');
 @Component({
   tag: 'amplify-s3-image',
   styleUrl: 'amplify-s3-image.scss',
+  shadow: true,
 })
 export class AmplifyS3Image {
   /* The key of the image object in S3 */
