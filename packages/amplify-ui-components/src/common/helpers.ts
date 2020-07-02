@@ -11,6 +11,7 @@ import { PhoneNumberInterface } from '../components/amplify-auth-fields/amplify-
 import { Translations } from './Translations';
 import Auth from '@aws-amplify/auth';
 import { Storage } from '@aws-amplify/storage';
+import { AccessLevel } from './types/storage-types';
 
 const logger = new Logger('helpers');
 
@@ -191,6 +192,48 @@ export const getStorageObject = async (
     return src;
   } catch (error) {
     logger.error(error);
+    throw new Error(error);
+  }
+};
+
+const readFileAsync = (blob: Blob) => {
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader();
+
+    reader.onload = () => {
+      resolve(reader.result as string);
+    };
+
+    reader.onerror = () => {
+      reject('Failed to read file!');
+      reader.abort();
+    };
+
+    reader.readAsText(blob);
+  });
+};
+
+export const getTextSource = async (
+  key: string,
+  level: AccessLevel,
+  track: boolean,
+  identityId: string,
+  logger: Logger,
+) => {
+  if (!Storage || typeof Storage.get !== 'function') {
+    throw new Error(NO_STORAGE_MODULE_FOUND);
+  }
+  try {
+    const textSrc = await Storage.get(key, {
+      download: true,
+      level,
+      track,
+      identityId,
+    });
+    logger.debug(textSrc);
+    let text = (await readFileAsync(textSrc['Body'])) as string;
+    return text;
+  } catch (error) {
     throw new Error(error);
   }
 };
