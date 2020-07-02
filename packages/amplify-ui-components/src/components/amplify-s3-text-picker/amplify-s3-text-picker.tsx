@@ -1,14 +1,13 @@
 import { Component, Prop, h, State, Host } from '@stencil/core';
 import { Logger, I18n } from '@aws-amplify/core';
 import { AccessLevel } from '../../common/types/storage-types';
-import { calcKey, getTextSource, putStorageObject } from '../../common/storage-helper';
+import { calcKey, putStorageObject } from '../../common/storage-helper';
 import { Translations } from '../../common/Translations';
 
 const logger = new Logger('S3TextPicker');
 
 @Component({
   tag: 'amplify-s3-text-picker',
-  styleUrl: 'amplify-s3-text-picker.scss',
 })
 export class AmplifyS3TextPicker {
   /* String representing directory location to text file */
@@ -23,18 +22,24 @@ export class AmplifyS3TextPicker {
   @Prop() identityId: string;
   /* Callback used to generate custom key value */
   @Prop() fileToKey: (data: object) => string | string;
+  /* Fallback content for aplify-s3-text */
+  @Prop() fallbackText: string = I18n.get(Translations.PICKER_TEXT);
   /* Source content of text */
-  @State() src: string = I18n.get(Translations.PICKER_TEXT);
+  @State() src: string;
 
   private async handleInput(event: Event) {
     const file = (event.target as HTMLInputElement).files[0];
 
-    const { path = '', level, fileToKey, track, identityId } = this;
+    const { path = '', level, fileToKey, track } = this;
     const key = path + calcKey(file, fileToKey);
+
+    if (!file) {
+      throw new Error('No file was selected');
+    }
 
     try {
       await putStorageObject(key, file, level, track, file['type'], logger);
-      this.src = await getTextSource(key, level, track, identityId, logger);
+      this.src = key;
     } catch (error) {
       logger.debug(error);
       throw new Error(error);
@@ -44,9 +49,15 @@ export class AmplifyS3TextPicker {
   render() {
     return (
       <Host>
-        <div class="text-container">
-          <pre>{this.src}</pre>
-        </div>
+        <amplify-s3-text
+          textKey={this.src}
+          path={this.path}
+          level={this.level}
+          track={this.track}
+          identityId={this.identityId}
+          contentType={this.contentType}
+          fallbackText={this.fallbackText}
+        />
         <amplify-picker inputHandler={e => this.handleInput(e)} acceptValue={'text/*'}></amplify-picker>
       </Host>
     );
