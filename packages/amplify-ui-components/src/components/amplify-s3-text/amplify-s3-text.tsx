@@ -1,7 +1,8 @@
 import { Component, Prop, h, State, Watch } from '@stencil/core';
-import { Logger } from '@aws-amplify/core';
+import { Logger, I18n } from '@aws-amplify/core';
 import { AccessLevel } from '../../common/types/storage-types';
 import { getTextSource, putStorageObject } from '../../common/storage-helper';
+import { Translations } from '../../common/Translations';
 
 const logger = new Logger('S3Text');
 
@@ -25,9 +26,12 @@ export class AmplifyS3Text {
   @Prop() track: boolean;
   /* Cognito identity id of the another user's image */
   @Prop() identityId: string;
+  /* Fallback content */
+  @Prop() fallbackText: string = I18n.get(Translations.TEXT_FALLBACK_CONTENT);
   /* Source content of text */
   @State() src: string;
 
+  @Watch('textKey')
   @Watch('body')
   async watchHandler() {
     await this.load();
@@ -61,11 +65,7 @@ export class AmplifyS3Text {
   render() {
     return (
       <div>
-        {this.src && (
-          <div class="text-container">
-            <pre>{this.src}</pre>
-          </div>
-        )}
+        <div class="text-container">{this.src ? <pre>{this.src}</pre> : <pre>{this.fallbackText}</pre>}</div>
       </div>
     );
   }
