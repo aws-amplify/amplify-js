@@ -3,3 +3,11 @@ export enum AccessLevel {
   Private = 'private',
   Protected = 'protected',
 }
+
+export interface StorageObject {
+  key: string;
+  contentType?: string;
+  eTag?: string;
+  lastModified?: Date;
+  size?: number;
+}

@@ -1,0 +1,44 @@
+.album-container {
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.grid-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: -1rem -1rem;
+  padding-bottom: 3rem;
+}
+
+.grid-item {
+  position: relative;
+  flex: 1 0 22rem;
+  flex-grow: 1;
+  margin: 1rem;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+}
+
+amplify-s3-image {
+  border-radius: 5px;
+  width: 22rem !important;
+  height: 300px !important;
+  object-fit: cover;
+}
+
+.img-overlay {
+  display: none;
+  width: 100% !important;
+  height: 304px !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.grid-item:hover .img-overlay {
+  display: block;
+}

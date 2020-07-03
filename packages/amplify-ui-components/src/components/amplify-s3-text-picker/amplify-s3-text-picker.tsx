@@ -1,9 +1,7 @@
 import { Component, Prop, h, State, Host } from '@stencil/core';
-import { AccessLevel } from '../../common/types/storage-types';
-import { Storage } from '@aws-amplify/storage';
 import { Logger, I18n } from '@aws-amplify/core';
-import { NO_STORAGE_MODULE_FOUND } from '../../common/constants';
-import { calcKey } from '../../common/helpers';
+import { AccessLevel } from '../../common/types/storage-types';
+import { calcKey, putStorageObject } from '../../common/storage-helper';
 import { Translations } from '../../common/Translations';
 
 const logger = new Logger('S3TextPicker');
@@ -23,33 +21,24 @@ export class AmplifyS3TextPicker {
   /* Cognito identity id of the another user's image */
   @Prop() identityId: string;
   /* Callback used to generate custom key value */
-  @Prop() fileToKey: (data: object) => string;
+  @Prop() fileToKey: (data: object) => string | string;
   /* Fallback content for aplify-s3-text */
   @Prop() fallbackText: string = I18n.get(Translations.PICKER_TEXT);
   /* Source content of text */
   @State() src: string;
 
-  async handleInput(event: Event) {
+  private async handleInput(event: Event) {
     const file = (event.target as HTMLInputElement).files[0];
+
+    const { path = '', level, fileToKey, track } = this;
+    const key = path + calcKey(file, fileToKey);
 
     if (!file) {
       throw new Error('No file was selected');
     }
 
-    const { path = '', level, fileToKey, track } = this;
-    const key = path + calcKey(file, fileToKey);
-
-    if (!Storage || typeof Storage.put !== 'function') {
-      throw new Error(NO_STORAGE_MODULE_FOUND);
-    }
-
     try {
-      const data = await Storage.put(key, file, {
-        level,
-        contentType: file['type'],
-        track,
-      });
-      logger.debug('handle pick data', data);
+      await putStorageObject(key, file, level, track, file['type'], logger);
       this.src = key;
     } catch (error) {
       logger.debug(error);
