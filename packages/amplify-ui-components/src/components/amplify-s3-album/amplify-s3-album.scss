@@ -1,3 +1,7 @@
+:host {
+  --shadow-color: rgba(0, 0, 0, 0.15);
+}
+
 .album-container {
   box-sizing: border-box;
   max-width: 100%;
@@ -17,7 +21,6 @@
   flex: 1 0 22rem;
   flex-grow: 1;
   margin: 1rem;
-  color: var(--amplify-white);
   display: flex;
   justify-content: center;
 }
@@ -36,7 +39,7 @@ amplify-s3-image {
   position: absolute;
   top: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.15);
+  background-color: var(--shadow-color);
 }
 
 .grid-item:hover .img-overlay {
