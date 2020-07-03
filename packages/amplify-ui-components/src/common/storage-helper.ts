@@ -3,7 +3,7 @@ import { NO_STORAGE_MODULE_FOUND } from './constants';
 import { Logger } from '@aws-amplify/core';
 import { AccessLevel } from './types/storage-types';
 
-export const imageFileType = [
+export const imageFileType = new Set([
   'apng',
   'bmp',
   'gif',
@@ -19,7 +19,7 @@ export const imageFileType = [
   'tif',
   'tiff',
   'webp',
-];
+]);
 
 export const calcKey = (file: File, fileToKey: string | Function) => {
   const { name, size, type } = file;

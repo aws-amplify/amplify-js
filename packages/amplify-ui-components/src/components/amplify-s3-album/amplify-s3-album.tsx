@@ -67,7 +67,7 @@ export class AmplifyS3Album {
     list.forEach((item: StorageObject) => {
       const name = item.key.toLowerCase();
       const ext = name.split('.')[1];
-      if (imageFileType.includes(ext)) {
+      if (imageFileType.has(ext)) {
         if (!item.contentType || (item.contentType && item.contentType === 'binary/octet-stream')) {
           item.contentType = this.getContentType(item);
         }
@@ -93,7 +93,6 @@ export class AmplifyS3Album {
     list.map(item => {
       this.imgArr[`${item['key']}`] = item['key'];
     });
-    console.log(this.imgArr);
   };
 
   private handlePick = async (event: Event) => {
