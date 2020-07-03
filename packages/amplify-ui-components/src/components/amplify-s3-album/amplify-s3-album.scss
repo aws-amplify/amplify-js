@@ -23,16 +23,16 @@
 }
 
 amplify-s3-image {
+  --width: 22rem;
+  --height: 20rem;
   border-radius: 5px;
-  width: 22rem !important;
-  height: 20rem !important;
   object-fit: cover;
 }
 
 .img-overlay {
   display: none;
-  width: 100% !important;
-  height: 21rem !important;
+  width: 100%;
+  height: 21rem;
   position: absolute;
   top: 0;
   left: 0;
