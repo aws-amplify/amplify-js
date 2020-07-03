@@ -11,7 +11,7 @@ import { ButtonTypes, ButtonVariant, InputEvent, TextFieldTypes } from "./common
 import { FunctionalComponent } from "@stencil/core";
 import { CountryCodeDialOptions } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { IconNameType } from "./components/amplify-icon/icons";
-import { AccessLevel } from "./common/types/storage-types";
+import { AccessLevel, StorageObject } from "./common/types/storage-types";
 import { SelectOptionsNumber, SelectOptionsString } from "./components/amplify-select/amplify-select-interface";
 export namespace Components {
     interface AmplifyAmazonButton {
@@ -645,6 +645,20 @@ export namespace Components {
          */
         "user": CognitoUserInterface;
     }
+    interface AmplifyS3Album {
+        "contentType": string;
+        "fileToKey": (data: object) => string | string;
+        "filter": (list: StorageObject[]) => StorageObject[];
+        "handleOnError": (event: Event) => void;
+        "handleOnLoad": (event: Event) => void;
+        "identityId": string;
+        "level": AccessLevel;
+        "path": string;
+        "picker": boolean;
+        "pickerText": string;
+        "sort": (list: StorageObject[]) => StorageObject[];
+        "track": boolean;
+    }
     interface AmplifyS3Image {
         "body": object;
         "contentType": string;
@@ -659,7 +673,7 @@ export namespace Components {
     interface AmplifyS3ImagePicker {
         "buttonText"?: string;
         "contentType": string;
-        "fileToKey": (data: object) => string;
+        "fileToKey": (data: object) => string | string;
         "headerHint"?: string;
         "headerTitle"?: string;
         "identityId": string;
@@ -681,7 +695,7 @@ export namespace Components {
     interface AmplifyS3TextPicker {
         "contentType": string;
         "fallbackText": string;
-        "fileToKey": (data: object) => string;
+        "fileToKey": (data: object) => string | string;
         "identityId": string;
         "level": AccessLevel;
         "path": string;
@@ -1101,6 +1115,12 @@ declare global {
         prototype: HTMLAmplifyRequireNewPasswordElement;
         new (): HTMLAmplifyRequireNewPasswordElement;
     };
+    interface HTMLAmplifyS3AlbumElement extends Components.AmplifyS3Album, HTMLStencilElement {
+    }
+    var HTMLAmplifyS3AlbumElement: {
+        prototype: HTMLAmplifyS3AlbumElement;
+        new (): HTMLAmplifyS3AlbumElement;
+    };
     interface HTMLAmplifyS3ImageElement extends Components.AmplifyS3Image, HTMLStencilElement {
     }
     var HTMLAmplifyS3ImageElement: {
@@ -1239,6 +1259,7 @@ declare global {
         "amplify-picker": HTMLAmplifyPickerElement;
         "amplify-radio-button": HTMLAmplifyRadioButtonElement;
         "amplify-require-new-password": HTMLAmplifyRequireNewPasswordElement;
+        "amplify-s3-album": HTMLAmplifyS3AlbumElement;
         "amplify-s3-image": HTMLAmplifyS3ImageElement;
         "amplify-s3-image-picker": HTMLAmplifyS3ImagePickerElement;
         "amplify-s3-text": HTMLAmplifyS3TextElement;
@@ -1894,6 +1915,20 @@ declare namespace LocalJSX {
          */
         "user"?: CognitoUserInterface;
     }
+    interface AmplifyS3Album {
+        "contentType"?: string;
+        "fileToKey"?: (data: object) => string | string;
+        "filter"?: (list: StorageObject[]) => StorageObject[];
+        "handleOnError"?: (event: Event) => void;
+        "handleOnLoad"?: (event: Event) => void;
+        "identityId"?: string;
+        "level"?: AccessLevel;
+        "path"?: string;
+        "picker"?: boolean;
+        "pickerText"?: string;
+        "sort"?: (list: StorageObject[]) => StorageObject[];
+        "track"?: boolean;
+    }
     interface AmplifyS3Image {
         "body"?: object;
         "contentType"?: string;
@@ -1908,7 +1943,7 @@ declare namespace LocalJSX {
     interface AmplifyS3ImagePicker {
         "buttonText"?: string;
         "contentType"?: string;
-        "fileToKey"?: (data: object) => string;
+        "fileToKey"?: (data: object) => string | string;
         "headerHint"?: string;
         "headerTitle"?: string;
         "identityId"?: string;
@@ -1930,7 +1965,7 @@ declare namespace LocalJSX {
     interface AmplifyS3TextPicker {
         "contentType"?: string;
         "fallbackText"?: string;
-        "fileToKey"?: (data: object) => string;
+        "fileToKey"?: (data: object) => string | string;
         "identityId"?: string;
         "level"?: AccessLevel;
         "path"?: string;
@@ -2174,6 +2209,7 @@ declare namespace LocalJSX {
         "amplify-picker": AmplifyPicker;
         "amplify-radio-button": AmplifyRadioButton;
         "amplify-require-new-password": AmplifyRequireNewPassword;
+        "amplify-s3-album": AmplifyS3Album;
         "amplify-s3-image": AmplifyS3Image;
         "amplify-s3-image-picker": AmplifyS3ImagePicker;
         "amplify-s3-text": AmplifyS3Text;
@@ -2232,6 +2268,7 @@ declare module "@stencil/core" {
             "amplify-picker": LocalJSX.AmplifyPicker & JSXBase.HTMLAttributes<HTMLAmplifyPickerElement>;
             "amplify-radio-button": LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
             "amplify-require-new-password": LocalJSX.AmplifyRequireNewPassword & JSXBase.HTMLAttributes<HTMLAmplifyRequireNewPasswordElement>;
+            "amplify-s3-album": LocalJSX.AmplifyS3Album & JSXBase.HTMLAttributes<HTMLAmplifyS3AlbumElement>;
             "amplify-s3-image": LocalJSX.AmplifyS3Image & JSXBase.HTMLAttributes<HTMLAmplifyS3ImageElement>;
             "amplify-s3-image-picker": LocalJSX.AmplifyS3ImagePicker & JSXBase.HTMLAttributes<HTMLAmplifyS3ImagePickerElement>;
             "amplify-s3-text": LocalJSX.AmplifyS3Text & JSXBase.HTMLAttributes<HTMLAmplifyS3TextElement>;
