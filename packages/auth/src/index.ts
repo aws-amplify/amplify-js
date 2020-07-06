@@ -11,7 +11,8 @@
  * and limitations under the License.
  */
 
-import { Auth, CognitoHostedUIIdentityProvider } from './Auth';
+import { Auth } from './Auth';
+import { CognitoHostedUIIdentityProvider } from './types/Auth';
 import { CognitoUser, CookieStorage, appendToCognitoUserAgent } from 'amazon-cognito-identity-js';
 
 /**
