@@ -17,7 +17,7 @@ const countryDialCodes = [
   { label: '+45', value: '+45'},
   { label: '+46', value: '+46'},
   { label: '+47', value: '+47'},
-  { label: '+48', value: '+47'},
+  { label: '+48', value: '+48'},
   { label: '+49', value: '+49'},
   { label: '+51', value: '+51'},
   { label: '+52', value: '+52'},
