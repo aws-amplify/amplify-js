@@ -34,6 +34,7 @@ import {
 	SyncConflict,
 	SyncError,
 	TypeConstructorMap,
+	ErrorHandler,
 } from '../types';
 import {
 	DATASTORE,
@@ -700,17 +701,8 @@ function configure(config: DataStoreConfig = {}) {
 
 	amplifyConfig = { ...configFromAmplify, ...amplifyConfig };
 
-	conflictHandler =
-		(configDataStore && configDataStore.conflictHandler) ||
-		conflictHandler ||
-		config.conflictHandler ||
-		defaultConflictHandler;
-
-	errorHandler =
-		(configDataStore && configDataStore.errorHandler) ||
-		errorHandler ||
-		config.errorHandler ||
-		defaultErrorHandler;
+	conflictHandler = setConflictHandler(config);
+	errorHandler = setErrorHandler(config);
 
 	maxRecordsToSync =
 		(configDataStore && configDataStore.maxRecordsToSync) ||
@@ -733,6 +725,38 @@ function defaultConflictHandler(conflictData: SyncConflict): PersistentModel {
 	const { localModel, modelConstructor, remoteModel } = conflictData;
 	const { _version } = remoteModel;
 	return modelInstanceCreator(modelConstructor, { ...localModel, _version });
+}
+
+function setConflictHandler(config: DataStoreConfig): ConflictHandler {
+	const { DataStore: configDataStore } = config;
+
+	const conflictHandlerIsDefault: () => boolean = () =>
+		conflictHandler === defaultConflictHandler;
+
+	if (configDataStore) {
+		return configDataStore.conflictHandler;
+	}
+	if (conflictHandlerIsDefault() && config.conflictHandler) {
+		return config.conflictHandler;
+	}
+
+	return conflictHandler || defaultConflictHandler;
+}
+
+function setErrorHandler(config: DataStoreConfig): ErrorHandler {
+	const { DataStore: configDataStore } = config;
+
+	const errorHandlerIsDefault: () => boolean = () =>
+		errorHandler === defaultErrorHandler;
+
+	if (configDataStore) {
+		return configDataStore.errorHandler;
+	}
+	if (errorHandlerIsDefault() && config.errorHandler) {
+		return config.errorHandler;
+	}
+
+	return errorHandler || defaultErrorHandler;
 }
 
 function defaultErrorHandler(error: SyncError) {
