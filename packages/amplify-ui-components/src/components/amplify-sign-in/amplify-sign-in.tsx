@@ -70,6 +70,8 @@ export class AmplifySignIn {
    * ```
    */
   @Prop() formFields: FormFieldTypes | string[] = [];
+  /** Hides the sign up link */
+  @Prop() hideSignUp: boolean = false;
   private newFormFields: FormFieldTypes | string[] = [];
 
   /* Whether or not the sign-in component is loading */
@@ -304,17 +306,22 @@ export class AmplifySignIn {
         <div slot="amplify-form-section-footer" class="sign-in-form-footer">
           <slot name="footer">
             <slot name="secondary-footer-content">
-              <span>
-                {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
-                <amplify-button
-                  variant="anchor"
-                  onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
-                  data-test="sign-in-create-account-link"
-                >
-                  {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
-                </amplify-button>
-              </span>
+              {!this.hideSignUp ? (
+                <span>
+                  {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
+                  <amplify-button
+                    variant="anchor"
+                    onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
+                    data-test="sign-in-create-account-link"
+                  >
+                    {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
+                  </amplify-button>
+                </span>
+              ) : (
+                <span></span>
+              )}
             </slot>
+
             <slot name="primary-footer-content">
               <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
                 <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
