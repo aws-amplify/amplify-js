@@ -8,7 +8,7 @@ import { NextPageContext } from 'next';
 // ! We have to use this exact reference, since it gets mutated with Amplify.Auth
 import { Amplify } from './index';
 
-export function withServerContext(context?: Pick<NextPageContext, 'req'>) {
+export function withSSRContext(context?: Pick<NextPageContext, 'req'>) {
 	const previousConfig = Amplify.configure();
 	const amplify = new AmplifyClass();
 	const Credentials = new CredentialsClass(null);

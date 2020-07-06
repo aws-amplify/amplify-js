@@ -1,14 +1,14 @@
 import { Amplify, CredentialsClass, UniversalStorage } from '@aws-amplify/core';
 
-import { withServerContext } from '../src/withServerContext';
+import { withSSRContext } from '../src/withSSRContext';
 
-describe('withServerContext', () => {
+describe('withSSRContext', () => {
 	it('should not require context (for client-side requests)', () => {
-		expect(() => withServerContext()).not.toThrow();
+		expect(() => withSSRContext()).not.toThrow();
 	});
 
 	it('should create a new instance of Amplify', () => {
-		const amplify = withServerContext();
+		const amplify = withSSRContext();
 
 		expect(amplify).not.toBe(Amplify);
 	});
@@ -18,7 +18,7 @@ describe('withServerContext', () => {
 		Amplify.configure({ TEST_VALUE: true });
 		expect(Amplify.configure()).toEqual({ TEST_VALUE: true });
 
-		const amplify = withServerContext();
+		const amplify = withSSRContext();
 		expect(amplify.configure()).toEqual(
 			expect.objectContaining({
 				Credentials: expect.any(CredentialsClass),
@@ -30,11 +30,11 @@ describe('withServerContext', () => {
 
 	describe('API', () => {
 		it('should be a different instance than Amplify.Auth', () => {
-			expect(withServerContext().API).not.toBe(Amplify.API);
+			expect(withSSRContext().API).not.toBe(Amplify.API);
 		});
 
 		it('should use different Credentials than Amplify', () => {
-			const amplify = withServerContext();
+			const amplify = withSSRContext();
 			const config = amplify.configure();
 
 			// GraphQLAPI uses Credentials internally
@@ -51,17 +51,15 @@ describe('withServerContext', () => {
 
 	describe('Auth', () => {
 		it('should be a different instance than Amplify.Auth', () => {
-			expect(withServerContext().Auth).not.toBe(Amplify.Auth);
+			expect(withSSRContext().Auth).not.toBe(Amplify.Auth);
 		});
 
 		it('should be created with UniversalStorage', () => {
-			expect(withServerContext().Auth._storage).toBeInstanceOf(
-				UniversalStorage
-			);
+			expect(withSSRContext().Auth._storage).toBeInstanceOf(UniversalStorage);
 		});
 
 		it('should use different Credentials than Amplify', () => {
-			const amplify = withServerContext();
+			const amplify = withSSRContext();
 			const config = amplify.configure();
 
 			expect(Amplify.Auth.Credentials).not.toBe(config.Credentials);
@@ -71,13 +69,13 @@ describe('withServerContext', () => {
 
 	describe('DataStore', () => {
 		it('should be a different instance than Amplify.DataStore', () => {
-			expect(withServerContext().DataStore).not.toBe(Amplify.DataStore);
+			expect(withSSRContext().DataStore).not.toBe(Amplify.DataStore);
 		});
 	});
 
 	describe('I18n', () => {
 		it('should be the same instance as Amplify.I18n', () => {
-			expect(withServerContext().I18n).toBe(Amplify.I18n);
+			expect(withSSRContext().I18n).toBe(Amplify.I18n);
 		});
 	});
 });
