@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@stencil/angular-output-target": "^0.0.2",
-    "@stencil/core": "1.10.2",
+    "@stencil/core": "1.15.0",
     "@stencil/eslint-plugin": "0.2.1",
     "@stencil/react-output-target": "^0.0.6",
     "@stencil/sass": "^1.1.1",
