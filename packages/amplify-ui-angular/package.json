@@ -36,7 +36,7 @@
 	"devDependencies": {
 		"@angular/compiler-cli": "^7.2.1",
 		"@angular/core": "^7.2.1",
-		"@types/node": "^12.12.36",
+		"@types/node": "12.12.47",
 		"rollup": "^1.1.2",
 		"rollup-plugin-node-resolve": "^4.0.0",
 		"rxjs": "^6.2.0",
