@@ -8,23 +8,24 @@ const logger = new Logger('S3TextPicker');
 
 @Component({
   tag: 'amplify-s3-text-picker',
+  shadow: true,
 })
 export class AmplifyS3TextPicker {
-  /* String representing directory location to text file */
+  /** String representing directory location to text file */
   @Prop() path: string;
-  /* The content type header used when uploading to S3 */
+  /** The content type header used when uploading to S3 */
   @Prop() contentType: string = 'text/*';
-  /* The access level of the image */
+  /** The access level of the image */
   @Prop() level: AccessLevel = AccessLevel.Public;
-  /* Whether or not to use track the get/put of the image */
+  /** Whether or not to use track the get/put of the image */
   @Prop() track: boolean;
-  /* Cognito identity id of the another user's image */
+  /** Cognito identity id of the another user's image */
   @Prop() identityId: string;
-  /* Callback used to generate custom key value */
+  /** Callback used to generate custom key value */
   @Prop() fileToKey: (data: object) => string | string;
-  /* Fallback content for aplify-s3-text */
+  /** Fallback content for aplify-s3-text */
   @Prop() fallbackText: string = I18n.get(Translations.PICKER_TEXT);
-  /* Source content of text */
+  /** Source content of text */
   @State() src: string;
 
   private async handleInput(event: Event) {

@@ -646,59 +646,197 @@ export namespace Components {
         "user": CognitoUserInterface;
     }
     interface AmplifyS3Album {
+        /**
+          * The content type header used when uploading to S3
+         */
         "contentType": string;
+        /**
+          * Callback used to generate custom key value
+         */
         "fileToKey": (data: object) => string | string;
+        /**
+          * Filter to be applied on album list
+         */
         "filter": (list: StorageObject[]) => StorageObject[];
+        /**
+          * Function executed when error occurs for the s3-image
+         */
         "handleOnError": (event: Event) => void;
+        /**
+          * Function executed when s3-image loads
+         */
         "handleOnLoad": (event: Event) => void;
+        /**
+          * Cognito identity id of the another user's image
+         */
         "identityId": string;
+        /**
+          * The access level of the image
+         */
         "level": AccessLevel;
+        /**
+          * String representing directory location to text file
+         */
         "path": string;
+        /**
+          * Boolean to enable or disable picker
+         */
         "picker": boolean;
+        /**
+          * Picker button text
+         */
         "pickerText": string;
+        /**
+          * Sort to be applied on album list
+         */
         "sort": (list: StorageObject[]) => StorageObject[];
+        /**
+          * Whether or not to use track the get/put of the image
+         */
         "track": boolean;
     }
     interface AmplifyS3Image {
+        /**
+          * Image body content to be uploaded
+         */
         "body": object;
+        /**
+          * The content type header used when uploading to S3
+         */
         "contentType": string;
+        /**
+          * Function executed when error occurs for the image
+         */
         "handleOnError": (event: Event) => void;
+        /**
+          * Function executed when image loads
+         */
         "handleOnLoad": (event: Event) => void;
+        /**
+          * Cognito identity id of the another user's image
+         */
         "identityId": string;
+        /**
+          * The key of the image object in S3
+         */
         "imgKey": string;
+        /**
+          * The access level of the image
+         */
         "level": AccessLevel;
+        /**
+          * String representing directory location to image file
+         */
         "path": string;
+        /**
+          * Whether or not to use track on get/put of the image
+         */
         "track": boolean;
     }
     interface AmplifyS3ImagePicker {
+        /**
+          * Upload Button Text as string
+         */
         "buttonText"?: string;
+        /**
+          * The content type header used when uploading to S3
+         */
         "contentType": string;
+        /**
+          * Callback used to generate custom key value
+         */
         "fileToKey": (data: object) => string | string;
+        /**
+          * Header Hint value in string
+         */
         "headerHint"?: string;
+        /**
+          * Title string value
+         */
         "headerTitle"?: string;
+        /**
+          * Cognito identity id of the another user's image
+         */
         "identityId": string;
+        /**
+          * The access level of the image
+         */
         "level": AccessLevel;
+        /**
+          * String representing directory location to image file
+         */
         "path": string;
+        /**
+          * Placeholder hint that goes under the placeholder image
+         */
         "placeholderHint"?: string;
+        /**
+          * Whether or not to use track the get/put of the image
+         */
         "track": boolean;
     }
     interface AmplifyS3Text {
+        /**
+          * Text body content to be uploaded
+         */
         "body": object;
+        /**
+          * The content type header used when uploading to S3
+         */
         "contentType": string;
+        /**
+          * Fallback content
+         */
         "fallbackText": string;
+        /**
+          * Cognito identity id of the another user's image
+         */
         "identityId": string;
+        /**
+          * The access level of the image
+         */
         "level": AccessLevel;
+        /**
+          * String representing directory location to text file
+         */
         "path": string;
+        /**
+          * The key of the text object in S3
+         */
         "textKey": string;
+        /**
+          * Whether or not to use track the get/put of the image
+         */
         "track": boolean;
     }
     interface AmplifyS3TextPicker {
+        /**
+          * The content type header used when uploading to S3
+         */
         "contentType": string;
+        /**
+          * Fallback content for aplify-s3-text
+         */
         "fallbackText": string;
+        /**
+          * Callback used to generate custom key value
+         */
         "fileToKey": (data: object) => string | string;
+        /**
+          * Cognito identity id of the another user's image
+         */
         "identityId": string;
+        /**
+          * The access level of the image
+         */
         "level": AccessLevel;
+        /**
+          * String representing directory location to text file
+         */
         "path": string;
+        /**
+          * Whether or not to use track the get/put of the image
+         */
         "track": boolean;
     }
     interface AmplifySection {
@@ -1916,59 +2054,197 @@ declare namespace LocalJSX {
         "user"?: CognitoUserInterface;
     }
     interface AmplifyS3Album {
+        /**
+          * The content type header used when uploading to S3
+         */
         "contentType"?: string;
+        /**
+          * Callback used to generate custom key value
+         */
         "fileToKey"?: (data: object) => string | string;
+        /**
+          * Filter to be applied on album list
+         */
         "filter"?: (list: StorageObject[]) => StorageObject[];
+        /**
+          * Function executed when error occurs for the s3-image
+         */
         "handleOnError"?: (event: Event) => void;
+        /**
+          * Function executed when s3-image loads
+         */
         "handleOnLoad"?: (event: Event) => void;
+        /**
+          * Cognito identity id of the another user's image
+         */
         "identityId"?: string;
+        /**
+          * The access level of the image
+         */
         "level"?: AccessLevel;
+        /**
+          * String representing directory location to text file
+         */
         "path"?: string;
+        /**
+          * Boolean to enable or disable picker
+         */
         "picker"?: boolean;
+        /**
+          * Picker button text
+         */
         "pickerText"?: string;
+        /**
+          * Sort to be applied on album list
+         */
         "sort"?: (list: StorageObject[]) => StorageObject[];
+        /**
+          * Whether or not to use track the get/put of the image
+         */
         "track"?: boolean;
     }
     interface AmplifyS3Image {
+        /**
+          * Image body content to be uploaded
+         */
         "body"?: object;
+        /**
+          * The content type header used when uploading to S3
+         */
         "contentType"?: string;
+        /**
+          * Function executed when error occurs for the image
+         */
         "handleOnError"?: (event: Event) => void;
+        /**
+          * Function executed when image loads
+         */
         "handleOnLoad"?: (event: Event) => void;
+        /**
+          * Cognito identity id of the another user's image
+         */
         "identityId"?: string;
+        /**
+          * The key of the image object in S3
+         */
         "imgKey"?: string;
+        /**
+          * The access level of the image
+         */
         "level"?: AccessLevel;
+        /**
+          * String representing directory location to image file
+         */
         "path"?: string;
+        /**
+          * Whether or not to use track on get/put of the image
+         */
         "track"?: boolean;
     }
     interface AmplifyS3ImagePicker {
+        /**
+          * Upload Button Text as string
+         */
         "buttonText"?: string;
+        /**
+          * The content type header used when uploading to S3
+         */
         "contentType"?: string;
+        /**
+          * Callback used to generate custom key value
+         */
         "fileToKey"?: (data: object) => string | string;
+        /**
+          * Header Hint value in string
+         */
         "headerHint"?: string;
+        /**
+          * Title string value
+         */
         "headerTitle"?: string;
+        /**
+          * Cognito identity id of the another user's image
+         */
         "identityId"?: string;
+        /**
+          * The access level of the image
+         */
         "level"?: AccessLevel;
+        /**
+          * String representing directory location to image file
+         */
         "path"?: string;
+        /**
+          * Placeholder hint that goes under the placeholder image
+         */
         "placeholderHint"?: string;
+        /**
+          * Whether or not to use track the get/put of the image
+         */
         "track"?: boolean;
     }
     interface AmplifyS3Text {
+        /**
+          * Text body content to be uploaded
+         */
         "body"?: object;
+        /**
+          * The content type header used when uploading to S3
+         */
         "contentType"?: string;
+        /**
+          * Fallback content
+         */
         "fallbackText"?: string;
+        /**
+          * Cognito identity id of the another user's image
+         */
         "identityId"?: string;
+        /**
+          * The access level of the image
+         */
         "level"?: AccessLevel;
+        /**
+          * String representing directory location to text file
+         */
         "path"?: string;
+        /**
+          * The key of the text object in S3
+         */
         "textKey"?: string;
+        /**
+          * Whether or not to use track the get/put of the image
+         */
         "track"?: boolean;
     }
     interface AmplifyS3TextPicker {
+        /**
+          * The content type header used when uploading to S3
+         */
         "contentType"?: string;
+        /**
+          * Fallback content for aplify-s3-text
+         */
         "fallbackText"?: string;
+        /**
+          * Callback used to generate custom key value
+         */
         "fileToKey"?: (data: object) => string | string;
+        /**
+          * Cognito identity id of the another user's image
+         */
         "identityId"?: string;
+        /**
+          * The access level of the image
+         */
         "level"?: AccessLevel;
+        /**
+          * String representing directory location to text file
+         */
         "path"?: string;
+        /**
+          * Whether or not to use track the get/put of the image
+         */
         "track"?: boolean;
     }
     interface AmplifySection {

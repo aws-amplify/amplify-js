@@ -9,25 +9,26 @@ const logger = new Logger('S3Text');
 @Component({
   tag: 'amplify-s3-text',
   styleUrl: 'amplify-s3-text.scss',
+  shadow: true,
 })
 export class AmplifyS3Text {
-  /* The key of the text object in S3 */
+  /** The key of the text object in S3 */
   @Prop() textKey: string;
-  /* String representing directory location to text file */
+  /** String representing directory location to text file */
   @Prop() path: string;
-  /* Text body content to be uploaded */
+  /** Text body content to be uploaded */
   @Prop() body: object;
-  /* The content type header used when uploading to S3 */
+  /** The content type header used when uploading to S3 */
   @Prop() contentType: string = 'text/*';
-  /* The access level of the image */
+  /** The access level of the image */
   @Prop() level: AccessLevel = AccessLevel.Public;
-  /* Whether or not to use track the get/put of the image */
+  /** Whether or not to use track the get/put of the image */
   @Prop() track: boolean;
-  /* Cognito identity id of the another user's image */
+  /** Cognito identity id of the another user's image */
   @Prop() identityId: string;
-  /* Fallback content */
+  /** Fallback content */
   @Prop() fallbackText: string = I18n.get(Translations.TEXT_FALLBACK_CONTENT);
-  /* Source content of text */
+  /** Source content of text */
   @State() src: string;
 
   @Watch('textKey')
