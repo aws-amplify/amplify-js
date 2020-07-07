@@ -15,7 +15,7 @@ export class AmplifyCountryDialCode {
   /** The callback, called when the input is modified by the user. */
   @Prop() handleInputChange?: (inputEvent: Event) => void;
   /** Default selected dial code */
-  @Prop() dialCode?: string | number;
+  @Prop() dialCode: string | number = '+1';
 
   private selectedDialCode: string;
 

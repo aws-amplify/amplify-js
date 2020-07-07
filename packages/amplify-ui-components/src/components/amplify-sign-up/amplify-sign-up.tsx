@@ -136,7 +136,11 @@ export class AmplifySignUp {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
     if (this.phoneNumber.phoneNumberValue) {
-      this.signUpAttributes.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
+      try {
+        this.signUpAttributes.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
+      } catch (error) {
+        dispatchToastHubEvent(error);
+      }
     }
     switch (this.usernameAlias) {
       case 'email':
@@ -280,10 +284,18 @@ export class AmplifySignUp {
   setFieldValue(field: PhoneFormFieldType | FormFieldType, formAttributes: AmplifySignUpAttributes) {
     switch (field.type) {
       case 'username':
-        formAttributes.username = field.value;
+        if (field.value === undefined) {
+          formAttributes.username = '';
+        } else {
+          formAttributes.username = field.value;
+        }
         break;
       case 'password':
-        formAttributes.password = field.value;
+        if (field.value === undefined) {
+          formAttributes.password = '';
+        } else {
+          formAttributes.password = field.value;
+        }
         break;
       case 'email':
         formAttributes.attributes.email = field.value;

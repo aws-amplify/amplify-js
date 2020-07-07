@@ -174,7 +174,11 @@ export class AmplifyForgotPassword {
 
     switch (this.usernameAlias) {
       case 'phone_number':
-        this.forgotPasswordAttrs.userInput = composePhoneNumberInput(this.phoneNumber);
+        try {
+          this.forgotPasswordAttrs.userInput = composePhoneNumberInput(this.phoneNumber);
+        } catch (error) {
+          dispatchToastHubEvent(error);
+        }
         break;
       default:
         break;

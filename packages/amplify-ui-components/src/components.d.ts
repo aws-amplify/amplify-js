@@ -201,7 +201,7 @@ export namespace Components {
         /**
           * Default selected dial code
          */
-        "dialCode"?: string | number;
+        "dialCode": string | number;
         /**
           * The ID of the field.  Should match with its corresponding input's ID.
          */

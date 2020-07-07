@@ -166,7 +166,11 @@ export class AmplifySignIn {
 
     switch (this.usernameAlias) {
       case 'phone_number':
-        this.signInAttributes.userInput = composePhoneNumberInput(this.phoneNumber);
+        try {
+          this.signInAttributes.userInput = composePhoneNumberInput(this.phoneNumber);
+        } catch (error) {
+          dispatchToastHubEvent(error);
+        }
       default:
         break;
     }
@@ -303,7 +307,11 @@ export class AmplifySignIn {
     switch (field.type) {
       case 'username':
       case 'email':
-        formAttributes.userInput = field.value;
+        if (field.value === undefined) {
+          formAttributes.userInput = '';
+        } else {
+          formAttributes.userInput = field.value;
+        }
         break;
       case 'phone_number':
         if ((field as PhoneFormFieldType).dialCode) {
@@ -312,7 +320,11 @@ export class AmplifySignIn {
         this.phoneNumber.phoneNumberValue = field.value;
         break;
       case 'password':
-        formAttributes.password = field.value;
+        if (field.value === undefined) {
+          formAttributes.password = '';
+        } else {
+          formAttributes.password = field.value;
+        }
         break;
     }
   }
