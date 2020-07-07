@@ -15,15 +15,15 @@ const logger = new Logger('S3Album');
   shadow: true,
 })
 export class AmplifyS3Album {
-  /** String representing directory location to text file */
+  /** String representing directory location of image files to be listed */
   @Prop() path: string;
   /** The content type header used when uploading to S3 */
   @Prop() contentType: string = 'binary/octet-stream';
-  /** The access level of the image */
+  /** The access level of the files */
   @Prop() level: AccessLevel = AccessLevel.Public;
-  /** Whether or not to use track the get/put of the image */
+  /** Whether or not to use track the get/put of the listing of images */
   @Prop() track: boolean;
-  /** Cognito identity id of the another user's image */
+  /** Cognito identity id of the another user's image list */
   @Prop() identityId: string;
   /** Callback used to generate custom key value */
   @Prop() fileToKey: (data: object) => string | string;
