@@ -2,7 +2,12 @@ import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
 import { Component, Prop, State, h, Watch } from '@stencil/core';
 
-import { FormFieldTypes, PhoneNumberInterface } from '../amplify-auth-fields/amplify-auth-fields-interface';
+import {
+  FormFieldTypes,
+  FormFieldType,
+  PhoneNumberInterface,
+  PhoneFormFieldType,
+} from '../amplify-auth-fields/amplify-auth-fields-interface';
 import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
 import {
   NO_AUTH_MODULE_FOUND,
@@ -132,6 +137,33 @@ export class AmplifyForgotPassword {
         return event => (this.forgotPasswordAttrs[fieldType] = event.target.value);
       default:
         return;
+    }
+  }
+
+  setFieldValue(field: PhoneFormFieldType | FormFieldType, formAttributes: ForgotPasswordAttributes) {
+    switch (field.type) {
+      case 'username':
+      case 'email':
+        if (field.value === undefined) {
+          formAttributes.userInput = '';
+        } else {
+          formAttributes.userInput = field.value;
+        }
+        break;
+      case 'phone_number':
+        if ((field as PhoneFormFieldType).dialCode) {
+          this.phoneNumber.countryDialCodeValue = (field as PhoneFormFieldType).dialCode;
+        }
+        this.phoneNumber.phoneNumberValue = field.value;
+        break;
+      case 'password':
+      case 'code':
+        if (field.value === undefined) {
+          formAttributes[field.type] = '';
+        } else {
+          formAttributes[field.type] = field.value;
+        }
+        break;
     }
   }
 
