@@ -1,5 +1,5 @@
 :host {
-  --shadow-color: rgba(0, 0, 0, 0.15);
+  --overlay-bg-color: rgba(0, 0, 0, 0.15);
 }
 
 .album-container {
@@ -39,7 +39,7 @@ amplify-s3-image {
   position: absolute;
   top: 0;
   left: 0;
-  background-color: var(--shadow-color);
+  background-color: var(--overlay-bg-color);
 }
 
 .grid-item:hover .img-overlay {
