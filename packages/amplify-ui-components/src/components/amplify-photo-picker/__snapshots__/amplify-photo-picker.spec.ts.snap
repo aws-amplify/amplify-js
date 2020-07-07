@@ -2,26 +2,28 @@
 
 exports[`amplify-photo-picker spec: Render logic -> should render a picker by default 1`] = `
 <amplify-photo-picker>
-  <div class="photo-picker-container">
-    <amplify-section>
-      <div class="header">
-        Picker Title
-      </div>
-      <div class="header-hint">
-        Ancilliary text or content may occupy this space here
-      </div>
-      <amplify-picker acceptvalue="image/*">
-        <div class="body" slot="picker">
-          <amplify-icon name="photoPlaceholder"></amplify-icon>
+  <mock:shadow-root>
+    <div class="photo-picker-container">
+      <amplify-section>
+        <div class="header">
+          Picker Title
         </div>
-      </amplify-picker>
-      <div class="placeholder-hint">
-        Placeholder hint
-      </div>
-      <amplify-button>
-        Button
-      </amplify-button>
-    </amplify-section>
-  </div>
+        <div class="header-hint">
+          Ancilliary text or content may occupy this space here
+        </div>
+        <amplify-picker acceptvalue="image/*">
+          <div class="picker-body" slot="picker">
+            <amplify-icon name="photoPlaceholder"></amplify-icon>
+          </div>
+        </amplify-picker>
+        <div class="placeholder-hint">
+          Placeholder hint
+        </div>
+        <amplify-button>
+          Button
+        </amplify-button>
+      </amplify-section>
+    </div>
+  </mock:shadow-root>
 </amplify-photo-picker>
 `;

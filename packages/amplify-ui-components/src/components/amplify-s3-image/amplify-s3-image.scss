@@ -1,9 +1,12 @@
-amplify-s3-image {
+:host {
   height: inherit;
   width: inherit;
+
+  --height: inherit;
+  --width: inherit;
 }
 
 img {
-  height: inherit;
-  width: inherit;
+  height: var(--height);
+  width: var(--width);
 }

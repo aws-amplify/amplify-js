@@ -15,29 +15,29 @@ const logger = new Logger('S3Album');
   shadow: true,
 })
 export class AmplifyS3Album {
-  /* String representing directory location to text file */
+  /** String representing directory location to text file */
   @Prop() path: string;
-  /* The content type header used when uploading to S3 */
+  /** The content type header used when uploading to S3 */
   @Prop() contentType: string = 'binary/octet-stream';
-  /* The access level of the image */
+  /** The access level of the image */
   @Prop() level: AccessLevel = AccessLevel.Public;
-  /* Whether or not to use track the get/put of the image */
+  /** Whether or not to use track the get/put of the image */
   @Prop() track: boolean;
-  /* Cognito identity id of the another user's image */
+  /** Cognito identity id of the another user's image */
   @Prop() identityId: string;
-  /* Callback used to generate custom key value */
+  /** Callback used to generate custom key value */
   @Prop() fileToKey: (data: object) => string | string;
-  /* Filter to be applied on album list */
+  /** Filter to be applied on album list */
   @Prop() filter: (list: StorageObject[]) => StorageObject[];
-  /* Sort to be applied on album list */
+  /** Sort to be applied on album list */
   @Prop() sort: (list: StorageObject[]) => StorageObject[];
-  /* Boolean to enable or disable picker */
+  /** Boolean to enable or disable picker */
   @Prop() picker: boolean = true;
-  /* Function executed when s3-image loads */
+  /** Function executed when s3-image loads */
   @Prop() handleOnLoad: (event: Event) => void;
-  /* Function executed when error occurs for the s3-image */
+  /** Function executed when error occurs for the s3-image */
   @Prop() handleOnError: (event: Event) => void;
-  /* Picker button text */
+  /** Picker button text */
   @Prop() pickerText: string = I18n.get(Translations.PICKER_TEXT);
 
   @State() albumItems: StorageObject[] = [];
