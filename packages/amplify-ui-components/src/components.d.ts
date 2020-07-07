@@ -199,6 +199,10 @@ export namespace Components {
     }
     interface AmplifyCountryDialCode {
         /**
+          * Default selected dial code
+         */
+        "dialCode": string | number;
+        /**
           * The ID of the field.  Should match with its corresponding input's ID.
          */
         "fieldId": string;
@@ -531,6 +535,10 @@ export namespace Components {
     }
     interface AmplifyPhoneField {
         /**
+          * Default dial code in the phone field
+         */
+        "dialCode"?: string | number;
+        /**
           * Will disable the input if set to true
          */
         "disabled"?: boolean;
@@ -650,6 +658,10 @@ export namespace Components {
           * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
          */
         "options": SelectOptionsString | SelectOptionsNumber;
+        /**
+          * Default selected option
+         */
+        "selected"?: string | number;
     }
     interface AmplifySelectMfaType {
         /**
@@ -1347,6 +1359,10 @@ declare namespace LocalJSX {
     }
     interface AmplifyCountryDialCode {
         /**
+          * Default selected dial code
+         */
+        "dialCode"?: string | number;
+        /**
           * The ID of the field.  Should match with its corresponding input's ID.
          */
         "fieldId"?: string;
@@ -1683,6 +1699,10 @@ declare namespace LocalJSX {
     }
     interface AmplifyPhoneField {
         /**
+          * Default dial code in the phone field
+         */
+        "dialCode"?: string | number;
+        /**
           * Will disable the input if set to true
          */
         "disabled"?: boolean;
@@ -1802,6 +1822,10 @@ declare namespace LocalJSX {
           * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
          */
         "options"?: SelectOptionsString | SelectOptionsNumber;
+        /**
+          * Default selected option
+         */
+        "selected"?: string | number;
     }
     interface AmplifySelectMfaType {
         /**
