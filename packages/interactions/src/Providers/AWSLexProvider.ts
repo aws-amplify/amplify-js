@@ -23,6 +23,7 @@ import {
 	Credentials,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
+import { Readable } from 'stream';
 
 const logger = new Logger('AWSLexProvider');
 
@@ -151,10 +152,24 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 					postContentCommand
 				);
 				this.reportBotStatus(data, botname);
-				return data;
+
+				const audioArray = await this.streamToArray(data.audioStream);
+				return { ...data, ...{ audioStream: audioArray } };
 			} catch (err) {
 				return Promise.reject(err);
 			}
+		}
+	}
+
+	private streamToArray(
+		stream: Readable | ReadableStream | Blob
+	): Promise<Uint8Array> {
+		const audioArray = new Uint8Array();
+		if (stream instanceof Readable) {
+			throw new ErrorEvent('Node.js is not supported currently.');
+		} else {
+			// stream: ReadableStream | Blob
+			return new Response(stream).arrayBuffer().then(buffer => new Uint8Array(buffer));
 		}
 	}
 
