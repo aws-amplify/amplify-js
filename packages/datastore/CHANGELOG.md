@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.4...@aws-amplify/datastore@2.2.5) (2020-07-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** give precedence to config.conflictHandler ([#6237](https://github.com/aws-amplify/amplify-js/issues/6237)) ([d616b76](https://github.com/aws-amplify/amplify-js/commit/d616b76aa054930bc816ad13be281bd9bd07f64c))
+
+
+
+
+
 ## [2.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.3...@aws-amplify/datastore@2.2.4) (2020-06-18)
 
 **Note:** Version bump only for package @aws-amplify/datastore
