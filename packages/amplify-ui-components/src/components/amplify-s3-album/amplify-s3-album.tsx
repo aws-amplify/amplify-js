@@ -15,7 +15,7 @@ const logger = new Logger('S3Album');
   shadow: true,
 })
 export class AmplifyS3Album {
-  /** String representing directory location to list image files */
+  /** String representing directory location of image files to be listed */
   @Prop() path: string;
   /** The content type header used when uploading to S3 */
   @Prop() contentType: string = 'binary/octet-stream';
