@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/predictions",
-  "version": "3.1.17",
+  "version": "3.1.18",
   "description": "Machine learning category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -34,8 +34,8 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "^3.4.0",
-    "@aws-amplify/storage": "^3.2.7",
+    "@aws-amplify/core": "^3.4.1",
+    "@aws-amplify/storage": "^3.2.8",
     "@aws-sdk/client-comprehend": "1.0.0-gamma.2",
     "@aws-sdk/client-polly": "1.0.0-gamma.2",
     "@aws-sdk/client-rekognition": "1.0.0-gamma.2",
