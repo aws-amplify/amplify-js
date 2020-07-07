@@ -20,7 +20,7 @@ if (browserOrNode().isBrowser) {
     document.createTextNode(`
     :root {
       /* Typography */
-      --amplify-font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
+      --amplify-font-family: 'Amazon Ember', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 
       --amplify-text-xxs: 0.75rem;
       --amplify-text-xs: 0.81rem;
@@ -29,8 +29,6 @@ if (browserOrNode().isBrowser) {
       --amplify-text-lg: 1.5rem;
       --amplify-text-xl: 2rem;
       --amplify-text-xxl: 2.5rem;
-
-      --amplify-font-weight: 400;
 
       /* Colors */
       --amplify-primary-color: #ff9900;
