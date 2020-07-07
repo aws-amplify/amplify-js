@@ -2,14 +2,14 @@ import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
 import { Component, Prop, State, h, Watch } from '@stencil/core';
 
-import { FormFieldTypes, PhoneNumberInterface } from '../amplify-auth-fields/amplify-auth-fields-interface';
-import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
 import {
-  NO_AUTH_MODULE_FOUND,
-  COUNTRY_DIAL_CODE_DEFAULT,
-  PHONE_SUFFIX,
-  COUNTRY_DIAL_CODE_SUFFIX,
-} from '../../common/constants';
+  FormFieldTypes,
+  FormFieldType,
+  PhoneNumberInterface,
+  PhoneFormFieldType,
+} from '../amplify-auth-fields/amplify-auth-fields-interface';
+import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
+import { NO_AUTH_MODULE_FOUND, COUNTRY_DIAL_CODE_DEFAULT } from '../../common/constants';
 import { Translations } from '../../common/Translations';
 import { CodeDeliveryType, ForgotPasswordAttributes } from './amplify-forgot-password-interface';
 
@@ -18,6 +18,7 @@ import {
   dispatchAuthStateChangeEvent,
   composePhoneNumberInput,
   checkUsernameAlias,
+  handlePhoneNumberChange,
 } from '../../common/helpers';
 
 const logger = new Logger('ForgotPassword');
@@ -126,12 +127,39 @@ export class AmplifyForgotPassword {
       case 'email':
         return event => (this.forgotPasswordAttrs.userInput = event.target.value);
       case 'phone_number':
-        return event => this.handlePhoneNumberChange(event);
+        return event => handlePhoneNumberChange(event, this.phoneNumber);
       case 'password':
       case 'code':
         return event => (this.forgotPasswordAttrs[fieldType] = event.target.value);
       default:
         return;
+    }
+  }
+
+  setFieldValue(field: PhoneFormFieldType | FormFieldType, formAttributes: ForgotPasswordAttributes) {
+    switch (field.type) {
+      case 'username':
+      case 'email':
+        if (field.value === undefined) {
+          formAttributes.userInput = '';
+        } else {
+          formAttributes.userInput = field.value;
+        }
+        break;
+      case 'phone_number':
+        if ((field as PhoneFormFieldType).dialCode) {
+          this.phoneNumber.countryDialCodeValue = (field as PhoneFormFieldType).dialCode;
+        }
+        this.phoneNumber.phoneNumberValue = field.value;
+        break;
+      case 'password':
+      case 'code':
+        if (field.value === undefined) {
+          formAttributes[field.type] = '';
+        } else {
+          formAttributes[field.type] = field.value;
+        }
+        break;
     }
   }
 
@@ -145,24 +173,6 @@ export class AmplifyForgotPassword {
     fnToCall(event, callback.bind(this));
   }
 
-  private handlePhoneNumberChange(event) {
-    const name = event.target.name;
-    const value = event.target.value;
-
-    /** Cognito expects to have a string be passed when signing up. Since the Select input is separate
-     * input from the phone number input, we need to first capture both components values and combined
-     * them together.
-     */
-
-    if (name === COUNTRY_DIAL_CODE_SUFFIX) {
-      this.phoneNumber.countryDialCodeValue = value;
-    }
-
-    if (name === PHONE_SUFFIX) {
-      this.phoneNumber.phoneNumberValue = value;
-    }
-  }
-
   private async send(event) {
     if (event) {
       event.preventDefault();
@@ -174,7 +184,11 @@ export class AmplifyForgotPassword {
 
     switch (this.usernameAlias) {
       case 'phone_number':
-        this.forgotPasswordAttrs.userInput = composePhoneNumberInput(this.phoneNumber);
+        try {
+          this.forgotPasswordAttrs.userInput = composePhoneNumberInput(this.phoneNumber);
+        } catch (error) {
+          dispatchToastHubEvent(error);
+        }
         break;
       default:
         break;
