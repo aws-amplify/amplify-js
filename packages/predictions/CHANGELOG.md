@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.1.17...@aws-amplify/predictions@3.1.18) (2020-07-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/predictions:** decode parsed s3object name ([#6129](https://github.com/aws-amplify/amplify-js/issues/6129)) ([2224a5a](https://github.com/aws-amplify/amplify-js/commit/2224a5abeb125c5a27c0a5970153b3381750cbbb))
+
+
+
+
+
 ## [3.1.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.1.16...@aws-amplify/predictions@3.1.17) (2020-06-18)
 
 **Note:** Version bump only for package @aws-amplify/predictions
