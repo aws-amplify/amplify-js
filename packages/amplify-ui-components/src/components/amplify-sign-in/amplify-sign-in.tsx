@@ -154,7 +154,6 @@ export class AmplifySignIn {
     }
 
     try {
-      console.log(this.signInAttributes);
       const user = await Auth.signIn(this.signInAttributes.userInput, this.signInAttributes.password);
       logger.debug(user);
       if (user.challengeName === ChallengeName.SMSMFA || user.challengeName === ChallengeName.SoftwareTokenMFA) {
