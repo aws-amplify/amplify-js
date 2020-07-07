@@ -4,6 +4,8 @@ import { Component, Prop, h, State, Watch } from '@stencil/core';
 import {
   FormFieldTypes,
   PhoneNumberInterface,
+  FormFieldType,
+  PhoneFormFieldType,
 } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
   PHONE_SUFFIX,
@@ -268,27 +270,33 @@ export class AmplifySignUp {
       this.formFields.forEach(field => {
         const newField = { ...field };
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
+        this.setFieldValue(field, this.signUpAttributes);
         newFields.push(newField);
-
-        if (field.value) {
-          switch (field.type) {
-            case 'username':
-              this.signUpAttributes.username = field.value;
-            case 'password':
-              this.signUpAttributes.password = field.value;
-            case 'email':
-              this.signUpAttributes.attributes.email = field.value;
-            case 'phone_number':
-              if (field.dialCode) this.phoneNumber.countryDialCodeValue = field.dialCode;
-              this.phoneNumber.phoneNumberValue = field.value;
-            // this.signUpAttributes.attributes. = field.dialCode;
-            // return event => this.handlePhoneNumberChange(event);
-            default:
-              this.signUpAttributes.attributes[field.type] = field.value;
-          }
-        }
       });
       this.newFormFields = newFields;
+    }
+  }
+
+  setFieldValue(field: PhoneFormFieldType | FormFieldType, formAttributes: AmplifySignUpAttributes) {
+    switch (field.type) {
+      case 'username':
+        formAttributes.username = field.value;
+        break;
+      case 'password':
+        formAttributes.password = field.value;
+        break;
+      case 'email':
+        formAttributes.attributes.email = field.value;
+        break;
+      case 'phone_number':
+        if ((field as PhoneFormFieldType).dialCode) {
+          this.phoneNumber.countryDialCodeValue = (field as PhoneFormFieldType).dialCode;
+        }
+        this.phoneNumber.phoneNumberValue = field.value;
+        break;
+      default:
+        formAttributes.attributes[field.type] = field.value;
+        break;
     }
   }
 

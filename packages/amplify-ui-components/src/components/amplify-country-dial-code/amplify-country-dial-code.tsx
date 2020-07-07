@@ -1,4 +1,4 @@
-import { Component, Prop, h } from '@stencil/core';
+import { Component, Prop, Watch, h } from '@stencil/core';
 import countryDialCodes from '../../common/country-dial-codes';
 import { CountryCodeDialOptions } from './amplify-country-dial-code-interface';
 import { COUNTRY_DIAL_CODE_SUFFIX } from '../../common/constants';
@@ -17,17 +17,32 @@ export class AmplifyCountryDialCode {
   /** Default selected dial code */
   @Prop() dialCode?: string | number;
 
-  render() {
-    let selectedDialCode = this.dialCode;
+  private selectedDialCode: string;
+
+  componentWillLoad() {
+    this.setSelectedDialCode();
+  }
+
+  @Watch('dialCode')
+  watchDialCodeHandler() {
+    this.setSelectedDialCode();
+  }
+
+  setSelectedDialCode() {
     if (typeof this.dialCode === 'number') {
-      selectedDialCode = `+${this.dialCode}`;
+      this.selectedDialCode = `+${this.dialCode}`;
+    } else {
+      this.selectedDialCode = this.dialCode;
     }
+  }
+
+  render() {
     return (
       <amplify-select
         fieldId={this.fieldId}
         options={this.options}
         handleInputChange={this.handleInputChange}
-        selected={selectedDialCode}
+        selected={this.selectedDialCode}
       />
     );
   }

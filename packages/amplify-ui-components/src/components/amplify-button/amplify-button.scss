@@ -9,6 +9,7 @@
   --link-color: var(--amplify-primary-color);
   --link-hover: var(--amplify-primary-tint);
   --link-active: var(--amplify-primary-shade);
+  --text-transform: uppercase;
 
   width: 100%;
   text-align: center;
@@ -36,6 +37,7 @@
   color: var(--color);
   padding: 1rem;
   letter-spacing: 0.75px;
+  text-transform: var(--text-transform);
   background-color: var(--background-color);
   border-width: var(--border-width);
   border-color: var(--border-color);

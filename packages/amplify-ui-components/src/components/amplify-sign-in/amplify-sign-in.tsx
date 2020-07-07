@@ -3,7 +3,9 @@ import { I18n, Logger, isEmpty } from '@aws-amplify/core';
 import { Component, Prop, State, h, Watch } from '@stencil/core';
 import {
   FormFieldTypes,
+  FormFieldType,
   PhoneNumberInterface,
+  PhoneFormFieldType,
 } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
   AuthState,
@@ -85,6 +87,16 @@ export class AmplifySignIn {
     password: '',
   };
 
+  componentWillLoad() {
+    checkUsernameAlias(this.usernameAlias);
+    this.buildFormFields();
+  }
+
+  @Watch('formFields')
+  formFieldsHandler() {
+    this.buildFormFields();
+  }
+
   private handleFormFieldInputChange(fieldType) {
     switch (fieldType) {
       case 'username':
@@ -158,6 +170,7 @@ export class AmplifySignIn {
     }
 
     try {
+      console.log(this.signInAttributes);
       const user = await Auth.signIn(this.signInAttributes.userInput, this.signInAttributes.password);
       logger.debug(user);
       if (user.challengeName === ChallengeName.SMSMFA || user.challengeName === ChallengeName.SoftwareTokenMFA) {
@@ -277,20 +290,29 @@ export class AmplifySignIn {
           );
         }
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
+        this.setFieldValue(newField, this.signInAttributes);
         newFields.push(newField);
       });
       this.newFormFields = newFields;
     }
   }
 
-  componentWillLoad() {
-    checkUsernameAlias(this.usernameAlias);
-    this.buildFormFields();
-  }
-
-  @Watch('formFields')
-  formFieldsHandler() {
-    this.buildFormFields();
+  setFieldValue(field: PhoneFormFieldType | FormFieldType, formAttributes: SignInAttributes) {
+    switch (field.type) {
+      case 'username':
+      case 'email':
+        formAttributes.userInput = field.value;
+        break;
+      case 'phone_number':
+        if ((field as PhoneFormFieldType).dialCode) {
+          this.phoneNumber.countryDialCodeValue = (field as PhoneFormFieldType).dialCode;
+        }
+        this.phoneNumber.phoneNumberValue = field.value;
+        break;
+      case 'password':
+        formAttributes.password = field.value;
+        break;
+    }
   }
 
   render() {
