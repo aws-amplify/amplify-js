@@ -5,17 +5,17 @@ Thank you for your interest in contributing to our project! <3 Whether it's a bu
 - [Our History and Ethos](#our-history-and-ethos)
 - [Our Design](#our-design)
 - [Development Process](#development-process)
-  * [Setting up for local development](#setting-up-for-local-development)
-  * [Architecture of the codebase](#architecture-of-the-codebase)
-  * [Steps towards contributions](#steps-towards-contributions)
+  - [Setting up for local development](#setting-up-for-local-development)
+  - [Architecture of the codebase](#architecture-of-the-codebase)
+  - [Steps towards contributions](#steps-towards-contributions)
 - [Pull Requests](#pull-requests)
 - [Debugging](#debugging)
 - [Release](#release)
-  * [Finding contributions to work on](#finding-contributions-to-work-on)
-  * [Related Repositories](#related-repositories)
-  * [Code of Conduct](#code-of-conduct)
-  * [Security issue notifications](#security-issue-notifications)
-  * [Licensing](#licensing)
+  - [Finding contributions to work on](#finding-contributions-to-work-on)
+  - [Related Repositories](#related-repositories)
+  - [Code of Conduct](#code-of-conduct)
+  - [Security issue notifications](#security-issue-notifications)
+  - [Licensing](#licensing)
 
 # Our History and Ethos
 
@@ -47,7 +47,7 @@ Our work is done directly on Github and PR's are sent to the github repo by core
 
 This section should get you running with **Amplify JS** and get you familiar with the basics of the codebase. You will need the latest version of [nodejs](https://nodejs.org/en/) on your system and developing locally also requires `yarn` workspaces. You can install it [here](https://classic.yarnpkg.com/en/docs/install#mac-stable).
 
-Start by, [Forking](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the master branch of [amplify-js](https://github.com/aws-amplify/amplify-js).
+Start by, [Forking](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the main branch of [amplify-js](https://github.com/aws-amplify/amplify-js).
 
 ```
 $ git clone git@github.com:[username]/amplify-js.git
@@ -58,40 +58,39 @@ $ yarn bootstrap
 $ yarn build
 ```
 
-> Note: Make sure to always [sync your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with master branch of amplify-js
+> Note: Make sure to always [sync your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with main branch of amplify-js
 
-## Architecture of the codebase 
+## Architecture of the codebase
 
 Amplify JS is a monorepo built with `Yarn` and `Lerna`. All the categories of Amplify live within the `packages` directory in the root. Each category inside packages has its own `src/` and `package.json`.
 
 #### Packages inside Amplify JS
 
-- [core](https://github.com/aws-amplify/amplify-js/tree/master/packages/core) 
-- [cache](https://github.com/aws-amplify/amplify-js/tree/master/packages/cache)
-- [auth](https://github.com/aws-amplify/amplify-js/tree/master/packages/auth)
-- [api](https://github.com/aws-amplify/amplify-js/tree/master/packages/api)
-- [analytics](https://github.com/aws-amplify/amplify-js/tree/master/packages/analytics)
-- [storage](https://github.com/aws-amplify/amplify-js/tree/master/packages/storage)
-- [interactions](https://github.com/aws-amplify/amplify-js/tree/master/packages/interactions)
-- [predictions](https://github.com/aws-amplify/amplify-js/tree/master/packages/predictions)
-- [pubsub](https://github.com/aws-amplify/amplify-js/tree/master/packages/pubsub)
-- [datastore](https://github.com/aws-amplify/amplify-js/tree/master/packages/datastore)
-- [pushnotification](https://github.com/aws-amplify/amplify-js/tree/master/packages/pushnotification)
-- [xr](https://github.com/aws-amplify/amplify-js/tree/master/packages/xr)
-- [amplify-ui](https://github.com/aws-amplify/amplify-js/tree/master/packages/amplify-ui)
-- [aws-amplify-react](https://github.com/aws-amplify/amplify-js/tree/master/packages/aws-amplify-react)
-- [aws-amplify-react-native](https://github.com/aws-amplify/amplify-js/tree/master/packages/aws-amplify-react-native)
-- [aws-amplify-angular](https://github.com/aws-amplify/amplify-js/tree/master/packages/aws-amplify-angular)
-- [aws-amplify-vue](https://github.com/aws-amplify/amplify-js/tree/master/packages/aws-amplify-vue)
-- [amplify-ui-components](https://github.com/aws-amplify/amplify-js/tree/master/packages/amplify-ui-components)
-- [amplify-ui-react](https://github.com/aws-amplify/amplify-js/tree/master/packages/amplify-ui-react)
-- [amplify-ui-angular](https://github.com/aws-amplify/amplify-js/tree/master/packages/amplify-ui-angular)
-- [amplify-ui-vue](https://github.com/aws-amplify/amplify-js/tree/master/packages/amplify-ui-vue)
-- [amplify-ui-storybook](https://github.com/aws-amplify/amplify-js/tree/master/packages/amplify-ui-storybook)
-
-
+- [core](https://github.com/aws-amplify/amplify-js/tree/main/packages/core)
+- [cache](https://github.com/aws-amplify/amplify-js/tree/main/packages/cache)
+- [auth](https://github.com/aws-amplify/amplify-js/tree/main/packages/auth)
+- [api](https://github.com/aws-amplify/amplify-js/tree/main/packages/api)
+- [analytics](https://github.com/aws-amplify/amplify-js/tree/main/packages/analytics)
+- [storage](https://github.com/aws-amplify/amplify-js/tree/main/packages/storage)
+- [interactions](https://github.com/aws-amplify/amplify-js/tree/main/packages/interactions)
+- [predictions](https://github.com/aws-amplify/amplify-js/tree/main/packages/predictions)
+- [pubsub](https://github.com/aws-amplify/amplify-js/tree/main/packages/pubsub)
+- [datastore](https://github.com/aws-amplify/amplify-js/tree/main/packages/datastore)
+- [pushnotification](https://github.com/aws-amplify/amplify-js/tree/main/packages/pushnotification)
+- [xr](https://github.com/aws-amplify/amplify-js/tree/main/packages/xr)
+- [amplify-ui](https://github.com/aws-amplify/amplify-js/tree/main/packages/amplify-ui)
+- [aws-amplify-react](https://github.com/aws-amplify/amplify-js/tree/main/packages/aws-amplify-react)
+- [aws-amplify-react-native](https://github.com/aws-amplify/amplify-js/tree/main/packages/aws-amplify-react-native)
+- [aws-amplify-angular](https://github.com/aws-amplify/amplify-js/tree/main/packages/aws-amplify-angular)
+- [aws-amplify-vue](https://github.com/aws-amplify/amplify-js/tree/main/packages/aws-amplify-vue)
+- [amplify-ui-components](https://github.com/aws-amplify/amplify-js/tree/main/packages/amplify-ui-components)
+- [amplify-ui-react](https://github.com/aws-amplify/amplify-js/tree/main/packages/amplify-ui-react)
+- [amplify-ui-angular](https://github.com/aws-amplify/amplify-js/tree/main/packages/amplify-ui-angular)
+- [amplify-ui-vue](https://github.com/aws-amplify/amplify-js/tree/main/packages/amplify-ui-vue)
+- [amplify-ui-storybook](https://github.com/aws-amplify/amplify-js/tree/main/packages/amplify-ui-storybook)
 
 ## Steps towards contributions
+
 - To make changes with respect to a specific category, go into `packages/[category]`.
 - Make changes to required file.
 - Write unit tests
@@ -185,7 +184,7 @@ _[Skip step 1 to 3 if you have already done this]_
    - use slashes to seperate parts of branch names
    - Hyphenate well defined branch name
 5. Once your work is committed and you're ready to share, run test `yarn test`.
-**Note:**  Manually test your changes in a sample app with different edge cases and also test across different browsers and platform
+   **Note:** Manually test your changes in a sample app with different edge cases and also test across different browsers and platform
 6. Then, Push your branch `git push origin -u`
 7. This previous step will give you a URL to view a GitHub page in your browser. Copy-paste this, and complete the workflow in the UI. It will invite you to "create a PR" from your newly published branch. Fill out the PR template to submit a PR.
 8. Finally, the Amplify JS team will review your PR. Add reviewers based on the core member who is tracking the issue with you or code owners.
@@ -198,8 +197,9 @@ Sometimes the issue can be solved by doing a clean and fresh build. To do this, 
 # Release
 
 To give a bird's eye view of the release cycle,
+
 - We follow semantic versioning for our releases
-- Every merge into the `master` ends up as `unstable` package in the npm
+- Every merge into the `main` ends up as `unstable` package in the npm
 - The core team will cut a release out to `stable` from `unstable` bi-weekly
 
 ## Finding contributions to work on
@@ -235,6 +235,6 @@ If you discover a potential security issue in this project we ask that you notif
 
 ## Licensing
 
-See the [LICENSE](https://github.com/aws-amplify/amplify-ios/blob/master/LICENSE) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
+See the [LICENSE](https://github.com/aws-amplify/amplify-js/blob/main/LICENSE) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
 
 We may ask you to sign a [Contributor License Agreement (CLA)](http://en.wikipedia.org/wiki/Contributor_License_Agreement) for larger changes.
