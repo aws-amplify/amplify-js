@@ -675,15 +675,15 @@ export namespace Components {
          */
         "handleOnLoad": (event: Event) => void;
         /**
-          * Cognito identity id of the another user's image
+          * Cognito identity id of the another user's image list
          */
         "identityId": string;
         /**
-          * The access level of the image
+          * The access level of the files
          */
         "level": AccessLevel;
         /**
-          * String representing directory location to text file
+          * String representing directory location to list image files
          */
         "path": string;
         /**
@@ -699,7 +699,7 @@ export namespace Components {
          */
         "sort": (list: StorageObject[]) => StorageObject[];
         /**
-          * Whether or not to use track the get/put of the image
+          * Whether or not to use track the get/put of the listing of images
          */
         "track": boolean;
     }
@@ -797,11 +797,11 @@ export namespace Components {
          */
         "fallbackText": string;
         /**
-          * Cognito identity id of the another user's image
+          * Cognito identity id of the another user's text file
          */
         "identityId": string;
         /**
-          * The access level of the image
+          * The access level of the text file
          */
         "level": AccessLevel;
         /**
@@ -813,7 +813,7 @@ export namespace Components {
          */
         "textKey": string;
         /**
-          * Whether or not to use track the get/put of the image
+          * Whether or not to use track the get/put of the text file
          */
         "track": boolean;
     }
@@ -831,11 +831,11 @@ export namespace Components {
          */
         "fileToKey": (data: object) => string | string;
         /**
-          * Cognito identity id of the another user's image
+          * Cognito identity id of the another user's text file
          */
         "identityId": string;
         /**
-          * The access level of the image
+          * The access level of the text file
          */
         "level": AccessLevel;
         /**
@@ -843,7 +843,7 @@ export namespace Components {
          */
         "path": string;
         /**
-          * Whether or not to use track the get/put of the image
+          * Whether or not to use track the get/put of the text file
          */
         "track": boolean;
     }
@@ -2095,15 +2095,15 @@ declare namespace LocalJSX {
          */
         "handleOnLoad"?: (event: Event) => void;
         /**
-          * Cognito identity id of the another user's image
+          * Cognito identity id of the another user's image list
          */
         "identityId"?: string;
         /**
-          * The access level of the image
+          * The access level of the files
          */
         "level"?: AccessLevel;
         /**
-          * String representing directory location to text file
+          * String representing directory location to list image files
          */
         "path"?: string;
         /**
@@ -2119,7 +2119,7 @@ declare namespace LocalJSX {
          */
         "sort"?: (list: StorageObject[]) => StorageObject[];
         /**
-          * Whether or not to use track the get/put of the image
+          * Whether or not to use track the get/put of the listing of images
          */
         "track"?: boolean;
     }
@@ -2217,11 +2217,11 @@ declare namespace LocalJSX {
          */
         "fallbackText"?: string;
         /**
-          * Cognito identity id of the another user's image
+          * Cognito identity id of the another user's text file
          */
         "identityId"?: string;
         /**
-          * The access level of the image
+          * The access level of the text file
          */
         "level"?: AccessLevel;
         /**
@@ -2233,7 +2233,7 @@ declare namespace LocalJSX {
          */
         "textKey"?: string;
         /**
-          * Whether or not to use track the get/put of the image
+          * Whether or not to use track the get/put of the text file
          */
         "track"?: boolean;
     }
@@ -2251,11 +2251,11 @@ declare namespace LocalJSX {
          */
         "fileToKey"?: (data: object) => string | string;
         /**
-          * Cognito identity id of the another user's image
+          * Cognito identity id of the another user's text file
          */
         "identityId"?: string;
         /**
-          * The access level of the image
+          * The access level of the text file
          */
         "level"?: AccessLevel;
         /**
@@ -2263,7 +2263,7 @@ declare namespace LocalJSX {
          */
         "path"?: string;
         /**
-          * Whether or not to use track the get/put of the image
+          * Whether or not to use track the get/put of the text file
          */
         "track"?: boolean;
     }

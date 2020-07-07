@@ -15,11 +15,11 @@ export class AmplifyS3TextPicker {
   @Prop() path: string;
   /** The content type header used when uploading to S3 */
   @Prop() contentType: string = 'text/*';
-  /** The access level of the image */
+  /** The access level of the text file */
   @Prop() level: AccessLevel = AccessLevel.Public;
-  /** Whether or not to use track the get/put of the image */
+  /** Whether or not to use track the get/put of the text file */
   @Prop() track: boolean;
-  /** Cognito identity id of the another user's image */
+  /** Cognito identity id of the another user's text file */
   @Prop() identityId: string;
   /** Callback used to generate custom key value */
   @Prop() fileToKey: (data: object) => string | string;
