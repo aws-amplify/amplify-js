@@ -44,7 +44,7 @@ const componentFieldMapping = {
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
-      inputProps={ff.inputProps}
+      inputProps={{ ...ff.inputProps, min: '0' }}
       disabled={ff.disabled}
     />
   ),
