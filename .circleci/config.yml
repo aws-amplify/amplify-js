@@ -604,6 +604,7 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/master
       - 1.0-stable
+      - next-amplify
 
 workflows:
   build_test_deploy:
