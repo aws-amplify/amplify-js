@@ -9,12 +9,7 @@ import {
   PhoneFormFieldType,
 } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
-import {
-  NO_AUTH_MODULE_FOUND,
-  COUNTRY_DIAL_CODE_DEFAULT,
-  PHONE_SUFFIX,
-  COUNTRY_DIAL_CODE_SUFFIX,
-} from '../../common/constants';
+import { NO_AUTH_MODULE_FOUND, COUNTRY_DIAL_CODE_DEFAULT } from '../../common/constants';
 import { Translations } from '../../common/Translations';
 import { CodeDeliveryType, ForgotPasswordAttributes } from './amplify-forgot-password-interface';
 
@@ -23,6 +18,7 @@ import {
   dispatchAuthStateChangeEvent,
   composePhoneNumberInput,
   checkUsernameAlias,
+  handlePhoneNumberChange,
 } from '../../common/helpers';
 
 const logger = new Logger('ForgotPassword');
@@ -131,7 +127,7 @@ export class AmplifyForgotPassword {
       case 'email':
         return event => (this.forgotPasswordAttrs.userInput = event.target.value);
       case 'phone_number':
-        return event => this.handlePhoneNumberChange(event);
+        return event => handlePhoneNumberChange(event, this.phoneNumber);
       case 'password':
       case 'code':
         return event => (this.forgotPasswordAttrs[fieldType] = event.target.value);
@@ -175,24 +171,6 @@ export class AmplifyForgotPassword {
         };
     const callback = this.handleFormFieldInputChange(field.type);
     fnToCall(event, callback.bind(this));
-  }
-
-  private handlePhoneNumberChange(event) {
-    const name = event.target.name;
-    const value = event.target.value;
-
-    /** Cognito expects to have a string be passed when signing up. Since the Select input is separate
-     * input from the phone number input, we need to first capture both components values and combined
-     * them together.
-     */
-
-    if (name === COUNTRY_DIAL_CODE_SUFFIX) {
-      this.phoneNumber.countryDialCodeValue = value;
-    }
-
-    if (name === PHONE_SUFFIX) {
-      this.phoneNumber.phoneNumberValue = value;
-    }
   }
 
   private async send(event) {

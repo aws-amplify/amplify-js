@@ -7,12 +7,7 @@ import {
   FormFieldType,
   PhoneFormFieldType,
 } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import {
-  PHONE_SUFFIX,
-  COUNTRY_DIAL_CODE_DEFAULT,
-  COUNTRY_DIAL_CODE_SUFFIX,
-  NO_AUTH_MODULE_FOUND,
-} from '../../common/constants';
+import { COUNTRY_DIAL_CODE_DEFAULT, NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
 import { AmplifySignUpAttributes } from './amplify-sign-up-interface';
 import {
@@ -20,6 +15,7 @@ import {
   dispatchToastHubEvent,
   composePhoneNumberInput,
   checkUsernameAlias,
+  handlePhoneNumberChange,
 } from '../../common/helpers';
 import { Translations } from '../../common/Translations';
 
@@ -92,7 +88,7 @@ export class AmplifySignUp {
       case 'email':
         return event => (this.signUpAttributes.attributes.email = event.target.value);
       case 'phone_number':
-        return event => this.handlePhoneNumberChange(event);
+        return event => handlePhoneNumberChange(event, this.phoneNumber);
       default:
         return event => (this.signUpAttributes.attributes[fieldType] = event.target.value);
     }
@@ -106,24 +102,6 @@ export class AmplifySignUp {
         };
     const callback = this.handleFormFieldInputChange(field.type);
     fnToCall(event, callback.bind(this));
-  }
-
-  private handlePhoneNumberChange(event) {
-    const name = event.target.name;
-    const value = event.target.value;
-
-    /** Cognito expects to have a string be passed when signing up. Since the Select input is separate
-     * input from the phone number input, we need to first capture both components values and combined
-     * them together.
-     */
-
-    if (name === COUNTRY_DIAL_CODE_SUFFIX) {
-      this.phoneNumber.countryDialCodeValue = value;
-    }
-
-    if (name === PHONE_SUFFIX) {
-      this.phoneNumber.phoneNumberValue = value;
-    }
   }
 
   // TODO: Add validation
