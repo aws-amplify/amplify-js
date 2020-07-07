@@ -11,6 +11,7 @@
  * and limitations under the License.
  */
 
+export { CognitoHostedUIIdentityProvider } from './types/Auth';
 export {
 	CognitoUser,
 	CookieStorage,
@@ -24,5 +25,4 @@ export {
 	Auth as default,
 	Auth,
 	AuthClass,
-	CognitoHostedUIIdentityProvider,
 } from './Auth';

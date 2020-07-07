@@ -34,6 +34,7 @@ import {
 	SyncConflict,
 	SyncError,
 	TypeConstructorMap,
+	ErrorHandler,
 } from '../types';
 import {
 	DATASTORE,
@@ -368,6 +369,101 @@ const createNonModelClass = <T>(typeDefinition: SchemaNonModel) => {
 function isQueryOne(obj: any): obj is string {
 	return typeof obj === 'string';
 }
+
+const query: {
+	<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
+		id: string
+	): Promise<T | undefined>;
+	<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
+		criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
+		pagination?: PaginationInput
+	): Promise<T[]>;
+} = async <T extends PersistentModel>(
+	modelConstructor: PersistentModelConstructor<T>,
+	idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll,
+	pagination?: PaginationInput
+): Promise<T | T[] | undefined> => {
+	await this.start();
+
+	//#region Input validation
+
+	if (!isValidModelConstructor(modelConstructor)) {
+		const msg = 'Constructor is not for a valid model';
+		logger.error(msg, { modelConstructor });
+
+		throw new Error(msg);
+	}
+
+	if (typeof idOrCriteria === 'string') {
+		if (pagination !== undefined) {
+			logger.warn('Pagination is ignored when querying by id');
+		}
+	}
+
+	const modelDefinition = getModelDefinition(modelConstructor);
+	let predicate: ModelPredicate<T>;
+
+	if (isQueryOne(idOrCriteria)) {
+		predicate = ModelPredicateCreator.createForId<T>(
+			modelDefinition,
+			idOrCriteria
+		);
+	} else {
+		if (isPredicatesAll(idOrCriteria)) {
+			// Predicates.ALL means "all records", so no predicate (undefined)
+			predicate = undefined;
+		} else {
+			predicate = ModelPredicateCreator.createFromExisting(
+				modelDefinition,
+				idOrCriteria
+			);
+		}
+	}
+
+	const { limit, page } = pagination || {};
+
+	if (page !== undefined && limit === undefined) {
+		throw new Error('Limit is required when requesting a page');
+	}
+
+	if (page !== undefined) {
+		if (typeof page !== 'number') {
+			throw new Error('Page should be a number');
+		}
+
+		if (page < 0) {
+			throw new Error("Page can't be negative");
+		}
+	}
+
+	if (limit !== undefined) {
+		if (typeof limit !== 'number') {
+			throw new Error('Limit should be a number');
+		}
+
+		if (limit < 0) {
+			throw new Error("Limit can't be negative");
+		}
+	}
+
+	//#endregion
+
+	logger.debug('params ready', {
+		modelConstructor,
+		predicate: ModelPredicateCreator.getPredicates(predicate, false),
+		pagination,
+	});
+
+	const result = await this.storage.query(
+		modelConstructor,
+		predicate,
+		pagination
+	);
+
+	return isQueryOne(idOrCriteria) ? result[0] : result;
+};
 
 function defaultConflictHandler(conflictData: SyncConflict): PersistentModel {
 	const { localModel, modelConstructor, remoteModel } = conflictData;
@@ -719,6 +815,38 @@ class DataStore {
 		return savedModel;
 	};
 
+	setConflictHandler = (config: DataStoreConfig): ConflictHandler => {
+		const { DataStore: configDataStore } = config;
+
+		const conflictHandlerIsDefault: () => boolean = () =>
+			this.conflictHandler === defaultConflictHandler;
+
+		if (configDataStore) {
+			return configDataStore.conflictHandler;
+		}
+		if (conflictHandlerIsDefault() && config.conflictHandler) {
+			return config.conflictHandler;
+		}
+
+		return this.conflictHandler || defaultConflictHandler;
+	};
+
+	setErrorHandler = (config: DataStoreConfig): ErrorHandler => {
+		const { DataStore: configDataStore } = config;
+
+		const errorHandlerIsDefault: () => boolean = () =>
+			this.errorHandler === defaultErrorHandler;
+
+		if (configDataStore) {
+			return configDataStore.errorHandler;
+		}
+		if (errorHandlerIsDefault() && config.errorHandler) {
+			return config.errorHandler;
+		}
+
+		return this.errorHandler || defaultErrorHandler;
+	};
+
 	delete: {
 		<T extends PersistentModel>(
 			model: T,
@@ -926,17 +1054,8 @@ class DataStore {
 
 		this.amplifyConfig = { ...configFromAmplify, ...this.amplifyConfig };
 
-		this.conflictHandler =
-			(configDataStore && configDataStore.conflictHandler) ||
-			this.conflictHandler ||
-			config.conflictHandler ||
-			defaultConflictHandler;
-
-		this.errorHandler =
-			(configDataStore && configDataStore.errorHandler) ||
-			this.errorHandler ||
-			config.errorHandler ||
-			defaultErrorHandler;
+		this.conflictHandler = this.setConflictHandler(config);
+		this.errorHandler = this.setErrorHandler(config);
 
 		this.maxRecordsToSync =
 			(configDataStore && configDataStore.maxRecordsToSync) ||

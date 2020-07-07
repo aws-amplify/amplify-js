@@ -64,7 +64,7 @@ import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
 import { default as urlListener } from './urlListener';
 import { AuthError, NoUserPoolError } from './Errors';
-import { AuthErrorTypes } from './types/Auth';
+import { AuthErrorTypes, CognitoHostedUIIdentityProvider } from './types/Auth';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -80,13 +80,6 @@ typeof Symbol.for === 'function'
 const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
-
-export enum CognitoHostedUIIdentityProvider {
-	Cognito = 'COGNITO',
-	Google = 'Google',
-	Facebook = 'Facebook',
-	Amazon = 'LoginWithAmazon',
-}
 
 /**
  * Provide authentication steps

@@ -57,6 +57,7 @@ export enum CognitoHostedUIIdentityProvider {
 	Google = 'Google',
 	Facebook = 'Facebook',
 	Amazon = 'LoginWithAmazon',
+	Apple = 'SignInWithApple',
 }
 
 export type LegacyProvider =
