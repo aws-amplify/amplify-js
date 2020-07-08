@@ -683,7 +683,7 @@ export namespace Components {
          */
         "level": AccessLevel;
         /**
-          * String representing directory location to list image files
+          * String representing directory location of image files to be listed
          */
         "path": string;
         /**
@@ -2103,7 +2103,7 @@ declare namespace LocalJSX {
          */
         "level"?: AccessLevel;
         /**
-          * String representing directory location to list image files
+          * String representing directory location of image files to be listed
          */
         "path"?: string;
         /**
