@@ -8,9 +8,9 @@
 | Property          | Attribute          | Description | Type                   | Default                                                |
 | ----------------- | ------------------ | ----------- | ---------------------- | ------------------------------------------------------ |
 | `buttonText`      | `button-text`      |             | `string`               | `I18n.get(Translations.PHOTO_PICKER_BUTTON_TEXT)`      |
+| `handleClick`     | --                 |             | `(file: File) => void` | `() => {}`                                             |
 | `headerHint`      | `header-hint`      |             | `string`               | `I18n.get(Translations.PHOTO_PICKER_HINT)`             |
 | `headerTitle`     | `header-title`     |             | `string`               | `I18n.get(Translations.PHOTO_PICKER_TITLE)`            |
-| `onClickHandler`  | --                 |             | `(file: File) => void` | `() => {}`                                             |
 | `placeholderHint` | `placeholder-hint` |             | `string`               | `I18n.get(Translations.PHOTO_PICKER_PLACEHOLDER_HINT)` |
 | `previewSrc`      | `preview-src`      |             | `object \| string`     | `undefined`                                            |
 

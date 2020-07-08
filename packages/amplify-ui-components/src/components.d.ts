@@ -578,9 +578,9 @@ export namespace Components {
     }
     interface AmplifyPhotoPicker {
         "buttonText"?: string;
+        "handleClick"?: (file: File) => void;
         "headerHint"?: string;
         "headerTitle"?: string;
-        "onClickHandler"?: (file: File) => void;
         "placeholderHint"?: string;
         "previewSrc"?: string | object;
     }
@@ -1998,9 +1998,9 @@ declare namespace LocalJSX {
     }
     interface AmplifyPhotoPicker {
         "buttonText"?: string;
+        "handleClick"?: (file: File) => void;
         "headerHint"?: string;
         "headerTitle"?: string;
-        "onClickHandler"?: (file: File) => void;
         "placeholderHint"?: string;
         "previewSrc"?: string | object;
     }

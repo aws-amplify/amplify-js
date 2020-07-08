@@ -55,7 +55,7 @@ export class AmplifyPhotoPicker {
 
           <div class="placeholder-hint">{this.placeholderHint}</div>
 
-          <amplify-button handleButtonClick={() => this.onClickHandler(this.file)}>{this.buttonText}</amplify-button>
+          <amplify-button handleButtonClick={() => this.handleClick(this.file)}>{this.buttonText}</amplify-button>
         </amplify-section>
       </div>
     );
