@@ -20,7 +20,7 @@ if (browserOrNode().isBrowser) {
     document.createTextNode(`
     :root {
       /* Typography */
-      --amplify-font-family: 'Amazon Ember', 'Helvetica Neue Light', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
+      --amplify-font-family: 'Amazon Ember', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 
       --amplify-text-xxs: 0.75rem;
       --amplify-text-xs: 0.81rem;

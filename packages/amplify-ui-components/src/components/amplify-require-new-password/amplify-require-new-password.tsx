@@ -46,6 +46,7 @@ export class AmplifyRequireNewPassword {
     },
   ];
 
+  @State() currentUser: CognitoUserInterface = this.user;
   @State() password: string;
   @State() loading: boolean = false;
   private requiredAttributes: object = {};
@@ -56,9 +57,18 @@ export class AmplifyRequireNewPassword {
     this.requiredAttributes[attribute] = event.target.value;
   }
 
-  componentWillLoad() {
-    if (this.user && this.user.challengeParam.requiredAttributes) {
-      const userRequiredAttributes = this.user.challengeParam.requiredAttributes;
+  async componentWillLoad() {
+    if (!this.user) {
+      // Check for authenticated user
+      try {
+        const user = await Auth.currentAuthenticatedUser();
+        if (user) this.currentUser = user;
+      } catch (error) {
+        dispatchToastHubEvent(error);
+      }
+    }
+    if (this.currentUser && this.currentUser.challengeParam.requiredAttributes) {
+      const userRequiredAttributes = this.currentUser.challengeParam.requiredAttributes;
 
       userRequiredAttributes.forEach(attribute => {
         const formField = {
@@ -108,7 +118,7 @@ export class AmplifyRequireNewPassword {
 
     this.loading = true;
     try {
-      const user = await Auth.completeNewPassword(this.user, this.password, this.requiredAttributes);
+      const user = await Auth.completeNewPassword(this.currentUser, this.password, this.requiredAttributes);
 
       logger.debug('complete new password', user);
       switch (user.challengeName) {

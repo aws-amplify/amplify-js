@@ -4,6 +4,8 @@ import {
   TOAST_AUTH_ERROR_EVENT,
   AUTH_STATE_CHANGE_EVENT,
   PHONE_EMPTY_ERROR_MESSAGE,
+  COUNTRY_DIAL_CODE_SUFFIX,
+  PHONE_SUFFIX,
 } from './constants';
 import { AuthState, AuthStateHandler, UsernameAlias } from '../common/types/auth-types';
 import { PhoneNumberInterface } from '../components/amplify-auth-fields/amplify-auth-fields-interface';
@@ -153,3 +155,21 @@ export const requiredAttributesMap = {
     placeholder: I18n.get(Translations.NAME_PLACEHOLDER),
   },
 };
+
+export function handlePhoneNumberChange(event, phoneNumber: PhoneNumberInterface) {
+  const name = event.target.name;
+  const value = event.target.value;
+
+  /** Cognito expects to have a string be passed when signing up. Since the Select input is separate
+   * input from the phone number input, we need to first capture both components values and combined
+   * them together.
+   */
+
+  if (name === COUNTRY_DIAL_CODE_SUFFIX) {
+    phoneNumber.countryDialCodeValue = value;
+  }
+
+  if (name === PHONE_SUFFIX) {
+    phoneNumber.phoneNumberValue = value;
+  }
+}
