@@ -34,7 +34,8 @@
     "clean": "rimraf dist .stencil"
   },
   "dependencies": {
-    "qrcode": "^1.4.4"
+    "qrcode": "^1.4.4",
+    "uuid": "^8.2.0"
   },
   "devDependencies": {
     "@stencil/angular-output-target": "^0.0.2",

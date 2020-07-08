@@ -52,6 +52,7 @@ if (browserOrNode().isBrowser) {
       --amplify-grey: #828282;
       --amplify-light-grey: #c4c4c4;
       --amplify-white: #ffffff;
+      --amplify-smoke-white: #f5f5f5;
 
       --amplify-red: #dd3f5b;
     }
