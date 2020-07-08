@@ -8,21 +8,21 @@ import { Translations } from '../../common/Translations';
   shadow: true,
 })
 export class AmplifyPhotoPicker {
-  /* Title string value */
+  /** Title string value */
   @Prop() headerTitle?: string = I18n.get(Translations.PHOTO_PICKER_TITLE);
-  /* Header Hint value in string */
+  /** Header Hint value in string */
   @Prop() headerHint?: string = I18n.get(Translations.PHOTO_PICKER_HINT);
-  /* Placeholder hint that goes under the placeholder image */
+  /** Placeholder hint that goes under the placeholder image */
   @Prop() placeholderHint?: string = I18n.get(Translations.PHOTO_PICKER_PLACEHOLDER_HINT);
-  /* Picker button text as string */
+  /** Picker button text as string */
   @Prop() buttonText?: string = I18n.get(Translations.PHOTO_PICKER_BUTTON_TEXT);
-  /* Source of the image to be previewed */
+  /** Source of the image to be previewed */
   @Prop() previewSrc?: string | object;
-  /* Function that handles file pick onClick */
-  @Prop() onClickHandler?: (file: File) => void = () => {};
-  /* Preview State tracks the change in preview source */
+  /** Function that handles file pick onClick */
+  @Prop() handleClick?: (file: File) => void = () => {};
+  /** Preview State tracks the change in preview source */
   @State() previewState: string;
-  /* File slected through picker */
+  /** File slected through picker */
   @State() file: File;
 
   componentWillLoad() {
@@ -55,7 +55,7 @@ export class AmplifyPhotoPicker {
 
           <div class="placeholder-hint">{this.placeholderHint}</div>
 
-          <amplify-button handleButtonClick={() => this.onClickHandler(this.file)}>{this.buttonText}</amplify-button>
+          <amplify-button handleButtonClick={() => this.handleClick(this.file)}>{this.buttonText}</amplify-button>
         </amplify-section>
       </div>
     );

@@ -53,7 +53,7 @@ export class AmplifyS3ImagePicker {
         <slot name="photo-picker">
           <amplify-photo-picker
             previewSrc={this.src}
-            onClickHandler={this.handlePick}
+            handleClick={this.handlePick}
             headerTitle={this.headerTitle}
             headerHint={this.headerHint}
             placeholderHint={this.placeholderHint}

@@ -5,11 +5,11 @@
 
 ## Properties
 
-| Property       | Attribute      | Description | Type                 | Default                              |
-| -------------- | -------------- | ----------- | -------------------- | ------------------------------------ |
-| `acceptValue`  | `accept-value` |             | `string`             | `'*/*'`                              |
-| `inputHandler` | --             |             | `(e: Event) => void` | `undefined`                          |
-| `pickerText`   | `picker-text`  |             | `string`             | `I18n.get(Translations.PICKER_TEXT)` |
+| Property       | Attribute      | Description                 | Type                 | Default                              |
+| -------------- | -------------- | --------------------------- | -------------------- | ------------------------------------ |
+| `acceptValue`  | `accept-value` | File input accept value     | `string`             | `'*/*'`                              |
+| `inputHandler` | --             | File input onChange handler | `(e: Event) => void` | `undefined`                          |
+| `pickerText`   | `picker-text`  | Picker button text          | `string`             | `I18n.get(Translations.PICKER_TEXT)` |
 
 
 ## Dependencies
