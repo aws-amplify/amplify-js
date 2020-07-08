@@ -8,11 +8,11 @@ import { Translations } from '../../common/Translations';
   shadow: true,
 })
 export class AmplifyPicker {
-  /* Picker button text */
+  /** Picker button text */
   @Prop() pickerText: string = I18n.get(Translations.PICKER_TEXT);
-  /* File input accept value */
+  /** File input accept value */
   @Prop() acceptValue: string = '*/*';
-  /* File input onChange handler */
+  /** File input onChange handler */
   @Prop() inputHandler: (e: Event) => void;
 
   render() {
