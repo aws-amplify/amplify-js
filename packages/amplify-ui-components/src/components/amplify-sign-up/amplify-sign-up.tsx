@@ -4,13 +4,10 @@ import { Component, Prop, h, State, Watch } from '@stencil/core';
 import {
   FormFieldTypes,
   PhoneNumberInterface,
+  FormFieldType,
+  PhoneFormFieldType,
 } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import {
-  PHONE_SUFFIX,
-  COUNTRY_DIAL_CODE_DEFAULT,
-  COUNTRY_DIAL_CODE_SUFFIX,
-  NO_AUTH_MODULE_FOUND,
-} from '../../common/constants';
+import { COUNTRY_DIAL_CODE_DEFAULT, NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
 import { AmplifySignUpAttributes } from './amplify-sign-up-interface';
 import {
@@ -18,6 +15,7 @@ import {
   dispatchToastHubEvent,
   composePhoneNumberInput,
   checkUsernameAlias,
+  handlePhoneNumberChange,
 } from '../../common/helpers';
 import { Translations } from '../../common/Translations';
 
@@ -90,7 +88,7 @@ export class AmplifySignUp {
       case 'email':
         return event => (this.signUpAttributes.attributes.email = event.target.value);
       case 'phone_number':
-        return event => this.handlePhoneNumberChange(event);
+        return event => handlePhoneNumberChange(event, this.phoneNumber);
       default:
         return event => (this.signUpAttributes.attributes[fieldType] = event.target.value);
     }
@@ -106,24 +104,6 @@ export class AmplifySignUp {
     fnToCall(event, callback.bind(this));
   }
 
-  private handlePhoneNumberChange(event) {
-    const name = event.target.name;
-    const value = event.target.value;
-
-    /** Cognito expects to have a string be passed when signing up. Since the Select input is separate
-     * input from the phone number input, we need to first capture both components values and combined
-     * them together.
-     */
-
-    if (name === COUNTRY_DIAL_CODE_SUFFIX) {
-      this.phoneNumber.countryDialCodeValue = value;
-    }
-
-    if (name === PHONE_SUFFIX) {
-      this.phoneNumber.phoneNumberValue = value;
-    }
-  }
-
   // TODO: Add validation
   // TODO: Prefix
   private async signUp(event: Event) {
@@ -134,7 +114,11 @@ export class AmplifySignUp {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
     if (this.phoneNumber.phoneNumberValue) {
-      this.signUpAttributes.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
+      try {
+        this.signUpAttributes.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
+      } catch (error) {
+        dispatchToastHubEvent(error);
+      }
     }
     switch (this.usernameAlias) {
       case 'email':
@@ -267,9 +251,41 @@ export class AmplifySignUp {
       this.formFields.forEach(field => {
         const newField = { ...field };
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
+        this.setFieldValue(field, this.signUpAttributes);
         newFields.push(newField);
       });
       this.newFormFields = newFields;
+    }
+  }
+
+  setFieldValue(field: PhoneFormFieldType | FormFieldType, formAttributes: AmplifySignUpAttributes) {
+    switch (field.type) {
+      case 'username':
+        if (field.value === undefined) {
+          formAttributes.username = '';
+        } else {
+          formAttributes.username = field.value;
+        }
+        break;
+      case 'password':
+        if (field.value === undefined) {
+          formAttributes.password = '';
+        } else {
+          formAttributes.password = field.value;
+        }
+        break;
+      case 'email':
+        formAttributes.attributes.email = field.value;
+        break;
+      case 'phone_number':
+        if ((field as PhoneFormFieldType).dialCode) {
+          this.phoneNumber.countryDialCodeValue = (field as PhoneFormFieldType).dialCode;
+        }
+        this.phoneNumber.phoneNumberValue = field.value;
+        break;
+      default:
+        formAttributes.attributes[field.type] = field.value;
+        break;
     }
   }
 

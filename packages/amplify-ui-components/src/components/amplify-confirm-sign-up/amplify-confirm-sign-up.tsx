@@ -1,7 +1,12 @@
 import { I18n } from '@aws-amplify/core';
 import { Component, Prop, h, State, Watch } from '@stencil/core';
-import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
-import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
+import {
+  FormFieldTypes,
+  FormFieldType,
+  PhoneNumberInterface,
+  PhoneFormFieldType,
+} from '../amplify-auth-fields/amplify-auth-fields-interface';
+import { NO_AUTH_MODULE_FOUND, COUNTRY_DIAL_CODE_DEFAULT } from '../../common/constants';
 import { Translations } from '../../common/Translations';
 import { AuthState, CognitoUserInterface, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
 
@@ -11,6 +16,8 @@ import {
   dispatchAuthStateChangeEvent,
   checkUsernameAlias,
   isHintValid,
+  composePhoneNumberInput,
+  handlePhoneNumberChange,
 } from '../../common/helpers';
 
 @Component({
@@ -53,8 +60,13 @@ export class AmplifyConfirmSignUp {
   @State() code: string;
   @State() loading: boolean = false;
   @State() userInput: string = this.user ? this.user.username : null;
+
   private _signUpAttrs = this.user && this.user.signUpAttrs ? this.user.signUpAttrs : null;
   private newFormFields: FormFieldTypes | string[] = [];
+  private phoneNumber: PhoneNumberInterface = {
+    countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
+    phoneNumberValue: null,
+  };
 
   componentWillLoad() {
     checkUsernameAlias(this.usernameAlias);
@@ -123,12 +135,32 @@ export class AmplifyConfirmSignUp {
     switch (fieldType) {
       case 'username':
       case 'email':
-      case 'phone_number':
         return event => (this.userInput = event.target.value);
+      case 'phone_number':
+        return event => handlePhoneNumberChange(event, this.phoneNumber);
       case 'code':
         return event => (this.code = event.target.value);
       default:
         return;
+    }
+  }
+
+  setFieldValue(field: PhoneFormFieldType | FormFieldType) {
+    switch (field.type) {
+      case 'username':
+      case 'email':
+        if (field.value === undefined) {
+          this.userInput = '';
+        } else {
+          this.userInput = field.value;
+        }
+        break;
+      case 'phone_number':
+        if ((field as PhoneFormFieldType).dialCode) {
+          this.phoneNumber.countryDialCodeValue = (field as PhoneFormFieldType).dialCode;
+        }
+        this.phoneNumber.phoneNumberValue = field.value;
+        break;
     }
   }
 
@@ -170,6 +202,16 @@ export class AmplifyConfirmSignUp {
 
     this.loading = true;
 
+    switch (this.usernameAlias) {
+      case 'phone_number':
+        try {
+          this.userInput = composePhoneNumberInput(this.phoneNumber);
+        } catch (error) {
+          dispatchToastHubEvent(error);
+        }
+      default:
+        break;
+    }
     try {
       const confirmSignUpResult = await Auth.confirmSignUp(this.userInput, this.code);
       const user =
