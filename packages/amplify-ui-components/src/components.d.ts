@@ -577,16 +577,43 @@ export namespace Components {
         "value": string;
     }
     interface AmplifyPhotoPicker {
+        /**
+          * Picker button text as string
+         */
         "buttonText"?: string;
+        /**
+          * Function that handles file pick onClick
+         */
+        "handleClick"?: (file: File) => void;
+        /**
+          * Header Hint value in string
+         */
         "headerHint"?: string;
+        /**
+          * Title string value
+         */
         "headerTitle"?: string;
-        "onClickHandler"?: (file: File) => void;
+        /**
+          * Placeholder hint that goes under the placeholder image
+         */
         "placeholderHint"?: string;
+        /**
+          * Source of the image to be previewed
+         */
         "previewSrc"?: string | object;
     }
     interface AmplifyPicker {
+        /**
+          * File input accept value
+         */
         "acceptValue": string;
+        /**
+          * File input onChange handler
+         */
         "inputHandler": (e: Event) => void;
+        /**
+          * Picker button text
+         */
         "pickerText": string;
     }
     interface AmplifyRadioButton {
@@ -1997,16 +2024,43 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     interface AmplifyPhotoPicker {
+        /**
+          * Picker button text as string
+         */
         "buttonText"?: string;
+        /**
+          * Function that handles file pick onClick
+         */
+        "handleClick"?: (file: File) => void;
+        /**
+          * Header Hint value in string
+         */
         "headerHint"?: string;
+        /**
+          * Title string value
+         */
         "headerTitle"?: string;
-        "onClickHandler"?: (file: File) => void;
+        /**
+          * Placeholder hint that goes under the placeholder image
+         */
         "placeholderHint"?: string;
+        /**
+          * Source of the image to be previewed
+         */
         "previewSrc"?: string | object;
     }
     interface AmplifyPicker {
+        /**
+          * File input accept value
+         */
         "acceptValue"?: string;
+        /**
+          * File input onChange handler
+         */
         "inputHandler"?: (e: Event) => void;
+        /**
+          * Picker button text
+         */
         "pickerText"?: string;
     }
     interface AmplifyRadioButton {
