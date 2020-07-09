@@ -87,7 +87,7 @@ export class RestClient {
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
 	async ajax(urlOrApiInfo: string | ApiInfo, method: string, init) {
-		logger.debug(method + ' ' + urlOrApiInfo);
+		logger.debug(method, urlOrApiInfo);
 
 		let parsed_url;
 		let url: string;
