@@ -1,9 +1,9 @@
 {
   "name": "@aws-amplify/ui-storybook",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "private": true,
   "dependencies": {
-    "@aws-amplify/ui-react": "^0.2.9",
+    "@aws-amplify/ui-react": "^0.2.10",
     "@storybook/addon-knobs": "^5.3.13",
     "@storybook/theming": "^5.3.14",
     "@types/jest": "^24.0.0",
