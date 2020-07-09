@@ -48,7 +48,7 @@
     "zen-observable-ts": "0.8.19"
   },
   "peerDependencies": {
-    "@aws-amplify/pubsub": "^2.1.1"
+    "@aws-amplify/pubsub": "^3.0.0"
   },
   "jest": {
     "globals": {
