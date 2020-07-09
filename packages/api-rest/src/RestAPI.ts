@@ -238,14 +238,14 @@ export class RestAPIClass {
 	 */
 	head(apiName, path, init): Promise<any> {
 		try {
-			const apiConfig = this.getEndpointInfo(apiName, path);
+			const apiInfo = this.getEndpointInfo(apiName, path);
 
 			const cancellableToken = this._api.getCancellableToken();
 
 			const initParams = Object.assign({}, init);
 			initParams.cancellableToken = cancellableToken;
 
-			const responsePromise = this._api.head(apiConfig, initParams);
+			const responsePromise = this._api.head(apiInfo, initParams);
 
 			this._api.updateRequestToBeCancellable(responsePromise, cancellableToken);
 
