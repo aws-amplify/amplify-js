@@ -31,7 +31,7 @@ export class APIClass {
 	 * @param {Object} options - Configuration object for API
 	 */
 	private _options;
-	private _restApi;
+	private _restApi: RestAPIClass;
 	private _graphqlApi;
 
 	/**
