@@ -1474,7 +1474,8 @@ export class AuthClass {
 						onSuccess: data => {
 							logger.debug('global sign out success');
 							if (isSignedInHostedUI) {
-								return res(this._oAuthHandler.signOut());
+								this._oAuthHandler.signOut();
+								setTimeout(() => rej('Signout timeout fail'), 3000);
 							} else {
 								return res();
 							}
@@ -1489,7 +1490,8 @@ export class AuthClass {
 				logger.debug('user sign out', user);
 				user.signOut();
 				if (isSignedInHostedUI) {
-					return res(this._oAuthHandler.signOut());
+					this._oAuthHandler.signOut();
+					setTimeout(() => rej('Signout timeout fail'), 3000);
 				} else {
 					return res();
 				}

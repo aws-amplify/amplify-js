@@ -153,7 +153,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	return CognitoUser;
 });
 
-import { Hub } from '@aws-amplify/core';
+import { Hub, Credentials, StorageHelper } from '@aws-amplify/core';
 
 const authOptionsWithOAuth: AuthOptions = {
 	userPoolId: 'awsUserPoolsId',
@@ -244,5 +244,114 @@ describe('Hosted UI tests', () => {
 				event: 'cognitoHostedUI',
 			});
 		}, 0);
+	});
+
+	test('globalSignOut for signed with hosted ui', async () => {
+		jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+			return {
+				setItem() {},
+				getItem() {
+					return 'true';
+				},
+				removeItem() {},
+			};
+		});
+
+		const auth = new Auth(authOptionsWithOAuth);
+
+		const user = new CognitoUser({
+			Username: 'username',
+			Pool: userPool,
+		});
+
+		const spyonAuth = jest
+			.spyOn(Credentials, 'clear')
+			.mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
+
+		const spyon = jest
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+			.mockImplementationOnce(() => {
+				return user;
+			});
+
+		const spyon2 = jest
+			.spyOn(CognitoUser.prototype, 'globalSignOut')
+			.mockImplementation(({ onSuccess }) => {
+				onSuccess('success');
+			});
+
+		auth._oAuthHandler = {
+			signOut: () => {
+				return Promise.resolve();
+			},
+		};
+
+		expect.assertions(2);
+
+		try {
+			await auth.signOut({ global: true });
+
+			expect(true).toBe(false);
+		} catch (err) {
+			expect(err).toEqual('Signout timeout fail');
+		}
+
+		expect(spyon2).toBeCalled();
+
+		spyonAuth.mockClear();
+		spyon.mockClear();
+		spyon2.mockClear();
+	});
+
+	test('SignOut for signed with hosted ui', async () => {
+		jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+			return {
+				setItem() {},
+				getItem() {
+					return 'true';
+				},
+				removeItem() {},
+			};
+		});
+
+		const auth = new Auth(authOptionsWithOAuth);
+
+		const user = new CognitoUser({
+			Username: 'username',
+			Pool: userPool,
+		});
+
+		const spyonAuth = jest
+			.spyOn(Credentials, 'clear')
+			.mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
+
+		const spyon = jest
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+			.mockImplementationOnce(() => {
+				return user;
+			});
+
+		auth._oAuthHandler = {
+			signOut: () => {
+				return Promise.resolve();
+			},
+		};
+
+		expect.assertions(1);
+
+		try {
+			await auth.signOut({ global: false });
+
+			expect(true).toBe(false);
+		} catch (err) {
+			expect(err).toEqual('Signout timeout fail');
+		}
+
+		spyonAuth.mockClear();
+		spyon.mockClear();
 	});
 });
