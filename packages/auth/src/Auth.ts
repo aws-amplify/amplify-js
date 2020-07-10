@@ -970,6 +970,12 @@ export class AuthClass {
 						user['challengeParam'] = challengeParam;
 						resolve(user);
 					},
+					totpRequired: (challengeName, challengeParam) => {
+						logger.debug('signIn mfa setup', challengeName);
+						user['challengeName'] = challengeName;
+						user['challengeParam'] = challengeParam;
+						resolve(user);
+					},
 				},
 				clientMetadata
 			);
