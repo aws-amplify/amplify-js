@@ -176,6 +176,7 @@ export class AmplifySignIn {
         this.checkContact(user);
       }
     } catch (error) {
+      error.message = I18n.get(error.message);
       dispatchToastHubEvent(error);
       if (error.code === 'UserNotConfirmedException') {
         logger.debug('the user is not confirmed');
