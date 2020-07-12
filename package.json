@@ -31,8 +31,13 @@
 		}
 	},
 	"workspaces": {
-  		"packages": ["packages/*"],
-  		"nohoist": ["**/@types/react-native", "**/@types/react-native/**"]
+		"packages": [
+			"packages/*"
+		],
+		"nohoist": [
+			"**/@types/react-native",
+			"**/@types/react-native/**"
+		]
 	},
 	"repository": {
 		"type": "git",
