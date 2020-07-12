@@ -1,21 +1,87 @@
 {
-    "Amplify Mobile Hub Configuration": {
-        "prefix": "Amplify.configure",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "import Amplify from 'aws-amplify';",
-            "import awsmobile from './aws-exports';",
-            "Amplify.configure(awsmobile)"
-        ]
-    },
+	"Amplify Mobile Hub Configuration": {
+		"prefix": "Amplify.configure",
+		"scope": "javascript,javascriptreact,typescript",
+		"body": [
+			"import Amplify from 'aws-amplify';",
+			"import awsmobile from './aws-exports';",
+			"Amplify.configure(awsmobile)"
+		]
+	},
 
-    "Amplify Predict Configuration": {
-        "prefix": "Predict.configure",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "import Amplify from 'aws-amplify';",
-            "import awsmobile from './aws-exports';",
-            "Amplify.configure(awsmobile)"
-        ]
-    }
+	"Amplify Predictions Configuration": {
+		"prefix": "Predict.config",
+		"scope": "javascript,javascriptreact,typescript",
+		"body": [
+			"Amplify.configure({",
+			    "\t// To get the AWS Credentials, you need to configure",
+			    "\t// the Auth module with your Cognito Federated Identity Pool",
+			    "\t\"Auth\": {",
+			        "\t\t\"identityPoolId\": ${1: \"us-east-1:xxx-xxx-xxx-xxx-xxx\"},",
+			        "\t\t\"region\": ${2:\"us-east-1\"}",
+                "\t},",
+                "\t\"predictions\": {",
+                    "\t\t\"convert\": {",
+                        "\t\t\t\"translateText\": {",
+                            "\t\t\t\t\"region\": ${3: \"us-east-1\"},",
+                            "\t\t\t\t\"proxy\": ${4: false},",
+                            "\t\t\t\t\"defaults\": {",
+                                "\t\t\t\t\t\"sourceLanguage\": ${5: \"en\"},",
+                                "\t\t\t\t\t\"targetLanguage\": ${6: \"zh\"}",
+                            "\t\t\t\t}",
+                        "\t\t\t},",
+                        "\t\t\t\"speechGenerator\": {",
+                            "\t\t\t\t\"region\": ${7: \"us-east-1\"},",
+                            "\t\t\t\t\"proxy\": ${8: false},",
+                            "\t\t\t\t\"defaults\": {",
+                                "\t\t\t\t\t\"VoiceId\": ${9: \"Ivy\"},",
+                                "\t\t\t\t\t\"LanguageCode\": ${10: \"en-US\"}",
+                            "\t\t\t\t}",
+                        "\t\t\t},",
+                        "\t\t\t\"transcription\": {",
+                            "\t\t\t\t\"region\": ${11: \"us-east-1\"},",
+                            "\t\t\t\t\"proxy\": ${12: false},",
+                            "\t\t\t\t\"defaults\": {",
+                                "\t\t\t\t\t\"language\": ${13: \"en-US\"}",
+                            "\t\t\t\t}",
+                        "\t\t\t}",
+                    "\t\t},",
+                    "\t\t\"identify\": {",
+                        "\t\t\t\"identifyText\": {",
+                            "\t\t\t\t\"proxy\": ${14: false },",
+                            "\t\t\t\t\"region\": ${15: \"us-east-1\"},",
+                            "\t\t\t\t\"defaults\": {",
+                                "\t\t\t\t\t\"format\": ${16: \"PLAIN\"}",
+                            "\t\t\t\t}",
+                        "\t\t\t},",
+                        "\t\t\t\"identifyEntities\": {",
+                            "\t\t\t\t\"proxy\": ${17: false },",
+                            "\t\t\t\t\"region\": ${16: \"us-east-1\"},",
+                            "\t\t\t\t\"celebrityDetectionEnabled\": ${16: true},",
+                            "\t\t\t\t\"defaults\": {",
+                                "\t\t\t\t\t\"collectionId\": ${17: \"identifyEntities8b89c648-test\"},",
+                                "\t\t\t\t\t\"maxEntities\": ${18: 50}",
+                            "\t\t\t\t}",
+                        "\t\t\t},",
+                        "\t\t\t\"identifyLabels\": {",
+                            "\t\t\t\t\"proxy\": ${19: false },",
+                            "\t\t\t\t\"region\": ${18: \"us-east-1\"},",
+                            "\t\t\t\t\"defaults\": {",
+                                "\t\t\t\t\t\"type\": ${19: \"LABELS\"}",
+                            "\t\t\t\t}",
+                        "\t\t\t}",
+                    "\t\t},",
+                    "\t\t\"interpret\": {",
+                        "\t\t\t\"interpretText\": {",
+                            "\t\t\t\t\"region\": ${20: \"us-east-1\"},",
+                            "\t\t\t\t\"proxy\": ${21: false},",
+                            "\t\t\t\t\"defaults\": {",
+                                "\t\t\t\t\t\"type\": ${22: \"ALL\"}",
+                            "\t\t\t\t}",
+                        "\t\t\t}",
+                    "\t\t}",
+                "\t}",
+			"})"
+		]
+	}
 }
