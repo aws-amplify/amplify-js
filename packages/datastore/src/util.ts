@@ -1,3 +1,7 @@
+import { Buffer } from 'buffer';
+import CryptoJS from 'crypto-js/core';
+import { monotonicFactory, ULID } from 'ulid';
+import { v4 as uuid } from 'uuid';
 import { ModelInstanceCreator } from './datastore/datastore';
 import {
 	AllOperators,
@@ -14,8 +18,6 @@ import {
 	SchemaNamespace,
 } from './types';
 
-import { v4 as uuid } from 'uuid';
-
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
 		throw new Error(`Invalid ${obj}`);
@@ -30,6 +32,10 @@ export const validatePredicate = <T extends PersistentModel>(
 	let filterType: keyof Pick<any[], 'every' | 'some'>;
 	let isNegation = false;
 
+	if (predicatesOrGroups.length === 0) {
+		return true;
+	}
+
 	switch (groupType) {
 		case 'not':
 			filterType = 'every';
@@ -43,10 +49,6 @@ export const validatePredicate = <T extends PersistentModel>(
 			break;
 		default:
 			exhaustiveCheck(groupType);
-	}
-
-	if (predicatesOrGroups.length === 0) {
-		return true;
 	}
 
 	const result: boolean = predicatesOrGroups[filterType](predicateOrGroup => {
@@ -134,7 +136,9 @@ export const establishRelation = (
 					modelName: fieldAttribute.type.model,
 					relationType: connectionType,
 					targetName: fieldAttribute.association['targetName'],
+					associatedWith: fieldAttribute.association['associatedWith'],
 				});
+
 				if (connectionType === 'BELONGS_TO') {
 					relationship[mKey].indexes.push(
 						fieldAttribute.association['targetName']
@@ -142,6 +146,24 @@ export const establishRelation = (
 				}
 			}
 		});
+
+		// create indexes from key fields
+		if (model.attributes) {
+			model.attributes.forEach(attribute => {
+				if (attribute.type === 'key') {
+					const { fields } = attribute.properties;
+					if (fields) {
+						fields.forEach(field => {
+							// only add index if it hasn't already been added
+							const exists = relationship[mKey].indexes.includes(field);
+							if (!exists) {
+								relationship[mKey].indexes.push(field);
+							}
+						});
+					}
+				}
+			});
+		}
 	});
 
 	return relationship;
@@ -282,6 +304,14 @@ export const getIndex = (rel: RelationType[], src: string): string => {
 	return index;
 };
 
+export const getIndexFromAssociation = (
+	indexes: string[],
+	src: string
+): string => {
+	const index = indexes.find(idx => idx === src);
+	return index;
+};
+
 export enum NAMESPACES {
 	DATASTORE = 'datastore',
 	USER = 'user',
@@ -336,3 +366,39 @@ export const isPrivateMode = () => {
 		db.onsuccess = isNotPrivate;
 	});
 };
+
+const randomBytes = function(nBytes: number): Buffer {
+	return Buffer.from(CryptoJS.lib.WordArray.random(nBytes).toString(), 'hex');
+};
+const prng = () => randomBytes(1).readUInt8(0) / 0xff;
+export function monotonicUlidFactory(seed?: number): ULID {
+	const ulid = monotonicFactory(prng);
+
+	return () => {
+		return ulid(seed);
+	};
+}
+
+/**
+ * Uses performance.now() if available, otherwise, uses Date.now() (e.g. react native without a polyfill)
+ *
+ * The values returned by performance.now() always increase at a constant rate,
+ * independent of the system clock (which might be adjusted manually or skewed
+ * by software like NTP).
+ *
+ * Otherwise, performance.timing.navigationStart + performance.now() will be
+ * approximately equal to Date.now()
+ *
+ * See: https://developer.mozilla.org/en-US/docs/Web/API/Performance/now#Example
+ */
+export function getNow() {
+	if (
+		typeof performance !== 'undefined' &&
+		performance &&
+		typeof performance.now === 'function'
+	) {
+		return performance.now() | 0; // convert to integer
+	} else {
+		return Date.now();
+	}
+}

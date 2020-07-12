@@ -11,8 +11,8 @@
  * and limitations under the License.
  */
 import { ConsoleLogger as Logger } from '../Logger';
-import JS from '../JS';
-import Amplify from '../Amplify';
+import { browserOrNode } from '../JS';
+import { Amplify } from '../Amplify';
 /**
  * Provides a means to registering a service worker in the browser
  * and communicating with it via postMessage events.
@@ -25,7 +25,7 @@ import Amplify from '../Amplify';
  * and attempt to dispatch messages on state change and record analytics
  * events based on the service worker lifecycle.
  */
-class ServiceWorkerClass {
+export class ServiceWorkerClass {
 	// The active service worker will be set once it is registered
 	private _serviceWorker: ServiceWorker;
 
@@ -42,7 +42,7 @@ class ServiceWorkerClass {
 	// The AWS Amplify logger
 	private _logger: Logger = new Logger('ServiceWorker');
 
-	constructor() {}
+	constructor() { }
 
 	/**
 	 * Get the currently active service worker
@@ -112,7 +112,7 @@ class ServiceWorkerClass {
 		if (!this._registration) throw new Error('Service Worker not registered');
 		this._publicKey = publicKey;
 		return new Promise((resolve, reject) => {
-			if (JS.browserOrNode().isBrowser) {
+			if (browserOrNode().isBrowser) {
 				this._registration.pushManager.getSubscription().then(subscription => {
 					if (subscription) {
 						this._subscription = subscription;
@@ -203,4 +203,7 @@ class ServiceWorkerClass {
 	}
 }
 
+/**
+ * @deprecated use named import
+ */
 export default ServiceWorkerClass;

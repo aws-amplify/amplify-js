@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 import { Client } from 'paho-mqtt';
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable-ts';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import { MqttOverWSProvider } from './MqttOverWSProvider';
@@ -96,9 +96,9 @@ export class AWSAppSyncProvider extends MqttOverWSProvider {
 				const { mqttConnections = [], newSubscriptions } = options;
 
 				// creates a map of {"topic": "alias"}
-				const newAliases = Object.entries(newSubscriptions).map(
-					([alias, v]: [string, { topic: string }]) => [v.topic, alias]
-				);
+				const newAliases = Object.entries(
+					newSubscriptions
+				).map(([alias, v]: [string, { topic: string }]) => [v.topic, alias]);
 
 				// Merge new aliases with old ones
 				this._topicAlias = new Map([

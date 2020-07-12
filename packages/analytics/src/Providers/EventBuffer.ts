@@ -6,6 +6,11 @@ import {
 	EventObject,
 	EventMap,
 } from '../types';
+import {
+	PutEventsCommand,
+	PutEventsCommandOutput,
+} from '@aws-sdk/client-pinpoint';
+import { isAppInForeground } from '../utils/AppUtils';
 
 const logger = new Logger('EventsBuffer');
 const RETRYABLE_CODES = [429, 500];
@@ -83,7 +88,11 @@ export default class EventsBuffer {
 			clearInterval(this._interval);
 		}
 
-		if (this._pause || !bufferLength) {
+		// Do not send the batch of events if
+		// the Buffer is paused or is empty or the App is not in the foreground
+		// Apps should be in the foreground since
+		// the OS may restrict access to the network in the background
+		if (this._pause || !bufferLength || !isAppInForeground()) {
 			return;
 		}
 
@@ -100,7 +109,8 @@ export default class EventsBuffer {
 		const batchEventParams = this._generateBatchEventParams(eventMap);
 
 		try {
-			const data = await this._client.putEvents(batchEventParams).promise();
+			const command: PutEventsCommand = new PutEventsCommand(batchEventParams);
+			const data: PutEventsCommandOutput = await this._client.send(command);
 			this._processPutEventsSuccessResponse(data, eventMap);
 		} catch (err) {
 			return this._handlePutEventsFailure(err, eventMap);
@@ -145,8 +155,8 @@ export default class EventsBuffer {
 	}
 
 	private _handlePutEventsFailure(err, eventMap: EventMap) {
-		logger.debug('_putEvents Failed:', err);
-		const { statusCode } = err;
+		logger.debug('_putEvents Failed: ', err);
+		const statusCode = err.$metadata && err.$metadata.httpStatusCode;
 
 		if (RETRYABLE_CODES.includes(statusCode)) {
 			const retryableEvents = Object.values(eventMap);
@@ -217,9 +227,7 @@ export default class EventsBuffer {
 
 			if (params.resendLimit-- > 0) {
 				logger.debug(
-					`resending event ${eventId} : ${name} with ${
-						params.resendLimit
-					} retry attempts remaining`
+					`resending event ${eventId} : ${name} with ${params.resendLimit} retry attempts remaining`
 				);
 				eligibleEvents.push({ [eventId]: event });
 				return;

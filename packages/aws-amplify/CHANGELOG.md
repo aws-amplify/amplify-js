@@ -3,82 +3,236 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [2.2.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.1...aws-amplify@2.2.2) (2020-01-10)
+## [3.0.20](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.19...aws-amplify@3.0.20) (2020-07-09)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.19](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.18...aws-amplify@3.0.19) (2020-07-07)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.18](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.17...aws-amplify@3.0.18) (2020-06-18)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.17](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.16...aws-amplify@3.0.17) (2020-06-09)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.16](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.15...aws-amplify@3.0.16) (2020-06-04)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.15](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.14...aws-amplify@3.0.15) (2020-06-03)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.14](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.13...aws-amplify@3.0.14) (2020-06-02)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.13](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.12...aws-amplify@3.0.13) (2020-05-26)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.12](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.11...aws-amplify@3.0.12) (2020-05-22)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.11](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.10...aws-amplify@3.0.11) (2020-05-14)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.10](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.9...aws-amplify@3.0.10) (2020-04-30)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.8...aws-amplify@3.0.9) (2020-04-24)
 
 
 ### Bug Fixes
 
-* **aws-amplify:** delete unused AmazonAIPredictionsProvider import ([#4629](https://github.com/aws-amplify/amplify-js/issues/4629)) ([8781ce4](https://github.com/aws-amplify/amplify-js/commit/8781ce4b5139a9b55f39f59bb31e204bdbb2c8bc))
-* [#4311](https://github.com/aws-amplify/amplify-js/issues/4311) Update main entry field to point to CJS builds instead of webpack bundles ([#4678](https://github.com/aws-amplify/amplify-js/issues/4678)) ([54fbdf4](https://github.com/aws-amplify/amplify-js/commit/54fbdf4b1393567735fb7b5f4144db273f1a5f6a))
+* **aws-amplify:** add DataStore export ([#5421](https://github.com/aws-amplify/amplify-js/issues/5421)) ([7cab470](https://github.com/aws-amplify/amplify-js/commit/7cab47085520534327f30b531d3fb0400cc07dac))
 
 
 
 
+
+## [3.0.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.7...aws-amplify@3.0.8) (2020-04-14)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.6...aws-amplify@3.0.7) (2020-04-08)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.5...aws-amplify@3.0.6) (2020-04-07)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.4...aws-amplify@3.0.5) (2020-04-03)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.3...aws-amplify@3.0.4) (2020-04-02)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.2...aws-amplify@3.0.3) (2020-04-01)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.1...aws-amplify@3.0.2) (2020-04-01)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.3.0...aws-amplify@3.0.1) (2020-03-31)
+
+
+### Reverts
+
+* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
+
+
+
+
+
+# [2.3.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.7...aws-amplify@2.3.0) (2020-03-30)
+
+### Features
+
+- **@aws-amplify/datastore:** Make DataStore available in aws-amplify… ([#5202](https://github.com/aws-amplify/amplify-js/issues/5202)) ([c9c020d](https://github.com/aws-amplify/amplify-js/commit/c9c020d6d13c5678ce15c738f7eaebec39e2b48a))
+
+## [2.2.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.6...aws-amplify@2.2.7) (2020-03-25)
+
+**Note:** Version bump only for package aws-amplify
+
+## [2.2.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.5...aws-amplify@2.2.6) (2020-02-28)
+
+**Note:** Version bump only for package aws-amplify
+
+## [2.2.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.4...aws-amplify@2.2.5) (2020-02-14)
+
+**Note:** Version bump only for package aws-amplify
+
+## [2.2.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.2...aws-amplify@2.2.4) (2020-02-07)
+
+### Bug Fixes
+
+- **cache:** export correct module for RN ([#4786](https://github.com/aws-amplify/amplify-js/issues/4786)) ([a15730c](https://github.com/aws-amplify/amplify-js/commit/a15730cc50692d9d31a0f586c3544b3dcdbea659))
+
+## [2.2.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.1...aws-amplify@2.2.2) (2020-01-10)
+
+### Bug Fixes
+
+- **aws-amplify:** delete unused AmazonAIPredictionsProvider import ([#4629](https://github.com/aws-amplify/amplify-js/issues/4629)) ([8781ce4](https://github.com/aws-amplify/amplify-js/commit/8781ce4b5139a9b55f39f59bb31e204bdbb2c8bc))
+- [#4311](https://github.com/aws-amplify/amplify-js/issues/4311) Update main entry field to point to CJS builds instead of webpack bundles ([#4678](https://github.com/aws-amplify/amplify-js/issues/4678)) ([54fbdf4](https://github.com/aws-amplify/amplify-js/commit/54fbdf4b1393567735fb7b5f4144db273f1a5f6a))
 
 ## [2.2.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.2.0...aws-amplify@2.2.1) (2019-12-18)
 
 **Note:** Version bump only for package aws-amplify
 
-
-
-
-
 # [2.2.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@2.1.0...aws-amplify@2.2.0) (2019-12-03)
-
 
 ### Features
 
-* **analytics:** Add analytics provider for AWS Firehose ([#2823](https://github.com/aws-amplify/amplify-js/issues/2823)) ([29103ae](https://github.com/aws-amplify/amplify-js/commit/29103ae0b2d76dba66e3dc856d77c4c2ffb0e687))
-
-
-
-
+- **analytics:** Add analytics provider for AWS Firehose ([#2823](https://github.com/aws-amplify/amplify-js/issues/2823)) ([29103ae](https://github.com/aws-amplify/amplify-js/commit/29103ae0b2d76dba66e3dc856d77c4c2ffb0e687))
 
 # [2.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@1.2.4...aws-amplify@2.1.0) (2019-11-15)
 
-
 ### Features
 
-* enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
-
-
-
-
+- enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
 
 ## [1.2.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@1.2.3...aws-amplify@1.2.4) (2019-10-29)
 
 **Note:** Version bump only for package aws-amplify
 
-
-
-
-
 ## [1.2.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@1.2.2...aws-amplify@1.2.3) (2019-10-23)
 
 **Note:** Version bump only for package aws-amplify
-
-
-
-
 
 ## [1.2.2](https://github.com/aws/aws-amplify/compare/aws-amplify@1.2.0...aws-amplify@1.2.2) (2019-10-10)
 
 **Note:** Version bump only for package aws-amplify
 
-
-
-
-
 # [1.2.0](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.40...aws-amplify@1.2.0) (2019-10-10)
-
 
 ### Features
 
-* Added Prettier formatting ([4dfd9aa](https://github.com/aws/aws-amplify/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
-
-
-
-
+- Added Prettier formatting ([4dfd9aa](https://github.com/aws/aws-amplify/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
 
 ## [1.1.40](https://github.com/aws/aws-amplify/compare/aws-amplify@1.1.38...aws-amplify@1.1.40) (2019-09-13)
 

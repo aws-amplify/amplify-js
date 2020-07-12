@@ -1,0 +1,29 @@
+:host {
+  --footer-font-family: var(--amplify-font-family);
+  --footer-font-size: var(--amplify-text-sm);
+  --footer-color: var(--amplify-grey);
+  --font-weight: var(--amplify-font-weight);
+}
+
+.sign-up-form-footer {
+  font-family: var(--footer-font-family);
+  font-size: var(--footer-font-size);
+  color: var(--footer-color);
+  font-weight: (--font-weight);
+
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: space-around;
+
+  @include md {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  * + * {
+    margin-bottom: 15px;
+  }
+}

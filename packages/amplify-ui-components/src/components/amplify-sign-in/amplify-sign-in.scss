@@ -1,0 +1,30 @@
+:host {
+  --footer-size: var(--amplify-text-sm);
+  --footer-color: var(--amplify-grey);
+  --footer-font-family: var(--amplify-font-family);
+  --font-weight: var(--amplify-font-weight);
+}
+
+.sign-in-form-footer {
+  font-family: var(--footer-font-family);
+  font-size: var(--footer-size);
+  color: var(--footer-color);
+  font-weight: (--font-weight);
+  margin-bottom: 10px;
+
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: space-around;
+
+  @include md {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  * + * {
+    margin-bottom: 15px;
+  }
+}
