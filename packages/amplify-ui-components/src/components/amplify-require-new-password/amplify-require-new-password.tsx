@@ -12,8 +12,9 @@ import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { Translations } from '../../common/Translations';
 
 import { Auth } from '@aws-amplify/auth';
-import { ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, requiredAttributesMap } from '../../common/helpers';
+import { checkContact } from '../../common/auth-helpers';
 
 const logger = new Logger('amplify-require-new-password');
 
@@ -90,22 +91,22 @@ export class AmplifyRequireNewPassword {
     this.password = event.target.value;
   }
 
-  private async checkContact(user) {
-    if (!Auth || typeof Auth.verifiedContact !== 'function') {
-      throw new Error(NO_AUTH_MODULE_FOUND);
-    }
-    try {
-      const data = await Auth.verifiedContact(user);
-      if (!isEmpty(data.verified)) {
-        this.handleAuthStateChange(AuthState.SignedIn, user);
-      } else {
-        user = Object.assign(user, data);
-        this.handleAuthStateChange(AuthState.VerifyContact, user);
-      }
-    } catch (error) {
-      dispatchToastHubEvent(error);
-    }
-  }
+  // private async checkContact(user) {
+  //   if (!Auth || typeof Auth.verifiedContact !== 'function') {
+  //     throw new Error(NO_AUTH_MODULE_FOUND);
+  //   }
+  //   try {
+  //     const data = await Auth.verifiedContact(user);
+  //     if (!isEmpty(data.verified)) {
+  //       this.handleAuthStateChange(AuthState.SignedIn, user);
+  //     } else {
+  //       user = Object.assign(user, data);
+  //       this.handleAuthStateChange(AuthState.VerifyContact, user);
+  //     }
+  //   } catch (error) {
+  //     dispatchToastHubEvent(error);
+  //   }
+  // }
 
   private async completeNewPassword(event: Event) {
     if (event) {
@@ -130,7 +131,7 @@ export class AmplifyRequireNewPassword {
           this.handleAuthStateChange(AuthState.TOTPSetup, user);
           break;
         default:
-          this.checkContact(user);
+          checkContact(user);
       }
     } catch (error) {
       dispatchToastHubEvent(error);

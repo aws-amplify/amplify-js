@@ -18,6 +18,7 @@ import {
   handlePhoneNumberChange,
 } from '../../common/helpers';
 import { Translations } from '../../common/Translations';
+import { checkContact } from '../../common/auth-helpers';
 
 /**
  * @slot footer - Content is place in the footer of the component
@@ -132,7 +133,12 @@ export class AmplifySignUp {
 
     try {
       const data = await Auth.signUp(this.signUpAttributes);
-      this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
+      if (data?.userConfirmed && data?.user) {
+        const user = await Auth.signIn(this.signUpAttributes.username, this.signUpAttributes.password);
+        checkContact(user);
+      } else {
+        this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
+      }
     } catch (error) {
       dispatchToastHubEvent(error);
     }

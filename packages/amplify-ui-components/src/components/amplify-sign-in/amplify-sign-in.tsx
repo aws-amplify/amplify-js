@@ -26,6 +26,7 @@ import {
   handlePhoneNumberChange,
 } from '../../common/helpers';
 import { SignInAttributes } from './amplify-sign-in-interface';
+import { checkContact } from '../../common/auth-helpers';
 
 const logger = new Logger('SignIn');
 /**
@@ -117,19 +118,19 @@ export class AmplifySignIn {
     fnToCall(event, callback.bind(this));
   }
 
-  private checkContact(user) {
-    if (!Auth || typeof Auth.verifiedContact !== 'function') {
-      throw new Error(NO_AUTH_MODULE_FOUND);
-    }
-    Auth.verifiedContact(user).then(data => {
-      if (!isEmpty(data.verified)) {
-        this.handleAuthStateChange(AuthState.SignedIn, user);
-      } else {
-        user = Object.assign(user, data);
-        this.handleAuthStateChange(AuthState.VerifyContact, user);
-      }
-    });
-  }
+  // private checkContact(user) {
+  //   if (!Auth || typeof Auth.verifiedContact !== 'function') {
+  //     throw new Error(NO_AUTH_MODULE_FOUND);
+  //   }
+  //   Auth.verifiedContact(user).then(data => {
+  //     if (!isEmpty(data.verified)) {
+  //       this.handleAuthStateChange(AuthState.SignedIn, user);
+  //     } else {
+  //       user = Object.assign(user, data);
+  //       this.handleAuthStateChange(AuthState.VerifyContact, user);
+  //     }
+  //   });
+  // }
 
   private async signIn(event: Event) {
     // avoid submitting the form
@@ -173,7 +174,7 @@ export class AmplifySignIn {
         logger.debug('custom challenge', user.challengeParam);
         this.handleAuthStateChange(AuthState.CustomConfirmSignIn, user);
       } else {
-        this.checkContact(user);
+        checkContact(user);
       }
     } catch (error) {
       dispatchToastHubEvent(error);
