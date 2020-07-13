@@ -31,6 +31,7 @@ export enum Translations {
   SELECT_MFA_TYPE_HEADER_TEXT = 'Select MFA Type',
   SELECT_MFA_TYPE_SUBMIT_BUTTON_TEXT = 'Verify',
   SEND_CODE = 'Send Code',
+  SUBMIT = 'Submit',
   SETUP_TOTP_REQUIRED = 'TOTP needs to be configured',
   SIGN_IN_ACTION = 'Sign In',
   SIGN_IN_HEADER_TEXT = 'Sign in to your account',

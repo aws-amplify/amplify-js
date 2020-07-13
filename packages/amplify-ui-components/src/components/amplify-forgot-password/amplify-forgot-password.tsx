@@ -30,8 +30,10 @@ const logger = new Logger('ForgotPassword');
 export class AmplifyForgotPassword {
   /** The header text of the forgot password section */
   @Prop() headerText: string = I18n.get(Translations.RESET_YOUR_PASSWORD);
+  /** The text displayed inside of the send code button for the form */
+  @Prop() sendButtonText: string = I18n.get(Translations.SEND_CODE);
   /** The text displayed inside of the submit button for the form */
-  @Prop() submitButtonText: string = I18n.get(Translations.SEND_CODE);
+  @Prop() submitButtonText: string = I18n.get(Translations.SUBMIT);
   /** The form fields displayed inside of the forgot password form */
   @Prop() formFields: FormFieldTypes | string[] = [];
   /** The function called when making a request to reset password */
@@ -245,6 +247,7 @@ export class AmplifyForgotPassword {
 
   render() {
     const submitFn = this.delivery ? event => this.handleSubmit(event) : event => this.handleSend(event);
+    const submitButtonText = this.delivery ? this.submitButtonText : this.sendButtonText;
     return (
       <amplify-form-section
         headerText={this.headerText}
@@ -260,7 +263,7 @@ export class AmplifyForgotPassword {
           </amplify-button>
         }
         testDataPrefix={'forgot-password'}
-        submitButtonText={I18n.get(Translations.SEND_CODE)}
+        submitButtonText={submitButtonText}
       >
         <amplify-auth-fields formFields={this.newFormFields} />
       </amplify-form-section>
