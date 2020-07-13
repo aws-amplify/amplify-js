@@ -139,6 +139,22 @@
             ".then(response => console.log({ response }))",
             ".catch(err => console.log({ err }));"
         ]
+    },
+
+    "Amplify Predictions TextInS3Image": {
+        "prefix": "Predict.textInS3Image",
+        "body": [
+            "Predictions.identify({",
+                "\ttext: {",
+                    "\t\tsource: {",
+                        "\t\t\tkey: ${1: pathToPhoto},",
+                        "\t\t\tlevel?: ${2: 'public | private | protected'}, //optional, default is the configured on Storage category",
+                    "\t\t}",
+                "\t}",
+            "})",
+            ".then((response) => console.log({ response }))",
+            ".catch(err => console.log({ err }));"
+        ]
     }
 
 
