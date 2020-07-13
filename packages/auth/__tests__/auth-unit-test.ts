@@ -1161,6 +1161,7 @@ describe('auth unit test', () => {
 					onFailure: jasmine.any(Function),
 					mfaRequired: jasmine.any(Function),
 					mfaSetup: jasmine.any(Function),
+					totpRequired: jasmine.any(Function),
 				},
 				{ foo: 'bar' }
 			);
@@ -1190,6 +1191,7 @@ describe('auth unit test', () => {
 					onFailure: jasmine.any(Function),
 					mfaRequired: jasmine.any(Function),
 					mfaSetup: jasmine.any(Function),
+					totpRequired: jasmine.any(Function),
 				},
 				{ custom: 'value' }
 			);

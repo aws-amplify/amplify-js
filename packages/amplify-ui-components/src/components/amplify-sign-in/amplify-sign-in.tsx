@@ -3,7 +3,9 @@ import { I18n, Logger, isEmpty } from '@aws-amplify/core';
 import { Component, Prop, State, h, Watch } from '@stencil/core';
 import {
   FormFieldTypes,
+  FormFieldType,
   PhoneNumberInterface,
+  PhoneFormFieldType,
 } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
   AuthState,
@@ -13,12 +15,7 @@ import {
   UsernameAliasStrings,
 } from '../../common/types/auth-types';
 import { Translations } from '../../common/Translations';
-import {
-  NO_AUTH_MODULE_FOUND,
-  COUNTRY_DIAL_CODE_DEFAULT,
-  COUNTRY_DIAL_CODE_SUFFIX,
-  PHONE_SUFFIX,
-} from '../../common/constants';
+import { NO_AUTH_MODULE_FOUND, COUNTRY_DIAL_CODE_DEFAULT } from '../../common/constants';
 
 import {
   dispatchToastHubEvent,
@@ -26,6 +23,7 @@ import {
   composePhoneNumberInput,
   checkUsernameAlias,
   isHintValid,
+  handlePhoneNumberChange,
 } from '../../common/helpers';
 import { SignInAttributes } from './amplify-sign-in-interface';
 
@@ -70,6 +68,8 @@ export class AmplifySignIn {
    * ```
    */
   @Prop() formFields: FormFieldTypes | string[] = [];
+  /** Hides the sign up link */
+  @Prop() hideSignUp: boolean = false;
   private newFormFields: FormFieldTypes | string[] = [];
 
   /* Whether or not the sign-in component is loading */
@@ -85,13 +85,23 @@ export class AmplifySignIn {
     password: '',
   };
 
+  componentWillLoad() {
+    checkUsernameAlias(this.usernameAlias);
+    this.buildFormFields();
+  }
+
+  @Watch('formFields')
+  formFieldsHandler() {
+    this.buildFormFields();
+  }
+
   private handleFormFieldInputChange(fieldType) {
     switch (fieldType) {
       case 'username':
       case 'email':
         return event => (this.signInAttributes.userInput = event.target.value);
       case 'phone_number':
-        return event => this.handlePhoneNumberChange(event);
+        return event => handlePhoneNumberChange(event, this.phoneNumber);
       case 'password':
         return event => (this.signInAttributes.password = event.target.value);
     }
@@ -105,24 +115,6 @@ export class AmplifySignIn {
         };
     const callback = this.handleFormFieldInputChange(field.type);
     fnToCall(event, callback.bind(this));
-  }
-
-  private handlePhoneNumberChange(event) {
-    const name = event.target.name;
-    const value = event.target.value;
-
-    /** Cognito expects to have a string be passed when signing up. Since the Select input is separate
-     * input from the phone number input, we need to first capture both components values and combined
-     * them together.
-     */
-
-    if (name === COUNTRY_DIAL_CODE_SUFFIX) {
-      this.phoneNumber.countryDialCodeValue = value;
-    }
-
-    if (name === PHONE_SUFFIX) {
-      this.phoneNumber.phoneNumberValue = value;
-    }
   }
 
   private checkContact(user) {
@@ -152,7 +144,11 @@ export class AmplifySignIn {
 
     switch (this.usernameAlias) {
       case 'phone_number':
-        this.signInAttributes.userInput = composePhoneNumberInput(this.phoneNumber);
+        try {
+          this.signInAttributes.userInput = composePhoneNumberInput(this.phoneNumber);
+        } catch (error) {
+          dispatchToastHubEvent(error);
+        }
       default:
         break;
     }
@@ -277,20 +273,37 @@ export class AmplifySignIn {
           );
         }
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
+        this.setFieldValue(newField, this.signInAttributes);
         newFields.push(newField);
       });
       this.newFormFields = newFields;
     }
   }
 
-  componentWillLoad() {
-    checkUsernameAlias(this.usernameAlias);
-    this.buildFormFields();
-  }
-
-  @Watch('formFields')
-  formFieldsHandler() {
-    this.buildFormFields();
+  setFieldValue(field: PhoneFormFieldType | FormFieldType, formAttributes: SignInAttributes) {
+    switch (field.type) {
+      case 'username':
+      case 'email':
+        if (field.value === undefined) {
+          formAttributes.userInput = '';
+        } else {
+          formAttributes.userInput = field.value;
+        }
+        break;
+      case 'phone_number':
+        if ((field as PhoneFormFieldType).dialCode) {
+          this.phoneNumber.countryDialCodeValue = (field as PhoneFormFieldType).dialCode;
+        }
+        this.phoneNumber.phoneNumberValue = field.value;
+        break;
+      case 'password':
+        if (field.value === undefined) {
+          formAttributes.password = '';
+        } else {
+          formAttributes.password = field.value;
+        }
+        break;
+    }
   }
 
   render() {
@@ -304,17 +317,22 @@ export class AmplifySignIn {
         <div slot="amplify-form-section-footer" class="sign-in-form-footer">
           <slot name="footer">
             <slot name="secondary-footer-content">
-              <span>
-                {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
-                <amplify-button
-                  variant="anchor"
-                  onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
-                  data-test="sign-in-create-account-link"
-                >
-                  {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
-                </amplify-button>
-              </span>
+              {!this.hideSignUp ? (
+                <span>
+                  {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
+                  <amplify-button
+                    variant="anchor"
+                    onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
+                    data-test="sign-in-create-account-link"
+                  >
+                    {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
+                  </amplify-button>
+                </span>
+              ) : (
+                <span></span>
+              )}
             </slot>
+
             <slot name="primary-footer-content">
               <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
                 <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
