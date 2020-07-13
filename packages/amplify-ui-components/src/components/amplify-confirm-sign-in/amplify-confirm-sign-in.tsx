@@ -73,20 +73,6 @@ export class AmplifyConfirmSignIn {
     this.code = event.target.value;
   }
 
-  // private checkContact(user) {
-  //   if (!Auth || typeof Auth.verifiedContact !== 'function') {
-  //     throw new Error(NO_AUTH_MODULE_FOUND);
-  //   }
-  //   Auth.verifiedContact(user).then(data => {
-  //     if (!isEmpty(data.verified)) {
-  //       this.handleAuthStateChange(AuthState.SignedIn, user);
-  //     } else {
-  //       user = Object.assign(user, data);
-  //       this.handleAuthStateChange(AuthState.VerifyContact, user);
-  //     }
-  //   });
-  // }
-
   private async confirm(event: Event) {
     if (event) {
       event.preventDefault();

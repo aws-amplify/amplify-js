@@ -91,23 +91,6 @@ export class AmplifyRequireNewPassword {
     this.password = event.target.value;
   }
 
-  // private async checkContact(user) {
-  //   if (!Auth || typeof Auth.verifiedContact !== 'function') {
-  //     throw new Error(NO_AUTH_MODULE_FOUND);
-  //   }
-  //   try {
-  //     const data = await Auth.verifiedContact(user);
-  //     if (!isEmpty(data.verified)) {
-  //       this.handleAuthStateChange(AuthState.SignedIn, user);
-  //     } else {
-  //       user = Object.assign(user, data);
-  //       this.handleAuthStateChange(AuthState.VerifyContact, user);
-  //     }
-  //   } catch (error) {
-  //     dispatchToastHubEvent(error);
-  //   }
-  // }
-
   private async completeNewPassword(event: Event) {
     if (event) {
       event.preventDefault();

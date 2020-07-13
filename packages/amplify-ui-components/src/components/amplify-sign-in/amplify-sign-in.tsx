@@ -118,20 +118,6 @@ export class AmplifySignIn {
     fnToCall(event, callback.bind(this));
   }
 
-  // private checkContact(user) {
-  //   if (!Auth || typeof Auth.verifiedContact !== 'function') {
-  //     throw new Error(NO_AUTH_MODULE_FOUND);
-  //   }
-  //   Auth.verifiedContact(user).then(data => {
-  //     if (!isEmpty(data.verified)) {
-  //       this.handleAuthStateChange(AuthState.SignedIn, user);
-  //     } else {
-  //       user = Object.assign(user, data);
-  //       this.handleAuthStateChange(AuthState.VerifyContact, user);
-  //     }
-  //   });
-  // }
-
   private async signIn(event: Event) {
     // avoid submitting the form
     if (event) {
