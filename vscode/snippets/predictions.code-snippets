@@ -92,8 +92,8 @@
         ]
     },
 
-    "Amplify Predictions SpeechToText": {
-        "prefix": "Predict.speechToText",
+    "Amplify Predictions Transcription": {
+        "prefix": "Predict.transcription",
         "body": [
             "Predictions.convert({",
                 "\ttranscription: {",
@@ -106,7 +106,27 @@
               ".then(({ transcription: { fullText } }) => console.log({ fullText }))",
               ".catch(err => console.log({ err }));"
         ]
+    },
+
+    "Amplify Predictions TranslateText": {
+        "prefix": "Predict.translateText",
+        "body": [
+            "Predictions.convert({",
+                "\ttranslateText: {",
+                  "\t\tsource: {",
+                    "\t\t\ttext: ${1: textToTranslate},",
+                    "\t\t\t// language : \"es\" // defaults configured on aws-exports.js",
+                    "\t\t\t// supported languages https://docs.aws.amazon.com/translate/latest/dg/how-it-works.html#how-it-works-language-codes",
+                    "\t\t},",
+                  "\t\t// targetLanguage: \"en\"",
+                "\t}",
+              "})",
+              ".then(result => console.log({ result }))",
+              ".catch(err => console.log({ err }));"
+        ]
     }
+
+
 
 
 }
