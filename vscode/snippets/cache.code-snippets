@@ -1,128 +1,46 @@
 {
-    "setItem": {
-        "prefix": "setItem",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "setItem"
-        ]
-    },
-    "getItem": {
-        "prefix": "getItem",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "getItem"
-        ]
-    },
-    "removeItem": {
-        "prefix": "removeItem",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "removeItem"
-        ]
-    },
-    "clear": {
-        "prefix": "clear",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "clear"
-        ]
-    },
-    "getAllKeys": {
-        "prefix": "getAllKeys",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "getAllKeys"
-        ]
-    },
-    "getCacheCurSize": {
-        "prefix": "getCacheCurSize",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "getCacheCurSize"
-        ]
-    },
-    "configure": {
-        "prefix": "configure",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "configure"
-        ]
-    },
-    "createInstance": {
-        "prefix": "createInstance",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "createInstance"
-        ]
-    },
-    "keyPrefix": {
-        "prefix": "keyPrefix",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "keyPrefix"
-        ]
-    },
-    "capacityInBytes": {
-        "prefix": "capacityInBytes",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "capacityInBytes"
-        ]
-    },
-    "itemMaxSize": {
-        "prefix": "itemMaxSize",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "itemMaxSize"
-        ]
-    },
-    "defaultTTL": {
-        "prefix": "defaultTTL",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "defaultTTL"
-        ]
-    },
-    "defaultPriority": {
-        "prefix": "defaultPriority",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "defaultPriority"
-        ]
-    },
-    "warningThreshold": {
-        "prefix": "warningThreshold",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "warningThreshold"
-        ]
-    },
-    "storage": {
-        "prefix": "storage",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "storage"
-        ]
-    },
-    "priority": {
-        "prefix": "priority",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "priority"
-        ]
-    },
-    "expires": {
-        "prefix": "expires",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "expires"
-        ]
-    },
-    "callback": {
-        "prefix": "callback",
-        "scope": "javascript,javascriptreact,typescript",
-        "body": [
-            "callback"
-        ]
-    }
+	"Amplify Cache Configure": {
+		"prefix": "Cache.configure",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"const config = {",
+			"\titemMaxSize: 3000, // 3000 bytes",
+			"\tdefaultPriority: 4",
+			"};\n",
+			"const myCacheConfig = Cache.configure(config);"
+		]
+	},
+	"Amplify Cache Create Instance": {
+		"prefix": "Cache.createInstance",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"const config = {",
+			"\tkeyPrefix: '${1:prefix_}',",
+			"\tcapacityInBytes: ${2:1000000},",
+			"\titemMaxSize: ${3:200000},",
+			"\tdefaultTTL: ${4:3600000},",
+			"\tdefaultPriority: ${5:5},",
+			"\twarningThreshold: ${6:0.8},\n",
+			"\t// Supported values are LocalStorage and SessionStorage",
+			"\t// for Web development and AsyncStorage for React Native.",
+			"\tstorage: ${7:window.sessionStorage},",
+			"};\n",
+			"const newCache = Cache.createInstance(config);"
+		]
+	},
+	"Amplify Cache Add Item": {
+		"prefix": "Cache.setItem",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["Cache.setItem(${1:'key'}, ${2:'value'});"]
+	},
+	"Amplify Cache Get Item": {
+		"prefix": "Cache.getItem",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["Cache.getItem(${1:'key'});"]
+	},
+	"Amplify Cache Remove Item": {
+		"prefix": "Cache.removeItem",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["Cache.removeItem(${1:'key'});"]
+	}
 }
