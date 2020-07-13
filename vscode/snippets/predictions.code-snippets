@@ -75,7 +75,7 @@
 		]
     },
 
-    "Amplify TextToSpeech": {
+    "Amplify Predictions TextToSpeech": {
         "prefix": "Predict.textToSpeech",
         "body": [
             "Predictions.convert({",
@@ -88,6 +88,22 @@
                 "\t}",
               "})",
               ".then(result => console.log({ result }))",
+              ".catch(err => console.log({ err }));"
+        ]
+    },
+
+    "Amplify Predictions SpeechToText": {
+        "prefix": "Predict.speechToText",
+        "body": [
+            "Predictions.convert({",
+                "\ttranscription: {",
+                  "\t\tsource: {",
+                    "\t\t\t${1: bytes}",
+                  "\t\t},",
+                  "\t\t// language: \"en-US\", // other options are \"en-GB\", \"fr-FR\", \"fr-CA\", \"es-US\"",
+                "\t}",
+              "})",
+              ".then(({ transcription: { fullText } }) => console.log({ fullText }))",
               ".catch(err => console.log({ err }));"
         ]
     }
