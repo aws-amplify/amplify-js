@@ -99,8 +99,7 @@
 	},
 	"devDependencies": {
 		"vscode": "^1.1.18"
-	}
-=======
+	},
     "name": "aws-amplify-vscode",
     "displayName": "AWS Amplify API",
     "description": "AWS Amplify API code snippets",
