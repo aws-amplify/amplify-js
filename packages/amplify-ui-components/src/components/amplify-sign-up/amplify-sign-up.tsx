@@ -133,7 +133,7 @@ export class AmplifySignUp {
 
     try {
       const data = await Auth.signUp(this.signUpAttributes);
-      if (data?.userConfirmed && data?.user) {
+      if (data && data.userConfirmed) {
         const user = await Auth.signIn(this.signUpAttributes.username, this.signUpAttributes.password);
         checkContact(user);
       } else {
