@@ -1,0 +1,11 @@
+{
+	"files": [],
+	"references": [
+		{
+			"path": "tsconfig.esm.json"
+		},
+		{
+			"path": "tsconfig.cjs.json"
+		}
+	]
+}

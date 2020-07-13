@@ -1,0 +1,9 @@
+{
+	"compileOnSave": true,
+	"files": [],
+	"references": [
+		{
+			"path": "packages/auth/tsconfig.json"
+		}
+	]
+}

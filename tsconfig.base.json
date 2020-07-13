@@ -1,0 +1,36 @@
+{
+	"compilerOptions": {
+		"alwaysStrict": false,
+		"baseUrl": ".",
+		"composite": true,
+		"declaration": true,
+		"declarationMap": true,
+		"downlevelIteration": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"lib": ["DOM", "ES2017", "ES2018.AsyncIterable"],
+		"moduleResolution": "node",
+		"noEmit": false,
+		"noEmitOnError": false,
+		"noImplicitAny": false,
+		"noImplicitThis": false,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"resolveJsonModule": true,
+		"sourceMap": true,
+		"strict": false,
+		"strictBindCallApply": true,
+		"strictFunctionTypes": true,
+		"strictNullChecks": true,
+		"strictPropertyInitialization": true,
+		"target": "ES5",
+		"typeRoots": ["node_modules/@types", "packages/**/node_modules"],
+		"useDefineForClassFields": true
+	},
+	"exclude": [
+		"node_modules",
+		"packages/**/cjs",
+		"packages/**/esm",
+		"packages/**/node_modules"
+	]
+}

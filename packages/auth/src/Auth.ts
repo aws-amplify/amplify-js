@@ -85,9 +85,11 @@ const dispatchAuthEvent = (event: string, data: any, message: string) => {
  * Provide authentication steps
  */
 export class AuthClass {
+	// @ts-ignore
 	private _config: AuthOptions;
 	private userPool = null;
 	private user: any = null;
+	// @ts-ignore
 	private _oAuthHandler: OAuth;
 	private _storage;
 	private _storageSync;
@@ -167,10 +169,12 @@ export class AuthClass {
 		if (userPoolId) {
 			const userPoolData: ICognitoUserPoolData = {
 				UserPoolId: userPoolId,
+				// @ts-ignore
 				ClientId: userPoolWebClientId,
 			};
 			userPoolData.Storage = this._storage;
 
+			// @ts-ignore
 			this.userPool = new CognitoUserPool(userPoolData);
 		}
 
@@ -186,6 +190,7 @@ export class AuthClass {
 		// initiailize cognitoauth client if hosted ui options provided
 		// to keep backward compatibility:
 		const cognitoHostedUIConfig = oauth
+			// @ts-ignore
 			? isCognitoHostedOpts(this._config.oauth)
 				? oauth
 				: (<any>oauth).awsCognito
@@ -250,16 +255,22 @@ export class AuthClass {
 			return this.rejectNoUserPool();
 		}
 
+		// @ts-ignore
 		let username: string = null;
+		// @ts-ignore
 		let password: string = null;
 		const attributes: object[] = [];
+		// @ts-ignore
 		let validationData: object[] = null;
 		let clientMetadata;
 
 		if (params && typeof params === 'string') {
 			username = params;
+			// @ts-ignore
 			password = restOfAttrs ? restOfAttrs[0] : null;
+			// @ts-ignore
 			const email: string = restOfAttrs ? restOfAttrs[1] : null;
+			// @ts-ignore
 			const phone_number: string = restOfAttrs ? restOfAttrs[2] : null;
 			if (email) attributes.push({ Name: 'email', Value: email });
 			if (phone_number)
@@ -281,6 +292,7 @@ export class AuthClass {
 					attributes.push(ele);
 				});
 			}
+			// @ts-ignore
 			validationData = params['validationData'] || null;
 		} else {
 			return this.rejectAuthError(AuthErrorTypes.SignUpError);
@@ -297,6 +309,7 @@ export class AuthClass {
 		logger.debug('signUp validation data:', validationData);
 
 		return new Promise((resolve, reject) => {
+			// @ts-ignore
 			this.userPool.signUp(
 				username,
 				password,
@@ -424,7 +437,9 @@ export class AuthClass {
 
 		// for backward compatibility
 		if (typeof usernameOrSignInOpts === 'string') {
+			// @ts-ignore
 			username = usernameOrSignInOpts;
+			// @ts-ignore
 			password = pw;
 		} else if (isUsernamePasswordOpts(usernameOrSignInOpts)) {
 			if (typeof pw !== 'undefined') {
@@ -432,8 +447,11 @@ export class AuthClass {
 					'The password should be defined under the first parameter object!'
 				);
 			}
+			// @ts-ignore
 			username = usernameOrSignInOpts.username;
+			// @ts-ignore
 			password = usernameOrSignInOpts.password;
+			// @ts-ignore
 			validationData = usernameOrSignInOpts.validationData;
 		} else {
 			return this.rejectAuthError(AuthErrorTypes.InvalidUsername);
@@ -443,6 +461,7 @@ export class AuthClass {
 		}
 		const authDetails = new AuthenticationDetails({
 			Username: username,
+			// @ts-ignore
 			Password: password,
 			ValidationData: validationData,
 			ClientMetadata: clientMetadata,
@@ -656,11 +675,14 @@ export class AuthClass {
 				// if it does not exist, then it should be NOMFA
 				const MFAOptions = data.MFAOptions;
 				if (MFAOptions) {
+					// @ts-ignore
 					ret = 'SMS_MFA';
 				} else {
+					// @ts-ignore
 					ret = 'NOMFA';
 				}
 			} else if (mfaList.length === 0) {
+				// @ts-ignore
 				ret = 'NOMFA';
 			} else {
 				logger.debug('invalid case for getPreferredMFA', data);
@@ -700,28 +722,33 @@ export class AuthClass {
 
 		switch (mfaMethod) {
 			case 'TOTP' || 'SOFTWARE_TOKEN_MFA':
+				// @ts-ignore
 				totpMfaSettings = {
 					PreferredMfa: true,
 					Enabled: true,
 				};
 				break;
 			case 'SMS' || 'SMS_MFA':
+				// @ts-ignore
 				smsMfaSettings = {
 					PreferredMfa: true,
 					Enabled: true,
 				};
 				break;
 			case 'NOMFA':
+				// @ts-ignore
 				const mfaList = userData['UserMFASettingList'];
 				const currentMFAType = await this._getMfaTypeFromUserData(userData);
 				if (currentMFAType === 'NOMFA') {
 					return Promise.resolve('No change for mfa type');
 				} else if (currentMFAType === 'SMS_MFA') {
+					// @ts-ignore
 					smsMfaSettings = {
 						PreferredMfa: false,
 						Enabled: false,
 					};
 				} else if (currentMFAType === 'SOFTWARE_TOKEN_MFA') {
+					// @ts-ignore
 					totpMfaSettings = {
 						PreferredMfa: false,
 						Enabled: false,
@@ -735,11 +762,13 @@ export class AuthClass {
 					// to disable SMS or TOTP if exists in that list
 					mfaList.forEach(mfaType => {
 						if (mfaType === 'SMS_MFA') {
+							// @ts-ignore
 							smsMfaSettings = {
 								PreferredMfa: false,
 								Enabled: false,
 							};
 						} else if (mfaType === 'SOFTWARE_TOKEN_MFA') {
+							// @ts-ignore
 							totpMfaSettings = {
 								PreferredMfa: false,
 								Enabled: false,
@@ -1140,6 +1169,7 @@ export class AuthClass {
 						});
 					}
 
+					// @ts-ignore
 					const user = this.userPool.getCurrentUser();
 
 					if (!user) {
@@ -1188,6 +1218,7 @@ export class AuthClass {
 											Value: data.UserAttributes[i].Value,
 										};
 										const userAttribute = new CognitoUserAttribute(attribute);
+										// @ts-ignore
 										attributeList.push(userAttribute);
 									}
 
@@ -1516,8 +1547,10 @@ export class AuthClass {
 		}
 
 		if (this.userPool) {
+			// @ts-ignore
 			const user = this.userPool.getCurrentUser();
 			if (user) {
+				// @ts-ignore
 				await this.cognitoIdentitySignOut(opts, user);
 			} else {
 				logger.debug('no current Cognito user');
@@ -1708,6 +1741,7 @@ export class AuthClass {
 				}
 
 				const info = {
+					// @ts-ignore
 					id: credentials ? credentials.identityId : undefined,
 					username: user.getUsername(),
 					attributes: userAttrs,
@@ -1725,6 +1759,7 @@ export class AuthClass {
 		}
 	}
 
+	// @ts-ignore
 	public async federatedSignIn(
 		options?: FederatedSignInOptions
 	): Promise<ICredentials>;
@@ -1736,6 +1771,7 @@ export class AuthClass {
 	public async federatedSignIn(
 		options?: FederatedSignInOptionsCustom
 	): Promise<ICredentials>;
+	// @ts-ignore
 	public async federatedSignIn(
 		providerOrOptions:
 			| LegacyProvider
@@ -1776,18 +1812,25 @@ export class AuthClass {
 				: (options as FederatedSignInOptionsCustom).customState;
 
 			if (this._config.userPoolId) {
+				// @ts-ignore
 				const client_id = isCognitoHostedOpts(this._config.oauth)
 					? this._config.userPoolWebClientId
+					// @ts-ignore
 					: this._config.oauth.clientID;
 				/*Note: Invenstigate automatically adding trailing slash */
+				// @ts-ignore
 				const redirect_uri = isCognitoHostedOpts(this._config.oauth)
 					? this._config.oauth.redirectSignIn
+					// @ts-ignore
 					: this._config.oauth.redirectUri;
 
 				this._oAuthHandler.oauthSignIn(
+					// @ts-ignore
 					this._config.oauth.responseType,
+					// @ts-ignore
 					this._config.oauth.domain,
 					redirect_uri,
+					// @ts-ignore
 					client_id,
 					provider,
 					customState
@@ -1806,6 +1849,7 @@ export class AuthClass {
 				}
 			} catch (e) {}
 
+			// @ts-ignore
 			const { token, identity_id, expires_at } = response;
 			// Because Credentials.set would update the user info with identity id
 			// So we need to retrieve the user again.
@@ -1866,8 +1910,11 @@ export class AuthClass {
 				this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
 				try {
 					const {
+						// @ts-ignore
 						accessToken,
+						// @ts-ignore
 						idToken,
+						// @ts-ignore
 						refreshToken,
 						state,
 					} = await this._oAuthHandler.handleAuthResponse(currentUrl);
@@ -1908,6 +1955,7 @@ export class AuthClass {
 					if (window && typeof window.history !== 'undefined') {
 						window.history.replaceState(
 							{},
+							// @ts-ignore
 							null,
 							(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
 						);
@@ -1999,6 +2047,7 @@ export class AuthClass {
 	private createCognitoUser(username: string): CognitoUser {
 		const userData: ICognitoUserData = {
 			Username: username,
+			// @ts-ignore
 			Pool: this.userPool,
 		};
 		userData.Storage = this._storage;
@@ -2042,4 +2091,5 @@ export class AuthClass {
 	}
 }
 
+// @ts-ignore
 export const Auth = new AuthClass(null);

@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"module": "ES6",
+		"outDir": "esm",
+		"rootDir": "src",
+		"tsBuildInfoFile": "esm/.tsbuildinfo"
+	},
+	"exclude": ["__tests__"],
+	"extends": "../../tsconfig.base.json",
+	"include": ["__tests__", "src"]
+}

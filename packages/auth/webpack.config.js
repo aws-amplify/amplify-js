@@ -1,8 +1,8 @@
 module.exports = {
 	entry: {
-		'aws-amplify-auth.min': './lib-esm/index.js',
+		'aws-amplify-auth.min': './esm/index.js',
 	},
-	externals: ['react-native', '@aws-amplify/cache', '@aws-amplify/core'],
+	externals: ['react-native', '@aws-amplify/cache', '@aws-amplify/core', 'amazon-cognito-identity-js'],
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',

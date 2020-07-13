@@ -183,6 +183,7 @@ export default class OAuth {
 	}
 
 	private async _handleImplicitFlow(currentUrl: string) {
+		// @ts-ignore
 		const { id_token, access_token } = parse(currentUrl)
 			.hash.substr(1) // Remove # from returned code
 			.split('&')
@@ -229,8 +230,10 @@ export default class OAuth {
 				`Starting ${this._config.responseType} flow with ${currentUrl}`
 			);
 			if (this._config.responseType === 'code') {
+				// @ts-ignore
 				return { ...(await this._handleCodeFlow(currentUrl)), state };
 			} else {
+				// @ts-ignore
 				return { ...(await this._handleImplicitFlow(currentUrl)), state };
 			}
 		} catch (e) {
@@ -241,6 +244,7 @@ export default class OAuth {
 
 	private _validateState(urlParams: any): string {
 		if (!urlParams) {
+			// @ts-ignore
 			return;
 		}
 
@@ -324,6 +328,7 @@ export default class OAuth {
 		const state = [];
 		for (let i = 0; i < buffer.byteLength; i += 1) {
 			const index = buffer[i] % CHARSET.length;
+			// @ts-ignore
 			state.push(CHARSET[index]);
 		}
 		return state.join('');

@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"module": "CommonJS",
+		"outDir": "cjs",
+		"rootDir": "src",
+		"tsBuildInfoFile": "cjs/.tsbuildinfo"
+	},
+	"exclude": ["__tests__"],
+	"extends": "../../tsconfig.base.json",
+	"include": ["__tests__", "src"]
+}

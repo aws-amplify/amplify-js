@@ -2,7 +2,6 @@
 	"name": "aws-amplify-monorepo",
 	"private": true,
 	"version": "0.1.30",
-	"description": "",
 	"scripts": {
 		"setup-dev": "yarn && yarn bootstrap && yarn link-all && yarn build",
 		"bootstrap": "lerna bootstrap",
@@ -14,6 +13,8 @@
 		"build": "lerna run build --stream",
 		"build:esm:watch": "lerna run build:esm:watch --parallel",
 		"build:cjs:watch": "lerna run build:cjs:watch --parallel",
+		"build:with-references": "tsc -b && cd packages/auth && yarn webpack",
+		"watch:with-references": "tsc -w",
 		"clean": "lerna run clean --parallel",
 		"format": "lerna run format",
 		"lint": "lerna run lint",
@@ -31,8 +32,13 @@
 		}
 	},
 	"workspaces": {
-  		"packages": ["packages/*"],
-  		"nohoist": ["**/@types/react-native", "**/@types/react-native/**"]
+		"packages": [
+			"packages/*"
+		],
+		"nohoist": [
+			"**/@types/react-native",
+			"**/@types/react-native/**"
+		]
 	},
 	"repository": {
 		"type": "git",
@@ -75,7 +81,7 @@
 		"tslint": "^5.7.0",
 		"tslint-config-airbnb": "^5.8.0",
 		"typedoc": "^0.16.9",
-		"typescript": "~3.6.4",
+		"typescript": "^3.9.6",
 		"uglifyjs-webpack-plugin": "^0.4.6",
 		"uuid-validate": "^0.0.3",
 		"webpack": "^4.32.0",
