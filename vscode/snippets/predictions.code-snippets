@@ -79,16 +79,16 @@
         "prefix": "Predict.textToSpeech",
         "body": [
             "Predictions.convert({",
-                "\t\t\ttextToSpeech: {",
-                  "\t\t\t\tsource: {",
-                    "text: textToGenerateSpeech",
-                  "},",
-                  voiceId: "Amy" // default configured on aws-exports.js
-                  // list of different options are here https://docs.aws.amazon.com/polly/latest/dg/voicelist.html
-                }
-              })
-              .then(result => console.log({ result }))
-              .catch(err => console.log({ err }));
+                "\ttextToSpeech: {",
+                  "\t\tsource: {",
+                    "\t\t\ttext: ${1: textToGenerateSpeech},",
+                  "\t\t},",
+                  "\t\tvoiceId: ${2: \"Amy\"} // default configured on aws-exports.js",
+                  "\t\t// list of different options are here https://docs.aws.amazon.com/polly/latest/dg/voicelist.html",
+                "\t}",
+              "})",
+              ".then(result => console.log({ result }))",
+              ".catch(err => console.log({ err }));"
         ]
     }
 
