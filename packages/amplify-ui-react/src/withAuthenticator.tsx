@@ -24,8 +24,8 @@ export function withAuthenticator(
 			return checkUser();
 		}, []);
 
-		async function checkUser() {
-			await setUser();
+		function checkUser() {
+			setUser();
 			
 			return onAuthUIStateChange(authState => {
 				if (authState === AuthState.SignedIn) {
