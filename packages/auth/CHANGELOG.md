@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.0...@aws-amplify/auth@3.3.1) (2020-07-09)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+# [3.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.2.14...@aws-amplify/auth@3.3.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** User Attributes coerced to boolean ([#6180](https://github.com/aws-amplify/amplify-js/issues/6180)) ([8dd9295](https://github.com/aws-amplify/amplify-js/commit/8dd92959fbe11c328ec4f8e467c0929ed1e7e5ca))
+
+
+### Features
+
+* **@aws-amplify/auth:** add SignInWithApple to supported providers ([#5402](https://github.com/aws-amplify/amplify-js/issues/5402)) ([c6e8162](https://github.com/aws-amplify/amplify-js/commit/c6e8162bd9a148453f3cb1f58960ed3a59a50a0b))
+
+
+
+
+
+## [3.2.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.2.13...@aws-amplify/auth@3.2.14) (2020-06-18)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Call replaceState before dispatchAuthEvent ([#5937](https://github.com/aws-amplify/amplify-js/issues/5937)) ([1e8d4ed](https://github.com/aws-amplify/amplify-js/commit/1e8d4ed9cdecf8b91d5032ae6125afe6b9048873))
+* **@aws-amplify/core:** retry federation refresh token on network error ([#5728](https://github.com/aws-amplify/amplify-js/issues/5728)) ([bd07ee8](https://github.com/aws-amplify/amplify-js/commit/bd07ee8e8b987021e58b9c25d5e1ef524aa4abbc))
+
+
+
+
+
 ## [3.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.2.12...@aws-amplify/auth@3.2.13) (2020-06-09)
 
 **Note:** Version bump only for package @aws-amplify/auth

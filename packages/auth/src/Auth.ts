@@ -64,7 +64,7 @@ import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
 import { default as urlListener } from './urlListener';
 import { AuthError, NoUserPoolError } from './Errors';
-import { AuthErrorTypes } from './types/Auth';
+import { AuthErrorTypes, CognitoHostedUIIdentityProvider } from './types/Auth';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -80,13 +80,6 @@ typeof Symbol.for === 'function'
 const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
-
-export enum CognitoHostedUIIdentityProvider {
-	Cognito = 'COGNITO',
-	Google = 'Google',
-	Facebook = 'Facebook',
-	Amazon = 'LoginWithAmazon',
-}
 
 /**
  * Provide authentication steps
@@ -972,6 +965,12 @@ export class AuthClass {
 						resolve(user);
 					},
 					mfaSetup: (challengeName, challengeParam) => {
+						logger.debug('signIn mfa setup', challengeName);
+						user['challengeName'] = challengeName;
+						user['challengeParam'] = challengeParam;
+						resolve(user);
+					},
+					totpRequired: (challengeName, challengeParam) => {
 						logger.debug('signIn mfa setup', challengeName);
 						user['challengeName'] = challengeName;
 						user['challengeParam'] = challengeParam;
@@ -1983,10 +1982,12 @@ export class AuthClass {
 		const obj = {};
 		if (attributes) {
 			attributes.map(attribute => {
-				if (attribute.Value === 'true') {
-					obj[attribute.Name] = true;
-				} else if (attribute.Value === 'false') {
-					obj[attribute.Name] = false;
+				if (
+					attribute.Name === 'email_verified' ||
+					attribute.Name === 'phone_number_verified'
+				) {
+					obj[attribute.Name] =
+						attribute.Value === 'true' || attribute.Value === true;
 				} else {
 					obj[attribute.Name] = attribute.Value;
 				}
