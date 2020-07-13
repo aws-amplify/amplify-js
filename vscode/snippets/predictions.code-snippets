@@ -77,6 +77,7 @@
 
     "Amplify Predictions TextToSpeech": {
         "prefix": "Predict.textToSpeech",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Predictions.convert({",
                 "\ttextToSpeech: {",
@@ -94,6 +95,7 @@
 
     "Amplify Predictions Transcription": {
         "prefix": "Predict.transcription",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Predictions.convert({",
                 "\ttranscription: {",
@@ -110,6 +112,7 @@
 
     "Amplify Predictions TranslateText": {
         "prefix": "Predict.translateText",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Predictions.convert({",
                 "\ttranslateText: {",
@@ -128,6 +131,7 @@
 
     "Amplify Predictions TextInImage": {
         "prefix": "Predict.textInImage",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Predictions.identify({",
                 "\ttext: {",
@@ -143,6 +147,7 @@
 
     "Amplify Predictions TextInS3Image": {
         "prefix": "Predict.textInS3Image",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Predictions.identify({",
                 "\ttext: {",
@@ -159,6 +164,7 @@
 
     "Amplify Predictions PlainText": {
         "prefix": "Predict.PlainText",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Predictions.identify({",
                 "\ttext: {",
@@ -197,6 +203,7 @@
 
     "Amplify Prediction StructuredForm": {
         "prefix": "Predict.structuredForm",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Predictions.identify({",
                 "\ttext: {",
