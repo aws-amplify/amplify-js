@@ -1480,8 +1480,7 @@ export class AuthClass {
 						onSuccess: data => {
 							logger.debug('global sign out success');
 							if (isSignedInHostedUI) {
-								this._oAuthHandler.signOut();
-								setTimeout(() => rej('Signout timeout fail'), 3000);
+								this.oAuthSignOutRedirectOrReject(rej);
 							} else {
 								return res();
 							}
@@ -1496,13 +1495,19 @@ export class AuthClass {
 				logger.debug('user sign out', user);
 				user.signOut();
 				if (isSignedInHostedUI) {
-					this._oAuthHandler.signOut();
-					setTimeout(() => rej('Signout timeout fail'), 3000);
+					this.oAuthSignOutRedirectOrReject(rej);
 				} else {
 					return res();
 				}
 			}
 		});
+	}
+
+	private oAuthSignOutRedirectOrReject(reject: (reason?: any) => void) {
+		this._oAuthHandler.signOut(); // this method redirects url
+
+		// App should be redirected to another url otherwise it will reject
+		setTimeout(() => reject('Signout timeout fail'), 3000);
 	}
 
 	/**
