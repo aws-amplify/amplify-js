@@ -2033,6 +2033,7 @@ export class AuthClass {
 	}
 
 	private rejectAuthError(type: AuthErrorTypes): Promise<never> {
+		console.log(type);
 		return Promise.reject(new AuthError(type));
 	}
 
