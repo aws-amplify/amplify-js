@@ -24,7 +24,6 @@ import {
 	getAmplifyUserAgent,
 	browserOrNode,
 } from '@aws-amplify/core';
-import { Readable } from 'stream';
 
 const logger = new Logger('AWSLexProvider');
 
@@ -148,11 +147,9 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			try {
 				const postContentCommand = new PostContentCommand(params);
 				let data = await this.lexRuntimeServiceClient.send(postContentCommand);
-				if (message.options['messageType'] === 'voice') {
-					const accept: AcceptType = message.options.accept || 'Uint8Array';
-					const audioArray = await this.convert(data.audioStream, accept);
-					data = { ...data, ...{ audioStream: audioArray } };
-				}
+				const accept: AcceptType = message.options.accept || 'Uint8Array';
+				const audioArray = await this.convert(data.audioStream, accept);
+				data = { ...data, ...{ audioStream: audioArray } };
 				this.reportBotStatus(data, botname);
 				return data;
 			} catch (err) {
@@ -168,22 +165,21 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		this._botsCompleteCallback[botname] = callback;
 	}
 
-	private convert(
-		stream: Readable | ReadableStream | Blob,
-		accept: AcceptType
-	): Promise<any> {
+	private convert(stream: any, accept: AcceptType): Promise<any> {
 		/**
 		 * This assumes that sdk returns `ReadableStream | Blob` on browser, `Readable` on Node,
 		 * and `Blob` on React Native according to https://github.com/aws/aws-sdk-js-v3/issues/843.
 		 */
+		const { isBrowser } = browserOrNode();
 		if (stream instanceof Blob && accept === 'Blob') {
 			return Promise.resolve(stream); // no conversion required
-		} else if (stream instanceof Readable) {
+		}
+		if (stream instanceof Blob || stream instanceof ReadableStream) {
+			const converter = isBrowser ? this.convertOnBrowser : this.convertOnRN;
+			return converter(stream, accept);
+		} else {
 			return Promise.reject('Node.js is currently not supported.');
 		}
-		const { isBrowser } = browserOrNode();
-		const converter = isBrowser ? this.convertOnBrowser : this.convertOnRN;
-		return converter(stream, accept);
 	}
 
 	private convertOnBrowser(
@@ -205,7 +201,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		accept: AcceptType
 	): Promise<ArrayBuffer | Blob | Uint8Array> {
 		return new Promise(async (res, rej) => {
-			if (stream instanceof ReadableStream) {
+			if (!(stream instanceof Blob)) {
 				return rej(`Unexpected response type 'ReadableStream' in React Native`);
 			}
 			const blobURL = URL.createObjectURL(stream);
