@@ -12,7 +12,7 @@
  */
 
 import { AbstractInteractionsProvider } from './InteractionsProvider';
-import { InteractionsOptions, InteractionsMessage } from '../types';
+import { InteractionsOptions, InteractionsMessage, AcceptType } from '../types';
 import {
 	LexRuntimeServiceClient,
 	PostTextCommand,
@@ -22,6 +22,7 @@ import {
 	ConsoleLogger as Logger,
 	Credentials,
 	getAmplifyUserAgent,
+	browserOrNode,
 } from '@aws-amplify/core';
 import { Readable } from 'stream';
 
@@ -143,33 +144,20 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 					accept: 'audio/mpeg',
 				};
 			}
-
 			logger.debug('postContent to lex', message);
-
 			try {
 				const postContentCommand = new PostContentCommand(params);
-				const data = await this.lexRuntimeServiceClient.send(
-					postContentCommand
-				);
+				let data = await this.lexRuntimeServiceClient.send(postContentCommand);
+				if (message.options['messageType'] === 'voice') {
+					const accept: AcceptType = message.options.accept || 'Uint8Array';
+					const audioArray = await this.convert(data.audioStream, accept);
+					data = { ...data, ...{ audioStream: audioArray } };
+				}
 				this.reportBotStatus(data, botname);
-
-				const audioArray = await this.streamToArray(data.audioStream);
-				return { ...data, ...{ audioStream: audioArray } };
+				return data;
 			} catch (err) {
 				return Promise.reject(err);
 			}
-		}
-	}
-
-	private streamToArray(
-		stream: Readable | ReadableStream | Blob
-	): Promise<Uint8Array> {
-		const audioArray = new Uint8Array();
-		if (stream instanceof Readable) {
-			throw new ErrorEvent('Node.js is not supported currently.');
-		} else {
-			// stream: ReadableStream | Blob
-			return new Response(stream).arrayBuffer().then(buffer => new Uint8Array(buffer));
 		}
 	}
 
@@ -178,5 +166,61 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			throw new ErrorEvent('Bot ' + botname + ' does not exist');
 		}
 		this._botsCompleteCallback[botname] = callback;
+	}
+
+	private convert(
+		stream: Readable | ReadableStream | Blob,
+		accept: AcceptType
+	): Promise<any> {
+		/**
+		 * This assumes that sdk returns `ReadableStream | Blob` on browser, `Readable` on Node,
+		 * and `Blob` on React Native according to https://github.com/aws/aws-sdk-js-v3/issues/843.
+		 */
+		if (stream instanceof Blob && accept === 'Blob') {
+			return Promise.resolve(stream); // no conversion required
+		} else if (stream instanceof Readable) {
+			return Promise.reject('Node.js is currently not supported.');
+		}
+		const { isBrowser } = browserOrNode();
+		const converter = isBrowser ? this.convertOnBrowser : this.convertOnRN;
+		return converter(stream, accept);
+	}
+
+	private convertOnBrowser(
+		stream: ReadableStream | Blob,
+		accept: AcceptType
+	): Promise<ArrayBuffer | Blob | Uint8Array> {
+		const response = new Response(stream);
+		if (accept === 'ArrayBuffer') {
+			return response.arrayBuffer();
+		} else if (accept === 'Blob') {
+			return response.blob();
+		} else {
+			return response.arrayBuffer().then(buffer => new Uint8Array(buffer));
+		}
+	}
+
+	private convertOnRN(
+		stream: ReadableStream | Blob,
+		accept: AcceptType
+	): Promise<ArrayBuffer | Blob | Uint8Array> {
+		return new Promise(async (res, rej) => {
+			if (stream instanceof ReadableStream) {
+				return rej(`Unexpected response type 'ReadableStream' in React Native`);
+			}
+			const blobURL = URL.createObjectURL(stream);
+			const request = new XMLHttpRequest();
+			request.responseType = 'arraybuffer';
+			request.onload = _event => {
+				if (accept === 'ArrayBuffer') {
+					return res(request.response);
+				} else {
+					return res(new Uint8Array(request.response));
+				}
+			};
+			request.onerror = rej;
+			request.open('GET', blobURL, true);
+			request.send();
+		});
 	}
 }
