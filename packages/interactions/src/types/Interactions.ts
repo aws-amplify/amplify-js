@@ -14,9 +14,12 @@ export interface InteractionsOptions {
 	[key: string]: any;
 }
 
+export type AcceptType = 'ArrayBuffer' | 'Blob' | 'Uint8Array';
+
 export interface InteractionsMessage {
 	content: string | Object;
 	options: {
 		[key: string]: string;
+		accept?: AcceptType;
 	};
 }
