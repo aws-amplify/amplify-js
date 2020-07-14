@@ -9,6 +9,9 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
           <slot name="amplify-form-section-header">
             <div class="form-section-header">
               <h3 data-test="form-section-header-section"></h3>
+              <div class="sub-title">
+                <slot name="sub-title"></slot>
+              </div>
             </div>
           </slot>
         </div>
@@ -40,6 +43,9 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
           <slot name="amplify-form-section-header">
             <div class="form-section-header">
               <h3 data-test="form-section-header-section"></h3>
+              <div class="sub-title">
+                <slot name="sub-title"></slot>
+              </div>
             </div>
           </slot>
         </div>
@@ -71,6 +77,9 @@ exports[`amplify-form-section spec: Render logic -> should render form section 1
           <slot name="amplify-form-section-header">
             <div class="form-section-header">
               <h3 data-test="form-section-header-section"></h3>
+              <div class="sub-title">
+                <slot name="sub-title"></slot>
+              </div>
             </div>
           </slot>
         </div>
