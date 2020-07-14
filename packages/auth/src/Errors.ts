@@ -12,7 +12,7 @@
  */
 
 import { AuthErrorMessages, AuthErrorTypes } from './types';
-import { ConsoleLogger as Logger, I18n } from '@aws-amplify/core';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { AuthErrorStrings } from './common/AuthErrorStrings';
 
 const logger = new Logger('AuthError');
@@ -21,8 +21,7 @@ export class AuthError extends Error {
 	public log: string;
 	constructor(type: AuthErrorTypes) {
 		const { message, log } = authErrorMessages[type];
-		const translatedMessage = I18n.get(message);
-		super(translatedMessage);
+		super(message);
 
 		// Hack for making the custom error class work when transpiled to es5
 		// TODO: Delete the following 2 lines after we change the build target to >= es2015
@@ -30,7 +29,7 @@ export class AuthError extends Error {
 		Object.setPrototypeOf(this, AuthError.prototype);
 
 		this.name = 'AuthError';
-		this.log = log || translatedMessage;
+		this.log = log || message;
 
 		logger.error(this.log);
 	}
