@@ -58,6 +58,7 @@ import {
 	CognitoIdToken,
 	CognitoRefreshToken,
 	CognitoAccessToken,
+	ResendConfirmationCodeResponse,
 } from 'amazon-cognito-identity-js';
 
 import { parse } from 'url';
@@ -383,7 +384,7 @@ export class AuthClass {
 	public resendSignUp(
 		username: string,
 		clientMetadata: ClientMetaData = this._config.clientMetadata
-	): Promise<string> {
+	): Promise<ResendConfirmationCodeResponse> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
@@ -1600,8 +1601,8 @@ export class AuthClass {
 		return new Promise((resolve, reject) => {
 			user.forgotPassword(
 				{
-					onSuccess: () => {
-						resolve();
+					onSuccess: data => {
+						resolve(data);
 						return;
 					},
 					onFailure: err => {
