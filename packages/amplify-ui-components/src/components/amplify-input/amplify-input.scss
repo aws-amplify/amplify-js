@@ -12,7 +12,7 @@
 .input {
   display: block;
   width: 100%;
-  padding: 16px;
+  padding: 1rem;
   font-size: var(--amplify-text-sm);
   color: var(--color);
   background-color: var(--background-color);
@@ -21,6 +21,8 @@
   border-radius: 3px;
   box-sizing: border-box;
   margin: 0 0 0.625rem 0;
+  height: 3.125rem;
+  line-height: 1.1;
 
   &:focus {
     outline: none;

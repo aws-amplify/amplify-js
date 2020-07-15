@@ -1,5 +1,5 @@
 import { h } from '@stencil/core';
-import { FormFieldType } from './amplify-auth-fields-interface';
+import { FormFieldType, PhoneFormFieldType } from './amplify-auth-fields-interface';
 
 const componentFieldMapping = {
   username: (ff: FormFieldType) => (
@@ -44,12 +44,12 @@ const componentFieldMapping = {
       required={ff.required}
       handleInputChange={ff.handleInputChange}
       value={ff.value}
-      inputProps={ff.inputProps}
+      inputProps={{ ...ff.inputProps, min: '0' }}
       disabled={ff.disabled}
     />
   ),
   // TODO: Will create a phone field component once the dial country code component is in
-  phone_number: (ff: FormFieldType) => (
+  phone_number: (ff: PhoneFormFieldType) => (
     <amplify-phone-field
       label={ff.label}
       placeholder={ff.placeholder}
@@ -58,6 +58,7 @@ const componentFieldMapping = {
       value={ff.value}
       inputProps={ff.inputProps}
       disabled={ff.disabled}
+      dialCode={ff.dialCode}
     />
   ),
   default: (ff: FormFieldType) => (

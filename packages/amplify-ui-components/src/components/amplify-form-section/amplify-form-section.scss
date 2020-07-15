@@ -4,6 +4,7 @@
   --footer-color: var(--amplify-grey);
   --footer-size: var(--amplify-text-sm);
   --font-family: var(--amplify-font-family);
+  --font-weight: var(--amplify-font-weight);
 }
 
 .form-section-header {
@@ -15,7 +16,7 @@
 
 .form-section-footer {
   font-family: var(--font-family);
-  font-weight: 300;
+  font-weight: var(--font-weight);
   font-size: var(--footer-size);
   color: var(--footer-color);
   display: flex;

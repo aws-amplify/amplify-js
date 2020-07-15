@@ -64,3 +64,10 @@ export interface apiOptions {
 	endpoints: object;
 	credentials?: object;
 }
+
+export type ApiInfo = {
+	endpoint: string;
+	region?: string;
+	service?: string;
+	custom_header?: () => { [key: string]: string };
+};

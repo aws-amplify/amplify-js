@@ -27,13 +27,15 @@ export class AmplifyPhoneField {
   @Prop() inputProps?: object;
   /** Will disable the input if set to true */
   @Prop() disabled?: boolean;
+  /** Default dial code in the phone field */
+  @Prop() dialCode?: string | number;
 
   render() {
     return (
       <div>
         <amplify-form-field label={this.label} type="tel" hint={this.hint} required={this.required}>
           <div class="phone-field" slot="input">
-            <amplify-country-dial-code handleInputChange={this.handleInputChange} />
+            <amplify-country-dial-code dialCode={this.dialCode} handleInputChange={this.handleInputChange} />
             <amplify-input
               fieldId={this.fieldId}
               handleInputChange={this.handleInputChange}

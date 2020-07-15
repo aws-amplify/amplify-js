@@ -139,6 +139,7 @@ export class Authenticator extends React.Component<
 		if (channel === 'auth') {
 			switch (payload.event) {
 				case 'cognitoHostedUI':
+				case 'signIn':
 					this.handleStateChange('signedIn', payload.data);
 					break;
 				case 'cognitoHostedUI_failure':
