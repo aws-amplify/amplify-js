@@ -8,7 +8,7 @@ executors:
   build-executor:
     docker:
       - image: cypress/base:12
-    resource_class: large
+    resource_class: xlarge
     working_directory: ~/amplify-js
 
   js-test-executor:
