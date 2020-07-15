@@ -8,6 +8,14 @@ declare module 'amazon-cognito-identity-js' {
 		DeliveryMedium: string;
 		Destination: string;
 	}
+    
+    export interface ForgotPasswordResponse {
+        CodeDeliveryDetails?: CodeDeliveryDetailsType;
+    }
+    
+    export interface ResendConfirmationCodeResponse {
+        CodeDeliveryDetails?: CodeDeliveryDetailsType;
+    }
 
 	export type ClientMetadata = { [key: string]: string } | undefined;
 
@@ -99,7 +107,7 @@ declare module 'amazon-cognito-identity-js' {
 			clientMetaData?: ClientMetadata
 		): void;
 		public resendConfirmationCode(
-			callback: NodeCallback<Error, 'SUCCESS'>,
+			callback: NodeCallback<Error, ResendConfirmationCodeResponse>,
 			clientMetaData?: ClientMetadata
 		): void;
 		public changePassword(
@@ -109,7 +117,7 @@ declare module 'amazon-cognito-identity-js' {
 		): void;
 		public forgotPassword(
 			callbacks: {
-				onSuccess: (data: any) => void;
+				onSuccess: (data: ForgotPasswordResponse) => void;
 				onFailure: (err: Error) => void;
 				inputVerificationCode?: (data: any) => void;
 			},
