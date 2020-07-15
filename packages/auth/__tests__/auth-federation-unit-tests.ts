@@ -1,3 +1,5 @@
+jest.mock('@aws-sdk/credential-provider-imds');
+
 jest.mock('crypto-js/sha256', () => {
 	return {
 		default: jest.fn(() => ''),
@@ -318,9 +320,9 @@ describe('auth federation unit test', () => {
 				expect(await auth.currentUserCredentials()).toBe('cred');
 				expect(getAuthInstanceSpy).toHaveBeenCalledTimes(maxRetries);
 
-				storageSpy.mockRestore();
-				credsSpy.mockRestore();
-				getAuthInstanceSpy.mockRestore();
+				storageSpy.mockClear();
+				credsSpy.mockClear();
+				getAuthInstanceSpy.mockClear();
 				clearMockGAPI();
 			},
 			DEFAULT_RETRY_TIMEOUT
@@ -369,9 +371,9 @@ describe('auth federation unit test', () => {
 				expect(await auth.currentUserCredentials()).toBe('cred');
 				expect(getAuthInstanceSpy).toHaveBeenCalledTimes(1);
 
-				spyon.mockRestore();
-				spyon2.mockRestore();
-				getAuthInstanceSpy.mockRestore();
+				spyon.mockClear();
+				spyon2.mockClear();
+				getAuthInstanceSpy.mockClear();
 				clearMockFB();
 			},
 			DEFAULT_RETRY_TIMEOUT
@@ -416,9 +418,9 @@ describe('auth federation unit test', () => {
 				expect(getAuthInstanceSpy).toHaveBeenCalledTimes(1);
 				expect(credsClearSpy).toHaveBeenCalledTimes(1);
 
-				storageSpy.mockRestore();
-				getAuthInstanceSpy.mockRestore();
-				credsClearSpy.mockRestore();
+				storageSpy.mockClear();
+				getAuthInstanceSpy.mockClear();
+				credsClearSpy.mockClear();
 				clearMockGAPI();
 			}
 		});
@@ -462,9 +464,9 @@ describe('auth federation unit test', () => {
 				expect.assertions(2);
 				expect(getAuthInstanceSpy).toHaveBeenCalledTimes(1);
 				expect(credsClearSpy).toHaveBeenCalledTimes(1);
-				storageSpy.mockRestore();
-				getAuthInstanceSpy.mockRestore();
-				credsClearSpy.mockRestore();
+				storageSpy.mockClear();
+				getAuthInstanceSpy.mockClear();
+				credsClearSpy.mockClear();
 				clearMockFB();
 			}
 		});
