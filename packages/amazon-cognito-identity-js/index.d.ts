@@ -10,11 +10,11 @@ declare module 'amazon-cognito-identity-js' {
 	}
     
     export interface ForgotPasswordResponse {
-        CodeDeliveryDetails?: CodeDeliveryDetailsType;
+        CodeDeliveryDetails?: CodeDeliveryDetails;
     }
     
     export interface ResendConfirmationCodeResponse {
-        CodeDeliveryDetails?: CodeDeliveryDetailsType;
+        CodeDeliveryDetails?: CodeDeliveryDetails;
     }
 
 	export type ClientMetadata = { [key: string]: string } | undefined;
