@@ -17,8 +17,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
           <slot name="amplify-form-section-footer">
             <div class="form-section-footer">
               <amplify-button data-test="form-section-form-section-button" type="submit">
-                <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
-                <span style="display: initial;">
+                <span>
                   Submit
                 </span>
               </amplify-button>
@@ -48,8 +47,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
           <slot name="amplify-form-section-footer">
             <div class="form-section-footer">
               <amplify-button data-test="form-section-form-section-button" type="submit">
-                <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
-                <span style="display: initial;">
+                <span>
                   Go
                 </span>
               </amplify-button>
@@ -79,8 +77,7 @@ exports[`amplify-form-section spec: Render logic -> should render form section 1
           <slot name="amplify-form-section-footer">
             <div class="form-section-footer">
               <amplify-button data-test="form-section-form-section-button" type="submit">
-                <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
-                <span style="display: initial;">
+                <span>
                   Submit
                 </span>
               </amplify-button>
