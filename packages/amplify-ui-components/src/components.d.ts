@@ -306,6 +306,10 @@ export namespace Components {
          */
         "headerText": string;
         /**
+          * The text displayed inside of the send code button for the form
+         */
+        "sendButtonText": string;
+        /**
           * The text displayed inside of the submit button for the form
          */
         "submitButtonText": string;
@@ -1748,6 +1752,10 @@ declare namespace LocalJSX {
           * The header text of the forgot password section
          */
         "headerText"?: string;
+        /**
+          * The text displayed inside of the send code button for the form
+         */
+        "sendButtonText"?: string;
         /**
           * The text displayed inside of the submit button for the form
          */
