@@ -318,9 +318,9 @@ describe('auth federation unit test', () => {
 				expect(await auth.currentUserCredentials()).toBe('cred');
 				expect(getAuthInstanceSpy).toHaveBeenCalledTimes(maxRetries);
 
-				storageSpy.mockClear();
-				credsSpy.mockClear();
-				getAuthInstanceSpy.mockClear();
+				storageSpy.mockRestore();
+				credsSpy.mockRestore();
+				getAuthInstanceSpy.mockRestore();
 				clearMockGAPI();
 			},
 			DEFAULT_RETRY_TIMEOUT
@@ -369,9 +369,9 @@ describe('auth federation unit test', () => {
 				expect(await auth.currentUserCredentials()).toBe('cred');
 				expect(getAuthInstanceSpy).toHaveBeenCalledTimes(1);
 
-				spyon.mockClear();
-				spyon2.mockClear();
-				getAuthInstanceSpy.mockClear();
+				spyon.mockRestore();
+				spyon2.mockRestore();
+				getAuthInstanceSpy.mockRestore();
 				clearMockFB();
 			},
 			DEFAULT_RETRY_TIMEOUT
@@ -416,9 +416,9 @@ describe('auth federation unit test', () => {
 				expect(getAuthInstanceSpy).toHaveBeenCalledTimes(1);
 				expect(credsClearSpy).toHaveBeenCalledTimes(1);
 
-				storageSpy.mockClear();
-				getAuthInstanceSpy.mockClear();
-				credsClearSpy.mockClear();
+				storageSpy.mockRestore();
+				getAuthInstanceSpy.mockRestore();
+				credsClearSpy.mockRestore();
 				clearMockGAPI();
 			}
 		});
@@ -462,9 +462,9 @@ describe('auth federation unit test', () => {
 				expect.assertions(2);
 				expect(getAuthInstanceSpy).toHaveBeenCalledTimes(1);
 				expect(credsClearSpy).toHaveBeenCalledTimes(1);
-				storageSpy.mockClear();
-				getAuthInstanceSpy.mockClear();
-				credsClearSpy.mockClear();
+				storageSpy.mockRestore();
+				getAuthInstanceSpy.mockRestore();
+				credsClearSpy.mockRestore();
 				clearMockFB();
 			}
 		});
