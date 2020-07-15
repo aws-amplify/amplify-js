@@ -153,7 +153,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	return CognitoUser;
 });
 
-import { Hub } from '@aws-amplify/core';
+import { Hub, Credentials, StorageHelper } from '@aws-amplify/core';
 
 const authOptionsWithOAuth: AuthOptions = {
 	userPoolId: 'awsUserPoolsId',
@@ -184,6 +184,7 @@ const session = new CognitoUserSession({
 });
 
 import { AuthClass as Auth } from '../src/Auth';
+import { AuthOptions } from '../src/types';
 
 describe('Hosted UI tests', () => {
 	beforeEach(() => {
@@ -244,5 +245,221 @@ describe('Hosted UI tests', () => {
 				event: 'cognitoHostedUI',
 			});
 		}, 0);
+	});
+
+	test('globalSignOut hosted ui, timeout reject', async () => {
+		jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+			return {
+				setItem() {},
+				getItem() {
+					return 'true';
+				},
+				removeItem() {},
+			};
+		});
+
+		const auth = new Auth(authOptionsWithOAuth);
+
+		const user = new CognitoUser({
+			Username: 'username',
+			Pool: userPool,
+		});
+
+		const spyonAuth = jest
+			.spyOn(Credentials, 'clear')
+			.mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
+
+		const spyon = jest
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+			.mockImplementationOnce(() => {
+				return user;
+			});
+
+		const spyon2 = jest
+			.spyOn(CognitoUser.prototype, 'globalSignOut')
+			.mockImplementation(({ onSuccess }) => {
+				onSuccess('success');
+			});
+
+		auth._oAuthHandler = {
+			signOut: () => {
+				// testing timeout
+				return new Promise(() => {});
+			},
+		};
+
+		expect.assertions(2);
+
+		try {
+			await auth.signOut({ global: true });
+		} catch (err) {
+			expect(err).toEqual('Signout timeout fail');
+		}
+
+		expect(spyon2).toBeCalled();
+
+		spyonAuth.mockClear();
+		spyon.mockClear();
+		spyon2.mockClear();
+	});
+
+	test('SignOut hosted ui, timeout reject', async () => {
+		jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+			return {
+				setItem() {},
+				getItem() {
+					return 'true';
+				},
+				removeItem() {},
+			};
+		});
+
+		const auth = new Auth(authOptionsWithOAuth);
+
+		const user = new CognitoUser({
+			Username: 'username',
+			Pool: userPool,
+		});
+
+		const spyonAuth = jest
+			.spyOn(Credentials, 'clear')
+			.mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
+
+		const spyon = jest
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+			.mockImplementationOnce(() => {
+				return user;
+			});
+
+		auth._oAuthHandler = {
+			signOut: () => {
+				// testing timeout
+				return new Promise(() => {});
+			},
+		};
+
+		expect.assertions(1);
+
+		try {
+			await auth.signOut({ global: false });
+		} catch (err) {
+			expect(err).toEqual('Signout timeout fail');
+		}
+
+		spyonAuth.mockClear();
+		spyon.mockClear();
+	});
+	test('globalSignOut hosted ui, url opener', done => {
+		jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+			return {
+				setItem() {},
+				getItem() {
+					return 'true';
+				},
+				removeItem() {},
+			};
+		});
+
+		const urlOpener = jest.fn(
+			(url: string, redirectUrl: string): Promise<any> => {
+				return new Promise(() => {
+					return new Promise(() => {
+						expect(url).toEqual(
+							'https://xxxxxxxxxxxx-xxxxxx-xxx.auth.us-west-2.amazoncognito.com/logout?client_id=awsUserPoolsWebClientId&logout_uri=http%3A%2F%2Flocalhost%3A4200%2F'
+						);
+
+						done();
+					});
+				});
+			}
+		);
+		const options = {
+			...authOptionsWithOAuth,
+		};
+		options.oauth.urlOpener = urlOpener;
+
+		const auth = new Auth(options);
+
+		const user = new CognitoUser({
+			Username: 'username',
+			Pool: userPool,
+		});
+
+		const spyonAuth = jest
+			.spyOn(Credentials, 'clear')
+			.mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
+
+		const spyon = jest
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+			.mockImplementationOnce(() => {
+				return user;
+			});
+
+		expect.assertions(1);
+
+		auth.signOut({ global: true });
+
+		spyonAuth.mockClear();
+		spyon.mockClear();
+	});
+
+	test('SignOut hosted ui, urlOpener', done => {
+		jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+			return {
+				setItem() {},
+				getItem() {
+					return 'true';
+				},
+				removeItem() {},
+			};
+		});
+
+		const urlOpener = jest.fn(
+			(url: string): Promise<any> => {
+				return new Promise(() => {
+					expect(url).toEqual(
+						'https://xxxxxxxxxxxx-xxxxxx-xxx.auth.us-west-2.amazoncognito.com/logout?client_id=awsUserPoolsWebClientId&logout_uri=http%3A%2F%2Flocalhost%3A4200%2F'
+					);
+
+					done();
+				});
+			}
+		);
+		const options = {
+			...authOptionsWithOAuth,
+		};
+		options.oauth.urlOpener = urlOpener;
+
+		const auth = new Auth(options);
+
+		const user = new CognitoUser({
+			Username: 'username',
+			Pool: userPool,
+		});
+
+		const spyonAuth = jest
+			.spyOn(Credentials, 'clear')
+			.mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
+
+		const spyon = jest
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+			.mockImplementationOnce(() => {
+				return user;
+			});
+
+		expect.assertions(1);
+
+		auth.signOut({ global: true });
+
+		spyonAuth.mockClear();
+		spyon.mockClear();
 	});
 });

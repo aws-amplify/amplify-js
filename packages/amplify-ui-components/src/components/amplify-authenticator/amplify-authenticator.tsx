@@ -42,6 +42,7 @@ export class AmplifyAuthenticator {
   private handleExternalAuthEvent = ({ payload }) => {
     switch (payload.event) {
       case 'cognitoHostedUI':
+      case 'signIn':
         return dispatchAuthStateChangeEvent(AuthState.SignedIn, payload.data);
       case 'cognitoHostedUI_failure':
       case 'parsingUrl_failure':
