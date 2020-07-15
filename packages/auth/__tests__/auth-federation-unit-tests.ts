@@ -247,7 +247,7 @@ function expiredCreds(provider) {
 	};
 }
 
-const DEFAULT_RETRY_TIMEOUT = 60000;
+const DEFAULT_RETRY_TIMEOUT = 180000;
 
 import { AuthOptions } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
