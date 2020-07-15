@@ -15,8 +15,12 @@ describe('amplify-forgot-password spec:', () => {
       expect(amplifyForgotPassword.headerText).toBe(I18n.get(Translations.RESET_YOUR_PASSWORD));
     });
 
+    it('`sendButtonText` should be set by default', () => {
+      expect(amplifyForgotPassword.sendButtonText).toBe(I18n.get(Translations.SEND_CODE));
+    });
+
     it('`submitButtonText` should be set by default', () => {
-      expect(amplifyForgotPassword.submitButtonText).toBe(I18n.get(Translations.SEND_CODE));
+      expect(amplifyForgotPassword.submitButtonText).toBe(I18n.get(Translations.SUBMIT));
     });
 
     it('should render `usernameAlias` as `username` by default', () => {
