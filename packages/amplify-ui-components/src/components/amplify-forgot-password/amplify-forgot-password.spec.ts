@@ -1,4 +1,3 @@
-import { I18n } from '@aws-amplify/core';
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyForgotPassword } from './amplify-forgot-password';
 import { Translations } from '../../common/Translations';
@@ -12,11 +11,11 @@ describe('amplify-forgot-password spec:', () => {
     });
 
     it('`headerText` should be set by default', () => {
-      expect(amplifyForgotPassword.headerText).toBe(I18n.get(Translations.RESET_YOUR_PASSWORD));
+      expect(amplifyForgotPassword.headerText).toBe(Translations.RESET_YOUR_PASSWORD);
     });
 
     it('`submitButtonText` should be set by default', () => {
-      expect(amplifyForgotPassword.submitButtonText).toBe(I18n.get(Translations.SEND_CODE));
+      expect(amplifyForgotPassword.submitButtonText).toBe(Translations.SEND_CODE);
     });
 
     it('should render `usernameAlias` as `username` by default', () => {
