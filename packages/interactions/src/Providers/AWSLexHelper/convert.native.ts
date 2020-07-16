@@ -1,12 +1,9 @@
 import { AcceptType } from '../../types';
-export const convertOnBrowser = (
+export const convert = (
 	stream: Blob,
 	accept: AcceptType
 ): Promise<ArrayBuffer | Blob | Uint8Array> => {
     return new Promise(async (res, rej) => {
-        if (!(stream instanceof Blob)) {
-            return rej(`Unexpected response type 'ReadableStream' in React Native`);
-        }
         const blobURL = URL.createObjectURL(stream);
         const request = new XMLHttpRequest();
         request.responseType = 'arraybuffer';
