@@ -335,8 +335,7 @@ export class AmplifySignIn {
 
             <slot name="primary-footer-content">
               <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
-                <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
-                <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
+                {this.loading ? <amplify-loading-spinner /> : <span>{this.submitButtonText}</span>}
               </amplify-button>
             </slot>
           </slot>
