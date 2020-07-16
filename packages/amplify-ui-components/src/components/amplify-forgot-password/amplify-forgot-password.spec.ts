@@ -19,7 +19,7 @@ describe('amplify-forgot-password spec:', () => {
     });
 
     it('`submitButtonText` should be set by default', () => {
-      expect(amplifyForgotPassword.submitButtonText).toBe(Translations.SEND_CODE);
+      expect(amplifyForgotPassword.submitButtonText).toBe(Translations.SUBMIT);
     });
 
     it('should render `usernameAlias` as `username` by default', () => {
