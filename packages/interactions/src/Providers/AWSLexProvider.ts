@@ -152,7 +152,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				const accept: AcceptType = message.options.accept || 'Uint8Array';
 				const audioArray = await convert(data.audioStream, accept);
 				this.reportBotStatus(data, botname);
-				return { ...data, ...{ audioStream: audioArray } }; // TODO: type the function type
+				return { ...data, ...{ audioStream: audioArray } }; // TODO: type the response type
 			} catch (err) {
 				return Promise.reject(err);
 			}
