@@ -80,6 +80,7 @@
     },
     "coveragePathIgnorePatterns": [
       "/node_modules/"
-    ]
+    ],
+    "testSequencer": "./testSequencer.js"
   }
 }

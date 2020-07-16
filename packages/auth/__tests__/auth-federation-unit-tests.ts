@@ -1,3 +1,9 @@
+jest.mock('crypto-js/sha256', () => {
+	return {
+		default: jest.fn(() => ''),
+	};
+});
+
 jest.mock('../src/OAuth/oauthStorage', () => {
 	return {
 		clearAll: jest.fn(),
@@ -241,7 +247,7 @@ function expiredCreds(provider) {
 	};
 }
 
-const DEFAULT_RETRY_TIMEOUT = 180000;
+const DEFAULT_RETRY_TIMEOUT = 60000;
 
 import { AuthOptions } from '../src/types';
 import { AuthClass as Auth } from '../src/Auth';
