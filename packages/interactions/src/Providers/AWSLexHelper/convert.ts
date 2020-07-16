@@ -4,12 +4,9 @@ export const convert = (
 	stream: Readable | ReadableStream | Blob,
 	accept: AcceptType
 ): Promise<ArrayBuffer | Blob | Uint8Array> => {
-	console.log('hello');
-	// if (stream instanceof Readable) {
-	// 	throw new Error('Node.js is not supported currently.');
-	// } else {
-	if (stream instanceof ArrayBuffer || stream instanceof Blob) {
-		// stream instanceof ReadableStream | Blob
+	if (stream instanceof Readable) {
+		throw new Error('Node.js is not supported currently.');
+	} else { // if stream instanceof ReadableStream | Blob
 		const response = new Response(stream);
 		if (accept === 'ArrayBuffer') {
 			return response.arrayBuffer();
