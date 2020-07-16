@@ -15,6 +15,8 @@ import {
 	InteractionsProviders,
 	InteractionsResponse,
 	InteractionsProvider,
+	InteractionsTextMessage,
+	InteractionsVoiceMessage,
 } from './types';
 import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { AWSLexProvider } from './Providers';
@@ -95,6 +97,9 @@ export class InteractionsClass {
 		}
 	}
 
+	public async send(botname: string, message: string);
+	public async send(botname: string, message: InteractionsTextMessage);
+	public async send(botname: string, message: InteractionsVoiceMessage);
 	public async send(botname: string, message: string | Object) {
 		if (!this._options.bots || !this._options.bots[botname]) {
 			throw new Error('Bot ' + botname + ' does not exist');
