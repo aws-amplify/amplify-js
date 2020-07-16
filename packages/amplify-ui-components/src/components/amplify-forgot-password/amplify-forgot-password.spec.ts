@@ -14,6 +14,10 @@ describe('amplify-forgot-password spec:', () => {
       expect(amplifyForgotPassword.headerText).toBe(Translations.RESET_YOUR_PASSWORD);
     });
 
+    it('`sendButtonText` should be set by default', () => {
+      expect(amplifyForgotPassword.sendButtonText).toBe(Translations.SEND_CODE);
+    });
+
     it('`submitButtonText` should be set by default', () => {
       expect(amplifyForgotPassword.submitButtonText).toBe(Translations.SEND_CODE);
     });
