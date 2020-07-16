@@ -19,7 +19,7 @@ export type AcceptType = 'ArrayBuffer' | 'Blob' | 'Uint8Array';
 export interface InteractionsMessage {
 	content: string | Object;
 	options: {
-		[key: string]: string;
+		messageType: 'voice' | 'text'
 		accept?: AcceptType;
 	};
 }
