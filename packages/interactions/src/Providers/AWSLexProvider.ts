@@ -24,6 +24,7 @@ import {
 	getAmplifyUserAgent,
 	browserOrNode,
 } from '@aws-amplify/core';
+import { convert } from './AWSLexHelper/convert';
 
 const logger = new Logger('AWSLexProvider');
 
@@ -90,6 +91,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		botname: string,
 		message: string | InteractionsMessage
 	): Promise<object> {
+		// TODO: overload + default
 		if (!this._config[botname]) {
 			return Promise.reject('Bot ' + botname + ' does not exist');
 		}
@@ -148,10 +150,9 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				const postContentCommand = new PostContentCommand(params);
 				let data = await this.lexRuntimeServiceClient.send(postContentCommand);
 				const accept: AcceptType = message.options.accept || 'Uint8Array';
-				const audioArray = await this.convert(data.audioStream, accept);
-				data = { ...data, ...{ audioStream: audioArray } };
+				const audioArray = await convert(data.audioStream, accept);
 				this.reportBotStatus(data, botname);
-				return data;
+				return { ...data, ...{ audioStream: audioArray } }; // TODO: type the function type
 			} catch (err) {
 				return Promise.reject(err);
 			}
@@ -165,58 +166,4 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		this._botsCompleteCallback[botname] = callback;
 	}
 
-	private convert(stream: any, accept: AcceptType): Promise<any> {
-		/**
-		 * This assumes that sdk returns `ReadableStream | Blob` on browser, `Readable` on Node,
-		 * and `Blob` on React Native according to https://github.com/aws/aws-sdk-js-v3/issues/843.
-		 */
-		const { isBrowser } = browserOrNode();
-		if (stream instanceof Blob && accept === 'Blob') {
-			return Promise.resolve(stream); // no conversion required
-		}
-		if (stream instanceof Blob || stream instanceof ReadableStream) {
-			const converter = isBrowser ? this.convertOnBrowser : this.convertOnRN;
-			return converter(stream, accept);
-		} else {
-			return Promise.reject('Node.js is currently not supported.');
-		}
-	}
-
-	private convertOnBrowser(
-		stream: ReadableStream | Blob,
-		accept: AcceptType
-	): Promise<ArrayBuffer | Blob | Uint8Array> {
-		const response = new Response(stream);
-		if (accept === 'ArrayBuffer') {
-			return response.arrayBuffer();
-		} else if (accept === 'Blob') {
-			return response.blob();
-		} else {
-			return response.arrayBuffer().then(buffer => new Uint8Array(buffer));
-		}
-	}
-
-	private convertOnRN(
-		stream: ReadableStream | Blob,
-		accept: AcceptType
-	): Promise<ArrayBuffer | Blob | Uint8Array> {
-		return new Promise(async (res, rej) => {
-			if (!(stream instanceof Blob)) {
-				return rej(`Unexpected response type 'ReadableStream' in React Native`);
-			}
-			const blobURL = URL.createObjectURL(stream);
-			const request = new XMLHttpRequest();
-			request.responseType = 'arraybuffer';
-			request.onload = _event => {
-				if (accept === 'ArrayBuffer') {
-					return res(request.response);
-				} else {
-					return res(new Uint8Array(request.response));
-				}
-			};
-			request.onerror = rej;
-			request.open('GET', blobURL, true);
-			request.send();
-		});
-	}
 }
