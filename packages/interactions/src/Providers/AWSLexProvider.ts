@@ -12,7 +12,7 @@
  */
 
 import { AbstractInteractionsProvider } from './InteractionsProvider';
-import { InteractionsOptions, InteractionsMessage, AcceptType } from '../types';
+import { InteractionsOptions, InteractionsMessage } from '../types';
 import {
 	LexRuntimeServiceClient,
 	PostTextCommand,
@@ -22,7 +22,6 @@ import {
 	ConsoleLogger as Logger,
 	Credentials,
 	getAmplifyUserAgent,
-	browserOrNode,
 } from '@aws-amplify/core';
 import { convert } from './AWSLexHelper/convert';
 
@@ -91,7 +90,6 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		botname: string,
 		message: string | InteractionsMessage
 	): Promise<object> {
-		// TODO: overload + default
 		if (!this._config[botname]) {
 			return Promise.reject('Bot ' + botname + ' does not exist');
 		}
@@ -126,12 +124,16 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				return Promise.reject(err);
 			}
 		} else {
-			if (message.options['messageType'] === 'voice') {
+			const {
+				content,
+				options: { messageType, accept = 'Uint8Array' },
+			} = message;
+			if (messageType === 'voice') {
 				params = {
 					botAlias: this._config[botname].alias,
 					botName: botname,
 					contentType: 'audio/x-l16; sample-rate=16000',
-					inputStream: message.content,
+					inputStream: content,
 					userId: credentials.identityId,
 					accept: 'audio/mpeg',
 				};
@@ -140,7 +142,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 					botAlias: this._config[botname].alias,
 					botName: botname,
 					contentType: 'text/plain; charset=utf-8',
-					inputStream: message.content,
+					inputStream: content,
 					userId: credentials.identityId,
 					accept: 'audio/mpeg',
 				};
@@ -149,7 +151,6 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			try {
 				const postContentCommand = new PostContentCommand(params);
 				let data = await this.lexRuntimeServiceClient.send(postContentCommand);
-				const accept: AcceptType = message.options.accept || 'Uint8Array';
 				const audioArray = await convert(data.audioStream, accept);
 				this.reportBotStatus(data, botname);
 				return { ...data, ...{ audioStream: audioArray } }; // TODO: type the response type
@@ -165,5 +166,4 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 		}
 		this._botsCompleteCallback[botname] = callback;
 	}
-
 }
