@@ -1,10 +1,11 @@
 import { Component, Prop, h, State, Host } from '@stencil/core';
-import { Logger, I18n } from '@aws-amplify/core';
+import { Logger, I18n, appendToAmplifyUserAgent } from '@aws-amplify/core';
 import { AccessLevel } from '../../common/types/storage-types';
 import { calcKey, getStorageObject, putStorageObject } from '../../common/storage-helper';
 import { Translations } from '../../common/Translations';
 
 const logger = new Logger('S3ImagePicker');
+const USER_AGENT_ID = 'amplify-s3-image-picker';
 
 @Component({
   tag: 'amplify-s3-image-picker',
@@ -32,6 +33,10 @@ export class AmplifyS3ImagePicker {
   @Prop() buttonText?: string = I18n.get(Translations.IMAGE_PICKER_BUTTON_TEXT);
   /** Source for the image */
   @State() src: string | object;
+
+  componentWillLoad() {
+    appendToAmplifyUserAgent(USER_AGENT_ID);
+  }
 
   private handlePick = async (file: File) => {
     const { path = '', level, track, identityId, fileToKey } = this;

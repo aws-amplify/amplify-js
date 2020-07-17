@@ -1,13 +1,14 @@
 import { Component, Prop, h, State } from '@stencil/core';
 import { AccessLevel, StorageObject } from '../../common/types/storage-types';
 import { Storage } from '@aws-amplify/storage';
-import { Logger, filenameToContentType, I18n } from '@aws-amplify/core';
+import { Logger, filenameToContentType, appendToAmplifyUserAgent } from '@aws-amplify/core';
 import { NO_STORAGE_MODULE_FOUND } from '../../common/constants';
 import { calcKey, imageFileType, putStorageObject } from '../../common/storage-helper';
 import { v4 as uuid } from 'uuid';
 import { Translations } from '../../common/Translations';
 
 const logger = new Logger('S3Album');
+const USER_AGENT_ID = 'amplify-s3-album';
 
 @Component({
   tag: 'amplify-s3-album',
@@ -38,7 +39,7 @@ export class AmplifyS3Album {
   /** Function executed when error occurs for the s3-image */
   @Prop() handleOnError: (event: Event) => void;
   /** Picker button text */
-  @Prop() pickerText: string = I18n.get(Translations.PICKER_TEXT);
+  @Prop() pickerText: string = Translations.PICKER_TEXT;
 
   @State() albumItems: StorageObject[] = [];
 
@@ -86,6 +87,7 @@ export class AmplifyS3Album {
   }
 
   componentWillLoad() {
+    appendToAmplifyUserAgent(USER_AGENT_ID);
     this.list();
   }
 
@@ -141,7 +143,9 @@ export class AmplifyS3Album {
           </div>
         </div>
 
-        {this.picker && <amplify-picker inputHandler={e => this.handlePick(e)} acceptValue="image/*" />}
+        {this.picker && (
+          <amplify-picker pickerText={this.pickerText} inputHandler={e => this.handlePick(e)} acceptValue="image/*" />
+        )}
       </div>
     );
   }

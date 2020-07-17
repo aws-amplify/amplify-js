@@ -1,9 +1,10 @@
 import { Component, Prop, h, State, Host, Watch } from '@stencil/core';
-import { Logger } from '@aws-amplify/core';
+import { Logger, appendToAmplifyUserAgent } from '@aws-amplify/core';
 import { AccessLevel } from '../../common/types/storage-types';
 import { getStorageObject, putStorageObject } from '../../common/storage-helper';
 
 const logger = new Logger('S3Image');
+const USER_AGENT_ID = 'amplify-s3-image';
 
 @Component({
   tag: 'amplify-s3-image',
@@ -38,6 +39,7 @@ export class AmplifyS3Image {
   }
 
   async componentWillLoad() {
+    appendToAmplifyUserAgent(USER_AGENT_ID);
     await this.load();
   }
 

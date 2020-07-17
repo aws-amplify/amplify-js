@@ -1,10 +1,11 @@
 import { Component, Prop, h, State, Watch } from '@stencil/core';
-import { Logger, I18n } from '@aws-amplify/core';
+import { Logger, I18n, appendToAmplifyUserAgent } from '@aws-amplify/core';
 import { AccessLevel } from '../../common/types/storage-types';
 import { getTextSource, putStorageObject } from '../../common/storage-helper';
 import { Translations } from '../../common/Translations';
 
 const logger = new Logger('S3Text');
+const USER_AGENT_ID = 'amplify-s3-text';
 
 @Component({
   tag: 'amplify-s3-text',
@@ -38,6 +39,7 @@ export class AmplifyS3Text {
   }
 
   async componentWillLoad() {
+    appendToAmplifyUserAgent(USER_AGENT_ID);
     await this.load();
   }
 

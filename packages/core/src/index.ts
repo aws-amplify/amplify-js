@@ -28,7 +28,11 @@ export { Credentials } from './Credentials';
 export { ServiceWorker } from './ServiceWorker';
 export { ICredentials } from './types';
 export { StorageHelper, MemoryStorage } from './StorageHelper';
-export { Platform, getAmplifyUserAgent } from './Platform';
+export {
+	Platform,
+	getAmplifyUserAgent,
+	appendToAmplifyUserAgent,
+} from './Platform';
 export * from './constants';
 
 export const Constants = {

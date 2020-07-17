@@ -39,6 +39,18 @@ export const getAmplifyUserAgent = () => {
 	return Platform.userAgent;
 };
 
+export const appendToAmplifyUserAgent = content => {
+	if (!content) {
+		return;
+	}
+	if (Platform.userAgent && !Platform.userAgent.includes(content)) {
+		Platform.userAgent = Platform.userAgent.concat(' ', content);
+	}
+	if (!Platform.userAgent || Platform.userAgent === '') {
+		Platform.userAgent = content;
+	}
+};
+
 /**
  * @deprecated use named import
  */

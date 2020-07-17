@@ -1,10 +1,11 @@
 import { Component, Prop, h, State, Host } from '@stencil/core';
-import { Logger, I18n } from '@aws-amplify/core';
+import { Logger, I18n, appendToAmplifyUserAgent } from '@aws-amplify/core';
 import { AccessLevel } from '../../common/types/storage-types';
 import { calcKey, putStorageObject } from '../../common/storage-helper';
 import { Translations } from '../../common/Translations';
 
 const logger = new Logger('S3TextPicker');
+const USER_AGENT_ID = 'amplify-s3-text-picker';
 
 @Component({
   tag: 'amplify-s3-text-picker',
@@ -27,6 +28,10 @@ export class AmplifyS3TextPicker {
   @Prop() fallbackText: string = I18n.get(Translations.PICKER_TEXT);
   /** Source content of text */
   @State() src: string;
+
+  componentWillLoad() {
+    appendToAmplifyUserAgent(USER_AGENT_ID);
+  }
 
   private async handleInput(event: Event) {
     const file = (event.target as HTMLInputElement).files[0];
