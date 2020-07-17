@@ -54,13 +54,13 @@ const defaultConfig = {
 };
 const platforms = ['ios', 'android'];
 
-describe('PushNotification', () => {
+describe('PushNotification:', () => {
 	afterEach(() => {
 		jest.restoreAllMocks();
 		clearPlatformMock();
 	});
 
-	describe('Amplify register', () => {
+	describe('Amplify register ->', () => {
 		test('should register with Amplify', () => {
 			const registerSpy = jest.spyOn(Amplify, 'register');
 
@@ -72,14 +72,14 @@ describe('PushNotification', () => {
 		});
 	});
 
-	describe('getModuleName', () => {
+	describe('getModuleName ->', () => {
 		test('should return correct name', () => {
 			const pushnotification = new PushNotification(null);
 			expect(pushnotification.getModuleName()).toEqual('Pushnotification');
 		});
 	});
 
-	describe('configure', () => {
+	describe('configure ->', () => {
 		test('should return config with base config', () => {
 			const pushnotification = new PushNotification(null);
 			expect(pushnotification.configure(defaultConfig)).toMatchObject({
@@ -208,7 +208,7 @@ describe('PushNotification', () => {
 		});
 	});
 
-	describe('onRegister', () => {
+	describe('onRegister ->', () => {
 		test('iOS handler should be called', () => {
 			mockPlatform('ios');
 
@@ -266,7 +266,7 @@ describe('PushNotification', () => {
 		});
 	});
 
-	describe('onNotification', () => {
+	describe('onNotification ->', () => {
 		test('iOS handler should be called', () => {
 			mockPlatform('ios');
 
@@ -320,7 +320,7 @@ describe('PushNotification', () => {
 		});
 	});
 
-	describe('onNotificationOpened', () => {
+	describe('onNotificationOpened ->', () => {
 		platforms.forEach(platform => {
 			test(`${platform} handler should be called`, () => {
 				mockPlatform('ios');
@@ -345,7 +345,7 @@ describe('PushNotification', () => {
 		});
 	});
 
-	describe('requestIOSPermissions', () => {
+	describe('requestIOSPermissions ->', () => {
 		test('should request iOS permissions with default config on configure', () => {
 			mockPlatform('ios');
 
