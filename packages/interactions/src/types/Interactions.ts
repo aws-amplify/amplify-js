@@ -16,20 +16,6 @@ export interface InteractionsOptions {
 
 export type AcceptType = 'ArrayBuffer' | 'Blob' | 'Uint8Array';
 
-export interface InteractionsTextMessage {
-	content: string;
-	options: {
-		messageType: 'text'
-		accept?: AcceptType;
-	};
-} 
-
-export interface InteractionsVoiceMessage {
-	content: Object;
-	options: {
-		messageType: 'voice'
-		accept?: AcceptType;
-	};
-}
-
-export type InteractionsMessage = InteractionsVoiceMessage | InteractionsTextMessage;
+export type InteractionsMessage = {
+	content: string | Object
+};
