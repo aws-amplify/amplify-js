@@ -13,9 +13,9 @@
 
 import { AuthErrorMessages, AuthErrorTypes } from './types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { AuthErrorStrings } from './common/AuthErrorStrings';
 
 const logger = new Logger('AuthError');
-const DEFAULT_MSG = 'Authentication Error';
 
 export class AuthError extends Error {
 	public log: string;
@@ -50,7 +50,7 @@ export class NoUserPoolError extends AuthError {
 
 export const authErrorMessages: AuthErrorMessages = {
 	noConfig: {
-		message: DEFAULT_MSG,
+		message: AuthErrorStrings.DEFAULT_MSG,
 		log: `
             Error: Amplify has not been configured correctly.
             This error is typically caused by one of the following scenarios:
@@ -63,7 +63,7 @@ export const authErrorMessages: AuthErrorMessages = {
         `,
 	},
 	missingAuthConfig: {
-		message: DEFAULT_MSG,
+		message: AuthErrorStrings.DEFAULT_MSG,
 		log: `
             Error: Amplify has not been configured correctly. 
             The configuration object is missing required auth properties. 
@@ -72,36 +72,35 @@ export const authErrorMessages: AuthErrorMessages = {
         `,
 	},
 	emptyUsername: {
-		message: 'Username cannot be empty',
+		message: AuthErrorStrings.EMPTY_USERNAME,
 	},
 	// TODO: should include a list of valid sign-in types
 	invalidUsername: {
-		message:
-			'The username should either be a string or one of the sign in types',
+		message: AuthErrorStrings.INVALID_USERNAME,
 	},
 	emptyPassword: {
-		message: 'Password cannot be empty',
+		message: AuthErrorStrings.EMPTY_PASSWORD,
 	},
 	emptyCode: {
-		message: 'Confirmation code cannot be empty',
+		message: AuthErrorStrings.EMPTY_CODE,
 	},
 	signUpError: {
-		message: 'Error creating account',
+		message: AuthErrorStrings.SIGN_UP_ERROR,
 		log: 'The first parameter should either be non-null string or object',
 	},
 	noMFA: {
-		message: 'No valid MFA method provided',
+		message: AuthErrorStrings.NO_MFA,
 	},
 	invalidMFA: {
-		message: 'Invalid MFA type',
+		message: AuthErrorStrings.INVALID_MFA,
 	},
 	emptyChallengeResponse: {
-		message: 'Challenge response cannot be empty',
+		message: AuthErrorStrings.EMPTY_CHALLENGE,
 	},
 	noUserSession: {
-		message: 'Failed to get the session because the user is empty',
+		message: AuthErrorStrings.NO_USER_SESSION,
 	},
 	default: {
-		message: DEFAULT_MSG,
+		message: AuthErrorStrings.DEFAULT_MSG,
 	},
 };

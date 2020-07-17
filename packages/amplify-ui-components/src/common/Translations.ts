@@ -1,4 +1,6 @@
-export enum Translations {
+import { AuthErrorStrings } from '@aws-amplify/auth';
+
+export enum AuthStrings {
   BACK_TO_SIGN_IN = 'Back to Sign In',
   CHANGE_PASSWORD_ACTION = 'Change',
   CHANGE_PASSWORD = 'Change Password',
@@ -31,6 +33,7 @@ export enum Translations {
   SELECT_MFA_TYPE_HEADER_TEXT = 'Select MFA Type',
   SELECT_MFA_TYPE_SUBMIT_BUTTON_TEXT = 'Verify',
   SEND_CODE = 'Send Code',
+  SUBMIT = 'Submit',
   SETUP_TOTP_REQUIRED = 'TOTP needs to be configured',
   SIGN_IN_ACTION = 'Sign In',
   SIGN_IN_HEADER_TEXT = 'Sign in to your account',
@@ -102,3 +105,6 @@ export enum Translations {
   PICKER_TEXT = 'Pick a file',
   TEXT_FALLBACK_CONTENT = 'Fallback Content',
 }
+
+type Translations = AuthErrorStrings | AuthStrings;
+export const Translations = { ...AuthStrings, ...AuthErrorStrings };
