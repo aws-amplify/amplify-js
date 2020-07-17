@@ -12,7 +12,7 @@
  */
 
 import { AbstractInteractionsProvider } from './InteractionsProvider';
-import { InteractionsOptions, InteractionsMessage } from '../types';
+import { InteractionsOptions, InteractionsMessage, InteractionsResponse } from '../types';
 import {
 	LexRuntimeServiceClient,
 	PostTextCommand,
@@ -89,7 +89,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 	async sendMessage(
 		botname: string,
 		message: string | InteractionsMessage
-	): Promise<object> {
+	): Promise<InteractionsResponse> {
 		if (!this._config[botname]) {
 			return Promise.reject('Bot ' + botname + ' does not exist');
 		}

@@ -10,6 +10,18 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-export interface InteractionsResponse {
-	[key: string]: any;
-}
+import {
+	PostTextResponse,
+	PostContentResponse,
+} from '@aws-sdk/client-lex-runtime-service';
+
+export type InteractionsTextResponse = PostTextResponse;
+export type InteractionsVoiceResponse = Omit<
+	PostContentResponse,
+	'audioStream'
+> & {
+	audioStream: Uint8Array | ArrayBuffer | Blob;
+};
+export type InteractionsResponse =
+	| InteractionsTextResponse
+	| InteractionsVoiceResponse;
