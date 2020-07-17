@@ -147,7 +147,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 			try {
 				const postContentCommand = new PostContentCommand(params);
 				let data = await this.lexRuntimeServiceClient.send(postContentCommand);
-				const audioArray = await convert(data.audioStream, 'Uint8Array');
+				const audioArray = await convert(data.audioStream);
 				this.reportBotStatus(data, botname);
 				return { ...data, ...{ audioStream: audioArray } }; // TODO: type the response type
 			} catch (err) {

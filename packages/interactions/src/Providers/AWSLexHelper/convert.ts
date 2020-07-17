@@ -1,18 +1,12 @@
 import { Readable } from 'stream';
 import { AcceptType } from '../../types';
 export const convert = async (
-	stream: Readable | ReadableStream | Blob,
-	accept: AcceptType
-): Promise<ArrayBuffer | Blob | Uint8Array> => {
+	stream: Readable | ReadableStream | Blob
+): Promise<Uint8Array> => {
 	let audio = stream instanceof Readable ? await readReadable(stream) : stream;
-	const response = new Response(audio);
-	if (accept === 'ArrayBuffer') {
-		return response.arrayBuffer();
-	} else if (accept === 'Blob') {
-		return response.blob();
-	} else {
-		return response.arrayBuffer().then(buffer => new Uint8Array(buffer));
-	}
+	return new Response(audio)
+		.arrayBuffer()
+		.then(buffer => new Uint8Array(buffer));
 };
 
 const readReadable = (stream: Readable): Promise<Blob> => {

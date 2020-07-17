@@ -17,5 +17,5 @@ export interface InteractionsOptions {
 export type AcceptType = 'ArrayBuffer' | 'Blob' | 'Uint8Array';
 
 export type InteractionsMessage = {
-	content: string | Object
+	content: string | Object;
 };
