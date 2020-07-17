@@ -9,6 +9,7 @@
   --link-color: var(--amplify-primary-color);
   --link-hover: var(--amplify-primary-tint);
   --link-active: var(--amplify-primary-shade);
+  --text-transform: uppercase;
 
   width: 100%;
   text-align: center;
@@ -23,9 +24,9 @@
   min-width: 153px;
   display: inline-block;
   margin-bottom: 0;
-  font-size: var(--amplify-text-xxs);
-  font-weight: 400;
-  line-height: 1.42857143;
+  font-size: var(--amplify-text-sm);
+  font-family: var(--amplify-font-family);
+  font-weight: 600;
   text-align: center;
   white-space: nowrap;
   vertical-align: middle;
@@ -34,9 +35,9 @@
   user-select: none;
   background-image: none;
   color: var(--color);
-  text-transform: uppercase;
-  padding: 14px;
-  letter-spacing: 1.1px;
+  padding: 1rem;
+  letter-spacing: 0.75px;
+  text-transform: var(--text-transform);
   background-color: var(--background-color);
   border-width: var(--border-width);
   border-color: var(--border-color);

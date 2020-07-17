@@ -970,6 +970,12 @@ export class AuthClass {
 						user['challengeParam'] = challengeParam;
 						resolve(user);
 					},
+					totpRequired: (challengeName, challengeParam) => {
+						logger.debug('signIn mfa setup', challengeName);
+						user['challengeName'] = challengeName;
+						user['challengeParam'] = challengeParam;
+						resolve(user);
+					},
 				},
 				clientMetadata
 			);
@@ -1474,7 +1480,7 @@ export class AuthClass {
 						onSuccess: data => {
 							logger.debug('global sign out success');
 							if (isSignedInHostedUI) {
-								return res(this._oAuthHandler.signOut());
+								this.oAuthSignOutRedirectOrReject(rej);
 							} else {
 								return res();
 							}
@@ -1489,12 +1495,19 @@ export class AuthClass {
 				logger.debug('user sign out', user);
 				user.signOut();
 				if (isSignedInHostedUI) {
-					return res(this._oAuthHandler.signOut());
+					this.oAuthSignOutRedirectOrReject(rej);
 				} else {
 					return res();
 				}
 			}
 		});
+	}
+
+	private oAuthSignOutRedirectOrReject(reject: (reason?: any) => void) {
+		this._oAuthHandler.signOut(); // this method redirects url
+
+		// App should be redirected to another url otherwise it will reject
+		setTimeout(() => reject('Signout timeout fail'), 3000);
 	}
 
 	/**

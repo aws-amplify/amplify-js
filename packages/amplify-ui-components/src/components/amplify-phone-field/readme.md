@@ -7,6 +7,7 @@
 
 | Property            | Attribute     | Description                                                                                                        | Type                                | Default                                    |
 | ------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------------------------- | ------------------------------------------ |
+| `dialCode`          | `dial-code`   | Default dial code in the phone field                                                                               | `number \| string`                  | `undefined`                                |
 | `disabled`          | `disabled`    | Will disable the input if set to true                                                                              | `boolean`                           | `undefined`                                |
 | `fieldId`           | `field-id`    | Based on the type of field e.g. sign in, sign up, forgot password, etc.                                            | `string`                            | `PHONE_SUFFIX`                             |
 | `handleInputChange` | --            | The callback, called when the input is modified by the user.                                                       | `(inputEvent: Event) => void`       | `undefined`                                |

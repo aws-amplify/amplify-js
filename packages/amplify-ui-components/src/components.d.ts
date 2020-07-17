@@ -11,6 +11,7 @@ import { ButtonTypes, ButtonVariant, InputEvent, TextFieldTypes } from "./common
 import { FunctionalComponent } from "@stencil/core";
 import { CountryCodeDialOptions } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { IconNameType } from "./components/amplify-icon/icons";
+import { AccessLevel, StorageObject } from "./common/types/storage-types";
 import { SelectOptionsNumber, SelectOptionsString } from "./components/amplify-select/amplify-select-interface";
 export namespace Components {
     interface AmplifyAmazonButton {
@@ -199,6 +200,10 @@ export namespace Components {
     }
     interface AmplifyCountryDialCode {
         /**
+          * Default selected dial code
+         */
+        "dialCode": string | number;
+        /**
           * The ID of the field.  Should match with its corresponding input's ID.
          */
         "fieldId": string;
@@ -300,6 +305,10 @@ export namespace Components {
           * The header text of the forgot password section
          */
         "headerText": string;
+        /**
+          * The text displayed inside of the send code button for the form
+         */
+        "sendButtonText": string;
         /**
           * The text displayed inside of the submit button for the form
          */
@@ -531,6 +540,10 @@ export namespace Components {
     }
     interface AmplifyPhoneField {
         /**
+          * Default dial code in the phone field
+         */
+        "dialCode"?: string | number;
+        /**
           * Will disable the input if set to true
          */
         "disabled"?: boolean;
@@ -566,6 +579,46 @@ export namespace Components {
           * The value of the content inside of the input field
          */
         "value": string;
+    }
+    interface AmplifyPhotoPicker {
+        /**
+          * Picker button text as string
+         */
+        "buttonText"?: string;
+        /**
+          * Function that handles file pick onClick
+         */
+        "handleClick"?: (file: File) => void;
+        /**
+          * Header Hint value in string
+         */
+        "headerHint"?: string;
+        /**
+          * Title string value
+         */
+        "headerTitle"?: string;
+        /**
+          * Placeholder hint that goes under the placeholder image
+         */
+        "placeholderHint"?: string;
+        /**
+          * Source of the image to be previewed
+         */
+        "previewSrc"?: string | object;
+    }
+    interface AmplifyPicker {
+        /**
+          * File input accept value
+         */
+        "acceptValue": string;
+        /**
+          * File input onChange handler
+         */
+        "inputHandler": (e: Event) => void;
+        /**
+          * Picker button text
+         */
+        "pickerText": string;
     }
     interface AmplifyRadioButton {
         /**
@@ -631,6 +684,200 @@ export namespace Components {
          */
         "user": CognitoUserInterface;
     }
+    interface AmplifyS3Album {
+        /**
+          * The content type header used when uploading to S3
+         */
+        "contentType": string;
+        /**
+          * Callback used to generate custom key value
+         */
+        "fileToKey": (data: object) => string | string;
+        /**
+          * Filter to be applied on album list
+         */
+        "filter": (list: StorageObject[]) => StorageObject[];
+        /**
+          * Function executed when error occurs for the s3-image
+         */
+        "handleOnError": (event: Event) => void;
+        /**
+          * Function executed when s3-image loads
+         */
+        "handleOnLoad": (event: Event) => void;
+        /**
+          * Cognito identity id of the another user's image list
+         */
+        "identityId": string;
+        /**
+          * The access level of the files
+         */
+        "level": AccessLevel;
+        /**
+          * String representing directory location of image files to be listed
+         */
+        "path": string;
+        /**
+          * Boolean to enable or disable picker
+         */
+        "picker": boolean;
+        /**
+          * Picker button text
+         */
+        "pickerText": string;
+        /**
+          * Sort to be applied on album list
+         */
+        "sort": (list: StorageObject[]) => StorageObject[];
+        /**
+          * Whether or not to use track the get/put of the listing of images
+         */
+        "track": boolean;
+    }
+    interface AmplifyS3Image {
+        /**
+          * Image body content to be uploaded
+         */
+        "body": object;
+        /**
+          * The content type header used when uploading to S3
+         */
+        "contentType": string;
+        /**
+          * Function executed when error occurs for the image
+         */
+        "handleOnError": (event: Event) => void;
+        /**
+          * Function executed when image loads
+         */
+        "handleOnLoad": (event: Event) => void;
+        /**
+          * Cognito identity id of the another user's image
+         */
+        "identityId": string;
+        /**
+          * The key of the image object in S3
+         */
+        "imgKey": string;
+        /**
+          * The access level of the image
+         */
+        "level": AccessLevel;
+        /**
+          * String representing directory location to image file
+         */
+        "path": string;
+        /**
+          * Whether or not to use track on get/put of the image
+         */
+        "track": boolean;
+    }
+    interface AmplifyS3ImagePicker {
+        /**
+          * Upload Button Text as string
+         */
+        "buttonText"?: string;
+        /**
+          * The content type header used when uploading to S3
+         */
+        "contentType": string;
+        /**
+          * Callback used to generate custom key value
+         */
+        "fileToKey": (data: object) => string | string;
+        /**
+          * Header Hint value in string
+         */
+        "headerHint"?: string;
+        /**
+          * Title string value
+         */
+        "headerTitle"?: string;
+        /**
+          * Cognito identity id of the another user's image
+         */
+        "identityId": string;
+        /**
+          * The access level of the image
+         */
+        "level": AccessLevel;
+        /**
+          * String representing directory location to image file
+         */
+        "path": string;
+        /**
+          * Placeholder hint that goes under the placeholder image
+         */
+        "placeholderHint"?: string;
+        /**
+          * Whether or not to use track the get/put of the image
+         */
+        "track": boolean;
+    }
+    interface AmplifyS3Text {
+        /**
+          * Text body content to be uploaded
+         */
+        "body": object;
+        /**
+          * The content type header used when uploading to S3
+         */
+        "contentType": string;
+        /**
+          * Fallback content
+         */
+        "fallbackText": string;
+        /**
+          * Cognito identity id of the another user's text file
+         */
+        "identityId": string;
+        /**
+          * The access level of the text file
+         */
+        "level": AccessLevel;
+        /**
+          * String representing directory location to text file
+         */
+        "path": string;
+        /**
+          * The key of the text object in S3
+         */
+        "textKey": string;
+        /**
+          * Whether or not to use track the get/put of the text file
+         */
+        "track": boolean;
+    }
+    interface AmplifyS3TextPicker {
+        /**
+          * The content type header used when uploading to S3
+         */
+        "contentType": string;
+        /**
+          * Fallback content for aplify-s3-text
+         */
+        "fallbackText": string;
+        /**
+          * Callback used to generate custom key value
+         */
+        "fileToKey": (data: object) => string | string;
+        /**
+          * Cognito identity id of the another user's text file
+         */
+        "identityId": string;
+        /**
+          * The access level of the text file
+         */
+        "level": AccessLevel;
+        /**
+          * String representing directory location to text file
+         */
+        "path": string;
+        /**
+          * Whether or not to use track the get/put of the text file
+         */
+        "track": boolean;
+    }
     interface AmplifySection {
         /**
           * Equivalent to html section role
@@ -650,6 +897,10 @@ export namespace Components {
           * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
          */
         "options": SelectOptionsString | SelectOptionsNumber;
+        /**
+          * Default selected option
+         */
+        "selected"?: string | number;
     }
     interface AmplifySelectMfaType {
         /**
@@ -1021,6 +1272,18 @@ declare global {
         prototype: HTMLAmplifyPhoneFieldElement;
         new (): HTMLAmplifyPhoneFieldElement;
     };
+    interface HTMLAmplifyPhotoPickerElement extends Components.AmplifyPhotoPicker, HTMLStencilElement {
+    }
+    var HTMLAmplifyPhotoPickerElement: {
+        prototype: HTMLAmplifyPhotoPickerElement;
+        new (): HTMLAmplifyPhotoPickerElement;
+    };
+    interface HTMLAmplifyPickerElement extends Components.AmplifyPicker, HTMLStencilElement {
+    }
+    var HTMLAmplifyPickerElement: {
+        prototype: HTMLAmplifyPickerElement;
+        new (): HTMLAmplifyPickerElement;
+    };
     interface HTMLAmplifyRadioButtonElement extends Components.AmplifyRadioButton, HTMLStencilElement {
     }
     var HTMLAmplifyRadioButtonElement: {
@@ -1032,6 +1295,36 @@ declare global {
     var HTMLAmplifyRequireNewPasswordElement: {
         prototype: HTMLAmplifyRequireNewPasswordElement;
         new (): HTMLAmplifyRequireNewPasswordElement;
+    };
+    interface HTMLAmplifyS3AlbumElement extends Components.AmplifyS3Album, HTMLStencilElement {
+    }
+    var HTMLAmplifyS3AlbumElement: {
+        prototype: HTMLAmplifyS3AlbumElement;
+        new (): HTMLAmplifyS3AlbumElement;
+    };
+    interface HTMLAmplifyS3ImageElement extends Components.AmplifyS3Image, HTMLStencilElement {
+    }
+    var HTMLAmplifyS3ImageElement: {
+        prototype: HTMLAmplifyS3ImageElement;
+        new (): HTMLAmplifyS3ImageElement;
+    };
+    interface HTMLAmplifyS3ImagePickerElement extends Components.AmplifyS3ImagePicker, HTMLStencilElement {
+    }
+    var HTMLAmplifyS3ImagePickerElement: {
+        prototype: HTMLAmplifyS3ImagePickerElement;
+        new (): HTMLAmplifyS3ImagePickerElement;
+    };
+    interface HTMLAmplifyS3TextElement extends Components.AmplifyS3Text, HTMLStencilElement {
+    }
+    var HTMLAmplifyS3TextElement: {
+        prototype: HTMLAmplifyS3TextElement;
+        new (): HTMLAmplifyS3TextElement;
+    };
+    interface HTMLAmplifyS3TextPickerElement extends Components.AmplifyS3TextPicker, HTMLStencilElement {
+    }
+    var HTMLAmplifyS3TextPickerElement: {
+        prototype: HTMLAmplifyS3TextPickerElement;
+        new (): HTMLAmplifyS3TextPickerElement;
     };
     interface HTMLAmplifySectionElement extends Components.AmplifySection, HTMLStencilElement {
     }
@@ -1143,8 +1436,15 @@ declare global {
         "amplify-oauth-button": HTMLAmplifyOauthButtonElement;
         "amplify-password-field": HTMLAmplifyPasswordFieldElement;
         "amplify-phone-field": HTMLAmplifyPhoneFieldElement;
+        "amplify-photo-picker": HTMLAmplifyPhotoPickerElement;
+        "amplify-picker": HTMLAmplifyPickerElement;
         "amplify-radio-button": HTMLAmplifyRadioButtonElement;
         "amplify-require-new-password": HTMLAmplifyRequireNewPasswordElement;
+        "amplify-s3-album": HTMLAmplifyS3AlbumElement;
+        "amplify-s3-image": HTMLAmplifyS3ImageElement;
+        "amplify-s3-image-picker": HTMLAmplifyS3ImagePickerElement;
+        "amplify-s3-text": HTMLAmplifyS3TextElement;
+        "amplify-s3-text-picker": HTMLAmplifyS3TextPickerElement;
         "amplify-section": HTMLAmplifySectionElement;
         "amplify-select": HTMLAmplifySelectElement;
         "amplify-select-mfa-type": HTMLAmplifySelectMfaTypeElement;
@@ -1347,6 +1647,10 @@ declare namespace LocalJSX {
     }
     interface AmplifyCountryDialCode {
         /**
+          * Default selected dial code
+         */
+        "dialCode"?: string | number;
+        /**
           * The ID of the field.  Should match with its corresponding input's ID.
          */
         "fieldId"?: string;
@@ -1448,6 +1752,10 @@ declare namespace LocalJSX {
           * The header text of the forgot password section
          */
         "headerText"?: string;
+        /**
+          * The text displayed inside of the send code button for the form
+         */
+        "sendButtonText"?: string;
         /**
           * The text displayed inside of the submit button for the form
          */
@@ -1683,6 +1991,10 @@ declare namespace LocalJSX {
     }
     interface AmplifyPhoneField {
         /**
+          * Default dial code in the phone field
+         */
+        "dialCode"?: string | number;
+        /**
           * Will disable the input if set to true
          */
         "disabled"?: boolean;
@@ -1718,6 +2030,46 @@ declare namespace LocalJSX {
           * The value of the content inside of the input field
          */
         "value"?: string;
+    }
+    interface AmplifyPhotoPicker {
+        /**
+          * Picker button text as string
+         */
+        "buttonText"?: string;
+        /**
+          * Function that handles file pick onClick
+         */
+        "handleClick"?: (file: File) => void;
+        /**
+          * Header Hint value in string
+         */
+        "headerHint"?: string;
+        /**
+          * Title string value
+         */
+        "headerTitle"?: string;
+        /**
+          * Placeholder hint that goes under the placeholder image
+         */
+        "placeholderHint"?: string;
+        /**
+          * Source of the image to be previewed
+         */
+        "previewSrc"?: string | object;
+    }
+    interface AmplifyPicker {
+        /**
+          * File input accept value
+         */
+        "acceptValue"?: string;
+        /**
+          * File input onChange handler
+         */
+        "inputHandler"?: (e: Event) => void;
+        /**
+          * Picker button text
+         */
+        "pickerText"?: string;
     }
     interface AmplifyRadioButton {
         /**
@@ -1783,6 +2135,200 @@ declare namespace LocalJSX {
          */
         "user"?: CognitoUserInterface;
     }
+    interface AmplifyS3Album {
+        /**
+          * The content type header used when uploading to S3
+         */
+        "contentType"?: string;
+        /**
+          * Callback used to generate custom key value
+         */
+        "fileToKey"?: (data: object) => string | string;
+        /**
+          * Filter to be applied on album list
+         */
+        "filter"?: (list: StorageObject[]) => StorageObject[];
+        /**
+          * Function executed when error occurs for the s3-image
+         */
+        "handleOnError"?: (event: Event) => void;
+        /**
+          * Function executed when s3-image loads
+         */
+        "handleOnLoad"?: (event: Event) => void;
+        /**
+          * Cognito identity id of the another user's image list
+         */
+        "identityId"?: string;
+        /**
+          * The access level of the files
+         */
+        "level"?: AccessLevel;
+        /**
+          * String representing directory location of image files to be listed
+         */
+        "path"?: string;
+        /**
+          * Boolean to enable or disable picker
+         */
+        "picker"?: boolean;
+        /**
+          * Picker button text
+         */
+        "pickerText"?: string;
+        /**
+          * Sort to be applied on album list
+         */
+        "sort"?: (list: StorageObject[]) => StorageObject[];
+        /**
+          * Whether or not to use track the get/put of the listing of images
+         */
+        "track"?: boolean;
+    }
+    interface AmplifyS3Image {
+        /**
+          * Image body content to be uploaded
+         */
+        "body"?: object;
+        /**
+          * The content type header used when uploading to S3
+         */
+        "contentType"?: string;
+        /**
+          * Function executed when error occurs for the image
+         */
+        "handleOnError"?: (event: Event) => void;
+        /**
+          * Function executed when image loads
+         */
+        "handleOnLoad"?: (event: Event) => void;
+        /**
+          * Cognito identity id of the another user's image
+         */
+        "identityId"?: string;
+        /**
+          * The key of the image object in S3
+         */
+        "imgKey"?: string;
+        /**
+          * The access level of the image
+         */
+        "level"?: AccessLevel;
+        /**
+          * String representing directory location to image file
+         */
+        "path"?: string;
+        /**
+          * Whether or not to use track on get/put of the image
+         */
+        "track"?: boolean;
+    }
+    interface AmplifyS3ImagePicker {
+        /**
+          * Upload Button Text as string
+         */
+        "buttonText"?: string;
+        /**
+          * The content type header used when uploading to S3
+         */
+        "contentType"?: string;
+        /**
+          * Callback used to generate custom key value
+         */
+        "fileToKey"?: (data: object) => string | string;
+        /**
+          * Header Hint value in string
+         */
+        "headerHint"?: string;
+        /**
+          * Title string value
+         */
+        "headerTitle"?: string;
+        /**
+          * Cognito identity id of the another user's image
+         */
+        "identityId"?: string;
+        /**
+          * The access level of the image
+         */
+        "level"?: AccessLevel;
+        /**
+          * String representing directory location to image file
+         */
+        "path"?: string;
+        /**
+          * Placeholder hint that goes under the placeholder image
+         */
+        "placeholderHint"?: string;
+        /**
+          * Whether or not to use track the get/put of the image
+         */
+        "track"?: boolean;
+    }
+    interface AmplifyS3Text {
+        /**
+          * Text body content to be uploaded
+         */
+        "body"?: object;
+        /**
+          * The content type header used when uploading to S3
+         */
+        "contentType"?: string;
+        /**
+          * Fallback content
+         */
+        "fallbackText"?: string;
+        /**
+          * Cognito identity id of the another user's text file
+         */
+        "identityId"?: string;
+        /**
+          * The access level of the text file
+         */
+        "level"?: AccessLevel;
+        /**
+          * String representing directory location to text file
+         */
+        "path"?: string;
+        /**
+          * The key of the text object in S3
+         */
+        "textKey"?: string;
+        /**
+          * Whether or not to use track the get/put of the text file
+         */
+        "track"?: boolean;
+    }
+    interface AmplifyS3TextPicker {
+        /**
+          * The content type header used when uploading to S3
+         */
+        "contentType"?: string;
+        /**
+          * Fallback content for aplify-s3-text
+         */
+        "fallbackText"?: string;
+        /**
+          * Callback used to generate custom key value
+         */
+        "fileToKey"?: (data: object) => string | string;
+        /**
+          * Cognito identity id of the another user's text file
+         */
+        "identityId"?: string;
+        /**
+          * The access level of the text file
+         */
+        "level"?: AccessLevel;
+        /**
+          * String representing directory location to text file
+         */
+        "path"?: string;
+        /**
+          * Whether or not to use track the get/put of the text file
+         */
+        "track"?: boolean;
+    }
     interface AmplifySection {
         /**
           * Equivalent to html section role
@@ -1802,6 +2348,10 @@ declare namespace LocalJSX {
           * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
          */
         "options"?: SelectOptionsString | SelectOptionsNumber;
+        /**
+          * Default selected option
+         */
+        "selected"?: string | number;
     }
     interface AmplifySelectMfaType {
         /**
@@ -2017,8 +2567,15 @@ declare namespace LocalJSX {
         "amplify-oauth-button": AmplifyOauthButton;
         "amplify-password-field": AmplifyPasswordField;
         "amplify-phone-field": AmplifyPhoneField;
+        "amplify-photo-picker": AmplifyPhotoPicker;
+        "amplify-picker": AmplifyPicker;
         "amplify-radio-button": AmplifyRadioButton;
         "amplify-require-new-password": AmplifyRequireNewPassword;
+        "amplify-s3-album": AmplifyS3Album;
+        "amplify-s3-image": AmplifyS3Image;
+        "amplify-s3-image-picker": AmplifyS3ImagePicker;
+        "amplify-s3-text": AmplifyS3Text;
+        "amplify-s3-text-picker": AmplifyS3TextPicker;
         "amplify-section": AmplifySection;
         "amplify-select": AmplifySelect;
         "amplify-select-mfa-type": AmplifySelectMfaType;
@@ -2069,8 +2626,15 @@ declare module "@stencil/core" {
             "amplify-oauth-button": LocalJSX.AmplifyOauthButton & JSXBase.HTMLAttributes<HTMLAmplifyOauthButtonElement>;
             "amplify-password-field": LocalJSX.AmplifyPasswordField & JSXBase.HTMLAttributes<HTMLAmplifyPasswordFieldElement>;
             "amplify-phone-field": LocalJSX.AmplifyPhoneField & JSXBase.HTMLAttributes<HTMLAmplifyPhoneFieldElement>;
+            "amplify-photo-picker": LocalJSX.AmplifyPhotoPicker & JSXBase.HTMLAttributes<HTMLAmplifyPhotoPickerElement>;
+            "amplify-picker": LocalJSX.AmplifyPicker & JSXBase.HTMLAttributes<HTMLAmplifyPickerElement>;
             "amplify-radio-button": LocalJSX.AmplifyRadioButton & JSXBase.HTMLAttributes<HTMLAmplifyRadioButtonElement>;
             "amplify-require-new-password": LocalJSX.AmplifyRequireNewPassword & JSXBase.HTMLAttributes<HTMLAmplifyRequireNewPasswordElement>;
+            "amplify-s3-album": LocalJSX.AmplifyS3Album & JSXBase.HTMLAttributes<HTMLAmplifyS3AlbumElement>;
+            "amplify-s3-image": LocalJSX.AmplifyS3Image & JSXBase.HTMLAttributes<HTMLAmplifyS3ImageElement>;
+            "amplify-s3-image-picker": LocalJSX.AmplifyS3ImagePicker & JSXBase.HTMLAttributes<HTMLAmplifyS3ImagePickerElement>;
+            "amplify-s3-text": LocalJSX.AmplifyS3Text & JSXBase.HTMLAttributes<HTMLAmplifyS3TextElement>;
+            "amplify-s3-text-picker": LocalJSX.AmplifyS3TextPicker & JSXBase.HTMLAttributes<HTMLAmplifyS3TextPickerElement>;
             "amplify-section": LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
             "amplify-select": LocalJSX.AmplifySelect & JSXBase.HTMLAttributes<HTMLAmplifySelectElement>;
             "amplify-select-mfa-type": LocalJSX.AmplifySelectMfaType & JSXBase.HTMLAttributes<HTMLAmplifySelectMfaTypeElement>;

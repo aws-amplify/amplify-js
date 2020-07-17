@@ -84,8 +84,8 @@ exports[`amplify-icon spec: Render logic -> renders loading correctly 1`] = `
       <g fill="none" fill-rule="evenodd" id="02-Basic-Inputs" stroke="none" stroke-width="1">
         <g id="Bits-&amp;-Loaders-1312px-/-16-Copy-2" transform="translate(-392.000000, -448.000000)">
           <g id="AmpBasicSmall" transform="translate(392.000000, 448.000000)">
-            <path d="M10,0 C15.5228475,0 20,4.4771525 20,10 C20,15.5228475 15.5228475,20 10,20 C4.4771525,20 0,15.5228475 0,10 C0,4.4771525 4.4771525,0 10,0 Z M10,4 C6.6862915,4 4,6.6862915 4,10 C4,13.3137085 6.6862915,16 10,16 C13.3137085,16 16,13.3137085 16,10 C16,6.6862915 13.3137085,4 10,4 Z" fill="#E1E1E1" id="Combined-Shape-1"></path>
-            <path d="M10,0 L10,4 C6.6862915,4 4,6.6862915 4,10 C4,12.0133587 4.99166921,13.7951006 6.51321137,14.8834295 L4.18685298,18.1377379 C1.65198576,16.3237368 0,13.3547894 0,10 C0,4.4771525 4.4771525,0 10,0 Z" fill="#FF9900" id="Combined-Shape-2"></path>
+            <path d="M10,0 C15.5228475,0 20,4.4771525 20,10 C20,15.5228475 15.5228475,20 10,20 C4.4771525,20 0,15.5228475 0,10 C0,4.4771525 4.4771525,0 10,0 Z M10,4 C6.6862915,4 4,6.6862915 4,10 C4,13.3137085 6.6862915,16 10,16 C13.3137085,16 16,13.3137085 16,10 C16,6.6862915 13.3137085,4 10,4 Z" fill="#E1E1E1" id="spinner-circle"></path>
+            <path d="M10,0 L10,4 C6.6862915,4 4,6.6862915 4,10 C4,12.0133587 4.99166921,13.7951006 6.51321137,14.8834295 L4.18685298,18.1377379 C1.65198576,16.3237368 0,13.3547894 0,10 C0,4.4771525 4.4771525,0 10,0 Z" fill="#FF9900" id="spinner-bar"></path>
           </g>
         </g>
       </g>
@@ -113,6 +113,18 @@ exports[`amplify-icon spec: Render logic -> renders minimize correctly 1`] = `
       <g fill-rule="evenodd" id="icons/minis/screensmall">
         <path d="M11,16 L17.0147705,16 L17.0147705,3 L2.04162598,3 L2.04162598,10 L11,10 L11,16 Z M1,2 L18,2 L18,17 L1,17 L1,2 Z" fill-rule="nonzero" id="Rectangle"></path>
       </g>
+    </svg>
+  </span>
+</amplify-icon>
+`;
+
+exports[`amplify-icon spec: Render logic -> renders photoPlaceholder correctly 1`] = `
+<amplify-icon name="photoPlaceholder">
+  <span class="icon">
+    <svg height="64" viewBox="0 0 24 24" width="64" xmlns="http://www.w3.org/2000/svg" style="padding: 64px 0px 64px; fill: black;">
+      <circle cx="12" cy="12" r="3.2"></circle>
+      <path d="M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"></path>
+      <path d="M0 0h24v24H0z" fill="none"></path>
     </svg>
   </span>
 </amplify-icon>
