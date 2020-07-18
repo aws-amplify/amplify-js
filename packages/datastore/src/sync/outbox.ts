@@ -80,8 +80,9 @@ class MutationEventOutbox {
 	public async dequeue(storage: StorageFacade): Promise<MutationEvent> {
 		const head = await this.peek(storage);
 
-		await storage.delete(head);
-
+		if (head !== undefined) {
+			await storage.delete(head);
+		}
 		this.inProgressMutationEventId = undefined;
 
 		return head;
