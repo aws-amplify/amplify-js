@@ -106,28 +106,11 @@
 							if (!audioSupported) {
 								throw new Error(UNSUPPORTED);
 							}
-							resumeAudioContext()
-								.then(() => {
-									recorder = audioRecorder.createRecorder(
-										silenceDetectionConfig
-									);
-									recorder.record(onSilence, visualizer);
-								})
-								.catch(err => {
-									throw new Error(err);
-								});
-						};
-
-						/**
-						 * Resumes audioContext if it is suspended. No-op if it not.
-						 */
-						const resumeAudioContext = () => {
-							const audioContext = audioRecorder.audioContext();
-							if (audioContext.state !== 'suspended') {
-								return Promise.resolve();
-							} else {
-								return audioContext.resume();
-							}
+							const context = audioRecorder.audioContext();
+							context.resume().then(() => {
+								recorder = audioRecorder.createRecorder(silenceDetectionConfig);
+								recorder.record(onSilence, visualizer);
+							});
 						};
 
 						/**
