@@ -14,9 +14,6 @@ export interface InteractionsOptions {
 	[key: string]: any;
 }
 
-export interface InteractionsMessage {
+export type InteractionsMessage = {
 	content: string | Object;
-	options: {
-		[key: string]: string;
-	};
-}
+};

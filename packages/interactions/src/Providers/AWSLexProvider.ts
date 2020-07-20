@@ -12,7 +12,11 @@
  */
 
 import { AbstractInteractionsProvider } from './InteractionsProvider';
-import { InteractionsOptions, InteractionsMessage } from '../types';
+import {
+	InteractionsOptions,
+	InteractionsResponse,
+	InteractionsMessage,
+} from '../types';
 import {
 	LexRuntimeServiceClient,
 	PostTextCommand,
@@ -23,6 +27,7 @@ import {
 	Credentials,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
+import { convert } from './AWSLexHelper/convert';
 
 const logger = new Logger('AWSLexProvider');
 
@@ -88,7 +93,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 	async sendMessage(
 		botname: string,
 		message: string | InteractionsMessage
-	): Promise<object> {
+	): Promise<InteractionsResponse> {
 		if (!this._config[botname]) {
 			return Promise.reject('Bot ' + botname + ' does not exist');
 		}
@@ -123,7 +128,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				return Promise.reject(err);
 			}
 		} else {
-			if (message.options['messageType'] === 'voice') {
+			if (typeof message.content !== 'string') {
 				params = {
 					botAlias: this._config[botname].alias,
 					botName: botname,
@@ -142,16 +147,13 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 					accept: 'audio/mpeg',
 				};
 			}
-
 			logger.debug('postContent to lex', message);
-
 			try {
 				const postContentCommand = new PostContentCommand(params);
-				const data = await this.lexRuntimeServiceClient.send(
-					postContentCommand
-				);
+				let data = await this.lexRuntimeServiceClient.send(postContentCommand);
+				const audioArray = await convert(data.audioStream);
 				this.reportBotStatus(data, botname);
-				return data;
+				return { ...data, ...{ audioStream: audioArray } };
 			} catch (err) {
 				return Promise.reject(err);
 			}
