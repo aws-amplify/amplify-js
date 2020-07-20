@@ -21,8 +21,7 @@ exports[`amplify-sign-in spec: Render logic -> should render a \`sign in\` form 
           </slot>
           <slot name="primary-footer-content">
             <amplify-button data-test="sign-in-sign-in-button" type="submit">
-              <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
-              <span style="display: initial;">
+              <span>
                 Sign In
               </span>
             </amplify-button>
@@ -55,8 +54,7 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withEmptyFederate
           </slot>
           <slot name="primary-footer-content">
             <amplify-button data-test="sign-in-sign-in-button" type="submit">
-              <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
-              <span style="display: initial;">
+              <span>
                 Sign In
               </span>
             </amplify-button>
@@ -92,8 +90,7 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederated 1`]
           </slot>
           <slot name="primary-footer-content">
             <amplify-button data-test="sign-in-sign-in-button" type="submit">
-              <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
-              <span style="display: initial;">
+              <span>
                 Sign In
               </span>
             </amplify-button>
