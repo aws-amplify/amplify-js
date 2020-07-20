@@ -437,7 +437,7 @@ function ChatBotInputs(props) {
 	const micText = props.micText;
 	const submit = props.submit;
 	let placeholder;
-	
+
 	if (voiceEnabled && textEnabled) {
 		// @ts-ignore
 		placeholder = 'Type your message or tap 🎤';

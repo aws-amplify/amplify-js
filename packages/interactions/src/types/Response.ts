@@ -24,4 +24,4 @@ export type InteractionsVoiceResponse = Omit<
 };
 export type InteractionsResponse =
 	| InteractionsTextResponse
-	| InteractionsVoiceResponse
+	| InteractionsVoiceResponse;

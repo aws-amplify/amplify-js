@@ -104,7 +104,7 @@ export class InteractionsClass {
 	public async send(
 		botname: string,
 		message: InteractionsMessage
-	): Promise<InteractionsVoiceResponse>; 
+	): Promise<InteractionsVoiceResponse>;
 	public async send(botname: string, message: object): Promise<object>;
 	public async send(
 		botname: string,
