@@ -1,126 +1,126 @@
 {
     "setItem": {
         "prefix": "setItem",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "setItem"
         ]
     },
     "getItem": {
         "prefix": "getItem",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "getItem"
         ]
     },
     "removeItem": {
         "prefix": "removeItem",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "removeItem"
         ]
     },
     "clear": {
         "prefix": "clear",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "clear"
         ]
     },
     "getAllKeys": {
         "prefix": "getAllKeys",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "getAllKeys"
         ]
     },
     "getCacheCurSize": {
         "prefix": "getCacheCurSize",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "getCacheCurSize"
         ]
     },
     "configure": {
         "prefix": "configure",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "configure"
         ]
     },
     "createInstance": {
         "prefix": "createInstance",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "createInstance"
         ]
     },
     "keyPrefix": {
         "prefix": "keyPrefix",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "keyPrefix"
         ]
     },
     "capacityInBytes": {
         "prefix": "capacityInBytes",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "capacityInBytes"
         ]
     },
     "itemMaxSize": {
         "prefix": "itemMaxSize",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "itemMaxSize"
         ]
     },
     "defaultTTL": {
         "prefix": "defaultTTL",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "defaultTTL"
         ]
     },
     "defaultPriority": {
         "prefix": "defaultPriority",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "defaultPriority"
         ]
     },
     "warningThreshold": {
         "prefix": "warningThreshold",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "warningThreshold"
         ]
     },
     "storage": {
         "prefix": "storage",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "storage"
         ]
     },
     "priority": {
         "prefix": "priority",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "priority"
         ]
     },
     "expires": {
         "prefix": "expires",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "expires"
         ]
     },
     "callback": {
         "prefix": "callback",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "callback"
         ]

@@ -1,252 +1,252 @@
 {
     "AsyncStorage": {
         "prefix": "AsyncStorage",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "AsyncStorage"
         ]
     },
     "AuthenticationDetails": {
         "prefix": "AuthenticationDetails",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "AuthenticationDetails"
         ]
     },
     "BUFFER_SIZE": {
         "prefix": "BUFFER_SIZE",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "BUFFER_SIZE"
         ]
     },
     "CognitoAuth": {
         "prefix": "CognitoAuth",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "CognitoAuth"
         ]
     },
     "CognitoUser": {
         "prefix": "CognitoUser",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "CognitoUser"
         ]
     },
     "CognitoUserAttribute": {
         "prefix": "CognitoUserAttribute",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "CognitoUserAttribute"
         ]
     },
     "CognitoUserPool": {
         "prefix": "CognitoUserPool",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "CognitoUserPool"
         ]
     },
     "CookieStorage": {
         "prefix": "CookieStorage",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "CookieStorage"
         ]
     },
     "DEFAULT_ALGORITHM": {
         "prefix": "DEFAULT_ALGORITHM",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "DEFAULT_ALGORITHM"
         ]
     },
     "FLUSH_INTERVAL": {
         "prefix": "FLUSH_INTERVAL",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "FLUSH_INTERVAL"
         ]
     },
     "FLUSH_SIZE": {
         "prefix": "FLUSH_SIZE",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "FLUSH_SIZE"
         ]
     },
     "Hub": {
         "prefix": "Hub",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "Hub"
         ]
     },
     "Linking": {
         "prefix": "Linking",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "Linking"
         ]
     },
     "MIME_MAP": {
         "prefix": "MIME_MAP",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "MIME_MAP"
         ]
     },
     "NON_RETRYABLE_EXCEPTIONS": {
         "prefix": "NON_RETRYABLE_EXCEPTIONS",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "NON_RETRYABLE_EXCEPTIONS"
         ]
     },
     "OS": {
         "prefix": "OS",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "OS"
         ]
     },
     "RESEND_LIMIT": {
         "prefix": "RESEND_LIMIT",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "RESEND_LIMIT"
         ]
     },
     "SERVICE_NAME": {
         "prefix": "SERVICE_NAME",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "SERVICE_NAME"
         ]
     },
     "Storage": {
         "prefix": "Storage",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "Storage"
         ]
     },
     "StorageHelper": {
         "prefix": "StorageHelper",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "StorageHelper"
         ]
     },
     "_config": {
         "prefix": "_config",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "_config"
         ]
     },
     "_i18n": {
         "prefix": "_i18n",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "_i18n"
         ]
     },
     "_instance": {
         "prefix": "_instance",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "_instance"
         ]
     },
     "actions": {
         "prefix": "actions",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "actions"
         ]
     },
     "analyticsConfigured": {
         "prefix": "analyticsConfigured",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "analyticsConfigured"
         ]
     },
     "authConfigured": {
         "prefix": "authConfigured",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "authConfigured"
         ]
     },
     "crypto": {
         "prefix": "crypto",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "crypto"
         ]
     },
     "date": {
         "prefix": "date",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "date"
         ]
     },
     "expireTime": {
         "prefix": "expireTime",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "expireTime"
         ]
     },
     "instance": {
         "prefix": "instance",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "instance"
         ]
     },
     "logger": {
         "prefix": "logger",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "logger"
         ]
     },
     "preInteract": {
         "prefix": "preInteract",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "preInteract"
         ]
     },
     "startsessionRecorded": {
         "prefix": "startsessionRecorded",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "startsessionRecorded"
         ]
     },
     "url": {
         "prefix": "url",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "url"
         ]
     },
     "urlLib": {
         "prefix": "urlLib",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "urlLib"
         ]
     },
     "waitForInit": {
         "prefix": "waitForInit",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "waitForInit"
         ]

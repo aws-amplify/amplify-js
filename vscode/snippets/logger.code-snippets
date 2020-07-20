@@ -1,63 +1,63 @@
 {
     "info": {
         "prefix": "info",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "info"
         ]
     },
     "debug": {
         "prefix": "debug",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "debug"
         ]
     },
     "warn": {
         "prefix": "warn",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "warn"
         ]
     },
     "error": {
         "prefix": "error",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "error"
         ]
     },
     "ERROR": {
         "prefix": "ERROR",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "ERROR"
         ]
     },
     "WARN": {
         "prefix": "WARN",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "WARN"
         ]
     },
     "INFO": {
         "prefix": "INFO",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "INFO"
         ]
     },
     "DEBUG": {
         "prefix": "DEBUG",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "DEBUG"
         ]
     },
     "VERBOSE": {
         "prefix": "VERBOSE",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "VERBOSE"
         ]
