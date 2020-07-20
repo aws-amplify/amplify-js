@@ -318,6 +318,30 @@
         ]
     },
 
+    "Amplify Prediction Celebrities Detection": {
+        "prefix": "predict.detectCelebrity",
+        "body": [
+            "Predictions.identify({",
+                "\tentities: {",
+                  "\t\tsource: {",
+                    "\t\t\t${1: file},",
+                  "\t\t},",
+                  "\t\tcelebrityDetection: true // boolean. It will only show detected celebrities",
+                "\t}",
+            "})",
+            ".then(({ entities }) => {",
+                "\tentities.forEach(({ boundingBox, landmarks, metadata }) => {",
+                  "\t\tconst {",
+                      "\t\t\t${1: name},",
+                      "\t\t\t${1: urls}",
+                  "\t\t} = metadata; // celebrity info",
+
+                  "\t\t// ...",
+                "\t})",
+            "})",
+            ".catch(err => console.log({ err }));"
+        ]
+    }
 
 
 
