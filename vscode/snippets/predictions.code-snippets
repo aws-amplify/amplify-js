@@ -223,6 +223,30 @@
             "})",
             ".catch(err => console.log({ err }));"
         ]
+    },
+
+    "Amplify Prediction StructuredTables": {
+        "prefix": "Predict.structuredTables",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "Predictions.identify({",
+                "\ttext: {",
+                    "\t\tsource: {",
+                        "\t\t\t${1: file}",
+                    "\t\t},",
+                    "\t\tformat: ${2: \"TABLE\"},",
+                "\t}",
+            "})",
+            ".then(response => {",
+                "\tconst {",
+                    "\t\ttext: {",
+                        "\t\t\t// same as PLAIN +",
+                        "${3: keyValues}  // Array of { key (String), value: { text (String), selected (boolean)}, polygon, boundingBox }",
+                    "\t\t}",
+                "\t} = response",
+            "})",
+            ".catch(err => console.log({ err }));"
+        ]
     }
 
 
