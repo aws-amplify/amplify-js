@@ -1,5 +1,4 @@
 import { Readable } from 'stream';
-import { AcceptType } from '../../types';
 export const convert = async (
 	stream: Readable | ReadableStream | Blob
 ): Promise<Uint8Array> => {

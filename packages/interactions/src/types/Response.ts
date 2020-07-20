@@ -20,8 +20,8 @@ export type InteractionsVoiceResponse = Omit<
 	PostContentResponse,
 	'audioStream'
 > & {
-	audioStream: Uint8Array | ArrayBuffer | Blob;
+	audioStream: Uint8Array;
 };
 export type InteractionsResponse =
 	| InteractionsTextResponse
-	| InteractionsVoiceResponse;
+	| InteractionsVoiceResponse

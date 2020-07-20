@@ -98,7 +98,10 @@ export class InteractionsClass {
 
 	public async send(botname: string, message: string);
 	public async send(botname: string, message: Object);
-	public async send(botname: string, message: string | InteractionsMessage | Object) {
+	public async send(
+		botname: string,
+		message: string | InteractionsMessage | Object
+	) {
 		if (!this._options.bots || !this._options.bots[botname]) {
 			throw new Error('Bot ' + botname + ' does not exist');
 		}

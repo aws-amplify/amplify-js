@@ -1,8 +1,4 @@
-import { AcceptType } from '../../types';
-export const convert = (
-	stream: Blob,
-	accept: AcceptType
-): Promise<Uint8Array> => {
+export const convert = (stream: Blob): Promise<Uint8Array> => {
 	return new Promise(async (res, rej) => {
 		const blobURL = URL.createObjectURL(stream);
 		const request = new XMLHttpRequest();
