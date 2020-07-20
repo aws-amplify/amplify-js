@@ -1,28 +1,28 @@
 {
     "dispatch": {
         "prefix": "dispatch",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "dispatch"
         ]
     },
     "listen": {
         "prefix": "listen",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "listen"
         ]
     },
     "onHubCapsule": {
         "prefix": "onHubCapsule",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "onHubCapsule"
         ]
     },
     "Hub Capsule Switch": {
         "prefix": "Hub Capsule Switch",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "${1:alex}.onHubCapsule = (capsule) => {\n",
                 "\tswitch (capsule.payload.event) {\n",
