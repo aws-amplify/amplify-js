@@ -33,8 +33,8 @@ export class AmplifyFormSection {
             <slot name="amplify-form-section-header">
               <div class="form-section-header">
                 <h3 data-test={this.testDataPrefix + '-header-section'}>{this.headerText}</h3>
-                <div class="sub-title">
-                  <slot name="sub-title"></slot>
+                <div class="subtitle">
+                  <slot name="subtitle"></slot>
                 </div>
               </div>
             </slot>

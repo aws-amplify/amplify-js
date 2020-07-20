@@ -1,6 +1,8 @@
 :host {
   --header-color: var(--amplify-secondary-color);
-  // --header-size: var(--amplify-text-l);
+  --header-size: var(--amplify-text-md-2);
+  --subtitle-size: var(--amplify-grey);
+  --subtitle-color: var(--amplify-grey);
   --footer-color: var(--amplify-grey);
   --footer-size: var(--amplify-text-sm);
   --font-family: var(--amplify-font-family);
@@ -10,14 +12,14 @@
 .form-section-header {
   h3 {
     color: var(--header-color);
-    // font-size: var(--header-size);
-    font-size: 1.25rem;
+    font-size: var(--header-size);
     font-weight: 700;
     margin-bottom: 0.75rem;
   }
-  .sub-title {
+  .subtitle {
     font-weight: 400;
-    font-size: 14px;
+    font-size: var(--amplify-text-sm);
+    color: var(--subtitle-color);
   }
   margin: 1rem 0 1.5rem 0;
 }
@@ -36,6 +38,10 @@
     flex-direction: row-reverse;
     justify-content: space-between;
     align-items: baseline;
+  }
+
+  .secondary-footer-content {
+    margin-top: 1rem;
   }
 
   * + * {
