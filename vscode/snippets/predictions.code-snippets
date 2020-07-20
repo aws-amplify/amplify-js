@@ -269,7 +269,23 @@
               ".then((response) => console.log({ response }))",
               ".catch(err => console.log({ err }));"
         ]
-	}
+    },
+
+    "Amplify Prediction S3 Detection": {
+        "prefix": "predict.detectFromS3",
+        "body": [
+            "Predictions.identify({",
+                "\tentities: {",
+                  "\t\tsource: {",
+                    "\t\t\tkey: ${1: pathToPhoto},",
+                    "\t\t\tlevel: 'public | private | protected', //optional, default is the configured on Storage category",
+                  "\t\t},",
+                "\t}",
+              "})",
+              ".then((response) => console.log({ response }))",
+              ".catch(err => console.log({ err }));"
+        ]
+    }
 
 
 
