@@ -285,7 +285,42 @@
               ".then((response) => console.log({ response }))",
               ".catch(err => console.log({ err }));"
         ]
-    }
+    },
+
+    "Amplify Prediction Faces Detection": {
+        "prefix": "predict.detectFace",
+        "body": [
+            "Predictions.identify({",
+                "\tentities: {",
+                  "\t\tsource: {",
+                    "\t\t\tfile,",
+                  "\t\t},",
+                "\t}",
+              "})",
+              ".then(({ entities }) => {",
+                "\tentities.forEach(({boundingBox, landmarks}) => {",
+                  "\t\tconst {",
+                    "\t\t\t ${1: width}, // ratio of overall image width",
+                    "\t\t\t ${2: height}, // ratio of overall image height",
+                    "\t\t\t ${3: left}, // left coordinate as a ratio of overall image width",
+                    "\t\t\t ${4: top} // top coordinate as a ratio of overall image height",
+                  "\t\t} = boundingBox;",
+                  "\t\tlandmarks.forEach(landmark => {",
+                      "\t\t\tconst {",
+                          " ${5: type}, // string \"eyeLeft\", \"eyeRight\", \"mouthLeft\", \"mouthRight\", \"nose\"",
+                          " ${6: x}, // ratio of overall image width",
+                          " ${7: y}, // ratio of overall image height",
+                      "\t\t\t} = landmark;",
+                  "\t\t})",
+                "\t})",
+              "})",
+              ".catch(err => console.log({ err }));"
+        ]
+    },
+
+
+
+
 
 
 
