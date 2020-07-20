@@ -27,7 +27,7 @@ export const hasShadowDom = (el: HTMLElement) => {
 export const dispatchToastHubEvent = (error: ToastError) => {
   Hub.dispatch(UI_AUTH_CHANNEL, {
     event: TOAST_AUTH_ERROR_EVENT,
-    message: error.message,
+    message: I18n.get(error.message),
   });
 };
 
