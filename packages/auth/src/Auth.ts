@@ -1480,7 +1480,7 @@ export class AuthClass {
 						onSuccess: data => {
 							logger.debug('global sign out success');
 							if (isSignedInHostedUI) {
-								this.oAuthSignOutRedirectOrReject(rej);
+								this.oAuthSignOutRedirect(res, rej);
 							} else {
 								return res();
 							}
@@ -1495,12 +1495,30 @@ export class AuthClass {
 				logger.debug('user sign out', user);
 				user.signOut();
 				if (isSignedInHostedUI) {
-					this.oAuthSignOutRedirectOrReject(rej);
+					this.oAuthSignOutRedirect(res, rej);
 				} else {
 					return res();
 				}
 			}
 		});
+	}
+
+	private oAuthSignOutRedirect(
+		resolve: () => void,
+		reject: (reason?: any) => void
+	) {
+		const { isBrowser } = JS.browserOrNode();
+
+		if (isBrowser) {
+			this.oAuthSignOutRedirectOrReject(reject);
+		} else {
+			this.oAuthSignOutAndResolve(resolve);
+		}
+	}
+
+	private oAuthSignOutAndResolve(resolve: () => void) {
+		this._oAuthHandler.signOut();
+		resolve();
 	}
 
 	private oAuthSignOutRedirectOrReject(reject: (reason?: any) => void) {

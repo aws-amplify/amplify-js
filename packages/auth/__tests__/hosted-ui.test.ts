@@ -153,7 +153,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	return CognitoUser;
 });
 
-import { Hub, Credentials, StorageHelper } from '@aws-amplify/core';
+import { Hub, Credentials, StorageHelper, JS } from '@aws-amplify/core';
 
 const authOptionsWithOAuth: AuthOptions = {
 	userPoolId: 'awsUserPoolsId',
@@ -247,7 +247,7 @@ describe('Hosted UI tests', () => {
 		}, 0);
 	});
 
-	test('globalSignOut hosted ui, timeout reject', async () => {
+	test('globalSignOut hosted ui on browser, timeout reject', async () => {
 		jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
 			return {
 				setItem() {},
@@ -257,6 +257,13 @@ describe('Hosted UI tests', () => {
 				removeItem() {},
 			};
 		});
+
+		const currentImpl = JS.browserOrNode;
+
+		JS.browserOrNode = jest.fn(() => ({
+			isBrowser: true,
+			isNode: false,
+		}));
 
 		const auth = new Auth(authOptionsWithOAuth);
 
@@ -300,12 +307,12 @@ describe('Hosted UI tests', () => {
 
 		expect(spyon2).toBeCalled();
 
+		JS.browserOrNode = currentImpl;
 		spyonAuth.mockClear();
 		spyon.mockClear();
 		spyon2.mockClear();
 	});
-
-	test('SignOut hosted ui, timeout reject', async () => {
+	test('globalSignOut hosted ui on node, resolve undefined', async () => {
 		jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
 			return {
 				setItem() {},
@@ -315,6 +322,130 @@ describe('Hosted UI tests', () => {
 				removeItem() {},
 			};
 		});
+
+		const currentImpl = JS.browserOrNode;
+
+		JS.browserOrNode = jest.fn(() => ({
+			isBrowser: false,
+			isNode: true,
+		}));
+
+		const auth = new Auth(authOptionsWithOAuth);
+
+		const user = new CognitoUser({
+			Username: 'username',
+			Pool: userPool,
+		});
+
+		const spyonAuth = jest
+			.spyOn(Credentials, 'clear')
+			.mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
+
+		const spyon = jest
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+			.mockImplementationOnce(() => {
+				return user;
+			});
+
+		const spyon2 = jest
+			.spyOn(CognitoUser.prototype, 'globalSignOut')
+			.mockImplementation(({ onSuccess }) => {
+				onSuccess('success');
+			});
+
+		auth._oAuthHandler = {
+			signOut: () => {
+				// testing timeout
+				return new Promise(() => {});
+			},
+		};
+
+		expect.assertions(2);
+
+		const result = await auth.signOut({ global: true });
+		expect(result).toBe(undefined);
+
+		expect(spyon2).toBeCalled();
+
+		JS.browserOrNode = currentImpl;
+
+		spyonAuth.mockClear();
+		spyon.mockClear();
+		spyon2.mockClear();
+	});
+
+	test('SignOut hosted ui on node, resolve undefined', async () => {
+		jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+			return {
+				setItem() {},
+				getItem() {
+					return 'true';
+				},
+				removeItem() {},
+			};
+		});
+		const currentImpl = JS.browserOrNode;
+
+		JS.browserOrNode = jest.fn(() => ({
+			isBrowser: false,
+			isNode: true,
+		}));
+
+		const auth = new Auth(authOptionsWithOAuth);
+
+		const user = new CognitoUser({
+			Username: 'username',
+			Pool: userPool,
+		});
+
+		const spyonAuth = jest
+			.spyOn(Credentials, 'clear')
+			.mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
+
+		const spyon = jest
+			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
+			.mockImplementationOnce(() => {
+				return user;
+			});
+
+		auth._oAuthHandler = {
+			signOut: () => {
+				// testing timeout
+				return new Promise(() => {});
+			},
+		};
+
+		expect.assertions(1);
+
+		const signoutResult = await auth.signOut({ global: false }); // return undefined on node
+		expect(signoutResult).toBe(undefined);
+
+		spyonAuth.mockClear();
+		spyon.mockClear();
+		JS.browserOrNode = currentImpl;
+	});
+
+	test('SignOut hosted ui on WebBrowser, timeout reject', async () => {
+		jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
+			return {
+				setItem() {},
+				getItem() {
+					return 'true';
+				},
+				removeItem() {},
+			};
+		});
+
+		const currentImpl = JS.browserOrNode;
+
+		JS.browserOrNode = jest.fn(() => ({
+			isBrowser: true,
+			isNode: false,
+		}));
 
 		const auth = new Auth(authOptionsWithOAuth);
 
@@ -352,7 +483,9 @@ describe('Hosted UI tests', () => {
 
 		spyonAuth.mockClear();
 		spyon.mockClear();
+		JS.browserOrNode = currentImpl;
 	});
+
 	test('globalSignOut hosted ui, url opener', done => {
 		jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
 			return {
