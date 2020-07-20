@@ -189,6 +189,7 @@ import { AuthOptions } from '../src/types';
 describe('Hosted UI tests', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	test('hosted UI in progress, signIn success', done => {
@@ -197,18 +198,18 @@ describe('Hosted UI tests', () => {
 			Username: 'username',
 			Pool: userPool,
 		});
-		const spyon = jest
+		const spyonGetCurrentUser = jest
 			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementationOnce(() => {
 				return user;
 			});
-		const spyon2 = jest
+		jest
 			.spyOn(CognitoUser.prototype, 'getSession')
 			.mockImplementation(callback => {
 				return callback(null, session);
 			});
 
-		const spyon3 = jest
+		jest
 			.spyOn(CognitoUser.prototype, 'getUserData')
 			.mockImplementationOnce(callback => {
 				const data = {
@@ -218,13 +219,13 @@ describe('Hosted UI tests', () => {
 				callback(null, data);
 			});
 
-		const spyon4 = jest
+		jest
 			.spyOn(CognitoUserSession.prototype, 'getAccessToken')
 			.mockImplementationOnce(() => {
 				return new CognitoAccessToken({ AccessToken: 'accessToken' });
 			});
 
-		const spyon5 = jest
+		jest
 			.spyOn(CognitoAccessToken.prototype, 'decodePayload')
 			.mockImplementation(() => {
 				return { scope: '' };
@@ -236,7 +237,7 @@ describe('Hosted UI tests', () => {
 
 		auth.currentUserPoolUser().then(resUser => {
 			expect(resUser).toEqual(user);
-			expect(spyon).toBeCalledTimes(1);
+			expect(spyonGetCurrentUser).toBeCalledTimes(1);
 			done();
 		});
 
@@ -258,9 +259,7 @@ describe('Hosted UI tests', () => {
 			};
 		});
 
-		const currentImpl = JS.browserOrNode;
-
-		JS.browserOrNode = jest.fn(() => ({
+		jest.spyOn(JS, 'browserOrNode').mockImplementation(() => ({
 			isBrowser: true,
 			isNode: false,
 		}));
@@ -272,19 +271,17 @@ describe('Hosted UI tests', () => {
 			Pool: userPool,
 		});
 
-		const spyonAuth = jest
-			.spyOn(Credentials, 'clear')
-			.mockImplementationOnce(() => {
-				return Promise.resolve();
-			});
+		jest.spyOn(Credentials, 'clear').mockImplementationOnce(() => {
+			return Promise.resolve();
+		});
 
-		const spyon = jest
+		jest
 			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementationOnce(() => {
 				return user;
 			});
 
-		const spyon2 = jest
+		const spyGlobalSignOut = jest
 			.spyOn(CognitoUser.prototype, 'globalSignOut')
 			.mockImplementation(({ onSuccess }) => {
 				onSuccess('success');
@@ -305,12 +302,7 @@ describe('Hosted UI tests', () => {
 			expect(err).toEqual('Signout timeout fail');
 		}
 
-		expect(spyon2).toBeCalled();
-
-		JS.browserOrNode = currentImpl;
-		spyonAuth.mockClear();
-		spyon.mockClear();
-		spyon2.mockClear();
+		expect(spyGlobalSignOut).toBeCalled();
 	});
 	test('globalSignOut hosted ui on node, resolve undefined', async () => {
 		jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
@@ -323,9 +315,7 @@ describe('Hosted UI tests', () => {
 			};
 		});
 
-		const currentImpl = JS.browserOrNode;
-
-		JS.browserOrNode = jest.fn(() => ({
+		jest.spyOn(JS, 'browserOrNode').mockImplementation(() => ({
 			isBrowser: false,
 			isNode: true,
 		}));
@@ -337,19 +327,17 @@ describe('Hosted UI tests', () => {
 			Pool: userPool,
 		});
 
-		const spyonAuth = jest
-			.spyOn(Credentials, 'clear')
-			.mockImplementationOnce(() => {
-				return Promise.resolve();
-			});
+		jest.spyOn(Credentials, 'clear').mockImplementationOnce(() => {
+			return Promise.resolve();
+		});
 
-		const spyon = jest
+		jest
 			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementationOnce(() => {
 				return user;
 			});
 
-		const spyon2 = jest
+		const spyGlobalSignOut = jest
 			.spyOn(CognitoUser.prototype, 'globalSignOut')
 			.mockImplementation(({ onSuccess }) => {
 				onSuccess('success');
@@ -367,13 +355,7 @@ describe('Hosted UI tests', () => {
 		const result = await auth.signOut({ global: true });
 		expect(result).toBe(undefined);
 
-		expect(spyon2).toBeCalled();
-
-		JS.browserOrNode = currentImpl;
-
-		spyonAuth.mockClear();
-		spyon.mockClear();
-		spyon2.mockClear();
+		expect(spyGlobalSignOut).toBeCalled();
 	});
 
 	test('SignOut hosted ui on node, resolve undefined', async () => {
@@ -386,9 +368,8 @@ describe('Hosted UI tests', () => {
 				removeItem() {},
 			};
 		});
-		const currentImpl = JS.browserOrNode;
 
-		JS.browserOrNode = jest.fn(() => ({
+		jest.spyOn(JS, 'browserOrNode').mockImplementation(() => ({
 			isBrowser: false,
 			isNode: true,
 		}));
@@ -400,13 +381,11 @@ describe('Hosted UI tests', () => {
 			Pool: userPool,
 		});
 
-		const spyonAuth = jest
-			.spyOn(Credentials, 'clear')
-			.mockImplementationOnce(() => {
-				return Promise.resolve();
-			});
+		jest.spyOn(Credentials, 'clear').mockImplementationOnce(() => {
+			return Promise.resolve();
+		});
 
-		const spyon = jest
+		jest
 			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementationOnce(() => {
 				return user;
@@ -423,10 +402,6 @@ describe('Hosted UI tests', () => {
 
 		const signoutResult = await auth.signOut({ global: false }); // return undefined on node
 		expect(signoutResult).toBe(undefined);
-
-		spyonAuth.mockClear();
-		spyon.mockClear();
-		JS.browserOrNode = currentImpl;
 	});
 
 	test('SignOut hosted ui on WebBrowser, timeout reject', async () => {
@@ -440,9 +415,7 @@ describe('Hosted UI tests', () => {
 			};
 		});
 
-		const currentImpl = JS.browserOrNode;
-
-		JS.browserOrNode = jest.fn(() => ({
+		jest.spyOn(JS, 'browserOrNode').mockImplementation(() => ({
 			isBrowser: true,
 			isNode: false,
 		}));
@@ -454,13 +427,11 @@ describe('Hosted UI tests', () => {
 			Pool: userPool,
 		});
 
-		const spyonAuth = jest
-			.spyOn(Credentials, 'clear')
-			.mockImplementationOnce(() => {
-				return Promise.resolve();
-			});
+		jest.spyOn(Credentials, 'clear').mockImplementationOnce(() => {
+			return Promise.resolve();
+		});
 
-		const spyon = jest
+		jest
 			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementationOnce(() => {
 				return user;
@@ -480,10 +451,6 @@ describe('Hosted UI tests', () => {
 		} catch (err) {
 			expect(err).toEqual('Signout timeout fail');
 		}
-
-		spyonAuth.mockClear();
-		spyon.mockClear();
-		JS.browserOrNode = currentImpl;
 	});
 
 	test('globalSignOut hosted ui, url opener', done => {
@@ -522,13 +489,11 @@ describe('Hosted UI tests', () => {
 			Pool: userPool,
 		});
 
-		const spyonAuth = jest
-			.spyOn(Credentials, 'clear')
-			.mockImplementationOnce(() => {
-				return Promise.resolve();
-			});
+		jest.spyOn(Credentials, 'clear').mockImplementationOnce(() => {
+			return Promise.resolve();
+		});
 
-		const spyon = jest
+		jest
 			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementationOnce(() => {
 				return user;
@@ -537,9 +502,6 @@ describe('Hosted UI tests', () => {
 		expect.assertions(1);
 
 		auth.signOut({ global: true });
-
-		spyonAuth.mockClear();
-		spyon.mockClear();
 	});
 
 	test('SignOut hosted ui, urlOpener', done => {
@@ -576,13 +538,11 @@ describe('Hosted UI tests', () => {
 			Pool: userPool,
 		});
 
-		const spyonAuth = jest
-			.spyOn(Credentials, 'clear')
-			.mockImplementationOnce(() => {
-				return Promise.resolve();
-			});
+		jest.spyOn(Credentials, 'clear').mockImplementationOnce(() => {
+			return Promise.resolve();
+		});
 
-		const spyon = jest
+		jest
 			.spyOn(CognitoUserPool.prototype, 'getCurrentUser')
 			.mockImplementationOnce(() => {
 				return user;
@@ -591,8 +551,5 @@ describe('Hosted UI tests', () => {
 		expect.assertions(1);
 
 		auth.signOut({ global: true });
-
-		spyonAuth.mockClear();
-		spyon.mockClear();
 	});
 });
