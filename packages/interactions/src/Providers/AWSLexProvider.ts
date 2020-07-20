@@ -12,7 +12,11 @@
  */
 
 import { AbstractInteractionsProvider } from './InteractionsProvider';
-import { InteractionsOptions, InteractionsMessage, InteractionsResponse } from '../types';
+import {
+	InteractionsOptions,
+	InteractionsResponse,
+	InteractionsMessage,
+} from '../types';
 import {
 	LexRuntimeServiceClient,
 	PostTextCommand,
@@ -149,7 +153,7 @@ export class AWSLexProvider extends AbstractInteractionsProvider {
 				let data = await this.lexRuntimeServiceClient.send(postContentCommand);
 				const audioArray = await convert(data.audioStream);
 				this.reportBotStatus(data, botname);
-				return { ...data, ...{ audioStream: audioArray } }; // TODO: type the response type
+				return { ...data, ...{ audioStream: audioArray } }; 
 			} catch (err) {
 				return Promise.reject(err);
 			}
