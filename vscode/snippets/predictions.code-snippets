@@ -378,11 +378,23 @@
             "})",
             ".catch(err => console.log(err));"
         ]
+    },
+
+    "Amplify Prediction Interpret": {
+        "prefix": "predict.interpret",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "Predictions.interpret({",
+                "\ttext: {",
+                  "\t\tsource: {",
+                    "\t\t\ttext: ${1: textToInterpret},",
+                  "\t\t},",
+                  "\t\ttype: ${2:\"ALL\"}",
+                "\t}",
+            "})",
+            ".then(result => console.log({ result }))",
+            ".catch(err => console.log({ err }));"
+        ]
     }
-
-
-
-
-
 
 }
