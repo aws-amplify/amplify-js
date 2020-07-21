@@ -74,7 +74,6 @@
 			"})"
 		]
     },
-
     "Amplify Predictions TextToSpeech": {
         "prefix": "Predict.textToSpeech",
         "scope": "javascript,javascriptreact,typescript",
@@ -92,7 +91,6 @@
               ".catch(err => console.log({ err }));"
         ]
     },
-
     "Amplify Predictions Transcription": {
         "prefix": "Predict.transcription",
         "scope": "javascript,javascriptreact,typescript",
@@ -109,7 +107,6 @@
               ".catch(err => console.log({ err }));"
         ]
     },
-
     "Amplify Predictions TranslateText": {
         "prefix": "Predict.translateText",
         "scope": "javascript,javascriptreact,typescript",
@@ -128,7 +125,6 @@
               ".catch(err => console.log({ err }));"
         ]
     },
-
     "Amplify Predictions TextInImage": {
         "prefix": "Predict.textInImage",
         "scope": "javascript,javascriptreact,typescript",
@@ -144,7 +140,6 @@
             ".catch(err => console.log({ err }));"
         ]
     },
-
     "Amplify Predictions TextInS3Image": {
         "prefix": "Predict.textInS3Image",
         "scope": "javascript,javascriptreact,typescript",
@@ -161,7 +156,6 @@
             ".catch(err => console.log({ err }));"
         ]
     },
-
     "Amplify Predictions PlainText": {
         "prefix": "Predict.PlainText",
         "scope": "javascript,javascriptreact,typescript",
@@ -200,7 +194,6 @@
             ".catch(err => console.log({ err }));"
         ]
     },
-
     "Amplify Prediction StructuredForm": {
         "prefix": "Predict.structuredForm",
         "scope": "javascript,javascriptreact,typescript",
@@ -224,7 +217,6 @@
             ".catch(err => console.log({ err }));"
         ]
     },
-
     "Amplify Prediction StructuredTables": {
         "prefix": "Predict.structuredTables",
         "scope": "javascript,javascriptreact,typescript",
@@ -254,7 +246,6 @@
             ".catch(err => console.log({ err }));"
         ]
     },
-
     "Amplify Prediction Detection": {
 		"prefix": "predict.detectFromBrowser",
         "scope": "javascript,javascriptreact,typescript",
@@ -270,7 +261,6 @@
               ".catch(err => console.log({ err }));"
         ]
     },
-
     "Amplify Prediction S3 Detection": {
         "prefix": "predict.detectFromS3",
         "scope": "javascript,javascriptreact,typescript",
@@ -287,7 +277,6 @@
               ".catch(err => console.log({ err }));"
         ]
     },
-
     "Amplify Prediction Faces Detection": {
         "prefix": "predict.detectFace",
         "scope": "javascript,javascriptreact,typescript",
@@ -319,7 +308,6 @@
               ".catch(err => console.log({ err }));"
         ]
     },
-
     "Amplify Prediction Celebrities Detection": {
         "prefix": "predict.detectCelebrity",
         "scope": "javascript,javascriptreact,typescript",
@@ -345,7 +333,6 @@
             ".catch(err => console.log({ err }));"
         ]
     },
-
     "Amplify Prediction Advanced Detection": {
         "prefix": "predict.detectPreviousUpload",
         "scope": "javascript,javascriptreact,typescript",
