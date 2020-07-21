@@ -1,238 +1,238 @@
 {
     "_isInteger": {
         "prefix": "_isInteger",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "_isInteger"
         ]
     },
     "analyticsEvent": {
         "prefix": "analyticsEvent",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "analyticsEvent"
         ]
     },
     "authEvent": {
         "prefix": "authEvent",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "authEvent"
         ]
     },
     "autoSessionRecord": {
         "prefix": "autoSessionRecord",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "autoSessionRecord"
         ]
     },
     "browserClientInfo": {
         "prefix": "browserClientInfo",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "browserClientInfo"
         ]
     },
     "browserTimezone": {
         "prefix": "browserTimezone",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "browserTimezone"
         ]
     },
     "browserType": {
         "prefix": "browserType",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "browserType"
         ]
     },
     "canonical_headers": {
         "prefix": "canonical_headers",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "canonical_headers"
         ]
     },
     "canonical_request": {
         "prefix": "canonical_request",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "canonical_request"
         ]
     },
     "clientInfo": {
         "prefix": "clientInfo",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "clientInfo"
         ]
     },
     "credential_scope": {
         "prefix": "credential_scope",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "credential_scope"
         ]
     },
     "dimToMake": {
         "prefix": "dimToMake",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "dimToMake"
         ]
     },
     "dimension": {
         "prefix": "dimension",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "dimension"
         ]
     },
     "dispatchAnalyticsEvent": {
         "prefix": "dispatchAnalyticsEvent",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "dispatchAnalyticsEvent"
         ]
     },
     "dispatchAppStateEvent": {
         "prefix": "dispatchAppStateEvent",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "dispatchAppStateEvent"
         ]
     },
     "dispatchAuthEvent": {
         "prefix": "dispatchAuthEvent",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "dispatchAuthEvent"
         ]
     },
     "dispatchStorageEvent": {
         "prefix": "dispatchStorageEvent",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "dispatchStorageEvent"
         ]
     },
     "encrypt": {
         "prefix": "encrypt",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "encrypt"
         ]
     },
     "getByteLength": {
         "prefix": "getByteLength",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "getByteLength"
         ]
     },
     "getCurrTime": {
         "prefix": "getCurrTime",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "getCurrTime"
         ]
     },
     "get_authorization_header": {
         "prefix": "get_authorization_header",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "get_authorization_header"
         ]
     },
     "get_signature": {
         "prefix": "get_signature",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "get_signature"
         ]
     },
     "get_signing_key": {
         "prefix": "get_signing_key",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "get_signing_key"
         ]
     },
     "graphqlOperation": {
         "prefix": "graphqlOperation",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "graphqlOperation"
         ]
     },
     "hash": {
         "prefix": "hash",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "hash"
         ]
     },
     "invalidParameter": {
         "prefix": "invalidParameter",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "invalidParameter"
         ]
     },
     "isInteger": {
         "prefix": "isInteger",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "isInteger"
         ]
     },
     "missingConfig": {
         "prefix": "missingConfig",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "missingConfig"
         ]
     },
     "parse_service_info": {
         "prefix": "parse_service_info",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "parse_service_info"
         ]
     },
     "sign": {
         "prefix": "sign",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "sign"
         ]
     },
     "signUrl": {
         "prefix": "signUrl",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "signUrl"
         ]
     },
     "signed_headers": {
         "prefix": "signed_headers",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "signed_headers"
         ]
     },
     "storageEvent": {
         "prefix": "storageEvent",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "storageEvent"
         ]
     },
     "string_to_sign": {
         "prefix": "string_to_sign",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "string_to_sign"
         ]
