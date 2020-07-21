@@ -357,11 +357,13 @@ class SubscriptionProcessor {
 															errors: [],
 														},
 													} = subscriptionError;
-													logger.warn(message);
+													logger.warn('subscriptionError', message);
 
 													if (typeof subscriptionReadyCallback === 'function') {
 														subscriptionReadyCallback();
 													}
+
+													observer.error(message);
 												},
 											})
 									);
