@@ -273,6 +273,7 @@
 
     "Amplify Prediction S3 Detection": {
         "prefix": "predict.detectFromS3",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Predictions.identify({",
                 "\tentities: {",
@@ -289,6 +290,7 @@
 
     "Amplify Prediction Faces Detection": {
         "prefix": "predict.detectFace",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Predictions.identify({",
                 "\tentities: {",
@@ -320,6 +322,7 @@
 
     "Amplify Prediction Celebrities Detection": {
         "prefix": "predict.detectCelebrity",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Predictions.identify({",
                 "\tentities: {",
@@ -345,6 +348,7 @@
 
     "Amplify Prediction Advanced Detection": {
         "prefix": "predict.detectPreviousUpload",
+        "scope": "javascript,javascriptreact,typescript",
         "body": [
             "Predictions.identify({",
                 "\tentities: {",
