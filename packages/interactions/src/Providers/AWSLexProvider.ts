@@ -27,7 +27,7 @@ import {
 	Credentials,
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-import { convert } from './AWSLexHelper/convert';
+import { convert } from './AWSLexProviderHelper/convert';
 
 const logger = new Logger('AWSLexProvider');
 

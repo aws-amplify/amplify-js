@@ -8,7 +8,7 @@ import {
 } from '@aws-sdk/client-lex-runtime-service';
 import { Readable } from 'stream';
 
-// mock Node.js stream
+// mock stream response
 const createReadable = () => {
 	const stream = new Readable({
 		read() {},
@@ -458,7 +458,7 @@ describe('Interactions', () => {
 
 		describe('Sending messages to bot', () => {
 			jest.useFakeTimers();
-			test('Interactions configuration and send text message to existing bot and call onComplete from Interaction.onComplete', async () => {
+			test('onComplete callback from `Interactions.onComplete` called with text', async () => {
 				const curCredSpyOn = jest
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
@@ -495,7 +495,7 @@ describe('Interactions', () => {
 						m2: 'done',
 					},
 				});
-				
+
 				const interactionsMessageText = {
 					content: 'done',
 					options: {
@@ -519,7 +519,7 @@ describe('Interactions', () => {
 				jest.runAllTimers();
 			});
 
-			test('Interactions configuration and send voice message to existing bot and call onComplete from Interaction.onComplete', async () => {
+			test('onComplete callback from `Interactions.onComplete` called with voice', async () => {
 				const curCredSpyOn = jest
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
@@ -569,7 +569,7 @@ describe('Interactions', () => {
 				jest.runAllTimers();
 			});
 
-			test('Interactions configuration and send text message to existing bot and call onComplete from configure onComplete', async () => {
+			test('onComplete callback from configure being called with text', async () => {
 				const curCredSpyOn = jest
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
@@ -628,7 +628,7 @@ describe('Interactions', () => {
 				jest.runAllTimers();
 			});
 
-			test('Interactions configuration and send voice message to existing bot and call onComplete from configure onComplete', async () => {
+			test('onComplete callback from configure being called with text with voice', async () => {
 				const curCredSpyOn = jest
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));

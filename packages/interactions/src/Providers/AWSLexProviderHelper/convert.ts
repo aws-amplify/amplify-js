@@ -15,7 +15,6 @@ const readOnBrowser = (stream: ReadableStream | Blob) => {
 		.then(buffer => new Uint8Array(buffer));
 };
 
-// Node.js support
 const readOnNode = (stream: Readable): Promise<Uint8Array> => {
 	if (!stream.isPaused()) stream.pause();
 	const chunks: Array<string | Buffer> = [];
