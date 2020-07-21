@@ -1,7 +1,7 @@
 {
 	"Amplify API Configuration": {
 		"prefix": "API:",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"API: {",
 			"\tendpoints: [",
@@ -25,12 +25,12 @@
 	},
 	"REST API": {
 		"prefix": "API.",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": ["const ${4:data} = await API.${1}('${2:APIName}', '${3:/path}');"]
 	},
 	"REST API Get": {
 		"prefix": "API.get",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"API.get(${1:apiName, path, myInit})",
 			"\t.then(response => {",
@@ -43,7 +43,7 @@
 	},
 	"REST API Post": {
 		"prefix": "API.post",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"API.post(${1:apiName, path, myInit})",
 			"\t.then(response => {",
@@ -56,7 +56,7 @@
 	},
 	"REST API Put": {
 		"prefix": "API.put",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"API.put(${1:apiName, path, myInit})",
 			"\t.then(response => {",
@@ -69,7 +69,7 @@
 	},
 	"REST API Delete": {
 		"prefix": "API.del",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"API.del(${1:apiName, path, myInit})",
 			"\t.then(response => {",
@@ -82,7 +82,7 @@
 	},
 	"REST API Head": {
 		"prefix": "API.head",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"API.head(${1:apiName, path, myInit})",
 			"\t.then(response => {",
@@ -95,17 +95,17 @@
 	},
 	"GraphQL API Mutation": {
 		"prefix": "API.graphql",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": ["await API.graphql(graphqlOperation(${1}));"]
 	},
 	"GraphQL API Query": {
 		"prefix": "API.query",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": ["const ${1:data} = await API.graphql(graphqlOperation(${2}));"]
 	},
 	"GraphQL API Subscribe": {
 		"prefix": "API.subscribe",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"const subscription = API.graphql(",
 			"\tgraphqlOperation(${1})",
@@ -122,24 +122,24 @@
 	},
 	"GraphQL API Endpoint": {
 		"prefix": "graphql_endpoint:",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"graphql_endpoint: ${1:'https:/www.example.com/my-graphql-endpoint'}"
 		]
 	},
 	"GraphQL API Endpoint IAM Region": {
 		"prefix": "graphql_endpoint_iam_region:",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": ["graphql_endpoint_iam_region: ${1:'my_graphql_apigateway_region'}"]
 	},
 	"GraphQL API Operation": {
 		"prefix": "graphqlOperation",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": ["graphqlOperation"]
 	},
 	"API AppSync Configuration": {
 		"prefix": "myAppConfig",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"myAppConfig = {",
 			"\t// ...",
@@ -153,7 +153,7 @@
 	},
 	"Query ListEvents": {
 		"prefix": "ListEvents",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"ListEvents = `query ListEvents {",
 			"\tlistEvents {",
@@ -168,7 +168,7 @@
 	},
 	"Query GetEvent": {
 		"prefix": "GetEvent",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"GetEvent = `query GetEvent($id: ID! $nextToken: String) {",
 			"\tgetEvent(id: $id) {",
@@ -186,7 +186,7 @@
 	},
 	"Mutations CreateEvent": {
 		"prefix": "CreateEvent",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"CreateEvent = `mutation CreateEvent($name: String!, $when: String!, $where: String!, $description: String!) {",
 			"\tcreateEvent(name: $name, when: $when, where: $where, description: $description) {",
@@ -210,7 +210,7 @@
 	},
 	"Subscriptions SubscribeToEventComments": {
 		"prefix": "SubscribeToEventComments",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"SubscribeToEventComments = `subscription SubscribeToEventComments($eventId: String!) {",
 			"\tsubscribeToEventComments(eventId: $eventId) {",
@@ -231,7 +231,7 @@
 	},
 	"custom_header": {
 		"prefix": "custom_header",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"custom_header: async () => {",
 			"\treturn { Authorization : ${1:'token'} }",
@@ -242,7 +242,7 @@
 	},
 	"React Connect": {
 		"prefix": "<Connect",
-		"scope": "javascript,javascriptreact,typescript",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"<Connect query={graphqlOperation(GetEvent, { id: currEventId })}",
 			"\t\tsubscription={graphqlOperation(SubscribeToEventComments, { eventId: currEventId })}",
