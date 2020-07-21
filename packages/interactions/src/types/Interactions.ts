@@ -22,7 +22,7 @@ export type InteractionsTextMessage = {
 };
 
 export type InteractionsVoiceMessage = {
-	content: string | object;
+	content: object;
 	options: {
 		messageType: 'voice';
 	};
