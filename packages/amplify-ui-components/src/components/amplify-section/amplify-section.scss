@@ -19,7 +19,6 @@
   min-width: var(--min-width);
 
   @include md {
-    width: auto;
     width: var(--width);
   }
 }
