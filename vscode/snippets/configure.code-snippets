@@ -1,7 +1,7 @@
 {
     "Amplify Mobile Hub Configuration": {
         "prefix": "Amplify.configure",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "import Amplify from 'aws-amplify';",
             "import awsmobile from './aws-exports';",

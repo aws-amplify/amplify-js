@@ -1,14 +1,14 @@
 {
     "setLanguage": {
         "prefix": "setLanguage",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "setLanguage"
         ]
     },
     "I18n Custom Dictionary": {
         "prefix": "I18n Custom Dictionary",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "const dict = {",
                 "\t${1:'fr'}: {",
