@@ -80,6 +80,9 @@
             },
             {
                 "path": "./snippets/storage.code-snippets"
+			},
+			{
+                "path": "./snippets/predictions.code-snippets"
             }
         ]
     }
