@@ -341,6 +341,39 @@
             "})",
             ".catch(err => console.log({ err }));"
         ]
+    },
+
+    "Amplify Prediction Advanced Detection": {
+        "prefix": "predict.detectPreviousUpload",
+        "body": [
+            "Predictions.identify({",
+                "\tentities: {",
+                  "\t\tsource: {",
+                    "\t\t\tfile,",
+                  "\t\t},",
+                  "\t\tcollection: ${1: true}",
+                "\t}",
+            "})",
+            ".then(({ entities }) => {",
+                "\tentities.forEach(({ boundingBox, metadata: { externalImageId } }) => {",
+                  "\t\tconst {",
+                    "\t\t\t ${1: width}, // ratio of overall image width",
+                    "\t\t\t ${2: height}, // ratio of overall image height",
+                    "\t\t\t ${3: left}, // left coordinate as a ratio of overall image width",
+                    "\t\t\t ${4: top} // top coordinate as a ratio of overall image height",
+                  "\t\t} = boundingBox;",
+                  "\t\tconsole.log({ externalImageId }); // this is the object key on S3 from the original image!",
+
+                  "\t\tStorage.get(\"\", {",
+                      "\t\t\tcustomPrefix: {",
+                      "\t\t\tpublic: externalImageId",
+                      "\t\t\t},",
+                      "\t\t\tlevel: \"public\",",
+                  "\t\t}).then(src => console.log({ src }));",
+                "\t})",
+            "})",
+            ".catch(err => console.log(err));"
+        ]
     }
 
 
