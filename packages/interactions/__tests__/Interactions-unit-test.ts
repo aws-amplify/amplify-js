@@ -628,7 +628,7 @@ describe('Interactions', () => {
 				jest.runAllTimers();
 			});
 
-			test('onComplete callback from configure being called with text with voice', async () => {
+			test('onComplete callback from configure being called with voice', async () => {
 				const curCredSpyOn = jest
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
