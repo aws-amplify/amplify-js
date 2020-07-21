@@ -10,7 +10,7 @@
 }
 
 .form-section-header {
-  h3 {
+  .header {
     color: var(--header-color);
     font-size: var(--header-size);
     font-weight: 700;
@@ -38,10 +38,6 @@
     flex-direction: row-reverse;
     justify-content: space-between;
     align-items: baseline;
-  }
-
-  .secondary-footer-content {
-    margin-top: 1rem;
   }
 
   * + * {
