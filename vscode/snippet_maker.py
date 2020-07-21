@@ -46,7 +46,7 @@ for guide in guides:
                 snippets.write('    "Amplify ' + title.title() + ' ' + header + snippet_number + '": {\n')
                 snippets.write('        "prefix": "Amplify ' + header + snippet_number + '",\n')
                 if language == 'js':
-                    snippets.write('        "scope": "javascript,javascriptreact,typescript",\n')
+                    snippets.write('        "scope": "javascript,javascriptreact,typescript,typescriptreact",\n')
                 else:
                     snippets.write('        "scope": "' + language + '",\n')
                 snippets.write('        "body": [\n')           

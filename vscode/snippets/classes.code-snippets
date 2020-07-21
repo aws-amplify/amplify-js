@@ -1,252 +1,252 @@
 {
     "APIClass": {
         "prefix": "APIClass",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "APIClass"
         ]
     },
     "AWSAppSyncProvider": {
         "prefix": "AWSAppSyncProvider",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "AWSAppSyncProvider"
         ]
     },
     "AWSCredentials": {
         "prefix": "AWSCredentials",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "AWSCredentials"
         ]
     },
     "AWSIoTProvider": {
         "prefix": "AWSIoTProvider",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "AWSIoTProvider"
         ]
     },
     "AWSKinesisProvider": {
         "prefix": "AWSKinesisProvider",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "AWSKinesisProvider"
         ]
     },
     "AWSLexProvider": {
         "prefix": "AWSLexProvider",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "AWSLexProvider"
         ]
     },
     "AWSPinpointProvider": {
         "prefix": "AWSPinpointProvider",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "AWSPinpointProvider"
         ]
     },
     "AbstractInteractionsProvider": {
         "prefix": "AbstractInteractionsProvider",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "AbstractInteractionsProvider"
         ]
     },
     "AbstractPubSubProvider": {
         "prefix": "AbstractPubSubProvider",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "AbstractPubSubProvider"
         ]
     },
     "Amplify": {
         "prefix": "Amplify",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "Amplify"
         ]
     },
     "AnalyticsClass": {
         "prefix": "AnalyticsClass",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "AnalyticsClass"
         ]
     },
     "AsyncStorageCache": {
         "prefix": "AsyncStorageCache",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "AsyncStorageCache"
         ]
     },
     "AuthClass": {
         "prefix": "AuthClass",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "AuthClass"
         ]
     },
     "BrowserStorageCache": {
         "prefix": "BrowserStorageCache",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "BrowserStorageCache"
         ]
     },
     "CacheList": {
         "prefix": "CacheList",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "CacheList"
         ]
     },
     "CacheObject": {
         "prefix": "CacheObject",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "CacheObject"
         ]
     },
     "ClientDevice": {
         "prefix": "ClientDevice",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "ClientDevice"
         ]
     },
     "ClientsQueue": {
         "prefix": "ClientsQueue",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "ClientsQueue"
         ]
     },
     "ConsoleLogger": {
         "prefix": "ConsoleLogger",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "ConsoleLogger"
         ]
     },
     "Credentials": {
         "prefix": "Credentials",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "Credentials"
         ]
     },
     "DoubleLinkedNode": {
         "prefix": "DoubleLinkedNode",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "DoubleLinkedNode"
         ]
     },
     "FacebookOAuth": {
         "prefix": "FacebookOAuth",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "FacebookOAuth"
         ]
     },
     "GoogleOAuth": {
         "prefix": "GoogleOAuth",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "GoogleOAuth"
         ]
     },
     "HubClass": {
         "prefix": "HubClass",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "HubClass"
         ]
     },
     "I18n": {
         "prefix": "I18n",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "I18n"
         ]
     },
     "I18nOptions": {
         "prefix": "I18nOptions",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "I18nOptions"
         ]
     },
     "InMemoryCache": {
         "prefix": "InMemoryCache",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "InMemoryCache"
         ]
     },
     "JS": {
         "prefix": "JS",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "JS"
         ]
     },
     "MqttOverWSProvider": {
         "prefix": "MqttOverWSProvider",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "MqttOverWSProvider"
         ]
     },
     "Parser": {
         "prefix": "Parser",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "Parser"
         ]
     },
     "RestClient": {
         "prefix": "RestClient",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "RestClient"
         ]
     },
     "RestClientOptions": {
         "prefix": "RestClientOptions",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "RestClientOptions"
         ]
     },
     "ServiceWorkerClass": {
         "prefix": "ServiceWorkerClass",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "ServiceWorkerClass"
         ]
     },
     "Signer": {
         "prefix": "Signer",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "Signer"
         ]
     },
     "StorageCache": {
         "prefix": "StorageCache",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "StorageCache"
         ]
     },
     "StorageClass": {
         "prefix": "StorageClass",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "StorageClass"
         ]

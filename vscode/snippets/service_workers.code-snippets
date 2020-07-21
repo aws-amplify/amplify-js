@@ -1,21 +1,21 @@
 {
     "register": {
         "prefix": "register",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "register"
         ]
     },
     "enablePush": {
         "prefix": "enablePush",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "enablePush"
         ]
     },
     "Service Worker Add Event Listener": {
         "prefix": "addEventListener",
-        "scope": "javascript,javascriptreact,typescript",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "/**",
             "* Listen for incoming Push events",
