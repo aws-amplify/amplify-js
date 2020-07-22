@@ -1,4 +1,6 @@
-export enum Translations {
+import { AuthErrorStrings } from '@aws-amplify/auth';
+
+export enum AuthStrings {
   BACK_TO_SIGN_IN = 'Back to Sign In',
   CHANGE_PASSWORD_ACTION = 'Change',
   CHANGE_PASSWORD = 'Change Password',
@@ -103,3 +105,6 @@ export enum Translations {
   PICKER_TEXT = 'Pick a file',
   TEXT_FALLBACK_CONTENT = 'Fallback Content',
 }
+
+type Translations = AuthErrorStrings | AuthStrings;
+export const Translations = { ...AuthStrings, ...AuthErrorStrings };
