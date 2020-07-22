@@ -110,34 +110,6 @@
             "\t.catch( err => console.log(err));"
         ]
     },
-    "PhotoPicker": {
-        "prefix": "PhotoPicker",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "PhotoPicker"
-        ]
-    },
-    "onLoad": {
-        "prefix": "onLoad",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "onLoad"
-        ]
-    },
-    "aws-amplify-react": {
-        "prefix": "aws-amplify-react",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "aws-amplify-react"
-        ]
-    },
-    "imgKey": {
-        "prefix": "imgKey",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "imgKey"
-        ]
-    },
     "fileToKey": {
         "prefix": "fileToKey",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
