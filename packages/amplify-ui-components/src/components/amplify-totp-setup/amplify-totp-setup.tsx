@@ -26,7 +26,7 @@ export class AmplifyTOTPSetup {
   /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Used for header text in totp setup component */
-  @Prop() headerText: string = I18n.get(Translations.TOTP_HEADER_TEXT);
+  @Prop() headerText: string = Translations.TOTP_HEADER_TEXT;
 
   @State() code: string | null = null;
   @State() setupMessage: string | null = null;
@@ -138,7 +138,7 @@ export class AmplifyTOTPSetup {
   render() {
     return (
       <amplify-form-section
-        headerText={this.headerText}
+        headerText={I18n.get(this.headerText)}
         submitButtonText={I18n.get(Translations.TOTP_SUBMIT_BUTTON_TEXT)}
         handleSubmit={event => this.verifyTotpToken(event)}
         loading={this.loading}
