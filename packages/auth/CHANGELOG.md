@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.1...@aws-amplify/auth@3.3.2) (2020-07-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** add totpRequired callback to completeNewPassword ([#6292](https://github.com/aws-amplify/amplify-js/issues/6292)) ([6b52d0b](https://github.com/aws-amplify/amplify-js/commit/6b52d0b1e26ad0b3661536040af3d78ddf20b3e9))
+* **@aws-amplify/auth:** Fix react-native oauth signout ([#6376](https://github.com/aws-amplify/amplify-js/issues/6376)) ([c27b816](https://github.com/aws-amplify/amplify-js/commit/c27b8164995220090967f782ccd8e42ad4fa4bdb))
+* **@aws-amplify/auth:** signout promise on OAuth flow ([#6294](https://github.com/aws-amplify/amplify-js/issues/6294)) ([68af3ab](https://github.com/aws-amplify/amplify-js/commit/68af3abb54d5af4e1bcedacb8e2137e10e2c971c))
+
+
+
+
+
 ## [3.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.0...@aws-amplify/auth@3.3.1) (2020-07-09)
 
 **Note:** Version bump only for package @aws-amplify/auth
