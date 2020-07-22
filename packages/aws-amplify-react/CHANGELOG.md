@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.20](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.1.19...aws-amplify-react@4.1.20) (2020-07-22)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Update authState after a successful Auth.signIn call ([#6276](https://github.com/aws-amplify/amplify-js/issues/6276)) ([e79a805](https://github.com/aws-amplify/amplify-js/commit/e79a805534c25dcd52ea4e55ef8b4fbd0f5dce36))
+
+
+
+
+
 ## [4.1.19](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.1.18...aws-amplify-react@4.1.19) (2020-07-09)
 
 **Note:** Version bump only for package aws-amplify-react
