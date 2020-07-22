@@ -58,8 +58,8 @@
                   "\t\tconst response = await fetch(pathToImageFile)",
 
                   "\t\tconst blob = await response.blob()",
-                  "\t\tStorage.put('yourKeyHere.jpeg', blob, {",
-                    "\t\t\tcontentType: 'image/jpeg',",
+                  "\t\tStorage.put(${1:'yourKeyHere.jpeg'}, ${2:blob}, {",
+                    "\t\t\tcontentType: ${2:'image/jpeg'},",
                   "\t\t})",
                 "} catch (err) {",
                   "\t\tconsole.log(err)",
@@ -67,46 +67,29 @@
               "}"
         ]
     },
-    "onChange": {
-        "prefix": "onChange",
+    "S3Image": {
+        "prefix": "S3Image",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
-            "onChange"
-        ]
-    },
-    "RNFetchBlob": {
-        "prefix": "RNFetchBlob",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "RNFetchBlob"
-        ]
-    },
-    "readFile": {
-        "prefix": "readFile",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "readFile"
-        ]
-    },
-    "contentType": {
-        "prefix": "contentType",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "contentType"
-        ]
-    },
-    "imageType": {
-        "prefix": "imageType",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "imageType"
-        ]
-    },
-    "react-native-fetch-blob": {
-        "prefix": "react-native-fetch-blob",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "react-native-fetch-blob"
+            "class S3ImageUpload extends React.Component {",
+                "\tonChange(e) {",
+                    "\t\tconst file = e.target.files[0];",
+                    "\t\tStorage.put(${1:'example.png'}, ${2:file}, {",
+                        "\t\t\tcontentType: ${3:'image/png'}",
+                    "\t\t})",
+                    "\t\t.then (result => console.log(result))",
+                    "\t\t.catch(err => console.log(err));",
+                "\t}",
+
+                "\trender() {",
+                    "\t\treturn (",
+                        "\t\t\t<input",
+                            "\t\t\ttype=${:4\"file\"} accept='image/png'",
+                            "\t\t\tonChange={(evt) => this.onChange(evt)}",
+                        "\t\t\t/>",
+                    "\t\t)",
+                "\t}",
+              "}"
         ]
     },
     "Storage Remove": {
@@ -146,13 +129,6 @@
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "aws-amplify-react"
-        ]
-    },
-    "S3Image": {
-        "prefix": "S3Image",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "S3Image"
         ]
     },
     "imgKey": {
