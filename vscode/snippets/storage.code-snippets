@@ -37,12 +37,8 @@
             "\tlevel: ${3:'private'},",
             "\tcontentType: ${4:'text/plain'}",
             "})",
-            ".then ( (result) => { ",
-            "\tconsole.log(result); ", 
-            "})",
-            ".catch( (err) => { ",
-            "\tconsole.log(err);",
-            "});"
+            ".then ( result => console.log(result))",
+            ".catch( err => console.log(err)});"
         ]
     },
     "S3ImageUpload": {
@@ -50,6 +46,25 @@
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "S3ImageUpload"
+        ]
+    },
+
+    "RNUpload": {
+        "prefix": "RNUpload",
+        "scope": "javascript, javascriptreaxt, typescript, typescriptreact",
+        "body": [
+            "uploadToStorage = async pathToImageFile => {",
+                "\ttry {",
+                  "\t\tconst response = await fetch(pathToImageFile)",
+
+                  "\t\tconst blob = await response.blob()",
+                  "\t\tStorage.put('yourKeyHere.jpeg', blob, {",
+                    "\t\t\tcontentType: 'image/jpeg',",
+                  "\t\t})",
+                "} catch (err) {",
+                  "\t\tconsole.log(err)",
+                "}",
+              "}"
         ]
     },
     "onChange": {
