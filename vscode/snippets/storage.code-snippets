@@ -25,12 +25,8 @@
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "Storage.get(${1:'test.txt'}, { level: ${2:'private'} })",
-            "\t.then ( (result) => { ",
-            "\t\tconsole.log(result); ", 
-            "\t})",
-            "\t.catch( (err) => { ",
-            "\t\tconsole.log(err);",
-            "\t});"
+            "\t.then ( result => console.log(result))",
+            "\t.catch( err => console.log(err));"
         ]
     },
     "Storage Put": {
