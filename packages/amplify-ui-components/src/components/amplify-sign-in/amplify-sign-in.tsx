@@ -43,9 +43,9 @@ export class AmplifySignIn {
   /** Fires when sign in form is submitted */
   @Prop() handleSubmit: (event: Event) => void = event => this.signIn(event);
   /** Used for header text in sign in component */
-  @Prop() headerText: string = I18n.get(Translations.SIGN_IN_HEADER_TEXT);
+  @Prop() headerText: string = Translations.SIGN_IN_HEADER_TEXT;
   /** Used for the submit button text in sign in component */
-  @Prop() submitButtonText: string = I18n.get(Translations.SIGN_IN_ACTION);
+  @Prop() submitButtonText: string = Translations.SIGN_IN_ACTION;
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
   /** Auth state change handler for this component */
@@ -309,7 +309,11 @@ export class AmplifySignIn {
 
   render() {
     return (
-      <amplify-form-section headerText={this.headerText} handleSubmit={this.handleSubmit} testDataPrefix={'sign-in'}>
+      <amplify-form-section
+        headerText={I18n.get(this.headerText)}
+        handleSubmit={this.handleSubmit}
+        testDataPrefix={'sign-in'}
+      >
         <div slot="subtitle">
           <slot name="header-subtitle"></slot>
         </div>
@@ -339,7 +343,7 @@ export class AmplifySignIn {
 
             <slot name="primary-footer-content">
               <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
-                {this.loading ? <amplify-loading-spinner /> : <span>{this.submitButtonText}</span>}
+                {this.loading ? <amplify-loading-spinner /> : <span>{I18n.get(this.submitButtonText)}</span>}
               </amplify-button>
             </slot>
           </slot>
