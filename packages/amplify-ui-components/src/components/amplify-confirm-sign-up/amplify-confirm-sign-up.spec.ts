@@ -1,4 +1,3 @@
-import { I18n } from '@aws-amplify/core';
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyConfirmSignUp } from './amplify-confirm-sign-up';
 import { Translations } from '../../common/Translations';
