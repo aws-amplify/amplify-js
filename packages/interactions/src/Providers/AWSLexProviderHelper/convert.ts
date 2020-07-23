@@ -4,6 +4,6 @@ export const convert = (stream: object): Promise<Uint8Array> => {
 			.arrayBuffer()
 			.then(buffer => new Uint8Array(buffer));
 	} else {
-		throw Error('Readable is not supported.');
+		throw new Error('Readable is not supported.');
 	}
 };
