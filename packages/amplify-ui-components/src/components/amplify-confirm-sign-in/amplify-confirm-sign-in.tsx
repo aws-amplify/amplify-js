@@ -21,9 +21,9 @@ export class AmplifyConfirmSignIn {
   /** Fires when confirm sign in form is submitted */
   @Prop() handleSubmit: (event: Event) => void = event => this.confirm(event);
   /** Used for header text in confirm sign in component */
-  @Prop() headerText: string = I18n.get(Translations.CONFIRM_SMS_CODE);
+  @Prop() headerText: string = Translations.CONFIRM_SMS_CODE;
   /** Used for the submit button text in confirm sign in component */
-  @Prop() submitButtonText: string = I18n.get(Translations.CONFIRM);
+  @Prop() submitButtonText: string = Translations.CONFIRM;
   /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /**
@@ -62,8 +62,8 @@ export class AmplifyConfirmSignIn {
     if (this.user && this.user['challengeName'] === ChallengeName.SoftwareTokenMFA) {
       this.mfaOption = MfaOption.TOTP;
       // If header text is using default use TOTP string
-      if (this.headerText === I18n.get(Translations.CONFIRM_SMS_CODE)) {
-        this.headerText = I18n.get(Translations.CONFIRM_TOTP_CODE);
+      if (this.headerText === Translations.CONFIRM_SMS_CODE) {
+        this.headerText = Translations.CONFIRM_TOTP_CODE;
       }
     }
   }
@@ -110,9 +110,9 @@ export class AmplifyConfirmSignIn {
   render() {
     return (
       <amplify-form-section
-        headerText={this.headerText}
+        headerText={I18n.get(this.headerText)}
         handleSubmit={this.handleSubmit}
-        submitButtonText={this.submitButtonText}
+        submitButtonText={I18n.get(this.submitButtonText)}
         loading={this.loading}
         secondaryFooterContent={
           <span>

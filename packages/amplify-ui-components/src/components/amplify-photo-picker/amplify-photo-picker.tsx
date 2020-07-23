@@ -9,13 +9,13 @@ import { Translations } from '../../common/Translations';
 })
 export class AmplifyPhotoPicker {
   /** Title string value */
-  @Prop() headerTitle?: string = I18n.get(Translations.PHOTO_PICKER_TITLE);
+  @Prop() headerTitle?: string = Translations.PHOTO_PICKER_TITLE;
   /** Header Hint value in string */
-  @Prop() headerHint?: string = I18n.get(Translations.PHOTO_PICKER_HINT);
+  @Prop() headerHint?: string = Translations.PHOTO_PICKER_HINT;
   /** Placeholder hint that goes under the placeholder image */
-  @Prop() placeholderHint?: string = I18n.get(Translations.PHOTO_PICKER_PLACEHOLDER_HINT);
+  @Prop() placeholderHint?: string = Translations.PHOTO_PICKER_PLACEHOLDER_HINT;
   /** Picker button text as string */
-  @Prop() buttonText?: string = I18n.get(Translations.PHOTO_PICKER_BUTTON_TEXT);
+  @Prop() buttonText?: string = Translations.PHOTO_PICKER_BUTTON_TEXT;
   /** Source of the image to be previewed */
   @Prop() previewSrc?: string | object;
   /** Function that handles file pick onClick */
@@ -44,8 +44,8 @@ export class AmplifyPhotoPicker {
     return (
       <div class="photo-picker-container">
         <amplify-section>
-          <div class="header">{this.headerTitle}</div>
-          <div class="header-hint">{this.headerHint}</div>
+          <div class="header">{I18n.get(this.headerTitle)}</div>
+          <div class="header-hint">{I18n.get(this.headerHint)}</div>
 
           <amplify-picker acceptValue={'image/*'} inputHandler={this.handleInput}>
             <div class="picker-body" slot="picker">
@@ -53,9 +53,11 @@ export class AmplifyPhotoPicker {
             </div>
           </amplify-picker>
 
-          <div class="placeholder-hint">{this.placeholderHint}</div>
+          <div class="placeholder-hint">{I18n.get(this.placeholderHint)}</div>
 
-          <amplify-button handleButtonClick={() => this.handleClick(this.file)}>{this.buttonText}</amplify-button>
+          <amplify-button handleButtonClick={() => this.handleClick(this.file)}>
+            {I18n.get(this.buttonText)}
+          </amplify-button>
         </amplify-section>
       </div>
     );

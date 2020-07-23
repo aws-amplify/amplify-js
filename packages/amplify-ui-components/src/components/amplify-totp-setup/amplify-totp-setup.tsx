@@ -140,7 +140,7 @@ export class AmplifyTOTPSetup {
   render() {
     return (
       <amplify-form-section
-        headerText={this.headerText}
+        headerText={I18n.get(this.headerText)}
         submitButtonText={I18n.get(Translations.TOTP_SUBMIT_BUTTON_TEXT)}
         handleSubmit={event => this.verifyTotpToken(event)}
         loading={this.loading}

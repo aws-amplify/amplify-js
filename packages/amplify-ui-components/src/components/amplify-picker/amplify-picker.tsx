@@ -9,7 +9,7 @@ import { Translations } from '../../common/Translations';
 })
 export class AmplifyPicker {
   /** Picker button text */
-  @Prop() pickerText: string = I18n.get(Translations.PICKER_TEXT);
+  @Prop() pickerText: string = Translations.PICKER_TEXT;
   /** File input accept value */
   @Prop() acceptValue: string = '*/*';
   /** File input onChange handler */
@@ -19,9 +19,14 @@ export class AmplifyPicker {
     return (
       <div class="picker">
         <slot name="picker">
-          <amplify-button>{this.pickerText}</amplify-button>
+          <amplify-button>{I18n.get(this.pickerText)}</amplify-button>
         </slot>
-        <input title={this.pickerText} type="file" accept={this.acceptValue} onChange={e => this.inputHandler(e)} />
+        <input
+          title={I18n.get(this.pickerText)}
+          type="file"
+          accept={this.acceptValue}
+          onChange={e => this.inputHandler(e)}
+        />
       </div>
     );
   }
