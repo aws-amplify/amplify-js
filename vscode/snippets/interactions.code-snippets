@@ -47,6 +47,7 @@
             "\twelcomeMessage=${4:\"Welcome, how can I help you today?\"}",
             "\tonComplete={${5:this.handleComplete.bind(this)}}",
             "\tclearonComplete={${6:true}}",
+            "\tconversationModeOn={false}",
             "/>"
         ]
     },
@@ -78,7 +79,7 @@
                 "\t}",
                 "\tAlert.alert('Done', JSON.stringify(confirmation, null, 2), [{ text: 'OK' }]);\n",
                 "\tthis.setState({",
-                "\tbotName: ${1:'BookTripMOBILEHUB'}",
+                "\tbotName: ${1:'BookTrip'}",
                 "\t});",
                 "\treturn ${2:'Trip booked. Thank you! What would you like to do next?'};",
             "}\n",
