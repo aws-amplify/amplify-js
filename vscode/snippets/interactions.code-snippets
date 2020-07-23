@@ -12,7 +12,7 @@
                 "\tInteractions: {",
                     "\t\tbots: {",
                         "\t\t\t${3:\"BookTripMOBILEHUB\"}: {",
-                            "\t\t\t\t${4:\"name\": \"BookTripMOBILEHUB\"},",
+                            "\t\t\t\t${4:\"name\": \"BookTrip\"},",
                             "\t\t\t\t${5:\"alias\": \"$LATEST\"},",
                             "\t\t\t\t${6:\"region\": \"us-east-1\"},",
                         "\t\t\t},",
@@ -25,7 +25,7 @@
         "prefix": "handleComplete",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
-            "handleComplete = function (err, confirmation) {",
+            "const handleComplete = function (err, confirmation) {",
                 "\tif (err) {",
                     "\t\talert('bot conversation failed')",
                     "\t\treturn;",
@@ -37,13 +37,13 @@
         ]
     },
     "ChatBot React": {
-        "prefix": "<Chatbot",
+        "prefix": "<Chatbot React",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "<ChatBot",
             "\ttitle=${1:\"My Bot\"}",
             "\ttheme={${2:myTheme}}",
-            "\tbotName=${3:\"BookTripMOBILEHUB\"}",
+            "\tbotName=${3:\"BookTrip\"}",
             "\twelcomeMessage=${4:\"Welcome, how can I help you today?\"}",
             "\tonComplete={${5:this.handleComplete.bind(this)}}",
             "\tclearonComplete={${6:true}}",
@@ -51,7 +51,7 @@
         ]
     },
     "ChatBot React Native": {
-        "prefix": "<Chatbot",
+        "prefix": "<Chatbot Native",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "<ChatBot",
