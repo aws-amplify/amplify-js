@@ -12,6 +12,7 @@ import { FunctionalComponent } from "@stencil/core";
 import { CountryCodeDialOptions } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { IconNameType } from "./components/amplify-icon/icons";
 import { AccessLevel, StorageObject } from "./common/types/storage-types";
+import { AmplifySceneError } from "./components/amplify-scene/amplify-scene-interface";
 import { SelectOptionsNumber, SelectOptionsString } from "./components/amplify-select/amplify-select-interface";
 export namespace Components {
     interface AmplifyAmazonButton {
@@ -878,6 +879,14 @@ export namespace Components {
          */
         "track": boolean;
     }
+    interface AmplifyScene {
+        "sceneName": string;
+    }
+    interface AmplifySceneLoading {
+        "loadPercentage": number;
+        "sceneError": AmplifySceneError | null;
+        "sceneName": string;
+    }
     interface AmplifySection {
         /**
           * Equivalent to html section role
@@ -1326,6 +1335,18 @@ declare global {
         prototype: HTMLAmplifyS3TextPickerElement;
         new (): HTMLAmplifyS3TextPickerElement;
     };
+    interface HTMLAmplifySceneElement extends Components.AmplifyScene, HTMLStencilElement {
+    }
+    var HTMLAmplifySceneElement: {
+        prototype: HTMLAmplifySceneElement;
+        new (): HTMLAmplifySceneElement;
+    };
+    interface HTMLAmplifySceneLoadingElement extends Components.AmplifySceneLoading, HTMLStencilElement {
+    }
+    var HTMLAmplifySceneLoadingElement: {
+        prototype: HTMLAmplifySceneLoadingElement;
+        new (): HTMLAmplifySceneLoadingElement;
+    };
     interface HTMLAmplifySectionElement extends Components.AmplifySection, HTMLStencilElement {
     }
     var HTMLAmplifySectionElement: {
@@ -1445,6 +1466,8 @@ declare global {
         "amplify-s3-image-picker": HTMLAmplifyS3ImagePickerElement;
         "amplify-s3-text": HTMLAmplifyS3TextElement;
         "amplify-s3-text-picker": HTMLAmplifyS3TextPickerElement;
+        "amplify-scene": HTMLAmplifySceneElement;
+        "amplify-scene-loading": HTMLAmplifySceneLoadingElement;
         "amplify-section": HTMLAmplifySectionElement;
         "amplify-select": HTMLAmplifySelectElement;
         "amplify-select-mfa-type": HTMLAmplifySelectMfaTypeElement;
@@ -2329,6 +2352,14 @@ declare namespace LocalJSX {
          */
         "track"?: boolean;
     }
+    interface AmplifyScene {
+        "sceneName"?: string;
+    }
+    interface AmplifySceneLoading {
+        "loadPercentage"?: number;
+        "sceneError"?: AmplifySceneError | null;
+        "sceneName"?: string;
+    }
     interface AmplifySection {
         /**
           * Equivalent to html section role
@@ -2576,6 +2607,8 @@ declare namespace LocalJSX {
         "amplify-s3-image-picker": AmplifyS3ImagePicker;
         "amplify-s3-text": AmplifyS3Text;
         "amplify-s3-text-picker": AmplifyS3TextPicker;
+        "amplify-scene": AmplifyScene;
+        "amplify-scene-loading": AmplifySceneLoading;
         "amplify-section": AmplifySection;
         "amplify-select": AmplifySelect;
         "amplify-select-mfa-type": AmplifySelectMfaType;
@@ -2635,6 +2668,8 @@ declare module "@stencil/core" {
             "amplify-s3-image-picker": LocalJSX.AmplifyS3ImagePicker & JSXBase.HTMLAttributes<HTMLAmplifyS3ImagePickerElement>;
             "amplify-s3-text": LocalJSX.AmplifyS3Text & JSXBase.HTMLAttributes<HTMLAmplifyS3TextElement>;
             "amplify-s3-text-picker": LocalJSX.AmplifyS3TextPicker & JSXBase.HTMLAttributes<HTMLAmplifyS3TextPickerElement>;
+            "amplify-scene": LocalJSX.AmplifyScene & JSXBase.HTMLAttributes<HTMLAmplifySceneElement>;
+            "amplify-scene-loading": LocalJSX.AmplifySceneLoading & JSXBase.HTMLAttributes<HTMLAmplifySceneLoadingElement>;
             "amplify-section": LocalJSX.AmplifySection & JSXBase.HTMLAttributes<HTMLAmplifySectionElement>;
             "amplify-select": LocalJSX.AmplifySelect & JSXBase.HTMLAttributes<HTMLAmplifySelectElement>;
             "amplify-select-mfa-type": LocalJSX.AmplifySelectMfaType & JSXBase.HTMLAttributes<HTMLAmplifySelectMfaTypeElement>;

@@ -1,0 +1,48 @@
+.loading-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: var(--amplify-light-squid-ink);
+  min-height: 400px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-logo {
+  margin-bottom: 20px;
+  width: 80px;
+  fill: var(--amplify-white);
+}
+
+.loading-scene-name {
+  color: var(--amplify-white);
+  margin: 0 2px 20px 2px;
+  font-size: 1em;
+  font-family: 'Amazon Ember';
+}
+
+.loading-bar {
+  height: 2px;
+  width: 100%;
+  border-radius: 2px;
+  background-color: var(--amplify-deep-squid-ink);
+}
+
+.loading-bar-fill {
+  background-color: var(--amplify-light-blue);
+  height: 100%;
+  border-radius: 2px;
+}
+
+.scene-error-text {
+  color: var(--amplify-red);
+  font-size: 14px;
+  font-family: 'Amazon Ember';
+}
