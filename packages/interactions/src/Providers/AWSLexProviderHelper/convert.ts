@@ -1,41 +1,9 @@
-import { Readable } from 'stream';
-export const convert = async (
-	stream: Readable | ReadableStream | Blob
-): Promise<Uint8Array> => {
-	if (stream instanceof Readable) {
-		return readOnNode(stream);
+export const convert = (stream: object): Promise<Uint8Array> => {
+	if (stream instanceof Blob || stream instanceof ReadableStream) {
+		return new Response(stream)
+			.arrayBuffer()
+			.then(buffer => new Uint8Array(buffer));
 	} else {
-		return readOnBrowser(stream);
+		throw Error('Readable is not supported.');
 	}
-};
-
-const readOnBrowser = (stream: ReadableStream | Blob) => {
-	return new Response(stream)
-		.arrayBuffer()
-		.then(buffer => new Uint8Array(buffer));
-};
-
-const readOnNode = (stream: Readable): Promise<Uint8Array> => {
-	if (!stream.isPaused()) stream.pause();
-	const chunks: Array<string | Buffer> = [];
-	return new Promise((res, rej) => {
-		stream.on('readable', () => {
-			while (true) {
-				const chunk = stream.read();
-				if (!chunk) break;
-				chunks.push(chunk);
-			}
-		});
-		stream.on('end', () => {
-			const blob = new Blob(chunks);
-			const fileReader = new FileReader();
-			fileReader.onload = event => {
-				const buffer = event.target.result as ArrayBuffer;
-				return res(new Uint8Array(buffer));
-			};
-			fileReader.onerror = rej;
-			fileReader.readAsArrayBuffer(blob);
-		});
-		stream.on('error', rej);
-	});
 };

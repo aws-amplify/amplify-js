@@ -6,18 +6,17 @@ import {
 	PostContentCommand,
 	PostTextCommand,
 } from '@aws-sdk/client-lex-runtime-service';
-import { Readable } from 'stream';
+import 'jest';
+
+(global as any).Response = () => {};
+(global as any).Response.prototype.arrayBuffer = (blob: Blob) => {
+	return Promise.resolve(new ArrayBuffer(0));
+};
 
 // mock stream response
-const createReadable = () => {
-	const stream = new Readable({
-		read() {},
-	});
-	stream.push('test');
-	stream.push(null);
-	return stream;
+const createBlob = () => {
+	return new Blob();
 };
-const typedStream = new Uint8Array([116, 101, 115, 116]); // 'test' in Uint8Array
 
 LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof PostTextCommand) {
@@ -48,14 +47,14 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 						m1: 'voice:hi',
 						m2: 'voice:done',
 					},
-					audioStream: createReadable(),
+					audioStream: createBlob(),
 				};
 				return Promise.resolve(result);
 			} else {
 				const result = {
 					message: 'voice:echo:' + command.input.inputStream,
 					dialogState: 'ElicitSlot',
-					audioStream: createReadable(),
+					audioStream: createBlob(),
 				};
 				return Promise.resolve(result);
 			}
@@ -68,14 +67,14 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 						m1: 'hi',
 						m2: 'done',
 					},
-					audioStream: createReadable(),
+					audioStream: createBlob(),
 				};
 				return Promise.resolve(result);
 			} else {
 				const result = {
 					message: 'echo:' + command.input.inputStream,
 					dialogState: 'ElicitSlot',
-					audioStream: createReadable(),
+					audioStream: createBlob(),
 				};
 				return Promise.resolve(result);
 			}
@@ -367,7 +366,7 @@ describe('Interactions', () => {
 			expect(responseVoice).toEqual({
 				dialogState: 'ElicitSlot',
 				message: 'voice:echo:voice:hi',
-				audioStream: typedStream,
+				audioStream: new Uint8Array(),
 			});
 
 			const responseText = await interactions.send(
@@ -377,7 +376,7 @@ describe('Interactions', () => {
 			expect(responseText).toEqual({
 				dialogState: 'ElicitSlot',
 				message: 'echo:hi',
-				audioStream: typedStream,
+				audioStream: new Uint8Array(),
 			});
 		});
 
@@ -442,7 +441,7 @@ describe('Interactions', () => {
 			expect(responseVoice).toEqual({
 				dialogState: 'ElicitSlot',
 				message: 'voice:echo:voice:hi',
-				audioStream: typedStream,
+				audioStream: new Uint8Array(),
 			});
 
 			const responseText = await interactions.send(
@@ -452,7 +451,7 @@ describe('Interactions', () => {
 			expect(responseText).toEqual({
 				dialogState: 'ElicitSlot',
 				message: 'echo:hi',
-				audioStream: typedStream,
+				audioStream: new Uint8Array(),
 			});
 		});
 
@@ -514,7 +513,7 @@ describe('Interactions', () => {
 						m1: 'hi',
 						m2: 'done',
 					},
-					audioStream: typedStream,
+					audioStream: new Uint8Array(),
 				});
 				jest.runAllTimers();
 			});
@@ -564,7 +563,7 @@ describe('Interactions', () => {
 						m1: 'voice:hi',
 						m2: 'voice:done',
 					},
-					audioStream: typedStream,
+					audioStream: new Uint8Array(),
 				});
 				jest.runAllTimers();
 			});
@@ -623,7 +622,7 @@ describe('Interactions', () => {
 						m1: 'hi',
 						m2: 'done',
 					},
-					audioStream: typedStream,
+					audioStream: new Uint8Array(),
 				});
 				jest.runAllTimers();
 			});
@@ -673,7 +672,7 @@ describe('Interactions', () => {
 						m1: 'voice:hi',
 						m2: 'voice:done',
 					},
-					audioStream: typedStream,
+					audioStream: new Uint8Array(),
 				});
 				jest.runAllTimers();
 			});
@@ -916,7 +915,7 @@ describe('Interactions', () => {
 				expect(responseVoice).toEqual({
 					dialogState: 'ElicitSlot',
 					message: 'voice:echo:voice:hi',
-					audioStream: typedStream,
+					audioStream: new Uint8Array(),
 				});
 
 				const responseText = await interactions.send(
@@ -926,7 +925,7 @@ describe('Interactions', () => {
 				expect(responseText).toEqual({
 					dialogState: 'ElicitSlot',
 					message: 'echo:hi',
-					audioStream: typedStream,
+					audioStream: new Uint8Array(),
 				});
 			});
 		});
