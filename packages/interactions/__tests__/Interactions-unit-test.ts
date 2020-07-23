@@ -6,7 +6,6 @@ import {
 	PostContentCommand,
 	PostTextCommand,
 } from '@aws-sdk/client-lex-runtime-service';
-import 'jest';
 
 (global as any).Response = () => {};
 (global as any).Response.prototype.arrayBuffer = (blob: Blob) => {
