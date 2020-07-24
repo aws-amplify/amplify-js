@@ -1,165 +1,163 @@
 {
-    "Amplify Manual Storage Configuration": {
-        "prefix": "Storage:",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "Storage: {",
-            "\tbucket: ${1:''}, // REQUIRED - Amazon  S3 bucket",
-            "\tregion: ${2:'XX-XXXX-X'} // OPTIONAL - Amazon service region",
-            "}"
-        ]
-    },
-    "Manual Storage Configuration": {
-        "prefix": "Storage.configure",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "Storage.configure({",
+	"Amplify Manual Storage Configuration": {
+		"prefix": "Storage:",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"Storage: {",
+                "\tbucket: ${1:''}, // REQUIRED - Amazon  S3 bucket",
+                "\tregion: ${2:'XX-XXXX-X'} // OPTIONAL - Amazon service region",
+			"}"
+		]
+	},
+	"Manual Storage Configuration": {
+		"prefix": "Storage.configure",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"Storage.configure({",
                 "\tbucket: // Your bucket ARN;",
                 "\tregion: // Specify the region your bucket was created in;",
                 "\tidentityPoolId: // Specify your identityPoolId for Auth and Unauth access to your bucket;",
-            "});"
-        ]
-    },
-    "Storage Get": {
-        "prefix": "Storage.get",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "Storage.get(${1:'test.txt'}, { level: ${2:'private'} })",
-            "\t.then ( result => console.log(result))",
-            "\t.catch( err => console.log(err));"
-        ]
-    },
-    "Storage Put": {
-        "prefix": "Storage.put",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "Storage.put(${1:'test.txt'}, ${2:'Protected Content'}, {",
-            "\tlevel: ${3:'private'},",
-            "\tcontentType: ${4:'text/plain'}",
-            "})",
-            ".then ( result => console.log(result))",
-            ".catch( err => console.log(err)});"
-        ]
-    },
-    "S3ImageUpload": {
-        "prefix": "S3ImageUpload",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "S3ImageUpload"
-        ]
-    },
+			"});"
+		]
+	},
+	"Storage Get": {
+		"prefix": "Storage.get",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"Storage.get(${1:'test.txt'}, { level: ${2:'private'} })",
+			"\t.then ( result => console.log(result))",
+			"\t.catch( err => console.log(err));"
+		]
+	},
+	"Storage Put": {
+		"prefix": "Storage.put",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"Storage.put(${1:'test.txt'}, ${2:'Protected Content'}, {",
+			"\tlevel: ${3:'private'},",
+			"\tcontentType: ${4:'text/plain'}",
+			"})",
+			".then ( result => console.log(result))",
+			".catch( err => console.log(err)});"
+		]
+	},
+	"S3ImageUpload": {
+		"prefix": "S3ImageUpload",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["S3ImageUpload"]
+	},
 
-    "RNUpload": {
-        "prefix": "RNUpload",
-        "scope": "javascript, javascriptreaxt, typescript, typescriptreact",
-        "body": [
-            "uploadToStorage = async pathToImageFile => {",
-                "\ttry {",
-                  "\t\tconst response = await fetch(pathToImageFile)",
+	"RNUpload": {
+		"prefix": "RNUpload",
+		"scope": "javascript, javascriptreaxt, typescript, typescriptreact",
+		"body": [
+			"uploadToStorage = async pathToImageFile => {",
+			"\ttry {",
+                "\t\tconst response = await fetch(pathToImageFile)",
 
-                  "\t\tconst blob = await response.blob()",
-                  "\t\tStorage.put(${1:'yourKeyHere.jpeg'}, ${2:blob}, {",
-                    "\t\t\tcontentType: ${2:'image/jpeg'},",
-                  "\t\t})",
-                "} catch (err) {",
-                  "\t\tconsole.log(err)",
+                "\t\tconst blob = await response.blob()",
+                "\t\tStorage.put(${1:'yourKeyHere.jpeg'}, ${2:blob}, {",
+                "\t\t\tcontentType: ${2:'image/jpeg'},",
+                "\t\t})",
+			"} catch (err) {",
+                "\t\tconsole.log(err)",
                 "}",
-              "}"
-        ]
-    },
-    "S3Image": {
-        "prefix": "S3Image",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "class S3ImageUpload extends React.Component {",
+			"}"
+		]
+	},
+	"S3Image": {
+		"prefix": "S3Image",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"class S3ImageUpload extends React.Component {",
                 "\tonChange(e) {",
                     "\t\tconst file = e.target.files[0];",
                     "\t\tStorage.put(${1:'example.png'}, ${2:file}, {",
-                        "\t\t\tcontentType: ${3:'image/png'}",
+                    "\t\t\tcontentType: ${3:'image/png'}",
                     "\t\t})",
-                    "\t\t.then (result => console.log(result))",
-                    "\t\t.catch(err => console.log(err));",
-                "\t}",
+                    "\t.then (result => console.log(result))",
+                    "\t.catch(err => console.log(err));",
+			    "\t}",
 
                 "\trender() {",
                     "\t\treturn (",
-                        "\t\t\t<input",
-                            "\t\t\ttype=${:4\"file\"} accept='image/png'",
-                            "\t\t\tonChange={(evt) => this.onChange(evt)}",
-                        "\t\t\t/>",
+                    "\t\t\t<input",
+                    "\t\t\ttype=${:4\"file\"} accept='image/png'",
+                    "\t\t\tonChange={(evt) => this.onChange(evt)}",
+                    "\t\t\t/>",
                     "\t\t)",
                 "\t}",
-              "}"
-        ]
-    },
-    "Storage Remove": {
-        "prefix": "Storage.remove",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "Storage.remove(${1:'test.txt'}, { level: ${2:'private'} })",
-            "\t.then ( result => console.log(result))",
-            "\t.catch( err => console.log(err));"
-        ]
-    },
-    "Storage List": {
-        "prefix": "Storage.list",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "Storage.list(${1:'photos/'}, { level: ${2:'protected'} })",
-            "\t.then ( result => console.log(result))",
-            "\t.catch( err => console.log(err));"
-        ]
-    },
-    "fileToKey": {
-        "prefix": "fileToKey",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "fileToKey(data) {",
-                "\tconst { name, size, type } = data;",
-                "\treturn 'test_' + name;",
-            "}"
-        ]
-    },
-    "S3Album": {
-        "prefix": "<S3Album",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "<S3Album",
-            "\tlevel=${1:\"private\"}",
-            "\tpath={path}",
-            "\tfilter={(item) => ${2:/jpg/i.test(item.path)}}",
-            "/>"
-        ]
-    },
-    "amplify-photo-picker": {
-        "prefix": "<amplify-photo-picker",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "<amplify-photo-picker",
-            "\t(loaded)=\"onImagePreviewLoaded(\\$event)\"",
-            "\t(picked)=\"onImageSelected(\\$event)\">",
-            "</amplify-photo-picker>"
-        ]
-    },
-    "amplify-s3-album": {
-        "prefix": "<amplify-s3-album",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "<amplify-s3-album",
-            "\tpath=\"\"",
-            "\t(selected)=\"onAlbumImageSelected(\\$event)\">",
-            "</amplify-s3-album>"
-        ]
-    },
-    "Custom Upload Path": {
-        "prefix": "customPrefix",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "customPrefix: {",
+			"}"
+		]
+	},
+	"Storage Remove": {
+		"prefix": "Storage.remove",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"Storage.remove(${1:'test.txt'}, { level: ${2:'private'} })",
+			"\t.then ( result => console.log(result))",
+			"\t.catch( err => console.log(err));"
+		]
+	},
+	"Storage List": {
+		"prefix": "Storage.list",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"Storage.list(${1:'photos/'}, { level: ${2:'protected'} })",
+			"\t.then ( result => console.log(result))",
+			"\t.catch( err => console.log(err));"
+		]
+	},
+	"fileToKey": {
+		"prefix": "fileToKey",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"fileToKey(data) {",
+			"\tconst { name, size, type } = data;",
+			"\treturn 'test_' + name;",
+			"}"
+		]
+	},
+	"S3Album": {
+		"prefix": "<S3Album",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"<S3Album",
+                "\tlevel=${1:\"private\"}",
+                "\tpath={path}",
+                "\tfilter={(item) => ${2:/jpg/i.test(item.path)}}",
+			"/>"
+		]
+	},
+	"amplify-photo-picker": {
+		"prefix": "<amplify-photo-picker",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"<amplify-photo-picker",
+			"\t(loaded)=\"onImagePreviewLoaded(\\$event)\"",
+			"\t(picked)=\"onImageSelected(\\$event)\">",
+			"</amplify-photo-picker>"
+		]
+	},
+	"amplify-s3-album": {
+		"prefix": "<amplify-s3-album",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"<amplify-s3-album",
+			"\tpath=\"\"",
+			"\t(selected)=\"onAlbumImageSelected(\\$event)\">",
+			"</amplify-s3-album>"
+		]
+	},
+	"Custom Upload Path": {
+		"prefix": "customPrefix",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"customPrefix: {",
                 "\tpublic: ${1:'myPublicPrefix/'},",
                 "\tprotected: ${2:'myProtectedPrefix/'},",
                 "\tprivate: ${3:'myPrivatePrefix/'}",
-            "};"
-        ]
-    }
+			"};"
+		]
+	}
 }
