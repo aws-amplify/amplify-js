@@ -361,8 +361,7 @@
                 "\t\t\tlevel: \"public\",",
                 "\t\t}).then(src => console.log({ src }));",
                 "\t})",
-			"})",
-			".catch(err => console.log(err));"
+			"}).catch(err => console.log(err));"
 		]
 	},
 
