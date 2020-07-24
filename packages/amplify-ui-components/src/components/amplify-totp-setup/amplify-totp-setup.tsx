@@ -27,7 +27,7 @@ export class AmplifyTOTPSetup {
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Used for header text in totp setup component */
   @Prop() headerText: string = I18n.get(Translations.TOTP_HEADER_TEXT);
-   /** Used for customise the branding in qr code image */
+   /** Used for customizing the issuer string in the qr code image */
   @Prop() branding: string = I18n.get(Translations.TOTP_BRANDING);
 
   @State() code: string | null = null;
