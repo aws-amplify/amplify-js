@@ -356,7 +356,7 @@
 
                 "\t\tStorage.get(\"\", {",
                 "\t\t\tcustomPrefix: {",
-                "\t\t\tpublic: externalImageId",
+                "\t\t\t\tpublic: externalImageId",
                 "\t\t\t},",
                 "\t\t\tlevel: \"public\",",
                 "\t\t}).then(src => console.log({ src }));",
