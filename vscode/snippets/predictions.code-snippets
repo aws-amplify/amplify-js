@@ -246,7 +246,7 @@
 		]
 	},
 	"Amplify Prediction Detection": {
-		"prefix": "predict.detectFromBrowser",
+		"prefix": "Predict.detectFromBrowser",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -261,7 +261,7 @@
 		]
 	},
 	"Amplify Prediction S3 Detection": {
-		"prefix": "predict.detectEntitiesFromS3",
+		"prefix": "Predict.detectEntitiesFromS3",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -277,7 +277,7 @@
 		]
 	},
 	"Amplify Prediction Faces Detection": {
-		"prefix": "predict.detectFace",
+		"prefix": "Predict.detectFace",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -308,7 +308,7 @@
 		]
 	},
 	"Amplify Prediction Celebrities Detection": {
-		"prefix": "predict.detectCelebrity",
+		"prefix": "Predict.detectCelebrity",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -333,7 +333,7 @@
 		]
 	},
 	"Amplify Prediction Advanced Detection": {
-		"prefix": "predict.detectPreviousUpload",
+		"prefix": "Predict.detectPreviousUpload",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -366,7 +366,7 @@
 	},
 
 	"Amplify Prediction Interpret": {
-		"prefix": "predict.interpret",
+		"prefix": "Predict.interpret",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.interpret({",
