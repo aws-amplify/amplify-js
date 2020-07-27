@@ -319,11 +319,6 @@ jobs:
       - run: yarn --frozen-lockfile
       - run: yarn run bootstrap
       - run: yarn run build
-
-      - save_cache:
-          key: amplify-ssh-deps-{{ .Branch }}
-          paths:
-            - ~/.ssh
       - persist_to_workspace:
           root: /root
           paths:
@@ -566,10 +561,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - restore_cache:
-          keys:
-            - amplify-ssh-deps-{{ .Branch }}
-            - amplify-ssh-deps
       # - run:
       #     name: 'Publish to Amplify Package'
       #     command: |
@@ -591,10 +582,6 @@ jobs:
     steps:
       - attach_workspace:
           at: /root
-      - restore_cache:
-          keys:
-            - amplify-ssh-deps-{{ .Branch }}
-            - amplify-ssh-deps
       - run:
           name: 'Post-release steps'
           command: |
@@ -708,11 +695,10 @@ workflows:
       #     filters:
       #       <<: *releasable_branches
       - deploy:
-          requires:
-            - build
           filters:
             <<: *releasable_branches
-          #     requires:
+          requires:
+            - build
           #       - unit_test
           #       - integ_react_predictions
           #       - integ_react_datastore
