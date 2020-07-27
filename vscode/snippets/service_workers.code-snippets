@@ -1,17 +1,25 @@
 {
-    "register": {
-        "prefix": "sw.register",
+    "Service Worker Configuration": {
+        "prefix": "sw.config",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "import { ServiceWorker } from 'aws-amplify';",
             "const serviceWorker = new ServiceWorker();"
         ]
     },
-    "enablePush": {
-        "prefix": "enablePush",
+    "Service Worker Registration": {
+        "prefix": "sw.register",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
-            "enablePush"
+            "// Register the service worker with `service-worker.js` with service worker scope `/`.",
+            "registeredServiceWorker = await serviceWorker.register('${1:/service-worker.js}', '${2:/}');"
+        ]
+    },
+    "enablePush": {
+        "prefix": "sw.enablePush",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
+        "body": [
+            "serviceWorker.enablePush('${1:BLx__NGvdasMNkjd6VYPdzQJVBkb2qafh}')"
         ]
     },
     "Service Worker Add Event Listener": {
