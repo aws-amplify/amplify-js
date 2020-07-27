@@ -46,11 +46,15 @@ const dispatchStorageEvent = (
 	message: string
 ) => {
 	if (track) {
+		const data = { attrs };
+		if (metrics) {
+			data['metrics'] = metrics;
+		}
 		Hub.dispatch(
 			'storage',
 			{
 				event,
-				data: { attrs, metrics },
+				data,
 				message,
 			},
 			'Storage',
