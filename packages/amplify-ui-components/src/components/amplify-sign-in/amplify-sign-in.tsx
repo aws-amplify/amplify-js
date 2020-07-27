@@ -25,6 +25,7 @@ import {
   isHintValid,
   handlePhoneNumberChange,
 } from '../../common/helpers';
+import { handleSignIn } from '../../common/auth-helpers';
 import { SignInAttributes } from './amplify-sign-in-interface';
 
 const logger = new Logger('SignIn');
@@ -117,20 +118,6 @@ export class AmplifySignIn {
     fnToCall(event, callback.bind(this));
   }
 
-  private checkContact(user) {
-    if (!Auth || typeof Auth.verifiedContact !== 'function') {
-      throw new Error(NO_AUTH_MODULE_FOUND);
-    }
-    Auth.verifiedContact(user).then(data => {
-      if (!isEmpty(data.verified)) {
-        this.handleAuthStateChange(AuthState.SignedIn, user);
-      } else {
-        user = Object.assign(user, data);
-        this.handleAuthStateChange(AuthState.VerifyContact, user);
-      }
-    });
-  }
-
   private async signIn(event: Event) {
     // avoid submitting the form
     if (event) {
@@ -153,40 +140,8 @@ export class AmplifySignIn {
         break;
     }
 
-    try {
-      const user = await Auth.signIn(this.signInAttributes.userInput, this.signInAttributes.password);
-      logger.debug(user);
-      if (user.challengeName === ChallengeName.SMSMFA || user.challengeName === ChallengeName.SoftwareTokenMFA) {
-        logger.debug('confirm user with ' + user.challengeName);
-        this.handleAuthStateChange(AuthState.ConfirmSignIn, user);
-      } else if (user.challengeName === ChallengeName.NewPasswordRequired) {
-        logger.debug('require new password', user.challengeParam);
-        this.handleAuthStateChange(AuthState.ResetPassword, user);
-      } else if (user.challengeName === ChallengeName.MFASetup) {
-        logger.debug('TOTP setup', user.challengeParam);
-        this.handleAuthStateChange(AuthState.TOTPSetup, user);
-      } else if (
-        user.challengeName === ChallengeName.CustomChallenge &&
-        user.challengeParam &&
-        user.challengeParam.trigger === 'true'
-      ) {
-        logger.debug('custom challenge', user.challengeParam);
-        this.handleAuthStateChange(AuthState.CustomConfirmSignIn, user);
-      } else {
-        this.checkContact(user);
-      }
-    } catch (error) {
-      dispatchToastHubEvent(error);
-      if (error.code === 'UserNotConfirmedException') {
-        logger.debug('the user is not confirmed');
-        this.handleAuthStateChange(AuthState.ConfirmSignUp, { username: this.signInAttributes.userInput });
-      } else if (error.code === 'PasswordResetRequiredException') {
-        logger.debug('the user requires a new password');
-        this.handleAuthStateChange(AuthState.ForgotPassword, { username: this.signInAttributes.userInput });
-      }
-    } finally {
-      this.loading = false;
-    }
+    await handleSignIn(this.signInAttributes.userInput, this.signInAttributes.password, this.handleAuthStateChange);
+    this.loading = false;
   }
 
   buildDefaultFormFields() {
