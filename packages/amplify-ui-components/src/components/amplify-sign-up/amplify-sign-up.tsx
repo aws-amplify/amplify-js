@@ -35,13 +35,13 @@ export class AmplifySignUp {
   /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: string;
   /** Used for header text in sign up component */
-  @Prop() headerText: string = I18n.get(Translations.SIGN_UP_HEADER_TEXT);
+  @Prop() headerText: string = Translations.SIGN_UP_HEADER_TEXT;
   /** Used for the submit button text in sign up component */
-  @Prop() submitButtonText: string = I18n.get(Translations.SIGN_UP_SUBMIT_BUTTON_TEXT);
+  @Prop() submitButtonText: string = Translations.SIGN_UP_SUBMIT_BUTTON_TEXT;
   /** Used for the submit button text in sign up component */
-  @Prop() haveAccountText: string = I18n.get(Translations.SIGN_UP_HAVE_ACCOUNT_TEXT);
+  @Prop() haveAccountText: string = Translations.SIGN_UP_HAVE_ACCOUNT_TEXT;
   /** Used for the submit button text in sign up component */
-  @Prop() signInText: string = I18n.get(Translations.SIGN_IN_TEXT);
+  @Prop() signInText: string = Translations.SIGN_IN_TEXT;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing
@@ -301,25 +301,29 @@ export class AmplifySignUp {
 
   render() {
     return (
-      <amplify-form-section headerText={this.headerText} handleSubmit={this.handleSubmit} testDataPrefix={'sign-up'}>
+      <amplify-form-section
+        headerText={I18n.get(this.headerText)}
+        handleSubmit={this.handleSubmit}
+        testDataPrefix={'sign-up'}
+      >
         <amplify-auth-fields formFields={this.newFormFields} />
         <div class="sign-up-form-footer" slot="amplify-form-section-footer">
           <slot name="footer">
             <slot name="secondary-footer-content">
               <span>
-                {this.haveAccountText}{' '}
+                {I18n.get(this.haveAccountText)}{' '}
                 <amplify-button
                   variant="anchor"
                   onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
                   data-test="sign-up-sign-in-link"
                 >
-                  {this.signInText}
+                  {I18n.get(this.signInText)}
                 </amplify-button>
               </span>
             </slot>
             <slot name="primary-footer-content">
               <amplify-button type="submit" data-test="sign-up-create-account-button">
-                {this.loading ? <amplify-loading-spinner /> : <span>{this.submitButtonText}</span>}
+                {this.loading ? <amplify-loading-spinner /> : <span>{I18n.get(this.submitButtonText)}</span>}
               </amplify-button>
             </slot>
           </slot>
