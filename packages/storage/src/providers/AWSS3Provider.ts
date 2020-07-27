@@ -46,7 +46,7 @@ const dispatchStorageEvent = (
 	message: string
 ) => {
 	if (track) {
-		let data = { attrs };
+		const data = { attrs };
 		if (metrics) {
 			data['metrics'] = metrics;
 		}
