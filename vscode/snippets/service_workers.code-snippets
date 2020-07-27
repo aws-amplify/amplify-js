@@ -1,9 +1,10 @@
 {
     "register": {
-        "prefix": "register",
+        "prefix": "sw.register",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
-            "register"
+            "import { ServiceWorker } from 'aws-amplify';",
+            "const serviceWorker = new ServiceWorker();"
         ]
     },
     "enablePush": {
@@ -14,7 +15,7 @@
         ]
     },
     "Service Worker Add Event Listener": {
-        "prefix": "addEventListener",
+        "prefix": "sw.addEventListener",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "/**",
