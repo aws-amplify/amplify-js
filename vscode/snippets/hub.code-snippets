@@ -1,45 +1,35 @@
 {
-    "dispatch": {
-        "prefix": "dispatch",
+    "Hub installation": {
+        "prefix": "Hub.install",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
-            "dispatch"
+            "import { Hub } from 'aws-amplify';"
         ]
     },
-    "listen": {
-        "prefix": "listen",
+    "Hub listen": {
+        "prefix": "Hub.listen",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
-            "listen"
+            "//Hub.listen(channel: string | RegExp, callback)",
+            "Hub.listen('${1:auth}', (${2:data}) => {",
+                "\tconst ${3:{ payload }} = ${4:data};",
+                "\t${5:this.onAuthEvent(payload)};",
+                "\tconsole.log('A new auth event has happened: ', data.payload.data.username + ' has ' + data.payload.event);",
+            "})",
         ]
     },
-    "onHubCapsule": {
-        "prefix": "onHubCapsule",
+    "Hub dispatch": {
+        "prefix": "Hub.dispatch",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
-            "onHubCapsule"
-        ]
-    },
-    "Hub Capsule Switch": {
-        "prefix": "Hub Capsule Switch",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "${1:alex}.onHubCapsule = (capsule) => {\n",
-                "\tswitch (capsule.payload.event) {\n",
-                    "\t\tcase 'signIn':",
-                    "\t\t\t${2:alex}.error('user signed in'); //[ERROR] ${3:Alexander_the_auth_watcher} - user signed in",
-                    "\t\t\tbreak;",
-                    "\t\tcase 'signUp':",
-                    "\t\t\t${4:alex}.error('user signed up');",
-                    "\t\t\tbreak;",
-                    "\t\tcase 'signOut':",
-                    "\t\t\t${5:alex}.error('user signed out');",
-                    "\t\t\tbreak;",
-                    "\t\tcase 'signIn_failure':",
-                    "\t\t\t${6:alex}.error('user sign in failed');",
-                    "\t\t\tbreak;",
-                "\t}",
-            "}"
+            "// Hub.dispatch(channel: string, payload: HubPayload)",
+            "Hub.dispatch(",
+                "\t'${1:DogsChannel}',",
+                "\t{",
+                "\t\tevent: '${2:buttonClick}',",
+                "\t\tdata: ${3:{color:'blue'}},",
+                "\t\tmessage:'${4:}'",
+            "});"
         ]
     }
 }
