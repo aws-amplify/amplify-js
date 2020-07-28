@@ -206,7 +206,6 @@ describe('StorageProvider test', () => {
 					event: 'getSignedUrl',
 					data: {
 						attrs: { method: 'get', result: 'success' },
-						metrics: null,
 					},
 					message: 'Signed URL: url',
 				},
@@ -505,7 +504,6 @@ describe('StorageProvider test', () => {
 							method: 'put',
 							result: 'success',
 						},
-						metrics: null,
 					},
 					message: 'Upload success for key',
 				},
@@ -627,7 +625,6 @@ describe('StorageProvider test', () => {
 					event: 'delete',
 					data: {
 						attrs: { method: 'remove', result: 'success' },
-						metrics: null,
 					},
 					message: 'Deleted key successfully',
 				},
@@ -781,7 +778,6 @@ describe('StorageProvider test', () => {
 					event: 'list',
 					data: {
 						attrs: { method: 'list', result: 'success' },
-						metrics: null,
 					},
 					message: '1 items returned from list operation',
 				},

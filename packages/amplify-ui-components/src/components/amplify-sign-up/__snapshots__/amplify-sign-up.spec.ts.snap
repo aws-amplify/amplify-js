@@ -17,8 +17,7 @@ exports[`amplify-sign-up spec: Render logic -> should render a \`sign up\` form 
           </slot>
           <slot name="primary-footer-content">
             <amplify-button data-test="sign-up-create-account-button" type="submit">
-              <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
-              <span style="display: initial;">
+              <span>
                 Create Account
               </span>
             </amplify-button>

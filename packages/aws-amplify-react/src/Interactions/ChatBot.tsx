@@ -205,7 +205,6 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 				messageType: 'voice',
 			},
 		};
-
 		const response = await Interactions.send(
 			this.props.botName,
 			interactionsMessage
