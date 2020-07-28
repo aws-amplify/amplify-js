@@ -29,6 +29,7 @@ import { SignInAttributes } from './amplify-sign-in-interface';
 
 const logger = new Logger('SignIn');
 /**
+ * @slot header-subtitle - Subtitle content placed below header text
  * @slot footer - Content is place in the footer of the component
  * @slot primary-footer-content - Content placed on the right side of the footer
  * @slot secondary-footer-content - Content placed on the left side of the footer
@@ -313,6 +314,9 @@ export class AmplifySignIn {
         handleSubmit={this.handleSubmit}
         testDataPrefix={'sign-in'}
       >
+        <div slot="subtitle">
+          <slot name="header-subtitle"></slot>
+        </div>
         <amplify-federated-buttons handleAuthStateChange={this.handleAuthStateChange} federated={this.federated} />
 
         {!isEmpty(this.federated) && <amplify-strike>or</amplify-strike>}
