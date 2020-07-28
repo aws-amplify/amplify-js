@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.5.5...@aws-amplify/ui-components@0.6.0) (2020-07-27)
+
+
+### Features
+
+* add branding prop for customise QR branding ([#6333](https://github.com/aws-amplify/amplify-js/issues/6333)) ([28efe52](https://github.com/aws-amplify/amplify-js/commit/28efe520ec6e6f2f8518ab7ce7b1d9a0c00534ad))
+
+
+
+
+
 ## [0.5.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.5.4...@aws-amplify/ui-components@0.5.5) (2020-07-22)
 
 
