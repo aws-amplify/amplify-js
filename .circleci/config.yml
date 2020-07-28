@@ -17,7 +17,7 @@ executors:
       - image: verdaccio/verdaccio
     resource_class: large
 
-  mac-executor:
+  macos-executor:
     macos:
       xcode: 11.4.1
 
@@ -535,47 +535,46 @@ jobs:
           spec: custom-authenticator
 
   integ_rn_ios_storage:
-    executor: mac-executor
+    executor: macos-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
       - integ_test_rn_ios
 
   integ_rn_ios_push_notifications:
-    executor: mac-executor
+    executor: macos-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/push-notifications/PushNotificationApp
     steps:
       - integ_test_rn_ios
 
   integ_rn_android_storage:
-    executor: mac-executor
+    executor: macos-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
       - integ_test_rn_android
 
   deploy:
-    executor: mac-executor
+    executor: macos-executor
     working_directory: ~/amplify-js
     steps:
       - attach_workspace:
           at: ~/
-      # - run:
-      #     name: 'Publish to Amplify Package'
-      #     command: |
-      #       if [ -z "$CIRCLE_PULL_REQUEST" ]; then
-      #         echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-      #         npm whoami
-      #         git config --global user.email $GITHUB_EMAIL
-      #         git config --global user.name $GITHUB_USER
-      #         git status
-      #         git --no-pager diff
-      #         yarn publish:$CIRCLE_BRANCH
-      #       else
-      #         echo "Skipping deploy."
-      #       fi
-      - run: ls -alF
+      - run:
+          name: 'Publish to Amplify Package'
+          command: |
+            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
+              echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+              npm whoami
+              git config --global user.email $GITHUB_EMAIL
+              git config --global user.name $GITHUB_USER
+              git status
+              git --no-pager diff
+              yarn publish:$CIRCLE_BRANCH
+            else
+              echo "Skipping deploy."
+            fi
 
   post_release:
     executor: build-executor
@@ -601,122 +600,120 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/master
       - 1.0-stable
-      - ci_deploy_macos #TODO: remove line before merging
 
 workflows:
   build_test_deploy:
     jobs:
       - build
-      # - integ_setup:
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_setup_ui:
-      #     filters:
-      #       <<: *releasable_branches
-      # - unit_test:
-      #     requires:
-      #       - build
-      # - integ_react_auth:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_angular_auth:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_vue_auth:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_react_predictions:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_react_datastore:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_react_storage:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_react_storage_ui:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_rn_ios_storage:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_rn_ios_push_notifications:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_rn_android_storage:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_react_auth_ui:
-      #     requires:
-      #       - integ_setup_ui
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_angular_auth_ui:
-      #     requires:
-      #       - integ_setup_ui
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      # - integ_vue_auth_ui:
-      #     requires:
-      #       - integ_setup_ui
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
+      - integ_setup:
+          filters:
+            <<: *releasable_branches
+      - integ_setup_ui:
+          filters:
+            <<: *releasable_branches
+      - unit_test:
+          requires:
+            - build
+      - integ_react_auth:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_angular_auth:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_vue_auth:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_predictions:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_datastore:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_storage_ui:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_ios_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_ios_push_notifications:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_android_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_auth_ui:
+          requires:
+            - integ_setup_ui
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_angular_auth_ui:
+          requires:
+            - integ_setup_ui
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_vue_auth_ui:
+          requires:
+            - integ_setup_ui
+            - build
+          filters:
+            <<: *releasable_branches
       - deploy:
           filters:
             <<: *releasable_branches
           requires:
-            - build
-          #       - unit_test
-          #       - integ_react_predictions
-          #       - integ_react_datastore
-          #       - integ_react_storage
-          #       - integ_react_storage_ui
-          #       - integ_react_auth
-          #       - integ_angular_auth
-          #       - integ_vue_auth
-          #       - integ_react_auth_ui
-          #       - integ_angular_auth_ui
-          #       - integ_vue_auth_ui
-          #       - integ_rn_ios_storage
-          #       - integ_rn_ios_push_notifications
-          #       - integ_rn_android_storage
-          # - post_release:
-          #     filters:
-          #       branches:
-          #         only:
-          #           - release
-          # requires:
-          #   - deploy
+            - unit_test
+            - integ_react_predictions
+            - integ_react_datastore
+            - integ_react_storage
+            - integ_react_storage_ui
+            - integ_react_auth
+            - integ_angular_auth
+            - integ_vue_auth
+            - integ_react_auth_ui
+            - integ_angular_auth_ui
+            - integ_vue_auth_ui
+            - integ_rn_ios_storage
+            - integ_rn_ios_push_notifications
+            - integ_rn_android_storage
+      - post_release:
+          filters:
+            branches:
+              only:
+                - release
+          requires:
+            - deploy
