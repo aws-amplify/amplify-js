@@ -1,13 +1,14 @@
 import { Auth } from '@aws-amplify/auth';
-import { I18n, Logger, isEmpty } from '@aws-amplify/core';
+import { I18n, Logger } from '@aws-amplify/core';
 import { Component, Prop, State, h } from '@stencil/core';
 import QRCode from 'qrcode';
 
-import { CognitoUserInterface, AuthStateHandler, AuthState, MfaOption } from '../../common/types/auth-types';
+import { CognitoUserInterface, AuthStateHandler, MfaOption } from '../../common/types/auth-types';
 import { Translations } from '../../common/Translations';
 import { TOTPSetupEventType } from './amplify-totp-setup-interface';
 import { NO_AUTH_MODULE_FOUND, SETUP_TOTP, SUCCESS } from '../../common/constants';
 import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { checkContact } from '../../common/auth-helpers';
 
 const logger = new Logger('TOTP');
 
@@ -44,28 +45,11 @@ export class AmplifyTOTPSetup {
     return `otpauth://totp/${issuer}:${user.username}?secret=${secretKey}&issuer=${issuer}`;
   }
 
-  private async checkContact(user: CognitoUserInterface) {
-    if (!Auth || typeof Auth.verifiedContact !== 'function') {
-      throw new Error(NO_AUTH_MODULE_FOUND);
-    }
-    try {
-      const dataVerifed = await Auth.verifiedContact(user);
-      if (!isEmpty(dataVerifed)) {
-        this.handleAuthStateChange(AuthState.SignedIn, user);
-      } else {
-        const newUser = Object.assign(user, dataVerifed);
-        this.handleAuthStateChange(AuthState.VerifyContact, newUser);
-      }
-    } catch (error) {
-      dispatchToastHubEvent(error);
-    }
-  }
-
   private onTOTPEvent(event: TOTPSetupEventType, data: any, user: CognitoUserInterface) {
     logger.debug('on totp event', event, data);
 
     if (event === SETUP_TOTP && data === SUCCESS) {
-      this.checkContact(user);
+      checkContact(user, this.handleAuthStateChange);
     }
   }
 

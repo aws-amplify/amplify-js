@@ -18,6 +18,7 @@ import {
   handlePhoneNumberChange,
 } from '../../common/helpers';
 import { Translations } from '../../common/Translations';
+import { checkContact } from '../../common/auth-helpers';
 
 /**
  * @slot header-subtitle - Subtitle content placed below header text
@@ -133,7 +134,12 @@ export class AmplifySignUp {
 
     try {
       const data = await Auth.signUp(this.signUpAttributes);
-      this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
+      if (data && data.userConfirmed) {
+        const user = await Auth.signIn(this.signUpAttributes.username, this.signUpAttributes.password);
+        checkContact(user, this.handleAuthStateChange);
+      } else {
+        this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
+      }
     } catch (error) {
       dispatchToastHubEvent(error);
     }
