@@ -45,11 +45,11 @@ export class AmplifyTOTPSetup {
     return `otpauth://totp/${issuer}:${user.username}?secret=${secretKey}&issuer=${issuer}`;
   }
 
-  private onTOTPEvent(event: TOTPSetupEventType, data: any, user: CognitoUserInterface) {
+  private async onTOTPEvent(event: TOTPSetupEventType, data: any, user: CognitoUserInterface) {
     logger.debug('on totp event', event, data);
 
     if (event === SETUP_TOTP && data === SUCCESS) {
-      checkContact(user, this.handleAuthStateChange);
+      await checkContact(user, this.handleAuthStateChange);
     }
   }
 
@@ -113,7 +113,7 @@ export class AmplifyTOTPSetup {
       this.setupMessage = I18n.get(Translations.TOTP_SUCCESS_MESSAGE);
       logger.debug(I18n.get(Translations.TOTP_SUCCESS_MESSAGE));
 
-      this.onTOTPEvent(SETUP_TOTP, SUCCESS, user);
+      await this.onTOTPEvent(SETUP_TOTP, SUCCESS, user);
     } catch (error) {
       this.setupMessage = I18n.get(Translations.TOTP_SETUP_FAILURE);
       logger.error(error);

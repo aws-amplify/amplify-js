@@ -86,7 +86,7 @@ export class AmplifyConfirmSignIn {
     this.loading = true;
     try {
       await Auth.confirmSignIn(this.user, this.code, mfaType);
-      checkContact(this.user, this.handleAuthStateChange);
+      await checkContact(this.user, this.handleAuthStateChange);
     } catch (error) {
       dispatchToastHubEvent(error);
     } finally {

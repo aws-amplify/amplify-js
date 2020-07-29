@@ -47,7 +47,7 @@ export const handleSignIn = async (username: string, password: string, handleAut
       logger.debug('custom challenge', user.challengeParam);
       handleAuthStateChange(AuthState.CustomConfirmSignIn, user);
     } else {
-      checkContact(user, handleAuthStateChange);
+      await checkContact(user, handleAuthStateChange);
     }
   } catch (error) {
     dispatchToastHubEvent(error);

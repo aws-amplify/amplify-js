@@ -136,7 +136,7 @@ export class AmplifySignUp {
       const data = await Auth.signUp(this.signUpAttributes);
       if (data && data.userConfirmed) {
         const user = await Auth.signIn(this.signUpAttributes.username, this.signUpAttributes.password);
-        checkContact(user, this.handleAuthStateChange);
+        await checkContact(user, this.handleAuthStateChange);
       } else {
         this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
       }

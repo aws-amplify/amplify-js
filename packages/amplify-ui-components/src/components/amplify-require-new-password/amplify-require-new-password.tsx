@@ -114,7 +114,7 @@ export class AmplifyRequireNewPassword {
           this.handleAuthStateChange(AuthState.TOTPSetup, user);
           break;
         default:
-          checkContact(user, this.handleAuthStateChange);
+          await checkContact(user, this.handleAuthStateChange);
       }
     } catch (error) {
       dispatchToastHubEvent(error);
