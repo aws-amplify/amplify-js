@@ -26,7 +26,9 @@ export class AmplifyTOTPSetup {
   /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Used for header text in totp setup component */
-  @Prop() headerText: string = Translations.TOTP_HEADER_TEXT;
+  @Prop() headerText: string = I18n.get(Translations.TOTP_HEADER_TEXT);
+  /** Used for customizing the issuer string in the qr code image */
+  @Prop() issuer: string = I18n.get(Translations.TOTP_ISSUER);
 
   @State() code: string | null = null;
   @State() setupMessage: string | null = null;
@@ -82,7 +84,7 @@ export class AmplifyTOTPSetup {
 
   private async setup() {
     this.setupMessage = null;
-    const issuer = encodeURI('AWSCognito');
+    const encodedIssuer = encodeURI(this.issuer);
 
     if (!Auth || typeof Auth.setupTOTP !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
@@ -93,7 +95,7 @@ export class AmplifyTOTPSetup {
       const secretKey = await Auth.setupTOTP(this.user);
 
       logger.debug('secret key', secretKey);
-      this.code = this.buildOtpAuthPath(this.user, issuer, secretKey);
+      this.code = this.buildOtpAuthPath(this.user, encodedIssuer, secretKey);
 
       this.generateQRCode(this.code);
     } catch (error) {

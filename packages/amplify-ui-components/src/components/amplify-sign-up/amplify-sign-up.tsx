@@ -20,6 +20,7 @@ import {
 import { Translations } from '../../common/Translations';
 
 /**
+ * @slot header-subtitle - Subtitle content placed below header text
  * @slot footer - Content is place in the footer of the component
  * @slot primary-footer-content - Content placed on the right side of the footer
  * @slot secondary-footer-content - Content placed on the left side of the footer
@@ -306,6 +307,9 @@ export class AmplifySignUp {
         handleSubmit={this.handleSubmit}
         testDataPrefix={'sign-up'}
       >
+        <div slot="subtitle">
+          <slot name="header-subtitle"></slot>
+        </div>
         <amplify-auth-fields formFields={this.newFormFields} />
         <div class="sign-up-form-footer" slot="amplify-form-section-footer">
           <slot name="footer">
