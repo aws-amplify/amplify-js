@@ -685,6 +685,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 								logger.debug(err);
 								this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
 							};
+							this.awsRealTimeSocket.onclose = event => {
+								logger.debug(`WebSocket closed ${event.reason}`);
+								this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
+							};
 							res('Cool, connected to AWS AppSyncRealTime');
 							return;
 						}
