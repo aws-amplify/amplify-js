@@ -19,6 +19,7 @@ import {
   composePhoneNumberInput,
   handlePhoneNumberChange,
 } from '../../common/helpers';
+import { handleSignIn } from '../../common/auth-helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-up',
@@ -214,9 +215,12 @@ export class AmplifyConfirmSignUp {
     }
     try {
       const confirmSignUpResult = await Auth.confirmSignUp(this.userInput, this.code);
-      const user =
-        confirmSignUpResult && this._signUpAttrs && (await Auth.signIn(this.userInput, this._signUpAttrs.password));
-      this.handleAuthStateChange(AuthState.SignedIn, user);
+
+      if (confirmSignUpResult && this._signUpAttrs) {
+        await handleSignIn(this.userInput, this._signUpAttrs.password, this.handleAuthStateChange);
+      } else {
+        throw new Error('Confirming user sign up failed');
+      }
     } catch (error) {
       dispatchToastHubEvent(error);
     } finally {

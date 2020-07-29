@@ -1,5 +1,4 @@
-import { Auth } from '@aws-amplify/auth';
-import { I18n, Logger, isEmpty } from '@aws-amplify/core';
+import { I18n, isEmpty } from '@aws-amplify/core';
 import { Component, Prop, State, h, Watch } from '@stencil/core';
 import {
   FormFieldTypes,
@@ -7,15 +6,9 @@ import {
   PhoneNumberInterface,
   PhoneFormFieldType,
 } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import {
-  AuthState,
-  ChallengeName,
-  FederatedConfig,
-  AuthStateHandler,
-  UsernameAliasStrings,
-} from '../../common/types/auth-types';
+import { AuthState, FederatedConfig, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
 import { Translations } from '../../common/Translations';
-import { NO_AUTH_MODULE_FOUND, COUNTRY_DIAL_CODE_DEFAULT } from '../../common/constants';
+import { COUNTRY_DIAL_CODE_DEFAULT } from '../../common/constants';
 
 import {
   dispatchToastHubEvent,
@@ -28,7 +21,6 @@ import {
 import { handleSignIn } from '../../common/auth-helpers';
 import { SignInAttributes } from './amplify-sign-in-interface';
 
-const logger = new Logger('SignIn');
 /**
  * @slot footer - Content is place in the footer of the component
  * @slot primary-footer-content - Content placed on the right side of the footer
@@ -124,9 +116,6 @@ export class AmplifySignIn {
       event.preventDefault();
     }
 
-    if (!Auth || typeof Auth.signIn !== 'function') {
-      throw new Error(NO_AUTH_MODULE_FOUND);
-    }
     this.loading = true;
 
     switch (this.usernameAlias) {

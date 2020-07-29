@@ -24,6 +24,9 @@ export async function checkContact(user: CognitoUserInterface, handleAuthStateCh
 }
 
 export const handleSignIn = async (username: string, password: string, handleAuthStateChange: AuthStateHandler) => {
+  if (!Auth || typeof Auth.signIn !== 'function') {
+    throw new Error(NO_AUTH_MODULE_FOUND);
+  }
   try {
     const user = await Auth.signIn(username, password);
     logger.debug(user);
@@ -55,7 +58,5 @@ export const handleSignIn = async (username: string, password: string, handleAut
       logger.debug('the user requires a new password');
       handleAuthStateChange(AuthState.ForgotPassword, { username });
     }
-  } finally {
-    this.loading = false;
   }
 };
