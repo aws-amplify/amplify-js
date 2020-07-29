@@ -34,8 +34,8 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Storage.put(${1:'test.txt'}, ${2:'Protected Content'}, {",
-			"\tlevel: ${3:'private'},",
-			"\tcontentType: ${4:'text/plain'}",
+                "\tlevel: ${3:'private'},",
+                "\tcontentType: ${4:'text/plain'}",
 			"})",
 			".then ( result => console.log(result))",
 			".catch( err => console.log(err)});"
@@ -44,7 +44,26 @@
 	"S3ImageUpload": {
 		"prefix": "S3ImageUpload",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": ["S3ImageUpload"]
+		"body": [
+            "class S3ImageUpload extends React.Component {",
+                "\tonChange(e) {",
+                "\t\tconst file = e.target.files[0];",
+                "\t\tStorage.put('example.png', file, {",
+                "\t\t\tcontentType: 'image/png'",
+                "\t\t})",
+                "\t\t.then (result => console.log(result))",
+                "\t\t.catch(err => console.log(err));",
+                "\t}",
+                "\trender() {",
+                "\t\treturn (",
+                "\t\t\t<input",
+                "\t\t\t\ttype=\"file\" accept='image/png'",
+                "\t\t\t\tonChange={(evt) => this.onChange(evt)}",
+                "\t\t\t/>",
+                "\t\t)",
+                "\t}",
+            "}"
+        ]
 	},
 
 	"RNUpload": {
@@ -52,14 +71,14 @@
 		"scope": "javascript, javascriptreaxt, typescript, typescriptreact",
 		"body": [
 			"uploadToStorage = async pathToImageFile => {",
-			"\ttry {",
+                "\ttry {",
                 "\t\tconst response = await fetch(pathToImageFile)",
 
                 "\t\tconst blob = await response.blob()",
                 "\t\tStorage.put(${1:'yourKeyHere.jpeg'}, ${2:blob}, {",
                 "\t\t\tcontentType: ${2:'image/jpeg'},",
                 "\t\t})",
-			"} catch (err) {",
+                "} catch (err) {",
                 "\t\tconsole.log(err)",
                 "}",
 			"}"
@@ -71,21 +90,21 @@
 		"body": [
 			"class S3ImageUpload extends React.Component {",
                 "\tonChange(e) {",
-                    "\t\tconst file = e.target.files[0];",
-                    "\t\tStorage.put(${1:'example.png'}, ${2:file}, {",
-                    "\t\t\tcontentType: ${3:'image/png'}",
-                    "\t\t})",
-                    "\t.then (result => console.log(result))",
-                    "\t.catch(err => console.log(err));",
-			    "\t}",
+                "\t\tconst file = e.target.files[0];",
+                "\t\tStorage.put(${1:'example.png'}, ${2:file}, {",
+                "\t\t\tcontentType: ${3:'image/png'}",
+                "\t\t})",
+                "\t.then (result => console.log(result))",
+                "\t.catch(err => console.log(err));",
+                "\t}",
 
                 "\trender() {",
-                    "\t\treturn (",
-                    "\t\t\t<input",
-                    "\t\t\ttype=${:4\"file\"} accept='image/png'",
-                    "\t\t\tonChange={(evt) => this.onChange(evt)}",
-                    "\t\t\t/>",
-                    "\t\t)",
+                "\t\treturn (",
+                "\t\t\t<input",
+                "\t\t\ttype=${:4\"file\"} accept='image/png'",
+                "\t\t\tonChange={(evt) => this.onChange(evt)}",
+                "\t\t\t/>",
+                "\t\t)",
                 "\t}",
 			"}"
 		]
@@ -123,9 +142,9 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"<S3Album",
-                "\tlevel=${1:\"private\"}",
-                "\tpath={path}",
-                "\tfilter={(item) => ${2:/jpg/i.test(item.path)}}",
+			"\tlevel=${1:\"private\"}",
+			"\tpath={path}",
+			"\tfilter={(item) => ${2:/jpg/i.test(item.path)}}",
 			"/>"
 		]
 	},
@@ -154,9 +173,9 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"customPrefix: {",
-                "\tpublic: ${1:'myPublicPrefix/'},",
-                "\tprotected: ${2:'myProtectedPrefix/'},",
-                "\tprivate: ${3:'myPrivatePrefix/'}",
+			"\tpublic: ${1:'myPublicPrefix/'},",
+			"\tprotected: ${2:'myProtectedPrefix/'},",
+			"\tprivate: ${3:'myPrivatePrefix/'}",
 			"};"
 		]
 	}
