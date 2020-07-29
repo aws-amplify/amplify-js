@@ -27,9 +27,9 @@ export class AmplifyTOTPSetup {
   /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Used for header text in totp setup component */
-  @Prop() headerText: string = I18n.get(Translations.TOTP_HEADER_TEXT);
+  @Prop() headerText: string = Translations.TOTP_HEADER_TEXT;
   /** Used for customizing the issuer string in the qr code image */
-  @Prop() issuer: string = I18n.get(Translations.TOTP_ISSUER);
+  @Prop() issuer: string = Translations.TOTP_ISSUER;
 
   @State() code: string | null = null;
   @State() setupMessage: string | null = null;
@@ -68,7 +68,7 @@ export class AmplifyTOTPSetup {
 
   private async setup() {
     this.setupMessage = null;
-    const encodedIssuer = encodeURI(this.issuer);
+    const encodedIssuer = encodeURI(I18n.get(this.issuer));
 
     if (!Auth || typeof Auth.setupTOTP !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
