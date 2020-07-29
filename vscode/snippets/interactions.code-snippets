@@ -1,6 +1,6 @@
 {
 	"Interactions Manual Configuration": {
-		"prefix": "Interactions",
+		"prefix": "Interactions.config",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"import Amplify from 'aws-amplify';\n",
@@ -22,7 +22,7 @@
 		]
 	},
 	"handleComplete React": {
-		"prefix": "handleComplete",
+		"prefix": "handleComplete React",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"const handleComplete = function (err, confirmation) {",
@@ -69,7 +69,7 @@
 		]
 	},
 	"handleComplete React Native": {
-		"prefix": "handleComplete",
+		"prefix": "handleComplete Native",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"handleComplete(err, confirmation) {",
