@@ -196,6 +196,7 @@ export class AmplifySignIn {
       case 'email':
         formFieldInputs.push({
           type: 'email',
+          name: 'email',
           required: true,
           handleInputChange: this.handleFormFieldInputChange('email'),
           inputProps: {
@@ -206,6 +207,7 @@ export class AmplifySignIn {
       case 'phone_number':
         formFieldInputs.push({
           type: 'phone_number',
+          name: 'tel',
           required: true,
           handleInputChange: this.handleFormFieldInputChange('phone_number'),
           inputProps: {
@@ -217,6 +219,7 @@ export class AmplifySignIn {
       default:
         formFieldInputs.push({
           type: 'username',
+          name: 'username',
           required: true,
           handleInputChange: this.handleFormFieldInputChange('username'),
           inputProps: {
@@ -228,6 +231,7 @@ export class AmplifySignIn {
 
     formFieldInputs.push({
       type: 'password',
+      name: 'password',
       hint: (
         <div>
           {I18n.get(Translations.FORGOT_PASSWORD_TEXT)}{' '}
