@@ -38,7 +38,7 @@ export class AmplifyS3Album {
   /** Function executed when error occurs for the s3-image */
   @Prop() handleOnError: (event: Event) => void;
   /** Picker button text */
-  @Prop() pickerText: string = I18n.get(Translations.PICKER_TEXT);
+  @Prop() pickerText: string = Translations.PICKER_TEXT;
 
   @State() albumItems: StorageObject[] = [];
 
@@ -141,7 +141,13 @@ export class AmplifyS3Album {
           </div>
         </div>
 
-        {this.picker && <amplify-picker inputHandler={e => this.handlePick(e)} acceptValue="image/*" />}
+        {this.picker && (
+          <amplify-picker
+            pickerText={I18n.get(this.pickerText)}
+            inputHandler={e => this.handlePick(e)}
+            acceptValue="image/*"
+          />
+        )}
       </div>
     );
   }
