@@ -1,6 +1,24 @@
 {
+    "Amplify Predictions Import": {
+        "prefix": "predictions.import",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "import Amplify from 'aws-amplify';"
+        ]
+    },
+    "Amplify Predictions Import Configurations": {
+        "prefix": "predictions.importconfig",
+        "scope": "javascript,javascriptreact,typescript",
+        "body": [
+            "import Predictions, { AmazonAIPredictionsProvider } from '@aws-amplify/predictions';",
+            "import awsconfig from './aws-exports';\n",
+
+            "Amplify.configure(awsconfig);",
+            "Amplify.addPluggable(new AmazonAIPredictionsProvider());"
+        ]
+    },
 	"Amplify Predictions Configuration": {
-		"prefix": "Predict.config",
+		"prefix": "Predictions.config",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Amplify.configure({",
@@ -74,7 +92,7 @@
 		]
 	},
 	"Amplify Predictions TextToSpeech": {
-		"prefix": "Predict.textToSpeech",
+		"prefix": "Predictions.textToSpeech",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.convert({",
@@ -91,7 +109,7 @@
 		]
 	},
 	"Amplify Predictions Transcription": {
-		"prefix": "Predict.transcription",
+		"prefix": "Predictions.transcription",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.convert({",
@@ -107,7 +125,7 @@
 		]
 	},
 	"Amplify Predictions TranslateText": {
-		"prefix": "Predict.translateText",
+		"prefix": "Predictions.translateText",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.convert({",
@@ -125,7 +143,7 @@
 		]
 	},
 	"Amplify Predictions TextInImage": {
-		"prefix": "Predict.textInImage",
+		"prefix": "Predictions.textInImage",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -140,7 +158,7 @@
 		]
 	},
 	"Amplify Predictions TextInS3Image": {
-		"prefix": "Predict.textInS3Image",
+		"prefix": "Predictions.textInS3Image",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -156,7 +174,7 @@
 		]
 	},
 	"Amplify Predictions PlainText": {
-		"prefix": "Predict.plainText",
+		"prefix": "Predictions.plainText",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -194,7 +212,7 @@
 		]
 	},
 	"Amplify Prediction StructuredForm": {
-		"prefix": "Predict.structuredForm",
+		"prefix": "Predictions.structuredForm",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -217,7 +235,7 @@
 		]
 	},
 	"Amplify Prediction StructuredTables": {
-		"prefix": "Predict.structuredTables",
+		"prefix": "Predictions.structuredTables",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -246,7 +264,7 @@
 		]
 	},
 	"Amplify Prediction Detection": {
-		"prefix": "Predict.detectFromBrowser",
+		"prefix": "Predictions.detectFromBrowser",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -261,7 +279,7 @@
 		]
 	},
 	"Amplify Prediction S3 Detection": {
-		"prefix": "Predict.detectEntitiesFromS3",
+		"prefix": "Predictions.detectEntitiesFromS3",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -277,7 +295,7 @@
 		]
 	},
 	"Amplify Prediction Faces Detection": {
-		"prefix": "Predict.detectFace",
+		"prefix": "Predictions.detectFace",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -308,7 +326,7 @@
 		]
 	},
 	"Amplify Prediction Celebrities Detection": {
-		"prefix": "Predict.detectCelebrity",
+		"prefix": "Predictions.detectCelebrity",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -333,7 +351,7 @@
 		]
 	},
 	"Amplify Prediction Advanced Detection": {
-		"prefix": "Predict.detectPreviousUpload",
+		"prefix": "Predictions.detectPreviousUpload",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -366,7 +384,7 @@
 	},
 
 	"Amplify Prediction Interpret": {
-		"prefix": "Predict.interpret",
+		"prefix": "Predictions.interpret",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.interpret({",
