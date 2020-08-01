@@ -115,7 +115,7 @@
                 "\t\tsource: {",
                 "\t\t\t${1:bytes}",
                 "\t\t},",
-                "\t\t// language: \"en-US\", // other options are \"en-GB\", \"fr-FR\", \"fr-CA\", \"es-US\"",
+                "\t\t// language: \"${2:en-US}\", // other options are \"en-GB\", \"fr-FR\", \"fr-CA\", \"es-US\"",
                 "\t}",
 			"})"
 		]
@@ -127,11 +127,11 @@
 			"Predictions.convert({",
                 "\ttranslateText: {",
                 "\t\tsource: {",
-                "\t\t\ttext: ${1:textToTranslate},",
-                "\t\t\t// language : \"es\" // defaults configured on aws-exports.js",
+                "\t\t\ttext: ${1:\"\"},",
+                "\t\t\t language : \"${2:es}\" // defaults configured on aws-exports.js",
                 "\t\t\t// supported languages https://docs.aws.amazon.com/translate/latest/dg/how-it-works.html#how-it-works-language-codes",
                 "\t\t},",
-                "\t\t// targetLanguage: \"en\"",
+                "\t\t targetLanguage: \"${3:en}\"",
                 "\t}",
 			"})"
 		]
@@ -158,6 +158,7 @@
                 "\t\tsource: {",
                 "\t\t\tkey: ${1:pathToPhoto},",
                 "\t\t\tlevel?: ${2:'public | private | protected'}, //optional, default is the configured on Storage category",
+                "\t\t\t// identityId: ${3:\"\"} //this is optional for level protected",
                 "\t\t}",
                 "\t}",
 			"})"
