@@ -103,9 +103,7 @@
                 "\t\tvoiceId: ${2:\"Amy\"} // default configured on aws-exports.js",
                 "\t\t// list of different options are here https://docs.aws.amazon.com/polly/latest/dg/voicelist.html",
                 "\t}",
-			"})",
-			".then(result => console.log({ result }))",
-			".catch(err => console.log({ err }));"
+			"})"
 		]
 	},
 	"Amplify Predictions Transcription": {
@@ -119,9 +117,7 @@
                 "\t\t},",
                 "\t\t// language: \"en-US\", // other options are \"en-GB\", \"fr-FR\", \"fr-CA\", \"es-US\"",
                 "\t}",
-			"})",
-			".then(({ transcription: { fullText } }) => console.log({ fullText }))",
-			".catch(err => console.log({ err }));"
+			"})"
 		]
 	},
 	"Amplify Predictions TranslateText": {
@@ -137,9 +133,7 @@
                 "\t\t},",
                 "\t\t// targetLanguage: \"en\"",
                 "\t}",
-			"})",
-			".then(result => console.log({ result }))",
-			".catch(err => console.log({ err }));"
+			"})"
 		]
 	},
 	"Amplify Predictions TextInImage": {
@@ -152,9 +146,7 @@
                 "\t\t\t${1:file}",
                 "\t\t}",
                 "\t}",
-			"})",
-			".then(response => console.log({ response }))",
-			".catch(err => console.log({ err }));"
+			"})"
 		]
 	},
 	"Amplify Predictions TextInS3Image": {
@@ -168,9 +160,7 @@
                 "\t\t\tlevel?: ${2:'public | private | protected'}, //optional, default is the configured on Storage category",
                 "\t\t}",
                 "\t}",
-			"})",
-			".then((response) => console.log({ response }))",
-			".catch(err => console.log({ err }));"
+			"})"
 		]
 	},
 	"Amplify Predictions PlainText": {
@@ -273,9 +263,7 @@
                 "\t\t\t${1:file},",
                 "\t\t},",
                 "\t}",
-			"})",
-			".then((response) => console.log({ response }))",
-			".catch(err => console.log({ err }));"
+			"})"
 		]
 	},
 	"Amplify Prediction S3 Detection": {
@@ -289,9 +277,7 @@
                 "\t\t\tlevel: 'public | private | protected', // optional, default is the configured on Storage category",
                 "\t\t},",
                 "\t}",
-			"})",
-			".then((response) => console.log({ response }))",
-			".catch(err => console.log({ err }));"
+			"})"
 		]
 	},
 	"Amplify Prediction Faces Detection": {
@@ -394,9 +380,7 @@
                 "\t\t},",
                 "\t\ttype: ${2:\"ALL\"}",
                 "\t}",
-			"})",
-			".then(result => console.log({ result }))",
-			".catch(err => console.log({ err }));"
+			"})"
 		]
 	}
 }
