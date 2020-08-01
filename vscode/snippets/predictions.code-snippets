@@ -1,13 +1,13 @@
 {
     "Amplify Predictions Import": {
-        "prefix": "predictions.import",
+        "prefix": "Predictions.import",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import Amplify from 'aws-amplify';"
         ]
     },
     "Amplify Predictions Import Configurations": {
-        "prefix": "predictions.importconfig",
+        "prefix": "Predictions.importconfig",
         "scope": "javascript,javascriptreact,typescript",
         "body": [
             "import Predictions, { AmazonAIPredictionsProvider } from '@aws-amplify/predictions';",
@@ -32,7 +32,7 @@
                 "\t\t\t\"translateText\": {",
                 "\t\t\t\t\"region\": ${3:\"us-east-1\"},",
                 "\t\t\t\t\"proxy\": ${4:false},",
-                "\t\t\t\t\"defaults\": {",
+                "\t\t\t\t\"defaults\": {  //The below values are default values for translate Language and can be changed to your desired values",
                 "\t\t\t\t\t\"sourceLanguage\": ${5:\"en\"},",
                 "\t\t\t\t\t\"targetLanguage\": ${6:\"zh\"}",
                 "\t\t\t\t}",
@@ -40,7 +40,7 @@
                 "\t\t\t\"speechGenerator\": {",
                 "\t\t\t\t\"region\": ${7:\"us-east-1\"},",
                 "\t\t\t\t\"proxy\": ${8:false},",
-                "\t\t\t\t\"defaults\": {",
+                "\t\t\t\t\"defaults\": {  //The below values are default values for speechGenerator and can be changed to your desired values",
                 "\t\t\t\t\t\"VoiceId\": ${9:\"Ivy\"},",
                 "\t\t\t\t\t\"LanguageCode\": ${10:\"en-US\"}",
                 "\t\t\t\t}",
@@ -48,7 +48,7 @@
                 "\t\t\t\"transcription\": {",
                 "\t\t\t\t\"region\": ${11:\"us-east-1\"},",
                 "\t\t\t\t\"proxy\": ${12:false},",
-                "\t\t\t\t\"defaults\": {",
+                "\t\t\t\t\"defaults\": {  //The below values are default values for transcription and can be changed to your desired values",
                 "\t\t\t\t\t\"language\": ${13:\"en-US\"}",
                 "\t\t\t\t}",
                 "\t\t\t}",
@@ -57,7 +57,7 @@
                 "\t\t\t\"identifyText\": {",
                 "\t\t\t\t\"proxy\": ${14:false},",
                 "\t\t\t\t\"region\": ${15:\"us-east-1\"},",
-                "\t\t\t\t\"defaults\": {",
+                "\t\t\t\t\"defaults\": {  //The below values are default values for text identity and can be changed to your desired values",
                 "\t\t\t\t\t\"format\": ${16:\"PLAIN\"}",
                 "\t\t\t\t}",
                 "\t\t\t},",
@@ -65,7 +65,7 @@
                 "\t\t\t\t\"proxy\": ${17:false},",
                 "\t\t\t\t\"region\": ${16: \"us-east-1\"},",
                 "\t\t\t\t\"celebrityDetectionEnabled\": ${16:true},",
-                "\t\t\t\t\"defaults\": {",
+                "\t\t\t\t\"defaults\": {  //The below values are default values for entity identification and can be changed to your desired values",
                 "\t\t\t\t\t\"collectionId\": ${17:\"identifyEntities8b89c648-test\"},",
                 "\t\t\t\t\t\"maxEntities\": ${18:50}",
                 "\t\t\t\t}",
@@ -73,7 +73,7 @@
                 "\t\t\t\"identifyLabels\": {",
                 "\t\t\t\t\"proxy\": ${19:false},",
                 "\t\t\t\t\"region\": ${18:\"us-east-1\"},",
-                "\t\t\t\t\"defaults\": {",
+                "\t\t\t\t\"defaults\": {  //The below values are default values for labels identification and can be changed to your desired values",
                 "\t\t\t\t\t\"type\": ${19:\"LABELS\"}",
                 "\t\t\t\t}",
                 "\t\t\t}",
@@ -82,7 +82,7 @@
                 "\t\t\t\"interpretText\": {",
                 "\t\t\t\t\"region\": ${20:\"us-east-1\"},",
                 "\t\t\t\t\"proxy\": ${21:false},",
-                "\t\t\t\t\"defaults\": {",
+                "\t\t\t\t\"defaults\": {  //The below values are default values for text interpretation and can be changed to your desired values",
                 "\t\t\t\t\t\"type\": ${22:\"ALL\"}",
                 "\t\t\t\t}",
                 "\t\t\t}",
