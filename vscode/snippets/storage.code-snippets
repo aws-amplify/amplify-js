@@ -11,7 +11,7 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"import awsconfig from './aws-exports';",
-			"Amplify.configure(awsconfig);\n\n",
+			"Amplify.configure(awsconfig);",
 		]
 	},
 	"Manual Storage Configuration": {
@@ -29,9 +29,13 @@
 		"prefix": "Storage.get",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"Storage.get(${1:'test.txt'}, { level: ${2:'private'} })",
-			"\t.then ( result => console.log(result))",
-			"\t.catch( err => console.log(err));"
+			"Storage.get(${1:'test.txt'}, {",
+				"\tlevel: '${2:protected}'",
+				"\tidentityId: \"${3:}\", // only in case of protected",
+				"\tcontentType: \"${4:}\",",
+				"\ttrack: ${5:false},",
+				"\tdownload: ${6:false},",
+			"})"
 		]
 	},
 	"Storage Put": {
