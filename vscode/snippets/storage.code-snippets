@@ -78,25 +78,29 @@
 		"prefix": "Storage.remove",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"Storage.remove(${1:'test.txt'}, { level: ${2:'private'} })",
-			"\t.then ( result => console.log(result))",
-			"\t.catch( err => console.log(err));"
+			"Storage.remove(${1:'test.txt'}, {",
+				"\tlevel: ${2:'protected'},",
+				"\tidentityId: ${3:''} // only in case of protected",
+			"})",
+
 		]
 	},
 	"Storage List": {
 		"prefix": "Storage.list",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"Storage.list(${1:'photos/'}, { level: ${2:'protected'} })",
-			"\t.then ( result => console.log(result))",
-			"\t.catch( err => console.log(err));"
+			"Storage.list(${1:'photos/'}, {",
+				"\tlevel: ${2:'protected'}",
+				"\tidentityId: ${3:''}, // only in case of protected",
+				"\ttrack: ${4:false},",
+			"})",
 		]
 	},
 	"fileToKey": {
 		"prefix": "fileToKey",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"fileToKey(data) {",
+			"const fileToKey = (data) => {",
 			"\tconst { name, size, type } = data;",
 			"\treturn 'test_' + name;",
 			"}"
@@ -111,26 +115,6 @@
 			"\tpath={path}",
 			"\tfilter={(item) => ${2:/jpg/i.test(item.path)}}",
 			"/>"
-		]
-	},
-	"amplify-photo-picker": {
-		"prefix": "<amplify-photo-picker",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": [
-			"<amplify-photo-picker",
-			"\t(loaded)=\"onImagePreviewLoaded(\\$event)\"",
-			"\t(picked)=\"onImageSelected(\\$event)\">",
-			"</amplify-photo-picker>"
-		]
-	},
-	"amplify-s3-album": {
-		"prefix": "<amplify-s3-album",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": [
-			"<amplify-s3-album",
-			"\tpath=\"\"",
-			"\t(selected)=\"onAlbumImageSelected(\\$event)\">",
-			"</amplify-s3-album>"
 		]
 	},
 	"Custom Upload Path": {
