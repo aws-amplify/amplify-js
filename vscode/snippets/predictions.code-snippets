@@ -268,7 +268,7 @@
 		]
 	},
 	"Amplify Prediction S3 Detection": {
-		"prefix": "Predictions.detectEntitiesFromS3",
+		"prefix": "Predictions.detectFromS3",
 		"scope": "javascript,javascriptreact,typescript",
 		"body": [
 			"Predictions.identify({",
@@ -335,6 +335,27 @@
                 "\t})",
 			"})",
 			".catch(err => console.log({ err }));"
+		]
+    },
+    "Amplify Prediction Label identification": {
+		"prefix": "Predictions.identify",
+		"scope": "javascript,javascriptreact,typescript",
+		"body": [
+			"Predictions.identify({",
+                "\tlabels: {",
+                "\t\tsource: {",
+                "\t\t\tfile,",
+                "\t\t},",
+                "\t\ttype: \"${1:LABELS}\"   // Other types are UNSAFE and ALL (To select both LABELS and UNSAFE)",
+                "\t}",
+            "})",
+            ".then(response => {",
+                "\tconst { labels } = response;",
+                "\tlabels.forEach(object => {",
+                "\t\tconst { name, boundingBoxes } = object",
+                "\t});",
+            "})",
+            ".catch(err => console.log({ err }));"
 		]
 	},
 	"Amplify Prediction Interpret": {
