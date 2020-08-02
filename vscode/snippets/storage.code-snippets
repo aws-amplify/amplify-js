@@ -1,12 +1,17 @@
 {
-	"Amplify Manual Storage Configuration": {
+	"Amplify Storage Import": {
+		"prefix": "Storage.import",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"import Amplify, { Storage } from 'aws-amplify';\n"
+		]
+	},
+	"Amplify Storage Import Configuration": {
 		"prefix": "Storage:",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"Storage: {",
-                "\tbucket: ${1:''}, // REQUIRED - Amazon  S3 bucket",
-                "\tregion: ${2:'XX-XXXX-X'} // OPTIONAL - Amazon service region",
-			"}"
+			"import awsconfig from './aws-exports';",
+			"Amplify.configure(awsconfig);\n\n",
 		]
 	},
 	"Manual Storage Configuration": {
@@ -14,9 +19,9 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Storage.configure({",
-                "\tbucket: // Your bucket ARN;",
-                "\tregion: // Specify the region your bucket was created in;",
-                "\tidentityPoolId: // Specify your identityPoolId for Auth and Unauth access to your bucket;",
+				"\tbucket: ${1:\"Your bucket ARN\"}",
+				"\tregion: ${2:\"Specify the region your bucket was created in\"}",
+				"\tidentityPoolId: ${3:\"Specify your identityPoolId for Auth and Unauth access to your bucket\"}",
 			"});"
 		]
 	},
