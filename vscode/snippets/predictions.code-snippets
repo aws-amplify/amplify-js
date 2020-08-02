@@ -158,7 +158,7 @@
                 "\t\tsource: {",
                 "\t\t\tkey: ${1:pathToPhoto},",
                 "\t\t\tlevel?: ${2:'public | private | protected'}, //optional, default is the configured on Storage category",
-                "\t\t\t// identityId: ${3:\"\"} //this is optional for level protected",
+                "\t\t\t// identityId: ${3:\"\"} //this is only for level protected",
                 "\t\t}",
                 "\t}",
 			"})"
