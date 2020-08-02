@@ -43,11 +43,11 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Storage.put(${1:'test.txt'}, ${2:'Protected Content'}, {",
-                "\tlevel: ${3:'private'},",
-                "\tcontentType: ${4:'text/plain'}",
+                "\tlevel: ${3:'protected'},",
+				"\tcontentType: ${4:''}",
+    			"identityId: ${5:''}, // only in case of protected",
+    			"track: ${6:false},",
 			"})",
-			".then ( result => console.log(result))",
-			".catch( err => console.log(err)});"
 		]
 	},
 	"S3ImageUpload": {
@@ -82,7 +82,6 @@
 			"uploadToStorage = async pathToImageFile => {",
                 "\ttry {",
                 "\t\tconst response = await fetch(pathToImageFile)",
-
                 "\t\tconst blob = await response.blob()",
                 "\t\tStorage.put(${1:'yourKeyHere.jpeg'}, ${2:blob}, {",
                 "\t\t\tcontentType: ${2:'image/jpeg'},",
