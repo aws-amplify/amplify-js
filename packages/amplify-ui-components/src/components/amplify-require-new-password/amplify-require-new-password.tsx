@@ -134,6 +134,7 @@ export class AmplifyRequireNewPassword {
             {I18n.get(Translations.BACK_TO_SIGN_IN)}
           </amplify-button>
         }
+        submitButtonText={I18n.get(this.submitButtonText)}
       >
         <amplify-auth-fields formFields={this.newFormFields} />
       </amplify-form-section>
