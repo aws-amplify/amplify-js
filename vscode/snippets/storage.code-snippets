@@ -45,8 +45,8 @@
 			"Storage.put(${1:'test.txt'}, ${2:'Protected Content'}, {",
                 "\tlevel: ${3:'protected'},",
 				"\tcontentType: ${4:''}",
-    			"identityId: ${5:''}, // only in case of protected",
-    			"track: ${6:false},",
+    			"\tidentityId: ${5:''}, // only in case of protected",
+    			"\ttrack: ${6:false},",
 			"})",
 		]
 	},
@@ -101,31 +101,20 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"const fileToKey = (data) => {",
-			"\tconst { name, size, type } = data;",
-			"\treturn 'test_' + name;",
+				"\tconst { name, size, type } = data;",
+				"\treturn 'test_' + name;",
 			"}"
 		]
 	},
-	"S3Album": {
-		"prefix": "<S3Album",
+	"Storage Manage Upload": {
+		"prefix": "storage.manageupload",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"<S3Album",
-			"\tlevel=${1:\"private\"}",
-			"\tpath={path}",
-			"\tfilter={(item) => ${2:/jpg/i.test(item.path)}}",
-			"/>"
-		]
-	},
-	"Custom Upload Path": {
-		"prefix": "customPrefix",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": [
-			"customPrefix: {",
-			"\tpublic: ${1:'myPublicPrefix/'},",
-			"\tprotected: ${2:'myProtectedPrefix/'},",
-			"\tprivate: ${3:'myPrivatePrefix/'}",
-			"};"
+			"Storage.put('test.txt', 'File content', {",
+				"\tprogressCallback(progress) {",
+				"\t\tconsole.log(`Uploaded: ${progress.loaded}/${progress.total}`);",
+				"\t},",
+			"});"
 		]
 	}
 }
