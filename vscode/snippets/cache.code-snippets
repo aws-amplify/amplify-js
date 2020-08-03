@@ -1,13 +1,29 @@
 {
+	"Amplify Cache Import": {
+		"prefix": "amplify cache import",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"import Amplify, { Cache } from 'aws-amplify';",
+			"import awsexports from './aws-exports';",
+			"",
+			"Amplify.configure(awsexports);"
+		]
+	},
+	"Cache Import": {
+		"prefix": "cache import",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["import { Cache } from 'aws-amplify';"]
+	},
 	"Amplify Cache Configure": {
 		"prefix": "Cache.configure",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"const config = {",
-			"\titemMaxSize: 3000, // 3000 bytes",
-			"\tdefaultPriority: 4",
+			"// https://docs.amplify.aws/lib/utilities/cache/q/platform/js#configuration-parameters",
+			"\titemMaxSize: ${1:3000},",
+			"\tdefaultPriority: ${2:4}",
 			"};\n",
-			"const myCacheConfig = Cache.configure(config);"
+			"const ${3:myCacheConfig} = Cache.configure(config);"
 		]
 	},
 	"Amplify Cache Create Instance": {
@@ -15,6 +31,7 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"const config = {",
+			"// https://docs.amplify.aws/lib/utilities/cache/q/platform/js#configuration-parameters",
 			"\tkeyPrefix: '${1:prefix_}',",
 			"\tcapacityInBytes: ${2:1000000},",
 			"\titemMaxSize: ${3:200000},",
@@ -25,13 +42,24 @@
 			"\t// for Web development and AsyncStorage for React Native.",
 			"\tstorage: ${7:window.sessionStorage},",
 			"};\n",
-			"const newCache = Cache.createInstance(config);"
+			"const ${8:newCache} = Cache.createInstance(config);"
 		]
 	},
 	"Amplify Cache Add Item": {
 		"prefix": "Cache.setItem",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": ["Cache.setItem(${1:'key'}, ${2:'value'});"]
+	},
+	"Amplify Cache Add Item with Options": {
+		"prefix": "Cache.setItem opts",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"Cache.setItem(${1:'key'}, ${2:'value'}, {",
+			"\tpriority: ${3:5},",
+			"\texprires: ${4:0},",
+			"\tcallback: ${5:() => {\\}},",
+			"});"
+		]
 	},
 	"Amplify Cache Get Item": {
 		"prefix": "Cache.getItem",
