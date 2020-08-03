@@ -10,7 +10,7 @@
 		"body": [
 			"import { API } from 'aws-amplify';",
 			"",
-			"API.configure(${1:{}});"
+			"API.configure(${1:{\\}});"
 		]
 	},
 	"API import configure rest": {
@@ -139,14 +139,14 @@
 		"prefix": "API graphql mutation",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"await API.graphql(graphqlOperation(${1:mutations.createTodo}, {input: ${2:{}}}));"
+			"await API.graphql(graphqlOperation(${1:mutations.createTodo}, {input: ${2:{\\}}}));"
 		]
 	},
 	"GraphQL API Query": {
 		"prefix": "API graphql query",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"const ${1:data} = await API.graphql(graphqlOperation(${2:queries.getTodo}, ${3:{}}));"
+			"const ${1:data} = await API.graphql(graphqlOperation(${2:queries.getTodo}, ${3:{\\}}));"
 		]
 	},
 	"Custom GraphQL API Mutation": {
@@ -155,7 +155,7 @@
 		"body": [
 			"await API.graphql({",
 			"\tquery: ${1:mutations.createTodo},",
-			"\tvariables: ${2:{input: todoDetails}},",
+			"\tvariables: ${2:{input: todoDetails\\}},",
 			"\tauthMode: ${3:'AWS_IAM'}",
 			"});"
 		]
@@ -166,7 +166,7 @@
 		"body": [
 			"const ${1:data} = await API.graphql({",
 			"\tquery: ${1:queries.getTodo},",
-			"\tvariables: ${2:{}},",
+			"\tvariables: ${2:{\\}},",
 			"\tauthMode: ${3:'AWS_IAM'}",
 			"});"
 		]
@@ -193,7 +193,7 @@
 		"body": [
 			"const subscription = API.graphql({",
 			"\tquery: ${1:subscriptions.onCreateTodo},",
-			"\tvariables: ${2:{}},",
+			"\tvariables: ${2:{\\}},",
 			"\tauthMode: ${3:'AWS_IAM'}",
 			"}).subscribe({",
 			"\tnext: (data) => {",
