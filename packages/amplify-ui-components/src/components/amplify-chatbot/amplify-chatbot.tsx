@@ -1,13 +1,9 @@
-import { Component, Host, h, Prop, State } from '@stencil/core';
+import { Component, Host, h, Prop, State, Listen } from '@stencil/core';
 
 interface Message {
   content: string;
   from: 'user' | 'bot';
 }
-
-const messageJSX = (messages: Message[]) => {
-  return messages.map(message => <div class={`bubble ${message.from}`}>{message.content}</div>);
-};
 
 @Component({
   tag: 'amplify-chatbot',
@@ -27,8 +23,18 @@ export class AmplifyChatbot {
   @Prop() onComplete: (err: string, data: object) => void;
   /** Text placed in the top header */
   @Prop() botTitle: string;
+
   @State() messages: Message[] = [];
   @State() text: string = '';
+
+  @Listen('formSubmit')
+  submitHandler(_event: CustomEvent) {
+    this.send();
+  }
+
+  messageJSX = (messages: Message[]) => {
+    return messages.map(message => <div class={`bubble ${message.from}`}>{message.content}</div>);
+  };
 
   handleChange(event: Event) {
     const target = event.target as HTMLInputElement;
@@ -53,7 +59,7 @@ export class AmplifyChatbot {
 
   render() {
     const testMessages: Message[] = [
-      { content: 'Bot: hi', from: 'bot' },
+      { content: 'hi', from: 'bot' },
       { content: 'User: hi', from: 'user' },
       {
         content:
@@ -65,24 +71,26 @@ export class AmplifyChatbot {
     return (
       <Host>
         <div class="amplify-chatbot">
-          <div class="chatbot-content">
-            <div class="header">{this.botTitle}</div>
-            <div class="body">{messageJSX(this.messages)}</div>
-          </div>
+          <div class="header">{this.botTitle}</div>
+          <div class="body">{this.messageJSX(this.messages)}</div>
           <div class="chatbot-control">
-            <input
+            {/* <input
               type="text"
               id="chatbot-text"
               placeholder="Write a message"
               value={this.text}
               onInput={e => this.handleChange(e)}
-            />
-            <span class="icon-button">
-              <amplify-icon name="microphone" />
-            </span>
-            <span class="icon-button" onClick={() => this.send()}>
-              <amplify-icon name="send" />
-            </span>
+            /> */}
+
+            <amplify-input
+              placeholder="Write a message"
+              fieldId="test"
+              description="text"
+              handleInputChange={evt => this.handleChange(evt)}
+              value={this.text}
+            ></amplify-input>
+            <amplify-button class="icon-button" variant="icon" icon="microphone"></amplify-button>
+            <amplify-button class="icon-button" variant="icon" icon="send" handleButtonClick={() => this.send()} />
           </div>
         </div>
       </Host>

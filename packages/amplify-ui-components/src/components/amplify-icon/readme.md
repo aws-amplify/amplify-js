@@ -14,7 +14,7 @@
 
 ### Used by
 
- - [amplify-chatbot](../amplify-chatbot)
+ - [amplify-button](../amplify-button)
  - [amplify-icon-button](../amplify-icon-button)
  - [amplify-loading-spinner](../amplify-loading-spinner)
  - [amplify-photo-picker](../amplify-photo-picker)
@@ -24,7 +24,7 @@
 ### Graph
 ```mermaid
 graph TD;
-  amplify-chatbot --> amplify-icon
+  amplify-button --> amplify-icon
   amplify-icon-button --> amplify-icon
   amplify-loading-spinner --> amplify-icon
   amplify-photo-picker --> amplify-icon

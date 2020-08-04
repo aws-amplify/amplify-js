@@ -1,7 +1,12 @@
 :host {
+  display: inline-block;
   --icon-fill-color: var(--amplify-white);
+  --width: auto;
+  height: var(--height);
 }
 
-.icon {
+svg {
   fill: var(--icon-fill-color);
+  width: var(--width);
+  height: 100%;
 }

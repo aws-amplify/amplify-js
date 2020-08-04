@@ -21,12 +21,15 @@
 
 ### Depends on
 
-- [amplify-icon](../amplify-icon)
+- [amplify-input](../amplify-input)
+- [amplify-button](../amplify-button)
 
 ### Graph
 ```mermaid
 graph TD;
-  amplify-chatbot --> amplify-icon
+  amplify-chatbot --> amplify-input
+  amplify-chatbot --> amplify-button
+  amplify-button --> amplify-icon
   style amplify-chatbot fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

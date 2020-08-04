@@ -8,9 +8,9 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AuthState, AuthStateHandler, CognitoUserInterface, FederatedConfig, MFATypesInterface, UsernameAliasStrings } from "./common/types/auth-types";
 import { FormFieldTypes } from "./components/amplify-auth-fields/amplify-auth-fields-interface";
 import { ButtonTypes, ButtonVariant, InputEvent, TextFieldTypes } from "./common/types/ui-types";
+import { IconNameType } from "./components/amplify-icon/icons";
 import { FunctionalComponent } from "@stencil/core";
 import { CountryCodeDialOptions } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
-import { IconNameType } from "./components/amplify-icon/icons";
 import { AccessLevel, StorageObject } from "./common/types/storage-types";
 import { SelectOptionsNumber, SelectOptionsString } from "./components/amplify-select/amplify-select-interface";
 export namespace Components {
@@ -67,6 +67,10 @@ export namespace Components {
           * (Optional) Callback called when a user clicks on the button
          */
         "handleButtonClick": (evt: Event) => void;
+        /**
+          * Name of icon to be placed inside the button
+         */
+        "icon"?: IconNameType;
         /**
           * Type of the button: 'button', 'submit' or 'reset'
          */
@@ -1551,6 +1555,10 @@ declare namespace LocalJSX {
           * (Optional) Callback called when a user clicks on the button
          */
         "handleButtonClick"?: (evt: Event) => void;
+        /**
+          * Name of icon to be placed inside the button
+         */
+        "icon"?: IconNameType;
         /**
           * Type of the button: 'button', 'submit' or 'reset'
          */
