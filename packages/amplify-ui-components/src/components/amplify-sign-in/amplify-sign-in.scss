@@ -10,7 +10,10 @@
   font-size: var(--footer-size);
   color: var(--footer-color);
   font-weight: (--font-weight);
-  margin-bottom: 10px;
+
+  amplify-button {
+    margin-bottom: 0.625rem;
+  }
 
   display: flex;
   flex-direction: column-reverse;
@@ -22,6 +25,9 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: baseline;
+    amplify-button {
+      margin-bottom: 0;
+    }
   }
 
   * + * {

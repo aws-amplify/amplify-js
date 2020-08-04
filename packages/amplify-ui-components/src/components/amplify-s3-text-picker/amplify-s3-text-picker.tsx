@@ -24,7 +24,7 @@ export class AmplifyS3TextPicker {
   /** Callback used to generate custom key value */
   @Prop() fileToKey: (data: object) => string | string;
   /** Fallback content for aplify-s3-text */
-  @Prop() fallbackText: string = I18n.get(Translations.PICKER_TEXT);
+  @Prop() fallbackText: string = Translations.PICKER_TEXT;
   /** Source content of text */
   @State() src: string;
 
@@ -57,7 +57,7 @@ export class AmplifyS3TextPicker {
           track={this.track}
           identityId={this.identityId}
           contentType={this.contentType}
-          fallbackText={this.fallbackText}
+          fallbackText={I18n.get(this.fallbackText)}
         />
         <amplify-picker inputHandler={e => this.handleInput(e)} acceptValue={'text/*'}></amplify-picker>
       </Host>

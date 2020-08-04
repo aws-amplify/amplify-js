@@ -53,6 +53,7 @@ export enum AuthStrings {
   SUCCESS_MFA_TYPE = 'Success! Your MFA Type is now:',
   TOTP_HEADER_TEXT = 'Scan then enter verification code',
   TOTP_LABEL = 'Enter Security Code:',
+  TOTP_ISSUER = 'AWSCognito',
   TOTP_SETUP_FAILURE = 'TOTP Setup has failed',
   TOTP_SUBMIT_BUTTON_TEXT = 'Verify Security Token',
   TOTP_SUCCESS_MESSAGE = 'Setup TOTP successfully!',
