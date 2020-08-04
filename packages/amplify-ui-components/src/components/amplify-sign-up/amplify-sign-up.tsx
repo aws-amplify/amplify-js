@@ -18,7 +18,7 @@ import {
   handlePhoneNumberChange,
 } from '../../common/helpers';
 import { Translations } from '../../common/Translations';
-import { checkContact } from '../../common/auth-helpers';
+import { handleSignIn } from '../../common/auth-helpers';
 
 /**
  * @slot header-subtitle - Subtitle content placed below header text
@@ -135,8 +135,7 @@ export class AmplifySignUp {
     try {
       const data = await Auth.signUp(this.signUpAttributes);
       if (data && data.userConfirmed) {
-        const user = await Auth.signIn(this.signUpAttributes.username, this.signUpAttributes.password);
-        await checkContact(user, this.handleAuthStateChange);
+        await handleSignIn(this.signUpAttributes.username, this.signUpAttributes.password, this.handleAuthStateChange);
       } else {
         this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
       }
