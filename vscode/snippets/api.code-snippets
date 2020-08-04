@@ -1,11 +1,11 @@
 {
 	"API import": {
-		"prefix": "API import",
+		"prefix": "API.import",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": ["import { API } from 'aws-amplify';"]
 	},
 	"API import configure": {
-		"prefix": "API import configure",
+		"prefix": "API.importconfig",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"import { API } from 'aws-amplify';",
@@ -14,7 +14,7 @@
 		]
 	},
 	"API import configure rest": {
-		"prefix": "API import configure rest",
+		"prefix": "API.restConfig",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"import { API } from 'aws-amplify';",
@@ -32,7 +32,7 @@
 		]
 	},
 	"API import configure graphql": {
-		"prefix": "API import configure graphql",
+		"prefix": "API.graphqlConfig",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"import { API } from 'aws-amplify';",
@@ -47,7 +47,7 @@
 		]
 	},
 	"Amplify API Configuration": {
-		"prefix": "API:",
+		"prefix": "API.config",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"API: {",
@@ -74,7 +74,7 @@
 		"prefix": "API.get",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"API.get(${1:apiName, path, myInit})",
+			"API.get(${1:apiName}, ${2:path}, ${3:myInit})",
 			"\t.then(response => {",
 			"\t\t// Add your code here",
 			"\t})",
@@ -87,7 +87,7 @@
 		"prefix": "API.post",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"API.post(${1:apiName, path, myInit})",
+			"API.post(${1:apiName}, ${2:path}, ${3:myInit})",
 			"\t.then(response => {",
 			"\t\t// Add your code here",
 			"\t})",
@@ -100,7 +100,7 @@
 		"prefix": "API.put",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"API.put(${1:apiName, path, myInit})",
+			"API.put(${1:apiName}, ${2:path}, ${3:myInit})",
 			"\t.then(response => {",
 			"\t\t// Add your code here",
 			"\t})",
@@ -113,7 +113,7 @@
 		"prefix": "API.del",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"API.del(${1:apiName, path, myInit})",
+			"API.del(${1:apiName}, ${2:path}, ${3:myInit})",
 			"\t.then(response => {",
 			"\t\t// Add your code here",
 			"\t})",
@@ -126,7 +126,7 @@
 		"prefix": "API.head",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"API.head(${1:apiName, path, myInit})",
+			"API.head(${1:apiName}, ${2:path}, ${3:myInit})",
 			"\t.then(response => {",
 			"\t\t// Add your code here",
 			"\t})",
@@ -136,21 +136,21 @@
 		]
 	},
 	"GraphQL API Mutation": {
-		"prefix": "API graphql mutation",
+		"prefix": "API.graphqlMutation",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"await API.graphql(graphqlOperation(${1:mutations.createTodo}, {input: ${2:{\\}}}));"
 		]
 	},
 	"GraphQL API Query": {
-		"prefix": "API graphql query",
+		"prefix": "API.graphqlQuery",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"const ${1:data} = await API.graphql(graphqlOperation(${2:queries.getTodo}, ${3:{\\}}));"
 		]
 	},
 	"Custom GraphQL API Mutation": {
-		"prefix": "API custom graphql mutation",
+		"prefix": "API.customGraphqlMutation",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"await API.graphql({",
@@ -161,18 +161,18 @@
 		]
 	},
 	"Custom GraphQL API Query": {
-		"prefix": "API custom graphql query",
+		"prefix": "API.customGraphqlQuery",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"const ${1:data} = await API.graphql({",
-			"\tquery: ${1:queries.getTodo},",
-			"\tvariables: ${2:{\\}},",
-			"\tauthMode: ${3:'AWS_IAM'}",
+			"\tquery: ${2:queries.getTodo},",
+			"\tvariables: ${3:{\\}},",
+			"\tauthMode: ${4:'AWS_IAM'}",
 			"});"
 		]
 	},
 	"GraphQL API Subscribe": {
-		"prefix": "API graphql subscribe",
+		"prefix": "API.graphqlSubscribe",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"const subscription = API.graphql(",
@@ -188,7 +188,7 @@
 		]
 	},
 	"Custom GraphQL API Subscribe": {
-		"prefix": "API custom graphql subscribe",
+		"prefix": "API.customGraphqlSubscribe",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"const subscription = API.graphql({",
@@ -204,6 +204,16 @@
 			"// Stop receiving data updates from the subscription",
 			"subscription.unsubscribe();"
 		]
+	},
+	"API cancel": {
+		"prefix": "API.cancel",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["API.cancel(${0:promise}, ${1:''});"]
+	},
+	"API isCancel": {
+		"prefix": "API.isCancel",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["API.isCancel(${0:error})"]
 	},
 	"GraphQL API Endpoint": {
 		"prefix": "graphql_endpoint:",
@@ -319,30 +329,5 @@
 			"\t// return { (await Auth.currentSession()).idToken.jwtToken }",
 			"}"
 		]
-	},
-	"React Connect": {
-		"prefix": "<Connect",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": [
-			"<Connect query={graphqlOperation(GetEvent, { id: currEventId })}",
-			"\t\tsubscription={graphqlOperation(SubscribeToEventComments, { eventId: currEventId })}",
-			"\t\tonSubscriptionsMsg={(prev, { subscribeToEventComments }) => {",
-			"\t\t\tconsole.log ( subscribeToEventComments);",
-			"\t\t\treturn prev; }}>",
-			"\t{({ data: { listEvents } }) => (",
-			"\t\t<AllEvents events={listEvents ? listEvents.items : []} />",
-			"\t)}",
-			"</Connect>"
-		]
-	},
-	"API cancel": {
-		"prefix": "API.cancel",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": ["API.cancel(${0:promise}, ${1:''});"]
-	},
-	"API isCancel": {
-		"prefix": "API.isCancel",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": ["API.isCancel(${0:error})"]
 	}
 }
