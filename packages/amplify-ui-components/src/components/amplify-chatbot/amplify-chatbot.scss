@@ -1,0 +1,78 @@
+:host {
+  --header-color: var(--amplify-secondary-color);
+  --header-size: var(--amplify-text-lg);
+}
+
+.amplify-chatbot {
+  position: relative;
+  background-color: var(--background-color);
+  display: inline-block;
+  border-radius: 6px;
+  box-shadow: 1px 0px 4px 0 rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+  font-family: var(--amplify-font-family);
+  width: 460px;
+  max-width: 460px;
+  margin-bottom: 1rem;
+}
+.header {
+  margin-top: 20px;
+  color: var(--header-color);
+  font-size: var(--header-size);
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  overflow: auto;
+}
+
+.bubble {
+  max-width: 80%;
+  padding: 0.8em 1.4em;
+  clear: both;
+  word-wrap: break-word;
+  margin-bottom: 0.625rem;
+}
+.bot {
+  margin-left: 1rem;
+  margin-right: auto;
+  background-color: #dbdbdb;
+  color: black;
+  border-radius: 1.5rem 1.5rem 1.5rem 0;
+}
+.user {
+  margin-right: 1rem;
+  margin-left: auto;
+  background-color: #099ac8; // TODO: expose amplify blue color
+  color: var(--amplify-white);
+  border-radius: 1.5rem 1.5rem 0 1.5rem;
+}
+
+.chatbot-control {
+  display: flex;
+  align-items: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+  input {
+    flex-grow: 1;
+    border: none;
+    &:focus {
+      outline: none;
+    }
+  }
+}
+.icon-button {
+  margin-left: 0.625rem;
+  cursor: pointer;
+}
+
+.chatbot-footer {
+  position: absolute;
+  bottom: 0px;
+  height: 2rem;
+}

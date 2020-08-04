@@ -3,11 +3,10 @@ import { AmplifyContainer } from './amplify-container';
 
 describe('amplify-container spec:', () => {
   describe('Component logic ->', () => {
-    let container;
-
-    beforeEach(() => {
-      container = new AmplifyContainer();
-    });
+    // let container;
+    // beforeEach(() => {
+    //   container = new AmplifyContainer();
+    // });
   });
   describe('Render logic ->', () => {
     it('should render with an empty slot', async () => {

@@ -76,6 +76,32 @@ export namespace Components {
          */
         "variant": ButtonVariant;
     }
+    interface AmplifyChatbot {
+        /**
+          * Name of the bot
+         */
+        "botName": string;
+        /**
+          * Text placed in the top header
+         */
+        "botTitle": string;
+        /**
+          * Clear messages when conversation finishes
+         */
+        "clearOnComplete": boolean;
+        /**
+          * Continue listening to users after they send the message
+         */
+        "conversationModeOn": boolean;
+        /**
+          * Callback to be called after conversation finishes
+         */
+        "onComplete": (err: string, data: object) => void;
+        /**
+          * Greeting message displayed to users
+         */
+        "welcomeMessage": string;
+    }
     interface AmplifyCheckbox {
         /**
           * If `true`, the checkbox is selected.
@@ -1116,6 +1142,12 @@ declare global {
         prototype: HTMLAmplifyButtonElement;
         new (): HTMLAmplifyButtonElement;
     };
+    interface HTMLAmplifyChatbotElement extends Components.AmplifyChatbot, HTMLStencilElement {
+    }
+    var HTMLAmplifyChatbotElement: {
+        prototype: HTMLAmplifyChatbotElement;
+        new (): HTMLAmplifyChatbotElement;
+    };
     interface HTMLAmplifyCheckboxElement extends Components.AmplifyCheckbox, HTMLStencilElement {
     }
     var HTMLAmplifyCheckboxElement: {
@@ -1410,6 +1442,7 @@ declare global {
         "amplify-auth0-button": HTMLAmplifyAuth0ButtonElement;
         "amplify-authenticator": HTMLAmplifyAuthenticatorElement;
         "amplify-button": HTMLAmplifyButtonElement;
+        "amplify-chatbot": HTMLAmplifyChatbotElement;
         "amplify-checkbox": HTMLAmplifyCheckboxElement;
         "amplify-code-field": HTMLAmplifyCodeFieldElement;
         "amplify-confirm-sign-in": HTMLAmplifyConfirmSignInElement;
@@ -1522,6 +1555,32 @@ declare namespace LocalJSX {
           * Variant of a button: 'button' | 'anchor'
          */
         "variant"?: ButtonVariant;
+    }
+    interface AmplifyChatbot {
+        /**
+          * Name of the bot
+         */
+        "botName"?: string;
+        /**
+          * Text placed in the top header
+         */
+        "botTitle"?: string;
+        /**
+          * Clear messages when conversation finishes
+         */
+        "clearOnComplete"?: boolean;
+        /**
+          * Continue listening to users after they send the message
+         */
+        "conversationModeOn"?: boolean;
+        /**
+          * Callback to be called after conversation finishes
+         */
+        "onComplete"?: (err: string, data: object) => void;
+        /**
+          * Greeting message displayed to users
+         */
+        "welcomeMessage"?: string;
     }
     interface AmplifyCheckbox {
         /**
@@ -2541,6 +2600,7 @@ declare namespace LocalJSX {
         "amplify-auth0-button": AmplifyAuth0Button;
         "amplify-authenticator": AmplifyAuthenticator;
         "amplify-button": AmplifyButton;
+        "amplify-chatbot": AmplifyChatbot;
         "amplify-checkbox": AmplifyCheckbox;
         "amplify-code-field": AmplifyCodeField;
         "amplify-confirm-sign-in": AmplifyConfirmSignIn;
@@ -2600,6 +2660,7 @@ declare module "@stencil/core" {
             "amplify-auth0-button": LocalJSX.AmplifyAuth0Button & JSXBase.HTMLAttributes<HTMLAmplifyAuth0ButtonElement>;
             "amplify-authenticator": LocalJSX.AmplifyAuthenticator & JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement>;
             "amplify-button": LocalJSX.AmplifyButton & JSXBase.HTMLAttributes<HTMLAmplifyButtonElement>;
+            "amplify-chatbot": LocalJSX.AmplifyChatbot & JSXBase.HTMLAttributes<HTMLAmplifyChatbotElement>;
             "amplify-checkbox": LocalJSX.AmplifyCheckbox & JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement>;
             "amplify-code-field": LocalJSX.AmplifyCodeField & JSXBase.HTMLAttributes<HTMLAmplifyCodeFieldElement>;
             "amplify-confirm-sign-in": LocalJSX.AmplifyConfirmSignIn & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignInElement>;
