@@ -1,41 +1,37 @@
 {
-    "Hub Importation": {
-        "prefix": "Hub.import",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "import { Hub } from 'aws-amplify';"
-        ]
-    },
-    "Hub listen": {
-        "prefix": "Hub.listen",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "//Hub.listen(channel: string | RegExp, callback)",
-            "Hub.listen('${1:Channel}', ({${2:payload}}) => {",
-                "\tconst { event, data, message } = payload;",
-                "\t//do something here",
-            "})",
-        ]
-    },
-    "Hub dispatch": {
-        "prefix": "Hub.dispatch",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "// Hub.dispatch(channel: string, payload: HubPayload)",
-            "Hub.dispatch(",
-                "\t'${1:Channel}',",
-                "\t{",
-                "\t\tevent: '${2:buttonClick}',",
-                "\t\tdata: ${3:{color:'blue'}},",
-                "\t\tmessage:'${4:}'",
-            "});"
-        ]
-    },
-    "Hub Remove": {
-        "prefix": "Hub.remove",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "Hub.remove(\"Channel\", listener);"
-        ]
-    },
+	"Hub Importation": {
+		"prefix": "Hub.import",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["import { Hub } from 'aws-amplify';"]
+	},
+	"Hub listen": {
+		"prefix": "Hub.listen",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"//Hub.listen(channel: string | RegExp, callback)",
+			"Hub.listen('${1:Channel}', ({${2:payload}}) => {",
+			"\tconst { event, data, message } = payload;",
+			"\t//do something here",
+			"})"
+		]
+	},
+	"Hub dispatch": {
+		"prefix": "Hub.dispatch",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"// Hub.dispatch(channel: string, payload: HubPayload)",
+			"Hub.dispatch(",
+			"\t'${1:Channel}',",
+			"\t{",
+			"\t\tevent: '${2:buttonClick}',",
+			"\t\tdata: ${3:{color:'blue'}},",
+			"\t\tmessage:'${4:}'",
+			"});"
+		]
+	},
+	"Hub Remove": {
+		"prefix": "Hub.remove",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["Hub.remove(\"Channel\", listener);"]
+	}
 }
