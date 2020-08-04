@@ -58,31 +58,12 @@
     --border: none;
     --margin: 0;
   }
-  // input {
-  //   padding: 1.25rem;
-  //   flex-grow: 1;
-  //   border: none;
-  //   &:focus {
-  //     outline: none;
-  //   }
-  // }
 }
-
 .icon-button {
   --icon-height: 1.25rem;
   --icon-color: var(--amplify-primary-color);
   --padding: 0.625rem;
 }
-
-// .amplify-icon-button {
-//   margin-right: 0.625rem;
-//   cursor: pointer;
-
-//   amplify-icon {
-//     --height: 1.25rem;
-//     --icon-fill-color: var(--amplify-primary-color);
-//   }
-// }
 .chatbot-footer {
   position: absolute;
   bottom: 0px;

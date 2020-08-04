@@ -74,14 +74,6 @@ export class AmplifyChatbot {
           <div class="header">{this.botTitle}</div>
           <div class="body">{this.messageJSX(this.messages)}</div>
           <div class="chatbot-control">
-            {/* <input
-              type="text"
-              id="chatbot-text"
-              placeholder="Write a message"
-              value={this.text}
-              onInput={e => this.handleChange(e)}
-            /> */}
-
             <amplify-input
               placeholder="Write a message"
               fieldId="test"
