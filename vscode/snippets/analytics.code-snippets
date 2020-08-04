@@ -1,4 +1,19 @@
 {
+	"Amplify Analytics Import": {
+		"prefix": "amplify analytics import",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["import Amplify, { Analytics } from 'aws-amplify';"]
+	},
+	"Amplify Analytics Import Configure": {
+		"prefix": "analytics import configure",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"import Amplify, { Analytics } from 'aws-amplify';",
+			"import awsexports from './aws-exorts';",
+			"",
+			"Amplify.configure(awsexports);"
+		]
+	},
 	"Amplify Analytics Configuration": {
 		"prefix": "Analytics.configure",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
@@ -10,23 +25,23 @@
 			"\tautoSessionRecord: ${2:true},\n",
 			"\tAWSPinpoint: {",
 			"\t\t// OPTIONAL -  Amazon Pinpoint App Client ID",
-			"\t\tappId: ${3:'XXXXXXXXXXabcdefghij1234567890ab'},",
+			"\t\tappId: '${3}',",
 			"\t\t// OPTIONAL -  Amazon service region",
-			"\t\tregion: ${4:'XX-XXXX-X'},",
+			"\t\tregion: '${4}',",
 			"\t\t// OPTIONAL -  Customized endpoint",
-			"\t\tendpointId: ${5:'XXXXXXXXXXXX'},",
+			"\t\tendpointId: '${5}',",
 			"\t\t// OPTIONAL - client context",
 			"\t\tclientContext: {",
-			"\t\t\tclientId: ${6:'xxxxx'},",
-			"\t\t\tappTitle: ${7:'xxxxx'},",
-			"\t\t\tappVersionName: ${8:'xxxxx'},",
-			"\t\t\tappVersionCode: ${9:'xxxxx'},",
-			"\t\t\tappPackageName: ${10:'xxxxx'},",
-			"\t\t\tplatform: ${11:'xxxxx'},",
-			"\t\t\tplatformVersion: ${12:'xxxxx'},",
-			"\t\t\tmodel: ${13:'xxxxx'},",
-			"\t\t\tmake: ${14:'xxxxx'},",
-			"\t\t\tlocale: ${15:'xxxxx'},",
+			"\t\t\tclientId: '${6}',",
+			"\t\t\tappTitle: '${7}',",
+			"\t\t\tappVersionName: '${8}',",
+			"\t\t\tappVersionCode: '${9}',",
+			"\t\t\tappPackageName: '${10}',",
+			"\t\t\tplatform: '${11}',",
+			"\t\t\tplatformVersion: '${12}',",
+			"\t\t\tmodel: '${13}',",
+			"\t\t\tmake: '${14}',",
+			"\t\t\tlocale: '${15}',",
 			"\t\t},\n",
 			"\t\t// Buffer settings used for reporting analytics events.\n",
 			"\t\t// OPTIONAL - The buffer size for events in number of items.",
@@ -46,67 +61,84 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.record({",
-			"\tname: ${1:'albumVisit'},",
-			"\tattributes: {},",
-			"\tmetrics: { ${2:minutesListened: 30} }",
+			"\tname: '${1}',",
+			"\tattributes: ${2:{\\}},",
+			"\tmetrics: ${3:{\\}}",
 			"});"
 		]
-	},
-	"Analytics.disable": {
-		"prefix": "Analytics.disable",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": ["Analytics.disable();"]
-	},
-	"Analytics.enable": {
-		"prefix": "Analytics.enable",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": ["Analytics.enable();"]
-	},
-	"Analytics Authentication Event": {
-		"prefix": "Analytics.record",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": ["Analytics.record({", "\tname: ${1:'_userauth.event'}", "});"]
 	},
 	"Analytics Update User Attributes": {
 		"prefix": "Analytics.updateEndpoint",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.updateEndpoint({",
-			"\t// Customized userId",
-			"\tUserId: ${1:'XXXXXXXXXXXX'},",
-			"\t// User attributes",
-			"\tAttributes: {",
-			"\t\t${2:interests: ['football', 'basketball', 'AWS']}",
-			"\t\t// ...",
+			"\t//https://docs.amplify.aws/lib/analytics/getting-started/q/platform/js#update-endpoint",
+			"\t${1}",
+			"});"
+		]
+	},
+	"Analytics Update User Attributes with Options": {
+		"prefix": "Analytics.updateEndpoint options",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"Analytics.updateEndpoint({",
+			"\t//https://docs.amplify.aws/lib/analytics/getting-started/q/platform/js#update-endpoint",
+			"\taddress: '${1}',",
+			"\tattributes: {",
+			"\t\t${2}",
 			"\t},",
-			"\t// Custom user attributes",
-			"\tUserAttributes: {",
-			"\t\t${3:hobbies: ['piano', 'hiking']}",
-			"\t\t// ...",
+			"\tchannelType: '${3:APNS}', // Valid values: APNS, GCM",
+			"\tdemographic: {",
+			"\t\tappVersion: '${4}',",
+			"\t\tlocale: '${5}',",
+			"\t\tmake: '${6}',",
+			"\t\tmodel: '${7}',",
+			"\t\tmodelVersion: '${8}',",
+			"\t\tplatform: '${9}',",
+			"\t\tplatformVersion: '${10}',",
+			"\t\ttimezone: '${11}'",
+			"\t},",
+			"\tlocation: {",
+			"\t\tcity: '${12}',",
+			"\t\tcountry: '${13}',",
+			"\t\tlatitude: ${14:0},",
+			"\t\tlongitude: ${15:0},",
+			"\t\tpostalCode: '${16}',",
+			"\t\tregion: '${17}'",
+			"\t},",
+			"\tmetrics: {",
+			"\t\t${18}",
+			"\t},",
+			"\toptOut: '${19:ALL}', // Valid values: ALL, NONE",
+			"\tuserId: '${20}',",
+			"\tuserAttributes: {",
+			"\t\t${21}",
 			"\t}",
-			"})"
+			"});"
 		]
 	},
 	"AWSKinesis": {
-		"prefix": "AWSKinesis",
+		"prefix": "Kinesis configure",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"AWSKinesis: {",
-			"\t// OPTIONAL - Amazon Kinesis service region",
-			"\tregion: ${1:'XX-XXXX-X'},",
-			"\t// OPTIONAL - The buffer size for events in number of items.",
-			"\tbufferSize: ${2:1000},",
-			"\t// OPTIONAL - The number of events to be deleted from the buffer when flushed.",
-			"\tflushSize: ${3:100},",
-			"\t// OPTIONAL - The interval in milliseconds to perform a buffer check and flush if necessary.",
-			"\tflushInterval: ${4:5000}, // 5s",
-			"\t// OPTIONAL - The limit for failed recording retries.",
-			"\tresendLimit: ${5:5}",
-			"}"
+			"Analytics.configure({",
+			"\tAWSKinesis: {",
+			"\t\t// OPTIONAL - Amazon Kinesis service region",
+			"\t\tregion: ${1:'XX-XXXX-X'},",
+			"\t\t// OPTIONAL - The buffer size for events in number of items.",
+			"\t\tbufferSize: ${2:1000},",
+			"\t\t// OPTIONAL - The number of events to be deleted from the buffer when flushed.",
+			"\t\tflushSize: ${3:100},",
+			"\t\t// OPTIONAL - The interval in milliseconds to perform a buffer check and flush if necessary.",
+			"\t\tflushInterval: ${4:5000}, // 5s",
+			"\t\t// OPTIONAL - The limit for failed recording retries.",
+			"\t\tresendLimit: ${5:5}",
+			"\t}",
+			"});"
 		]
 	},
 	"Kinesis Record": {
-		"prefix": "Analytics.record",
+		"prefix": " Kinesis record",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.record({",
@@ -114,64 +146,52 @@
 			"\t\t// The data blob to put into the record",
 			"\t},",
 			"\t// OPTIONAL",
-			"\tpartitionKey: ${1:'myPartitionKey'},",
-			"\tstreamName: ${2:'myKinesisStream'}",
+			"\tpartitionKey: '${1:myPartitionKey}',",
+			"\tstreamName: '${2:myKinesisStream}'",
 			"}, 'AWSKinesis');"
 		]
 	},
-	"Analytics Custom Plugin": {
-		"prefix": "AnalyticsProvider",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": [
-			"export default class ${1:MyAnalyticsProvider} implements AnalyticsProvider {",
-			"\t// category and provider name",
-			"\tstatic category = ${2:'Analytics'};",
-			"\tstatic providerName = ${3:'MyAnalytics'};\n",
-			"\t// you need to implement these four methods",
-			"\t// configure your provider",
-			"\tconfigure(config: object): object;\n",
-			"\t// record events and returns true if succeeds",
-			"\trecord(params: object): Promise<boolean>;\n",
-			"\t// return 'Analytics';",
-			"\tgetCategory(): string;\n",
-			"\t// return the name of your provider",
-			"\tgetProvider(): string;",
-			"}"
-		]
-	},
-	"Analytics AutoTrack": {
-		"prefix": "Analytics.autoTrack",
+	"Analytics Session Tracking": {
+		"prefix": "analytics session tracking",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.autoTrack('session', {",
-			"\tenable: true,",
+			"\tenable: ${1},",
 			"\tattributes: {",
-			"\t\tattr: 'attr'",
+			"\t\t${2}",
 			"\t},",
 			"\tprovider: 'AWSPinpoint'",
 			"});"
 		]
 	},
 	"Analytics PageView Tracking": {
-		"prefix": "Analytics PageView Tracking",
+		"prefix": "analytics pageview tracking",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.autoTrack('pageView', {",
-			"\tenable: true,",
+			"\tenable: ${1:true},",
 			"\teventName: 'pageView',",
 			"\tattributes: {",
-			"\t\tattr: 'attr'",
+			"\t\t${2}",
 			"\t},",
-			"\ttype: 'multiPageApp',",
-			"\tprovider: 'AWSPinpoint'",
-			"\tgetUrl: () => {",
-			"\t\treturn window.location.origin + window.location.pathname;",
-			"\t}",
+			"\ttype: '${3:multiPageApp}', // Valid values: SPA, multiPageApp",
+			"\tprovider: '${4:AWSPinpoint}',",
+			"\tgetUrl: ${5:() => {\n\t\treturn window.location.origin + window.location.pathname;\n\t\\}}",
 			"});"
 		]
 	},
+	"Analytics Add Pluggable": {
+		"prefix": "Analytics.addPluggable",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["Analytics.addPluggable(new ${1});"]
+	},
+	"Analytics Remove Pluggable": {
+		"prefix": "Analytics.removePluggable",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["Analytics.removePluggable(${1}.providerName);"]
+	},
 	"Analytics AmazonPersonalizeProvider": {
-		"prefix": "AmazonPersonalizeProvider",
+		"prefix": "AmazonPersonalizeProvider configure",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"import { Analytics, AmazonPersonalizeProvider } from 'aws-amplify';",
