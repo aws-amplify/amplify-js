@@ -1,6 +1,6 @@
 {
-    "Hub installation": {
-        "prefix": "Hub.install",
+    "Hub Importation": {
+        "prefix": "Hub.import",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "import { Hub } from 'aws-amplify';"
@@ -11,10 +11,9 @@
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "//Hub.listen(channel: string | RegExp, callback)",
-            "Hub.listen('${1:auth}', (${2:data}) => {",
-                "\tconst ${3:{ payload }} = ${4:data};",
-                "\t${5:this.onAuthEvent(payload)};",
-                "\tconsole.log('A new auth event has happened: ', data.payload.data.username + ' has ' + data.payload.event);",
+            "Hub.listen('${1:Channel}', ({${2:payload}}) => {",
+                "\tconst { event, data, message } = payload;",
+                "\t//do something here",
             "})",
         ]
     },
@@ -24,12 +23,19 @@
         "body": [
             "// Hub.dispatch(channel: string, payload: HubPayload)",
             "Hub.dispatch(",
-                "\t'${1:DogsChannel}',",
+                "\t'${1:Channel}',",
                 "\t{",
                 "\t\tevent: '${2:buttonClick}',",
                 "\t\tdata: ${3:{color:'blue'}},",
                 "\t\tmessage:'${4:}'",
             "});"
         ]
-    }
+    },
+    "Hub Remove": {
+        "prefix": "Hub.remove",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
+        "body": [
+            "Hub.remove(\"Channel\", listener);"
+        ]
+    },
 }
