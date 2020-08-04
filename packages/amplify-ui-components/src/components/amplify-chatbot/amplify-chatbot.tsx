@@ -1,9 +1,9 @@
 import { Component, Host, h, Prop, State } from '@stencil/core';
 
-type Message = {
+interface Message {
   content: string;
   from: 'user' | 'bot';
-};
+}
 
 const messageJSX = (messages: Message[]) => {
   return messages.map(message => <div class={`bubble ${message.from}`}>{message.content}</div>);
