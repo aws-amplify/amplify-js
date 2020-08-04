@@ -1,5 +1,6 @@
 :host {
   --font-family: var(--amplify-font-family);
+  --background-color: var(--amplify-background-color);
 }
 
 .section {
@@ -15,10 +16,9 @@
   font-family: var(--font-family);
 
   width: 100%;
-  min-width: 320px;
+  min-width: var(--min-width);
 
   @include md {
-    width: auto;
-    min-width: 460px;
+    width: var(--width);
   }
 }

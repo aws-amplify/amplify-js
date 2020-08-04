@@ -1062,6 +1062,10 @@ export namespace Components {
          */
         "headerText": string;
         /**
+          * Used for customizing the issuer string in the qr code image
+         */
+        "issuer": string;
+        /**
           * Used in order to configure TOTP for a user
          */
         "user": CognitoUserInterface;
@@ -2545,6 +2549,10 @@ declare namespace LocalJSX {
           * Used for header text in totp setup component
          */
         "headerText"?: string;
+        /**
+          * Used for customizing the issuer string in the qr code image
+         */
+        "issuer"?: string;
         /**
           * Used in order to configure TOTP for a user
          */

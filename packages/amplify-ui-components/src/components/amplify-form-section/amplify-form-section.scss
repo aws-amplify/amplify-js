@@ -1,6 +1,8 @@
 :host {
   --header-color: var(--amplify-secondary-color);
-  --header-size: var(--amplify-text-md);
+  --header-size: var(--amplify-text-md-sub);
+  --subtitle-size: var(--amplify-grey);
+  --subtitle-color: var(--amplify-grey);
   --footer-color: var(--amplify-grey);
   --footer-size: var(--amplify-text-sm);
   --font-family: var(--amplify-font-family);
@@ -8,10 +10,18 @@
 }
 
 .form-section-header {
-  color: var(--header-color);
-  margin-bottom: 24px;
-  font-size: var(--header-size);
-  font-weight: 700;
+  .header {
+    color: var(--header-color);
+    font-size: var(--header-size);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .subtitle {
+    font-weight: 400;
+    font-size: var(--amplify-text-sm);
+    color: var(--subtitle-color);
+  }
+  margin: 1rem 0 1.5rem 0;
 }
 
 .form-section-footer {
