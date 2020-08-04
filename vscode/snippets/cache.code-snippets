@@ -1,6 +1,6 @@
 {
 	"Amplify Cache Import": {
-		"prefix": "amplify cache import",
+		"prefix": "Cache.importconfig",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"import Amplify, { Cache } from 'aws-amplify';",
@@ -10,7 +10,7 @@
 		]
 	},
 	"Cache Import": {
-		"prefix": "cache import",
+		"prefix": "Cache.import",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": ["import { Cache } from 'aws-amplify';"]
 	},
