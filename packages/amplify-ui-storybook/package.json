@@ -20,7 +20,7 @@
     "test": "react-scripts test --passWithNoTests",
     "start": "start-storybook -p 3000 -s public",
     "prebuild": "rimraf dist",
-    "build": "build-storybook -s public -o dist --quiet"
+    "build-storybook": "build-storybook -s public -o dist --quiet"
   },
   "eslintConfig": {
     "extends": "react-app"
