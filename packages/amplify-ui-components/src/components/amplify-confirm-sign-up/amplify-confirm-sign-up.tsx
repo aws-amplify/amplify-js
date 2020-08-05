@@ -216,10 +216,14 @@ export class AmplifyConfirmSignUp {
     try {
       const confirmSignUpResult = await Auth.confirmSignUp(this.userInput, this.code);
 
-      if (confirmSignUpResult && this._signUpAttrs) {
+      if (!confirmSignUpResult) {
+        throw new Error(I18n.get(Translations.CONFIRM_SIGN_UP_FAILED));
+      }
+      if (this._signUpAttrs) {
+        // Auto sign in user if password is available from previous workflow
         await handleSignIn(this.userInput, this._signUpAttrs.password, this.handleAuthStateChange);
       } else {
-        throw new Error('Confirming user sign up failed');
+        this.handleAuthStateChange(AuthState.SignIn);
       }
     } catch (error) {
       dispatchToastHubEvent(error);

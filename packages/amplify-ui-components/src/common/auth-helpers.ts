@@ -11,11 +11,11 @@ export async function checkContact(user: CognitoUserInterface, handleAuthStateCh
     throw new Error(NO_AUTH_MODULE_FOUND);
   }
   try {
-    const dataVerifed = await Auth.verifiedContact(user);
-    if (!isEmpty(dataVerifed)) {
+    const data = await Auth.verifiedContact(user);
+    if (!isEmpty(data.verified) || isEmpty(data.unverified)) {
       handleAuthStateChange(AuthState.SignedIn, user);
     } else {
-      const newUser = Object.assign(user, dataVerifed);
+      const newUser = Object.assign(user, data);
       handleAuthStateChange(AuthState.VerifyContact, newUser);
     }
   } catch (error) {

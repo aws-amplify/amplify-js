@@ -134,7 +134,10 @@ export class AmplifySignUp {
 
     try {
       const data = await Auth.signUp(this.signUpAttributes);
-      if (data && data.userConfirmed) {
+      if (!data) {
+        throw new Error(Translations.SIGN_UP_FAILED);
+      }
+      if (data.userConfirmed) {
         await handleSignIn(this.signUpAttributes.username, this.signUpAttributes.password, this.handleAuthStateChange);
       } else {
         this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
