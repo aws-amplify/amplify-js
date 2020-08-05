@@ -42,13 +42,12 @@
     "@aws-amplify/auth": "^3.3.3",
     "@aws-amplify/cache": "^3.1.21",
     "@aws-amplify/core": "^3.4.4",
-    "@aws-amplify/pubsub": "^3.0.22",
     "graphql": "14.0.0",
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
   },
   "peerDependencies": {
-    "@aws-amplify/pubsub": "^2.1.1"
+    "@aws-amplify/pubsub": "^3.0.22"
   },
   "jest": {
     "globals": {

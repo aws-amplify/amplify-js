@@ -42,7 +42,7 @@
     "@aws-amplify/api-rest": "^1.1.4"
   },
   "peerDependencies": {
-    "@aws-amplify/pubsub": "^2.1.1"
+    "@aws-amplify/pubsub": "^3.0.22"
   },
   "jest": {
     "globals": {
