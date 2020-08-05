@@ -5,9 +5,10 @@
 		"body": ["import Amplify, { Storage } from 'aws-amplify';\n"]
 	},
 	"Amplify Storage Import Configuration": {
-		"prefix": "Storage:",
+		"prefix": "Storage.importConfig",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
+			"import Amplify, { Storage } from 'aws-amplify';\n",
 			"import awsconfig from './aws-exports';",
 			"Amplify.configure(awsconfig);"
 		]
@@ -17,8 +18,8 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Storage.configure({",
-			"\tbucket: ${1:\"Your bucket ARN\"}",
-			"\tregion: ${2:\"Specify the region your bucket was created in\"}",
+			"\tbucket: ${1:\"Your bucket ARN\"},",
+			"\tregion: ${2:\"Specify the region your bucket was created in\"},",
 			"\tidentityPoolId: ${3:\"Specify your identityPoolId for Auth and Unauth access to your bucket\"}",
 			"});"
 		]
@@ -28,9 +29,9 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Storage.get(${1:'test.txt'}, {",
-			"\tlevel: '${2:protected}'",
-			"\tidentityId: \"${3:}\", // only in case of protected",
-			"\tcontentType: \"${4:}\",",
+			"\tlevel: '${2:protected}',",
+			"\tidentityId: '${3:}', // only in case of protected",
+			"\tcontentType: '${4:}',",
 			"\ttrack: ${5:false},",
 			"\tdownload: ${6:false},",
 			"})"
@@ -42,34 +43,10 @@
 		"body": [
 			"Storage.put(${1:'test.txt'}, ${2:'Protected Content'}, {",
 			"\tlevel: ${3:'protected'},",
-			"\tcontentType: ${4:''}",
+			"\tcontentType: ${4:''},",
 			"\tidentityId: ${5:''}, // only in case of protected",
 			"\ttrack: ${6:false},",
 			"})"
-		]
-	},
-	"S3ImageUpload": {
-		"prefix": "S3ImageUpload",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": [
-			"class S3ImageUpload extends React.Component {",
-			"\tonChange(e) {",
-			"\t\tconst file = e.target.files[0];",
-			"\t\tStorage.put('example.png', file, {",
-			"\t\t\tcontentType: 'image/png'",
-			"\t\t})",
-			"\t\t.then (result => console.log(result))",
-			"\t\t.catch(err => console.log(err));",
-			"\t}",
-			"\trender() {",
-			"\t\treturn (",
-			"\t\t\t<input",
-			"\t\t\t\ttype=\"file\" accept='image/png'",
-			"\t\t\t\tonChange={(evt) => this.onChange(evt)}",
-			"\t\t\t/>",
-			"\t\t)",
-			"\t}",
-			"}"
 		]
 	},
 	"Storage Remove": {
@@ -79,7 +56,7 @@
 			"Storage.remove(${1:'test.txt'}, {",
 			"\tlevel: ${2:'protected'},",
 			"\tidentityId: ${3:''} // only in case of protected",
-			"})"
+			"});"
 		]
 	},
 	"Storage List": {
@@ -87,7 +64,7 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Storage.list(${1:'photos/'}, {",
-			"\tlevel: ${2:'protected'}",
+			"\tlevel: ${2:'protected'},",
 			"\tidentityId: ${3:''}, // only in case of protected",
 			"\ttrack: ${4:false},",
 			"})"
@@ -104,10 +81,10 @@
 		]
 	},
 	"Storage Manage Upload": {
-		"prefix": "storage.manageupload",
+		"prefix": "Storage.manageupload",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"Storage.put('test.txt', 'File content', {",
+			"Storage.put(${1:'test.txt'}, ${2:'File content'}, {",
 			"\tprogressCallback(progress) {",
 			"\t\tconsole.log(`Uploaded: ${progress.loaded}/${progress.total}`);",
 			"\t},",
