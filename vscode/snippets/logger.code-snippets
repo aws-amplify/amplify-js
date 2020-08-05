@@ -1,65 +1,37 @@
 {
-    "info": {
-        "prefix": "info",
+    "Amplify Logger info": {
+        "prefix": "logger.info",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
-            "info"
+            "logger.info('info ${1:bar}')"
         ]
     },
-    "debug": {
-        "prefix": "debug",
+    "Amplify Logger debug": {
+        "prefix": "logger.debug",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
-            "debug"
+            "logger.debug('debug ${1:bar}')"
         ]
     },
-    "warn": {
-        "prefix": "warn",
+    "Amplify Logger warn": {
+        "prefix": "logger.warn",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
-            "warn"
+            "logger.warn('warn ${1:bar}')"
         ]
     },
-    "error": {
-        "prefix": "error",
+    "Amplify Logger error": {
+        "prefix": "logger.error",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
-            "error"
+            "logger.error('error ${1:bar}')"
         ]
     },
-    "ERROR": {
-        "prefix": "ERROR",
+    "Amplify Logger verbose": {
+        "prefix": "logger.verbose",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
-            "ERROR"
-        ]
-    },
-    "WARN": {
-        "prefix": "WARN",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "WARN"
-        ]
-    },
-    "INFO": {
-        "prefix": "INFO",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "INFO"
-        ]
-    },
-    "DEBUG": {
-        "prefix": "DEBUG",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "DEBUG"
-        ]
-    },
-    "VERBOSE": {
-        "prefix": "VERBOSE",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "VERBOSE"
+            "logger.error('verbose ${1:bar}')"
         ]
     }
 }
