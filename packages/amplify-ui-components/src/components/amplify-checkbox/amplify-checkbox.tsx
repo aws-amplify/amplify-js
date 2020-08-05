@@ -1,4 +1,4 @@
-import { Component, Prop, h } from '@stencil/core';
+import { Component, Prop, h, Event, EventEmitter } from '@stencil/core';
 
 @Component({
   tag: 'amplify-checkbox',
@@ -18,6 +18,16 @@ export class AmplifyCheckbox {
   @Prop() checked: boolean = false;
   /** If `true`, the checkbox is disabled */
   @Prop() disabled: boolean = false;
+  /** The callback, called when the input is modified by the user. */
+  @Prop() handleInputChange?: (inputEvent: Event) => void = () => void 0;
+  /** Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form */
+  @Event({
+    eventName: 'formSubmit',
+    composed: true,
+    cancelable: true,
+    bubbles: true,
+  })
+  formSubmit: EventEmitter;
 
   private onClick = () => {
     this.checked = !this.checked;
@@ -34,6 +44,7 @@ export class AmplifyCheckbox {
           id={this.fieldId}
           checked={this.checked}
           disabled={this.disabled}
+          onInput={event => this.handleInputChange(event)}
         />
         <amplify-label htmlFor={this.fieldId}>{this.label}</amplify-label>
       </span>

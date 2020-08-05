@@ -61,6 +61,14 @@ const componentFieldMapping = {
       dialCode={ff.dialCode}
     />
   ),
+  checkbox: (ff: FormFieldType) => (
+    <amplify-checkbox
+      label={ff.label}
+      handleInputChange={ff.handleInputChange}
+      value={ff.value}
+      disabled={ff.disabled}
+    />
+  ),
   default: (ff: FormFieldType) => (
     <amplify-form-field
       label={ff.label}
