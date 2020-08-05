@@ -2,24 +2,22 @@
 
 <!-- Auto Generated Below -->
 
-
 ## Properties
 
-| Property          | Attribute          | Description                                            | Type                   | Default                                                |
-| ----------------- | ------------------ | ------------------------------------------------------ | ---------------------- | ------------------------------------------------------ |
-| `buttonText`      | `button-text`      | Picker button text as string                           | `string`               | `I18n.get(Translations.PHOTO_PICKER_BUTTON_TEXT)`      |
-| `handleClick`     | --                 | Function that handles file pick onClick                | `(file: File) => void` | `() => {}`                                             |
-| `headerHint`      | `header-hint`      | Header Hint value in string                            | `string`               | `I18n.get(Translations.PHOTO_PICKER_HINT)`             |
-| `headerTitle`     | `header-title`     | Title string value                                     | `string`               | `I18n.get(Translations.PHOTO_PICKER_TITLE)`            |
-| `placeholderHint` | `placeholder-hint` | Placeholder hint that goes under the placeholder image | `string`               | `I18n.get(Translations.PHOTO_PICKER_PLACEHOLDER_HINT)` |
-| `previewSrc`      | `preview-src`      | Source of the image to be previewed                    | `object \| string`     | `undefined`                                            |
-
+| Property          | Attribute          | Description                                            | Type                   | Default                                      |
+| ----------------- | ------------------ | ------------------------------------------------------ | ---------------------- | -------------------------------------------- |
+| `buttonText`      | `button-text`      | Picker button text as string                           | `string`               | `Translations.PHOTO_PICKER_BUTTON_TEXT`      |
+| `handleClick`     | --                 | Function that handles file pick onClick                | `(file: File) => void` | `() => {}`                                   |
+| `headerHint`      | `header-hint`      | Header Hint value in string                            | `string`               | `Translations.PHOTO_PICKER_HINT`             |
+| `headerTitle`     | `header-title`     | Title string value                                     | `string`               | `Translations.PHOTO_PICKER_TITLE`            |
+| `placeholderHint` | `placeholder-hint` | Placeholder hint that goes under the placeholder image | `string`               | `Translations.PHOTO_PICKER_PLACEHOLDER_HINT` |
+| `previewSrc`      | `preview-src`      | Source of the image to be previewed                    | `object \| string`     | `undefined`                                  |
 
 ## Dependencies
 
 ### Used by
 
- - [amplify-s3-image-picker](../amplify-s3-image-picker)
+- [amplify-s3-image-picker](../amplify-s3-image-picker)
 
 ### Depends on
 
@@ -29,6 +27,7 @@
 - [amplify-button](../amplify-button)
 
 ### Graph
+
 ```mermaid
 graph TD;
   amplify-photo-picker --> amplify-section
@@ -40,6 +39,6 @@ graph TD;
   style amplify-photo-picker fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
-----------------------------------------------
+---
 
-*Built with [StencilJS](https://stenciljs.com/)*
+_Built with [StencilJS](https://stenciljs.com/)_

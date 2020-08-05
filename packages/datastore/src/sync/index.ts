@@ -652,7 +652,10 @@ export class SyncEngine {
 				},
 				error: err => {
 					reject(err);
-					this.disconnectionHandler(datastoreConnectivity);
+					const handleDisconnect = this.disconnectionHandler(
+						datastoreConnectivity
+					);
+					handleDisconnect(err);
 				},
 			});
 		});
