@@ -204,10 +204,30 @@
 		"body": [
 			"Analytics.configure({",
 			"\tAmazonPersonalize: {",
-			"\t\ttrackingId: '<TRACKING_ID>',",
-			"\t\tregion: 'XX-XXXX-X',",
-			"\t\tflushSize: 10,",
-			"\t\tflushInterval: 5000,",
+			"\t\ttrackingId: '${1}',",
+			"\t\tregion: '${2}',",
+			"\t\tflushSize: ${3:10},",
+			"\t\tflushInterval: ${4:5000},",
+			"\t}",
+			"});"
+		]
+	},
+	"Analytics AWSKinesisFirehoseProvider Configure": {
+		"prefix": "Analytics.configure",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"Analytics.configure({",
+			"\tAWSKinesisFirehose: {",
+			"\t\t// OPTIONAL -  Amazon Kinesis Firehose service region",
+			"\t\tregion: '${1}',",
+			"\t\t// OPTIONAL - The buffer size for events in number of items.",
+			"\t\tbufferSize: ${2:1000},",
+			"\t\t// OPTIONAL - The number of events to be deleted from the buffer when flushed.",
+			"\t\tflushSize: ${3:100},",
+			"\t\t// OPTIONAL - The interval in milliseconds to perform a buffer check and flush if necessary.",
+			"\t\tflushInterval: ${4:5000},",
+			"\t\t// OPTIONAL - The limit for failed recording retries.",
+			"\t\tresendLimit: ${5:5}",
 			"\t}",
 			"});"
 		]
@@ -217,11 +237,31 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.record({",
-			"\teventType: 'Identify',",
+			"\teventType: '${1:Identify}',",
 			"\tproperties: {",
-			"\t\t'userId': '<USER_ID>'",
+			"\t\t'userId': '${2}'",
 			"\t}",
 			"}, 'AmazonPersonalize');"
+		]
+	},
+	"Analytics AWSKinesisFirehoseProvider": {
+		"prefix": "AWSKinesisFirehoseProvider configure",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"import { Analytics, AWSKinesisFirehoseProvider} from 'aws-amplify';",
+			"Analytics.addPluggable(new AWSKinesisFirehoseProvider());"
+		]
+	},
+	"Analytics AWSKinesisFirehoseProvider Record": {
+		"prefix": "Analytics.record",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"Analytics.record({",
+			"\tdata: {",
+			"\t\t${1}",
+			"\t},",
+			"\tstreamName: '${2:myKinesisStream}'",
+			"}, 'AWSKinesisFirehose');"
 		]
 	}
 }
