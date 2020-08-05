@@ -241,13 +241,13 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 			const jsType = GraphQLScalarType.getJSType(type);
 
 			if (isArray) {
-				if (!Array.isArray(v)) {
+				if (!Array.isArray(v) && isRequired) {
 					throw new Error(
 						`Field ${name} should be of type ${jsType}[], ${typeof v} received. ${v}`
 					);
 				}
 
-				if ((<[]>v).some(e => typeof e !== jsType)) {
+				if (v !== null && (<[]>v).some(e => typeof e !== jsType)) {
 					const elemTypes = (<[]>v).map(e => typeof e).join(',');
 
 					throw new Error(
