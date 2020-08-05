@@ -72,6 +72,7 @@ graph TD;
   amplify-auth-fields --> amplify-code-field
   amplify-auth-fields --> amplify-phone-field
   amplify-auth-fields --> amplify-form-field
+  amplify-auth-fields --> amplify-checkbox
   amplify-username-field --> amplify-form-field
   amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
@@ -83,6 +84,7 @@ graph TD;
   amplify-phone-field --> amplify-country-dial-code
   amplify-phone-field --> amplify-input
   amplify-country-dial-code --> amplify-select
+  amplify-checkbox --> amplify-label
   amplify-authenticator --> amplify-sign-in
   style amplify-sign-in fill:#f9f,stroke:#333,stroke-width:4px
 ```

@@ -8,7 +8,7 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AuthState, AuthStateHandler, CognitoUserInterface, FederatedConfig, MFATypesInterface, UsernameAliasStrings } from "./common/types/auth-types";
 import { FormFieldTypes } from "./components/amplify-auth-fields/amplify-auth-fields-interface";
 import { ButtonTypes, ButtonVariant, InputEvent, TextFieldTypes } from "./common/types/ui-types";
-import { FunctionalComponent } from "@stencil/core";
+import { Event, FunctionalComponent } from "@stencil/core";
 import { CountryCodeDialOptions } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { IconNameType } from "./components/amplify-icon/icons";
 import { AccessLevel, StorageObject } from "./common/types/storage-types";
@@ -89,6 +89,10 @@ export namespace Components {
           * Field ID used for the 'htmlFor' in the label
          */
         "fieldId": string;
+        /**
+          * The callback, called when the input is modified by the user.
+         */
+        "handleInputChange"?: (inputEvent: Event) => void;
         /**
           * Label for the checkbox
          */
@@ -1541,6 +1545,10 @@ declare namespace LocalJSX {
          */
         "fieldId"?: string;
         /**
+          * The callback, called when the input is modified by the user.
+         */
+        "handleInputChange"?: (inputEvent: Event) => void;
+        /**
           * Label for the checkbox
          */
         "label"?: string;
@@ -1548,6 +1556,10 @@ declare namespace LocalJSX {
           * Name of the checkbox
          */
         "name"?: string;
+        /**
+          * Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form
+         */
+        "onFormSubmit"?: (event: CustomEvent<any>) => void;
         /**
           * Value of the checkbox
          */
