@@ -1,11 +1,11 @@
 {
 	"Amplify Analytics Import": {
-		"prefix": "amplify analytics import",
+		"prefix": "Analytics.import",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": ["import Amplify, { Analytics } from 'aws-amplify';"]
 	},
 	"Amplify Analytics Import Configure": {
-		"prefix": "analytics import configure",
+		"prefix": "Analytics.importConfig",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"import Amplify, { Analytics } from 'aws-amplify';",
@@ -78,7 +78,7 @@
 		]
 	},
 	"Analytics Update User Attributes with Options": {
-		"prefix": "Analytics.updateEndpoint options",
+		"prefix": "Analytics.updateEndpointOptions",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.updateEndpoint({",
@@ -118,7 +118,7 @@
 		]
 	},
 	"AWSKinesis": {
-		"prefix": "Kinesis configure",
+		"prefix": "Kinesis.configure",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.configure({",
@@ -138,7 +138,7 @@
 		]
 	},
 	"Kinesis Record": {
-		"prefix": " Kinesis record",
+		"prefix": " Kinesis.record",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.record({",
@@ -152,11 +152,11 @@
 		]
 	},
 	"Analytics Session Tracking": {
-		"prefix": "analytics session tracking",
+		"prefix": "analytics.sessionTracking",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.autoTrack('session', {",
-			"\tenable: ${1},",
+			"\tenable: ${1:true},",
 			"\tattributes: {",
 			"\t\t${2}",
 			"\t},",
@@ -165,7 +165,7 @@
 		]
 	},
 	"Analytics PageView Tracking": {
-		"prefix": "analytics pageview tracking",
+		"prefix": "analytics.pageviewTracking",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.autoTrack('pageView', {",
@@ -191,7 +191,7 @@
 		"body": ["Analytics.removePluggable(${1}.providerName);"]
 	},
 	"Analytics AmazonPersonalizeProvider": {
-		"prefix": "AmazonPersonalizeProvider configure",
+		"prefix": "Personalize.importConfig",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"import { Analytics, AmazonPersonalizeProvider } from 'aws-amplify';",
@@ -199,7 +199,7 @@
 		]
 	},
 	"Analytics AmazonPersonalizeProvider Configure": {
-		"prefix": "Analytics.configure",
+		"prefix": "Personalize.configure",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.configure({",
@@ -213,7 +213,7 @@
 		]
 	},
 	"Analytics AmazonPersonalizeProvider Record": {
-		"prefix": "Analytics.record",
+		"prefix": "Personalize.record",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.record({",
