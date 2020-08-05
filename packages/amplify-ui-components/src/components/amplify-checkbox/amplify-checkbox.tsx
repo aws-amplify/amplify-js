@@ -26,8 +26,7 @@ export class AmplifyCheckbox {
     composed: true,
     cancelable: true,
     bubbles: true,
-  })
-  formSubmit: EventEmitter;
+  }) formSubmit: EventEmitter;
 
   private onClick = () => {
     this.checked = !this.checked;
