@@ -19,7 +19,7 @@ export class AmplifyCheckbox {
   /** If `true`, the checkbox is disabled */
   @Prop() disabled: boolean = false;
   /** The callback, called when the input is modified by the user. */
-  @Prop() handleInputChange?: (inputEvent: Event) => void = () => void 0;
+  @Prop() handleInputChange?: (inputEvent: MouseEvent) => void = () => void 0;
   /** Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form */
   @Event({
     eventName: 'formSubmit',
