@@ -213,7 +213,7 @@
 		]
 	},
 	"Analytics AWSKinesisFirehoseProvider Configure": {
-		"prefix": "Analytics.configure",
+		"prefix": "Firehose.configure",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.configure({",
@@ -245,7 +245,7 @@
 		]
 	},
 	"Analytics AWSKinesisFirehoseProvider": {
-		"prefix": "AWSKinesisFirehoseProvider configure",
+		"prefix": "Firehose.import",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"import { Analytics, AWSKinesisFirehoseProvider} from 'aws-amplify';",
@@ -253,7 +253,7 @@
 		]
 	},
 	"Analytics AWSKinesisFirehoseProvider Record": {
-		"prefix": "Analytics.record",
+		"prefix": "Firehose.record",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Analytics.record({",
