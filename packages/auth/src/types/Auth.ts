@@ -91,8 +91,11 @@ export function isFederatedSignInOptionsCustom(
 	return obj && !!keys.find(k => obj.hasOwnProperty(k));
 }
 
-export function hasCustomState(obj: any): obj is FederatedSignInOptions {
-	const keys: (keyof FederatedSignInOptions)[] = ['customState'];
+export function hasCustomState(obj: any): boolean {
+	const keys: (
+		| keyof FederatedSignInOptions
+		| keyof FederatedSignInOptionsCustom
+	)[] = ['customState'];
 	return obj && !!keys.find(k => obj.hasOwnProperty(k));
 }
 
