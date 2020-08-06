@@ -1,22 +1,28 @@
 {
+	"Amplify Interactions Import": {
+		"prefix": "Interactions.import",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["import Amplify, { Interactions } from 'aws-amplify'"]
+	},
+	"Amplify Interactions Import Configuration": {
+		"prefix": "Interactions.importconfig",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"import awsconfig from './aws-exports';\n",
+			"Amplify.configure(awsconfig);"
+		]
+	},
 	"Interactions Manual Configuration": {
 		"prefix": "Interactions.config",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"import Amplify from 'aws-amplify';\n",
-			"Amplify.configure({",
-			"\tAuth: {",
-			"\t\tidentityPoolId: ${1:'us-east-1:xxx-xxx-xxx-xxx-xxx'},",
-			"\t\tregion: ${2:'us-east-1'}",
-			"\t},",
-			"\tInteractions: {",
-			"\t\tbots: {",
-			"\t\t\t${3:\"BookTripMOBILEHUB\"}: {",
-			"\t\t\t\t${4:\"name\": \"BookTrip\"},",
-			"\t\t\t\t${5:\"alias\": \"$LATEST\"},",
-			"\t\t\t\t${6:\"region\": \"us-east-1\"},",
-			"\t\t\t},",
-			"\t\t}",
+			"tInteractions.configure({",
+			"\tbots: {",
+			"\t\t${3:\"BookTripMOBILEHUB\"}: {",
+			"\t\t\t${4:\"name\": \"BookTrip\"},",
+			"\t\t\t${5:\"alias\": \"$LATEST\"},",
+			"\t\t\t${6:\"region\": \"us-east-1\"},",
+			"\t\t},",
 			"\t}",
 			"});"
 		]
