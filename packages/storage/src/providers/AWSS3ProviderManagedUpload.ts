@@ -331,12 +331,8 @@ export class AWSS3ProviderManagedUpload {
 	 * creates an S3 client with new V3 aws sdk
 	 */
 	protected async _createNewS3Client(config, emitter?) {
-		await this._getCredentials();
-		const {
-			region,
-			credentials,
-			dangerouslyConnectToHttpEndpointForTesting,
-		} = config;
+		const credentials = await this._getCredentials();
+		const { region, dangerouslyConnectToHttpEndpointForTesting } = config;
 		let localTestingConfig = {};
 
 		if (dangerouslyConnectToHttpEndpointForTesting) {
@@ -368,8 +364,8 @@ export class AWSS3ProviderManagedUpload {
 			.then(credentials => {
 				if (!credentials) return false;
 				const cred = Credentials.shear(credentials);
-				this.opts.credentials = cred;
 				logger.debug('set credentials for storage', cred);
+				return cred;
 			})
 			.catch(error => {
 				logger.warn('ensure credentials error', error);
