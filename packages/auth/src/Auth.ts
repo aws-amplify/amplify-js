@@ -25,6 +25,7 @@ import {
 	isCognitoHostedOpts,
 	isFederatedSignInOptions,
 	isFederatedSignInOptionsCustom,
+	hasCustomState,
 	FederatedSignInOptionsCustom,
 	LegacyProvider,
 	FederatedSignInOptions,
@@ -1787,6 +1788,7 @@ export class AuthClass {
 		if (
 			isFederatedSignInOptions(providerOrOptions) ||
 			isFederatedSignInOptionsCustom(providerOrOptions) ||
+			hasCustomState(providerOrOptions) ||
 			typeof providerOrOptions === 'undefined'
 		) {
 			const options = providerOrOptions || {
