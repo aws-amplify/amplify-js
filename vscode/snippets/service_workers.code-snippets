@@ -60,5 +60,23 @@
 			"\tevent.waitUntil(self.registration.showNotification(title,options));\n",
 			"});"
 		]
+	},
+	"Amplify Service Worker Send": {
+		"prefix": "sw.send",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"registeredServiceWorker.send({",
+			"\t'message': 'CleanAllCache'",
+			"});"
+		]
+	},
+	"Amplify Service Worker Recieve": {
+		"prefix": "sw.recieve",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"addEventListener('message', (event) => {",
+			"\tconsole.log('[Service Worker] Message Event: ', event.data)",
+			"})"
+		]
 	}
 }
