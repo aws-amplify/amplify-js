@@ -1,6 +1,6 @@
 {
     "Amplify PubSub AWS IoT Configuration": {
-        "prefix": "PubSub",
+        "prefix": "PubSub.IoT",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "import Amplify, { PubSub } from 'aws-amplify';",
@@ -13,7 +13,7 @@
         ]
     },
     "Amplify PubSub MQTT Configuration": {
-        "prefix": "PubSub",
+        "prefix": "PubSub.MQTT",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body": [
             "import Amplify, { PubSub } from 'aws-amplify';",
@@ -24,15 +24,28 @@
             "}));"
         ]
     },
-    "PubSub.subscribe": {
+    "Amplify PubSub Subscribe": {
         "prefix": "PubSub.subscribe",
         "scope": "javascript,javascriptreact,typescript,typescriptreact",
         "body":[
             "PubSub.subscribe(${1:'myTopic'}).subscribe({",
-            "\tnext: data => console.log('Message received', data),",
-            "\terror: error => console.error(error),",
-            "\tclose: () => console.log('Done'),",
+                "\tnext: data => console.log('Message received', data),",
+                "\terror: error => console.error(error),",
+                "\tclose: () => console.log('Done'),",
             "});"
+        ]
+    },
+    "Amplify PubSub Unsubscribe": {
+        "prefix": "PubSub.unsubscribe",
+        "scope": "javascript,javascriptreact,typescript,typescriptreact",
+        "body":[
+            "const sub1 = PubSub.subscribe('myTopicA').subscribe({",
+                "\tnext: data => console.log('Message received', data),",
+                "\terror: error => console.error(error),",
+                "\tclose: () => console.log('Done'),",
+            "});",
+            "sub1.unsubscribe();",
+            "// You will no longer get messages for 'myTopicA'"
         ]
     },
     "Publish One Topic PubSub": {
