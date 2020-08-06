@@ -15,6 +15,7 @@ import {
 	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
 	Platform,
+	Credentials,
 } from '@aws-amplify/core';
 import {
 	S3Client,
@@ -76,7 +77,7 @@ export class AWSS3ProviderManagedUpload {
 			// Multipart upload is not required. Upload the sanitized body as is
 			this.params.Body = this.body;
 			const putObjectCommand = new PutObjectCommand(this.params);
-			const s3 = this._createNewS3Client(this.opts, this.emitter);
+			const s3 = await this._createNewS3Client(this.opts, this.emitter);
 			return s3.send(putObjectCommand);
 		} else {
 			// Step 1: Initiate the multi part upload
@@ -138,7 +139,7 @@ export class AWSS3ProviderManagedUpload {
 		const createMultiPartUploadCommand = new CreateMultipartUploadCommand(
 			this.params
 		);
-		const s3 = this._createNewS3Client(this.opts);
+		const s3 = await this._createNewS3Client(this.opts);
 		const response = await s3.send(createMultiPartUploadCommand);
 		logger.debug(response.UploadId);
 		return response.UploadId;
@@ -160,7 +161,7 @@ export class AWSS3ProviderManagedUpload {
 				Bucket: this.params.Bucket,
 			};
 			const uploadPartCommand = new UploadPartCommand(uploadPartCommandInput);
-			const s3 = this._createNewS3Client(this.opts, part.emitter);
+			const s3 = await this._createNewS3Client(this.opts, part.emitter);
 			promises.push(s3.send(uploadPartCommand));
 		}
 		try {
@@ -192,7 +193,7 @@ export class AWSS3ProviderManagedUpload {
 			MultipartUpload: { Parts: this.multiPartMap },
 		};
 		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
-		const s3 = this._createNewS3Client(this.opts);
+		const s3 = await this._createNewS3Client(this.opts);
 		try {
 			const data = await s3.send(completeUploadCommand);
 			return data.Key;
@@ -235,7 +236,7 @@ export class AWSS3ProviderManagedUpload {
 			UploadId: uploadId,
 		};
 
-		const s3 = this._createNewS3Client(this.opts);
+		const s3 = await this._createNewS3Client(this.opts);
 		await s3.send(new AbortMultipartUploadCommand(input));
 
 		// verify that all parts are removed.
@@ -329,7 +330,8 @@ export class AWSS3ProviderManagedUpload {
 	 * @private
 	 * creates an S3 client with new V3 aws sdk
 	 */
-	protected _createNewS3Client(config, emitter?) {
+	protected async _createNewS3Client(config, emitter?) {
+		await this._getCredentials();
 		const {
 			region,
 			credentials,
@@ -356,5 +358,22 @@ export class AWSS3ProviderManagedUpload {
 		});
 		client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		return client;
+	}
+
+	/**
+	 * @private
+	 */
+	_getCredentials() {
+		return Credentials.get()
+			.then(credentials => {
+				if (!credentials) return false;
+				const cred = Credentials.shear(credentials);
+				this.opts.credentials = cred;
+				logger.debug('set credentials for storage', cred);
+			})
+			.catch(error => {
+				logger.warn('ensure credentials error', error);
+				return false;
+			});
 	}
 }
