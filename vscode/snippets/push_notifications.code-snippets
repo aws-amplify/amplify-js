@@ -1,6 +1,6 @@
 {
 	"Push Notifications Configuration": {
-		"prefix": "PushNotification.configure",
+		"prefix": "pn.configure",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Amplify.configure({",
@@ -14,7 +14,7 @@
 		]
 	},
 	"Push Notifications onNotification": {
-		"prefix": "PushNotification.onNotification",
+		"prefix": "pn.onNotification",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"// get the notification data when notification is received",
@@ -26,8 +26,18 @@
 			"});"
 		]
 	},
+	"Push Notifications onNotificationOpened": {
+		"prefix": "pn.onNotificationOpened",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"// get the notification data when notification is opened",
+			"PushNotification.onNotificationOpened((notification) => {",
+			"\tconsole.log('the notification is opened', notification);",
+			"});"
+		]
+	},
 	"Push Notifications onRegister": {
-		"prefix": "PushNotification.onRegister",
+		"prefix": "pn.onRegister",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"// get the registration token",
