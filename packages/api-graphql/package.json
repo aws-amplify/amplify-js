@@ -35,7 +35,8 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
-    "@types/zen-observable": "^0.8.0"
+    "@types/zen-observable": "^0.8.0",
+    "@aws-amplify/pubsub": "^3.0.22"
   },
   "dependencies": {
     "@aws-amplify/api-rest": "^1.1.4",
