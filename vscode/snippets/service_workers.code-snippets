@@ -1,45 +1,64 @@
 {
-    "register": {
-        "prefix": "register",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "register"
-        ]
-    },
-    "enablePush": {
-        "prefix": "enablePush",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "enablePush"
-        ]
-    },
-    "Service Worker Add Event Listener": {
-        "prefix": "addEventListener",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "/**",
-            "* Listen for incoming Push events",
-            "*/",
-            "addEventListener('push', (event) => {",
-                "\tvar data = {};",
-                "\tconsole.log(${1:'[Service Worker] Push Received.'});",
-                "\tconsole.log(${2:`[Service Worker] Push had this data:} \"${event.data.text()}\"`);\n",
-                "\tif (!(self.Notification && self.Notification.permission === 'granted'))",
-                "\t\treturn;\n",
-                "\tif (event.data)",
-                "\t\tdata = event.data.json();\n",
-                "\t// Customize the UI for the message box",
-                "\tvar title = data.title || ${3:\"Web Push Notification\"};",
-                "\tvar message = data.message || ${4:\"New Push Notification Received\"};",
-                "\tvar icon = ${5:\"images/notification-icon.png\"};",
-                "\tvar badge = ${6:'images/notification-badge.png'};",
-                "\tvar options = {",
-                    "\t\tbody: message,",
-                    "\t\ticon: icon,",
-                    "\t\tbadge: badge",
-                "\t};\n",
-                "\tevent.waitUntil(self.registration.showNotification(title,options));\n",
-            "});"
-        ]
-    }
+	"Amplify Service Worker Import": {
+		"prefix": "sw.import",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["import { ServiceWorker } from 'aws-amplify';"]
+	},
+	"Amplify Service Worker Configuration": {
+		"prefix": "sw.importconfig",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"import { ServiceWorker } from 'aws-amplify';",
+			"const serviceWorker = new ServiceWorker();\n",
+
+			"// Register the service worker with `service-worker.js` with service worker scope `/`.",
+			"const registeredServiceWorker = await serviceWorker.register('/service-worker.js', '/');",
+
+			"serviceWorker.enablePush('XXXXXXXXX')"
+		]
+	},
+	"Amplify Service Worker Registration": {
+		"prefix": "sw.register",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"// Register the service worker with `service-worker.js` with service worker scope `/`.",
+			"registeredServiceWorker = await serviceWorker.register('${1:/service-worker.js}', '${2:/}');"
+		]
+	},
+	"Amplify Service Worker enablePush": {
+		"prefix": "sw.enablePush",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"serviceWorker.enablePush('${1:BLx__NGvdasMNkjd6VYPdzQJVBkb2qafh}')"
+		]
+	},
+	"Amplify Service Worker handle Push": {
+		"prefix": "sw.handlePush",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"/**",
+			"* Listen for incoming Push events",
+			"*/",
+			"addEventListener('push', (event) => {",
+			"\tvar data = {};",
+			"\tconsole.log(${1:'[Service Worker] Push Received.'});",
+			"\tconsole.log(${2:`[Service Worker] Push had this data:} \"${event.data.text()}\"`);\n",
+			"\tif (!(self.Notification && self.Notification.permission === 'granted'))",
+			"\t\treturn;\n",
+			"\tif (event.data)",
+			"\t\tdata = event.data.json();\n",
+			"\t// Customize the UI for the message box",
+			"\tvar title = data.title || ${3:\"Web Push Notification\"};",
+			"\tvar message = data.message || ${4:\"New Push Notification Received\"};",
+			"\tvar icon = ${5:\"images/notification-icon.png\"};",
+			"\tvar badge = ${6:'images/notification-badge.png'};",
+			"\tvar options = {",
+			"\t\tbody: message,",
+			"\t\ticon: icon,",
+			"\t\tbadge: badge",
+			"\t};\n",
+			"\tevent.waitUntil(self.registration.showNotification(title,options));\n",
+			"});"
+		]
+	}
 }
