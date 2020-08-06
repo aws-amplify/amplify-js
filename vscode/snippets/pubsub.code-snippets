@@ -56,12 +56,10 @@
 	"Amplify PubSub Unsubscribe": {
 		"prefix": "PubSub.unsubscribe",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": [
-			"sub.unsubscribe();",
-		]
+		"body": ["sub.unsubscribe();"]
 	},
-	"Publish One Topic PubSub": {
-		"prefix": "PubSub.publish One Topic",
+	"Amplify PubSub Publish": {
+		"prefix": "Pubsub.publish",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"PubSub.publish(",
