@@ -9,7 +9,7 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"//Hub.listen(channel: string | RegExp, callback)",
-			"Hub.listen('${1:Channel}', ({${2:payload}}) => {",
+			"Hub.listen('${1:Channel}', ({payload}) => {",
 			"\tconst { event, data, message } = payload;",
 			"\t//do something here",
 			"})"
@@ -32,6 +32,6 @@
 	"Hub Remove": {
 		"prefix": "Hub.remove",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": ["Hub.remove(\"Channel\", listener);"]
+		"body": ["Hub.remove(\"Channel\", ${1:listener});"]
 	}
 }
