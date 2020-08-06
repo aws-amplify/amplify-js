@@ -4,16 +4,13 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": ["import Amplify, { PubSub } from 'aws-amplify';"]
 	},
-	"Amplify PubSub Import Configuration": {
-		"prefix": "Pubsub.importconfig",
+	"Amplify PubSub Import Configure": {
+		"prefix": "Pubsub.importConfig",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"import { AWSIoTProvider } from 'aws-amplify/lib/PubSub/Providers';\n",
-			"// Apply plugin with configuration",
-			"Amplify.addPluggable(new AWSIoTProvider({",
-			"\taws_pubsub_region: ${1:'<YOUR-AWS-REGION>'},",
-			"\taws_pubsub_endpoint: ${2:'wss://xxxxxxxxxxxxx.iot.<YOUR-AWS-REGION>.amazonaws.com/mqtt'},",
-			"}));"
+			"import Amplify, { PubSub } from 'aws-amplify';",
+			"import awsconfig from './aws-exports';",
+			"Amplify.configure(awsconfig);"
 		]
 	},
 	"Amplify PubSub AWS IoT Configuration": {
@@ -45,7 +42,7 @@
 		"prefix": "Pubsub.subscribe",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"const sub = PubSub.subscribe('myTopic') // for mutiple topic use array [\"topic1\", \"topic2\"]",
+			"const sub = PubSub.subscribe('${1:myTopic1}') // for mutiple topic use array [\"topic1\", \"topic2\"]",
 			".subscribe({",
 			"\tnext: data => console.log('Message received', data),",
 			"\terror: error => console.error(error),",
