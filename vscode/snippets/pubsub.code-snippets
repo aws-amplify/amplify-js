@@ -1,52 +1,69 @@
 {
-    "Amplify PubSub AWS IoT Configuration": {
-        "prefix": "PubSub",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "import Amplify, { PubSub } from 'aws-amplify';",
-            "import { AWSIoTProvider } from 'aws-amplify/lib/PubSub/Providers';\n",
-            "// Apply plugin with configuration",
-            "Amplify.addPluggable(new AWSIoTProvider({",
-            "\taws_pubsub_region: ${1:'<YOUR-AWS-REGION>'},",
-            "\taws_pubsub_endpoint: ${2:'wss://xxxxxxxxxxxxx.iot.<YOUR-AWS-REGION>.amazonaws.com/mqtt'},",
-            "}));"
-        ]
-    },
-    "Amplify PubSub MQTT Configuration": {
-        "prefix": "PubSub",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "import Amplify, { PubSub } from 'aws-amplify';",
-            "import { MqttOverWSProvider } from 'aws-amplify/lib/PubSub/Providers';\n",
-            "// Apply plugin with configuration",
-            "Amplify.addPluggable(new MqttOverWSProvider({",
-            "\taws_pubsub_endpoint: ${1:'wss://iot.eclipse.org:443/mqtt'},",
-            "}));"
-        ]
-    },
-    "PubSub.subscribe": {
-        "prefix": "PubSub.subscribe",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body":[
-            "PubSub.subscribe(${1:'myTopic'}).subscribe({",
-            "\tnext: data => console.log('Message received', data),",
-            "\terror: error => console.error(error),",
-            "\tclose: () => console.log('Done'),",
-            "});"
-        ]
-    },
-    "Publish One Topic PubSub": {
-        "prefix": "PubSub.publish One Topic",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "PubSub.publish(${2:'myTopic1'}, { msg: ${2:'Hello to all subscribers!'} });"
-        ]
-    },
-    "Publish Multiple Topics PubSub": {
-        "prefix": "PubSub.publish Multiple Topics",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "PubSub.publish(${1:['myTopic1','myTopic2']}, { ${2:msg: 'Hello to all subscribers!'} });"
-        ]
-    }
+	"Amplify PubSub Import": {
+		"prefix": "Pubsub.import",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["import Amplify, { PubSub } from 'aws-amplify';"]
+	},
+	"Amplify PubSub Import Configure": {
+		"prefix": "Pubsub.importConfig",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"import Amplify, { PubSub } from 'aws-amplify';",
+			"import awsconfig from './aws-exports';",
+			"Amplify.configure(awsconfig);"
+		]
+	},
+	"Amplify PubSub AWS IoT Configuration": {
+		"prefix": "Pubsub.IoT",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"import Amplify, { PubSub } from 'aws-amplify';",
+			"import { AWSIoTProvider } from 'aws-amplify/lib/PubSub/Providers';\n",
+			"// Apply plugin with configuration",
+			"Amplify.addPluggable(new AWSIoTProvider({",
+			"\taws_pubsub_region: ${1:'<YOUR-AWS-REGION>'},",
+			"\taws_pubsub_endpoint: ${2:'wss://xxxxxxxxxxxxx.iot.<YOUR-AWS-REGION>.amazonaws.com/mqtt'},",
+			"}));"
+		]
+	},
+	"Amplify PubSub MQTT Configuration": {
+		"prefix": "Pubsub.MQTT",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"import Amplify, { PubSub } from 'aws-amplify';",
+			"import { MqttOverWSProvider } from 'aws-amplify/lib/PubSub/Providers';\n",
+			"// Apply plugin with configuration",
+			"Amplify.addPluggable(new MqttOverWSProvider({",
+			"\taws_pubsub_endpoint: ${1:'wss://iot.eclipse.org:443/mqtt'},",
+			"}));"
+		]
+	},
+	"Amplify PubSub Subscribe": {
+		"prefix": "Pubsub.subscribe",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"const sub = PubSub.subscribe('${1:myTopic1}') // for mutiple topic use array [\"topic1\", \"topic2\"]",
+			".subscribe({",
+			"\tnext: data => console.log('Message received', data),",
+			"\terror: error => console.error(error),",
+			"\tclose: () => console.log('Done'),",
+			"});"
+		]
+	},
+	"Amplify PubSub Unsubscribe": {
+		"prefix": "PubSub.unsubscribe",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["sub.unsubscribe();"]
+	},
+	"Amplify PubSub Publish": {
+		"prefix": "Pubsub.publish",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"PubSub.publish(",
+			"\t'${1:myTopic1}', // for mutiple topic use array [\"topic1\", \"topic2\"]",
+			"\t{ msg: '${2:myTopic1}' },",
+			"\t{ provider: \"AWSIoTProvider\"}",
+			");"
+		]
+	}
 }
