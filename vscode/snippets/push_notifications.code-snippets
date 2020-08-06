@@ -1,14 +1,29 @@
 {
+	"Push Notifications Import": {
+		"prefix": "pn.configure",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["import Amplify from 'aws-amplify';"]
+	},
+	"Push Notifications Import Configuration": {
+		"prefix": "pn.importConfig",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"import PushNotification from '@aws-amplify/pushnotification';",
+			"import { PushNotificationIOS } from '@react-native-community/push-notification-ios';",
+			"import awsconfig from './aws-exports';\n",
+			"Amplify.configure(awsconfig);"
+		]
+	},
 	"Push Notifications Configuration": {
 		"prefix": "pn.configure",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"Amplify.configure({",
-			"\tAuth: { /* ... */ },",
-			"\tAnalytics: { /* ... */ },",
+			"\tAuth: ${1:{ /* ... */ }},",
+			"\tAnalytics: ${2:{ /* ... */ }},",
 			"\tPushNotification: {",
-			"\t\tappId: 'XXXXXXXXXXabcdefghij1234567890ab',",
-			"\t\trequestIOSPermissions: false",
+			"\t\tappId: '${3:XXXXXXXXXXabcdefghij1234567890ab}',",
+			"\t\trequestIOSPermissions: ${4:false}",
 			"\t}",
 			"});"
 		]
