@@ -1,8 +1,8 @@
 {
 	"Push Notifications Import": {
-		"prefix": "pn.configure",
+		"prefix": "pn.import",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": ["import Amplify from 'aws-amplify';"]
+		"body": ["import {PushNotification} from 'aws-amplify';"]
 	},
 	"Push Notifications Import Configuration": {
 		"prefix": "pn.importConfig",
