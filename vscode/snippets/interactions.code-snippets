@@ -12,7 +12,7 @@
 			"Amplify.configure(awsconfig);"
 		]
 	},
-	"Interactions Manual Configuration": {
+	"Amplify Interactions Manual Configuration": {
 		"prefix": "Interactions.config",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
@@ -27,7 +27,30 @@
 			"});"
 		]
 	},
-	"handleComplete React": {
+	"Amplify Interactions Send": {
+		"prefix": "Interactions.send",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"const userInput = ${1:''};",
+			"Interactions.send(\"botname\", userInput);"
+		]
+	},
+	"Amplify Interactions Complete": {
+		"prefix": "Interactions.oncomplete",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"const handleComplete = function (err, confirmation) {",
+			"\tif (err) {",
+			"\t\talert('bot conversation failed')",
+			"\t\treturn;",
+			"}",
+			"\talert('done: ' + JSON.stringify(confirmation, null, 2));",
+			"\treturn 'Trip booked. Thank you! What would you like to do next?';",
+			"}",
+			"Interactions.onComplete(\"botName\", handleComplete );"
+		]
+	},
+	"Amplify Interactions handleComplete React": {
 		"prefix": "handleComplete React",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
@@ -42,7 +65,7 @@
 			"Interactions.onComplete(botName, handleComplete );"
 		]
 	},
-	"ChatBot React": {
+	"Amplify Interactions ChatBot React": {
 		"prefix": "<Chatbot React",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
@@ -57,7 +80,7 @@
 			"/>"
 		]
 	},
-	"ChatBot React Native": {
+	"Amplify Interactions ChatBot React Native": {
 		"prefix": "<Chatbot Native",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
@@ -74,7 +97,7 @@
 			"/>"
 		]
 	},
-	"handleComplete React Native": {
+	"Amplify Interactions handleComplete React Native": {
 		"prefix": "handleComplete Native",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
