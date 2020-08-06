@@ -1,59 +1,65 @@
 {
-    "Push Notifications Configuration": {
-        "prefix": "PushNotification.configure",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "PushNotification.configure({",
-                "\t// ...",
-                "\tPushNotification: {",
-                    "\t\tappId: ${1:'XXXXXXXXXXabcdefghij1234567890ab'},",
-                "\t}",
-                "\t// ...",
-            "});"
-        ]
-    },
-    "Push Notifications onNotification": {
-        "prefix": "PushNotification.onNotification",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "// get the notification data",
-            "PushNotification.onNotification((notification) => {",
-                "\t// Note that the notification object structure is different from Android and IOS",
-                "\tconsole.log('in app notification', notification);\n",
-                "\t// required on iOS only (see fetchCompletionHandler docs: https://facebook.github.io/react-native/docs/pushnotificationios.html)",
-                "\tnotification.finish(PushNotificationIOS.FetchResult.NoData);",
-            "});"
-        ]
-    },
-    "Push Notifications onRegister": {
-        "prefix": "PushNotification.onRegister",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "// get the registration token",
-            "PushNotification.onRegister((token) => {",
-                "\tconsole.log('in app registration', token);",
-            "});"
-        ]
-    },
-    "FetchResult": {
-        "prefix": "FetchResult",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "FetchResult"
-        ]
-    },
-    "onRegister": {
-        "prefix": "onRegister",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "onRegister"
-        ]
-    },
-    "onNotification": {
-        "prefix": "onNotification",
-        "scope": "javascript,javascriptreact,typescript,typescriptreact",
-        "body": [
-            "onNotification"
-        ]
-    }
+	"Push Notifications Import": {
+		"prefix": "pn.import",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": ["import {PushNotification} from 'aws-amplify';"]
+	},
+	"Push Notifications Import Configuration": {
+		"prefix": "pn.importConfig",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"import PushNotification from '@aws-amplify/pushnotification';",
+			"import { PushNotificationIOS } from '@react-native-community/push-notification-ios';",
+			"import awsconfig from './aws-exports';\n",
+			"Amplify.configure(awsconfig);"
+		]
+	},
+	"Push Notifications Configuration": {
+		"prefix": "pn.configure",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"Amplify.configure({",
+			"\tAuth: ${1:{ /* ... */ }},",
+			"\tAnalytics: ${2:{ /* ... */ }},",
+			"\tPushNotification: {",
+			"\t\tappId: '${3:XXXXXXXXXXabcdefghij1234567890ab}',",
+			"\t\trequestIOSPermissions: ${4:false}",
+			"\t}",
+			"});"
+		]
+	},
+	"Push Notifications onNotification": {
+		"prefix": "pn.onNotification",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"// get the notification data when notification is received",
+			"PushNotification.onNotification((notification) => {",
+			"\t// Note that the notification object structure is different from Android and IOS",
+			"\tconsole.log('in app notification', notification);\n",
+			"\t// required on iOS only (see fetchCompletionHandler docs: https://github.com/react-native-community/push-notification-ios#finish)",
+			"\tnotification.finish(PushNotificationIOS.FetchResult.NoData);",
+			"});"
+		]
+	},
+	"Push Notifications onNotificationOpened": {
+		"prefix": "pn.onNotificationOpened",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"// get the notification data when notification is opened",
+			"PushNotification.onNotificationOpened((notification) => {",
+			"\tconsole.log('the notification is opened', notification);",
+			"});"
+		]
+	},
+	"Push Notifications onRegister": {
+		"prefix": "pn.onRegister",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"// get the registration token",
+			"// This will only be triggered when the token is generated or updated.",
+			"PushNotification.onRegister((token) => {",
+			"\tconsole.log('in app registration', token);",
+			"});"
+		]
+	}
 }
