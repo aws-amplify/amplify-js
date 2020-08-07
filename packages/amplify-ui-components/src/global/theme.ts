@@ -56,6 +56,12 @@ if (browserOrNode().isBrowser) {
       --amplify-smoke-white: #f5f5f5;
 
       --amplify-red: #dd3f5b;
+
+      /* Box styling */
+      --amplify-box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.15);
+      --amplify-border-radius: 6px;
+      --amplify-padding: 35px 40px;
+      --amplify-margin-bottom: 20px;
     }
   `),
   );
