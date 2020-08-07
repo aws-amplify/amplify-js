@@ -5,13 +5,13 @@
 
 .section {
   position: relative;
-  margin-bottom: var(--amplify-margin-bottom);
+  margin-bottom: var(--margin-bottom);
   background-color: var(--background-color);
-  padding: var(--amplify-padding);
+  padding: var(--padding);
   text-align: left;
   display: inline-block;
-  border-radius: var(--amplify-border-radius);
-  box-shadow: var(--amplify-box-shadow);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
   box-sizing: border-box;
   font-family: var(--font-family);
 
