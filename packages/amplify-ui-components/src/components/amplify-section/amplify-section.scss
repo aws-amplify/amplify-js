@@ -5,13 +5,13 @@
 
 .section {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: var(--margin-bottom);
   background-color: var(--background-color);
-  padding: 35px 40px;
+  padding: var(--padding);
   text-align: left;
   display: inline-block;
-  border-radius: 6px;
-  box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.15);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
   box-sizing: border-box;
   font-family: var(--font-family);
 
