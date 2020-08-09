@@ -26,6 +26,7 @@ import {
 	XRNoDomElement,
 	XRSceneLoadFailure,
 } from '../Errors';
+import fetch from 'node-fetch';
 
 type SumerianSceneOptions = SceneOptions & { progressCallback: Function };
 
