@@ -1,4 +1,6 @@
-export enum Translations {
+import { AuthErrorStrings } from '@aws-amplify/auth';
+
+export enum AuthStrings {
   BACK_TO_SIGN_IN = 'Back to Sign In',
   CHANGE_PASSWORD_ACTION = 'Change',
   CHANGE_PASSWORD = 'Change Password',
@@ -31,6 +33,7 @@ export enum Translations {
   SELECT_MFA_TYPE_HEADER_TEXT = 'Select MFA Type',
   SELECT_MFA_TYPE_SUBMIT_BUTTON_TEXT = 'Verify',
   SEND_CODE = 'Send Code',
+  SUBMIT = 'Submit',
   SETUP_TOTP_REQUIRED = 'TOTP needs to be configured',
   SIGN_IN_ACTION = 'Sign In',
   SIGN_IN_HEADER_TEXT = 'Sign in to your account',
@@ -50,6 +53,7 @@ export enum Translations {
   SUCCESS_MFA_TYPE = 'Success! Your MFA Type is now:',
   TOTP_HEADER_TEXT = 'Scan then enter verification code',
   TOTP_LABEL = 'Enter Security Code:',
+  TOTP_ISSUER = 'AWSCognito',
   TOTP_SETUP_FAILURE = 'TOTP Setup has failed',
   TOTP_SUBMIT_BUTTON_TEXT = 'Verify Security Token',
   TOTP_SUCCESS_MESSAGE = 'Setup TOTP successfully!',
@@ -101,4 +105,9 @@ export enum Translations {
   IMAGE_PICKER_BUTTON_TEXT = 'Upload',
   PICKER_TEXT = 'Pick a file',
   TEXT_FALLBACK_CONTENT = 'Fallback Content',
+  CONFIRM_SIGN_UP_FAILED = 'Confirm Sign Up Failed',
+  SIGN_UP_FAILED = 'Sign Up Failed',
 }
+
+type Translations = AuthErrorStrings | AuthStrings;
+export const Translations = { ...AuthStrings, ...AuthErrorStrings };

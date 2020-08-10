@@ -11,9 +11,9 @@ export class AmplifyUsernameField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */
   @Prop() fieldId: string = USERNAME_SUFFIX;
   /** Used for the username label */
-  @Prop() label: string = I18n.get(Translations.USERNAME_LABEL);
+  @Prop() label: string = Translations.USERNAME_LABEL;
   /** Used for the placeholder label */
-  @Prop() placeholder: string = I18n.get(Translations.USERNAME_PLACEHOLDER);
+  @Prop() placeholder: string = Translations.USERNAME_PLACEHOLDER;
   /** The required flag in order to make an input required prior to submitting a form */
   @Prop() required: boolean = false;
   /** The callback, called when the input is modified by the user. */
@@ -29,8 +29,8 @@ export class AmplifyUsernameField {
     return (
       <amplify-form-field
         fieldId={this.fieldId}
-        label={this.label}
-        placeholder={this.placeholder}
+        label={I18n.get(this.label)}
+        placeholder={I18n.get(this.placeholder)}
         required={this.required}
         handleInputChange={this.handleInputChange}
         value={this.value}

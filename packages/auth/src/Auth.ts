@@ -25,6 +25,7 @@ import {
 	isCognitoHostedOpts,
 	isFederatedSignInOptions,
 	isFederatedSignInOptionsCustom,
+	hasCustomState,
 	FederatedSignInOptionsCustom,
 	LegacyProvider,
 	FederatedSignInOptions,
@@ -970,6 +971,12 @@ export class AuthClass {
 						user['challengeParam'] = challengeParam;
 						resolve(user);
 					},
+					totpRequired: (challengeName, challengeParam) => {
+						logger.debug('signIn mfa setup', challengeName);
+						user['challengeName'] = challengeName;
+						user['challengeParam'] = challengeParam;
+						resolve(user);
+					},
 				},
 				clientMetadata
 			);
@@ -1474,7 +1481,7 @@ export class AuthClass {
 						onSuccess: data => {
 							logger.debug('global sign out success');
 							if (isSignedInHostedUI) {
-								return res(this._oAuthHandler.signOut());
+								this.oAuthSignOutRedirect(res, rej);
 							} else {
 								return res();
 							}
@@ -1489,12 +1496,37 @@ export class AuthClass {
 				logger.debug('user sign out', user);
 				user.signOut();
 				if (isSignedInHostedUI) {
-					return res(this._oAuthHandler.signOut());
+					this.oAuthSignOutRedirect(res, rej);
 				} else {
 					return res();
 				}
 			}
 		});
+	}
+
+	private oAuthSignOutRedirect(
+		resolve: () => void,
+		reject: (reason?: any) => void
+	) {
+		const { isBrowser } = JS.browserOrNode();
+
+		if (isBrowser) {
+			this.oAuthSignOutRedirectOrReject(reject);
+		} else {
+			this.oAuthSignOutAndResolve(resolve);
+		}
+	}
+
+	private oAuthSignOutAndResolve(resolve: () => void) {
+		this._oAuthHandler.signOut();
+		resolve();
+	}
+
+	private oAuthSignOutRedirectOrReject(reject: (reason?: any) => void) {
+		this._oAuthHandler.signOut(); // this method redirects url
+
+		// App should be redirected to another url otherwise it will reject
+		setTimeout(() => reject('Signout timeout fail'), 3000);
 	}
 
 	/**
@@ -1756,6 +1788,7 @@ export class AuthClass {
 		if (
 			isFederatedSignInOptions(providerOrOptions) ||
 			isFederatedSignInOptionsCustom(providerOrOptions) ||
+			hasCustomState(providerOrOptions) ||
 			typeof providerOrOptions === 'undefined'
 		) {
 			const options = providerOrOptions || {

@@ -306,6 +306,10 @@ export namespace Components {
          */
         "headerText": string;
         /**
+          * The text displayed inside of the send code button for the form
+         */
+        "sendButtonText": string;
+        /**
           * The text displayed inside of the submit button for the form
          */
         "submitButtonText": string;
@@ -1032,6 +1036,10 @@ export namespace Components {
          */
         "headerText": string;
         /**
+          * Used for customizing the issuer string in the qr code image
+         */
+        "issuer": string;
+        /**
           * Used in order to configure TOTP for a user
          */
         "user": CognitoUserInterface;
@@ -1748,6 +1756,10 @@ declare namespace LocalJSX {
           * The header text of the forgot password section
          */
         "headerText"?: string;
+        /**
+          * The text displayed inside of the send code button for the form
+         */
+        "sendButtonText"?: string;
         /**
           * The text displayed inside of the submit button for the form
          */
@@ -2478,6 +2490,10 @@ declare namespace LocalJSX {
           * Used for header text in totp setup component
          */
         "headerText"?: string;
+        /**
+          * Used for customizing the issuer string in the qr code image
+         */
+        "issuer"?: string;
         /**
           * Used in order to configure TOTP for a user
          */

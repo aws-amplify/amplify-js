@@ -1,7 +1,7 @@
 import { Component, Prop, h, State, Host } from '@stencil/core';
 import { Logger, I18n } from '@aws-amplify/core';
 import { AccessLevel } from '../../common/types/storage-types';
-import { calcKey, getStorageObject, putStorageObject } from '../../common/storage-helper';
+import { calcKey, getStorageObject, putStorageObject } from '../../common/storage-helpers';
 import { Translations } from '../../common/Translations';
 
 const logger = new Logger('S3ImagePicker');
@@ -23,13 +23,13 @@ export class AmplifyS3ImagePicker {
   /** Callback used to generate custom key value */
   @Prop() fileToKey: (data: object) => string | string;
   /** Title string value */
-  @Prop() headerTitle?: string = I18n.get(Translations.IMAGE_PICKER_TITLE);
+  @Prop() headerTitle?: string = Translations.IMAGE_PICKER_TITLE;
   /** Header Hint value in string */
-  @Prop() headerHint?: string = I18n.get(Translations.IMAGE_PICKER_HINT);
+  @Prop() headerHint?: string = Translations.IMAGE_PICKER_HINT;
   /** Placeholder hint that goes under the placeholder image */
-  @Prop() placeholderHint?: string = I18n.get(Translations.IMAGE_PICKER_PLACEHOLDER_HINT);
+  @Prop() placeholderHint?: string = Translations.IMAGE_PICKER_PLACEHOLDER_HINT;
   /** Upload Button Text as string */
-  @Prop() buttonText?: string = I18n.get(Translations.IMAGE_PICKER_BUTTON_TEXT);
+  @Prop() buttonText?: string = Translations.IMAGE_PICKER_BUTTON_TEXT;
   /** Source for the image */
   @State() src: string | object;
 
@@ -54,10 +54,10 @@ export class AmplifyS3ImagePicker {
           <amplify-photo-picker
             previewSrc={this.src}
             handleClick={this.handlePick}
-            headerTitle={this.headerTitle}
-            headerHint={this.headerHint}
-            placeholderHint={this.placeholderHint}
-            buttonText={this.buttonText}
+            headerTitle={I18n.get(this.headerTitle)}
+            headerHint={I18n.get(this.headerHint)}
+            placeholderHint={I18n.get(this.placeholderHint)}
+            buttonText={I18n.get(this.buttonText)}
           ></amplify-photo-picker>
         </slot>
       </Host>
