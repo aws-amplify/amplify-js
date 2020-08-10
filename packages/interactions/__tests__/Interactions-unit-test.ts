@@ -7,6 +7,16 @@ import {
 	PostTextCommand,
 } from '@aws-sdk/client-lex-runtime-service';
 
+(global as any).Response = () => {};
+(global as any).Response.prototype.arrayBuffer = (blob: Blob) => {
+	return Promise.resolve(new ArrayBuffer(0));
+};
+
+// mock stream response
+const createBlob = () => {
+	return new Blob();
+};
+
 LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 	if (command instanceof PostTextCommand) {
 		if (command.input.inputText === 'done') {
@@ -36,12 +46,14 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 						m1: 'voice:hi',
 						m2: 'voice:done',
 					},
+					audioStream: createBlob(),
 				};
 				return Promise.resolve(result);
 			} else {
 				const result = {
 					message: 'voice:echo:' + command.input.inputStream,
 					dialogState: 'ElicitSlot',
+					audioStream: createBlob(),
 				};
 				return Promise.resolve(result);
 			}
@@ -54,12 +66,14 @@ LexRuntimeServiceClient.prototype.send = jest.fn((command, callback) => {
 						m1: 'hi',
 						m2: 'done',
 					},
+					audioStream: createBlob(),
 				};
 				return Promise.resolve(result);
 			} else {
 				const result = {
 					message: 'echo:' + command.input.inputStream,
 					dialogState: 'ElicitSlot',
+					audioStream: createBlob(),
 				};
 				return Promise.resolve(result);
 			}
@@ -351,6 +365,7 @@ describe('Interactions', () => {
 			expect(responseVoice).toEqual({
 				dialogState: 'ElicitSlot',
 				message: 'voice:echo:voice:hi',
+				audioStream: new Uint8Array(),
 			});
 
 			const responseText = await interactions.send(
@@ -360,6 +375,7 @@ describe('Interactions', () => {
 			expect(responseText).toEqual({
 				dialogState: 'ElicitSlot',
 				message: 'echo:hi',
+				audioStream: new Uint8Array(),
 			});
 		});
 
@@ -424,6 +440,7 @@ describe('Interactions', () => {
 			expect(responseVoice).toEqual({
 				dialogState: 'ElicitSlot',
 				message: 'voice:echo:voice:hi',
+				audioStream: new Uint8Array(),
 			});
 
 			const responseText = await interactions.send(
@@ -433,11 +450,13 @@ describe('Interactions', () => {
 			expect(responseText).toEqual({
 				dialogState: 'ElicitSlot',
 				message: 'echo:hi',
+				audioStream: new Uint8Array(),
 			});
 		});
 
 		describe('Sending messages to bot', () => {
-			test('Interactions configuration and send message to existing bot and call onComplete from Interaction.onComplete', async () => {
+			jest.useFakeTimers();
+			test('onComplete callback from `Interactions.onComplete` called with text', async () => {
 				const curCredSpyOn = jest
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
@@ -466,7 +485,6 @@ describe('Interactions', () => {
 				interactions.onComplete('BookTripMOBILEHUB', onCompleteCallback);
 				await interactions.send('BookTripMOBILEHUB', 'hi');
 				const response = await interactions.send('BookTripMOBILEHUB', 'done');
-				jest.runAllTimers();
 				expect(response).toEqual({
 					dialogState: 'ReadyForFulfillment',
 					message: 'echo:done',
@@ -476,17 +494,60 @@ describe('Interactions', () => {
 					},
 				});
 
-				const interactionsMessageVoice = {
-					content: 'voice:done',
-					options: {
-						messageType: 'voice',
-					},
-				};
-
 				const interactionsMessageText = {
 					content: 'done',
 					options: {
 						messageType: 'text',
+					},
+				};
+
+				const textResponse = await interactions.send(
+					'BookTripMOBILEHUB',
+					interactionsMessageText
+				);
+				expect(textResponse).toEqual({
+					dialogState: 'ReadyForFulfillment',
+					message: 'echo:done',
+					slots: {
+						m1: 'hi',
+						m2: 'done',
+					},
+					audioStream: new Uint8Array(),
+				});
+				jest.runAllTimers();
+			});
+
+			test('onComplete callback from `Interactions.onComplete` called with voice', async () => {
+				const curCredSpyOn = jest
+					.spyOn(Credentials, 'get')
+					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
+
+				function onCompleteCallback(err, confirmation) {
+					expect(confirmation).toEqual({
+						slots: { m1: 'voice:hi', m2: 'voice:done' },
+					});
+				}
+
+				const configuration = {
+					Interactions: {
+						bots: {
+							BookTripMOBILEHUB: {
+								name: 'BookTripMOBILEHUB',
+								alias: '$LATEST',
+								region: 'us-east-1',
+							},
+						},
+					},
+				};
+
+				const interactions = new Interactions({});
+				const config = interactions.configure(configuration);
+				interactions.onComplete('BookTripMOBILEHUB', onCompleteCallback);
+
+				const interactionsMessageVoice = {
+					content: 'voice:done',
+					options: {
+						messageType: 'voice',
 					},
 				};
 
@@ -501,23 +562,12 @@ describe('Interactions', () => {
 						m1: 'voice:hi',
 						m2: 'voice:done',
 					},
+					audioStream: new Uint8Array(),
 				});
-
-				const textResponse = await interactions.send(
-					'BookTripMOBILEHUB',
-					interactionsMessageText
-				);
-				expect(textResponse).toEqual({
-					dialogState: 'ReadyForFulfillment',
-					message: 'echo:done',
-					slots: {
-						m1: 'hi',
-						m2: 'done',
-					},
-				});
+				jest.runAllTimers();
 			});
 
-			test('Interactions configuration and send message to existing bot and call onComplete from configure onComplete', async () => {
+			test('onComplete callback from configure being called with text', async () => {
 				const curCredSpyOn = jest
 					.spyOn(Credentials, 'get')
 					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
@@ -525,7 +575,6 @@ describe('Interactions', () => {
 				function onCompleteCallback(err, confirmation) {
 					expect(confirmation).toEqual({ slots: { m1: 'hi', m2: 'done' } });
 				}
-
 				const configuration = {
 					Interactions: {
 						bots: {
@@ -540,14 +589,12 @@ describe('Interactions', () => {
 				};
 
 				const interactions = new Interactions({});
-
 				const config = interactions.configure(configuration);
 
 				expect(config).toEqual(configuration.Interactions);
 
 				await interactions.send('BookTripMOBILEHUB', 'hi');
 				const response = await interactions.send('BookTripMOBILEHUB', 'done');
-				jest.runAllTimers();
 				expect(response).toEqual({
 					dialogState: 'ReadyForFulfillment',
 					message: 'echo:done',
@@ -556,33 +603,12 @@ describe('Interactions', () => {
 						m2: 'done',
 					},
 				});
-
-				const interactionsMessageVoice = {
-					content: 'voice:done',
-					options: {
-						messageType: 'voice',
-					},
-				};
-
 				const interactionsMessageText = {
 					content: 'done',
 					options: {
 						messageType: 'text',
 					},
 				};
-
-				const voiceResponse = await interactions.send(
-					'BookTripMOBILEHUB',
-					interactionsMessageVoice
-				);
-				expect(voiceResponse).toEqual({
-					dialogState: 'ReadyForFulfillment',
-					message: 'voice:echo:voice:done',
-					slots: {
-						m1: 'voice:hi',
-						m2: 'voice:done',
-					},
-				});
 
 				const textResponse = await interactions.send(
 					'BookTripMOBILEHUB',
@@ -595,7 +621,59 @@ describe('Interactions', () => {
 						m1: 'hi',
 						m2: 'done',
 					},
+					audioStream: new Uint8Array(),
 				});
+				jest.runAllTimers();
+			});
+
+			test('onComplete callback from configure being called with voice', async () => {
+				const curCredSpyOn = jest
+					.spyOn(Credentials, 'get')
+					.mockImplementation(() => Promise.resolve({ identityId: '1234' }));
+
+				function onCompleteCallback(err, confirmation) {
+					expect(confirmation).toEqual({
+						slots: { m1: 'voice:hi', m2: 'voice:done' },
+					});
+				}
+				const configuration = {
+					Interactions: {
+						bots: {
+							BookTripMOBILEHUB: {
+								name: 'BookTripMOBILEHUB',
+								alias: '$LATEST',
+								region: 'us-east-1',
+								onComplete: onCompleteCallback,
+							},
+						},
+					},
+				};
+
+				const interactions = new Interactions({});
+				const config = interactions.configure(configuration);
+
+				expect(config).toEqual(configuration.Interactions);
+
+				const interactionsMessageVoice = {
+					content: 'voice:done',
+					options: {
+						messageType: 'voice',
+					},
+				};
+				const voiceResponse = await interactions.send(
+					'BookTripMOBILEHUB',
+					interactionsMessageVoice
+				);
+				expect(voiceResponse).toEqual({
+					dialogState: 'ReadyForFulfillment',
+					message: 'voice:echo:voice:done',
+					slots: {
+						m1: 'voice:hi',
+						m2: 'voice:done',
+					},
+					audioStream: new Uint8Array(),
+				});
+				jest.runAllTimers();
 			});
 
 			test('aws-exports configuration and send message to not existing bot', async () => {
@@ -836,6 +914,7 @@ describe('Interactions', () => {
 				expect(responseVoice).toEqual({
 					dialogState: 'ElicitSlot',
 					message: 'voice:echo:voice:hi',
+					audioStream: new Uint8Array(),
 				});
 
 				const responseText = await interactions.send(
@@ -845,6 +924,7 @@ describe('Interactions', () => {
 				expect(responseText).toEqual({
 					dialogState: 'ElicitSlot',
 					message: 'echo:hi',
+					audioStream: new Uint8Array(),
 				});
 			});
 		});
