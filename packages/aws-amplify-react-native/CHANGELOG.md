@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.3...aws-amplify-react-native@4.2.4) (2020-08-06)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** lock react-native-vector-icons version ([#6432](https://github.com/aws-amplify/amplify-js/issues/6432)) ([5cc818b](https://github.com/aws-amplify/amplify-js/commit/5cc818bab04450365626b593a7521a28d343a2de))
+
+
+
+
+
+## [4.2.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.2...aws-amplify-react-native@4.2.3) (2020-07-27)
+
+
+### Bug Fixes
+
+* **@aws-amplify/interactions:** fix interactions v3 bugs and refactor type ([#6381](https://github.com/aws-amplify/amplify-js/issues/6381)) ([8c6fb4a](https://github.com/aws-amplify/amplify-js/commit/8c6fb4aefa60b36ed33d89c431e743f674119bde))
+
+
+
+
+
+## [4.2.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.1...aws-amplify-react-native@4.2.2) (2020-07-22)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Update authState after a successful Auth.signIn call ([#6276](https://github.com/aws-amplify/amplify-js/issues/6276)) ([e79a805](https://github.com/aws-amplify/amplify-js/commit/e79a805534c25dcd52ea4e55ef8b4fbd0f5dce36))
+
+
+
+
+
+## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.0...aws-amplify-react-native@4.2.1) (2020-06-18)
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+
+
+
+
 # [4.2.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.1.2...aws-amplify-react-native@4.2.0) (2020-05-22)
 
 

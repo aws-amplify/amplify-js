@@ -117,8 +117,9 @@ export default class Authenticator extends React.Component<
 		} = capsule;
 		switch (event) {
 			case 'cognitoHostedUI':
-				return this.handleStateChange('signedIn', data);
-
+			case 'signIn':
+				this.checkContact(data);
+				break;
 			case 'cognitoHostedUI_failure':
 			case 'parsingUrl_failure':
 			case 'signOut':

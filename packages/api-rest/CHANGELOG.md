@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.1.4...@aws-amplify/api-rest@1.1.5) (2020-08-06)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+
+
+
+
+## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.1.3...@aws-amplify/api-rest@1.1.4) (2020-07-27)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+
+
+
+
+## [1.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.1.2...@aws-amplify/api-rest@1.1.3) (2020-07-22)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+
+
+
+
+## [1.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.1.1...@aws-amplify/api-rest@1.1.2) (2020-07-09)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+
+
+
+
+## [1.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.1.0...@aws-amplify/api-rest@1.1.1) (2020-07-07)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+
+
+
+
+# [1.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.0.18...@aws-amplify/api-rest@1.1.0) (2020-06-18)
+
+
+### Features
+
+* Automatically handle clock drift/skew for API calls ([#5869](https://github.com/aws-amplify/amplify-js/issues/5869)) ([6218ff6](https://github.com/aws-amplify/amplify-js/commit/6218ff62269056f46d65760c3ec61baadb3742f4))
+
+
+
+
+
 ## [1.0.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.0.17...@aws-amplify/api-rest@1.0.18) (2020-06-09)
 
 **Note:** Version bump only for package @aws-amplify/api-rest
