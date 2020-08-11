@@ -915,6 +915,7 @@
 							exportSampleRate
 						);
 						var encodedWav = encodeWAV(downsampledBuffer);
+						console.log(buf2hex(encodedWav.buffer));
 						var audioBlob = new Blob([encodedWav], {
 							type: 'application/octet-stream',
 						});
@@ -967,6 +968,15 @@
 						return result;
 					}
 
+					function buf2hex(buffer) {
+						// buffer is an ArrayBuffer
+						return Array.prototype.map
+							.call(new Uint8Array(buffer), x =>
+								('00' + x.toString(16)).slice(-2)
+							)
+							.join('');
+					}
+
 					function floatTo16BitPCM(output, offset, input) {
 						for (var i = 0; i < input.length; i++, offset += 2) {
 							var s = Math.max(-1, Math.min(1, input[i]));
@@ -991,8 +1001,8 @@
 						view.setUint32(16, 16, true);
 						view.setUint16(20, 1, true);
 						view.setUint16(22, 1, true);
-						view.setUint32(24, recordSampleRate, true);
-						view.setUint32(28, recordSampleRate * 2, true);
+						view.setUint32(24, 16000, true);
+						view.setUint32(28, 16000 * 2, true);
 						view.setUint16(32, 2, true);
 						view.setUint16(34, 16, true);
 						writeString(view, 36, 'data');

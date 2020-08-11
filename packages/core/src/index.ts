@@ -29,6 +29,7 @@ export { ServiceWorker } from './ServiceWorker';
 export { ICredentials } from './types';
 export { StorageHelper, MemoryStorage } from './StorageHelper';
 export { Platform, getAmplifyUserAgent } from './Platform';
+export { AudioRecorder } from './AudioControl';
 export * from './constants';
 
 export const Constants = {

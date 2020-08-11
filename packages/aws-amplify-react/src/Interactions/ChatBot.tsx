@@ -7,7 +7,7 @@ import {
 } from '../AmplifyUI';
 import { Input, Button } from '../AmplifyTheme';
 
-import { I18n } from '@aws-amplify/core';
+import { I18n, AudioRecorder } from '@aws-amplify/core';
 import { Interactions } from '@aws-amplify/interactions';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { chatBot } from '../Amplify-UI/data-test-attributes';
@@ -55,7 +55,7 @@ const STATES = {
 
 const defaultVoiceConfig = {
 	silenceDetectionConfig: {
-		time: 2000,
+		time: 1500,
 		amplitude: 0.2,
 	},
 };
@@ -94,9 +94,12 @@ export interface IChatBotState {
 
 export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 	private listItemsRef: any;
+	private audioRecorder: AudioRecorder;
 
 	constructor(props) {
 		super(props);
+		this.audioRecorder = new AudioRecorder({ time: 1500, amplitude: 0.2 });
+
 		if (this.props.voiceEnabled) {
 			require('./aws-lex-audio');
 			// @ts-ignore
@@ -158,22 +161,18 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 					micButtonDisabled: false,
 				},
 				() => {
-					audioControl.startRecording(
-						this.onSilenceHandler,
-						null,
-						this.props.voiceConfig.silenceDetectionConfig
-					);
+					this.audioRecorder.startRecording(this.onSilenceHandler);
 				}
 			);
 		}
 	}
 
 	onSilenceHandler() {
-		audioControl.stopRecording();
+		this.audioRecorder.stopRecording();
 		if (!this.state.continueConversation) {
 			return;
 		}
-		audioControl.exportWAV(blob => {
+		this.audioRecorder.exportWAV(blob => {
 			this.setState(
 				{
 					currentVoiceState: STATES.SENDING,
@@ -235,7 +234,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 			return;
 		}
 		if (this.state.lexResponse.contentType === 'audio/mpeg') {
-			audioControl.play(this.state.lexResponse.audioStream, () => {
+			this.audioRecorder.play(this.state.lexResponse.audioStream, () => {
 				if (
 					this.state.lexResponse.dialogState === 'ReadyForFulfillment' ||
 					this.state.lexResponse.dialogState === 'Fulfilled' ||
@@ -257,7 +256,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 							micButtonDisabled: false,
 						},
 						() => {
-							audioControl.startRecording(
+							this.audioRecorder.startRecording(
 								this.onSilenceHandler,
 								null,
 								this.props.voiceConfig.silenceDetectionConfig
@@ -288,7 +287,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 				micButtonDisabled: false,
 			},
 			() => {
-				audioControl.clear();
+				this.audioRecorder.clear();
 			}
 		);
 	}
@@ -424,7 +423,6 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 
 	render() {
 		const { title, theme, onComplete } = this.props;
-
 		return (
 			<FormSection theme={theme}>
 				{title && (

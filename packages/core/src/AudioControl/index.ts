@@ -1,0 +1,1 @@
+export { AudioRecorder } from './control';
