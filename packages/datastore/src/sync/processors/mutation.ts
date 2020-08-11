@@ -30,6 +30,7 @@ import {
 	createMutationInstanceFromModelOperation,
 	TransformerMutationType,
 } from '../utils';
+import { Storage as storageCategory } from '@aws-amplify/storage';
 
 const MAX_ATTEMPTS = 10;
 
@@ -141,8 +142,17 @@ class MutationProcessor {
 					if (entry && typeof entry === 'object') {
 						var keys = Object.keys(entry);
 						for (var key of keys) {
-							if (key === 'file' || entry[key] instanceof File) {
-								entry[key] = JSON.stringify({ S3Link: 'temp' });
+							if (entry[key] instanceof File) {
+								const Folder = `ComplexObjects/${model}`;
+								var file = entry[key];
+								const result = await storageCategory.put(
+									`${Folder}/${file.name}`,
+									file,
+									{ contentType: file.type }
+								);
+								console.log(result);
+								const S3key = `${Folder}/${file.name}`;
+								entry[key] = JSON.stringify({ S3Link: S3key });
 							}
 							if (typeof entry[key] === 'object' || Array.isArray(entry)) {
 								stack.push(entry[key]);
