@@ -18,8 +18,10 @@ import {
   handlePhoneNumberChange,
 } from '../../common/helpers';
 import { Translations } from '../../common/Translations';
+import { handleSignIn } from '../../common/auth-helpers';
 
 /**
+ * @slot header-subtitle - Subtitle content placed below header text
  * @slot footer - Content is place in the footer of the component
  * @slot primary-footer-content - Content placed on the right side of the footer
  * @slot secondary-footer-content - Content placed on the left side of the footer
@@ -132,7 +134,14 @@ export class AmplifySignUp {
 
     try {
       const data = await Auth.signUp(this.signUpAttributes);
-      this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
+      if (!data) {
+        throw new Error(Translations.SIGN_UP_FAILED);
+      }
+      if (data.userConfirmed) {
+        await handleSignIn(this.signUpAttributes.username, this.signUpAttributes.password, this.handleAuthStateChange);
+      } else {
+        this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
+      }
     } catch (error) {
       dispatchToastHubEvent(error);
     }
@@ -306,6 +315,9 @@ export class AmplifySignUp {
         handleSubmit={this.handleSubmit}
         testDataPrefix={'sign-up'}
       >
+        <div slot="subtitle">
+          <slot name="header-subtitle"></slot>
+        </div>
         <amplify-auth-fields formFields={this.newFormFields} />
         <div class="sign-up-form-footer" slot="amplify-form-section-footer">
           <slot name="footer">

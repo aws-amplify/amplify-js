@@ -782,6 +782,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
 - data.path Cookies path (default: '/')
 - data.expires Cookie expiration (in days, default: 365)
 - data.secure Cookie secure flag (default: true)
+- data.sameSite Cookie request behaviour (default: null)
 
 **Use case 27.** Selecting the MFA method and authenticating using TOTP.
 
