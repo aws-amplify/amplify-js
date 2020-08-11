@@ -3,7 +3,7 @@ import { AccessLevel, StorageObject } from '../../common/types/storage-types';
 import { Storage } from '@aws-amplify/storage';
 import { Logger, filenameToContentType, I18n } from '@aws-amplify/core';
 import { NO_STORAGE_MODULE_FOUND } from '../../common/constants';
-import { calcKey, imageFileType, putStorageObject } from '../../common/storage-helper';
+import { calcKey, imageFileType, putStorageObject } from '../../common/storage-helpers';
 import { v4 as uuid } from 'uuid';
 import { Translations } from '../../common/Translations';
 

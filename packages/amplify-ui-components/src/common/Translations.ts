@@ -105,6 +105,8 @@ export enum AuthStrings {
   IMAGE_PICKER_BUTTON_TEXT = 'Upload',
   PICKER_TEXT = 'Pick a file',
   TEXT_FALLBACK_CONTENT = 'Fallback Content',
+  CONFIRM_SIGN_UP_FAILED = 'Confirm Sign Up Failed',
+  SIGN_UP_FAILED = 'Sign Up Failed',
 }
 
 type Translations = AuthErrorStrings | AuthStrings;
