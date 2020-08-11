@@ -8,6 +8,7 @@
 		"prefix": "Interactions.importconfig",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
+			"import Amplify, { Interactions } from 'aws-amplify'",
 			"import awsconfig from './aws-exports';\n",
 			"Amplify.configure(awsconfig);"
 		]
@@ -16,7 +17,7 @@
 		"prefix": "Interactions.config",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"tInteractions.configure({",
+			"Interactions.configure({",
 			"\tbots: {",
 			"\t\t${3:\"BookTripMOBILEHUB\"}: {",
 			"\t\t\t${4:\"name\": \"BookTrip\"},",
@@ -32,7 +33,7 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"const userInput = ${1:''};",
-			"Interactions.send(\"botname\", userInput);"
+			"Interactions.send(${2:'botname'}, userInput);"
 		]
 	},
 	"Amplify Interactions Complete": {
@@ -47,89 +48,7 @@
 			"\talert('done: ' + JSON.stringify(confirmation, null, 2));",
 			"\treturn 'Trip booked. Thank you! What would you like to do next?';",
 			"}",
-			"Interactions.onComplete(\"botName\", handleComplete );"
-		]
-	},
-	"Amplify Interactions handleComplete React": {
-		"prefix": "handleComplete React",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": [
-			"const handleComplete = function (err, confirmation) {",
-			"\tif (err) {",
-			"\t\talert('bot conversation failed')",
-			"\t\treturn;",
-			"\t}",
-			"\talert('done: ' + JSON.stringify(confirmation, null, 2));\n",
-			"\treturn ${1:'Trip booked. Thank you! What would you like to do next?'};",
-			"}\n",
-			"Interactions.onComplete(botName, handleComplete );"
-		]
-	},
-	"Amplify Interactions ChatBot React": {
-		"prefix": "<Chatbot React",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": [
-			"<ChatBot",
-			"\ttitle=${1:\"My Bot\"}",
-			"\ttheme={${2:myTheme}}",
-			"\tbotName=${3:\"BookTrip\"}",
-			"\twelcomeMessage=${4:\"Welcome, how can I help you today?\"}",
-			"\tonComplete={${5:this.handleComplete.bind(this)}}",
-			"\tclearonComplete={${6:true}}",
-			"\tconversationModeOn={false}",
-			"/>"
-		]
-	},
-	"Amplify Interactions ChatBot React Native": {
-		"prefix": "<Chatbot Native",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": [
-			"<ChatBot",
-			"\tbotName={${1:botName}}",
-			"\twelcomeMessage={${2:welcomeMessage}}",
-			"\tonComplete={${3:this.handleComplete}}",
-			"\tclearonComplete={${4:false}}",
-			"\tstyles={Stylesheet.create({",
-			"\t\titemMe: {",
-			"\t\t\tcolor: ${5:'red'}",
-			"\t\t}",
-			"\t})}",
-			"/>"
-		]
-	},
-	"Amplify Interactions handleComplete React Native": {
-		"prefix": "handleComplete Native",
-		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": [
-			"handleComplete(err, confirmation) {",
-			"\tif (err) {",
-			"\t\tAlert.alert('Error','Bot conversation failed', [{ text: 'OK' }]);",
-			"\t\treturn;",
-			"\t}",
-			"\tAlert.alert('Done', JSON.stringify(confirmation, null, 2), [{ text: 'OK' }]);\n",
-			"\tthis.setState({",
-			"\tbotName: ${1:'BookTrip'}",
-			"\t});",
-			"\treturn ${2:'Trip booked. Thank you! What would you like to do next?'};",
-			"}\n",
-			"render() {",
-			"\tconst { botName, showChatBot, welcomeMessage } = this.state;\n",
-			"\treturn (",
-			"\t<SafeAreaView style={styles.container}>",
-			"\t\t<ChatBot",
-			"\t\t\tbotName={botName}",
-			"\t\t\twelcomeMessage={welcomeMessage}",
-			"\t\t\tonComplete={this.handleComplete}",
-			"\t\t\tclearonComplete={false}",
-			"\t\t\tstyles={Stylesheet.create({",
-			"\t\t\t\titemMe: {",
-			"\t\t\t\t\tcolor: ${3:'red'}",
-			"\t\t\t\t}",
-			"\t\t\t})}",
-			"\t\t/>",
-			"\t</SafeAreaView>",
-			"\t);",
-			"}"
+			"Interactions.onComplete(${1:\"botName\"}, handleComplete );"
 		]
 	}
 }
