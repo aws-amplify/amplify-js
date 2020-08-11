@@ -153,8 +153,10 @@ class MutationProcessor {
 								console.log(result);
 								const S3key = `${Folder}/${file.name}`;
 								entry[key] = JSON.stringify({ S3Link: S3key });
-							}
-							if (typeof entry[key] === 'object' || Array.isArray(entry)) {
+							} else if (
+								typeof entry[key] === 'object' ||
+								Array.isArray(entry)
+							) {
 								stack.push(entry[key]);
 							}
 						}
