@@ -4,8 +4,8 @@
 		"description": "DataStore import",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"import { DataStore } from '@aws-amplify/datastore'",
-			"import { ${1:Todo} } from './models'",
+			"import { DataStore } from '@aws-amplify/datastore';",
+			"import { ${1:Todo} } from './models';",
 			"// // optional - clear datastore when switching users",
 			"// import { Hub } from 'aws-amplify';",
 			"// Hub.listen('auth', async (data) => {",
@@ -67,16 +67,32 @@
 		"description": "DataStore Delete",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
-			"// delete 1 item",
 			"async function delete${1:Todo}(id: string) {",
 			"\t\tconst todelete = await DataStore.query(${1}, id);",
 			"\t\tDataStore.delete(todelete); // or directly pass in instance",
-			"}",
-			"// // 2 ways to delete conditional items",
-			"// await DataStore.delete(${1:Todo}, post => post.status(\"eq\", PostStatus.DRAFT));",
-			"// DataStore.delete(todelete, post => post.status(\"eq\", PostStatus.DRAFT));",
-			"// // delete all items",
-			"// await DataStore.delete(${1:Todo}, Predicates.ALL);"
+			"}"
+		]
+	},
+	"DataStore Delete Conditional": {
+		"prefix": "DataStore Delete Conditional",
+		"description": "DataStore Delete Conditional",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"async function delete${1:Todo}(id: string) {",
+			"\t\tconst todelete = await DataStore.delete(${1:Todo}, post => post.status(${2:\"eq\"}, ${3:PostStatus.DRAFT}));",
+			"\t\tDataStore.delete(todelete); // or directly pass in instance",
+			"}"
+		]
+	},
+	"DataStore Delete All": {
+		"prefix": "DataStore Delete All",
+		"description": "DataStore Delete All",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"async function delete${1:Todo}(id: string) {",
+			"\t\tconst todelete = await DataStore.delete(${1:Todo}, Predicates.ALL);",
+			"\t\tDataStore.delete(todelete); // or directly pass in instance",
+			"}"
 		]
 	},
 	"DataStore Subscribe": {
