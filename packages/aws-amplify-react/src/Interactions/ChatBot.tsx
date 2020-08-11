@@ -256,11 +256,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 							micButtonDisabled: false,
 						},
 						() => {
-							this.audioRecorder.startRecording(
-								this.onSilenceHandler,
-								null,
-								this.props.voiceConfig.silenceDetectionConfig
-							);
+							this.audioRecorder.startRecording(this.onSilenceHandler);
 						}
 					);
 				}

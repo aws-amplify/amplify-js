@@ -26,7 +26,7 @@ export class AudioRecorder {
 		this.init();
 	}
 
-	public init() {
+	private init() {
 		window.AudioContext =
 			window.AudioContext || (window as any).webkitAudioContext;
 		this.audioContext = new AudioContext();
@@ -34,45 +34,41 @@ export class AudioRecorder {
 			.getUserMedia({ audio: true })
 			.then(stream => {
 				this.audioSupported = true;
-
-				const sourceNode = this.audioContext.createMediaStreamSource(stream);
-				const processorNode = this.audioContext.createScriptProcessor(
-					4096,
-					1,
-					1
-				);
-
-				processorNode.onaudioprocess = audioProcessingEvent => {
-					if (!this.recording) return;
-					const stream = audioProcessingEvent.inputBuffer.getChannelData(0);
-					this.streamBuffer.push(new Float32Array(stream)); // set to a copy of the stream
-					this.streamBufferLength += stream.length;
-					this.analyse();
-				};
-
-				var analyserNode = this.audioContext.createAnalyser();
-				analyserNode.minDecibels = -90;
-				analyserNode.maxDecibels = -10;
-				analyserNode.smoothingTimeConstant = 0.85;
-
-				sourceNode.connect(analyserNode);
-				analyserNode.connect(processorNode);
-				processorNode.connect(sourceNode.context.destination);
-
-				this.analyserNode = analyserNode;
+				this.setupAudioNodes(stream);
 			})
-			.catch(err => {
+			.catch(() => {
 				this.audioSupported = false;
 			});
 	}
 
-	private setupAudioNodes() {}
+	private setupAudioNodes(stream: MediaStream) {
+		const sourceNode = this.audioContext.createMediaStreamSource(stream);
+		const processorNode = this.audioContext.createScriptProcessor(4096, 1, 1);
 
-	public startRecording(onSilence: Function) {
-		console.log('start recording');
-		onSilence = onSilence || function() {};
-		this.onSilence = onSilence;
-		if (!this.audioSupported) return; // TODO: divide into two cases
+		processorNode.onaudioprocess = audioProcessingEvent => {
+			if (!this.recording) return;
+			const stream = audioProcessingEvent.inputBuffer.getChannelData(0);
+			this.streamBuffer.push(new Float32Array(stream)); // set to a copy of the stream
+			this.streamBufferLength += stream.length;
+			this.analyse();
+		};
+
+		const analyserNode = this.audioContext.createAnalyser();
+		analyserNode.minDecibels = -90;
+		analyserNode.maxDecibels = -10;
+		analyserNode.smoothingTimeConstant = 0.85;
+
+		sourceNode.connect(analyserNode);
+		analyserNode.connect(processorNode);
+		processorNode.connect(sourceNode.context.destination);
+
+		this.analyserNode = analyserNode;
+	}
+
+	public startRecording(onSilence?: Function) {
+		const silenceHandler = onSilence || function() {};
+		this.onSilence = silenceHandler;
+		if (!this.audioSupported) return;
 
 		const context = this.audioContext;
 		context.resume().then(() => {
@@ -82,7 +78,6 @@ export class AudioRecorder {
 	}
 
 	public stopRecording() {
-		console.log('stop recording');
 		if (!this.audioSupported) return;
 		this.recording = false;
 	}
@@ -95,9 +90,9 @@ export class AudioRecorder {
 
 	public play(buffer: Uint8Array, callback: Function) {
 		if (!buffer) return;
-		var myBlob = new Blob([buffer]);
+		const myBlob = new Blob([buffer]);
 
-		var fileReader = new FileReader();
+		const fileReader = new FileReader();
 		fileReader.onload = () => {
 			const playbackSource = this.audioContext.createBufferSource();
 			this.audioContext.decodeAudioData(
@@ -120,43 +115,38 @@ export class AudioRecorder {
 	private analyse() {
 		const analyser = this.analyserNode;
 		analyser.fftSize = 2048;
-		var bufferLength = analyser.fftSize;
-		var dataArray = new Uint8Array(bufferLength);
-		var amplitude = this.options.amplitude;
-		var time = this.options.time;
+
+		const bufferLength = analyser.fftSize;
+		const dataArray = new Uint8Array(bufferLength);
+		const amplitude = this.options.amplitude;
+		const time = this.options.time;
 
 		analyser.getByteTimeDomainData(dataArray);
 
-		for (var i = 0; i < bufferLength; i++) {
+		for (let i = 0; i < bufferLength; i++) {
 			// Normalize between -1 and 1.
-			var curr_value_time = dataArray[i] / 128 - 1.0;
+			const curr_value_time = dataArray[i] / 128 - 1.0;
 			if (curr_value_time > amplitude || curr_value_time < -1 * amplitude) {
 				this.start = Date.now();
 			}
 		}
-		var newtime = Date.now();
-		var elapsedTime = newtime - this.start;
+		const newtime = Date.now();
+		const elapsedTime = newtime - this.start;
 		if (elapsedTime > time) {
 			this.onSilence();
 		}
 	}
 
-	public exportWAV(callback: Function, exportSampleRate?: number) {
+	public exportWAV(callback: Function, exportSampleRate: number = 16000) {
 		if (!this.audioSupported) return;
-		exportSampleRate =
-			typeof exportSampleRate !== 'undefined' ? exportSampleRate : 16000;
 		const recordSampleRate = this.audioContext.sampleRate;
 		const blob = exportBuffer(
-			[...this.streamBuffer],
+			this.streamBuffer,
 			this.streamBufferLength,
 			recordSampleRate,
 			exportSampleRate
 		);
 		callback(blob);
 		this.clear();
-	}
-
-	public getBuffers() {
-		return this.streamBuffer;
 	}
 }
