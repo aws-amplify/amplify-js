@@ -13,12 +13,13 @@
 
 import {
 	ConsoleLogger as Logger,
+	DateUtils,
 	Signer,
 	Platform,
 	Credentials,
 } from '@aws-amplify/core';
 
-import { apiOptions } from './types';
+import { apiOptions, ApiInfo } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { parse, format } from 'url';
 
@@ -80,15 +81,29 @@ export class RestClient {
 */
 	/**
 	 * Basic HTTP request. Customizable
-	 * @param {string} url - Full request URL
+	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {string} method - Request HTTP method
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async ajax(url: string, method: string, init) {
-		logger.debug(method + ' ' + url);
+	async ajax(urlOrApiInfo: string | ApiInfo, method: string, init) {
+		logger.debug(method, urlOrApiInfo);
 
-		const parsed_url = this._parseUrl(url);
+		let parsed_url;
+		let url: string;
+		let region: string = 'us-east-1';
+		let service: string = 'execute-api';
+		let custom_header: () => {
+			[key: string]: string;
+		} = undefined;
+
+		if (typeof urlOrApiInfo === 'string') {
+			parsed_url = this._parseUrl(urlOrApiInfo);
+			url = urlOrApiInfo;
+		} else {
+			({ endpoint: url, custom_header, region, service } = urlOrApiInfo);
+			parsed_url = this._parseUrl(urlOrApiInfo.endpoint);
+		}
 
 		const params = {
 			method,
@@ -133,13 +148,12 @@ export class RestClient {
 		params['signerServiceInfo'] = initParams.signerServiceInfo;
 
 		// custom_header callback
-		const custom_header = this._custom_header
-			? await this._custom_header()
-			: undefined;
+		const custom_header_obj =
+			typeof custom_header === 'function' ? await custom_header() : undefined;
 
 		params.headers = {
 			...libraryHeaders,
-			...custom_header,
+			...custom_header_obj,
 			...initParams.headers,
 		};
 
@@ -168,7 +182,31 @@ export class RestClient {
 
 		// Signing the request in case there credentials are available
 		return Credentials.get().then(
-			credentials => this._signed({ ...params }, credentials, isAllResponse),
+			credentials => {
+				return this._signed({ ...params }, credentials, isAllResponse, {
+					region,
+					service,
+				}).catch(error => {
+					if (DateUtils.isClockSkewError(error)) {
+						const { headers } = error.response;
+						const dateHeader = headers && (headers.date || headers.Date);
+						const responseDate = new Date(dateHeader);
+						const requestDate = DateUtils.getDateFromHeaderString(
+							params.headers['x-amz-date']
+						);
+
+						if (DateUtils.isClockSkewed(requestDate, responseDate)) {
+							DateUtils.setClockOffset(
+								responseDate.getTime() - requestDate.getTime()
+							);
+
+							return this.ajax(urlOrApiInfo, method, init);
+						}
+					}
+
+					throw error;
+				});
+			},
 			err => {
 				logger.debug('No credentials available, the request will be unsigned');
 				return this._request(params, isAllResponse);
@@ -178,62 +216,62 @@ export class RestClient {
 
 	/**
 	 * GET HTTP request
-	 * @param {string} url - Full request URL
+	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {JSON} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	get(url: string, init) {
-		return this.ajax(url, 'GET', init);
+	get(urlOrApiInfo: string | ApiInfo, init) {
+		return this.ajax(urlOrApiInfo, 'GET', init);
 	}
 
 	/**
 	 * PUT HTTP request
-	 * @param {string} url - Full request URL
+	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	put(url: string, init) {
-		return this.ajax(url, 'PUT', init);
+	put(urlOrApiInfo: string | ApiInfo, init) {
+		return this.ajax(urlOrApiInfo, 'PUT', init);
 	}
 
 	/**
 	 * PATCH HTTP request
-	 * @param {string} url - Full request URL
+	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	patch(url: string, init) {
-		return this.ajax(url, 'PATCH', init);
+	patch(urlOrApiInfo: string | ApiInfo, init) {
+		return this.ajax(urlOrApiInfo, 'PATCH', init);
 	}
 
 	/**
 	 * POST HTTP request
-	 * @param {string} url - Full request URL
+	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	post(url: string, init) {
-		return this.ajax(url, 'POST', init);
+	post(urlOrApiInfo: string | ApiInfo, init) {
+		return this.ajax(urlOrApiInfo, 'POST', init);
 	}
 
 	/**
 	 * DELETE HTTP request
-	 * @param {string} url - Full request URL
+	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	del(url: string, init) {
-		return this.ajax(url, 'DELETE', init);
+	del(urlOrApiInfo: string | ApiInfo, init) {
+		return this.ajax(urlOrApiInfo, 'DELETE', init);
 	}
 
 	/**
 	 * HEAD HTTP request
-	 * @param {string} url - Full request URL
+	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	head(url: string, init) {
-		return this.ajax(url, 'HEAD', init);
+	head(urlOrApiInfo: string | ApiInfo, init) {
+		return this.ajax(urlOrApiInfo, 'HEAD', init);
 	}
 
 	/**
@@ -316,14 +354,16 @@ export class RestClient {
 
 	/** private methods **/
 
-	private _signed(params, credentials, isAllResponse) {
+	private _signed(params, credentials, isAllResponse, { service, region }) {
 		const {
 			signerServiceInfo: signerServiceInfoParams,
 			...otherParams
 		} = params;
 
-		const endpoint_region: string = this._region || this._options.region;
-		const endpoint_service: string = this._service || this._options.service;
+		const endpoint_region: string =
+			region || this._region || this._options.region;
+		const endpoint_service: string =
+			service || this._service || this._options.service;
 
 		const creds = {
 			secret_key: credentials.secretAccessKey,

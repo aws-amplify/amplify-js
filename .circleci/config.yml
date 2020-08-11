@@ -17,7 +17,7 @@ executors:
       - image: verdaccio/verdaccio
     resource_class: large
 
-  ios-executor:
+  macos-executor:
     macos:
       xcode: 11.4.1
 
@@ -72,7 +72,7 @@ commands:
             git config --global user.name $NPM_USER
             git status
             git --no-pager diff
-            ./.circleci/retry-publish.sh publish:verdaccio
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s publish:verdaccio -n 5 -r true
 
   prepare_test_env:
     steps:
@@ -96,8 +96,14 @@ commands:
         type: string
       framework:
         type: string
-      spec:
+      category:
         type: string
+      sample_name:
+        type: string
+      spec:
+        # optional - the script will use sample_name by default
+        type: string
+        default: ''
     steps:
       - run:
           name: 'Install << parameters.test_name >> sample'
@@ -105,14 +111,10 @@ commands:
             echo "Current NPM registry: " $(yarn config get registry)
             yarn
       - run:
-          name: 'Start << parameters.test_name >> Sample server in background'
-          command: yarn start
-          background: true
-      - run:
           name: 'Run cypress tests for << parameters.test_name >> Sample'
           command: |
             cd ~/amplify-js-samples-staging
-            yarn cypress:<< parameters.framework >> --spec "cypress/integration/<< parameters.spec >>"
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -143,13 +145,13 @@ commands:
           name: 'Run << parameters.test_name >> UI tests'
           command: |
             cd ~/amplify-js-samples-staging-ui
-            yarn ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging-ui/cypress/videos
       - store_artifacts:
           path: ~/amplify-js-samples-staging-ui/cypress/screenshots
 
-  ios_install_verdaccio:
+  install_verdaccio:
     steps:
       - run:
           name: Install Verdaccio
@@ -161,11 +163,11 @@ commands:
             cd ~
             verdaccio
 
-  integ_test_rn:
+  integ_test_rn_ios:
     steps:
       - attach_workspace:
           at: ~/
-      - ios_install_verdaccio
+      - install_verdaccio
       - publish_to_verdaccio
       - run:
           name: Yarn Install
@@ -203,7 +205,106 @@ commands:
             JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
             JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
           name: Detox Test
-          command: detox test -c ios.sim.debug -u
+          command: |
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
+
+  integ_test_rn_android:
+    steps:
+      - attach_workspace:
+          at: ~/
+      - install_verdaccio
+      - publish_to_verdaccio
+      - run:
+          # https://reactnative.dev/docs/environment-setup
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh export-env
+          name: Configure Environment Variables
+      - restore_cache:
+          key: |
+            brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
+      - run:
+          # React Native Android can have issues with later versions of Node:
+          # https://github.com/facebook/react-native/issues/26808
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh install-node
+          name: Install node@10
+      - run:
+          # https://reactnative.dev/docs/environment-setup
+          environment:
+            HOMEBREW_NO_AUTO_UPDATE: '1'
+          command: |
+            brew tap wix/brew >/dev/null
+            brew tap homebrew/cask >/dev/null
+            brew cask install android-sdk >/dev/null
+            yarn global add detox-cli
+            touch .watchmanconfig
+            node -v
+          name: Configure Detox Environment
+      - save_cache:
+          key: |
+            brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
+          paths:
+            - /usr/local/Homebrew
+            - ~/Library/Caches/Homebrew
+      - run:
+          name: Yarn Install
+          command: |
+            echo "Current NPM registry: " $(yarn config get registry)
+            yarn install --frozen-lockfile --non-interactive
+      - run:
+          # Install Android Emulator without Android Studio
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh sdkmanager
+          name: Install Android Emulator
+          shell: /bin/bash -e
+      - run:
+          # Force ssh key generation for emulators
+          command: |
+            adb start-server
+            adb devices
+            adb kill-server
+            ls -la ~/.android
+          name: ADB Start Stop
+      - run:
+          # Create Android Emulator without Android Studio
+          command: >-
+            avdmanager create avd --force --name TestingAVD
+            --package "system-images;android-28;default;x86_64"
+            --tag default --device pixel
+          name: Create Android Emulator
+      - run:
+          background: true
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh start-emulator
+          name: Start Android Emulator (background)
+      - run:
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh wait-for-avd
+          name: Wait for AVD to be ready
+          no_output_timeout: 5m
+      - run:
+          background: true
+          command: yarn start
+          name: Start Metro Packager (background)
+      - run:
+          name: Detox Build
+          command: detox build -c android.emu.debug
+      - run:
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
+            JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
+          name: Detox Test
+          command: |
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'detox test -c android.emu.debug -u' 3
       - store_test_results:
           path: reports/junit
       - store_artifacts:
@@ -218,7 +319,6 @@ jobs:
       - run: yarn --frozen-lockfile
       - run: yarn run bootstrap
       - run: yarn run build
-
       - save_cache:
           key: amplify-ssh-deps-{{ .Branch }}
           paths:
@@ -269,7 +369,9 @@ jobs:
       - integ_test_js:
           test_name: 'React Authenticator'
           framework: react
-          spec: auth/authenticator.spec.js
+          category: auth
+          sample_name: with-authenticator
+          spec: authenticator
 
   integ_angular_auth:
     executor: js-test-executor
@@ -280,7 +382,9 @@ jobs:
       - integ_test_js:
           test_name: 'Angular Authenticator'
           framework: angular
-          spec: auth/authenticator.spec.js
+          category: auth
+          sample_name: amplify-authenticator
+          spec: authenticator
 
   integ_vue_auth:
     executor: js-test-executor
@@ -291,7 +395,9 @@ jobs:
       - integ_test_js:
           test_name: 'Vue Authenticator'
           framework: vue
-          spec: auth/authenticator.spec.js
+          category: auth
+          sample_name: amplify-authenticator
+          spec: authenticator
 
   integ_react_predictions:
     executor: js-test-executor
@@ -302,7 +408,9 @@ jobs:
       - integ_test_js:
           test_name: 'React Predictions'
           framework: react
-          spec: predictions/multiuser-translation.spec.js
+          category: predictions
+          sample_name: multi-user-translation
+          spec: multiuser-translation
 
   integ_react_datastore:
     executor: js-test-executor
@@ -313,7 +421,34 @@ jobs:
       - integ_test_js:
           test_name: 'React DataStore'
           framework: react
-          spec: datastore/many-to-many.spec.js
+          category: datastore
+          sample_name: many-to-many
+
+  integ_react_storage:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageApp
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Storage'
+          framework: react
+          category: storage
+          sample_name: storageApp
+          spec: storage
+
+  integ_react_storage_ui:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageComp
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Storage UI Components'
+          framework: react
+          category: storage
+          sample_name: storageComp
+          spec: storage-comp
 
   integ_setup_ui:
     executor: build-executor
@@ -404,22 +539,32 @@ jobs:
           spec: custom-authenticator
 
   integ_rn_ios_storage:
-    executor: ios-executor
+    executor: macos-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
-      - integ_test_rn
+      - integ_test_rn_ios
+
+  integ_rn_ios_push_notifications:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/push-notifications/PushNotificationApp
+    steps:
+      - integ_test_rn_ios
+
+  integ_rn_android_storage:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+    steps:
+      - integ_test_rn_android
 
   deploy:
-    executor: build-executor
+    executor: macos-executor
     working_directory: ~/amplify-js
     steps:
       - attach_workspace:
-          at: /root
-      - restore_cache:
-          keys:
-            - amplify-ssh-deps-{{ .Branch }}
-            - amplify-ssh-deps
+          at: ~/
       - run:
           name: 'Publish to Amplify Package'
           command: |
@@ -430,7 +575,7 @@ jobs:
               git config --global user.name $GITHUB_USER
               git status
               git --no-pager diff
-              ./.circleci/retry-publish.sh publish:$CIRCLE_BRANCH
+              yarn publish:$CIRCLE_BRANCH
             else
               echo "Skipping deploy."
             fi
@@ -454,13 +599,13 @@ jobs:
             git add ./packages/core/src/Platform/version.ts
             git commit -m "chore(release): update version.ts [ci skip]"
             git push origin release
-            git push origin release:master
+            git push origin release:main
 
 releasable_branches: &releasable_branches
   branches:
     only:
       - release
-      - master
+      - main
       - ui-components/master
       - 1.0-stable
 
@@ -507,7 +652,31 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_react_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_storage_ui:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_rn_ios_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_ios_push_notifications:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_android_storage:
           requires:
             - integ_setup
             - build
@@ -538,6 +707,8 @@ workflows:
             - unit_test
             - integ_react_predictions
             - integ_react_datastore
+            - integ_react_storage
+            - integ_react_storage_ui
             - integ_react_auth
             - integ_angular_auth
             - integ_vue_auth
@@ -545,6 +716,8 @@ workflows:
             - integ_angular_auth_ui
             - integ_vue_auth_ui
             - integ_rn_ios_storage
+            - integ_rn_ios_push_notifications
+            - integ_rn_android_storage
       - post_release:
           filters:
             branches:

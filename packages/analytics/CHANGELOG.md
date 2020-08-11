@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.2.5...@aws-amplify/analytics@3.2.6) (2020-08-06)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [3.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.2.4...@aws-amplify/analytics@3.2.5) (2020-07-27)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [3.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.2.3...@aws-amplify/analytics@3.2.4) (2020-07-22)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [3.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.2.2...@aws-amplify/analytics@3.2.3) (2020-07-09)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [3.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.2.1...@aws-amplify/analytics@3.2.2) (2020-07-07)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [3.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.2.0...@aws-amplify/analytics@3.2.1) (2020-06-18)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.15...@aws-amplify/analytics@3.2.0) (2020-06-09)
+
+
+### Features
+
+* **@aws-amplify/analytics:** add KinesisClient endpoint configuration ([#5818](https://github.com/aws-amplify/amplify-js/issues/5818)) ([5745490](https://github.com/aws-amplify/amplify-js/commit/57454907249703f77f77c921162acdb3179f89b9))
+
+
+
+
+
 ## [3.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.1.14...@aws-amplify/analytics@3.1.15) (2020-06-04)
 
 **Note:** Version bump only for package @aws-amplify/analytics

@@ -14,6 +14,7 @@ import {
 	AWSS3ProviderManagedUpload,
 	BodyPart,
 } from '../../src/providers/AWSS3ProviderManagedUpload';
+import { Credentials } from '@aws-amplify/core';
 import {
 	S3Client,
 	PutObjectCommand,
@@ -136,7 +137,7 @@ describe('multi part upload tests', () => {
 			protected minPartSize = testMinPartSize;
 			protected async uploadParts(uploadId: string, parts: BodyPart[]) {
 				// Make service calls and set the event listeners first from the base impl
-				super.uploadParts(uploadId, parts);
+				await super.uploadParts(uploadId, parts);
 				// Now trigger some notifications from the event listeners
 				for (const part of parts) {
 					part.emitter.emit('sendProgress', {

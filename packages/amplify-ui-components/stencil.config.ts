@@ -9,11 +9,7 @@ export const config: Config = {
   extras: {
     initializeNextTick: false,
   },
-  excludeSrc: [
-    '**/*.e2e.*',
-    '**/*.spec.*',
-    '**/*.stories.*'
-  ],
+  excludeSrc: ['**/*.e2e.*', '**/*.spec.*', '**/*.stories.*'],
   namespace: 'amplify-ui-components',
   plugins: [
     externals({
@@ -22,9 +18,7 @@ export const config: Config = {
     }),
     nodePolyfills(),
     sass({
-      injectGlobalPaths: [
-        'src/global/breakpoint.scss'
-      ]
+      injectGlobalPaths: ['src/global/breakpoint.scss'],
     }),
   ],
   nodeResolve: {
