@@ -126,6 +126,32 @@ class MutationProcessor {
 			(head = await this.outbox.peek(this.storage)) !== undefined
 		) {
 			const { model, operation, data, condition } = head;
+
+			// Iterate through data to find either a key called file or a value of type File
+			var iterableData = JSON.parse(data);
+			if (operation === 'Create') {
+				var stack = [iterableData];
+				while (stack.length) {
+					var entry = stack.pop();
+					if (Array.isArray(entry)) {
+						for (const element of entry) {
+							stack.push(element);
+						}
+					}
+					if (entry && typeof entry === 'object') {
+						var keys = Object.keys(entry);
+						for (var key of keys) {
+							if (key === 'file' || entry[key] instanceof File) {
+								entry[key] = JSON.stringify({ S3Link: 'temp' });
+							}
+							if (typeof entry[key] === 'object' || Array.isArray(entry)) {
+								stack.push(entry[key]);
+							}
+						}
+					}
+				}
+			}
+			const newData = JSON.stringify(iterableData);
 			const modelConstructor = this.userClasses[
 				model
 			] as PersistentModelConstructor<MutationEvent>;
@@ -137,7 +163,7 @@ class MutationProcessor {
 					namespaceName,
 					model,
 					operation,
-					data,
+					newData,
 					condition,
 					modelConstructor,
 					this.MutationEvent,
@@ -310,7 +336,7 @@ class MutationProcessor {
 											: null,
 									});
 								} catch (err) {
-									logger.warn("failed to execute errorHandler", err);
+									logger.warn('failed to execute errorHandler', err);
 								} finally {
 									// Return empty tuple, dequeues the mutation
 									return error.data
