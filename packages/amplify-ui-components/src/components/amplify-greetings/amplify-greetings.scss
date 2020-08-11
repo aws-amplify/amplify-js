@@ -5,12 +5,24 @@
 }
 
 .greetings {
-  position: relative;
+  display: flex;
   border: 1px solid transparent;
   background-color: var(--background-color);
   border-color: var(--border-color);
-  padding: 10px;
+  padding: 0.625rem;
   font-family: var(--font-family);
+  justify-content: space-between;
+}
+
+.nav {
+  display: flex;
+  align-self: center;
+}
+
+.logo {
+  display: flex;
+  align-self: center;
+  justify-self: flex-start;
 }
 
 amplify-sign-out {
