@@ -14,7 +14,7 @@
 			"// Register the service worker with `service-worker.js` with service worker scope `/`.",
 			"const registeredServiceWorker = await serviceWorker.register('/service-worker.js', '/');",
 
-			"serviceWorker.enablePush('XXXXXXXXX')"
+			"serviceWorker.enablePush(${1:'XXXXXXXXX'})"
 		]
 	},
 	"Amplify Service Worker Registration": {
@@ -28,9 +28,7 @@
 	"Amplify Service Worker enablePush": {
 		"prefix": "sw.enablePush",
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
-		"body": [
-			"serviceWorker.enablePush('${1:BLx__NGvdasMNkjd6VYPdzQJVBkb2qafh}')"
-		]
+		"body": ["serviceWorker.enablePush('${1:XXXXXXXXX}')"]
 	},
 	"Amplify Service Worker handle Push": {
 		"prefix": "sw.handlePush",
@@ -66,7 +64,7 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"registeredServiceWorker.send({",
-			"\t'message': 'CleanAllCache'",
+			"${1:'message': 'CleanAllCache'}",
 			"});"
 		]
 	},
