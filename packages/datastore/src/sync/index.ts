@@ -89,6 +89,7 @@ export class SyncEngine {
 	private readonly mutationsProcessor: MutationProcessor;
 	private readonly modelMerger: ModelMerger;
 	private readonly outbox: MutationEventOutbox;
+	private readonly complexObjectsOutbox: MutationEventOutbox;
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -113,6 +114,13 @@ export class SyncEngine {
 			ownSymbol
 		);
 
+		this.complexObjectsOutbox = new MutationEventOutbox(
+			this.schema,
+			this.namespaceResolver,
+			MutationEvent,
+			ownSymbol
+		);
+
 		this.modelMerger = new ModelMerger(this.outbox, ownSymbol);
 
 		this.syncQueriesProcessor = new SyncProcessor(
@@ -131,6 +139,7 @@ export class SyncEngine {
 			conflictHandler,
 			errorHandler
 		);
+		// TODO this.complexObjectsMutationsProcessor
 	}
 
 	start(params: StartParams) {
@@ -311,6 +320,59 @@ export class SyncEngine {
 							const namespace = this.schema.namespaces[
 								this.namespaceResolver(model)
 							];
+
+							console.log('ARKAM');
+							console.log(element);
+							let stack: Array<any>;
+							let entry;
+							let temp: MutableModel<any>;
+							temp = (this.modelClasses
+								.ModelMetadata as PersistentModelConstructor<any>).copyOf(
+								element,
+								draft => {
+									draft = draft;
+								}
+							);
+							var values = Object.values(temp);
+							stack = values;
+							while (stack.length) {
+								entry = stack.pop();
+								if (Array.isArray(entry)) {
+									for (const ele of entry) {
+										if (ele && typeof ele === 'object') {
+											stack.push(ele);
+										} else if (ele && Array.isArray(ele)) {
+											stack.push(ele);
+										}
+									}
+								}
+								if (entry && typeof entry === 'object') {
+									const keys = Object.keys(entry);
+									for (const key of keys) {
+										if (entry[key] instanceof File) {
+											const file = entry[key];
+											console.log(entry);
+											console.log(entry[key]);
+											console.log('Found file');
+											console.log(file);
+											//await this.complexObjectsOutbox.enqueue(
+											//	this.storage,
+											//	file
+											//);
+											//console.log(this.complexObjectsOutbox);
+											//console.log(this.complexObjectsOutbox.peek);
+											//entry = "{}"
+										} else if (
+											typeof entry[key] === 'object' ||
+											Array.isArray(entry)
+										) {
+											stack.push(entry[key]);
+										}
+									}
+								}
+							}
+							console.log(temp);
+
 							const MutationEventConstructor = this.modelClasses[
 								'MutationEvent'
 							] as PersistentModelConstructor<MutationEvent>;
@@ -325,6 +387,9 @@ export class SyncEngine {
 								MutationEventConstructor,
 								this.modelInstanceCreator
 							);
+
+							console.log('ARK');
+							console.log(mutationEvent);
 
 							await this.outbox.enqueue(this.storage, mutationEvent);
 
@@ -652,7 +717,9 @@ export class SyncEngine {
 				},
 				error: err => {
 					reject(err);
-					const handleDisconnect = this.disconnectionHandler(datastoreConnectivity);
+					const handleDisconnect = this.disconnectionHandler(
+						datastoreConnectivity
+					);
 					handleDisconnect(err);
 				},
 			});
