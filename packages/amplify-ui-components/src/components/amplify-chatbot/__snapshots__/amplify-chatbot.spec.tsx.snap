@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-chatbot renders chatbot 1`] = `
+<amplify-chatbot>
+  <mock:shadow-root>
+    <div class="amplify-chatbot">
+      <div class="header"></div>
+      <div class="body"></div>
+      <div class="chatbot-control">
+        <amplify-input description="text" fieldid="test" placeholder="Write a message" value=""></amplify-input>
+        <amplify-button class="icon-button" icon="microphone" variant="icon"></amplify-button>
+        <amplify-button class="icon-button" icon="send" variant="icon"></amplify-button>
+      </div>
+    </div>
+  </mock:shadow-root>
+</amplify-chatbot>
+`;

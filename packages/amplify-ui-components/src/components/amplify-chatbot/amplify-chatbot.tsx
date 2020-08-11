@@ -29,7 +29,7 @@ export class AmplifyChatbot {
 
   @Listen('formSubmit')
   submitHandler(_event: CustomEvent) {
-    this.send();
+    this.sendText();
   }
 
   messageJSX = (messages: Message[]) => {
@@ -41,7 +41,7 @@ export class AmplifyChatbot {
     this.text = target.value;
   }
 
-  send() {
+  sendText() {
     if (this.text === '') return;
     this.messages = [
       ...this.messages,
@@ -58,16 +58,6 @@ export class AmplifyChatbot {
   }
 
   render() {
-    const testMessages: Message[] = [
-      { content: 'hi', from: 'bot' },
-      { content: 'User: hi', from: 'user' },
-      {
-        content:
-          'long mesageeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-        from: 'bot',
-      },
-    ];
-    if (this.messages.length === 0) this.messages.push(...testMessages);
     return (
       <Host>
         <div class="amplify-chatbot">
@@ -82,7 +72,7 @@ export class AmplifyChatbot {
               value={this.text}
             ></amplify-input>
             <amplify-button class="icon-button" variant="icon" icon="microphone"></amplify-button>
-            <amplify-button class="icon-button" variant="icon" icon="send" handleButtonClick={() => this.send()} />
+            <amplify-button class="icon-button" variant="icon" icon="send" handleButtonClick={() => this.sendText()} />
           </div>
         </div>
       </Host>
