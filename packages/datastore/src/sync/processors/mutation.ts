@@ -128,7 +128,7 @@ class MutationProcessor {
 		) {
 			const { model, operation, data, condition } = head;
 
-			// Iterate through data to find either a key called file or a value of type File
+			// Iterate through data to find either a value of type File
 			var iterableData = JSON.parse(data);
 			if (operation === 'Create') {
 				var stack = [iterableData];
@@ -140,11 +140,11 @@ class MutationProcessor {
 						}
 					}
 					if (entry && typeof entry === 'object') {
-						var keys = Object.keys(entry);
-						for (var key of keys) {
+						const keys = Object.keys(entry);
+						for (const key of keys) {
 							if (entry[key] instanceof File) {
 								const Folder = `ComplexObjects/${model}`;
-								var file = entry[key];
+								const file = entry[key];
 								const result = await storageCategory.put(
 									`${Folder}/${file.name}`,
 									file,
