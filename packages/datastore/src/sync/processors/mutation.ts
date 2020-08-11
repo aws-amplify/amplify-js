@@ -129,11 +129,14 @@ class MutationProcessor {
 			const { model, operation, data, condition } = head;
 
 			// Iterate through data to find either a value of type File
-			var iterableData = JSON.parse(data);
+			let iterableData: JSON;
+			let stack: Array<any>;
+			let entry: any;
+			iterableData = JSON.parse(data);
 			if (operation === 'Create') {
-				var stack = [iterableData];
+				stack = [iterableData];
 				while (stack.length) {
-					var entry = stack.pop();
+					entry = stack.pop();
 					if (Array.isArray(entry)) {
 						for (const element of entry) {
 							stack.push(element);
