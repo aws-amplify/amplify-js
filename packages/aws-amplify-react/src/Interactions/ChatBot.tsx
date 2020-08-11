@@ -60,8 +60,6 @@ const defaultVoiceConfig = {
 	},
 };
 
-let audioControl;
-
 export interface IChatBotProps {
 	botName?: string;
 	clearOnComplete?: boolean;
@@ -98,12 +96,10 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 
 	constructor(props) {
 		super(props);
-		this.audioRecorder = new AudioRecorder({ time: 1500, amplitude: 0.2 });
-
 		if (this.props.voiceEnabled) {
-			require('./aws-lex-audio');
-			// @ts-ignore
-			audioControl = new global.LexAudio.audioControl();
+			this.audioRecorder = new AudioRecorder(
+				this.props.voiceConfig.silenceDetectionConfig
+			);
 		}
 		if (!this.props.textEnabled && this.props.voiceEnabled) {
 			STATES.INITIAL.MESSAGE = 'Click the mic button';
