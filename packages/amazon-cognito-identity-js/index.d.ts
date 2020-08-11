@@ -368,6 +368,7 @@ declare module 'amazon-cognito-identity-js' {
 		path?: string;
 		expires?: number;
 		secure?: boolean;
+		sameSite?: 'strict' | 'lax';
 	}
 	export class CookieStorage implements ICognitoStorage {
 		constructor(data: ICookieStorageData);
