@@ -41,9 +41,6 @@
     "@aws-amplify/api-graphql": "^1.1.5",
     "@aws-amplify/api-rest": "^1.1.5"
   },
-  "peerDependencies": {
-    "@aws-amplify/pubsub": "^3.0.0"
-  },
   "jest": {
     "globals": {
       "ts-jest": {

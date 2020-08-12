@@ -47,9 +47,6 @@
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
   },
-  "peerDependencies": {
-    "@aws-amplify/pubsub": "^3.0.0"
-  },
   "jest": {
     "globals": {
       "ts-jest": {
