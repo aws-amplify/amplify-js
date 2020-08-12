@@ -319,6 +319,10 @@ jobs:
       - run: yarn --frozen-lockfile
       - run: yarn run bootstrap
       - run: yarn run build
+      - save_cache:
+          key: amplify-ssh-deps-{{ .Branch }}
+          paths:
+            - ~/.ssh
       - persist_to_workspace:
           root: /root
           paths:
@@ -445,6 +449,18 @@ jobs:
           category: storage
           sample_name: storageComp
           spec: storage-comp
+
+  integ_amazon_cognito_identity_js:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/amazon-cognito-identity-js
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'amazon-cognito-identity-js'
+          framework: react
+          category: auth
+          sample_name: amazon-cognito-identity-js
 
   integ_setup_ui:
     executor: build-executor
@@ -581,6 +597,10 @@ jobs:
     steps:
       - attach_workspace:
           at: /root
+      - restore_cache:
+          keys:
+            - amplify-ssh-deps-{{ .Branch }}
+            - amplify-ssh-deps
       - run:
           name: 'Post-release steps'
           command: |
@@ -656,6 +676,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_amazon_cognito_identity_js:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_rn_ios_storage:
           requires:
             - integ_setup
@@ -701,6 +727,7 @@ workflows:
             - integ_react_datastore
             - integ_react_storage
             - integ_react_storage_ui
+            - integ_amazon_cognito_identity_js
             - integ_react_auth
             - integ_angular_auth
             - integ_vue_auth

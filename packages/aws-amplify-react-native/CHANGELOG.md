@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.3...aws-amplify-react-native@4.2.4) (2020-08-06)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** lock react-native-vector-icons version ([#6432](https://github.com/aws-amplify/amplify-js/issues/6432)) ([5cc818b](https://github.com/aws-amplify/amplify-js/commit/5cc818bab04450365626b593a7521a28d343a2de))
+
+
+
+
+
 ## [4.2.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.2...aws-amplify-react-native@4.2.3) (2020-07-27)
 
 
