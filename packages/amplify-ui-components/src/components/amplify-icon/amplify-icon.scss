@@ -1,13 +1,11 @@
 :host {
-  display: inline-block;
   --width: auto;
-  --height: 1.25rem;
+  --height: auto;
   --icon-fill-color: var(--amplify-white);
-  height: var(--height);
 }
 
 svg {
   fill: var(--icon-fill-color);
   width: var(--width);
-  height: 100%;
+  height: var(--height);
 }
