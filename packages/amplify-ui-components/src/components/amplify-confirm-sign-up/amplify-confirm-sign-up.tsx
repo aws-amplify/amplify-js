@@ -19,6 +19,7 @@ import {
   composePhoneNumberInput,
   handlePhoneNumberChange,
 } from '../../common/helpers';
+import { handleSignIn } from '../../common/auth-helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-up',
@@ -214,9 +215,16 @@ export class AmplifyConfirmSignUp {
     }
     try {
       const confirmSignUpResult = await Auth.confirmSignUp(this.userInput, this.code);
-      const user =
-        confirmSignUpResult && this._signUpAttrs && (await Auth.signIn(this.userInput, this._signUpAttrs.password));
-      this.handleAuthStateChange(AuthState.SignedIn, user);
+
+      if (!confirmSignUpResult) {
+        throw new Error(I18n.get(Translations.CONFIRM_SIGN_UP_FAILED));
+      }
+      if (this._signUpAttrs) {
+        // Auto sign in user if password is available from previous workflow
+        await handleSignIn(this.userInput, this._signUpAttrs.password, this.handleAuthStateChange);
+      } else {
+        this.handleAuthStateChange(AuthState.SignIn);
+      }
     } catch (error) {
       dispatchToastHubEvent(error);
     } finally {
