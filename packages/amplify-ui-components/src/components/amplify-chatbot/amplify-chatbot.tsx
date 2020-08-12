@@ -96,10 +96,10 @@ export class AmplifyChatbot {
         value={this.text}
       />
     );
-    const micButton = (
+    const micButton = this.voiceEnabled && (
       <amplify-button class="icon-button" variant="icon" icon="microphone" disabled={this.state !== 'initial'} />
     );
-    const sendButton = (
+    const sendButton = this.textEnabled && (
       <amplify-button
         class="icon-button"
         variant="icon"
@@ -108,18 +108,7 @@ export class AmplifyChatbot {
         disabled={this.state !== 'initial'}
       />
     );
-    // TODO: clever way to handle this logic?
-    console.log(this.voiceEnabled && this.textEnabled);
-    if (this.voiceEnabled && this.textEnabled) {
-      return [textInput, micButton, sendButton];
-    } else if (this.voiceEnabled) {
-      return [textInput, micButton];
-    } else if (this.textEnabled) {
-      return [textInput, sendButton];
-    } else {
-      // TODO: throw an warning that at least one should be enabled.
-      return [textInput, sendButton];
-    }
+    return [textInput, micButton, sendButton];
   }
 
   render() {
