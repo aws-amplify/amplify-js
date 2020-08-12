@@ -5,27 +5,27 @@
 .amplify-chatbot {
   display: inline-block;
   background-color: var(--background-color);
-  border-radius: 6px;
-  box-shadow: 1px 0px 4px 0 rgba(0, 0, 0, 0.15);
+  border-radius: 0.375rem;
+  box-shadow: 0.0625rem 0rem 0.25rem 0 rgba(0, 0, 0, 0.15);
   box-sizing: border-box;
   font-family: var(--amplify-font-family);
-  width: 460px;
+  width: 28.75rem;
   margin-bottom: 1rem;
 }
 .header {
-  margin-top: 20px;
+  margin-top: 1.25rem;
   color: var(--header-color);
   font-size: var(--header-size);
   font-weight: bold;
   text-align: center;
-  padding-bottom: 24px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding-bottom: 1.5rem;
+  border-bottom: 0.0625rem solid rgba(0, 0, 0, 0.05);
 }
 .body {
   padding-top: 2rem;
   display: flex;
   flex-direction: column;
-  height: 500px;
+  height: 31.25rem;
   overflow: auto;
 }
 .bubble {
@@ -52,7 +52,7 @@
 .chatbot-control {
   display: flex;
   align-items: center;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 0.062rem solid rgba(0, 0, 0, 0.05);
   padding-right: 0.625rem;
   amplify-input {
     --border: none;
@@ -66,6 +66,6 @@
 }
 .chatbot-footer {
   position: absolute;
-  bottom: 0px;
+  bottom: 0rem;
   height: 2rem;
 }
