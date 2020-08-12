@@ -83,6 +83,9 @@
 			},
 			{
 				"path": "./snippets/predictions.code-snippets"
+			},
+			{
+				"path": "./snippets/datastore.code-snippets"
 			}
 		]
 	}

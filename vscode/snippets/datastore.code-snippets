@@ -1,0 +1,109 @@
+{
+	"DataStore import": {
+		"prefix": "DataStore import",
+		"description": "DataStore import",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"import { DataStore } from '@aws-amplify/datastore';",
+			"import { ${1:Todo} } from './models';",
+			"// // optional - clear datastore when switching users",
+			"// import { Hub } from 'aws-amplify';",
+			"// Hub.listen('auth', async (data) => {",
+			"// \tif (data.payload.event === 'signOut') {",
+			"// \t\tawait DataStore.clear();",
+			"// \t}",
+			"// });"
+		]
+	},
+	"DataStore Read": {
+		"prefix": "DataStore Read",
+		"description": "DataStore Read",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"React.useEffect(() => {",
+			"\tfetch${1:Todo}()",
+			"\tconst subscription = DataStore.observe(${1}).subscribe(fetch${1})",
+			"\treturn () => subscription.unsubscribe()",
+			"}, [])",
+			"async function fetch${1}() {",
+			"\tconst _${1}s = await DataStore.query(${1})",
+			"\t// // reminder: setState with the results of ${1}",
+			"\t// set${1}s(_${1}s)",
+			"}"
+		]
+	},
+	"DataStore Create": {
+		"prefix": "DataStore Create",
+		"description": "DataStore Create",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"async function create${1:Todo}(new${1}: ${1}Type) {",
+			"\t// reminder: check that newdata is valid",
+			"\tawait DataStore.save(new ${1}({...${2:new${1}}}))",
+			"\t// reminder: clear old state",
+			"}"
+		]
+	},
+	"DataStore Update": {
+		"prefix": "DataStore Update",
+		"description": "DataStore Update",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"async function update${1:Todo}(new${1}: Partial${1}Type) {",
+			"\tconst original = await DataStore.query(${1}, new${1}.id);",
+			"\t// Models in DataStore are immutable. ",
+			"\t// To update a record you must use the copyOf function",
+			"\t// to apply updates to the item’s fields rather than mutating the instance directly.",
+			"\tawait DataStore.save(",
+			"\t\t${1}.copyOf(original, updated => {",
+			"\t\t\tupdated.FIELD = new${1}.FIELD;",
+			"\t\t})",
+			"\t);",
+			"}"
+		]
+	},
+	"DataStore Delete": {
+		"prefix": "DataStore Delete",
+		"description": "DataStore Delete",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"async function delete${1:Todo}(id: string) {",
+			"\t\tconst todelete = await DataStore.query(${1}, id);",
+			"\t\tDataStore.delete(todelete); // or directly pass in instance",
+			"}"
+		]
+	},
+	"DataStore Delete Conditional": {
+		"prefix": "DataStore Delete Conditional",
+		"description": "DataStore Delete Conditional",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"async function delete${1:Todo}(id: string) {",
+			"\t\tconst todelete = await DataStore.delete(${1:Todo}, post => post.status(${2:\"eq\"}, ${3:PostStatus.DRAFT}));",
+			"\t\tDataStore.delete(todelete); // or directly pass in instance",
+			"}"
+		]
+	},
+	"DataStore Delete All": {
+		"prefix": "DataStore Delete All",
+		"description": "DataStore Delete All",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"async function delete${1:Todo}(id: string) {",
+			"\t\tconst todelete = await DataStore.delete(${1:Todo}, Predicates.ALL);",
+			"\t\tDataStore.delete(todelete); // or directly pass in instance",
+			"}"
+		]
+	},
+	"DataStore Subscribe": {
+		"prefix": "DataStore Subscribe",
+		"description": "DataStore Subscribe",
+		"scope": "javascript,javascriptreact,typescript,typescriptreact",
+		"body": [
+			"const subscription = DataStore.observe(${1:Todo}).subscribe(msg => {",
+			"\t// do something with the message",
+			"\t// console.log(msg.model, msg.opType, msg.element);",
+			"});"
+		]
+	}
+}
