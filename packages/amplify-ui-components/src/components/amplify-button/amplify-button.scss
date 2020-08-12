@@ -10,7 +10,7 @@
   --link-hover: var(--amplify-primary-tint);
   --link-active: var(--amplify-primary-shade);
   --text-transform: uppercase;
-  --icon-color: var(--amplify-white);
+  --icon-fill: var(--amplify-white);
   --icon-height: 1.25rem;
   --padding: 1rem;
 
@@ -69,7 +69,7 @@
   cursor: pointer;
   padding: var(--padding);
   amplify-icon {
-    --icon-fill-color: var(--icon-color);
+    --icon-fill-color: var(--icon-fill);
     --height: var(--icon-height);
   }
 }

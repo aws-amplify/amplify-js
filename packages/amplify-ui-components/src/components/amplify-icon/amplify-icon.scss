@@ -1,7 +1,8 @@
 :host {
   display: inline-block;
-  --icon-fill-color: var(--amplify-white);
   --width: auto;
+  --height: 1.25rem;
+  --icon-fill-color: var(--amplify-white);
   height: var(--height);
 }
 
