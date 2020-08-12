@@ -102,6 +102,14 @@ export namespace Components {
          */
         "onComplete": (err: string, data: object) => void;
         /**
+          * Whether text chat is enabled
+         */
+        "textEnabled": boolean;
+        /**
+          * Whether voice chat is enabled
+         */
+        "voiceEnabled": boolean;
+        /**
           * Greeting message displayed to users
          */
         "welcomeMessage": string;
@@ -1589,6 +1597,14 @@ declare namespace LocalJSX {
           * Callback to be called after conversation finishes
          */
         "onComplete"?: (err: string, data: object) => void;
+        /**
+          * Whether text chat is enabled
+         */
+        "textEnabled"?: boolean;
+        /**
+          * Whether voice chat is enabled
+         */
+        "voiceEnabled"?: boolean;
         /**
           * Greeting message displayed to users
          */

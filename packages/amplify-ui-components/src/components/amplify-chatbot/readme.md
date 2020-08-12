@@ -14,6 +14,8 @@
 | `clearOnComplete`    | `clear-on-complete`    | Clear messages when conversation finishes               | `boolean`                             | `false`     |
 | `conversationModeOn` | `conversation-mode-on` | Continue listening to users after they send the message | `boolean`                             | `false`     |
 | `onComplete`         | --                     | Callback to be called after conversation finishes       | `(err: string, data: object) => void` | `undefined` |
+| `textEnabled`        | `text-enabled`         | Whether text chat is enabled                            | `boolean`                             | `true`      |
+| `voiceEnabled`       | `voice-enabled`        | Whether voice chat is enabled                           | `boolean`                             | `false`     |
 | `welcomeMessage`     | `welcome-message`      | Greeting message displayed to users                     | `string`                              | `undefined` |
 
 
