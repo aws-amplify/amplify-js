@@ -61,11 +61,6 @@
 }
 .icon-button {
   --icon-height: 1.25rem;
-  --icon-color: var(--amplify-primary-color);
+  --icon-fill: var(--amplify-primary-color);
   --padding: 0.625rem;
-}
-.chatbot-footer {
-  position: absolute;
-  bottom: 0rem;
-  height: 2rem;
 }
