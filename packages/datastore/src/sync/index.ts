@@ -31,6 +31,7 @@ import {
 	predicateToGraphQLCondition,
 	TransformerMutationType,
 } from './utils';
+import { handleCloud } from './ComplexObjUtils';
 
 const logger = new Logger('DataStore');
 
@@ -238,10 +239,24 @@ export class SyncEngine {
 										// Before calling merge check if the file has been downloaded and added to item
 										// Create interface for getting file
 										// Make it extesnible for different implementations
+										console.log('Start the interception');
+										console.log(modelDefinition);
+										console.log(modelDefinition.name);
+										console.log(item);
+										console.log(this.schema.namespaces);
+
+										const newItem = handleCloud(
+											item,
+											modelConstructor,
+											modelDefinition.name
+										);
+										console.log(newItem);
 										const model = this.modelInstanceCreator(
 											modelConstructor,
 											item
 										);
+										console.log("Here's the model");
+										console.log(model);
 
 										this.storage.runExclusive(storage =>
 											this.modelMerger.merge(storage, model)

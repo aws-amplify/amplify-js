@@ -27,6 +27,7 @@ import {
 } from '../../util';
 import { Adapter } from './index';
 import { tsIndexSignature } from '@babel/types';
+import { prepareLocalFile } from '../../sync/ComplexObjUtils';
 
 const logger = new Logger('DataStore');
 
@@ -254,7 +255,11 @@ class IndexedDBAdapter implements Adapter {
 				(await this._get(store, id)) === undefined
 					? OpType.INSERT
 					: OpType.UPDATE;
-
+			//console.log('into the IDB');
+			//console.log(item);
+			//const modelName = storeName.split('_')[1];
+			//const newItem = prepareLocalFile(item, modelName);
+			//console.log(newItem);
 			// It is me
 			if (id === model.id) {
 				const key = await store.index('byId').getKey(item.id);
