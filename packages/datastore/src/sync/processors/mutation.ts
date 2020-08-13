@@ -130,15 +130,13 @@ class MutationProcessor {
 			// If model has complexObjects, uploads them to S3
 			// TODO: Throw error if file > 50mb
 			if (complexObjects) {
-				const Folder = `ComplexObjects/${model}`;
-				for (const { file } of complexObjects) {
-					const S3key = `${Folder}/${file.name}`;
+				for (const { file, s3Key } of complexObjects) {
 					if (operation === TransformerMutationType.CREATE) {
-						await storageCategory.put(S3key, file, {
+						await storageCategory.put(s3Key, file, {
 							contentType: file.type,
 						});
 					} else if (operation === TransformerMutationType.DELETE) {
-						await storageCategory.remove(S3key);
+						await storageCategory.remove(s3Key);
 					}
 				}
 			}

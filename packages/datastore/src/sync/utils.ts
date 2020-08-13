@@ -20,7 +20,7 @@ import {
 	SchemaNonModel,
 } from '../types';
 import { exhaustiveCheck } from '../util';
-import { MutationEvent } from './';
+import { MutationEvent, ComplexObject } from './';
 
 enum GraphQLOperationType {
 	LIST = 'query',
@@ -318,45 +318,39 @@ export function buildGraphQLOperation(
 	];
 }
 
-// Iteratively creates deep clone of object stripping file and replacing it with S3key
-// Returns stripped copy of object and list of files
+// Creates deep clone of object stripping file and replacing it with s3Key
+// Returns stripped copy of object and list of files and s3Keys
 function handleComplexObjects(
 	object: PersistentModel,
 	model: string
-): Array<any> {
-	let result = {};
-	let queue = { parent: result, value: object, next: null };
-	let end = queue;
-	let output = [];
-	let parent;
-	const Folder = `ComplexObjects/${model}`;
-	for (; queue; queue = queue.next) {
-		const item = queue;
-		const current = item.value;
-		parent = item.parent;
-		for (const key in current) {
-			const value = current[key];
-			if (typeof value === 'object') {
-				if (value instanceof File) {
-					console.log('Found file');
-					const file = value;
-					const S3Key = `${Folder}/${value.name}`;
-					// Replacing file with S3Key here instead of later
-					// because when file being uploaded original location
-					// of file not easily accessible
-					parent[key] = JSON.stringify({ S3link: S3Key });
-					output.push({ file });
-				} else {
-					const resultValue = (parent[key] = {});
-					end.next = { parent: resultValue, value: value, next: null };
-					end = end.next;
-				}
-			} else {
-				parent[key] = value;
-			}
+): [PersistentModel, Array<ComplexObject>] {
+	const folder = `ComplexObjects/${model}`;
+	const fileList = [];
+
+	const deepCopy = obj => {
+		if (typeof obj !== 'object' || obj === null) {
+			return obj;
 		}
-	}
-	return [result, output];
+
+		const returnObj = Array.isArray(obj) ? [] : {};
+
+		Object.entries(obj).forEach(([key, value]) => {
+			if (value instanceof File) {
+				const file = value;
+				const s3Key = `${folder}/${value.name}`;
+				fileList.push({ file, s3Key });
+				returnObj[key] = JSON.stringify({ s3Key });
+				return;
+			}
+
+			returnObj[key] = deepCopy(value);
+		});
+
+		return returnObj;
+	};
+
+	const result = deepCopy(object);
+	return [result, fileList];
 }
 
 export function createMutationInstanceFromModelOperation<
@@ -374,7 +368,7 @@ export function createMutationInstanceFromModelOperation<
 ): MutationEvent {
 	let operation: TransformerMutationType;
 
-	const [newElement, filesList] = handleComplexObjects(element, model.name);
+	const [newElement, fileList] = handleComplexObjects(element, model.name);
 
 	switch (opType) {
 		case OpType.INSERT:
@@ -397,7 +391,7 @@ export function createMutationInstanceFromModelOperation<
 		model: model.name,
 		operation,
 		condition: JSON.stringify(condition),
-		complexObjects: filesList,
+		complexObjects: fileList,
 	});
 
 	return mutationEvent;

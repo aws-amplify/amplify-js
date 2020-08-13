@@ -40,7 +40,7 @@ type StartParams = {
 	fullSyncInterval: number;
 };
 
-type ComplexObject = { file: File };
+export type ComplexObject = { file: File; s3Key: string };
 export declare class MutationEvent {
 	constructor(init: ModelInit<MutationEvent>);
 	static copyOf(
