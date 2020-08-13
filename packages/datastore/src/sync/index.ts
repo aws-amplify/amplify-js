@@ -40,6 +40,7 @@ type StartParams = {
 	fullSyncInterval: number;
 };
 
+export type ComplexObject = { file: File; s3Key: string };
 export declare class MutationEvent {
 	constructor(init: ModelInit<MutationEvent>);
 	static copyOf(
@@ -52,6 +53,7 @@ export declare class MutationEvent {
 	public readonly data: string;
 	public readonly modelId: string;
 	public readonly condition: string;
+	public readonly complexObjects: Array<ComplexObject>;
 }
 
 declare class ModelMetadata {
@@ -232,6 +234,10 @@ export class SyncEngine {
 											modelDefinition.name
 										] as PersistentModelConstructor<any>;
 
+										// TODO
+										// Before calling merge check if the file has been downloaded and added to item
+										// Create interface for getting file
+										// Make it extesnible for different implementations
 										const model = this.modelInstanceCreator(
 											modelConstructor,
 											item
@@ -269,6 +275,8 @@ export class SyncEngine {
 											modelDefinition.name
 										] as PersistentModelConstructor<any>;
 
+										// TODO
+										// Before calling merge check if the file has been downloaded and added to item
 										const model = this.modelInstanceCreator(
 											modelConstructor,
 											item
@@ -311,6 +319,7 @@ export class SyncEngine {
 							const namespace = this.schema.namespaces[
 								this.namespaceResolver(model)
 							];
+
 							const MutationEventConstructor = this.modelClasses[
 								'MutationEvent'
 							] as PersistentModelConstructor<MutationEvent>;
@@ -652,7 +661,9 @@ export class SyncEngine {
 				},
 				error: err => {
 					reject(err);
-					const handleDisconnect = this.disconnectionHandler(datastoreConnectivity);
+					const handleDisconnect = this.disconnectionHandler(
+						datastoreConnectivity
+					);
 					handleDisconnect(err);
 				},
 			});

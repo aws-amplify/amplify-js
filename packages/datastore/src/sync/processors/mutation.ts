@@ -30,6 +30,7 @@ import {
 	createMutationInstanceFromModelOperation,
 	TransformerMutationType,
 } from '../utils';
+import { Storage as storageCategory } from '@aws-amplify/storage';
 
 const MAX_ATTEMPTS = 10;
 
@@ -125,7 +126,20 @@ class MutationProcessor {
 			this.processing &&
 			(head = await this.outbox.peek(this.storage)) !== undefined
 		) {
-			const { model, operation, data, condition } = head;
+			const { complexObjects, model, operation, data, condition } = head;
+			// If model has complexObjects, uploads them to S3
+			// TODO: Throw error if file > 50mb
+			if (complexObjects) {
+				for (const { file, s3Key } of complexObjects) {
+					if (operation === TransformerMutationType.CREATE) {
+						await storageCategory.put(s3Key, file, {
+							contentType: file.type,
+						});
+					} else if (operation === TransformerMutationType.DELETE) {
+						await storageCategory.remove(s3Key);
+					}
+				}
+			}
 			const modelConstructor = this.userClasses[
 				model
 			] as PersistentModelConstructor<MutationEvent>;
@@ -155,6 +169,9 @@ class MutationProcessor {
 				continue;
 			}
 
+			// TODO
+			// record holds data that is returned from AppSync
+			// Will need to replace
 			const record = result.data[opName];
 			await this.outbox.dequeue(this.storage);
 
@@ -310,7 +327,7 @@ class MutationProcessor {
 											: null,
 									});
 								} catch (err) {
-									logger.warn("failed to execute errorHandler", err);
+									logger.warn('failed to execute errorHandler', err);
 								} finally {
 									// Return empty tuple, dequeues the mutation
 									return error.data
