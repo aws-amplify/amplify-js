@@ -328,13 +328,14 @@ function handleComplexObjects(
 	let queue = { parent: result, value: object, next: null };
 	let end = queue;
 	let output = [];
+	let parent;
 	const Folder = `ComplexObjects/${model}`;
 	for (; queue; queue = queue.next) {
-		var item = queue;
-		var current = item.value;
-		var parent = item.parent;
-		for (var key in current) {
-			var value = current[key];
+		const item = queue;
+		const current = item.value;
+		parent = item.parent;
+		for (const key in current) {
+			const value = current[key];
 			if (typeof value === 'object') {
 				if (value instanceof File) {
 					console.log('Found file');
@@ -346,7 +347,7 @@ function handleComplexObjects(
 					parent[key] = JSON.stringify({ S3link: S3Key });
 					output.push({ file });
 				} else {
-					var resultValue = (parent[key] = {});
+					const resultValue = (parent[key] = {});
 					end.next = { parent: resultValue, value: value, next: null };
 					end = end.next;
 				}
