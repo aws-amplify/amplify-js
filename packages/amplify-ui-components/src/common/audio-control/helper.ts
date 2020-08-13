@@ -1,18 +1,3 @@
-export const exportBuffer = (
-  recBuffer: Float32Array[],
-  recLength: number,
-  recordSampleRate: number,
-  exportSampleRate: number,
-) => {
-  const mergedBuffers = mergeBuffers(recBuffer, recLength);
-  const downsampledBuffer = downsampleBuffer(mergedBuffers, recordSampleRate, exportSampleRate);
-  const encodedWav = encodeWAV(downsampledBuffer, exportSampleRate);
-  const audioBlob = new Blob([encodedWav], {
-    type: 'application/octet-stream',
-  });
-  return audioBlob;
-};
-
 const mergeBuffers = (bufferArray: Float32Array[], recLength: number) => {
   const result = new Float32Array(recLength);
   let offset = 0;
@@ -65,22 +50,37 @@ const encodeWAV = (samples: Float32Array, exportSampleRate: number) => {
   const buffer = new ArrayBuffer(44 + samples.length * 2);
   const view = new DataView(buffer);
   writeString(view, 0, 'RIFF');
-  view.setUint32(4, 32 + samples.length * 2, true);
+  view.setUint32(4, 32 + samples.length * 2, true); // chunk size
   writeString(view, 8, 'WAVE');
 
   // fmt subchunk
   writeString(view, 12, 'fmt ');
-  view.setUint32(16, 16, true);
-  view.setUint16(20, 1, true);
-  view.setUint16(22, 1, true);
-  view.setUint32(24, exportSampleRate, true);
-  view.setUint32(28, exportSampleRate * 2, true);
-  view.setUint16(32, 2, true);
-  view.setUint16(34, 16, true);
+  view.setUint32(16, 16, true); // subchunk size
+  view.setUint16(20, 1, true); // audio format, pcm = 1
+  view.setUint16(22, 1, true); // number of channels
+  view.setUint32(24, exportSampleRate, true); // sample rate
+  view.setUint32(28, exportSampleRate * 2, true); // byte rate
+  view.setUint16(32, 2, true); // block align, # of bytes per sample
+  view.setUint16(34, 16, true); // bits per sample
 
   // data subchunk
   writeString(view, 36, 'data');
-  view.setUint32(40, samples.length * 2, true);
-  floatTo16BitPCM(view, 44, samples);
+  view.setUint32(40, samples.length * 2, true); // subchunk size
+  floatTo16BitPCM(view, 44, samples); // pcm values here
   return view;
+};
+
+export const exportBuffer = (
+  recBuffer: Float32Array[],
+  recLength: number,
+  recordSampleRate: number,
+  exportSampleRate: number,
+) => {
+  const mergedBuffers = mergeBuffers(recBuffer, recLength);
+  const downsampledBuffer = downsampleBuffer(mergedBuffers, recordSampleRate, exportSampleRate);
+  const encodedWav = encodeWAV(downsampledBuffer, exportSampleRate);
+  const audioBlob = new Blob([encodedWav], {
+    type: 'application/octet-stream',
+  });
+  return audioBlob;
 };
