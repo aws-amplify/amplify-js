@@ -7,16 +7,22 @@
 
 ## Properties
 
-| Property             | Attribute              | Description                                             | Type                                  | Default     |
-| -------------------- | ---------------------- | ------------------------------------------------------- | ------------------------------------- | ----------- |
-| `botName`            | `bot-name`             | Name of the bot                                         | `string`                              | `undefined` |
-| `botTitle`           | `bot-title`            | Text placed in the top header                           | `string`                              | `undefined` |
-| `clearOnComplete`    | `clear-on-complete`    | Clear messages when conversation finishes               | `boolean`                             | `false`     |
-| `conversationModeOn` | `conversation-mode-on` | Continue listening to users after they send the message | `boolean`                             | `false`     |
-| `onComplete`         | --                     | Callback to be called after conversation finishes       | `(err: string, data: object) => void` | `undefined` |
-| `textEnabled`        | `text-enabled`         | Whether text chat is enabled                            | `boolean`                             | `true`      |
-| `voiceEnabled`       | `voice-enabled`        | Whether voice chat is enabled                           | `boolean`                             | `false`     |
-| `welcomeMessage`     | `welcome-message`      | Greeting message displayed to users                     | `string`                              | `undefined` |
+| Property             | Attribute              | Description                                             | Type      | Default     |
+| -------------------- | ---------------------- | ------------------------------------------------------- | --------- | ----------- |
+| `botName`            | `bot-name`             | Name of the bot                                         | `string`  | `undefined` |
+| `botTitle`           | `bot-title`            | Text placed in the top header                           | `string`  | `undefined` |
+| `clearOnComplete`    | `clear-on-complete`    | Clear messages when conversation finishes               | `boolean` | `false`     |
+| `conversationModeOn` | `conversation-mode-on` | Continue listening to users after they send the message | `boolean` | `false`     |
+| `textEnabled`        | `text-enabled`         | Whether text chat is enabled                            | `boolean` | `true`      |
+| `voiceEnabled`       | `voice-enabled`        | Whether voice chat is enabled                           | `boolean` | `false`     |
+| `welcomeMessage`     | `welcome-message`      | Greeting message displayed to users                     | `string`  | `undefined` |
+
+
+## Events
+
+| Event           | Description                                  | Type                      |
+| --------------- | -------------------------------------------- | ------------------------- |
+| `chatCompleted` | Event emitted when conversation is completed | `CustomEvent<ChatResult>` |
 
 
 ## Dependencies

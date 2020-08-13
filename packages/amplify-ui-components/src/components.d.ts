@@ -9,6 +9,7 @@ import { AuthState, AuthStateHandler, CognitoUserInterface, FederatedConfig, MFA
 import { FormFieldTypes } from "./components/amplify-auth-fields/amplify-auth-fields-interface";
 import { ButtonTypes, ButtonVariant, InputEvent, TextFieldTypes } from "./common/types/ui-types";
 import { IconNameType } from "./components/amplify-icon/icons";
+import { ChatResult } from "./common/types/interactions-types";
 import { FunctionalComponent } from "@stencil/core";
 import { CountryCodeDialOptions } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { AccessLevel, StorageObject } from "./common/types/storage-types";
@@ -97,10 +98,6 @@ export namespace Components {
           * Continue listening to users after they send the message
          */
         "conversationModeOn": boolean;
-        /**
-          * Callback to be called after conversation finishes
-         */
-        "onComplete": (err: string, data: object) => void;
         /**
           * Whether text chat is enabled
          */
@@ -1594,9 +1591,9 @@ declare namespace LocalJSX {
          */
         "conversationModeOn"?: boolean;
         /**
-          * Callback to be called after conversation finishes
+          * Event emitted when conversation is completed
          */
-        "onComplete"?: (err: string, data: object) => void;
+        "onChatCompleted"?: (event: CustomEvent<ChatResult>) => void;
         /**
           * Whether text chat is enabled
          */
