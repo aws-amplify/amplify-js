@@ -1,9 +1,9 @@
 import { exportBuffer } from './helper';
 
-type SilenceDetectionConfig = {
+interface SilenceDetectionConfig {
   time: number;
   amplitude: number;
-};
+}
 
 export class AudioRecorder {
   private options: SilenceDetectionConfig;
