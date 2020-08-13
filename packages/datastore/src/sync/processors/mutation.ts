@@ -133,9 +133,13 @@ class MutationProcessor {
 				const Folder = `ComplexObjects/${model}`;
 				for (const { file } of complexObjects) {
 					const S3key = `${Folder}/${file.name}`;
-					const result = await storageCategory.put(S3key, file, {
-						contentType: file.type,
-					});
+					if (operation === TransformerMutationType.CREATE) {
+						await storageCategory.put(S3key, file, {
+							contentType: file.type,
+						});
+					} else if (operation === TransformerMutationType.DELETE) {
+						await storageCategory.remove(S3key);
+					}
 				}
 			}
 			const modelConstructor = this.userClasses[
