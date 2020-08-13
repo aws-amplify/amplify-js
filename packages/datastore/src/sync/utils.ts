@@ -318,6 +318,46 @@ export function buildGraphQLOperation(
 	];
 }
 
+// Iteratively creates deep clone of object stripping file and replacing it with S3key
+// Returns stripped copy of object and list of files
+function handleComplexObjects(
+	object: PersistentModel,
+	model: string
+): Array<any> {
+	let result = {};
+	let queue = { parent: result, value: object, next: null };
+	let end = queue;
+	let output = [];
+	const Folder = `ComplexObjects/${model}`;
+	for (; queue; queue = queue.next) {
+		var item = queue;
+		var current = item.value;
+		var parent = item.parent;
+		for (var key in current) {
+			var value = current[key];
+			if (typeof value === 'object') {
+				if (value instanceof File) {
+					console.log('Found file');
+					const file = value;
+					const S3Key = `${Folder}/${value.name}`;
+					// Replacing file with S3Key here instead of later
+					// because when file being uploaded original location
+					// of file not easily accessible
+					parent[key] = JSON.stringify({ S3link: S3Key });
+					output.push({ file });
+				} else {
+					var resultValue = (parent[key] = {});
+					end.next = { parent: resultValue, value: value, next: null };
+					end = end.next;
+				}
+			} else {
+				parent[key] = value;
+			}
+		}
+	}
+	return [result, output];
+}
+
 export function createMutationInstanceFromModelOperation<
 	T extends PersistentModel
 >(
@@ -332,6 +372,8 @@ export function createMutationInstanceFromModelOperation<
 	id?: string
 ): MutationEvent {
 	let operation: TransformerMutationType;
+
+	const [newElement, filesList] = handleComplexObjects(element, model.name);
 
 	switch (opType) {
 		case OpType.INSERT:
@@ -349,11 +391,12 @@ export function createMutationInstanceFromModelOperation<
 
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
 		...(id ? { id } : {}),
-		data: JSON.stringify(element),
-		modelId: element.id,
+		data: JSON.stringify(newElement),
+		modelId: newElement.id,
 		model: model.name,
 		operation,
 		condition: JSON.stringify(condition),
+		complexObjects: filesList,
 	});
 
 	return mutationEvent;

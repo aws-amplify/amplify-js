@@ -126,47 +126,18 @@ class MutationProcessor {
 			this.processing &&
 			(head = await this.outbox.peek(this.storage)) !== undefined
 		) {
-			const { model, operation, data, condition } = head;
-
-			// Iterate through data to find either a value of type File
-			let iterableData: JSON;
-			let stack: Array<any>;
-			let entry: any;
-			iterableData = JSON.parse(data);
-			if (operation === 'Create') {
-				stack = [iterableData];
-				while (stack.length) {
-					entry = stack.pop();
-					if (Array.isArray(entry)) {
-						for (const element of entry) {
-							stack.push(element);
-						}
-					}
-					if (entry && typeof entry === 'object') {
-						const keys = Object.keys(entry);
-						for (const key of keys) {
-							if (entry[key] instanceof File) {
-								const Folder = `ComplexObjects/${model}`;
-								const file = entry[key];
-								const result = await storageCategory.put(
-									`${Folder}/${file.name}`,
-									file,
-									{ contentType: file.type }
-								);
-								console.log(result);
-								const S3key = `${Folder}/${file.name}`;
-								entry[key] = JSON.stringify({ S3Link: S3key });
-							} else if (
-								typeof entry[key] === 'object' ||
-								Array.isArray(entry)
-							) {
-								stack.push(entry[key]);
-							}
-						}
-					}
+			const { complexObjects, model, operation, data, condition } = head;
+			// If model has complexObjects, uploads them to S3
+			// TODO: Throw error if file > 50mb
+			if (complexObjects) {
+				const Folder = `ComplexObjects/${model}`;
+				for (const { file } of complexObjects) {
+					const S3key = `${Folder}/${file.name}`;
+					const result = await storageCategory.put(S3key, file, {
+						contentType: file.type,
+					});
 				}
 			}
-			const newData = JSON.stringify(iterableData);
 			const modelConstructor = this.userClasses[
 				model
 			] as PersistentModelConstructor<MutationEvent>;
@@ -178,7 +149,7 @@ class MutationProcessor {
 					namespaceName,
 					model,
 					operation,
-					newData,
+					data,
 					condition,
 					modelConstructor,
 					this.MutationEvent,
@@ -196,6 +167,9 @@ class MutationProcessor {
 				continue;
 			}
 
+			// TODO
+			// record holds data that is returned from AppSync
+			// Will need to replace
 			const record = result.data[opName];
 			await this.outbox.dequeue(this.storage);
 
