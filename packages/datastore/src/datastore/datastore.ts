@@ -908,7 +908,7 @@ async function start(): Promise<void> {
 				},
 			});
 	} else {
-		logger.info("Data won't be synchronized. No GraphQL endpoint configured.", {
+		logger.warn("Data won't be synchronized. No GraphQL endpoint configured. Did you forget `Amplify.configure(awsconfig)`?", {
 			config: amplifyConfig,
 		});
 
