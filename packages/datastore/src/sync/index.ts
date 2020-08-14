@@ -230,53 +230,47 @@ export class SyncEngine {
 							subscriptions.push(
 								this.mutationsProcessor
 									.start()
-									.subscribe(({ modelDefinition, model: item, hasMore }) => {
-										const modelConstructor = this.userModelClasses[
-											modelDefinition.name
-										] as PersistentModelConstructor<any>;
+									.subscribe(
+										async ({ modelDefinition, model: item, hasMore }) => {
+											const modelConstructor = this.userModelClasses[
+												modelDefinition.name
+											] as PersistentModelConstructor<any>;
 
-										// Before calling merge checks if the file has been downloaded and adds it to item
+											// Before calling merge checks if the file has been downloaded and adds it to item
 
-										// Right now use of this function creates strange situation
-										// No errors are thrown but after newItem created and merged
-										// The version,lastChanged, and deleted of local model all remain not updated
-										// and an item with just fields of id,version,lastChanged, and deleted shows up in IDB
-										// If below function is not used, then model in IDB is perfectly as expected
-										// But in both cases when I refresh page the model's file gets replaced with {file: s3Key}
+											const newItem = await handleCloud(
+												this.storage,
+												item,
+												modelConstructor,
+												modelDefinition
+											);
 
-										//const newItem = handleCloud(
-										//	this.storage,
-										//	item,
-										//	modelConstructor,
-										//	modelDefinition
-										//);
+											const model = this.modelInstanceCreator(
+												modelConstructor,
+												newItem
+											);
 
-										const model = this.modelInstanceCreator(
-											modelConstructor,
-											item
-										);
-										console.log(model);
+											this.storage.runExclusive(storage =>
+												this.modelMerger.merge(storage, model)
+											);
 
-										this.storage.runExclusive(storage =>
-											this.modelMerger.merge(storage, model)
-										);
+											observer.next({
+												type:
+													ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
+												data: {
+													model: modelConstructor,
+													element: model,
+												},
+											});
 
-										observer.next({
-											type:
-												ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
-											data: {
-												model: modelConstructor,
-												element: model,
-											},
-										});
-
-										observer.next({
-											type: ControlMessage.SYNC_ENGINE_OUTBOX_STATUS,
-											data: {
-												isEmpty: !hasMore,
-											},
-										});
-									})
+											observer.next({
+												type: ControlMessage.SYNC_ENGINE_OUTBOX_STATUS,
+												data: {
+													isEmpty: !hasMore,
+												},
+											});
+										}
+									)
 							);
 							//#endregion
 
@@ -289,16 +283,16 @@ export class SyncEngine {
 											modelDefinition.name
 										] as PersistentModelConstructor<any>;
 
-										//const newItem = handleCloud(
-										//	this.storage,
-										//	item,
-										//	modelConstructor,
-										//	modelDefinition
-										//);
+										const newItem = handleCloud(
+											this.storage,
+											item,
+											modelConstructor,
+											modelDefinition
+										);
 
 										const model = this.modelInstanceCreator(
 											modelConstructor,
-											item
+											newItem
 										);
 
 										this.storage.runExclusive(storage =>
@@ -476,7 +470,16 @@ export class SyncEngine {
 									const modelConstructor = this.userModelClasses[
 										modelDefinition.name
 									] as PersistentModelConstructor<any>;
-
+									const newItems = [];
+									for (const item of items) {
+										const newItem = await handleCloud(
+											this.storage,
+											item,
+											modelConstructor,
+											modelDefinition
+										);
+										newItems.push(newItem);
+									}
 									if (!count.has(modelConstructor)) {
 										count.set(modelConstructor, {
 											new: 0,
@@ -499,7 +502,7 @@ export class SyncEngine {
 										const idsInOutbox = await this.outbox.getModelIds(storage);
 
 										const oneByOne: ModelInstanceMetadata[] = [];
-										const page = items.filter(item => {
+										const page = newItems.filter(async item => {
 											if (!idsInOutbox.has(item.id)) {
 												return true;
 											}
