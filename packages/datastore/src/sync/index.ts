@@ -237,17 +237,25 @@ export class SyncEngine {
 
 										// Before calling merge checks if the file has been downloaded and adds it to item
 
-										const newItem = handleCloud(
-											this.storage,
-											item,
-											modelConstructor,
-											modelDefinition
-										);
+										// Right now use of this function creates strange situation
+										// No errors are thrown but after newItem created and merged
+										// The version,lastChanged, and deleted of local model all remain not updated
+										// and an item with just fields of id,version,lastChanged, and deleted shows up in IDB
+										// If below function is not used, then model in IDB is perfectly as expected
+										// But in both cases when I refresh page the model's file gets replaced with {file: s3Key}
+
+										//const newItem = handleCloud(
+										//	this.storage,
+										//	item,
+										//	modelConstructor,
+										//	modelDefinition
+										//);
 
 										const model = this.modelInstanceCreator(
 											modelConstructor,
-											newItem
+											item
 										);
+										console.log(model);
 
 										this.storage.runExclusive(storage =>
 											this.modelMerger.merge(storage, model)
@@ -281,22 +289,16 @@ export class SyncEngine {
 											modelDefinition.name
 										] as PersistentModelConstructor<any>;
 
-										// Before calling merge check if the file has been downloaded and added to item
-										// Right now use of this function creates strange situation
-										// of version,lastChanged, and deleted of local model not being updated
-										// and of an item with just fields of id,version,lastChanged, and deleted showing up in IDB
-										// If below function is not used, then model in IDB is perfectly as expected
-										// But in both cases when I refresh page the model's file gets replaced with {file: s3Key}
-										const newItem = handleCloud(
-											this.storage,
-											item,
-											modelConstructor,
-											modelDefinition
-										);
+										//const newItem = handleCloud(
+										//	this.storage,
+										//	item,
+										//	modelConstructor,
+										//	modelDefinition
+										//);
 
 										const model = this.modelInstanceCreator(
 											modelConstructor,
-											newItem
+											item
 										);
 
 										this.storage.runExclusive(storage =>
