@@ -41,7 +41,7 @@ type StartParams = {
 	fullSyncInterval: number;
 };
 
-type ComplexObject = { file: File };
+export type ComplexObject = { file: File; s3Key: string };
 export declare class MutationEvent {
 	constructor(init: ModelInit<MutationEvent>);
 	static copyOf(
@@ -235,28 +235,19 @@ export class SyncEngine {
 											modelDefinition.name
 										] as PersistentModelConstructor<any>;
 
-										// TODO
-										// Before calling merge check if the file has been downloaded and added to item
-										// Create interface for getting file
-										// Make it extesnible for different implementations
-										console.log('Start the interception');
-										console.log(modelDefinition);
-										console.log(modelDefinition.name);
-										console.log(item);
-										console.log(this.schema.namespaces);
+										// Before calling merge checks if the file has been downloaded and adds it to item
 
 										const newItem = handleCloud(
+											this.storage,
 											item,
 											modelConstructor,
-											modelDefinition.name
+											modelDefinition
 										);
-										console.log(newItem);
+
 										const model = this.modelInstanceCreator(
 											modelConstructor,
-											item
+											newItem
 										);
-										console.log("Here's the model");
-										console.log(model);
 
 										this.storage.runExclusive(storage =>
 											this.modelMerger.merge(storage, model)
@@ -290,11 +281,22 @@ export class SyncEngine {
 											modelDefinition.name
 										] as PersistentModelConstructor<any>;
 
-										// TODO
 										// Before calling merge check if the file has been downloaded and added to item
+										// Right now use of this function creates strange situation
+										// of version,lastChanged, and deleted of local model not being updated
+										// and of an item with just fields of id,version,lastChanged, and deleted showing up in IDB
+										// If below function is not used, then model in IDB is perfectly as expected
+										// But in both cases when I refresh page the model's file gets replaced with {file: s3Key}
+										const newItem = handleCloud(
+											this.storage,
+											item,
+											modelConstructor,
+											modelDefinition
+										);
+
 										const model = this.modelInstanceCreator(
 											modelConstructor,
-											item
+											newItem
 										);
 
 										this.storage.runExclusive(storage =>

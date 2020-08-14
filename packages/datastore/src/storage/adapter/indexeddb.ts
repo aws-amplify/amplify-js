@@ -27,7 +27,6 @@ import {
 } from '../../util';
 import { Adapter } from './index';
 import { tsIndexSignature } from '@babel/types';
-import { prepareLocalFile } from '../../sync/ComplexObjUtils';
 
 const logger = new Logger('DataStore');
 

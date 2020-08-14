@@ -1,7 +1,5 @@
-import { DataStore } from '../index';
-import * as idb from 'idb';
-
-let db: idb.IDBPDatabase;
+import { PersistentModel } from '../types';
+import { ModelPredicateCreator } from '../predicates';
 
 function tryParseJSON(jsonString) {
 	try {
@@ -14,9 +12,17 @@ function tryParseJSON(jsonString) {
 	return false;
 }
 
-function handleComplexObjects(cloudObject, localObject) {
-	console.log('Into the real');
-	console.log(localObject);
+function isEmpty(obj) {
+	for (var key in obj) {
+		if (obj.hasOwnProperty(key)) return false;
+	}
+	return true;
+}
+
+function handleComplexObjects(
+	cloudObject: PersistentModel,
+	localObject: PersistentModel
+) {
 	let result = {};
 	let queue = {
 		newObj: result,
@@ -35,10 +41,35 @@ function handleComplexObjects(cloudObject, localObject) {
 		for (const key of keys) {
 			const cloudValue = cloud[key];
 			const localValue = local[key];
-			const isJsonString = tryParseJSON(cloudValue);
-			if (isJsonString && isJsonString.S3link && localValue instanceof File) {
-				console.log('found file');
-				newObj[key] = localValue;
+			// if cloudValue and localValue differ
+			// Either cloudValue contains {file: s3Key} and localValue {file: File}
+			// Both contain a file
+			// or they differ on version, lastChanced, deleted
+			if (cloudValue !== localValue) {
+				if (cloudValue === null || typeof cloudValue === 'number') {
+					newObj[key] = cloudValue;
+				} else {
+					const cloudEntries = Object.entries(cloudValue);
+					const localEntries = Object.entries(localValue);
+
+					const [[nestedCloudKey, nestedCloudValue]] = cloudEntries;
+					const [[nestedLocalKey, nestedLocalValue]] = localEntries;
+
+					// if both are file just take the cloud
+					if (
+						nestedCloudValue instanceof File &&
+						nestedLocalValue instanceof File
+					) {
+						newObj[key] = cloudValue;
+					}
+					// if the nestedCloudValue is an s3Key then take the file
+					const isJsonString = tryParseJSON(nestedCloudValue);
+					if (isJsonString) {
+						if (isJsonString.s3Key && nestedLocalValue instanceof File) {
+							newObj[key] = localValue;
+						}
+					}
+				}
 			} else if (typeof cloudValue === 'object') {
 				const resultValue = (newObj[key] = {});
 				end.next = {
@@ -56,17 +87,52 @@ function handleComplexObjects(cloudObject, localObject) {
 	return result;
 }
 
-export async function handleCloud(item, modelConstructor, name) {
-	await DataStore.start();
-	const storeName = `${name.toLowerCase()}_${name}`;
-	db = await idb.openDB(storeName, 2);
-	console.log('handling cloud');
-	console.log(modelConstructor);
-	//const localModel = await DataStore.query(modelConstructor, item.id);
-	const localModel = db.get(storeName, item.id);
-	console.log('got local model');
-	console.log(localModel);
+// adds file to record from mutation.ts
+// by adding file from complexObjects wherever s3Key seen
+export function handleRecord(
+	cloudObject: PersistentModel,
+	complexObjects
+): PersistentModel {
+	let count = 0;
+	const deepCopy = obj => {
+		if (typeof obj !== 'object' || obj === null) {
+			return obj;
+		}
+
+		const returnObj = Array.isArray(obj) ? [] : {};
+
+		Object.entries(obj).forEach(([key, value]) => {
+			const isJsonString = tryParseJSON(value);
+			if (isJsonString) {
+				const { file, s3Key } = complexObjects[count];
+				if (isJsonString.s3Key === s3Key) {
+					returnObj[key] = file;
+				}
+				count += 1;
+				return;
+			}
+
+			returnObj[key] = deepCopy(value);
+		});
+
+		return returnObj;
+	};
+
+	const result = deepCopy(cloudObject);
+	return result;
+}
+
+export async function handleCloud(
+	storage,
+	item,
+	modelConstructor,
+	modelDefinition
+) {
+	const predicate = ModelPredicateCreator.createForId(modelDefinition, item.id);
+	// queries and pulls model that is stored in IDB and has file
+	const [localModel] = await storage.query(modelConstructor, predicate);
 	if (localModel) {
 		return handleComplexObjects(item, localModel);
 	}
+	// TODO: if no local model exists then download using s3Key
 }

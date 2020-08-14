@@ -31,6 +31,7 @@ import {
 	TransformerMutationType,
 } from '../utils';
 import { Storage as storageCategory } from '@aws-amplify/storage';
+import { handleRecord } from '../ComplexObjUtils';
 
 const MAX_ATTEMPTS = 10;
 
@@ -130,15 +131,13 @@ class MutationProcessor {
 			// If model has complexObjects, uploads them to S3
 			// TODO: Throw error if file > 50mb
 			if (complexObjects) {
-				const Folder = `ComplexObjects/${model}`;
-				for (const { file } of complexObjects) {
-					const S3key = `${Folder}/${file.name}`;
+				for (const { file, s3Key } of complexObjects) {
 					if (operation === TransformerMutationType.CREATE) {
-						await storageCategory.put(S3key, file, {
+						await storageCategory.put(s3Key, file, {
 							contentType: file.type,
 						});
 					} else if (operation === TransformerMutationType.DELETE) {
-						await storageCategory.remove(S3key);
+						await storageCategory.remove(s3Key);
 					}
 				}
 			}
@@ -172,9 +171,15 @@ class MutationProcessor {
 			}
 
 			// TODO
-			// record holds data that is returned from AppSync
-			// Will need to replace
+			// record is object that is immediately returned from AppSync
+			// after object is stored in cloud
+			// handleRecord adds file to Record
+			// by iterating through record and whenever s3key seen
+			// pops from begining of complexObjects
+			// and if complexObjects s3key matches record s3key
+			// add corresponding file to record
 			const record = result.data[opName];
+			const newRecord = await handleRecord(record, complexObjects);
 			await this.outbox.dequeue(this.storage);
 
 			const hasMore = (await this.outbox.peek(this.storage)) !== undefined;
@@ -182,7 +187,7 @@ class MutationProcessor {
 			this.observer.next({
 				operation,
 				modelDefinition,
-				model: record,
+				model: newRecord,
 				hasMore,
 			});
 		}
