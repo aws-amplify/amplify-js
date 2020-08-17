@@ -38,7 +38,7 @@
 .bot {
   margin-left: 1rem;
   margin-right: auto;
-  background-color: #dbdbdb;
+  background-color: rgb(230, 230, 230);
   color: black;
   border-radius: 1.5rem 1.5rem 1.5rem 0;
 }
@@ -63,4 +63,70 @@
   --icon-height: 1.25rem;
   --icon-fill: var(--amplify-primary-color);
   --padding: 0.625rem;
+}
+/**
+ * Loading animation adapted from: https://github.com/nzbin/three-dots.
+ */
+.dot-flashing {
+  position: relative;
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-top: 0.3rem;
+  margin-bottom: 0.3rem;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.65);
+  // background-color: var(--amplify-primary-color);
+  // color: var(--amplify-primary-color);
+  -webkit-animation: dot-flashing 1s infinite linear alternate;
+  animation: dot-flashing 1s infinite linear alternate;
+  -webkit-animation-delay: 0.5s;
+  animation-delay: 0.5s;
+}
+.dot-flashing::before,
+.dot-flashing::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  // background-color: var(--amplify-primary-color);
+}
+.dot-flashing::before {
+  left: -15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  -webkit-animation: dot-flashing 1s infinite alternate;
+  animation: dot-flashing 1s infinite alternate;
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+}
+.dot-flashing::after {
+  left: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  -webkit-animation: dot-flashing 1s infinite alternate;
+  animation: dot-flashing 1s infinite alternate;
+  -webkit-animation-delay: 1s;
+  animation-delay: 1s;
+}
+@-webkit-keyframes dot-flashing {
+  0% {
+    background-color: #9880ff;
+  }
+  50%,
+  100% {
+    background-color: #ebe6ff;
+  }
+}
+@keyframes dot-flashing {
+  0% {
+    background-color: rgba(0, 0, 0, 0.65);
+  }
+  50%,
+  100% {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
 }

@@ -52,10 +52,6 @@ export class AmplifyChatbot {
   /** Event emitted when conversation is completed */
   @Event() chatCompleted: EventEmitter<ChatResult>;
 
-  messageJSX = (messages: Message[]) => {
-    return messages.map(message => <div class={`bubble ${message.from}`}>{message.content}</div>);
-  };
-
   handleChange(event: Event) {
     const target = event.target as HTMLInputElement;
     this.text = target.value;
@@ -93,7 +89,6 @@ export class AmplifyChatbot {
   }
 
   async lexResponseHandler() {
-    this.state = 'speaking';
     if (!Interactions || typeof Interactions.send !== 'function') {
       throw new Error(NO_INTERACTIONS_MODULE_FOUND);
     }
@@ -104,13 +99,10 @@ export class AmplifyChatbot {
       },
     };
     const response = await Interactions.send(this.botName, interactionsMessage);
-    if ((response as any).inputTranscript === '') {
-      this.appendMessage('&#10240', 'user');
-    } else {
-      this.appendMessage((response as any).inputTranscript, 'user');
-    }
-    this.appendMessage((response as any).message, 'bot');
-    this.playTranscript((response as any).audioStream);
+    this.state = 'speaking';
+    if (response.inputTranscript) this.appendMessage(response.inputTranscript, 'user');
+    this.appendMessage(response.message, 'bot');
+    this.playTranscript(response.audioStream);
   }
 
   playTranscript(audioStream: Uint8Array) {
@@ -139,7 +131,6 @@ export class AmplifyChatbot {
         time: 1500,
         amplitude: 0.2,
       });
-      console.log(this.audioRecorder);
     }
   }
 
@@ -152,7 +143,6 @@ export class AmplifyChatbot {
         throw new Error(NO_INTERACTIONS_MODULE_FOUND);
       }
       const onComplete = (err: string, data: object) => {
-        console.log({ err, data });
         this.chatCompleted.emit({
           data,
           err,
@@ -195,6 +185,18 @@ export class AmplifyChatbot {
     );
     return [textInput, micButton, sendButton];
   }
+
+  private messageJSX = (messages: Message[]) => {
+    const messageList = messages.map(message => <div class={`bubble ${message.from}`}>{message.content}</div>);
+    if (this.state === 'sending') {
+      messageList.push(
+        <div class="bubble bot">
+          <div class="dot-flashing" />
+        </div>,
+      );
+    }
+    return messageList;
+  };
 
   render() {
     console.log(this.state);

@@ -53,7 +53,6 @@ export class AudioRecorder {
     processorNode.onaudioprocess = audioProcessingEvent => {
       if (!this.recording) return;
       const stream = audioProcessingEvent.inputBuffer.getChannelData(0);
-      console.log(stream);
       this.streamBuffer.push(new Float32Array(stream)); // set to a copy of the stream
       this.streamBufferLength += stream.length;
       this.analyse();
