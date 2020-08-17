@@ -1,10 +1,11 @@
 import { PersistentModel } from '../types';
 import { ModelPredicateCreator } from '../predicates';
 import { ComplexObject } from './';
+import { Storage as storageCategory } from '@aws-amplify/storage';
 
 function tryParseJSON(jsonString) {
 	try {
-		var o = JSON.parse(jsonString);
+		let o = JSON.parse(jsonString);
 		if (o && typeof o === 'object') {
 			return o;
 		}
@@ -13,7 +14,7 @@ function tryParseJSON(jsonString) {
 	return false;
 }
 function isEmpty(obj) {
-	for (var key in obj) {
+	for (let key in obj) {
 		if (obj.hasOwnProperty(key)) return false;
 	}
 	return true;
@@ -46,9 +47,41 @@ function getComplexObjects(
 	iterate(object);
 	return fileList;
 }
-// adds file to record from mutation.ts
-// by adding file from complexObjects wherever s3Key seen
-export function handleRecord(cloudObject, complexObjects) {
+
+async function downloadComplexObjects(
+	cloudObject,
+	fileList: Array<ComplexObject>
+): Promise<Array<ComplexObject>> {
+	console.log('Entered downloadComplexObjects');
+	const iterate = async obj => {
+		Object.keys(obj).forEach(async key => {
+			const isJsonString = tryParseJSON(obj[key]);
+			if (isJsonString) {
+				if (isJsonString.s3Key) {
+					const s3Key = isJsonString.s3Key;
+					const result = await storageCategory.get(s3Key, {
+						download: true,
+					});
+					const file = result['Body'];
+					fileList.push({ file: file, s3Key: s3Key });
+					console.log('we have pushed to fileList');
+					console.log(fileList);
+					return;
+				}
+			}
+
+			if (typeof obj[key] === 'object') {
+				if (!isEmpty(obj[key])) {
+					iterate(obj[key]);
+				}
+			}
+		});
+	};
+	await iterate(cloudObject);
+	return fileList;
+}
+
+export async function addComplexObject(cloudObject, complexObjects) {
 	let count = 0;
 	const deepCopy = obj => {
 		if (typeof obj !== 'object' || obj === null) {
@@ -58,15 +91,33 @@ export function handleRecord(cloudObject, complexObjects) {
 		const returnObj = Array.isArray(obj) ? [] : {};
 
 		Object.entries(obj).forEach(([key, value]) => {
-			if (value instanceof File) {
+			console.log('Here is the key and value');
+			console.log(key);
+			console.log(value);
+			if (value instanceof File || value instanceof Blob) {
 				returnObj[key] = value;
 			} else {
 				const isJsonString = tryParseJSON(value);
 				if (isJsonString) {
-					const { file, s3Key } = complexObjects[count];
+					console.log('found JSON String');
+					console.log(complexObjects);
+					console.log('this is count');
+					console.log(count);
+					const top = complexObjects[count];
+					console.log('this is top');
+					console.log(top);
+					const file = top['file'];
+					const s3Key = top['s3Key'];
+					console.log('this is the file');
+					console.log(file);
+					console.log('this is the s3Key');
+					console.log(s3Key);
 					if (isJsonString.s3Key === s3Key) {
+						console.log('there is a match so save');
 						returnObj[key] = file;
 					}
+					console.log("it's saved");
+					console.log(returnObj[key]);
 					count += 1;
 					return;
 				}
@@ -77,8 +128,10 @@ export function handleRecord(cloudObject, complexObjects) {
 
 		return returnObj;
 	};
-
-	const result = deepCopy(cloudObject);
+	console.log('here is complexObjects');
+	console.log(complexObjects);
+	console.log(complexObjects[0]);
+	const result = await deepCopy(cloudObject);
 	return result;
 }
 
@@ -88,12 +141,23 @@ export async function handleCloud(
 	modelConstructor,
 	modelDefinition
 ) {
+	console.log('into the handle');
 	const predicate = ModelPredicateCreator.createForId(modelDefinition, item.id);
 	// queries and pulls model that is stored in IDB and has file
 	const [localModel] = await storage.query(modelConstructor, predicate);
 	if (localModel) {
 		const fileList = getComplexObjects(localModel, modelDefinition.name);
-		return handleRecord(item, fileList);
+		return addComplexObject(item, fileList);
 	}
-	// TODO: if no local model exists then download using s3Key
+	// if no local model exists then download using s3Key
+	else {
+		console.log('attempted download');
+		console.log(item);
+		const complexObjects = await downloadComplexObjects(item, []);
+		if (complexObjects && !isEmpty(complexObjects)) {
+			console.log('here is what complexObjects is ');
+			console.log(complexObjects);
+			return await addComplexObject(item, complexObjects);
+		}
+	}
 }

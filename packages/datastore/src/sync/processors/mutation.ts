@@ -31,7 +31,7 @@ import {
 	TransformerMutationType,
 } from '../utils';
 import { Storage as storageCategory } from '@aws-amplify/storage';
-import { handleRecord } from '../ComplexObjUtils';
+import { addComplexObject } from '../ComplexObjUtils';
 
 const MAX_ATTEMPTS = 10;
 
@@ -137,7 +137,7 @@ class MutationProcessor {
 							contentType: file.type,
 						});
 					} else if (operation === TransformerMutationType.DELETE) {
-						await storageCategory.remove(s3Key);
+						await storageCategory.remove(file.name);
 					}
 				}
 			}
@@ -170,16 +170,8 @@ class MutationProcessor {
 				continue;
 			}
 
-			// TODO
-			// record is object that is immediately returned from AppSync
-			// after object is stored in cloud
-			// handleRecord adds file to Record
-			// by iterating through record and whenever s3key seen
-			// pops from begining of complexObjects
-			// and if complexObjects s3key matches record s3key
-			// add corresponding file to record
 			const record = result.data[opName];
-			const newRecord = await handleRecord(record, complexObjects);
+			const newRecord = await addComplexObject(record, complexObjects);
 			await this.outbox.dequeue(this.storage);
 
 			const hasMore = (await this.outbox.peek(this.storage)) !== undefined;
