@@ -41,7 +41,7 @@ export class AmplifyChatbot {
   /** Current app state */
   @State() state: AppState = 'initial';
 
-  @Element() private element: HTMLElement;
+  @Element() element: HTMLAmplifyChatbotElement;
 
   private audioRecorder: AudioRecorder;
   private audioInput: Blob;
@@ -54,12 +54,12 @@ export class AmplifyChatbot {
   /** Event emitted when conversation is completed */
   @Event() chatCompleted: EventEmitter<ChatResult>;
 
-  handleChange(event: Event) {
+  private handleChange(event: Event) {
     const target = event.target as HTMLInputElement;
     this.text = target.value;
   }
 
-  appendMessage(content: string, from: Agent) {
+  private appendMessage(content: string, from: Agent) {
     this.messages = [
       ...this.messages,
       {
@@ -69,19 +69,19 @@ export class AmplifyChatbot {
     ];
   }
 
-  reset() {
+  private reset() {
     this.state = 'initial';
     this.text = '';
     this.audioRecorder && this.audioRecorder.clear();
   }
 
-  micButtonHandler() {
+  private micButtonHandler() {
     if (this.state !== 'initial') return;
     this.state = 'listening';
     this.audioRecorder.startRecording(() => this.onSilenceHandler());
   }
 
-  onSilenceHandler() {
+  private onSilenceHandler() {
     this.state = 'sending';
     this.audioRecorder.stopRecording();
     this.audioRecorder.exportWAV(blob => {
@@ -90,7 +90,7 @@ export class AmplifyChatbot {
     });
   }
 
-  async lexResponseHandler() {
+  private async lexResponseHandler() {
     if (!Interactions || typeof Interactions.send !== 'function') {
       throw new Error(NO_INTERACTIONS_MODULE_FOUND);
     }
@@ -107,13 +107,13 @@ export class AmplifyChatbot {
     this.playTranscript(response.audioStream);
   }
 
-  playTranscript(audioStream: Uint8Array) {
+  private playTranscript(audioStream: Uint8Array) {
     this.audioRecorder.play(audioStream, () => {
       this.state = 'initial';
     });
   }
 
-  async sendText() {
+  private async sendText() {
     if (this.text.length === 0 || this.state !== 'initial') return;
     const text = this.text;
     this.text = '';
@@ -151,6 +151,7 @@ export class AmplifyChatbot {
         });
         if (this.clearOnComplete) {
           this.messages = [];
+          this.reset();
         }
       };
       Interactions.onComplete(this.botName, onComplete);
@@ -162,7 +163,7 @@ export class AmplifyChatbot {
     body.scrollTop = body.scrollHeight;
   }
 
-  footerJSX(): JSXBase.IntrinsicElements[] {
+  private footerJSX(): JSXBase.IntrinsicElements[] {
     const textInput = (
       <amplify-input
         placeholder="Write a message"
