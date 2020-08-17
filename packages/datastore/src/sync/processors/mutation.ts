@@ -31,7 +31,7 @@ import {
 	TransformerMutationType,
 } from '../utils';
 import { Storage as storageCategory } from '@aws-amplify/storage';
-import { addComplexObject } from '../ComplexObjUtils';
+import { isEmpty } from '../ComplexObjUtils';
 
 const MAX_ATTEMPTS = 10;
 
@@ -130,7 +130,7 @@ class MutationProcessor {
 			const { complexObjects, model, operation, data, condition } = head;
 			// If model has complexObjects, uploads them to S3
 			// TODO: Throw error if file > 50mb
-			if (complexObjects) {
+			if (!isEmpty(complexObjects)) {
 				for (const { file, s3Key } of complexObjects) {
 					if (operation === TransformerMutationType.CREATE) {
 						await storageCategory.put(s3Key, file, {
@@ -171,7 +171,6 @@ class MutationProcessor {
 			}
 
 			const record = result.data[opName];
-			const newRecord = await addComplexObject(record, complexObjects);
 			await this.outbox.dequeue(this.storage);
 
 			const hasMore = (await this.outbox.peek(this.storage)) !== undefined;
@@ -179,7 +178,7 @@ class MutationProcessor {
 			this.observer.next({
 				operation,
 				modelDefinition,
-				model: newRecord,
+				model: record,
 				hasMore,
 			});
 		}

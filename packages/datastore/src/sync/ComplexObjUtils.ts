@@ -13,7 +13,7 @@ function tryParseJSON(jsonString) {
 
 	return false;
 }
-function isEmpty(obj) {
+export function isEmpty(obj) {
 	for (let key in obj) {
 		if (obj.hasOwnProperty(key)) return false;
 	}
@@ -28,17 +28,17 @@ function getComplexObjects(
 	const fileList = [];
 
 	const iterate = obj => {
-		Object.keys(obj).forEach(key => {
-			if (obj[key] instanceof File) {
-				const file = obj[key];
+		Object.entries(obj).forEach(([key, value]) => {
+			if (value instanceof File) {
+				const file = value;
 				const s3Key = `${folder}/${file.name}`;
 				fileList.push({ file, s3Key });
 				return;
 			}
 
-			if (typeof obj[key] === 'object') {
-				if (!isEmpty(obj[key])) {
-					iterate(obj[key]);
+			if (typeof value === 'object') {
+				if (!isEmpty(value)) {
+					iterate(value);
 				}
 			}
 		});
@@ -52,23 +52,23 @@ async function downloadComplexObjects(
 	cloudObject
 ): Promise<Array<ComplexObject>> {
 	const keys = [];
-	const iterate = async obj => {
-		Object.keys(obj).forEach(async key => {
-			const isJsonString = tryParseJSON(obj[key]);
+	const iterate = obj => {
+		Object.entries(obj).forEach(([key, value]) => {
+			const isJsonString = tryParseJSON(value);
 			if (isJsonString) {
 				if (isJsonString.s3Key) {
 					const s3Key = isJsonString.s3Key;
 					keys.push(s3Key);
 				}
 			}
-			if (typeof obj[key] === 'object') {
-				if (!isEmpty(obj[key])) {
-					iterate(obj[key]);
+			if (typeof value === 'object') {
+				if (!isEmpty(value)) {
+					iterate(value);
 				}
 			}
 		});
 	};
-	await iterate(cloudObject);
+	iterate(cloudObject);
 	const fileList = await Promise.all(
 		keys.map(async key => {
 			const result = await storageCategory.get(key, {
@@ -81,7 +81,7 @@ async function downloadComplexObjects(
 	return fileList;
 }
 
-export async function addComplexObject(cloudObject, complexObjects) {
+async function addComplexObject(cloudObject, complexObjects) {
 	let count = 0;
 	const deepCopy = obj => {
 		if (typeof obj !== 'object' || obj === null) {
@@ -120,16 +120,18 @@ export async function handleCloud(
 	modelConstructor,
 	modelDefinition
 ) {
+	let complexObjects;
 	const predicate = ModelPredicateCreator.createForId(modelDefinition, item.id);
 	// queries and pulls model that is stored in IDB and has file
 	const [localModel] = await storage.query(modelConstructor, predicate);
 	if (localModel) {
-		const fileList = getComplexObjects(localModel, modelDefinition.name);
-		return addComplexObject(item, fileList);
+		complexObjects = getComplexObjects(localModel, modelDefinition.name);
 	}
 	// if no local model exists then download using s3Key
 	else {
-		const complexObjects = await downloadComplexObjects(item);
+		complexObjects = await downloadComplexObjects(item);
+	}
+	if (!isEmpty(complexObjects)) {
 		return await addComplexObject(item, complexObjects);
 	}
 }
