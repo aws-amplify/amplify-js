@@ -158,4 +158,8 @@ export default StyleSheet.create({
 		textAlign: 'center',
 		padding: 20,
 	},
+	text: {
+		color: '#152939',
+		fontSize: 14,
+	},
 });
