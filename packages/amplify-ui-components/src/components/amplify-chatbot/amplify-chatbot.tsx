@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, State, Listen, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, h, Prop, State, Listen, Event, EventEmitter, Element } from '@stencil/core';
 import { Interactions } from '@aws-amplify/interactions';
 import { JSXBase } from '@stencil/core/internal';
 import { AudioRecorder } from '../../common/audio-control/recorder';
@@ -40,6 +40,8 @@ export class AmplifyChatbot {
   @State() text: string = '';
   /** Current app state */
   @State() state: AppState = 'initial';
+
+  @Element() private element: HTMLElement;
 
   private audioRecorder: AudioRecorder;
   private audioInput: Blob;
@@ -153,6 +155,11 @@ export class AmplifyChatbot {
       };
       Interactions.onComplete(this.botName, onComplete);
     }
+  }
+
+  componentDidRender() {
+    const body = this.element.shadowRoot.querySelector('.body');
+    body.scrollTop = body.scrollHeight;
   }
 
   footerJSX(): JSXBase.IntrinsicElements[] {
