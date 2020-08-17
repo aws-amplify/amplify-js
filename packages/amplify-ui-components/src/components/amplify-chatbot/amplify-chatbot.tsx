@@ -213,7 +213,7 @@ export class AmplifyChatbot {
         <div class="amplify-chatbot">
           <div class="header">{this.botTitle}</div>
           <div class="body">{this.messageJSX(this.messages)}</div>
-          <div class="chatbot-control">{this.footerJSX()}</div>
+          <div class="footer">{this.footerJSX()}</div>
         </div>
       </Host>
     );
