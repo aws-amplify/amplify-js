@@ -154,10 +154,8 @@ export async function handleCloud(
 		console.log('attempted download');
 		console.log(item);
 		const complexObjects = await downloadComplexObjects(item, []);
-		if (complexObjects && !isEmpty(complexObjects)) {
-			console.log('here is what complexObjects is ');
-			console.log(complexObjects);
-			return await addComplexObject(item, complexObjects);
-		}
+		console.log('here is what complexObjects is ');
+		console.log(complexObjects);
+		return await addComplexObject(item, complexObjects);
 	}
 }
