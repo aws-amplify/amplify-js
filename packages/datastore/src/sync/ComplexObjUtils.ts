@@ -49,27 +49,18 @@ function getComplexObjects(
 }
 
 async function downloadComplexObjects(
-	cloudObject,
-	fileList: Array<ComplexObject>
+	cloudObject
 ): Promise<Array<ComplexObject>> {
-	console.log('Entered downloadComplexObjects');
+	const keys = [];
 	const iterate = async obj => {
 		Object.keys(obj).forEach(async key => {
 			const isJsonString = tryParseJSON(obj[key]);
 			if (isJsonString) {
 				if (isJsonString.s3Key) {
 					const s3Key = isJsonString.s3Key;
-					const result = await storageCategory.get(s3Key, {
-						download: true,
-					});
-					const file = result['Body'];
-					fileList.push({ file: file, s3Key: s3Key });
-					console.log('we have pushed to fileList');
-					console.log(fileList);
-					return;
+					keys.push(s3Key);
 				}
 			}
-
 			if (typeof obj[key] === 'object') {
 				if (!isEmpty(obj[key])) {
 					iterate(obj[key]);
@@ -78,6 +69,15 @@ async function downloadComplexObjects(
 		});
 	};
 	await iterate(cloudObject);
+	const fileList = await Promise.all(
+		keys.map(async key => {
+			const result = await storageCategory.get(key, {
+				download: true,
+			});
+			const file = result['Body'];
+			return { file, s3Key: key };
+		})
+	);
 	return fileList;
 }
 
@@ -91,33 +91,15 @@ export async function addComplexObject(cloudObject, complexObjects) {
 		const returnObj = Array.isArray(obj) ? [] : {};
 
 		Object.entries(obj).forEach(([key, value]) => {
-			console.log('Here is the key and value');
-			console.log(key);
-			console.log(value);
 			if (value instanceof File || value instanceof Blob) {
 				returnObj[key] = value;
 			} else {
 				const isJsonString = tryParseJSON(value);
 				if (isJsonString) {
-					console.log('found JSON String');
-					console.log(complexObjects);
-					console.log('this is count');
-					console.log(count);
-					const top = complexObjects[count];
-					console.log('this is top');
-					console.log(top);
-					const file = top['file'];
-					const s3Key = top['s3Key'];
-					console.log('this is the file');
-					console.log(file);
-					console.log('this is the s3Key');
-					console.log(s3Key);
+					const { file, s3Key } = complexObjects[count];
 					if (isJsonString.s3Key === s3Key) {
-						console.log('there is a match so save');
 						returnObj[key] = file;
 					}
-					console.log("it's saved");
-					console.log(returnObj[key]);
 					count += 1;
 					return;
 				}
@@ -128,9 +110,6 @@ export async function addComplexObject(cloudObject, complexObjects) {
 
 		return returnObj;
 	};
-	console.log('here is complexObjects');
-	console.log(complexObjects);
-	console.log(complexObjects[0]);
 	const result = await deepCopy(cloudObject);
 	return result;
 }
@@ -141,7 +120,6 @@ export async function handleCloud(
 	modelConstructor,
 	modelDefinition
 ) {
-	console.log('into the handle');
 	const predicate = ModelPredicateCreator.createForId(modelDefinition, item.id);
 	// queries and pulls model that is stored in IDB and has file
 	const [localModel] = await storage.query(modelConstructor, predicate);
@@ -151,11 +129,7 @@ export async function handleCloud(
 	}
 	// if no local model exists then download using s3Key
 	else {
-		console.log('attempted download');
-		console.log(item);
-		const complexObjects = await downloadComplexObjects(item, []);
-		console.log('here is what complexObjects is ');
-		console.log(complexObjects);
+		const complexObjects = await downloadComplexObjects(item);
 		return await addComplexObject(item, complexObjects);
 	}
 }
