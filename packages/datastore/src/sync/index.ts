@@ -278,12 +278,12 @@ export class SyncEngine {
 							// TODO: extract to function
 							subscriptions.push(
 								dataSubsObservable.subscribe(
-									([_transformerMutationType, modelDefinition, item]) => {
+									async ([_transformerMutationType, modelDefinition, item]) => {
 										const modelConstructor = this.userModelClasses[
 											modelDefinition.name
 										] as PersistentModelConstructor<any>;
 
-										const newItem = handleCloud(
+										const newItem = await handleCloud(
 											this.storage,
 											item,
 											modelConstructor,
