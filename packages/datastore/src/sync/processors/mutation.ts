@@ -132,7 +132,10 @@ class MutationProcessor {
 			// TODO: Throw error if file > 50mb
 			if (!isEmpty(complexObjects)) {
 				for (const { file, s3Key } of complexObjects) {
-					if (operation === TransformerMutationType.CREATE) {
+					if (
+						operation === TransformerMutationType.CREATE ||
+						operation === TransformerMutationType.UPDATE
+					) {
 						await storageCategory.put(s3Key, file, {
 							contentType: file.type,
 						});

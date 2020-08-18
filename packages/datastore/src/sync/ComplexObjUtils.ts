@@ -13,11 +13,53 @@ function tryParseJSON(jsonString) {
 
 	return false;
 }
+
+function blobToFile(blob: Blob, fileName: string): File {
+	return new File([blob], fileName);
+}
+
 export function isEmpty(obj) {
 	for (let key in obj) {
 		if (obj.hasOwnProperty(key)) return false;
 	}
 	return true;
+}
+
+async function checkForUpdate(cloudObject, complexObjects) {
+	let count = 0;
+	let keys = [];
+	const iterate = obj => {
+		Object.entries(obj).forEach(([key, value]) => {
+			const isJsonString = tryParseJSON(value);
+			if (isJsonString) {
+				const { file, s3Key } = complexObjects[count];
+				if (isJsonString.s3Key !== s3Key) {
+					keys.push(isJsonString.s3Key);
+				}
+				count += 1;
+			}
+			if (typeof value === 'object') {
+				if (!isEmpty(value)) {
+					iterate(value);
+				}
+			}
+		});
+	};
+	iterate(cloudObject);
+	if (!isEmpty(keys)) {
+		const fileList = await Promise.all(
+			keys.map(async key => {
+				const result = await storageCategory.get(key, {
+					download: true,
+				});
+				const file = blobToFile(result['Body'], key.split('/')[2]);
+				return { file, s3Key: key };
+			})
+		);
+		return fileList;
+	} else {
+		return [];
+	}
 }
 
 function getComplexObjects(
@@ -74,7 +116,7 @@ async function downloadComplexObjects(
 			const result = await storageCategory.get(key, {
 				download: true,
 			});
-			const file = result['Body'];
+			const file = blobToFile(result['Body'], key.split('/')[2]);
 			return { file, s3Key: key };
 		})
 	);
@@ -110,8 +152,8 @@ async function addComplexObject(cloudObject, complexObjects) {
 
 		return returnObj;
 	};
-	const result = await deepCopy(cloudObject);
-	return result;
+	const newModel = await deepCopy(cloudObject);
+	return newModel;
 }
 
 export async function handleCloud(
@@ -126,6 +168,10 @@ export async function handleCloud(
 	const [localModel] = await storage.query(modelConstructor, predicate);
 	if (localModel) {
 		complexObjects = getComplexObjects(localModel, modelDefinition.name);
+		const potential = await checkForUpdate(item, complexObjects);
+		if (!isEmpty(potential)) {
+			complexObjects = potential;
+		}
 	}
 	// if no local model exists then download using s3Key
 	else {
