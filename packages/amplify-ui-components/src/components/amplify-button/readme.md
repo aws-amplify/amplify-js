@@ -21,6 +21,8 @@
  - [amplify-confirm-sign-up](../amplify-confirm-sign-up)
  - [amplify-forgot-password](../amplify-forgot-password)
  - [amplify-form-section](../amplify-form-section)
+ - [amplify-photo-picker](../amplify-photo-picker)
+ - [amplify-picker](../amplify-picker)
  - [amplify-require-new-password](../amplify-require-new-password)
  - [amplify-sign-in](../amplify-sign-in)
  - [amplify-sign-out](../amplify-sign-out)
@@ -34,6 +36,8 @@ graph TD;
   amplify-confirm-sign-up --> amplify-button
   amplify-forgot-password --> amplify-button
   amplify-form-section --> amplify-button
+  amplify-photo-picker --> amplify-button
+  amplify-picker --> amplify-button
   amplify-require-new-password --> amplify-button
   amplify-sign-in --> amplify-button
   amplify-sign-out --> amplify-button

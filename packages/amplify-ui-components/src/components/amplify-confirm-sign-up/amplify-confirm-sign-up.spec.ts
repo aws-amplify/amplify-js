@@ -1,4 +1,3 @@
-import { I18n } from '@aws-amplify/core';
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyConfirmSignUp } from './amplify-confirm-sign-up';
 import { Translations } from '../../common/Translations';
@@ -20,11 +19,11 @@ describe('amplify-confirm-sign-up spec:', () => {
     });
 
     it('should render `headerText` to `Confirm Sign up` by default', () => {
-      expect(confirmSignUp.headerText).toEqual(I18n.get(Translations.CONFIRM_SIGN_UP_HEADER_TEXT));
+      expect(confirmSignUp.headerText).toEqual(Translations.CONFIRM_SIGN_UP_HEADER_TEXT);
     });
 
     it('should render `submitButtonText` to `Confirm` by default', () => {
-      expect(confirmSignUp.submitButtonText).toEqual(I18n.get(Translations.CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT));
+      expect(confirmSignUp.submitButtonText).toEqual(Translations.CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT);
     });
 
     it('should render `usernameAlias` as `username` by default', () => {

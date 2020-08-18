@@ -11,18 +11,25 @@
  * and limitations under the License.
  */
 
-export { CognitoHostedUIIdentityProvider } from './types/Auth';
-export {
+import { Auth, AuthClass } from './Auth';
+import { CognitoHostedUIIdentityProvider } from './types/Auth';
+import {
 	CognitoUser,
 	CookieStorage,
 	appendToCognitoUserAgent,
 } from 'amazon-cognito-identity-js';
+import { AuthErrorStrings } from './common/AuthErrorStrings';
 
+/**
+ * @deprecated use named import
+ */
+export default Auth;
 export {
-	/**
-	 * @deprecated use named import
-	 */
-	Auth as default,
 	Auth,
 	AuthClass,
-} from './Auth';
+	CognitoUser,
+	CookieStorage,
+	CognitoHostedUIIdentityProvider,
+	appendToCognitoUserAgent,
+	AuthErrorStrings,
+};

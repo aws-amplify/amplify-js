@@ -512,7 +512,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	private _errorDisconnect(msg: string) {
 		logger.debug(`Disconnect error: ${msg}`);
 		this.subscriptionObserverMap.forEach(({ observer }) => {
-			if (!observer.closed) {
+			if (observer && !observer.closed) {
 				observer.error({
 					errors: [{ ...new GraphQLError(msg) }],
 				});
