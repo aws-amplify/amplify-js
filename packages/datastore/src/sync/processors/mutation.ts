@@ -140,7 +140,7 @@ class MutationProcessor {
 							contentType: file.type,
 						});
 					} else if (operation === TransformerMutationType.DELETE) {
-						await storageCategory.remove(file.name);
+						await storageCategory.remove(s3Key);
 					}
 				}
 			}

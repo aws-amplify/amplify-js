@@ -283,12 +283,20 @@ export class SyncEngine {
 											modelDefinition.name
 										] as PersistentModelConstructor<any>;
 
-										const newItem = await handleCloud(
-											this.storage,
-											item,
-											modelConstructor,
-											modelDefinition
-										);
+										let newItem;
+										if (
+											_transformerMutationType !==
+											TransformerMutationType.DELETE
+										) {
+											newItem = await handleCloud(
+												this.storage,
+												item,
+												modelConstructor,
+												modelDefinition
+											);
+										} else {
+											newItem = item;
+										}
 
 										const model = this.modelInstanceCreator(
 											modelConstructor,

@@ -90,9 +90,7 @@ function getComplexObjects(
 	return fileList;
 }
 
-async function downloadComplexObjects(
-	cloudObject
-): Promise<Array<ComplexObject>> {
+async function downloadComplexObjects(cloudObject) {
 	const keys = [];
 	const iterate = obj => {
 		Object.entries(obj).forEach(([key, value]) => {
@@ -113,11 +111,21 @@ async function downloadComplexObjects(
 	iterate(cloudObject);
 	const fileList = await Promise.all(
 		keys.map(async key => {
-			const result = await storageCategory.get(key, {
-				download: true,
-			});
-			const file = blobToFile(result['Body'], key.split('/')[2]);
-			return { file, s3Key: key };
+			const complexObject = await storageCategory
+				.get(key, {
+					download: true,
+				})
+				.then(result => {
+					console.log;
+					console.log(result);
+					const file = blobToFile(result['Body'], key.split('/')[2]);
+					return { file, s3Key: key };
+				})
+				.catch(err => {
+					// If 404 error, file not in S3 Bucket, return nothing as the item is of type DELETE
+					return;
+				});
+			return complexObject;
 		})
 	);
 	return fileList;
@@ -173,11 +181,21 @@ export async function handleCloud(
 			complexObjects = potential;
 		}
 	}
-	// if no local model exists then download using s3Key
+	// if no local model exists and item is not being deleted then download using s3Key
 	else {
-		complexObjects = await downloadComplexObjects(item);
+		if (!item['_deleted']) {
+			complexObjects = await downloadComplexObjects(item);
+			// If complexObjects contains undefined item's file not in S3
+			if (complexObjects[0] === undefined) {
+				return item;
+			}
+		} else {
+			return item;
+		}
 	}
 	if (!isEmpty(complexObjects)) {
 		return await addComplexObject(item, complexObjects);
+	} else {
+		return item;
 	}
 }
