@@ -11,7 +11,7 @@ interface Message {
   from: Agent;
 }
 
-type AppState = 'initial' | 'listening' | 'sending' | 'speaking';
+type AppState = 'initial' | 'listening' | 'sending' | 'speaking' | 'error';
 
 @Component({
   tag: 'amplify-chatbot',
@@ -28,7 +28,7 @@ export class AmplifyChatbot {
   /** Greeting message displayed to users */
   @Prop() welcomeMessage: string;
   /** Text placed in the top header */
-  @Prop() botTitle: string;
+  @Prop() botTitle: string = 'ChatBot Lex';
   /** Whether voice chat is enabled */
   @Prop() voiceEnabled: boolean = false;
   /** Whether text chat is enabled */
@@ -40,6 +40,8 @@ export class AmplifyChatbot {
   @State() text: string = '';
   /** Current app state */
   @State() state: AppState = 'initial';
+  /** Toast error message */
+  @State() error: string;
 
   @Element() element: HTMLAmplifyChatbotElement;
 
@@ -48,84 +50,11 @@ export class AmplifyChatbot {
 
   @Listen('formSubmit')
   submitHandler(_event: CustomEvent) {
-    this.sendText();
+    this.sendTextMessage();
   }
 
   /** Event emitted when conversation is completed */
   @Event() chatCompleted: EventEmitter<ChatResult>;
-
-  private handleChange(event: Event) {
-    const target = event.target as HTMLInputElement;
-    this.text = target.value;
-  }
-
-  private appendMessage(content: string, from: Agent) {
-    this.messages = [
-      ...this.messages,
-      {
-        content,
-        from,
-      },
-    ];
-  }
-
-  private reset() {
-    this.state = 'initial';
-    this.text = '';
-    this.audioRecorder && this.audioRecorder.clear();
-  }
-
-  private micButtonHandler() {
-    if (this.state !== 'initial') return;
-    this.state = 'listening';
-    this.audioRecorder.startRecording(() => this.onSilenceHandler());
-  }
-
-  private onSilenceHandler() {
-    this.state = 'sending';
-    this.audioRecorder.stopRecording();
-    this.audioRecorder.exportWAV(blob => {
-      this.audioInput = blob;
-      this.lexResponseHandler();
-    });
-  }
-
-  private async lexResponseHandler() {
-    if (!Interactions || typeof Interactions.send !== 'function') {
-      throw new Error(NO_INTERACTIONS_MODULE_FOUND);
-    }
-    const interactionsMessage = {
-      content: this.audioInput,
-      options: {
-        messageType: 'voice',
-      },
-    };
-    const response = await Interactions.send(this.botName, interactionsMessage);
-    this.state = 'speaking';
-    if (response.inputTranscript) this.appendMessage(response.inputTranscript, 'user');
-    this.appendMessage(response.message, 'bot');
-    this.playTranscript(response.audioStream);
-  }
-
-  private playTranscript(audioStream: Uint8Array) {
-    this.audioRecorder.play(audioStream, () => {
-      this.state = 'initial';
-    });
-  }
-
-  private async sendText() {
-    if (this.text.length === 0 || this.state !== 'initial') return;
-    const text = this.text;
-    this.text = '';
-    this.appendMessage(text, 'user');
-    this.state = 'sending';
-
-    const response = await Interactions.send(this.botName, text);
-    if (response.message) {
-      this.appendMessage(response.message, 'bot');
-    }
-    this.state = 'initial';
-  }
 
   connectedCallback() {
     if (this.voiceEnabled) {
@@ -138,7 +67,7 @@ export class AmplifyChatbot {
 
   componentWillLoad() {
     if (this.messages.length === 0 && this.welcomeMessage && this.welcomeMessage.length > 0) {
-      this.appendMessage(this.welcomeMessage, 'bot');
+      this.appendToChat(this.welcomeMessage, 'bot');
     }
     if (this.botName) {
       if (!Interactions || typeof Interactions.onComplete !== 'function') {
@@ -155,12 +84,90 @@ export class AmplifyChatbot {
         }
       };
       Interactions.onComplete(this.botName, onComplete);
+    } else {
+      this.state = 'error';
+      this.error = 'Error: Bot Name must be provided to ChatBot';
     }
   }
 
   componentDidRender() {
+    // scroll to the bottom of messages if necessary
     const body = this.element.shadowRoot.querySelector('.body');
     body.scrollTop = body.scrollHeight;
+  }
+
+  private handleChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    this.text = target.value;
+  }
+
+  private appendToChat(content: string, from: Agent) {
+    this.messages = [
+      ...this.messages,
+      {
+        content,
+        from,
+      },
+    ];
+  }
+
+  private reset() {
+    this.state = 'initial';
+    this.text = '';
+    this.error = undefined;
+    this.audioRecorder && this.audioRecorder.clear();
+  }
+
+  private micButtonHandler() {
+    if (this.state !== 'initial') return;
+    this.state = 'listening';
+    this.audioRecorder.startRecording(() => this.onSilenceHandler());
+  }
+
+  private onSilenceHandler() {
+    this.state = 'sending';
+    this.audioRecorder.stopRecording();
+    this.audioRecorder.exportWAV(blob => {
+      this.audioInput = blob;
+      this.sendVoiceMessage();
+    });
+  }
+
+  private async sendVoiceMessage() {
+    if (!Interactions || typeof Interactions.send !== 'function') {
+      throw new Error(NO_INTERACTIONS_MODULE_FOUND);
+    }
+    const interactionsMessage = {
+      content: this.audioInput,
+      options: {
+        messageType: 'voice',
+      },
+    };
+    const response = await Interactions.send(this.botName, interactionsMessage);
+    this.state = 'speaking';
+    if (response.inputTranscript) this.appendToChat(response.inputTranscript, 'user');
+    this.appendToChat(response.message, 'bot');
+    this.playTranscript(response.audioStream);
+  }
+
+  private playTranscript(audioStream: Uint8Array) {
+    this.audioRecorder.play(audioStream, () => {
+      this.state = 'initial';
+    });
+  }
+
+  private async sendTextMessage() {
+    if (this.text.length === 0 || this.state !== 'initial' || typeof this.error !== undefined) return;
+    const text = this.text;
+    this.text = '';
+    this.appendToChat(text, 'user');
+    this.state = 'sending';
+
+    const response = await Interactions.send(this.botName, text);
+    if (response.message) {
+      this.appendToChat(response.message, 'bot');
+    }
+    this.state = 'initial';
   }
 
   private footerJSX(): JSXBase.IntrinsicElements[] {
@@ -171,6 +178,7 @@ export class AmplifyChatbot {
         description="text"
         handleInputChange={evt => this.handleChange(evt)}
         value={this.text}
+        disabled={this.state === 'error'}
       />
     );
     const micButton = this.voiceEnabled && (
@@ -179,7 +187,7 @@ export class AmplifyChatbot {
         class="icon-button"
         variant="icon"
         icon="microphone"
-        disabled={this.state !== 'initial'}
+        disabled={this.state === 'error' || this.state !== 'initial'}
       />
     );
     const sendButton = this.textEnabled && (
@@ -187,8 +195,8 @@ export class AmplifyChatbot {
         class="icon-button"
         variant="icon"
         icon="send"
-        handleButtonClick={() => this.sendText()}
-        disabled={this.state !== 'initial'}
+        handleButtonClick={() => this.sendTextMessage()}
+        disabled={this.state === 'error' || this.state !== 'initial'}
       />
     );
     return [textInput, micButton, sendButton];
@@ -211,9 +219,23 @@ export class AmplifyChatbot {
     return (
       <Host>
         <div class="amplify-chatbot">
-          <div class="header">{this.botTitle}</div>
-          <div class="body">{this.messageJSX(this.messages)}</div>
-          <div class="footer">{this.footerJSX()}</div>
+          <div class="header" data-test="chatbot-header">
+            {this.botTitle}
+          </div>
+          <div class="body" data-test="chatbot-body">
+            {this.messageJSX(this.messages)}
+          </div>
+          <div class="footer" data-test="chatbot-footer">
+            {this.footerJSX()}
+          </div>
+          {this.error ? (
+            <amplify-toast
+              message={this.error}
+              handleClose={() => {
+                this.error = undefined;
+              }}
+            />
+          ) : null}
         </div>
       </Host>
     );
