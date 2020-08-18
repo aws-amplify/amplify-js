@@ -56,38 +56,41 @@ export class AmplifyChatbot {
   /** Event emitted when conversation is completed */
   @Event() chatCompleted: EventEmitter<ChatResult>;
 
-  connectedCallback() {
+  componentWillLoad() {
+    // Check props and Interactions
+    if (!this.voiceEnabled && !this.textEnabled) {
+      this.setError('Error: you must enable voice or text for the chatbot');
+    } else if (!this.botName) {
+      this.setError('Error: Bot Name must be provided to ChatBot');
+    } else if (!Interactions || typeof Interactions.onComplete !== 'function') {
+      this.setError(NO_INTERACTIONS_MODULE_FOUND);
+    }
+
+    // Initialize AudioRecorder if voice is enabled
     if (this.voiceEnabled) {
       this.audioRecorder = new AudioRecorder({
         time: 1500,
         amplitude: 0.2,
       });
     }
-  }
 
-  componentWillLoad() {
+    // Set welcome message
     if (this.messages.length === 0 && this.welcomeMessage && this.welcomeMessage.length > 0) {
       this.appendToChat(this.welcomeMessage, 'bot');
     }
-    if (this.botName) {
-      if (!Interactions || typeof Interactions.onComplete !== 'function') {
-        throw new Error(NO_INTERACTIONS_MODULE_FOUND);
+
+    // Callback function to be called after chat is completed
+    const onComplete = (err: string, data: object) => {
+      this.chatCompleted.emit({
+        data,
+        err,
+      });
+      if (this.clearOnComplete) {
+        this.reset();
       }
-      const onComplete = (err: string, data: object) => {
-        this.chatCompleted.emit({
-          data,
-          err,
-        });
-        if (this.clearOnComplete) {
-          this.messages = [];
-          this.reset();
-        }
-      };
+
       Interactions.onComplete(this.botName, onComplete);
-    } else {
-      this.state = 'error';
-      this.error = 'Error: Bot Name must be provided to ChatBot';
-    }
+    };
   }
 
   componentDidRender() {
@@ -115,6 +118,7 @@ export class AmplifyChatbot {
     this.state = 'initial';
     this.text = '';
     this.error = undefined;
+    this.messages = this.welcomeMessage ? this.messages.slice(0, 1) : [];
     this.audioRecorder && this.audioRecorder.clear();
   }
 
@@ -147,11 +151,7 @@ export class AmplifyChatbot {
     this.state = 'speaking';
     if (response.inputTranscript) this.appendToChat(response.inputTranscript, 'user');
     this.appendToChat(response.message, 'bot');
-    this.playTranscript(response.audioStream);
-  }
-
-  private playTranscript(audioStream: Uint8Array) {
-    this.audioRecorder.play(audioStream, () => {
+    this.audioRecorder.play(response.audioStream, () => {
       this.state = 'initial';
     });
   }
@@ -168,6 +168,11 @@ export class AmplifyChatbot {
       this.appendToChat(response.message, 'bot');
     }
     this.state = 'initial';
+  }
+
+  private setError(message: string) {
+    this.state = 'error';
+    this.error = message;
   }
 
   private footerJSX(): JSXBase.IntrinsicElements[] {
@@ -214,6 +219,19 @@ export class AmplifyChatbot {
     return messageList;
   };
 
+  private errorToast() {
+    return (
+      this.error && (
+        <amplify-toast
+          message={this.error}
+          handleClose={() => {
+            this.error = undefined;
+          }}
+        />
+      )
+    );
+  }
+
   render() {
     console.log(this.state);
     return (
@@ -228,14 +246,7 @@ export class AmplifyChatbot {
           <div class="footer" data-test="chatbot-footer">
             {this.footerJSX()}
           </div>
-          {this.error ? (
-            <amplify-toast
-              message={this.error}
-              handleClose={() => {
-                this.error = undefined;
-              }}
-            />
-          ) : null}
+          {this.errorToast()}
         </div>
       </Host>
     );
