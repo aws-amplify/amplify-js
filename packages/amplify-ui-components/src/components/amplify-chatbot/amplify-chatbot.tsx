@@ -46,8 +46,8 @@ export class AmplifyChatbot {
   @Element() element: HTMLAmplifyChatbotElement;
 
   private audioRecorder: AudioRecorder;
-  private audioInput: Blob;
 
+  // Occurs when user presses enter in input box
   @Listen('formSubmit')
   submitHandler(_event: CustomEvent) {
     this.sendTextMessage();
@@ -56,15 +56,30 @@ export class AmplifyChatbot {
   /** Event emitted when conversation is completed */
   @Event() chatCompleted: EventEmitter<ChatResult>;
 
+  /**
+   * Lifecycle functions
+   */
+
   componentWillLoad() {
-    // Check props and Interactions
+    if (!Interactions || typeof Interactions.onComplete !== 'function') {
+      throw new Error(NO_INTERACTIONS_MODULE_FOUND);
+    }
+    this.updateProps();
+  }
+
+  componentDidRender() {
+    // scroll to the bottom of messages if necessary
+    const body = this.element.shadowRoot.querySelector('.body');
+    body.scrollTop = body.scrollHeight;
+  }
+
+  private updateProps() {
     if (!this.voiceEnabled && !this.textEnabled) {
       this.setError('Error: you must enable voice or text for the chatbot');
     } else if (!this.botName) {
       this.setError('Error: Bot Name must be provided to ChatBot');
-    } else if (!Interactions || typeof Interactions.onComplete !== 'function') {
-      this.setError(NO_INTERACTIONS_MODULE_FOUND);
     }
+    this.reset();
 
     // Initialize AudioRecorder if voice is enabled
     if (this.voiceEnabled) {
@@ -72,11 +87,6 @@ export class AmplifyChatbot {
         time: 1500,
         amplitude: 0.2,
       });
-    }
-
-    // Set welcome message
-    if (this.messages.length === 0 && this.welcomeMessage && this.welcomeMessage.length > 0) {
-      this.appendToChat(this.welcomeMessage, 'bot');
     }
 
     // Callback function to be called after chat is completed
@@ -88,61 +98,58 @@ export class AmplifyChatbot {
       if (this.clearOnComplete) {
         this.reset();
       }
-
-      Interactions.onComplete(this.botName, onComplete);
     };
+    try {
+      Interactions.onComplete(this.botName, onComplete);
+    } catch (err) {
+      this.setError(err);
+    }
   }
 
-  componentDidRender() {
-    // scroll to the bottom of messages if necessary
-    const body = this.element.shadowRoot.querySelector('.body');
-    body.scrollTop = body.scrollHeight;
+  /**
+   * Handlers
+   */
+
+  private handleMicButton() {
+    if (this.state !== 'initial') return;
+    this.state = 'listening';
+    this.audioRecorder.startRecording(() => this.handleSilence());
   }
 
-  private handleChange(event: Event) {
+  private handleSilence() {
+    this.state = 'sending';
+    this.audioRecorder.stopRecording();
+    this.audioRecorder.exportWAV(blob => {
+      this.sendVoiceMessage(blob);
+    });
+  }
+
+  private handleTextChange(event: Event) {
     const target = event.target as HTMLInputElement;
     this.text = target.value;
   }
 
-  private appendToChat(content: string, from: Agent) {
-    this.messages = [
-      ...this.messages,
-      {
-        content,
-        from,
-      },
-    ];
-  }
+  /**
+   * Interactions helpers
+   */
 
-  private reset() {
-    this.state = 'initial';
+  private async sendTextMessage() {
+    if (this.text.length === 0 || this.state !== 'initial') return;
+    const text = this.text;
     this.text = '';
-    this.error = undefined;
-    this.messages = this.welcomeMessage ? this.messages.slice(0, 1) : [];
-    this.audioRecorder && this.audioRecorder.clear();
-  }
-
-  private micButtonHandler() {
-    if (this.state !== 'initial') return;
-    this.state = 'listening';
-    this.audioRecorder.startRecording(() => this.onSilenceHandler());
-  }
-
-  private onSilenceHandler() {
+    this.appendToChat(text, 'user');
     this.state = 'sending';
-    this.audioRecorder.stopRecording();
-    this.audioRecorder.exportWAV(blob => {
-      this.audioInput = blob;
-      this.sendVoiceMessage();
-    });
+
+    const response = await Interactions.send(this.botName, text);
+    if (response.message) {
+      this.appendToChat(response.message, 'bot');
+    }
+    this.state = 'initial';
   }
 
-  private async sendVoiceMessage() {
-    if (!Interactions || typeof Interactions.send !== 'function') {
-      throw new Error(NO_INTERACTIONS_MODULE_FOUND);
-    }
+  private async sendVoiceMessage(audioInput: Blob) {
     const interactionsMessage = {
-      content: this.audioInput,
+      content: audioInput,
       options: {
         messageType: 'voice',
       },
@@ -156,24 +163,49 @@ export class AmplifyChatbot {
     });
   }
 
-  private async sendTextMessage() {
-    if (this.text.length === 0 || this.state !== 'initial' || typeof this.error !== undefined) return;
-    const text = this.text;
-    this.text = '';
-    this.appendToChat(text, 'user');
-    this.state = 'sending';
-
-    const response = await Interactions.send(this.botName, text);
-    if (response.message) {
-      this.appendToChat(response.message, 'bot');
-    }
-    this.state = 'initial';
+  private appendToChat(content: string, from: Agent) {
+    this.messages = [
+      ...this.messages,
+      {
+        content,
+        from,
+      },
+    ];
   }
+
+  /**
+   * State control functions
+   */
 
   private setError(message: string) {
     this.state = 'error';
     this.error = message;
   }
+
+  private reset() {
+    this.state = 'initial';
+    this.text = '';
+    this.error = undefined;
+    this.messages = [];
+    if (this.welcomeMessage) this.appendToChat(this.welcomeMessage, 'bot');
+    this.audioRecorder && this.audioRecorder.clear();
+  }
+
+  /**
+   * Rendering related methods
+   */
+
+  private messageJSX = (messages: Message[]) => {
+    const messageList = messages.map(message => <div class={`bubble ${message.from}`}>{message.content}</div>);
+    if (this.state === 'sending') {
+      messageList.push(
+        <div class="bubble bot">
+          <div class="dot-flashing" />
+        </div>,
+      );
+    }
+    return messageList;
+  };
 
   private footerJSX(): JSXBase.IntrinsicElements[] {
     const textInput = (
@@ -181,14 +213,14 @@ export class AmplifyChatbot {
         placeholder="Write a message"
         fieldId="test"
         description="text"
-        handleInputChange={evt => this.handleChange(evt)}
+        handleInputChange={evt => this.handleTextChange(evt)}
         value={this.text}
         disabled={this.state === 'error'}
       />
     );
     const micButton = this.voiceEnabled && (
       <amplify-button
-        handleButtonClick={() => this.micButtonHandler()}
+        handleButtonClick={() => this.handleMicButton()}
         class="icon-button"
         variant="icon"
         icon="microphone"
@@ -207,18 +239,6 @@ export class AmplifyChatbot {
     return [textInput, micButton, sendButton];
   }
 
-  private messageJSX = (messages: Message[]) => {
-    const messageList = messages.map(message => <div class={`bubble ${message.from}`}>{message.content}</div>);
-    if (this.state === 'sending') {
-      messageList.push(
-        <div class="bubble bot">
-          <div class="dot-flashing" />
-        </div>,
-      );
-    }
-    return messageList;
-  };
-
   private errorToast() {
     return (
       this.error && (
@@ -233,7 +253,6 @@ export class AmplifyChatbot {
   }
 
   render() {
-    console.log(this.state);
     return (
       <Host>
         <div class="amplify-chatbot">
