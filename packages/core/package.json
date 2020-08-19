@@ -39,6 +39,8 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"devDependencies": {
+		"@types/cookie": "^0.4.0",
+		"@types/express": "^4.17.7",
 		"@types/next": "^9.0.0",
 		"find": "^0.2.7",
 		"genversion": "^2.2.0",
