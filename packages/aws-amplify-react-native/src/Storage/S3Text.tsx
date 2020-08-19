@@ -32,7 +32,7 @@ export const S3Text = ({
 	style,
 	theme = AmplifyTheme,
 }: IS3TextProps) => {
-	const { text, error, loading } = useS3Text({
+	const { text, error } = useS3Text({
 		textKey,
 		path,
 		level,
