@@ -2,6 +2,8 @@ import { PersistentModel } from '../types';
 import { ModelPredicateCreator } from '../predicates';
 import { ComplexObject } from './';
 import { Storage as storageCategory } from '@aws-amplify/storage';
+import CryptoJS from 'crypto-js/core';
+import md5 from 'crypto-js/md5';
 
 function tryParseJSON(jsonString) {
 	try {
@@ -18,6 +20,34 @@ function blobToFile(blob: Blob, fileName: string): File {
 	return new File([blob], fileName);
 }
 
+async function fileToArrayBuffer(file) {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+
+		reader.addEventListener('load', () => {
+			resolve(reader.result);
+		});
+
+		reader.addEventListener('error', error => {
+			reject(error);
+		});
+
+		reader.readAsArrayBuffer(file);
+	});
+}
+async function getEtag(blob) {
+	const keys = [blob];
+	const fileList = await Promise.all(
+		keys.map(async key => {
+			const buf = await fileToArrayBuffer(blob);
+			var wordArray = CryptoJS.lib.WordArray.create(buf);
+			const out = md5(wordArray).toString();
+			return out;
+		})
+	);
+	return fileList[0];
+}
+
 export function isEmpty(obj) {
 	for (let key in obj) {
 		if (obj.hasOwnProperty(key)) return false;
@@ -32,8 +62,8 @@ async function checkForUpdate(cloudObject, complexObjects) {
 		Object.entries(obj).forEach(([key, value]) => {
 			const isJsonString = tryParseJSON(value);
 			if (isJsonString) {
-				const { file, s3Key } = complexObjects[count];
-				if (isJsonString.s3Key !== s3Key) {
+				const { file, s3Key, eTag } = complexObjects[count];
+				if (isJsonString.eTag !== eTag) {
 					keys.push(isJsonString.s3Key);
 				}
 				count += 1;
@@ -53,7 +83,8 @@ async function checkForUpdate(cloudObject, complexObjects) {
 					download: true,
 				});
 				const file = blobToFile(result['Body'], key.split('/')[2]);
-				return { file, s3Key: key };
+				const eTag = await getEtag(file);
+				return { file, s3Key: key, eTag };
 			})
 		);
 		return fileList;
@@ -62,15 +93,15 @@ async function checkForUpdate(cloudObject, complexObjects) {
 	}
 }
 
-function getComplexObjects(
+async function getComplexObjects(
 	object: PersistentModel,
 	model: string
-): Array<ComplexObject> {
+): Promise<Array<ComplexObject>> {
 	const folder = `ComplexObjects/${model}`;
 	const fileList = [];
 
 	const iterate = obj => {
-		Object.entries(obj).forEach(([key, value]) => {
+		Object.entries(obj).forEach(async ([key, value]) => {
 			if (value instanceof File) {
 				const file = value;
 				const s3Key = `${folder}/${file.name}`;
@@ -87,7 +118,17 @@ function getComplexObjects(
 	};
 
 	iterate(object);
-	return fileList;
+
+	const newList = await Promise.all(
+		fileList.map(async key => {
+			const file = key['file'];
+			const s3Key = key['s3Key'];
+			const eTag = await getEtag(file);
+			return { file, s3Key, eTag };
+		})
+	);
+
+	return newList;
 }
 
 async function downloadComplexObjects(cloudObject) {
@@ -116,8 +157,6 @@ async function downloadComplexObjects(cloudObject) {
 					download: true,
 				})
 				.then(result => {
-					console.log;
-					console.log(result);
 					const file = blobToFile(result['Body'], key.split('/')[2]);
 					return { file, s3Key: key };
 				})
@@ -146,7 +185,7 @@ async function addComplexObject(cloudObject, complexObjects) {
 			} else {
 				const isJsonString = tryParseJSON(value);
 				if (isJsonString) {
-					const { file, s3Key } = complexObjects[count];
+					const { file, s3Key, eTag } = complexObjects[count];
 					if (isJsonString.s3Key === s3Key) {
 						returnObj[key] = file;
 					}
@@ -164,6 +203,71 @@ async function addComplexObject(cloudObject, complexObjects) {
 	return newModel;
 }
 
+function handleHelper(object: PersistentModel, model: string) {
+	const folder = `ComplexObjects/${model}`;
+	const fileList = [];
+
+	const iterate = obj => {
+		Object.entries(obj).forEach(async ([key, value]) => {
+			if (value instanceof File) {
+				const file = value;
+				const s3Key = `${folder}/${file.name}`;
+				fileList.push({ file, s3Key });
+				return;
+			}
+
+			if (typeof value === 'object') {
+				if (!isEmpty(value)) {
+					iterate(value);
+				}
+			}
+		});
+	};
+
+	iterate(object);
+	return fileList;
+}
+
+export async function handleLocal(
+	object: PersistentModel,
+	model: string
+): Promise<[PersistentModel, Array<ComplexObject>]> {
+	const folder = `ComplexObjects/${model}`;
+	let count = 0;
+
+	const deepCopy = async obj => {
+		if (typeof obj !== 'object' || obj === null) {
+			return obj;
+		}
+
+		const returnObj = Array.isArray(obj) ? [] : {};
+
+		Object.entries(obj).forEach(async ([key, value]) => {
+			if (value instanceof File) {
+				const { file, s3Key, eTag } = newList[count];
+				count += 1;
+				returnObj[key] = JSON.stringify({ s3Key, eTag });
+				return;
+			}
+
+			returnObj[key] = await deepCopy(value);
+		});
+
+		return returnObj;
+	};
+	const complexObjects = handleHelper(object, model);
+	const newList = await Promise.all(
+		complexObjects.map(async key => {
+			const file = key['file'];
+			const s3Key = key['s3Key'];
+			const eTag = await getEtag(file);
+			return { file, s3Key, eTag };
+		})
+	);
+	const result = await deepCopy(object);
+	return [result, newList];
+}
+
 export async function handleCloud(
 	storage,
 	item,
@@ -175,7 +279,7 @@ export async function handleCloud(
 	// queries and pulls model that is stored in IDB and has file
 	const [localModel] = await storage.query(modelConstructor, predicate);
 	if (localModel) {
-		complexObjects = getComplexObjects(localModel, modelDefinition.name);
+		complexObjects = await getComplexObjects(localModel, modelDefinition.name);
 		const potential = await checkForUpdate(item, complexObjects);
 		if (!isEmpty(potential)) {
 			complexObjects = potential;

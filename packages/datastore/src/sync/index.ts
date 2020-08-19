@@ -41,7 +41,7 @@ type StartParams = {
 	fullSyncInterval: number;
 };
 
-export type ComplexObject = { file: File; s3Key: string };
+export type ComplexObject = { file: File; s3Key: string; eTag: string };
 export declare class MutationEvent {
 	constructor(init: ModelInit<MutationEvent>);
 	static copyOf(
@@ -345,7 +345,7 @@ export class SyncEngine {
 								'MutationEvent'
 							] as PersistentModelConstructor<MutationEvent>;
 							const graphQLCondition = predicateToGraphQLCondition(condition);
-							const mutationEvent = createMutationInstanceFromModelOperation(
+							const mutationEvent = await createMutationInstanceFromModelOperation(
 								namespace.relationships,
 								this.getModelDefinition(model),
 								opType,

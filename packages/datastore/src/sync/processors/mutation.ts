@@ -131,7 +131,7 @@ class MutationProcessor {
 			// If model has complexObjects, uploads them to S3
 			// TODO: Throw error if file > 50mb
 			if (!isEmpty(complexObjects)) {
-				for (const { file, s3Key } of complexObjects) {
+				for (const { file, s3Key, eTag } of complexObjects) {
 					if (
 						operation === TransformerMutationType.CREATE ||
 						operation === TransformerMutationType.UPDATE
@@ -297,7 +297,7 @@ class MutationProcessor {
 								const namespace = this.schema.namespaces[namespaceName];
 
 								// convert retry with to tryWith
-								const updatedMutation = createMutationInstanceFromModelOperation(
+								const updatedMutation = await createMutationInstanceFromModelOperation(
 									namespace.relationships,
 									modelDefinition,
 									opType,
