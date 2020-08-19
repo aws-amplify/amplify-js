@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { Auth, AuthClass } from './Auth';
+import { Auth } from './Auth';
 import { CognitoHostedUIIdentityProvider } from './types/Auth';
 import {
 	CognitoUser,
@@ -26,7 +26,6 @@ import { AuthErrorStrings } from './common/AuthErrorStrings';
 export default Auth;
 export {
 	Auth,
-	AuthClass,
 	CognitoUser,
 	CookieStorage,
 	CognitoHostedUIIdentityProvider,
