@@ -254,9 +254,11 @@ export class AmplifyChatbot {
     return (
       <Host>
         <div class="amplify-chatbot">
-          <div class="header" data-test="chatbot-header">
-            {this.botTitle}
-          </div>
+          <slot name="header">
+            <div class="header" data-test="chatbot-header">
+              {this.botTitle}
+            </div>
+          </slot>
           <div class="body" data-test="chatbot-body">
             {this.messageJSX(this.messages)}
           </div>
