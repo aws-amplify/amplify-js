@@ -1150,7 +1150,7 @@ export class AuthClass {
 					}
 
 					// refresh the session if the session expired.
-					user.getSession((err, session) => {
+					user.getSession(async (err, session) => {
 						if (err) {
 							logger.debug('Failed to get the user session', err);
 							rej(err);
@@ -1159,7 +1159,12 @@ export class AuthClass {
 
 						// get user data from Cognito
 						const bypassCache = params ? params.bypassCache : false;
-						// validate the token's scope fisrt before calling this function
+
+						if (bypassCache) {
+							await Credentials.clear();
+						}
+
+						// validate the token's scope first before calling this function
 						const { scope = '' } = session.getAccessToken().decodePayload();
 						if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
 							user.getUserData(
