@@ -13,8 +13,9 @@
   --icon-fill: var(--amplify-white);
   --icon-height: 1.25rem;
   --padding: 1rem;
+  --width: 100%;
 
-  width: 100%;
+  width: var(--width);
   text-align: center;
 
   @include md {
