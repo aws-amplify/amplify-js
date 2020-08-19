@@ -32,7 +32,7 @@ export const S3Text = ({
 	style,
 	theme = AmplifyTheme,
 }: IS3TextProps) => {
-	const { text, error } = useS3Text({
+	const { text, error, loading } = useS3Text({
 		textKey,
 		path,
 		level,
@@ -51,7 +51,7 @@ export const S3Text = ({
 	return <Text style={textStyle}>{error ? I18n.get(fallbackText) : text}</Text>;
 };
 
-interface IUseS3Text {
+interface IUseS3TextProps {
 	textKey?: string;
 	path?: string;
 	level: AccessLevel;
@@ -59,6 +59,12 @@ interface IUseS3Text {
 	identityId?: string;
 	body?: string;
 	contentType: string;
+}
+
+interface UseS3TextState {
+	text?: string;
+	loading: boolean;
+	error?: Error;
 }
 
 export const useS3Text = ({
@@ -69,19 +75,26 @@ export const useS3Text = ({
 	identityId = '',
 	body,
 	contentType = 'text/*',
-}: IUseS3Text): { text?: string; error?: Error } => {
+}: IUseS3TextProps): UseS3TextState => {
 	if (!textKey && !path) {
 		logger.debug('empty textKey and path');
-		return { error: new Error('empty textKey and path') };
+		return {
+			error: new Error('empty textKey and path'),
+			loading: false,
+		};
 	}
 
 	const key = (textKey ?? path) as string;
 
-	const [state, setState] = useState<{ text?: string; error?: Error }>({});
+	const [state, setState] = useState<UseS3TextState>({ loading: true });
 
 	useEffect(() => {
 		(async () => {
 			logger.debug(`loading ${key}...`);
+
+			if (!state.loading) {
+				setState({ loading: true });
+			}
 
 			if (body && textKey) {
 				try {
@@ -94,7 +107,7 @@ export const useS3Text = ({
 					logger.debug('uploading data:', data);
 				} catch (error) {
 					logger.error(error);
-					setState({ error: error });
+					setState({ error: error, loading: false });
 					return;
 				}
 			}
@@ -108,10 +121,10 @@ export const useS3Text = ({
 					logger
 				);
 
-				setState({ text: source });
+				setState({ text: source, loading: false });
 			} catch (error) {
 				logger.error(error);
-				setState({ error: error });
+				setState({ error: error, loading: false });
 			}
 		})();
 	}, [textKey, path, body]);
