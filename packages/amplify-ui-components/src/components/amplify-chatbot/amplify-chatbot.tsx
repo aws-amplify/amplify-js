@@ -59,7 +59,6 @@ export class AmplifyChatbot {
   /**
    * Lifecycle functions
    */
-
   componentWillLoad() {
     if (!Interactions || typeof Interactions.onComplete !== 'function') {
       throw new Error(NO_INTERACTIONS_MODULE_FOUND);
@@ -75,12 +74,12 @@ export class AmplifyChatbot {
 
   private updateProps() {
     if (!this.voiceEnabled && !this.textEnabled) {
-      this.setError('Error: you must enable voice or text for the chatbot');
+      this.setError('Error: Either voice or text must be enabled for the chatbot');
     } else if (!this.botName) {
       this.setError('Error: Bot Name must be provided to ChatBot');
     }
-    this.reset();
 
+    if (this.welcomeMessage) this.appendToChat(this.welcomeMessage, 'bot');
     // Initialize AudioRecorder if voice is enabled
     if (this.voiceEnabled) {
       this.audioRecorder = new AudioRecorder({
@@ -99,6 +98,7 @@ export class AmplifyChatbot {
         this.reset();
       }
     };
+
     try {
       Interactions.onComplete(this.botName, onComplete);
     } catch (err) {
@@ -109,7 +109,6 @@ export class AmplifyChatbot {
   /**
    * Handlers
    */
-
   private handleMicButton() {
     if (this.state !== 'initial') return;
     this.state = 'listening';
@@ -119,7 +118,7 @@ export class AmplifyChatbot {
   private handleSilence() {
     this.state = 'sending';
     this.audioRecorder.stopRecording();
-    this.audioRecorder.exportWAV(blob => {
+    this.audioRecorder.exportWAV((blob: Blob) => {
       this.sendVoiceMessage(blob);
     });
   }
@@ -132,7 +131,6 @@ export class AmplifyChatbot {
   /**
    * Interactions helpers
    */
-
   private async sendTextMessage() {
     if (this.text.length === 0 || this.state !== 'initial') return;
     const text = this.text;
@@ -176,7 +174,6 @@ export class AmplifyChatbot {
   /**
    * State control functions
    */
-
   private setError(message: string) {
     this.state = 'error';
     this.error = message;
@@ -194,7 +191,6 @@ export class AmplifyChatbot {
   /**
    * Rendering related methods
    */
-
   private messageJSX = (messages: Message[]) => {
     const messageList = messages.map(message => <div class={`bubble ${message.from}`}>{message.content}</div>);
     if (this.state === 'sending') {
@@ -220,6 +216,7 @@ export class AmplifyChatbot {
     );
     const micButton = this.voiceEnabled && (
       <amplify-button
+        data-test="chatbot-mic-button"
         handleButtonClick={() => this.handleMicButton()}
         class="icon-button"
         variant="icon"
@@ -229,6 +226,7 @@ export class AmplifyChatbot {
     );
     const sendButton = this.textEnabled && (
       <amplify-button
+        data-test="chatbot-send-button"
         class="icon-button"
         variant="icon"
         icon="send"

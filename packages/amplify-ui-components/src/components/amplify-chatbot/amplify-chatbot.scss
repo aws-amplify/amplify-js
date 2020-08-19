@@ -31,7 +31,7 @@
 .bubble {
   max-width: 80%;
   padding: 0.8em 1.4em;
-  clear: both;
+  text-align: left;
   word-wrap: break-word;
   margin-bottom: 0.625rem;
 }
@@ -114,11 +114,11 @@
 }
 @-webkit-keyframes dot-flashing {
   0% {
-    background-color: #9880ff;
+    background-color: rgba(0, 0, 0, 0.65);
   }
   50%,
   100% {
-    background-color: #ebe6ff;
+    background-color: rgba(0, 0, 0, 0.1);
   }
 }
 @keyframes dot-flashing {
