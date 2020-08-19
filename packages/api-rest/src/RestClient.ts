@@ -12,12 +12,11 @@
  */
 
 import {
+	Amplify,
 	ConsoleLogger as Logger,
-	CredentialsClass,
 	DateUtils,
 	Signer,
 	Platform,
-	Credentials,
 } from '@aws-amplify/core';
 
 import { apiOptions, ApiInfo } from './types';
@@ -61,20 +60,16 @@ export class RestClient {
 	 */
 	private _cancelTokenMap: WeakMap<any, CancelTokenSource> = null;
 
-	Credentials = Credentials;
+	amplify = Amplify;
 
 	/**
 	 * @param {RestClientOptions} [options] - Instance options
 	 */
-	constructor(options: apiOptions & { Credentials?: CredentialsClass }) {
+	constructor(options: apiOptions) {
 		this._options = options;
 		logger.debug('API Options', this._options);
 		if (this._cancelTokenMap == null) {
 			this._cancelTokenMap = new WeakMap();
-		}
-
-		if (options.Credentials) {
-			this.Credentials = options.Credentials;
 		}
 	}
 
@@ -188,7 +183,7 @@ export class RestClient {
 		}
 
 		// Signing the request in case there credentials are available
-		return this.Credentials.get().then(
+		return this.amplify.Credentials.get().then(
 			credentials => {
 				return this._signed({ ...params }, credentials, isAllResponse, {
 					region,

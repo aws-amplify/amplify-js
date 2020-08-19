@@ -94,7 +94,7 @@ export class AuthClass {
 	private _storageSync;
 	private oAuthFlowInProgress: boolean = false;
 
-	Credentials = Credentials;
+	amplify = Amplify;
 
 	/**
 	 * Initialize Auth with AWS configurations
@@ -176,7 +176,7 @@ export class AuthClass {
 			this.userPool = new CognitoUserPool(userPoolData);
 		}
 
-		this.Credentials.configure({
+		this.amplify.Credentials.configure({
 			mandatorySignIn,
 			region: identityPoolRegion || region,
 			userPoolId,
@@ -475,8 +475,8 @@ export class AuthClass {
 				delete user['challengeName'];
 				delete user['challengeParam'];
 				try {
-					await this.Credentials.clear();
-					const cred = await this.Credentials.set(session, 'session');
+					await this.amplify.Credentials.clear();
+					const cred = await this.amplify.Credentials.set(session, 'session');
 					logger.debug('succeed to get cognito credentials', cred);
 				} catch (e) {
 					logger.debug('cannot get cognito credentials', e);
@@ -900,8 +900,11 @@ export class AuthClass {
 					onSuccess: async session => {
 						logger.debug(session);
 						try {
-							await this.Credentials.clear();
-							const cred = await this.Credentials.set(session, 'session');
+							await this.amplify.Credentials.clear();
+							const cred = await this.amplify.Credentials.set(
+								session,
+								'session'
+							);
 							logger.debug('succeed to get cognito credentials', cred);
 						} catch (e) {
 							logger.debug('cannot get cognito credentials', e);
@@ -942,8 +945,11 @@ export class AuthClass {
 					onSuccess: async session => {
 						logger.debug(session);
 						try {
-							await this.Credentials.clear();
-							const cred = await this.Credentials.set(session, 'session');
+							await this.amplify.Credentials.clear();
+							const cred = await this.amplify.Credentials.set(
+								session,
+								'session'
+							);
 							logger.debug('succeed to get cognito credentials', cred);
 						} catch (e) {
 							logger.debug('cannot get cognito credentials', e);
@@ -1164,7 +1170,7 @@ export class AuthClass {
 						const bypassCache = params ? params.bypassCache : false;
 
 						if (bypassCache) {
-							await Credentials.clear();
+							await this.amplify.Credentials.clear();
 						}
 
 						// validate the token's scope first before calling this function
@@ -1364,23 +1370,23 @@ export class AuthClass {
 
 		if (federatedInfo) {
 			// refresh the jwt token here if necessary
-			return this.Credentials.refreshFederatedToken(federatedInfo);
+			return this.amplify.Credentials.refreshFederatedToken(federatedInfo);
 		} else {
 			return this.currentSession()
 				.then(session => {
 					logger.debug('getting session success', session);
-					return this.Credentials.set(session, 'session');
+					return this.amplify.Credentials.set(session, 'session');
 				})
 				.catch(error => {
 					logger.debug('getting session failed', error);
-					return this.Credentials.set(null, 'guest');
+					return this.amplify.Credentials.set(null, 'guest');
 				});
 		}
 	}
 
 	public currentCredentials(): Promise<ICredentials> {
 		logger.debug('getting current credentials');
-		return this.Credentials.get();
+		return this.amplify.Credentials.get();
 	}
 
 	/**
@@ -1572,7 +1578,7 @@ export class AuthClass {
 
 	private async cleanCachedItems() {
 		// clear cognito cached item
-		await this.Credentials.clear();
+		await this.amplify.Credentials.clear();
 	}
 
 	/**
@@ -1718,7 +1724,7 @@ export class AuthClass {
 	 * @return {Object }- current User's information
 	 */
 	public async currentUserInfo() {
-		const source = this.Credentials.getCredSource();
+		const source = this.amplify.Credentials.getCredSource();
 
 		if (!source || source === 'aws' || source === 'userPool') {
 			const user = await this.currentUserPoolUser().catch(err =>
@@ -1842,9 +1848,9 @@ export class AuthClass {
 			} catch (e) {}
 
 			const { token, identity_id, expires_at } = response;
-			// Because this.Credentials.set would update the user info with identity id
+			// Because this.amplify.Credentials.set would update the user info with identity id
 			// So we need to retrieve the user again.
-			const credentials = await this.Credentials.set(
+			const credentials = await this.amplify.Credentials.set(
 				{ provider, token, identity_id, user, expires_at },
 				'federation'
 			);
@@ -1919,7 +1925,10 @@ export class AuthClass {
 					let credentials;
 					// Get AWS Credentials & store if Identity Pool is defined
 					if (this._config.identityPoolId) {
-						credentials = await this.Credentials.set(session, 'session');
+						credentials = await this.amplify.Credentials.set(
+							session,
+							'session'
+						);
 						logger.debug('AWS credentials', credentials);
 					}
 

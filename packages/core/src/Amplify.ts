@@ -11,6 +11,7 @@ export class AmplifyClass {
 	Auth = null;
 	Analytics = null;
 	API = null;
+	Credentials = null;
 	Storage = null;
 	I18n = null;
 	Cache = null;
@@ -50,6 +51,13 @@ export class AmplifyClass {
 		logger.debug('amplify config', this._config);
 		this._components.map(comp => {
 			comp.configure(this._config);
+
+			// Dependency Injection via property-setting.
+			// This avoids introducing a public method/interface/setter that's difficult to remove later.
+			// Plus, it reduces `if` statements within the `constructor` and `configure` of each module
+			if (comp.hasOwnProperty('amplify')) {
+				comp.amplify = this;
+			}
 		});
 
 		return this._config;

@@ -16,15 +16,13 @@ import { OperationDefinitionNode } from 'graphql/language';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import Observable from 'zen-observable-ts';
-import Amplify, {
+import {
+	Amplify,
 	ConsoleLogger as Logger,
-	Credentials,
 	Constants,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import PubSub from '@aws-amplify/pubsub';
-import Auth from '@aws-amplify/auth';
-import Cache from '@aws-amplify/cache';
 import { GraphQLOptions, GraphQLResult } from './types';
 import { RestClient } from '@aws-amplify/api-rest';
 const USER_AGENT_HEADER = 'x-amz-user-agent';
@@ -46,7 +44,7 @@ export class GraphQLAPIClass {
 	private _options;
 	private _api = null;
 
-	Credentials = Credentials;
+	amplify = Amplify;
 
 	/**
 	 * Initialize GraphQL API with AWS configuration
@@ -70,10 +68,6 @@ export class GraphQLAPIClass {
 		const { API = {}, ...otherOptions } = options || {};
 		let opt = { ...otherOptions, ...API };
 		logger.debug('configure GraphQL API', { opt });
-
-		if (opt['Credentials']) {
-			this.Credentials = opt['Credentials'];
-		}
 
 		if (opt['aws_project_region']) {
 			opt = Object.assign({}, opt, {
@@ -105,6 +99,9 @@ export class GraphQLAPIClass {
 		logger.debug('create Rest instance');
 		if (this._options) {
 			this._api = new RestClient(this._options);
+			// Share Amplify instance with client for SSR
+			this._api.amplify = this.amplify;
+
 			return true;
 		} else {
 			return Promise.reject('API not configured');
@@ -137,7 +134,7 @@ export class GraphQLAPIClass {
 				}
 				break;
 			case 'OPENID_CONNECT':
-				const federatedInfo = await Cache.getItem('federatedInfo');
+				const federatedInfo = await this.amplify.Cache.getItem('federatedInfo');
 
 				if (!federatedInfo || !federatedInfo.token) {
 					throw new Error('No federated jwt');
@@ -147,7 +144,7 @@ export class GraphQLAPIClass {
 				};
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
-				const session = await Auth.currentSession();
+				const session = await this.amplify.Auth.currentSession();
 				headers = {
 					Authorization: session.getAccessToken().getJwtToken(),
 				};
@@ -360,10 +357,10 @@ export class GraphQLAPIClass {
 	 * @private
 	 */
 	_ensureCredentials() {
-		return this.Credentials.get()
+		return this.amplify.Credentials.get()
 			.then(credentials => {
 				if (!credentials) return false;
-				const cred = this.Credentials.shear(credentials);
+				const cred = this.amplify.Credentials.shear(credentials);
 				logger.debug('set credentials for api', cred);
 
 				return true;

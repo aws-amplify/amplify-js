@@ -39,6 +39,10 @@ export class CredentialsClass {
 		this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
 	}
 
+	public getModuleName() {
+		return 'Credentials';
+	}
+
 	public getCredSource() {
 		return this._credentials_source;
 	}
@@ -500,6 +504,8 @@ export class CredentialsClass {
 }
 
 export const Credentials = new CredentialsClass(null);
+
+Amplify.register(Credentials);
 
 /**
  * @deprecated use named import
