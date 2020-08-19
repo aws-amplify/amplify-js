@@ -32,7 +32,7 @@ export const S3Text = ({
 	style,
 	theme = AmplifyTheme,
 }: IS3TextProps) => {
-	const [text, error] = useS3Text({
+	const { text, error } = useS3Text({
 		textKey,
 		path,
 		level,
@@ -69,10 +69,10 @@ export const useS3Text = ({
 	identityId = '',
 	body,
 	contentType = 'text/*',
-}: IUseS3Text): [string?, Error?] => {
+}: IUseS3Text): { text?: string; error?: Error } => {
 	if (!textKey && !path) {
 		logger.debug('empty textKey and path');
-		return [undefined, new Error('empty textKey and path')];
+		return { error: new Error('empty textKey and path') };
 	}
 
 	const key = (textKey ?? path) as string;
@@ -116,7 +116,7 @@ export const useS3Text = ({
 		})();
 	}, [textKey, path, body]);
 
-	return [state.text, state.error];
+	return state;
 };
 
 // helper methods from /packages/amplify-ui-components/src/common/storage-helpers.ts
