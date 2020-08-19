@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.4...@aws-amplify/auth@3.3.5) (2020-08-19)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Default hash to `#` when null ([#6279](https://github.com/aws-amplify/amplify-js/issues/6279)) ([eb97194](https://github.com/aws-amplify/amplify-js/commit/eb9719467f7c143a26bfd2d598b3903ff0815731))
+* **@aws-amplify/auth:** Force clear credentials when bypassCache: true ([#6581](https://github.com/aws-amplify/amplify-js/issues/6581)) ([128527c](https://github.com/aws-amplify/amplify-js/commit/128527c6834bafe37b2f4c6c5fca9029b03a7e3d))
+
+
+
+
+
 ## [3.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.3...@aws-amplify/auth@3.3.4) (2020-08-06)
 
 **Note:** Version bump only for package @aws-amplify/auth
