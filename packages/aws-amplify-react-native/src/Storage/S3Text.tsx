@@ -42,7 +42,11 @@ export const S3Text = ({
 		contentType,
 	});
 
-	const textStyle = Object.assign({}, StyleSheet.flatten(theme.text), style);
+	const textStyle = Object.assign(
+		{},
+		StyleSheet.flatten(theme.storageText),
+		style
+	);
 
 	return <Text style={textStyle}>{error ? I18n.get(fallbackText) : text}</Text>;
 };
@@ -73,8 +77,7 @@ export const useS3Text = ({
 
 	const key = (textKey ?? path) as string;
 
-	const [text, setText] = useState<string | undefined>();
-	const [error, setError] = useState<Error | undefined>();
+	const [state, setState] = useState<{ text?: string; error?: Error }>({});
 
 	useEffect(() => {
 		(async () => {
@@ -91,7 +94,7 @@ export const useS3Text = ({
 					logger.debug('uploading data:', data);
 				} catch (error) {
 					logger.error(error);
-					setError(error);
+					setState({ error: error });
 					return;
 				}
 			}
@@ -105,15 +108,15 @@ export const useS3Text = ({
 					logger
 				);
 
-				setText(source);
+				setState({ text: source });
 			} catch (error) {
 				logger.error(error);
-				setError(error);
+				setState({ error: error });
 			}
 		})();
 	}, [textKey, path, body]);
 
-	return [text, error];
+	return [state.text, state.error];
 };
 
 // helper methods from /packages/amplify-ui-components/src/common/storage-helpers.ts
@@ -143,7 +146,9 @@ export const getTextSource = async (
 	logger: Logger
 ) => {
 	if (!Storage || typeof Storage.get !== 'function') {
-		throw new Error();
+		throw new Error(
+			'No Storage module found, please ensure @aws-amplify/storage is imported'
+		);
 	}
 	try {
 		const textSrc = await Storage.get(key, {
