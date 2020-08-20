@@ -1,5 +1,5 @@
 import { Auth } from '@aws-amplify/auth';
-import { I18n, isEmpty } from '@aws-amplify/core';
+import { I18n } from '@aws-amplify/core';
 import { Component, Prop, State, h } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
@@ -12,6 +12,7 @@ import {
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 import { Translations } from '../../common/Translations';
+import { checkContact } from '../../common/auth-helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-in',
@@ -72,20 +73,6 @@ export class AmplifyConfirmSignIn {
     this.code = event.target.value;
   }
 
-  private checkContact(user) {
-    if (!Auth || typeof Auth.verifiedContact !== 'function') {
-      throw new Error(NO_AUTH_MODULE_FOUND);
-    }
-    Auth.verifiedContact(user).then(data => {
-      if (!isEmpty(data.verified)) {
-        this.handleAuthStateChange(AuthState.SignedIn, user);
-      } else {
-        user = Object.assign(user, data);
-        this.handleAuthStateChange(AuthState.VerifyContact, user);
-      }
-    });
-  }
-
   private async confirm(event: Event) {
     if (event) {
       event.preventDefault();
@@ -99,7 +86,7 @@ export class AmplifyConfirmSignIn {
     this.loading = true;
     try {
       await Auth.confirmSignIn(this.user, this.code, mfaType);
-      this.checkContact(this.user);
+      await checkContact(this.user, this.handleAuthStateChange);
     } catch (error) {
       dispatchToastHubEvent(error);
     } finally {

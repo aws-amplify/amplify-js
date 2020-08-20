@@ -1,7 +1,7 @@
 import { Component, Prop, h, State, Host, Watch } from '@stencil/core';
 import { Logger } from '@aws-amplify/core';
 import { AccessLevel } from '../../common/types/storage-types';
-import { getStorageObject, putStorageObject } from '../../common/storage-helper';
+import { getStorageObject, putStorageObject } from '../../common/storage-helpers';
 
 const logger = new Logger('S3Image');
 

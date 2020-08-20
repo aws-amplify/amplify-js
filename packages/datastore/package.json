@@ -1,105 +1,105 @@
 {
-  "name": "@aws-amplify/datastore",
-  "version": "2.2.8",
-  "description": "AppSyncLocal support for aws-amplify",
-  "main": "./lib/index.js",
-  "module": "./lib-esm/index.js",
-  "typings": "./lib-esm/index.d.ts",
-  "react-native": {
-    "./lib/index": "./lib-esm/index.js"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "sideEffects": false,
-  "scripts": {
-    "test": "npm run lint && jest -w 1 --coverage",
-    "build-with-test": "npm test && npm run build",
-    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-    "build:esm": "node ./build es6",
-    "build:cjs:watch": "node ./build es5 --watch",
-    "build:esm:watch": "node ./build es6 --watch",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "rimraf lib-esm lib dist",
-    "format": "echo \"Not implemented\"",
-    "lint": "tslint '{__tests__,src}/**/*.ts'"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-js.git"
-  },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/aws/aws-amplify/issues"
-  },
-  "homepage": "https://aws-amplify.github.io/",
-  "devDependencies": {
-    "@react-native-community/netinfo": "4.7.0",
-    "@types/uuid": "3.4.5",
-    "dexie": "3.0.1",
-    "dexie-export-import": "1.0.0-rc.2",
-    "fake-indexeddb": "3.0.0"
-  },
-  "dependencies": {
-    "@aws-amplify/api": "^3.1.21",
-    "@aws-amplify/core": "^3.4.4",
-    "@aws-amplify/pubsub": "^3.0.22",
-    "idb": "5.0.2",
-    "immer": "6.0.1",
-    "ulid": "2.3.0",
-    "uuid": "3.3.2",
-    "zen-observable-ts": "0.8.19",
-    "zen-push": "0.2.1"
-  },
-  "peerDependencies": {
-    "@react-native-community/netinfo": "^5.5.0"
-  },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "diagnostics": true,
-        "tsConfig": {
-          "lib": [
-            "es5",
-            "es2015",
-            "dom",
-            "esnext.asynciterable",
-            "es2017.object"
-          ],
-          "allowJs": true,
-          "esModuleInterop": true,
-          "downlevelIteration": true
-        }
-      }
-    },
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-    "testPathIgnorePatterns": [
-      "__tests__/model.ts",
-      "__tests__/schema.ts"
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json",
-      "jsx"
-    ],
-    "testEnvironment": "jsdom",
-    "testURL": "http://localhost/",
-    "coverageThreshold": {
-      "global": {
-        "branches": 0,
-        "functions": 0,
-        "lines": 0,
-        "statements": 0
-      }
-    },
-    "coveragePathIgnorePatterns": [
-      "/node_modules/"
-    ]
-  }
+	"name": "@aws-amplify/datastore",
+	"version": "2.2.10",
+	"description": "AppSyncLocal support for aws-amplify",
+	"main": "./lib/index.js",
+	"module": "./lib-esm/index.js",
+	"typings": "./lib-esm/index.d.ts",
+	"react-native": {
+		"./lib/index": "./lib-esm/index.js"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"sideEffects": false,
+	"scripts": {
+		"test": "npm run lint && jest -w 1 --coverage",
+		"build-with-test": "npm test && npm run build",
+		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "node ./build es6",
+		"build:cjs:watch": "node ./build es5 --watch",
+		"build:esm:watch": "node ./build es6 --watch",
+		"build": "npm run clean && npm run build:esm && npm run build:cjs",
+		"clean": "rimraf lib-esm lib dist",
+		"format": "echo \"Not implemented\"",
+		"lint": "tslint '{__tests__,src}/**/*.ts'"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git"
+	},
+	"author": "Amazon Web Services",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/aws/aws-amplify/issues"
+	},
+	"homepage": "https://aws-amplify.github.io/",
+	"devDependencies": {
+		"@react-native-community/netinfo": "4.7.0",
+		"@types/uuid": "3.4.5",
+		"dexie": "3.0.2",
+		"dexie-export-import": "1.0.0-rc.2",
+		"fake-indexeddb": "3.0.0"
+	},
+	"dependencies": {
+		"@aws-amplify/api": "^3.1.23",
+		"@aws-amplify/core": "^3.4.6",
+		"@aws-amplify/pubsub": "^3.0.24",
+		"idb": "5.0.2",
+		"immer": "6.0.1",
+		"ulid": "2.3.0",
+		"uuid": "3.3.2",
+		"zen-observable-ts": "0.8.19",
+		"zen-push": "0.2.1"
+	},
+	"peerDependencies": {
+		"@react-native-community/netinfo": "^5.5.0"
+	},
+	"jest": {
+		"globals": {
+			"ts-jest": {
+				"diagnostics": true,
+				"tsConfig": {
+					"lib": [
+						"es5",
+						"es2015",
+						"dom",
+						"esnext.asynciterable",
+						"es2017.object"
+					],
+					"allowJs": true,
+					"esModuleInterop": true,
+					"downlevelIteration": true
+				}
+			}
+		},
+		"transform": {
+			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+		},
+		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"testPathIgnorePatterns": [
+			"__tests__/model.ts",
+			"__tests__/schema.ts"
+		],
+		"moduleFileExtensions": [
+			"ts",
+			"tsx",
+			"js",
+			"json",
+			"jsx"
+		],
+		"testEnvironment": "jsdom",
+		"testURL": "http://localhost/",
+		"coverageThreshold": {
+			"global": {
+				"branches": 0,
+				"functions": 0,
+				"lines": 0,
+				"statements": 0
+			}
+		},
+		"coveragePathIgnorePatterns": [
+			"/node_modules/"
+		]
+	}
 }
