@@ -1994,7 +1994,6 @@ export class AuthClass {
 						err,
 						`A failure occurred when returning state`
 					);
-
 				}
 			}
 		} finally {
