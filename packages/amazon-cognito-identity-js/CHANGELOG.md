@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.4](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.3.3...amazon-cognito-identity-js@4.3.4) (2020-08-19)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+
+
+
+
+## [4.3.3](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.3.2...amazon-cognito-identity-js@4.3.3) (2020-07-07)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+
+
+
+
+## [4.3.2](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.3.1...amazon-cognito-identity-js@4.3.2) (2020-06-18)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** allow storage to return missing items ([#5877](https://github.com/aws-amplify/amplify-js/issues/5877)) ([1fd8336](https://github.com/aws-amplify/amplify-js/commit/1fd83360138be0359505c25bce2890f959c1000e))
+
+
+
+
+
 ## [4.3.1](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.3.0...amazon-cognito-identity-js@4.3.1) (2020-06-03)
 
 **Note:** Version bump only for package amazon-cognito-identity-js

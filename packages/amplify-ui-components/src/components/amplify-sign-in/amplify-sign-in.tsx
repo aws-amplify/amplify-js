@@ -1,24 +1,14 @@
-import { Auth } from '@aws-amplify/auth';
-import { I18n, Logger, isEmpty } from '@aws-amplify/core';
+import { I18n, isEmpty } from '@aws-amplify/core';
 import { Component, Prop, State, h, Watch } from '@stencil/core';
 import {
   FormFieldTypes,
+  FormFieldType,
   PhoneNumberInterface,
+  PhoneFormFieldType,
 } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
-import {
-  AuthState,
-  ChallengeName,
-  FederatedConfig,
-  AuthStateHandler,
-  UsernameAliasStrings,
-} from '../../common/types/auth-types';
+import { AuthState, FederatedConfig, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
 import { Translations } from '../../common/Translations';
-import {
-  NO_AUTH_MODULE_FOUND,
-  COUNTRY_DIAL_CODE_DEFAULT,
-  COUNTRY_DIAL_CODE_SUFFIX,
-  PHONE_SUFFIX,
-} from '../../common/constants';
+import { COUNTRY_DIAL_CODE_DEFAULT } from '../../common/constants';
 
 import {
   dispatchToastHubEvent,
@@ -26,11 +16,13 @@ import {
   composePhoneNumberInput,
   checkUsernameAlias,
   isHintValid,
+  handlePhoneNumberChange,
 } from '../../common/helpers';
+import { handleSignIn } from '../../common/auth-helpers';
 import { SignInAttributes } from './amplify-sign-in-interface';
 
-const logger = new Logger('SignIn');
 /**
+ * @slot header-subtitle - Subtitle content placed below header text
  * @slot footer - Content is place in the footer of the component
  * @slot primary-footer-content - Content placed on the right side of the footer
  * @slot secondary-footer-content - Content placed on the left side of the footer
@@ -44,9 +36,9 @@ export class AmplifySignIn {
   /** Fires when sign in form is submitted */
   @Prop() handleSubmit: (event: Event) => void = event => this.signIn(event);
   /** Used for header text in sign in component */
-  @Prop() headerText: string = I18n.get(Translations.SIGN_IN_HEADER_TEXT);
+  @Prop() headerText: string = Translations.SIGN_IN_HEADER_TEXT;
   /** Used for the submit button text in sign in component */
-  @Prop() submitButtonText: string = I18n.get(Translations.SIGN_IN_ACTION);
+  @Prop() submitButtonText: string = Translations.SIGN_IN_ACTION;
   /** Federated credentials & configuration. */
   @Prop() federated: FederatedConfig;
   /** Auth state change handler for this component */
@@ -70,6 +62,8 @@ export class AmplifySignIn {
    * ```
    */
   @Prop() formFields: FormFieldTypes | string[] = [];
+  /** Hides the sign up link */
+  @Prop() hideSignUp: boolean = false;
   private newFormFields: FormFieldTypes | string[] = [];
 
   /* Whether or not the sign-in component is loading */
@@ -85,13 +79,23 @@ export class AmplifySignIn {
     password: '',
   };
 
+  componentWillLoad() {
+    checkUsernameAlias(this.usernameAlias);
+    this.buildFormFields();
+  }
+
+  @Watch('formFields')
+  formFieldsHandler() {
+    this.buildFormFields();
+  }
+
   private handleFormFieldInputChange(fieldType) {
     switch (fieldType) {
       case 'username':
       case 'email':
         return event => (this.signInAttributes.userInput = event.target.value);
       case 'phone_number':
-        return event => this.handlePhoneNumberChange(event);
+        return event => handlePhoneNumberChange(event, this.phoneNumber);
       case 'password':
         return event => (this.signInAttributes.password = event.target.value);
     }
@@ -107,90 +111,27 @@ export class AmplifySignIn {
     fnToCall(event, callback.bind(this));
   }
 
-  private handlePhoneNumberChange(event) {
-    const name = event.target.name;
-    const value = event.target.value;
-
-    /** Cognito expects to have a string be passed when signing up. Since the Select input is separate
-     * input from the phone number input, we need to first capture both components values and combined
-     * them together.
-     */
-
-    if (name === COUNTRY_DIAL_CODE_SUFFIX) {
-      this.phoneNumber.countryDialCodeValue = value;
-    }
-
-    if (name === PHONE_SUFFIX) {
-      this.phoneNumber.phoneNumberValue = value;
-    }
-  }
-
-  private checkContact(user) {
-    if (!Auth || typeof Auth.verifiedContact !== 'function') {
-      throw new Error(NO_AUTH_MODULE_FOUND);
-    }
-    Auth.verifiedContact(user).then(data => {
-      if (!isEmpty(data.verified)) {
-        this.handleAuthStateChange(AuthState.SignedIn, user);
-      } else {
-        user = Object.assign(user, data);
-        this.handleAuthStateChange(AuthState.VerifyContact, user);
-      }
-    });
-  }
-
   private async signIn(event: Event) {
     // avoid submitting the form
     if (event) {
       event.preventDefault();
     }
 
-    if (!Auth || typeof Auth.signIn !== 'function') {
-      throw new Error(NO_AUTH_MODULE_FOUND);
-    }
     this.loading = true;
 
     switch (this.usernameAlias) {
       case 'phone_number':
-        this.signInAttributes.userInput = composePhoneNumberInput(this.phoneNumber);
+        try {
+          this.signInAttributes.userInput = composePhoneNumberInput(this.phoneNumber);
+        } catch (error) {
+          dispatchToastHubEvent(error);
+        }
       default:
         break;
     }
 
-    try {
-      const user = await Auth.signIn(this.signInAttributes.userInput, this.signInAttributes.password);
-      logger.debug(user);
-      if (user.challengeName === ChallengeName.SMSMFA || user.challengeName === ChallengeName.SoftwareTokenMFA) {
-        logger.debug('confirm user with ' + user.challengeName);
-        this.handleAuthStateChange(AuthState.ConfirmSignIn, user);
-      } else if (user.challengeName === ChallengeName.NewPasswordRequired) {
-        logger.debug('require new password', user.challengeParam);
-        this.handleAuthStateChange(AuthState.ResetPassword, user);
-      } else if (user.challengeName === ChallengeName.MFASetup) {
-        logger.debug('TOTP setup', user.challengeParam);
-        this.handleAuthStateChange(AuthState.TOTPSetup, user);
-      } else if (
-        user.challengeName === ChallengeName.CustomChallenge &&
-        user.challengeParam &&
-        user.challengeParam.trigger === 'true'
-      ) {
-        logger.debug('custom challenge', user.challengeParam);
-        this.handleAuthStateChange(AuthState.CustomConfirmSignIn, user);
-      } else {
-        this.checkContact(user);
-      }
-    } catch (error) {
-      dispatchToastHubEvent(error);
-      if (error.code === 'UserNotConfirmedException') {
-        logger.debug('the user is not confirmed');
-        this.handleAuthStateChange(AuthState.ConfirmSignUp, { username: this.signInAttributes.userInput });
-      } else if (error.code === 'PasswordResetRequiredException') {
-        logger.debug('the user requires a new password');
-        this.handleAuthStateChange(AuthState.ForgotPassword, { username: this.signInAttributes.userInput });
-      }
-    } finally {
-      this.loading = false;
-    }
+    await handleSignIn(this.signInAttributes.userInput, this.signInAttributes.password, this.handleAuthStateChange);
+    this.loading = false;
   }
 
   buildDefaultFormFields() {
@@ -277,25 +218,49 @@ export class AmplifySignIn {
           );
         }
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
+        this.setFieldValue(newField, this.signInAttributes);
         newFields.push(newField);
       });
       this.newFormFields = newFields;
     }
   }
 
-  componentWillLoad() {
-    checkUsernameAlias(this.usernameAlias);
-    this.buildFormFields();
-  }
-
-  @Watch('formFields')
-  formFieldsHandler() {
-    this.buildFormFields();
+  setFieldValue(field: PhoneFormFieldType | FormFieldType, formAttributes: SignInAttributes) {
+    switch (field.type) {
+      case 'username':
+      case 'email':
+        if (field.value === undefined) {
+          formAttributes.userInput = '';
+        } else {
+          formAttributes.userInput = field.value;
+        }
+        break;
+      case 'phone_number':
+        if ((field as PhoneFormFieldType).dialCode) {
+          this.phoneNumber.countryDialCodeValue = (field as PhoneFormFieldType).dialCode;
+        }
+        this.phoneNumber.phoneNumberValue = field.value;
+        break;
+      case 'password':
+        if (field.value === undefined) {
+          formAttributes.password = '';
+        } else {
+          formAttributes.password = field.value;
+        }
+        break;
+    }
   }
 
   render() {
     return (
-      <amplify-form-section headerText={this.headerText} handleSubmit={this.handleSubmit} testDataPrefix={'sign-in'}>
+      <amplify-form-section
+        headerText={I18n.get(this.headerText)}
+        handleSubmit={this.handleSubmit}
+        testDataPrefix={'sign-in'}
+      >
+        <div slot="subtitle">
+          <slot name="header-subtitle"></slot>
+        </div>
         <amplify-federated-buttons handleAuthStateChange={this.handleAuthStateChange} federated={this.federated} />
 
         {!isEmpty(this.federated) && <amplify-strike>or</amplify-strike>}
@@ -304,21 +269,25 @@ export class AmplifySignIn {
         <div slot="amplify-form-section-footer" class="sign-in-form-footer">
           <slot name="footer">
             <slot name="secondary-footer-content">
-              <span>
-                {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
-                <amplify-button
-                  variant="anchor"
-                  onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
-                  data-test="sign-in-create-account-link"
-                >
-                  {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
-                </amplify-button>
-              </span>
+              {!this.hideSignUp ? (
+                <span>
+                  {I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
+                  <amplify-button
+                    variant="anchor"
+                    onClick={() => this.handleAuthStateChange(AuthState.SignUp)}
+                    data-test="sign-in-create-account-link"
+                  >
+                    {I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
+                  </amplify-button>
+                </span>
+              ) : (
+                <span></span>
+              )}
             </slot>
+
             <slot name="primary-footer-content">
               <amplify-button type="submit" disabled={this.loading} data-test="sign-in-sign-in-button">
-                <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
-                <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
+                {this.loading ? <amplify-loading-spinner /> : <span>{I18n.get(this.submitButtonText)}</span>}
               </amplify-button>
             </slot>
           </slot>

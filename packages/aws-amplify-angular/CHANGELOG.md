@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.24](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.23...aws-amplify-angular@5.0.24) (2020-08-19)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [5.0.23](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.22...aws-amplify-angular@5.0.23) (2020-08-06)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [5.0.22](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.21...aws-amplify-angular@5.0.22) (2020-07-27)
+
+
+### Bug Fixes
+
+* **@aws-amplify/interactions:** fix interactions v3 bugs and refactor type ([#6381](https://github.com/aws-amplify/amplify-js/issues/6381)) ([8c6fb4a](https://github.com/aws-amplify/amplify-js/commit/8c6fb4aefa60b36ed33d89c431e743f674119bde))
+
+
+
+
+
+## [5.0.21](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.20...aws-amplify-angular@5.0.21) (2020-07-22)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [5.0.20](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.19...aws-amplify-angular@5.0.20) (2020-07-09)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [5.0.19](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.18...aws-amplify-angular@5.0.19) (2020-07-07)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [5.0.18](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.17...aws-amplify-angular@5.0.18) (2020-06-18)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
 ## [5.0.17](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.16...aws-amplify-angular@5.0.17) (2020-06-09)
 
 **Note:** Version bump only for package aws-amplify-angular

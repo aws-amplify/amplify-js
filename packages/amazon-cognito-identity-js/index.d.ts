@@ -100,7 +100,7 @@ declare module 'amazon-cognito-identity-js' {
 			clientMetaData?: ClientMetadata
 		): void;
 		public resendConfirmationCode(
-			callback: NodeCallback<Error, 'SUCCESS'>,
+			callback: NodeCallback<Error, any>,
 			clientMetaData?: ClientMetadata
 		): void;
 		public changePassword(
@@ -368,6 +368,7 @@ declare module 'amazon-cognito-identity-js' {
 		path?: string;
 		expires?: number;
 		secure?: boolean;
+		sameSite?: 'strict' | 'lax';
 	}
 	export class CookieStorage implements ICognitoStorage {
 		constructor(data: ICookieStorageData);
