@@ -26,9 +26,9 @@
   font-weight: bold;
   text-align: center;
   padding-bottom: 1.5rem;
-  border-bottom: 0.0625rem solid rgba(0, 0, 0, 0.05);
 }
 .body {
+  border-top: 0.0625rem solid rgba(0, 0, 0, 0.05);
   padding-top: 2rem;
   display: flex;
   flex-grow: 1;
@@ -64,7 +64,14 @@
   amplify-input {
     --border: none;
     --margin: 0;
+    flex-grow: 1;
   }
+}
+canvas {
+  margin-left: 0.625rem;
+  margin-right: 0.625rem;
+  flex-grow: 1;
+  height: 3.125rem;
 }
 .icon-button {
   --icon-height: 1.25rem;
@@ -85,8 +92,6 @@
   height: 0.625rem;
   border-radius: 10rem;
   background-color: rgba(0, 0, 0, 0.65);
-  // background-color: var(--amplify-primary-color);
-  // color: var(--amplify-primary-color);
   -webkit-animation: dot-flashing 1s infinite linear alternate;
   animation: dot-flashing 1s infinite linear alternate;
   -webkit-animation-delay: 0.5s;
@@ -98,7 +103,6 @@
   position: absolute;
   top: 0;
   background-color: rgba(0, 0, 0, 0.65);
-  // background-color: var(--amplify-primary-color);
 }
 .dot-flashing::before {
   left: -1rem;

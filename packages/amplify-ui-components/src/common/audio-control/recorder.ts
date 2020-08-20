@@ -5,6 +5,8 @@ interface SilenceDetectionConfig {
   amplitude: number;
 }
 
+type Visualizer = (dataArray: Uint8Array, bufferLength: number) => void;
+
 export class AudioRecorder {
   private options: SilenceDetectionConfig;
   private audioContext: AudioContext;
@@ -12,6 +14,7 @@ export class AudioRecorder {
 
   private analyserNode: AnalyserNode;
   private onSilence: Function;
+  private visualizer: Visualizer;
 
   // input mic stream is stored in a buffer
   private streamBuffer: Float32Array[] = [];
@@ -70,9 +73,10 @@ export class AudioRecorder {
     this.analyserNode = analyserNode;
   }
 
-  public startRecording(onSilence?: Function) {
+  public startRecording(onSilence?: Function, visualizer?: Visualizer) {
     const silenceHandler = onSilence || function() {};
     this.onSilence = silenceHandler;
+    this.visualizer = visualizer;
     if (this.recording || !this.audioSupported) return;
 
     const context = this.audioContext;
@@ -124,6 +128,10 @@ export class AudioRecorder {
     const time = this.options.time;
 
     analyser.getByteTimeDomainData(dataArray);
+
+    if (this.visualizer) {
+      this.visualizer(dataArray, bufferLength);
+    }
 
     for (let i = 0; i < bufferLength; i++) {
       // Normalize between -1 and 1.

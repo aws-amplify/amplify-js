@@ -29,15 +29,15 @@
 
 ### Depends on
 
-- [amplify-input](../amplify-input)
 - [amplify-button](../amplify-button)
+- [amplify-input](../amplify-input)
 - [amplify-toast](../amplify-toast)
 
 ### Graph
 ```mermaid
 graph TD;
-  amplify-chatbot --> amplify-input
   amplify-chatbot --> amplify-button
+  amplify-chatbot --> amplify-input
   amplify-chatbot --> amplify-toast
   amplify-button --> amplify-icon
   amplify-toast --> amplify-icon

@@ -4,9 +4,11 @@ exports[`amplify-chatbot renders chatbot 1`] = `
 <amplify-chatbot>
   <mock:shadow-root>
     <div class="amplify-chatbot">
-      <div class="header" data-test="chatbot-header">
-        ChatBot Lex
-      </div>
+      <slot name="header">
+        <div class="header" data-test="chatbot-header">
+          ChatBot Lex
+        </div>
+      </slot>
       <div class="body" data-test="chatbot-body"></div>
       <div class="footer" data-test="chatbot-footer">
         <amplify-input description="text" disabled="" fieldid="test" placeholder="Write a message" value=""></amplify-input>

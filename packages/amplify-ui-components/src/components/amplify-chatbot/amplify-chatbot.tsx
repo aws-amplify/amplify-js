@@ -41,7 +41,7 @@ export class AmplifyChatbot {
   /** Current app state */
   @State() state: AppState = 'initial';
   /** Toast error message */
-  @State() error: string;
+  @State() errorMessage: string;
 
   @Element() element: HTMLAmplifyChatbotElement;
 
@@ -112,7 +112,10 @@ export class AmplifyChatbot {
   private handleMicButton() {
     if (this.state !== 'initial') return;
     this.state = 'listening';
-    this.audioRecorder.startRecording(() => this.handleSilence());
+    this.audioRecorder.startRecording(
+      () => this.handleSilence(),
+      (data, length) => this.visualizer(data, length),
+    );
   }
 
   private handleSilence() {
@@ -126,6 +129,61 @@ export class AmplifyChatbot {
   private handleTextChange(event: Event) {
     const target = event.target as HTMLInputElement;
     this.text = target.value;
+  }
+
+  private cancelButtonHandler() {
+    this.state = 'initial';
+    this.audioRecorder.stopRecording();
+  }
+
+  /**
+   * Visualization
+   */
+  private visualizer(dataArray: Uint8Array, bufferLength: number) {
+    const canvas = this.element.shadowRoot.querySelector('canvas');
+    if (!canvas) return;
+    const { width, height } = canvas.getBoundingClientRect();
+
+    // need to update the default canvas width and height
+    canvas.width = width;
+    canvas.height = height;
+
+    const canvasCtx = canvas.getContext('2d');
+    let animationId: number;
+
+    canvasCtx.fillStyle = 'white';
+    canvasCtx.clearRect(0, 0, width, height);
+
+    const draw = () => {
+      if (this.state !== 'listening') return;
+
+      canvasCtx.fillRect(0, 0, width, height);
+      canvasCtx.lineWidth = 1;
+      canvasCtx.strokeStyle = '#099ac8';
+      canvasCtx.beginPath();
+
+      const sliceWidth = (width * 1.0) / bufferLength;
+      let x = 0;
+
+      for (let i = 0; i < bufferLength; i++) {
+        const value = dataArray[i] / 128.0;
+        const y = (value * height) / 2;
+        if (i === 0) {
+          canvasCtx.moveTo(x, y);
+        } else {
+          canvasCtx.lineTo(x, y);
+        }
+        x += sliceWidth;
+      }
+
+      canvasCtx.lineTo(canvas.width, canvas.height / 2);
+      canvasCtx.stroke();
+    };
+
+    // Register our draw function with requestAnimationFrame.
+    if (typeof animationId === 'undefined') {
+      animationId = requestAnimationFrame(draw);
+    }
   }
 
   /**
@@ -176,13 +234,13 @@ export class AmplifyChatbot {
    */
   private setError(message: string) {
     this.state = 'error';
-    this.error = message;
+    this.errorMessage = message;
   }
 
   private reset() {
     this.state = 'initial';
     this.text = '';
-    this.error = undefined;
+    this.errorMessage = undefined;
     this.messages = [];
     if (this.welcomeMessage) this.appendToChat(this.welcomeMessage, 'bot');
     this.audioRecorder && this.audioRecorder.clear();
@@ -203,7 +261,23 @@ export class AmplifyChatbot {
     return messageList;
   };
 
+  private listeningFooterJSX(): JSXBase.IntrinsicElements[] {
+    const visualization = <canvas height="50" />;
+
+    const cancelButton = this.state === 'listening' && (
+      <amplify-button
+        data-test="chatbot-cancel-button"
+        handleButtonClick={() => this.cancelButtonHandler()}
+        class="icon-button"
+        variant="icon"
+        icon="ban"
+      />
+    );
+    return [visualization, cancelButton];
+  }
+
   private footerJSX(): JSXBase.IntrinsicElements[] {
+    if (this.state === 'listening') return this.listeningFooterJSX();
     const textInput = (
       <amplify-input
         placeholder="Write a message"
@@ -239,11 +313,11 @@ export class AmplifyChatbot {
 
   private errorToast() {
     return (
-      this.error && (
+      this.errorMessage && (
         <amplify-toast
-          message={this.error}
+          message={this.errorMessage}
           handleClose={() => {
-            this.error = undefined;
+            this.errorMessage = undefined;
           }}
         />
       )
