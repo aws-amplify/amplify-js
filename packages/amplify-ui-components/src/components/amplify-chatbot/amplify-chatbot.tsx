@@ -181,7 +181,7 @@ export class AmplifyChatbot {
     };
 
     // Register our draw function with requestAnimationFrame.
-    if (typeof animationId === 'undefined') {
+    if (!animationId) {
       animationId = requestAnimationFrame(draw);
     }
   }
@@ -263,7 +263,6 @@ export class AmplifyChatbot {
 
   private listeningFooterJSX(): JSXBase.IntrinsicElements[] {
     const visualization = <canvas height="50" />;
-
     const cancelButton = this.state === 'listening' && (
       <amplify-button
         data-test="chatbot-cancel-button"
