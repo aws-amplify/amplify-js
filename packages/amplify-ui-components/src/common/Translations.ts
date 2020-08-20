@@ -4,7 +4,7 @@ export enum AuthStrings {
   BACK_TO_SIGN_IN = 'Back to Sign In',
   CHANGE_PASSWORD_ACTION = 'Change',
   CHANGE_PASSWORD = 'Change Password',
-  CHATBOT_TITLE = 'Chatbot Lex',
+  CHATBOT_TITLE = 'ChatBot Lex',
   CODE_LABEL = 'Verification code',
   CODE_PLACEHOLDER = 'Enter code',
   CONFIRM_SIGN_UP_CODE_LABEL = 'Confirmation Code',
