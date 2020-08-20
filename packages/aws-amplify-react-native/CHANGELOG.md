@@ -3,6 +3,78 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.4...aws-amplify-react-native@4.2.5) (2020-08-19)
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+
+
+
+
+## [4.2.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.3...aws-amplify-react-native@4.2.4) (2020-08-06)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** lock react-native-vector-icons version ([#6432](https://github.com/aws-amplify/amplify-js/issues/6432)) ([5cc818b](https://github.com/aws-amplify/amplify-js/commit/5cc818bab04450365626b593a7521a28d343a2de))
+
+
+
+
+
+## [4.2.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.2...aws-amplify-react-native@4.2.3) (2020-07-27)
+
+
+### Bug Fixes
+
+* **@aws-amplify/interactions:** fix interactions v3 bugs and refactor type ([#6381](https://github.com/aws-amplify/amplify-js/issues/6381)) ([8c6fb4a](https://github.com/aws-amplify/amplify-js/commit/8c6fb4aefa60b36ed33d89c431e743f674119bde))
+
+
+
+
+
+## [4.2.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.1...aws-amplify-react-native@4.2.2) (2020-07-22)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Update authState after a successful Auth.signIn call ([#6276](https://github.com/aws-amplify/amplify-js/issues/6276)) ([e79a805](https://github.com/aws-amplify/amplify-js/commit/e79a805534c25dcd52ea4e55ef8b4fbd0f5dce36))
+
+
+
+
+
+## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.0...aws-amplify-react-native@4.2.1) (2020-06-18)
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+
+
+
+
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.1.2...aws-amplify-react-native@4.2.0) (2020-05-22)
+
+
+### Features
+
+* **aws-amplify-react-native:** convert RN to TypeScript ([#5626](https://github.com/aws-amplify/amplify-js/issues/5626)) ([2514581](https://github.com/aws-amplify/amplify-js/commit/2514581061110bc5c661aed83fc1edd57c50a8df))
+
+
+
+
+
+## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.1.1...aws-amplify-react-native@4.1.2) (2020-05-14)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** android text display with keyboard ([#5620](https://github.com/aws-amplify/amplify-js/issues/5620)) ([44f2f0c](https://github.com/aws-amplify/amplify-js/commit/44f2f0cf7077f4e50dbe944cd04465ec148e652c))
+* **aws-amplify-react-native:** fix button disabled logic ([#5469](https://github.com/aws-amplify/amplify-js/issues/5469)) ([4e40512](https://github.com/aws-amplify/amplify-js/commit/4e40512ace51748dd413b59850b5d9f0eaa0c66b))
+
+
+
+
+
 ## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.1.0...aws-amplify-react-native@4.1.1) (2020-04-30)
 
 

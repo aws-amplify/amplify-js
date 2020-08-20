@@ -39,7 +39,7 @@ const template = `
         </ion-label>
         <ion-input type="text"
           class="amplify-form-input"
-          (keyup)="setUsername($event.target.value)"
+          (input)="setUsername($event.target.value)"
           [value]="username"
           data-test="${auth.confirmSignUp.usernameInput}"
         ></ion-input>
@@ -53,7 +53,7 @@ const template = `
           #code
           type="text"
           class="amplify-form-input"
-          (keyup)="setCode(code.value)"
+          (input)="setCode(code.value)"
           (keyup.enter)="onConfirm()"
           data-test="${auth.confirmSignUp.confirmationCodeInput}"
         ></ion-input>
@@ -111,9 +111,7 @@ const template = `
 	template,
 })
 export class ConfirmSignUpComponentIonic extends ConfirmSignUpComponentCore {
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		super(amplifyService);
 	}
 }

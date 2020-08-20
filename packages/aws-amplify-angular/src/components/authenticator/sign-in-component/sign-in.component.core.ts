@@ -106,9 +106,7 @@ export class SignInComponentCore implements OnInit {
 	signInUsername = '';
 	protected logger: any;
 
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		this.logger = this.amplifyService.logger('SignInComponent');
 		this.onUsernameFieldChanged = this.onUsernameFieldChanged.bind(this);
 	}

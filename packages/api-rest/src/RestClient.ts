@@ -13,13 +13,14 @@
 
 import {
 	ConsoleLogger as Logger,
+	DateUtils,
 	Signer,
 	Platform,
 	Credentials,
 } from '@aws-amplify/core';
 
-import { apiOptions } from './types';
-import axios from 'axios';
+import { apiOptions, ApiInfo } from './types';
+import axios, { CancelTokenSource } from 'axios';
 import { parse, format } from 'url';
 
 const logger = new Logger('RestClient');
@@ -42,13 +43,32 @@ export class RestClient {
 	private _region: string = 'us-east-1'; // this will be updated by endpoint function
 	private _service: string = 'execute-api'; // this can be updated by endpoint function
 	private _custom_header = undefined; // this can be updated by endpoint function
+
+	/**
+	 * This weak map provides functionality to let clients cancel
+	 * in-flight axios requests. https://github.com/axios/axios#cancellation
+	 *
+	 * 1. For every axios request, a unique cancel token is generated and added in the request.
+	 * 2. Promise for fulfilling the request is then mapped to that unique cancel token.
+	 * 3. The promise is returned to the client.
+	 * 4. Clients can either wait for the promise to fulfill or call `API.cancel(promise)` to cancel the request.
+	 * 5. If `API.cancel(promise)` is called, then the corresponding cancel token is retrieved from the map below.
+	 * 6. Promise returned to the client will be in rejected state with the error provided during cancel.
+	 * 7. Clients can check if the error is because of cancelling by calling `API.isCancel(error)`.
+	 *
+	 * For more details, see https://github.com/aws-amplify/amplify-js/pull/3769#issuecomment-552660025
+	 */
+	private _cancelTokenMap: WeakMap<any, CancelTokenSource> = null;
+
 	/**
 	 * @param {RestClientOptions} [options] - Instance options
 	 */
 	constructor(options: apiOptions) {
-		const { endpoints } = options;
 		this._options = options;
 		logger.debug('API Options', this._options);
+		if (this._cancelTokenMap == null) {
+			this._cancelTokenMap = new WeakMap();
+		}
 	}
 
 	/**
@@ -61,15 +81,29 @@ export class RestClient {
 */
 	/**
 	 * Basic HTTP request. Customizable
-	 * @param {string} url - Full request URL
+	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {string} method - Request HTTP method
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async ajax(url: string, method: string, init) {
-		logger.debug(method + ' ' + url);
+	async ajax(urlOrApiInfo: string | ApiInfo, method: string, init) {
+		logger.debug(method, urlOrApiInfo);
 
-		const parsed_url = this._parseUrl(url);
+		let parsed_url;
+		let url: string;
+		let region: string = 'us-east-1';
+		let service: string = 'execute-api';
+		let custom_header: () => {
+			[key: string]: string;
+		} = undefined;
+
+		if (typeof urlOrApiInfo === 'string') {
+			parsed_url = this._parseUrl(urlOrApiInfo);
+			url = urlOrApiInfo;
+		} else {
+			({ endpoint: url, custom_header, region, service } = urlOrApiInfo);
+			parsed_url = this._parseUrl(urlOrApiInfo.endpoint);
+		}
 
 		const params = {
 			method,
@@ -80,6 +114,7 @@ export class RestClient {
 			data: null,
 			responseType: 'json',
 			timeout: 0,
+			cancelToken: null,
 		};
 
 		let libraryHeaders = {};
@@ -106,17 +141,19 @@ export class RestClient {
 		if (initParams.timeout) {
 			params.timeout = initParams.timeout;
 		}
+		if (initParams.cancellableToken) {
+			params.cancelToken = initParams.cancellableToken.token;
+		}
 
 		params['signerServiceInfo'] = initParams.signerServiceInfo;
 
 		// custom_header callback
-		const custom_header = this._custom_header
-			? await this._custom_header()
-			: undefined;
+		const custom_header_obj =
+			typeof custom_header === 'function' ? await custom_header() : undefined;
 
 		params.headers = {
 			...libraryHeaders,
-			...custom_header,
+			...custom_header_obj,
 			...initParams.headers,
 		};
 
@@ -145,7 +182,31 @@ export class RestClient {
 
 		// Signing the request in case there credentials are available
 		return Credentials.get().then(
-			credentials => this._signed({ ...params }, credentials, isAllResponse),
+			credentials => {
+				return this._signed({ ...params }, credentials, isAllResponse, {
+					region,
+					service,
+				}).catch(error => {
+					if (DateUtils.isClockSkewError(error)) {
+						const { headers } = error.response;
+						const dateHeader = headers && (headers.date || headers.Date);
+						const responseDate = new Date(dateHeader);
+						const requestDate = DateUtils.getDateFromHeaderString(
+							params.headers['x-amz-date']
+						);
+
+						if (DateUtils.isClockSkewed(requestDate, responseDate)) {
+							DateUtils.setClockOffset(
+								responseDate.getTime() - requestDate.getTime()
+							);
+
+							return this.ajax(urlOrApiInfo, method, init);
+						}
+					}
+
+					throw error;
+				});
+			},
 			err => {
 				logger.debug('No credentials available, the request will be unsigned');
 				return this._request(params, isAllResponse);
@@ -155,62 +216,104 @@ export class RestClient {
 
 	/**
 	 * GET HTTP request
-	 * @param {string} url - Full request URL
+	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {JSON} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	get(url: string, init) {
-		return this.ajax(url, 'GET', init);
+	get(urlOrApiInfo: string | ApiInfo, init) {
+		return this.ajax(urlOrApiInfo, 'GET', init);
 	}
 
 	/**
 	 * PUT HTTP request
-	 * @param {string} url - Full request URL
+	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	put(url: string, init) {
-		return this.ajax(url, 'PUT', init);
+	put(urlOrApiInfo: string | ApiInfo, init) {
+		return this.ajax(urlOrApiInfo, 'PUT', init);
 	}
 
 	/**
 	 * PATCH HTTP request
-	 * @param {string} url - Full request URL
+	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	patch(url: string, init) {
-		return this.ajax(url, 'PATCH', init);
+	patch(urlOrApiInfo: string | ApiInfo, init) {
+		return this.ajax(urlOrApiInfo, 'PATCH', init);
 	}
 
 	/**
 	 * POST HTTP request
-	 * @param {string} url - Full request URL
+	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	post(url: string, init) {
-		return this.ajax(url, 'POST', init);
+	post(urlOrApiInfo: string | ApiInfo, init) {
+		return this.ajax(urlOrApiInfo, 'POST', init);
 	}
 
 	/**
 	 * DELETE HTTP request
-	 * @param {string} url - Full request URL
+	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	del(url: string, init) {
-		return this.ajax(url, 'DELETE', init);
+	del(urlOrApiInfo: string | ApiInfo, init) {
+		return this.ajax(urlOrApiInfo, 'DELETE', init);
 	}
 
 	/**
 	 * HEAD HTTP request
-	 * @param {string} url - Full request URL
+	 * @param {string | ApiInfo } urlOrApiInfo - Full request URL or Api information
 	 * @param {json} init - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	head(url: string, init) {
-		return this.ajax(url, 'HEAD', init);
+	head(urlOrApiInfo: string | ApiInfo, init) {
+		return this.ajax(urlOrApiInfo, 'HEAD', init);
+	}
+
+	/**
+	 * Cancel an inflight API request
+	 * @param {Promise<any>} request - The request promise to cancel
+	 * @param {string} [message] - A message to include in the cancelation exception
+	 */
+	cancel(request: Promise<any>, message?: string) {
+		const source = this._cancelTokenMap.get(request);
+		if (source) {
+			source.cancel(message);
+		}
+		return true;
+	}
+
+	/**
+	 * Checks to see if an error thrown is from an api request cancellation
+	 * @param {any} error - Any error
+	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
+	 */
+	isCancel(error): boolean {
+		return axios.isCancel(error);
+	}
+
+	/**
+	 * Retrieves a new and unique cancel token which can be
+	 * provided in an axios request to be cancelled later.
+	 */
+	getCancellableToken(): CancelTokenSource {
+		return axios.CancelToken.source();
+	}
+
+	/**
+	 * Updates the weakmap with a response promise and its
+	 * cancel token such that the cancel token can be easily
+	 * retrieved (and used for cancelling the request)
+	 */
+	updateRequestToBeCancellable(
+		promise: Promise<any>,
+		cancelTokenSource: CancelTokenSource
+	) {
+		this._cancelTokenMap.set(promise, cancelTokenSource);
 	}
 
 	/**
@@ -251,14 +354,16 @@ export class RestClient {
 
 	/** private methods **/
 
-	private _signed(params, credentials, isAllResponse) {
+	private _signed(params, credentials, isAllResponse, { service, region }) {
 		const {
 			signerServiceInfo: signerServiceInfoParams,
 			...otherParams
 		} = params;
 
-		const endpoint_region: string = this._region || this._options.region;
-		const endpoint_service: string = this._service || this._options.service;
+		const endpoint_region: string =
+			region || this._region || this._options.region;
+		const endpoint_service: string =
+			service || this._service || this._options.service;
 
 		const creds = {
 			secret_key: credentials.secretAccessKey,

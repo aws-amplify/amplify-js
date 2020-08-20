@@ -3,6 +3,86 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.14...@aws-amplify/ui-storybook@0.2.15) (2020-08-19)
+
+**Note:** Version bump only for package @aws-amplify/ui-storybook
+
+
+
+
+
+## [0.2.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.13...@aws-amplify/ui-storybook@0.2.14) (2020-08-06)
+
+**Note:** Version bump only for package @aws-amplify/ui-storybook
+
+
+
+
+
+## [0.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.12...@aws-amplify/ui-storybook@0.2.13) (2020-07-27)
+
+**Note:** Version bump only for package @aws-amplify/ui-storybook
+
+
+
+
+
+## [0.2.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.11...@aws-amplify/ui-storybook@0.2.12) (2020-07-22)
+
+**Note:** Version bump only for package @aws-amplify/ui-storybook
+
+
+
+
+
+## [0.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.10...@aws-amplify/ui-storybook@0.2.11) (2020-07-09)
+
+**Note:** Version bump only for package @aws-amplify/ui-storybook
+
+
+
+
+
+## [0.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.9...@aws-amplify/ui-storybook@0.2.10) (2020-07-07)
+
+**Note:** Version bump only for package @aws-amplify/ui-storybook
+
+
+
+
+
+## [0.2.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.8...@aws-amplify/ui-storybook@0.2.9) (2020-06-18)
+
+**Note:** Version bump only for package @aws-amplify/ui-storybook
+
+
+
+
+
+## [0.2.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.7...@aws-amplify/ui-storybook@0.2.8) (2020-06-02)
+
+**Note:** Version bump only for package @aws-amplify/ui-storybook
+
+
+
+
+
+## [0.2.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.6...@aws-amplify/ui-storybook@0.2.7) (2020-05-22)
+
+**Note:** Version bump only for package @aws-amplify/ui-storybook
+
+
+
+
+
+## [0.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.5...@aws-amplify/ui-storybook@0.2.6) (2020-05-14)
+
+**Note:** Version bump only for package @aws-amplify/ui-storybook
+
+
+
+
+
 ## [0.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.4...@aws-amplify/ui-storybook@0.2.5) (2020-04-30)
 
 **Note:** Version bump only for package @aws-amplify/ui-storybook

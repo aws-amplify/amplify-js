@@ -1,4 +1,4 @@
-import { MutationEvent } from '.';
+import { MutationEvent } from './index';
 import { ModelPredicateCreator } from '../predicates';
 import { ExclusiveStorage as Storage, StorageFacade } from '../storage/storage';
 import {
@@ -116,6 +116,16 @@ class MutationEventOutbox {
 		);
 
 		return mutationEvents;
+	}
+
+	public async getModelIds(storage: StorageFacade): Promise<Set<string>> {
+		const mutationEvents = await storage.query(this.MutationEvent);
+
+		const result = new Set<string>();
+
+		mutationEvents.forEach(({ modelId }) => result.add(modelId));
+
+		return result;
 	}
 }
 
