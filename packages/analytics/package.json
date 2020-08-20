@@ -44,6 +44,7 @@
     "@aws-sdk/client-personalize-events": "1.0.0-gamma.4",
     "@aws-sdk/client-pinpoint": "1.0.0-gamma.4",
     "@aws-sdk/util-utf8-browser": "1.0.0-gamma.3",
+    "lodash": "^4.17.20",
     "uuid": "^3.2.1"
   },
   "jest": {
