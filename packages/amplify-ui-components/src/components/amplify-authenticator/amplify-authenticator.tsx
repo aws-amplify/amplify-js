@@ -17,6 +17,7 @@ import {
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
 import { Hub, Logger } from '@aws-amplify/core';
 import { dispatchAuthStateChangeEvent, onAuthUIStateChange } from '../../common/helpers';
+import { checkContact } from '../../common/auth-helpers';
 
 const logger = new Logger('Authenticator');
 
@@ -42,7 +43,9 @@ export class AmplifyAuthenticator {
   private handleExternalAuthEvent = ({ payload }) => {
     switch (payload.event) {
       case 'cognitoHostedUI':
-        return dispatchAuthStateChangeEvent(AuthState.SignedIn, payload.data);
+      case 'signIn':
+        checkContact(payload.data, dispatchAuthStateChangeEvent);
+        break;
       case 'cognitoHostedUI_failure':
       case 'parsingUrl_failure':
       case 'signOut':

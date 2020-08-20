@@ -17,11 +17,7 @@ executors:
       - image: verdaccio/verdaccio
     resource_class: large
 
-  android-executor:
-    macos:
-      xcode: 11.4.1
-
-  ios-executor:
+  macos-executor:
     macos:
       xcode: 11.4.1
 
@@ -323,7 +319,6 @@ jobs:
       - run: yarn --frozen-lockfile
       - run: yarn run bootstrap
       - run: yarn run build
-
       - save_cache:
           key: amplify-ssh-deps-{{ .Branch }}
           paths:
@@ -442,6 +437,31 @@ jobs:
           sample_name: storageApp
           spec: storage
 
+  integ_react_storage_ui:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageComp
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Storage UI Components'
+          framework: react
+          category: storage
+          sample_name: storageComp
+          spec: storage-comp
+
+  integ_amazon_cognito_identity_js:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/amazon-cognito-identity-js
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'amazon-cognito-identity-js'
+          framework: react
+          category: auth
+          sample_name: amazon-cognito-identity-js
+
   integ_setup_ui:
     executor: build-executor
     working_directory: ~/
@@ -531,36 +551,32 @@ jobs:
           spec: custom-authenticator
 
   integ_rn_ios_storage:
-    executor: ios-executor
+    executor: macos-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
       - integ_test_rn_ios
 
   integ_rn_ios_push_notifications:
-    executor: ios-executor
+    executor: macos-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/push-notifications/PushNotificationApp
     steps:
       - integ_test_rn_ios
 
   integ_rn_android_storage:
-    executor: android-executor
+    executor: macos-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
       - integ_test_rn_android
 
   deploy:
-    executor: build-executor
+    executor: macos-executor
     working_directory: ~/amplify-js
     steps:
       - attach_workspace:
-          at: /root
-      - restore_cache:
-          keys:
-            - amplify-ssh-deps-{{ .Branch }}
-            - amplify-ssh-deps
+          at: ~/
       - run:
           name: 'Publish to Amplify Package'
           command: |
@@ -654,6 +670,18 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_react_storage_ui:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_amazon_cognito_identity_js:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_rn_ios_storage:
           requires:
             - integ_setup
@@ -698,6 +726,8 @@ workflows:
             - integ_react_predictions
             - integ_react_datastore
             - integ_react_storage
+            - integ_react_storage_ui
+            - integ_amazon_cognito_identity_js
             - integ_react_auth
             - integ_angular_auth
             - integ_vue_auth

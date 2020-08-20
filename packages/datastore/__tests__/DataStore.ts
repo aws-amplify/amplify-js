@@ -342,6 +342,10 @@ describe('DataStore tests', () => {
 			expect(() => {
 				Model.copyOf(<any>undefined, d => d);
 			}).toThrow('The source object is not a valid model');
+			expect(() => {
+				const source = new Model( {field1: 'something'});
+				Model.copyOf(source, d => d.field1 = <any>1234);
+			}).toThrow('Field field1 should be of type string, number received. 1234');
 		});
 
 		test('Delete params', async () => {

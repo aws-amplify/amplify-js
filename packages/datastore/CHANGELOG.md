@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.9...@aws-amplify/datastore@2.2.10) (2020-08-19)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.2.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.8...@aws-amplify/datastore@2.2.9) (2020-08-06)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.2.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.7...@aws-amplify/datastore@2.2.8) (2020-07-27)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.2.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.6...@aws-amplify/datastore@2.2.7) (2020-07-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** call disconnectionHandler on subscription error ([#6366](https://github.com/aws-amplify/amplify-js/issues/6366)) ([a7feace](https://github.com/aws-amplify/amplify-js/commit/a7feacea4ed506340d250249d0b15286fe3ef5fa))
+
+
+
+
+
+## [2.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.5...@aws-amplify/datastore@2.2.6) (2020-07-09)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.4...@aws-amplify/datastore@2.2.5) (2020-07-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** give precedence to config.conflictHandler ([#6237](https://github.com/aws-amplify/amplify-js/issues/6237)) ([d616b76](https://github.com/aws-amplify/amplify-js/commit/d616b76aa054930bc816ad13be281bd9bd07f64c))
+
+
+
+
+
 ## [2.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.3...@aws-amplify/datastore@2.2.4) (2020-06-18)
 
 **Note:** Version bump only for package @aws-amplify/datastore

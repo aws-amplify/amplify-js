@@ -12,9 +12,9 @@ export class AmplifyPhoneField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */
   @Prop() fieldId: string = PHONE_SUFFIX;
   /** Used for the Phone label */
-  @Prop() label: string = I18n.get(Translations.PHONE_LABEL);
+  @Prop() label: string = Translations.PHONE_LABEL;
   /** Used for the placeholder label */
-  @Prop() placeholder: string = I18n.get(Translations.PHONE_PLACEHOLDER);
+  @Prop() placeholder: string = Translations.PHONE_PLACEHOLDER;
   /** Used as the hint in case you forgot your confirmation code, etc. */
   @Prop() hint: string | FunctionalComponent | null;
   /** The required flag in order to make an input required prior to submitting a form */
@@ -27,17 +27,19 @@ export class AmplifyPhoneField {
   @Prop() inputProps?: object;
   /** Will disable the input if set to true */
   @Prop() disabled?: boolean;
+  /** Default dial code in the phone field */
+  @Prop() dialCode?: string | number;
 
   render() {
     return (
       <div>
-        <amplify-form-field label={this.label} type="tel" hint={this.hint} required={this.required}>
+        <amplify-form-field label={I18n.get(this.label)} type="tel" hint={this.hint} required={this.required}>
           <div class="phone-field" slot="input">
-            <amplify-country-dial-code handleInputChange={this.handleInputChange} />
+            <amplify-country-dial-code dialCode={this.dialCode} handleInputChange={this.handleInputChange} />
             <amplify-input
               fieldId={this.fieldId}
               handleInputChange={this.handleInputChange}
-              placeholder={this.placeholder}
+              placeholder={I18n.get(this.placeholder)}
               name={this.fieldId}
               value={this.value}
               inputProps={this.inputProps}
