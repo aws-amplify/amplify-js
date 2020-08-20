@@ -364,6 +364,9 @@ jobs:
             - amplify-js-samples-staging
 
   integ_react_auth:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/auth/with-authenticator
@@ -378,6 +381,9 @@ jobs:
           browser: << parameters.browser >>
 
   integ_angular_auth:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
@@ -392,6 +398,9 @@ jobs:
           browser: << parameters.browser >>
 
   integ_vue_auth:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
