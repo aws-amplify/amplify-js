@@ -621,6 +621,20 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
 		});
+		
+		// TODO: remove this middleware once a long term fix is implemented by aws-sdk-js team.
+		this.pinpointClient.middlewareStack.addRelativeTo(
+			next => args => {
+				delete args.request.headers['amz-sdk-invocation-id'];
+				delete args.request.headers['amz-sdk-request'];
+				return next(args);
+			},
+			{
+				step: 'finalizeRequest',
+				relation: 'after',
+				toMiddleware: 'retryMiddleware',
+			}
+		);
 
 		if (this._bufferExists() && identityId === credentials.identityId) {
 			// if the identity has remained the same, pass the updated client to the buffer

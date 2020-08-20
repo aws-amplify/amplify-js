@@ -4,6 +4,9 @@ exports[`amplify-sign-in spec: Render logic -> should render a \`sign in\` form 
 <amplify-sign-in>
   <mock:shadow-root>
     <amplify-form-section headertext="Sign in to your account" testdataprefix="sign-in">
+      <div slot="subtitle">
+        <slot name="header-subtitle"></slot>
+      </div>
       <amplify-federated-buttons></amplify-federated-buttons>
       <amplify-auth-fields></amplify-auth-fields>
       <div class="sign-in-form-footer" slot="amplify-form-section-footer">
@@ -34,6 +37,9 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withEmptyFederate
 <amplify-sign-in>
   <mock:shadow-root>
     <amplify-form-section headertext="Sign in to your account" testdataprefix="sign-in">
+      <div slot="subtitle">
+        <slot name="header-subtitle"></slot>
+      </div>
       <amplify-federated-buttons></amplify-federated-buttons>
       <amplify-auth-fields></amplify-auth-fields>
       <div class="sign-in-form-footer" slot="amplify-form-section-footer">
@@ -64,6 +70,9 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederated 1`]
 <amplify-sign-in>
   <mock:shadow-root>
     <amplify-form-section headertext="Sign in to your account" testdataprefix="sign-in">
+      <div slot="subtitle">
+        <slot name="header-subtitle"></slot>
+      </div>
       <amplify-federated-buttons></amplify-federated-buttons>
       <amplify-strike>
         or

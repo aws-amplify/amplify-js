@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.12...@aws-amplify/storage@3.2.13) (2020-08-19)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [3.2.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.11...@aws-amplify/storage@3.2.12) (2020-08-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/storage:** fix s3 multipart upload for very large files ([#6509](https://github.com/aws-amplify/amplify-js/issues/6509)) ([621966e](https://github.com/aws-amplify/amplify-js/commit/621966e97c3eb3f9ee356cae201cd62a72db1e08))
+
+
+
+
+
+## [3.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.10...@aws-amplify/storage@3.2.11) (2020-07-27)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [3.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.9...@aws-amplify/storage@3.2.10) (2020-07-22)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
 ## [3.2.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.8...@aws-amplify/storage@3.2.9) (2020-07-09)
 
 **Note:** Version bump only for package @aws-amplify/storage
