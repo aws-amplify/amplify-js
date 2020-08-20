@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/ui-components",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Core Amplify UI Component Library",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
@@ -71,9 +71,9 @@
     "rollup-plugin-node-polyfills": "^0.2.1"
   },
   "peerDependencies": {
-    "@aws-amplify/auth": "^2.1.5",
-    "@aws-amplify/core": "^2.2.4",
-    "@aws-amplify/xr": "^1.1.5"
+    "@aws-amplify/auth": "^3.0.0",
+    "@aws-amplify/core": "^3.0.0",
+    "@aws-amplify/xr": "^2.0.0"
   },
   "husky": {
     "hooks": {
