@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.12...@aws-amplify/storage@3.2.13) (2020-08-19)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
 ## [3.2.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.11...@aws-amplify/storage@3.2.12) (2020-08-06)
 
 
