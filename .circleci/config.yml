@@ -415,6 +415,9 @@ jobs:
           browser: << parameters.browser >>
 
   integ_react_predictions:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/predictions/multi-user-translation
@@ -426,8 +429,12 @@ jobs:
           category: predictions
           sample_name: multi-user-translation
           spec: multiuser-translation
+          browser: << parameters.browser >>
 
   integ_react_datastore:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/datastore/many-to-many
@@ -438,8 +445,13 @@ jobs:
           framework: react
           category: datastore
           sample_name: many-to-many
+          spec: many-to-many
+          browser: << parameters.browser >>
 
   integ_react_storage:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageApp
@@ -451,6 +463,7 @@ jobs:
           category: storage
           sample_name: storageApp
           spec: storage
+          browser: << parameters.browser >>
 
   integ_react_storage_ui:
     executor: js-test-executor
@@ -466,6 +479,9 @@ jobs:
           spec: storage-comp
 
   integ_amazon_cognito_identity_js:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/auth/amazon-cognito-identity-js
@@ -476,6 +492,8 @@ jobs:
           framework: react
           category: auth
           sample_name: amazon-cognito-identity-js
+          spec: amazon-cognito-identity-js
+          browser: << parameters.browser >>
 
   integ_setup_ui:
     executor: build-executor
@@ -642,6 +660,9 @@ deploy_branches: &deploy_branches
       - release
       - main
 
+test_browsers: &test_browsers
+  browser: [chrome, firefox]
+
 workflows:
   build_test_deploy:
     jobs:
@@ -663,7 +684,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              browser: [chrome, firefox]
+              <<: *test_browsers
       - integ_angular_auth:
           requires:
             - integ_setup
@@ -672,7 +693,7 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              browser: [chrome, firefox]
+              <<: *test_browsers
       - integ_vue_auth:
           requires:
             - integ_setup
@@ -681,25 +702,34 @@ workflows:
             <<: *releasable_branches
           matrix:
             parameters:
-              browser: [chrome, firefox]
+              <<: *test_browsers
       - integ_react_predictions:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_datastore:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_storage:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_storage_ui:
           requires:
             - integ_setup
