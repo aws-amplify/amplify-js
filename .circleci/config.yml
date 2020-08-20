@@ -148,7 +148,7 @@ commands:
           name: 'Run << parameters.test_name >> UI tests'
           command: |
             cd ~/amplify-js-samples-staging-ui
-            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >>' -n 3
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging-ui/cypress/videos
       - store_artifacts:
