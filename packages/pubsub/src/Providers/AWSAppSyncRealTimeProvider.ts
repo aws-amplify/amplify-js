@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import * as Observable from 'zen-observable';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 import { GraphQLError } from 'graphql';
 import * as url from 'url';
 import { v4 as uuid } from 'uuid';
@@ -29,7 +29,7 @@ import {
 import Cache from '@aws-amplify/cache';
 import Auth from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from './PubSubProvider';
-import { CONTROL_MSG } from '@aws-amplify/pubsub';
+import { CONTROL_MSG } from '../index';
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
@@ -217,6 +217,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		});
 	}
 
+	protected get isSSLEnabled() {
+		return !this.options
+			.aws_appsync_dangerously_connect_to_http_endpoint_for_testing;
+	}
 	private async _startSubscriptionWithAWSAppSyncRealTime({
 		options,
 		observer,
@@ -230,6 +234,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			apiKey,
 			region,
 			graphql_headers = () => ({}),
+			additionalHeaders = {},
 		} = options;
 
 		const subscriptionState: SUBSCRIPTION_STATUS = SUBSCRIPTION_STATUS.PENDING;
@@ -259,6 +264,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				region,
 			})),
 			...(await graphql_headers()),
+			...additionalHeaders,
 			[USER_AGENT_HEADER]: Constants.userAgent,
 		};
 
@@ -444,7 +450,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			}
 			clearTimeout(startAckTimeoutId);
 			dispatchApiEvent(
-				'connected',
+				CONTROL_MSG.SUBSCRIPTION_ACK,
 				{ query, variables },
 				'Connection established for subscription'
 			);
@@ -505,7 +511,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	private _errorDisconnect(msg: string) {
 		logger.debug(`Disconnect error: ${msg}`);
 		this.subscriptionObserverMap.forEach(({ observer }) => {
-			if (!observer.closed) {
+			if (observer && !observer.closed) {
 				observer.error({
 					errors: [{ ...new GraphQLError(msg) }],
 				});
@@ -567,8 +573,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				try {
 					this.socketStatus = SOCKET_STATUS.CONNECTING;
 					// Creating websocket url with required query strings
+					const protocol = this.isSSLEnabled ? 'wss://' : 'ws://';
 					const discoverableEndpoint = appSyncGraphqlEndpoint
-						.replace('https://', 'wss://')
+						.replace('https://', protocol)
+						.replace('http://', protocol)
 						.replace('appsync-api', 'appsync-realtime-api')
 						.replace('gogi-beta', 'grt-beta');
 
@@ -607,6 +615,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					}
 					this.awsRealTimeSocket = null;
 					this.socketStatus = SOCKET_STATUS.CLOSED;
+
+					throw err;
 				}
 			}
 		});

@@ -1,9 +1,9 @@
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
-import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
-import '@aws-amplify/pubsub';
-import Observable from 'zen-observable-ts';
+import { ConsoleLogger as Logger, Hub, HubCapsule } from '@aws-amplify/core';
+import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 import {
 	InternalSchema,
 	PersistentModel,
@@ -180,7 +180,7 @@ class SubscriptionProcessor {
 			if (ownerValue) {
 				result = {
 					authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-					isOwner: true,
+					isOwner: ownerAuthRule.areSubscriptionsPublic ? false : true,
 					ownerField: ownerAuthRule.ownerField,
 					ownerValue,
 				};
@@ -202,7 +202,7 @@ class SubscriptionProcessor {
 			if (ownerValue) {
 				result = {
 					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-					isOwner: true,
+					isOwner: ownerAuthRule.areSubscriptionsPublic ? false : true,
 					ownerField: ownerAuthRule.ownerField,
 					ownerValue,
 				};
@@ -216,16 +216,12 @@ class SubscriptionProcessor {
 		return null;
 	}
 
-	private hubQueryCompletionListener(
-		completed: Function,
-		variables: any,
-		capsule: {
-			payload: {
-				data?: any;
-			};
-		}
-	) {
-		if (variables === capsule.payload.data.variables) {
+	private hubQueryCompletionListener(completed: Function, capsule: HubCapsule) {
+		const {
+			payload: { event },
+		} = capsule;
+
+		if (event === PUBSUB_CONTROL_MSG.SUBSCRIPTION_ACK) {
 			completed();
 		}
 	}
@@ -301,7 +297,7 @@ class SubscriptionProcessor {
 									ownerValue,
 									authMode,
 								}) => {
-									const marker = {};
+									const variables = {};
 
 									if (isOwner) {
 										if (!ownerValue) {
@@ -312,14 +308,16 @@ class SubscriptionProcessor {
 											return;
 										}
 
-										marker[ownerField] = ownerValue;
+										variables[ownerField] = ownerValue;
 									}
 
 									const queryObservable = <
 										Observable<{
 											value: GraphQLResult<Record<string, PersistentModel>>;
 										}>
-									>(<unknown>API.graphql({ query, variables: marker, ...{ authMode } })); // use default authMode if not found
+									>(<unknown>API.graphql({ query, variables, ...{ authMode } })); // use default authMode if not found
+
+									let subscriptionReadyCallback: () => void;
 
 									subscriptions.push(
 										queryObservable
@@ -359,6 +357,12 @@ class SubscriptionProcessor {
 															errors: [],
 														},
 													} = subscriptionError;
+													logger.warn('subscriptionError', message);
+
+													if (typeof subscriptionReadyCallback === 'function') {
+														subscriptionReadyCallback();
+													}
+
 													observer.error(message);
 												},
 											})
@@ -369,10 +373,10 @@ class SubscriptionProcessor {
 											let boundFunction: any;
 
 											await new Promise(res => {
+												subscriptionReadyCallback = res;
 												boundFunction = this.hubQueryCompletionListener.bind(
 													this,
-													res,
-													marker
+													res
 												);
 												Hub.listen('api', boundFunction);
 											});

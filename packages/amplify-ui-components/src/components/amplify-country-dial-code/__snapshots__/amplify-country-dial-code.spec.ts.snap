@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-country-dial-code spec: Render logic -> shoulder render a \`amplif-select\` component with country dial codes as default 1`] = `
+<amplify-country-dial-code>
+  <mock:shadow-root>
+    <amplify-select fieldid="country-dial-code-select" selected="+1"></amplify-select>
+  </mock:shadow-root>
+</amplify-country-dial-code>
+`;

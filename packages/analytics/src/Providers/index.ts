@@ -1,6 +1,4 @@
-import AWSPinpointProvider from './AWSPinpointProvider';
-import AWSKinesisProvider from './AWSKinesisProvider';
-import AWSKinesisFirehoseProvider from './AWSKinesisFirehoseProvider';
-import AmazonPersonalizeProvider from './AmazonPersonalizeProvider';
-
-export { AWSPinpointProvider, AWSKinesisProvider, AWSKinesisFirehoseProvider, AmazonPersonalizeProvider };
+export { AWSPinpointProvider } from './AWSPinpointProvider';
+export { AWSKinesisProvider } from './AWSKinesisProvider';
+export { AWSKinesisFirehoseProvider } from './AWSKinesisFirehoseProvider';
+export { AmazonPersonalizeProvider } from './AmazonPersonalizeProvider';

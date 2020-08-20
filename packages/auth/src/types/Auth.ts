@@ -57,6 +57,7 @@ export enum CognitoHostedUIIdentityProvider {
 	Google = 'Google',
 	Facebook = 'Facebook',
 	Amazon = 'LoginWithAmazon',
+	Apple = 'SignInWithApple',
 }
 
 export type LegacyProvider =
@@ -79,17 +80,22 @@ export type FederatedSignInOptionsCustom = {
 export function isFederatedSignInOptions(
 	obj: any
 ): obj is FederatedSignInOptions {
-	const keys: (keyof FederatedSignInOptions)[] = ['provider', 'customState'];
+	const keys: (keyof FederatedSignInOptions)[] = ['provider'];
 	return obj && !!keys.find(k => obj.hasOwnProperty(k));
 }
 
 export function isFederatedSignInOptionsCustom(
 	obj: any
 ): obj is FederatedSignInOptionsCustom {
-	const keys: (keyof FederatedSignInOptionsCustom)[] = [
-		'customProvider',
-		'customState',
-	];
+	const keys: (keyof FederatedSignInOptionsCustom)[] = ['customProvider'];
+	return obj && !!keys.find(k => obj.hasOwnProperty(k));
+}
+
+export function hasCustomState(obj: any): boolean {
+	const keys: (keyof (
+		| FederatedSignInOptions
+		| FederatedSignInOptionsCustom
+	))[] = ['customState'];
 	return obj && !!keys.find(k => obj.hasOwnProperty(k));
 }
 
@@ -119,6 +125,7 @@ export interface FederatedResponse {
 export interface FederatedUser {
 	name: string;
 	email?: string;
+	picture?: string;
 }
 
 export interface AwsCognitoOAuthOpts {

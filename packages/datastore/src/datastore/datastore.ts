@@ -1,14 +1,14 @@
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 import { Draft, immerable, produce, setAutoFreeze } from 'immer';
-import { v1 as uuid1, v4 as uuid4 } from 'uuid';
-import Observable from 'zen-observable-ts';
+import { v4 as uuid4 } from 'uuid';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 import {
 	isPredicatesAll,
 	ModelPredicateCreator,
 	PredicateAll,
 } from '../predicates';
-import Storage from '../storage/storage';
-import { SyncEngine } from '../sync';
+import { ExclusiveStorage as Storage } from '../storage/storage';
+import { ControlMessage, SyncEngine } from '../sync';
 import {
 	ConflictHandler,
 	DataStoreConfig,
@@ -34,12 +34,14 @@ import {
 	SyncConflict,
 	SyncError,
 	TypeConstructorMap,
+	ErrorHandler,
 } from '../types';
 import {
 	DATASTORE,
 	establishRelation,
 	exhaustiveCheck,
 	isModelConstructor,
+	monotonicUlidFactory,
 	NAMESPACES,
 	STORAGE,
 	SYNC,
@@ -49,6 +51,8 @@ import {
 setAutoFreeze(true);
 
 const logger = new Logger('DataStore');
+
+const ulid = monotonicUlidFactory(Date.now());
 
 declare class Setting {
 	constructor(init: ModelInit<Setting>);
@@ -137,7 +141,7 @@ const initSchema = (userSchema: Schema) => {
 		const modelAssociations = new Map<string, string[]>();
 
 		Object.values(schema.namespaces[namespace].models).forEach(model => {
-			const wea: string[] = [];
+			const connectedModels: string[] = [];
 
 			Object.values(model.fields)
 				.filter(
@@ -146,9 +150,11 @@ const initSchema = (userSchema: Schema) => {
 						field.association.connectionType === 'BELONGS_TO' &&
 						(<ModelFieldType>field.type).model !== model.name
 				)
-				.forEach(field => wea.push((<ModelFieldType>field.type).model));
+				.forEach(field =>
+					connectedModels.push((<ModelFieldType>field.type).model)
+				);
 
-			modelAssociations.set(model.name, wea);
+			modelAssociations.set(model.name, connectedModels);
 		});
 
 		const result = new Map<string, string[]>();
@@ -218,46 +224,53 @@ function modelInstanceCreator<T extends PersistentModel = PersistentModel>(
 	return <T>new modelConstructor(init);
 }
 
+const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
+	k: string,
+	v: any
+) => {
+	const fieldDefinition = modelDefinition.fields[k];
+
+	if (fieldDefinition !== undefined) {
+		const { type, isRequired, name, isArray } = fieldDefinition;
+
+		if (isRequired && (v === null || v === undefined)) {
+			throw new Error(`Field ${name} is required`);
+		}
+
+		if (isGraphQLScalarType(type)) {
+			const jsType = GraphQLScalarType.getJSType(type);
+
+			if (isArray) {
+				if (!Array.isArray(v)) {
+					throw new Error(
+						`Field ${name} should be of type ${jsType}[], ${typeof v} received. ${v}`
+					);
+				}
+
+				if ((<[]>v).some(e => typeof e !== jsType)) {
+					const elemTypes = (<[]>v).map(e => typeof e).join(',');
+
+					throw new Error(
+						`All elements in the ${name} array should be of type ${jsType}, [${elemTypes}] received. ${v}`
+					);
+				}
+			} else if (typeof v !== jsType && v !== null) {
+				throw new Error(
+					`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`
+				);
+			}
+		}
+	}
+};
+
 const initializeInstance = <T>(
 	init: ModelInit<T>,
 	modelDefinition: SchemaModel | SchemaNonModel,
 	draft: Draft<T & ModelInstanceMetadata>
 ) => {
+	const modelValidator = validateModelFields(modelDefinition);
 	Object.entries(init).forEach(([k, v]) => {
-		const fieldDefinition = modelDefinition.fields[k];
-
-		if (fieldDefinition !== undefined) {
-			const { type, isRequired, name, isArray } = fieldDefinition;
-
-			if (isRequired && (v === null || v === undefined)) {
-				throw new Error(`Field ${name} is required`);
-			}
-
-			if (isGraphQLScalarType(type)) {
-				const jsType = GraphQLScalarType.getJSType(type);
-
-				if (isArray) {
-					if (!Array.isArray(v)) {
-						throw new Error(
-							`Field ${name} should be of type ${jsType}[], ${typeof v} received. ${v}`
-						);
-					}
-
-					if ((<[]>v).some(e => typeof e !== jsType)) {
-						const elemTypes = (<[]>v).map(e => typeof e).join(',');
-
-						throw new Error(
-							`All elements in the ${name} array should be of type ${jsType}, [${elemTypes}] received. ${v}`
-						);
-					}
-				} else if (typeof v !== jsType && v !== null) {
-					throw new Error(
-						`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`
-					);
-				}
-			}
-		}
-
+		modelValidator(k, v);
 		(<any>draft)[k] = v;
 	});
 };
@@ -290,8 +303,7 @@ const createModelClass = <T extends PersistentModel>(
 							? _id
 							: modelDefinition.syncable
 							? uuid4()
-							: // Transform UUID v1 into a lexicographically sortable string for non-syncable models
-							  uuid1().replace(/^(.{8})-(.{4})-(.{4})/, '$3-$2-$1');
+							: ulid();
 
 					draft.id = id;
 
@@ -308,17 +320,18 @@ const createModelClass = <T extends PersistentModel>(
 
 		static copyOf(source: T, fn: (draft: MutableModel<T>) => T) {
 			const modelConstructor = Object.getPrototypeOf(source || {}).constructor;
-
 			if (!isValidModelConstructor(modelConstructor)) {
 				const msg = 'The source object is not a valid model';
 				logger.error(msg, { source });
-
 				throw new Error(msg);
 			}
-
 			return produce(source, draft => {
 				fn(<MutableModel<T>>draft);
 				draft.id = source.id;
+				const modelValidator = validateModelFields(modelDefinition);
+				Object.entries(draft).forEach(([k, v]) => {
+					modelValidator(k, v);
+				});
 			});
 		}
 	});
@@ -354,8 +367,9 @@ const createNonModelClass = <T>(typeDefinition: SchemaNonModel) => {
 const save = async <T extends PersistentModel>(
 	model: T,
 	condition?: ProducerModelPredicate<T>
-) => {
+): Promise<T> => {
 	await start();
+
 	const modelConstructor: PersistentModelConstructor<T> = model
 		? <PersistentModelConstructor<T>>model.constructor
 		: undefined;
@@ -374,7 +388,7 @@ const save = async <T extends PersistentModel>(
 		condition
 	);
 
-	const savedModel = await storage.runExclusive(async s => {
+	const [savedModel] = await storage.runExclusive(async s => {
 		await s.save(model, producedCondition);
 
 		return s.query(
@@ -404,6 +418,7 @@ const remove: {
 	idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll
 ) => {
 	await start();
+
 	let condition: ModelPredicate<T>;
 
 	if (!modelOrConstructor) {
@@ -488,26 +503,48 @@ const remove: {
 		return deleted;
 	}
 };
-
 const observe: {
-	(): Observable<SubscriptionMessage<any>>;
-	<T extends PersistentModel>(obj: T): Observable<SubscriptionMessage<T>>;
+	(): Observable<SubscriptionMessage<PersistentModel>>;
+
+	<T extends PersistentModel>(model: T): Observable<SubscriptionMessage<T>>;
+
 	<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
-		id: string
+		criteria?: string | ProducerModelPredicate<T>
 	): Observable<SubscriptionMessage<T>>;
-	<T extends PersistentModel>(
-		modelConstructor: PersistentModelConstructor<T>
-	): Observable<SubscriptionMessage<T>>;
-	<T extends PersistentModel>(
-		modelConstructor: PersistentModelConstructor<T>,
-		criteria: ProducerModelPredicate<T>
-	): Observable<SubscriptionMessage<T>>;
-} = <T extends PersistentModel>(
-	modelConstructor?: PersistentModelConstructor<T>,
+} = <T extends PersistentModel = PersistentModel>(
+	modelOrConstructor?: T | PersistentModelConstructor<T>,
 	idOrCriteria?: string | ProducerModelPredicate<T>
-) => {
+): Observable<SubscriptionMessage<T>> => {
 	let predicate: ModelPredicate<T>;
+
+	const modelConstructor: PersistentModelConstructor<T> =
+		modelOrConstructor && isValidModelConstructor(modelOrConstructor)
+			? modelOrConstructor
+			: undefined;
+
+	if (modelOrConstructor && modelConstructor === undefined) {
+		const model = <T>modelOrConstructor;
+		const modelConstructor =
+			model && (<Object>Object.getPrototypeOf(model)).constructor;
+
+		if (isValidModelConstructor<T>(modelConstructor)) {
+			if (idOrCriteria) {
+				logger.warn('idOrCriteria is ignored when using a model instance', {
+					model,
+					idOrCriteria,
+				});
+			}
+
+			return observe(modelConstructor, model.id);
+		} else {
+			const msg =
+				'The model is not an instance of a PersistentModelConstructor';
+			logger.error(msg, { model });
+
+			throw new Error(msg);
+		}
+	}
 
 	if (idOrCriteria !== undefined && modelConstructor === undefined) {
 		const msg = 'Cannot provide criteria without a modelConstructor';
@@ -530,13 +567,13 @@ const observe: {
 	} else {
 		predicate =
 			modelConstructor &&
-			ModelPredicateCreator.createFromExisting(
+			ModelPredicateCreator.createFromExisting<T>(
 				getModelDefinition(modelConstructor),
 				idOrCriteria
 			);
 	}
 
-	return new Observable<SubscriptionMessage<any>>(observer => {
+	return new Observable<SubscriptionMessage<T>>(observer => {
 		let handle: ZenObservable.Subscription;
 
 		(async () => {
@@ -556,6 +593,10 @@ const observe: {
 	});
 };
 
+function isQueryOne(obj: any): obj is string {
+	return typeof obj === 'string';
+}
+
 const query: {
 	<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
@@ -570,8 +611,11 @@ const query: {
 	modelConstructor: PersistentModelConstructor<T>,
 	idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll,
 	pagination?: PaginationInput
-) => {
+): Promise<T | T[] | undefined> => {
 	await start();
+
+	//#region Input validation
+
 	if (!isValidModelConstructor(modelConstructor)) {
 		const msg = 'Constructor is not for a valid model';
 		logger.error(msg, { modelConstructor });
@@ -583,33 +627,27 @@ const query: {
 		if (pagination !== undefined) {
 			logger.warn('Pagination is ignored when querying by id');
 		}
-
-		const predicate = ModelPredicateCreator.createForId<T>(
-			getModelDefinition(modelConstructor),
-			idOrCriteria
-		);
-		const [result] = await storage.query(modelConstructor, predicate);
-
-		if (result) {
-			return result;
-		}
-
-		return undefined;
 	}
 
-	/**
-	 * idOrCriteria is always a ProducerModelPredicate<T>, never a symbol.
-	 * The symbol is used only for typing purposes. e.g. see Predicates.ALL
-	 */
-	const criteria = idOrCriteria as ProducerModelPredicate<T>;
+	const modelDefinition = getModelDefinition(modelConstructor);
+	let predicate: ModelPredicate<T>;
 
-	// Predicates.ALL means "all records", so no predicate (undefined)
-	const predicate = !isPredicatesAll(criteria)
-		? ModelPredicateCreator.createFromExisting(
-				getModelDefinition(modelConstructor),
-				criteria
-		  )
-		: undefined;
+	if (isQueryOne(idOrCriteria)) {
+		predicate = ModelPredicateCreator.createForId<T>(
+			modelDefinition,
+			idOrCriteria
+		);
+	} else {
+		if (isPredicatesAll(idOrCriteria)) {
+			// Predicates.ALL means "all records", so no predicate (undefined)
+			predicate = undefined;
+		} else {
+			predicate = ModelPredicateCreator.createFromExisting(
+				modelDefinition,
+				idOrCriteria
+			);
+		}
+	}
 
 	const { limit, page } = pagination || {};
 
@@ -637,7 +675,17 @@ const query: {
 		}
 	}
 
-	return storage.query(modelConstructor, predicate, pagination);
+	//#endregion
+
+	logger.debug('params ready', {
+		modelConstructor,
+		predicate: ModelPredicateCreator.getPredicates(predicate, false),
+		pagination,
+	});
+
+	const result = await storage.query(modelConstructor, predicate, pagination);
+
+	return isQueryOne(idOrCriteria) ? result[0] : result;
 };
 
 let sync: SyncEngine;
@@ -645,6 +693,7 @@ let amplifyConfig: Record<string, any> = {};
 let conflictHandler: ConflictHandler;
 let errorHandler: (error: SyncError) => void;
 let maxRecordsToSync: number;
+let syncPageSize: number;
 let fullSyncInterval: number;
 
 function configure(config: DataStoreConfig = {}) {
@@ -653,28 +702,25 @@ function configure(config: DataStoreConfig = {}) {
 		conflictHandler: configConflictHandler,
 		errorHandler: configErrorHandler,
 		maxRecordsToSync: configMaxRecordsToSync,
+		syncPageSize: configSyncPageSize,
 		fullSyncInterval: configFullSyncInterval,
 		...configFromAmplify
 	} = config;
 
 	amplifyConfig = { ...configFromAmplify, ...amplifyConfig };
 
-	conflictHandler =
-		(configDataStore && configDataStore.conflictHandler) ||
-		conflictHandler ||
-		config.conflictHandler ||
-		defaultConflictHandler;
-
-	errorHandler =
-		(configDataStore && configDataStore.errorHandler) ||
-		errorHandler ||
-		config.errorHandler ||
-		defaultErrorHandler;
+	conflictHandler = setConflictHandler(config);
+	errorHandler = setErrorHandler(config);
 
 	maxRecordsToSync =
 		(configDataStore && configDataStore.maxRecordsToSync) ||
 		maxRecordsToSync ||
 		config.maxRecordsToSync;
+
+	syncPageSize =
+		(configDataStore && configDataStore.syncPageSize) ||
+		syncPageSize ||
+		config.syncPageSize;
 
 	fullSyncInterval =
 		(configDataStore && configDataStore.fullSyncInterval) ||
@@ -687,6 +733,38 @@ function defaultConflictHandler(conflictData: SyncConflict): PersistentModel {
 	const { localModel, modelConstructor, remoteModel } = conflictData;
 	const { _version } = remoteModel;
 	return modelInstanceCreator(modelConstructor, { ...localModel, _version });
+}
+
+function setConflictHandler(config: DataStoreConfig): ConflictHandler {
+	const { DataStore: configDataStore } = config;
+
+	const conflictHandlerIsDefault: () => boolean = () =>
+		conflictHandler === defaultConflictHandler;
+
+	if (configDataStore) {
+		return configDataStore.conflictHandler;
+	}
+	if (conflictHandlerIsDefault() && config.conflictHandler) {
+		return config.conflictHandler;
+	}
+
+	return conflictHandler || defaultConflictHandler;
+}
+
+function setErrorHandler(config: DataStoreConfig): ErrorHandler {
+	const { DataStore: configDataStore } = config;
+
+	const errorHandlerIsDefault: () => boolean = () =>
+		errorHandler === defaultErrorHandler;
+
+	if (configDataStore) {
+		return configDataStore.errorHandler;
+	}
+	if (errorHandlerIsDefault() && config.errorHandler) {
+		return config.errorHandler;
+	}
+
+	return errorHandler || defaultErrorHandler;
 }
 
 function defaultErrorHandler(error: SyncError) {
@@ -742,7 +820,8 @@ async function checkSchemaVersion(
 			Setting,
 			ModelPredicateCreator.createFromExisting(modelDefinition, c =>
 				c.key('eq', SETTING_SCHEMA_VERSION)
-			)
+			),
+			{ page: 0, limit: 1 }
 		);
 
 		if (schemaVersionSetting !== undefined) {
@@ -765,11 +844,14 @@ async function checkSchemaVersion(
 let syncSubscription: ZenObservable.Subscription;
 
 let initResolve: Function;
+let initReject: Function;
 let initialized: Promise<void>;
 async function start(): Promise<void> {
 	if (initialized === undefined) {
-		initialized = new Promise(res => {
+		logger.debug('Starting DataStore');
+		initialized = new Promise((res, rej) => {
 			initResolve = res;
+			initReject = rej;
 		});
 	} else {
 		await initialized;
@@ -784,11 +866,15 @@ async function start(): Promise<void> {
 		modelInstanceCreator
 	);
 
+	await storage.init();
+
 	await checkSchemaVersion(storage, schema.version);
 
 	const { aws_appsync_graphqlEndpoint } = amplifyConfig;
 
 	if (aws_appsync_graphqlEndpoint) {
+		logger.debug('GraphQL endpoint available', aws_appsync_graphqlEndpoint);
+
 		sync = new SyncEngine(
 			schema,
 			namespaceResolver,
@@ -797,6 +883,7 @@ async function start(): Promise<void> {
 			storage,
 			modelInstanceCreator,
 			maxRecordsToSync,
+			syncPageSize,
 			conflictHandler,
 			errorHandler
 		);
@@ -805,13 +892,30 @@ async function start(): Promise<void> {
 		syncSubscription = sync
 			.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
 			.subscribe({
+				next: ({ type, data }) => {
+					if (type === ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED) {
+						initResolve();
+					}
+
+					Hub.dispatch('datastore', {
+						event: type,
+						data,
+					});
+				},
 				error: err => {
 					logger.warn('Sync error', err);
+					initReject();
 				},
 			});
+	} else {
+		logger.warn("Data won't be synchronized. No GraphQL endpoint configured. Did you forget `Amplify.configure(awsconfig)`?", {
+			config: amplifyConfig,
+		});
+
+		initResolve();
 	}
 
-	initResolve();
+	await initialized;
 }
 
 async function clear() {
@@ -869,15 +973,21 @@ function getNamespace(): SchemaNamespace {
 }
 
 class DataStore {
-	static getModuleName() {
+	constructor() {
+		Amplify.register(this);
+	}
+	getModuleName() {
 		return 'DataStore';
 	}
-	static query = query;
-	static save = save;
-	static delete = remove;
-	static observe = observe;
-	static configure = configure;
-	static clear = clear;
+	start = start;
+	query = query;
+	save = save;
+	delete = remove;
+	observe = observe;
+	configure = configure;
+	clear = clear;
 }
 
-export { initSchema, DataStore };
+const instance = new DataStore();
+
+export { initSchema, instance as DataStore };
