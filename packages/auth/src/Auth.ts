@@ -25,6 +25,7 @@ import {
 	isCognitoHostedOpts,
 	isFederatedSignInOptions,
 	isFederatedSignInOptionsCustom,
+	hasCustomState,
 	FederatedSignInOptionsCustom,
 	LegacyProvider,
 	FederatedSignInOptions,
@@ -64,7 +65,7 @@ import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
 import { default as urlListener } from './urlListener';
 import { AuthError, NoUserPoolError } from './Errors';
-import { AuthErrorTypes } from './types/Auth';
+import { AuthErrorTypes, CognitoHostedUIIdentityProvider } from './types/Auth';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -80,13 +81,6 @@ typeof Symbol.for === 'function'
 const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
-
-export enum CognitoHostedUIIdentityProvider {
-	Cognito = 'COGNITO',
-	Google = 'Google',
-	Facebook = 'Facebook',
-	Amazon = 'LoginWithAmazon',
-}
 
 /**
  * Provide authentication steps
@@ -385,12 +379,12 @@ export class AuthClass {
 	 * Resend the verification code
 	 * @param {String} username - The username to be confirmed
 	 * @param {ClientMetadata} clientMetadata - Metadata to be passed to Cognito Lambda triggers
-	 * @return - A promise resolves data if success
+	 * @return - A promise resolves code delivery details if successful
 	 */
 	public resendSignUp(
 		username: string,
 		clientMetadata: ClientMetaData = this._config.clientMetadata
-	): Promise<string> {
+	): Promise<any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
@@ -977,6 +971,12 @@ export class AuthClass {
 						user['challengeParam'] = challengeParam;
 						resolve(user);
 					},
+					totpRequired: (challengeName, challengeParam) => {
+						logger.debug('signIn mfa setup', challengeName);
+						user['challengeName'] = challengeName;
+						user['challengeParam'] = challengeParam;
+						resolve(user);
+					},
 				},
 				clientMetadata
 			);
@@ -1150,7 +1150,7 @@ export class AuthClass {
 					}
 
 					// refresh the session if the session expired.
-					user.getSession((err, session) => {
+					user.getSession(async (err, session) => {
 						if (err) {
 							logger.debug('Failed to get the user session', err);
 							rej(err);
@@ -1159,7 +1159,12 @@ export class AuthClass {
 
 						// get user data from Cognito
 						const bypassCache = params ? params.bypassCache : false;
-						// validate the token's scope fisrt before calling this function
+
+						if (bypassCache) {
+							await Credentials.clear();
+						}
+
+						// validate the token's scope first before calling this function
 						const { scope = '' } = session.getAccessToken().decodePayload();
 						if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
 							user.getUserData(
@@ -1481,7 +1486,7 @@ export class AuthClass {
 						onSuccess: data => {
 							logger.debug('global sign out success');
 							if (isSignedInHostedUI) {
-								return res(this._oAuthHandler.signOut());
+								this.oAuthSignOutRedirect(res, rej);
 							} else {
 								return res();
 							}
@@ -1496,12 +1501,37 @@ export class AuthClass {
 				logger.debug('user sign out', user);
 				user.signOut();
 				if (isSignedInHostedUI) {
-					return res(this._oAuthHandler.signOut());
+					this.oAuthSignOutRedirect(res, rej);
 				} else {
 					return res();
 				}
 			}
 		});
+	}
+
+	private oAuthSignOutRedirect(
+		resolve: () => void,
+		reject: (reason?: any) => void
+	) {
+		const { isBrowser } = JS.browserOrNode();
+
+		if (isBrowser) {
+			this.oAuthSignOutRedirectOrReject(reject);
+		} else {
+			this.oAuthSignOutAndResolve(resolve);
+		}
+	}
+
+	private oAuthSignOutAndResolve(resolve: () => void) {
+		this._oAuthHandler.signOut();
+		resolve();
+	}
+
+	private oAuthSignOutRedirectOrReject(reject: (reason?: any) => void) {
+		this._oAuthHandler.signOut(); // this method redirects url
+
+		// App should be redirected to another url otherwise it will reject
+		setTimeout(() => reject('Signout timeout fail'), 3000);
 	}
 
 	/**
@@ -1763,6 +1793,7 @@ export class AuthClass {
 		if (
 			isFederatedSignInOptions(providerOrOptions) ||
 			isFederatedSignInOptionsCustom(providerOrOptions) ||
+			hasCustomState(providerOrOptions) ||
 			typeof providerOrOptions === 'undefined'
 		) {
 			const options = providerOrOptions || {
@@ -1983,10 +2014,12 @@ export class AuthClass {
 		const obj = {};
 		if (attributes) {
 			attributes.map(attribute => {
-				if (attribute.Value === 'true') {
-					obj[attribute.Name] = true;
-				} else if (attribute.Value === 'false') {
-					obj[attribute.Name] = false;
+				if (
+					attribute.Name === 'email_verified' ||
+					attribute.Name === 'phone_number_verified'
+				) {
+					obj[attribute.Name] =
+						attribute.Value === 'true' || attribute.Value === true;
 				} else {
 					obj[attribute.Name] = attribute.Value;
 				}
