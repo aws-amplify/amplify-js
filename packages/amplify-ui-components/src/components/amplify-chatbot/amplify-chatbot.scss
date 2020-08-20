@@ -2,8 +2,19 @@
 :host {
   --header-color: var(--amplify-secondary-color);
   --header-size: var(--amplify-text-lg);
+  --bot-background-color: rgb(230, 230, 230);
+  --bot-text-color: black;
+  --user-background-color: #099ac8;
+  --user-text-color: var(--amplify-white);
   --width: 28.75rem;
   --height: 37.5rem;
+
+  width: 95%;
+  height: var(--height);
+  @include md {
+    width: var(--width);
+  }
+  max-width: var(--width);
 }
 .amplify-chatbot {
   display: inline-flex;
@@ -14,11 +25,8 @@
   box-sizing: border-box;
   font-family: var(--amplify-font-family);
   margin-bottom: 1rem;
-  width: 95%;
-  height: var(--height);
-  @include md {
-    width: var(--width);
-  }
+  width: 100%;
+  height: 100%;
 }
 .header {
   margin-top: 1.25rem;
@@ -37,7 +45,7 @@
   overflow: auto;
 }
 .bubble {
-  max-width: 80%;
+  max-width: 100%;
   padding: 0.8em 1.4em;
   text-align: left;
   word-wrap: break-word;
@@ -46,15 +54,15 @@
 .bot {
   margin-left: 1rem;
   margin-right: auto;
-  background-color: rgb(230, 230, 230);
-  color: black;
+  background-color: var(--bot-background-color);
+  color: var(--bot-text-color);
   border-radius: 1.5rem 1.5rem 1.5rem 0;
 }
 .user {
   margin-right: 1rem;
   margin-left: auto;
-  background-color: #099ac8; // TODO: expose amplify blue color
-  color: var(--amplify-white);
+  background-color: var(--user-background-color);
+  color: var(--user-text-color);
   border-radius: 1.5rem 1.5rem 0 1.5rem;
 }
 .footer {
@@ -78,5 +86,5 @@ canvas {
   --icon-height: 1.25rem;
   --icon-fill: var(--amplify-primary-color);
   --padding: 0.625rem;
-  --width: inherit;
+  --width: auto;
 }
