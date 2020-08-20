@@ -375,6 +375,7 @@ jobs:
           category: auth
           sample_name: with-authenticator
           spec: authenticator
+          browser: << parameters.browser >>
 
   integ_angular_auth:
     executor: js-test-executor
@@ -388,6 +389,7 @@ jobs:
           category: auth
           sample_name: amplify-authenticator
           spec: authenticator
+          browser: << parameters.browser >>
 
   integ_vue_auth:
     executor: js-test-executor
@@ -401,6 +403,7 @@ jobs:
           category: auth
           sample_name: amplify-authenticator
           spec: authenticator
+          browser: << parameters.browser >>
 
   integ_react_predictions:
     executor: js-test-executor
@@ -623,6 +626,12 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/master
       - 1.0-stable
+      - circle-ci-cross-browser
+deploy_branches: &deploy_branches
+  branches:
+    only:
+      - release
+      - main
 
 workflows:
   build_test_deploy:
@@ -643,18 +652,27 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              browser: [chrome, firefox]
       - integ_angular_auth:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              browser: [chrome, firefox]
       - integ_vue_auth:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              browser: [chrome, firefox]
       - integ_react_predictions:
           requires:
             - integ_setup
@@ -723,7 +741,7 @@ workflows:
             <<: *releasable_branches
       - deploy:
           filters:
-            <<: *releasable_branches
+            <<: *deploy_branches
           requires:
             - unit_test
             - integ_react_predictions
