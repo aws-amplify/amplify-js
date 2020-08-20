@@ -3,6 +3,7 @@ import { Interactions } from '@aws-amplify/interactions';
 import { JSXBase } from '@stencil/core/internal';
 import { AudioRecorder } from '../../common/audio-control/recorder';
 import { ChatResult } from '../../common/types/interactions-types';
+import { visualize } from '../../common/audio-control/visualizer';
 import { NO_INTERACTIONS_MODULE_FOUND } from '../../common/constants';
 
 type Agent = 'user' | 'bot';
@@ -141,49 +142,7 @@ export class AmplifyChatbot {
    */
   private visualizer(dataArray: Uint8Array, bufferLength: number) {
     const canvas = this.element.shadowRoot.querySelector('canvas');
-    if (!canvas) return;
-    const { width, height } = canvas.getBoundingClientRect();
-
-    // need to update the default canvas width and height
-    canvas.width = width;
-    canvas.height = height;
-
-    const canvasCtx = canvas.getContext('2d');
-    let animationId: number;
-
-    canvasCtx.fillStyle = 'white';
-    canvasCtx.clearRect(0, 0, width, height);
-
-    const draw = () => {
-      if (this.state !== 'listening') return;
-
-      canvasCtx.fillRect(0, 0, width, height);
-      canvasCtx.lineWidth = 1;
-      canvasCtx.strokeStyle = '#099ac8';
-      canvasCtx.beginPath();
-
-      const sliceWidth = (width * 1.0) / bufferLength;
-      let x = 0;
-
-      for (let i = 0; i < bufferLength; i++) {
-        const value = dataArray[i] / 128.0;
-        const y = (value * height) / 2;
-        if (i === 0) {
-          canvasCtx.moveTo(x, y);
-        } else {
-          canvasCtx.lineTo(x, y);
-        }
-        x += sliceWidth;
-      }
-
-      canvasCtx.lineTo(canvas.width, canvas.height / 2);
-      canvasCtx.stroke();
-    };
-
-    // Register our draw function with requestAnimationFrame.
-    if (!animationId) {
-      animationId = requestAnimationFrame(draw);
-    }
+    visualize(dataArray, bufferLength, canvas);
   }
 
   /**
