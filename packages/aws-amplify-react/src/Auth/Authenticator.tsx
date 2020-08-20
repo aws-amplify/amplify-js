@@ -12,26 +12,32 @@
  */
 
 import * as React from 'react';
-import Amplify, { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
-import Greetings from './Greetings';
-import SignIn from './SignIn';
-import ConfirmSignIn from './ConfirmSignIn';
-import RequireNewPassword from './RequireNewPassword';
-import SignUp from './SignUp';
-import Loading from './Loading';
-import ConfirmSignUp from './ConfirmSignUp';
-import VerifyContact from './VerifyContact';
-import ForgotPassword from './ForgotPassword';
-import TOTPSetup from './TOTPSetup';
-import Constants from './common/constants';
-import { UsernameAttributes } from './common/types';
+import {
+	Amplify,
+	I18n,
+	ConsoleLogger as Logger,
+	Hub,
+	isEmpty,
+} from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
+import { Greetings } from './Greetings';
+import { SignIn } from './SignIn';
+import { ConfirmSignIn } from './ConfirmSignIn';
+import { RequireNewPassword } from './RequireNewPassword';
+import { SignUp } from './SignUp';
+import { Loading } from './Loading';
+import { ConfirmSignUp } from './ConfirmSignUp';
+import { VerifyContact } from './VerifyContact';
+import { ForgotPassword } from './ForgotPassword';
+import { TOTPSetup } from './TOTPSetup';
+import { Constants } from './common/constants';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import AmplifyMessageMap from '../AmplifyMessageMap';
+import { AmplifyMessageMap } from '../AmplifyMessageMap';
 
 import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
 import { auth } from '../Amplify-UI/data-test-attributes';
+import { UsernameAttributes } from './common/types';
 
 const logger = new Logger('Authenticator');
 const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
@@ -60,7 +66,7 @@ export interface IAuthenticatorState {
 	showToast?: boolean;
 }
 
-export default class Authenticator extends React.Component<
+export class Authenticator extends React.Component<
 	IAuthenticatorProps,
 	IAuthenticatorState
 > {
@@ -85,15 +91,16 @@ export default class Authenticator extends React.Component<
 			Amplify.configure(config);
 		}
 		this._isMounted = true;
-		// the workaround for Cognito Hosted UI
-		// don't check the user immediately if redirected back from Hosted UI
-		// instead waiting for the hub event sent from Auth module
-		// the item in the localStorage is a mark to indicate whether
-		// the app is redirected back from Hosted UI or not
+		// The workaround for Cognito Hosted UI:
+		// Don't check the user immediately if redirected back from Hosted UI as
+		// it might take some time for credentials to be available, instead
+		// wait for the hub event sent from Auth module. This item in the
+		// localStorage is a mark to indicate whether the app is just redirected
+		// back from Hosted UI or not and is set in Auth:handleAuthResponse.
 		const byHostedUI = localStorage.getItem(
-			Constants.SIGNING_IN_WITH_HOSTEDUI_KEY
+			Constants.REDIRECTED_FROM_HOSTED_UI
 		);
-		localStorage.removeItem(Constants.SIGNING_IN_WITH_HOSTEDUI_KEY);
+		localStorage.removeItem(Constants.REDIRECTED_FROM_HOSTED_UI);
 		if (byHostedUI !== 'true') this.checkUser();
 	}
 
@@ -133,12 +140,29 @@ export default class Authenticator extends React.Component<
 			});
 	}
 
+	checkContact(user, changeState) {
+		if (!Auth || typeof Auth.verifiedContact !== 'function') {
+			throw new Error(
+				'No Auth module found, please ensure @aws-amplify/auth is imported'
+			);
+		}
+		Auth.verifiedContact(user).then(data => {
+			if (!isEmpty(data.verified)) {
+				changeState('signedIn', user);
+			} else {
+				user = Object.assign(user, data);
+				changeState('verifyContact', user);
+			}
+		});
+	}
+
 	onHubCapsule(capsule) {
 		const { channel, payload, source } = capsule;
 		if (channel === 'auth') {
 			switch (payload.event) {
 				case 'cognitoHostedUI':
-					this.handleStateChange('signedIn', payload.data);
+				case 'signIn':
+					this.checkContact(payload.data, this.handleStateChange);
 					break;
 				case 'cognitoHostedUI_failure':
 					this.handleStateChange('signIn', null);
@@ -151,9 +175,6 @@ export default class Authenticator extends React.Component<
 					break;
 				case 'customGreetingSignOut':
 					this.handleStateChange('signIn', null);
-					break;
-				case 'parsingCallbackUrl':
-					localStorage.setItem(Constants.SIGNING_IN_WITH_HOSTEDUI_KEY, 'true');
 					break;
 				default:
 					break;
@@ -317,3 +338,8 @@ export default class Authenticator extends React.Component<
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default Authenticator;

@@ -27,7 +27,7 @@ const template = `
             class="amplify-form-input"
             type="email"
             placeholder="{{ this.amplifyService.i18n().get(this.getPlaceholder()) }}"
-            (keyup)="setEmail($event.target.value)"
+            (input)="setEmail($event.target.value)"
             data-test="${auth.genericAttrs.emailInput}"
         ></ion-input>
     </ion-item> 
@@ -43,7 +43,7 @@ const template = `
             class="amplify-form-input"
             type="text"
             placeholder="{{ this.amplifyService.i18n().get(this.getPlaceholder()) }}"
-            (keyup)="setUsername($event.target.value)"
+            (input)="setUsername($event.target.value)"
             data-test="${auth.genericAttrs.usernameInput}"
         ></ion-input>
     </ion-item>
@@ -55,9 +55,7 @@ const template = `
 	template,
 })
 export class UsernameFieldComponentIonic extends UsernameFieldComponentCore {
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		super(amplifyService);
 	}
 }

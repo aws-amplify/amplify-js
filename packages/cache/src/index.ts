@@ -11,12 +11,15 @@
  * and limitations under the License.
  */
 
-import Amplify from '@aws-amplify/core';
-import BrowserStorageCache from './BrowserStorageCache';
-import InMemoryCache from './InMemoryCache';
+import { Amplify } from '@aws-amplify/core';
+import { BrowserStorageCache } from './BrowserStorageCache';
+import { InMemoryCache } from './InMemoryCache';
 import { CacheConfig } from './types';
 
 export { BrowserStorageCache, InMemoryCache, CacheConfig };
+/**
+ * @deprecated use named import
+ */
 export default BrowserStorageCache;
 
 Amplify.register(BrowserStorageCache);
