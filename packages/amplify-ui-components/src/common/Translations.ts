@@ -4,6 +4,7 @@ export enum AuthStrings {
   BACK_TO_SIGN_IN = 'Back to Sign In',
   CHANGE_PASSWORD_ACTION = 'Change',
   CHANGE_PASSWORD = 'Change Password',
+  CHATBOT_TITLE = 'Chatbot Lex',
   CODE_LABEL = 'Verification code',
   CODE_PLACEHOLDER = 'Enter code',
   CONFIRM_SIGN_UP_CODE_LABEL = 'Confirmation Code',
@@ -105,6 +106,7 @@ export enum AuthStrings {
   IMAGE_PICKER_BUTTON_TEXT = 'Upload',
   PICKER_TEXT = 'Pick a file',
   TEXT_FALLBACK_CONTENT = 'Fallback Content',
+  TEXT_INPUT_PLACEHOLDER = 'Write a message',
 }
 
 type Translations = AuthErrorStrings | AuthStrings;

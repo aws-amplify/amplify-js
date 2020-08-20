@@ -1,10 +1,12 @@
 import { Component, Host, h, Prop, State, Listen, Event, EventEmitter, Element } from '@stencil/core';
+import { I18n } from '@aws-amplify/core';
 import { Interactions } from '@aws-amplify/interactions';
 import { JSXBase } from '@stencil/core/internal';
 import { AudioRecorder } from '../../common/audio-control/recorder';
 import { ChatResult } from '../../common/types/interactions-types';
 import { visualize } from '../../common/audio-control/visualizer';
 import { NO_INTERACTIONS_MODULE_FOUND } from '../../common/constants';
+import { Translations } from '../../common/Translations';
 
 type Agent = 'user' | 'bot';
 interface Message {
@@ -29,7 +31,7 @@ export class AmplifyChatbot {
   /** Greeting message displayed to users */
   @Prop() welcomeMessage: string;
   /** Text placed in the top header */
-  @Prop() botTitle: string = 'ChatBot Lex';
+  @Prop() botTitle: string = Translations.CHATBOT_TITLE;
   /** Whether voice chat is enabled */
   @Prop() voiceEnabled: boolean = false;
   /** Whether text chat is enabled */
@@ -238,7 +240,7 @@ export class AmplifyChatbot {
     if (this.state === 'listening') return this.listeningFooterJSX();
     const textInput = (
       <amplify-input
-        placeholder="Write a message"
+        placeholder={I18n.get(Translations.TEXT_INPUT_PLACEHOLDER)}
         fieldId="test"
         description="text"
         handleInputChange={evt => this.handleTextChange(evt)}
@@ -288,7 +290,7 @@ export class AmplifyChatbot {
         <div class="amplify-chatbot">
           <slot name="header">
             <div class="header" data-test="chatbot-header">
-              {this.botTitle}
+              {I18n.get(this.botTitle)}
             </div>
           </slot>
           <div class="body" data-test="chatbot-body">
