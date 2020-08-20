@@ -44,12 +44,7 @@ export class AudioRecorder {
   }
 
   private async setupAudioNodes(stream: MediaStream) {
-    console.log(this.audioContext);
-
-    await this.audioContext
-      .resume()
-      .then(() => console.log('resumed'))
-      .catch(() => console.error('what?'));
+    await this.audioContext.resume();
     const sourceNode = this.audioContext.createMediaStreamSource(stream);
     const processorNode = this.audioContext.createScriptProcessor(4096, 1, 1);
 
