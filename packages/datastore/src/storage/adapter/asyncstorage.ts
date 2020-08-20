@@ -1,24 +1,26 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import AsyncStorageDatabase from './AsyncStorageDatabase';
-import { Adapter } from '.';
+import { Adapter } from './index';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ModelPredicateCreator } from '../../predicates';
 import {
 	InternalSchema,
 	isPredicateObj,
+	ModelInstanceMetadata,
 	ModelPredicate,
 	NamespaceResolver,
 	OpType,
+	PaginationInput,
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicateObject,
 	QueryOne,
 	RelationType,
-	PaginationInput,
 } from '../../types';
 import {
 	exhaustiveCheck,
 	getIndex,
+	getIndexFromAssociation,
 	isModelConstructor,
 	traverseModel,
 	validatePredicate,
@@ -34,7 +36,7 @@ class AsyncStorageAdapter implements Adapter {
 		namsespaceName: string,
 		modelName: string
 	) => PersistentModelConstructor<any>;
-	private db: any;
+	private db: AsyncStorageDatabase;
 	private initPromise: Promise<void>;
 	private resolve: (value?: any) => void;
 	private reject: (value?: any) => void;
@@ -70,6 +72,7 @@ class AsyncStorageAdapter implements Adapter {
 			});
 		} else {
 			await this.initPromise;
+			return;
 		}
 		this.schema = theSchema;
 		this.namespaceResolver = namespaceResolver;
@@ -78,6 +81,7 @@ class AsyncStorageAdapter implements Adapter {
 		try {
 			if (!this.db) {
 				this.db = new AsyncStorageDatabase();
+				await this.db.init();
 				this.resolve();
 			}
 		} catch (error) {
@@ -110,7 +114,7 @@ class AsyncStorageAdapter implements Adapter {
 		);
 		const fromDB = await this.db.get(model.id, storeName);
 
-		if (condition) {
+		if (condition && fromDB) {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
 			const { predicates: predicateObjs, type } = predicates;
 
@@ -271,13 +275,10 @@ class AsyncStorageAdapter implements Adapter {
 				);
 			}
 		}
-		const all = <T[]>await this.db.getAll(storeName);
 
-		return await this.load(
-			namespaceName,
-			modelConstructor.name,
-			this.inMemoryPagination(all, pagination)
-		);
+		const all = <T[]>await this.db.getAll(storeName, pagination);
+
+		return await this.load(namespaceName, modelConstructor.name, all);
 	}
 
 	private inMemoryPagination<T>(
@@ -366,6 +367,14 @@ class AsyncStorageAdapter implements Adapter {
 			const storeName = this.getStorenameForModel(modelConstructor);
 			if (condition) {
 				const fromDB = await this.db.get(model.id, storeName);
+
+				if (fromDB === undefined) {
+					const msg = 'Model instance not found in storage';
+					logger.warn(msg, { model });
+
+					return [[model], []];
+				}
+
 				const predicates = ModelPredicateCreator.getPredicates(condition);
 				const { predicates: predicateObjs, type } = predicates;
 
@@ -446,11 +455,21 @@ class AsyncStorageAdapter implements Adapter {
 		for await (const rel of relations) {
 			const { relationType, modelName } = rel;
 			const storeName = this.getStorename(nameSpace, modelName);
-			const index = getIndex(
-				this.schema.namespaces[nameSpace].relationships[modelName]
-					.relationTypes,
-				srcModel
-			);
+
+			const index: string =
+				getIndex(
+					this.schema.namespaces[nameSpace].relationships[modelName]
+						.relationTypes,
+					srcModel
+				) ||
+				// if we were unable to find an index via relationTypes
+				// i.e. for keyName connections, attempt to find one by the
+				// associatedWith property
+				getIndexFromAssociation(
+					this.schema.namespaces[nameSpace].relationships[modelName].indexes,
+					rel.associatedWith
+				);
+
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
@@ -511,6 +530,37 @@ class AsyncStorageAdapter implements Adapter {
 
 		this.db = undefined;
 		this.initPromise = undefined;
+	}
+
+	async batchSave<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<any>,
+		items: ModelInstanceMetadata[]
+	): Promise<[T, OpType][]> {
+		const { name: modelName } = modelConstructor;
+		const namespaceName = this.namespaceResolver(modelConstructor);
+		const storeName = this.getStorename(namespaceName, modelName);
+
+		const batch: ModelInstanceMetadata[] = [];
+
+		for (const item of items) {
+			const { id } = item;
+
+			const connectedModels = traverseModel(
+				modelConstructor.name,
+				this.modelInstanceCreator(modelConstructor, item),
+				this.schema.namespaces[this.namespaceResolver(modelConstructor)],
+				this.modelInstanceCreator,
+				this.getModelConstructorByModelName
+			);
+
+			const { instance } = connectedModels.find(
+				({ instance }) => instance.id === id
+			);
+
+			batch.push(instance);
+		}
+
+		return await this.db.batchSave(storeName, batch);
 	}
 }
 

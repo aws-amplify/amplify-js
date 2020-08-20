@@ -11,9 +11,9 @@ export class AmplifyEmailField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */
   @Prop() fieldId: string = EMAIL_SUFFIX;
   /** Used for the EMAIL label */
-  @Prop() label: string = I18n.get(Translations.EMAIL_LABEL);
+  @Prop() label: string = Translations.EMAIL_LABEL;
   /** Used for the placeholder label */
-  @Prop() placeholder: string = I18n.get(Translations.EMAIL_PLACEHOLDER);
+  @Prop() placeholder: string = Translations.EMAIL_PLACEHOLDER;
   /** The required flag in order to make an input required prior to submitting a form */
   @Prop() required: boolean = false;
   /** The callback, called when the input is modified by the user. */
@@ -29,8 +29,8 @@ export class AmplifyEmailField {
     return (
       <amplify-form-field
         fieldId={this.fieldId}
-        label={this.label}
-        placeholder={this.placeholder}
+        label={I18n.get(this.label)}
+        placeholder={I18n.get(this.placeholder)}
         type="email"
         required={this.required}
         handleInputChange={this.handleInputChange}

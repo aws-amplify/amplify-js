@@ -3,6 +3,151 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.1.9...@aws-amplify/pushnotification@3.1.10) (2020-08-19)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [3.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.1.8...@aws-amplify/pushnotification@3.1.9) (2020-08-06)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [3.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.1.7...@aws-amplify/pushnotification@3.1.8) (2020-07-27)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [3.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.1.6...@aws-amplify/pushnotification@3.1.7) (2020-07-22)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [3.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.1.5...@aws-amplify/pushnotification@3.1.6) (2020-07-09)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [3.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.1.4...@aws-amplify/pushnotification@3.1.5) (2020-07-07)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [3.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.1.3...@aws-amplify/pushnotification@3.1.4) (2020-06-18)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [3.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.1.2...@aws-amplify/pushnotification@3.1.3) (2020-06-09)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [3.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.1.1...@aws-amplify/pushnotification@3.1.2) (2020-06-04)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [3.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.1.0...@aws-amplify/pushnotification@3.1.1) (2020-06-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pushnotification:** only initialize push notifications when config is present ([#5975](https://github.com/aws-amplify/amplify-js/issues/5975)) ([c2692c3](https://github.com/aws-amplify/amplify-js/commit/c2692c34c78f436f273dfcb22d2384484ced4e70))
+
+
+
+
+
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.0.13...@aws-amplify/pushnotification@3.1.0) (2020-06-02)
+
+
+### Features
+
+* **@aws-amplify/pushnotification:** inherit compileSdkVersion from project ([#5475](https://github.com/aws-amplify/amplify-js/issues/5475)) ([8744976](https://github.com/aws-amplify/amplify-js/commit/874497611cb69ba7272e216fb688cac0934c9cb8))
+
+
+
+
+
+## [3.0.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.0.12...@aws-amplify/pushnotification@3.0.13) (2020-05-26)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [3.0.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.0.11...@aws-amplify/pushnotification@3.0.12) (2020-05-22)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [3.0.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.0.10...@aws-amplify/pushnotification@3.0.11) (2020-05-14)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [3.0.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.0.9...@aws-amplify/pushnotification@3.0.10) (2020-04-30)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [3.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.0.8...@aws-amplify/pushnotification@3.0.9) (2020-04-24)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Use SecureRandom instead of Random for better security. ([#5418](https://github.com/aws-amplify/amplify-js/issues/5418)) ([4f3ba81](https://github.com/aws-amplify/amplify-js/commit/4f3ba811a422159d7d8db821963c3381cfaac571))
+
+
+
+
+
+## [3.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.0.7...@aws-amplify/pushnotification@3.0.8) (2020-04-14)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
 ## [3.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@3.0.6...@aws-amplify/pushnotification@3.0.7) (2020-04-08)
 
 **Note:** Version bump only for package @aws-amplify/pushnotification

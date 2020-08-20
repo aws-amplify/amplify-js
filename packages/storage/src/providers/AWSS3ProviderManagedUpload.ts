@@ -14,6 +14,8 @@
 import {
 	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
+	Platform,
+	Credentials,
 } from '@aws-amplify/core';
 import {
 	S3Client,
@@ -30,8 +32,7 @@ import {
 import { AxiosHttpHandler, SEND_PROGRESS_EVENT } from './axios-http-handler';
 import * as events from 'events';
 import { parseUrl } from '@aws-sdk/url-parser-node';
-import { httpHandlerOptions } from './httpHandlerOptions';
-import { streamCollector } from '@aws-sdk/stream-collector-native';
+import { streamCollector } from '@aws-sdk/fetch-http-handler';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
 
@@ -76,7 +77,7 @@ export class AWSS3ProviderManagedUpload {
 			// Multipart upload is not required. Upload the sanitized body as is
 			this.params.Body = this.body;
 			const putObjectCommand = new PutObjectCommand(this.params);
-			const s3 = this._createNewS3Client(this.opts, this.emitter);
+			const s3 = await this._createNewS3Client(this.opts, this.emitter);
 			return s3.send(putObjectCommand);
 		} else {
 			// Step 1: Initiate the multi part upload
@@ -138,7 +139,7 @@ export class AWSS3ProviderManagedUpload {
 		const createMultiPartUploadCommand = new CreateMultipartUploadCommand(
 			this.params
 		);
-		const s3 = this._createNewS3Client(this.opts);
+		const s3 = await this._createNewS3Client(this.opts);
 		const response = await s3.send(createMultiPartUploadCommand);
 		logger.debug(response.UploadId);
 		return response.UploadId;
@@ -160,7 +161,7 @@ export class AWSS3ProviderManagedUpload {
 				Bucket: this.params.Bucket,
 			};
 			const uploadPartCommand = new UploadPartCommand(uploadPartCommandInput);
-			const s3 = this._createNewS3Client(this.opts, part.emitter);
+			const s3 = await this._createNewS3Client(this.opts, part.emitter);
 			promises.push(s3.send(uploadPartCommand));
 		}
 		try {
@@ -192,7 +193,7 @@ export class AWSS3ProviderManagedUpload {
 			MultipartUpload: { Parts: this.multiPartMap },
 		};
 		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
-		const s3 = this._createNewS3Client(this.opts);
+		const s3 = await this._createNewS3Client(this.opts);
 		try {
 			const data = await s3.send(completeUploadCommand);
 			return data.Key;
@@ -235,7 +236,7 @@ export class AWSS3ProviderManagedUpload {
 			UploadId: uploadId,
 		};
 
-		const s3 = this._createNewS3Client(this.opts);
+		const s3 = await this._createNewS3Client(this.opts);
 		await s3.send(new AbortMultipartUploadCommand(input));
 
 		// verify that all parts are removed.
@@ -291,7 +292,7 @@ export class AWSS3ProviderManagedUpload {
 			// If it's a blob, we need to convert it to an array buffer as axios has issues
 			// with correctly identifying blobs in *react native* environment. For more
 			// details see https://github.com/aws-amplify/amplify-js/issues/5311
-			if (httpHandlerOptions.bufferBody) {
+			if (Platform.isReactNative) {
 				return await streamCollector(body);
 			}
 			return body;
@@ -329,19 +330,17 @@ export class AWSS3ProviderManagedUpload {
 	 * @private
 	 * creates an S3 client with new V3 aws sdk
 	 */
-	protected _createNewS3Client(config, emitter?) {
-		const {
-			region,
-			credentials,
-			dangerouslyConnectToHttpEndpointForTesting,
-		} = config;
+	protected async _createNewS3Client(config, emitter?) {
+		const credentials = await this._getCredentials();
+		const { region, dangerouslyConnectToHttpEndpointForTesting } = config;
 		let localTestingConfig = {};
 
 		if (dangerouslyConnectToHttpEndpointForTesting) {
 			localTestingConfig = {
 				endpoint: localTestingStorageEndpoint,
-				s3BucketEndpoint: true,
-				s3ForcePathStyle: true,
+				tls: false,
+				bucketEndpoint: false,
+				forcePathStyle: true,
 			};
 		}
 
@@ -349,11 +348,28 @@ export class AWSS3ProviderManagedUpload {
 			region,
 			credentials,
 			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler(httpHandlerOptions, emitter),
+			requestHandler: new AxiosHttpHandler({}, emitter),
 			customUserAgent: getAmplifyUserAgent(),
 			urlParser: parseUrl,
 		});
 		client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		return client;
+	}
+
+	/**
+	 * @private
+	 */
+	_getCredentials() {
+		return Credentials.get()
+			.then(credentials => {
+				if (!credentials) return false;
+				const cred = Credentials.shear(credentials);
+				logger.debug('set credentials for storage', cred);
+				return cred;
+			})
+			.catch(error => {
+				logger.warn('ensure credentials error', error);
+				return false;
+			});
 	}
 }

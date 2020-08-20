@@ -431,7 +431,8 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 	private async _handleEndpointUpdateFailure(failureData: EndpointFailureData) {
 		const { err, endpointObject } = failureData;
-		const { statusCode } = err;
+		const statusCode = err.$metadata && err.$metadata.httpStatusCode;
+
 		logger.debug('updateEndpoint failed', err);
 
 		switch (statusCode) {
@@ -482,6 +483,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 	private _handleEndpointUpdateForbidden(failureData: EndpointFailureData) {
 		const { err, endpointObject } = failureData;
+
 		const { code, retryable } = err;
 
 		if (code !== EXPIRED_TOKEN_CODE && !retryable) {
@@ -619,6 +621,20 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
 		});
+		
+		// TODO: remove this middleware once a long term fix is implemented by aws-sdk-js team.
+		this.pinpointClient.middlewareStack.addRelativeTo(
+			next => args => {
+				delete args.request.headers['amz-sdk-invocation-id'];
+				delete args.request.headers['amz-sdk-request'];
+				return next(args);
+			},
+			{
+				step: 'finalizeRequest',
+				relation: 'after',
+				toMiddleware: 'retryMiddleware',
+			}
+		);
 
 		if (this._bufferExists() && identityId === credentials.identityId) {
 			// if the identity has remained the same, pass the updated client to the buffer

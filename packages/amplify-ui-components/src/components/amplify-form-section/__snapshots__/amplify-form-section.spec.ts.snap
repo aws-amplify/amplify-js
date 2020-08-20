@@ -8,7 +8,10 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
         <div>
           <slot name="amplify-form-section-header">
             <div class="form-section-header">
-              <h3 data-test="form-section-header-section"></h3>
+              <h3 class="header" data-test="form-section-header-section"></h3>
+              <div class="subtitle">
+                <slot name="subtitle"></slot>
+              </div>
             </div>
           </slot>
         </div>
@@ -17,8 +20,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
           <slot name="amplify-form-section-footer">
             <div class="form-section-footer">
               <amplify-button data-test="form-section-form-section-button" type="submit">
-                <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
-                <span style="display: initial;">
+                <span>
                   Submit
                 </span>
               </amplify-button>
@@ -39,7 +41,10 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
         <div>
           <slot name="amplify-form-section-header">
             <div class="form-section-header">
-              <h3 data-test="form-section-header-section"></h3>
+              <h3 class="header" data-test="form-section-header-section"></h3>
+              <div class="subtitle">
+                <slot name="subtitle"></slot>
+              </div>
             </div>
           </slot>
         </div>
@@ -48,8 +53,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
           <slot name="amplify-form-section-footer">
             <div class="form-section-footer">
               <amplify-button data-test="form-section-form-section-button" type="submit">
-                <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
-                <span style="display: initial;">
+                <span>
                   Go
                 </span>
               </amplify-button>
@@ -62,7 +66,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
 </amplify-form-section>
 `;
 
-exports[`amplify-form-section spec: Render logic -> should render without Emotion CSS classes 1`] = `
+exports[`amplify-form-section spec: Render logic -> should render form section 1`] = `
 <amplify-form-section>
   <mock:shadow-root>
     <form>
@@ -70,7 +74,10 @@ exports[`amplify-form-section spec: Render logic -> should render without Emotio
         <div>
           <slot name="amplify-form-section-header">
             <div class="form-section-header">
-              <h3 data-test="form-section-header-section"></h3>
+              <h3 class="header" data-test="form-section-header-section"></h3>
+              <div class="subtitle">
+                <slot name="subtitle"></slot>
+              </div>
             </div>
           </slot>
         </div>
@@ -79,8 +86,7 @@ exports[`amplify-form-section spec: Render logic -> should render without Emotio
           <slot name="amplify-form-section-footer">
             <div class="form-section-footer">
               <amplify-button data-test="form-section-form-section-button" type="submit">
-                <amplify-loading-spinner style="display: none;"></amplify-loading-spinner>
-                <span style="display: initial;">
+                <span>
                   Submit
                 </span>
               </amplify-button>

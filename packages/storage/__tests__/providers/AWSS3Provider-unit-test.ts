@@ -23,6 +23,9 @@ import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 
 S3Client.prototype.send = jest.fn(async command => {
 	if (command instanceof ListObjectsCommand) {
+		if (command.input.Prefix === 'public/emptyListResultsPath') {
+			return {};
+		}
 		return {
 			Contents: [
 				{
@@ -203,7 +206,6 @@ describe('StorageProvider test', () => {
 					event: 'getSignedUrl',
 					data: {
 						attrs: { method: 'get', result: 'success' },
-						metrics: null,
 					},
 					message: 'Signed URL: url',
 				},
@@ -342,12 +344,7 @@ describe('StorageProvider test', () => {
 				options.bucket + '.s3.' + options.region + '.amazonaws.com'
 			);
 
-			// For test to be deterministic, let's assume a 100 ms difference between when the date
-			// was created in the source vs in the test.
-			const diff =
-				new Date(Date.now() + 1200 * 1000).getMilliseconds() -
-				(spyon.mock.calls[0][1] as Date).getMilliseconds();
-			expect(diff).toBeLessThan(100);
+			expect(spyon.mock.calls[0][1].expiresIn).toBe(1200);
 		});
 
 		test('get object with default expires option', async () => {
@@ -369,12 +366,7 @@ describe('StorageProvider test', () => {
 				options.bucket + '.s3.' + options.region + '.amazonaws.com'
 			);
 
-			// For test to be deterministic, let's assume a 100 ms difference between when the date
-			// was created in the source vs in the test. 900 secs is default
-			const diff =
-				new Date(Date.now() + 900 * 1000).getMilliseconds() -
-				(spyon.mock.calls[0][1] as Date).getMilliseconds();
-			expect(diff).toBeLessThan(100);
+			expect(spyon.mock.calls[0][1].expiresIn).toBe(900);
 		});
 
 		test('get object with identityId option', async () => {
@@ -468,8 +460,12 @@ describe('StorageProvider test', () => {
 			const spyon = jest.spyOn(S3Client.prototype, 'send');
 
 			expect.assertions(2);
-			expect(await storage.put('key', 'object', {})).toEqual({ key: 'key' });
+			expect(await storage.put('key', 'object', { acl: 'public' })).toEqual({
+				key: 'key',
+			});
+
 			expect(spyon.mock.calls[0][0].input).toEqual({
+				ACL: 'public',
 				Body: 'object',
 				Bucket: 'bucket',
 				ContentType: 'binary/octet-stream',
@@ -508,7 +504,6 @@ describe('StorageProvider test', () => {
 							method: 'put',
 							result: 'success',
 						},
-						metrics: null,
 					},
 					message: 'Upload success for key',
 				},
@@ -630,7 +625,6 @@ describe('StorageProvider test', () => {
 					event: 'delete',
 					data: {
 						attrs: { method: 'remove', result: 'success' },
-						metrics: null,
 					},
 					message: 'Deleted key successfully',
 				},
@@ -729,6 +723,28 @@ describe('StorageProvider test', () => {
 			spyon.mockClear();
 		});
 
+		test('list objects with zero results', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res({});
+				});
+			});
+
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const spyon = jest.spyOn(S3Client.prototype, 'send');
+
+			expect.assertions(2);
+			expect(
+				await storage.list('emptyListResultsPath', { level: 'public' })
+			).toEqual([]);
+			expect(spyon.mock.calls[0][0].input).toEqual({
+				Bucket: 'bucket',
+				Prefix: 'public/emptyListResultsPath',
+			});
+			spyon.mockClear();
+		});
+
 		test('list object with track', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return new Promise((res, rej) => {
@@ -762,7 +778,6 @@ describe('StorageProvider test', () => {
 					event: 'list',
 					data: {
 						attrs: { method: 'list', result: 'success' },
-						metrics: null,
 					},
 					message: '1 items returned from list operation',
 				},

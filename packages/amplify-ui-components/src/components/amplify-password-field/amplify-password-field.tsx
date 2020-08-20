@@ -11,9 +11,9 @@ export class AmplifyPasswordField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */
   @Prop() fieldId: string = PASSWORD_SUFFIX;
   /** Used for the password label */
-  @Prop() label: string = I18n.get(Translations.PASSWORD_LABEL);
+  @Prop() label: string = Translations.PASSWORD_LABEL;
   /** Used for the placeholder label */
-  @Prop() placeholder: string = I18n.get(Translations.PASSWORD_PLACEHOLDER);
+  @Prop() placeholder: string = Translations.PASSWORD_PLACEHOLDER;
   /** Used as the hint in case you forgot your password, etc. */
   @Prop() hint: string | FunctionalComponent | null;
   /** The required flag in order to make an input required prior to submitting a form */
@@ -32,8 +32,8 @@ export class AmplifyPasswordField {
       <amplify-form-field
         type="password"
         fieldId={this.fieldId}
-        label={this.label}
-        placeholder={this.placeholder}
+        label={I18n.get(this.label)}
+        placeholder={I18n.get(this.placeholder)}
         hint={this.hint}
         required={this.required}
         handleInputChange={this.handleInputChange}

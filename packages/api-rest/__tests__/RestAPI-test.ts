@@ -1,14 +1,28 @@
-import axios from 'axios';
+import axios, { CancelTokenStatic } from 'axios';
 import { RestAPIClass as API } from '../src/';
 import { RestClient } from '../src/RestClient';
-import { Signer, Credentials } from '@aws-amplify/core';
+import { Signer, Credentials, DateUtils } from '@aws-amplify/core';
 
 jest.mock('axios');
 
+axios.CancelToken = <CancelTokenStatic>{
+	source: () => ({ token: null, cancel: null }),
+};
+
+let cancelTokenSpy = null;
+let cancelMock = null;
+let tokenMock = null;
+
 const config = {
 	API: {
-		region: 'region',
-		header: {},
+		endpoints: [
+			{
+				name: 'apiName',
+				endpoint: 'endpoint',
+				region: 'region',
+				service: 'execute-api',
+			},
+		],
 	},
 };
 
@@ -17,6 +31,16 @@ afterEach(() => {
 });
 
 describe('Rest API test', () => {
+	beforeEach(() => {
+		cancelMock = jest.fn();
+		tokenMock = jest.fn();
+		cancelTokenSpy = jest
+			.spyOn(axios.CancelToken, 'source')
+			.mockImplementation(() => {
+				return { token: tokenMock, cancel: cancelMock };
+			});
+	});
+
 	const aws_cloud_logic_custom = [
 		{
 			id: 'lh3s27sl16',
@@ -24,6 +48,13 @@ describe('Rest API test', () => {
 			description: '',
 			endpoint:
 				'https://lh3s27sl16.execute-api.us-east-1.amazonaws.com/Development',
+			region: 'us-east-1',
+			paths: ['/todos', '/todos/123'],
+		},
+		{
+			name: 'apiName',
+			description: '',
+			endpoint: 'endpoint',
 			region: 'us-east-1',
 			paths: ['/todos', '/todos/123'],
 		},
@@ -85,7 +116,9 @@ describe('Rest API test', () => {
 
 	describe('get test', () => {
 		test('happy case', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure(config);
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -98,15 +131,21 @@ describe('Rest API test', () => {
 				.mockImplementationOnce(() => {
 					return Promise.resolve();
 				});
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
 
-			await api.get('apiName', 'path', 'init');
+			await api.get('apiName', 'path', { init: 'init' });
 
-			expect(spyon2).toBeCalledWith('endpointpath', 'init');
+			expect(spyon2).toBeCalledWith(
+				{
+					custom_header: undefined,
+					endpoint: 'endpointpath',
+					region: 'region',
+					service: 'execute-api',
+				},
+				{
+					init: 'init',
+					cancellableToken: { cancel: cancelMock, token: tokenMock },
+				}
+			);
 		});
 
 		test('custom_header', async () => {
@@ -153,6 +192,7 @@ describe('Rest API test', () => {
 					signerServiceInfo: undefined,
 					url: 'https://www.amazonaws.compath/',
 					timeout: 0,
+					cancelToken: tokenMock,
 				},
 				undefined
 			);
@@ -166,7 +206,9 @@ describe('Rest API test', () => {
 				aws_cloud_logic_custom,
 			};
 
-			const api = new API(options);
+			const api = new API({});
+			api.configure(options);
+
 			const creds = {
 				secretAccessKey: 'secret',
 				accessKeyId: 'access',
@@ -185,11 +227,6 @@ describe('Rest API test', () => {
 				});
 			});
 
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
 			const spyonSigner = jest
 				.spyOn(Signer, 'sign')
 				.mockImplementationOnce(() => {
@@ -217,6 +254,7 @@ describe('Rest API test', () => {
 				responseType: 'json',
 				url: 'endpoint/items',
 				timeout: 2500,
+				cancelToken: tokenMock,
 			};
 			expect(spyonSigner).toBeCalledWith(expectedParams, creds2, {
 				region: 'us-east-1',
@@ -232,7 +270,9 @@ describe('Rest API test', () => {
 				aws_cloud_logic_custom,
 			};
 
-			const api = new API(options);
+			const api = new API({});
+			api.configure(options);
+
 			const creds = {
 				secretAccessKey: 'secret',
 				accessKeyId: 'access',
@@ -251,11 +291,6 @@ describe('Rest API test', () => {
 				});
 			});
 
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
 			const spyonSigner = jest
 				.spyOn(Signer, 'sign')
 				.mockImplementationOnce(() => {
@@ -285,6 +320,7 @@ describe('Rest API test', () => {
 				responseType: 'json',
 				url: 'endpoint/items?ke%3Ay3=val%3Aue%203',
 				timeout: 0,
+				cancelToken: tokenMock,
 			};
 			expect(spyonSigner).toBeCalledWith(expectedParams, creds2, {
 				region: 'us-east-1',
@@ -300,7 +336,9 @@ describe('Rest API test', () => {
 				aws_cloud_logic_custom,
 			};
 
-			const api = new API(options);
+			const api = new API({});
+			api.configure(options);
+
 			const creds = {
 				secretAccessKey: 'secret',
 				accessKeyId: 'access',
@@ -319,11 +357,6 @@ describe('Rest API test', () => {
 				});
 			});
 
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
 			const spyonRequest = jest
 				.spyOn(RestClient.prototype as any, '_request')
 				.mockImplementationOnce(() => {
@@ -357,6 +390,7 @@ describe('Rest API test', () => {
 				signerServiceInfo: undefined,
 				url: 'endpoint/items?ke%3Ay3=val%3Aue%203',
 				timeout: 0,
+				cancelToken: tokenMock,
 			};
 			expect(spyonRequest).toBeCalledWith(expectedParams, undefined);
 		});
@@ -368,7 +402,9 @@ describe('Rest API test', () => {
 				aws_cloud_logic_custom,
 			};
 
-			const api = new API(options);
+			const api = new API({});
+			api.configure(options);
+
 			const creds = {
 				secretAccessKey: 'secret',
 				accessKeyId: 'access',
@@ -387,11 +423,6 @@ describe('Rest API test', () => {
 				});
 			});
 
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
 			const spyonSigner = jest
 				.spyOn(Signer, 'sign')
 				.mockImplementationOnce(() => {
@@ -421,6 +452,7 @@ describe('Rest API test', () => {
 				responseType: 'json',
 				url: 'endpoint/items?key1=value1&key2=value2_real',
 				timeout: 0,
+				cancelToken: tokenMock,
 			};
 			expect(spyonSigner).toBeCalledWith(expectedParams, creds2, {
 				region: 'us-east-1',
@@ -429,7 +461,9 @@ describe('Rest API test', () => {
 		});
 
 		test('endpoint length 0', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure({});
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -442,34 +476,25 @@ describe('Rest API test', () => {
 				.mockImplementationOnce(() => {
 					return Promise.resolve();
 				});
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return '';
-				});
 
 			expect.assertions(1);
 			try {
-				await api.get('apiName', 'path', 'init');
+				await api.get('apiNameDoesntExist', 'path', { init: 'init' });
 			} catch (e) {
-				expect(e).toBe('API apiName does not exist');
+				expect(e).toBe('API apiNameDoesntExist does not exist');
 			}
 		});
 
 		test('cred not ready', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure(config);
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						rej('err no current credentials');
 					});
-				});
-
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
 				});
 
 			const spyon4 = jest
@@ -479,23 +504,124 @@ describe('Rest API test', () => {
 				});
 
 			expect.assertions(1);
-			await api.get('apiName', 'path', 'init');
+			await api.get('apiName', 'path', { init: 'init' });
 			expect(spyon4).toBeCalled();
 		});
 
-		test('no restclient instance', async () => {
-			const api = new API(config);
+		test('clock skew', async () => {
+			const api = new API({});
+			api.configure({
+				endpoints: [
+					{
+						name: 'url',
+						endpoint: 'endpoint',
+					},
+				],
+			});
+
+			const normalError = new Error('Response Error');
+
+			// Server is always "correct"
+			const serverDate = new Date();
+			// Local machine is ahead by 1 hour
+			const requestDate = new Date();
+			requestDate.setHours(requestDate.getHours() + 1);
+
+			const clockSkewError: any = new Error('BadRequestException');
+			const init = {
+				headers: {
+					'x-amz-date': DateUtils.getHeaderStringFromDate(requestDate),
+				},
+			};
+
+			clockSkewError.response = {
+				headers: {
+					'x-amzn-errortype': 'BadRequestException',
+					date: serverDate.toString(),
+				},
+			};
+
+			// Clock should not be skewed yet
+			expect(DateUtils.getClockOffset()).toBe(0);
+			// Ensure the errors are the correct type for gating
+			expect(DateUtils.isClockSkewError(normalError)).toBe(false);
+			expect(DateUtils.isClockSkewError(clockSkewError)).toBe(true);
+
+			jest
+				.spyOn(RestClient.prototype as any, 'endpoint')
+				.mockImplementation(() => 'endpoint');
+
+			jest.spyOn(Credentials, 'get').mockResolvedValue('creds');
+
+			jest
+				.spyOn(RestClient.prototype as any, '_signed')
+				.mockRejectedValueOnce(normalError);
+
+			await expect(api.post('url', 'path', init)).rejects.toThrow(normalError);
+
+			// Clock should not be skewed from normal errors
+			expect(DateUtils.getClockOffset()).toBe(0);
+
+			jest
+				.spyOn(RestClient.prototype as any, '_signed')
+				.mockRejectedValueOnce(clockSkewError);
+
+			await expect(api.post('url', 'path', init)).resolves.toEqual([
+				{ name: 'Bob' },
+			]);
+
+			// With a clock skew error, the clock will get offset with the difference
+			expect(DateUtils.getClockOffset()).toBe(
+				serverDate.getTime() - requestDate.getTime()
+			);
+		});
+
+		test('cancel request', async () => {
+			const api = new API({});
+			api.configure(config);
+
 			const spyon = jest
-				.spyOn(API.prototype, 'createInstance')
+				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
-					return Promise.reject('err');
+					return new Promise((res, rej) => {
+						res('cred');
+					});
+				});
+			const spyon2 = jest
+				.spyOn(RestClient.prototype, 'get')
+				.mockImplementationOnce(() => {
+					return Promise.reject('error cancelled');
+				});
+			const spyon4 = jest
+				.spyOn(RestClient.prototype, 'isCancel')
+				.mockImplementationOnce(() => {
+					return true;
 				});
 
-			expect.assertions(1);
+			const promiseResponse = api.get('apiName', 'path', { init: 'init' });
+			api.cancel(promiseResponse, 'testmessage');
+
+			expect.assertions(5);
+
+			expect(spyon2).toBeCalledWith(
+				{
+					custom_header: undefined,
+					endpoint: 'endpointpath',
+					region: 'region',
+					service: 'execute-api',
+				},
+				{
+					init: 'init',
+					cancellableToken: { cancel: cancelMock, token: tokenMock },
+				}
+			);
+			expect(cancelTokenSpy).toBeCalledTimes(1);
+			expect(cancelMock).toBeCalledWith('testmessage');
 			try {
-				await api.get('apiName', 'path', 'init');
-			} catch (e) {
-				expect(e).toBe('err');
+				await promiseResponse;
+			} catch (err) {
+				expect(err).toEqual('error cancelled');
+				expect(api.isCancel(err)).toBeTruthy();
 			}
 		});
 	});
@@ -522,16 +648,22 @@ describe('Rest API test', () => {
 				.mockImplementationOnce(() => {
 					return Promise.resolve();
 				});
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
 
 			api.configure(options);
-			await api.post('apiName', 'path', 'init');
+			await api.post('apiName', 'path', { init: 'init' });
 
-			expect(spyon2).toBeCalledWith('endpointpath', 'init');
+			expect(spyon2).toBeCalledWith(
+				{
+					custom_header: undefined,
+					endpoint: 'endpointpath',
+					region: 'us-east-1',
+					service: 'execute-api',
+				},
+				{
+					init: 'init',
+					cancellableToken: { cancel: cancelMock, token: tokenMock },
+				}
+			);
 		});
 
 		test('endpoint length 0', async () => {
@@ -547,18 +679,15 @@ describe('Rest API test', () => {
 				.mockImplementationOnce(() => {
 					return Promise.resolve();
 				});
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return '';
-				});
 
-			const api = new API(config);
+			const api = new API({});
+			api.configure(config);
+
 			expect.assertions(1);
 			try {
-				await api.post('apiName', 'path', 'init');
+				await api.post('apiNameDoesNotExists', 'path', { init: 'init' });
 			} catch (e) {
-				expect(e).toBe('API apiName does not exist');
+				expect(e).toBe('API apiNameDoesNotExists does not exist');
 			}
 		});
 
@@ -571,13 +700,9 @@ describe('Rest API test', () => {
 					});
 				});
 
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
+			const api = new API({});
+			api.configure(config);
 
-			const api = new API(config);
 			const spyon4 = jest
 				.spyOn(RestClient.prototype as any, '_request')
 				.mockImplementationOnce(() => {
@@ -585,30 +710,16 @@ describe('Rest API test', () => {
 				});
 
 			expect.assertions(1);
-			await api.post('apiName', 'path', 'init');
+			await api.post('apiName', 'path', { init: 'init' });
 			expect(spyon4).toBeCalled();
-		});
-
-		test('no restclient instance', async () => {
-			const api = new API(config);
-			const spyon = jest
-				.spyOn(API.prototype, 'createInstance')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
-
-			expect.assertions(1);
-			try {
-				await api.post('apiName', 'path', 'init');
-			} catch (e) {
-				expect(e).toBe('err');
-			}
 		});
 	});
 
 	describe('put test', () => {
 		test('happy case', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure(config);
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -621,19 +732,29 @@ describe('Rest API test', () => {
 				.mockImplementationOnce(() => {
 					return Promise.resolve();
 				});
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
 
-			await api.put('apiName', 'path', 'init');
+			await api.put('apiName', 'path', { init: 'init' });
 
-			expect(spyon2).toBeCalledWith('endpointpath', 'init');
+			expect(spyon2).toBeCalledWith(
+				{
+					custom_header: undefined,
+					endpoint: 'endpointpath',
+					region: 'region',
+					service: 'execute-api',
+				},
+				{
+					init: 'init',
+					cancellableToken: { cancel: cancelMock, token: tokenMock },
+				}
+			);
 		});
 
 		test('endpoint length 0', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure({
+				endpoints: [],
+			});
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -645,35 +766,26 @@ describe('Rest API test', () => {
 				.spyOn(RestClient.prototype, 'put')
 				.mockImplementationOnce(() => {
 					return Promise.resolve();
-				});
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return '';
 				});
 
 			expect.assertions(1);
 			try {
-				await api.put('apiName', 'path', 'init');
+				await api.put('apiName', 'path', { init: 'init' });
 			} catch (e) {
 				expect(e).toBe('API apiName does not exist');
 			}
 		});
 
 		test('cred not ready', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure(config);
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						rej('err');
 					});
-				});
-
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
 				});
 
 			const spyon4 = jest
@@ -683,30 +795,16 @@ describe('Rest API test', () => {
 				});
 
 			expect.assertions(1);
-			await api.put('apiName', 'path', 'init');
+			await api.put('apiName', 'path', { init: 'init' });
 			expect(spyon4).toBeCalled();
-		});
-
-		test('no restclient instance', async () => {
-			const api = new API(config);
-			const spyon = jest
-				.spyOn(API.prototype, 'createInstance')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
-
-			expect.assertions(1);
-			try {
-				await api.put('apiName', 'path', 'init');
-			} catch (e) {
-				expect(e).toBe('err');
-			}
 		});
 	});
 
 	describe('patch test', () => {
 		test('happy case', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure(config);
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -719,19 +817,29 @@ describe('Rest API test', () => {
 				.mockImplementationOnce(() => {
 					return Promise.resolve();
 				});
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
 
-			await api.patch('apiName', 'path', 'init');
+			await api.patch('apiName', 'path', { init: 'init' });
 
-			expect(spyon2).toBeCalledWith('endpointpath', 'init');
+			expect(spyon2).toBeCalledWith(
+				{
+					custom_header: undefined,
+					endpoint: 'endpointpath',
+					region: 'region',
+					service: 'execute-api',
+				},
+				{
+					init: 'init',
+					cancellableToken: { cancel: cancelMock, token: tokenMock },
+				}
+			);
 		});
 
 		test('endpoint length 0', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure({
+				endpoints: [],
+			});
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -743,35 +851,26 @@ describe('Rest API test', () => {
 				.spyOn(RestClient.prototype, 'patch')
 				.mockImplementationOnce(() => {
 					return Promise.resolve();
-				});
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return '';
 				});
 
 			expect.assertions(1);
 			try {
-				await api.patch('apiName', 'path', 'init');
+				await api.patch('apiName', 'path', { init: 'init' });
 			} catch (e) {
 				expect(e).toBe('API apiName does not exist');
 			}
 		});
 
 		test('cred not ready', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure(config);
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						rej('err');
 					});
-				});
-
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
 				});
 
 			const spyon4 = jest
@@ -781,30 +880,16 @@ describe('Rest API test', () => {
 				});
 
 			expect.assertions(1);
-			await api.patch('apiName', 'path', 'init');
+			await api.patch('apiName', 'path', { init: 'init' });
 			expect(spyon4).toBeCalled();
-		});
-
-		test('no restclient instance', async () => {
-			const api = new API(config);
-			const spyon = jest
-				.spyOn(API.prototype, 'createInstance')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
-
-			expect.assertions(1);
-			try {
-				await api.patch('apiName', 'path', 'init');
-			} catch (e) {
-				expect(e).toBe('err');
-			}
 		});
 	});
 
 	describe('del test', () => {
 		test('happy case', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure(config);
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -817,19 +902,27 @@ describe('Rest API test', () => {
 				.mockImplementationOnce(() => {
 					return Promise.resolve();
 				});
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
 
-			await api.del('apiName', 'path', 'init');
+			await api.del('apiName', 'path', { init: 'init' });
 
-			expect(spyon2).toBeCalledWith('endpointpath', 'init');
+			expect(spyon2).toBeCalledWith(
+				{
+					custom_header: undefined,
+					endpoint: 'endpointpath',
+					region: 'region',
+					service: 'execute-api',
+				},
+				{
+					init: 'init',
+					cancellableToken: { cancel: cancelMock, token: tokenMock },
+				}
+			);
 		});
 
 		test('endpoint length 0', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure({});
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -841,35 +934,26 @@ describe('Rest API test', () => {
 				.spyOn(RestClient.prototype, 'del')
 				.mockImplementationOnce(() => {
 					return Promise.resolve();
-				});
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return '';
 				});
 
 			expect.assertions(1);
 			try {
-				await api.del('apiName', 'path', 'init');
+				await api.del('apiName', 'path', { init: 'init' });
 			} catch (e) {
 				expect(e).toBe('API apiName does not exist');
 			}
 		});
 
 		test('cred not ready', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure(config);
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						rej('err');
 					});
-				});
-
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
 				});
 
 			const spyon4 = jest
@@ -879,30 +963,16 @@ describe('Rest API test', () => {
 				});
 
 			expect.assertions(1);
-			await api.del('apiName', 'path', 'init');
+			await api.del('apiName', 'path', { init: 'init' });
 			expect(spyon4).toBeCalled();
-		});
-
-		test('no restclient instance', async () => {
-			const api = new API(config);
-			const spyon = jest
-				.spyOn(API.prototype, 'createInstance')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
-
-			expect.assertions(1);
-			try {
-				await api.del('apiName', 'path', 'init');
-			} catch (e) {
-				expect(e).toBe('err');
-			}
 		});
 	});
 
 	describe('head test', () => {
 		test('happy case', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure(config);
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -915,19 +985,27 @@ describe('Rest API test', () => {
 				.mockImplementationOnce(() => {
 					return Promise.resolve();
 				});
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
 
-			await api.head('apiName', 'path', 'init');
+			await api.head('apiName', 'path', { init: 'init' });
 
-			expect(spyon2).toBeCalledWith('endpointpath', 'init');
+			expect(spyon2).toBeCalledWith(
+				{
+					custom_header: undefined,
+					endpoint: 'endpointpath',
+					region: 'region',
+					service: 'execute-api',
+				},
+				{
+					init: 'init',
+					cancellableToken: { cancel: cancelMock, token: tokenMock },
+				}
+			);
 		});
 
 		test('endpoint length 0', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure({});
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -939,35 +1017,26 @@ describe('Rest API test', () => {
 				.spyOn(RestClient.prototype, 'head')
 				.mockImplementationOnce(() => {
 					return Promise.resolve();
-				});
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return '';
 				});
 
 			expect.assertions(1);
 			try {
-				await api.head('apiName', 'path', 'init');
+				await api.head('apiName', 'path', { init: 'init' });
 			} catch (e) {
 				expect(e).toBe('API apiName does not exist');
 			}
 		});
 
 		test('cred not ready', async () => {
-			const api = new API(config);
+			const api = new API({});
+			api.configure(config);
+
 			const spyon = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
 					return new Promise((res, rej) => {
 						rej('err');
 					});
-				});
-
-			const spyon3 = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
 				});
 
 			const spyon4 = jest
@@ -977,55 +1046,19 @@ describe('Rest API test', () => {
 				});
 
 			expect.assertions(1);
-			await api.head('apiName', 'path', 'init');
+			await api.head('apiName', 'path', { init: 'init' });
 			expect(spyon4).toBeCalled();
-		});
-
-		test('no restclient instance', async () => {
-			const api = new API(config);
-			const spyon = jest
-				.spyOn(API.prototype, 'createInstance')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
-
-			expect.assertions(1);
-			try {
-				await api.head('apiName', 'path', 'init');
-			} catch (e) {
-				expect(e).toBe('err');
-			}
 		});
 	});
 
 	describe('endpoint test', () => {
 		test('happy case', async () => {
-			const api = new API(config);
-			const spyon = jest
-				.spyOn(RestClient.prototype, 'endpoint')
-				.mockImplementationOnce(() => {
-					return 'endpoint';
-				});
+			const api = new API({});
+			api.configure(config);
 
-			await api.endpoint('apiName');
+			const endpoint = await api.endpoint('apiName');
 
-			expect(spyon).toBeCalledWith('apiName');
-		});
-
-		test('no restclient instance', async () => {
-			const api = new API(config);
-			const spyon = jest
-				.spyOn(API.prototype, 'createInstance')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
-
-			expect.assertions(1);
-			try {
-				await api.endpoint('apiName');
-			} catch (e) {
-				expect(e).toBe('err');
-			}
+			expect(endpoint).toBe('endpoint');
 		});
 	});
 });

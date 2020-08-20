@@ -90,6 +90,36 @@ describe('kinesis provider test', () => {
 			});
 
 			jest.advanceTimersByTime(6000);
+	});
+
+	describe('passing parameters to KinesisClient', () => {
+		test('happy case', async () => {
+			const config = {
+				region: 'region1',
+				endpoint: 'endpoint1',
+			};
+
+			const analytics = new KinesisProvider({ ...config });
+
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			await analytics.record({
+				event: {
+					data: {
+						data: 'data',
+					},
+					streamName: 'stream',
+				},
+				config: {},
+			});
+
+			jest.advanceTimersByTime(6000);
+
+			expect(KinesisClient).toHaveBeenCalledWith(
+				expect.objectContaining(config)
+			);
 		});
 	});
 });

@@ -12,6 +12,7 @@
  */
 import { RestClient } from './RestClient';
 import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { ApiInfo } from './types';
 
 const logger = new Logger('RestAPI');
 
@@ -23,7 +24,7 @@ export class RestAPIClass {
 	 * @private
 	 */
 	private _options;
-	private _api = null;
+	private _api: RestClient = null;
 
 	/**
 	 * Initialize Rest API with AWS configuration
@@ -62,22 +63,24 @@ export class RestAPIClass {
 			});
 		}
 
-		if (!Array.isArray(opt.endpoints)) {
+		if (Array.isArray(opt.endpoints)) {
+			// Check if endpoints has custom_headers and validate if is a function
+			opt.endpoints.forEach(endpoint => {
+				if (
+					typeof endpoint.custom_header !== 'undefined' &&
+					typeof endpoint.custom_header !== 'function'
+				) {
+					logger.warn(
+						'Rest API ' + endpoint.name + ', custom_header should be a function'
+					);
+					endpoint.custom_header = undefined;
+				}
+			});
+		} else if (this._options && Array.isArray(this._options.endpoints)) {
+			opt.endpoints = this._options.endpoints;
+		} else {
 			opt.endpoints = [];
 		}
-
-		// Check if endpoints has custom_headers and validate if is a function
-		opt.endpoints.forEach(endpoint => {
-			if (
-				typeof endpoint.custom_header !== 'undefined' &&
-				typeof endpoint.custom_header !== 'function'
-			) {
-				logger.warn(
-					'Rest API ' + endpoint.name + ', custom_header should be a function'
-				);
-				endpoint.custom_header = undefined;
-			}
-		});
 
 		this._options = Object.assign({}, this._options, opt);
 
@@ -92,12 +95,8 @@ export class RestAPIClass {
 	 */
 	createInstance() {
 		logger.debug('create Rest API instance');
-		if (this._options) {
-			this._api = new RestClient(this._options);
-			return true;
-		} else {
-			return Promise.reject('API not configured');
-		}
+		this._api = new RestClient(this._options);
+		return true;
 	}
 
 	/**
@@ -107,20 +106,23 @@ export class RestAPIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async get(apiName, path, init) {
-		if (!this._api) {
-			try {
-				await this.createInstance();
-			} catch (error) {
-				return Promise.reject(error);
-			}
-		}
+	get(apiName, path, init): Promise<any> {
+		try {
+			const apiInfo = this.getEndpointInfo(apiName, path);
 
-		const endpoint = this._api.endpoint(apiName);
-		if (endpoint.length === 0) {
-			return Promise.reject('API ' + apiName + ' does not exist');
+			const cancellableToken = this._api.getCancellableToken();
+
+			const initParams = Object.assign({}, init);
+			initParams.cancellableToken = cancellableToken;
+
+			const responsePromise = this._api.get(apiInfo, initParams);
+
+			this._api.updateRequestToBeCancellable(responsePromise, cancellableToken);
+
+			return responsePromise;
+		} catch (err) {
+			return Promise.reject(err.message);
 		}
-		return this._api.get(endpoint + path, init);
 	}
 
 	/**
@@ -130,20 +132,23 @@ export class RestAPIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async post(apiName, path, init) {
-		if (!this._api) {
-			try {
-				await this.createInstance();
-			} catch (error) {
-				return Promise.reject(error);
-			}
-		}
+	post(apiName, path, init): Promise<any> {
+		try {
+			const apiInfo = this.getEndpointInfo(apiName, path);
 
-		const endpoint = this._api.endpoint(apiName);
-		if (endpoint.length === 0) {
-			return Promise.reject('API ' + apiName + ' does not exist');
+			const cancellableToken = this._api.getCancellableToken();
+
+			const initParams = Object.assign({}, init);
+			initParams.cancellableToken = cancellableToken;
+
+			const responsePromise = this._api.post(apiInfo, initParams);
+
+			this._api.updateRequestToBeCancellable(responsePromise, cancellableToken);
+
+			return responsePromise;
+		} catch (err) {
+			return Promise.reject(err.message);
 		}
-		return this._api.post(endpoint + path, init);
 	}
 
 	/**
@@ -153,20 +158,23 @@ export class RestAPIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async put(apiName, path, init) {
-		if (!this._api) {
-			try {
-				await this.createInstance();
-			} catch (error) {
-				return Promise.reject(error);
-			}
-		}
+	put(apiName, path, init): Promise<any> {
+		try {
+			const apiInfo = this.getEndpointInfo(apiName, path);
 
-		const endpoint = this._api.endpoint(apiName);
-		if (endpoint.length === 0) {
-			return Promise.reject('API ' + apiName + ' does not exist');
+			const cancellableToken = this._api.getCancellableToken();
+
+			const initParams = Object.assign({}, init);
+			initParams.cancellableToken = cancellableToken;
+
+			const responsePromise = this._api.put(apiInfo, initParams);
+
+			this._api.updateRequestToBeCancellable(responsePromise, cancellableToken);
+
+			return responsePromise;
+		} catch (err) {
+			return Promise.reject(err.message);
 		}
-		return this._api.put(endpoint + path, init);
 	}
 
 	/**
@@ -176,20 +184,23 @@ export class RestAPIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async patch(apiName, path, init) {
-		if (!this._api) {
-			try {
-				await this.createInstance();
-			} catch (error) {
-				return Promise.reject(error);
-			}
-		}
+	patch(apiName, path, init): Promise<any> {
+		try {
+			const apiInfo = this.getEndpointInfo(apiName, path);
 
-		const endpoint = this._api.endpoint(apiName);
-		if (endpoint.length === 0) {
-			return Promise.reject('API ' + apiName + ' does not exist');
+			const cancellableToken = this._api.getCancellableToken();
+
+			const initParams = Object.assign({}, init);
+			initParams.cancellableToken = cancellableToken;
+
+			const responsePromise = this._api.patch(apiInfo, initParams);
+
+			this._api.updateRequestToBeCancellable(responsePromise, cancellableToken);
+
+			return responsePromise;
+		} catch (err) {
+			return Promise.reject(err.message);
 		}
-		return this._api.patch(endpoint + path, init);
 	}
 
 	/**
@@ -199,20 +210,23 @@ export class RestAPIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async del(apiName, path, init) {
-		if (!this._api) {
-			try {
-				await this.createInstance();
-			} catch (error) {
-				return Promise.reject(error);
-			}
-		}
+	del(apiName, path, init): Promise<any> {
+		try {
+			const apiInfo = this.getEndpointInfo(apiName, path);
 
-		const endpoint = this._api.endpoint(apiName);
-		if (endpoint.length === 0) {
-			return Promise.reject('API ' + apiName + ' does not exist');
+			const cancellableToken = this._api.getCancellableToken();
+
+			const initParams = Object.assign({}, init);
+			initParams.cancellableToken = cancellableToken;
+
+			const responsePromise = this._api.del(apiInfo, initParams);
+
+			this._api.updateRequestToBeCancellable(responsePromise, cancellableToken);
+
+			return responsePromise;
+		} catch (err) {
+			return Promise.reject(err.message);
 		}
-		return this._api.del(endpoint + path, init);
 	}
 
 	/**
@@ -222,20 +236,41 @@ export class RestAPIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	async head(apiName, path, init) {
-		if (!this._api) {
-			try {
-				await this.createInstance();
-			} catch (error) {
-				return Promise.reject(error);
-			}
-		}
+	head(apiName, path, init): Promise<any> {
+		try {
+			const apiInfo = this.getEndpointInfo(apiName, path);
 
-		const endpoint = this._api.endpoint(apiName);
-		if (endpoint.length === 0) {
-			return Promise.reject('API ' + apiName + ' does not exist');
+			const cancellableToken = this._api.getCancellableToken();
+
+			const initParams = Object.assign({}, init);
+			initParams.cancellableToken = cancellableToken;
+
+			const responsePromise = this._api.head(apiInfo, initParams);
+
+			this._api.updateRequestToBeCancellable(responsePromise, cancellableToken);
+
+			return responsePromise;
+		} catch (err) {
+			return Promise.reject(err.message);
 		}
-		return this._api.head(endpoint + path, init);
+	}
+
+	/**
+	 * Checks to see if an error thrown is from an api request cancellation
+	 * @param {any} error - Any error
+	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
+	 */
+	isCancel(error) {
+		return this._api.isCancel(error);
+	}
+
+	/**
+	 * Cancels an inflight request
+	 * @param {any} request - request to cancel
+	 * @return {boolean} - A boolean indicating if the request was cancelled
+	 */
+	cancel(request: Promise<any>, message?: string) {
+		return this._api.cancel(request, message);
 	}
 
 	/**
@@ -244,14 +279,51 @@ export class RestAPIClass {
 	 * @return {string} - The endpoint of the api
 	 */
 	async endpoint(apiName) {
-		if (!this._api) {
-			try {
-				await this.createInstance();
-			} catch (error) {
-				return Promise.reject(error);
-			}
-		}
 		return this._api.endpoint(apiName);
+	}
+
+	/**
+	 * Getting endpoint info for API
+	 * @param {string} apiName - The name of the api
+	 * @param {string} path - The path of the api that is going to accessed
+	 * @return {ApiInfo} - The endpoint information for that api-name
+	 */
+	private getEndpointInfo(apiName: string, path: string): ApiInfo {
+		const cloud_logic_array = this._options.endpoints;
+
+		if (!Array.isArray(cloud_logic_array)) {
+			throw new Error(`API category not configured`);
+		}
+
+		const apiConfig = cloud_logic_array.find(api => api.name === apiName);
+
+		if (!apiConfig) {
+			throw new Error(`API ${apiName} does not exist`);
+		}
+
+		const response: ApiInfo = {
+			endpoint: apiConfig.endpoint + path,
+		};
+
+		if (typeof apiConfig.region === 'string') {
+			response.region = apiConfig.region;
+		} else if (typeof this._options.region === 'string') {
+			response.region = this._options.region;
+		}
+
+		if (typeof apiConfig.service === 'string') {
+			response.service = apiConfig.service || 'execute-api';
+		} else {
+			response.service = 'execute-api';
+		}
+
+		if (typeof apiConfig.custom_header === 'function') {
+			response.custom_header = apiConfig.custom_header;
+		} else {
+			response.custom_header = undefined;
+		}
+
+		return response;
 	}
 }
 

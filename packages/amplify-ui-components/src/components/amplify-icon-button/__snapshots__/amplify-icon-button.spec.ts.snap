@@ -126,6 +126,20 @@ exports[`amplify-icon-button spec: Render logic -> renders minimize icon button 
 </amplify-icon-button>
 `;
 
+exports[`amplify-icon-button spec: Render logic -> renders photoPlaceholder icon button correctly 1`] = `
+<amplify-icon-button name="photoPlaceholder">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="photoPlaceholder"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
 exports[`amplify-icon-button spec: Render logic -> renders sound icon button correctly 1`] = `
 <amplify-icon-button name="sound">
   <mock:shadow-root>

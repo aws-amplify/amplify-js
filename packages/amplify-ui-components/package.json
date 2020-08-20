@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/ui-components",
-  "version": "0.3.2",
-	"description": "Core Amplify UI Component Library",
+  "version": "0.6.2",
+  "description": "Core Amplify UI Component Library",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
   "es2015": "dist/esm/index.mjs",
@@ -34,13 +34,14 @@
     "clean": "rimraf dist .stencil"
   },
   "dependencies": {
-    "qrcode": "^1.4.4"
+    "qrcode": "^1.4.4",
+    "uuid": "^8.2.0"
   },
   "devDependencies": {
     "@stencil/angular-output-target": "^0.0.2",
-    "@stencil/core": "^1.10.2",
+    "@stencil/core": "1.15.0",
     "@stencil/eslint-plugin": "0.2.1",
-    "@stencil/react-output-target": "^0.0.2",
+    "@stencil/react-output-target": "^0.0.6",
     "@stencil/sass": "^1.1.1",
     "@storybook/addon-a11y": "^5.2.5",
     "@storybook/addon-actions": "^5.2.5",
@@ -70,9 +71,9 @@
     "rollup-plugin-node-polyfills": "^0.2.1"
   },
   "peerDependencies": {
-    "@aws-amplify/auth": "^2.1.5",
-    "@aws-amplify/core": "^2.2.4",
-    "@aws-amplify/xr": "^1.1.5"
+    "@aws-amplify/auth": "^3.0.0",
+    "@aws-amplify/core": "^3.0.0",
+    "@aws-amplify/xr": "^2.0.0"
   },
   "husky": {
     "hooks": {

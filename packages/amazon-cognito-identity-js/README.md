@@ -88,7 +88,7 @@ migration.
   Package Manager, which is installed with Node.js):
 
   ```
-  > npm install --save-dev webpack json-loader
+  > npm install --save-dev webpack-cli
   > npm install --save amazon-cognito-identity-js
   ```
 
@@ -109,14 +109,6 @@ migration.
   	output: {
   		path: __dirname + '/dist',
   		filename: 'my-app.js',
-  	},
-  	module: {
-  		rules: [
-  			{
-  				test: /\.json$/,
-  				loader: 'json-loader',
-  			},
-  		],
   	},
   };
   ```
@@ -766,9 +758,6 @@ cognitoUser.initiateAuth(authenticationDetails, {
 
 **Use case 26.** Using cookies to store cognito tokens
 
-```javascript
-```
-
 To use the CookieStorage you have to pass it in the constructor map of CognitoUserPool and CognitoUser (when constructed directly):
 
 ```js
@@ -793,6 +782,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
 - data.path Cookies path (default: '/')
 - data.expires Cookie expiration (in days, default: 365)
 - data.secure Cookie secure flag (default: true)
+- data.sameSite Cookie request behaviour (default: null)
 
 **Use case 27.** Selecting the MFA method and authenticating using TOTP.
 
