@@ -1938,17 +1938,17 @@ export class AuthClass {
 					currentUser.setSignInUserSession(session);
 
 					if (
-            window && typeof window.history !== 'undefined' &&
-  					(this._config.oauth as AwsCognitoOAuthOpts).disableRedirectAfterSignIn !== true
-          ) {
-   					const replaceStateUrl = (this._config.oauth as AwsCognitoOAuthOpts).redirectAfterSignIn ?
-	  					(this._config.oauth as AwsCognitoOAuthOpts).redirectAfterSignIn :
-		  				(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn;
-			  		window.history.replaceState(
-				  		{},
-					  	null,
-						  replaceStateUrl
-						);
+            					window && typeof window.history !== 'undefined' &&
+  						(this._config.oauth as AwsCognitoOAuthOpts).disableRedirectAfterSignIn !== true
+          				) {
+   						const replaceStateUrl = (this._config.oauth as AwsCognitoOAuthOpts).redirectAfterSignIn ?
+	  						(this._config.oauth as AwsCognitoOAuthOpts).redirectAfterSignIn :
+		  					(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn;
+			  			window.history.replaceState(
+				  			{},
+					  		null,
+							replaceStateUrl
+							);
 					}
 
 					dispatchAuthEvent(
