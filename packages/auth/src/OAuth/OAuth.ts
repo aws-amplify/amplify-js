@@ -183,8 +183,9 @@ export default class OAuth {
 	}
 
 	private async _handleImplicitFlow(currentUrl: string) {
-		const { id_token, access_token } = parse(currentUrl)
-			.hash.substr(1) // Remove # from returned code
+		// hash is `null` if `#` doesn't exist on URL
+		const { id_token, access_token } = (parse(currentUrl).hash || '#')
+			.substr(1) // Remove # from returned code
 			.split('&')
 			.map(pairings => pairings.split('='))
 			.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), {
