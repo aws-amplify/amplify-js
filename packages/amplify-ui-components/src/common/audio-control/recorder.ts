@@ -88,7 +88,7 @@ export class AudioRecorder {
   }
 
   public stopRecording() {
-    if (!this.audioSupported || !this.audioSupported) return;
+    if (!this.audioSupported) return;
     this.recording = false;
   }
 
