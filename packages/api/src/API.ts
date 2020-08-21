@@ -34,6 +34,8 @@ export class APIClass {
 	private _restApi: RestAPIClass;
 	private _graphqlApi;
 
+	amplify = Amplify;
+
 	/**
 	 * Initialize API with AWS configuration
 	 * @param {Object} options - Configuration object for API
@@ -56,6 +58,11 @@ export class APIClass {
 	 */
 	configure(options) {
 		this._options = Object.assign({}, this._options, options);
+
+		// Share Amplify instance with client for SSR
+		this._restApi.amplify = this.amplify;
+		this._graphqlApi.amplify = this.amplify;
+
 		const restAPIConfig = this._restApi.configure(this._options);
 		const graphQLAPIConfig = this._graphqlApi.configure(this._options);
 
