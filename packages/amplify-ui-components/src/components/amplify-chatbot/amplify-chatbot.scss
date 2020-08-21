@@ -9,7 +9,7 @@
   --width: 28.75rem;
   --height: 37.5rem;
 
-  width: 95%;
+  width: 100%;
   height: var(--height);
   @include md {
     width: var(--width);
