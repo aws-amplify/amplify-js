@@ -27,12 +27,9 @@ export class AudioRecorder {
 
   constructor(options: SilenceDetectionConfig) {
     this.options = options;
-    this.init().catch(err => {
-      throw new Error(err);
-    });
   }
 
-  private async init() {
+  async init() {
     if (browserOrNode().isBrowser) {
       window.AudioContext = window.AudioContext || (window as any).webkitAudioContext;
       this.audioContext = new AudioContext();
@@ -78,10 +75,10 @@ export class AudioRecorder {
   }
 
   public startRecording(onSilence?: Function, visualizer?: Visualizer) {
+    if (this.recording || !this.audioSupported) return;
     const silenceHandler = onSilence || function() {};
     this.onSilence = silenceHandler;
     this.visualizer = visualizer;
-    if (this.recording || !this.audioSupported) return;
 
     const context = this.audioContext;
     context.resume().then(() => {
@@ -91,7 +88,7 @@ export class AudioRecorder {
   }
 
   public stopRecording() {
-    if (!this.audioSupported) return;
+    if (!this.audioSupported || !this.audioSupported) return;
     this.recording = false;
   }
 
@@ -102,7 +99,7 @@ export class AudioRecorder {
   }
 
   public play(buffer: Uint8Array) {
-    if (!buffer) return;
+    if (!buffer || !this.audioSupported) return;
     const myBlob = new Blob([buffer]);
 
     return new Promise((res, rej) => {
@@ -129,6 +126,7 @@ export class AudioRecorder {
   }
 
   private analyse() {
+    if (!this.audioSupported) return;
     const analyser = this.analyserNode;
     analyser.fftSize = 2048;
 

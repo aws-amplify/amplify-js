@@ -99,6 +99,9 @@ export class AmplifyChatbot {
         time: this.silenceTime,
         amplitude: this.silenceThreshold,
       });
+      this.audioRecorder.init().catch(err => {
+        this.setError(err);
+      });
     }
 
     // Callback function to be called after chat is completed
