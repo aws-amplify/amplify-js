@@ -130,7 +130,7 @@ export class AmplifyChatbot {
   private handleSilence() {
     this.chatState = ChatState.Sending;
     this.audioRecorder.stopRecording();
-    this.audioRecorder.exportWAV((blob: Blob) => {
+    this.audioRecorder.exportWAV().then(blob => {
       this.sendVoiceMessage(blob);
     });
   }
@@ -181,7 +181,7 @@ export class AmplifyChatbot {
     this.chatState = ChatState.Speaking;
     if (response.inputTranscript) this.appendToChat(response.inputTranscript, 'user');
     this.appendToChat(response.message, 'bot');
-    this.audioRecorder.play(response.audioStream, () => {
+    this.audioRecorder.play(response.audioStream).then(() => {
       this.chatState = ChatState.Initial;
     });
   }

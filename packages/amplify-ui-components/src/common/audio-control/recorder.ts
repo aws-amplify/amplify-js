@@ -29,10 +29,10 @@ export class AudioRecorder {
     this.init();
   }
 
-  private init() {
+  private async init() {
     window.AudioContext = window.AudioContext || (window as any).webkitAudioContext;
     this.audioContext = new AudioContext();
-    navigator.mediaDevices
+    await navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then(stream => {
         this.audioSupported = true;
@@ -92,25 +92,31 @@ export class AudioRecorder {
     this.streamBuffer = [];
   }
 
-  public play(buffer: Uint8Array, callback: Function) {
+  public play(buffer: Uint8Array) {
     if (!buffer) return;
     const myBlob = new Blob([buffer]);
 
-    const fileReader = new FileReader();
-    fileReader.onload = () => {
-      const playbackSource = this.audioContext.createBufferSource();
-      this.audioContext.decodeAudioData(fileReader.result as ArrayBuffer, buf => {
-        playbackSource.buffer = buf;
-        playbackSource.connect(this.audioContext.destination);
-        playbackSource.onended = function(_event) {
-          if (typeof callback === 'function') {
-            callback();
-          }
-        };
-        playbackSource.start(0);
-      });
-    };
-    fileReader.readAsArrayBuffer(myBlob);
+    return new Promise((res, rej) => {
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        const playbackSource = this.audioContext.createBufferSource();
+        this.audioContext
+          .decodeAudioData(fileReader.result as ArrayBuffer)
+          .then(buf => {
+            playbackSource.buffer = buf;
+            playbackSource.connect(this.audioContext.destination);
+            playbackSource.onended = () => {
+              return res();
+            };
+            playbackSource.start(0);
+          })
+          .catch(err => {
+            return rej(err);
+          });
+      };
+      fileReader.onerror = () => rej();
+      fileReader.readAsArrayBuffer(myBlob);
+    });
   }
 
   private analyse() {
@@ -142,11 +148,11 @@ export class AudioRecorder {
     }
   }
 
-  public exportWAV(callback: Function, exportSampleRate: number = 16000) {
+  public async exportWAV(exportSampleRate: number = 16000) {
     if (!this.audioSupported) return;
     const recordSampleRate = this.audioContext.sampleRate;
     const blob = exportBuffer(this.streamBuffer, this.streamBufferLength, recordSampleRate, exportSampleRate);
-    callback(blob);
     this.clear();
+    return blob;
   }
 }
