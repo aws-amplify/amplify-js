@@ -1,5 +1,12 @@
 import { exportBuffer } from './helper';
 import { browserOrNode } from '@aws-amplify/core';
+import {
+  DEFAULT_EXPORT_SAMPLE_RATE,
+  FFT_MAX_DECIBELS,
+  FFT_MIN_DECIBELS,
+  FFT_SIZE,
+  FFT_SMOOTHING_TIME_CONSTANT,
+} from './settings';
 
 interface SilenceDetectionConfig {
   time: number;
@@ -30,6 +37,10 @@ export class AudioRecorder {
     this.options = options;
   }
 
+  /**
+   * This must be called first to enable audio context and request microphone access.
+   * Once access granted, it connects all the necessary audio nodes to the context so that it can begin recording or playing.
+   */
   async init() {
     if (browserOrNode().isBrowser) {
       window.AudioContext = window.AudioContext || (window as any).webkitAudioContext;
@@ -50,6 +61,9 @@ export class AudioRecorder {
     }
   }
 
+  /**
+   * Setup audio nodes after successful `init`.
+   */
   private async setupAudioNodes(stream: MediaStream) {
     await this.audioContext.resume();
     const sourceNode = this.audioContext.createMediaStreamSource(stream);
@@ -64,9 +78,9 @@ export class AudioRecorder {
     };
 
     const analyserNode = this.audioContext.createAnalyser();
-    analyserNode.minDecibels = -90;
-    analyserNode.maxDecibels = -10;
-    analyserNode.smoothingTimeConstant = 0.85;
+    analyserNode.minDecibels = FFT_MIN_DECIBELS;
+    analyserNode.maxDecibels = FFT_MAX_DECIBELS;
+    analyserNode.smoothingTimeConstant = FFT_SMOOTHING_TIME_CONSTANT;
 
     sourceNode.connect(analyserNode);
     analyserNode.connect(processorNode);
@@ -75,6 +89,12 @@ export class AudioRecorder {
     this.analyserNode = analyserNode;
   }
 
+  /**
+   * Start recording audio and listen for silence.
+   *
+   * @param onSilence {SilenceHandler} - called whenever silence is detected
+   * @param visualizer {Visualizer} - called with audio data on each audio process to be used for visualization.
+   */
   public startRecording(onSilence?: SilenceHandler, visualizer?: Visualizer) {
     if (this.recording || !this.audioSupported) return;
     this.onSilence = onSilence || function() {};
@@ -87,17 +107,28 @@ export class AudioRecorder {
     });
   }
 
+  /**
+   * Pause recording
+   */
   public stopRecording() {
     if (!this.audioSupported) return;
     this.recording = false;
   }
 
+  /**
+   * Pause recording and clear audio buffer
+   */
   public clear() {
     this.stopRecording();
     this.streamBufferLength = 0;
     this.streamBuffer = [];
   }
 
+  /**
+   * Plays given audioStream with audioContext
+   *
+   * @param buffer {Uint8Array} - audioStream to be played
+   */
   public play(buffer: Uint8Array) {
     if (!buffer || !this.audioSupported) return;
     const myBlob = new Blob([buffer]);
@@ -125,10 +156,13 @@ export class AudioRecorder {
     });
   }
 
+  /**
+   * Called after each audioProcess. Check for silence and give fft time domain data to visualizer.
+   */
   private analyse() {
     if (!this.audioSupported) return;
     const analyser = this.analyserNode;
-    analyser.fftSize = 2048;
+    analyser.fftSize = FFT_SIZE;
 
     const bufferLength = analyser.fftSize;
     const dataArray = new Uint8Array(bufferLength);
@@ -152,7 +186,12 @@ export class AudioRecorder {
     }
   }
 
-  public async exportWAV(exportSampleRate: number = 16000) {
+  /**
+   * Encodes recorded buffer to a wav file and exports it to a blob.
+   *
+   * @param exportSampleRate {number} - desired sample rate of the exported buffer
+   */
+  public async exportWAV(exportSampleRate: number = DEFAULT_EXPORT_SAMPLE_RATE) {
     if (!this.audioSupported) return;
     const recordSampleRate = this.audioContext.sampleRate;
     const blob = exportBuffer(this.streamBuffer, this.streamBufferLength, recordSampleRate, exportSampleRate);
