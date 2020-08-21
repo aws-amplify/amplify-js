@@ -7,6 +7,7 @@ import { visualize } from '../../common/audio-control/visualizer';
 import { ChatResult } from '../../common/types/interactions-types';
 import { NO_INTERACTIONS_MODULE_FOUND } from '../../common/constants';
 import { Translations } from '../../common/Translations';
+import { InteractionsResponse } from '@aws-amplify/interactions/lib-esm/types';
 
 type Agent = 'user' | 'bot';
 interface Message {
@@ -170,7 +171,12 @@ export class AmplifyChatbot {
     this.appendToChat(text, 'user');
     this.chatState = ChatState.Sending;
 
-    const response = await Interactions.send(this.botName, text);
+    let response: InteractionsResponse;
+    try {
+      response = await Interactions.send(this.botName, text);
+    } catch (err) {
+      this.setError(err);
+    }
     if (response.message) {
       this.appendToChat(response.message, 'bot');
     }
@@ -184,13 +190,19 @@ export class AmplifyChatbot {
         messageType: 'voice',
       },
     };
-    const response = await Interactions.send(this.botName, interactionsMessage);
+
+    let response: InteractionsResponse;
+    try {
+      response = await Interactions.send(this.botName, interactionsMessage);
+    } catch (err) {
+      this.setError(err);
+    }
     this.chatState = ChatState.Speaking;
+
     if (response.inputTranscript) this.appendToChat(response.inputTranscript, 'user');
     this.appendToChat(response.message, 'bot');
-    this.audioRecorder.play(response.audioStream).then(() => {
-      this.chatState = ChatState.Initial;
-    });
+    await this.audioRecorder.play(response.audioStream).catch(err => this.setError(err));
+    this.chatState = ChatState.Initial;
   }
 
   private appendToChat(content: string, from: Agent) {
