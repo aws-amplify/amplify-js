@@ -1,17 +1,20 @@
-import {
-	AmplifyClass,
-	CredentialsClass,
-	UniversalStorage,
-} from '@aws-amplify/core';
+import { AmplifyClass, JS, UniversalStorage } from '@aws-amplify/core';
 import { NextPageContext } from 'next';
 
 // ! We have to use this exact reference, since it gets mutated with Amplify.Auth
 import { Amplify } from './index';
 
+const { isBrowser } = JS.browserOrNode();
+
 export function withSSRContext(context?: Pick<NextPageContext, 'req'>) {
 	const previousConfig = Amplify.configure();
 	const amplify = new AmplifyClass();
 	const storage = new UniversalStorage(context);
+
+	// Replace Auth singleton's existing Storage with UniversalStorage, since UI components reference category singletons
+	if (isBrowser) {
+		Amplify.configure({ storage });
+	}
 
 	const previousModules = Object.keys(Amplify)
 		.map(
@@ -29,6 +32,8 @@ export function withSSRContext(context?: Pick<NextPageContext, 'req'>) {
 				case 'API':
 				case 'Auth':
 				case 'DataStore':
+				case 'GraphQLAPI':
+				case 'RestAPI':
 					return new module.constructor();
 
 				// Modules that a static reference is safe to use, without need for new Credentials.
@@ -49,6 +54,7 @@ export function withSSRContext(context?: Pick<NextPageContext, 'req'>) {
 			amplify.register(instance);
 		});
 
+	// Configure new Amplify instances with previous configuration
 	amplify.configure({ ...previousConfig, storage });
 
 	return amplify;
