@@ -37,7 +37,6 @@ import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Hub,
-	Credentials,
 	StorageHelper,
 	ICredentials,
 	Parser,
