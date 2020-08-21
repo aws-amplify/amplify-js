@@ -7,7 +7,7 @@ import { visualize } from '../../common/audio-control/visualizer';
 import { ChatResult } from '../../common/types/interactions-types';
 import { NO_INTERACTIONS_MODULE_FOUND } from '../../common/constants';
 import { Translations } from '../../common/Translations';
-import { InteractionsResponse } from '@aws-amplify/interactions/lib-esm/types';
+import { InteractionsResponse } from '@aws-amplify/interactions';
 
 type Agent = 'user' | 'bot';
 interface Message {
