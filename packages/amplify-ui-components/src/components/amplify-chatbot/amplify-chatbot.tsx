@@ -14,7 +14,13 @@ interface Message {
   from: Agent;
 }
 
-type AppState = 'initial' | 'listening' | 'sending' | 'speaking' | 'error';
+enum ChatState {
+  Initial,
+  Listening,
+  Sending,
+  Speaking,
+  Error,
+}
 
 @Component({
   tag: 'amplify-chatbot',
@@ -42,7 +48,7 @@ export class AmplifyChatbot {
   /** Text input box value  */
   @State() text: string = '';
   /** Current app state */
-  @State() state: AppState = 'initial';
+  @State() chatState: ChatState = ChatState.Initial;
   /** Toast error message */
   @State() errorMessage: string;
 
@@ -70,7 +76,7 @@ export class AmplifyChatbot {
   }
 
   componentDidRender() {
-    // scroll to the bottom of messages if necessary
+    // scroll to the bottom if necessary
     const body = this.element.shadowRoot.querySelector('.body');
     body.scrollTop = body.scrollHeight;
   }
@@ -113,8 +119,8 @@ export class AmplifyChatbot {
    * Handlers
    */
   private handleMicButton() {
-    if (this.state !== 'initial') return;
-    this.state = 'listening';
+    if (this.chatState !== ChatState.Initial) return;
+    this.chatState = ChatState.Listening;
     this.audioRecorder.startRecording(
       () => this.handleSilence(),
       (data, length) => this.visualizer(data, length),
@@ -122,7 +128,7 @@ export class AmplifyChatbot {
   }
 
   private handleSilence() {
-    this.state = 'sending';
+    this.chatState = ChatState.Sending;
     this.audioRecorder.stopRecording();
     this.audioRecorder.exportWAV((blob: Blob) => {
       this.sendVoiceMessage(blob);
@@ -134,9 +140,9 @@ export class AmplifyChatbot {
     this.text = target.value;
   }
 
-  private cancelButtonHandler() {
-    this.state = 'initial';
-    this.audioRecorder.stopRecording();
+  private handleCancelButton() {
+    this.audioRecorder.clear();
+    this.chatState = ChatState.Initial;
   }
 
   /**
@@ -151,17 +157,17 @@ export class AmplifyChatbot {
    * Interactions helpers
    */
   private async sendTextMessage() {
-    if (this.text.length === 0 || this.state !== 'initial') return;
+    if (this.text.length === 0 || this.chatState !== ChatState.Initial) return;
     const text = this.text;
     this.text = '';
     this.appendToChat(text, 'user');
-    this.state = 'sending';
+    this.chatState = ChatState.Sending;
 
     const response = await Interactions.send(this.botName, text);
     if (response.message) {
       this.appendToChat(response.message, 'bot');
     }
-    this.state = 'initial';
+    this.chatState = ChatState.Initial;
   }
 
   private async sendVoiceMessage(audioInput: Blob) {
@@ -172,11 +178,11 @@ export class AmplifyChatbot {
       },
     };
     const response = await Interactions.send(this.botName, interactionsMessage);
-    this.state = 'speaking';
+    this.chatState = ChatState.Speaking;
     if (response.inputTranscript) this.appendToChat(response.inputTranscript, 'user');
     this.appendToChat(response.message, 'bot');
     this.audioRecorder.play(response.audioStream, () => {
-      this.state = 'initial';
+      this.chatState = ChatState.Initial;
     });
   }
 
@@ -194,12 +200,12 @@ export class AmplifyChatbot {
    * State control functions
    */
   private setError(message: string) {
-    this.state = 'error';
+    this.chatState = ChatState.Error;
     this.errorMessage = message;
   }
 
   private reset() {
-    this.state = 'initial';
+    this.chatState = ChatState.Initial;
     this.text = '';
     this.errorMessage = undefined;
     this.messages = [];
@@ -208,11 +214,11 @@ export class AmplifyChatbot {
   }
 
   /**
-   * Rendering related methods
+   * Rendering methods
    */
   private messageJSX = (messages: Message[]) => {
     const messageList = messages.map(message => <div class={`bubble ${message.from}`}>{message.content}</div>);
-    if (this.state === 'sending') {
+    if (this.chatState === ChatState.Sending) {
       messageList.push(
         <div class="bubble bot">
           <div class="dot-flashing" />
@@ -224,10 +230,10 @@ export class AmplifyChatbot {
 
   private listeningFooterJSX(): JSXBase.IntrinsicElements[] {
     const visualization = <canvas height="50" />;
-    const cancelButton = this.state === 'listening' && (
+    const cancelButton = (
       <amplify-button
         data-test="chatbot-cancel-button"
-        handleButtonClick={() => this.cancelButtonHandler()}
+        handleButtonClick={() => this.handleCancelButton()}
         class="icon-button"
         variant="icon"
         icon="ban"
@@ -237,7 +243,7 @@ export class AmplifyChatbot {
   }
 
   private footerJSX(): JSXBase.IntrinsicElements[] {
-    if (this.state === 'listening') return this.listeningFooterJSX();
+    if (this.chatState === ChatState.Listening) return this.listeningFooterJSX();
     const textInput = (
       <amplify-input
         placeholder={I18n.get(Translations.TEXT_INPUT_PLACEHOLDER)}
@@ -245,7 +251,7 @@ export class AmplifyChatbot {
         description="text"
         handleInputChange={evt => this.handleTextChange(evt)}
         value={this.text}
-        disabled={this.state === 'error'}
+        disabled={this.chatState === ChatState.Error}
       />
     );
     const micButton = this.voiceEnabled && (
@@ -255,7 +261,7 @@ export class AmplifyChatbot {
         class="icon-button"
         variant="icon"
         icon="microphone"
-        disabled={this.state === 'error' || this.state !== 'initial'}
+        disabled={this.chatState === ChatState.Error || this.chatState !== ChatState.Initial}
       />
     );
     const sendButton = this.textEnabled && (
@@ -265,7 +271,7 @@ export class AmplifyChatbot {
         variant="icon"
         icon="send"
         handleButtonClick={() => this.sendTextMessage()}
-        disabled={this.state === 'error' || this.state !== 'initial'}
+        disabled={this.chatState === ChatState.Error || this.chatState !== ChatState.Initial}
       />
     );
     return [textInput, micButton, sendButton];
