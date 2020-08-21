@@ -26,7 +26,7 @@ export const S3Text = ({
 	body,
 	contentType = 'text/*',
 	level = AccessLevel.Public,
-	track = false,
+	track,
 	identityId,
 	fallbackText = 'Fallback Content',
 	style,
@@ -55,7 +55,7 @@ interface IUseS3TextProps {
 	textKey?: string;
 	path?: string;
 	level: AccessLevel;
-	track: boolean;
+	track?: boolean;
 	identityId?: string;
 	body?: string;
 	contentType: string;
@@ -71,7 +71,7 @@ export const useS3Text = ({
 	textKey,
 	path,
 	level = AccessLevel.Public,
-	track = false,
+	track,
 	identityId = '',
 	body,
 	contentType = 'text/*',
@@ -116,9 +116,9 @@ export const useS3Text = ({
 				const source = await getTextSource(
 					key,
 					level,
-					track,
 					identityId,
-					logger
+					logger,
+					track
 				);
 
 				setState({ text: source, loading: false });
@@ -154,9 +154,9 @@ const readFileAsync = (blob: Blob) => {
 export const getTextSource = async (
 	key: string,
 	level: AccessLevel,
-	track: boolean,
 	identityId: string,
-	logger: Logger
+	logger: Logger,
+	track: boolean
 ) => {
 	if (!Storage || typeof Storage.get !== 'function') {
 		throw new Error(
