@@ -254,7 +254,6 @@ export class AmplifyChatbot {
     const textInput = (
       <amplify-input
         placeholder={I18n.get(Translations.TEXT_INPUT_PLACEHOLDER)}
-        fieldId="test"
         description="text"
         handleInputChange={evt => this.handleTextChange(evt)}
         value={this.text}
