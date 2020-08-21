@@ -10,7 +10,6 @@ export const visualize = (dataArray: Uint8Array, bufferLength: number, canvas: H
   canvas.height = height;
 
   const canvasCtx = canvas.getContext('2d');
-  let animationId: number;
 
   canvasCtx.fillStyle = 'white';
   canvasCtx.clearRect(0, 0, width, height);
@@ -41,7 +40,5 @@ export const visualize = (dataArray: Uint8Array, bufferLength: number, canvas: H
   };
 
   // Register our draw function with requestAnimationFrame.
-  if (!animationId) {
-    animationId = requestAnimationFrame(draw);
-  }
+  requestAnimationFrame(draw);
 };
