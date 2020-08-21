@@ -9,10 +9,13 @@ import { NO_INTERACTIONS_MODULE_FOUND } from '../../common/constants';
 import { Translations } from '../../common/Translations';
 import { InteractionsResponse } from '@aws-amplify/interactions';
 
-type Agent = 'user' | 'bot';
+enum MessageFrom {
+  Bot,
+  User,
+}
 interface Message {
   content: string;
-  from: Agent;
+  from: MessageFrom;
 }
 
 enum ChatState {
@@ -93,7 +96,7 @@ export class AmplifyChatbot {
       this.setError('Error: Bot Name must be provided to ChatBot');
     }
 
-    if (this.welcomeMessage) this.appendToChat(this.welcomeMessage, 'bot');
+    if (this.welcomeMessage) this.appendToChat(this.welcomeMessage, MessageFrom.Bot);
     // Initialize AudioRecorder if voice is enabled
     if (this.voiceEnabled) {
       this.audioRecorder = new AudioRecorder({
@@ -168,7 +171,7 @@ export class AmplifyChatbot {
     if (this.text.length === 0 || this.chatState !== ChatState.Initial) return;
     const text = this.text;
     this.text = '';
-    this.appendToChat(text, 'user');
+    this.appendToChat(text, MessageFrom.User);
     this.chatState = ChatState.Sending;
 
     let response: InteractionsResponse;
@@ -178,7 +181,7 @@ export class AmplifyChatbot {
       this.setError(err);
     }
     if (response.message) {
-      this.appendToChat(response.message, 'bot');
+      this.appendToChat(response.message, MessageFrom.Bot);
     }
     this.chatState = ChatState.Initial;
   }
@@ -199,13 +202,13 @@ export class AmplifyChatbot {
     }
     this.chatState = ChatState.Speaking;
 
-    if (response.inputTranscript) this.appendToChat(response.inputTranscript, 'user');
-    this.appendToChat(response.message, 'bot');
+    if (response.inputTranscript) this.appendToChat(response.inputTranscript, MessageFrom.User);
+    this.appendToChat(response.message, MessageFrom.Bot);
     await this.audioRecorder.play(response.audioStream).catch(err => this.setError(err));
     this.chatState = ChatState.Initial;
   }
 
-  private appendToChat(content: string, from: Agent) {
+  private appendToChat(content: string, from: MessageFrom) {
     this.messages = [
       ...this.messages,
       {
@@ -228,7 +231,7 @@ export class AmplifyChatbot {
     this.text = '';
     this.errorMessage = undefined;
     this.messages = [];
-    if (this.welcomeMessage) this.appendToChat(this.welcomeMessage, 'bot');
+    if (this.welcomeMessage) this.appendToChat(this.welcomeMessage, MessageFrom.Bot);
     this.audioRecorder && this.audioRecorder.clear();
   }
 
