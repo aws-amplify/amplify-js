@@ -10,8 +10,8 @@ import { Translations } from '../../common/Translations';
 import { InteractionsResponse } from '@aws-amplify/interactions';
 
 enum MessageFrom {
-  Bot,
-  User,
+  Bot = 'bot',
+  User = 'user',
 }
 interface Message {
   content: string;
