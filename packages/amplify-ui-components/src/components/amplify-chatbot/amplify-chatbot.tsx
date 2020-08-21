@@ -2,8 +2,7 @@ import { Component, Host, h, Prop, State, Listen, Event, EventEmitter, Element }
 import { I18n } from '@aws-amplify/core';
 import { Interactions } from '@aws-amplify/interactions';
 import { JSXBase } from '@stencil/core/internal';
-import { AudioRecorder } from '../../common/audio-control/recorder';
-import { visualize } from '../../common/audio-control/visualizer';
+import { AudioRecorder, visualize } from '../../common/audio-control';
 import { ChatResult } from '../../common/types/interactions-types';
 import { NO_INTERACTIONS_MODULE_FOUND } from '../../common/constants';
 import { Translations } from '../../common/Translations';
@@ -221,9 +220,10 @@ export class AmplifyChatbot {
   }
 
   /**
-   * State control functions
+   * State control methods
    */
-  private setError(message: string) {
+  private setError(error: string | Error) {
+    const message = typeof error === 'string' ? error : error.message;
     this.chatState = ChatState.Error;
     this.errorMessage = message;
   }
