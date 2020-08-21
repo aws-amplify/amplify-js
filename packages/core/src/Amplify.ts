@@ -50,14 +50,14 @@ export class AmplifyClass {
 		this._config = Object.assign(this._config, config);
 		logger.debug('amplify config', this._config);
 		this._components.map(comp => {
-			comp.configure(this._config);
-
 			// Dependency Injection via property-setting.
 			// This avoids introducing a public method/interface/setter that's difficult to remove later.
 			// Plus, it reduces `if` statements within the `constructor` and `configure` of each module
 			if (comp.hasOwnProperty('amplify')) {
 				comp.amplify = this;
 			}
+
+			comp.configure(this._config);
 		});
 
 		return this._config;
