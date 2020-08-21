@@ -72,7 +72,7 @@ export class AmplifyChatbot {
     if (!Interactions || typeof Interactions.onComplete !== 'function') {
       throw new Error(NO_INTERACTIONS_MODULE_FOUND);
     }
-    this.updateProps();
+    this.validateProps();
   }
 
   componentDidRender() {
@@ -81,7 +81,7 @@ export class AmplifyChatbot {
     body.scrollTop = body.scrollHeight;
   }
 
-  private updateProps() {
+  private validateProps() {
     if (!this.voiceEnabled && !this.textEnabled) {
       this.setError('Error: Either voice or text must be enabled for the chatbot');
     } else if (!this.botName) {
