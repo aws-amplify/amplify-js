@@ -17,7 +17,6 @@ interface Message {
   content: string;
   from: MessageFrom;
 }
-
 enum ChatState {
   Initial,
   Listening,
@@ -26,6 +25,9 @@ enum ChatState {
   Error,
 }
 
+/**
+ * @slot header - title content placed at the top
+ */
 @Component({
   tag: 'amplify-chatbot',
   styleUrl: 'amplify-chatbot.scss',

@@ -27,6 +27,13 @@
 | `chatCompleted` | Event emitted when conversation is completed | `CustomEvent<ChatResult>` |
 
 
+## Slots
+
+| Slot       | Description                     |
+| ---------- | ------------------------------- |
+| `"header"` | title content placed at the top |
+
+
 ## Dependencies
 
 ### Depends on
