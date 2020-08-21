@@ -39,3 +39,6 @@ export const AUTH_CHANNEL = 'auth';
 export const UI_AUTH_CHANNEL = 'UI Auth';
 export const TOAST_AUTH_ERROR_EVENT = 'ToastAuthError';
 export const AUTH_STATE_CHANGE_EVENT = 'AuthStateChange';
+
+// AudioRecorder export MIME type
+export const RECORDER_EXPORT_MIME_TYPE = 'application/octet-stream';

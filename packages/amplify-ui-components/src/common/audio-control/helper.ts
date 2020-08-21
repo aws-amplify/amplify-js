@@ -1,3 +1,5 @@
+import { RECORDER_EXPORT_MIME_TYPE } from '../constants';
+
 const mergeBuffers = (bufferArray: Float32Array[], recLength: number) => {
   const result = new Float32Array(recLength);
   let offset = 0;
@@ -80,7 +82,7 @@ export const exportBuffer = (
   const downsampledBuffer = downsampleBuffer(mergedBuffers, recordSampleRate, exportSampleRate);
   const encodedWav = encodeWAV(downsampledBuffer, exportSampleRate);
   const audioBlob = new Blob([encodedWav], {
-    type: 'application/octet-stream',
+    type: RECORDER_EXPORT_MIME_TYPE,
   });
   return audioBlob;
 };
