@@ -200,6 +200,7 @@ export class CredentialsClass {
 	}
 
 	private async _setCredentialsForGuest() {
+		let attempted = false;
 		logger.debug('setting credentials for guest');
 		const { identityPoolId, region, mandatorySignIn } = this._config;
 		if (mandatorySignIn) {
@@ -281,7 +282,44 @@ export class CredentialsClass {
 				return res;
 			})
 			.catch(async e => {
-				return e;
+				// If identity id is deleted in the console, we make one attempt to recreate it
+				// and remove existing id from cache.
+				if (
+					e.name === 'ResourceNotFoundException' &&
+					e.message === `Identity '${identityId}' not found.` &&
+					!attempted
+				) {
+					attempted = true;
+					logger.debug('Failed to load guest credentials');
+					this._storage.removeItem('CognitoIdentityId-' + identityPoolId);
+
+					const credentialsProvider: CredentialProvider = async () => {
+						const { IdentityId } = await cognitoClient.send(
+							new GetIdCommand({
+								IdentityPoolId: identityPoolId,
+							})
+						);
+						this._identityId = IdentityId;
+						const cognitoIdentityParams: FromCognitoIdentityParameters = {
+							client: cognitoClient,
+							identityId: IdentityId,
+						};
+
+						const credentialsFromCognitoIdentity = fromCognitoIdentity(
+							cognitoIdentityParams
+						);
+
+						return credentialsFromCognitoIdentity();
+					};
+
+					credentials = credentialsProvider().catch(async err => {
+						throw err;
+					});
+
+					return this._loadCredentials(credentials, 'guest', false, null);
+				} else {
+					return e;
+				}
 			});
 	}
 
