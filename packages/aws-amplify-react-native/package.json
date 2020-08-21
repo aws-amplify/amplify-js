@@ -37,7 +37,8 @@
 		"graphql": "^14.0.0",
 		"react-native-fs": "^2.12.1",
 		"react-native-sound": "^0.10.9",
-		"react-native-voice": "^0.2.6"
+		"react-native-voice": "^0.2.6",
+		"expo-image-picker": "^8.3.0"
 	},
 	"repository": {
 		"type": "git",

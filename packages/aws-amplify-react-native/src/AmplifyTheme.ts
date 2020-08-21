@@ -158,4 +158,11 @@ export default StyleSheet.create({
 		textAlign: 'center',
 		padding: 20,
 	},
+	imagePicker: {
+		height: 120,
+		width: 120,
+		borderRadius: 120 / 2,
+		borderColor: buttonColor,
+		borderWidth: 2,
+	},
 });
