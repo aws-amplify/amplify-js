@@ -1,5 +1,8 @@
+import { browserOrNode } from '@aws-amplify/core';
+
 export const visualize = (dataArray: Uint8Array, bufferLength: number, canvas: HTMLCanvasElement) => {
   if (!canvas) return;
+  if (!browserOrNode().isBrowser) throw new Error('Visualization is not supported on non-browsers.');
   const { width, height } = canvas.getBoundingClientRect();
 
   // need to update the default canvas width and height
@@ -16,7 +19,7 @@ export const visualize = (dataArray: Uint8Array, bufferLength: number, canvas: H
     canvasCtx.fillRect(0, 0, width, height);
     canvasCtx.lineWidth = 1;
     const color = getComputedStyle(document.documentElement).getPropertyValue('--amplify-primary-color');
-    canvasCtx.strokeStyle = !color || color === '' ? '#099ac8' : color;
+    canvasCtx.strokeStyle = !color || color === '' ? '#ff9900' : color; // TODO: try separate css variable
     canvasCtx.beginPath();
 
     const sliceWidth = (width * 1.0) / bufferLength;

@@ -3,8 +3,8 @@ import { I18n } from '@aws-amplify/core';
 import { Interactions } from '@aws-amplify/interactions';
 import { JSXBase } from '@stencil/core/internal';
 import { AudioRecorder } from '../../common/audio-control/recorder';
-import { ChatResult } from '../../common/types/interactions-types';
 import { visualize } from '../../common/audio-control/visualizer';
+import { ChatResult } from '../../common/types/interactions-types';
 import { NO_INTERACTIONS_MODULE_FOUND } from '../../common/constants';
 import { Translations } from '../../common/Translations';
 
@@ -42,6 +42,10 @@ export class AmplifyChatbot {
   @Prop() voiceEnabled: boolean = false;
   /** Whether text chat is enabled */
   @Prop() textEnabled: boolean = true;
+  /** Amount of silence (in ms) to wait for */
+  @Prop() silenceTime: number = 1500;
+  /** Noise threshold between -1 and 1. Anything below is considered a silence. */
+  @Prop() silenceThreshold: number = 0.2;
 
   /** Messages in current session */
   @State() messages: Message[] = [];
@@ -92,8 +96,8 @@ export class AmplifyChatbot {
     // Initialize AudioRecorder if voice is enabled
     if (this.voiceEnabled) {
       this.audioRecorder = new AudioRecorder({
-        time: 1500,
-        amplitude: 0.2,
+        time: this.silenceTime,
+        amplitude: this.silenceThreshold,
       });
     }
 

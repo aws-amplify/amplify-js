@@ -1,4 +1,5 @@
 import { exportBuffer } from './helper';
+import { browserOrNode } from '@aws-amplify/core';
 
 interface SilenceDetectionConfig {
   time: number;
@@ -26,21 +27,29 @@ export class AudioRecorder {
 
   constructor(options: SilenceDetectionConfig) {
     this.options = options;
-    this.init();
+    this.init().catch(err => {
+      throw new Error(err);
+    });
   }
 
   private async init() {
-    window.AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    this.audioContext = new AudioContext();
-    await navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then(stream => {
-        this.audioSupported = true;
-        this.setupAudioNodes(stream);
-      })
-      .catch(() => {
-        this.audioSupported = false;
-      });
+    if (browserOrNode().isBrowser) {
+      window.AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      this.audioContext = new AudioContext();
+      await navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then(stream => {
+          this.audioSupported = true;
+          this.setupAudioNodes(stream);
+        })
+        .catch(() => {
+          this.audioSupported = false;
+          return Promise.reject('Audio is not supported');
+        });
+    } else {
+      this.audioSupported = false;
+      return Promise.reject('Audio is not supported');
+    }
   }
 
   private async setupAudioNodes(stream: MediaStream) {

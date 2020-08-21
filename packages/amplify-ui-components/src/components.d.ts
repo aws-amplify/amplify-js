@@ -99,6 +99,14 @@ export namespace Components {
          */
         "conversationModeOn": boolean;
         /**
+          * Noise threshold between -1 and 1. Anything below is considered a silence.
+         */
+        "silenceThreshold": number;
+        /**
+          * Amount of silence (in ms) to wait for
+         */
+        "silenceTime": number;
+        /**
           * Whether text chat is enabled
          */
         "textEnabled": boolean;
@@ -1594,6 +1602,14 @@ declare namespace LocalJSX {
           * Event emitted when conversation is completed
          */
         "onChatCompleted"?: (event: CustomEvent<ChatResult>) => void;
+        /**
+          * Noise threshold between -1 and 1. Anything below is considered a silence.
+         */
+        "silenceThreshold"?: number;
+        /**
+          * Amount of silence (in ms) to wait for
+         */
+        "silenceTime"?: number;
         /**
           * Whether text chat is enabled
          */
