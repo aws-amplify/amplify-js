@@ -9,7 +9,7 @@
 		"scope": "javascript,javascriptreact,typescript,typescriptreact",
 		"body": [
 			"import Amplify, { Analytics } from 'aws-amplify';",
-			"import awsexports from './aws-exorts';",
+			"import awsexports from './aws-exports';",
 			"",
 			"Amplify.configure(awsexports);"
 		]
