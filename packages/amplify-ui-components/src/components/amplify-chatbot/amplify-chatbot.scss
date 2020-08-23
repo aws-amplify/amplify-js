@@ -1,13 +1,13 @@
 @import 'animation.scss';
 :host {
+  --width: 28.75rem;
+  --height: 37.5rem;
   --header-color: var(--amplify-secondary-color);
   --header-size: var(--amplify-text-lg);
   --bot-background-color: rgb(230, 230, 230);
   --bot-text-color: black;
   --user-background-color: #099ac8;
   --user-text-color: var(--amplify-white);
-  --width: 28.75rem;
-  --height: 37.5rem;
 
   width: 100%;
   height: var(--height);
