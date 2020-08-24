@@ -92,9 +92,9 @@ export class AmplifyChatbot {
 
   private validateProps() {
     if (!this.voiceEnabled && !this.textEnabled) {
-      this.setError('Error: Either voice or text must be enabled for the chatbot');
+      this.setError(Translations.CHAT_DISABLED_ERROR);
     } else if (!this.botName) {
-      this.setError('Error: Bot Name must be provided to ChatBot');
+      this.setError(Translations.NO_BOT_NAME_ERROR);
     }
 
     if (this.welcomeMessage) this.appendToChat(this.welcomeMessage, MessageFrom.Bot);
@@ -314,7 +314,7 @@ export class AmplifyChatbot {
     return (
       this.errorMessage && (
         <amplify-toast
-          message={this.errorMessage}
+          message={I18n.get(this.errorMessage)}
           handleClose={() => {
             this.errorMessage = undefined;
           }}

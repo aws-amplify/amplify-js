@@ -110,6 +110,8 @@ export enum AuthStrings {
 export enum InteractionsStrings {
   CHATBOT_TITLE = 'ChatBot Lex',
   TEXT_INPUT_PLACEHOLDER = 'Write a message',
+  CHAT_DISABLED_ERROR = 'Error: Either voice or text must be enabled for the chatbot',
+  NO_BOT_NAME_ERROR = 'Error: Bot Name must be provided to ChatBot',
 }
 
 type Translations = AuthErrorStrings | AuthStrings | InteractionsStrings;
