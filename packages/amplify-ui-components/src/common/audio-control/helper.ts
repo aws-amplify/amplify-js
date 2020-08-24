@@ -61,7 +61,7 @@ const writeString = (view: DataView, offset: number, string: string) => {
 };
 
 /**
- * Enocdes raw pcm audio into a wav file.
+ * Encodes raw pcm audio into a wav file.
  */
 const encodeWAV = (samples: Float32Array, exportSampleRate?: number) => {
   /**
