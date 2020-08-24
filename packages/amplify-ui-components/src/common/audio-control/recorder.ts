@@ -145,19 +145,20 @@ export class AudioRecorder {
       const fileReader = new FileReader();
       fileReader.onload = () => {
         const playbackSource = this.audioContext.createBufferSource();
-        this.audioContext
-          .decodeAudioData(fileReader.result as ArrayBuffer)
-          .then(buf => {
-            playbackSource.buffer = buf;
-            playbackSource.connect(this.audioContext.destination);
-            playbackSource.onended = () => {
-              return res();
-            };
-            playbackSource.start(0);
-          })
-          .catch(err => {
-            return rej(err);
-          });
+
+        const successCallback = (buf: AudioBuffer) => {
+          playbackSource.buffer = buf;
+          playbackSource.connect(this.audioContext.destination);
+          playbackSource.onended = () => {
+            return res();
+          };
+          playbackSource.start(0);
+        };
+        const errorCallback = err => {
+          return rej(err);
+        };
+
+        this.audioContext.decodeAudioData(fileReader.result as ArrayBuffer, successCallback, errorCallback);
       };
       fileReader.onerror = () => rej();
       fileReader.readAsArrayBuffer(myBlob);
