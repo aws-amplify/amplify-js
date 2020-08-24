@@ -100,7 +100,7 @@ declare module 'amazon-cognito-identity-js' {
 			clientMetaData?: ClientMetadata
 		): void;
 		public resendConfirmationCode(
-			callback: NodeCallback<Error, 'SUCCESS'>,
+			callback: NodeCallback<Error, any>,
 			clientMetaData?: ClientMetadata
 		): void;
 		public changePassword(
