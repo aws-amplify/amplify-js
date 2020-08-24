@@ -40,4 +40,11 @@ do
 	# wait 5 seconds
 	sleep 5
 	echo "Retry $n of $N"
+
+	if [ "$n" -eq $N ]; 
+	then
+		echo "Returning error"
+		exit 1
+	fi
 done
+
