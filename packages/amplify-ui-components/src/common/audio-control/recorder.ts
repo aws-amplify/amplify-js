@@ -1,5 +1,5 @@
 import { exportBuffer } from './helper';
-import { browserOrNode } from '@aws-amplify/core';
+import { browserOrNode, Logger } from '@aws-amplify/core';
 import {
   DEFAULT_EXPORT_SAMPLE_RATE,
   FFT_MAX_DECIBELS,
@@ -15,6 +15,7 @@ interface SilenceDetectionConfig {
 
 type SilenceHandler = () => void;
 type Visualizer = (dataArray: Uint8Array, bufferLength: number) => void;
+const logger = new Logger('AudioRecorder');
 
 export class AudioRecorder {
   private options: SilenceDetectionConfig;
@@ -65,7 +66,7 @@ export class AudioRecorder {
    * Setup audio nodes after successful `init`.
    */
   private async setupAudioNodes(stream: MediaStream) {
-    await this.audioContext.resume();
+    await this.audioContext.resume().catch(logger.error);
     const sourceNode = this.audioContext.createMediaStreamSource(stream);
     const processorNode = this.audioContext.createScriptProcessor(4096, 1, 1);
 
@@ -104,7 +105,7 @@ export class AudioRecorder {
     context.resume().then(() => {
       this.start = Date.now();
       this.recording = true;
-    });
+    }).catch(logger.error);
   }
 
   /**
