@@ -203,10 +203,20 @@ export class AmplifyChatbot {
     }
     this.chatState = ChatState.Speaking;
 
+    const dialogState = response.dialogState;
     if (response.inputTranscript) this.appendToChat(response.inputTranscript, MessageFrom.User);
     this.appendToChat(response.message, MessageFrom.Bot);
-    await this.audioRecorder.play(response.audioStream).catch(err => this.setError(err));
-    this.chatState = ChatState.Initial;
+
+    await this.audioRecorder
+      .play(response.audioStream)
+      .then(() => {
+        this.chatState = ChatState.Initial;
+        if (this.conversationModeOn && dialogState !== 'Fulfilled' && dialogState !== 'Failed') {
+          // if session is not finished, resume listening to mic
+          this.handleMicButton();
+        }
+      })
+      .catch(err => this.setError(err));
   }
 
   private appendToChat(content: string, from: MessageFrom) {
