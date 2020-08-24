@@ -620,7 +620,6 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/master
       - 1.0-stable
-      - fix-aws-amplify-angular-build #TODO: remove line before merging
 
 workflows:
   build_test_deploy:
@@ -719,29 +718,29 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      # - deploy:
-      #     filters:
-      #       <<: *releasable_branches
-      #     requires:
-      #       - unit_test
-      #       - integ_react_predictions
-      #       - integ_react_datastore
-      #       - integ_react_storage
-      #       - integ_react_storage_ui
-      #       - integ_amazon_cognito_identity_js
-      #       - integ_react_auth
-      #       - integ_angular_auth
-      #       - integ_vue_auth
-      #       - integ_react_auth_ui
-      #       - integ_angular_auth_ui
-      #       - integ_vue_auth_ui
-      #       - integ_rn_ios_storage
-      #       - integ_rn_ios_push_notifications
-      #       - integ_rn_android_storage
-      # - post_release:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - release
-      #     requires:
-      #       - deploy
+      - deploy:
+          filters:
+            <<: *releasable_branches
+          requires:
+            - unit_test
+            - integ_react_predictions
+            - integ_react_datastore
+            - integ_react_storage
+            - integ_react_storage_ui
+            - integ_amazon_cognito_identity_js
+            - integ_react_auth
+            - integ_angular_auth
+            - integ_vue_auth
+            - integ_react_auth_ui
+            - integ_angular_auth_ui
+            - integ_vue_auth_ui
+            - integ_rn_ios_storage
+            - integ_rn_ios_push_notifications
+            - integ_rn_android_storage
+      - post_release:
+          filters:
+            branches:
+              only:
+                - release
+          requires:
+            - deploy
