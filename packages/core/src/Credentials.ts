@@ -200,7 +200,6 @@ export class CredentialsClass {
 	}
 
 	private async _setCredentialsForGuest() {
-		let attempted = false;
 		logger.debug('setting credentials for guest');
 		const { identityPoolId, region, mandatorySignIn } = this._config;
 		if (mandatorySignIn) {
@@ -286,10 +285,8 @@ export class CredentialsClass {
 				// and remove existing id from cache.
 				if (
 					e.name === 'ResourceNotFoundException' &&
-					e.message === `Identity '${identityId}' not found.` &&
-					!attempted
+					e.message === `Identity '${identityId}' not found.`
 				) {
-					attempted = true;
 					logger.debug('Failed to load guest credentials');
 					this._storage.removeItem('CognitoIdentityId-' + identityPoolId);
 
