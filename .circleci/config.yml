@@ -13,7 +13,7 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress/base:12
+      - image: cypress/browsers:node12.18.0-chrome83-ff77
       - image: verdaccio/verdaccio
     resource_class: large
 
