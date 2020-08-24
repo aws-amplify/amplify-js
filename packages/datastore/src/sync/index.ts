@@ -31,6 +31,7 @@ import {
 	predicateToGraphQLCondition,
 	TransformerMutationType,
 } from './utils';
+import { handleCloud } from './ComplexObjUtils';
 
 const logger = new Logger('DataStore');
 
@@ -40,7 +41,7 @@ type StartParams = {
 	fullSyncInterval: number;
 };
 
-export type ComplexObject = { file: File; s3Key: string };
+export type ComplexObject = { file: File; s3Key: string; eTag: string };
 export declare class MutationEvent {
 	constructor(init: ModelInit<MutationEvent>);
 	static copyOf(
@@ -229,40 +230,47 @@ export class SyncEngine {
 							subscriptions.push(
 								this.mutationsProcessor
 									.start()
-									.subscribe(({ modelDefinition, model: item, hasMore }) => {
-										const modelConstructor = this.userModelClasses[
-											modelDefinition.name
-										] as PersistentModelConstructor<any>;
+									.subscribe(
+										async ({ modelDefinition, model: item, hasMore }) => {
+											const modelConstructor = this.userModelClasses[
+												modelDefinition.name
+											] as PersistentModelConstructor<any>;
 
-										// TODO
-										// Before calling merge check if the file has been downloaded and added to item
-										// Create interface for getting file
-										// Make it extesnible for different implementations
-										const model = this.modelInstanceCreator(
-											modelConstructor,
-											item
-										);
+											// Before calling merge checks if the file has been downloaded and adds it to item
 
-										this.storage.runExclusive(storage =>
-											this.modelMerger.merge(storage, model)
-										);
+											const newItem = await handleCloud(
+												this.storage,
+												item,
+												modelConstructor,
+												modelDefinition
+											);
 
-										observer.next({
-											type:
-												ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
-											data: {
-												model: modelConstructor,
-												element: model,
-											},
-										});
+											const model = this.modelInstanceCreator(
+												modelConstructor,
+												newItem
+											);
 
-										observer.next({
-											type: ControlMessage.SYNC_ENGINE_OUTBOX_STATUS,
-											data: {
-												isEmpty: !hasMore,
-											},
-										});
-									})
+											this.storage.runExclusive(storage =>
+												this.modelMerger.merge(storage, model)
+											);
+
+											observer.next({
+												type:
+													ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
+												data: {
+													model: modelConstructor,
+													element: model,
+												},
+											});
+
+											observer.next({
+												type: ControlMessage.SYNC_ENGINE_OUTBOX_STATUS,
+												data: {
+													isEmpty: !hasMore,
+												},
+											});
+										}
+									)
 							);
 							//#endregion
 
@@ -270,16 +278,29 @@ export class SyncEngine {
 							// TODO: extract to function
 							subscriptions.push(
 								dataSubsObservable.subscribe(
-									([_transformerMutationType, modelDefinition, item]) => {
+									async ([_transformerMutationType, modelDefinition, item]) => {
 										const modelConstructor = this.userModelClasses[
 											modelDefinition.name
 										] as PersistentModelConstructor<any>;
 
-										// TODO
-										// Before calling merge check if the file has been downloaded and added to item
+										let newItem;
+										if (
+											_transformerMutationType !==
+											TransformerMutationType.DELETE
+										) {
+											newItem = await handleCloud(
+												this.storage,
+												item,
+												modelConstructor,
+												modelDefinition
+											);
+										} else {
+											newItem = item;
+										}
+
 										const model = this.modelInstanceCreator(
 											modelConstructor,
-											item
+											newItem
 										);
 
 										this.storage.runExclusive(storage =>
@@ -324,7 +345,7 @@ export class SyncEngine {
 								'MutationEvent'
 							] as PersistentModelConstructor<MutationEvent>;
 							const graphQLCondition = predicateToGraphQLCondition(condition);
-							const mutationEvent = createMutationInstanceFromModelOperation(
+							const mutationEvent = await createMutationInstanceFromModelOperation(
 								namespace.relationships,
 								this.getModelDefinition(model),
 								opType,
@@ -457,7 +478,16 @@ export class SyncEngine {
 									const modelConstructor = this.userModelClasses[
 										modelDefinition.name
 									] as PersistentModelConstructor<any>;
-
+									const newItems = [];
+									for (const item of items) {
+										const newItem = await handleCloud(
+											this.storage,
+											item,
+											modelConstructor,
+											modelDefinition
+										);
+										newItems.push(newItem);
+									}
 									if (!count.has(modelConstructor)) {
 										count.set(modelConstructor, {
 											new: 0,
@@ -480,7 +510,7 @@ export class SyncEngine {
 										const idsInOutbox = await this.outbox.getModelIds(storage);
 
 										const oneByOne: ModelInstanceMetadata[] = [];
-										const page = items.filter(item => {
+										const page = newItems.filter(async item => {
 											if (!idsInOutbox.has(item.id)) {
 												return true;
 											}

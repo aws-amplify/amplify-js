@@ -21,6 +21,7 @@ import {
 } from '../types';
 import { exhaustiveCheck } from '../util';
 import { MutationEvent, ComplexObject } from './';
+import { handleLocal } from './ComplexObjUtils';
 
 enum GraphQLOperationType {
 	LIST = 'query',
@@ -318,42 +319,7 @@ export function buildGraphQLOperation(
 	];
 }
 
-// Creates deep clone of object stripping file and replacing it with s3Key
-// Returns stripped copy of object and list of files and s3Keys
-function handleComplexObjects(
-	object: PersistentModel,
-	model: string
-): [PersistentModel, Array<ComplexObject>] {
-	const folder = `ComplexObjects/${model}`;
-	const fileList = [];
-
-	const deepCopy = obj => {
-		if (typeof obj !== 'object' || obj === null) {
-			return obj;
-		}
-
-		const returnObj = Array.isArray(obj) ? [] : {};
-
-		Object.entries(obj).forEach(([key, value]) => {
-			if (value instanceof File) {
-				const file = value;
-				const s3Key = `${folder}/${value.name}`;
-				fileList.push({ file, s3Key });
-				returnObj[key] = JSON.stringify({ s3Key });
-				return;
-			}
-
-			returnObj[key] = deepCopy(value);
-		});
-
-		return returnObj;
-	};
-
-	const result = deepCopy(object);
-	return [result, fileList];
-}
-
-export function createMutationInstanceFromModelOperation<
+export async function createMutationInstanceFromModelOperation<
 	T extends PersistentModel
 >(
 	relationships: RelationshipType,
@@ -365,10 +331,10 @@ export function createMutationInstanceFromModelOperation<
 	MutationEventConstructor: PersistentModelConstructor<MutationEvent>,
 	modelInstanceCreator: ModelInstanceCreator,
 	id?: string
-): MutationEvent {
+): Promise<MutationEvent> {
 	let operation: TransformerMutationType;
 
-	const [newElement, fileList] = handleComplexObjects(element, model.name);
+	const [newElement, fileList] = await handleLocal(element, model.name);
 
 	switch (opType) {
 		case OpType.INSERT:

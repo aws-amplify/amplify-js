@@ -31,6 +31,7 @@ import {
 	TransformerMutationType,
 } from '../utils';
 import { Storage as storageCategory } from '@aws-amplify/storage';
+import { isEmpty } from '../ComplexObjUtils';
 
 const MAX_ATTEMPTS = 10;
 
@@ -129,9 +130,12 @@ class MutationProcessor {
 			const { complexObjects, model, operation, data, condition } = head;
 			// If model has complexObjects, uploads them to S3
 			// TODO: Throw error if file > 50mb
-			if (complexObjects) {
-				for (const { file, s3Key } of complexObjects) {
-					if (operation === TransformerMutationType.CREATE) {
+			if (!isEmpty(complexObjects)) {
+				for (const { file, s3Key, eTag } of complexObjects) {
+					if (
+						operation === TransformerMutationType.CREATE ||
+						operation === TransformerMutationType.UPDATE
+					) {
 						await storageCategory.put(s3Key, file, {
 							contentType: file.type,
 						});
@@ -169,9 +173,6 @@ class MutationProcessor {
 				continue;
 			}
 
-			// TODO
-			// record holds data that is returned from AppSync
-			// Will need to replace
 			const record = result.data[opName];
 			await this.outbox.dequeue(this.storage);
 
@@ -296,7 +297,7 @@ class MutationProcessor {
 								const namespace = this.schema.namespaces[namespaceName];
 
 								// convert retry with to tryWith
-								const updatedMutation = createMutationInstanceFromModelOperation(
+								const updatedMutation = await createMutationInstanceFromModelOperation(
 									namespace.relationships,
 									modelDefinition,
 									opType,
