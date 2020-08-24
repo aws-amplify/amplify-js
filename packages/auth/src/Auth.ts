@@ -25,6 +25,7 @@ import {
 	isCognitoHostedOpts,
 	isFederatedSignInOptions,
 	isFederatedSignInOptionsCustom,
+	hasCustomState,
 	FederatedSignInOptionsCustom,
 	LegacyProvider,
 	FederatedSignInOptions,
@@ -378,12 +379,12 @@ export class AuthClass {
 	 * Resend the verification code
 	 * @param {String} username - The username to be confirmed
 	 * @param {ClientMetadata} clientMetadata - Metadata to be passed to Cognito Lambda triggers
-	 * @return - A promise resolves data if success
+	 * @return - A promise resolves code delivery details if successful
 	 */
 	public resendSignUp(
 		username: string,
 		clientMetadata: ClientMetaData = this._config.clientMetadata
-	): Promise<string> {
+	): Promise<any> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
@@ -1149,7 +1150,7 @@ export class AuthClass {
 					}
 
 					// refresh the session if the session expired.
-					user.getSession((err, session) => {
+					user.getSession(async (err, session) => {
 						if (err) {
 							logger.debug('Failed to get the user session', err);
 							rej(err);
@@ -1158,7 +1159,12 @@ export class AuthClass {
 
 						// get user data from Cognito
 						const bypassCache = params ? params.bypassCache : false;
-						// validate the token's scope fisrt before calling this function
+
+						if (bypassCache) {
+							await Credentials.clear();
+						}
+
+						// validate the token's scope first before calling this function
 						const { scope = '' } = session.getAccessToken().decodePayload();
 						if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
 							user.getUserData(
@@ -1787,6 +1793,7 @@ export class AuthClass {
 		if (
 			isFederatedSignInOptions(providerOrOptions) ||
 			isFederatedSignInOptionsCustom(providerOrOptions) ||
+			hasCustomState(providerOrOptions) ||
 			typeof providerOrOptions === 'undefined'
 		) {
 			const options = providerOrOptions || {

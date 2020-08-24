@@ -5,12 +5,12 @@
 
 ## Properties
 
-| Property                | Attribute     | Description                                                 | Type                                                | Default                                   |
-| ----------------------- | ------------- | ----------------------------------------------------------- | --------------------------------------------------- | ----------------------------------------- |
-| `handleAuthStateChange` | --            | Auth state change handler for this component                | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent`            |
-| `headerText`            | `header-text` | Used for header text in totp setup component                | `string`                                            | `I18n.get(Translations.TOTP_HEADER_TEXT)` |
-| `issuer`                | `issuer`      | Used for customizing the issuer string in the qr code image | `string`                                            | `I18n.get(Translations.TOTP_ISSUER)`      |
-| `user`                  | --            | Used in order to configure TOTP for a user                  | `CognitoUserInterface`                              | `undefined`                               |
+| Property                | Attribute     | Description                                                 | Type                                                | Default                         |
+| ----------------------- | ------------- | ----------------------------------------------------------- | --------------------------------------------------- | ------------------------------- |
+| `handleAuthStateChange` | --            | Auth state change handler for this component                | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent`  |
+| `headerText`            | `header-text` | Used for header text in totp setup component                | `string`                                            | `Translations.TOTP_HEADER_TEXT` |
+| `issuer`                | `issuer`      | Used for customizing the issuer string in the qr code image | `string`                                            | `Translations.TOTP_ISSUER`      |
+| `user`                  | --            | Used in order to configure TOTP for a user                  | `CognitoUserInterface`                              | `undefined`                     |
 
 
 ## Dependencies

@@ -511,7 +511,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	private _errorDisconnect(msg: string) {
 		logger.debug(`Disconnect error: ${msg}`);
 		this.subscriptionObserverMap.forEach(({ observer }) => {
-			if (!observer.closed) {
+			if (observer && !observer.closed) {
 				observer.error({
 					errors: [{ ...new GraphQLError(msg) }],
 				});
@@ -683,6 +683,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 							);
 							this.awsRealTimeSocket.onerror = err => {
 								logger.debug(err);
+								this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
+							};
+							this.awsRealTimeSocket.onclose = event => {
+								logger.debug(`WebSocket closed ${event.reason}`);
 								this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
 							};
 							res('Cool, connected to AWS AppSyncRealTime');

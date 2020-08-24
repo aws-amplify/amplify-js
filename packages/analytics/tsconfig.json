@@ -23,7 +23,8 @@
             "../../node_modules/@types"
         ],
         // temporary fix
-        "types": ["node", "lodash"]
+        "types": ["node", "lodash"],
+        "esModuleInterop": true
     },
     "include": [
         "src/**/*"
