@@ -256,7 +256,7 @@ export class AmplifyChatbot {
       messageList.push(
         <div class="bubble bot">
           <div class="dot-flashing" />
-        </div>,
+        </div>
       );
     }
     return messageList;
