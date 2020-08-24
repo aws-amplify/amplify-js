@@ -66,7 +66,11 @@ export class AudioRecorder {
    * Setup audio nodes after successful `init`.
    */
   private async setupAudioNodes(stream: MediaStream) {
-    await this.audioContext.resume().catch(logger.error);
+    try {
+      await this.audioContext.resume();
+    } catch (err) {
+      logger.error(err);
+    }
     const sourceNode = this.audioContext.createMediaStreamSource(stream);
     const processorNode = this.audioContext.createScriptProcessor(4096, 1, 1);
 
@@ -96,16 +100,19 @@ export class AudioRecorder {
    * @param onSilence {SilenceHandler} - called whenever silence is detected
    * @param visualizer {Visualizer} - called with audio data on each audio process to be used for visualization.
    */
-  public startRecording(onSilence?: SilenceHandler, visualizer?: Visualizer) {
+  public async startRecording(onSilence?: SilenceHandler, visualizer?: Visualizer) {
     if (this.recording || !this.audioSupported) return;
     this.onSilence = onSilence || function() {};
     this.visualizer = visualizer || function() {};
 
     const context = this.audioContext;
-    context.resume().then(() => {
-      this.start = Date.now();
-      this.recording = true;
-    }).catch(logger.error);
+    try {
+      await context.resume();
+    } catch (err) {
+      logger.error(err);
+    }
+    this.start = Date.now();
+    this.recording = true;
   }
 
   /**
