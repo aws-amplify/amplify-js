@@ -473,7 +473,7 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL amplify-js-samples-staging-ui
             cd amplify-js-samples-staging-ui
-            git checkout ui-components/master
+            git checkout ui-components/main
             yarn
       - save_cache:
           key: amplify-js-ui
@@ -618,7 +618,7 @@ releasable_branches: &releasable_branches
     only:
       - release
       - main
-      - ui-components/master
+      - ui-components/main
       - 1.0-stable
 
 workflows:
