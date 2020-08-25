@@ -13,7 +13,7 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress/base:12
+      - image: cypress/included:4.12.1
       - image: verdaccio/verdaccio
     resource_class: large
 
@@ -618,7 +618,7 @@ releasable_branches: &releasable_branches
     only:
       - release
       - main
-      - ui-components/master
+      - ui-components/main
       - 1.0-stable
 
 workflows:
