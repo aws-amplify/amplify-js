@@ -1,4 +1,5 @@
 import { AmplifyClass, JS, UniversalStorage } from '@aws-amplify/core';
+import { PersistentModel } from '@aws-amplify/datastore';
 import { NextPageContext } from 'next';
 
 // ! We have to use this exact reference, since it gets mutated with Amplify.Auth
@@ -57,5 +58,12 @@ export function withSSRContext(context?: Pick<NextPageContext, 'req'>) {
 	// Configure new Amplify instances with previous configuration
 	amplify.configure({ ...previousConfig, storage });
 
-	return amplify;
+	return {
+		...amplify,
+
+		// Helper for converting DataStore models to JSON
+		serializeModel<T extends PersistentModel>(model: T | T[]): JSON {
+			return JSON.parse(JSON.stringify(model));
+		},
+	};
 }

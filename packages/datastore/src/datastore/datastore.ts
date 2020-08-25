@@ -1097,10 +1097,6 @@ class DataStore {
 		this.storage = undefined;
 		this.sync = undefined;
 	};
-
-	toJSON = <T extends PersistentModel>(model: T | T[]): JSON => {
-		return JSON.parse(JSON.stringify(model));
-	};
 }
 
 const instance = new DataStore();
