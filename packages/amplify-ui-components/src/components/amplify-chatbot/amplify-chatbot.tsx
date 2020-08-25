@@ -117,6 +117,8 @@ export class AmplifyChatbot {
       });
       if (this.clearOnComplete) {
         this.reset();
+      } else {
+        this.chatState = ChatState.Initial;
       }
     };
 
