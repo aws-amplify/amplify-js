@@ -923,7 +923,7 @@ export class AuthClass {
 	public completeNewPassword(
 		user: CognitoUser | any,
 		password: string,
-		requiredAttributes: any,
+		requiredAttributes: any = {},
 		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<CognitoUser | any> {
 		if (!password) {
