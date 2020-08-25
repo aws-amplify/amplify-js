@@ -618,7 +618,7 @@ releasable_branches: &releasable_branches
     only:
       - release
       - main
-      - ui-components/master
+      - ui-components/main
       - 1.0-stable
 
 workflows:
