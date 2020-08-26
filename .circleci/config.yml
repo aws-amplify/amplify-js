@@ -13,7 +13,7 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress/base:12
+      - image: cypress/included:4.12.1
       - image: verdaccio/verdaccio
     resource_class: large
 
@@ -304,7 +304,7 @@ commands:
             JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
           name: Detox Test
           command: |
-            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'detox test -c android.emu.debug -u' 3
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'detox test -c android.emu.debug -u' -n 3
       - store_test_results:
           path: reports/junit
       - store_artifacts:

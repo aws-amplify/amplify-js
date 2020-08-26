@@ -1979,14 +1979,14 @@ export default class CognitoUser {
 			this.Session = data.Session;
 			if (answerChallenge === 'SMS_MFA') {
 				return callback.mfaRequired(
-					data.challengeName,
-					data.challengeParameters
+					data.ChallengeName,
+					data.ChallengeParameters
 				);
 			}
 			if (answerChallenge === 'SOFTWARE_TOKEN_MFA') {
 				return callback.totpRequired(
-					data.challengeName,
-					data.challengeParameters
+					data.ChallengeName,
+					data.ChallengeParameters
 				);
 			}
 			return undefined;
