@@ -127,7 +127,7 @@ class SubscriptionProcessor {
 
 		// if not check if has groups authorization and token has groupClaim allowed for cognito token
 		let groupAuthRules = rules.filter(
-			rule => rule.authStrategy === 'group' && rule.provider === 'userPools'
+			rule => rule.authStrategy === 'groups' && rule.provider === 'userPools'
 		);
 
 		const validCognitoGroup = groupAuthRules.find(groupAuthRule => {
@@ -149,7 +149,7 @@ class SubscriptionProcessor {
 
 		// if not check if has groups authorization and token has groupClaim allowed for oidc token
 		groupAuthRules = rules.filter(
-			rule => rule.authStrategy === 'group' && rule.provider === 'oidc'
+			rule => rule.authStrategy === 'groups' && rule.provider === 'oidc'
 		);
 
 		const validOidcGroup = groupAuthRules.find(groupAuthRule => {
