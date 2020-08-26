@@ -33,6 +33,8 @@ import {
 import { Storage as storageCategory } from '@aws-amplify/storage';
 import { isEmpty } from '../ComplexObjUtils';
 
+storageCategory.configure({ level: 'private' });
+
 const MAX_ATTEMPTS = 10;
 
 const logger = new Logger('DataStore');
