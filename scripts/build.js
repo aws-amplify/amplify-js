@@ -157,7 +157,7 @@ async function buildES5(typeScriptCompiler) {
 	let compilerOptions = {
 		esModuleInterop: true,
 		noImplicitAny: false,
-		lib: ['dom', 'es2017', 'esnext.asynciterable'],
+		lib: ['dom', 'es2017', 'esnext.asynciterable', 'es2018.asyncgenerator'],
 		downlevelIteration: true,
 		jsx: jsx,
 		sourceMap: true,
@@ -202,7 +202,7 @@ function buildES6(typeScriptCompiler) {
 	let compilerOptions = {
 		esModuleInterop: true,
 		noImplicitAny: false,
-		lib: ['dom', 'es2017', 'esnext.asynciterable'],
+		lib: ['dom', 'es2017', 'esnext.asynciterable', 'es2018.asyncgenerator'],
 		downlevelIteration: true,
 		jsx: jsx,
 		sourceMap: true,
