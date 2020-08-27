@@ -344,7 +344,14 @@ const createModelClass = <T extends PersistentModel>(
 				return json.map(init => this.fromJSON(init));
 			}
 
-			return modelInstanceCreator(clazz, json);
+			const instance = modelInstanceCreator(clazz, json);
+			const modelValidator = validateModelFields(modelDefinition);
+
+			Object.entries(instance).forEach(([k, v]) => {
+				modelValidator(k, v);
+			});
+
+			return instance;
 		}
 	});
 
