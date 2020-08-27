@@ -8,6 +8,16 @@ import { NO_INTERACTIONS_MODULE_FOUND } from '../../common/constants';
 import { Translations } from '../../common/Translations';
 import { InteractionsResponse } from '@aws-amplify/interactions';
 
+// enum for possible bot states
+enum ChatState {
+  Initial,
+  Listening,
+  Sending,
+  Speaking,
+  Error,
+}
+
+// Message types
 enum MessageFrom {
   Bot = 'bot',
   User = 'user',
@@ -16,12 +26,15 @@ interface Message {
   content: string;
   from: MessageFrom;
 }
-enum ChatState {
-  Initial,
-  Listening,
-  Sending,
-  Speaking,
-  Error,
+
+// Error types
+enum ChatErrorType {
+  Recoverable,
+  Unrecoverable,
+}
+interface ChatError {
+  message: string;
+  errorType: ChatErrorType;
 }
 
 /**
@@ -58,8 +71,8 @@ export class AmplifyChatbot {
   @State() text: string = '';
   /** Current app state */
   @State() chatState: ChatState = ChatState.Initial;
-  /** Toast error message */
-  @State() errorMessage: string;
+  /** Toast error */
+  @State() error: ChatError;
 
   @Element() element: HTMLAmplifyChatbotElement;
 
@@ -92,9 +105,11 @@ export class AmplifyChatbot {
 
   private validateProps() {
     if (!this.voiceEnabled && !this.textEnabled) {
-      this.setError(Translations.CHAT_DISABLED_ERROR);
+      this.setError(Translations.CHAT_DISABLED_ERROR, ChatErrorType.Unrecoverable);
+      return;
     } else if (!this.botName) {
-      this.setError(Translations.NO_BOT_NAME_ERROR);
+      this.setError(Translations.NO_BOT_NAME_ERROR, ChatErrorType.Unrecoverable);
+      return;
     }
 
     if (this.welcomeMessage) this.appendToChat(this.welcomeMessage, MessageFrom.Bot);
@@ -105,7 +120,7 @@ export class AmplifyChatbot {
         amplitude: this.silenceThreshold,
       });
       this.audioRecorder.init().catch(err => {
-        this.setError(err);
+        this.setError(err, ChatErrorType.Recoverable);
       });
     }
 
@@ -125,7 +140,7 @@ export class AmplifyChatbot {
     try {
       Interactions.onComplete(this.botName, onComplete);
     } catch (err) {
-      this.setError(err);
+      this.setError(err, ChatErrorType.Unrecoverable);
     }
   }
 
@@ -159,6 +174,14 @@ export class AmplifyChatbot {
     this.chatState = ChatState.Initial;
   }
 
+  private handleToastClose(errorType: ChatErrorType) {
+    this.error = undefined; // clear error
+    // if error is recoverable, reset the app state to initial
+    if (errorType === ChatErrorType.Recoverable) {
+      this.chatState = ChatState.Initial;
+    }
+  }
+
   /**
    * Visualization
    */
@@ -181,7 +204,8 @@ export class AmplifyChatbot {
     try {
       response = await Interactions.send(this.botName, text);
     } catch (err) {
-      this.setError(err);
+      this.setError(err, ChatErrorType.Recoverable);
+      return;
     }
     if (response.message) {
       this.appendToChat(response.message, MessageFrom.Bot);
@@ -201,10 +225,11 @@ export class AmplifyChatbot {
     try {
       response = await Interactions.send(this.botName, interactionsMessage);
     } catch (err) {
-      this.setError(err);
+      this.setError(err, ChatErrorType.Recoverable);
+      return;
     }
-    this.chatState = ChatState.Speaking;
 
+    this.chatState = ChatState.Speaking;
     const dialogState = response.dialogState;
     if (response.inputTranscript) this.appendToChat(response.inputTranscript, MessageFrom.User);
     this.appendToChat(response.message, MessageFrom.Bot);
@@ -218,7 +243,7 @@ export class AmplifyChatbot {
           this.handleMicButton();
         }
       })
-      .catch(err => this.setError(err));
+      .catch(err => this.setError(err, ChatErrorType.Recoverable));
   }
 
   private appendToChat(content: string, from: MessageFrom) {
@@ -234,16 +259,16 @@ export class AmplifyChatbot {
   /**
    * State control methods
    */
-  private setError(error: string | Error) {
+  private setError(error: string | Error, errorType: ChatErrorType) {
     const message = typeof error === 'string' ? error : error.message;
     this.chatState = ChatState.Error;
-    this.errorMessage = message;
+    this.error = { message, errorType };
   }
 
   private reset() {
     this.chatState = ChatState.Initial;
     this.text = '';
-    this.errorMessage = undefined;
+    this.error = undefined;
     this.messages = [];
     if (this.welcomeMessage) this.appendToChat(this.welcomeMessage, MessageFrom.Bot);
     this.audioRecorder && this.audioRecorder.clear();
@@ -258,7 +283,7 @@ export class AmplifyChatbot {
       messageList.push(
         <div class="bubble bot">
           <div class="dot-flashing" />
-        </div>
+        </div>,
       );
     }
     return messageList;
@@ -313,16 +338,9 @@ export class AmplifyChatbot {
   }
 
   private errorToast() {
-    return (
-      this.errorMessage && (
-        <amplify-toast
-          message={I18n.get(this.errorMessage)}
-          handleClose={() => {
-            this.errorMessage = undefined;
-          }}
-        />
-      )
-    );
+    if (!this.error) return;
+    const { message, errorType } = this.error;
+    return <amplify-toast message={I18n.get(message)} handleClose={() => this.handleToastClose(errorType)} />;
   }
 
   render() {
