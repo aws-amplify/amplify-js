@@ -12,16 +12,16 @@ const { isBrowser } = JS.browserOrNode();
 
 // Helper for converting JSON back into DataStore models (while respecting IDs)
 function deserializeModel<T extends PersistentModel>(
-	model: PersistentModelConstructor<T>,
+	Model: PersistentModelConstructor<T>,
 	init: T | T[]
 ) {
 	if (Array.isArray(init)) {
-		return init.map(init => deserializeModel(model, init));
+		return init.map(init => deserializeModel(Model, init));
 	}
 
 	// `fromJSON` is intentionally hidden from types as a "private" method (though it exists on the instance)
 	// @ts-ignore Property 'fromJSON' does not exist on type 'PersistentModelConstructor<T>'.ts(2339)
-	return model.fromJSON(init);
+	return Model.fromJSON(init);
 }
 
 // Helper for converting DataStore models to JSON
