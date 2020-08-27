@@ -842,3 +842,8 @@ jobs:
 #                 - release
 #           requires:
 #             - deploy
+
+workflows:
+  windows_test:
+    jobs:
+      - integ_setup_windows
