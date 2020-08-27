@@ -305,13 +305,17 @@ export class AmplifyChatbot {
 
   private footerJSX(): JSXBase.IntrinsicElements[] {
     if (this.chatState === ChatState.Listening) return this.listeningFooterJSX();
+
+    const inputPlaceholder = this.textEnabled
+      ? Translations.TEXT_INPUT_PLACEHOLDER
+      : Translations.VOICE_INPUT_PLACEHOLDER;
     const textInput = (
       <amplify-input
-        placeholder={I18n.get(Translations.TEXT_INPUT_PLACEHOLDER)}
+        placeholder={I18n.get(inputPlaceholder)}
         description="text"
         handleInputChange={evt => this.handleTextChange(evt)}
         value={this.text}
-        disabled={this.chatState === ChatState.Error}
+        disabled={this.chatState === ChatState.Error || !this.textEnabled}
       />
     );
     const micButton = this.voiceEnabled && (
