@@ -354,19 +354,20 @@ jobs:
       - run:
           name: 'Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages'
           command: |
-            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            mkdir ~/.ssh/
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
             yarn
-      - save_cache:
-          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
-          paths:
-            - ~/.cache ## cache both yarn and Cypress
-      - persist_to_workspace:
-          root: /root
-          paths:
-            - amplify-js-samples-staging
+      # - save_cache:
+      #     key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
+      #     paths:
+      #       - ~/.cache ## cache both yarn and Cypress
+      # - persist_to_workspace:
+      #     root: /root
+      #     paths:
+      #       - amplify-js-samples-staging
   # integ_setup:
   #   executor: build-executor
   #   working_directory: ~/
