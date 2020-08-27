@@ -354,7 +354,7 @@ jobs:
       - run:
           name: 'Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages'
           command: |
-            echo "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+            ssh -o StrictHostKeyChecking=no github.com
             echo $env:SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $env:AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
