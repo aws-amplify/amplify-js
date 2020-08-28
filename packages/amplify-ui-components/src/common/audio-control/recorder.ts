@@ -157,7 +157,6 @@ export class AudioRecorder {
           this.playbackSource.start(0);
         };
         const errorCallback = err => {
-          console.error('test');
           return rej(err);
         };
 
