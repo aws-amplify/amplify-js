@@ -114,7 +114,7 @@ export enum InteractionsStrings {
   TEXT_INPUT_PLACEHOLDER = 'Write a message',
   VOICE_INPUT_PLACEHOLDER = 'Click mic to speak',
   CHAT_DISABLED_ERROR = 'Error: Either voice or text must be enabled for the chatbot',
-  NO_BOT_NAME_ERROR = 'Error: Bot Name must be provided to ChatBot',
+  NO_BOT_NAME_ERROR = 'Error: Bot name must be provided to ChatBot',
 }
 
 type Translations = AuthErrorStrings | AuthStrings | InteractionsStrings;
