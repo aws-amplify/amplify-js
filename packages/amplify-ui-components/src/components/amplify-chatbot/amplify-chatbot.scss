@@ -6,8 +6,10 @@
   --header-size: var(--amplify-text-lg);
   --bot-background-color: rgb(230, 230, 230);
   --bot-text-color: black;
+  --bot-dot-color: var(--bot-text-color);
   --user-background-color: #099ac8;
   --user-text-color: var(--amplify-white);
+  --user-dot-color: var(--user-text-color);
 }
 .amplify-chatbot {
   display: inline-flex;

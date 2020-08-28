@@ -12,7 +12,8 @@ import { InteractionsResponse } from '@aws-amplify/interactions';
 enum ChatState {
   Initial,
   Listening,
-  Sending,
+  SendingText,
+  SendingVoice,
   Speaking,
   Error,
 }
@@ -157,7 +158,7 @@ export class AmplifyChatbot {
   }
 
   private handleSilence() {
-    this.chatState = ChatState.Sending;
+    this.chatState = ChatState.SendingVoice;
     this.audioRecorder.stopRecording();
     this.audioRecorder.exportWAV().then(blob => {
       this.sendVoiceMessage(blob);
@@ -198,7 +199,7 @@ export class AmplifyChatbot {
     const text = this.text;
     this.text = '';
     this.appendToChat(text, MessageFrom.User);
-    this.chatState = ChatState.Sending;
+    this.chatState = ChatState.SendingText;
 
     let response: InteractionsResponse;
     try {
@@ -279,10 +280,17 @@ export class AmplifyChatbot {
    */
   private messageJSX = (messages: Message[]) => {
     const messageList = messages.map(message => <div class={`bubble ${message.from}`}>{message.content}</div>);
-    if (this.chatState === ChatState.Sending) {
+    if (this.chatState === ChatState.SendingText || this.chatState === ChatState.SendingVoice) {
+      // if waiting for voice message, show animation on user side because app is waiting for transcript. Else put it on bot side.
+      const client = this.chatState === ChatState.SendingText ? MessageFrom.Bot : MessageFrom.User;
+
       messageList.push(
-        <div class="bubble bot">
-          <div class="dot-flashing" />
+        <div class={`bubble ${client}`}>
+          <div class={`dot-flashing ${client}`}>
+            <span class="dot left" />
+            <span class="dot middle" />
+            <span class="dot right" />
+          </div>
         </div>,
       );
     }
