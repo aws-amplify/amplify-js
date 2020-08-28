@@ -85,6 +85,15 @@ commands:
           key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
       - publish_to_verdaccio
 
+  prepare_test_env_windows:
+    steps:
+      - attach_workspace:
+          at: ~/
+      - restore_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
+      - install_verdaccio
+      - publish_to_verdaccio
+
   prepare_ui_test_env:
     steps:
       - attach_workspace:
@@ -374,7 +383,7 @@ jobs:
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/auth/with-authenticator-legacy
     steps:
-      - prepare_test_env
+      - prepare_test_env_windows
       - integ_test_js:
           test_name: 'React Authenticator'
           framework: react
