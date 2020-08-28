@@ -844,4 +844,4 @@ jobs:
 workflows:
   windows_test:
     jobs:
-      - integ_setup_windows
+      - integ_setup
