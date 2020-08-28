@@ -38,6 +38,11 @@ export default class CookieStorage {
 					'The sameSite value of cookieStorage must be "lax" or "strict".'
 				);
 			}
+			if (data.sameSite === 'none' && !this.secure) {
+				throw new Error(
+					'sameSite = None requires the Secure attribute in latest browser versions.'
+				);
+			}
 			this.sameSite = data.sameSite;
 		} else {
 			this.sameSite = null;
