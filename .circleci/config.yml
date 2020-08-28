@@ -317,43 +317,43 @@ commands:
           path: reports/junit
 
 jobs:
-  build:
-    executor: build-executor
-    steps:
-      - checkout
-      - run: yarn config set workspaces-experimental true
-      - run: yarn --frozen-lockfile
-      - run: yarn run bootstrap
-      - run: yarn run build
-      - save_cache:
-          key: amplify-ssh-deps-{{ .Branch }}
-          paths:
-            - ~/.ssh
-      - persist_to_workspace:
-          root: /root
-          paths:
-            - amplify-js
+  # build:
+  #   executor: build-executor
+  #   steps:
+  #     - checkout
+  #     - run: yarn config set workspaces-experimental true
+  #     - run: yarn --frozen-lockfile
+  #     - run: yarn run bootstrap
+  #     - run: yarn run build
+  #     - save_cache:
+  #         key: amplify-ssh-deps-{{ .Branch }}
+  #         paths:
+  #           - ~/.ssh
+  #     - persist_to_workspace:
+  #         root: /root
+  #         paths:
+  #           - amplify-js
 
-  unit_test:
-    executor: build-executor
-    steps:
-      - attach_workspace:
-          at: /root
-      - run:
-          name: 'Run Amplify JS unit tests'
-          command: |
-            yarn run test
-            yarn run coverage
+  # unit_test:
+  #   executor: build-executor
+  #   steps:
+  #     - attach_workspace:
+  #         at: /root
+  #     - run:
+  #         name: 'Run Amplify JS unit tests'
+  #         command: |
+  #           yarn run test
+  #           yarn run coverage
 
-  integ_setup:
-    executor: build-executor
+  integ_setup_windows:
+    executor:
+      name: win/default
+      shell: bash.exe
     working_directory: ~/
     steps:
       - run:
           name: 'Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages'
           command: |
-            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-            echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
             yarn
@@ -669,7 +669,7 @@ test_browsers: &test_browsers
   browser: [chrome, firefox]
 
 workflows:
-  build_test_deploy:
+  windows_test:
     jobs:
       - build
       - integ_setup:
