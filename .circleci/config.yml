@@ -4,6 +4,9 @@
 #
 version: 2.1
 
+orbs:
+  win: circleci/windows@2.4.0
+
 executors:
   build-executor:
     docker:
@@ -13,7 +16,7 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress/included:4.12.1
+      - image: cypress/browsers:node12.18.0-chrome83-ff77
       - image: verdaccio/verdaccio
     resource_class: large
 
@@ -104,6 +107,9 @@ commands:
         # optional - the script will use sample_name by default
         type: string
         default: ''
+      browser:
+        type: string
+        default: ''
     steps:
       - run:
           name: 'Install << parameters.test_name >> sample'
@@ -114,7 +120,7 @@ commands:
           name: 'Run cypress tests for << parameters.test_name >> Sample'
           command: |
             cd ~/amplify-js-samples-staging
-            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>' -n 3
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >>' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -304,7 +310,7 @@ commands:
             JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
           name: Detox Test
           command: |
-            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'detox test -c android.emu.debug -u' -n 3
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'detox test -c android.emu.debug -u' 3
       - store_test_results:
           path: reports/junit
       - store_artifacts:
@@ -361,45 +367,62 @@ jobs:
             - amplify-js-samples-staging
 
   integ_react_auth:
-    executor: js-test-executor
+    parameters:
+      browser:
+        type: string
+    executor:
+      name: win/default
+      shell: bash.exe
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/auth/with-authenticator-legacy
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/with-authenticator
     steps:
       - prepare_test_env
       - integ_test_js:
           test_name: 'React Authenticator'
           framework: react
           category: auth
-          sample_name: with-authenticator-legacy
+          sample_name: with-authenticator
           spec: authenticator
+          browser: << parameters.browser >>
 
   integ_angular_auth:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/angular/auth/amplify-authenticator-legacy
+    working_directory: ~/amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
     steps:
       - prepare_test_env
       - integ_test_js:
           test_name: 'Angular Authenticator'
           framework: angular
           category: auth
-          sample_name: amplify-authenticator-legacy
+          sample_name: amplify-authenticator
           spec: authenticator
+          browser: << parameters.browser >>
 
   integ_vue_auth:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/vue/auth/amplify-authenticator-legacy
+    working_directory: ~/amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
     steps:
       - prepare_test_env
       - integ_test_js:
           test_name: 'Vue Authenticator'
           framework: vue
           category: auth
-          sample_name: amplify-authenticator-legacy
+          sample_name: amplify-authenticator
           spec: authenticator
+          browser: << parameters.browser >>
 
   integ_react_predictions:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/predictions/multi-user-translation
@@ -411,8 +434,12 @@ jobs:
           category: predictions
           sample_name: multi-user-translation
           spec: multiuser-translation
+          browser: << parameters.browser >>
 
   integ_react_datastore:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/datastore/many-to-many
@@ -423,8 +450,13 @@ jobs:
           framework: react
           category: datastore
           sample_name: many-to-many
+          spec: many-to-many
+          browser: << parameters.browser >>
 
   integ_react_storage:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageApp
@@ -436,6 +468,7 @@ jobs:
           category: storage
           sample_name: storageApp
           spec: storage
+          browser: << parameters.browser >>
 
   integ_react_storage_ui:
     executor: js-test-executor
@@ -451,6 +484,9 @@ jobs:
           spec: storage-comp
 
   integ_amazon_cognito_identity_js:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/auth/amazon-cognito-identity-js
@@ -461,6 +497,8 @@ jobs:
           framework: react
           category: auth
           sample_name: amazon-cognito-identity-js
+          spec: amazon-cognito-identity-js
+          browser: << parameters.browser >>
 
   integ_setup_ui:
     executor: build-executor
@@ -620,6 +658,15 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/master
       - 1.0-stable
+      - circle-ci-cross-browser
+deploy_branches: &deploy_branches
+  branches:
+    only:
+      - release
+      - main
+
+test_browsers: &test_browsers
+  browser: [chrome, firefox]
 
 workflows:
   build_test_deploy:
@@ -640,36 +687,54 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_angular_auth:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_vue_auth:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_predictions:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_datastore:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_storage:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_storage_ui:
           requires:
             - integ_setup
@@ -682,6 +747,9 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_rn_ios_storage:
           requires:
             - integ_setup
@@ -720,7 +788,7 @@ workflows:
             <<: *releasable_branches
       - deploy:
           filters:
-            <<: *releasable_branches
+            <<: *deploy_branches
           requires:
             - unit_test
             - integ_react_predictions
