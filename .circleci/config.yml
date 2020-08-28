@@ -5,7 +5,7 @@
 version: 2.1
 
 orbs:
-  win: circleci/windows@2.2.0
+  win: circleci/windows@2.4.0
 
 # executors:
 #   build-executor:
@@ -348,7 +348,7 @@ jobs:
   integ_setup_windows:
     executor:
       name: win/default
-      shell: powershell.exe
+      shell: bash.exe
     working_directory: ~/
     steps:
       - add_ssh_keys:
@@ -357,7 +357,7 @@ jobs:
       - run:
           name: 'Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages'
           command: |
-            git clone $env:AMPLIFY_JS_SAMPLES_STAGING_URL
+            git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
             yarn
       # - save_cache:
