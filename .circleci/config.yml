@@ -348,13 +348,15 @@ jobs:
   integ_setup_windows:
     executor:
       name: win/default
-      shell: powershell.exe
+      shell: bash.exe
     working_directory: ~/
     steps:
       - run:
           name: 'Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages'
           command: |
-            git clone $env:AMPLIFY_JS_SAMPLES_STAGING_URL
+            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
+            git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
             yarn
       # - save_cache:
