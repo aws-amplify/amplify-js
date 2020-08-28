@@ -7,22 +7,22 @@ version: 2.1
 orbs:
   win: circleci/windows@2.2.0
 
-executors:
-  build-executor:
-    docker:
-      - image: cypress/base:12
-    resource_class: large
-    working_directory: ~/amplify-js
+# executors:
+#   build-executor:
+#     docker:
+#       - image: cypress/base:12
+#     resource_class: large
+#     working_directory: ~/amplify-js
 
-  js-test-executor:
-    docker:
-      - image: cypress/included:4.12.1
-      - image: verdaccio/verdaccio
-    resource_class: large
+#   js-test-executor:
+#     docker:
+#       - image: cypress/included:4.12.1
+#       - image: verdaccio/verdaccio
+#     resource_class: large
 
-  macos-executor:
-    macos:
-      xcode: 11.4.1
+#   macos-executor:
+#     macos:
+#       xcode: 11.4.1
 
 # test_env_vars: &test_env_vars
 #   environment:
@@ -345,38 +345,39 @@ jobs:
   #           yarn run test
   #           yarn run coverage
 
-  # integ_setup_windows:
-  #   executor:
-  #     name: win/default
-  #     shell: powershell.exe
-  #   working_directory: ~/
-  #   steps:
-  #     - run:
-  #         name: 'Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages'
-  #         command: |
-  #           ssh -o StrictHostKeyChecking=no github.com
-  #           echo $env:SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
-  #           git clone $env:AMPLIFY_JS_SAMPLES_STAGING_URL
-  #           cd amplify-js-samples-staging
-  #           yarn
-  # - save_cache:
-  #     key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
-  #     paths:
-  #       - ~/.cache ## cache both yarn and Cypress
-  # - persist_to_workspace:
-  #     root: /root
-  #     paths:
-  #       - amplify-js-samples-staging
-  integ_setup:
-    executor: build-executor
+  integ_setup_windows:
+    executor:
+      name: win/default
+      shell: powershell.exe
     working_directory: ~/
     steps:
       - run:
           name: 'Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages'
           command: |
+            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
             cd amplify-js-samples-staging
             yarn
+      # - save_cache:
+      #     key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
+      #     paths:
+      #       - ~/.cache ## cache both yarn and Cypress
+      # - persist_to_workspace:
+      #     root: /root
+      #     paths:
+      #       - amplify-js-samples-staging
+  # integ_setup:
+  #   executor: build-executor
+  #   working_directory: ~/
+  #   steps:
+  #     - run:
+  #         name: 'Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages'
+  #         command: |
+  #           mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+  #           echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
+  #           git clone $AMPLIFY_JS_SAMPLES_STAGING_URL
+  #           cd amplify-js-samples-staging
+  #           yarn
   #     - save_cache:
   #         key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
   #         paths:
@@ -844,4 +845,4 @@ jobs:
 workflows:
   windows_test:
     jobs:
-      - integ_setup
+      - integ_setup_windows
