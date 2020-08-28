@@ -23,6 +23,7 @@ export class AudioRecorder {
   private audioSupported: boolean;
 
   private analyserNode: AnalyserNode;
+  private playbackSource: AudioBufferSourceNode;
   private onSilence: SilenceHandler;
   private visualizer: Visualizer;
 
@@ -144,17 +145,19 @@ export class AudioRecorder {
     return new Promise((res, rej) => {
       const fileReader = new FileReader();
       fileReader.onload = () => {
-        const playbackSource = this.audioContext.createBufferSource();
+        if (this.playbackSource) this.playbackSource.disconnect(); // disconnect previous playback source
+        this.playbackSource = this.audioContext.createBufferSource();
 
         const successCallback = (buf: AudioBuffer) => {
-          playbackSource.buffer = buf;
-          playbackSource.connect(this.audioContext.destination);
-          playbackSource.onended = () => {
+          this.playbackSource.buffer = buf;
+          this.playbackSource.connect(this.audioContext.destination);
+          this.playbackSource.onended = () => {
             return res();
           };
-          playbackSource.start(0);
+          this.playbackSource.start(0);
         };
         const errorCallback = err => {
+          console.error('test');
           return rej(err);
         };
 
@@ -163,6 +166,15 @@ export class AudioRecorder {
       fileReader.onerror = () => rej();
       fileReader.readAsArrayBuffer(myBlob);
     });
+  }
+
+  /**
+   * Stops playing audio if there's a playback source connected.
+   */
+  public stop() {
+    if (this.playbackSource) {
+      this.playbackSource.stop();
+    }
   }
 
   /**

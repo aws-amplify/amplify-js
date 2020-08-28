@@ -14,7 +14,6 @@ enum ChatState {
   Listening,
   SendingText,
   SendingVoice,
-  Speaking,
   Error,
 }
 
@@ -150,6 +149,7 @@ export class AmplifyChatbot {
    */
   private handleMicButton() {
     if (this.chatState !== ChatState.Initial) return;
+    this.audioRecorder.stop();
     this.chatState = ChatState.Listening;
     this.audioRecorder.startRecording(
       () => this.handleSilence(),
@@ -230,7 +230,7 @@ export class AmplifyChatbot {
       return;
     }
 
-    this.chatState = ChatState.Speaking;
+    this.chatState = ChatState.Initial;
     const dialogState = response.dialogState;
     if (response.inputTranscript) this.appendToChat(response.inputTranscript, MessageFrom.User);
     this.appendToChat(response.message, MessageFrom.Bot);
@@ -238,9 +238,13 @@ export class AmplifyChatbot {
     await this.audioRecorder
       .play(response.audioStream)
       .then(() => {
-        this.chatState = ChatState.Initial;
-        if (this.conversationModeOn && dialogState !== 'Fulfilled' && dialogState !== 'Failed') {
-          // if session is not finished, resume listening to mic
+        // if conversationMode is on, chat is incomplete, and mic button isn't pressed yet, resume listening.
+        if (
+          this.conversationModeOn &&
+          dialogState !== 'Fulfilled' &&
+          dialogState !== 'Failed' &&
+          this.chatState === ChatState.Initial
+        ) {
           this.handleMicButton();
         }
       })
