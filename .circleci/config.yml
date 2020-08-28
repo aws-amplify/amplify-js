@@ -351,6 +351,9 @@ jobs:
       shell: bash.exe
     working_directory: ~/
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - 'fe:63:2f:b7:c3:d3:bf:ca:3c:d8:69:78:06:b3:e4:dd'
       - run:
           name: 'Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages'
           command: |
