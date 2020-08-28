@@ -17,14 +17,14 @@ import { StyleSheet } from 'react-native';
 export type AmplifyThemeType = Record<string, any>;
 
 // Colors
-export const deepSquidInk = '#152939';
-export const linkUnderlayColor = '#FFF';
-export const errorIconColor = '#DD3F5B';
-export const textInputColor = '#000000';
-export const textInputBorderColor = '#C4C4C4';
-export const placeholderColor = '#C7C7CD';
-export const buttonColor = '#ff9900';
-export const disabledButtonColor = '#ff990080';
+const deepSquidInk = '#152939';
+export const defaultLinkUnderlayColor = '#FFF';
+export const defaultErrorIconColor = '#DD3F5B';
+const defaultTextInputColor = '#000000';
+const defaultTextInputBorderColor = '#C4C4C4';
+export const defaultPlaceholderColor = '#C7C7CD';
+const defaultButtonColor = '#ff9900';
+const defaultDisabledButtonColor = '#ff990080';
 
 // Theme
 export default StyleSheet.create({
@@ -68,13 +68,13 @@ export default StyleSheet.create({
 	},
 	sectionFooterLink: {
 		fontSize: 14,
-		color: buttonColor,
+		color: defaultButtonColor,
 		alignItems: 'baseline',
 		textAlign: 'center',
 	},
 	sectionFooterLinkDisabled: {
 		fontSize: 14,
-		color: disabledButtonColor,
+		color: defaultDisabledButtonColor,
 		alignItems: 'baseline',
 		textAlign: 'center',
 	},
@@ -107,12 +107,12 @@ export default StyleSheet.create({
 		width: '100%',
 	},
 	button: {
-		backgroundColor: buttonColor,
+		backgroundColor: defaultButtonColor,
 		alignItems: 'center',
 		padding: 16,
 	},
 	buttonDisabled: {
-		backgroundColor: disabledButtonColor,
+		backgroundColor: defaultDisabledButtonColor,
 		alignItems: 'center',
 		padding: 16,
 	},
@@ -128,8 +128,8 @@ export default StyleSheet.create({
 		padding: 16,
 		borderWidth: 1,
 		borderRadius: 3,
-		borderColor: textInputBorderColor,
-		color: textInputColor,
+		borderColor: defaultTextInputBorderColor,
+		color: defaultTextInputColor,
 	},
 	inputLabel: {
 		marginBottom: 8,
@@ -144,8 +144,8 @@ export default StyleSheet.create({
 		padding: 16,
 		borderWidth: 1,
 		borderRadius: 3,
-		borderColor: textInputBorderColor,
-		color: textInputColor,
+		borderColor: defaultTextInputBorderColor,
+		color: defaultTextInputColor,
 	},
 	picker: {
 		flex: 1,

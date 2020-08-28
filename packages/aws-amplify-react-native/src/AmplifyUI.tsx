@@ -29,9 +29,9 @@ import {
 import { I18n } from 'aws-amplify';
 import AmplifyTheme, {
 	AmplifyThemeType,
-	linkUnderlayColor,
-	errorIconColor,
-	placeholderColor,
+	defaultLinkUnderlayColor,
+	defaultErrorIconColor,
+	defaultPlaceholderColor,
 } from './AmplifyTheme';
 import { Icon } from 'react-native-elements';
 import countryDialCodes from './CountryDialCodes';
@@ -50,6 +50,7 @@ interface IFormFieldProps extends TextInputProperties {
 	label: string;
 	required?: boolean;
 	theme?: AmplifyThemeType;
+	placeholderTextColor?: string;
 }
 
 export const FormField: FC<IFormFieldProps> = props => {
@@ -63,7 +64,9 @@ export const FormField: FC<IFormFieldProps> = props => {
 				style={theme.input}
 				autoCapitalize="none"
 				autoCorrect={false}
-				placeholderTextColor={placeholderColor}
+				placeholderTextColor={
+					props.placeholderTextColor || defaultPlaceholderColor
+				}
 				{...props}
 			/>
 		</View>
@@ -77,6 +80,7 @@ interface IPhoneProps extends TextInputProperties {
 	required?: boolean;
 	theme?: AmplifyThemeType;
 	value?: string;
+	placeholderTextColor?: string;
 }
 
 interface IPhoneState {
@@ -102,7 +106,7 @@ export class PhoneField extends Component<IPhoneProps, IPhoneState> {
 	}
 
 	render() {
-		const { label, required, value } = this.props;
+		const { label, required, value, placeholderTextColor } = this.props;
 		const { dialCode } = this.state;
 		const theme = this.props.theme || AmplifyTheme;
 
@@ -132,7 +136,9 @@ export class PhoneField extends Component<IPhoneProps, IPhoneState> {
 						style={theme.phoneInput}
 						autoCapitalize="none"
 						autoCorrect={false}
-						placeholderTextColor={placeholderColor}
+						placeholderTextColor={
+							placeholderTextColor || defaultPlaceholderColor
+						}
 						{...this.props}
 						value={phoneValue}
 						onChangeText={phone => {
@@ -152,6 +158,7 @@ interface ILinkCellProps {
 	onPress: () => void;
 	testID?: string;
 	theme?: AmplifyThemeType;
+	linkUnderlayColor?: string;
 }
 
 export const LinkCell: FC<ILinkCellProps> = props => {
@@ -161,7 +168,7 @@ export const LinkCell: FC<ILinkCellProps> = props => {
 		<View style={theme.cell}>
 			<TouchableHighlight
 				onPress={props.onPress}
-				underlayColor={linkUnderlayColor}
+				underlayColor={props.linkUnderlayColor || defaultLinkUnderlayColor}
 				testID={props.testID}
 				disabled={disabled}
 			>
@@ -195,6 +202,7 @@ export const Header: FC<IHeaderProps> = props => {
 
 interface IErrorRowProps {
 	theme?: AmplifyThemeType;
+	errorIconColor?: string;
 }
 
 export const ErrorRow: FC<IErrorRowProps> = props => {
@@ -202,7 +210,10 @@ export const ErrorRow: FC<IErrorRowProps> = props => {
 	if (!props.children) return null;
 	return (
 		<View style={theme.errorRow}>
-			<Icon name="warning" color={errorIconColor} />
+			<Icon
+				name="warning"
+				color={props.errorIconColor || defaultErrorIconColor}
+			/>
 			<Text style={theme.errorRowText} testID={TEST_ID.AUTH.ERROR_ROW_TEXT}>
 				{props.children}
 			</Text>

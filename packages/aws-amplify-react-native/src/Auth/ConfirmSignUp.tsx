@@ -28,7 +28,10 @@ import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('ConfirmSignUp');
 
-interface IConfirmSignUpProps extends IAuthPieceProps {}
+interface IConfirmSignUpProps extends IAuthPieceProps {
+	linkUnderlayColor?: string;
+	errorIconColor?: string;
+}
 
 interface IConfirmSignUpState extends IAuthPieceState {
 	code: string | null;
@@ -95,6 +98,7 @@ export default class ConfirmSignUp extends AuthPiece<
 								onChangeText={text => this.setState({ code: text })}
 								label={I18n.get('Confirmation Code')}
 								placeholder={I18n.get('Enter your confirmation code')}
+								placeholderTextColor={this.props.placeholderTextColor}
 								required={true}
 								testID={TEST_ID.AUTH.CONFIRMATION_CODE_INPUT}
 							/>
@@ -112,6 +116,7 @@ export default class ConfirmSignUp extends AuthPiece<
 								onPress={this.resend}
 								disabled={!this.state.username}
 								testID={TEST_ID.AUTH.RESEND_CODE_BUTTON}
+								linkUnderlayColor={this.props.linkUnderlayColor}
 							>
 								{I18n.get('Resend code')}
 							</LinkCell>
@@ -119,11 +124,14 @@ export default class ConfirmSignUp extends AuthPiece<
 								theme={theme}
 								onPress={() => this.changeState('signIn')}
 								testID={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
+								linkUnderlayColor={this.props.linkUnderlayColor}
 							>
 								{I18n.get('Back to Sign In')}
 							</LinkCell>
 						</View>
-						<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+						<ErrorRow theme={theme} errorIconColor={this.props.errorIconColor}>
+							{this.state.error}
+						</ErrorRow>
 					</View>
 					<SignedOutMessage {...this.props} />
 				</View>

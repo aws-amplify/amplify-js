@@ -38,6 +38,7 @@ export interface IAuthPieceProps {
 	theme?: AmplifyThemeType;
 	track?: () => void;
 	usernameAttributes?: UsernameAttributesType;
+	placeholderTextColor?: string;
 }
 
 export interface IAuthPieceState {
@@ -80,7 +81,7 @@ export default class AuthPiece<
 
 	renderUsernameField(theme: AmplifyThemeType) {
 		const value = this.getUsernameFromInput();
-		const { usernameAttributes = [] } = this.props;
+		const { usernameAttributes = [], placeholderTextColor } = this.props;
 		if (usernameAttributes === 'email') {
 			return (
 				<FormField
@@ -88,6 +89,7 @@ export default class AuthPiece<
 					onChangeText={text => this.setState({ email: text })}
 					label={I18n.get('Email')}
 					placeholder={I18n.get('Enter your email')}
+					placeholderTextColor={placeholderTextColor}
 					required={true}
 					testID={TEST_ID.AUTH.EMAIL_INPUT}
 					value={value}
@@ -101,6 +103,7 @@ export default class AuthPiece<
 					onChangeText={text => this.setState({ phone_number: text })}
 					label={I18n.get('Phone Number')}
 					placeholder={I18n.get('Enter your phone number')}
+					placeholderTextColor={placeholderTextColor}
 					keyboardType="phone-pad"
 					required={true}
 					testID={TEST_ID.AUTH.PHONE_INPUT}
@@ -114,6 +117,7 @@ export default class AuthPiece<
 					onChangeText={text => this.setState({ username: text })}
 					label={I18n.get(this.getUsernameLabel())}
 					placeholder={I18n.get('Enter your username')}
+					placeholderTextColor={placeholderTextColor}
 					required={true}
 					testID={TEST_ID.AUTH.USERNAME_INPUT}
 					value={value}

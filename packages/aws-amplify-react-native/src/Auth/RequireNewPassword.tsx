@@ -29,7 +29,10 @@ import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('RequireNewPassword');
 
-interface IRequireNewPasswordProps extends IAuthPieceProps {}
+interface IRequireNewPasswordProps extends IAuthPieceProps {
+	linkUnderlayColor?: string;
+	errorIconColor?: string;
+}
 
 interface IRequireNewPasswordState extends IAuthPieceState {
 	password?: string;
@@ -82,6 +85,7 @@ export default class RequireNewPassword extends AuthPiece<
 				label={I18n.get(convertToPlaceholder(attribute))}
 				key={I18n.get(convertToPlaceholder(attribute))}
 				placeholder={I18n.get(convertToPlaceholder(attribute))}
+				placeholderTextColor={this.props.placeholderTextColor}
 				required={true}
 			/>
 		);
@@ -102,6 +106,7 @@ export default class RequireNewPassword extends AuthPiece<
 							onChangeText={text => this.setState({ password: text })}
 							label={I18n.get('Password')}
 							placeholder={I18n.get('Enter your password')}
+							placeholderTextColor={this.props.placeholderTextColor}
 							secureTextEntry={true}
 							required={true}
 						/>
@@ -127,11 +132,14 @@ export default class RequireNewPassword extends AuthPiece<
 							theme={theme}
 							onPress={() => this.changeState('signIn')}
 							testID={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
+							linkUnderlayColor={this.props.linkUnderlayColor}
 						>
 							{I18n.get('Back to Sign In')}
 						</LinkCell>
 					</View>
-					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+					<ErrorRow theme={theme} errorIconColor={this.props.errorIconColor}>
+						{this.state.error}
+					</ErrorRow>
 					<SignedOutMessage {...this.props} />
 				</ScrollView>
 			</Wrapper>

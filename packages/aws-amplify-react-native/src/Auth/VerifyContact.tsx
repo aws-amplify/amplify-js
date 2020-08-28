@@ -29,7 +29,10 @@ import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('VerifyContact');
 
-interface IVerifyContactProps extends IAuthPieceProps {}
+interface IVerifyContactProps extends IAuthPieceProps {
+	linkUnderlayColor?: string;
+	errorIconColor?: string;
+}
 
 interface IVerifyContactState extends IAuthPieceState {
 	code?: string;
@@ -180,6 +183,7 @@ export default class VerifyContact extends AuthPiece<
 					onChangeText={text => this.setState({ code: text })}
 					label={I18n.get('Confirmation Code')}
 					placeholder={I18n.get('Enter your confirmation code')}
+					placeholderTextColor={this.props.placeholderTextColor}
 					required={true}
 					testID={TEST_ID.AUTH.CONFIRMATION_CODE_INPUT}
 				/>
@@ -209,11 +213,14 @@ export default class VerifyContact extends AuthPiece<
 								theme={theme}
 								onPress={() => this.changeState('signedIn')}
 								testID={TEST_ID.AUTH.SKIP_BUTTON}
+								linkUnderlayColor={this.props.linkUnderlayColor}
 							>
 								{I18n.get('Skip')}
 							</LinkCell>
 						</View>
-						<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+						<ErrorRow theme={theme} errorIconColor={this.props.errorIconColor}>
+							{this.state.error}
+						</ErrorRow>
 					</View>
 					<SignedOutMessage {...this.props} />
 				</View>

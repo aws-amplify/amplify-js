@@ -29,7 +29,10 @@ import TEST_ID from '../AmplifyTestIDs';
 
 const logger = new Logger('SignIn');
 
-interface ISignInProps extends IAuthPieceProps {}
+interface ISignInProps extends IAuthPieceProps {
+	linkUnderlayColor?: string;
+	errorIconColor?: string;
+}
 
 interface ISignInState extends IAuthPieceState {
 	password?: string;
@@ -98,6 +101,7 @@ export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 								secureTextEntry={true}
 								required={true}
 								testID={TEST_ID.AUTH.PASSWORD_INPUT}
+								placeholderTextColor={this.props.placeholderTextColor}
 							/>
 							<AmplifyButton
 								text={I18n.get('Sign In').toUpperCase()}
@@ -114,6 +118,7 @@ export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 								theme={theme}
 								onPress={() => this.changeState('forgotPassword')}
 								testID={TEST_ID.AUTH.FORGOT_PASSWORD_BUTTON}
+								linkUnderlayColor={this.props.linkUnderlayColor}
 							>
 								{I18n.get('Forgot Password')}
 							</LinkCell>
@@ -121,11 +126,14 @@ export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 								theme={theme}
 								onPress={() => this.changeState('signUp')}
 								testID={TEST_ID.AUTH.SIGN_UP_BUTTON}
+								linkUnderlayColor={this.props.linkUnderlayColor}
 							>
 								{I18n.get('Sign Up')}
 							</LinkCell>
 						</View>
-						<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+						<ErrorRow theme={theme} errorIconColor={this.props.errorIconColor}>
+							{this.state.error}
+						</ErrorRow>
 					</View>
 					<SignedOutMessage {...this.props} />
 				</View>

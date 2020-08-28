@@ -71,6 +71,9 @@ interface IAuthenticatorProps {
 	usernameAttributes?: UsernameAttributesType;
 	onStateChange?: OnStateChangeType;
 	theme?: AmplifyThemeType;
+	placeholderTextColor?: string;
+	linkUnderlayColor?: string;
+	errorIconColor?: string;
 }
 
 interface IAuthenticatorState {
@@ -223,7 +226,14 @@ export default class Authenticator extends React.Component<
 				? Container
 				: this.props.container || EmptyContainer;
 
-		const { hideDefault, signUpConfig, usernameAttributes } = this.props;
+		const {
+			hideDefault,
+			signUpConfig,
+			usernameAttributes,
+			placeholderTextColor,
+			linkUnderlayColor,
+			errorIconColor,
+		} = this.props;
 		const props_children: any = this.props.children || [];
 		const default_children = [
 			<Loading />,
@@ -248,6 +258,9 @@ export default class Authenticator extends React.Component<
 					onStateChange: this.handleStateChange,
 					Auth: new AuthDecorator(this.handleStateChange),
 					usernameAttributes,
+					placeholderTextColor,
+					linkUnderlayColor,
+					errorIconColor,
 				});
 			});
 		return <ContainerWrapper theme={theme}>{children}</ContainerWrapper>;

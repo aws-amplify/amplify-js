@@ -45,6 +45,7 @@ interface ISignUpConfig {
 
 interface ISignUpProps extends IAuthPieceProps {
 	signUpConfig?: ISignUpConfig;
+	errorIconColor?: string;
 }
 
 interface ISignUpState extends IAuthPieceState {
@@ -264,6 +265,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 									}}
 									label={I18n.get(field.label)}
 									placeholder={I18n.get(field.placeholder)}
+									placeholderTextColor={this.props.placeholderTextColor}
 									required={field.required}
 									testID={field.testID}
 								/>
@@ -274,6 +276,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 									onChangeText={text => this.setState({ phone_number: text })}
 									label={I18n.get(field.label)}
 									placeholder={I18n.get(field.placeholder)}
+									placeholderTextColor={this.props.placeholderTextColor}
 									keyboardType="phone-pad"
 									required={field.required}
 									defaultDialCode={this.getDefaultDialCode()}
@@ -305,7 +308,9 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 							{I18n.get('Sign In')}
 						</LinkCell>
 					</View>
-					<ErrorRow theme={theme}>{this.state.error}</ErrorRow>
+					<ErrorRow theme={theme} errorIconColor={this.props.errorIconColor}>
+						{this.state.error}
+					</ErrorRow>
 					<SignedOutMessage {...this.props} />
 				</ScrollView>
 			</Wrapper>
