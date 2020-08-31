@@ -45,6 +45,7 @@ graph TD;
   amplify-sign-in --> amplify-strike
   amplify-sign-in --> amplify-auth-fields
   amplify-sign-in --> amplify-loading-spinner
+  amplify-button --> amplify-icon
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-loading-spinner

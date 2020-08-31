@@ -490,6 +490,46 @@ jobs:
           sample_name: multi-user-translation
           spec: multiuser-translation
           browser: << parameters.browser >>
+
+  integ_react_interactions:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/interactions/chatbot-component
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Interactions'
+          framework: react
+          category: interactions
+          sample_name: chatbot-component
+          spec: chatbot-component
+
+  integ_vue_interactions:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/vue/interactions/chatbot-component
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Vue Interactions'
+          framework: vue
+          category: interactions
+          sample_name: chatbot-component
+          spec: chatbot-component
+
+  integ_angular_interactions:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/angular/interactions/chatbot-component
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Angular Interactions'
+          framework: angular
+          category: interactions
+          sample_name: chatbot-component
+          spec: chatbot-component
+
   integ_react_datastore:
     parameters:
       browser:
@@ -697,7 +737,7 @@ releasable_branches: &releasable_branches
     only:
       - release
       - main
-      - ui-components/master
+      - ui-components/main
       - 1.0-stable
       - circle-ci-cross-browser
 deploy_branches: &deploy_branches
@@ -759,6 +799,24 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_interactions:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_vue_interactions:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_angular_interactions:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_react_datastore:
           requires:
             - integ_setup
