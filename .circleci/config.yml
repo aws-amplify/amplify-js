@@ -88,7 +88,7 @@ commands:
   prepare_test_env_windows:
     steps:
       - attach_workspace:
-          at: /root
+          at: ~/windows
       - restore_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
       - install_verdaccio
@@ -362,7 +362,7 @@ jobs:
           paths:
             - ~/.ssh
       - persist_to_workspace:
-          root: /root
+          root: ~/windows
           paths:
             - amplify-js
 
@@ -713,6 +713,7 @@ workflows:
   build_test_deploy:
     jobs:
       - build
+      - build_windows
       - integ_setup:
           filters:
             <<: *releasable_branches
@@ -725,7 +726,7 @@ workflows:
       - integ_react_auth:
           requires:
             - integ_setup
-            - build
+            - build_windows
           filters:
             <<: *releasable_branches
           matrix:
