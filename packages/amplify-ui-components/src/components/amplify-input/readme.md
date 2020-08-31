@@ -29,6 +29,7 @@
 
 ### Used by
 
+ - [amplify-chatbot](../amplify-chatbot)
  - [amplify-form-field](../amplify-form-field)
  - [amplify-phone-field](../amplify-phone-field)
  - [amplify-verify-contact](../amplify-verify-contact)
@@ -36,6 +37,7 @@
 ### Graph
 ```mermaid
 graph TD;
+  amplify-chatbot --> amplify-input
   amplify-form-field --> amplify-input
   amplify-phone-field --> amplify-input
   amplify-verify-contact --> amplify-input
