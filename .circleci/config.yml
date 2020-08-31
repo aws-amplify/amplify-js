@@ -88,11 +88,16 @@ commands:
   prepare_test_env_windows:
     steps:
       - attach_workspace:
-          at: ~/
+          at: /root
       - restore_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
       - install_verdaccio
       - publish_to_verdaccio
+      - run:
+          name: Yarn Install
+          command: |
+            echo "Current NPM registry: " $(yarn config get registry)
+            yarn install --frozen-lockfile --non-interactive
 
   prepare_ui_test_env:
     steps:
@@ -328,6 +333,24 @@ commands:
 jobs:
   build:
     executor: build-executor
+    steps:
+      - checkout
+      - run: yarn config set workspaces-experimental true
+      - run: yarn --frozen-lockfile
+      - run: yarn run bootstrap
+      - run: yarn run build
+      - save_cache:
+          key: amplify-ssh-deps-{{ .Branch }}
+          paths:
+            - ~/.ssh
+      - persist_to_workspace:
+          root: /root
+          paths:
+            - amplify-js
+  build_windows:
+    executor:
+      name: win/default
+      shell: bash.exe
     steps:
       - checkout
       - run: yarn config set workspaces-experimental true
@@ -690,6 +713,7 @@ workflows:
   build_test_deploy:
     jobs:
       - build
+      - build_windows
       - integ_setup:
           filters:
             <<: *releasable_branches
@@ -702,7 +726,7 @@ workflows:
       - integ_react_auth:
           requires:
             - integ_setup
-            - build
+            - build_windows
           filters:
             <<: *releasable_branches
           matrix:
