@@ -41,6 +41,7 @@ import {
 	ICredentials,
 	Parser,
 	JS,
+	UniversalStorage,
 } from '@aws-amplify/core';
 import {
 	CookieStorage,
@@ -150,7 +151,9 @@ export class AuthClass {
 			// backward compatability
 			if (cookieStorage) this._storage = new CookieStorage(cookieStorage);
 			else {
-				this._storage = new StorageHelper().getStorage();
+				this._storage = config.ssr
+					? new UniversalStorage()
+					: new StorageHelper().getStorage();
 			}
 		} else {
 			if (!this._isValidAuthStorage(this._config.storage)) {
