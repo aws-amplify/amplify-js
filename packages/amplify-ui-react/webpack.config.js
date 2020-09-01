@@ -30,6 +30,7 @@ module.exports = {
 	resolve: {
 		extensions: ['.js', '.json'],
 	},
+	node: { fs: 'empty' },
 	mode: 'production',
 	module: {
 		rules: [
