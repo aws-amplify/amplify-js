@@ -1,4 +1,4 @@
-import { JS } from '@aws-amplify/core';
+import { browserOrNode } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 
 type NetworkStatus = {
@@ -11,7 +11,7 @@ export default class ReachabilityNavigator implements Reachability {
 	> = [];
 
 	networkMonitor(netInfo?: any): Observable<NetworkStatus> {
-		if (JS.browserOrNode().isNode) {
+		if (browserOrNode().isNode) {
 			return Observable.from([{ online: true }]);
 		}
 
