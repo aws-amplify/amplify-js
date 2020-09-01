@@ -20,9 +20,12 @@ import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Constants,
+	Credentials,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import PubSub from '@aws-amplify/pubsub';
+import Auth from '@aws-amplify/auth';
+import Cache from '@aws-amplify/cache';
 import { GraphQLOptions, GraphQLResult } from './types';
 import { RestClient } from '@aws-amplify/api-rest';
 const USER_AGENT_HEADER = 'x-amz-user-agent';
@@ -44,7 +47,9 @@ export class GraphQLAPIClass {
 	private _options;
 	private _api = null;
 
-	amplify = Amplify;
+	Auth = Auth;
+	Cache = Cache;
+	Credentials = Credentials;
 
 	/**
 	 * Initialize GraphQL API with AWS configuration
@@ -99,8 +104,8 @@ export class GraphQLAPIClass {
 		logger.debug('create Rest instance');
 		if (this._options) {
 			this._api = new RestClient(this._options);
-			// Share Amplify instance with client for SSR
-			this._api.amplify = this.amplify;
+			// Share instance Credentials with client for SSR
+			this._api.Credentials = this.Credentials;
 
 			return true;
 		} else {
@@ -134,7 +139,7 @@ export class GraphQLAPIClass {
 				}
 				break;
 			case 'OPENID_CONNECT':
-				const federatedInfo = await this.amplify.Cache.getItem('federatedInfo');
+				const federatedInfo = await this.Cache.getItem('federatedInfo');
 
 				if (!federatedInfo || !federatedInfo.token) {
 					throw new Error('No federated jwt');
@@ -144,7 +149,7 @@ export class GraphQLAPIClass {
 				};
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
-				const session = await this.amplify.Auth.currentSession();
+				const session = await this.Auth.currentSession();
 				headers = {
 					Authorization: session.getAccessToken().getJwtToken(),
 				};
@@ -357,10 +362,10 @@ export class GraphQLAPIClass {
 	 * @private
 	 */
 	_ensureCredentials() {
-		return this.amplify.Credentials.get()
+		return this.Credentials.get()
 			.then(credentials => {
 				if (!credentials) return false;
-				const cred = this.amplify.Credentials.shear(credentials);
+				const cred = this.Credentials.shear(credentials);
 				logger.debug('set credentials for api', cred);
 
 				return true;

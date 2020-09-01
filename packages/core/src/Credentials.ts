@@ -33,6 +33,9 @@ export class CredentialsClass {
 	private _identityId;
 	private _nextCredentialsRefresh: Number;
 
+	// `Amplify.Auth` will either be `Auth` or `null` depending on if Auth was imported
+	Auth = Amplify.Auth;
+
 	constructor(config) {
 		this.configure(config);
 		this._refreshHandlers['google'] = GoogleOAuth.refreshGoogleToken;
@@ -62,6 +65,7 @@ export class CredentialsClass {
 		}
 
 		this._storage = this._config.storage;
+
 		if (!this._storage) {
 			this._storage = new StorageHelper().getStorage();
 		}
@@ -99,11 +103,10 @@ export class CredentialsClass {
 		}
 
 		logger.debug('need to get a new credential or refresh the existing one');
-		if (
-			Amplify.Auth &&
-			typeof Amplify.Auth.currentUserCredentials === 'function'
-		) {
-			return Amplify.Auth.currentUserCredentials();
+
+		// Some use-cases don't require Auth for signing in, but use Credentials for guest users (e.g. Analytics)
+		if (this.Auth && typeof this.Auth.currentUserCredentials === 'function') {
+			return this.Auth.currentUserCredentials();
 		} else {
 			return Promise.reject('No Auth module registered in Amplify');
 		}
