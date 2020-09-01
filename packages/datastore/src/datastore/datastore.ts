@@ -567,6 +567,7 @@ class DataStore {
 				this.errorHandler
 			);
 
+			// tslint:disable-next-line:max-line-length
 			const fullSyncIntervalInMilliseconds = this.fullSyncInterval * 1000 * 60; // fullSyncInterval from param is in minutes
 			syncSubscription = this.sync
 				.start({ fullSyncInterval: fullSyncIntervalInMilliseconds })
