@@ -7,11 +7,7 @@ import {
 	UniversalStorage,
 } from '@aws-amplify/core';
 
-import {
-	DataStore,
-	PersistentModel,
-	PersistentModelConstructor,
-} from '@aws-amplify/datastore';
+import { DataStore } from '@aws-amplify/datastore';
 import { NextPageContext } from 'next';
 
 // ! We have to use this exact reference, since it gets mutated with Amplify.Auth
@@ -28,25 +24,6 @@ const requiredModules = [
 
 // These modules have been tested with SSR
 const defaultModules = [API, Auth, DataStore];
-
-// Helper for converting JSON back into DataStore models (while respecting IDs)
-function deserializeModel<T extends PersistentModel>(
-	Model: PersistentModelConstructor<T>,
-	init: T | T[]
-) {
-	if (Array.isArray(init)) {
-		return init.map(init => deserializeModel(Model, init));
-	}
-
-	// `fromJSON` is intentionally hidden from types as a "private" method (though it exists on the instance)
-	// @ts-ignore Property 'fromJSON' does not exist on type 'PersistentModelConstructor<T>'.ts(2339)
-	return Model.fromJSON(init);
-}
-
-// Helper for converting DataStore models to JSON
-function serializeModel<T extends PersistentModel>(model: T | T[]): JSON {
-	return JSON.parse(JSON.stringify(model));
-}
 
 type Context = Pick<NextPageContext, 'req'> & {
 	modules?: any[];
@@ -79,9 +56,5 @@ export function withSSRContext(context: Context = {}) {
 	// Configure new Amplify instances with previous configuration
 	amplify.configure({ ...previousConfig, storage });
 
-	return {
-		...amplify,
-		deserializeModel,
-		serializeModel,
-	};
+	return amplify;
 }
