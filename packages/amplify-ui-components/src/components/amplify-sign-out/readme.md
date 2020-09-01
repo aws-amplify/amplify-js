@@ -25,6 +25,7 @@
 ```mermaid
 graph TD;
   amplify-sign-out --> amplify-button
+  amplify-button --> amplify-icon
   amplify-greetings --> amplify-sign-out
   style amplify-sign-out fill:#f9f,stroke:#333,stroke-width:4px
 ```

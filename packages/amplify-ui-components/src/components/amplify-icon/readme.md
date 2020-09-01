@@ -5,15 +5,16 @@
 
 ## Properties
 
-| Property | Attribute | Description                                                 | Type                                                                                                                                                                              | Default     |
-| -------- | --------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `name`   | `name`    | (Required) Name of icon used to determine the icon rendered | `"amazon" \| "auth0" \| "enter-vr" \| "exit-vr" \| "facebook" \| "google" \| "loading" \| "maximize" \| "minimize" \| "photoPlaceholder" \| "sound" \| "sound-mute" \| "warning"` | `undefined` |
+| Property | Attribute | Description                                                 | Type                                                                                                                                                                                                                 | Default     |
+| -------- | --------- | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `name`   | `name`    | (Required) Name of icon used to determine the icon rendered | `"amazon" \| "auth0" \| "ban" \| "enter-vr" \| "exit-vr" \| "facebook" \| "google" \| "loading" \| "maximize" \| "microphone" \| "minimize" \| "photoPlaceholder" \| "send" \| "sound" \| "sound-mute" \| "warning"` | `undefined` |
 
 
 ## Dependencies
 
 ### Used by
 
+ - [amplify-button](../amplify-button)
  - [amplify-icon-button](../amplify-icon-button)
  - [amplify-loading-spinner](../amplify-loading-spinner)
  - [amplify-photo-picker](../amplify-photo-picker)
@@ -23,6 +24,7 @@
 ### Graph
 ```mermaid
 graph TD;
+  amplify-button --> amplify-icon
   amplify-icon-button --> amplify-icon
   amplify-loading-spinner --> amplify-icon
   amplify-photo-picker --> amplify-icon
