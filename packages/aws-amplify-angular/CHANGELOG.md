@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.25](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.24...aws-amplify-angular@5.0.25) (2020-09-01)
+
+
+### Bug Fixes
+
+* **aws-amplify-angular:** remove rollup-plugin-node-builtins ([#6638](https://github.com/aws-amplify/amplify-js/issues/6638)) ([46770e9](https://github.com/aws-amplify/amplify-js/commit/46770e97427ca06c7855b78363669ea62b47cd76))
+
+
+
+
+
 ## [5.0.24](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.23...aws-amplify-angular@5.0.24) (2020-08-19)
 
 **Note:** Version bump only for package aws-amplify-angular

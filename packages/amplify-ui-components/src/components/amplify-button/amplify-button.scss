@@ -10,8 +10,12 @@
   --link-hover: var(--amplify-primary-tint);
   --link-active: var(--amplify-primary-shade);
   --text-transform: uppercase;
+  --icon-fill: var(--amplify-white);
+  --icon-height: 1.25rem;
+  --padding: 1rem;
+  --width: 100%;
 
-  width: 100%;
+  width: var(--width);
   text-align: center;
 
   @include md {
@@ -35,7 +39,7 @@
   user-select: none;
   background-image: none;
   color: var(--color);
-  padding: 1rem;
+  padding: var(--padding);
   letter-spacing: 0.75px;
   text-transform: var(--text-transform);
   background-color: var(--background-color);
@@ -56,6 +60,18 @@
     opacity: 0.65;
     cursor: auto;
     background-color: var(--background-color-disable);
+  }
+}
+
+.icon {
+  background-color: inherit;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  padding: var(--padding);
+  amplify-icon {
+    --icon-fill-color: var(--icon-fill);
+    --height: var(--icon-height);
   }
 }
 
