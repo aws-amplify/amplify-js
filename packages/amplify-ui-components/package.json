@@ -39,6 +39,8 @@
     "uuid": "^8.2.0"
   },
   "devDependencies": {
+    "@aws-amplify/auth": "^3.3.6",
+    "@aws-amplify/core": "^3.4.7",
     "@stencil/angular-output-target": "^0.0.2",
     "@stencil/core": "1.15.0",
     "@stencil/eslint-plugin": "0.2.1",
