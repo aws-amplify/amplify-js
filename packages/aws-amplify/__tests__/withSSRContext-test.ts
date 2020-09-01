@@ -19,11 +19,11 @@ describe('withSSRContext', () => {
 		expect(Amplify.configure()).toEqual({ TEST_VALUE: true });
 
 		const amplify = withSSRContext();
-		expect(amplify.configure()).toEqual(
+		expect(amplify.configure({ TEST_VALUE2: true })).toEqual(
 			expect.objectContaining({
-				Credentials: expect.any(CredentialsClass),
 				storage: expect.any(UniversalStorage),
 				TEST_VALUE: true,
+				TEST_VALUE2: true,
 			})
 		);
 	});
@@ -38,13 +38,13 @@ describe('withSSRContext', () => {
 			const config = amplify.configure();
 
 			// GraphQLAPI uses Credentials internally
-			expect(amplify.API._graphqlApi.Credentials).toBe(config.Credentials);
-			expect(Amplify.API._graphqlApi.Credentials).not.toBe(config.Credentials);
+			expect(Amplify.API._graphqlApi.Credentials).not.toBe(
+				amplify.API._graphqlApi.Credentials
+			);
 
 			// RestAPI._api is a RestClient with Credentials
-			expect(amplify.API._restApi._api.Credentials).toBe(config.Credentials);
 			expect(Amplify.API._restApi._api.Credentials).not.toBe(
-				config.Credentials
+				amplify.API._restApi._api.Credentials
 			);
 		});
 	});
@@ -60,10 +60,8 @@ describe('withSSRContext', () => {
 
 		it('should use different Credentials than Amplify', () => {
 			const amplify = withSSRContext();
-			const config = amplify.configure();
 
-			expect(Amplify.Auth.Credentials).not.toBe(config.Credentials);
-			expect(amplify.Auth.Credentials).toBe(config.Credentials);
+			expect(Amplify.Auth.Credentials).not.toBe(amplify.Auth.Credentials);
 		});
 	});
 
@@ -74,7 +72,8 @@ describe('withSSRContext', () => {
 	});
 
 	describe('I18n', () => {
-		it('should be the same instance as Amplify.I18n', () => {
+		// I18n isn't scoped to SSR (yet)
+		it.skip('should be the same instance as Amplify.I18n', () => {
 			expect(withSSRContext().I18n).toBe(Amplify.I18n);
 		});
 	});
