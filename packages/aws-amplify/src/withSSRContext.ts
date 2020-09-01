@@ -52,7 +52,7 @@ type Context = Pick<NextPageContext, 'req'> & {
 	modules?: any[];
 };
 
-export function withSSRContext(context?: Context) {
+export function withSSRContext(context: Context = {}) {
 	const { modules = defaultModules, req } = context;
 	const previousConfig = Amplify.configure();
 	const amplify = new AmplifyClass();
