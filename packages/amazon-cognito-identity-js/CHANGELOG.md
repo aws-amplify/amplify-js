@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.5](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.3.4...amazon-cognito-identity-js@4.3.5) (2020-09-01)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** incorrect return type for Auth.resendSignUp ([#5112](https://github.com/aws-amplify/amplify-js/issues/5112)) ([9164b37](https://github.com/aws-amplify/amplify-js/commit/9164b37cb7669c9dd08927dde58dccbefad25194))
+* **amazon-cognito-identity-js:** fix parameters in sendMFASelectionAnswer ([#6418](https://github.com/aws-amplify/amplify-js/issues/6418)) ([794c1da](https://github.com/aws-amplify/amplify-js/commit/794c1da170cd98d3def4651751b851f28810bb6e))
+
+
+
+
+
 ## [4.3.4](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.3.3...amazon-cognito-identity-js@4.3.4) (2020-08-19)
 
 **Note:** Version bump only for package amazon-cognito-identity-js
