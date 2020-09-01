@@ -1,19 +1,13 @@
 import API from '@aws-amplify/api';
 import { Auth } from '@aws-amplify/auth';
 import { Credentials } from '@aws-amplify/core';
-import {
-	AmplifyClass,
-	browserOrNode,
-	UniversalStorage,
-} from '@aws-amplify/core';
+import { AmplifyClass, UniversalStorage } from '@aws-amplify/core';
 
 import { DataStore } from '@aws-amplify/datastore';
 import { NextPageContext } from 'next';
 
 // ! We have to use this exact reference, since it gets mutated with Amplify.Auth
 import { Amplify } from './index';
-
-const { isBrowser } = browserOrNode();
 
 const requiredModules = [
 	// API cannot function without Auth
@@ -34,11 +28,6 @@ export function withSSRContext(context: Context = {}) {
 	const previousConfig = Amplify.configure();
 	const amplify = new AmplifyClass();
 	const storage = new UniversalStorage({ req });
-
-	// Replace Auth singleton's existing Storage with UniversalStorage, since UI components reference category singletons
-	if (isBrowser) {
-		Amplify.configure({ storage });
-	}
 
 	requiredModules.forEach(m => {
 		if (!modules.includes(m)) {
