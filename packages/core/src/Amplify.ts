@@ -3,8 +3,12 @@ import { ConsoleLogger as LoggerClass } from './Logger';
 const logger = new LoggerClass('Amplify');
 
 export class AmplifyClass {
-	private _components = {};
+	// Everything that is `register`ed is tracked here
+	private _components = [];
 	private _config = {};
+
+	// All modules (with `getModuleName()`) are stored here for dependency injection
+	private _modules = {};
 
 	// for backward compatibility to avoid breaking change
 	// if someone is using like Amplify.Auth
@@ -28,8 +32,9 @@ export class AmplifyClass {
 
 	register(comp) {
 		logger.debug('component registered in amplify', comp);
+		this._components.push(comp);
 		if (typeof comp.getModuleName === 'function') {
-			this._components[comp.getModuleName()] = comp;
+			this._modules[comp.getModuleName()] = comp;
 			this[comp.getModuleName()] = comp;
 		} else {
 			logger.debug('no getModuleName method for component', comp);
@@ -53,17 +58,17 @@ export class AmplifyClass {
 		// Dependency Injection via property-setting.
 		// This avoids introducing a public method/interface/setter that's difficult to remove later.
 		// Plus, it reduces `if` statements within the `constructor` and `configure` of each module
-		Object.entries(this._components).forEach(([Name, comp]) => {
+		Object.entries(this._modules).forEach(([Name, comp]) => {
 			// e.g. Auth.*
 			Object.keys(comp).forEach(property => {
-				// e.g. Auth["Credentials"] = this._components["Credentials"] when set
-				if (this._components[property]) {
-					comp[property] = this._components[property];
+				// e.g. Auth["Credentials"] = this._modules["Credentials"] when set
+				if (this._modules[property]) {
+					comp[property] = this._modules[property];
 				}
 			});
+		});
 
-			// @ts-ignore Property 'configure' does not exist on type 'unknown'.ts(2339)
-			// We would need a common interface
+		this._components.map(comp => {
 			comp.configure(this._config);
 		});
 
@@ -76,13 +81,11 @@ export class AmplifyClass {
 			pluggable['getCategory'] &&
 			typeof pluggable['getCategory'] === 'function'
 		) {
-			Object.values(this._components).map(comp => {
+			this._components.map(comp => {
 				if (
 					comp['addPluggable'] &&
 					typeof comp['addPluggable'] === 'function'
 				) {
-					// @ts-ignore Property 'addPluggable' does not exist on type 'unknown'.ts(2339)
-					// TODO Add common interface to pluggables
 					comp.addPluggable(pluggable);
 				}
 			});
