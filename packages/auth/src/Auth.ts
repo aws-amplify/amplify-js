@@ -31,6 +31,7 @@ import {
 	FederatedSignInOptions,
 	AwsCognitoOAuthOpts,
 	ClientMetaData,
+	AuthProvider,
 } from './types';
 
 import {
@@ -93,6 +94,7 @@ export class AuthClass {
 	private _storage;
 	private _storageSync;
 	private oAuthFlowInProgress: boolean = false;
+	private provider?: AuthProvider;
 
 	/**
 	 * Initialize Auth with AWS configurations
@@ -100,7 +102,6 @@ export class AuthClass {
 	 */
 	constructor(config: AuthOptions) {
 		this.configure(config);
-		this.currentUserCredentials = this.currentUserCredentials.bind(this);
 
 		Hub.listen('auth', ({ payload }) => {
 			const { event } = payload;
@@ -116,6 +117,7 @@ export class AuthClass {
 					break;
 			}
 		});
+
 		Amplify.register(this);
 	}
 
@@ -123,7 +125,11 @@ export class AuthClass {
 		return 'Auth';
 	}
 
-	configure(config) {
+	configure(config: AuthOptions) {
+		if (this.provider) {
+			return this.provider.configure(config);
+		}
+
 		if (!config) return this._config || {};
 		logger.debug('configure Auth');
 		const conf = Object.assign(
@@ -269,7 +275,9 @@ export class AuthClass {
 			username = params['username'];
 			password = params['password'];
 
+			// @ts-ignore
 			if (params && params.clientMetadata) {
+				// @ts-ignore
 				clientMetadata = params.clientMetadata;
 			} else if (this._config.clientMetadata) {
 				clientMetadata = this._config.clientMetadata;
@@ -1338,7 +1346,7 @@ export class AuthClass {
 	 * Get  authenticated credentials of current user.
 	 * @return - A promise resolves to be current user's credentials
 	 */
-	public async currentUserCredentials(): Promise<ICredentials> {
+	public currentUserCredentials = async (): Promise<ICredentials> => {
 		const that = this;
 		logger.debug('Getting current user credentials');
 
@@ -1373,7 +1381,7 @@ export class AuthClass {
 					return Credentials.set(null, 'guest');
 				});
 		}
-	}
+	};
 
 	public currentCredentials(): Promise<ICredentials> {
 		logger.debug('getting current credentials');
@@ -2065,11 +2073,13 @@ export class AuthClass {
 	}
 
 	private rejectAuthError(type: AuthErrorTypes): Promise<never> {
+		// @ts-ignore
 		return Promise.reject(new AuthError(type));
 	}
 
 	private rejectNoUserPool(): Promise<never> {
 		const type = this.noUserPoolErrorHandler(this._config);
+		// @ts-ignore
 		return Promise.reject(new NoUserPoolError(type));
 	}
 }
