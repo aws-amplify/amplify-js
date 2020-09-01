@@ -46,12 +46,12 @@
 	},
 	"dependencies": {
 		"@aws-crypto/sha256-js": "1.0.0-alpha.0",
-		"@aws-sdk/client-cognito-identity": "1.0.0-gamma.4",
-		"@aws-sdk/credential-provider-cognito-identity": "1.0.0-gamma.4",
-		"@aws-sdk/node-http-handler": "1.0.0-gamma.3",
-		"@aws-sdk/types": "1.0.0-gamma.3",
-		"@aws-sdk/util-hex-encoding": "1.0.0-gamma.3",
-		"@aws-sdk/util-user-agent-browser": "1.0.0-gamma.3",
+		"@aws-sdk/client-cognito-identity": "1.0.0-gamma.7",
+		"@aws-sdk/credential-provider-cognito-identity": "1.0.0-gamma.7",
+		"@aws-sdk/node-http-handler": "1.0.0-gamma.6",
+		"@aws-sdk/types": "1.0.0-gamma.5",
+		"@aws-sdk/util-hex-encoding": "1.0.0-gamma.6",
+		"@aws-sdk/util-user-agent-browser": "1.0.0-gamma.6",
 		"url": "^0.11.0",
 		"zen-observable-ts": "0.8.19"
 	},
