@@ -102,6 +102,7 @@ export class UniversalStorage implements Storage {
 		// @ts-ignore Argument of type 'Record<string, string>' is not assignable to parameter of type 'Pick<any, "res"> | { res: any; }'.
 		// Property 'res' is missing in type 'Record<string, string>' but required in type '{ res: any; }'.ts(2345)
 		nookies.set(this.store, key, value, {
+			path: '/',
 			// `httpOnly` cannot be set via JavaScript: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#JavaScript_access_using_Document.cookie
 			sameSite: true,
 			// Allow unsecure requests to http://localhost:3000/ when in development.
