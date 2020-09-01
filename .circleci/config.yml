@@ -88,7 +88,7 @@ commands:
   prepare_test_env_windows:
     steps:
       - attach_workspace:
-          at: /
+          at: ./
       - restore_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
       - install_verdaccio
@@ -362,7 +362,7 @@ jobs:
           paths:
             - ~/.ssh
       - persist_to_workspace:
-          root: /
+          root: ./
           paths:
             - amplify-js
 
