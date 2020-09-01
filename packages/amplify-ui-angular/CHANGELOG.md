@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-angular@0.2.15...@aws-amplify/ui-angular@0.3.0) (2020-09-01)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** Add Chatbot UI to main ([#6684](https://github.com/aws-amplify/amplify-js/issues/6684)) ([4e25f92](https://github.com/aws-amplify/amplify-js/commit/4e25f923723441c6fb705584fcc3349214806558)), closes [#5024](https://github.com/aws-amplify/amplify-js/issues/5024) [#6648](https://github.com/aws-amplify/amplify-js/issues/6648) [#6652](https://github.com/aws-amplify/amplify-js/issues/6652) [#6678](https://github.com/aws-amplify/amplify-js/issues/6678)
+
+
+
+
+
 ## [0.2.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-angular@0.2.14...@aws-amplify/ui-angular@0.2.15) (2020-08-19)
 
 **Note:** Version bump only for package @aws-amplify/ui-angular

@@ -36,6 +36,7 @@ graph TD;
   amplify-photo-picker --> amplify-icon
   amplify-photo-picker --> amplify-button
   amplify-picker --> amplify-button
+  amplify-button --> amplify-icon
   style amplify-s3-image-picker fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
