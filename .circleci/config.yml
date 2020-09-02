@@ -77,6 +77,37 @@ commands:
             git --no-pager diff
             ~/amplify-js/.circleci/retry-yarn-script.sh -s publish:verdaccio -n 5 -r true
 
+  publish_to_verdaccio_windows:
+    steps:
+      - run:
+          name: 'Set registry to Verdaccio and verify'
+          # If the registry isn't set correctly, fail the job
+          command: |
+            yarn config set registry $NPM_REGISTRY
+            npm set registry $NPM_REGISTRY
+            CURRENT_REGISTRY=$(yarn config get registry)
+            if [ "$CURRENT_REGISTRY" = "$NPM_REGISTRY" ]; then
+              exit 0
+            fi
+            exit 1
+      - run:
+          # npm-cli-login allows us to log in to verdaccio in a noninteractive way
+          # logs in with NPM_USER, NPM_PASS, and NPM_EMAIL env vars
+          name: 'Install and run npm-cli-login'
+          command: |
+            npm i -g npm-cli-adduser
+            npm-cli-adduser
+            sleep 1
+      - run:
+          name: 'Publish to Verdaccio'
+          command: |
+            cd ~/project
+            git config --global user.email $NPM_EMAIL
+            git config --global user.name $NPM_USER
+            git status
+            git --no-pager diff
+            ~/project/.circleci/retry-yarn-script.sh -s publish:verdaccio -n 5 -r true
+
   prepare_test_env:
     steps:
       - attach_workspace:
@@ -88,16 +119,11 @@ commands:
   prepare_test_env_windows:
     steps:
       - attach_workspace:
-          at: ./
+          at: ~/
       - restore_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
       - install_verdaccio
-      - publish_to_verdaccio
-      - run:
-          name: Yarn Install
-          command: |
-            echo "Current NPM registry: " $(yarn config get registry)
-            yarn install --frozen-lockfile --non-interactive
+      - publish_to_verdaccio_windows
 
   prepare_ui_test_env:
     steps:
@@ -362,9 +388,9 @@ jobs:
           paths:
             - ~/.ssh
       - persist_to_workspace:
-          root: ./
+          root: ~/
           paths:
-            - amplify-js
+            - ~/project
 
   unit_test:
     executor: build-executor
