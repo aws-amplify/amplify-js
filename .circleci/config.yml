@@ -77,6 +77,37 @@ commands:
             git --no-pager diff
             ~/amplify-js/.circleci/retry-yarn-script.sh -s publish:verdaccio -n 5 -r true
 
+  publish_to_verdaccio_windows:
+    steps:
+      - run:
+          name: 'Set registry to Verdaccio and verify'
+          # If the registry isn't set correctly, fail the job
+          command: |
+            yarn config set registry $NPM_REGISTRY
+            npm set registry $NPM_REGISTRY
+            CURRENT_REGISTRY=$(yarn config get registry)
+            if [ "$CURRENT_REGISTRY" = "$NPM_REGISTRY" ]; then
+              exit 0
+            fi
+            exit 1
+      - run:
+          # npm-cli-login allows us to log in to verdaccio in a noninteractive way
+          # logs in with NPM_USER, NPM_PASS, and NPM_EMAIL env vars
+          name: 'Install and run npm-cli-login'
+          command: |
+            npm i -g npm-cli-adduser
+            npm-cli-adduser
+            sleep 1
+      - run:
+          name: 'Publish to Verdaccio'
+          command: |
+            cd ~/project
+            git config --global user.email $NPM_EMAIL
+            git config --global user.name $NPM_USER
+            git status
+            git --no-pager diff
+            ~/project/.circleci/retry-yarn-script.sh -s publish:verdaccio -n 5 -r true
+
   prepare_test_env:
     steps:
       - attach_workspace:
@@ -88,16 +119,10 @@ commands:
   prepare_test_env_windows:
     steps:
       - attach_workspace:
-          at: C:\Users\circleci\project
+          at: ~/
       - restore_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
-      - install_verdaccio
-      - publish_to_verdaccio
-      - run:
-          name: Yarn Install
-          command: |
-            echo "Current NPM registry: " $(yarn config get registry)
-            yarn install --frozen-lockfile --non-interactive
+      - publish_to_verdaccio_windows
 
   prepare_ui_test_env:
     steps:
@@ -362,9 +387,9 @@ jobs:
           paths:
             - ~/.ssh
       - persist_to_workspace:
-          root: C:\Users\circleci\project
+          root: ~/
           paths:
-            - amplify-js
+            - ~/project
 
   unit_test:
     executor: build-executor
@@ -490,6 +515,46 @@ jobs:
           sample_name: multi-user-translation
           spec: multiuser-translation
           browser: << parameters.browser >>
+
+  integ_react_interactions:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/interactions/chatbot-component
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Interactions'
+          framework: react
+          category: interactions
+          sample_name: chatbot-component
+          spec: chatbot-component
+
+  integ_vue_interactions:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/vue/interactions/chatbot-component
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Vue Interactions'
+          framework: vue
+          category: interactions
+          sample_name: chatbot-component
+          spec: chatbot-component
+
+  integ_angular_interactions:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/angular/interactions/chatbot-component
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Angular Interactions'
+          framework: angular
+          category: interactions
+          sample_name: chatbot-component
+          spec: chatbot-component
+
   integ_react_datastore:
     parameters:
       browser:
@@ -697,7 +762,7 @@ releasable_branches: &releasable_branches
     only:
       - release
       - main
-      - ui-components/master
+      - ui-components/main
       - 1.0-stable
       - circle-ci-cross-browser
 deploy_branches: &deploy_branches
@@ -759,6 +824,24 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_interactions:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_vue_interactions:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_angular_interactions:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_react_datastore:
           requires:
             - integ_setup
