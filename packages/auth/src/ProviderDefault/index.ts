@@ -28,6 +28,7 @@ import {
 	UnregisterDevice,
 	AuthSignUpStep,
 	DeliveryMedium,
+	AuthFlowType,
 } from '../types';
 import {
 	SignUpCommandInput,
@@ -38,6 +39,8 @@ import {
 	DeleteUserCommandOutput,
 	ResendConfirmationCodeCommandInput,
 	ResendConfirmationCodeCommandOutput,
+	InitiateAuthCommandInput,
+	InitiateAuthCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { Request } from './request';
 import { handleError } from './error';
@@ -46,6 +49,7 @@ export class AuthProviderDefault implements AuthProvider {
 	request: ReturnType<Request>;
 	clientId?: string;
 	accessToken?: string;
+	authFlow: AuthFlowType = AuthFlowType.USER_SRP_AUTH;
 
 	getModuleName = (): 'Auth' => 'Auth';
 	getProviderName = () => 'AmazonCognito';
@@ -202,7 +206,12 @@ export class AuthProviderDefault implements AuthProvider {
 	};
 
 	signIn: SignIn = async params => {
-		console.log('SignIn Call');
+		// const response = await this.initiateAuth({
+		// 	ClientId: this.clientId,
+		// 	AuthFlow: this.authFlow,
+		// });
+
+		// const signInResult: AuthSignInResult = {};
 		return undefined as AuthSignInResult;
 	};
 
@@ -254,5 +263,11 @@ export class AuthProviderDefault implements AuthProvider {
 	unregisterDevice: UnregisterDevice = async params => {
 		console.log('unregisterDevice Call');
 		return undefined as AuthUser;
+	};
+
+	private initiateAuth = (
+		params: InitiateAuthCommandInput
+	): Promise<InitiateAuthCommandOutput> => {
+		return this.request<InitiateAuthCommandOutput>('InitiateAuth', params);
 	};
 }

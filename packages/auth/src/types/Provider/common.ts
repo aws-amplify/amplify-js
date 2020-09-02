@@ -1,3 +1,5 @@
+import { AuthFlowType } from '@aws-sdk/client-cognito-identity-provider';
+
 export interface AuthUserAttribute {
 	Name: string;
 	Value: string;
@@ -48,3 +50,5 @@ export enum MfaOption {
 }
 
 export interface AuthSignInResult {}
+
+export { AuthFlowType };
