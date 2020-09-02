@@ -12,7 +12,6 @@
  */
 
 import {
-	Amplify,
 	ConsoleLogger as Logger,
 	Credentials,
 	DateUtils,
