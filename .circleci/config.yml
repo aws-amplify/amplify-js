@@ -474,6 +474,9 @@ jobs:
           browser: << parameters.browser >>
 
   integ_vue_interactions:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/vue/interactions/chatbot-component
