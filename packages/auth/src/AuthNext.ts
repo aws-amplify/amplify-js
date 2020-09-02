@@ -24,7 +24,7 @@ import {
 } from './types';
 import { AuthProviderDefault } from './ProviderDefault';
 
-export class Auth implements AuthProvider {
+class AuthSingleton implements AuthProvider {
 	config?: AuthOptions;
 	provider: AuthProvider = new AuthProviderDefault();
 
@@ -129,3 +129,5 @@ export class Auth implements AuthProvider {
 		return this.provider.unregisterDevice(params);
 	};
 }
+
+export const Auth = new AuthSingleton();

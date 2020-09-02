@@ -51,12 +51,16 @@ export class AuthProviderDefault implements AuthProvider {
 	getProviderName = () => 'AmazonCognito';
 
 	configure(config: AuthOptions) {
+		this.clientId = config.userPoolWebClientId;
+
 		this.request = Request({
-			clientId: config.userPoolWebClientId,
 			region: config.region,
+			fetchOptions: {
+				fetcher: config.fetcher,
+			},
 		});
 
-		alert('configure Call');
+		console.log('configure Call');
 	}
 
 	signUp: SignUp = async params => {
@@ -173,82 +177,82 @@ export class AuthProviderDefault implements AuthProvider {
 	};
 
 	changePassword: ChangePassword = async params => {
-		alert('changePassword Call');
+		console.log('changePassword Call');
 		return undefined as AuthStateFlow;
 	};
 
 	updateUserAttribute: UpdateUserAttribute = async params => {
-		alert('updateUserAttribute call');
+		console.log('updateUserAttribute call');
 		return undefined as AuthStateFlow;
 	};
 
 	updatePreferredMFA: UpdatePreferredMfa = async params => {
-		alert('updatePreferredMFA Call');
+		console.log('updatePreferredMFA Call');
 		return undefined as AuthStateFlow;
 	};
 
 	verifyUserAttribute: VerifyUserAttribute = async params => {
-		alert('verifyUserAttribute Call');
+		console.log('verifyUserAttribute Call');
 		return undefined as AuthStateFlow;
 	};
 
 	confirmVerifyUserAttribute: ConfirmVerifyUserAttribute = async params => {
-		alert('confirmVerifyUserAttribute Call');
+		console.log('confirmVerifyUserAttribute Call');
 		return undefined as AuthStateFlow;
 	};
 
 	signIn: SignIn = async params => {
-		alert('SignIn Call');
+		console.log('SignIn Call');
 		return undefined as AuthSignInResult;
 	};
 
 	signInWithSocialToken: SignInWithSocialToken = async params => {
-		alert('signInWithSocialToken Call');
+		console.log('signInWithSocialToken Call');
 		return undefined as AuthSignInResult;
 	};
 
 	signInWithSocialUI: SignInWithSocialUI = async params => {
-		alert('signInWithSocialUI Call');
+		console.log('signInWithSocialUI Call');
 		return undefined as AuthSignInResult;
 	};
 
 	confirmSignIn: ConfirmSignIn = async params => {
-		alert('confirmSignIn Call');
+		console.log('confirmSignIn Call');
 		return undefined as AuthConfirmSignInResult;
 	};
 
 	setupTotp: SetupTotp = async params => {
-		alert('setupTotp Call');
+		console.log('setupTotp Call');
 		return undefined as AuthStateFlow;
 	};
 
 	verifyTotpToken: VerifyTotpToken = async params => {
-		alert('verifyTotpToken Call');
+		console.log('verifyTotpToken Call');
 		return undefined as AuthStateFlow;
 	};
 
 	resetPassword: ResetPassword = async params => {
-		alert('resetPassword Call');
+		console.log('resetPassword Call');
 		return undefined as AuthStateFlow;
 	};
 
 	confirmResetPassword: ConfirmResetPassword = async params => {
-		alert('confirmResetPassword Call');
+		console.log('confirmResetPassword Call');
 		return undefined as AuthStateFlow;
 	};
 
 	getUser: GetUser = async () => {
-		alert('getUser Call');
+		console.log('getUser Call');
 		return undefined as AuthUser;
 	};
 
 	registerDevice: RegisterDevice = async params => {
-		alert('registerDevice Call');
+		console.log('registerDevice Call');
 		return undefined as AuthUser;
 	};
 
 	unregisterDevice: UnregisterDevice = async params => {
-		alert('unregisterDevice Call');
+		console.log('unregisterDevice Call');
 		return undefined as AuthUser;
 	};
 }

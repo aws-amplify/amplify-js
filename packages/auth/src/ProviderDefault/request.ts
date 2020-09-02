@@ -1,3 +1,5 @@
+import { fetch } from 'cross-fetch';
+
 export type Fetcher = (endpoint: string, options: RequestInit) => any;
 
 // TODO: revisit once we determine whether `clientId` should be a non-optional
@@ -17,10 +19,6 @@ export interface RequestProps {
 		fetcher?: typeof fetch;
 		credentials?: RequestCredentials;
 	};
-	/**
-	 * the user pool client ID
-	 */
-	clientId?: string;
 }
 
 export function Request(props: RequestProps) {

@@ -39,6 +39,7 @@ export interface AuthOptions {
 	authenticationFlowType?: string;
 	identityPoolRegion?: string;
 	clientMetadata?: any;
+	fetcher?: typeof fetch;
 }
 
 export enum CognitoHostedUIIdentityProvider {
