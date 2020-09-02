@@ -413,35 +413,35 @@ jobs:
           category: auth
           sample_name: with-authenticator-legacy
           spec: authenticator
-          browser: << parameters.browser >>
+          browser: edge
       - integ_test_js:
           test_name: 'React Authenticator'
           framework: react
           category: auth
           sample_name: amplify-authenticator
           spec: ui-amplify-authenticator
-          browser: << parameters.browser >>
+          browser: edge
       - integ_test_js:
           test_name: 'React Typescript Authenticator'
           framework: react
           category: auth
           sample_name: typescript-amplify-authenticator
           spec: ui-amplify-authenticator
-          browser: << parameters.browser >>
+          browser: edge
       - integ_test_js:
           test_name: 'React Custom Authenticator'
           framework: react
           category: auth
           sample_name: amplify-authenticator
           spec: custom-authenticator
-          browser: << parameters.browser >>
+          browser: edge
       - integ_test_js:
           test_name: 'React Custom Authenticator'
           framework: react
           category: auth
           sample_name: with-authenticator
           spec: ui-amplify-authenticator
-          browser: << parameters.browser >>
+          browser: edge
   integ_angular_auth:
     parameters:
       browser:
