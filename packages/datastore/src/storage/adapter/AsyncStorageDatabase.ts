@@ -7,7 +7,7 @@ import {
 	QueryOne,
 } from '../../types';
 import { monotonicUlidFactory } from '../../util';
-import { InMemoryStore } from './InMemoryStore';
+import { createInMemoryStore } from './InMemoryStore';
 
 const DB_NAME = '@AmplifyDatastore';
 const COLLECTION = 'Collection';
@@ -21,7 +21,7 @@ class AsyncStorageDatabase {
 	 */
 	private _collectionInMemoryIndex = new Map<string, Map<string, string>>();
 
-	private storage = new InMemoryStore();
+	private storage = createInMemoryStore();
 
 	private getCollectionIndex(storeName: string) {
 		if (!this._collectionInMemoryIndex.has(storeName)) {
