@@ -35,3 +35,7 @@ export class InMemoryStore {
 		return this.db.get(key);
 	};
 }
+
+export function createInMemoryStore() {
+	return new InMemoryStore();
+}
