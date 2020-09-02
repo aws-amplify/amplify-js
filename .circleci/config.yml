@@ -491,6 +491,9 @@ jobs:
           browser: << parameters.browser >>
 
   integ_angular_interactions:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/angular/interactions/chatbot-component
