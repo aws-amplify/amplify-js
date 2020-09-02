@@ -390,7 +390,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - ~/project
+            - project
 
   unit_test:
     executor: build-executor
