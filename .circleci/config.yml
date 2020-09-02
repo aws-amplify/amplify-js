@@ -177,7 +177,7 @@ commands:
       - restore_pods
       - run:
           name: Install CocoaPods
-1          command: |
+          command: |
             cd ios
             pod install
       - save_pods
