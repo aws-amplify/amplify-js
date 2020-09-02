@@ -785,18 +785,27 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_vue_interactions:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_angular_interactions:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_datastore:
           requires:
             - integ_setup
