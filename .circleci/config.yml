@@ -347,7 +347,7 @@ jobs:
       shell: bash.exe
     steps:
       - checkout:
-          path: amplify-js
+          path: ~/amplify-js
       - run: yarn config set workspaces-experimental true
       - run: yarn --frozen-lockfile
       - run: yarn run bootstrap
