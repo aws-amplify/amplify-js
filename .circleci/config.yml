@@ -109,7 +109,7 @@ commands:
           name: 'Install << parameters.test_name >> sample'
           command: |
             echo "Current NPM registry: " $(yarn config get registry)
-            yarn
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
       - run:
           name: 'Run cypress tests for << parameters.test_name >> Sample'
           command: |
@@ -177,7 +177,7 @@ commands:
       - restore_pods
       - run:
           name: Install CocoaPods
-          command: |
+1          command: |
             cd ios
             pod install
       - save_pods
