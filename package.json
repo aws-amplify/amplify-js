@@ -36,8 +36,7 @@
 			"packages/*"
 		],
 		"nohoist": [
-			"**/@types/react-native",
-			"**/@types/react-native/**"
+			"**/@types"
 		]
 	},
 	"repository": {

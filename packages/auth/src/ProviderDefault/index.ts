@@ -26,33 +26,155 @@ import {
 	AuthUser,
 	RegisterDevice,
 	UnregisterDevice,
+	AuthSignUpStep,
+	ConfirmSignUpParams,
 } from '../types';
+import {
+	SignUpCommandInput,
+	SignUpCommandOutput,
+	ConfirmSignUpCommandInput,
+	ConfirmSignUpCommandOutput,
+	DeleteUserCommandInput,
+	DeleteUserCommandOutput,
+	ResendConfirmationCodeCommandInput,
+	ResendConfirmationCodeCommandOutput,
+} from '@aws-sdk/client-cognito-identity-provider';
+import { Request } from './request';
 
 export class AuthProviderDefault implements AuthProvider {
+	request: ReturnType<Request>;
+	clientId?: string;
+	accessToken?: string;
+
 	getModuleName = (): 'Auth' => 'Auth';
 	getProviderName = () => 'AmazonCognito';
 
 	configure(config: AuthOptions) {
+		this.request = Request({
+			clientId: config.userPoolWebClientId,
+			region: config.region,
+		});
+
 		alert('configure Call');
 	}
 
+	// TODO: revisit type incompatibility
+	// @ts-ignore
 	signUp: SignUp = async params => {
-		alert('signUp Call');
-		return undefined as AuthSignUpResult;
+		const requestParams: SignUpCommandInput = {
+			ClientId: this.clientId,
+			ClientMetadata: params.options && params.options.pluginOptions,
+			Password: params.password,
+			UserAttributes: params.options && params.options.userAttributes,
+			Username: params.username,
+		};
+		const response = await this.request<SignUpCommandOutput>(
+			'SignUp',
+			requestParams
+		);
+		if (response.__type) {
+			// @ts-ignore
+			throw new CognitoError(response.message, 400, response.__type, 400);
+		}
+		const result: AuthSignUpResult = {
+			isSignUpComplete: response.UserConfirmed,
+			// @ts-ignore
+			nextStep: response.CodeDeliveryDetails
+				? {
+						// TODO: fix
+						additionalInfo: {},
+						codeDeliveryDetails: response.CodeDeliveryDetails,
+						signUpStep: response.UserConfirmed
+							? AuthSignUpStep.DONE
+							: AuthSignUpStep.CONFIRM_SIGN_UP,
+				  }
+				: undefined,
+		};
+		return result;
 	};
 
 	confirmSignUp: ConfirmSignUp = async params => {
-		alert('confirmSignUp Call');
-		return undefined as AuthSignUpResult;
+		const requestParams: ConfirmSignUpCommandInput = {
+			AnalyticsMetadata:
+				params.options &&
+				params.options.pluginOptions &&
+				params.options.pluginOptions.analyticsMetadata,
+			ClientId: this.clientId,
+			ConfirmationCode: params.code,
+			Username: params.username,
+		};
+
+		const response = await this.request<ConfirmSignUpCommandOutput>(
+			'ConfirmSignUp',
+			requestParams
+		);
+
+		if (response.__type) {
+			// @ts-ignore
+			throw new CognitoError(response.message, 400, response.__type, 400);
+		}
+
+		const confirmSignUpResult: AuthSignUpResult = {
+			isSignUpComplete: true,
+		};
+
+		return confirmSignUpResult;
 	};
 
 	deleteAccount: DeleteAccount = async () => {
-		alert('deleteAccount Call');
+		if (!this.accessToken) {
+			throw new Error('TBD');
+		}
+
+		const requestParams: DeleteUserCommandInput = {
+			AccessToken: this.accessToken,
+		};
+
+		const response = await this.request<DeleteUserCommandOutput>(
+			'DeleteUser',
+			requestParams
+		);
+
+		// @ts-ignore
+		if (response.__type) {
+			// @ts-ignore
+			throw new CognitoError(response.message, 400, response.__type, 400);
+		}
+
+		return;
 	};
 
 	resendSignUpCode: ResendSignUpCode = async params => {
-		alert('resendSignUpCode Call');
-		return undefined as AuthSignUpResult;
+		const requestParams: ResendConfirmationCodeCommandInput = {
+			ClientId: this.clientId,
+			Username: params.username,
+		};
+
+		const response = await this.request<ResendConfirmationCodeCommandOutput>(
+			'ResendConfirmationCode',
+			requestParams
+		);
+
+		// @ts-ignore
+		if (response.__type) {
+			// @ts-ignore
+			throw new CognitoError(response.message, 400, response.__type, 400);
+		}
+
+		const result: AuthSignUpResult = {
+			isSignUpComplete: false,
+			// @ts-ignore
+			nextStep: response.CodeDeliveryDetails
+				? {
+						// TODO: fix
+						additionalInfo: {},
+						codeDeliveryDetails: response.CodeDeliveryDetails,
+						signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
+				  }
+				: undefined,
+		};
+
+		return result;
 	};
 
 	changePassword: ChangePassword = async params => {
