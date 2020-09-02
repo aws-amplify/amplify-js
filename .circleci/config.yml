@@ -348,6 +348,7 @@ jobs:
     steps:
       - checkout:
           path: ~/amplify-js
+      - run: cd ~/amplify-js
       - run: yarn config set workspaces-experimental true
       - run: yarn --frozen-lockfile
       - run: yarn run bootstrap
