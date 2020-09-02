@@ -1,14 +1,14 @@
-import { Auth } from '../src/AuthNext';
+import { AuthNext } from '../src/AuthNext';
 // import { randomDelay } from './utils';
 
-Auth.configure({
+AuthNext.configure({
 	region: 'us-west-2',
 	userPoolId: 'us-west-2_Jw5spDH5N',
 	userPoolWebClientId: '3lm8kka38317l1n4rhjmusae0r',
 });
 
 (async (): Promise<void> => {
-	// const signUpResponse = await Auth.signUp({
+	// const signUpResponse = await AuthNext.signUp({
 	// 	username: 'harrysolovay@gmail.com',
 	// 	password: 'Testingthis123!',
 	// });
@@ -16,14 +16,14 @@ Auth.configure({
 
 	undefined;
 
-	// const resendSignUpCodeResponse = await Auth.resendSignUpCode({
+	// const resendSignUpCodeResponse = await AuthNext.resendSignUpCode({
 	//  username: 'harrysolovay@gmail.com',
 	// });
 	// console.log(resendSignUpCodeResponse);
 
 	undefined;
 
-	// const confirmSignUpResponse = await Auth.confirmSignUp({
+	// const confirmSignUpResponse = await AuthNext.confirmSignUp({
 	// 	username: 'harrysolovay@gmail.com',
 	// 	code: '955927',
 	// });

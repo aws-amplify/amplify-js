@@ -130,4 +130,4 @@ class AuthSingleton implements AuthProvider {
 	};
 }
 
-export const Auth = new AuthSingleton();
+export const AuthNext = new AuthSingleton();
