@@ -36,32 +36,35 @@ let PostMetadata: NonModelTypeConstructor<InstanceType<
 >>;
 
 const inmemoryMap = new Map<string, string>();
-jest.mock('react-native', () => {
-	return {
-		AsyncStorage: {
-			getAllKeys: async () => {
-				return Array.from(inmemoryMap.keys());
-			},
-			multiGet: async (keys: string[]) => {
-				return keys.reduce(
-					(res, k) => (res.push([k, inmemoryMap.get(k)]), res),
-					[]
-				);
-			},
-			multiRemove: async (keys: string[]) => {
-				return keys.forEach(k => inmemoryMap.delete(k));
-			},
-			setItem: async (key: string, value: string) => {
-				return inmemoryMap.set(key, value);
-			},
-			removeItem: async (key: string) => {
-				return inmemoryMap.delete(key);
-			},
-			getItem: async (key: string) => {
-				return inmemoryMap.get(key);
-			},
-		},
-	};
+
+// ! We have to mock the same storage interface the AsyncStorageDatabase depends on
+// ! as a singleton so that new instances all share the same underlying data structure.
+jest.mock('../src/storage/adapter/InMemoryStore', () => {
+	class InMemoryStore {
+		getAllKeys = async () => {
+			return Array.from(inmemoryMap.keys());
+		};
+		multiGet = async (keys: string[]) => {
+			return keys.reduce(
+				(res, k) => (res.push([k, inmemoryMap.get(k)]), res),
+				[]
+			);
+		};
+		multiRemove = async (keys: string[]) => {
+			return keys.forEach(k => inmemoryMap.delete(k));
+		};
+		setItem = async (key: string, value: string) => {
+			return inmemoryMap.set(key, value);
+		};
+		removeItem = async (key: string) => {
+			return inmemoryMap.delete(key);
+		};
+		getItem = async (key: string) => {
+			return inmemoryMap.get(key);
+		};
+	}
+
+	return { InMemoryStore };
 });
 
 jest.mock('../src/storage/adapter/getDefaultAdapter/index', () => () =>
@@ -110,7 +113,8 @@ function setUpSchema(beforeSetUp?: Function) {
 }
 
 describe('AsyncStorage tests', () => {
-	const { AsyncStorage } = require('react-native');
+	const { InMemoryStore } = require('../src/storage/adapter/InMemoryStore');
+	const AsyncStorage = new InMemoryStore();
 
 	let blog: InstanceType<typeof Blog>,
 		blog2: InstanceType<typeof Blog>,
