@@ -1,19 +1,16 @@
-import { JS } from '@aws-amplify/core';
+import { browserOrNode } from '@aws-amplify/core';
 import { Adapter } from '..';
 
 const getDefaultAdapter: () => Adapter = () => {
-	const { isBrowser, isNode } = JS.browserOrNode();
-
-	if (isNode) {
-		const { AsyncStorageAdapter } = require('../AsyncStorageAdapter');
-
-		// Every invocation
-		return new AsyncStorageAdapter();
-	}
+	const { isBrowser } = browserOrNode();
 
 	if (isBrowser && window.indexedDB) {
-		return require('../IndexedDBAdapter').default;
+		return require('../indexeddb').default;
 	}
+
+	const { AsyncStorageAdapter } = require('../asyncstorage');
+
+	return new AsyncStorageAdapter();
 };
 
 export default getDefaultAdapter;

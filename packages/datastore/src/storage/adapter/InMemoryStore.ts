@@ -1,4 +1,4 @@
-export class AsyncStorage {
+export class InMemoryStore {
 	db = new Map<string, string>();
 
 	getAllKeys = async () => {
@@ -35,5 +35,3 @@ export class AsyncStorage {
 		return this.db.get(key);
 	};
 }
-
-export default new AsyncStorage();
