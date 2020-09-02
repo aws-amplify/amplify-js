@@ -64,7 +64,12 @@ jest.mock('../src/storage/adapter/InMemoryStore', () => {
 		};
 	}
 
-	return { InMemoryStore };
+	return {
+		createInMemoryStore() {
+			return new InMemoryStore();
+		},
+		InMemoryStore,
+	};
 });
 
 jest.mock('../src/storage/adapter/getDefaultAdapter/index', () => () =>
