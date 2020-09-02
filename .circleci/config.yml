@@ -91,6 +91,7 @@ commands:
           at: ~/
       - restore_cache:
           key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
+      - install_verdaccio
       - publish_to_verdaccio
 
   prepare_ui_test_env:
