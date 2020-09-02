@@ -27,7 +27,7 @@ import {
 	RegisterDevice,
 	UnregisterDevice,
 	AuthSignUpStep,
-	ConfirmSignUpParams,
+	DeliveryMedium,
 } from '../types';
 import {
 	SignUpCommandInput,
@@ -40,6 +40,7 @@ import {
 	ResendConfirmationCodeCommandOutput,
 } from '@aws-sdk/client-cognito-identity-provider';
 import { Request } from './request';
+import { handleError } from './error';
 
 export class AuthProviderDefault implements AuthProvider {
 	request: ReturnType<Request>;
@@ -58,8 +59,6 @@ export class AuthProviderDefault implements AuthProvider {
 		alert('configure Call');
 	}
 
-	// TODO: revisit type incompatibility
-	// @ts-ignore
 	signUp: SignUp = async params => {
 		const requestParams: SignUpCommandInput = {
 			ClientId: this.clientId,
@@ -68,28 +67,32 @@ export class AuthProviderDefault implements AuthProvider {
 			UserAttributes: params.options && params.options.userAttributes,
 			Username: params.username,
 		};
+
 		const response = await this.request<SignUpCommandOutput>(
 			'SignUp',
 			requestParams
 		);
-		if (response.__type) {
-			// @ts-ignore
-			throw new CognitoError(response.message, 400, response.__type, 400);
-		}
+
+		handleError(response);
+
 		const result: AuthSignUpResult = {
 			isSignUpComplete: response.UserConfirmed,
-			// @ts-ignore
 			nextStep: response.CodeDeliveryDetails
 				? {
-						// TODO: fix
 						additionalInfo: {},
-						codeDeliveryDetails: response.CodeDeliveryDetails,
+						codeDeliveryDetails: {
+							destination: response.CodeDeliveryDetails.Destination,
+							deliveryMedium: response.CodeDeliveryDetails
+								.DeliveryMedium as DeliveryMedium,
+							attributeName: response.CodeDeliveryDetails.AttributeName,
+						},
 						signUpStep: response.UserConfirmed
 							? AuthSignUpStep.DONE
 							: AuthSignUpStep.CONFIRM_SIGN_UP,
 				  }
 				: undefined,
 		};
+
 		return result;
 	};
 
@@ -109,10 +112,7 @@ export class AuthProviderDefault implements AuthProvider {
 			requestParams
 		);
 
-		if (response.__type) {
-			// @ts-ignore
-			throw new CognitoError(response.message, 400, response.__type, 400);
-		}
+		handleError(response);
 
 		const confirmSignUpResult: AuthSignUpResult = {
 			isSignUpComplete: true,
@@ -135,11 +135,7 @@ export class AuthProviderDefault implements AuthProvider {
 			requestParams
 		);
 
-		// @ts-ignore
-		if (response.__type) {
-			// @ts-ignore
-			throw new CognitoError(response.message, 400, response.__type, 400);
-		}
+		handleError(response);
 
 		return;
 	};
@@ -155,20 +151,19 @@ export class AuthProviderDefault implements AuthProvider {
 			requestParams
 		);
 
-		// @ts-ignore
-		if (response.__type) {
-			// @ts-ignore
-			throw new CognitoError(response.message, 400, response.__type, 400);
-		}
+		handleError(response);
 
 		const result: AuthSignUpResult = {
 			isSignUpComplete: false,
-			// @ts-ignore
 			nextStep: response.CodeDeliveryDetails
 				? {
-						// TODO: fix
 						additionalInfo: {},
-						codeDeliveryDetails: response.CodeDeliveryDetails,
+						codeDeliveryDetails: {
+							destination: response.CodeDeliveryDetails.Destination,
+							deliveryMedium: response.CodeDeliveryDetails
+								.DeliveryMedium as DeliveryMedium,
+							attributeName: response.CodeDeliveryDetails.AttributeName,
+						},
 						signUpStep: AuthSignUpStep.CONFIRM_SIGN_UP,
 				  }
 				: undefined,

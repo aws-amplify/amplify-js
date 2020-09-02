@@ -1,15 +1,3 @@
-// TODO: decide whether this custom error is necessary
-export class CognitoError extends Error {
-	constructor(
-		message: string,
-		public code: number,
-		public name: string,
-		public statusCode: number
-	) {
-		super(message);
-	}
-}
-
 export type Fetcher = (endpoint: string, options: RequestInit) => any;
 
 // TODO: revisit once we determine whether `clientId` should be a non-optional
@@ -38,11 +26,8 @@ export interface RequestProps {
 export function Request(props: RequestProps) {
 	if (!props.region && !props.endpoint) {
 		// TODO: enter correct error details & determine if error structure remains the same
-		throw new CognitoError(
-			'Must define either a `region` or `endpoint` in `RequestProps`',
-			400,
-			'',
-			400
+		throw new Error(
+			'Must define either a `region` or `endpoint` in `RequestProps`'
 		);
 	}
 	const endpoint =
