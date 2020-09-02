@@ -1,17 +1,23 @@
-import nookies from 'nookies';
-
+import Cookies from 'universal-cookie';
 import { browserOrNode } from '../JS';
 
 type Store = Record<string, string>;
 
 const { isBrowser } = browserOrNode();
-type Context = Parameters<typeof nookies.get>[0];
+
+// Avoid using @types/next because @aws-amplify/ui-angular's version of TypeScript is too old to support it
+type Context = { req?: any };
 
 export class UniversalStorage implements Storage {
+	cookies = new Cookies();
 	store: Store = isBrowser ? window.localStorage : Object.create(null);
 
-	constructor(context?: Context) {
-		Object.assign(this.store, nookies.get(context));
+	constructor(context: Context = {}) {
+		this.cookies = context.req
+			? new Cookies(context.req.headers.cookie)
+			: new Cookies();
+
+		Object.assign(this.store, this.cookies.getAll());
 	}
 
 	get length() {
@@ -35,13 +41,7 @@ export class UniversalStorage implements Storage {
 	}
 
 	protected getUniversalItem(key: keyof Store) {
-		const { [key]: value } = isBrowser
-			? nookies.get()
-			: // @ts-ignore Argument of type 'Record<string, string>' is not assignable to parameter of type 'Pick<any, "req"> | { req: any; }'.
-			  // Property 'req' is missing in type 'Record<string, string>' but required in type '{ req: any; }'.ts(2345)
-			  nookies.get(this.store);
-
-		return value;
+		return this.cookies.get(key);
 	}
 
 	key(index: number) {
@@ -58,9 +58,7 @@ export class UniversalStorage implements Storage {
 	}
 
 	protected removeUniversalItem(key: keyof Store) {
-		// @ts-ignore Argument of type 'Record<string, string>' is not assignable to parameter of type 'Pick<any, "res"> | { res: any; }'.
-		// Property 'res' is missing in type 'Record<string, string>' but required in type '{ res: any; }'.ts(2345)
-		nookies.destroy(this.store, key);
+		this.cookies.remove(key);
 	}
 
 	setItem(key: keyof Store, value: string) {
@@ -99,9 +97,7 @@ export class UniversalStorage implements Storage {
 	}
 
 	protected setUniversalItem(key: keyof Store, value: string) {
-		// @ts-ignore Argument of type 'Record<string, string>' is not assignable to parameter of type 'Pick<any, "res"> | { res: any; }'.
-		// Property 'res' is missing in type 'Record<string, string>' but required in type '{ res: any; }'.ts(2345)
-		nookies.set(this.store, key, value, {
+		this.cookies.set(key, value, {
 			path: '/',
 			// `httpOnly` cannot be set via JavaScript: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#JavaScript_access_using_Document.cookie
 			sameSite: true,
