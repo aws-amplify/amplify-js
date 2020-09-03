@@ -102,9 +102,13 @@ describe('DataStore tests', () => {
 		test('initSchema is executed only once', () => {
 			initSchema(testSchema());
 
+			const spy = jest.spyOn(console, 'warn');
+
 			expect(() => {
 				initSchema(testSchema());
-			}).toThrow('The schema has already been initialized');
+			}).not.toThrow();
+
+			expect(spy).toBeCalledWith('The schema has already been initialized');
 		});
 
 		test('Non @model class is created', () => {
