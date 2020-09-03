@@ -882,6 +882,9 @@ workflows:
             - integ_react_datastore
             - integ_react_storage
             - integ_react_storage_ui
+            - integ_react_interactions
+            - integ_angular_interactions
+            - integ_vue_interactions
             - integ_amazon_cognito_identity_js
             - integ_react_auth
             - integ_angular_auth
