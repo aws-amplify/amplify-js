@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.4.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.3.5...amazon-cognito-identity-js@4.4.0) (2020-09-03)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** add "none" to sameSite possible values ([#6682](https://github.com/aws-amplify/amplify-js/issues/6682)) ([cffb932](https://github.com/aws-amplify/amplify-js/commit/cffb932dfd2c7bb1ca246adc451cc7f6dea2a1f6))
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
 ## [4.3.5](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.3.4...amazon-cognito-identity-js@4.3.5) (2020-09-01)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-angular@0.3.0...@aws-amplify/ui-angular@0.4.0) (2020-09-03)
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
 # [0.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-angular@0.2.15...@aws-amplify/ui-angular@0.3.0) (2020-09-01)
 
 
