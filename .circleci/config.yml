@@ -112,7 +112,7 @@ commands:
           name: 'Install << parameters.test_name >> sample'
           command: |
             echo "Current NPM registry: " $(yarn config get registry)
-            yarn
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
       - run:
           name: 'Run cypress tests for << parameters.test_name >> Sample'
           command: |
@@ -143,7 +143,7 @@ commands:
           command: |
             cd << parameters.framework >>/<< parameters.category >>/<< parameters.sample_name >>
             echo "Current NPM registry: " $(yarn config get registry)
-            yarn
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
       - run:
           name: 'Run << parameters.test_name >> UI tests'
           command: |
@@ -176,7 +176,7 @@ commands:
           name: Yarn Install
           command: |
             echo "Current NPM registry: " $(yarn config get registry)
-            yarn install --frozen-lockfile --non-interactive
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
       - restore_pods
       - run:
           name: Install CocoaPods
@@ -259,7 +259,7 @@ commands:
           name: Yarn Install
           command: |
             echo "Current NPM registry: " $(yarn config get registry)
-            yarn install --frozen-lockfile --non-interactive
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
       - run:
           # Install Android Emulator without Android Studio
           command: |
