@@ -724,14 +724,6 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/main
       - 1.0-stable
-      - circleci-firefox
-deploy_branches: &deploy_branches
-  branches:
-    only:
-      - release
-      - main
-      - ui-components/main
-      - 1.0-stable
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -883,7 +875,7 @@ workflows:
             <<: *releasable_branches
       - deploy:
           filters:
-            <<: *deploy_branches
+            <<: *releasable_branches
           requires:
             - unit_test
             - integ_react_predictions
