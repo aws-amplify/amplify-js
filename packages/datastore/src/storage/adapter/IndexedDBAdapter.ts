@@ -1,6 +1,5 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import AsyncStorageDatabase from './AsyncStorageDatabase';
-import { Adapter } from './index';
+import * as idb from 'idb';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ModelPredicateCreator } from '../../predicates';
 import {
@@ -22,13 +21,17 @@ import {
 	getIndex,
 	getIndexFromAssociation,
 	isModelConstructor,
+	isPrivateMode,
 	traverseModel,
 	validatePredicate,
 } from '../../util';
+import { Adapter } from './index';
 
 const logger = new Logger('DataStore');
 
-export class AsyncStorageAdapter implements Adapter {
+const DB_NAME = 'amplify-datastore';
+
+class IndexedDBAdapter implements Adapter {
 	private schema: InternalSchema;
 	private namespaceResolver: NamespaceResolver;
 	private modelInstanceCreator: ModelInstanceCreator;
@@ -36,10 +39,24 @@ export class AsyncStorageAdapter implements Adapter {
 		namsespaceName: string,
 		modelName: string
 	) => PersistentModelConstructor<any>;
-	private db: AsyncStorageDatabase;
+	private db: idb.IDBPDatabase;
 	private initPromise: Promise<void>;
 	private resolve: (value?: any) => void;
 	private reject: (value?: any) => void;
+
+	private async checkPrivate() {
+		const isPrivate = await isPrivateMode().then(isPrivate => {
+			return isPrivate;
+		});
+		if (isPrivate) {
+			logger.error("IndexedDB not supported in this browser's private mode");
+			return Promise.reject(
+				"IndexedDB not supported in this browser's private mode"
+			);
+		} else {
+			return Promise.resolve();
+		}
+	}
 
 	private getStorenameForModel(
 		modelConstructor: PersistentModelConstructor<any>
@@ -65,6 +82,7 @@ export class AsyncStorageAdapter implements Adapter {
 			modelName: string
 		) => PersistentModelConstructor<any>
 	) {
+		await this.checkPrivate();
 		if (!this.initPromise) {
 			this.initPromise = new Promise((res, rej) => {
 				this.resolve = res;
@@ -72,16 +90,84 @@ export class AsyncStorageAdapter implements Adapter {
 			});
 		} else {
 			await this.initPromise;
-			return;
 		}
+
 		this.schema = theSchema;
 		this.namespaceResolver = namespaceResolver;
 		this.modelInstanceCreator = modelInstanceCreator;
 		this.getModelConstructorByModelName = getModelConstructorByModelName;
+
 		try {
 			if (!this.db) {
-				this.db = new AsyncStorageDatabase();
-				await this.db.init();
+				const VERSION = 2;
+				this.db = await idb.openDB(DB_NAME, VERSION, {
+					upgrade: async (db, oldVersion, newVersion, txn) => {
+						if (oldVersion === 0) {
+							Object.keys(theSchema.namespaces).forEach(namespaceName => {
+								const namespace = theSchema.namespaces[namespaceName];
+
+								Object.keys(namespace.models).forEach(modelName => {
+									const storeName = this.getStorename(namespaceName, modelName);
+									const store = db.createObjectStore(storeName, {
+										autoIncrement: true,
+									});
+
+									const indexes = this.schema.namespaces[namespaceName]
+										.relationships[modelName].indexes;
+									indexes.forEach(index => store.createIndex(index, index));
+
+									store.createIndex('byId', 'id', { unique: true });
+								});
+							});
+
+							return;
+						}
+
+						if (oldVersion === 1 && newVersion === 2) {
+							try {
+								for (const storeName of txn.objectStoreNames) {
+									const origStore = txn.objectStore(storeName);
+
+									// rename original store
+									const tmpName = `tmp_${storeName}`;
+									origStore.name = tmpName;
+
+									// create new store with original name
+									const newStore = db.createObjectStore(storeName, {
+										keyPath: undefined,
+										autoIncrement: true,
+									});
+
+									newStore.createIndex('byId', 'id', { unique: true });
+
+									let cursor = await origStore.openCursor();
+									let count = 0;
+
+									// Copy data from original to new
+									while (cursor && cursor.value) {
+										// we don't pass key, since they are all new entries in the new store
+										await newStore.put(cursor.value);
+
+										cursor = await cursor.continue();
+										count++;
+									}
+
+									// delete original
+									db.deleteObjectStore(tmpName);
+
+									logger.debug(`${count} ${storeName} records migrated`);
+								}
+							} catch (error) {
+								logger.error('Error migrating IndexedDB data', error);
+								txn.abort();
+								throw error;
+							}
+
+							return;
+						}
+					},
+				});
+
 				this.resolve();
 			}
 		} catch (error) {
@@ -89,10 +175,30 @@ export class AsyncStorageAdapter implements Adapter {
 		}
 	}
 
+	private async _get<T>(
+		storeOrStoreName: idb.IDBPObjectStore | string,
+		id: string
+	): Promise<T> {
+		let index: idb.IDBPIndex;
+
+		if (typeof storeOrStoreName === 'string') {
+			const storeName = storeOrStoreName;
+			index = this.db.transaction(storeName, 'readonly').store.index('byId');
+		} else {
+			const store = storeOrStoreName;
+			index = store.index('byId');
+		}
+
+		const result = await index.get(id);
+
+		return result;
+	}
+
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
+		await this.checkPrivate();
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
 		const storeName = this.getStorenameForModel(modelConstructor);
@@ -104,6 +210,7 @@ export class AsyncStorageAdapter implements Adapter {
 			this.getModelConstructorByModelName
 		);
 		const namespaceName = this.namespaceResolver(modelConstructor);
+
 		const set = new Set<string>();
 		const connectionStoreNames = Object.values(connectedModels).map(
 			({ modelName, item, instance }) => {
@@ -112,7 +219,13 @@ export class AsyncStorageAdapter implements Adapter {
 				return { storeName, item, instance };
 			}
 		);
-		const fromDB = await this.db.get(model.id, storeName);
+		const tx = this.db.transaction(
+			[storeName, ...Array.from(set.values())],
+			'readwrite'
+		);
+		const store = tx.objectStore(storeName);
+
+		const fromDB = await this._get(store, model.id);
 
 		if (condition && fromDB) {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
@@ -132,25 +245,33 @@ export class AsyncStorageAdapter implements Adapter {
 
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
+			const store = tx.objectStore(storeName);
 
 			const { id } = item;
 
-			const opType: OpType = (await this.db.get(id, storeName))
-				? OpType.UPDATE
-				: OpType.INSERT;
+			const opType: OpType =
+				(await this._get(store, id)) === undefined
+					? OpType.INSERT
+					: OpType.UPDATE;
 
+			// It is me
 			if (id === model.id) {
-				await this.db.save(item, storeName);
+				const key = await store.index('byId').getKey(item.id);
+				await store.put(item, key);
 
 				result.push([instance, opType]);
 			} else {
 				if (opType === OpType.INSERT) {
-					await this.db.save(item, storeName);
+					// Even if the parent is an INSERT, the child might not be, so we need to get its key
+					const key = await store.index('byId').getKey(item.id);
+					await store.put(item, key);
 
 					result.push([instance, opType]);
 				}
 			}
 		}
+
+		await tx.done;
 
 		return result;
 	}
@@ -176,21 +297,24 @@ export class AsyncStorageAdapter implements Adapter {
 			);
 		}
 
+		const tx = this.db.transaction([...connectionStoreNames], 'readonly');
+
 		for await (const relation of relations) {
-			const { fieldName, modelName, targetName, relationType } = relation;
+			const { fieldName, modelName, targetName } = relation;
 			const storeName = this.getStorename(namespaceName, modelName);
+			const store = tx.objectStore(storeName);
 			const modelConstructor = this.getModelConstructorByModelName(
 				namespaceName,
 				modelName
 			);
 
-			switch (relationType) {
+			switch (relation.relationType) {
 				case 'HAS_ONE':
 					for await (const recordItem of records) {
 						if (recordItem[fieldName]) {
-							const connectionRecord = await this.db.get(
-								recordItem[fieldName],
-								storeName
+							const connectionRecord = await this._get(
+								store,
+								recordItem[fieldName]
 							);
 
 							recordItem[fieldName] =
@@ -203,9 +327,9 @@ export class AsyncStorageAdapter implements Adapter {
 				case 'BELONGS_TO':
 					for await (const recordItem of records) {
 						if (recordItem[targetName]) {
-							const connectionRecord = await this.db.get(
-								recordItem[targetName],
-								storeName
+							const connectionRecord = await this._get(
+								store,
+								recordItem[targetName]
 							);
 
 							recordItem[fieldName] =
@@ -220,7 +344,7 @@ export class AsyncStorageAdapter implements Adapter {
 					// TODO: Lazy loading
 					break;
 				default:
-					exhaustiveCheck(relationType);
+					exhaustiveCheck(relation.relationType);
 					break;
 			}
 		}
@@ -235,6 +359,7 @@ export class AsyncStorageAdapter implements Adapter {
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput
 	): Promise<T[]> {
+		await this.checkPrivate();
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
@@ -251,17 +376,19 @@ export class AsyncStorageAdapter implements Adapter {
 				if (idPredicate) {
 					const { operand: id } = idPredicate;
 
-					const record = <any>await this.db.get(id, storeName);
+					const record = <any>await this._get(storeName, id);
 
 					if (record) {
 						const [x] = await this.load(namespaceName, modelConstructor.name, [
 							record,
 						]);
+
 						return [x];
 					}
 					return [];
 				}
 
+				// TODO: Use indices if possible
 				const all = <T[]>await this.db.getAll(storeName);
 
 				const filtered = predicateObjs
@@ -276,9 +403,11 @@ export class AsyncStorageAdapter implements Adapter {
 			}
 		}
 
-		const all = <T[]>await this.db.getAll(storeName, pagination);
-
-		return await this.load(namespaceName, modelConstructor.name, all);
+		return await this.load(
+			namespaceName,
+			modelConstructor.name,
+			await this.enginePagination(storeName, pagination)
+		);
 	}
 
 	private inMemoryPagination<T>(
@@ -297,12 +426,65 @@ export class AsyncStorageAdapter implements Adapter {
 		return records;
 	}
 
+	private async enginePagination<T>(
+		storeName: string,
+		pagination?: PaginationInput
+	): Promise<T[]> {
+		let result: T[];
+
+		if (pagination) {
+			const { page = 0, limit = 0 } = pagination;
+			const initialRecord = Math.max(0, page * limit) || 0;
+
+			let cursor = await this.db
+				.transaction(storeName)
+				.objectStore(storeName)
+				.openCursor();
+
+			if (cursor && initialRecord > 0) {
+				await cursor.advance(initialRecord);
+			}
+
+			const pageResults: T[] = [];
+
+			const hasLimit = typeof limit === 'number' && limit > 0;
+			let moreRecords = true;
+			let itemsLeft = limit;
+			while (moreRecords && cursor && cursor.value) {
+				pageResults.push(cursor.value);
+
+				cursor = await cursor.continue();
+
+				if (hasLimit) {
+					itemsLeft--;
+					moreRecords = itemsLeft > 0 && cursor !== null;
+				} else {
+					moreRecords = cursor !== null;
+				}
+			}
+
+			result = pageResults;
+		} else {
+			result = <T[]>await this.db.getAll(storeName);
+		}
+
+		return result;
+	}
+
 	async queryOne<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		firstOrLast: QueryOne = QueryOne.FIRST
 	): Promise<T | undefined> {
+		await this.checkPrivate();
 		const storeName = this.getStorenameForModel(modelConstructor);
-		const result = <T>await this.db.getOne(firstOrLast, storeName);
+
+		const cursor = await this.db
+			.transaction([storeName], 'readonly')
+			.objectStore(storeName)
+			.openCursor(undefined, firstOrLast === QueryOne.FIRST ? 'next' : 'prev');
+
+		const result = cursor ? <T>cursor.value : undefined;
+
 		return result && this.modelInstanceCreator(modelConstructor, result);
 	}
 
@@ -310,15 +492,16 @@ export class AsyncStorageAdapter implements Adapter {
 		modelOrModelConstructor: T | PersistentModelConstructor<T>,
 		condition?: ModelPredicate<T>
 	): Promise<[T[], T[]]> {
+		await this.checkPrivate();
 		const deleteQueue: { storeName: string; items: T[] }[] = [];
 
 		if (isModelConstructor(modelOrModelConstructor)) {
 			const modelConstructor = modelOrModelConstructor;
 			const nameSpace = this.namespaceResolver(modelConstructor);
 
-			// models to be deleted.
+			const storeName = this.getStorenameForModel(modelConstructor);
+
 			const models = await this.query(modelConstructor, condition);
-			// TODO: refactor this to use a function like getRelations()
 			const relations = this.schema.namespaces[nameSpace].relationships[
 				modelConstructor.name
 			].relationTypes;
@@ -338,6 +521,7 @@ export class AsyncStorageAdapter implements Adapter {
 					(acc, { items }) => acc.concat(items),
 					<T[]>[]
 				);
+
 				return [models, deletedModels];
 			} else {
 				await this.deleteTraverse(
@@ -348,7 +532,11 @@ export class AsyncStorageAdapter implements Adapter {
 					deleteQueue
 				);
 
-				await this.deleteItem(deleteQueue);
+				// Delete all
+				await this.db
+					.transaction([storeName], 'readwrite')
+					.objectStore(storeName)
+					.clear();
 
 				const deletedModels = deleteQueue.reduce(
 					(acc, { items }) => acc.concat(items),
@@ -365,8 +553,12 @@ export class AsyncStorageAdapter implements Adapter {
 			const nameSpace = this.namespaceResolver(modelConstructor);
 
 			const storeName = this.getStorenameForModel(modelConstructor);
+
 			if (condition) {
-				const fromDB = await this.db.get(model.id, storeName);
+				const tx = this.db.transaction([storeName], 'readwrite');
+				const store = tx.objectStore(storeName);
+
+				const fromDB = await this._get(store, model.id);
 
 				if (fromDB === undefined) {
 					const msg = 'Model instance not found in storage';
@@ -379,16 +571,19 @@ export class AsyncStorageAdapter implements Adapter {
 				const { predicates: predicateObjs, type } = predicates;
 
 				const isValid = validatePredicate(fromDB, type, predicateObjs);
+
 				if (!isValid) {
 					const msg = 'Conditional update failed';
 					logger.error(msg, { model: fromDB, condition: predicateObjs });
 
 					throw new Error(msg);
 				}
+				await tx.done;
 
 				const relations = this.schema.namespaces[nameSpace].relationships[
 					modelConstructor.name
 				].relationTypes;
+
 				await this.deleteTraverse(
 					relations,
 					[model],
@@ -424,27 +619,33 @@ export class AsyncStorageAdapter implements Adapter {
 	private async deleteItem<T extends PersistentModel>(
 		deleteQueue?: { storeName: string; items: T[] | IDBValidKey[] }[]
 	) {
+		const connectionStoreNames = deleteQueue.map(({ storeName }) => {
+			return storeName;
+		});
+
+		const tx = this.db.transaction([...connectionStoreNames], 'readwrite');
 		for await (const deleteItem of deleteQueue) {
 			const { storeName, items } = deleteItem;
+			const store = tx.objectStore(storeName);
 
 			for await (const item of items) {
 				if (item) {
+					let key: IDBValidKey;
+
 					if (typeof item === 'object') {
-						const id = item['id'];
-						await this.db.delete(id, storeName);
+						key = await store.index('byId').getKey(item['id']);
+					} else {
+						key = await store.index('byId').getKey(item.toString());
+					}
+
+					if (key !== undefined) {
+						await store.delete(key);
 					}
 				}
 			}
 		}
 	}
-	/**
-	 * Populates the delete Queue with all the items to delete
-	 * @param relations
-	 * @param models
-	 * @param srcModel
-	 * @param nameSpace
-	 * @param deleteQueue
-	 */
+
 	private async deleteTraverse<T extends PersistentModel>(
 		relations: RelationType[],
 		models: T[],
@@ -453,7 +654,7 @@ export class AsyncStorageAdapter implements Adapter {
 		deleteQueue: { storeName: string; items: T[] }[]
 	): Promise<void> {
 		for await (const rel of relations) {
-			const { relationType, modelName } = rel;
+			const { relationType, fieldName, modelName } = rel;
 			const storeName = this.getStorename(nameSpace, modelName);
 
 			const index: string =
@@ -473,15 +674,16 @@ export class AsyncStorageAdapter implements Adapter {
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
-						const allRecords = await this.db.getAll(storeName);
-						const recordToDelete = allRecords.filter(
-							childItem => childItem[index] === model.id
-						);
+						const recordToDelete = <T>await this.db
+							.transaction(storeName, 'readwrite')
+							.objectStore(storeName)
+							.index(index)
+							.get(model.id);
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
 								.relationTypes,
-							recordToDelete,
+							recordToDelete ? [recordToDelete] : [],
 							modelName,
 							nameSpace,
 							deleteQueue
@@ -490,10 +692,11 @@ export class AsyncStorageAdapter implements Adapter {
 					break;
 				case 'HAS_MANY':
 					for await (const model of models) {
-						const allRecords = await this.db.getAll(storeName);
-						const childrenArray = allRecords.filter(
-							childItem => childItem[index] === model.id
-						);
+						const childrenArray = await this.db
+							.transaction(storeName, 'readwrite')
+							.objectStore(storeName)
+							.index(index)
+							.getAll(model['id']);
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
@@ -526,7 +729,11 @@ export class AsyncStorageAdapter implements Adapter {
 	}
 
 	async clear(): Promise<void> {
-		await this.db.clear();
+		await this.checkPrivate();
+
+		this.db.close();
+
+		await idb.deleteDB(DB_NAME);
 
 		this.db = undefined;
 		this.initPromise = undefined;
@@ -536,15 +743,20 @@ export class AsyncStorageAdapter implements Adapter {
 		modelConstructor: PersistentModelConstructor<any>,
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
-		const { name: modelName } = modelConstructor;
-		const namespaceName = this.namespaceResolver(modelConstructor);
-		const storeName = this.getStorename(namespaceName, modelName);
+		if (items.length === 0) {
+			return [];
+		}
 
-		const batch: ModelInstanceMetadata[] = [];
+		await this.checkPrivate();
+
+		const result: [T, OpType][] = [];
+
+		const storeName = this.getStorenameForModel(modelConstructor);
+
+		const txn = this.db.transaction(storeName, 'readwrite');
+		const store = txn.store;
 
 		for (const item of items) {
-			const { id } = item;
-
 			const connectedModels = traverseModel(
 				modelConstructor.name,
 				this.modelInstanceCreator(modelConstructor, item),
@@ -553,15 +765,33 @@ export class AsyncStorageAdapter implements Adapter {
 				this.getModelConstructorByModelName
 			);
 
-			const { instance } = connectedModels.find(
-				({ instance }) => instance.id === id
-			);
+			const { id, _deleted } = item;
+			const index = store.index('byId');
+			const key = await index.getKey(id);
 
-			batch.push(instance);
+			if (!_deleted) {
+				const { instance } = connectedModels.find(
+					({ instance }) => instance.id === id
+				);
+
+				result.push([
+					<T>(<unknown>instance),
+					key ? OpType.UPDATE : OpType.INSERT,
+				]);
+				await store.put(instance, key);
+			} else {
+				result.push([<T>(<unknown>item), OpType.DELETE]);
+
+				if (key) {
+					await store.delete(key);
+				}
+			}
 		}
 
-		return await this.db.batchSave(storeName, batch);
+		await txn.done;
+
+		return result;
 	}
 }
 
-export default new AsyncStorageAdapter();
+export default new IndexedDBAdapter();
