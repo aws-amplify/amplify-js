@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.17...@aws-amplify/ui-storybook@0.2.18) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/ui-storybook
+
+
+
+
+
 ## [0.2.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-storybook@0.2.16...@aws-amplify/ui-storybook@0.2.17) (2020-09-03)
 
 **Note:** Version bump only for package @aws-amplify/ui-storybook
