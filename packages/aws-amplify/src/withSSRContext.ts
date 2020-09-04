@@ -1,7 +1,7 @@
 import API from '@aws-amplify/api';
 import { Auth } from '@aws-amplify/auth';
-import { Credentials } from '@aws-amplify/core';
-import { AmplifyClass, UniversalStorage } from '@aws-amplify/core';
+import { AmplifyClass, Credentials, UniversalStorage } from '@aws-amplify/core';
+import { DataStore } from '@aws-amplify/datastore';
 
 // ! We have to use this exact reference, since it gets mutated with Amplify.Auth
 import { Amplify } from './index';
@@ -14,7 +14,7 @@ const requiredModules = [
 ];
 
 // These modules have been tested with SSR
-const defaultModules = [API, Auth];
+const defaultModules = [API, Auth, DataStore];
 
 type Context = {
 	req?: any;
