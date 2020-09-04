@@ -17,7 +17,7 @@ describe('PubSub', () => {
 			expect(() =>
 				PubSub.subscribe('topic')
 			).toThrowErrorMatchingInlineSnapshot(
-				`"Subscriptions are not supported in Node to prevent memory leaks."`
+				`"Subscriptions are not supported in Node"`
 			);
 		});
 	});

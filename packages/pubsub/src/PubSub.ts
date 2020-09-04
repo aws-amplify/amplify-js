@@ -154,9 +154,7 @@ export class PubSubClass {
 		options?: ProvidertOptions
 	): Observable<any> {
 		if (isNode) {
-			throw new Error(
-				'Subscriptions are not supported in Node to prevent memory leaks.'
-			);
+			throw new Error('Subscriptions are not supported in Node');
 		}
 
 		logger.debug('subscribe options', options);
