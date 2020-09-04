@@ -163,7 +163,12 @@ export class SyncEngine {
 								},
 							});
 
-							let ctlSubsObservable, dataSubsObservable;
+							let ctlSubsObservable: Observable<CONTROL_MSG>;
+							let dataSubsObservable: Observable<[
+								TransformerMutationType,
+								SchemaModel,
+								Readonly<{ id: string } & Record<string, any>>
+							]>;
 
 							if (isNode) {
 								logger.warn(
@@ -172,7 +177,11 @@ export class SyncEngine {
 							} else {
 								//#region GraphQL Subscriptions
 								[
+									// const ctlObservable: Observable<CONTROL_MSG>
 									ctlSubsObservable,
+									// const dataObservable: Observable<[TransformerMutationType, SchemaModel, Readonly<{
+									// id: string;
+									// } & Record<string, any>>]>
 									dataSubsObservable,
 								] = this.subscriptionsProcessor.start();
 
