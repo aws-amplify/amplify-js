@@ -14,6 +14,7 @@ import {
 	MutableModel,
 	NamespaceResolver,
 	OpType,
+	PersistentModel,
 	PersistentModelConstructor,
 	SchemaModel,
 	SchemaNamespace,
@@ -167,7 +168,7 @@ export class SyncEngine {
 							let dataSubsObservable: Observable<[
 								TransformerMutationType,
 								SchemaModel,
-								Readonly<{ id: string } & Record<string, any>>
+								PersistentModel
 							]>;
 
 							if (isNode) {
