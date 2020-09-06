@@ -93,8 +93,11 @@ export const S3ImagePicker = ({
 			style={{ alignItems: 'center', justifyContent: 'center' }}
 		>
 			<ImageBackground
-				style={theme.imagePicker}
-				imageStyle={theme.image}
+				style={{
+					width: theme.imagePicker.width,
+					height: theme.imagePicker.height,
+				}}
+				imageStyle={theme.imagePicker}
 				source={{ uri: source }}
 			>
 				<View
