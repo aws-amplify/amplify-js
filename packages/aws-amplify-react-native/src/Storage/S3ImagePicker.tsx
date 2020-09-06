@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import {
-	Image,
 	TouchableOpacity,
 	Alert,
 	ActivityIndicator,
+	View,
+	ImageBackground,
 } from 'react-native';
 
 import { I18n, Storage, Logger } from 'aws-amplify';
@@ -14,8 +15,13 @@ import {
 	ImagePickerResult,
 } from 'expo-image-picker';
 import { Buffer } from 'buffer';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-import AmplifyTheme, { AmplifyThemeType } from '../AmplifyTheme';
+import AmplifyTheme, {
+	AmplifyThemeType,
+	placeholderColor,
+} from '../AmplifyTheme';
+
 import { AccessLevel } from './common/types';
 
 const logger = new Logger('Storage.S3ImagePicker');
@@ -86,12 +92,25 @@ export const S3ImagePicker = ({
 			onPress={showImagePicker}
 			style={{ alignItems: 'center', justifyContent: 'center' }}
 		>
-			{loading && (
-				<ActivityIndicator
-					style={{ position: 'absolute', width: '100%', height: '100%' }}
-				/>
-			)}
-			<Image style={theme.imagePicker} source={{ uri: source }} />
+			<ImageBackground
+				style={theme.imagePicker}
+				imageStyle={theme.image}
+				source={{ uri: source }}
+			>
+				<View
+					style={{
+						justifyContent: 'center',
+						alignItems: 'center',
+						height: '100%',
+						width: '100%',
+					}}
+				>
+					{loading && !source && <ActivityIndicator />}
+					{!loading && !source && (
+						<Icon name="camera" size={30} color={placeholderColor} />
+					)}
+				</View>
+			</ImageBackground>
 		</TouchableOpacity>
 	);
 
