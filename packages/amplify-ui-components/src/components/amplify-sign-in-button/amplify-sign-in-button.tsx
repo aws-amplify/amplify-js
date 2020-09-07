@@ -13,7 +13,7 @@ export class AmplifySignInButton {
   render() {
     return (
       <div class={`sign-in-button ${this.provider}`}>
-        <button>
+        <button type="submit">
           {this.provider in icons && (
             <span class="icon">
               <amplify-icon name={this.provider as IconNameType} />
