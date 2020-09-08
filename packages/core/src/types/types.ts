@@ -4,6 +4,7 @@ export interface AmplifyConfig {
 	API?: object;
 	Storage?: object;
 	Cache?: object;
+	ssr?: boolean;
 }
 
 export interface ICredentials {

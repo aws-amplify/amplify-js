@@ -110,7 +110,7 @@ export class SignUpComponentCore implements OnInit {
 	_signUpConfig: any;
 	_usernameAttributes: string = 'username';
 	user: any = {};
-	local_phone_number: string;
+	local_phone_number: string = '';
 	country_code: string = '1';
 	header: string = 'Create a new account';
 	defaultSignUpFields: SignUpField[] = defaultSignUpFieldAssets;
@@ -121,9 +121,7 @@ export class SignUpComponentCore implements OnInit {
 	defaultCountryCode: string;
 	protected logger: any;
 
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		this.logger = this.amplifyService.logger('SignUpComponent');
 	}
 

@@ -1,0 +1,24 @@
+:host {
+  --font-family: var(--amplify-font-family);
+  --background-color: var(--amplify-background-color);
+}
+
+.section {
+  position: relative;
+  margin-bottom: var(--margin-bottom);
+  background-color: var(--background-color);
+  padding: var(--padding);
+  text-align: left;
+  display: inline-block;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  box-sizing: border-box;
+  font-family: var(--font-family);
+
+  width: 100%;
+  min-width: var(--min-width);
+
+  @include md {
+    width: var(--width);
+  }
+}

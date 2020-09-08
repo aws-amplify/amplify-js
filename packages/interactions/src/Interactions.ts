@@ -13,14 +13,15 @@
 import {
 	InteractionsOptions,
 	InteractionsProviders,
-	InteractionsResponse,
 	InteractionsProvider,
+	InteractionsMessage,
+	InteractionsResponse,
 } from './types';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { AWSLexProvider } from './Providers';
 const logger = new Logger('Interactions');
 
-export default class Interactions {
+export class InteractionsClass {
 	private _options: InteractionsOptions;
 
 	private _pluggables: InteractionsProviders;
@@ -94,7 +95,22 @@ export default class Interactions {
 		}
 	}
 
-	public async send(botname: string, message: string | Object) {
+	public async send(
+		botname: string,
+		message: string
+	): Promise<InteractionsResponse>;
+	public async send(
+		botname: string,
+		message: InteractionsMessage
+	): Promise<InteractionsResponse>;
+	public async send(
+		botname: string,
+		message: object
+	): Promise<InteractionsResponse>;
+	public async send(
+		botname: string,
+		message: string | object
+	): Promise<InteractionsResponse> {
 		if (!this._options.bots || !this._options.bots[botname]) {
 			throw new Error('Bot ' + botname + ' does not exist');
 		}
@@ -129,3 +145,6 @@ export default class Interactions {
 		this._pluggables[botProvider].onComplete(botname, callback);
 	}
 }
+
+export const Interactions = new InteractionsClass(null);
+Amplify.register(Interactions);

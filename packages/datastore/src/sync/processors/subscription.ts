@@ -1,13 +1,15 @@
-import '@aws-amplify/pubsub';
-
-import Observable from 'zen-observable-ts';
-
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
-import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
-
-import { InternalSchema, PersistentModel, SchemaModel } from '../../types';
+import { ConsoleLogger as Logger, Hub, HubCapsule } from '@aws-amplify/core';
+import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
+import Observable, { ZenObservable } from 'zen-observable-ts';
+import {
+	InternalSchema,
+	PersistentModel,
+	SchemaModel,
+	SchemaNamespace,
+} from '../../types';
 import {
 	buildSubscriptionGraphQLOperation,
 	getAuthorizationRules,
@@ -41,6 +43,7 @@ class SubscriptionProcessor {
 	constructor(private readonly schema: InternalSchema) {}
 
 	private buildSubscription(
+		namespace: SchemaNamespace,
 		model: SchemaModel,
 		transformerMutationType: TransformerMutationType,
 		userCredentials: USER_CREDENTIALS,
@@ -65,6 +68,7 @@ class SubscriptionProcessor {
 			) || {};
 
 		const [opType, opName, query] = buildSubscriptionGraphQLOperation(
+			namespace,
 			model,
 			transformerMutationType,
 			isOwner,
@@ -123,7 +127,7 @@ class SubscriptionProcessor {
 
 		// if not check if has groups authorization and token has groupClaim allowed for cognito token
 		let groupAuthRules = rules.filter(
-			rule => rule.authStrategy === 'group' && rule.provider === 'userPools'
+			rule => rule.authStrategy === 'groups' && rule.provider === 'userPools'
 		);
 
 		const validCognitoGroup = groupAuthRules.find(groupAuthRule => {
@@ -145,7 +149,7 @@ class SubscriptionProcessor {
 
 		// if not check if has groups authorization and token has groupClaim allowed for oidc token
 		groupAuthRules = rules.filter(
-			rule => rule.authStrategy === 'group' && rule.provider === 'oidc'
+			rule => rule.authStrategy === 'groups' && rule.provider === 'oidc'
 		);
 
 		const validOidcGroup = groupAuthRules.find(groupAuthRule => {
@@ -176,7 +180,7 @@ class SubscriptionProcessor {
 			if (ownerValue) {
 				result = {
 					authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-					isOwner: true,
+					isOwner: ownerAuthRule.areSubscriptionsPublic ? false : true,
 					ownerField: ownerAuthRule.ownerField,
 					ownerValue,
 				};
@@ -198,7 +202,7 @@ class SubscriptionProcessor {
 			if (ownerValue) {
 				result = {
 					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-					isOwner: true,
+					isOwner: ownerAuthRule.areSubscriptionsPublic ? false : true,
 					ownerField: ownerAuthRule.ownerField,
 					ownerValue,
 				};
@@ -212,16 +216,12 @@ class SubscriptionProcessor {
 		return null;
 	}
 
-	private hubQueryCompletionListener(
-		completed: Function,
-		variables: any,
-		capsule: {
-			payload: {
-				data?: any;
-			};
-		}
-	) {
-		if (variables === capsule.payload.data.variables) {
+	private hubQueryCompletionListener(completed: Function, capsule: HubCapsule) {
+		const {
+			payload: { event },
+		} = capsule;
+
+		if (event === PUBSUB_CONTROL_MSG.SUBSCRIPTION_ACK) {
 			completed();
 		}
 	}
@@ -239,6 +239,7 @@ class SubscriptionProcessor {
 			(async () => {
 				try {
 					// retrieving current AWS Credentials
+					// TODO Should this use `this.amplify.Auth` for SSR?
 					const credentials = await Auth.currentCredentials();
 					userCredentials = credentials.authenticated
 						? USER_CREDENTIALS.auth
@@ -249,6 +250,7 @@ class SubscriptionProcessor {
 
 				try {
 					// retrieving current token info from Cognito UserPools
+					// TODO Should this use `this.amplify.Auth` for SSR?
 					const session = await Auth.currentSession();
 					cognitoTokenPayload = session.getIdToken().decodePayload();
 				} catch (err) {
@@ -278,6 +280,7 @@ class SubscriptionProcessor {
 								TransformerMutationType.DELETE,
 							].map(op =>
 								this.buildSubscription(
+									namespace,
 									modelDefinition,
 									op,
 									userCredentials,
@@ -296,7 +299,7 @@ class SubscriptionProcessor {
 									ownerValue,
 									authMode,
 								}) => {
-									const marker = {};
+									const variables = {};
 
 									if (isOwner) {
 										if (!ownerValue) {
@@ -307,14 +310,16 @@ class SubscriptionProcessor {
 											return;
 										}
 
-										marker[ownerField] = ownerValue;
+										variables[ownerField] = ownerValue;
 									}
 
 									const queryObservable = <
 										Observable<{
 											value: GraphQLResult<Record<string, PersistentModel>>;
 										}>
-									>(<unknown>API.graphql({ query, variables: marker, ...{ authMode } })); // use default authMode if not found
+									>(<unknown>API.graphql({ query, variables, ...{ authMode } })); // use default authMode if not found
+
+									let subscriptionReadyCallback: () => void;
 
 									subscriptions.push(
 										queryObservable
@@ -354,6 +359,12 @@ class SubscriptionProcessor {
 															errors: [],
 														},
 													} = subscriptionError;
+													logger.warn('subscriptionError', message);
+
+													if (typeof subscriptionReadyCallback === 'function') {
+														subscriptionReadyCallback();
+													}
+
 													observer.error(message);
 												},
 											})
@@ -364,10 +375,10 @@ class SubscriptionProcessor {
 											let boundFunction: any;
 
 											await new Promise(res => {
+												subscriptionReadyCallback = res;
 												boundFunction = this.hubQueryCompletionListener.bind(
 													this,
-													res,
-													marker
+													res
 												);
 												Hub.listen('api', boundFunction);
 											});

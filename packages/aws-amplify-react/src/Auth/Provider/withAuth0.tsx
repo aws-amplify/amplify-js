@@ -14,7 +14,7 @@
 import * as React from 'react';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
 // import auth0 from 'auth0-js';
 import { auth0SignInButton } from '@aws-amplify/ui';
@@ -23,11 +23,11 @@ import {
 	SignInButtonIcon,
 	SignInButtonContent,
 } from '../../Amplify-UI/Amplify-UI-Components-React';
-import Constants from '../common/constants';
+import { Constants } from '../common/constants';
 
 const logger = new Logger('withAuth0');
 
-export default function withAuth0(Comp, options?) {
+export function withAuth0(Comp, options?) {
 	return class extends React.Component<any, any> {
 		public _auth0;
 
@@ -101,11 +101,13 @@ export default function withAuth0(Comp, options?) {
 					this._auth0.client.userInfo(authResult.accessToken, (err, user) => {
 						let username = undefined;
 						let email = undefined;
+						let picture = undefined;
 						if (err) {
 							logger.debug('Failed to get the user info', err);
 						} else {
 							username = user.name;
 							email = user.email;
+							picture = user.picture;
 						}
 
 						Auth.federatedSignIn(
@@ -114,7 +116,11 @@ export default function withAuth0(Comp, options?) {
 								token: authResult.idToken,
 								expires_at: authResult.expiresIn * 1000 + new Date().getTime(),
 							},
-							{ name: username, email }
+							{
+								name: username,
+								email,
+								picture,
+							}
 						)
 							.then(() => {
 								if (onStateChange) {
@@ -194,3 +200,8 @@ const Button = props => (
 );
 
 export const Auth0Button = withAuth0(Button);
+
+/**
+ * @deprecated use named import
+ */
+export default withAuth0;

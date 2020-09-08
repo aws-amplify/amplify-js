@@ -23,8 +23,8 @@ import {
 
 import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
 
-const SHA256 = require('crypto-js/sha256');
-const Base64 = require('crypto-js/enc-base64');
+import sha256 from 'crypto-js/sha256';
+import Base64 from 'crypto-js/enc-base64';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
 typeof Symbol.for === 'function'
@@ -55,7 +55,16 @@ export default class OAuth {
 		this._urlOpener = config.urlOpener || launchUri;
 		this._config = config;
 		this._cognitoClientId = cognitoClientId;
+
+		if (!this.isValidScopes(scopes))
+			throw Error('scopes must be a String Array');
 		this._scopes = scopes;
+	}
+
+	private isValidScopes(scopes: string[]) {
+		return (
+			Array.isArray(scopes) && scopes.every(scope => typeof scope === 'string')
+		);
 	}
 
 	public oauthSignIn(
@@ -81,12 +90,14 @@ export default class OAuth {
 		const code_challenge = this._generateChallenge(pkce_key);
 		const code_challenge_method = 'S256';
 
+		const scopesString = this._scopes.join(' ');
+
 		const queryString = Object.entries({
 			redirect_uri: redirectSignIn,
 			response_type: responseType,
 			client_id: clientId,
 			identity_provider: provider,
-			scopes: this._scopes,
+			scope: scopesString,
 			state,
 			...(responseType === 'code' ? { code_challenge } : {}),
 			...(responseType === 'code' ? { code_challenge_method } : {}),
@@ -172,8 +183,9 @@ export default class OAuth {
 	}
 
 	private async _handleImplicitFlow(currentUrl: string) {
-		const { id_token, access_token } = parse(currentUrl)
-			.hash.substr(1) // Remove # from returned code
+		// hash is `null` if `#` doesn't exist on URL
+		const { id_token, access_token } = (parse(currentUrl).hash || '#')
+			.substr(1) // Remove # from returned code
 			.split('&')
 			.map(pairings => pairings.split('='))
 			.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), {
@@ -282,7 +294,7 @@ export default class OAuth {
 	}
 
 	private _generateChallenge(code: string) {
-		return this._base64URL(SHA256(code));
+		return this._base64URL(sha256(code));
 	}
 
 	private _base64URL(string) {
