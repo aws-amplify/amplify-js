@@ -507,45 +507,6 @@ jobs:
           spec: chatbot-component
           browser: << parameters.browser >>
 
-  integ_react_interactions:
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/interactions/chatbot-component
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'React Interactions'
-          framework: react
-          category: interactions
-          sample_name: chatbot-component
-          spec: chatbot-component
-
-  integ_vue_interactions:
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/vue/interactions/chatbot-component
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'Vue Interactions'
-          framework: vue
-          category: interactions
-          sample_name: chatbot-component
-          spec: chatbot-component
-
-  integ_angular_interactions:
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/angular/interactions/chatbot-component
-    steps:
-      - prepare_test_env
-      - integ_test_js:
-          test_name: 'Angular Interactions'
-          framework: angular
-          category: interactions
-          sample_name: chatbot-component
-          spec: chatbot-component
-
   integ_react_datastore:
     parameters:
       browser:
