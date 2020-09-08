@@ -34,6 +34,7 @@ graph TD;
   amplify-confirm-sign-up --> amplify-button
   amplify-confirm-sign-up --> amplify-form-section
   amplify-confirm-sign-up --> amplify-auth-fields
+  amplify-button --> amplify-icon
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-loading-spinner

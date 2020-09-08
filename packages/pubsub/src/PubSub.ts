@@ -15,6 +15,7 @@ import Observable from 'zen-observable-ts';
 
 import {
 	Amplify,
+	browserOrNode,
 	ConsoleLogger as Logger,
 	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
@@ -22,6 +23,7 @@ import {
 import { PubSubProvider, PubSubOptions, ProvidertOptions } from './types';
 import { AWSAppSyncProvider, AWSAppSyncRealTimeProvider } from './Providers';
 
+const { isNode } = browserOrNode();
 const logger = new Logger('PubSub');
 
 export class PubSubClass {
@@ -71,7 +73,6 @@ export class PubSubClass {
 		logger.debug('PubSub Options', this._options);
 		this._pluggables = [];
 		this.subscribe = this.subscribe.bind(this);
-		Amplify.register(this);
 	}
 
 	public getModuleName() {
@@ -152,6 +153,10 @@ export class PubSubClass {
 		topics: string[] | string,
 		options?: ProvidertOptions
 	): Observable<any> {
+		if (isNode) {
+			throw new Error('Subscriptions are not supported in Node');
+		}
+
 		logger.debug('subscribe options', options);
 
 		const providers = this.getProviders(options);
@@ -178,3 +183,4 @@ export class PubSubClass {
 }
 
 export const PubSub = new PubSubClass(null);
+Amplify.register(PubSub);

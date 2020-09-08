@@ -36,6 +36,7 @@ graph TD;
   amplify-greetings --> amplify-nav
   amplify-greetings --> amplify-sign-out
   amplify-sign-out --> amplify-button
+  amplify-button --> amplify-icon
   style amplify-greetings fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

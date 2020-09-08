@@ -49,6 +49,7 @@ export {
 	I18n,
 	ServiceWorker,
 } from '@aws-amplify/core';
+export { withSSRContext } from './withSSRContext';
 
 export { Amplify };
 

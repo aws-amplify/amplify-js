@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.0...@aws-amplify/ui-components@0.8.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+# [0.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.7.0...@aws-amplify/ui-components@0.8.0) (2020-09-03)
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+# [0.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.6.2...@aws-amplify/ui-components@0.7.0) (2020-09-01)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** Add Chatbot UI to main ([#6684](https://github.com/aws-amplify/amplify-js/issues/6684)) ([4e25f92](https://github.com/aws-amplify/amplify-js/commit/4e25f923723441c6fb705584fcc3349214806558)), closes [#5024](https://github.com/aws-amplify/amplify-js/issues/5024) [#6648](https://github.com/aws-amplify/amplify-js/issues/6648) [#6652](https://github.com/aws-amplify/amplify-js/issues/6652) [#6678](https://github.com/aws-amplify/amplify-js/issues/6678)
+
+
+
+
+
 ## [0.6.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.6.1...@aws-amplify/ui-components@0.6.2) (2020-08-19)
 
 **Note:** Version bump only for package @aws-amplify/ui-components

@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.0...@aws-amplify/auth@3.4.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+# [3.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.6...@aws-amplify/auth@3.4.0) (2020-09-03)
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+## [3.3.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.5...@aws-amplify/auth@3.3.6) (2020-09-01)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Fix types for completeNewPassword ([#6657](https://github.com/aws-amplify/amplify-js/issues/6657)) ([84af018](https://github.com/aws-amplify/amplify-js/commit/84af018657a30382cd489c35a0ebc4c41a63bc26)), closes [#6634](https://github.com/aws-amplify/amplify-js/issues/6634)
+* **@aws-amplify/auth:** incorrect return type for Auth.resendSignUp ([#5112](https://github.com/aws-amplify/amplify-js/issues/5112)) ([9164b37](https://github.com/aws-amplify/amplify-js/commit/9164b37cb7669c9dd08927dde58dccbefad25194))
+
+
+
+
+
 ## [3.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.4...@aws-amplify/auth@3.3.5) (2020-08-19)
 
 
