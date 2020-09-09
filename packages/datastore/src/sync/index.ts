@@ -134,7 +134,7 @@ export class SyncEngine {
 	}
 
 	start(params: StartParams) {
-		return new Observable<ControlMessageType<ControlMessage>>((observer) => {
+		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			logger.log('starting sync engine...');
 
 			let subscriptions: ZenObservable.Subscription[] = [];
@@ -149,7 +149,7 @@ export class SyncEngine {
 
 				const datastoreConnectivity = new DataStoreConnectivity();
 
-				const startPromise = new Promise((resolve) => {
+				const startPromise = new Promise(resolve => {
 					datastoreConnectivity.status().subscribe(async ({ online }) => {
 						// From offline to online
 						if (online && !this.online) {
@@ -177,6 +177,7 @@ export class SyncEngine {
 								);
 							} catch (err) {
 								observer.error(err);
+								return;
 							}
 
 							logger.log('Realtime ready');
@@ -192,7 +193,7 @@ export class SyncEngine {
 								await new Promise((resolve, reject) => {
 									const syncQuerySubscription = this.syncQueriesObservable().subscribe(
 										{
-											next: (message) => {
+											next: message => {
 												const { type } = message;
 
 												if (
@@ -206,7 +207,7 @@ export class SyncEngine {
 											complete: () => {
 												resolve();
 											},
-											error: (error) => {
+											error: error => {
 												reject(error);
 											},
 										}
@@ -218,6 +219,7 @@ export class SyncEngine {
 								});
 							} catch (error) {
 								observer.error(error);
+								return;
 							}
 							//#endregion
 
@@ -235,7 +237,7 @@ export class SyncEngine {
 											item
 										);
 
-										this.storage.runExclusive((storage) =>
+										this.storage.runExclusive(storage =>
 											this.modelMerger.merge(storage, model)
 										);
 
@@ -272,7 +274,7 @@ export class SyncEngine {
 											item
 										);
 
-										this.storage.runExclusive((storage) =>
+										this.storage.runExclusive(storage =>
 											this.modelMerger.merge(storage, model)
 										);
 									}
@@ -289,7 +291,7 @@ export class SyncEngine {
 								},
 							});
 
-							subscriptions.forEach((sub) => sub.unsubscribe());
+							subscriptions.forEach(sub => sub.unsubscribe());
 							subscriptions = [];
 						}
 
@@ -370,7 +372,7 @@ export class SyncEngine {
 			})();
 
 			return () => {
-				subscriptions.forEach((sub) => sub.unsubscribe());
+				subscriptions.forEach(sub => sub.unsubscribe());
 			};
 		});
 	}
@@ -405,7 +407,7 @@ export class SyncEngine {
 			return Observable.of<ControlMessageType<ControlMessage>>();
 		}
 
-		return new Observable<ControlMessageType<ControlMessage>>((observer) => {
+		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			let syncQueriesSubscription: ZenObservable.Subscription;
 			let waitTimeoutId: ReturnType<typeof setTimeout>;
 
@@ -431,7 +433,7 @@ export class SyncEngine {
 					let start: number;
 					let duration: number;
 					let newestStartedAt: number;
-					await new Promise((resolve) => {
+					await new Promise(resolve => {
 						syncQueriesSubscription = this.syncQueriesProcessor
 							.start(modelLastSync)
 							.subscribe({
@@ -465,11 +467,11 @@ export class SyncEngine {
 									 * If there are mutations in the outbox for a given id, those need to be
 									 * merged individually. Otherwise, we can merge them in batches.
 									 */
-									await this.storage.runExclusive(async (storage) => {
+									await this.storage.runExclusive(async storage => {
 										const idsInOutbox = await this.outbox.getModelIds(storage);
 
 										const oneByOne: ModelInstanceMetadata[] = [];
-										const page = items.filter((item) => {
+										const page = items.filter(item => {
 											if (!idsInOutbox.has(item.id)) {
 												return true;
 											}
@@ -542,7 +544,7 @@ export class SyncEngine {
 										modelMetadata = (this.modelClasses
 											.ModelMetadata as PersistentModelConstructor<any>).copyOf(
 											modelMetadata,
-											(draft) => {
+											draft => {
 												draft.lastSync = startedAt;
 												draft.lastFullSync = isFullSync
 													? startedAt
@@ -581,7 +583,7 @@ export class SyncEngine {
 										}
 									}
 								},
-								error: (error) => {
+								error: error => {
 									observer.error(error);
 								},
 							});
@@ -605,7 +607,7 @@ export class SyncEngine {
 						)})`
 					);
 
-					await new Promise((res) => {
+					await new Promise(res => {
 						waitTimeoutId = setTimeout(res, msNextFullSync);
 					});
 				}
@@ -643,16 +645,14 @@ export class SyncEngine {
 	): Promise<ZenObservable.Subscription> {
 		return new Promise((resolve, reject) => {
 			const subscription = ctlSubsObservable.subscribe({
-				next: (msg) => {
+				next: msg => {
 					if (msg === CONTROL_MSG.CONNECTED) {
 						resolve(subscription);
 					}
 				},
-				error: (err) => {
+				error: err => {
 					reject(err);
-					const handleDisconnect = this.disconnectionHandler(
-						datastoreConnectivity
-					);
+					const handleDisconnect = this.disconnectionHandler(datastoreConnectivity);
 					handleDisconnect(err);
 				},
 			});
@@ -666,10 +666,10 @@ export class SyncEngine {
 
 		const models: [string, string][] = [];
 
-		Object.values(this.schema.namespaces).forEach((namespace) => {
+		Object.values(this.schema.namespaces).forEach(namespace => {
 			Object.values(namespace.models)
 				.filter(({ syncable }) => syncable)
-				.forEach((model) => {
+				.forEach(model => {
 					models.push([namespace.name, model.name]);
 				});
 		});
@@ -694,7 +694,7 @@ export class SyncEngine {
 				[[savedModel]] = await this.storage.save(
 					(this.modelClasses.ModelMetadata as PersistentModelConstructor<
 						any
-					>).copyOf(modelMetadata, (draft) => {
+					>).copyOf(modelMetadata, draft => {
 						draft.fullSyncInterval = fullSyncInterval;
 					})
 				);
@@ -731,7 +731,7 @@ export class SyncEngine {
 
 		const predicate = ModelPredicateCreator.createFromExisting<ModelMetadata>(
 			this.schema.namespaces[SYNC].models[ModelMetadata.name],
-			(c) => c.namespace('eq', namespace).model('eq', model)
+			c => c.namespace('eq', namespace).model('eq', model)
 		);
 
 		const [modelMetadata] = await this.storage.query(ModelMetadata, predicate, {
