@@ -35,7 +35,6 @@ export class InteractionsClass {
 		this._options = options;
 		logger.debug('Interactions Options', this._options);
 		this._pluggables = {};
-		Amplify.register(this);
 	}
 
 	public getModuleName() {
@@ -104,11 +103,14 @@ export class InteractionsClass {
 		botname: string,
 		message: InteractionsMessage
 	): Promise<InteractionsResponse>;
-	public async send(botname: string, message: object): Promise<object>;
+	public async send(
+		botname: string,
+		message: object
+	): Promise<InteractionsResponse>;
 	public async send(
 		botname: string,
 		message: string | object
-	): Promise<object> {
+	): Promise<InteractionsResponse> {
 		if (!this._options.bots || !this._options.bots[botname]) {
 			throw new Error('Bot ' + botname + ' does not exist');
 		}
@@ -145,3 +147,4 @@ export class InteractionsClass {
 }
 
 export const Interactions = new InteractionsClass(null);
+Amplify.register(Interactions);

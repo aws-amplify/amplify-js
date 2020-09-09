@@ -33,9 +33,14 @@ export default class CookieStorage {
 			this.secure = true;
 		}
 		if (Object.prototype.hasOwnProperty.call(data, 'sameSite')) {
-			if (data.sameSite !== 'strict' && data.sameSite !== 'lax') {
+			if (!['strict','lax','none'].includes(data.sameSite)) {
 				throw new Error(
-					'The sameSite value of cookieStorage must be "lax" or "strict".'
+					'The sameSite value of cookieStorage must be "lax", "strict" or "none".'
+				);
+			}
+			if (data.sameSite === 'none' && !this.secure) {
+				throw new Error(
+					'sameSite = None requires the Secure attribute in latest browser versions.'
 				);
 			}
 			this.sameSite = data.sameSite;

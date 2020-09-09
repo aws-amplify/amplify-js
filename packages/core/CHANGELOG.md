@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.0...@aws-amplify/core@3.5.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [3.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.7...@aws-amplify/core@3.5.0) (2020-09-03)
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+## [3.4.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.6...@aws-amplify/core@3.4.7) (2020-09-01)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** get new guest credentials if identity id isn't found ([#6618](https://github.com/aws-amplify/amplify-js/issues/6618)) ([7b904bf](https://github.com/aws-amplify/amplify-js/commit/7b904bf8647a39e5bdb683d9767aaba69ab932f3))
+
+
+
+
+
 ## [3.4.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.5...@aws-amplify/core@3.4.6) (2020-08-19)
 
 **Note:** Version bump only for package @aws-amplify/core
