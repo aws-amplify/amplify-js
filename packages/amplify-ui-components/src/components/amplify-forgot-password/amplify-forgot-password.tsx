@@ -47,6 +47,9 @@ export class AmplifyForgotPassword {
   @State() delivery: CodeDeliveryType | null = null;
   @State() loading: boolean = false;
 
+  /** Hides the back to sign up link */
+  @Prop() hideBackToSignUp: boolean = false;
+
   private phoneNumber: PhoneNumberInterface = {
     countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
     phoneNumberValue: null,
@@ -254,13 +257,15 @@ export class AmplifyForgotPassword {
         handleSubmit={submitFn}
         loading={this.loading}
         secondaryFooterContent={
-          <amplify-button
-            variant="anchor"
-            onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
-            data-test="forgot-password-back-to-sign-in-link"
-          >
-            {I18n.get(Translations.BACK_TO_SIGN_IN)}
-          </amplify-button>
+          !this.hideBackToSignUp && (
+            <amplify-button
+              variant="anchor"
+              onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
+              data-test="forgot-password-back-to-sign-in-link"
+            >
+              {I18n.get(Translations.BACK_TO_SIGN_IN)}
+            </amplify-button>
+          )
         }
         testDataPrefix={'forgot-password'}
         submitButtonText={I18n.get(submitButtonText)}
