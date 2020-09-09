@@ -249,7 +249,11 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 					);
 				}
 
-				if (v !== null && (<[]>v).some(e => typeof e !== jsType)) {
+				if (
+					v !== undefined &&
+					v !== null &&
+					(<[]>v).some(e => typeof e !== jsType)
+				) {
 					const elemTypes = (<[]>v).map(e => typeof e).join(',');
 
 					throw new Error(
