@@ -146,6 +146,7 @@ export class AuthClass {
 			refreshHandlers,
 			identityPoolRegion,
 			clientMetadata,
+			endpoint,
 		} = this._config;
 
 		if (!this._config.storage) {
@@ -173,6 +174,7 @@ export class AuthClass {
 			const userPoolData: ICognitoUserPoolData = {
 				UserPoolId: userPoolId,
 				ClientId: userPoolWebClientId,
+				endpoint,
 			};
 			userPoolData.Storage = this._storage;
 
