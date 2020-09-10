@@ -7,7 +7,9 @@ exports[`amplify-sign-in spec: Render logic -> should render a \`sign in\` form 
       <div slot="subtitle">
         <slot name="header-subtitle"></slot>
       </div>
-      <amplify-federated-buttons></amplify-federated-buttons>
+      <slot name="federated-buttons">
+        <amplify-federated-buttons></amplify-federated-buttons>
+      </slot>
       <amplify-auth-fields></amplify-auth-fields>
       <div class="sign-in-form-footer" slot="amplify-form-section-footer">
         <slot name="footer">
@@ -40,7 +42,9 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withEmptyFederate
       <div slot="subtitle">
         <slot name="header-subtitle"></slot>
       </div>
-      <amplify-federated-buttons></amplify-federated-buttons>
+      <slot name="federated-buttons">
+        <amplify-federated-buttons></amplify-federated-buttons>
+      </slot>
       <amplify-auth-fields></amplify-auth-fields>
       <div class="sign-in-form-footer" slot="amplify-form-section-footer">
         <slot name="footer">
@@ -73,7 +77,9 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederated 1`]
       <div slot="subtitle">
         <slot name="header-subtitle"></slot>
       </div>
-      <amplify-federated-buttons></amplify-federated-buttons>
+      <slot name="federated-buttons">
+        <amplify-federated-buttons></amplify-federated-buttons>
+      </slot>
       <amplify-strike>
         or
       </amplify-strike>
