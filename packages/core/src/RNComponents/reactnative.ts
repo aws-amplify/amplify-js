@@ -11,4 +11,5 @@
  * and limitations under the License.
  */
 
-export { Linking, AppState, AsyncStorage } from 'react-native';
+export { default as AsyncStorage } from '@react-native-community/async-storage';
+export { Linking, AppState } from 'react-native';

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 const MEMORY_KEY_PREFIX = '@MemoryStorage:';
 let dataMemory = {};

@@ -14,10 +14,10 @@
 import {
 	NativeModules,
 	DeviceEventEmitter,
-	AsyncStorage,
 	Platform,
 	AppState,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import { Amplify, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
 

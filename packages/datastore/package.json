@@ -45,6 +45,7 @@
 		"@aws-amplify/api": "^3.2.2",
 		"@aws-amplify/core": "^3.5.2",
 		"@aws-amplify/pubsub": "^3.2.0",
+		"@react-native-community/async-storage": "^1.12.0",
 		"idb": "5.0.2",
 		"immer": "6.0.1",
 		"ulid": "2.3.0",
