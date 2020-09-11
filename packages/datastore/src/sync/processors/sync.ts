@@ -94,6 +94,7 @@ class SyncProcessor {
 						variables,
 					});
 				} catch (error) {
+					// If the error is unauthorized, filter out unauthorized items and return accessible items
 					const unauthorized = (error.errors as [any]).some(err => err.errorType === 'Unauthorized');
 					if (unauthorized) {
 						const result = error;
