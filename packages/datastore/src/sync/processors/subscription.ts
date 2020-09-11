@@ -239,6 +239,7 @@ class SubscriptionProcessor {
 			(async () => {
 				try {
 					// retrieving current AWS Credentials
+					// TODO Should this use `this.amplify.Auth` for SSR?
 					const credentials = await Auth.currentCredentials();
 					userCredentials = credentials.authenticated
 						? USER_CREDENTIALS.auth
@@ -249,6 +250,7 @@ class SubscriptionProcessor {
 
 				try {
 					// retrieving current token info from Cognito UserPools
+					// TODO Should this use `this.amplify.Auth` for SSR?
 					const session = await Auth.currentSession();
 					cognitoTokenPayload = session.getIdToken().decodePayload();
 				} catch (err) {

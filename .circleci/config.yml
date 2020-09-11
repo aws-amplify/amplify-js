@@ -104,17 +104,20 @@ commands:
         # optional - the script will use sample_name by default
         type: string
         default: ''
+      browser:
+        type: string
+        default: ''
     steps:
       - run:
           name: 'Install << parameters.test_name >> sample'
           command: |
             echo "Current NPM registry: " $(yarn config get registry)
-            yarn
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
       - run:
           name: 'Run cypress tests for << parameters.test_name >> Sample'
           command: |
             cd ~/amplify-js-samples-staging
-            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>' -n 3
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >>' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -140,7 +143,7 @@ commands:
           command: |
             cd << parameters.framework >>/<< parameters.category >>/<< parameters.sample_name >>
             echo "Current NPM registry: " $(yarn config get registry)
-            yarn
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
       - run:
           name: 'Run << parameters.test_name >> UI tests'
           command: |
@@ -173,7 +176,7 @@ commands:
           name: Yarn Install
           command: |
             echo "Current NPM registry: " $(yarn config get registry)
-            yarn install --frozen-lockfile --non-interactive
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
       - restore_pods
       - run:
           name: Install CocoaPods
@@ -256,7 +259,7 @@ commands:
           name: Yarn Install
           command: |
             echo "Current NPM registry: " $(yarn config get registry)
-            yarn install --frozen-lockfile --non-interactive
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
       - run:
           # Install Android Emulator without Android Studio
           command: |
@@ -361,6 +364,9 @@ jobs:
             - amplify-js-samples-staging
 
   integ_react_auth:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/auth/with-authenticator-legacy
@@ -372,8 +378,39 @@ jobs:
           category: auth
           sample_name: with-authenticator-legacy
           spec: authenticator
-
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'React Authenticator'
+          framework: react
+          category: auth
+          sample_name: amplify-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'React Typescript Authenticator'
+          framework: react
+          category: auth
+          sample_name: typescript-amplify-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'React Custom Authenticator'
+          framework: react
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'React Custom Authenticator'
+          framework: react
+          category: auth
+          sample_name: with-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
   integ_angular_auth:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/angular/auth/amplify-authenticator-legacy
@@ -385,8 +422,11 @@ jobs:
           category: auth
           sample_name: amplify-authenticator-legacy
           spec: authenticator
-
+          browser: << parameters.browser >>
   integ_vue_auth:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/vue/auth/amplify-authenticator-legacy
@@ -398,8 +438,11 @@ jobs:
           category: auth
           sample_name: amplify-authenticator-legacy
           spec: authenticator
-
+          browser: << parameters.browser >>
   integ_react_predictions:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/predictions/multi-user-translation
@@ -411,8 +454,12 @@ jobs:
           category: predictions
           sample_name: multi-user-translation
           spec: multiuser-translation
+          browser: << parameters.browser >>
 
   integ_react_interactions:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/interactions/chatbot-component
@@ -424,8 +471,12 @@ jobs:
           category: interactions
           sample_name: chatbot-component
           spec: chatbot-component
+          browser: << parameters.browser >>
 
   integ_vue_interactions:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/vue/interactions/chatbot-component
@@ -437,8 +488,12 @@ jobs:
           category: interactions
           sample_name: chatbot-component
           spec: chatbot-component
+          browser: << parameters.browser >>
 
   integ_angular_interactions:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/angular/interactions/chatbot-component
@@ -450,8 +505,12 @@ jobs:
           category: interactions
           sample_name: chatbot-component
           spec: chatbot-component
+          browser: << parameters.browser >>
 
   integ_react_datastore:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/datastore/many-to-many
@@ -462,8 +521,12 @@ jobs:
           framework: react
           category: datastore
           sample_name: many-to-many
-
+          spec: many-to-many
+          browser: << parameters.browser >>
   integ_react_storage:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageApp
@@ -475,7 +538,7 @@ jobs:
           category: storage
           sample_name: storageApp
           spec: storage
-
+          browser: << parameters.browser >>
   integ_react_storage_ui:
     executor: js-test-executor
     <<: *test_env_vars
@@ -488,8 +551,10 @@ jobs:
           category: storage
           sample_name: storageComp
           spec: storage-comp
-
   integ_amazon_cognito_identity_js:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/auth/amazon-cognito-identity-js
@@ -500,7 +565,8 @@ jobs:
           framework: react
           category: auth
           sample_name: amazon-cognito-identity-js
-
+          spec: amazon-cognito-identity-js
+          browser: << parameters.browser >>
   integ_setup_ui:
     executor: build-executor
     working_directory: ~/
@@ -522,7 +588,6 @@ jobs:
           root: /root
           paths:
             - amplify-js-samples-staging-ui
-
   integ_react_auth_ui:
     executor: js-test-executor
     <<: *test_env_vars
@@ -660,6 +725,9 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
 
+test_browsers: &test_browsers
+  browser: [chrome, firefox]
+
 workflows:
   build_test_deploy:
     jobs:
@@ -679,54 +747,81 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_angular_auth:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_vue_auth:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_predictions:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_interactions:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_vue_interactions:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_angular_interactions:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_datastore:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_storage:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_storage_ui:
           requires:
             - integ_setup
@@ -739,6 +834,9 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_rn_ios_storage:
           requires:
             - integ_setup
@@ -784,6 +882,9 @@ workflows:
             - integ_react_datastore
             - integ_react_storage
             - integ_react_storage_ui
+            - integ_react_interactions
+            - integ_angular_interactions
+            - integ_vue_interactions
             - integ_amazon_cognito_identity_js
             - integ_react_auth
             - integ_angular_auth

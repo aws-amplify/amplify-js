@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.3.1...@aws-amplify/datastore@2.4.0) (2020-09-10)
+
+
+### Features
+
+* **@aws-amplify/datastore:** Add SSR support for DataStore ([#6726](https://github.com/aws-amplify/amplify-js/issues/6726)) ([e56aba6](https://github.com/aws-amplify/amplify-js/commit/e56aba642acc7eb3482f0e69454a530409d1b3ac))
+
+
+
+
+
+## [2.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.3.0...@aws-amplify/datastore@2.3.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+# [2.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.11...@aws-amplify/datastore@2.3.0) (2020-09-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** DataStore regression with AsyncStorage ([#6712](https://github.com/aws-amplify/amplify-js/issues/6712)) ([7059556](https://github.com/aws-amplify/amplify-js/commit/7059556f693b4a52143ecaa9934a14f7195caee8))
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
 ## [2.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.10...@aws-amplify/datastore@2.2.11) (2020-09-01)
 
 **Note:** Version bump only for package @aws-amplify/datastore

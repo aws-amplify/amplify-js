@@ -1,4 +1,4 @@
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { browserOrNode, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ModelInstanceCreator } from '../datastore/datastore';
@@ -14,6 +14,7 @@ import {
 	MutableModel,
 	NamespaceResolver,
 	OpType,
+	PersistentModel,
 	PersistentModelConstructor,
 	SchemaModel,
 	SchemaNamespace,
@@ -32,6 +33,7 @@ import {
 	TransformerMutationType,
 } from './utils';
 
+const { isNode } = browserOrNode();
 const logger = new Logger('DataStore');
 
 const ownSymbol = Symbol('sync');
@@ -162,31 +164,48 @@ export class SyncEngine {
 								},
 							});
 
-							//#region GraphQL Subscriptions
-							const [
-								ctlSubsObservable,
-								dataSubsObservable,
-							] = this.subscriptionsProcessor.start();
+							let ctlSubsObservable: Observable<CONTROL_MSG>;
+							let dataSubsObservable: Observable<[
+								TransformerMutationType,
+								SchemaModel,
+								PersistentModel
+							]>;
 
-							try {
-								subscriptions.push(
-									await this.waitForSubscriptionsReady(
-										ctlSubsObservable,
-										datastoreConnectivity
-									)
+							if (isNode) {
+								logger.warn(
+									'Realtime disabled when in a server-side environment'
 								);
-							} catch (err) {
-								observer.error(err);
-								return;
+							} else {
+								//#region GraphQL Subscriptions
+								[
+									// const ctlObservable: Observable<CONTROL_MSG>
+									ctlSubsObservable,
+									// const dataObservable: Observable<[TransformerMutationType, SchemaModel, Readonly<{
+									// id: string;
+									// } & Record<string, any>>]>
+									dataSubsObservable,
+								] = this.subscriptionsProcessor.start();
+
+								try {
+									subscriptions.push(
+										await this.waitForSubscriptionsReady(
+											ctlSubsObservable,
+											datastoreConnectivity
+										)
+									);
+								} catch (err) {
+									observer.error(err);
+									return;
+								}
+
+								logger.log('Realtime ready');
+
+								observer.next({
+									type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
+								});
+
+								//#endregion
 							}
-
-							logger.log('Realtime ready');
-
-							observer.next({
-								type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
-							});
-
-							//#endregion
 
 							//#region Base & Sync queries
 							try {
@@ -262,24 +281,26 @@ export class SyncEngine {
 
 							//#region Merge subscriptions buffer
 							// TODO: extract to function
-							subscriptions.push(
-								dataSubsObservable.subscribe(
-									([_transformerMutationType, modelDefinition, item]) => {
-										const modelConstructor = this.userModelClasses[
-											modelDefinition.name
-										] as PersistentModelConstructor<any>;
+							if (!isNode) {
+								subscriptions.push(
+									dataSubsObservable.subscribe(
+										([_transformerMutationType, modelDefinition, item]) => {
+											const modelConstructor = this.userModelClasses[
+												modelDefinition.name
+											] as PersistentModelConstructor<any>;
 
-										const model = this.modelInstanceCreator(
-											modelConstructor,
-											item
-										);
+											const model = this.modelInstanceCreator(
+												modelConstructor,
+												item
+											);
 
-										this.storage.runExclusive(storage =>
-											this.modelMerger.merge(storage, model)
-										);
-									}
-								)
-							);
+											this.storage.runExclusive(storage =>
+												this.modelMerger.merge(storage, model)
+											);
+										}
+									)
+								);
+							}
 							//#endregion
 						} else if (!online) {
 							this.online = online;
@@ -652,7 +673,9 @@ export class SyncEngine {
 				},
 				error: err => {
 					reject(err);
-					const handleDisconnect = this.disconnectionHandler(datastoreConnectivity);
+					const handleDisconnect = this.disconnectionHandler(
+						datastoreConnectivity
+					);
 					handleDisconnect(err);
 				},
 			});
