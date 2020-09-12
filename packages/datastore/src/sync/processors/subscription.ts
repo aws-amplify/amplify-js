@@ -365,6 +365,10 @@ class SubscriptionProcessor {
 														subscriptionReadyCallback();
 													}
 
+													if (message.includes('"errorType":"Unauthorized"')) {
+														return;
+													}
+
 													observer.error(message);
 												},
 											})
