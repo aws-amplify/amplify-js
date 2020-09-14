@@ -3,6 +3,109 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.1...@aws-amplify/core@3.5.2) (2020-09-10)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.0...@aws-amplify/core@3.5.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [3.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.7...@aws-amplify/core@3.5.0) (2020-09-03)
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+## [3.4.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.6...@aws-amplify/core@3.4.7) (2020-09-01)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** get new guest credentials if identity id isn't found ([#6618](https://github.com/aws-amplify/amplify-js/issues/6618)) ([7b904bf](https://github.com/aws-amplify/amplify-js/commit/7b904bf8647a39e5bdb683d9767aaba69ab932f3))
+
+
+
+
+
+## [3.4.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.5...@aws-amplify/core@3.4.6) (2020-08-19)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.4.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.4...@aws-amplify/core@3.4.5) (2020-08-06)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.4.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.3...@aws-amplify/core@3.4.4) (2020-07-27)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.2...@aws-amplify/core@3.4.3) (2020-07-22)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.1...@aws-amplify/core@3.4.2) (2020-07-09)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.0...@aws-amplify/core@3.4.1) (2020-07-07)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [3.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.3.3...@aws-amplify/core@3.4.0) (2020-06-18)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** retry federation refresh token on network error ([#5728](https://github.com/aws-amplify/amplify-js/issues/5728)) ([bd07ee8](https://github.com/aws-amplify/amplify-js/commit/bd07ee8e8b987021e58b9c25d5e1ef524aa4abbc))
+
+
+### Features
+
+* **core:** expose observable for testing ([#6042](https://github.com/aws-amplify/amplify-js/issues/6042)) ([05257da](https://github.com/aws-amplify/amplify-js/commit/05257da6604917ab1a54accbfc9945c6bbbbb22b))
+* Automatically handle clock drift/skew for API calls ([#5869](https://github.com/aws-amplify/amplify-js/issues/5869)) ([6218ff6](https://github.com/aws-amplify/amplify-js/commit/6218ff62269056f46d65760c3ec61baadb3742f4))
+
+
+
+
+
 ## [3.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.3.2...@aws-amplify/core@3.3.3) (2020-06-09)
 
 **Note:** Version bump only for package @aws-amplify/core

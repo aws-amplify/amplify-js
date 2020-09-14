@@ -10,13 +10,19 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import { Auth } from '@aws-amplify/auth';
+import Cache from '@aws-amplify/cache';
 import { RestAPIClass } from '@aws-amplify/api-rest';
 import {
 	GraphQLAPIClass,
 	GraphQLOptions,
 	GraphQLResult,
 } from '@aws-amplify/api-graphql';
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import {
+	Amplify,
+	ConsoleLogger as Logger,
+	Credentials,
+} from '@aws-amplify/core';
 import Observable from 'zen-observable-ts';
 
 const logger = new Logger('API');
@@ -31,8 +37,12 @@ export class APIClass {
 	 * @param {Object} options - Configuration object for API
 	 */
 	private _options;
-	private _restApi;
+	private _restApi: RestAPIClass;
 	private _graphqlApi;
+
+	Auth = Auth;
+	Cache = Cache;
+	Credentials = Credentials;
 
 	/**
 	 * Initialize API with AWS configuration
@@ -42,7 +52,6 @@ export class APIClass {
 		this._options = options;
 		this._restApi = new RestAPIClass(options);
 		this._graphqlApi = new GraphQLAPIClass(options);
-		Amplify.register(this);
 		logger.debug('API Options', this._options);
 	}
 
@@ -57,6 +66,14 @@ export class APIClass {
 	 */
 	configure(options) {
 		this._options = Object.assign({}, this._options, options);
+
+		// Share Amplify instance with client for SSR
+		this._restApi.Credentials = this.Credentials;
+
+		this._graphqlApi.Auth = this.Auth;
+		this._graphqlApi.Cache = this.Cache;
+		this._graphqlApi.Credentials = this.Credentials;
+
 		const restAPIConfig = this._restApi.configure(this._options);
 		const graphQLAPIConfig = this._graphqlApi.configure(this._options);
 
@@ -179,3 +196,4 @@ export class APIClass {
 }
 
 export const API = new APIClass(null);
+Amplify.register(API);

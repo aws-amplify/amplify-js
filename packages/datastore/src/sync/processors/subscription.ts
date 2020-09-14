@@ -127,7 +127,7 @@ class SubscriptionProcessor {
 
 		// if not check if has groups authorization and token has groupClaim allowed for cognito token
 		let groupAuthRules = rules.filter(
-			rule => rule.authStrategy === 'group' && rule.provider === 'userPools'
+			rule => rule.authStrategy === 'groups' && rule.provider === 'userPools'
 		);
 
 		const validCognitoGroup = groupAuthRules.find(groupAuthRule => {
@@ -149,7 +149,7 @@ class SubscriptionProcessor {
 
 		// if not check if has groups authorization and token has groupClaim allowed for oidc token
 		groupAuthRules = rules.filter(
-			rule => rule.authStrategy === 'group' && rule.provider === 'oidc'
+			rule => rule.authStrategy === 'groups' && rule.provider === 'oidc'
 		);
 
 		const validOidcGroup = groupAuthRules.find(groupAuthRule => {
@@ -239,6 +239,7 @@ class SubscriptionProcessor {
 			(async () => {
 				try {
 					// retrieving current AWS Credentials
+					// TODO Should this use `this.amplify.Auth` for SSR?
 					const credentials = await Auth.currentCredentials();
 					userCredentials = credentials.authenticated
 						? USER_CREDENTIALS.auth
@@ -249,6 +250,7 @@ class SubscriptionProcessor {
 
 				try {
 					// retrieving current token info from Cognito UserPools
+					// TODO Should this use `this.amplify.Auth` for SSR?
 					const session = await Auth.currentSession();
 					cognitoTokenPayload = session.getIdToken().decodePayload();
 				} catch (err) {
@@ -357,11 +359,17 @@ class SubscriptionProcessor {
 															errors: [],
 														},
 													} = subscriptionError;
-													logger.warn(message);
+													logger.warn('subscriptionError', message);
 
 													if (typeof subscriptionReadyCallback === 'function') {
 														subscriptionReadyCallback();
 													}
+
+													if (message.includes('"errorType":"Unauthorized"')) {
+														return;
+													}
+
+													observer.error(message);
 												},
 											})
 									);

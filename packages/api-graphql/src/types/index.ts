@@ -11,6 +11,7 @@
  * and limitations under the License.
  */
 // @ts-ignore
+import { GraphQLError } from 'graphql/error/GraphQLError';
 import { DocumentNode } from 'graphql/language/ast';
 
 export interface GraphQLOptions {
@@ -28,7 +29,7 @@ export enum GRAPHQL_AUTH_MODE {
 
 export interface GraphQLResult<T = object> {
 	data?: T;
-	errors?: [object];
+	errors?: GraphQLError[];
 	extensions?: {
 		[key: string]: any;
 	};
