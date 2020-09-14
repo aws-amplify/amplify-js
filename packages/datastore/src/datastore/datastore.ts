@@ -5,6 +5,7 @@ import Observable, { ZenObservable } from 'zen-observable-ts';
 import {
 	isPredicatesAll,
 	ModelPredicateCreator,
+	ModelSortPredicateCreator,
 	PredicateAll,
 } from '../predicates';
 import { ExclusiveStorage as Storage } from '../storage/storage';
@@ -19,9 +20,11 @@ import {
 	ModelInit,
 	ModelInstanceMetadata,
 	ModelPredicate,
+	SortPredicate,
 	MutableModel,
 	NamespaceResolver,
 	NonModelTypeConstructor,
+	ProducerPaginationInput,
 	PaginationInput,
 	PersistentModel,
 	PersistentModelConstructor,
@@ -615,12 +618,12 @@ class DataStore {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
-			pagination?: PaginationInput
+			paginationProducer?: ProducerPaginationInput<T>
 		): Promise<T[]>;
 	} = async <T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll,
-		pagination?: PaginationInput
+		paginationProducer?: ProducerPaginationInput<T>
 	): Promise<T | T[] | undefined> => {
 		await this.start();
 
@@ -634,7 +637,7 @@ class DataStore {
 		}
 
 		if (typeof idOrCriteria === 'string') {
-			if (pagination !== undefined) {
+			if (paginationProducer !== undefined) {
 				logger.warn('Pagination is ignored when querying by id');
 			}
 		}
@@ -656,41 +659,25 @@ class DataStore {
 					modelDefinition,
 					idOrCriteria
 				);
+
+				logger.debug('after createFromExisting - predicate', predicate);
 			}
 		}
 
-		const { limit, page } = pagination || {};
-
-		if (page !== undefined && limit === undefined) {
-			throw new Error('Limit is required when requesting a page');
-		}
-
-		if (page !== undefined) {
-			if (typeof page !== 'number') {
-				throw new Error('Page should be a number');
-			}
-
-			if (page < 0) {
-				throw new Error("Page can't be negative");
-			}
-		}
-
-		if (limit !== undefined) {
-			if (typeof limit !== 'number') {
-				throw new Error('Limit should be a number');
-			}
-
-			if (limit < 0) {
-				throw new Error("Limit can't be negative");
-			}
-		}
+		const pagination = this.processPagination(
+			modelDefinition,
+			paginationProducer
+		);
 
 		//#endregion
 
 		logger.debug('params ready', {
 			modelConstructor,
 			predicate: ModelPredicateCreator.getPredicates(predicate, false),
-			pagination,
+			pagination: {
+				...pagination,
+				sort: ModelSortPredicateCreator.getPredicates(pagination.sort, false),
+			},
 		});
 
 		const result = await this.storage.query(
@@ -1012,6 +999,51 @@ class DataStore {
 		this.storage = undefined;
 		this.sync = undefined;
 	};
+
+	private processPagination<T extends PersistentModel>(
+		modelDefinition: SchemaModel,
+		paginationProducer: ProducerPaginationInput<T>
+	): PaginationInput<T> {
+		let sortPredicate: SortPredicate<T>;
+		const { limit, page, sort } = paginationProducer || {};
+
+		if (page !== undefined && limit === undefined) {
+			throw new Error('Limit is required when requesting a page');
+		}
+
+		if (page !== undefined) {
+			if (typeof page !== 'number') {
+				throw new Error('Page should be a number');
+			}
+
+			if (page < 0) {
+				throw new Error("Page can't be negative");
+			}
+		}
+
+		if (limit !== undefined) {
+			if (typeof limit !== 'number') {
+				throw new Error('Limit should be a number');
+			}
+
+			if (limit < 0) {
+				throw new Error("Limit can't be negative");
+			}
+		}
+
+		if (sort) {
+			sortPredicate = ModelSortPredicateCreator.createFromExisting(
+				modelDefinition,
+				paginationProducer.sort
+			);
+		}
+
+		return {
+			limit,
+			page,
+			sort: sortPredicate,
+		};
+	}
 }
 
 const instance = new DataStore();

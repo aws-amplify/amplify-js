@@ -357,7 +357,7 @@ class IndexedDBAdapter implements Adapter {
 	async query<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		predicate?: ModelPredicate<T>,
-		pagination?: PaginationInput
+		pagination?: PaginationInput<T>
 	): Promise<T[]> {
 		await this.checkPrivate();
 		const storeName = this.getStorenameForModel(modelConstructor);
@@ -410,9 +410,9 @@ class IndexedDBAdapter implements Adapter {
 		);
 	}
 
-	private inMemoryPagination<T>(
+	private inMemoryPagination<T extends PersistentModel>(
 		records: T[],
-		pagination?: PaginationInput
+		pagination?: PaginationInput<T>
 	): T[] {
 		if (pagination) {
 			const { page = 0, limit = 0 } = pagination;
@@ -426,9 +426,9 @@ class IndexedDBAdapter implements Adapter {
 		return records;
 	}
 
-	private async enginePagination<T>(
+	private async enginePagination<T extends PersistentModel>(
 		storeName: string,
-		pagination?: PaginationInput
+		pagination?: PaginationInput<T>
 	): Promise<T[]> {
 		let result: T[];
 
