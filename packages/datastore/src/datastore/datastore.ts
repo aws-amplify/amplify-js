@@ -47,7 +47,7 @@ import {
 	SYNC,
 	USER,
 } from '../util';
-import { isNullOrUndefined, isNull } from 'util';
+import { isNullOrUndefined } from 'util';
 
 setAutoFreeze(true);
 
