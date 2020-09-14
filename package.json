@@ -91,6 +91,7 @@
 		"winston": "^3.2.1"
 	},
 	"resolutions": {
+		"@types/babel__traverse": "7.0.8",
 		"terser": "4.6.7",
 		"npm-packlist": "1.1.12"
 	},
