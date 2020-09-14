@@ -140,7 +140,7 @@ export class AmplifySignUp {
       if (data.userConfirmed) {
         await handleSignIn(this.signUpAttributes.username, this.signUpAttributes.password, this.handleAuthStateChange);
       } else {
-        const signUpAttrs = JSON.parse(JSON.stringify(this.signUpAttributes));
+        const signUpAttrs = { ...this.signUpAttributes };
         this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs });
       }
     } catch (error) {
