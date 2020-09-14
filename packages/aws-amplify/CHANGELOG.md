@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.1.1...aws-amplify@3.2.0) (2020-09-10)
+
+
+### Features
+
+* **@aws-amplify/datastore:** Add SSR support for DataStore ([#6726](https://github.com/aws-amplify/amplify-js/issues/6726)) ([e56aba6](https://github.com/aws-amplify/amplify-js/commit/e56aba642acc7eb3482f0e69454a530409d1b3ac))
+
+
+
+
+
 ## [3.1.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.1.0...aws-amplify@3.1.1) (2020-09-03)
 
 **Note:** Version bump only for package aws-amplify

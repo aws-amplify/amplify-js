@@ -19,12 +19,13 @@
 
 ## Slots
 
-| Slot                         | Description                                     |
-| ---------------------------- | ----------------------------------------------- |
-| `"footer"`                   | Content is place in the footer of the component |
-| `"header-subtitle"`          | Subtitle content placed below header text       |
-| `"primary-footer-content"`   | Content placed on the right side of the footer  |
-| `"secondary-footer-content"` | Content placed on the left side of the footer   |
+| Slot                         | Description                                                   |
+| ---------------------------- | ------------------------------------------------------------- |
+| `"federated-buttons"`        | Content above form fields used for sign in federation buttons |
+| `"footer"`                   | Content is place in the footer of the component               |
+| `"header-subtitle"`          | Subtitle content placed below header text                     |
+| `"primary-footer-content"`   | Content placed on the right side of the footer                |
+| `"secondary-footer-content"` | Content placed on the left side of the footer                 |
 
 
 ## Dependencies
