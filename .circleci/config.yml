@@ -579,7 +579,7 @@ jobs:
             echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
             git clone $AMPLIFY_JS_SAMPLES_STAGING_URL amplify-js-samples-staging-ui
             cd amplify-js-samples-staging-ui
-            git checkout datastore-auth-scenarios
+            git checkout ui-components/cypress-5
             yarn
       - save_cache:
           key: amplify-js-ui
