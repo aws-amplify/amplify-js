@@ -131,6 +131,8 @@ describe('DataStore tests', () => {
 			const metadata = new Metadata({
 				author: 'some author',
 				tags: [],
+				rewards: [],
+				nominations: [],
 			});
 
 			expect(metadata).toBeInstanceOf(Metadata);
@@ -200,6 +202,8 @@ describe('DataStore tests', () => {
 
 			const nonModel = new Metadata({
 				author: 'something',
+				rewards: [],
+				nominations: [],
 			});
 
 			expect(() => {
@@ -315,16 +319,59 @@ describe('DataStore tests', () => {
 				'Field field1 should be of type string, number received. 1234'
 			);
 
+			expect((
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						tags: undefined,
+						rewards: [],
+						nominations: [],
+					}),
+				})
+			).metadata.tags).toBeUndefined();
+
 			expect(() => {
 				new Model({
 					field1: 'someField',
 					metadata: new Metadata({
 						author: 'Some author',
 						tags: undefined,
+						rewards: [null],
+						nominations: [],
 					}),
 				});
 			}).toThrowError(
-				'Field tags should be of type string[], undefined received. undefined'
+				'All elements in the rewards array should be of type string, [object] received. '
+			);
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						tags: undefined,
+						rewards: [],
+						nominations: null,
+					}),
+				});
+			}).toThrowError(
+				'Field nominations should be of type [string | null | undefined], object received. null'
+			);
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						tags: undefined,
+						rewards: [],
+						penNames: [undefined],
+						nominations: [],
+					}),
+				});
+			}).toThrowError(
+				'All elements in the penNames array should be of type string, [undefined] received. '
 			);
 
 			expect(() => {
@@ -333,10 +380,12 @@ describe('DataStore tests', () => {
 					metadata: new Metadata({
 						author: 'Some author',
 						tags: [<any>1234],
+						rewards: [],
+						nominations: [],
 					}),
 				});
 			}).toThrowError(
-				'All elements in the tags array should be of type string, [number] received. 1234'
+				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
 			);
 
 			expect(
@@ -417,6 +466,8 @@ describe('DataStore tests', () => {
 		const metadata = new Metadata({
 			author: 'some author',
 			tags: [],
+			rewards: [],
+			nominations: [],
 		});
 
 		await expect(DataStore.save(<any>metadata)).rejects.toThrow(
@@ -616,6 +667,9 @@ declare class Model {
 export declare class Metadata {
 	readonly author: string;
 	readonly tags?: string[];
+	readonly rewards: string[];
+	readonly penNames?: string[];
+	readonly nominations: string[];
 	constructor(init: Metadata);
 }
 
@@ -689,6 +743,29 @@ function testSchema(): Schema {
 						isRequired: false,
 						attributes: [],
 					},
+					rewards: {
+						name: 'rewards',
+						isArray: true,
+						type: 'String',
+						isRequired: true,
+						isArrayRequired: true,
+						attributes: [],
+					},
+					penNames: {
+						name: 'penNames',
+						isArray: true,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					nominations: {
+						name: 'nominations',
+						isArray: true,
+						type: 'String',
+						isRequired: false,
+						isArrayRequired: true,
+						attributes: [],
+					}
 				},
 			},
 		},
