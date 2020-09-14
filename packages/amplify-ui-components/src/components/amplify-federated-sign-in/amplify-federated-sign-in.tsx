@@ -22,7 +22,7 @@ export class AmplifyFederatedSignIn {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
-    const { oauth = {} } = Auth.configure({});
+    const { oauth = {} } = Auth.configure();
 
     // backward compatibility
     if (oauth['domain']) {
