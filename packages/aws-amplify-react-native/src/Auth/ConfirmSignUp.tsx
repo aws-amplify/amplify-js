@@ -73,6 +73,12 @@ export default class ConfirmSignUp extends AuthPiece<
 		const username = props.authData;
 
 		if (username && !state.username) {
+			if (props.usernameAttributes === 'email') {
+				return { email: username };	
+			} else if (props.usernameAttributes === 'phone_number') {
+			   	return { phone_number: username };
+		   	}
+			
 			return { username };
 		}
 
