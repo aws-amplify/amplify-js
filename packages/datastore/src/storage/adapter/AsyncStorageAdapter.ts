@@ -233,7 +233,7 @@ export class AsyncStorageAdapter implements Adapter {
 	async query<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		predicate?: ModelPredicate<T>,
-		pagination?: PaginationInput
+		pagination?: PaginationInput<T>
 	): Promise<T[]> {
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
@@ -281,9 +281,9 @@ export class AsyncStorageAdapter implements Adapter {
 		return await this.load(namespaceName, modelConstructor.name, all);
 	}
 
-	private inMemoryPagination<T>(
+	private inMemoryPagination<T extends PersistentModel>(
 		records: T[],
-		pagination?: PaginationInput
+		pagination?: PaginationInput<T>
 	): T[] {
 		if (pagination) {
 			const { page = 0, limit = 0 } = pagination;
@@ -381,7 +381,10 @@ export class AsyncStorageAdapter implements Adapter {
 				const isValid = validatePredicate(fromDB, type, predicateObjs);
 				if (!isValid) {
 					const msg = 'Conditional update failed';
-					logger.error(msg, { model: fromDB, condition: predicateObjs });
+					logger.error(msg, {
+						model: fromDB,
+						condition: predicateObjs,
+					});
 
 					throw new Error(msg);
 				}
