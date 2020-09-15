@@ -22,7 +22,7 @@ export interface Adapter extends SystemComponent {
 	query<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		predicate?: ModelPredicate<T>,
-		pagination?: PaginationInput
+		pagination?: PaginationInput<T>
 	): Promise<T[]>;
 	queryOne<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
