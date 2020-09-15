@@ -125,7 +125,7 @@ export class AuthClass {
 		return 'Auth';
 	}
 
-	configure(config) {
+	configure(config?) {
 		if (!config) return this._config || {};
 		logger.debug('configure Auth');
 		const conf = Object.assign(
