@@ -323,6 +323,47 @@ export const newSchema: Schema = {
 				},
 			},
 		},
+		Person: {
+			syncable: true,
+			name: 'Person',
+			pluralName: 'Persons',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				firstName: {
+					name: 'firstName',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				lastName: {
+					name: 'lastName',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				username: {
+					name: 'username',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+			},
+		},
 	},
 	enums: {},
 	nonModels: {
