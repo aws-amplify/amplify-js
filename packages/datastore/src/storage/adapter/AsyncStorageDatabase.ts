@@ -240,7 +240,7 @@ class AsyncStorageDatabase {
 	 */
 	async getAll<T extends PersistentModel>(
 		storeName: string,
-		pagination?: PaginationInput
+		pagination?: PaginationInput<T>
 	): Promise<T[]> {
 		const collection = this.getCollectionIndex(storeName);
 
