@@ -15,6 +15,7 @@
 module.exports = {
 	AUTH: {
 		BACK_TO_SIGN_IN_BUTTON: 'aws-amplify__auth--back-to-sign-in-button',
+		CHANGE_PASSWORD_BUTTON: 'aws-amplify__auth--change-password-button',
 		CHANGE_PASSWORD_TEXT: 'aws-amplify__auth--change-password-text',
 		CONFIRM_A_CODE_BUTTON: 'aws-amplify__auth--confirm-a-code-button',
 		CONFIRM_BUTTON: 'aws-amplify__auth--confirm-button',
