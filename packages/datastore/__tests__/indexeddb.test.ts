@@ -2,7 +2,7 @@ import Dexie from 'dexie';
 import 'dexie-export-import';
 import 'fake-indexeddb/auto';
 import * as idb from 'idb';
-import { DataStore } from '../src/index';
+import { DataStore, SortDirection } from '../src/index';
 import { DATASTORE, SYNC, USER } from '../src/util';
 import {
 	Author,
@@ -322,7 +322,7 @@ describe('Indexed db storage test', () => {
 		const sortedPersons = await DataStore.query(Person, null, {
 			page: 0,
 			limit: 20,
-			sort: s => s.firstName('DESCENDING'),
+			sort: s => s.firstName(SortDirection.DESCENDING),
 		});
 
 		expect(sortedPersons[0].firstName).toEqual('Meow Meow');
@@ -361,9 +361,9 @@ describe('Indexed db storage test', () => {
 				limit: 20,
 				sort: s =>
 					s
-						.firstName('ASCENDING')
-						.lastName('ASCENDING')
-						.username('ASCENDING'),
+						.firstName(SortDirection.ASCENDING)
+						.lastName(SortDirection.ASCENDING)
+						.username(SortDirection.ASCENDING),
 			}
 		);
 

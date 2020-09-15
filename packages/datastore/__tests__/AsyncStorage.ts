@@ -17,6 +17,7 @@ import {
 	Person as PersonType,
 } from './model';
 import { newSchema } from './schema';
+import { SortDirection } from '../src/types';
 
 let AsyncStorageAdapter: typeof AsyncStorageAdapterType;
 
@@ -312,7 +313,7 @@ describe('AsyncStorage tests', () => {
 		const sortedPersons = await DataStore.query(Person, null, {
 			page: 0,
 			limit: 20,
-			sort: s => s.firstName('DESCENDING'),
+			sort: s => s.firstName(SortDirection.DESCENDING),
 		});
 
 		expect(sortedPersons[0].firstName).toEqual('Meow Meow');
@@ -351,9 +352,9 @@ describe('AsyncStorage tests', () => {
 				limit: 20,
 				sort: s =>
 					s
-						.firstName('ASCENDING')
-						.lastName('ASCENDING')
-						.username('ASCENDING'),
+						.firstName(SortDirection.ASCENDING)
+						.lastName(SortDirection.ASCENDING)
+						.username(SortDirection.ASCENDING),
 			}
 		);
 
