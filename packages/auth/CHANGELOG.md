@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.3...@aws-amplify/auth@3.4.4) (2020-09-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Fix binding for Auth.currentCredentials ([#6809](https://github.com/aws-amplify/amplify-js/issues/6809)) ([912cf10](https://github.com/aws-amplify/amplify-js/commit/912cf105785584e9ba55f78c86dffed50b0bd6df))
+
+
+
+
+
 ## [3.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.2...@aws-amplify/auth@3.4.3) (2020-09-15)
 
 **Note:** Version bump only for package @aws-amplify/auth
