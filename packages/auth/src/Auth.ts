@@ -103,6 +103,7 @@ export class AuthClass {
 	 */
 	constructor(config: AuthOptions) {
 		this.configure(config);
+		this.currentCredentials = this.currentCredentials.bind(this);
 		this.currentUserCredentials = this.currentUserCredentials.bind(this);
 
 		Hub.listen('auth', ({ payload }) => {
