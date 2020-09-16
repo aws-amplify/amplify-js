@@ -592,12 +592,14 @@ jobs:
           framework: react
           category: datastore
           sample_name: << parameters.scenario >>
+          spec: << parameters.scenario >>
           browser: chrome
       - integ_test_js:
           test_name: 'DataStore Auth - Firefox'
           framework: react
           category: datastore
           sample_name: << parameters.scenario >>
+          spec: << parameters.scenario >>
           browser: firefox
 
   deploy:
