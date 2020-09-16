@@ -575,7 +575,7 @@ jobs:
           test_name: 'Angular Custom Authenticator'
           framework: angular
           category: auth
-          sample_name: ui-amplify-authenticator
+          sample_name: amplify-authenticator
           spec: custom-authenticator
 
   integ_vue_auth_ui:
@@ -588,8 +588,8 @@ jobs:
           test_name: 'Vue Authenticator'
           framework: vue
           category: auth
-          spec: amplify-authenticator
-          sample_name: ui-amplify-authenticator
+          sample_name: amplify-authenticator
+          spec: ui-amplify-authenticator
       - integ_test_js:
           test_name: 'Vue Custom Authenticator'
           framework: vue
@@ -790,12 +790,6 @@ workflows:
           filters:
             <<: *releasable_branches
       - integ_rn_android_storage:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_react_auth_ui:
           requires:
             - integ_setup
             - build
