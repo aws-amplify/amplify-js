@@ -239,7 +239,7 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 	if (fieldDefinition !== undefined) {
 		const { type, isRequired, isArrayRequired, name, isArray } = fieldDefinition;
 
-		if (isRequired && (v === null || v === undefined)) {
+		if (((!isArray && isRequired) || (isArray && isArrayRequired)) && (v === null || v === undefined)) {
 			throw new Error(`Field ${name} is required`);
 		}
 

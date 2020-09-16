@@ -356,7 +356,7 @@ describe('DataStore tests', () => {
 					}),
 				});
 			}).toThrowError(
-				'Field nominations should be of type [string | null | undefined], object received. null'
+				'Field nominations is required'
 			);
 
 			expect(() => {
