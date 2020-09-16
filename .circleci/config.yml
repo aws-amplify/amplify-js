@@ -588,10 +588,17 @@ jobs:
     steps:
       - prepare_test_env
       - integ_test_js:
-          test_name: 'DataStore Auth'
+          test_name: 'DataStore Auth - Chrome'
           framework: react
           category: datastore
           sample_name: << parameters.scenario >>
+          browser: chrome
+      - integ_test_js:
+          test_name: 'DataStore Auth - Firefox'
+          framework: react
+          category: datastore
+          sample_name: << parameters.scenario >>
+          browser: firefox
 
   deploy:
     executor: macos-executor
@@ -648,7 +655,16 @@ test_browsers: &test_browsers
   browser: [chrome, firefox]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
-  scenario: [owner-based-default, static-user-pool-groups-default]
+  scenario: [
+      owner-based-default, # TODO: Add `owner-based-operations`
+      static-user-pool-groups-default,
+      static-user-pool-groups-operations,
+      owner-and-group-different-models-default,
+      owner-and-group-same-model-default,
+      owner-and-group-same-model-operations,
+      dynamic-user-pool-groups-default,
+      dynamic-user-pool-groups-owner-based-default,
+    ]
 
 workflows:
   build_test_deploy:
