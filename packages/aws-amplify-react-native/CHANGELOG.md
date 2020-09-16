@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.5...aws-amplify-react-native@4.2.6) (2020-09-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify-react-native:**  Add missing testID attributes in RequireNewPassword component. ([#6780](https://github.com/aws-amplify/amplify-js/issues/6780)) ([acda4a6](https://github.com/aws-amplify/amplify-js/commit/acda4a690117d0867b077db6a001545a9c9c1e42))
+
+
+
+
+
 ## [4.2.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.4...aws-amplify-react-native@4.2.5) (2020-08-19)
 
 **Note:** Version bump only for package aws-amplify-react-native

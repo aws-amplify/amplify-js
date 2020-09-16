@@ -219,7 +219,7 @@ export class AmplifyConfirmSignUp {
       if (!confirmSignUpResult) {
         throw new Error(I18n.get(Translations.CONFIRM_SIGN_UP_FAILED));
       }
-      if (this._signUpAttrs) {
+      if (this._signUpAttrs && this._signUpAttrs.password && this._signUpAttrs.password !== '') {
         // Auto sign in user if password is available from previous workflow
         await handleSignIn(this.userInput, this._signUpAttrs.password, this.handleAuthStateChange);
       } else {
