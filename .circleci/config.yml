@@ -651,14 +651,13 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/main
       - 1.0-stable
-      - cci-datastore-auth
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
 
 datastore_auth_scenarios: &datastore_auth_scenarios
   scenario: [
-      owner-based-default, # TODO: Add `owner-based-operations`
+      owner-based-default, # TODO: Add `owner-based-operations` when tests pass
       static-user-pool-groups-default,
       static-user-pool-groups-operations,
       owner-and-group-different-models-default,
@@ -801,29 +800,29 @@ workflows:
           matrix:
             parameters:
               <<: *datastore_auth_scenarios
-      # - deploy:
-      #     filters:
-      #       <<: *releasable_branches
-      #     requires:
-      #       - unit_test
-      #       - integ_react_predictions
-      #       - integ_react_datastore
-      #       - integ_react_storage
-      #       - integ_react_storage_ui
-      #       - integ_react_interactions
-      #       - integ_angular_interactions
-      #       - integ_vue_interactions
-      #       - integ_amazon_cognito_identity_js
-      #       - integ_react_auth
-      #       - integ_angular_auth
-      #       - integ_vue_auth
-      #       - integ_rn_ios_storage
-      #       - integ_rn_ios_push_notifications
-      #       - integ_rn_android_storage
-      # - post_release:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - release
-      #     requires:
-      #       - deploy
+      - deploy:
+          filters:
+            <<: *releasable_branches
+          requires:
+            - unit_test
+            - integ_react_predictions
+            - integ_react_datastore
+            - integ_react_storage
+            - integ_react_storage_ui
+            - integ_react_interactions
+            - integ_angular_interactions
+            - integ_vue_interactions
+            - integ_amazon_cognito_identity_js
+            - integ_react_auth
+            - integ_angular_auth
+            - integ_vue_auth
+            - integ_rn_ios_storage
+            - integ_rn_ios_push_notifications
+            - integ_rn_android_storage
+      - post_release:
+          filters:
+            branches:
+              only:
+                - release
+          requires:
+            - deploy
