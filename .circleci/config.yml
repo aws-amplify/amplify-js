@@ -556,6 +556,7 @@ jobs:
           sample_name: amazon-cognito-identity-js
           spec: amazon-cognito-identity-js
           browser: << parameters.browser >>
+
   integ_rn_ios_storage:
     executor: macos-executor
     <<: *test_env_vars
@@ -576,6 +577,21 @@ jobs:
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
       - integ_test_rn_android
+
+  integ_datastore_auth:
+    parameters:
+      scenario:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore Auth'
+          framework: react
+          category: datastore
+          sample_name: << parameters.scenario >>
 
   deploy:
     executor: macos-executor
@@ -626,9 +642,13 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/main
       - 1.0-stable
+      - cci-datastore-auth
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
+
+datastore_auth_scenarios: &datastore_auth_scenarios
+  scenario: [owner-based-default, static-user-pool-groups-default]
 
 workflows:
   build_test_deploy:
@@ -754,29 +774,38 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      - deploy:
+      - integ_datastore_auth:
+          requires:
+            - integ_setup
+            - build
           filters:
             <<: *releasable_branches
-          requires:
-            - unit_test
-            - integ_react_predictions
-            - integ_react_datastore
-            - integ_react_storage
-            - integ_react_storage_ui
-            - integ_react_interactions
-            - integ_angular_interactions
-            - integ_vue_interactions
-            - integ_amazon_cognito_identity_js
-            - integ_react_auth
-            - integ_angular_auth
-            - integ_vue_auth
-            - integ_rn_ios_storage
-            - integ_rn_ios_push_notifications
-            - integ_rn_android_storage
-      - post_release:
-          filters:
-            branches:
-              only:
-                - release
-          requires:
-            - deploy
+          matrix:
+            parameters:
+              <<: *datastore_auth_scenarios
+      # - deploy:
+      #     filters:
+      #       <<: *releasable_branches
+      #     requires:
+      #       - unit_test
+      #       - integ_react_predictions
+      #       - integ_react_datastore
+      #       - integ_react_storage
+      #       - integ_react_storage_ui
+      #       - integ_react_interactions
+      #       - integ_angular_interactions
+      #       - integ_vue_interactions
+      #       - integ_amazon_cognito_identity_js
+      #       - integ_react_auth
+      #       - integ_angular_auth
+      #       - integ_vue_auth
+      #       - integ_rn_ios_storage
+      #       - integ_rn_ios_push_notifications
+      #       - integ_rn_android_storage
+      # - post_release:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - release
+      #     requires:
+      #       - deploy
