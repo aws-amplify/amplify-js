@@ -103,6 +103,7 @@ export class AuthClass {
 	 */
 	constructor(config: AuthOptions) {
 		this.configure(config);
+		this.currentCredentials = this.currentCredentials.bind(this);
 		this.currentUserCredentials = this.currentUserCredentials.bind(this);
 
 		Hub.listen('auth', ({ payload }) => {
@@ -1347,7 +1348,6 @@ export class AuthClass {
 	 * @return - A promise resolves to be current user's credentials
 	 */
 	public async currentUserCredentials(): Promise<ICredentials> {
-		const that = this;
 		logger.debug('Getting current user credentials');
 
 		try {
