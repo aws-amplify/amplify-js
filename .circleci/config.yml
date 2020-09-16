@@ -754,18 +754,6 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      - integ_angular_auth_ui:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_vue_auth_ui:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
       - deploy:
           filters:
             <<: *releasable_branches
@@ -782,9 +770,6 @@ workflows:
             - integ_react_auth
             - integ_angular_auth
             - integ_vue_auth
-            - integ_react_auth_ui
-            - integ_angular_auth_ui
-            - integ_vue_auth_ui
             - integ_rn_ios_storage
             - integ_rn_ios_push_notifications
             - integ_rn_android_storage
