@@ -14,8 +14,10 @@ import {
 	Post as PostType,
 	PostAuthorJoin as PostAuthorJoinType,
 	PostMetadata as PostMetadataType,
+	Person as PersonType,
 } from './model';
 import { newSchema } from './schema';
+import { SortDirection } from '../src/types';
 
 let AsyncStorageAdapter: typeof AsyncStorageAdapterType;
 
@@ -28,6 +30,7 @@ let BlogOwner: PersistentModelConstructor<InstanceType<typeof BlogOwnerType>>;
 let Comment: PersistentModelConstructor<InstanceType<typeof CommentType>>;
 let Nested: NonModelTypeConstructor<InstanceType<typeof NestedType>>;
 let Post: PersistentModelConstructor<InstanceType<typeof PostType>>;
+let Person: PersistentModelConstructor<InstanceType<typeof PersonType>>;
 let PostAuthorJoin: PersistentModelConstructor<InstanceType<
 	typeof PostAuthorJoinType
 >>;
@@ -101,6 +104,7 @@ function setUpSchema(beforeSetUp?: Function) {
 		Comment,
 		Nested,
 		Post,
+		Person,
 		PostAuthorJoin,
 		PostMetadata,
 	} = <
@@ -111,6 +115,7 @@ function setUpSchema(beforeSetUp?: Function) {
 			Comment: typeof Comment;
 			Nested: typeof Nested;
 			Post: typeof Post;
+			Person: typeof Person;
 			PostAuthorJoin: typeof PostAuthorJoin;
 			PostMetadata: typeof PostMetadata;
 		}
@@ -277,6 +282,85 @@ describe('AsyncStorage tests', () => {
 		const q1 = await DataStore.query(Comment, c1.id);
 
 		expect(q1.post.id).toEqual(p.id);
+	});
+
+	test('query with sort on a single field', async () => {
+		const p1 = new Person({
+			firstName: 'John',
+			lastName: 'Snow',
+		});
+
+		const p2 = new Person({
+			firstName: 'Clem',
+			lastName: 'Fandango',
+		});
+
+		const p3 = new Person({
+			firstName: 'Beezus',
+			lastName: 'Fuffoon',
+		});
+
+		const p4 = new Person({
+			firstName: 'Meow Meow',
+			lastName: 'Fuzzyface',
+		});
+
+		await DataStore.save(p1);
+		await DataStore.save(p2);
+		await DataStore.save(p3);
+		await DataStore.save(p4);
+
+		const sortedPersons = await DataStore.query(Person, null, {
+			page: 0,
+			limit: 20,
+			sort: s => s.firstName(SortDirection.DESCENDING),
+		});
+
+		expect(sortedPersons[0].firstName).toEqual('Meow Meow');
+		expect(sortedPersons[1].firstName).toEqual('John');
+		expect(sortedPersons[2].firstName).toEqual('Clem');
+		expect(sortedPersons[3].firstName).toEqual('Beezus');
+	});
+
+	test('query with sort on multiple fields', async () => {
+		const p1 = new Person({
+			firstName: 'John',
+			lastName: 'Snow',
+			username: 'johnsnow',
+		});
+		const p2 = new Person({
+			firstName: 'John',
+			lastName: 'Umber',
+			username: 'smalljohnumber',
+		});
+
+		const p3 = new Person({
+			firstName: 'John',
+			lastName: 'Umber',
+			username: 'greatjohnumber',
+		});
+
+		await DataStore.save(p1);
+		await DataStore.save(p2);
+		await DataStore.save(p3);
+
+		const sortedPersons = await DataStore.query(
+			Person,
+			c => c.username('ne', undefined),
+			{
+				page: 0,
+				limit: 20,
+				sort: s =>
+					s
+						.firstName(SortDirection.ASCENDING)
+						.lastName(SortDirection.ASCENDING)
+						.username(SortDirection.ASCENDING),
+			}
+		);
+
+		expect(sortedPersons[0].username).toEqual('johnsnow');
+		expect(sortedPersons[1].username).toEqual('greatjohnumber');
+		expect(sortedPersons[2].username).toEqual('smalljohnumber');
 	});
 
 	test('delete 1:1 function', async () => {

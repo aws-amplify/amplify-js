@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.0...aws-amplify@3.3.1) (2020-09-16)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+# [3.3.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.2.0...aws-amplify@3.3.0) (2020-09-15)
+
+
+### Features
+
+* **@aws-amplify/datastore:** add query sorting ([#6785](https://github.com/aws-amplify/amplify-js/issues/6785)) ([d9c2f5e](https://github.com/aws-amplify/amplify-js/commit/d9c2f5efbd5ad5dd97e441d7f453f8358f615199))
+
+
+
+
+
 # [3.2.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.1.1...aws-amplify@3.2.0) (2020-09-10)
 
 
