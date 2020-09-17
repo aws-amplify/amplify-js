@@ -1,3 +1,12 @@
+/**
+ * @prop --background-color: Component background color
+ * @prop --width: Component width
+ * @prop --min-width: Component minimum width
+ * @prop --box-shadow: Component box shadow
+ * @prop --border-radius: Component border radius
+ * @prop --padding: Padding within component
+ * @prop --margin-bottom: Margin below the component
+ */
 :host {
   --background-color: var(--amplify-background-color);
   --width: 28.75rem;

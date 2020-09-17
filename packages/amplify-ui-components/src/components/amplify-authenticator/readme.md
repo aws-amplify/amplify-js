@@ -13,6 +13,35 @@
 | `usernameAlias`         | `username-alias`     | Username Alias is used to setup authentication with `username`, `email` or `phone_number`                                       | `"email" \| "phone_number" \| "username"`           | `undefined`        |
 
 
+## Slots
+
+| Slot                     | Description                                                                                                            |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `"confirm-sign-in"`      | Content placed inside of the confirm sign in workflow for when a user needs to confirm the account they signed in with |
+| `"confirm-sign-up"`      | Content placed inside of the confirm sign up workflow for when a user needs to confirm the account they signed up with |
+| `"forgot-password"`      | Content placed inside of the forgot password workflow for when a user wants to reset their password                    |
+| `"greetings"`            | Content placed inside of the greetings navigation for when a user is signed in                                         |
+| `"loading"`              | Content placed inside of the loading workflow for when the app is loading                                              |
+| `"require-new-password"` | Content placed inside of the require new password workflow for when a user is required to update their password        |
+| `"sign-in"`              | Content placed inside of the sign in workflow for when a user wants to sign into their account                         |
+| `"sign-up"`              | Content placed inside of the sign up workflow for when a user wants to register a new account                          |
+| `"totp-setup"`           | Content placed inside of the totp-setup workflow for when a user opts to use TOTP MFA                                  |
+| `"verify-contact"`       | Content placed inside of the verify-contact workflow for when a user must verify their contact information             |
+
+
+## CSS Custom Properties
+
+| Name                 | Description                |
+| -------------------- | -------------------------- |
+| `--background-color` | Component background color |
+| `--border-radius`    | Component border radius    |
+| `--box-shadow`       | Component box shadow       |
+| `--margin-bottom`    | Margin below the component |
+| `--min-width`        | Component minimum width    |
+| `--padding`          | Padding within component   |
+| `--width`            | Component width            |
+
+
 ## Dependencies
 
 ### Depends on

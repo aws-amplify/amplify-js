@@ -19,6 +19,16 @@
 | `track`        | `track`         | Whether or not to use track the get/put of the text file | `boolean`                                                            | `undefined`                          |
 
 
+## CSS Custom Properties
+
+| Name                | Description                                    |
+| ------------------- | ---------------------------------------------- |
+| `--border-color`    | Used to set the border color of text container |
+| `--container-color` | Used to set the text container background      |
+| `--font-size`       | Used to set the font size for the text         |
+| `--text-color`      | Used to set the font color for the text        |
+
+
 ## Dependencies
 
 ### Used by
