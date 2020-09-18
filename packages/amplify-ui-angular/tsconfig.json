@@ -8,6 +8,7 @@
 		"fullTemplateTypeCheck": false
 	},
 	"compilerOptions": {
+		"skipLibCheck": true,
 		"alwaysStrict": true,
 		"strict": true,
 		"allowSyntheticDefaultImports": true,

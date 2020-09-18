@@ -13,7 +13,7 @@
 
 import { Storage as StorageClass } from './Storage';
 
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Storage');
 
@@ -48,6 +48,7 @@ const getInstance = () => {
 };
 
 export const Storage: StorageClass = getInstance();
+Amplify.register(Storage);
 
 /**
  * @deprecated use named import

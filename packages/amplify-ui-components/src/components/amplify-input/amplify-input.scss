@@ -3,6 +3,8 @@
   --background-color: var(--amplify-secondary-contrast);
   --border-color: var(--amplify-light-grey);
   --border-color-focus: var(--amplify-primary-color);
+  --border: 1px solid var(--border-color);
+  --margin: 0 0 0.625rem 0;
 }
 
 .input-host {
@@ -17,10 +19,10 @@
   color: var(--color);
   background-color: var(--background-color);
   background-image: none;
-  border: 1px solid var(--border-color);
+  border: var(--border);
   border-radius: 3px;
   box-sizing: border-box;
-  margin: 0 0 0.625rem 0;
+  margin: var(--margin);
   height: 3.125rem;
   line-height: 1.1;
 

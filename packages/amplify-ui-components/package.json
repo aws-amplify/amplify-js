@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/ui-components",
-  "version": "0.6.2",
+  "version": "0.8.4",
   "description": "Core Amplify UI Component Library",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
@@ -30,6 +30,7 @@
     "storybook": "concurrently 'start-storybook -p 3000 -s ./www' 'yarn:stencil:watch' --raw",
     "build-with-test": "npm run clean && npm test && npm run stencil",
     "build": "npm run clean && npm run stencil --ci",
+    "build:esm:watch": "npm run clean && npm run stencil:watch",
     "build:watch": "npm run clean && npm run stencil:watch",
     "clean": "rimraf dist .stencil"
   },
@@ -38,6 +39,8 @@
     "uuid": "^8.2.0"
   },
   "devDependencies": {
+    "@aws-amplify/auth": "^3.4.4",
+    "@aws-amplify/core": "^3.5.4",
     "@stencil/angular-output-target": "^0.0.2",
     "@stencil/core": "1.15.0",
     "@stencil/eslint-plugin": "0.2.1",

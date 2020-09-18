@@ -36,12 +36,13 @@ import {
 import {
 	Amplify,
 	ConsoleLogger as Logger,
-	Hub,
 	Credentials,
+	Hub,
 	StorageHelper,
 	ICredentials,
 	Parser,
 	JS,
+	UniversalStorage,
 } from '@aws-amplify/core';
 import {
 	CookieStorage,
@@ -94,12 +95,15 @@ export class AuthClass {
 	private _storageSync;
 	private oAuthFlowInProgress: boolean = false;
 
+	Credentials = Credentials;
+
 	/**
 	 * Initialize Auth with AWS configurations
 	 * @param {Object} config - Configuration of the Auth
 	 */
 	constructor(config: AuthOptions) {
 		this.configure(config);
+		this.currentCredentials = this.currentCredentials.bind(this);
 		this.currentUserCredentials = this.currentUserCredentials.bind(this);
 
 		Hub.listen('auth', ({ payload }) => {
@@ -116,14 +120,13 @@ export class AuthClass {
 					break;
 			}
 		});
-		Amplify.register(this);
 	}
 
 	public getModuleName() {
 		return 'Auth';
 	}
 
-	configure(config) {
+	configure(config?) {
 		if (!config) return this._config || {};
 		logger.debug('configure Auth');
 		const conf = Object.assign(
@@ -144,13 +147,16 @@ export class AuthClass {
 			refreshHandlers,
 			identityPoolRegion,
 			clientMetadata,
+			endpoint,
 		} = this._config;
 
 		if (!this._config.storage) {
 			// backward compatability
 			if (cookieStorage) this._storage = new CookieStorage(cookieStorage);
 			else {
-				this._storage = new StorageHelper().getStorage();
+				this._storage = config.ssr
+					? new UniversalStorage()
+					: new StorageHelper().getStorage();
 			}
 		} else {
 			if (!this._isValidAuthStorage(this._config.storage)) {
@@ -169,13 +175,14 @@ export class AuthClass {
 			const userPoolData: ICognitoUserPoolData = {
 				UserPoolId: userPoolId,
 				ClientId: userPoolWebClientId,
+				endpoint,
 			};
 			userPoolData.Storage = this._storage;
 
 			this.userPool = new CognitoUserPool(userPoolData);
 		}
 
-		Credentials.configure({
+		this.Credentials.configure({
 			mandatorySignIn,
 			region: identityPoolRegion || region,
 			userPoolId,
@@ -474,8 +481,8 @@ export class AuthClass {
 				delete user['challengeName'];
 				delete user['challengeParam'];
 				try {
-					await Credentials.clear();
-					const cred = await Credentials.set(session, 'session');
+					await this.Credentials.clear();
+					const cred = await this.Credentials.set(session, 'session');
 					logger.debug('succeed to get cognito credentials', cred);
 				} catch (e) {
 					logger.debug('cannot get cognito credentials', e);
@@ -695,7 +702,9 @@ export class AuthClass {
 		user: CognitoUser | any,
 		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA'
 	): Promise<string> {
-		const userData = await this._getUserData(user, { bypassCache: true });
+		const userData = await this._getUserData(user, {
+			bypassCache: true,
+		});
 		let smsMfaSettings = null;
 		let totpMfaSettings = null;
 
@@ -897,8 +906,8 @@ export class AuthClass {
 					onSuccess: async session => {
 						logger.debug(session);
 						try {
-							await Credentials.clear();
-							const cred = await Credentials.set(session, 'session');
+							await this.Credentials.clear();
+							const cred = await this.Credentials.set(session, 'session');
 							logger.debug('succeed to get cognito credentials', cred);
 						} catch (e) {
 							logger.debug('cannot get cognito credentials', e);
@@ -923,7 +932,7 @@ export class AuthClass {
 	public completeNewPassword(
 		user: CognitoUser | any,
 		password: string,
-		requiredAttributes: any,
+		requiredAttributes: any = {},
 		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<CognitoUser | any> {
 		if (!password) {
@@ -939,8 +948,8 @@ export class AuthClass {
 					onSuccess: async session => {
 						logger.debug(session);
 						try {
-							await Credentials.clear();
-							const cred = await Credentials.set(session, 'session');
+							await this.Credentials.clear();
+							const cred = await this.Credentials.set(session, 'session');
 							logger.debug('succeed to get cognito credentials', cred);
 						} catch (e) {
 							logger.debug('cannot get cognito credentials', e);
@@ -1161,7 +1170,7 @@ export class AuthClass {
 						const bypassCache = params ? params.bypassCache : false;
 
 						if (bypassCache) {
-							await Credentials.clear();
+							await this.Credentials.clear();
 						}
 
 						// validate the token's scope first before calling this function
@@ -1339,7 +1348,6 @@ export class AuthClass {
 	 * @return - A promise resolves to be current user's credentials
 	 */
 	public async currentUserCredentials(): Promise<ICredentials> {
-		const that = this;
 		logger.debug('Getting current user credentials');
 
 		try {
@@ -1361,23 +1369,23 @@ export class AuthClass {
 
 		if (federatedInfo) {
 			// refresh the jwt token here if necessary
-			return Credentials.refreshFederatedToken(federatedInfo);
+			return this.Credentials.refreshFederatedToken(federatedInfo);
 		} else {
 			return this.currentSession()
 				.then(session => {
 					logger.debug('getting session success', session);
-					return Credentials.set(session, 'session');
+					return this.Credentials.set(session, 'session');
 				})
 				.catch(error => {
 					logger.debug('getting session failed', error);
-					return Credentials.set(null, 'guest');
+					return this.Credentials.set(null, 'guest');
 				});
 		}
 	}
 
 	public currentCredentials(): Promise<ICredentials> {
 		logger.debug('getting current credentials');
-		return Credentials.get();
+		return this.Credentials.get();
 	}
 
 	/**
@@ -1569,7 +1577,7 @@ export class AuthClass {
 
 	private async cleanCachedItems() {
 		// clear cognito cached item
-		await Credentials.clear();
+		await this.Credentials.clear();
 	}
 
 	/**
@@ -1715,7 +1723,7 @@ export class AuthClass {
 	 * @return {Object }- current User's information
 	 */
 	public async currentUserInfo() {
-		const source = Credentials.getCredSource();
+		const source = this.Credentials.getCredSource();
 
 		if (!source || source === 'aws' || source === 'userPool') {
 			const user = await this.currentUserPoolUser().catch(err =>
@@ -1839,9 +1847,9 @@ export class AuthClass {
 			} catch (e) {}
 
 			const { token, identity_id, expires_at } = response;
-			// Because Credentials.set would update the user info with identity id
+			// Because this.Credentials.set would update the user info with identity id
 			// So we need to retrieve the user again.
-			const credentials = await Credentials.set(
+			const credentials = await this.Credentials.set(
 				{ provider, token, identity_id, user, expires_at },
 				'federation'
 			);
@@ -1908,13 +1916,15 @@ export class AuthClass {
 						RefreshToken: new CognitoRefreshToken({
 							RefreshToken: refreshToken,
 						}),
-						AccessToken: new CognitoAccessToken({ AccessToken: accessToken }),
+						AccessToken: new CognitoAccessToken({
+							AccessToken: accessToken,
+						}),
 					});
 
 					let credentials;
 					// Get AWS Credentials & store if Identity Pool is defined
 					if (this._config.identityPoolId) {
-						credentials = await Credentials.set(session, 'session');
+						credentials = await this.Credentials.set(session, 'session');
 						logger.debug('AWS credentials', credentials);
 					}
 
@@ -2075,3 +2085,5 @@ export class AuthClass {
 }
 
 export const Auth = new AuthClass(null);
+
+Amplify.register(Auth);

@@ -11,7 +11,11 @@
  * and limitations under the License.
  */
 import { RestClient } from './RestClient';
-import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
+import {
+	Amplify,
+	ConsoleLogger as Logger,
+	Credentials,
+} from '@aws-amplify/core';
 import { ApiInfo } from './types';
 
 const logger = new Logger('RestAPI');
@@ -26,13 +30,14 @@ export class RestAPIClass {
 	private _options;
 	private _api: RestClient = null;
 
+	Credentials = Credentials;
+
 	/**
 	 * Initialize Rest API with AWS configuration
 	 * @param {Object} options - Configuration object for API
 	 */
 	constructor(options) {
 		this._options = options;
-		Amplify.register(this);
 		logger.debug('API Options', this._options);
 	}
 
@@ -96,6 +101,9 @@ export class RestAPIClass {
 	createInstance() {
 		logger.debug('create Rest API instance');
 		this._api = new RestClient(this._options);
+
+		// Share Amplify instance with client for SSR
+		this._api.Credentials = this.Credentials;
 		return true;
 	}
 
@@ -328,3 +336,4 @@ export class RestAPIClass {
 }
 
 export const RestAPI = new RestAPIClass(null);
+Amplify.register(RestAPI);

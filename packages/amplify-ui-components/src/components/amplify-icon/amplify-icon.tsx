@@ -1,4 +1,4 @@
-import { Component, Prop, Watch, h } from '@stencil/core';
+import { Component, Prop, Watch } from '@stencil/core';
 import { icons, IconNameType } from './icons';
 
 @Component({
@@ -20,6 +20,6 @@ export class AmplifyIcon {
 
   // https://stenciljs.com/docs/templating-jsx#avoid-shared-jsx-nodes
   render() {
-    return <span class="icon">{icons[this.name]()}</span>;
+    return icons[this.name]();
   }
 }

@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.3.3...@aws-amplify/analytics@3.3.4) (2020-09-16)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [3.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.3.2...@aws-amplify/analytics@3.3.3) (2020-09-15)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [3.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.3.1...@aws-amplify/analytics@3.3.2) (2020-09-10)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [3.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.3.0...@aws-amplify/analytics@3.3.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+# [3.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.2.8...@aws-amplify/analytics@3.3.0) (2020-09-03)
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+## [3.2.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.2.7...@aws-amplify/analytics@3.2.8) (2020-09-01)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
 ## [3.2.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.2.6...@aws-amplify/analytics@3.2.7) (2020-08-19)
 
 **Note:** Version bump only for package @aws-amplify/analytics

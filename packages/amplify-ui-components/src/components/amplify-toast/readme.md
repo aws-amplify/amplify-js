@@ -16,6 +16,7 @@
 ### Used by
 
  - [amplify-authenticator](../amplify-authenticator)
+ - [amplify-chatbot](../amplify-chatbot)
 
 ### Depends on
 
@@ -26,6 +27,7 @@
 graph TD;
   amplify-toast --> amplify-icon
   amplify-authenticator --> amplify-toast
+  amplify-chatbot --> amplify-toast
   style amplify-toast fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

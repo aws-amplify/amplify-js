@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.1...@aws-amplify/pubsub@3.2.2) (2020-09-16)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.0...@aws-amplify/pubsub@3.2.1) (2020-09-15)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.1.1...@aws-amplify/pubsub@3.2.0) (2020-09-10)
+
+
+### Features
+
+* **@aws-amplify/datastore:** Add SSR support for DataStore ([#6726](https://github.com/aws-amplify/amplify-js/issues/6726)) ([e56aba6](https://github.com/aws-amplify/amplify-js/commit/e56aba642acc7eb3482f0e69454a530409d1b3ac))
+
+
+
+
+
+## [3.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.1.0...@aws-amplify/pubsub@3.1.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.0.25...@aws-amplify/pubsub@3.1.0) (2020-09-03)
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+## [3.0.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.0.24...@aws-amplify/pubsub@3.0.25) (2020-09-01)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
 ## [3.0.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.0.23...@aws-amplify/pubsub@3.0.24) (2020-08-19)
 
 
