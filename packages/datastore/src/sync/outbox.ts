@@ -27,54 +27,56 @@ class MutationEventOutbox {
 		storage: Storage,
 		mutationEvent: MutationEvent
 	): Promise<void> {
-		const mutationEventModelDefinition = this.schema.namespaces[SYNC].models[
-			'MutationEvent'
-		];
+		storage.runExclusive(async s => {
+			const mutationEventModelDefinition = this.schema.namespaces[SYNC].models[
+				'MutationEvent'
+			];
 
-		const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
-			mutationEventModelDefinition,
-			c =>
-				c
-					.modelId('eq', mutationEvent.modelId)
-					.id('ne', this.inProgressMutationEventId)
-		);
+			const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
+				mutationEventModelDefinition,
+				c =>
+					c
+						.modelId('eq', mutationEvent.modelId)
+						.id('ne', this.inProgressMutationEventId)
+			);
 
-		const [first] = await storage.query(this.MutationEvent, predicate);
+			const [first] = await s.query(this.MutationEvent, predicate);
 
-		if (first === undefined) {
-			await storage.save(mutationEvent, undefined, this.ownSymbol);
-			return;
-		}
+			if (first === undefined) {
+				await s.save(mutationEvent, undefined, this.ownSymbol);
+				return;
+			}
 
-		const { operation: incomingMutationType } = mutationEvent;
+			const { operation: incomingMutationType } = mutationEvent;
 
-		if (first.operation === TransformerMutationType.CREATE) {
-			if (incomingMutationType === TransformerMutationType.DELETE) {
-				// delete all for model
-				await storage.delete(this.MutationEvent, predicate);
+			if (first.operation === TransformerMutationType.CREATE) {
+				if (incomingMutationType === TransformerMutationType.DELETE) {
+					// delete all for model
+					await s.delete(this.MutationEvent, predicate);
+				} else {
+					// first gets updated with incoming's data, condition intentionally skiped
+					await s.save(
+						this.MutationEvent.copyOf(first, draft => {
+							draft.data = mutationEvent.data;
+						}),
+						undefined,
+						this.ownSymbol
+					);
+				}
 			} else {
-				// first gets updated with incoming's data, condition intentionally skiped
-				await storage.save(
-					this.MutationEvent.copyOf(first, draft => {
-						draft.data = mutationEvent.data;
-					}),
-					undefined,
-					this.ownSymbol
-				);
-			}
-		} else {
-			const { condition: incomingConditionJSON } = mutationEvent;
-			const incomingCondition = JSON.parse(incomingConditionJSON);
+				const { condition: incomingConditionJSON } = mutationEvent;
+				const incomingCondition = JSON.parse(incomingConditionJSON);
 
-			// If no condition
-			if (Object.keys(incomingCondition).length === 0) {
-				// delete all for model
-				await storage.delete(this.MutationEvent, predicate);
-			}
+				// If no condition
+				if (Object.keys(incomingCondition).length === 0) {
+					// delete all for model
+					await s.delete(this.MutationEvent, predicate);
+				}
 
-			// Enqueue new one
-			await storage.save(mutationEvent, undefined, this.ownSymbol);
-		}
+				// Enqueue new one
+				await s.save(mutationEvent, undefined, this.ownSymbol);
+			}
+		});
 	}
 
 	public async dequeue(storage: StorageFacade): Promise<MutationEvent> {
