@@ -72,23 +72,32 @@ export class UniversalStorage implements Storage {
 		switch (tokenType) {
 			// LastAuthUser is needed for computing other key names
 			case 'LastAuthUser':
+				break;
 
 			// accessToken is required for CognitoUserSession
 			case 'accessToken':
+				break;
 
 			// Required for CognitoUserSession
 			case 'idToken':
 				this.setUniversalItem(key, value);
+				break;
 
 			// userData is used when `Auth.currentAuthenticatedUser({ bypassCache: false })`.
 			// Can be persisted to speed up calls to `Auth.currentAuthenticatedUser()`
 			// case 'userData':
+			//	break;
 
 			// refreshToken isn't shared with the server so that the client handles refreshing
 			// case 'refreshToken':
+			//	break;
 
 			// Ignoring clockDrift on the server for now, but needs testing
 			// case 'clockDrift':
+			//	break;
+				
+			default:
+				break;
 		}
 	}
 
