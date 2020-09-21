@@ -73,6 +73,7 @@ export class PubSubClass {
 		logger.debug('PubSub Options', this._options);
 		this._pluggables = [];
 		this.subscribe = this.subscribe.bind(this);
+		Amplify.register(this);
 	}
 
 	public getModuleName() {
@@ -183,4 +184,3 @@ export class PubSubClass {
 }
 
 export const PubSub = new PubSubClass(null);
-Amplify.register(PubSub);

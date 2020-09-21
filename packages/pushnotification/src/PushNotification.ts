@@ -56,6 +56,8 @@ export default class PushNotification {
 		this._iosInitialized = false;
 
 		this._notificationOpenedHandlers = [];
+
+		Amplify.register(this);
 	}
 
 	getModuleName() {

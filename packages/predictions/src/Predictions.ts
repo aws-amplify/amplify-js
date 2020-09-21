@@ -42,6 +42,7 @@ export class PredictionsClass {
 		this._convertPluggables = [];
 		this._identifyPluggables = [];
 		this._interpretPluggables = [];
+		Amplify.register(this);
 	}
 
 	public getModuleName() {
@@ -246,4 +247,3 @@ export class PredictionsClass {
 }
 
 export const Predictions = new PredictionsClass({});
-Amplify.register(Predictions);

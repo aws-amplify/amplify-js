@@ -120,6 +120,7 @@ export class AuthClass {
 					break;
 			}
 		});
+		Amplify.register(this);
 	}
 
 	public getModuleName() {
@@ -2085,5 +2086,3 @@ export class AuthClass {
 }
 
 export const Auth = new AuthClass(null);
-
-Amplify.register(Auth);

@@ -524,6 +524,10 @@ class DataStore {
 	private sync: SyncEngine;
 	private syncPageSize: number;
 
+	constructor() {
+		Amplify.register(this);
+	}
+
 	getModuleName() {
 		return 'DataStore';
 	}
@@ -1047,6 +1051,5 @@ class DataStore {
 }
 
 const instance = new DataStore();
-Amplify.register(instance);
 
 export { DataStore as DataStoreClass, initSchema, instance as DataStore };

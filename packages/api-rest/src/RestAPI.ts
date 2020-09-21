@@ -38,6 +38,7 @@ export class RestAPIClass {
 	 */
 	constructor(options) {
 		this._options = options;
+		Amplify.register(this);
 		logger.debug('API Options', this._options);
 	}
 
@@ -336,4 +337,3 @@ export class RestAPIClass {
 }
 
 export const RestAPI = new RestAPIClass(null);
-Amplify.register(RestAPI);

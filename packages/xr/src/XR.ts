@@ -38,6 +38,7 @@ export class XRClass {
 
 		// Add default provider
 		this.addPluggable(new SumerianProvider());
+		Amplify.register(this);
 	}
 
 	/**
@@ -211,4 +212,3 @@ export class XRClass {
 }
 
 export const XR = new XRClass(null);
-Amplify.register(XR);

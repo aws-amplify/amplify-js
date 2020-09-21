@@ -46,6 +46,7 @@ export class Storage {
 		this.put = this.put.bind(this);
 		this.remove = this.remove.bind(this);
 		this.list = this.list.bind(this);
+		Amplify.register(this);
 	}
 
 	public getModuleName() {
