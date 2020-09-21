@@ -15,6 +15,7 @@ import {
 	Amplify,
 	ConsoleLogger as Logger,
 	Hub,
+	browserOrNode,
 	Parser,
 } from '@aws-amplify/core';
 import { AWSPinpointProvider } from './Providers/AWSPinpointProvider';
@@ -75,7 +76,11 @@ export class AnalyticsClass {
 		Hub.listen('auth', listener);
 		Hub.listen('storage', listener);
 		Hub.listen('analytics', listener);
-		Amplify.register(this);
+
+		// Register module each time on the client, but not on the server to prevent memory leaks
+		if (browserOrNode().isBrowser) {
+			Amplify.register(this);
+		}
 	}
 
 	public getModuleName() {

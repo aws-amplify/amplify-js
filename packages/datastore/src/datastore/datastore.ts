@@ -1,4 +1,10 @@
-import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
+import {
+	Amplify,
+	browserOrNode,
+	ConsoleLogger as Logger,
+	Hub,
+	JS,
+} from '@aws-amplify/core';
 import { Draft, immerable, produce, setAutoFreeze } from 'immer';
 import { v4 as uuid4 } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
@@ -525,7 +531,10 @@ class DataStore {
 	private syncPageSize: number;
 
 	constructor() {
-		Amplify.register(this);
+		// Register module each time on the client, but not on the server to prevent memory leaks
+		if (browserOrNode().isBrowser) {
+			Amplify.register(this);
+		}
 	}
 
 	getModuleName() {

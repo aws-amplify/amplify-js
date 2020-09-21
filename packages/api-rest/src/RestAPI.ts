@@ -13,6 +13,7 @@
 import { RestClient } from './RestClient';
 import {
 	Amplify,
+	browserOrNode,
 	ConsoleLogger as Logger,
 	Credentials,
 } from '@aws-amplify/core';
@@ -38,7 +39,12 @@ export class RestAPIClass {
 	 */
 	constructor(options) {
 		this._options = options;
-		Amplify.register(this);
+
+		// Register module each time on the client, but not on the server to prevent memory leaks
+		if (browserOrNode().isBrowser) {
+			Amplify.register(this);
+		}
+
 		logger.debug('API Options', this._options);
 	}
 

@@ -17,6 +17,7 @@ import {
 	GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
 import { CredentialProvider } from '@aws-sdk/types';
+import { browserOrNode } from '../lib-esm';
 
 const logger = new Logger('Credentials');
 
@@ -40,6 +41,11 @@ export class CredentialsClass {
 		this.configure(config);
 		this._refreshHandlers['google'] = GoogleOAuth.refreshGoogleToken;
 		this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
+
+		// Register module each time on the client, but not on the server to prevent memory leaks
+		if (browserOrNode().isBrowser) {
+			Amplify.register(this);
+		}
 	}
 
 	public getModuleName() {
@@ -545,8 +551,6 @@ export class CredentialsClass {
 }
 
 export const Credentials = new CredentialsClass(null);
-
-Amplify.register(Credentials);
 
 /**
  * @deprecated use named import

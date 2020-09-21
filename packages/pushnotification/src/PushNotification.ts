@@ -19,7 +19,12 @@ import {
 	AppState,
 } from 'react-native';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
-import { Amplify, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
+import {
+	Amplify,
+	browserOrNode,
+	ConsoleLogger as Logger,
+	isEmpty,
+} from '@aws-amplify/core';
 
 const logger = new Logger('Notification');
 
@@ -57,7 +62,10 @@ export default class PushNotification {
 
 		this._notificationOpenedHandlers = [];
 
-		Amplify.register(this);
+		// Register module each time on the client, but not on the server to prevent memory leaks
+		if (browserOrNode().isBrowser) {
+			Amplify.register(this);
+		}
 	}
 
 	getModuleName() {
@@ -65,7 +73,7 @@ export default class PushNotification {
 	}
 
 	configure(config) {
-		if (JS.isEmpty(config)) return this._config;
+		if (isEmpty(config)) return this._config;
 		let conf = config ? config.PushNotification || config : {};
 
 		if (config['aws_mobile_analytics_app_id']) {

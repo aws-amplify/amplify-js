@@ -20,6 +20,7 @@ import {
 } from '@aws-amplify/api-graphql';
 import {
 	Amplify,
+	browserOrNode,
 	ConsoleLogger as Logger,
 	Credentials,
 } from '@aws-amplify/core';
@@ -52,7 +53,12 @@ export class APIClass {
 		this._options = options;
 		this._restApi = new RestAPIClass(options);
 		this._graphqlApi = new GraphQLAPIClass(options);
-		Amplify.register(this);
+
+		// Register module each time on the client, but not on the server to prevent memory leaks
+		if (browserOrNode().isBrowser) {
+			Amplify.register(this);
+		}
+
 		logger.debug('API Options', this._options);
 	}
 

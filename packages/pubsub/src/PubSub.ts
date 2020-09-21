@@ -73,7 +73,11 @@ export class PubSubClass {
 		logger.debug('PubSub Options', this._options);
 		this._pluggables = [];
 		this.subscribe = this.subscribe.bind(this);
-		Amplify.register(this);
+
+		// Register module each time on the client, but not on the server to prevent memory leaks
+		if (browserOrNode().isBrowser) {
+			Amplify.register(this);
+		}
 	}
 
 	public getModuleName() {

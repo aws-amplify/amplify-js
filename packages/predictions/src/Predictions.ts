@@ -22,7 +22,11 @@ import {
 	AbstractInterpretPredictionsProvider,
 	AbstractPredictionsProvider,
 } from './types/Providers';
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import {
+	Amplify,
+	browserOrNode,
+	ConsoleLogger as Logger,
+} from '@aws-amplify/core';
 
 const logger = new Logger('Predictions');
 
@@ -42,7 +46,11 @@ export class PredictionsClass {
 		this._convertPluggables = [];
 		this._identifyPluggables = [];
 		this._interpretPluggables = [];
-		Amplify.register(this);
+
+		// Register module each time on the client, but not on the server to prevent memory leaks
+		if (browserOrNode().isBrowser) {
+			Amplify.register(this);
+		}
 	}
 
 	public getModuleName() {

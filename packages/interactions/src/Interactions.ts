@@ -17,7 +17,11 @@ import {
 	InteractionsMessage,
 	InteractionsResponse,
 } from './types';
-import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import {
+	Amplify,
+	browserOrNode,
+	ConsoleLogger as Logger,
+} from '@aws-amplify/core';
 import { AWSLexProvider } from './Providers';
 const logger = new Logger('Interactions');
 
@@ -35,7 +39,11 @@ export class InteractionsClass {
 		this._options = options;
 		logger.debug('Interactions Options', this._options);
 		this._pluggables = {};
-		Amplify.register(this);
+
+		// Register module each time on the client, but not on the server to prevent memory leaks
+		if (browserOrNode().isBrowser) {
+			Amplify.register(this);
+		}
 	}
 
 	public getModuleName() {
