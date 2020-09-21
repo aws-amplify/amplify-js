@@ -1,6 +1,6 @@
 import { ConsoleLogger as Logger } from './Logger';
 import { StorageHelper } from './StorageHelper';
-import { makeQuerablePromise } from './JS';
+import { makeQuerablePromise, browserOrNode } from './JS';
 import { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 import { jitteredExponentialRetry } from './Util';
 import { ICredentials } from './types';
@@ -17,7 +17,6 @@ import {
 	GetIdCommand,
 } from '@aws-sdk/client-cognito-identity';
 import { CredentialProvider } from '@aws-sdk/types';
-import { browserOrNode } from '../lib-esm';
 
 const logger = new Logger('Credentials');
 
