@@ -73,12 +73,12 @@ describe('PushNotification:', () => {
 			// Spy should be at 0 (it was already called on import)
 			expect(registerSpy).toHaveBeenCalledTimes(0);
 
-			// Global Amplify should keep original instance, not new instances
+			// Global Amplify will always reference last registered intance
 			const NewPushNotification = new PushNotification(null);
-			expect(Amplify.Pushnotification).not.toEqual(NewPushNotification);
+			expect(Amplify.Pushnotification).toEqual(NewPushNotification);
 
-			// Amplify.register should not have been called for the new instance
-			expect(registerSpy).toHaveBeenCalledTimes(0);
+			// Amplify.register should be called for the new instance
+			expect(registerSpy).toHaveBeenCalledTimes(1);
 			registerSpy.mockClear();
 		});
 	});
