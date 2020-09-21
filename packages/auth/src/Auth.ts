@@ -43,7 +43,6 @@ import {
 	Parser,
 	JS,
 	UniversalStorage,
-	browserOrNode,
 } from '@aws-amplify/core';
 import {
 	CookieStorage,
@@ -123,7 +122,7 @@ export class AuthClass {
 		});
 
 		// Register module each time on the client, but not on the server to prevent memory leaks
-		if (browserOrNode().isBrowser) {
+		if (JS.browserOrNode().isBrowser) {
 			Amplify.register(this);
 		}
 	}
@@ -1527,7 +1526,7 @@ export class AuthClass {
 		resolve: () => void,
 		reject: (reason?: any) => void
 	) {
-		const { isBrowser } = browserOrNode();
+		const { isBrowser } = JS.browserOrNode();
 
 		if (isBrowser) {
 			this.oAuthSignOutRedirectOrReject(reject);
@@ -1895,7 +1894,7 @@ export class AuthClass {
 			);
 
 			const currentUrl =
-				URL || (browserOrNode().isBrowser ? window.location.href : '');
+				URL || (JS.browserOrNode().isBrowser ? window.location.href : '');
 
 			const hasCodeOrError = !!(parse(currentUrl).query || '')
 				.split('&')
