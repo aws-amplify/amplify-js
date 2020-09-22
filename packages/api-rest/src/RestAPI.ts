@@ -41,7 +41,7 @@ export class RestAPIClass {
 		this._options = options;
 
 		// Register module each time on the client, but not on the server to prevent memory leaks
-		if (browserOrNode().isBrowser) {
+		if (!browserOrNode().isNode) {
 			Amplify.register(this);
 		}
 

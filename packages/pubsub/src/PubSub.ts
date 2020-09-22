@@ -75,7 +75,7 @@ export class PubSubClass {
 		this.subscribe = this.subscribe.bind(this);
 
 		// Register module each time on the client, but not on the server to prevent memory leaks
-		if (browserOrNode().isBrowser) {
+		if (!browserOrNode().isNode) {
 			Amplify.register(this);
 		}
 	}

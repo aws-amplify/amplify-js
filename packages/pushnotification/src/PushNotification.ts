@@ -62,7 +62,10 @@ export default class PushNotification {
 
 		this._notificationOpenedHandlers = [];
 
-		Amplify.register(this);
+		// Register module each time on the client, but not on the server to prevent memory leaks
+		if (!browserOrNode().isNode) {
+			Amplify.register(this);
+		}
 	}
 
 	getModuleName() {
