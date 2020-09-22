@@ -1,3 +1,14 @@
+jest.mock('@aws-amplify/core', () => ({
+	__esModule: true,
+	...jest.requireActual('@aws-amplify/core'),
+	browserOrNode() {
+		return {
+			isBrowser: true,
+			isNode: false,
+		};
+	},
+}));
+
 import { DeviceEventEmitter, Platform, NativeModules } from 'react-native';
 import Amplify from 'aws-amplify';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
