@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "qrcode": "^1.4.4",
-    "uuid": "^8.2.0", 
+    "uuid": "^8.2.0",
     "@aws-amplify/storage": "^3.3.4",
     "@aws-amplify/interactions": "^3.3.4",
     "@aws-amplify/auth": "^3.4.4",
