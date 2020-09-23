@@ -137,7 +137,6 @@ export class AuthClass {
 		const {
 			userPoolId,
 			userPoolWebClientId,
-			cookieStorage,
 			oauth,
 			region,
 			identityPoolId,
