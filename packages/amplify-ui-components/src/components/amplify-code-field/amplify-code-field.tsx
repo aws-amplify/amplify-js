@@ -40,6 +40,7 @@ export class AmplifyCodeField {
         value={this.value}
         inputProps={this.inputProps}
         disabled={this.disabled}
+        autocomplete="one-time-code"
       />
     );
   }
