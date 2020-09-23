@@ -21,7 +21,7 @@ import {
 	CognitoHostedUIIdentityProvider,
 } from '../types/Auth';
 
-import { ConsoleLogger as Logger, Hub, str2hex } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Hub, urlSafeEncode } from '@aws-amplify/core';
 
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
@@ -78,8 +78,15 @@ export default class OAuth {
 		customState?: string
 	) {
 		const generatedState = this._generateState(32);
+
+		/* encodeURIComponent is not URL safe, use urlSafeEncode instead. Cognito 
+		single-encodes/decodes url on first sign in and double-encodes/decodes url
+		when user already signed in. Using encodeURIComponent, Base32, Base64 add 
+		characters % or = which on further encoding becomes unsafe. '=' create issue 
+		for parsing query params. 
+		Refer: https://github.com/aws-amplify/amplify-js/issues/5218 */
 		const state = customState
-			? `${generatedState}-${str2hex(customState)}`
+			? `${generatedState}-${urlSafeEncode(customState)}`
 			: generatedState;
 
 		oAuthStorage.setState(state);
