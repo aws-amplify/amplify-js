@@ -24,6 +24,7 @@ import { AuthErrorStrings } from './common/AuthErrorStrings';
  * @deprecated use named import
  */
 export default Auth;
+export * from './utils';
 export {
 	Auth,
 	CognitoUser,

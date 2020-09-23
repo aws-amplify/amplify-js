@@ -1,5 +1,5 @@
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import Auth from '@aws-amplify/auth';
+import Auth, { getAuthStorage } from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
 import { ConsoleLogger as Logger, Hub, HubCapsule } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
@@ -258,8 +258,17 @@ class SubscriptionProcessor {
 				}
 
 				try {
-					// retrieving token info from OIDC
-					const federatedInfo = await Cache.getItem('federatedInfo');
+					// backwards compatibility
+					let federatedInfo = await Cache.getItem('federatedInfo');
+
+					if (!federatedInfo) {
+						const authConfig = Auth.configure();
+						const authStorage = getAuthStorage(authConfig);
+						federatedInfo = JSON.parse(
+							authStorage.getItem('aws-amplify-federatedInfo')
+						);
+					}
+
 					const { token } = federatedInfo;
 					const payload = token.split('.')[1];
 
@@ -267,6 +276,7 @@ class SubscriptionProcessor {
 						Buffer.from(payload, 'base64').toString('utf8')
 					);
 				} catch (err) {
+					logger.warn('error getting OIDC JWT', err);
 					// best effort to get oidc jwt
 				}
 

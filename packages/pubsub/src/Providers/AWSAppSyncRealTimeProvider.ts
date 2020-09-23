@@ -27,7 +27,7 @@ import {
 	NonRetryableError,
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
-import Auth from '@aws-amplify/auth';
+import Auth, { getAuthStorage } from '@aws-amplify/auth';
 import { AbstractPubSubProvider } from './PubSubProvider';
 import { CONTROL_MSG } from '../index';
 
@@ -780,7 +780,16 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	}
 
 	private async _awsRealTimeOPENIDHeader({ host }) {
-		const federatedInfo = await Cache.getItem('federatedInfo');
+		// backwards compatibility
+		let federatedInfo = await Cache.getItem('federatedInfo');
+
+		if (!federatedInfo) {
+			const authConfig = Auth.configure();
+			const authStorage = getAuthStorage(authConfig);
+			federatedInfo = JSON.parse(
+				authStorage.getItem('aws-amplify-federatedInfo')
+			);
+		}
 
 		if (!federatedInfo || !federatedInfo.token) {
 			throw new Error('No federated jwt');

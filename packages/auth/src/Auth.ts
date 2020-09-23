@@ -38,14 +38,11 @@ import {
 	ConsoleLogger as Logger,
 	Credentials,
 	Hub,
-	StorageHelper,
 	ICredentials,
 	Parser,
 	JS,
-	UniversalStorage,
 } from '@aws-amplify/core';
 import {
-	CookieStorage,
 	CognitoUserPool,
 	AuthenticationDetails,
 	ICognitoUserPoolData,
@@ -65,6 +62,7 @@ import {
 import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
 import { default as urlListener } from './urlListener';
+import { getAuthStorage } from './utils';
 import { AuthError, NoUserPoolError } from './Errors';
 import { AuthErrorTypes, CognitoHostedUIIdentityProvider } from './types/Auth';
 
@@ -150,21 +148,7 @@ export class AuthClass {
 			endpoint,
 		} = this._config;
 
-		if (!this._config.storage) {
-			// backward compatability
-			if (cookieStorage) this._storage = new CookieStorage(cookieStorage);
-			else {
-				this._storage = config.ssr
-					? new UniversalStorage()
-					: new StorageHelper().getStorage();
-			}
-		} else {
-			if (!this._isValidAuthStorage(this._config.storage)) {
-				logger.error('The storage in the Auth config is not valid!');
-				throw new Error('Empty storage object');
-			}
-			this._storage = this._config.storage;
-		}
+		this._storage = getAuthStorage(this._config);
 
 		this._storageSync = Promise.resolve();
 		if (typeof this._storage['sync'] === 'function') {
@@ -2052,17 +2036,6 @@ export class AuthClass {
 			user.setAuthenticationFlowType(authenticationFlowType);
 		}
 		return user;
-	}
-
-	private _isValidAuthStorage(obj) {
-		// We need to check if the obj has the functions of Storage
-		return (
-			!!obj &&
-			typeof obj.getItem === 'function' &&
-			typeof obj.setItem === 'function' &&
-			typeof obj.removeItem === 'function' &&
-			typeof obj.clear === 'function'
-		);
 	}
 
 	private noUserPoolErrorHandler(config: AuthOptions): AuthErrorTypes {

@@ -24,7 +24,7 @@ import {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import PubSub from '@aws-amplify/pubsub';
-import Auth from '@aws-amplify/auth';
+import Auth, { getAuthStorage } from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
 import { GraphQLOptions, GraphQLResult } from './types';
 import { RestClient } from '@aws-amplify/api-rest';
@@ -139,7 +139,16 @@ export class GraphQLAPIClass {
 				}
 				break;
 			case 'OPENID_CONNECT':
-				const federatedInfo = await this.Cache.getItem('federatedInfo');
+				// backwards compatibility
+				let federatedInfo = await Cache.getItem('federatedInfo');
+
+				if (!federatedInfo) {
+					const authConfig = Auth.configure();
+					const authStorage = getAuthStorage(authConfig);
+					federatedInfo = JSON.parse(
+						authStorage.getItem('aws-amplify-federatedInfo')
+					);
+				}
 
 				if (!federatedInfo || !federatedInfo.token) {
 					throw new Error('No federated jwt');
