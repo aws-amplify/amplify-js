@@ -665,6 +665,10 @@ datastore_auth_scenarios: &datastore_auth_scenarios
       owner-and-group-same-model-operations,
       dynamic-user-pool-groups-default,
       dynamic-user-pool-groups-owner-based-default,
+      private-auth-default,
+      private-auth-iam,
+      public-auth-default,
+      public-auth-iam,
     ]
 
 workflows:
