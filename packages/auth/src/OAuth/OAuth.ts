@@ -21,7 +21,7 @@ import {
 	CognitoHostedUIIdentityProvider,
 } from '../types/Auth';
 
-import { ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Hub, str2hex } from '@aws-amplify/core';
 
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
@@ -79,10 +79,10 @@ export default class OAuth {
 	) {
 		const generatedState = this._generateState(32);
 		const state = customState
-			? `${generatedState}-${customState}`
+			? `${generatedState}-${str2hex(customState)}`
 			: generatedState;
 
-		oAuthStorage.setState(encodeURIComponent(state));
+		oAuthStorage.setState(state);
 
 		const pkce_key = this._generateRandom(128);
 		oAuthStorage.setPKCE(pkce_key);
