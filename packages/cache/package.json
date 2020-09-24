@@ -8,7 +8,16 @@
   "react-native": {
     "./lib/index": "./lib-esm/reactnative.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/reactnative.ts",
+    "./src/index.ts",
+    "./lib/index.js",
+    "./lib/reactnative.js",
+    "./lib-esm/index.js",
+    "./lib-esm/reactnative.js",
+    "./dist/aws-amplify-cache.js",
+    "./dist/aws-amplify-cache.min.js"
+  ],
   "publishConfig": {
     "access": "public"
   },

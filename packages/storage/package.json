@@ -8,7 +8,13 @@
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/index.ts",
+    "./lib/index.js",
+    "./lib-esm/index.js",
+    "./dist/aws-amplify-storage.min.js",
+    "./dist/aws-amplify-storage.js"
+  ],
   "publishConfig": {
     "access": "public"
   },

@@ -8,7 +8,13 @@
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/Auth.ts",
+    "./lib/Auth.js",
+    "./lib-esm/Auth.js",
+    "./dist/aws-amplify-auth.js",
+    "./dist/aws-amplify-auth.min.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
