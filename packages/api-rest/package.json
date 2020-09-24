@@ -8,7 +8,13 @@
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/RestAPI.ts",
+    "./lib/RestAPI.js",
+    "./lib-esm/RestAPI.js",
+    "./dist/aws-amplify-api-rest.js",
+    "./dist/aws-amplify-api-rest.min.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
