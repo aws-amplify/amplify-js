@@ -8,7 +8,13 @@
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/PubSub.ts",
+    "./lib/PubSub.js",
+    "./lib-esm/PubSub.js",
+    "./dist/aws-amplify-pubsub.min.js",
+    "./dist/aws-amplify-pubsub.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
