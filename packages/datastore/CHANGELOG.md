@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.5.0...@aws-amplify/datastore@2.5.1) (2020-09-16)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+# [2.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.4.0...@aws-amplify/datastore@2.5.0) (2020-09-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** Allow subscribing and querying with partial auth ([#6458](https://github.com/aws-amplify/amplify-js/issues/6458)) ([6abbf50](https://github.com/aws-amplify/amplify-js/commit/6abbf5053978420ef008fc45968a54d0762943de))
+
+
+### Features
+
+* **@aws-amplify/datastore:** add query sorting ([#6785](https://github.com/aws-amplify/amplify-js/issues/6785)) ([d9c2f5e](https://github.com/aws-amplify/amplify-js/commit/d9c2f5efbd5ad5dd97e441d7f453f8358f615199))
+
+
+
+
+
+# [2.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.3.1...@aws-amplify/datastore@2.4.0) (2020-09-10)
+
+
+### Features
+
+* **@aws-amplify/datastore:** Add SSR support for DataStore ([#6726](https://github.com/aws-amplify/amplify-js/issues/6726)) ([e56aba6](https://github.com/aws-amplify/amplify-js/commit/e56aba642acc7eb3482f0e69454a530409d1b3ac))
+
+
+
+
+
 ## [2.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.3.0...@aws-amplify/datastore@2.3.1) (2020-09-03)
 
 **Note:** Version bump only for package @aws-amplify/datastore

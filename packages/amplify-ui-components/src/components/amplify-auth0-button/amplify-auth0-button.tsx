@@ -22,7 +22,7 @@ export class AmplifyAuth0Button {
 
   private handleLoad = () => {
     // @ts-ignore Property 'auth0' does not exist on type '{}'.
-    const { oauth = {} } = Auth.configure({});
+    const { oauth = {} } = Auth.configure();
     // @ts-ignore Property 'auth0' does not exist on type '{}'.
     const { config = oauth.auth0 } = this;
 

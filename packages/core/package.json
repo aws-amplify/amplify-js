@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "3.5.1",
+	"version": "3.5.4",
 	"description": "Core category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -61,7 +61,7 @@
 		"@aws-sdk/types": "1.0.0-gamma.6",
 		"@aws-sdk/util-hex-encoding": "1.0.0-gamma.6",
 		"@aws-sdk/util-user-agent-browser": "1.0.0-gamma.7",
-		"universal-cookie": "^4.0.3",
+		"universal-cookie": "^4.0.4",
 		"url": "^0.11.0",
 		"zen-observable-ts": "0.8.19"
 	},

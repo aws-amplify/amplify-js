@@ -103,6 +103,7 @@ export class AuthClass {
 	 */
 	constructor(config: AuthOptions) {
 		this.configure(config);
+		this.currentCredentials = this.currentCredentials.bind(this);
 		this.currentUserCredentials = this.currentUserCredentials.bind(this);
 
 		Hub.listen('auth', ({ payload }) => {
@@ -125,7 +126,7 @@ export class AuthClass {
 		return 'Auth';
 	}
 
-	configure(config) {
+	configure(config?) {
 		if (!config) return this._config || {};
 		logger.debug('configure Auth');
 		const conf = Object.assign(
@@ -146,6 +147,7 @@ export class AuthClass {
 			refreshHandlers,
 			identityPoolRegion,
 			clientMetadata,
+			endpoint,
 		} = this._config;
 
 		if (!this._config.storage) {
@@ -173,6 +175,7 @@ export class AuthClass {
 			const userPoolData: ICognitoUserPoolData = {
 				UserPoolId: userPoolId,
 				ClientId: userPoolWebClientId,
+				endpoint,
 			};
 			userPoolData.Storage = this._storage;
 
@@ -1345,7 +1348,6 @@ export class AuthClass {
 	 * @return - A promise resolves to be current user's credentials
 	 */
 	public async currentUserCredentials(): Promise<ICredentials> {
-		const that = this;
 		logger.debug('Getting current user credentials');
 
 		try {
