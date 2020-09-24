@@ -5,7 +5,13 @@
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
-	"sideEffects": false,
+	"sideEffects": [
+		"./src/Analytics.ts",
+		"./lib/Analytics.js",
+		"./lib-esm/Analytics.js",
+		"./dist/aws-amplify-analytics.js",
+		"./dist/aws-amplify-analytics.min.js"
+	],
 	"publishConfig": {
 		"access": "public"
 	},

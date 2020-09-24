@@ -8,7 +8,13 @@
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/GraphQLAPI.ts",
+    "./lib/GraphQLAPI.js",
+    "./lib-esm/GraphQLAPI.js",
+    "./dist/aws-amplify-api-graphql.js",
+    "./dist/aws-amplify-api-graphql.min.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
