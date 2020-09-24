@@ -11,7 +11,13 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"sideEffects": false,
+	"sideEffects": [
+		"./src/datastore/datastore.ts",
+		"./lib/datastore/datastore.js",
+		"./lib-esm/datastore/datastore.js",
+		"./dist/aws-amplify-datastore.min.js",
+		"./dist/aws-amplify-datastore.js"
+	],
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage",
 		"build-with-test": "npm test && npm run build",

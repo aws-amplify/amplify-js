@@ -8,7 +8,16 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"sideEffects": false,
+	"sideEffects": [
+		"./src/I18n/index.ts",
+		"./src/Credentials.ts",
+		"./lib/I18n/index.js",
+		"./lib/Credentials.js",
+		"./lib-esm/I18n/index.js",
+		"./lib-esm/Credentials.js",
+		"./dist/aws-amplify-core.min.js",
+		"./dist/aws-amplify-core.js"
+	],
 	"scripts": {
 		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
 		"build-with-test": "npm test && npm run build",
