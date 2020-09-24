@@ -4,11 +4,16 @@ import { AuthOptions } from '../types';
 
 const logger = new Logger('AuthStorageUtils');
 
+// keep reference to storage in memory so storage is only initialized once
+let storageRef;
 /**
  * @private
  * Internal use of Amplify only
  */
 export function getAuthStorage(config: AuthOptions) {
+	if (storageRef) {
+		return storageRef;
+	}
 	let storage;
 	if (!config.storage) {
 		// backwards compatibility
@@ -25,6 +30,7 @@ export function getAuthStorage(config: AuthOptions) {
 		}
 		storage = config.storage;
 	}
+	storageRef = storage;
 	return storage;
 }
 
