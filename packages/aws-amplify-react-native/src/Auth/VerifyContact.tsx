@@ -12,7 +12,8 @@
  */
 
 import React from 'react';
-import { View, Picker } from 'react-native';
+import { View } from 'react-native';
+import { Picker } from '@react-native-community/picker';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import {
 	AmplifyButton,

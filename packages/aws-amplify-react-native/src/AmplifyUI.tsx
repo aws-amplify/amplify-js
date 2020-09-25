@@ -15,7 +15,6 @@ import React, { Component, FC } from 'react';
 import {
 	Image,
 	Keyboard,
-	Picker,
 	Platform,
 	Text,
 	TextInput,
@@ -27,6 +26,7 @@ import {
 	TextInputProperties,
 	TouchableOpacityProps,
 } from 'react-native';
+import { Picker } from '@react-native-community/picker';
 import { I18n } from 'aws-amplify';
 import AmplifyTheme, {
 	AmplifyThemeType,
