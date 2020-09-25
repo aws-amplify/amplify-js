@@ -239,7 +239,7 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 	if (fieldDefinition !== undefined) {
 		const { type, isRequired, isArrayNullable, name, isArray } = fieldDefinition;
 
-		if (((!isArray && isRequired) || (isArray && isArrayNullable)) && (v === null || v === undefined)) {
+		if (((!isArray && isRequired) || (isArray && !isArrayNullable)) && (v === null || v === undefined)) {
 			throw new Error(`Field ${name} is required`);
 		}
 
@@ -252,7 +252,7 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 					errorTypeText = `${jsType} | null | undefined`;
 				}
 
-				if (!Array.isArray(v) && isArrayNullable) {
+				if (!Array.isArray(v) && !isArrayNullable) {
 					throw new Error(
 						`Field ${name} should be of type [${errorTypeText}], ${typeof v} received. ${v}`
 					);
