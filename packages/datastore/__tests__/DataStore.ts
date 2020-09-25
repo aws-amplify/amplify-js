@@ -319,7 +319,7 @@ describe('DataStore tests', () => {
 				'Field field1 should be of type string, number received. 1234'
 			);
 
-			expect((
+			expect(
 				new Model({
 					field1: 'someField',
 					metadata: new Metadata({
@@ -328,8 +328,8 @@ describe('DataStore tests', () => {
 						rewards: [],
 						nominations: [],
 					}),
-				})
-			).metadata.tags).toBeUndefined();
+				}).metadata.tags
+			).toBeUndefined();
 
 			expect(() => {
 				new Model({
@@ -355,9 +355,7 @@ describe('DataStore tests', () => {
 						nominations: null,
 					}),
 				});
-			}).toThrowError(
-				'Field nominations is required'
-			);
+			}).toThrowError('Field nominations is required');
 
 			expect(() => {
 				new Model({
@@ -396,9 +394,11 @@ describe('DataStore tests', () => {
 				Model.copyOf(<any>undefined, d => d);
 			}).toThrow('The source object is not a valid model');
 			expect(() => {
-				const source = new Model( {field1: 'something'});
-				Model.copyOf(source, d => d.field1 = <any>1234);
-			}).toThrow('Field field1 should be of type string, number received. 1234');
+				const source = new Model({ field1: 'something' });
+				Model.copyOf(source, d => (d.field1 = <any>1234));
+			}).toThrow(
+				'Field field1 should be of type string, number received. 1234'
+			);
 		});
 
 		test('Delete params', async () => {
@@ -741,6 +741,7 @@ function testSchema(): Schema {
 						isArray: true,
 						type: 'String',
 						isRequired: false,
+						isArrayNullable: true,
 						attributes: [],
 					},
 					rewards: {
@@ -748,7 +749,6 @@ function testSchema(): Schema {
 						isArray: true,
 						type: 'String',
 						isRequired: true,
-						isArrayNullable: true,
 						attributes: [],
 					},
 					penNames: {
@@ -756,6 +756,7 @@ function testSchema(): Schema {
 						isArray: true,
 						type: 'String',
 						isRequired: true,
+						isArrayNullable: true,
 						attributes: [],
 					},
 					nominations: {
@@ -763,7 +764,6 @@ function testSchema(): Schema {
 						isArray: true,
 						type: 'String',
 						isRequired: false,
-						isArrayNullable: true,
 						attributes: [],
 					}
 				},
