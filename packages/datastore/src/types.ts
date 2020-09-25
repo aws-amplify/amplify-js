@@ -159,7 +159,7 @@ type ModelField = {
 		| EnumFieldType;
 	isArray: boolean;
 	isRequired?: boolean;
-	isArrayRequired?: boolean;
+	isArrayNullable?: boolean;
 	association?: ModelAssociation;
 	attributes?: ModelAttributes[];
 };
