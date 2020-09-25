@@ -748,7 +748,7 @@ function testSchema(): Schema {
 						isArray: true,
 						type: 'String',
 						isRequired: true,
-						isArrayRequired: true,
+						isArrayNullable: true,
 						attributes: [],
 					},
 					penNames: {
@@ -763,7 +763,7 @@ function testSchema(): Schema {
 						isArray: true,
 						type: 'String',
 						isRequired: false,
-						isArrayRequired: true,
+						isArrayNullable: true,
 						attributes: [],
 					}
 				},
