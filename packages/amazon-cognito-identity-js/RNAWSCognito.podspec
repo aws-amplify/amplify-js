@@ -7,7 +7,8 @@ Pod::Spec.new do |s|
   s.name    = "RNAWSCognito"
   s.version = package['version']
   s.requires_arc = true
-  s.platforms = { :ios => "8.0" }
+  s.ios.deployment_target = '8.0'
+  s.osx.deployment_target = '10.14'
   s.license = { :file => 'LICENSE.txt' }
   s.homepage = "https://github.com/aws-amplify/amplify-js/tree/main/packages/amazon-cognito-identity-js"
   s.author = "Amazon"
