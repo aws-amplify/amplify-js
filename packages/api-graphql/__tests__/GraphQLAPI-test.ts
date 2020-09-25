@@ -381,7 +381,7 @@ describe('API test', () => {
 			spyonCache.mockClear();
 		});
 
-		test('happy-case-query-oidc with auth storage token', async () => {
+		test('happy-case-query-oidc with auth storage federated token', async () => {
 			const spyonCredentials = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
