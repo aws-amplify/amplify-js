@@ -24,7 +24,7 @@ import {
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import PubSub from '@aws-amplify/pubsub';
-import Auth, { getAuthStorage } from '@aws-amplify/auth';
+import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
 import { GraphQLOptions, GraphQLResult } from './types';
 import { RestClient } from '@aws-amplify/api-rest';
@@ -139,22 +139,20 @@ export class GraphQLAPIClass {
 				}
 				break;
 			case 'OPENID_CONNECT':
+				let token;
 				// backwards compatibility
-				let federatedInfo = await Cache.getItem('federatedInfo');
-
-				if (!federatedInfo) {
-					const authConfig = Auth.configure();
-					const authStorage = getAuthStorage(authConfig);
-					federatedInfo = JSON.parse(
-						authStorage.getItem('aws-amplify-federatedInfo')
-					);
+				const federatedInfo = await Cache.getItem('federatedInfo');
+				if (federatedInfo) {
+					token = federatedInfo.token;
+				} else {
+					const currentUser = await Auth.currentAuthenticatedUser();
+					token = currentUser.token;
 				}
-
-				if (!federatedInfo || !federatedInfo.token) {
+				if (!token) {
 					throw new Error('No federated jwt');
 				}
 				headers = {
-					Authorization: federatedInfo.token,
+					Authorization: token,
 				};
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':

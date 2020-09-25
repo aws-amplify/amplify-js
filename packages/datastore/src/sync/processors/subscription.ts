@@ -1,5 +1,5 @@
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import Auth, { getAuthStorage } from '@aws-amplify/auth';
+import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
 import { ConsoleLogger as Logger, Hub, HubCapsule } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
@@ -258,18 +258,16 @@ class SubscriptionProcessor {
 				}
 
 				try {
+					let token;
 					// backwards compatibility
-					let federatedInfo = await Cache.getItem('federatedInfo');
-
-					if (!federatedInfo) {
-						const authConfig = Auth.configure();
-						const authStorage = getAuthStorage(authConfig);
-						federatedInfo = JSON.parse(
-							authStorage.getItem('aws-amplify-federatedInfo')
-						);
+					const federatedInfo = await Cache.getItem('federatedInfo');
+					if (federatedInfo) {
+						token = federatedInfo.token;
+					} else {
+						const currentUser = await Auth.currentAuthenticatedUser();
+						token = currentUser.token;
 					}
 
-					const { token } = federatedInfo;
 					const payload = token.split('.')[1];
 
 					oidcTokenPayload = JSON.parse(
