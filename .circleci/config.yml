@@ -13,7 +13,7 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress/included:4.12.1
+      - image: cypress/included:5.2.0
       - image: verdaccio/verdaccio
     resource_class: large
 
@@ -82,14 +82,6 @@ commands:
           key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
       - publish_to_verdaccio
 
-  prepare_ui_test_env:
-    steps:
-      - attach_workspace:
-          at: /root
-      - restore_cache:
-          key: amplify-js-ui
-      - publish_to_verdaccio
-
   integ_test_js:
     parameters:
       test_name:
@@ -122,37 +114,6 @@ commands:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/screenshots
-
-  integ_test_ui:
-    parameters:
-      test_name:
-        type: string
-      framework:
-        type: string
-      category:
-        type: string
-      sample_name:
-        type: string
-      spec:
-        # optional - the script will use sample_name by default
-        type: string
-        default: ''
-    steps:
-      - run:
-          name: 'Install << parameters.test_name >> sample'
-          command: |
-            cd << parameters.framework >>/<< parameters.category >>/<< parameters.sample_name >>
-            echo "Current NPM registry: " $(yarn config get registry)
-            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
-      - run:
-          name: 'Run << parameters.test_name >> UI tests'
-          command: |
-            cd ~/amplify-js-samples-staging-ui
-            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >>' -n 3
-      - store_artifacts:
-          path: ~/amplify-js-samples-staging-ui/cypress/videos
-      - store_artifacts:
-          path: ~/amplify-js-samples-staging-ui/cypress/screenshots
 
   install_verdaccio:
     steps:
@@ -369,7 +330,7 @@ jobs:
         type: string
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/react/auth/with-authenticator-legacy
+    working_directory: ~/amplify-js-samples-staging/samples
     steps:
       - prepare_test_env
       - integ_test_js:
@@ -413,7 +374,7 @@ jobs:
         type: string
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/angular/auth/amplify-authenticator-legacy
+    working_directory: ~/amplify-js-samples-staging/samples
     steps:
       - prepare_test_env
       - integ_test_js:
@@ -423,13 +384,27 @@ jobs:
           sample_name: amplify-authenticator-legacy
           spec: authenticator
           browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Angular Authenticator'
+          framework: angular
+          category: auth
+          sample_name: amplify-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Angular Custom Authenticator'
+          framework: angular
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
+          browser: << parameters.browser >>
   integ_vue_auth:
     parameters:
       browser:
         type: string
     executor: js-test-executor
     <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging/samples/vue/auth/amplify-authenticator-legacy
+    working_directory: ~/amplify-js-samples-staging/samples
     steps:
       - prepare_test_env
       - integ_test_js:
@@ -438,6 +413,20 @@ jobs:
           category: auth
           sample_name: amplify-authenticator-legacy
           spec: authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Vue Authenticator'
+          framework: vue
+          category: auth
+          sample_name: amplify-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Vue Custom Authenticator'
+          framework: vue
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
           browser: << parameters.browser >>
   integ_react_predictions:
     parameters:
@@ -567,92 +556,6 @@ jobs:
           sample_name: amazon-cognito-identity-js
           spec: amazon-cognito-identity-js
           browser: << parameters.browser >>
-  integ_setup_ui:
-    executor: build-executor
-    working_directory: ~/
-    steps:
-      - run:
-          name: 'Clone Amplify JS Samples repo, install cypress, install react samples authenticator and link amplify packages'
-          command: |
-            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-            echo $SSH_HOST_PUBLIC_KEY >> ~/.ssh/known_hosts
-            git clone $AMPLIFY_JS_SAMPLES_STAGING_URL amplify-js-samples-staging-ui
-            cd amplify-js-samples-staging-ui
-            git checkout ui-components/master
-            yarn
-      - save_cache:
-          key: amplify-js-ui
-          paths:
-            - ~/.cache ## cache both yarn and Cypress
-      - persist_to_workspace:
-          root: /root
-          paths:
-            - amplify-js-samples-staging-ui
-  integ_react_auth_ui:
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging-ui/samples
-    steps:
-      - prepare_ui_test_env
-      - integ_test_ui:
-          test_name: 'React Authenticator'
-          framework: react
-          category: auth
-          sample_name: amplify-authenticator
-      - integ_test_ui:
-          test_name: 'React Typescript Authenticator'
-          framework: react
-          category: auth
-          sample_name: typescript-amplify-authenticator
-          spec: amplify-authenticator
-      - integ_test_ui:
-          test_name: 'React Custom Authenticator'
-          framework: react
-          category: auth
-          sample_name: amplify-authenticator
-          spec: custom-authenticator
-      - integ_test_ui:
-          test_name: 'React Custom Authenticator'
-          framework: react
-          category: auth
-          sample_name: with-authenticator
-          spec: amplify-authenticator
-
-  integ_angular_auth_ui:
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging-ui/samples
-    steps:
-      - prepare_ui_test_env
-      - integ_test_ui:
-          test_name: 'Angular Authenticator'
-          framework: angular
-          category: auth
-          sample_name: amplify-authenticator
-      - integ_test_ui:
-          test_name: 'Angular Custom Authenticator'
-          framework: angular
-          category: auth
-          sample_name: amplify-authenticator
-          spec: custom-authenticator
-
-  integ_vue_auth_ui:
-    executor: js-test-executor
-    <<: *test_env_vars
-    working_directory: ~/amplify-js-samples-staging-ui/samples
-    steps:
-      - prepare_ui_test_env
-      - integ_test_ui:
-          test_name: 'Vue Authenticator'
-          framework: vue
-          category: auth
-          sample_name: amplify-authenticator
-      - integ_test_ui:
-          test_name: 'Vue Custom Authenticator'
-          framework: vue
-          category: auth
-          sample_name: amplify-authenticator
-          spec: custom-authenticator
 
   integ_rn_ios_storage:
     executor: macos-executor
@@ -674,6 +577,30 @@ jobs:
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
       - integ_test_rn_android
+
+  integ_datastore_auth:
+    parameters:
+      scenario:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore Auth - Chrome'
+          framework: react
+          category: datastore
+          sample_name: << parameters.scenario >>
+          spec: << parameters.scenario >>
+          browser: chrome
+      - integ_test_js:
+          test_name: 'DataStore Auth - Firefox'
+          framework: react
+          category: datastore
+          sample_name: << parameters.scenario >>
+          spec: << parameters.scenario >>
+          browser: firefox
 
   deploy:
     executor: macos-executor
@@ -728,14 +655,27 @@ releasable_branches: &releasable_branches
 test_browsers: &test_browsers
   browser: [chrome, firefox]
 
+datastore_auth_scenarios: &datastore_auth_scenarios
+  scenario: [
+      owner-based-default, # TODO: Add `owner-based-operations` when tests pass
+      static-user-pool-groups-default,
+      static-user-pool-groups-operations,
+      owner-and-group-different-models-default,
+      owner-and-group-same-model-default,
+      owner-and-group-same-model-operations,
+      dynamic-user-pool-groups-default,
+      dynamic-user-pool-groups-owner-based-default,
+      private-auth-default,
+      private-auth-iam,
+      public-auth-default,
+      public-auth-iam,
+    ]
+
 workflows:
   build_test_deploy:
     jobs:
       - build
       - integ_setup:
-          filters:
-            <<: *releasable_branches
-      - integ_setup_ui:
           filters:
             <<: *releasable_branches
       - unit_test:
@@ -855,24 +795,15 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      - integ_react_auth_ui:
+      - integ_datastore_auth:
           requires:
-            - integ_setup_ui
+            - integ_setup
             - build
           filters:
             <<: *releasable_branches
-      - integ_angular_auth_ui:
-          requires:
-            - integ_setup_ui
-            - build
-          filters:
-            <<: *releasable_branches
-      - integ_vue_auth_ui:
-          requires:
-            - integ_setup_ui
-            - build
-          filters:
-            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *datastore_auth_scenarios
       - deploy:
           filters:
             <<: *releasable_branches
@@ -889,9 +820,6 @@ workflows:
             - integ_react_auth
             - integ_angular_auth
             - integ_vue_auth
-            - integ_react_auth_ui
-            - integ_angular_auth_ui
-            - integ_vue_auth_ui
             - integ_rn_ios_storage
             - integ_rn_ios_push_notifications
             - integ_rn_android_storage
