@@ -1,10 +1,10 @@
-import { browserOrNode } from '@aws-amplify/core';
+import { browserOrNode, isWebWorker } from '@aws-amplify/core';
 import { Adapter } from '..';
 
 const getDefaultAdapter: () => Adapter = () => {
 	const { isBrowser } = browserOrNode();
 
-	if (isBrowser && window.indexedDB) {
+	if ((isBrowser && window.indexedDB) || (isWebWorker() && self.indexedDB)) {
 		return require('../indexeddb').default;
 	}
 
