@@ -50,6 +50,7 @@ import {
 	SYNC,
 	USER,
 } from '../util';
+import { isNullOrUndefined } from 'util';
 
 setAutoFreeze(true);
 
@@ -236,9 +237,9 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 	const fieldDefinition = modelDefinition.fields[k];
 
 	if (fieldDefinition !== undefined) {
-		const { type, isRequired, name, isArray } = fieldDefinition;
+		const { type, isRequired, isArrayNullable, name, isArray } = fieldDefinition;
 
-		if (isRequired && (v === null || v === undefined)) {
+		if (((!isArray && isRequired) || (isArray && !isArrayNullable)) && (v === null || v === undefined)) {
 			throw new Error(`Field ${name} is required`);
 		}
 
@@ -246,17 +247,25 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 			const jsType = GraphQLScalarType.getJSType(type);
 
 			if (isArray) {
-				if (!Array.isArray(v)) {
+				let errorTypeText: string = jsType;
+				if (!isRequired) {
+					errorTypeText = `${jsType} | null | undefined`;
+				}
+
+				if (!Array.isArray(v) && !isArrayNullable) {
 					throw new Error(
-						`Field ${name} should be of type ${jsType}[], ${typeof v} received. ${v}`
+						`Field ${name} should be of type [${errorTypeText}], ${typeof v} received. ${v}`
 					);
 				}
 
-				if ((<[]>v).some(e => typeof e !== jsType)) {
+				if (
+					!isNullOrUndefined(v) &&
+					(<[]>v).some(e => typeof e !== jsType || (isNullOrUndefined(e) && isRequired))
+				) {
 					const elemTypes = (<[]>v).map(e => typeof e).join(',');
 
 					throw new Error(
-						`All elements in the ${name} array should be of type ${jsType}, [${elemTypes}] received. ${v}`
+						`All elements in the ${name} array should be of type ${errorTypeText}, [${elemTypes}] received. ${v}`
 					);
 				}
 			} else if (typeof v !== jsType && v !== null) {
