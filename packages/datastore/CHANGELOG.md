@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.5.1...@aws-amplify/datastore@2.5.2) (2020-09-25)
+
+
+### Bug Fixes
+
+* Add files with Amplify.register to sideEffects array ([#6867](https://github.com/aws-amplify/amplify-js/issues/6867)) ([58ddbf8](https://github.com/aws-amplify/amplify-js/commit/58ddbf8811e44695d97b6ab8be8f7cd2a2242921))
+* **@aws-amplify/datastore:** use runExclusive when enqueuing ([#6828](https://github.com/aws-amplify/amplify-js/issues/6828)) ([26ce5df](https://github.com/aws-amplify/amplify-js/commit/26ce5dfb0270009fc10f003f5627046ddaf5ae4e))
+
+
+
+
+
 ## [2.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.5.0...@aws-amplify/datastore@2.5.1) (2020-09-16)
 
 **Note:** Version bump only for package @aws-amplify/datastore
