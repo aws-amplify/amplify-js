@@ -110,7 +110,7 @@ commands:
           command: |
             cd ~/amplify-js-samples-staging
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> dev' -n 3
-       - run:
+      - run:
           name: 'Run cypress tests for << parameters.test_name >> sample on prod'
           command: |
             cd ~/amplify-js-samples-staging
