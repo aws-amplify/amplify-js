@@ -43,6 +43,7 @@ import {
 	Parser,
 	JS,
 	UniversalStorage,
+	urlSafeDecode,
 } from '@aws-amplify/core';
 import {
 	CookieStorage,
@@ -1980,7 +1981,7 @@ export class AuthClass {
 
 						dispatchAuthEvent(
 							'customOAuthState',
-							customState,
+							urlSafeDecode(customState),
 							`State for user ${currentUser.getUsername()}`
 						);
 					}
