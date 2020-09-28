@@ -49,8 +49,8 @@ import {
 	STORAGE,
 	SYNC,
 	USER,
+	isNullOrUndefined,
 } from '../util';
-import { isNullOrUndefined } from 'util';
 
 setAutoFreeze(true);
 
@@ -237,9 +237,18 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 	const fieldDefinition = modelDefinition.fields[k];
 
 	if (fieldDefinition !== undefined) {
-		const { type, isRequired, isArrayNullable, name, isArray } = fieldDefinition;
+		const {
+			type,
+			isRequired,
+			isArrayNullable,
+			name,
+			isArray,
+		} = fieldDefinition;
 
-		if (((!isArray && isRequired) || (isArray && !isArrayNullable)) && (v === null || v === undefined)) {
+		if (
+			((!isArray && isRequired) || (isArray && !isArrayNullable)) &&
+			(v === null || v === undefined)
+		) {
 			throw new Error(`Field ${name} is required`);
 		}
 
@@ -260,7 +269,9 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 
 				if (
 					!isNullOrUndefined(v) &&
-					(<[]>v).some(e => typeof e !== jsType || (isNullOrUndefined(e) && isRequired))
+					(<[]>v).some(
+						e => typeof e !== jsType || (isNullOrUndefined(e) && isRequired)
+					)
 				) {
 					const elemTypes = (<[]>v).map(e => typeof e).join(',');
 
