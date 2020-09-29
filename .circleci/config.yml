@@ -829,6 +829,7 @@ workflows:
             - integ_rn_ios_storage
             - integ_rn_ios_push_notifications
             - integ_rn_android_storage
+            - integ_datastore_auth
       - post_release:
           filters:
             branches:
