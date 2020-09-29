@@ -26,6 +26,10 @@ export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	}
 };
 
+export const isNullOrUndefined = (val: any): boolean => {
+	return typeof val === 'undefined' || val === undefined || val === null;
+};
+
 export const validatePredicate = <T extends PersistentModel>(
 	model: T,
 	groupType: keyof PredicateGroups<T>,
