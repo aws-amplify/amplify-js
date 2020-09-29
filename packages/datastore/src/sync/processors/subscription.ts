@@ -258,15 +258,25 @@ class SubscriptionProcessor {
 				}
 
 				try {
-					// retrieving token info from OIDC
+					let token;
+					// backwards compatibility
 					const federatedInfo = await Cache.getItem('federatedInfo');
-					const { token } = federatedInfo;
+					if (federatedInfo) {
+						token = federatedInfo.token;
+					} else {
+						const currentUser = await Auth.currentAuthenticatedUser();
+						if (currentUser) {
+							token = currentUser.token;
+						}
+					}
+
 					const payload = token.split('.')[1];
 
 					oidcTokenPayload = JSON.parse(
 						Buffer.from(payload, 'base64').toString('utf8')
 					);
 				} catch (err) {
+					logger.warn('error getting OIDC JWT', err);
 					// best effort to get oidc jwt
 				}
 

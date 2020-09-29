@@ -1251,9 +1251,15 @@ export class AuthClass {
 		}
 
 		try {
-			federatedUser = JSON.parse(
+			const federatedInfo = JSON.parse(
 				this._storage.getItem('aws-amplify-federatedInfo')
-			).user;
+			);
+			if (federatedInfo) {
+				federatedUser = {
+					...federatedInfo.user,
+					token: federatedInfo.token,
+				};
+			}
 		} catch (e) {
 			logger.debug('cannot load federated user from auth storage');
 		}
