@@ -787,7 +787,9 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			token = federatedInfo.token;
 		} else {
 			const currentUser = await Auth.currentAuthenticatedUser();
-			token = currentUser.token;
+			if (currentUser) {
+				token = currentUser.token;
+			}
 		}
 		if (!token) {
 			throw new Error('No federated jwt');

@@ -265,7 +265,9 @@ class SubscriptionProcessor {
 						token = federatedInfo.token;
 					} else {
 						const currentUser = await Auth.currentAuthenticatedUser();
-						token = currentUser.token;
+						if (currentUser) {
+							token = currentUser.token;
+						}
 					}
 
 					const payload = token.split('.')[1];
