@@ -270,11 +270,12 @@ class SubscriptionProcessor {
 						}
 					}
 
-					const payload = token.split('.')[1];
-
-					oidcTokenPayload = JSON.parse(
-						Buffer.from(payload, 'base64').toString('utf8')
-					);
+					if (token) {
+						const payload = token.split('.')[1];
+						oidcTokenPayload = JSON.parse(
+							Buffer.from(payload, 'base64').toString('utf8')
+						);
+					}
 				} catch (err) {
 					logger.warn('error getting OIDC JWT', err);
 					// best effort to get oidc jwt
