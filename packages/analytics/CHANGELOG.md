@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.3.4...@aws-amplify/analytics@3.3.5) (2020-09-25)
+
+
+### Bug Fixes
+
+* Add files with Amplify.register to sideEffects array ([#6867](https://github.com/aws-amplify/amplify-js/issues/6867)) ([58ddbf8](https://github.com/aws-amplify/amplify-js/commit/58ddbf8811e44695d97b6ab8be8f7cd2a2242921))
+
+
+
+
+
 ## [3.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.3.3...@aws-amplify/analytics@3.3.4) (2020-09-16)
 
 **Note:** Version bump only for package @aws-amplify/analytics
