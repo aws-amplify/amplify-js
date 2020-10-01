@@ -277,7 +277,7 @@ class SubscriptionProcessor {
 						);
 					}
 				} catch (err) {
-					logger.warn('error getting OIDC JWT', err);
+					logger.debug('error getting OIDC JWT', err);
 					// best effort to get oidc jwt
 				}
 
