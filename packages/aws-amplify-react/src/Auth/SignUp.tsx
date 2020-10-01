@@ -14,9 +14,9 @@
 import * as React from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import {
 	FormSection,
 	SectionHeader,
@@ -25,7 +25,6 @@ import {
 	FormField,
 	Input,
 	InputLabel,
-	SelectInput,
 	Button,
 	Link,
 	SectionFooterPrimaryContent,
@@ -34,14 +33,14 @@ import {
 
 import { auth } from '../Amplify-UI/data-test-attributes';
 
-import countryDialCodes from './common/country-dial-codes';
-import signUpWithUsernameFields, {
+import { countryDialCodes } from './common/country-dial-codes';
+import {
+	signUpWithUsernameFields,
 	signUpWithEmailFields,
 	signUpWithPhoneNumberFields,
+	ISignUpField,
 } from './common/default-sign-up-fields';
 import { UsernameAttributes } from './common/types';
-import { ISignUpField } from './common/default-sign-up-fields';
-import { valid } from 'semver';
 import { PhoneField } from './PhoneField';
 
 const logger = new Logger('SignUp');
@@ -58,13 +57,14 @@ export interface ISignUpProps extends IAuthPieceProps {
 	signUpConfig?: ISignUpConfig;
 }
 
-export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
+export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 	public defaultSignUpFields: ISignUpField[];
 	public header: string;
 	public signUpFields: ISignUpField[];
 
 	constructor(props: ISignUpProps) {
 		super(props);
+		this.state = { requestPending: false };
 
 		this._validAuthStates = ['signUp'];
 		this.signUp = this.signUp.bind(this);
@@ -117,7 +117,6 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 			this.props.signUpConfig.hiddenDefaults.length > 0
 		) {
 			this.defaultSignUpFields = this.defaultSignUpFields.filter(d => {
-				// @ts-ignore
 				return !this.props.signUpConfig.hiddenDefaults.includes(d.key);
 			});
 		}
@@ -128,7 +127,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 				!this.props.signUpConfig.hideAllDefaults
 			) {
 				// see if fields passed to component should override defaults
-				this.defaultSignUpFields.forEach((f, i) => {
+				this.defaultSignUpFields.forEach(f => {
 					const matchKey = this.signUpFields.findIndex(d => {
 						return d.key === f.key;
 					});
@@ -189,10 +188,9 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 	getDefaultDialCode() {
 		return this.props.signUpConfig &&
 			this.props.signUpConfig.defaultCountryCode &&
-			// @ts-ignore
 			countryDialCodes.indexOf(
 				`+${this.props.signUpConfig.defaultCountryCode}`
-			) !== '-1'
+			) !== -1
 			? `+${this.props.signUpConfig.defaultCountryCode}`
 			: '+1';
 	}
@@ -205,12 +203,14 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 		);
 	}
 
-	signUp() {
+	async signUp() {
+		this.setState({ requestPending: true });
 		if (!this.inputs.dial_code) {
 			this.inputs.dial_code = this.getDefaultDialCode();
 		}
 		const validation = this.validate();
 		if (validation && validation.length > 0) {
+			this.setState({ requestPending: false });
 			return this.error(
 				`The following fields need to be filled out: ${validation.join(', ')}`
 			);
@@ -232,7 +232,6 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 
 		inputKeys.forEach((key, index) => {
 			if (
-				// @ts-ignore
 				!['username', 'password', 'checkedValue', 'dial_code'].includes(key)
 			) {
 				if (
@@ -266,15 +265,18 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 				`Couldn't find the label: ${this.getUsernameLabel()}, in sign up fields according to usernameAttributes!`
 			);
 		}
-		Auth.signUp(signup_info)
-			.then(data => {
-				// @ts-ignore
-				this.changeState('confirmSignUp', data.user.username);
-			})
-			.catch(err => this.error(err));
+		try {
+			const data = await Auth.signUp(signup_info);
+			// @ts-ignore
+			this.changeState('confirmSignUp', data.user.username);
+		} catch (err) {
+			this.error(err);
+		} finally {
+			this.setState({ requestPending: false });
+		}
 	}
 
-	showComponent(theme) {
+	showComponent(theme): React.ReactNode {
 		const { hide } = this.props;
 		if (hide && hide.includes(SignUp)) {
 			return null;
@@ -301,11 +303,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 								)}
 								<Input
 									autoFocus={
-										this.signUpFields.findIndex(f => {
-											return f.key === field.key;
-										}) === 0
-											? true
-											: false
+										this.signUpFields.findIndex(f => f.key === field.key) === 0
 									}
 									placeholder={I18n.get(field.placeholder)}
 									theme={theme}
@@ -332,6 +330,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 				<SectionFooter theme={theme} data-test={auth.signUp.footerSection}>
 					<SectionFooterPrimaryContent theme={theme}>
 						<Button
+							disabled={this.state.requestPending}
 							onClick={this.signUp}
 							theme={theme}
 							data-test={auth.signUp.createAccountButton}
@@ -354,3 +353,8 @@ export default class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default SignUp;

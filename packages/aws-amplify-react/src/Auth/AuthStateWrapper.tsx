@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Component } from 'react';
-import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
@@ -20,10 +19,10 @@ export interface IAuthStateWrapperState {
 	error?: any;
 }
 
-export default class AuthStateWrapper extends Component<
+export class AuthStateWrapper extends React.Component<
 	IAuthStateWrapperProps,
 	IAuthStateWrapperState
-> {
+> {	
 	constructor(props) {
 		super(props);
 
@@ -111,3 +110,8 @@ export default class AuthStateWrapper extends Component<
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AuthStateWrapper;

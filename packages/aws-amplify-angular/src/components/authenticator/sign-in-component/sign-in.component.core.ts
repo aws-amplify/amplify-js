@@ -106,9 +106,7 @@ export class SignInComponentCore implements OnInit {
 	signInUsername = '';
 	protected logger: any;
 
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		this.logger = this.amplifyService.logger('SignInComponent');
 		this.onUsernameFieldChanged = this.onUsernameFieldChanged.bind(this);
 	}
@@ -117,6 +115,11 @@ export class SignInComponentCore implements OnInit {
 	set data(data: any) {
 		this.hide = data.hide ? data.hide : this.hide;
 		this._usernameAttributes = data.usernameAttributes;
+		this._authState = data.authState;
+		this._show = includes(
+			['signIn', 'signedOut', 'signedUp'],
+			data.authState.state
+		);
 	}
 
 	@Input() hide: string[] = [];

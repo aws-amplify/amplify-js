@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js/core';
 import TypedArrays from 'crypto-js/lib-typedarrays'; // necessary for crypto js
 import Base64 from 'crypto-js/enc-base64';
@@ -69,6 +69,9 @@ import StorageHelper from './StorageHelper';
  * @param {CognitoUserSession} session The new session.
  * @param {bool=} userConfirmationNecessary User must be confirmed.
  */
+
+const isBrowser = typeof navigator !== 'undefined';
+const userAgent = isBrowser ? navigator.userAgent : 'nodejs';
 
 /** @class */
 export default class CognitoUser {
@@ -154,11 +157,16 @@ export default class CognitoUser {
 		const authParameters = authDetails.getAuthParameters();
 		authParameters.USERNAME = this.username;
 
+		const clientMetaData =
+			Object.keys(authDetails.getValidationData()).length !== 0
+				? authDetails.getValidationData()
+				: authDetails.getClientMetadata();
+
 		const jsonReq = {
 			AuthFlow: 'CUSTOM_AUTH',
 			ClientId: this.pool.getClientId(),
 			AuthParameters: authParameters,
-			ClientMetadata: authDetails.getValidationData(),
+			ClientMetadata: clientMetaData,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -256,11 +264,16 @@ export default class CognitoUser {
 				authParameters.CHALLENGE_NAME = 'SRP_A';
 			}
 
+			const clientMetaData =
+				Object.keys(authDetails.getValidationData()).length !== 0
+					? authDetails.getValidationData()
+					: authDetails.getClientMetadata();
+
 			const jsonReq = {
 				AuthFlow: this.authenticationFlowType,
 				ClientId: this.pool.getClientId(),
 				AuthParameters: authParameters,
-				ClientMetadata: authDetails.getValidationData(),
+				ClientMetadata: clientMetaData,
 			};
 			if (this.getUserContextData(this.username)) {
 				jsonReq.UserContextData = this.getUserContextData(this.username);
@@ -340,6 +353,7 @@ export default class CognitoUser {
 							ClientId: this.pool.getClientId(),
 							ChallengeResponses: challengeResponses,
 							Session: data.Session,
+							ClientMetadata: clientMetaData,
 						};
 						if (this.getUserContextData()) {
 							jsonReqResp.UserContextData = this.getUserContextData();
@@ -395,11 +409,16 @@ export default class CognitoUser {
 			authParameters.DEVICE_KEY = this.deviceKey;
 		}
 
+		const clientMetaData =
+			Object.keys(authDetails.getValidationData()).length !== 0
+				? authDetails.getValidationData()
+				: authDetails.getClientMetadata();
+
 		const jsonReq = {
 			AuthFlow: 'USER_PASSWORD_AUTH',
 			ClientId: this.pool.getClientId(),
 			AuthParameters: authParameters,
-			ClientMetadata: authDetails.getValidationData(),
+			ClientMetadata: clientMetaData,
 		};
 		if (this.getUserContextData(this.username)) {
 			jsonReq.UserContextData = this.getUserContextData(this.username);
@@ -528,7 +547,7 @@ export default class CognitoUser {
 						DeviceKey: newDeviceMetadata.DeviceKey,
 						AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 						DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
-						DeviceName: navigator.userAgent,
+						DeviceName: userAgent,
 					},
 					(errConfirm, dataConfirm) => {
 						if (errConfirm) {
@@ -565,9 +584,15 @@ export default class CognitoUser {
 	 * @param {customChallenge} callback.customChallenge Custom challenge
 	 *         response required to continue.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	completeNewPasswordChallenge(newPassword, requiredAttributeData, callback) {
+	completeNewPasswordChallenge(
+		newPassword,
+		requiredAttributeData,
+		callback,
+		clientMetadata
+	) {
 		if (!newPassword) {
 			return callback.onFailure(new Error('New password is required.'));
 		}
@@ -591,6 +616,7 @@ export default class CognitoUser {
 			ClientId: this.pool.getClientId(),
 			ChallengeResponses: finalUserAttributes,
 			Session: this.Session,
+			ClientMetadata: clientMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -620,10 +646,11 @@ export default class CognitoUser {
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 * @private
 	 */
-	getDeviceResponse(callback) {
+	getDeviceResponse(callback, clientMetadata) {
 		const authenticationHelper = new AuthenticationHelper(this.deviceGroupKey);
 		const dateHelper = new DateHelper();
 
@@ -643,6 +670,7 @@ export default class CognitoUser {
 				ChallengeName: 'DEVICE_SRP_AUTH',
 				ClientId: this.pool.getClientId(),
 				ChallengeResponses: authParameters,
+				ClientMetadata: clientMetadata,
 			};
 			if (this.getUserContextData()) {
 				jsonReq.UserContextData = this.getUserContextData();
@@ -731,14 +759,21 @@ export default class CognitoUser {
 	 * @param {string} confirmationCode Code entered by user.
 	 * @param {bool} forceAliasCreation Allow migrating from an existing email / phone number.
 	 * @param {nodeCallback<string>} callback Called on success or error.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	confirmRegistration(confirmationCode, forceAliasCreation, callback) {
+	confirmRegistration(
+		confirmationCode,
+		forceAliasCreation,
+		callback,
+		clientMetadata
+	) {
 		const jsonReq = {
 			ClientId: this.pool.getClientId(),
 			ConfirmationCode: confirmationCode,
 			Username: this.username,
 			ForceAliasCreation: forceAliasCreation,
+			ClientMetadata: clientMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -759,9 +794,10 @@ export default class CognitoUser {
 	 * @param {customChallenge} callback.customChallenge
 	 *    Custom challenge response required to continue.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	sendCustomChallengeAnswer(answerChallenge, callback) {
+	sendCustomChallengeAnswer(answerChallenge, callback, clientMetadata) {
 		const challengeResponses = {};
 		challengeResponses.USERNAME = this.username;
 		challengeResponses.ANSWER = answerChallenge;
@@ -779,6 +815,7 @@ export default class CognitoUser {
 			ChallengeResponses: challengeResponses,
 			ClientId: this.pool.getClientId(),
 			Session: this.Session,
+			ClientMetadata: clientMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -803,9 +840,10 @@ export default class CognitoUser {
 	 * @param {string} mfaType The mfa we are replying to.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {authSuccess} callback.onSuccess Called on success with the new session.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	sendMFACode(confirmationCode, callback, mfaType) {
+	sendMFACode(confirmationCode, callback, mfaType, clientMetadata) {
 		const challengeResponses = {};
 		challengeResponses.USERNAME = this.username;
 		challengeResponses.SMS_MFA_CODE = confirmationCode;
@@ -823,6 +861,7 @@ export default class CognitoUser {
 			ChallengeResponses: challengeResponses,
 			ClientId: this.pool.getClientId(),
 			Session: this.Session,
+			ClientMetadata: clientMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -890,7 +929,7 @@ export default class CognitoUser {
 									.getAccessToken()
 									.getJwtToken(),
 								DeviceSecretVerifierConfig: deviceSecretVerifierConfig,
-								DeviceName: navigator.userAgent,
+								DeviceName: userAgent,
 							},
 							(errConfirm, dataConfirm) => {
 								if (errConfirm) {
@@ -922,9 +961,10 @@ export default class CognitoUser {
 	 * @param {string} oldUserPassword The current password.
 	 * @param {string} newUserPassword The requested new password.
 	 * @param {nodeCallback<string>} callback Called on success or error.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	changePassword(oldUserPassword, newUserPassword, callback) {
+	changePassword(oldUserPassword, newUserPassword, callback, clientMetadata) {
 		if (!(this.signInUserSession != null && this.signInUserSession.isValid())) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -935,6 +975,7 @@ export default class CognitoUser {
 				PreviousPassword: oldUserPassword,
 				ProposedPassword: newUserPassword,
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+				ClientMetadata: clientMetadata,
 			},
 			err => {
 				if (err) {
@@ -1041,9 +1082,10 @@ export default class CognitoUser {
 	/**
 	 * This is used by an authenticated user to delete itself
 	 * @param {nodeCallback<string>} callback Called on success or error.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	deleteUser(callback) {
+	deleteUser(callback, clientMetadata) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -1052,6 +1094,7 @@ export default class CognitoUser {
 			'DeleteUser',
 			{
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+				ClientMetadata: clientMetadata,
 			},
 			err => {
 				if (err) {
@@ -1071,9 +1114,10 @@ export default class CognitoUser {
 	 * This is used by an authenticated user to change a list of attributes
 	 * @param {AttributeArg[]} attributes A list of the new user attributes.
 	 * @param {nodeCallback<string>} callback Called on success or error.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	updateAttributes(attributes, callback) {
+	updateAttributes(attributes, callback, clientMetadata) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback(new Error('User is not authenticated'), null);
 		}
@@ -1083,12 +1127,17 @@ export default class CognitoUser {
 			{
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 				UserAttributes: attributes,
+				ClientMetadata: clientMetadata,
 			},
 			err => {
 				if (err) {
 					return callback(err, null);
 				}
-				return callback(null, 'SUCCESS');
+
+				// update cached user
+				return this.getUserData(() => callback(null, 'SUCCESS'), {
+					bypassCache: true,
+				});
 			}
 		);
 		return undefined;
@@ -1158,8 +1207,35 @@ export default class CognitoUser {
 	}
 
 	/**
+	 * PRIVATE ONLY: This is an internal only method and should not
+	 * be directly called by the consumers.
+	 */
+	createGetUserRequest() {
+		return this.client.promisifyRequest('GetUser', {
+			AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+		});
+	}
+
+	/**
+	 * PRIVATE ONLY: This is an internal only method and should not
+	 * be directly called by the consumers.
+	 */
+	refreshSessionIfPossible() {
+		// best effort, if not possible
+		return new Promise(resolve => {
+			const refresh = this.signInUserSession.getRefreshToken();
+			if (refresh && refresh.getToken()) {
+				this.refreshSession(refresh, resolve);
+			} else {
+				resolve();
+			}
+		});
+	}
+
+	/**
 	 * This is used by an authenticated users to get the userData
 	 * @param {nodeCallback<UserData>} callback Called on success or error.
+	 * @param {GetUserDataOptions} params
 	 * @returns {void}
 	 */
 	getUserData(callback, params) {
@@ -1168,44 +1244,68 @@ export default class CognitoUser {
 			return callback(new Error('User is not authenticated'), null);
 		}
 
-		const bypassCache = params ? params.bypassCache : false;
+		const userData = this.getUserDataFromCache();
 
-		const userData = this.storage.getItem(this.userDataKey);
-		// get the cached user data
-
-		if (!userData || bypassCache) {
-			this.client.request(
-				'GetUser',
-				{
-					AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
-				},
-				(err, latestUserData) => {
-					if (err) {
-						return callback(err, null);
-					}
-					this.cacheUserData(latestUserData);
-					const refresh = this.signInUserSession.getRefreshToken();
-					if (refresh && refresh.getToken()) {
-						this.refreshSession(refresh, (refreshError, data) => {
-							if (refreshError) {
-								return callback(refreshError, null);
-							}
-							return callback(null, latestUserData);
-						});
-					} else {
-						return callback(null, latestUserData);
-					}
-				}
-			);
-		} else {
-			try {
-				return callback(null, JSON.parse(userData));
-			} catch (err) {
-				this.clearCachedUserData();
-				return callback(err, null);
-			}
+		if (!userData) {
+			this.fetchUserData()
+				.then(data => {
+					callback(null, data);
+				})
+				.catch(callback);
+			return;
 		}
-		return undefined;
+
+		if (this.isFetchUserDataAndTokenRequired(params)) {
+			this.fetchUserData()
+				.then(data => {
+					return this.refreshSessionIfPossible().then(() => data);
+				})
+				.then(data => callback(null, data))
+				.catch(callback);
+			return;
+		}
+
+		try {
+			callback(null, JSON.parse(userData));
+			return;
+		} catch (err) {
+			this.clearCachedUserData();
+			callback(err, null);
+			return;
+		}
+	}
+
+	/**
+	 *
+	 * PRIVATE ONLY: This is an internal only method and should not
+	 * be directly called by the consumers.
+	 */
+	getUserDataFromCache() {
+		const userData = this.storage.getItem(this.userDataKey);
+
+		return userData;
+	}
+
+	/**
+	 *
+	 * PRIVATE ONLY: This is an internal only method and should not
+	 * be directly called by the consumers.
+	 */
+	isFetchUserDataAndTokenRequired(params) {
+		const { bypassCache = false } = params || {};
+
+		return bypassCache;
+	}
+	/**
+	 *
+	 * PRIVATE ONLY: This is an internal only method and should not
+	 * be directly called by the consumers.
+	 */
+	fetchUserData() {
+		return this.createGetUserRequest().then(data => {
+			this.cacheUserData(data);
+			return data;
+		});
 	}
 
 	/**
@@ -1238,12 +1338,14 @@ export default class CognitoUser {
 	/**
 	 * This is used by a user to resend a confirmation code
 	 * @param {nodeCallback<string>} callback Called on success or error.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	resendConfirmationCode(callback) {
+	resendConfirmationCode(callback, clientMetadata) {
 		const jsonReq = {
 			ClientId: this.pool.getClientId(),
 			Username: this.username,
+			ClientMetadata: clientMetadata,
 		};
 
 		this.client.request('ResendConfirmationCode', jsonReq, (err, result) => {
@@ -1275,7 +1377,7 @@ export default class CognitoUser {
 
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
 			this.username
-		}`;
+			}`;
 		const idTokenKey = `${keyPrefix}.idToken`;
 		const accessTokenKey = `${keyPrefix}.accessToken`;
 		const refreshTokenKey = `${keyPrefix}.refreshToken`;
@@ -1300,6 +1402,7 @@ export default class CognitoUser {
 				ClockDrift: clockDrift,
 			};
 			const cachedSession = new CognitoUserSession(sessionData);
+
 			if (cachedSession.isValid()) {
 				this.signInUserSession = cachedSession;
 				return callback(null, this.signInUserSession);
@@ -1327,9 +1430,10 @@ export default class CognitoUser {
 	 * This uses the refreshToken to retrieve a new session
 	 * @param {CognitoRefreshToken} refreshToken A previous session's refresh token.
 	 * @param {nodeCallback<CognitoUserSession>} callback Called on success or error.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	refreshSession(refreshToken, callback) {
+	refreshSession(refreshToken, callback, clientMetadata) {
 		const authParameters = {};
 		authParameters.REFRESH_TOKEN = refreshToken.getToken();
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
@@ -1346,6 +1450,7 @@ export default class CognitoUser {
 			ClientId: this.pool.getClientId(),
 			AuthFlow: 'REFRESH_TOKEN_AUTH',
 			AuthParameters: authParameters,
+			ClientMetadata: clientMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -1434,7 +1539,7 @@ export default class CognitoUser {
 	cacheDeviceKeyAndPassword() {
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
 			this.username
-		}`;
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1451,7 +1556,7 @@ export default class CognitoUser {
 	getCachedDeviceKeyAndPassword() {
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
 			this.username
-		}`;
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1470,7 +1575,7 @@ export default class CognitoUser {
 	clearCachedDeviceKeyAndPassword() {
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
 			this.username
-		}`;
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1526,12 +1631,14 @@ export default class CognitoUser {
 	 * @param {inputVerificationCode?} callback.inputVerificationCode
 	 *    Optional callback raised instead of onSuccess with response data.
 	 * @param {onSuccess} callback.onSuccess Called on success.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	forgotPassword(callback) {
+	forgotPassword(callback, clientMetadata) {
 		const jsonReq = {
 			ClientId: this.pool.getClientId(),
 			Username: this.username,
+			ClientMetadata: clientMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -1554,14 +1661,16 @@ export default class CognitoUser {
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<void>} callback.onSuccess Called on success.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	confirmPassword(confirmationCode, newPassword, callback) {
+	confirmPassword(confirmationCode, newPassword, callback, clientMetadata) {
 		const jsonReq = {
 			ClientId: this.pool.getClientId(),
 			Username: this.username,
 			ConfirmationCode: confirmationCode,
 			Password: newPassword,
+			ClientMetadata: clientMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -1580,9 +1689,10 @@ export default class CognitoUser {
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {inputVerificationCode} callback.inputVerificationCode Called on success.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	getAttributeVerificationCode(attributeName, callback) {
+	getAttributeVerificationCode(attributeName, callback, clientMetadata) {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback.onFailure(new Error('User is not authenticated'));
 		}
@@ -1592,6 +1702,7 @@ export default class CognitoUser {
 			{
 				AttributeName: attributeName,
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+				ClientMetadata: clientMetadata,
 			},
 			(err, data) => {
 				if (err) {
@@ -1776,7 +1887,7 @@ export default class CognitoUser {
 	 * This is used to list all devices for a user
 	 *
 	 * @param {int} limit the number of devices returned in a call
-	 * @param {string} paginationToken the pagination token in case any was returned before
+	 * @param {string | null} paginationToken the pagination token in case any was returned before
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<*>} callback.onSuccess Called on success with device list.
@@ -1786,21 +1897,21 @@ export default class CognitoUser {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback.onFailure(new Error('User is not authenticated'));
 		}
+		const requestParams = {
+			AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+			Limit: limit,
+		};
 
-		this.client.request(
-			'ListDevices',
-			{
-				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
-				Limit: limit,
-				PaginationToken: paginationToken,
-			},
-			(err, data) => {
-				if (err) {
-					return callback.onFailure(err);
-				}
-				return callback.onSuccess(data);
+		if (paginationToken) {
+			requestParams.PaginationToken = paginationToken;
+		}
+
+		this.client.request('ListDevices', requestParams, (err, data) => {
+			if (err) {
+				return callback.onFailure(err);
 			}
-		);
+			return callback.onSuccess(data);
+		});
 		return undefined;
 	}
 
@@ -1868,14 +1979,14 @@ export default class CognitoUser {
 			this.Session = data.Session;
 			if (answerChallenge === 'SMS_MFA') {
 				return callback.mfaRequired(
-					data.challengeName,
-					data.challengeParameters
+					data.ChallengeName,
+					data.ChallengeParameters
 				);
 			}
 			if (answerChallenge === 'SOFTWARE_TOKEN_MFA') {
 				return callback.totpRequired(
-					data.challengeName,
-					data.challengeParameters
+					data.ChallengeName,
+					data.ChallengeParameters
 				);
 			}
 			return undefined;

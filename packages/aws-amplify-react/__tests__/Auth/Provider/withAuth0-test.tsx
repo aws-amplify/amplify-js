@@ -1,7 +1,6 @@
-import Auth from '@aws-amplify/auth';
-import React, { Component } from 'react';
-import withAuth0, { Auth0Button } from '../../../src/Auth/Provider/withAuth0';
-import { SignInButton, Button } from '../../../src/AmplifyUI';
+import * as React from 'react';
+import { Auth } from '@aws-amplify/auth';
+import { withAuth0, Auth0Button } from '../../../src/Auth/Provider/withAuth0';
 
 const auth0_config = {
 	domain: 'your auth0 domain',
@@ -16,7 +15,7 @@ const auth0_config = {
 describe('withAuth0 test', () => {
 	describe('render test', () => {
 		test('render correctly', () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -30,7 +29,7 @@ describe('withAuth0 test', () => {
 
 	describe('signIn test', () => {
 		test('happy case', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -53,7 +52,7 @@ describe('withAuth0 test', () => {
 
 	describe('initialize test', () => {
 		test('happy case', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -99,7 +98,7 @@ describe('withAuth0 test', () => {
 		});
 
 		test('return if parse hash failed', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -139,7 +138,7 @@ describe('withAuth0 test', () => {
 		});
 
 		test('directly return if in signedin state', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -179,7 +178,7 @@ describe('withAuth0 test', () => {
 		});
 
 		test('directly return if no auth0 config', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}

@@ -1,105 +1,96 @@
-import { Credentials } from '../src/Credentials';
-import { AWS } from '../src/Facet';
+import { CredentialsClass as Credentials } from '../src/Credentials';
 import Amplify from '../src/Amplify';
-import { CognitoIdentityCredentials } from 'aws-sdk';
 
 const authClass = {
-    getModuleName() {
-        return 'Auth';
-    }
-    currentUserCredentials() {
-        return Promise.resolve('cred');
-    }
-}
+	getModuleName() {
+		return 'Auth';
+	},
+	currentUserCredentials() {
+		return Promise.resolve('cred');
+	},
+	configure(config: any) {
+		return config;
+	},
+};
 
 const cacheClass = {
-    getModuleName() {
-        return 'Cache';
-    }
-
-    getItem() {
-        return null;
-    }
-}
-
-const cognitoCredentialSpyon = jest.spyOn(CognitoIdentityCredentials.prototype, 'get').mockImplementation((callback) => {
-    callback(null);
-})
-
-const options = {
-    userPoolId: "awsUserPoolsId",
-    userPoolWebClientId: "awsUserPoolsWebClientId",
-    region: "region",
-    identityPoolId: "awsCognitoIdentityPoolId",
-    mandatorySignIn: false
-}
-
-beforeAll(() => {
-    AWS.config.update({
-        credentials: null,
-    });
-});
+	getModuleName() {
+		return 'Cache';
+	},
+	getItem() {
+		return null;
+	},
+	configure(config: any) {
+		return config;
+	},
+};
 
 describe('Credentials test', () => {
-    describe('configure test', () => {
-        test('happy case', () => {
-            const config = {
-                attr: 'attr'
-            }
+	describe('.Auth', () => {
+		it('should be undefined by default', async () => {
+			const credentials = new Credentials(null);
 
-            const credentials = new Credentials(null);
-            expect(credentials.configure(config)).toEqual({
-                attr: 'attr'
-            });
-        });
-    });
+			expect(credentials.Auth).toBeUndefined();
 
-    describe('getCredSource test', () => {
-        test('happy case', () => {
-            const credentials = new Credentials(null);
-            credentials['_credentials_source'] = 'source';
-            expect(credentials.getCredSource()).toBe('source');
+			expect(credentials.get()).rejects.toMatchInlineSnapshot(
+				`"No Auth module registered in Amplify"`
+			);
+		});
 
-        });
-    });
+		it('should be Amplify.Auth if configured through Amplify', () => {
+			const credentials = new Credentials(null);
 
-    describe('get test', () => {
-        test('credentials in the memory and not expired', async () => {
-            Amplify.register(authClass);
-            Amplify.register(cacheClass);
-            const credentials = new Credentials(null);
-            
-            credentials['_credentials'] = {
-                expired: false,
-                expireTime: new Date().getTime() + 20*60*1000
-            }
-            expect(await credentials.get()).toEqual(credentials['_credentials']);
-        
-        });
+			Amplify.register(authClass);
+			Amplify.register(credentials);
 
-        test('credentials not in memory or being expired', async () => {
-            const credentials = new Credentials(null);
-            
-            expect(await credentials.get()).toBe('cred');
-        });
-    });
+			Amplify.configure({});
 
-   describe.skip('refreshFederatedToken test', () => {
-        test('federated info and not expired, then refresh it successfully', async () => {
-            const credentials = new Credentials(null);
-        });
+			expect(credentials.Auth).toBe(authClass);
+			expect(credentials.get()).resolves.toBe('cred');
+		});
+	});
 
-        test('federated info and expired, then refresh it successfully', async () => {
-            const credentials = new Credentials(null);
-        });
+	describe('configure test', () => {
+		test('happy case', () => {
+			const config = {
+				attr: 'attr',
+			};
 
-        test('with federated info and expired, no refresh handler provided', async () => {
-            const credentials = new Credentials(null);
-        });
+			const credentials = new Credentials(null);
+			expect(credentials.configure(config)).toEqual({
+				attr: 'attr',
+			});
+		});
+	});
 
-        test('with federated info and expired, then refresh failed', async () => {
-            const credentials = new Credentials(null);
-        });
-    });
+	describe('getCredSource test', () => {
+		test('happy case', () => {
+			const credentials = new Credentials(null);
+			credentials['_credentials_source'] = 'source';
+			expect(credentials.getCredSource()).toBe('source');
+		});
+	});
 
+	describe('get test', () => {
+		test('credentials in the memory and not expired', async () => {
+			Amplify.register(authClass);
+			Amplify.register(cacheClass);
+			const credentials = new Credentials(null);
+
+			const expiration = new Date(new Date().getTime() + 20 * 60 * 1000);
+			credentials['_credentials'] = {
+				expiration,
+			};
+			credentials['_nextCredentialsRefresh'] = expiration.getTime() + 1;
+			expect(await credentials.get()).toEqual(credentials['_credentials']);
+		});
+
+		test('credentials not in memory or being expired', async () => {
+			Amplify.register(authClass);
+
+			const credentials = new Credentials(null);
+
+			expect(await credentials.get()).toBe('cred');
+		});
+	});
 });

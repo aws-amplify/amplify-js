@@ -11,9 +11,8 @@
  * and limitations under the License.
  */
 
-import Hub from '../Hub';
+import { Hub } from '../Hub';
 import { ConsoleLogger as Logger } from '../Logger';
-import JS from '../JS';
 
 const logger = new Logger('ClientDevice_Browser');
 
@@ -42,13 +41,13 @@ function browserClientInfo() {
 	const timezone = browserTimezone();
 
 	return {
-		platform: platform,
+		platform,
 		make: product || vendor,
 		model: type.type,
 		version: type.version,
 		appVersion: [type.type, type.version].join('/'),
-		language: language,
-		timezone: timezone,
+		language,
+		timezone,
 	};
 }
 
