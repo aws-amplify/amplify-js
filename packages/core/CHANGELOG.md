@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.5...@aws-amplify/core@3.6.0) (2020-10-01)
+
+
+### Features
+
+* **@aws-amplify/datastore:** support indexeddb adapter on web worker ([#6874](https://github.com/aws-amplify/amplify-js/issues/6874)) ([e43e181](https://github.com/aws-amplify/amplify-js/commit/e43e18195ca201fa61bd0dfb1b18c06c3262f825))
+
+
+
+
+
 ## [3.5.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.4...@aws-amplify/core@3.5.5) (2020-09-25)
 
 
