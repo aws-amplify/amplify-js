@@ -272,8 +272,11 @@ declare module 'amazon-cognito-identity-js' {
 		Value: string;
 	}
 
-	export class CognitoUserAttribute {
+	export class CognitoUserAttribute implements ICognitoUserAttributeData {
 		constructor(data: ICognitoUserAttributeData);
+		
+		Name: string;
+		Value: string;
 
 		public getValue(): string;
 		public setValue(value: string): CognitoUserAttribute;
