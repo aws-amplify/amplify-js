@@ -126,6 +126,7 @@ export class AmplifyConfirmSignUp {
           );
         }
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
+        this.setFieldValue(newField);
         newFields.push(newField);
       });
       this.newFormFields = newFields;

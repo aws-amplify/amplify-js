@@ -194,7 +194,7 @@ export class AmplifySignIn {
     this.newFormFields = [...formFieldInputs];
   }
 
-  buildFormFields() {
+  private buildFormFields() {
     if (this.formFields.length === 0) {
       this.buildDefaultFormFields();
     } else {

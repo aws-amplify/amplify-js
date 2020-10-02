@@ -261,7 +261,7 @@ export class AmplifySignUp {
       this.formFields.forEach(field => {
         const newField = { ...field };
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
-        this.setFieldValue(field, this.signUpAttributes);
+        this.setFieldValue(newField, this.signUpAttributes);
         newFields.push(newField);
       });
       this.newFormFields = newFields;
