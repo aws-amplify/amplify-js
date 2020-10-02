@@ -69,6 +69,8 @@ export class AmplifyForgotPassword {
     this.buildFormFields();
   }
 
+  // This flags avoid erasing forgotPasswordAttrs when changing lang
+  private valuesHaveBeenCopiedFromFormFields: boolean = false;
   private buildFormFields() {
     if (this.formFields.length === 0) {
       this.buildDefaultFormFields();
@@ -77,10 +79,13 @@ export class AmplifyForgotPassword {
       this.formFields.forEach(field => {
         const newField = { ...field };
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
-        this.setFieldValue(newField, this.forgotPasswordAttrs);
+        if (this.valuesHaveBeenCopiedFromFormFields) {
+          this.setFieldValue(newField, this.forgotPasswordAttrs);
+        }
         newFields.push(newField);
       });
       this.newFormFields = newFields;
+      this.valuesHaveBeenCopiedFromFormFields = true;
     }
   }
 
