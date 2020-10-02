@@ -79,7 +79,7 @@ export class AmplifyForgotPassword {
       this.formFields.forEach(field => {
         const newField = { ...field };
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
-        if (this.valuesHaveBeenCopiedFromFormFields) {
+        if (!this.valuesHaveBeenCopiedFromFormFields) {
           this.setFieldValue(newField, this.forgotPasswordAttrs);
         }
         newFields.push(newField);
