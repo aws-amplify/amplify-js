@@ -43,6 +43,7 @@ import {
 	Parser,
 	JS,
 	UniversalStorage,
+	urlSafeDecode,
 } from '@aws-amplify/core';
 import {
 	CookieStorage,
@@ -1250,9 +1251,15 @@ export class AuthClass {
 		}
 
 		try {
-			federatedUser = JSON.parse(
+			const federatedInfo = JSON.parse(
 				this._storage.getItem('aws-amplify-federatedInfo')
-			).user;
+			);
+			if (federatedInfo) {
+				federatedUser = {
+					...federatedInfo.user,
+					token: federatedInfo.token,
+				};
+			}
 		} catch (e) {
 			logger.debug('cannot load federated user from auth storage');
 		}
@@ -1974,7 +1981,7 @@ export class AuthClass {
 
 						dispatchAuthEvent(
 							'customOAuthState',
-							customState,
+							urlSafeDecode(customState),
 							`State for user ${currentUser.getUsername()}`
 						);
 					}

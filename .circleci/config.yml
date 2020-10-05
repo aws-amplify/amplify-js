@@ -1,7 +1,5 @@
 # Javascript Node CircleCI 2.1 configuration file
 #
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
 version: 2.1
 
 executors:
@@ -19,7 +17,7 @@ executors:
 
   macos-executor:
     macos:
-      xcode: 11.4.1
+      xcode: 11.5.0
 
 test_env_vars: &test_env_vars
   environment:
@@ -29,20 +27,6 @@ test_env_vars: &test_env_vars
     NPM_EMAIL: circleci@amplify.js
 
 commands:
-  restore_pods:
-    steps:
-      - restore_cache:
-          keys:
-            - v1-storage-app-pods-{{ checksum "ios/Podfile.lock" }}
-            - v1-storage-app-pods-
-
-  save_pods:
-    steps:
-      - save_cache:
-          key: v1-storage-app-pods-{{ checksum "ios/Podfile.lock" }}
-          paths:
-            - ios/Pods
-
   publish_to_verdaccio:
     steps:
       - run:
@@ -106,10 +90,15 @@ commands:
             echo "Current NPM registry: " $(yarn config get registry)
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
       - run:
-          name: 'Run cypress tests for << parameters.test_name >> Sample'
+          name: 'Run cypress tests for << parameters.test_name >> sample on dev'
           command: |
             cd ~/amplify-js-samples-staging
-            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >>' -n 3
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> dev' -n 3
+      - run:
+          name: 'Run cypress tests for << parameters.test_name >> sample on prod'
+          command: |
+            cd ~/amplify-js-samples-staging
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> prod' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -138,13 +127,11 @@ commands:
           command: |
             echo "Current NPM registry: " $(yarn config get registry)
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
-      - restore_pods
       - run:
           name: Install CocoaPods
           command: |
             cd ios
             pod install
-      - save_pods
       - run:
           background: true
           command: xcrun simctl boot "iPhone 11" || true
@@ -279,10 +266,22 @@ jobs:
     executor: build-executor
     steps:
       - checkout
-      - run: yarn config set workspaces-experimental true
-      - run: yarn --frozen-lockfile
-      - run: yarn run bootstrap
-      - run: yarn run build
+      - run:
+          name: yarn install --non-interactive
+          # temporarily rename .yarnrc before installing so that we can generate a yarn.lock artifact
+          command: |
+            mv .yarnrc ._yarnrc
+            yarn
+      - run: yarn build
+      # storing yarn.lock as an artifact, so that we can quickly get a dependency diff
+      # with the last working build in the event that some upstream deps break the build in the future
+      - store_artifacts:
+          path: yarn.lock
+      - run:
+          name: delete lockfile after persisting
+          command: |
+            mv ._yarnrc .yarnrc
+            rm yarn.lock
       - save_cache:
           key: amplify-ssh-deps-{{ .Branch }}
           paths:
@@ -300,8 +299,8 @@ jobs:
       - run:
           name: 'Run Amplify JS unit tests'
           command: |
-            yarn run test
-            yarn run coverage
+            yarn test
+            yarn coverage
 
   integ_setup:
     executor: build-executor
@@ -556,6 +555,7 @@ jobs:
           sample_name: amazon-cognito-identity-js
           spec: amazon-cognito-identity-js
           browser: << parameters.browser >>
+
   integ_rn_ios_storage:
     executor: macos-executor
     <<: *test_env_vars
@@ -576,6 +576,30 @@ jobs:
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
     steps:
       - integ_test_rn_android
+
+  integ_datastore_auth:
+    parameters:
+      scenario:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore Auth - Chrome'
+          framework: react
+          category: datastore
+          sample_name: << parameters.scenario >>
+          spec: << parameters.scenario >>
+          browser: chrome
+      - integ_test_js:
+          test_name: 'DataStore Auth - Firefox'
+          framework: react
+          category: datastore
+          sample_name: << parameters.scenario >>
+          spec: << parameters.scenario >>
+          browser: firefox
 
   deploy:
     executor: macos-executor
@@ -629,6 +653,23 @@ releasable_branches: &releasable_branches
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
+
+datastore_auth_scenarios: &datastore_auth_scenarios
+  scenario: [
+      owner-based-default, # TODO: Add `owner-based-operations` when tests pass
+      static-user-pool-groups-default,
+      static-user-pool-groups-operations,
+      owner-and-group-different-models-default,
+      owner-and-group-same-model-default,
+      owner-and-group-same-model-operations,
+      dynamic-user-pool-groups-default,
+      dynamic-user-pool-groups-owner-based-default,
+      private-auth-default,
+      private-auth-iam,
+      public-auth-default,
+      public-auth-iam,
+      owner-custom-claim-default,
+    ]
 
 workflows:
   build_test_deploy:
@@ -754,6 +795,15 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_datastore_auth:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *datastore_auth_scenarios
       - deploy:
           filters:
             <<: *releasable_branches
@@ -773,6 +823,7 @@ workflows:
             - integ_rn_ios_storage
             - integ_rn_ios_push_notifications
             - integ_rn_android_storage
+            - integ_datastore_auth
       - post_release:
           filters:
             branches:
