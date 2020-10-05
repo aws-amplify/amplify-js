@@ -1,8 +1,8 @@
 /**
- * @prop --container-color: Used to set the text container background
- * @prop --border-color: Used to set the border color of text container
- * @prop --text-color: Used to set the font color for the text
- * @prop --font-size: Used to set the font size for the text
+ * @prop --container-color: Text container background
+ * @prop --border-color: Text container border color
+ * @prop --text-color: Text font color
+ * @prop --font-size: Text font size
  */
 :host {
   --container-color: var(--amplify-smoke-white);
