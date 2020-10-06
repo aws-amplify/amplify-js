@@ -21,12 +21,12 @@
 
 ## CSS Custom Properties
 
-| Name                | Description                 |
-| ------------------- | --------------------------- |
-| `--border-color`    | Text container border color |
-| `--container-color` | Text container background   |
-| `--font-size`       | Text font size              |
-| `--text-color`      | Text font color             |
+| Name                | Description                            |
+| ------------------- | -------------------------------------- |
+| `--border-color`    | Border color of the text container     |
+| `--container-color` | Background color of the text container |
+| `--font-size`       | Font size of the text                  |
+| `--text-color`      | Font color of the text                 |
 
 
 ## Dependencies

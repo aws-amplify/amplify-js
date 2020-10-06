@@ -77,7 +77,7 @@ export namespace Components {
          */
         "type": ButtonTypes;
         /**
-          * Variant of a button: 'button' | 'anchor'
+          * Variant of a button: 'button' | 'anchor | 'icon'
          */
         "variant": ButtonVariant;
     }
@@ -371,7 +371,7 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
-          * The ID of the field.  Should match with its corresponding input's ID.
+          * The ID of the field. Should match with its corresponding input's ID.
          */
         "fieldId": string;
         /**
@@ -379,7 +379,7 @@ export namespace Components {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
-          * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
+          * The text of a hint to the user as to how to fill out the input. Goes just below the input.
          */
         "hint": string | FunctionalComponent | null;
         /**
@@ -387,7 +387,7 @@ export namespace Components {
          */
         "inputProps"?: object;
         /**
-          * The text of the label.  Goes above the input. Ex: 'First name'
+          * The text of the label. Goes above the input. Ex: 'First name'
          */
         "label": string | null;
         /**
@@ -1577,7 +1577,7 @@ declare namespace LocalJSX {
          */
         "type"?: ButtonTypes;
         /**
-          * Variant of a button: 'button' | 'anchor'
+          * Variant of a button: 'button' | 'anchor | 'icon'
          */
         "variant"?: ButtonVariant;
     }
@@ -1875,7 +1875,7 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
-          * The ID of the field.  Should match with its corresponding input's ID.
+          * The ID of the field. Should match with its corresponding input's ID.
          */
         "fieldId"?: string;
         /**
@@ -1883,7 +1883,7 @@ declare namespace LocalJSX {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
-          * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
+          * The text of a hint to the user as to how to fill out the input. Goes just below the input.
          */
         "hint"?: string | FunctionalComponent | null;
         /**
@@ -1891,7 +1891,7 @@ declare namespace LocalJSX {
          */
         "inputProps"?: object;
         /**
-          * The text of the label.  Goes above the input. Ex: 'First name'
+          * The text of the label. Goes above the input. Ex: 'First name'
          */
         "label"?: string | null;
         /**

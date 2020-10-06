@@ -1,3 +1,7 @@
+/**
+ * @prop --button-color: Text color of the button
+ * @prop --button-background-hover: Background color of the button when it's hovered
+ */
 :host {
   --button-color: var(--amplify-secondary-contrast);
   --button-background-hover: var(--amplify-secondary-color);
@@ -24,11 +28,11 @@
       box-shadow: 0.3px 0.3px 0.3px rgba(0, 0, 0, 0.3);
     }
 
-    &:hover>.tooltip {
+    &:hover > .tooltip {
       display: block;
     }
 
-    &:hover>svg {
+    &:hover > svg {
       -webkit-filter: none;
       filter: none;
     }

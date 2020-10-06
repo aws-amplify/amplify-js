@@ -17,6 +17,13 @@
 | `value`    | `value`    | Value of the checkbox                        | `string`  | `undefined` |
 
 
+## CSS Custom Properties
+
+| Name            | Description      |
+| --------------- | ---------------- |
+| `--font-family` | Text font family |
+
+
 ## Dependencies
 
 ### Depends on

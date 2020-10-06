@@ -23,6 +23,15 @@
 | `"nav"`               | Right-justified content placed at the end of the greetings bar  |
 
 
+## CSS Custom Properties
+
+| Name                 | Description                       |
+| -------------------- | --------------------------------- |
+| `--background-color` | Background color of the container |
+| `--border-color`     | Border color of the container     |
+| `--font-family`      | Font family of the text           |
+
+
 ## Dependencies
 
 ### Depends on

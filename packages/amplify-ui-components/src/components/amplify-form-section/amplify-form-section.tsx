@@ -1,5 +1,10 @@
 import { Component, Prop, h, FunctionalComponent, Listen } from '@stencil/core';
 
+/**
+ * @slot amplify-form-section-header - Content for the header section
+ * @slot subtitle - Content for the subtitle. This is inside of `amplify-form-section-header`.
+ * @slot amplify-form-section-footer - Content for the footer section.
+ */
 @Component({
   tag: 'amplify-form-section',
   styleUrl: 'amplify-form-section.scss',
