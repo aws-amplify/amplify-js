@@ -337,6 +337,29 @@ exports[`S3Image render test render with src exist 1`] = `
 </div>
 `;
 
+exports[`S3Image render test render with alt text 1`] = `
+<div
+  style={Object {}}
+>
+  <div
+    onClick={[Function]}
+    style={
+      Object {
+        "position": "relative",
+      }
+    }
+  >
+    <img
+      alt="alternative text"
+      onError={[Function]}
+      onLoad={[Function]}
+      src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+    />
+    <div />
+  </div>
+</div>
+`;
+
 exports[`S3Image render test render with translate text 1`] = `
 <div
   style={Object {}}

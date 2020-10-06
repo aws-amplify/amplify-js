@@ -38,6 +38,12 @@ describe('S3Image', () => {
 			expect(wrapper).toMatchSnapshot();
 		});
 
+		test('render with alt text', () => {
+			const wrapper = shallow(<S3Image alt="alternative text" />);
+
+			expect(wrapper).toMatchSnapshot();
+		});
+
 		test('render with translate text', () => {
 			const wrapper = shallow(<S3Image translate="translate" />);
 

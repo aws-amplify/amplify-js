@@ -40,6 +40,7 @@ export interface IS3ImageProps {
 	picker?: any;
 	selected?: any;
 	src?: any;
+	alt?: any;
 	style?: any;
 	theme?: any;
 	track?: any;
@@ -203,7 +204,7 @@ export class S3Image extends React.Component<IS3ImageProps, IS3ImageState> {
 			return null;
 		}
 
-		const { className, selected } = this.props;
+		const { className, selected, alt } = this.props;
 		const containerStyle: React.CSSProperties = { position: 'relative' };
 		return (
 			<div style={containerStyle} onClick={this.handleClick}>
@@ -211,6 +212,7 @@ export class S3Image extends React.Component<IS3ImageProps, IS3ImageState> {
 					className={className}
 					style={theme.photoImg}
 					src={src}
+					alt={alt}
 					onLoad={this.handleOnLoad}
 					onError={this.handleOnError}
 				/>
