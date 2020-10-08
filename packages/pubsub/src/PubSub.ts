@@ -153,8 +153,10 @@ export class PubSubClass {
 		topics: string[] | string,
 		options?: ProvidertOptions
 	): Observable<any> {
-		if (isNode) {
-			throw new Error('Subscriptions are not supported in Node');
+		if (this._options && this._options.ssr) {
+			throw new Error(
+				'Subscriptions are not supported for Server-Side Rendering (SSR)'
+			);
 		}
 
 		logger.debug('subscribe options', options);
