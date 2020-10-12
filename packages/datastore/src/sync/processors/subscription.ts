@@ -61,6 +61,7 @@ class SubscriptionProcessor {
 		const { authMode, isOwner, ownerField, ownerValue } =
 			this.getAuthorizationInfo(
 				model,
+				transformerMutationType,
 				userCredentials,
 				cognitoTokenPayload,
 				oidcTokenPayload
@@ -78,6 +79,7 @@ class SubscriptionProcessor {
 
 	private getAuthorizationInfo(
 		model: SchemaModel,
+		transformerMutationType: TransformerMutationType,
 		userCredentials: USER_CREDENTIALS,
 		cognitoTokenPayload: { [field: string]: any } = {},
 		oidcTokenPayload: { [field: string]: any } = {}
@@ -88,7 +90,7 @@ class SubscriptionProcessor {
 		ownerValue?: string;
 	} {
 		let result;
-		const rules = getAuthorizationRules(model);
+		const rules = getAuthorizationRules(model, transformerMutationType);
 
 		// check if has apiKey and public authorization
 		const apiKeyAuth = rules.find(

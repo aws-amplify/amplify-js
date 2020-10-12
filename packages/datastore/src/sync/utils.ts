@@ -154,7 +154,8 @@ function getNonModelFields(
 }
 
 export function getAuthorizationRules(
-	modelDefinition: SchemaModel
+	modelDefinition: SchemaModel,
+	transformerOpType: TransformerMutationType
 ): AuthorizationRule[] {
 	// Searching for owner authorization on attributes
 	const authConfig = []
@@ -177,10 +178,13 @@ export function getAuthorizationRules(
 			groups = [],
 		} = rule;
 
-		// subscriptions for all operations is authorized if `read` is protected
-		const isReadAuthorized = operations.includes('read');
+		const isOperationAuthorized =
+			operations.includes('read') || // subscriptions for all operations is authorized if `read` is protected
+			operations.find(
+				operation => operation.toLowerCase() === transformerOpType.toLowerCase()
+			);
 
-		if (isReadAuthorized) {
+		if (isOperationAuthorized) {
 			const rule: AuthorizationRule = {
 				identityClaim,
 				ownerField,
