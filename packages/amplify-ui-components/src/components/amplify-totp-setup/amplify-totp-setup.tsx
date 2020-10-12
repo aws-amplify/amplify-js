@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
-import { Component, Prop, State, h } from '@stencil/core';
+import { Component, Prop, State, h, Host } from '@stencil/core';
 import QRCode from 'qrcode';
 
 import { CognitoUserInterface, AuthStateHandler, MfaOption } from '../../common/types/auth-types';
@@ -120,26 +120,27 @@ export class AmplifyTOTPSetup {
     }
   }
 
-  // TODO add Toast component to the Top of the form section
   render() {
     return (
-      <amplify-form-section
-        headerText={I18n.get(this.headerText)}
-        submitButtonText={I18n.get(Translations.TOTP_SUBMIT_BUTTON_TEXT)}
-        handleSubmit={event => this.verifyTotpToken(event)}
-        loading={this.loading}
-      >
-        <div class="totp-setup">
-          <img src={this.qrCodeImageSource} alt={I18n.get(Translations.QR_CODE_ALT)} />
-          <amplify-form-field
-            label={I18n.get(Translations.TOTP_LABEL)}
-            inputProps={this.inputProps}
-            fieldId="totpCode"
-            name="totpCode"
-            handleInputChange={event => this.handleTotpInputChange(event)}
-          />
-        </div>
-      </amplify-form-section>
+      <Host>
+        <amplify-form-section
+          headerText={I18n.get(this.headerText)}
+          submitButtonText={I18n.get(Translations.TOTP_SUBMIT_BUTTON_TEXT)}
+          handleSubmit={event => this.verifyTotpToken(event)}
+          loading={this.loading}
+        >
+          <div class="totp-setup">
+            <img src={this.qrCodeImageSource} alt={I18n.get(Translations.QR_CODE_ALT)} />
+            <amplify-form-field
+              label={I18n.get(Translations.TOTP_LABEL)}
+              inputProps={this.inputProps}
+              fieldId="totpCode"
+              name="totpCode"
+              handleInputChange={event => this.handleTotpInputChange(event)}
+            />
+          </div>
+        </amplify-form-section>
+      </Host>
     );
   }
 }

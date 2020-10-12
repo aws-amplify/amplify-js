@@ -8,4 +8,16 @@
   --border-radius: 6px;
   --padding: 35px 40px;
   --margin-bottom: 20px;
+
+  --container-height: 100vh;
+  --container-display: flex;
+  --container-justify: start;
+  --container-align: start;
+}
+
+.auth-container {
+  display: var(--container-display);
+  justify-content: var(--container-justify);
+  align-items: var(--container-align);
+  min-height: var(--container-height);
 }
