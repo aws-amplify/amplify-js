@@ -154,8 +154,7 @@ function getNonModelFields(
 }
 
 export function getAuthorizationRules(
-	modelDefinition: SchemaModel,
-	transformerOpType: TransformerMutationType
+	modelDefinition: SchemaModel
 ): AuthorizationRule[] {
 	// Searching for owner authorization on attributes
 	const authConfig = []
@@ -178,47 +177,47 @@ export function getAuthorizationRules(
 			groups = [],
 		} = rule;
 
-		const isOperationAuthorized =
-			operations.includes('read') || // subscriptions for all operations is authorized if `read` is protected
-			operations.find(
-				operation => operation.toLowerCase() === transformerOpType.toLowerCase()
-			);
+		const isReadAuthorized = operations.includes('read');
+		const isOwnerAuth = authStrategy === 'owner';
 
-		if (isOperationAuthorized) {
-			const rule: AuthorizationRule = {
-				identityClaim,
-				ownerField,
-				provider,
-				groupClaim,
-				authStrategy,
-				groups,
-				areSubscriptionsPublic: false,
-			};
-
-			if (authStrategy === 'owner') {
-				// look for the subscription level override
-				// only pay attention to the public level
-				const modelConfig = (<typeof modelDefinition.attributes>[])
-					.concat(modelDefinition.attributes)
-					.find(attr => attr && attr.type === 'model');
-
-				// find the subscriptions level. ON is default
-				const { properties: { subscriptions: { level = 'on' } = {} } = {} } =
-					modelConfig || {};
-
-				// treat subscriptions as public for owner auth with unprotected reads
-				// when `read` is omitted from `operations`
-				rule.areSubscriptionsPublic =
-					!operations.includes('read') || level === 'public';
-			}
-
-			// owner rules has least priority
-			if (authStrategy === 'owner') {
-				resultRules.push(rule);
-			} else {
-				resultRules.unshift(rule);
-			}
+		if (!isReadAuthorized && !isOwnerAuth) {
+			return;
 		}
+
+		const authRule: AuthorizationRule = {
+			identityClaim,
+			ownerField,
+			provider,
+			groupClaim,
+			authStrategy,
+			groups,
+			areSubscriptionsPublic: false,
+		};
+
+		if (isOwnerAuth) {
+			// look for the subscription level override
+			// only pay attention to the public level
+			const modelConfig = (<typeof modelDefinition.attributes>[])
+				.concat(modelDefinition.attributes)
+				.find(attr => attr && attr.type === 'model');
+
+			// find the subscriptions level. ON is default
+			const { properties: { subscriptions: { level = 'on' } = {} } = {} } =
+				modelConfig || {};
+
+			// treat subscriptions as public for owner auth with unprotected reads
+			// when `read` is omitted from `operations`
+			authRule.areSubscriptionsPublic =
+				!operations.includes('read') || level === 'public';
+		}
+
+		if (isOwnerAuth) {
+			// owner rules has least priority
+			resultRules.push(authRule);
+			return;
+		}
+
+		resultRules.unshift(authRule);
 	});
 
 	return resultRules;

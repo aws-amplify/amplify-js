@@ -2,7 +2,6 @@ import {
 	SubscriptionProcessor,
 	USER_CREDENTIALS,
 } from '../src/sync/processors/subscription';
-import { TransformerMutationType } from '../src/sync/utils';
 import { SchemaModel } from '../src/types';
 
 describe('sync engine subscription module', () => {
@@ -79,7 +78,6 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
 				USER_CREDENTIALS.auth,
 				tokenPayload
 			)
@@ -158,7 +156,6 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
 				USER_CREDENTIALS.auth,
 				tokenPayload
 			)
@@ -237,7 +234,6 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
 				USER_CREDENTIALS.auth,
 				tokenPayload
 			)
@@ -323,7 +319,6 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
 				USER_CREDENTIALS.auth,
 				tokenPayload
 			)
@@ -401,7 +396,6 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
 				USER_CREDENTIALS.auth,
 				tokenPayload
 			)
@@ -460,7 +454,6 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
 				USER_CREDENTIALS.unauth
 			)
 		).toEqual(authInfo);
@@ -518,7 +511,6 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
 				USER_CREDENTIALS.unauth
 			)
 		).toEqual(null);
@@ -576,7 +568,6 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
 				USER_CREDENTIALS.auth
 			)
 		).toEqual(authInfo);
@@ -634,7 +625,6 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
 				USER_CREDENTIALS.none
 			)
 		).toEqual(authInfo);
