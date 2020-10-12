@@ -75,7 +75,6 @@ export class AnalyticsClass {
 		Hub.listen('auth', listener);
 		Hub.listen('storage', listener);
 		Hub.listen('analytics', listener);
-		Amplify.register(this);
 	}
 
 	public getModuleName() {
@@ -402,3 +401,4 @@ const sendEvents = () => {
 };
 
 export const Analytics = new AnalyticsClass();
+Amplify.register(Analytics);

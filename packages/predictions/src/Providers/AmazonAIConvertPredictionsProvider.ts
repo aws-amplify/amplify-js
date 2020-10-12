@@ -24,6 +24,7 @@ import {
 	MessageHeaderValue,
 } from '@aws-sdk/eventstream-marshaller';
 import { fromUtf8, toUtf8 } from '@aws-sdk/util-utf8-node';
+
 const logger = new Logger('AmazonAIConvertPredictionsProvider');
 const eventBuilder = new EventStreamMarshaller(toUtf8, fromUtf8);
 

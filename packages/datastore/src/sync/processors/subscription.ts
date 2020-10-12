@@ -239,6 +239,7 @@ class SubscriptionProcessor {
 			(async () => {
 				try {
 					// retrieving current AWS Credentials
+					// TODO Should this use `this.amplify.Auth` for SSR?
 					const credentials = await Auth.currentCredentials();
 					userCredentials = credentials.authenticated
 						? USER_CREDENTIALS.auth
@@ -249,6 +250,7 @@ class SubscriptionProcessor {
 
 				try {
 					// retrieving current token info from Cognito UserPools
+					// TODO Should this use `this.amplify.Auth` for SSR?
 					const session = await Auth.currentSession();
 					cognitoTokenPayload = session.getIdToken().decodePayload();
 				} catch (err) {
@@ -256,15 +258,26 @@ class SubscriptionProcessor {
 				}
 
 				try {
-					// retrieving token info from OIDC
+					let token;
+					// backwards compatibility
 					const federatedInfo = await Cache.getItem('federatedInfo');
-					const { token } = federatedInfo;
-					const payload = token.split('.')[1];
+					if (federatedInfo) {
+						token = federatedInfo.token;
+					} else {
+						const currentUser = await Auth.currentAuthenticatedUser();
+						if (currentUser) {
+							token = currentUser.token;
+						}
+					}
 
-					oidcTokenPayload = JSON.parse(
-						Buffer.from(payload, 'base64').toString('utf8')
-					);
+					if (token) {
+						const payload = token.split('.')[1];
+						oidcTokenPayload = JSON.parse(
+							Buffer.from(payload, 'base64').toString('utf8')
+						);
+					}
 				} catch (err) {
+					logger.debug('error getting OIDC JWT', err);
 					// best effort to get oidc jwt
 				}
 
@@ -361,6 +374,10 @@ class SubscriptionProcessor {
 
 													if (typeof subscriptionReadyCallback === 'function') {
 														subscriptionReadyCallback();
+													}
+
+													if (message.includes('"errorType":"Unauthorized"')) {
+														return;
 													}
 
 													observer.error(message);

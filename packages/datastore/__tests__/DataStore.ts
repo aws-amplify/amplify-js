@@ -102,9 +102,13 @@ describe('DataStore tests', () => {
 		test('initSchema is executed only once', () => {
 			initSchema(testSchema());
 
+			const spy = jest.spyOn(console, 'warn');
+
 			expect(() => {
 				initSchema(testSchema());
-			}).toThrow('The schema has already been initialized');
+			}).not.toThrow();
+
+			expect(spy).toBeCalledWith('The schema has already been initialized');
 		});
 
 		test('Non @model class is created', () => {
@@ -127,6 +131,8 @@ describe('DataStore tests', () => {
 			const metadata = new Metadata({
 				author: 'some author',
 				tags: [],
+				rewards: [],
+				nominations: [],
 			});
 
 			expect(metadata).toBeInstanceOf(Metadata);
@@ -196,6 +202,8 @@ describe('DataStore tests', () => {
 
 			const nonModel = new Metadata({
 				author: 'something',
+				rewards: [],
+				nominations: [],
 			});
 
 			expect(() => {
@@ -311,16 +319,57 @@ describe('DataStore tests', () => {
 				'Field field1 should be of type string, number received. 1234'
 			);
 
+			expect(
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						tags: undefined,
+						rewards: [],
+						nominations: [],
+					}),
+				}).metadata.tags
+			).toBeUndefined();
+
 			expect(() => {
 				new Model({
 					field1: 'someField',
 					metadata: new Metadata({
 						author: 'Some author',
 						tags: undefined,
+						rewards: [null],
+						nominations: [],
 					}),
 				});
 			}).toThrowError(
-				'Field tags should be of type string[], undefined received. undefined'
+				'All elements in the rewards array should be of type string, [object] received. '
+			);
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						tags: undefined,
+						rewards: [],
+						nominations: null,
+					}),
+				});
+			}).toThrowError('Field nominations is required');
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						tags: undefined,
+						rewards: [],
+						penNames: [undefined],
+						nominations: [],
+					}),
+				});
+			}).toThrowError(
+				'All elements in the penNames array should be of type string, [undefined] received. '
 			);
 
 			expect(() => {
@@ -329,10 +378,12 @@ describe('DataStore tests', () => {
 					metadata: new Metadata({
 						author: 'Some author',
 						tags: [<any>1234],
+						rewards: [],
+						nominations: [],
 					}),
 				});
 			}).toThrowError(
-				'All elements in the tags array should be of type string, [number] received. 1234'
+				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
 			);
 
 			expect(
@@ -343,9 +394,11 @@ describe('DataStore tests', () => {
 				Model.copyOf(<any>undefined, d => d);
 			}).toThrow('The source object is not a valid model');
 			expect(() => {
-				const source = new Model( {field1: 'something'});
-				Model.copyOf(source, d => d.field1 = <any>1234);
-			}).toThrow('Field field1 should be of type string, number received. 1234');
+				const source = new Model({ field1: 'something' });
+				Model.copyOf(source, d => (d.field1 = <any>1234));
+			}).toThrow(
+				'Field field1 should be of type string, number received. 1234'
+			);
 		});
 
 		test('Delete params', async () => {
@@ -413,6 +466,8 @@ describe('DataStore tests', () => {
 		const metadata = new Metadata({
 			author: 'some author',
 			tags: [],
+			rewards: [],
+			nominations: [],
 		});
 
 		await expect(DataStore.save(<any>metadata)).rejects.toThrow(
@@ -612,6 +667,9 @@ declare class Model {
 export declare class Metadata {
 	readonly author: string;
 	readonly tags?: string[];
+	readonly rewards: string[];
+	readonly penNames?: string[];
+	readonly nominations: string[];
 	constructor(init: Metadata);
 }
 
@@ -683,8 +741,31 @@ function testSchema(): Schema {
 						isArray: true,
 						type: 'String',
 						isRequired: false,
+						isArrayNullable: true,
 						attributes: [],
 					},
+					rewards: {
+						name: 'rewards',
+						isArray: true,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					penNames: {
+						name: 'penNames',
+						isArray: true,
+						type: 'String',
+						isRequired: true,
+						isArrayNullable: true,
+						attributes: [],
+					},
+					nominations: {
+						name: 'nominations',
+						isArray: true,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					}
 				},
 			},
 		},

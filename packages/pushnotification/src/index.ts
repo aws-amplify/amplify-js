@@ -10,9 +10,11 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import { Amplify } from '@aws-amplify/core';
 import NotificationClass from './PushNotification';
 
 const _instance = new NotificationClass(null);
 const PushNotification = _instance;
+Amplify.register(PushNotification);
 
 export default PushNotification;

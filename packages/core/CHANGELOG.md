@@ -3,6 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.5...@aws-amplify/core@3.6.0) (2020-10-01)
+
+
+### Features
+
+* **@aws-amplify/datastore:** support indexeddb adapter on web worker ([#6874](https://github.com/aws-amplify/amplify-js/issues/6874)) ([e43e181](https://github.com/aws-amplify/amplify-js/commit/e43e18195ca201fa61bd0dfb1b18c06c3262f825))
+
+
+
+
+
+## [3.5.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.4...@aws-amplify/core@3.5.5) (2020-09-25)
+
+
+### Bug Fixes
+
+* Add files with Amplify.register to sideEffects array ([#6867](https://github.com/aws-amplify/amplify-js/issues/6867)) ([58ddbf8](https://github.com/aws-amplify/amplify-js/commit/58ddbf8811e44695d97b6ab8be8f7cd2a2242921))
+
+
+
+
+
+## [3.5.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.3...@aws-amplify/core@3.5.4) (2020-09-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** No Auth module registered in Amplify ([#6811](https://github.com/aws-amplify/amplify-js/issues/6811)) ([cfa00d3](https://github.com/aws-amplify/amplify-js/commit/cfa00d32ce942faba72a8064173ba5fc9cba17bd))
+
+
+
+
+
+## [3.5.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.2...@aws-amplify/core@3.5.3) (2020-09-15)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.1...@aws-amplify/core@3.5.2) (2020-09-10)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.0...@aws-amplify/core@3.5.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [3.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.7...@aws-amplify/core@3.5.0) (2020-09-03)
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+## [3.4.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.6...@aws-amplify/core@3.4.7) (2020-09-01)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** get new guest credentials if identity id isn't found ([#6618](https://github.com/aws-amplify/amplify-js/issues/6618)) ([7b904bf](https://github.com/aws-amplify/amplify-js/commit/7b904bf8647a39e5bdb683d9767aaba69ab932f3))
+
+
+
+
+
 ## [3.4.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.4.5...@aws-amplify/core@3.4.6) (2020-08-19)
 
 **Note:** Version bump only for package @aws-amplify/core
