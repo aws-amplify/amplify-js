@@ -154,8 +154,7 @@ function getNonModelFields(
 }
 
 export function getAuthorizationRules(
-	modelDefinition: SchemaModel,
-	transformerOpType: TransformerMutationType
+	modelDefinition: SchemaModel
 ): AuthorizationRule[] {
 	// Searching for owner authorization on attributes
 	const authConfig = []
@@ -171,18 +170,17 @@ export function getAuthorizationRules(
 		const {
 			identityClaim = 'cognito:username',
 			ownerField = 'owner',
-			operations = ['create', 'update', 'delete'],
+			operations = ['create', 'update', 'delete', 'read'],
 			provider = 'userPools',
 			groupClaim = 'cognito:groups',
 			allow: authStrategy = 'iam',
 			groups = [],
 		} = rule;
 
-		const isOperationAuthorized = operations.find(
-			operation => operation.toLowerCase() === transformerOpType.toLowerCase()
-		);
+		// subscriptions for all operations is authorized if `read` is protected
+		const isReadAuthorized = operations.includes('read');
 
-		if (isOperationAuthorized) {
+		if (isReadAuthorized) {
 			const rule: AuthorizationRule = {
 				identityClaim,
 				ownerField,
@@ -204,7 +202,10 @@ export function getAuthorizationRules(
 				const { properties: { subscriptions: { level = 'on' } = {} } = {} } =
 					modelConfig || {};
 
-				rule.areSubscriptionsPublic = level === 'public';
+				// treat subscriptions as public for owner auth with unprotected reads
+				// when `read` is omitted from `operations`
+				rule.areSubscriptionsPublic =
+					!operations.includes('read') || level === 'public';
 			}
 
 			// owner rules has least priority
