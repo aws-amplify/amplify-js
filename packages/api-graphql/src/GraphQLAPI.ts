@@ -16,10 +16,11 @@ import { OperationDefinitionNode } from 'graphql/language';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import Observable from 'zen-observable-ts';
-import Amplify, {
+import {
+	Amplify,
 	ConsoleLogger as Logger,
-	Credentials,
 	Constants,
+	Credentials,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import PubSub from '@aws-amplify/pubsub';
@@ -46,13 +47,16 @@ export class GraphQLAPIClass {
 	private _options;
 	private _api = null;
 
+	Auth = Auth;
+	Cache = Cache;
+	Credentials = Credentials;
+
 	/**
 	 * Initialize GraphQL API with AWS configuration
 	 * @param {Object} options - Configuration object for API
 	 */
 	constructor(options) {
 		this._options = options;
-		Amplify.register(this);
 		logger.debug('API Options', this._options);
 	}
 
@@ -100,6 +104,9 @@ export class GraphQLAPIClass {
 		logger.debug('create Rest instance');
 		if (this._options) {
 			this._api = new RestClient(this._options);
+			// Share instance Credentials with client for SSR
+			this._api.Credentials = this.Credentials;
+
 			return true;
 		} else {
 			return Promise.reject('API not configured');
@@ -132,17 +139,26 @@ export class GraphQLAPIClass {
 				}
 				break;
 			case 'OPENID_CONNECT':
+				let token;
+				// backwards compatibility
 				const federatedInfo = await Cache.getItem('federatedInfo');
-
-				if (!federatedInfo || !federatedInfo.token) {
+				if (federatedInfo) {
+					token = federatedInfo.token;
+				} else {
+					const currentUser = await Auth.currentAuthenticatedUser();
+					if (currentUser) {
+						token = currentUser.token;
+					}
+				}
+				if (!token) {
 					throw new Error('No federated jwt');
 				}
 				headers = {
-					Authorization: federatedInfo.token,
+					Authorization: token,
 				};
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
-				const session = await Auth.currentSession();
+				const session = await this.Auth.currentSession();
 				headers = {
 					Authorization: session.getAccessToken().getJwtToken(),
 				};
@@ -355,10 +371,10 @@ export class GraphQLAPIClass {
 	 * @private
 	 */
 	_ensureCredentials() {
-		return Credentials.get()
+		return this.Credentials.get()
 			.then(credentials => {
 				if (!credentials) return false;
-				const cred = Credentials.shear(credentials);
+				const cred = this.Credentials.shear(credentials);
 				logger.debug('set credentials for api', cred);
 
 				return true;
@@ -371,3 +387,4 @@ export class GraphQLAPIClass {
 }
 
 export const GraphQLAPI = new GraphQLAPIClass(null);
+Amplify.register(GraphQLAPI);

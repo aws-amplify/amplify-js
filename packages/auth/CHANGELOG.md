@@ -3,6 +3,163 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.5...@aws-amplify/auth@3.4.6) (2020-10-01)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** add token to currentAuthenticatedUser for OIDC  ([#6858](https://github.com/aws-amplify/amplify-js/issues/6858)) ([61f7478](https://github.com/aws-amplify/amplify-js/commit/61f7478609fce7dd2f25c562aeb887d3f3db4a67))
+
+
+
+
+
+## [3.4.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.4...@aws-amplify/auth@3.4.5) (2020-09-25)
+
+
+### Bug Fixes
+
+* Add files with Amplify.register to sideEffects array ([#6867](https://github.com/aws-amplify/amplify-js/issues/6867)) ([58ddbf8](https://github.com/aws-amplify/amplify-js/commit/58ddbf8811e44695d97b6ab8be8f7cd2a2242921))
+
+
+
+
+
+## [3.4.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.3...@aws-amplify/auth@3.4.4) (2020-09-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Fix binding for Auth.currentCredentials ([#6809](https://github.com/aws-amplify/amplify-js/issues/6809)) ([912cf10](https://github.com/aws-amplify/amplify-js/commit/912cf105785584e9ba55f78c86dffed50b0bd6df))
+
+
+
+
+
+## [3.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.2...@aws-amplify/auth@3.4.3) (2020-09-15)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [3.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.1...@aws-amplify/auth@3.4.2) (2020-09-10)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [3.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.0...@aws-amplify/auth@3.4.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+# [3.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.6...@aws-amplify/auth@3.4.0) (2020-09-03)
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+## [3.3.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.5...@aws-amplify/auth@3.3.6) (2020-09-01)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Fix types for completeNewPassword ([#6657](https://github.com/aws-amplify/amplify-js/issues/6657)) ([84af018](https://github.com/aws-amplify/amplify-js/commit/84af018657a30382cd489c35a0ebc4c41a63bc26)), closes [#6634](https://github.com/aws-amplify/amplify-js/issues/6634)
+* **@aws-amplify/auth:** incorrect return type for Auth.resendSignUp ([#5112](https://github.com/aws-amplify/amplify-js/issues/5112)) ([9164b37](https://github.com/aws-amplify/amplify-js/commit/9164b37cb7669c9dd08927dde58dccbefad25194))
+
+
+
+
+
+## [3.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.4...@aws-amplify/auth@3.3.5) (2020-08-19)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Default hash to `#` when null ([#6279](https://github.com/aws-amplify/amplify-js/issues/6279)) ([eb97194](https://github.com/aws-amplify/amplify-js/commit/eb9719467f7c143a26bfd2d598b3903ff0815731))
+* **@aws-amplify/auth:** Force clear credentials when bypassCache: true ([#6581](https://github.com/aws-amplify/amplify-js/issues/6581)) ([128527c](https://github.com/aws-amplify/amplify-js/commit/128527c6834bafe37b2f4c6c5fca9029b03a7e3d))
+
+
+
+
+
+## [3.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.3...@aws-amplify/auth@3.3.4) (2020-08-06)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [3.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.2...@aws-amplify/auth@3.3.3) (2020-07-27)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [3.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.1...@aws-amplify/auth@3.3.2) (2020-07-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** add totpRequired callback to completeNewPassword ([#6292](https://github.com/aws-amplify/amplify-js/issues/6292)) ([6b52d0b](https://github.com/aws-amplify/amplify-js/commit/6b52d0b1e26ad0b3661536040af3d78ddf20b3e9))
+* **@aws-amplify/auth:** Fix react-native oauth signout ([#6376](https://github.com/aws-amplify/amplify-js/issues/6376)) ([c27b816](https://github.com/aws-amplify/amplify-js/commit/c27b8164995220090967f782ccd8e42ad4fa4bdb))
+* **@aws-amplify/auth:** signout promise on OAuth flow ([#6294](https://github.com/aws-amplify/amplify-js/issues/6294)) ([68af3ab](https://github.com/aws-amplify/amplify-js/commit/68af3abb54d5af4e1bcedacb8e2137e10e2c971c))
+
+
+
+
+
+## [3.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.3.0...@aws-amplify/auth@3.3.1) (2020-07-09)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+# [3.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.2.14...@aws-amplify/auth@3.3.0) (2020-07-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** User Attributes coerced to boolean ([#6180](https://github.com/aws-amplify/amplify-js/issues/6180)) ([8dd9295](https://github.com/aws-amplify/amplify-js/commit/8dd92959fbe11c328ec4f8e467c0929ed1e7e5ca))
+
+
+### Features
+
+* **@aws-amplify/auth:** add SignInWithApple to supported providers ([#5402](https://github.com/aws-amplify/amplify-js/issues/5402)) ([c6e8162](https://github.com/aws-amplify/amplify-js/commit/c6e8162bd9a148453f3cb1f58960ed3a59a50a0b))
+
+
+
+
+
+## [3.2.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.2.13...@aws-amplify/auth@3.2.14) (2020-06-18)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Call replaceState before dispatchAuthEvent ([#5937](https://github.com/aws-amplify/amplify-js/issues/5937)) ([1e8d4ed](https://github.com/aws-amplify/amplify-js/commit/1e8d4ed9cdecf8b91d5032ae6125afe6b9048873))
+* **@aws-amplify/core:** retry federation refresh token on network error ([#5728](https://github.com/aws-amplify/amplify-js/issues/5728)) ([bd07ee8](https://github.com/aws-amplify/amplify-js/commit/bd07ee8e8b987021e58b9c25d5e1ef524aa4abbc))
+
+
+
+
+
 ## [3.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.2.12...@aws-amplify/auth@3.2.13) (2020-06-09)
 
 **Note:** Version bump only for package @aws-amplify/auth

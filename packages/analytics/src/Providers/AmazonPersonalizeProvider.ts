@@ -29,7 +29,9 @@ import {
 	SessionInfoManager,
 	MediaAutoTrack,
 } from './AmazonPersonalizeHelper';
-import { isEmpty, isEqual, get } from 'lodash';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
+import isEqual from 'lodash/isEqual';
 import { AnalyticsProvider } from '../types';
 
 const logger = new Logger('AmazonPersonalizeProvider');

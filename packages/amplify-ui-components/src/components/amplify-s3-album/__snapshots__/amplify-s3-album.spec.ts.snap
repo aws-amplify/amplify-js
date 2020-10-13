@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-s3-album spec: Render logic -> should render album 1`] = `
+<amplify-s3-album>
+  <mock:shadow-root>
+    <div>
+      <div class="album-container">
+        <div class="grid-row"></div>
+      </div>
+      <amplify-picker acceptvalue="image/*" pickertext="Pick a file"></amplify-picker>
+    </div>
+  </mock:shadow-root>
+</amplify-s3-album>
+`;

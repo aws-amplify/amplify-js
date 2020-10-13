@@ -13,6 +13,7 @@
 
 import React, { Component, FC } from 'react';
 import {
+	Image,
 	Keyboard,
 	Picker,
 	Platform,
@@ -30,12 +31,11 @@ import { I18n } from 'aws-amplify';
 import AmplifyTheme, {
 	AmplifyThemeType,
 	linkUnderlayColor,
-	errorIconColor,
 	placeholderColor,
 } from './AmplifyTheme';
-import { Icon } from 'react-native-elements';
 import countryDialCodes from './CountryDialCodes';
 import TEST_ID from './AmplifyTestIDs';
+import icons from './icons';
 
 interface IContainerProps {
 	theme?: AmplifyThemeType;
@@ -202,7 +202,7 @@ export const ErrorRow: FC<IErrorRowProps> = props => {
 	if (!props.children) return null;
 	return (
 		<View style={theme.errorRow}>
-			<Icon name="warning" color={errorIconColor} />
+			<Image source={icons.warning} style={theme.errorRowIcon} />
 			<Text style={theme.errorRowText} testID={TEST_ID.AUTH.ERROR_ROW_TEXT}>
 				{props.children}
 			</Text>

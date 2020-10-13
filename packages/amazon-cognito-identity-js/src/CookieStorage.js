@@ -9,6 +9,7 @@ export default class CookieStorage {
 	 * @param {string} data.path Cookies path (default: '/')
 	 * @param {integer} data.expires Cookie expiration (in days, default: 365)
 	 * @param {boolean} data.secure Cookie secure flag (default: true)
+	 * @param {string} data.sameSite Cookie request behaviour (default: null)
 	 */
 	constructor(data) {
 		if (data.domain) {
@@ -31,6 +32,21 @@ export default class CookieStorage {
 		} else {
 			this.secure = true;
 		}
+		if (Object.prototype.hasOwnProperty.call(data, 'sameSite')) {
+			if (!['strict','lax','none'].includes(data.sameSite)) {
+				throw new Error(
+					'The sameSite value of cookieStorage must be "lax", "strict" or "none".'
+				);
+			}
+			if (data.sameSite === 'none' && !this.secure) {
+				throw new Error(
+					'sameSite = None requires the Secure attribute in latest browser versions.'
+				);
+			}
+			this.sameSite = data.sameSite;
+		} else {
+			this.sameSite = null;
+		}
 	}
 
 	/**
@@ -40,12 +56,18 @@ export default class CookieStorage {
 	 * @returns {string} value that was set
 	 */
 	setItem(key, value) {
-		Cookies.set(key, value, {
+		const options = {
 			path: this.path,
 			expires: this.expires,
 			domain: this.domain,
 			secure: this.secure,
-		});
+		};
+
+		if (this.sameSite) {
+			options.sameSite = this.sameSite;
+		}
+
+		Cookies.set(key, value, options);
 		return Cookies.get(key);
 	}
 
@@ -65,11 +87,18 @@ export default class CookieStorage {
 	 * @returns {string} value - value that was deleted
 	 */
 	removeItem(key) {
-		return Cookies.remove(key, {
+		const options = {
 			path: this.path,
+			expires: this.expires,
 			domain: this.domain,
 			secure: this.secure,
-		});
+		};
+
+		if (this.sameSite) {
+			options.sameSite = this.sameSite;
+		}
+
+		return Cookies.remove(key, options);
 	}
 
 	/**

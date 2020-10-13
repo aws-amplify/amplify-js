@@ -1,13 +1,14 @@
 import { Auth } from '@aws-amplify/auth';
-import { I18n, Logger, isEmpty } from '@aws-amplify/core';
-import { Component, Prop, State, h } from '@stencil/core';
+import { I18n, Logger } from '@aws-amplify/core';
+import { Component, Prop, State, h, Host } from '@stencil/core';
 import QRCode from 'qrcode';
 
-import { CognitoUserInterface, AuthStateHandler, AuthState, MfaOption } from '../../common/types/auth-types';
+import { CognitoUserInterface, AuthStateHandler, MfaOption } from '../../common/types/auth-types';
 import { Translations } from '../../common/Translations';
 import { TOTPSetupEventType } from './amplify-totp-setup-interface';
 import { NO_AUTH_MODULE_FOUND, SETUP_TOTP, SUCCESS } from '../../common/constants';
 import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { checkContact } from '../../common/auth-helpers';
 
 const logger = new Logger('TOTP');
 
@@ -26,7 +27,9 @@ export class AmplifyTOTPSetup {
   /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Used for header text in totp setup component */
-  @Prop() headerText: string = I18n.get(Translations.TOTP_HEADER_TEXT);
+  @Prop() headerText: string = Translations.TOTP_HEADER_TEXT;
+  /** Used for customizing the issuer string in the qr code image */
+  @Prop() issuer: string = Translations.TOTP_ISSUER;
 
   @State() code: string | null = null;
   @State() setupMessage: string | null = null;
@@ -42,28 +45,11 @@ export class AmplifyTOTPSetup {
     return `otpauth://totp/${issuer}:${user.username}?secret=${secretKey}&issuer=${issuer}`;
   }
 
-  private async checkContact(user: CognitoUserInterface) {
-    if (!Auth || typeof Auth.verifiedContact !== 'function') {
-      throw new Error(NO_AUTH_MODULE_FOUND);
-    }
-    try {
-      const dataVerifed = await Auth.verifiedContact(user);
-      if (!isEmpty(dataVerifed)) {
-        this.handleAuthStateChange(AuthState.SignedIn, user);
-      } else {
-        const newUser = Object.assign(user, dataVerifed);
-        this.handleAuthStateChange(AuthState.VerifyContact, newUser);
-      }
-    } catch (error) {
-      dispatchToastHubEvent(error);
-    }
-  }
-
-  private onTOTPEvent(event: TOTPSetupEventType, data: any, user: CognitoUserInterface) {
+  private async onTOTPEvent(event: TOTPSetupEventType, data: any, user: CognitoUserInterface) {
     logger.debug('on totp event', event, data);
 
     if (event === SETUP_TOTP && data === SUCCESS) {
-      this.checkContact(user);
+      await checkContact(user, this.handleAuthStateChange);
     }
   }
 
@@ -82,7 +68,7 @@ export class AmplifyTOTPSetup {
 
   private async setup() {
     this.setupMessage = null;
-    const issuer = encodeURI('AWSCognito');
+    const encodedIssuer = encodeURI(I18n.get(this.issuer));
 
     if (!Auth || typeof Auth.setupTOTP !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
@@ -93,7 +79,7 @@ export class AmplifyTOTPSetup {
       const secretKey = await Auth.setupTOTP(this.user);
 
       logger.debug('secret key', secretKey);
-      this.code = this.buildOtpAuthPath(this.user, issuer, secretKey);
+      this.code = this.buildOtpAuthPath(this.user, encodedIssuer, secretKey);
 
       this.generateQRCode(this.code);
     } catch (error) {
@@ -127,33 +113,34 @@ export class AmplifyTOTPSetup {
       this.setupMessage = I18n.get(Translations.TOTP_SUCCESS_MESSAGE);
       logger.debug(I18n.get(Translations.TOTP_SUCCESS_MESSAGE));
 
-      this.onTOTPEvent(SETUP_TOTP, SUCCESS, user);
+      await this.onTOTPEvent(SETUP_TOTP, SUCCESS, user);
     } catch (error) {
       this.setupMessage = I18n.get(Translations.TOTP_SETUP_FAILURE);
       logger.error(error);
     }
   }
 
-  // TODO add Toast component to the Top of the form section
   render() {
     return (
-      <amplify-form-section
-        headerText={this.headerText}
-        submitButtonText={I18n.get(Translations.TOTP_SUBMIT_BUTTON_TEXT)}
-        handleSubmit={event => this.verifyTotpToken(event)}
-        loading={this.loading}
-      >
-        <div class="totp-setup">
-          <img src={this.qrCodeImageSource} alt={I18n.get(Translations.QR_CODE_ALT)} />
-          <amplify-form-field
-            label={I18n.get(Translations.TOTP_LABEL)}
-            inputProps={this.inputProps}
-            fieldId="totpCode"
-            name="totpCode"
-            handleInputChange={event => this.handleTotpInputChange(event)}
-          />
-        </div>
-      </amplify-form-section>
+      <Host>
+        <amplify-form-section
+          headerText={I18n.get(this.headerText)}
+          submitButtonText={I18n.get(Translations.TOTP_SUBMIT_BUTTON_TEXT)}
+          handleSubmit={event => this.verifyTotpToken(event)}
+          loading={this.loading}
+        >
+          <div class="totp-setup">
+            <img src={this.qrCodeImageSource} alt={I18n.get(Translations.QR_CODE_ALT)} />
+            <amplify-form-field
+              label={I18n.get(Translations.TOTP_LABEL)}
+              inputProps={this.inputProps}
+              fieldId="totpCode"
+              name="totpCode"
+              handleInputChange={event => this.handleTotpInputChange(event)}
+            />
+          </div>
+        </amplify-form-section>
+      </Host>
     );
   }
 }

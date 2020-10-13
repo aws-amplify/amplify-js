@@ -1,6 +1,7 @@
 import { Element, Component, Prop, h } from '@stencil/core';
 import { ButtonTypes, ButtonVariant } from '../../common/types/ui-types';
 import { hasShadowDom } from '../../common/helpers';
+import { IconNameType } from '../amplify-icon/icons';
 
 @Component({
   tag: 'amplify-button',
@@ -17,6 +18,8 @@ export class AmplifyButton {
   @Prop() handleButtonClick: (evt: Event) => void;
   /** Disabled state of the button */
   @Prop() disabled?: boolean = false;
+  /** Name of icon to be placed inside the button */
+  @Prop() icon?: IconNameType;
 
   private handleClick = (ev: Event) => {
     if (this.handleButtonClick) {
@@ -55,6 +58,7 @@ export class AmplifyButton {
         disabled={this.disabled}
         onClick={this.handleClick}
       >
+        {this.variant === 'icon' && <amplify-icon name={this.icon}></amplify-icon>}
         <slot />
       </button>
     );

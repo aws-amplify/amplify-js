@@ -22,15 +22,21 @@ const MIME_MAP = [
 	{ type: 'text/calendar', ext: 'ics' },
 	{ type: 'text/calendar', ext: 'ical' },
 
-	{ type: 'image/png', ext: 'png' },
+	{ type: 'image/apng', ext: 'apng' },
+	{ type: 'image/bmp', ext: 'bmp' },
 	{ type: 'image/gif', ext: 'gif' },
+	{ type: 'image/x-icon', ext: 'ico' },
+	{ type: 'image/x-icon', ext: 'cur' },
 	{ type: 'image/jpeg', ext: 'jpg' },
 	{ type: 'image/jpeg', ext: 'jpeg' },
-	{ type: 'image/bmp', ext: 'bmp' },
-	{ type: 'image/x-icon', ext: 'ico' },
+	{ type: 'image/jpeg', ext: 'jfif' },
+	{ type: 'image/jpeg', ext: 'pjp' },
+	{ type: 'image/jpeg', ext: 'pjpeg' },
+	{ type: 'image/png', ext: 'png' },
+	{ type: 'image/svg+xml', ext: 'svg' },
 	{ type: 'image/tiff', ext: 'tif' },
 	{ type: 'image/tiff', ext: 'tiff' },
-	{ type: 'image/svg+xml', ext: 'svg' },
+	{ type: 'image/webp', ext: 'webp' },
 
 	{ type: 'application/json', ext: 'json' },
 	{ type: 'application/xml', ext: 'xml' },
@@ -156,6 +162,15 @@ export const makeQuerablePromise = promise => {
 	return result;
 };
 
+export const isWebWorker = () => {
+	if (typeof self === 'undefined') {
+		return false;
+	}
+	const selfContext = self as { WorkerGlobalScope? };
+	return typeof selfContext.WorkerGlobalScope !== 'undefined' &&
+		self instanceof selfContext.WorkerGlobalScope;
+};
+
 export const browserOrNode = () => {
 	const isBrowser =
 		typeof window !== 'undefined' && typeof window.document !== 'undefined';
@@ -262,6 +277,7 @@ export class JS {
 	static isTextFile = isTextFile;
 	static generateRandomString = generateRandomString;
 	static makeQuerablePromise = makeQuerablePromise;
+	static isWebWorker = isWebWorker;
 	static browserOrNode = browserOrNode;
 	static transferKeyToLowerCase = transferKeyToLowerCase;
 	static transferKeyToUpperCase = transferKeyToUpperCase;

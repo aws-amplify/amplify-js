@@ -1,4 +1,6 @@
-export enum Translations {
+import { AuthErrorStrings } from '@aws-amplify/auth';
+
+export enum AuthStrings {
   BACK_TO_SIGN_IN = 'Back to Sign In',
   CHANGE_PASSWORD_ACTION = 'Change',
   CHANGE_PASSWORD = 'Change Password',
@@ -31,6 +33,7 @@ export enum Translations {
   SELECT_MFA_TYPE_HEADER_TEXT = 'Select MFA Type',
   SELECT_MFA_TYPE_SUBMIT_BUTTON_TEXT = 'Verify',
   SEND_CODE = 'Send Code',
+  SUBMIT = 'Submit',
   SETUP_TOTP_REQUIRED = 'TOTP needs to be configured',
   SIGN_IN_ACTION = 'Sign In',
   SIGN_IN_HEADER_TEXT = 'Sign in to your account',
@@ -50,6 +53,7 @@ export enum Translations {
   SUCCESS_MFA_TYPE = 'Success! Your MFA Type is now:',
   TOTP_HEADER_TEXT = 'Scan then enter verification code',
   TOTP_LABEL = 'Enter Security Code:',
+  TOTP_ISSUER = 'AWSCognito',
   TOTP_SETUP_FAILURE = 'TOTP Setup has failed',
   TOTP_SUBMIT_BUTTON_TEXT = 'Verify Security Token',
   TOTP_SUCCESS_MESSAGE = 'Setup TOTP successfully!',
@@ -91,4 +95,27 @@ export enum Translations {
   WEBSITE_PLACEHOLDER = 'Enter your website',
   NAME_LABEL = 'Full Name',
   NAME_PLACEHOLDER = 'Enter your full name',
+  PHOTO_PICKER_TITLE = 'Picker Title',
+  PHOTO_PICKER_HINT = 'Ancilliary text or content may occupy this space here',
+  PHOTO_PICKER_PLACEHOLDER_HINT = 'Placeholder hint',
+  PHOTO_PICKER_BUTTON_TEXT = 'Button',
+  IMAGE_PICKER_TITLE = 'Add Profile Photo',
+  IMAGE_PICKER_HINT = 'Preview the image before upload',
+  IMAGE_PICKER_PLACEHOLDER_HINT = 'Tap to image select',
+  IMAGE_PICKER_BUTTON_TEXT = 'Upload',
+  PICKER_TEXT = 'Pick a file',
+  TEXT_FALLBACK_CONTENT = 'Fallback Content',
+  CONFIRM_SIGN_UP_FAILED = 'Confirm Sign Up Failed',
+  SIGN_UP_FAILED = 'Sign Up Failed',
 }
+
+export enum InteractionsStrings {
+  CHATBOT_TITLE = 'ChatBot Lex',
+  TEXT_INPUT_PLACEHOLDER = 'Write a message',
+  VOICE_INPUT_PLACEHOLDER = 'Click mic to speak',
+  CHAT_DISABLED_ERROR = 'Error: Either voice or text must be enabled for the chatbot',
+  NO_BOT_NAME_ERROR = 'Error: Bot name must be provided to ChatBot',
+}
+
+type Translations = AuthErrorStrings | AuthStrings | InteractionsStrings;
+export const Translations = { ...AuthStrings, ...AuthErrorStrings, ...InteractionsStrings };

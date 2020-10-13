@@ -3,6 +3,140 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.2...aws-amplify@3.3.3) (2020-10-01)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.1...aws-amplify@3.3.2) (2020-09-25)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.0...aws-amplify@3.3.1) (2020-09-16)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+# [3.3.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.2.0...aws-amplify@3.3.0) (2020-09-15)
+
+
+### Features
+
+* **@aws-amplify/datastore:** add query sorting ([#6785](https://github.com/aws-amplify/amplify-js/issues/6785)) ([d9c2f5e](https://github.com/aws-amplify/amplify-js/commit/d9c2f5efbd5ad5dd97e441d7f453f8358f615199))
+
+
+
+
+
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.1.1...aws-amplify@3.2.0) (2020-09-10)
+
+
+### Features
+
+* **@aws-amplify/datastore:** Add SSR support for DataStore ([#6726](https://github.com/aws-amplify/amplify-js/issues/6726)) ([e56aba6](https://github.com/aws-amplify/amplify-js/commit/e56aba642acc7eb3482f0e69454a530409d1b3ac))
+
+
+
+
+
+## [3.1.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.1.0...aws-amplify@3.1.1) (2020-09-03)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.25...aws-amplify@3.1.0) (2020-09-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** DataStore regression with AsyncStorage ([#6712](https://github.com/aws-amplify/amplify-js/issues/6712)) ([7059556](https://github.com/aws-amplify/amplify-js/commit/7059556f693b4a52143ecaa9934a14f7195caee8))
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+## [3.0.25](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.24...aws-amplify@3.0.25) (2020-09-01)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.24](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.23...aws-amplify@3.0.24) (2020-08-19)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.23](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.22...aws-amplify@3.0.23) (2020-08-06)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.22](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.21...aws-amplify@3.0.22) (2020-07-27)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.21](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.20...aws-amplify@3.0.21) (2020-07-22)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.20](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.19...aws-amplify@3.0.20) (2020-07-09)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.19](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.18...aws-amplify@3.0.19) (2020-07-07)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.0.18](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.17...aws-amplify@3.0.18) (2020-06-18)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
 ## [3.0.17](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.0.16...aws-amplify@3.0.17) (2020-06-09)
 
 **Note:** Version bump only for package aws-amplify

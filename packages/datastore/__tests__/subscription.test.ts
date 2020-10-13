@@ -171,7 +171,7 @@ describe('sync engine subscription module', () => {
 			)
 		).toEqual(authInfo);
 	});
-	test('group authorization', () => {
+	test('groups authorization', () => {
 		const model: SchemaModel = {
 			syncable: true,
 			name: 'Post',
@@ -185,7 +185,7 @@ describe('sync engine subscription module', () => {
 							{
 								provider: 'userPools',
 								ownerField: 'owner',
-								allow: 'group',
+								allow: 'groups',
 								groups: ['mygroup'],
 								identityClaim: 'cognito:username',
 								operations: ['create', 'update', 'delete'],
