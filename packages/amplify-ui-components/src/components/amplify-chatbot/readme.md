@@ -31,7 +31,7 @@
 
 | Slot       | Description                     |
 | ---------- | ------------------------------- |
-| `"header"` | title content placed at the top |
+| `"header"` | Title content placed at the top |
 
 
 ## CSS Custom Properties
