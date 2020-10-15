@@ -30,7 +30,6 @@ import CognitoUserSession from './CognitoUserSession';
 import DateHelper from './DateHelper';
 import CognitoUserAttribute from './CognitoUserAttribute';
 import StorageHelper from './StorageHelper';
-import { thisExpression } from '@babel/types';
 
 /**
  * @callback nodeCallback
