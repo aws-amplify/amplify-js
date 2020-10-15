@@ -289,7 +289,7 @@ describe('API test', () => {
 			expect(spyon).toBeCalledWith(url, init);
 		});
 
-		test('happy-case-query-oidc', async () => {
+		test('happy-case-query-oidc with Cache token', async () => {
 			const spyonAuth = jest
 				.spyOn(Credentials, 'get')
 				.mockImplementationOnce(() => {
@@ -379,6 +379,109 @@ describe('API test', () => {
 			expect(spyon).toBeCalledWith(url, init);
 
 			spyonCache.mockClear();
+		});
+
+		test('happy-case-query-oidc with auth storage federated token', async () => {
+			const spyonCredentials = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res('cred');
+					});
+				});
+
+			const cache_config = {
+				capacityInBytes: 3000,
+				itemMaxSize: 800,
+				defaultTTL: 3000000,
+				defaultPriority: 5,
+				warningThreshold: 0.8,
+				storage: window.localStorage,
+			};
+
+			Cache.configure(cache_config);
+
+			const spyonCache = jest
+				.spyOn(Cache, 'getItem')
+				.mockImplementationOnce(() => {
+					return null;
+				});
+
+			const spyonAuth = jest
+				.spyOn(Auth, 'currentAuthenticatedUser')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res({
+							name: 'federated user',
+							token: 'federated_token_from_storage',
+						});
+					});
+				});
+
+			const spyon = jest
+				.spyOn(RestClient.prototype, 'post')
+				.mockImplementationOnce((url, init) => {
+					return new Promise((res, rej) => {
+						res({});
+					});
+				});
+
+			const api = new API(config);
+			const url = 'https://appsync.amazonaws.com',
+				region = 'us-east-2',
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+			api.configure({
+				aws_appsync_graphqlEndpoint: url,
+				aws_appsync_region: region,
+				aws_appsync_authenticationType: 'OPENID_CONNECT',
+			});
+			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
+				getEvent(id: $id) {
+					id
+					name
+					where
+					when
+					description
+					comments(nextToken: $nextToken) {
+						items {
+						commentId
+						content
+						createdAt
+						}
+					}
+				}
+			}`;
+
+			const doc = parse(GetEvent);
+			const query = print(doc);
+
+			const headers = {
+				Authorization: 'federated_token_from_storage',
+				'x-amz-user-agent': Constants.userAgent,
+			};
+
+			const body = {
+				query,
+				variables,
+			};
+
+			const init = {
+				headers,
+				body,
+				signerServiceInfo: {
+					service: 'appsync',
+					region,
+				},
+				cancellableToken: mockCancellableToken,
+			};
+
+			await api.graphql(graphqlOperation(GetEvent, variables));
+
+			expect(spyon).toBeCalledWith(url, init);
+
+			spyonCredentials.mockClear();
+			spyonCache.mockClear();
+			spyonAuth.mockClear();
 		});
 
 		test('multi-auth default case AWS_IAM, using API_KEY as auth mode', async () => {

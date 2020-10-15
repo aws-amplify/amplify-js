@@ -33,8 +33,8 @@ export class CredentialsClass {
 	private _identityId;
 	private _nextCredentialsRefresh: Number;
 
-	// `Amplify.Auth` will either be `Auth` or `null` depending on if Auth was imported
-	Auth = Amplify.Auth;
+	// Allow `Auth` to be injected for SSR, but Auth isn't a required dependency for Credentials
+	Auth = undefined;
 
 	constructor(config) {
 		this.configure(config);
@@ -105,8 +105,11 @@ export class CredentialsClass {
 		logger.debug('need to get a new credential or refresh the existing one');
 
 		// Some use-cases don't require Auth for signing in, but use Credentials for guest users (e.g. Analytics)
-		if (this.Auth && typeof this.Auth.currentUserCredentials === 'function') {
-			return this.Auth.currentUserCredentials();
+		// Prefer locally scoped `Auth`, but fallback to registered `Amplify.Auth` global otherwise.
+		const { Auth = Amplify.Auth } = this;
+
+		if (Auth && typeof Auth.currentUserCredentials === 'function') {
+			return Auth.currentUserCredentials();
 		} else {
 			return Promise.reject('No Auth module registered in Amplify');
 		}

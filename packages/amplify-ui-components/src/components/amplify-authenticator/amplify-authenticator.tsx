@@ -203,7 +203,11 @@ export class AmplifyAuthenticator {
             data-test="authenticator-error"
           />
         ) : null}
-        {this.renderAuthComponent(this.authState)}
+        {this.authState === AuthState.SignedIn ? (
+          this.renderAuthComponent(this.authState)
+        ) : (
+          <div class="auth-container">{this.renderAuthComponent(this.authState)}</div>
+        )}
       </Host>
     );
   }
