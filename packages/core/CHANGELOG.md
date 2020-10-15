@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.6.0...@aws-amplify/core@3.7.0) (2020-10-15)
+
+
+### Features
+
+* **@aws-amplify/core:** add worker support to reachability ([#6956](https://github.com/aws-amplify/amplify-js/issues/6956)) ([ebb20c1](https://github.com/aws-amplify/amplify-js/commit/ebb20c1c970eea5dc32288f4dfda9c2cc959ac10))
+
+
+
+
+
 # [3.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.5...@aws-amplify/core@3.6.0) (2020-10-01)
 
 
