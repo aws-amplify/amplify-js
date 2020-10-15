@@ -31,15 +31,15 @@
 
 ## CSS Custom Properties
 
-| Name                 | Description                |
-| -------------------- | -------------------------- |
-| `--background-color` | Component background color |
-| `--border-radius`    | Component border radius    |
-| `--box-shadow`       | Component box shadow       |
-| `--margin-bottom`    | Margin below the component |
-| `--min-width`        | Component minimum width    |
-| `--padding`          | Padding within component   |
-| `--width`            | Component width            |
+| Name                 | Description                       |
+| -------------------- | --------------------------------- |
+| `--background-color` | Background color of the container |
+| `--border-radius`    | Border radius of the container    |
+| `--box-shadow`       | Bow shadow of the container       |
+| `--margin-bottom`    | Margin below the component        |
+| `--min-width`        | Minimum width of the container    |
+| `--padding`          | Padding within the component      |
+| `--width`            | Width of the container            |
 
 
 ## Dependencies

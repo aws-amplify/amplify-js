@@ -23,23 +23,23 @@
 
 ## CSS Custom Properties
 
-| Name                         | Description                                                  |
-| ---------------------------- | ------------------------------------------------------------ |
-| `--background-color`         | Background color of the button                               |
-| `--background-color-active`  | Background color of the button when it's active              |
-| `--background-color-disable` | Background color of the button when it's disabled            |
-| `--border-color`             | Border color of the button                                   |
-| `--border-style`             | Border style of the button                                   |
-| `--border-width`             | Border width of the button                                   |
-| `--color`                    | Text color within the button                                 |
-| `--icon-fill`                | Icon fill color within an icon variant button                |
-| `--icon-height`              | Icon height within an icon variant button                    |
-| `--link-active`              | Text color within the anchor variant button when it's active |
-| `--link-color`               | Text color within an anchor variant button                   |
-| `--link-hover`               | Text color within an anchor variant button when it's hovered |
-| `--padding`                  | Padding within the button                                    |
-| `--text-transform`           | Text capitalization transform within the button              |
-| `--width`                    | Width of the button                                          |
+| Name                         | Description                                              |
+| ---------------------------- | -------------------------------------------------------- |
+| `--background-color`         | Background color of the button                           |
+| `--background-color-active`  | Background color of the button when it's active          |
+| `--background-color-disable` | Background color of the button when it's disabled        |
+| `--border-color`             | Border color of the button                               |
+| `--border-style`             | Border style of the button                               |
+| `--border-width`             | Border width of the button                               |
+| `--color`                    | Text color within the button                             |
+| `--icon-fill`                | Icon fill color within an icon variant button            |
+| `--icon-height`              | Icon height within an icon variant button                |
+| `--link-active`              | Text color within the anchor variant button when active  |
+| `--link-color`               | Text color within an anchor variant button               |
+| `--link-hover`               | Text color within an anchor variant button when hovering |
+| `--padding`                  | Padding within the button                                |
+| `--text-transform`           | Text capitalization transform within the button          |
+| `--width`                    | Width of the button                                      |
 
 
 ## Dependencies
