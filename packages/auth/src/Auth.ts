@@ -2054,7 +2054,11 @@ export class AuthClass {
 
 		const { authenticationFlowType } = this._config;
 
-		const user = new CognitoUser(userData);
+		const user = new CognitoUser(userData, {
+			onTokenRefresh() {
+				dispatchAuthEvent('token_refresh', undefined, `New token retrieved`);
+			},
+		});
 		if (authenticationFlowType) {
 			user.setAuthenticationFlowType(authenticationFlowType);
 		}

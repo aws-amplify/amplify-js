@@ -60,8 +60,15 @@ declare module 'amazon-cognito-identity-js' {
 		Storage?: ICognitoStorage;
 	}
 
+	export interface ICognitoUserEventEmitters {
+		onTokenRefresh(): void;
+	}
+
 	export class CognitoUser {
-		constructor(data: ICognitoUserData);
+		constructor(
+			data: ICognitoUserData,
+			eventEmitters?: ICognitoUserEventEmitters
+		);
 
 		public setSignInUserSession(
 			signInUserSession: CognitoUserSession
@@ -75,7 +82,9 @@ declare module 'amazon-cognito-identity-js' {
 		): string;
 
 		public getSession(
-			callback: ((error: Error, session: null) => void) | ((error: null, session: CognitoUserSession) => void)
+			callback:
+				| ((error: Error, session: null) => void)
+				| ((error: null, session: CognitoUserSession) => void)
 		): void;
 		public refreshSession(
 			refreshToken: CognitoRefreshToken,
@@ -221,7 +230,10 @@ declare module 'amazon-cognito-identity-js' {
 		public enableMFA(callback: NodeCallback<Error, string>): void;
 		public disableMFA(callback: NodeCallback<Error, string>): void;
 		public getMFAOptions(callback: NodeCallback<Error, MFAOption[]>): void;
-		public getUserData(callback: NodeCallback<Error, UserData>, params?: any): void;
+		public getUserData(
+			callback: NodeCallback<Error, UserData>,
+			params?: any
+		): void;
 		public associateSoftwareToken(callbacks: {
 			associateSecretCode: (secretCode: string) => void;
 			onFailure: (err: any) => void;
