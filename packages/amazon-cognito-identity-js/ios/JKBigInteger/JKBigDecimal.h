@@ -11,7 +11,7 @@
 #import <Foundation/Foundation.h>
 #import "JKBigInteger.h"
 
-@interface JKBigDecimal : NSObject <NSCoding>
+@interface JKBigDecimal : NSObject <NSSecureCoding>
 
 @property(nonatomic, retain)JKBigInteger *bigInteger;
 @property(nonatomic, assign)NSUInteger figure;//小数位数

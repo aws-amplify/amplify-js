@@ -162,6 +162,15 @@ export const makeQuerablePromise = promise => {
 	return result;
 };
 
+export const isWebWorker = () => {
+	if (typeof self === 'undefined') {
+		return false;
+	}
+	const selfContext = self as { WorkerGlobalScope? };
+	return typeof selfContext.WorkerGlobalScope !== 'undefined' &&
+		self instanceof selfContext.WorkerGlobalScope;
+};
+
 export const browserOrNode = () => {
 	const isBrowser =
 		typeof window !== 'undefined' && typeof window.document !== 'undefined';
@@ -268,6 +277,7 @@ export class JS {
 	static isTextFile = isTextFile;
 	static generateRandomString = generateRandomString;
 	static makeQuerablePromise = makeQuerablePromise;
+	static isWebWorker = isWebWorker;
 	static browserOrNode = browserOrNode;
 	static transferKeyToLowerCase = transferKeyToLowerCase;
 	static transferKeyToUpperCase = transferKeyToUpperCase;

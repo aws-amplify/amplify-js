@@ -780,13 +780,22 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	}
 
 	private async _awsRealTimeOPENIDHeader({ host }) {
+		let token;
+		// backwards compatibility
 		const federatedInfo = await Cache.getItem('federatedInfo');
-
-		if (!federatedInfo || !federatedInfo.token) {
+		if (federatedInfo) {
+			token = federatedInfo.token;
+		} else {
+			const currentUser = await Auth.currentAuthenticatedUser();
+			if (currentUser) {
+				token = currentUser.token;
+			}
+		}
+		if (!token) {
 			throw new Error('No federated jwt');
 		}
 		return {
-			Authorization: federatedInfo.token,
+			Authorization: token,
 			host,
 		};
 	}
