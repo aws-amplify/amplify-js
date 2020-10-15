@@ -26,8 +26,8 @@ export const clientInfo = () => {
 		platform: OS,
 		version: String(Version),
 		appVersion: [OS, String(Version)].join('/'),
-		make: make,
-		model: model,
+		make,
+		model,
 	};
 };
 

@@ -159,6 +159,10 @@ export class HubClass {
 				callback: cb,
 			});
 		}
+
+		return () => {
+			this.remove(channel, cb);
+		};
 	}
 
 	private _toListeners(capsule: HubCapsule) {
@@ -206,5 +210,8 @@ export class HubClass {
 /*We export a __default__ instance of HubClass to use it as a 
 psuedo Singleton for the main messaging bus, however you can still create
 your own instance of HubClass() for a separate "private bus" of events.*/
-const Hub = new HubClass('__default__');
+export const Hub = new HubClass('__default__');
+/**
+ * @deprecated use named import
+ */
 export default Hub;

@@ -11,17 +11,19 @@
  * and limitations under the License.
  */
 
-import StorageClass from './Storage';
-import { StorageProvider } from './types';
+import { Storage as StorageClass } from './Storage';
 
-import Amplify, { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Storage');
 
 let _instance: StorageClass = null;
 
-if (!_instance) {
-	logger.debug('Create Storage Instance');
+const getInstance = () => {
+	if (_instance) {
+		return _instance;
+	}
+	logger.debug('Create Storage Instance, debug');
 	_instance = new StorageClass();
 	_instance.vault = new StorageClass();
 
@@ -42,12 +44,17 @@ if (!_instance) {
 		logger.debug('storage vault configure called');
 		_instance.vault.configure(vaultConfig);
 	};
-}
+	return _instance;
+};
 
-const Storage = _instance;
+export const Storage: StorageClass = getInstance();
 Amplify.register(Storage);
 
+/**
+ * @deprecated use named import
+ */
 export default Storage;
+
 export { StorageClass };
-export { StorageProvider };
-export * from './Providers';
+export * from './providers';
+export * from './types';

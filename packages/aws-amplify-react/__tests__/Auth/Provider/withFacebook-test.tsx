@@ -1,15 +1,14 @@
-import Auth from '@aws-amplify/auth';
 import * as React from 'react';
-import { Component } from 'react';
-import withFacebook, {
+import { Auth } from '@aws-amplify/auth';
+import {
+	withFacebook,
 	FacebookButton,
 } from '../../../src/Auth/Provider/withFacebook';
-import { SignInButton, Button } from '../../../src/AmplifyUI';
 
 describe('withFacebook test', () => {
 	describe('render test', () => {
 		test('render correctly', () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -23,7 +22,7 @@ describe('withFacebook test', () => {
 
 	describe('signIn test', () => {
 		test('happy case with connected response', () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -59,7 +58,7 @@ describe('withFacebook test', () => {
 		});
 
 		test('happy case with not connected response', () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -103,7 +102,7 @@ describe('withFacebook test', () => {
 		});
 
 		test('return if pop up window closed', () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -146,7 +145,7 @@ describe('withFacebook test', () => {
 
 	describe('federatedSignIn', () => {
 		test('happy case', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -154,6 +153,14 @@ describe('withFacebook test', () => {
 			const fbResponse = {
 				name: 'username',
 				email: 'user@example.com',
+				picture: {
+					data: {
+						url: 'https://domain.tld/image.jpg',
+						width: 50,
+						height: 50,
+						is_silhouette: false,
+					},
+				},
 			};
 
 			window.FB = {
@@ -189,7 +196,11 @@ describe('withFacebook test', () => {
 			expect(spyon).toBeCalledWith(
 				'facebook',
 				{ token: 'accessToken', expires_at: 0 },
-				{ name: 'username', email: 'user@example.com' }
+				{
+					name: 'username',
+					email: 'user@example.com',
+					picture: 'https://domain.tld/image.jpg',
+				}
 			);
 
 			spyon.mockClear();
@@ -198,7 +209,7 @@ describe('withFacebook test', () => {
 		});
 
 		test('happy case with onStateChange exists', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -206,6 +217,14 @@ describe('withFacebook test', () => {
 			const fbResponse = {
 				name: 'username',
 				email: 'user@example.com',
+				picture: {
+					data: {
+						url: 'https://domain.tld/image.jpg',
+						width: 50,
+						height: 50,
+						is_silhouette: false,
+					},
+				},
 			};
 
 			window.FB = {
@@ -247,7 +266,11 @@ describe('withFacebook test', () => {
 			expect(spyon).toBeCalledWith(
 				'facebook',
 				{ token: 'accessToken', expires_at: 0 },
-				{ name: 'username', email: 'user@example.com' }
+				{
+					name: 'username',
+					email: 'user@example.com',
+					picture: 'https://domain.tld/image.jpg',
+				}
 			);
 
 			spyon.mockClear();
@@ -256,7 +279,7 @@ describe('withFacebook test', () => {
 		});
 
 		test('directly return if no accesstoken', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -302,7 +325,7 @@ describe('withFacebook test', () => {
 
 	describe('fbAsyncInit test', () => {
 		test('happy case', () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -330,7 +353,7 @@ describe('withFacebook test', () => {
 
 	describe('facebook signout test', () => {
 		test('happy case', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -356,7 +379,7 @@ describe('withFacebook test', () => {
 		});
 
 		test('not connected', async () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}

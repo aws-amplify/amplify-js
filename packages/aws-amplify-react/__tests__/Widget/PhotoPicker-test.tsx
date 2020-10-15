@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Component } from 'react';
-import PhotoPicker from '../../src/Widget/PhotoPicker';
-import Picker from '../../src/Widget/Picker';
+import { PhotoPicker } from '../../src/Widget/PhotoPicker';
+import { Picker } from '../../src/Widget/Picker';
 
 describe('PhotoPicker test', () => {
 	describe('render test', () => {

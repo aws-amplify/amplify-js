@@ -12,27 +12,25 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
-import withGoogle from './withGoogle';
-import withFacebook from './withFacebook';
-import withAmazon from './withAmazon';
-import withOAuth from './withOAuth';
-import withAuth0 from './withAuth0';
+import { withGoogle } from './withGoogle';
+import { withFacebook } from './withFacebook';
+import { withAmazon } from './withAmazon';
+import { withOAuth } from './withOAuth';
+import { withAuth0 } from './withAuth0';
 
-export { default as withGoogle, GoogleButton } from './withGoogle';
-export { default as withFacebook, FacebookButton } from './withFacebook';
-export { default as withAmazon, AmazonButton } from './withAmazon';
-export { default as withOAuth, OAuthButton } from './withOAuth';
-export { default as withAuth0, Auth0Button } from './withAuth0';
+export { withGoogle, GoogleButton } from './withGoogle';
+export { withFacebook, FacebookButton } from './withFacebook';
+export { withAmazon, AmazonButton } from './withAmazon';
+export { withOAuth, OAuthButton } from './withOAuth';
+export { withAuth0, Auth0Button } from './withAuth0';
 
 export function withFederated(Comp) {
-	// @ts-ignore
 	const Federated = withAuth0(
 		withOAuth(withAmazon(withGoogle(withFacebook(Comp))))
 	);
 
-	return class extends Component {
+	return class extends React.Component {
 		render() {
 			// @ts-ignore
 			const federated = this.props.federated || {};
