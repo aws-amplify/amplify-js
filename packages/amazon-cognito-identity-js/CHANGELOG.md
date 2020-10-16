@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.5.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.4.0...amazon-cognito-identity-js@4.5.0) (2020-10-15)
+
+
+### Features
+
+* Patch JKBigInteger to use NSSecureCoding ([#6843](https://github.com/aws-amplify/amplify-js/issues/6843)) ([53be43d](https://github.com/aws-amplify/amplify-js/commit/53be43d7a0049e04a47e7fece5dcd726c7a414fe))
+
+
+
+
+
 # [4.4.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.3.5...amazon-cognito-identity-js@4.4.0) (2020-09-03)
 
 
