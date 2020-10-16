@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/ui-components",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "description": "Core Amplify UI Component Library",
   "module": "dist/index.mjs",
   "main": "dist/index.js",
@@ -35,11 +35,11 @@
     "clean": "rimraf dist .stencil"
   },
   "dependencies": {
-    "@aws-amplify/auth": "^3.4.6",
-    "@aws-amplify/core": "^3.6.0",
-    "@aws-amplify/interactions": "^3.3.6",
-    "@aws-amplify/storage": "^3.3.6",
-    "@aws-amplify/xr": "^2.2.6",
+    "@aws-amplify/auth": "^3.4.7",
+    "@aws-amplify/core": "^3.7.0",
+    "@aws-amplify/interactions": "^3.3.7",
+    "@aws-amplify/storage": "^3.3.7",
+    "@aws-amplify/xr": "^2.2.7",
     "qrcode": "^1.4.4",
     "uuid": "^8.2.0"
   },
