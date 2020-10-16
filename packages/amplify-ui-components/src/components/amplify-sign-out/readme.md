@@ -13,9 +13,9 @@
 
 ## Slots
 
-| Slot           | Description                 |
-| -------------- | --------------------------- |
-| `"(sign-out)"` | The sign out button element |
+| Slot         | Description                 |
+| ------------ | --------------------------- |
+| `"sign-out"` | The sign out button element |
 
 
 ## Dependencies

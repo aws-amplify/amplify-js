@@ -7,7 +7,7 @@ import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../commo
 import { Translations } from '../../common/Translations';
 
 /**
- * @slot (sign-out) - The sign out button element
+ * @slot sign-out - The sign out button element
  */
 @Component({
   tag: 'amplify-sign-out',
