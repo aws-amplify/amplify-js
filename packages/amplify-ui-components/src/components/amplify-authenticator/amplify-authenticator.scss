@@ -6,6 +6,10 @@
  * @prop --border-radius: Border radius of the container
  * @prop --padding: Padding within the component
  * @prop --margin-bottom: Margin below the component
+ * @prop --container-height: Height of the container. Defaults to 100vh.
+ * @prop --container-display: Display option of the container. Defaults to flex.
+ * @prop --container-justify: `justify-content` property of a flex container
+ * @prop --container-align: `align-items` property of a flex container
  */
 :host {
   --background-color: var(--amplify-background-color);
