@@ -39,8 +39,9 @@ describe('DataStore GraphQL generation', () => {
 					$limit: Int
 					$nextToken: String
 					$lastSync: AWSTimestamp
+					$filter: ModelPostFilterInput
 				) {
-					syncPosts(limit: $limit, nextToken: $nextToken, lastSync: $lastSync) {
+					syncPosts(limit: $limit, nextToken: $nextToken, lastSync: $lastSync, filter: $filter) {
 						items {
 							${postSelectionSet}
 						}

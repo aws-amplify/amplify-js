@@ -19,6 +19,7 @@ import {
 	SchemaModel,
 	SchemaNamespace,
 	TypeConstructorMap,
+	ModelPredicate,
 } from '../types';
 import { exhaustiveCheck, getNow, SYNC } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
@@ -102,7 +103,8 @@ export class SyncEngine {
 		private readonly maxRecordsToSync: number,
 		private readonly syncPageSize: number,
 		conflictHandler: ConflictHandler,
-		errorHandler: ErrorHandler
+		errorHandler: ErrorHandler,
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -120,9 +122,13 @@ export class SyncEngine {
 		this.syncQueriesProcessor = new SyncProcessor(
 			this.schema,
 			this.maxRecordsToSync,
-			this.syncPageSize
+			this.syncPageSize,
+			syncPredicates
 		);
-		this.subscriptionsProcessor = new SubscriptionProcessor(this.schema);
+		this.subscriptionsProcessor = new SubscriptionProcessor(
+			this.schema,
+			syncPredicates
+		);
 		this.mutationsProcessor = new MutationProcessor(
 			this.schema,
 			this.storage,

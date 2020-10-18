@@ -271,9 +271,9 @@ export function buildGraphQLOperation(
 	switch (graphQLOpType) {
 		case 'LIST':
 			operation = `sync${pluralTypeName}`;
-			documentArgs = `($limit: Int, $nextToken: String, $lastSync: AWSTimestamp)`;
+			documentArgs = `($limit: Int, $nextToken: String, $lastSync: AWSTimestamp, $filter: Model${typeName}FilterInput)`;
 			operationArgs =
-				'(limit: $limit, nextToken: $nextToken, lastSync: $lastSync)';
+				'(limit: $limit, nextToken: $nextToken, lastSync: $lastSync, filter: $filter)';
 			selectionSet = `items {
 							${selectionSet}
 						}
@@ -381,6 +381,30 @@ export function predicateToGraphQLCondition(
 			}
 
 			result[field] = { [operator]: operand };
+		} else {
+			result[p.type] = predicateToGraphQLCondition(p);
+		}
+	});
+
+	return result;
+}
+
+export function predicateToGraphQLFilter(
+	predicatesGroup: PredicatesGroup<any>
+): GraphQLCondition {
+	const result = {};
+
+	if (!predicatesGroup || !Array.isArray(predicatesGroup.predicates)) {
+		return result;
+	}
+
+	const { type, predicates } = predicatesGroup;
+
+	result[type] = predicates.map(p => {
+		if (isPredicateObj(p)) {
+			const { field, operator, operand } = p;
+
+			return { [field]: { [operator]: operand } };
 		} else {
 			result[p.type] = predicateToGraphQLCondition(p);
 		}

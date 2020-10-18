@@ -434,13 +434,62 @@ export type DataStoreConfig = {
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
 		fullSyncInterval?: number;
+		syncExpressions?: SyncExpression<any>[];
 	};
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
 	fullSyncInterval?: number;
+	syncExpressions?: SyncExpression<any>[];
 };
+
+export type SyncExpression<T extends PersistentModel> = Promise<{
+	modelConstructor: PersistentModelConstructor<T>;
+	conditionProducer:
+		| ProducerModelPredicate<T>
+		| (() => ProducerModelPredicate<T>)
+		| (() => Promise<ProducerModelPredicate<T>>);
+}>;
+
+/*
+Adds Intellisense when passing a function | promise that returns a predicate
+Or just a predicate. E.g.,
+
+syncExpressions: [
+	syncExpression(Post, c => c.rating('gt', 5)),
+
+	OR
+
+	syncExpression(Post, async () => {
+		return c => c.rating('gt', 5)
+	}),
+]
+*/
+export async function syncExpression<T extends PersistentModel, P>(
+	modelConstructor: PersistentModelConstructor<T>,
+	conditionProducer: (
+		condition: P | ModelPredicate<T>
+	) => P extends ModelPredicate<T>
+		? ModelPredicate<T>
+		: ProducerModelPredicate<T> | Promise<ProducerModelPredicate<T>>
+): Promise<{
+	modelConstructor: PersistentModelConstructor<T>;
+	conditionProducer: (
+		condition: P | ModelPredicate<T>
+	) => P extends ModelPredicate<T>
+		? ModelPredicate<T>
+		: ProducerModelPredicate<T> | Promise<ProducerModelPredicate<T>>;
+}> {
+	return {
+		modelConstructor,
+		conditionProducer,
+	};
+}
+
+type SyncConditionProducer<T extends PersistentModel> =
+	| (() => Promise<ProducerModelPredicate<T>>)
+	| (() => ProducerModelPredicate<T>);
 
 export type SyncConflict = {
 	modelConstructor: PersistentModelConstructor<any>;
