@@ -1,3 +1,13 @@
+/**
+ * @prop --header-color: Text color within the form header
+ * @prop --header-size: Text size within the form header
+ * @prop --subtitle-color: Text color within the subtitle
+ * @prop --subtitle-size: Text size within the subtitle
+ * @prop --footer-color: Text color within the footer
+ * @prop --footer-size: Text size within the footer
+ * @prop --font-family: Text font family within the footer
+ * @prop --font-weight: Text weight within the footer
+ */
 :host {
   --header-color: var(--amplify-secondary-color);
   --header-size: var(--amplify-text-md-sub);

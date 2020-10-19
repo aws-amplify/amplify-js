@@ -22,7 +22,7 @@ import { handleSignIn } from '../../common/auth-helpers';
 
 /**
  * @slot header-subtitle - Subtitle content placed below header text
- * @slot footer - Content is place in the footer of the component
+ * @slot footer - Content placed in the footer of the component
  * @slot primary-footer-content - Content placed on the right side of the footer
  * @slot secondary-footer-content - Content placed on the left side of the footer
  */

@@ -21,6 +21,18 @@ import { checkContact } from '../../common/auth-helpers';
 
 const logger = new Logger('Authenticator');
 
+/**
+ * @slot sign-in - Content placed inside of the sign in workflow for when a user wants to sign into their account
+ * @slot confirm-sign-in - Content placed inside of the confirm sign in workflow for when a user needs to confirm the account they signed in with
+ * @slot sign-up - Content placed inside of the sign up workflow for when a user wants to register a new account
+ * @slot confirm-sign-up - Content placed inside of the confirm sign up workflow for when a user needs to confirm the account they signed up with
+ * @slot forgot-password - Content placed inside of the forgot password workflow for when a user wants to reset their password
+ * @slot require-new-password - Content placed inside of the require new password workflow for when a user is required to update their password
+ * @slot verify-contact - Content placed inside of the verify-contact workflow for when a user must verify their contact information
+ * @slot totp-setup - Content placed inside of the totp-setup workflow for when a user opts to use TOTP MFA
+ * @slot greetings - Content placed inside of the greetings navigation for when a user is signed in
+ * @slot loading - Content placed inside of the loading workflow for when the app is loading
+ */
 @Component({
   tag: 'amplify-authenticator',
   styleUrl: 'amplify-authenticator.scss',
