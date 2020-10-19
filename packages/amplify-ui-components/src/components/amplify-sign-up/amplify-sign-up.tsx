@@ -22,7 +22,7 @@ import { handleSignIn } from '../../common/auth-helpers';
 
 /**
  * @slot header-subtitle - Subtitle content placed below header text
- * @slot footer - Content is place in the footer of the component
+ * @slot footer - Content placed in the footer of the component
  * @slot primary-footer-content - Content placed on the right side of the footer
  * @slot secondary-footer-content - Content placed on the left side of the footer
  */
@@ -42,7 +42,7 @@ export class AmplifySignUp {
   @Prop() submitButtonText: string = Translations.SIGN_UP_SUBMIT_BUTTON_TEXT;
   /** Used for the submit button text in sign up component */
   @Prop() haveAccountText: string = Translations.SIGN_UP_HAVE_ACCOUNT_TEXT;
-  /** Used for the submit button text in sign up component */
+  /** Text used for the sign in hyperlink */
   @Prop() signInText: string = Translations.SIGN_IN_TEXT;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.

@@ -25,6 +25,17 @@
 | `formSubmit` | Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form | `CustomEvent<any>` |
 
 
+## CSS Custom Properties
+
+| Name                   | Description                               |
+| ---------------------- | ----------------------------------------- |
+| `--background-color`   | Background color of the input             |
+| `--border-color`       | Border color of the input                 |
+| `--border-color-focus` | Border color of the input when focused on |
+| `--color`              | Text color within the input               |
+| `--margin`             | Margin around the input                   |
+
+
 ## Dependencies
 
 ### Used by

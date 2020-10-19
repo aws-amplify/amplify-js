@@ -1,3 +1,7 @@
+/**
+ * @prop --font-family: Font family of the text within the container
+ * @prop --background-color: Background color of the container
+ */
 :host {
   --font-family: var(--amplify-font-family);
   --background-color: var(--amplify-background-color);
