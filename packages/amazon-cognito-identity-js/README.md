@@ -33,7 +33,7 @@ depending on your project setup and experience with modern JavaScript build tool
 ```javascript
 // Using ES6 modules
 import 'cross-fetch/polyfill';
-import { AmazonCognitoIdentity } from 'amazon-cognito-identity-js';
+import AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
 // Or, using CommonJS modules
 require('cross-fetch/polyfill');
