@@ -10,6 +10,15 @@
 | `name`   | `name`    | (Required) Name of icon used to determine the icon rendered | `"amazon" \| "auth0" \| "ban" \| "enter-vr" \| "exit-vr" \| "facebook" \| "google" \| "loading" \| "maximize" \| "microphone" \| "minimize" \| "photoPlaceholder" \| "send" \| "sound" \| "sound-mute" \| "warning"` | `undefined` |
 
 
+## CSS Custom Properties
+
+| Name                | Description            |
+| ------------------- | ---------------------- |
+| `--height`          | Height of the icon     |
+| `--icon-fill-color` | Fill color of the icon |
+| `--width`           | Width of the icon      |
+
+
 ## Dependencies
 
 ### Used by

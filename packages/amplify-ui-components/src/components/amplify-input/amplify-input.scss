@@ -1,3 +1,10 @@
+/**
+ * @prop --color: Text color within the input
+ * @prop --background-color: Background color of the input
+ * @prop --border-color: Border color of the input 
+ * @prop --border-color-focus: Border color of the input when focused on
+ * @prop --margin: Margin around the input
+ */
 :host {
   --color: var(--amplify-secondary-color);
   --background-color: var(--amplify-secondary-contrast);

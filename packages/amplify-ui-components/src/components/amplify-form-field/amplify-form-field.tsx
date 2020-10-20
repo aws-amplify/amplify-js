@@ -1,18 +1,22 @@
 import { Component, Prop, h, FunctionalComponent } from '@stencil/core';
 import { TextFieldTypes } from '../../common/types/ui-types';
+
+/**
+ * @slot input - Content for the input within the form field
+ */
 @Component({
   tag: 'amplify-form-field',
   styleUrl: 'amplify-form-field.scss',
   shadow: true,
 })
 export class AmplifyFormField {
-  /** The ID of the field.  Should match with its corresponding input's ID. */
+  /** The ID of the field. Should match with its corresponding input's ID. */
   @Prop() fieldId: string;
-  /** The text of the label.  Goes above the input. Ex: 'First name' */
+  /** The text of the label. Goes above the input. Ex: 'First name' */
   @Prop() label: string | null;
   /** The text of the description.  Goes between the label and the input. */
   @Prop() description: string | null;
-  /** The text of a hint to the user as to how to fill out the input.  Goes just below the input. */
+  /** The text of a hint to the user as to how to fill out the input. Goes just below the input. */
   @Prop() hint: string | FunctionalComponent | null;
   /** The input type.  Can be any HTML input type. */
   @Prop() type?: TextFieldTypes = 'text';
