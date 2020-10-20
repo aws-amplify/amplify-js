@@ -129,7 +129,7 @@ class SubscriptionProcessor {
 		);
 
 		const validCognitoGroup = groupAuthRules.find(groupAuthRule => {
-			// validate token agains groupClaim
+			// validate token against groupClaim
 			const userGroups: string[] =
 				cognitoTokenPayload[groupAuthRule.groupClaim] || [];
 
@@ -151,11 +151,11 @@ class SubscriptionProcessor {
 		);
 
 		const validOidcGroup = groupAuthRules.find(groupAuthRule => {
-			// validate token agains groupClaim
+			// validate token against groupClaim
 			const userGroups: string[] =
 				oidcTokenPayload[groupAuthRule.groupClaim] || [];
 
-			userGroups.find(userGroup => {
+			return userGroups.find(userGroup => {
 				return groupAuthRule.groups.find(group => group === userGroup);
 			});
 		});
