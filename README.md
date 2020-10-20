@@ -8,14 +8,19 @@
     <img src="https://img.shields.io/discord/308323056592486420?logo=discord"" alt="Discord Chat" />  
   </a>
   <a href="https://codecov.io/gh/aws-amplify/amplify-js">
-    <img src="https://codecov.io/gh/aws-amplify/amplify-js/branch/master/graph/badge.svg" />
+    <img src="https://codecov.io/gh/aws-amplify/amplify-js/branch/main/graph/badge.svg" />
   </a>
   <a href="https://lgtm.com/projects/g/aws-amplify/amplify-js/context:javascript"><img alt="Language grade: JavaScript" src="https://img.shields.io/lgtm/grade/javascript/g/aws-amplify/amplify-js.svg?logo=lgtm&logoWidth=18"/>
   </a>
   <a href="https://circleci.com/gh/aws-amplify/amplify-js">
-    <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-js/master.svg" alt="build:started">
+    <img src="https://img.shields.io/circleci/project/github/aws-amplify/amplify-js/main.svg" alt="build:started">
   </a>
 </p>
+
+### Reporting Bugs/Feature Requests
+[![Open Bugs](https://img.shields.io/github/issues/aws-amplify/amplify-js/bug?color=d73a4a&label=bugs)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+[![Feature Requests](https://img.shields.io/github/issues/aws-amplify/amplify-js/feature-request?color=ff9001&label=feature%20requests)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+label%3Afeature-request+is%3Aopen)
+[![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-js?color=%2325CC00&label=issues%20closed)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+is%3Aclosed+)
 
 ### AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications
 
@@ -72,8 +77,9 @@ If you can't migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) or
 - [Documentation](https://docs.amplify.aws/)
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [Demo Applications](https://github.com/aws-amplify/amplify-js-samples)
 - [Examples](#examples)
-- [Contributing](https://github.com/aws/aws-amplify/blob/master/CONTRIBUTING.md)
+- [Contributing](https://github.com/aws-amplify/amplify-js/blob/main/CONTRIBUTING.md)
 
 ## Installation
 

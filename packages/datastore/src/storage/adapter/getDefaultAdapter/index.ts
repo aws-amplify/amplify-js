@@ -1,12 +1,16 @@
+import { browserOrNode, isWebWorker } from '@aws-amplify/core';
 import { Adapter } from '..';
 
 const getDefaultAdapter: () => Adapter = () => {
-	if (window.indexedDB) {
+	const { isBrowser } = browserOrNode();
+
+	if ((isBrowser && window.indexedDB) || (isWebWorker() && self.indexedDB)) {
 		return require('../indexeddb').default;
 	}
-	if (process && process.env) {
-		throw new Error('Node is not supported');
-	}
+
+	const { AsyncStorageAdapter } = require('../asyncstorage');
+
+	return new AsyncStorageAdapter();
 };
 
 export default getDefaultAdapter;

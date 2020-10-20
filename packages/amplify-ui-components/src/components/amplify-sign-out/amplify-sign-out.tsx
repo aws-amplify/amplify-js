@@ -6,6 +6,9 @@ import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
 import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 import { Translations } from '../../common/Translations';
 
+/**
+ * @slot sign-out - The sign out button element
+ */
 @Component({
   tag: 'amplify-sign-out',
   shadow: true,
@@ -14,7 +17,7 @@ export class AmplifySignOut {
   /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /** Text inside of the Sign Out button */
-  @Prop() buttonText: string = I18n.get(Translations.SIGN_OUT);
+  @Prop() buttonText: string = Translations.SIGN_OUT;
 
   private async signOut(event) {
     if (event) event.preventDefault();
@@ -36,7 +39,7 @@ export class AmplifySignOut {
   render() {
     return (
       <amplify-button slot="sign-out" onClick={event => this.signOut(event)} data-test="sign-out-button">
-        {this.buttonText}
+        {I18n.get(this.buttonText)}
       </amplify-button>
     );
   }

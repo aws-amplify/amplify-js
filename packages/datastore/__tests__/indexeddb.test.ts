@@ -2,7 +2,7 @@ import Dexie from 'dexie';
 import 'dexie-export-import';
 import 'fake-indexeddb/auto';
 import * as idb from 'idb';
-import { DataStore } from '../src/index';
+import { DataStore, SortDirection } from '../src/index';
 import { DATASTORE, SYNC, USER } from '../src/util';
 import {
 	Author,
@@ -13,6 +13,7 @@ import {
 	Post,
 	PostAuthorJoin,
 	PostMetadata,
+	Person,
 } from './model';
 let db: idb.IDBPDatabase;
 
@@ -60,6 +61,7 @@ describe('Indexed db storage test', () => {
 			`${USER}_Blog`,
 			`${USER}_BlogOwner`,
 			`${USER}_Comment`,
+			`${USER}_Person`,
 			`${USER}_Post`,
 			`${USER}_PostAuthorJoin`,
 		];
@@ -289,6 +291,85 @@ describe('Indexed db storage test', () => {
 		const q1 = await DataStore.query(Comment, c1.id);
 
 		expect(q1.post.id).toEqual(p.id);
+	});
+
+	test('query with sort on a single field', async () => {
+		const p1 = new Person({
+			firstName: 'John',
+			lastName: 'Snow',
+		});
+
+		const p2 = new Person({
+			firstName: 'Clem',
+			lastName: 'Fandango',
+		});
+
+		const p3 = new Person({
+			firstName: 'Beezus',
+			lastName: 'Fuffoon',
+		});
+
+		const p4 = new Person({
+			firstName: 'Meow Meow',
+			lastName: 'Fuzzyface',
+		});
+
+		await DataStore.save(p1);
+		await DataStore.save(p2);
+		await DataStore.save(p3);
+		await DataStore.save(p4);
+
+		const sortedPersons = await DataStore.query(Person, null, {
+			page: 0,
+			limit: 20,
+			sort: s => s.firstName(SortDirection.DESCENDING),
+		});
+
+		expect(sortedPersons[0].firstName).toEqual('Meow Meow');
+		expect(sortedPersons[1].firstName).toEqual('John');
+		expect(sortedPersons[2].firstName).toEqual('Clem');
+		expect(sortedPersons[3].firstName).toEqual('Beezus');
+	});
+
+	test('query with sort on multiple fields', async () => {
+		const p1 = new Person({
+			firstName: 'John',
+			lastName: 'Snow',
+			username: 'johnsnow',
+		});
+		const p2 = new Person({
+			firstName: 'John',
+			lastName: 'Umber',
+			username: 'smalljohnumber',
+		});
+
+		const p3 = new Person({
+			firstName: 'John',
+			lastName: 'Umber',
+			username: 'greatjohnumber',
+		});
+
+		await DataStore.save(p1);
+		await DataStore.save(p2);
+		await DataStore.save(p3);
+
+		const sortedPersons = await DataStore.query(
+			Person,
+			c => c.username('ne', undefined),
+			{
+				page: 0,
+				limit: 20,
+				sort: s =>
+					s
+						.firstName(SortDirection.ASCENDING)
+						.lastName(SortDirection.ASCENDING)
+						.username(SortDirection.ASCENDING),
+			}
+		);
+
+		expect(sortedPersons[0].username).toEqual('johnsnow');
+		expect(sortedPersons[1].username).toEqual('greatjohnumber');
+		expect(sortedPersons[2].username).toEqual('smalljohnumber');
 	});
 
 	test('delete 1:1 function', async () => {

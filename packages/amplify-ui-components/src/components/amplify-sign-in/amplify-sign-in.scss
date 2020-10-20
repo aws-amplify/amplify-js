@@ -1,15 +1,25 @@
+/**
+ * @prop --footer-font-family: Font family of the footer
+ * @prop --footer-font-size: Font size of the footer
+ * @prop --footer-color: Font color of the footer
+ * @prop --footer-wegight: Font weight of the footer
+ */
 :host {
   --footer-size: var(--amplify-text-sm);
   --footer-color: var(--amplify-grey);
   --footer-font-family: var(--amplify-font-family);
+  --font-weight: var(--amplify-font-weight);
 }
 
 .sign-in-form-footer {
   font-family: var(--footer-font-family);
-  font-weight: 300;
   font-size: var(--footer-size);
   color: var(--footer-color);
-  margin-bottom: 10px;
+  font-weight: (--font-weight);
+
+  amplify-button {
+    margin-bottom: 0.625rem;
+  }
 
   display: flex;
   flex-direction: column-reverse;
@@ -21,6 +31,9 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: baseline;
+    amplify-button {
+      margin-bottom: 0;
+    }
   }
 
   * + * {

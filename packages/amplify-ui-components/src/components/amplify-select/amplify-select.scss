@@ -1,3 +1,10 @@
+/**
+ * @prop --color: Text color of the select choices
+ * @prop --background-color: Background color of the input container
+ * @prop --border-color: Border color of the input container
+ * @prop --border-focus: Border color of the input container when focused on
+ * @prop --background-image: Image of the icon displayed next to text. Defaults to an upside down triangle.
+ */
 :host {
   --color: var(--amplify-secondary-color);
   --background-color: var(--amplify-secondary-contrast);
@@ -8,11 +15,10 @@
 }
 
 .select {
-  padding: 14px;
+  padding: 1rem 1.75rem 1rem 1rem;
   font-size: var(--amplify-text-sm);
   color: var(--color);
   background-color: var(--background-color);
-  background-image: none;
   border: 1px solid var(--border-color);
   border-radius: 3px 0 0 3px;
   box-sizing: border-box;
@@ -21,11 +27,12 @@
   appearance: none;
   flex-basis: auto;
   width: fit-content;
-  height: 51px;
   margin: 0;
+  height: 3.125rem;
 
   background-image: var(--background-image);
-  background-position: calc(100% - 20px) calc(1em + 8px), calc(100% - 15px) calc(1em + 8px), calc(100% - 2.5em) 0.5em;
+  background-position: calc(100% - 1rem) calc(1em + 0.5rem), calc(100% - 0.7rem) calc(1em + 0.5rem),
+    calc(100% - 2.5em) 0.5em;
   background-size: 6px 5px, 6px 5px, 0px 1.5em;
   background-repeat: no-repeat;
 

@@ -3,6 +3,138 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.23...@aws-amplify/ui-react@0.2.24) (2020-10-15)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [0.2.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.22...@aws-amplify/ui-react@0.2.23) (2020-10-01)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [0.2.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.21...@aws-amplify/ui-react@0.2.22) (2020-09-25)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [0.2.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.20...@aws-amplify/ui-react@0.2.21) (2020-09-16)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [0.2.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.19...@aws-amplify/ui-react@0.2.20) (2020-09-15)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [0.2.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.18...@aws-amplify/ui-react@0.2.19) (2020-09-10)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [0.2.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.17...@aws-amplify/ui-react@0.2.18) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [0.2.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.16...@aws-amplify/ui-react@0.2.17) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [0.2.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.15...@aws-amplify/ui-react@0.2.16) (2020-09-01)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [0.2.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.14...@aws-amplify/ui-react@0.2.15) (2020-08-19)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [0.2.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.13...@aws-amplify/ui-react@0.2.14) (2020-08-06)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [0.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.12...@aws-amplify/ui-react@0.2.13) (2020-07-27)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [0.2.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.11...@aws-amplify/ui-react@0.2.12) (2020-07-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-react:** Fix user not being set on initial render ([#6306](https://github.com/aws-amplify/amplify-js/issues/6306)) ([4603092](https://github.com/aws-amplify/amplify-js/commit/4603092749c058086f2a9a353df0b4d6f0a7071a))
+* **@aws-amplify/ui-react:** Remove side-effects on unmount ([#6312](https://github.com/aws-amplify/amplify-js/issues/6312)) ([3206a4f](https://github.com/aws-amplify/amplify-js/commit/3206a4fa05588674261ba6ac415c0315560ae968))
+
+
+
+
+
+## [0.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.10...@aws-amplify/ui-react@0.2.11) (2020-07-09)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [0.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.9...@aws-amplify/ui-react@0.2.10) (2020-07-07)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [0.2.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.8...@aws-amplify/ui-react@0.2.9) (2020-06-18)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
 ## [0.2.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.7...@aws-amplify/ui-react@0.2.8) (2020-06-02)
 
 **Note:** Version bump only for package @aws-amplify/ui-react

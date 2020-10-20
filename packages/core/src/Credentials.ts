@@ -33,10 +33,17 @@ export class CredentialsClass {
 	private _identityId;
 	private _nextCredentialsRefresh: Number;
 
+	// Allow `Auth` to be injected for SSR, but Auth isn't a required dependency for Credentials
+	Auth = undefined;
+
 	constructor(config) {
 		this.configure(config);
 		this._refreshHandlers['google'] = GoogleOAuth.refreshGoogleToken;
 		this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
+	}
+
+	public getModuleName() {
+		return 'Credentials';
 	}
 
 	public getCredSource() {
@@ -58,6 +65,7 @@ export class CredentialsClass {
 		}
 
 		this._storage = this._config.storage;
+
 		if (!this._storage) {
 			this._storage = new StorageHelper().getStorage();
 		}
@@ -95,11 +103,13 @@ export class CredentialsClass {
 		}
 
 		logger.debug('need to get a new credential or refresh the existing one');
-		if (
-			Amplify.Auth &&
-			typeof Amplify.Auth.currentUserCredentials === 'function'
-		) {
-			return Amplify.Auth.currentUserCredentials();
+
+		// Some use-cases don't require Auth for signing in, but use Credentials for guest users (e.g. Analytics)
+		// Prefer locally scoped `Auth`, but fallback to registered `Amplify.Auth` global otherwise.
+		const { Auth = Amplify.Auth } = this;
+
+		if (Auth && typeof Auth.currentUserCredentials === 'function') {
+			return Auth.currentUserCredentials();
 		} else {
 			return Promise.reject('No Auth module registered in Amplify');
 		}
@@ -281,7 +291,42 @@ export class CredentialsClass {
 				return res;
 			})
 			.catch(async e => {
-				return e;
+				// If identity id is deleted in the console, we make one attempt to recreate it
+				// and remove existing id from cache.
+				if (
+					e.name === 'ResourceNotFoundException' &&
+					e.message === `Identity '${identityId}' not found.`
+				) {
+					logger.debug('Failed to load guest credentials');
+					this._storage.removeItem('CognitoIdentityId-' + identityPoolId);
+
+					const credentialsProvider: CredentialProvider = async () => {
+						const { IdentityId } = await cognitoClient.send(
+							new GetIdCommand({
+								IdentityPoolId: identityPoolId,
+							})
+						);
+						this._identityId = IdentityId;
+						const cognitoIdentityParams: FromCognitoIdentityParameters = {
+							client: cognitoClient,
+							identityId: IdentityId,
+						};
+
+						const credentialsFromCognitoIdentity = fromCognitoIdentity(
+							cognitoIdentityParams
+						);
+
+						return credentialsFromCognitoIdentity();
+					};
+
+					credentials = credentialsProvider().catch(async err => {
+						throw err;
+					});
+
+					return this._loadCredentials(credentials, 'guest', false, null);
+				} else {
+					return e;
+				}
 			});
 	}
 
@@ -500,6 +545,8 @@ export class CredentialsClass {
 }
 
 export const Credentials = new CredentialsClass(null);
+
+Amplify.register(Credentials);
 
 /**
  * @deprecated use named import

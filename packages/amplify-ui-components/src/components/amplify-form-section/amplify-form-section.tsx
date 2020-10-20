@@ -1,5 +1,10 @@
 import { Component, Prop, h, FunctionalComponent, Listen } from '@stencil/core';
 
+/**
+ * @slot amplify-form-section-header - Content for the header section
+ * @slot subtitle - Content for the subtitle. This is inside of `amplify-form-section-header`.
+ * @slot amplify-form-section-footer - Content for the footer section.
+ */
 @Component({
   tag: 'amplify-form-section',
   styleUrl: 'amplify-form-section.scss',
@@ -32,17 +37,22 @@ export class AmplifyFormSection {
           <div>
             <slot name="amplify-form-section-header">
               <div class="form-section-header">
-                <h3 data-test={this.testDataPrefix + '-header-section'}>{this.headerText}</h3>
+                <h3 class="header" data-test={this.testDataPrefix + '-header-section'}>
+                  {this.headerText}
+                </h3>
+                <div class="subtitle">
+                  <slot name="subtitle"></slot>
+                </div>
               </div>
             </slot>
           </div>
+
           <slot />
           <div>
             <slot name="amplify-form-section-footer">
               <div class="form-section-footer">
                 <amplify-button type="submit" data-test={this.testDataPrefix + '-' + this.testDataPrefix + '-button'}>
-                  <amplify-loading-spinner style={{ display: this.loading ? 'initial' : 'none' }} />
-                  <span style={{ display: this.loading ? 'none' : 'initial' }}>{this.submitButtonText}</span>
+                  {this.loading ? <amplify-loading-spinner /> : <span>{this.submitButtonText}</span>}
                 </amplify-button>
                 {this.secondaryFooterContent}
               </div>

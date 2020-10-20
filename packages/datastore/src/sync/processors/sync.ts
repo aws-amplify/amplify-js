@@ -6,7 +6,9 @@ import {
 	SchemaModel,
 } from '../../types';
 import { buildGraphQLOperation } from '../utils';
-import { jitteredExponentialRetry } from '@aws-amplify/core';
+import { jitteredExponentialRetry, ConsoleLogger as Logger } from '@aws-amplify/core';
+
+const logger = new Logger('DataStore');
 
 const DEFAULT_PAGINATION_LIMIT = 1000;
 const DEFAULT_MAX_RECORDS_TO_SYNC = 10000;
@@ -62,7 +64,7 @@ class SyncProcessor {
 					startedAt: number;
 				};
 			}>
-		>await this.jitteredRetry<T>(query, variables);
+		>await this.jitteredRetry<T>(query, variables, opName);
 
 		const { [opName]: opResult } = data;
 
@@ -73,7 +75,8 @@ class SyncProcessor {
 
 	private async jitteredRetry<T>(
 		query: string,
-		variables: { limit: number; lastSync: number; nextToken: string }
+		variables: { limit: number; lastSync: number; nextToken: string },
+		opName: string
 	): Promise<
 		GraphQLResult<{
 			[opName: string]: {
@@ -85,10 +88,23 @@ class SyncProcessor {
 	> {
 		return await jitteredExponentialRetry(
 			async (query, variables) => {
-				return await API.graphql({
-					query,
-					variables,
-				});
+				try {
+					return await API.graphql({
+						query,
+						variables,
+					});
+				} catch (error) {
+					// If the error is unauthorized, filter out unauthorized items and return accessible items
+					const unauthorized = (error.errors as [any]).some(err => err.errorType === 'Unauthorized');
+					if (unauthorized) {
+						const result = error;
+						result.data[opName].items = result.data[opName].items.filter(item => item !== null);
+						logger.warn('queryError', 'User is unauthorized, some items could not be returned.');
+						return result;
+					} else {
+						throw error;
+					}
+				}
 			},
 			[query, variables]
 		);

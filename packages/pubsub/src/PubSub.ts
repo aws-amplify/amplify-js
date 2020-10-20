@@ -71,7 +71,6 @@ export class PubSubClass {
 		logger.debug('PubSub Options', this._options);
 		this._pluggables = [];
 		this.subscribe = this.subscribe.bind(this);
-		Amplify.register(this);
 	}
 
 	public getModuleName() {
@@ -152,6 +151,12 @@ export class PubSubClass {
 		topics: string[] | string,
 		options?: ProvidertOptions
 	): Observable<any> {
+		if (this._options && this._options.ssr) {
+			throw new Error(
+				'Subscriptions are not supported for Server-Side Rendering (SSR)'
+			);
+		}
+
 		logger.debug('subscribe options', options);
 
 		const providers = this.getProviders(options);
@@ -178,3 +183,4 @@ export class PubSubClass {
 }
 
 export const PubSub = new PubSubClass(null);
+Amplify.register(PubSub);

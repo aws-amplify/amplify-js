@@ -436,6 +436,7 @@ function ChatBotInputs(props) {
 	const handleMicButton = props.handleMicButton;
 	const micText = props.micText;
 	const submit = props.submit;
+	let placeholder;
 
 	if (voiceEnabled && textEnabled) {
 		// @ts-ignore

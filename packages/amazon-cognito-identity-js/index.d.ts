@@ -74,7 +74,9 @@ declare module 'amazon-cognito-identity-js' {
 			authenticationFlowType: string
 		): string;
 
-		public getSession(callback: Function): any;
+		public getSession(
+			callback: ((error: Error, session: null) => void) | ((error: null, session: CognitoUserSession) => void)
+		): void;
 		public refreshSession(
 			refreshToken: CognitoRefreshToken,
 			callback: NodeCallback<any, any>,
@@ -100,7 +102,7 @@ declare module 'amazon-cognito-identity-js' {
 			clientMetaData?: ClientMetadata
 		): void;
 		public resendConfirmationCode(
-			callback: NodeCallback<Error, 'SUCCESS'>,
+			callback: NodeCallback<Error, any>,
 			clientMetaData?: ClientMetadata
 		): void;
 		public changePassword(
@@ -368,6 +370,7 @@ declare module 'amazon-cognito-identity-js' {
 		path?: string;
 		expires?: number;
 		secure?: boolean;
+		sameSite?: 'strict' | 'lax' | 'none';
 	}
 	export class CookieStorage implements ICognitoStorage {
 		constructor(data: ICookieStorageData);
