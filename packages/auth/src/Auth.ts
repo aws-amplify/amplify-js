@@ -88,10 +88,10 @@ const eventEmitters = {
 	onTokenRefresh() {
 		dispatchAuthEvent('token_refresh', undefined, `New token retrieved`);
 	},
-	onTokenRefreshFailure() {
+	onTokenRefreshFailure(error: Error) {
 		dispatchAuthEvent(
 			'token_refresh_failure',
-			undefined,
+			error,
 			`Failed to retrieve new token`
 		);
 	},
