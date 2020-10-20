@@ -84,6 +84,12 @@ const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
 
+const eventEmitters = {
+	onTokenRefresh() {
+		dispatchAuthEvent('token_refresh', undefined, `New token retrieved`);
+	},
+};
+
 /**
  * Provide authentication steps
  */
@@ -180,7 +186,7 @@ export class AuthClass {
 			};
 			userPoolData.Storage = this._storage;
 
-			this.userPool = new CognitoUserPool(userPoolData);
+			this.userPool = new CognitoUserPool(userPoolData, eventEmitters);
 		}
 
 		this.Credentials.configure({
@@ -2054,11 +2060,7 @@ export class AuthClass {
 
 		const { authenticationFlowType } = this._config;
 
-		const user = new CognitoUser(userData, {
-			onTokenRefresh() {
-				dispatchAuthEvent('token_refresh', undefined, `New token retrieved`);
-			},
-		});
+		const user = new CognitoUser(userData, eventEmitters);
 		if (authenticationFlowType) {
 			user.setAuthenticationFlowType(authenticationFlowType);
 		}

@@ -313,7 +313,10 @@ declare module 'amazon-cognito-identity-js' {
 	}
 
 	export class CognitoUserPool {
-		constructor(data: ICognitoUserPoolData);
+		constructor(
+			data: ICognitoUserPoolData,
+			eventEmitters?: ICognitoUserEventEmitters
+		);
 
 		public getUserPoolId(): string;
 		public getClientId(): string;
