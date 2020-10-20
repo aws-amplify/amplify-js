@@ -1464,8 +1464,8 @@ export default class CognitoUser {
 					return callback(err, null);
 				}
 				if (authResult) {
-					if (this.Pool.eventEmitters) {
-						this.Pool.eventEmitters.onTokenRefresh();
+					if (this.pool.eventEmitters) {
+						this.pool.eventEmitters.onTokenRefresh();
 					}
 					const authenticationResult = authResult.AuthenticationResult;
 					if (
@@ -1485,8 +1485,8 @@ export default class CognitoUser {
 				return undefined;
 			});
 		} catch (e) {
-			if (this.Pool.eventEmitters) {
-				this.Pool.eventEmitters.onTokenRefreshFailure(e);
+			if (this.pool.eventEmitters) {
+				this.pool.eventEmitters.onTokenRefreshFailure(e);
 			}
 		}
 	}
