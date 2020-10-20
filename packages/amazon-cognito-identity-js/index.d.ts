@@ -62,13 +62,11 @@ declare module 'amazon-cognito-identity-js' {
 
 	export interface ICognitoUserEventEmitters {
 		onTokenRefresh(): void;
+		onTokenRefreshFailure(error: Error): void;
 	}
 
 	export class CognitoUser {
-		constructor(
-			data: ICognitoUserData,
-			eventEmitters?: ICognitoUserEventEmitters
-		);
+		constructor(data: ICognitoUserData);
 
 		public setSignInUserSession(
 			signInUserSession: CognitoUserSession

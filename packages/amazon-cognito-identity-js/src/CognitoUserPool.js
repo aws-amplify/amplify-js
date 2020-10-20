@@ -129,7 +129,7 @@ export default class CognitoUserPool {
 			};
 
 			const returnData = {
-				user: new CognitoUser(cognitoUser, this.eventEmitters),
+				user: new CognitoUser(cognitoUser),
 				userConfirmed: data.UserConfirmed,
 				userSub: data.UserSub,
 				codeDeliveryDetails: data.CodeDeliveryDetails,
@@ -155,7 +155,7 @@ export default class CognitoUserPool {
 				Storage: this.storage,
 			};
 
-			return new CognitoUser(cognitoUser, this.eventEmitters);
+			return new CognitoUser(cognitoUser);
 		}
 
 		return null;

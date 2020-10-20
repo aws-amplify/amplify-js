@@ -88,6 +88,13 @@ const eventEmitters = {
 	onTokenRefresh() {
 		dispatchAuthEvent('token_refresh', undefined, `New token retrieved`);
 	},
+	onTokenRefreshFailure() {
+		dispatchAuthEvent(
+			'token_refresh_failure',
+			undefined,
+			`Failed to retrieve new token`
+		);
+	},
 };
 
 /**
@@ -2060,7 +2067,7 @@ export class AuthClass {
 
 		const { authenticationFlowType } = this._config;
 
-		const user = new CognitoUser(userData, eventEmitters);
+		const user = new CognitoUser(userData);
 		if (authenticationFlowType) {
 			user.setAuthenticationFlowType(authenticationFlowType);
 		}

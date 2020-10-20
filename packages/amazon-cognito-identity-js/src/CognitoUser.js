@@ -82,7 +82,7 @@ export default class CognitoUser {
 	 * @param {CognitoUserPool} data.Pool Pool containing the user.
 	 * @param {object} data.Storage Optional storage object.
 	 */
-	constructor(data, eventEmitters) {
+	constructor(data) {
 		if (data == null || data.Username == null || data.Pool == null) {
 			throw new Error('Username and pool information are required.');
 		}
@@ -100,8 +100,6 @@ export default class CognitoUser {
 
 		this.keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
 		this.userDataKey = `${this.keyPrefix}.${this.username}.userData`;
-
-		this.eventEmitters = eventEmitters;
 	}
 
 	/**
@@ -1436,55 +1434,61 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	refreshSession(refreshToken, callback, clientMetadata) {
-		const authParameters = {};
-		authParameters.REFRESH_TOKEN = refreshToken.getToken();
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
-		const lastUserKey = `${keyPrefix}.LastAuthUser`;
+		try {
+			const authParameters = {};
+			authParameters.REFRESH_TOKEN = refreshToken.getToken();
+			const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
+			const lastUserKey = `${keyPrefix}.LastAuthUser`;
 
-		if (this.storage.getItem(lastUserKey)) {
-			this.username = this.storage.getItem(lastUserKey);
-			const deviceKeyKey = `${keyPrefix}.${this.username}.deviceKey`;
-			this.deviceKey = this.storage.getItem(deviceKeyKey);
-			authParameters.DEVICE_KEY = this.deviceKey;
-		}
+			if (this.storage.getItem(lastUserKey)) {
+				this.username = this.storage.getItem(lastUserKey);
+				const deviceKeyKey = `${keyPrefix}.${this.username}.deviceKey`;
+				this.deviceKey = this.storage.getItem(deviceKeyKey);
+				authParameters.DEVICE_KEY = this.deviceKey;
+			}
 
-		const jsonReq = {
-			ClientId: this.pool.getClientId(),
-			AuthFlow: 'REFRESH_TOKEN_AUTH',
-			AuthParameters: authParameters,
-			ClientMetadata: clientMetadata,
-		};
-		if (this.getUserContextData()) {
-			jsonReq.UserContextData = this.getUserContextData();
+			const jsonReq = {
+				ClientId: this.pool.getClientId(),
+				AuthFlow: 'REFRESH_TOKEN_AUTH',
+				AuthParameters: authParameters,
+				ClientMetadata: clientMetadata,
+			};
+			if (this.getUserContextData()) {
+				jsonReq.UserContextData = this.getUserContextData();
+			}
+			this.client.request('InitiateAuth', jsonReq, (err, authResult) => {
+				if (err) {
+					if (err.code === 'NotAuthorizedException') {
+						this.clearCachedUser();
+					}
+					return callback(err, null);
+				}
+				if (authResult) {
+					if (this.Pool.eventEmitters) {
+						this.Pool.eventEmitters.onTokenRefresh();
+					}
+					const authenticationResult = authResult.AuthenticationResult;
+					if (
+						!Object.prototype.hasOwnProperty.call(
+							authenticationResult,
+							'RefreshToken'
+						)
+					) {
+						authenticationResult.RefreshToken = refreshToken.getToken();
+					}
+					this.signInUserSession = this.getCognitoUserSession(
+						authenticationResult
+					);
+					this.cacheTokens();
+					return callback(null, this.signInUserSession);
+				}
+				return undefined;
+			});
+		} catch (e) {
+			if (this.Pool.eventEmitters) {
+				this.Pool.eventEmitters.onTokenRefreshFailure(e);
+			}
 		}
-		this.client.request('InitiateAuth', jsonReq, (err, authResult) => {
-			if (err) {
-				if (err.code === 'NotAuthorizedException') {
-					this.clearCachedUser();
-				}
-				return callback(err, null);
-			}
-			if (authResult) {
-				if (this.eventEmitters) {
-					this.eventEmitters.onTokenRefresh();
-				}
-				const authenticationResult = authResult.AuthenticationResult;
-				if (
-					!Object.prototype.hasOwnProperty.call(
-						authenticationResult,
-						'RefreshToken'
-					)
-				) {
-					authenticationResult.RefreshToken = refreshToken.getToken();
-				}
-				this.signInUserSession = this.getCognitoUserSession(
-					authenticationResult
-				);
-				this.cacheTokens();
-				return callback(null, this.signInUserSession);
-			}
-			return undefined;
-		});
 	}
 
 	/**
