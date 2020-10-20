@@ -1407,15 +1407,18 @@ export class AuthClass {
 		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<void> {
 		return new Promise((resolve, reject) => {
-			user.getAttributeVerificationCode(attr, {
-				onSuccess() {
-					return resolve();
+			user.getAttributeVerificationCode(
+				attr,
+				{
+					onSuccess() {
+						return resolve();
+					},
+					onFailure(err) {
+						return reject(err);
+					},
 				},
-				onFailure(err) {
-					return reject(err);
-				},
-				clientMetadata,
-			});
+				clientMetadata
+			);
 		});
 	}
 
