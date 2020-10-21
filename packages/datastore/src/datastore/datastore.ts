@@ -545,6 +545,8 @@ class DataStore {
 	private sync: SyncEngine;
 	private syncPageSize: number;
 	private syncExpressions: SyncExpression<any>[];
+	private syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>;
+	private syncModelsUpdated: Set<String> = null;
 
 	getModuleName() {
 		return 'DataStore';
@@ -579,7 +581,7 @@ class DataStore {
 		if (aws_appsync_graphqlEndpoint) {
 			logger.debug('GraphQL endpoint available', aws_appsync_graphqlEndpoint);
 
-			const syncPredicates = await this.processSyncExpressions();
+			this.syncPredicates = await this.processSyncExpressions();
 
 			this.sync = new SyncEngine(
 				schema,
@@ -592,7 +594,8 @@ class DataStore {
 				this.syncPageSize,
 				this.conflictHandler,
 				this.errorHandler,
-				syncPredicates
+				this.syncPredicates,
+				this.syncModelsUpdated
 			);
 
 			// tslint:disable-next-line:max-line-length
@@ -1027,9 +1030,10 @@ class DataStore {
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.storage = undefined;
 		this.sync = undefined;
+		this.syncPredicates = undefined;
 	};
 
-	stop = async function clear() {
+	stop = async function stop() {
 		if (syncSubscription && !syncSubscription.closed) {
 			syncSubscription.unsubscribe();
 		}
@@ -1111,10 +1115,39 @@ class DataStore {
 			)
 		);
 
+		this.compareSyncPredicates(syncPredicates);
+
 		return this.weakMapFromEntries(syncPredicates);
 	}
 
-	private createFromCondition(modelDefinition, condition) {
+	private compareSyncPredicates(
+		syncPredicates: [SchemaModel, ModelPredicate<any>][]
+	) {
+		if (!this.syncPredicates) {
+			return;
+		}
+
+		this.syncModelsUpdated = new Set<string>();
+
+		syncPredicates.forEach(([modelDefinition, predicate]) => {
+			const previousPredicate = ModelPredicateCreator.getPredicates(
+				this.syncPredicates.get(modelDefinition),
+				false
+			);
+
+			const newPredicate = ModelPredicateCreator.getPredicates(
+				predicate,
+				false
+			);
+
+			const predicateChanged =
+				JSON.stringify(previousPredicate) !== JSON.stringify(newPredicate);
+
+			predicateChanged && this.syncModelsUpdated.add(modelDefinition.name);
+		});
+	}
+
+	private createFromCondition(modelDefinition: SchemaModel, condition) {
 		try {
 			return ModelPredicateCreator.createFromExisting(
 				modelDefinition,
@@ -1134,6 +1167,7 @@ class DataStore {
 			if (error instanceof TypeError) {
 				return conditionProducer;
 			}
+			throw error;
 		}
 	}
 

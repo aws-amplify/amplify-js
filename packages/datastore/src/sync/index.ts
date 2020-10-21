@@ -104,7 +104,8 @@ export class SyncEngine {
 		private readonly syncPageSize: number,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
-		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly syncModelsUpdated: Set<String> // Iterate over and compare
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -123,11 +124,11 @@ export class SyncEngine {
 			this.schema,
 			this.maxRecordsToSync,
 			this.syncPageSize,
-			syncPredicates
+			this.syncPredicates
 		);
 		this.subscriptionsProcessor = new SubscriptionProcessor(
 			this.schema,
-			syncPredicates
+			this.syncPredicates
 		);
 		this.mutationsProcessor = new MutationProcessor(
 			this.schema,
@@ -720,11 +721,18 @@ export class SyncEngine {
 					ownSymbol
 				);
 			} else {
+				const syncPredicateUpdated =
+					this.syncModelsUpdated && this.syncModelsUpdated.has(model);
+
 				[[savedModel]] = await this.storage.save(
 					(this.modelClasses.ModelMetadata as PersistentModelConstructor<
 						any
 					>).copyOf(modelMetadata, draft => {
 						draft.fullSyncInterval = fullSyncInterval;
+						if (syncPredicateUpdated) {
+							draft.lastSync = null;
+							draft.lastFullSync = null;
+						}
 					})
 				);
 			}
