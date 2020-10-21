@@ -38,6 +38,7 @@ import { AmplifyMessageMap } from '../AmplifyMessageMap';
 import { Container, Toast } from '../Amplify-UI/Amplify-UI-Components-React';
 import { auth } from '../Amplify-UI/data-test-attributes';
 import { UsernameAttributes } from './common/types';
+import { IFederatedOptions } from './FederatedSignIn';
 
 const logger = new Logger('Authenticator');
 const AUTHENTICATOR_AUTHSTATE = 'amplify-authenticator-authState';
@@ -50,7 +51,7 @@ export interface IAuthenticatorProps {
 	authState?: string;
 	container?: any;
 	errorMessage?: (message: string) => string;
-	federated?: any;
+	federated?: IFederatedOptions;
 	hide?: any[];
 	hideDefault?: boolean;
 	onStateChange?: (authState: string, data?) => void;

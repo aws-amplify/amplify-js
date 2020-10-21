@@ -22,9 +22,17 @@ import {
 
 const logger = new Logger('FederatedSignIn');
 
+export interface IFederatedOptions  {
+	google_client_id?: string,
+	facebook_app_id?: number
+	amazon_client_id?: string,
+	oauth_config?: any,
+	auth0?: any,
+}
+
 export interface IFederatedButtonsProps {
 	authState: any;
-	federated: any;
+	federated: IFederatedOptions;
 	onAuthEvent?: any;
 	onStateChange: any;
 	theme: any;

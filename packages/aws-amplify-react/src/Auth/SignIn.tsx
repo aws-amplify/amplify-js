@@ -16,7 +16,7 @@ import { I18n, isEmpty, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 
 import { AuthPiece, IAuthPieceProps, IAuthPieceState  } from './AuthPiece';
-import { FederatedButtons } from './FederatedSignIn';
+import { FederatedButtons, IFederatedOptions } from './FederatedSignIn';
 import { SignUp } from './SignUp';
 import { ForgotPassword } from './ForgotPassword';
 
@@ -40,7 +40,7 @@ import { auth } from '../Amplify-UI/data-test-attributes';
 const logger = new Logger('SignIn');
 
 export interface ISignInProps extends IAuthPieceProps {
-	federated?: any;
+	federated?: IFederatedOptions;
 	override?: any;
 }
 
