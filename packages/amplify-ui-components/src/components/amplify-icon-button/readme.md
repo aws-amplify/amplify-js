@@ -12,6 +12,14 @@
 | `tooltip`         | `tooltip`           | (Optional) The tooltip that will show on hover of the button | `string`                                                                                                                                                                                                             | `null`      |
 
 
+## CSS Custom Properties
+
+| Name                        | Description                                      |
+| --------------------------- | ------------------------------------------------ |
+| `--button-background-hover` | Background color of the button when it's hovered |
+| `--button-color`            | Text color of the button                         |
+
+
 ## Dependencies
 
 ### Depends on

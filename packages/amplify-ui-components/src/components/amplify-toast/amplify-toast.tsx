@@ -1,5 +1,8 @@
 import { Component, Prop, h } from '@stencil/core';
 
+/**
+ * @slot (default) - Content placed inside the toast. If `message` prop is already set, then this content will be displayed to the right of the `message`.
+ */
 @Component({
   tag: 'amplify-toast',
   styleUrl: 'amplify-toast.scss',

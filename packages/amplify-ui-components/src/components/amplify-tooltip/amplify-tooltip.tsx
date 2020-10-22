@@ -1,5 +1,8 @@
 import { Component, h, Prop } from '@stencil/core';
 
+/**
+ * @slot (default) - Text displayed below the tooltip. This will always be visible.
+ */
 @Component({
   tag: 'amplify-tooltip',
   styleUrl: 'amplify-tooltip.scss',
