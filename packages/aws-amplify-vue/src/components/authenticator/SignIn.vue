@@ -23,7 +23,7 @@
         <div v-bind:class="amplifyUI.inputLabel">{{$Amplify.I18n.get('Password')}} *</div>
         <input  v-bind:class="amplifyUI.input" v-model="password" type="password" :placeholder="$Amplify.I18n.get('Enter your password')" v-on:keyup.enter="signIn" v-bind:data-test="auth.signIn.passwordInput" />
         <div v-bind:class="amplifyUI.hint">
-          {{$Amplify.I18n.get('Forget your password? ')}}
+          {{$Amplify.I18n.get('Forgot your password? ')}}
           <a v-bind:class="amplifyUI.a" v-on:click="forgot" v-bind:data-test="auth.signIn.forgotPasswordLink">{{$Amplify.I18n.get('Reset password')}}</a>
         </div>
       </div>

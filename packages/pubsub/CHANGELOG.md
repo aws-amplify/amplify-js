@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.4...@aws-amplify/pubsub@3.2.5) (2020-10-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pubsub:** Block subscriptions for SSR, not Node ([#6937](https://github.com/aws-amplify/amplify-js/issues/6937)) ([e1d122b](https://github.com/aws-amplify/amplify-js/commit/e1d122bec0fb67eab0a696ee6e0ffa976631e4f0))
+
+
+
+
+
 ## [3.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.3...@aws-amplify/pubsub@3.2.4) (2020-10-01)
 
 
