@@ -28,6 +28,16 @@
 | `"secondary-footer-content"` | Content placed on the left side of the footer                 |
 
 
+## CSS Custom Properties
+
+| Name                   | Description               |
+| ---------------------- | ------------------------- |
+| `--footer-color`       | Font color of the footer  |
+| `--footer-font-family` | Font family of the footer |
+| `--footer-font-size`   | Font size of the footer   |
+| `--footer-wegight`     | Font weight of the footer |
+
+
 ## Dependencies
 
 ### Used by

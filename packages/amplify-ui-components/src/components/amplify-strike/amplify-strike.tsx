@@ -1,5 +1,8 @@
 import { Component, h } from '@stencil/core';
 
+/**
+ * @slot (default) - Content placed between the two horizontal rules
+ */
 @Component({
   tag: 'amplify-strike',
   styleUrl: 'amplify-strike.scss',

@@ -1,13 +1,15 @@
 # Javascript Node CircleCI 2.1 configuration file
 #
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
 version: 2.1
 
 executors:
   build-executor:
     docker:
       - image: cypress/base:12
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
+
     resource_class: large
     working_directory: ~/amplify-js
 
@@ -15,11 +17,14 @@ executors:
     docker:
       - image: cypress/included:5.2.0
       - image: verdaccio/verdaccio
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
     resource_class: large
 
   macos-executor:
     macos:
-      xcode: 11.4.1
+      xcode: 11.5.0
 
 test_env_vars: &test_env_vars
   environment:
@@ -29,20 +34,6 @@ test_env_vars: &test_env_vars
     NPM_EMAIL: circleci@amplify.js
 
 commands:
-  restore_pods:
-    steps:
-      - restore_cache:
-          keys:
-            - v1-storage-app-pods-{{ checksum "ios/Podfile.lock" }}
-            - v1-storage-app-pods-
-
-  save_pods:
-    steps:
-      - save_cache:
-          key: v1-storage-app-pods-{{ checksum "ios/Podfile.lock" }}
-          paths:
-            - ios/Pods
-
   publish_to_verdaccio:
     steps:
       - run:
@@ -106,10 +97,15 @@ commands:
             echo "Current NPM registry: " $(yarn config get registry)
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
       - run:
-          name: 'Run cypress tests for << parameters.test_name >> Sample'
+          name: 'Run cypress tests for << parameters.test_name >> sample on dev'
           command: |
             cd ~/amplify-js-samples-staging
-            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >>' -n 3
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> dev' -n 3
+      - run:
+          name: 'Run cypress tests for << parameters.test_name >> sample on prod'
+          command: |
+            cd ~/amplify-js-samples-staging
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> prod' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -138,13 +134,11 @@ commands:
           command: |
             echo "Current NPM registry: " $(yarn config get registry)
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
-      - restore_pods
       - run:
           name: Install CocoaPods
           command: |
             cd ios
             pod install
-      - save_pods
       - run:
           background: true
           command: xcrun simctl boot "iPhone 11" || true
@@ -279,10 +273,22 @@ jobs:
     executor: build-executor
     steps:
       - checkout
-      - run: yarn config set workspaces-experimental true
-      - run: yarn --frozen-lockfile
-      - run: yarn run bootstrap
-      - run: yarn run build
+      - run:
+          name: yarn install --non-interactive
+          # temporarily rename .yarnrc before installing so that we can generate a yarn.lock artifact
+          command: |
+            mv .yarnrc ._yarnrc
+            yarn
+      - run: yarn build
+      # storing yarn.lock as an artifact, so that we can quickly get a dependency diff
+      # with the last working build in the event that some upstream deps break the build in the future
+      - store_artifacts:
+          path: yarn.lock
+      - run:
+          name: delete lockfile after persisting
+          command: |
+            mv ._yarnrc .yarnrc
+            rm yarn.lock
       - save_cache:
           key: amplify-ssh-deps-{{ .Branch }}
           paths:
@@ -300,8 +306,8 @@ jobs:
       - run:
           name: 'Run Amplify JS unit tests'
           command: |
-            yarn run test
-            yarn run coverage
+            yarn test
+            yarn coverage
 
   integ_setup:
     executor: build-executor
@@ -638,7 +644,7 @@ jobs:
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
             git pull origin release
-            yarn && yarn build
+            yarn workspace @aws-amplify/core build
             git add ./packages/core/src/Platform/version.ts
             git commit -m "chore(release): update version.ts [ci skip]"
             git push origin release

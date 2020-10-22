@@ -61,7 +61,6 @@ class SubscriptionProcessor {
 		const { authMode, isOwner, ownerField, ownerValue } =
 			this.getAuthorizationInfo(
 				model,
-				transformerMutationType,
 				userCredentials,
 				cognitoTokenPayload,
 				oidcTokenPayload
@@ -79,7 +78,6 @@ class SubscriptionProcessor {
 
 	private getAuthorizationInfo(
 		model: SchemaModel,
-		transformerMutationType: TransformerMutationType,
 		userCredentials: USER_CREDENTIALS,
 		cognitoTokenPayload: { [field: string]: any } = {},
 		oidcTokenPayload: { [field: string]: any } = {}
@@ -90,7 +88,7 @@ class SubscriptionProcessor {
 		ownerValue?: string;
 	} {
 		let result;
-		const rules = getAuthorizationRules(model, transformerMutationType);
+		const rules = getAuthorizationRules(model);
 
 		// check if has apiKey and public authorization
 		const apiKeyAuth = rules.find(
@@ -131,7 +129,7 @@ class SubscriptionProcessor {
 		);
 
 		const validCognitoGroup = groupAuthRules.find(groupAuthRule => {
-			// validate token agains groupClaim
+			// validate token against groupClaim
 			const userGroups: string[] =
 				cognitoTokenPayload[groupAuthRule.groupClaim] || [];
 
@@ -153,11 +151,11 @@ class SubscriptionProcessor {
 		);
 
 		const validOidcGroup = groupAuthRules.find(groupAuthRule => {
-			// validate token agains groupClaim
+			// validate token against groupClaim
 			const userGroups: string[] =
 				oidcTokenPayload[groupAuthRule.groupClaim] || [];
 
-			userGroups.find(userGroup => {
+			return userGroups.find(userGroup => {
 				return groupAuthRule.groups.find(group => group === userGroup);
 			});
 		});
@@ -270,13 +268,14 @@ class SubscriptionProcessor {
 						}
 					}
 
-					const payload = token.split('.')[1];
-
-					oidcTokenPayload = JSON.parse(
-						Buffer.from(payload, 'base64').toString('utf8')
-					);
+					if (token) {
+						const payload = token.split('.')[1];
+						oidcTokenPayload = JSON.parse(
+							Buffer.from(payload, 'base64').toString('utf8')
+						);
+					}
 				} catch (err) {
-					logger.warn('error getting OIDC JWT', err);
+					logger.debug('error getting OIDC JWT', err);
 					// best effort to get oidc jwt
 				}
 
