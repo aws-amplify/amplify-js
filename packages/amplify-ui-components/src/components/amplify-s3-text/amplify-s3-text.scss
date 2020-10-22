@@ -1,3 +1,9 @@
+/**
+ * @prop --container-color: Background color of the text container
+ * @prop --border-color: Border color of the text container
+ * @prop --text-color: Font color of the text
+ * @prop --font-size: Font size of the text
+ */
 :host {
   --container-color: var(--amplify-smoke-white);
   --border-color: var(--amplify-light-grey);

@@ -1251,9 +1251,15 @@ export class AuthClass {
 		}
 
 		try {
-			federatedUser = JSON.parse(
+			const federatedInfo = JSON.parse(
 				this._storage.getItem('aws-amplify-federatedInfo')
-			).user;
+			);
+			if (federatedInfo) {
+				federatedUser = {
+					...federatedInfo.user,
+					token: federatedInfo.token,
+				};
+			}
 		} catch (e) {
 			logger.debug('cannot load federated user from auth storage');
 		}
@@ -1401,15 +1407,18 @@ export class AuthClass {
 		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<void> {
 		return new Promise((resolve, reject) => {
-			user.getAttributeVerificationCode(attr, {
-				onSuccess() {
-					return resolve();
+			user.getAttributeVerificationCode(
+				attr,
+				{
+					onSuccess() {
+						return resolve();
+					},
+					onFailure(err) {
+						return reject(err);
+					},
 				},
-				onFailure(err) {
-					return reject(err);
-				},
-				clientMetadata,
-			});
+				clientMetadata
+			);
 		});
 	}
 

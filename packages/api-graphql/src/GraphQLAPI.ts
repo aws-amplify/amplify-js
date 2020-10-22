@@ -139,13 +139,22 @@ export class GraphQLAPIClass {
 				}
 				break;
 			case 'OPENID_CONNECT':
-				const federatedInfo = await this.Cache.getItem('federatedInfo');
-
-				if (!federatedInfo || !federatedInfo.token) {
+				let token;
+				// backwards compatibility
+				const federatedInfo = await Cache.getItem('federatedInfo');
+				if (federatedInfo) {
+					token = federatedInfo.token;
+				} else {
+					const currentUser = await Auth.currentAuthenticatedUser();
+					if (currentUser) {
+						token = currentUser.token;
+					}
+				}
+				if (!token) {
 					throw new Error('No federated jwt');
 				}
 				headers = {
-					Authorization: federatedInfo.token,
+					Authorization: token,
 				};
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
