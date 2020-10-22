@@ -1,5 +1,8 @@
 import { Component, Prop, h } from '@stencil/core';
 
+/**
+ * @slot (default) - Label content
+ */
 @Component({
   tag: 'amplify-label',
   styleUrl: 'amplify-label.scss',

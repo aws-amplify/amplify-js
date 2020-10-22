@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.6.0...@aws-amplify/datastore@2.6.1) (2020-10-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix DS subscriptions involving read operation ([#6954](https://github.com/aws-amplify/amplify-js/issues/6954)) ([2f74c6b](https://github.com/aws-amplify/amplify-js/commit/2f74c6b74d38af570017139f2ba8269dc1009135))
+
+
+
+
+
+# [2.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.5.2...@aws-amplify/datastore@2.6.0) (2020-10-01)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** add token to currentAuthenticatedUser for OIDC  ([#6858](https://github.com/aws-amplify/amplify-js/issues/6858)) ([61f7478](https://github.com/aws-amplify/amplify-js/commit/61f7478609fce7dd2f25c562aeb887d3f3db4a67))
+* **@aws-amplify/datastore:** check for token before getting payload ([#6893](https://github.com/aws-amplify/amplify-js/issues/6893)) ([880e1da](https://github.com/aws-amplify/amplify-js/commit/880e1da9d85b1caa3992bc7b4b6ace1a32eee525))
+* **@aws-amplify/datastore:** correct validation for array values in models ([#6784](https://github.com/aws-amplify/amplify-js/issues/6784)) ([95f73e2](https://github.com/aws-amplify/amplify-js/commit/95f73e2d1b8eab2d9b8fc474ca2986f84d2a68e3))
+* **@aws-amplify/datastore:** fix import isNullOrUndefined ([#6883](https://github.com/aws-amplify/amplify-js/issues/6883)) ([a55168b](https://github.com/aws-amplify/amplify-js/commit/a55168b0c6b794b337a5b2258fc22b5721a82e85))
+
+
+### Features
+
+* **@aws-amplify/datastore:** support indexeddb adapter on web worker ([#6874](https://github.com/aws-amplify/amplify-js/issues/6874)) ([e43e181](https://github.com/aws-amplify/amplify-js/commit/e43e18195ca201fa61bd0dfb1b18c06c3262f825))
+
+
+
+
+
 ## [2.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.5.1...@aws-amplify/datastore@2.5.2) (2020-09-25)
 
 
