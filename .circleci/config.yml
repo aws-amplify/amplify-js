@@ -6,6 +6,10 @@ executors:
   build-executor:
     docker:
       - image: cypress/base:12
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
+
     resource_class: large
     working_directory: ~/amplify-js
 
@@ -13,6 +17,9 @@ executors:
     docker:
       - image: cypress/included:5.2.0
       - image: verdaccio/verdaccio
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
     resource_class: large
 
   macos-executor:
@@ -90,10 +97,15 @@ commands:
             echo "Current NPM registry: " $(yarn config get registry)
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
       - run:
-          name: 'Run cypress tests for << parameters.test_name >> Sample'
+          name: 'Run cypress tests for << parameters.test_name >> sample on dev'
           command: |
             cd ~/amplify-js-samples-staging
-            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >>' -n 3
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> dev' -n 3
+      - run:
+          name: 'Run cypress tests for << parameters.test_name >> sample on prod'
+          command: |
+            cd ~/amplify-js-samples-staging
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> prod' -n 3
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -632,7 +644,7 @@ jobs:
             git config --global user.email $GITHUB_EMAIL
             git config --global user.name $GITHUB_USER
             git pull origin release
-            yarn && yarn build
+            yarn workspace @aws-amplify/core build
             git add ./packages/core/src/Platform/version.ts
             git commit -m "chore(release): update version.ts [ci skip]"
             git push origin release
