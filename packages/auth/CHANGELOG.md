@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.6...@aws-amplify/auth@3.4.7) (2020-10-15)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [3.4.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.5...@aws-amplify/auth@3.4.6) (2020-10-01)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** add token to currentAuthenticatedUser for OIDC  ([#6858](https://github.com/aws-amplify/amplify-js/issues/6858)) ([61f7478](https://github.com/aws-amplify/amplify-js/commit/61f7478609fce7dd2f25c562aeb887d3f3db4a67))
+
+
+
+
+
+## [3.4.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.4...@aws-amplify/auth@3.4.5) (2020-09-25)
+
+
+### Bug Fixes
+
+* Add files with Amplify.register to sideEffects array ([#6867](https://github.com/aws-amplify/amplify-js/issues/6867)) ([58ddbf8](https://github.com/aws-amplify/amplify-js/commit/58ddbf8811e44695d97b6ab8be8f7cd2a2242921))
+
+
+
+
+
+## [3.4.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.3...@aws-amplify/auth@3.4.4) (2020-09-16)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Fix binding for Auth.currentCredentials ([#6809](https://github.com/aws-amplify/amplify-js/issues/6809)) ([912cf10](https://github.com/aws-amplify/amplify-js/commit/912cf105785584e9ba55f78c86dffed50b0bd6df))
+
+
+
+
+
+## [3.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.2...@aws-amplify/auth@3.4.3) (2020-09-15)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
 ## [3.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.1...@aws-amplify/auth@3.4.2) (2020-09-10)
 
 **Note:** Version bump only for package @aws-amplify/auth

@@ -1,5 +1,5 @@
 import { I18n } from '@aws-amplify/core';
-import { Component, Prop, State, h } from '@stencil/core';
+import { Component, Prop, State, h, Host } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import {
   AuthState,
@@ -125,19 +125,21 @@ export class AmplifyRequireNewPassword {
 
   render() {
     return (
-      <amplify-form-section
-        headerText={I18n.get(this.headerText)}
-        handleSubmit={this.handleSubmit}
-        loading={this.loading}
-        secondaryFooterContent={
-          <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
-            {I18n.get(Translations.BACK_TO_SIGN_IN)}
-          </amplify-button>
-        }
-        submitButtonText={I18n.get(this.submitButtonText)}
-      >
-        <amplify-auth-fields formFields={this.newFormFields} />
-      </amplify-form-section>
+      <Host>
+        <amplify-form-section
+          headerText={I18n.get(this.headerText)}
+          handleSubmit={this.handleSubmit}
+          loading={this.loading}
+          secondaryFooterContent={
+            <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
+              {I18n.get(Translations.BACK_TO_SIGN_IN)}
+            </amplify-button>
+          }
+          submitButtonText={I18n.get(this.submitButtonText)}
+        >
+          <amplify-auth-fields formFields={this.newFormFields} />
+        </amplify-form-section>
+      </Host>
     );
   }
 }

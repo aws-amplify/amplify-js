@@ -1,3 +1,9 @@
+/**
+ * @prop --color: Color of the text
+ * @prop --font-family: Font family of the text
+ * @prop --font-size: Font size of the text
+ * @prop --font-weight: Font weight of the text
+ */
 :host {
   --color: var(--amplify-grey);
   --font-family: var(--amplify-font-family);

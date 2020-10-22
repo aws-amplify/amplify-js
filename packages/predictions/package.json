@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/predictions",
-	"version": "3.2.2",
+	"version": "3.2.7",
 	"description": "Machine learning category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -8,7 +8,13 @@
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js"
 	},
-	"sideEffects": false,
+	"sideEffects": [
+		"./src/Predictions.ts",
+		"./lib/Predictions.js",
+		"./lib-esm/Predictions.js",
+		"./dist/aws-amplify-predictions.min.js",
+		"./dist/aws-amplify-predictions.js"
+	],
 	"scripts": {
 		"test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
 		"build-with-test": "npm run clean && npm test && tsc && webpack -p",
@@ -34,8 +40,8 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"dependencies": {
-		"@aws-amplify/core": "^3.5.2",
-		"@aws-amplify/storage": "^3.3.2",
+		"@aws-amplify/core": "^3.7.0",
+		"@aws-amplify/storage": "^3.3.7",
 		"@aws-sdk/client-comprehend": "1.0.0-gamma.8",
 		"@aws-sdk/client-polly": "1.0.0-gamma.8",
 		"@aws-sdk/client-rekognition": "1.0.0-gamma.8",

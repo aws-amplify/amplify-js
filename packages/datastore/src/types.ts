@@ -159,6 +159,7 @@ type ModelField = {
 		| EnumFieldType;
 	isArray: boolean;
 	isRequired?: boolean;
+	isArrayNullable?: boolean;
 	association?: ModelAssociation;
 	attributes?: ModelAttributes[];
 };
@@ -168,6 +169,8 @@ type ModelField = {
 export type NonModelTypeConstructor<T> = {
 	new (init: T): T;
 };
+
+// Class for model
 export type PersistentModelConstructor<T extends PersistentModel> = {
 	new (init: ModelInit<T>): T;
 	copyOf(src: T, mutator: (draft: MutableModel<T>) => void): T;
@@ -176,6 +179,8 @@ export type TypeConstructorMap = Record<
 	string,
 	PersistentModelConstructor<any> | NonModelTypeConstructor<any>
 >;
+
+// Instance of model
 export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
 export type ModelInit<T> = Omit<T, 'id'>;
 type DeepWritable<T> = {
@@ -210,11 +215,13 @@ export type SubscriptionMessage<T extends PersistentModel> = {
 //#endregion
 
 //#region Predicates
+
 export type PredicateExpression<M extends PersistentModel, FT> = TypeName<
 	FT
 > extends keyof MapTypeToOperands<FT>
 	? (
 			operator: keyof MapTypeToOperands<FT>[TypeName<FT>],
+			// make the operand type match the type they're trying to filter on
 			operand: MapTypeToOperands<FT>[TypeName<FT>][keyof MapTypeToOperands<
 				FT
 			>[TypeName<FT>]]
@@ -337,9 +344,44 @@ export type GraphQLCondition = Partial<
 
 //#region Pagination
 
-export type PaginationInput = {
+export type ProducerPaginationInput<T extends PersistentModel> = {
+	sort?: ProducerSortPredicate<T>;
 	limit?: number;
 	page?: number;
+};
+
+export type PaginationInput<T extends PersistentModel> = {
+	sort?: SortPredicate<T>;
+	limit?: number;
+	page?: number;
+};
+
+export type ProducerSortPredicate<M extends PersistentModel> = (
+	condition: SortPredicate<M>
+) => SortPredicate<M>;
+
+export type SortPredicate<T extends PersistentModel> = {
+	[K in keyof T]-?: SortPredicateExpression<T, NonNullable<T[K]>>;
+};
+
+export type SortPredicateExpression<M extends PersistentModel, FT> = TypeName<
+	FT
+> extends keyof MapTypeToOperands<FT>
+	? (sortDirection: keyof typeof SortDirection) => SortPredicate<M>
+	: never;
+
+export enum SortDirection {
+	ASCENDING = 'ASCENDING',
+	DESCENDING = 'DESCENDING',
+}
+
+export type SortPredicatesGroup<
+	T extends PersistentModel
+> = SortPredicateObject<T>[];
+
+export type SortPredicateObject<T extends PersistentModel> = {
+	field: keyof T;
+	sortDirection: keyof typeof SortDirection;
 };
 
 //#endregion
