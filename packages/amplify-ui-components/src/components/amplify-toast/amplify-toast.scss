@@ -1,10 +1,17 @@
+/**
+ * @prop --background-color: Background color of the container
+ * @prop --color: Text color within the toast
+ * @prop --font-size: Font size of the text within the toast
+ * @prop --close-icon-color: Fill color of the close icon
+ * @prop --close-icon-hover: Fill color of the close icon when hovering
+ */
 :host {
   --background-color: var(--amplify-secondary-tint);
   --color: var(--amplify-white);
   --font-size: var(--amplify-text-sm);
   --font-family: var(--amplify-font-family);
   --close-icon-color: var(--amplify-white);
-  --close-icon-hover: var(--amplify-red)
+  --close-icon-hover: var(--amplify-red);
 }
 
 .toast-icon {
@@ -28,7 +35,7 @@
   border-radius: 5px;
   font-family: var(--font-family);
 
-  >span {
+  > span {
     margin-right: 10px;
   }
 }
@@ -57,8 +64,7 @@
   }
 
   &:hover::before,
-  &:hover::after
-  {
+  &:hover::after {
     background: var(--close-icon-hover);
   }
 

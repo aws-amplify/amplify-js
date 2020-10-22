@@ -23,6 +23,13 @@
 | `track`         | `track`        | Whether or not to use track the get/put of the listing of images   | `boolean`                                                            | `undefined`                |
 
 
+## CSS Custom Properties
+
+| Name                 | Description                  |
+| -------------------- | ---------------------------- |
+| `--overlay-bg-color` | Image overlay color on hover |
+
+
 ## Dependencies
 
 ### Depends on
