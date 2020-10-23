@@ -7,6 +7,7 @@ import {
 	ModelPredicate,
 	PredicatesGroup,
 	GraphQLCondition,
+	GraphQLFilter,
 } from '../../types';
 import { buildGraphQLOperation, predicateToGraphQLFilter } from '../utils';
 import {
@@ -48,7 +49,7 @@ class SyncProcessor {
 		});
 	}
 
-	private graphqlFilterFromPredicate(model: SchemaModel): GraphQLCondition {
+	private graphqlFilterFromPredicate(model: SchemaModel): GraphQLFilter {
 		if (!this.syncPredicates) {
 			return null;
 		}
@@ -71,7 +72,7 @@ class SyncProcessor {
 		lastSync: number,
 		nextToken: string,
 		limit: number = null,
-		filter: GraphQLCondition
+		filter: GraphQLFilter
 	): Promise<{ nextToken: string; startedAt: number; items: T[] }> {
 		const [opName, query] = this.typeQuery.get(modelDefinition);
 
