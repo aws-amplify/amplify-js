@@ -5,6 +5,12 @@
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
+  "types": "./lib-esm/index.d.ts",
+  "exports": {
+    "import": "./lib-esm/index.js",
+    "require": "./lib/index.js"
+  },
+  "keywords": ["aws", "amplify", "library", "cache"],
   "react-native": {
     "./lib/index": "./lib-esm/reactnative.js"
   },

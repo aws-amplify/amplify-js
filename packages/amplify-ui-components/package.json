@@ -8,6 +8,11 @@
   "es2017": "dist/esm/index.mjs",
   "unpkg": "dist/amplify-ui-components/amplify-ui-components.js",
   "types": "dist/types/index.d.ts",
+  "exports": {
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.js"
+  },
+  "keywords": ["aws", "amplify", "library", "ui", "user", "interface", "components"],
   "collection": "dist/collection/collection-manifest.json",
   "files": [
     "dist/",

@@ -5,6 +5,10 @@
 	"main": "bundles/aws-amplify-angular.umd.js",
 	"module": "dist/index.js",
 	"typings": "dist/index.d.ts",
+	"types": "dist/index.d.ts",
+	"exports": {
+    "import": "./dist/index.js"
+  },
 	"scripts": {
 		"cleantemp": "rimraf coverage dist tmp docs",
 		"ngcompile": "node_modules/.bin/ngc -p tsconfig-aot.json",
@@ -25,6 +29,7 @@
 	},
 	"author": "Amazon Web Services",
 	"license": "Apache-2.0",
+	"keywords": ["aws", "amplify", "library", "angular"],
 	"devDependencies": {
 		"@angular/common": "^5.2.6",
 		"@angular/compiler": "^5.2.9",

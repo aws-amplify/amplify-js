@@ -5,6 +5,11 @@
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
+	"types": "./lib-esm/index.d.ts",
+	"exports": {
+    "import": "./lib-esm/index.js",
+    "require": "./lib/index.js"
+  },
 	"sideEffects": [
 		"./src/Analytics.ts",
 		"./lib/Analytics.js",
@@ -15,6 +20,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
+	"keywords": ["aws", "amplify", "library", "analytics"],
 	"scripts": {
 		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
 		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",

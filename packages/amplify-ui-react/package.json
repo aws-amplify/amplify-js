@@ -24,6 +24,12 @@
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
+	"types": "./lib-esm/index.d.ts",
+	"exports": {
+    "import": "./dist/lib-esm/index.js",
+    "require": "./dist/lib/index.js"
+	},
+	"keywords": ["aws", "amplify", "library", "ui", "user", "interface", "components", "react"],
 	"devDependencies": {
 		"@types/react": "^16.0.41",
 		"@types/react-dom": "^16.0.11",

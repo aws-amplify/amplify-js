@@ -5,6 +5,11 @@
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
+	"types": "./lib-esm/index.d.ts",
+	"exports": {
+    "import": "./lib-esm/index.js",
+    "require": "./lib/index.js"
+  },
 	"sideEffects": [
 		"./src/Storage/index.ts",
 		"./src/Storage/S3Album.ts",
@@ -18,6 +23,7 @@
 		"./dist/aws-amplify-react.js",
 		"./dist/aws-amplify-react.min.js"
 	],
+	"keywords": ["aws", "amplify", "library", "react"],
 	"scripts": {
 		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage --updateSnapshot --maxWorkers 2",
 		"build-with-test": "npm test && npm run build",

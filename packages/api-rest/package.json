@@ -5,6 +5,11 @@
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
+  "types": "./lib-esm/index.d.ts",
+  "exports": {
+    "import": "./lib-esm/index.js",
+    "require": "./lib/index.js"
+  },
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
@@ -18,6 +23,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "keywords": ["aws", "amplify", "library", "rest", "api"],
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest --coverage",
     "build-with-test": "npm test && npm run build",

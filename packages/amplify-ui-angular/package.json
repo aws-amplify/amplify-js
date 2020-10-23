@@ -9,6 +9,7 @@
 		"type": "git",
 		"url": "https://github.com/aws-amplify/amplify-js.git"
 	},
+	"keywords": ["aws", "amplify", "library", "ui", "user", "interface", "components", "angular"],
 	"scripts": {
 		"build": "npm run build.ng",
 		"build.link": "npm run build && node scripts/link-copy.js",
@@ -27,6 +28,9 @@
 	"module": "dist/fesm5.js",
 	"main": "dist/fesm5.js",
 	"types": "dist/core.d.ts",
+	"exports": {
+    "import": "./build/es5/index.js"
+  },
 	"files": [
 		"dist/"
 	],

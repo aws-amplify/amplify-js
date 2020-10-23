@@ -5,10 +5,16 @@
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
+  "types": "./lib-esm/index.d.ts",
+  "exports": {
+    "import": "./lib-esm/index.js",
+    "require": "./lib/index.js"
+  },
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
   "sideEffects": false,
+  "keywords": ["aws", "amplify", "library"],
   "scripts": {
     "test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
     "build-with-test": "npm run clean && npm test && tsc && webpack -p",

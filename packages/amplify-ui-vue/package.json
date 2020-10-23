@@ -9,6 +9,10 @@
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
+	"exports": {
+    "require": "./dist/index.js"
+	},
+	"keywords": ["aws", "amplify", "library", "ui", "user", "interface", "vue"],
 	"files": [
 		"dist/"
 	],

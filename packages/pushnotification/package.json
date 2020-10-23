@@ -5,9 +5,14 @@
   "main": "./lib/index.js",
   "module": "./lib/index.js",
   "typings": "./lib/index.d.ts",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    "require": "./lib/index.js"
+  },
   "publishConfig": {
     "access": "public"
   },
+  "keywords": ["aws", "amplify", "library", "push", "notifications"],
   "scripts": {
     "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
     "build-with-test": "npm test && npm run build",

@@ -63,6 +63,10 @@
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
   "types": "./index.d.ts",
+  "exports": {
+    "import": "./es/index.js",
+    "require": "./lib/index.js"
+  },
   "dependencies": {
     "buffer": "4.9.1",
     "crypto-js": "^3.3.0",

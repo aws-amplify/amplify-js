@@ -4,6 +4,7 @@
   "license": "Apache-2.0",
   "private": false,
   "author": "Amazon Web Services",
+  "keywords": ["aws", "amplify", "library", "vue"],
   "scripts": {
     "serve": "vue-cli-service serve",
     "lint": "vue-cli-service lint",
