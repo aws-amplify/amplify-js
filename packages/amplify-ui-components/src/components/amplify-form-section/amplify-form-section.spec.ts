@@ -32,14 +32,5 @@ describe('amplify-form-section spec:', () => {
 
       expect(page.root).toMatchSnapshot();
     });
-
-    it('should render form section', async () => {
-      const page = await newSpecPage({
-        components: [AmplifyFormSection],
-        html: `<amplify-form-section></amplify-form-section>`,
-      });
-
-      expect(page.root).toMatchSnapshot();
-    });
   });
 });
