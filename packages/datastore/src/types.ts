@@ -326,17 +326,31 @@ export enum QueryOne {
 	FIRST,
 	LAST,
 }
+export type GraphQLField = {
+	[field: string]: {
+		[operator: string]: string | number | [number, number];
+	};
+};
 
 export type GraphQLCondition = Partial<
-	| {
-			[field: string]: {
-				[operator: string]: string | number | [number, number];
-			};
-	  }
+	| GraphQLField
 	| {
 			and: [GraphQLCondition];
 			or: [GraphQLCondition];
 			not: GraphQLCondition;
+	  }
+>;
+
+export type GraphQLFilter = Partial<
+	| GraphQLField
+	| {
+			and: GraphQLFilter[];
+	  }
+	| {
+			or: GraphQLFilter[];
+	  }
+	| {
+			not: GraphQLFilter;
 	  }
 >;
 
@@ -434,22 +448,21 @@ export type DataStoreConfig = {
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
 		fullSyncInterval?: number;
-		syncExpressions?: SyncExpression<any>[];
+		syncExpressions?: SyncExpression<PersistentModel>[];
 	};
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
 	fullSyncInterval?: number;
-	syncExpressions?: SyncExpression<any>[];
+	syncExpressions?: SyncExpression<PersistentModel>[];
 };
 
 export type SyncExpression<T extends PersistentModel> = Promise<{
 	modelConstructor: PersistentModelConstructor<T>;
 	conditionProducer:
 		| ProducerModelPredicate<T>
-		| (() => ProducerModelPredicate<T>)
-		| (() => Promise<ProducerModelPredicate<T>>);
+		| (() => ProducerModelPredicate<T>);
 }>;
 
 /*
@@ -472,24 +485,20 @@ export async function syncExpression<T extends PersistentModel, P>(
 		condition: P | ModelPredicate<T>
 	) => P extends ModelPredicate<T>
 		? ModelPredicate<T>
-		: ProducerModelPredicate<T> | Promise<ProducerModelPredicate<T>>
+		: ProducerModelPredicate<T>
 ): Promise<{
 	modelConstructor: PersistentModelConstructor<T>;
 	conditionProducer: (
 		condition: P | ModelPredicate<T>
 	) => P extends ModelPredicate<T>
 		? ModelPredicate<T>
-		: ProducerModelPredicate<T> | Promise<ProducerModelPredicate<T>>;
+		: ProducerModelPredicate<T>;
 }> {
 	return {
 		modelConstructor,
 		conditionProducer,
 	};
 }
-
-type SyncConditionProducer<T extends PersistentModel> =
-	| (() => Promise<ProducerModelPredicate<T>>)
-	| (() => ProducerModelPredicate<T>);
 
 export type SyncConflict = {
 	modelConstructor: PersistentModelConstructor<any>;

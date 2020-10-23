@@ -2,6 +2,8 @@ import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
 	GraphQLCondition,
+	GraphQLFilter,
+	GraphQLField,
 	isEnumFieldType,
 	isGraphQLScalarType,
 	isPredicateObj,
@@ -391,23 +393,34 @@ export function predicateToGraphQLCondition(
 
 export function predicateToGraphQLFilter(
 	predicatesGroup: PredicatesGroup<any>
-): GraphQLCondition {
-	const result = {};
+): GraphQLFilter {
+	const result: GraphQLFilter = {};
 
 	if (!predicatesGroup || !Array.isArray(predicatesGroup.predicates)) {
 		return result;
 	}
 
 	const { type, predicates } = predicatesGroup;
+	const isList = type === 'and' || type === 'or';
 
-	result[type] = predicates.map(p => {
-		if (isPredicateObj(p)) {
-			const { field, operator, operand } = p;
+	result[type] = isList ? [] : {};
 
-			return { [field]: { [operator]: operand } };
-		} else {
-			result[p.type] = predicateToGraphQLCondition(p);
+	const appendToFilter = value =>
+		isList ? result[type].push(value) : (result[type] = value);
+
+	predicates.forEach(predicate => {
+		if (isPredicateObj(predicate)) {
+			const { field, operator, operand } = predicate;
+
+			const gqlField: GraphQLField = {
+				[field]: { [operator]: operand },
+			};
+
+			appendToFilter(gqlField);
+			return;
 		}
+
+		appendToFilter(predicateToGraphQLFilter(predicate));
 	});
 
 	return result;

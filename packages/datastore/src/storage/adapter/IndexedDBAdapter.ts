@@ -30,7 +30,6 @@ import {
 	sortCompareFunction,
 } from '../../util';
 import { Adapter } from './index';
-import { tsIndexSignature } from '@babel/types';
 
 const logger = new Logger('DataStore');
 

@@ -546,7 +546,7 @@ class DataStore {
 	private syncPageSize: number;
 	private syncExpressions: SyncExpression<any>[];
 	private syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>;
-	private syncModelsUpdated: Set<String> = null;
+	private syncModelsUpdated: Set<string> = new Set<string>();
 
 	getModuleName() {
 		return 'DataStore';
@@ -1147,7 +1147,10 @@ class DataStore {
 		});
 	}
 
-	private createFromCondition(modelDefinition: SchemaModel, condition) {
+	private createFromCondition(
+		modelDefinition: SchemaModel,
+		condition: ProducerModelPredicate<PersistentModel>
+	) {
 		try {
 			return ModelPredicateCreator.createFromExisting(
 				modelDefinition,
@@ -1159,7 +1162,9 @@ class DataStore {
 		}
 	}
 
-	private async unwrapPromise(conditionProducer) {
+	private async unwrapPromise<T extends PersistentModel>(
+		conditionProducer
+	): Promise<ProducerModelPredicate<T>> {
 		try {
 			const condition = await conditionProducer();
 			return condition;
@@ -1175,7 +1180,7 @@ class DataStore {
 		entries: [SchemaModel, ModelPredicate<any>][]
 	): WeakMap<SchemaModel, ModelPredicate<any>> {
 		return entries.reduce((map, [modelDefinition, predicate]) => {
-			if (map.get(modelDefinition)) {
+			if (map.has(modelDefinition)) {
 				const { name } = modelDefinition;
 				logger.warn(
 					`You can only utilize one Sync Expression per model. 

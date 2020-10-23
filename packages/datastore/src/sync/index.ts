@@ -105,7 +105,7 @@ export class SyncEngine {
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
-		private readonly syncModelsUpdated: Set<String> // Iterate over and compare
+		private readonly syncModelsUpdated: ReadonlySet<string>
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -721,14 +721,15 @@ export class SyncEngine {
 					ownSymbol
 				);
 			} else {
-				const syncPredicateUpdated =
-					this.syncModelsUpdated && this.syncModelsUpdated.has(model);
+				const syncPredicateUpdated = this.syncModelsUpdated.has(model);
 
 				[[savedModel]] = await this.storage.save(
 					(this.modelClasses.ModelMetadata as PersistentModelConstructor<
 						any
 					>).copyOf(modelMetadata, draft => {
 						draft.fullSyncInterval = fullSyncInterval;
+						// perform a base sync if the syncPredicate changed in between calls to DataStore.start
+						// ensures that the local store contains all the data specified by the syncExpression
 						if (syncPredicateUpdated) {
 							draft.lastSync = null;
 							draft.lastFullSync = null;
