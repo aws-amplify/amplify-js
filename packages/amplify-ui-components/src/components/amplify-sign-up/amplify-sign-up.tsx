@@ -341,7 +341,7 @@ export class AmplifySignUp {
                 </span>
               </slot>
               <slot name="primary-footer-content">
-                <amplify-button type="submit" data-test="sign-up-create-account-button">
+                <amplify-button type="submit" disabled={this.loading} data-test="sign-up-create-account-button">
                   {this.loading ? <amplify-loading-spinner /> : <span>{I18n.get(this.submitButtonText)}</span>}
                 </amplify-button>
               </slot>
