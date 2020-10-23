@@ -6,7 +6,6 @@ import {
 	SchemaModel,
 	ModelPredicate,
 	PredicatesGroup,
-	GraphQLCondition,
 	GraphQLFilter,
 } from '../../types';
 import { buildGraphQLOperation, predicateToGraphQLFilter } from '../utils';
