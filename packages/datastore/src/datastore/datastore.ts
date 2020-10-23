@@ -280,6 +280,8 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 						`All elements in the ${name} array should be of type ${errorTypeText}, [${elemTypes}] received. ${v}`
 					);
 				}
+			} else if (!isRequired && v === undefined) {
+				return;
 			} else if (typeof v !== jsType && v !== null) {
 				throw new Error(
 					`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`
