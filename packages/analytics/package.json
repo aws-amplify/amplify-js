@@ -20,6 +20,7 @@
 	"publishConfig": {
 		"access": "public"
 	},
+	"keywords": ["aws", "amplify", "library", "analytics"],
 	"scripts": {
 		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
 		"test:watch": "tslint 'src/**/*.ts' && jest -w 1 --watch",

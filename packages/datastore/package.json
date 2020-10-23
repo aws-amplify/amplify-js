@@ -23,6 +23,7 @@
 		"./dist/aws-amplify-datastore.min.js",
 		"./dist/aws-amplify-datastore.js"
 	],
+	"keywords": ["aws", "amplify", "library", "datastore", "data", "store"],
 	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage",
 		"build-with-test": "npm test && npm run build",

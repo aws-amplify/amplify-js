@@ -29,6 +29,7 @@
 	},
 	"author": "Amazon Web Services",
 	"license": "Apache-2.0",
+	"keywords": ["aws", "amplify", "library", "angular"],
 	"devDependencies": {
 		"@angular/common": "^5.2.6",
 		"@angular/compiler": "^5.2.9",

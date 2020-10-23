@@ -23,6 +23,7 @@
 		"./dist/aws-amplify-core.min.js",
 		"./dist/aws-amplify-core.js"
 	],
+	"keywords": ["aws", "amplify", "library", "core"],
 	"scripts": {
 		"test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
 		"build-with-test": "npm test && npm run build",

@@ -10,6 +10,7 @@
     "import": "./lib-esm/index.js",
     "require": "./lib/index.js"
   },
+  "keywords": ["aws", "amplify", "library", "cache"],
   "react-native": {
     "./lib/index": "./lib-esm/reactnative.js"
   },

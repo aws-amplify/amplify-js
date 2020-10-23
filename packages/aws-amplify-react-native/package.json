@@ -5,7 +5,8 @@
 	"main": "dist/index.js",
 	"exports": {
     "require": "./dist/index.js"
-  },
+	},
+	"keywords": ["aws", "amplify", "library", "react", "native", "react-native"],
 	"scripts": {
 		"test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
 		"build": "npm run clean && babel src --out-dir dist --extensions '.ts,.tsx,.js,.jsx' --copy-files",

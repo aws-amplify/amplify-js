@@ -9,6 +9,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "keywords": ["aws", "amplify", "library", "ui", "user", "interface", "components"],
   "scripts": {
     "format": "echo \"Not implemented\"",
     "test": "webpack",
