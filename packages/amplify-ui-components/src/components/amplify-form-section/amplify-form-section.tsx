@@ -51,7 +51,11 @@ export class AmplifyFormSection {
           <div>
             <slot name="amplify-form-section-footer">
               <div class="form-section-footer">
-                <amplify-button type="submit" data-test={this.testDataPrefix + '-' + this.testDataPrefix + '-button'}>
+                <amplify-button
+                  type="submit"
+                  disabled={this.loading}
+                  data-test={this.testDataPrefix + '-' + this.testDataPrefix + '-button'}
+                >
                   {this.loading ? <amplify-loading-spinner /> : <span>{this.submitButtonText}</span>}
                 </amplify-button>
                 {this.secondaryFooterContent}
