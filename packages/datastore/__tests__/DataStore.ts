@@ -195,6 +195,73 @@ describe('DataStore tests', () => {
 			expect(model1.id).toBe(model2.id);
 		});
 
+		test('Optional field can be initialized with undefined', () => {
+			const { Model } = initSchema(testSchema()) as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model1 = new Model({
+				field1: 'something',
+				optionalField1: undefined,
+			});
+
+			expect(model1.optionalField1).toBeUndefined();
+		});
+
+		test('Optional field can be initialized with null', () => {
+			const { Model } = initSchema(testSchema()) as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model1 = new Model({
+				field1: 'something',
+				optionalField1: null,
+			});
+
+			expect(model1.optionalField1).toBeNull();
+		});
+
+		test('Optional field can be changed to undefined inside copyOf', () => {
+			const { Model } = initSchema(testSchema()) as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model1 = new Model({
+				field1: 'something',
+				optionalField1: 'something-else',
+			});
+
+			const model2 = Model.copyOf(model1, draft => {
+				(<any>draft).optionalField1 = undefined;
+			});
+
+			// ID should be kept the same
+			expect(model1.id).toBe(model2.id);
+
+			expect(model1.optionalField1).toBe('something-else');
+			expect(model2.optionalField1).toBeUndefined();
+		});
+
+		test('Optional field can be set to null inside copyOf', () => {
+			const { Model } = initSchema(testSchema()) as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model1 = new Model({
+				field1: 'something',
+			});
+
+			const model2 = Model.copyOf(model1, draft => {
+				(<any>draft).optionalField1 = null;
+			});
+
+			// ID should be kept the same
+			expect(model1.id).toBe(model2.id);
+
+			expect(model1.optionalField1).toBeUndefined();
+			expect(model2.optionalField1).toBeNull();
+		});
+
 		test('Non @model - Field cannot be changed', () => {
 			const { Metadata } = initSchema(testSchema()) as {
 				Metadata: NonModelTypeConstructor<Metadata>;
@@ -654,6 +721,7 @@ describe('DataStore tests', () => {
 declare class Model {
 	public readonly id: string;
 	public readonly field1: string;
+	public readonly optionalField1?: string;
 	public readonly metadata?: Metadata;
 
 	constructor(init: ModelInit<Model>);
@@ -693,6 +761,12 @@ function testSchema(): Schema {
 						isArray: false,
 						type: 'String',
 						isRequired: true,
+					},
+					optionalField1: {
+						name: 'optionalField1',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
 					},
 					metadata: {
 						name: 'metadata',
