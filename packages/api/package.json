@@ -5,9 +5,14 @@
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
+	"types": "./lib/index.d.ts",
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js"
 	},
+	"exports": {
+    "import": "./lib-esm/index.js",
+    "require": "./lib/index.js"
+  },
 	"sideEffects": [
 		"./src/API.ts",
 		"./lib/API.js",

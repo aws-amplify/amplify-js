@@ -8,6 +8,10 @@
   "es2017": "dist/esm/index.mjs",
   "unpkg": "dist/amplify-ui-components/amplify-ui-components.js",
   "types": "dist/types/index.d.ts",
+  "exports": {
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.js"
+  },
   "collection": "dist/collection/collection-manifest.json",
   "files": [
     "dist/",

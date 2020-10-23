@@ -5,6 +5,10 @@
 	"main": "bundles/aws-amplify-angular.umd.js",
 	"module": "dist/index.js",
 	"typings": "dist/index.d.ts",
+	"types": "dist/index.d.ts",
+	"exports": {
+    "import": "./dist/index.js"
+  },
 	"scripts": {
 		"cleantemp": "rimraf coverage dist tmp docs",
 		"ngcompile": "node_modules/.bin/ngc -p tsconfig-aot.json",

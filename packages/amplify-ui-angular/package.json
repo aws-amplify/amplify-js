@@ -27,6 +27,9 @@
 	"module": "dist/fesm5.js",
 	"main": "dist/fesm5.js",
 	"types": "dist/core.d.ts",
+	"exports": {
+    "import": "./build/es5/index.js"
+  },
 	"files": [
 		"dist/"
 	],

@@ -3,6 +3,9 @@
   "version": "2.0.2",
   "main": "dist/aws-amplify-ui.js",
   "types": "lib/index.d.ts",
+  "exports": {
+    "require": "./lib/index.js"
+  },
   "publishConfig": {
     "access": "public"
   },

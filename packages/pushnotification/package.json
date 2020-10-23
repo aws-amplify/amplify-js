@@ -5,6 +5,10 @@
   "main": "./lib/index.js",
   "module": "./lib/index.js",
   "typings": "./lib/index.d.ts",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    "require": "./lib/index.js"
+  },
   "publishConfig": {
     "access": "public"
   },
