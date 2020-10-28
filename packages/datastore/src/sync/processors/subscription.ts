@@ -9,12 +9,16 @@ import {
 	PersistentModel,
 	SchemaModel,
 	SchemaNamespace,
+	PredicatesGroup,
+	ModelPredicate,
 } from '../../types';
 import {
 	buildSubscriptionGraphQLOperation,
 	getAuthorizationRules,
 	TransformerMutationType,
 } from '../utils';
+import { ModelPredicateCreator } from '../../predicates';
+import { validatePredicate } from '../../util';
 
 const logger = new Logger('DataStore');
 
@@ -40,7 +44,10 @@ class SubscriptionProcessor {
 	][] = [];
 	private dataObserver: ZenObservable.Observer<any>;
 
-	constructor(private readonly schema: InternalSchema) {}
+	constructor(
+		private readonly schema: InternalSchema,
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>
+	) {}
 
 	private buildSubscription(
 		namespace: SchemaNamespace,
@@ -352,14 +359,29 @@ class SubscriptionProcessor {
 														return;
 													}
 
-													const { [opName]: record } = data;
-
-													this.pushToBuffer(
-														transformerMutationType,
-														modelDefinition,
-														record
+													const predicatesGroup = ModelPredicateCreator.getPredicates(
+														this.syncPredicates.get(modelDefinition),
+														false
 													);
 
+													const { [opName]: record } = data;
+
+													// checking incoming subscription against syncPredicate.
+													// once AppSync implements filters on subscriptions, we'll be
+													// able to set these when establishing the subscription instead.
+													// Until then, we'll need to filter inbound
+													if (
+														this.passesPredicateValidation(
+															record,
+															predicatesGroup
+														)
+													) {
+														this.pushToBuffer(
+															transformerMutationType,
+															modelDefinition,
+															record
+														);
+													}
 													this.drainBuffer();
 												},
 												error: subscriptionError => {
@@ -422,6 +444,19 @@ class SubscriptionProcessor {
 		});
 
 		return [ctlObservable, dataObservable];
+	}
+
+	private passesPredicateValidation(
+		record: PersistentModel,
+		predicatesGroup: PredicatesGroup<any>
+	): boolean {
+		if (!predicatesGroup) {
+			return true;
+		}
+
+		const { predicates, type } = predicatesGroup;
+
+		return validatePredicate(record, type, predicates);
 	}
 
 	private pushToBuffer(
