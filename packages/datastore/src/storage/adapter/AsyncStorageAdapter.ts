@@ -2,7 +2,10 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import AsyncStorageDatabase from './AsyncStorageDatabase';
 import { Adapter } from './index';
 import { ModelInstanceCreator } from '../../datastore/datastore';
-import { ModelPredicateCreator } from '../../predicates';
+import {
+	ModelPredicateCreator,
+	ModelSortPredicateCreator,
+} from '../../predicates';
 import {
 	InternalSchema,
 	isPredicateObj,
@@ -24,6 +27,7 @@ import {
 	isModelConstructor,
 	traverseModel,
 	validatePredicate,
+	sortCompareFunction,
 } from '../../util';
 
 const logger = new Logger('DataStore');
@@ -237,6 +241,7 @@ export class AsyncStorageAdapter implements Adapter {
 	): Promise<T[]> {
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
+		const sortSpecified = pagination && pagination.sort;
 
 		if (predicate) {
 			const predicates = ModelPredicateCreator.getPredicates(predicate);
@@ -276,6 +281,15 @@ export class AsyncStorageAdapter implements Adapter {
 			}
 		}
 
+		if (sortSpecified) {
+			const all = <T[]>await this.db.getAll(storeName);
+			return await this.load(
+				namespaceName,
+				modelConstructor.name,
+				this.inMemoryPagination(all, pagination)
+			);
+		}
+
 		const all = <T[]>await this.db.getAll(storeName, pagination);
 
 		return await this.load(namespaceName, modelConstructor.name, all);
@@ -286,6 +300,16 @@ export class AsyncStorageAdapter implements Adapter {
 		pagination?: PaginationInput<T>
 	): T[] {
 		if (pagination) {
+			if (pagination.sort) {
+				const sortPredicates = ModelSortPredicateCreator.getPredicates(
+					pagination.sort
+				);
+
+				if (sortPredicates.length) {
+					const compareFn = sortCompareFunction(sortPredicates);
+					records.sort(compareFn);
+				}
+			}
 			const { page = 0, limit = 0 } = pagination;
 			const start = Math.max(0, page * limit) || 0;
 
@@ -293,7 +317,6 @@ export class AsyncStorageAdapter implements Adapter {
 
 			return records.slice(start, end);
 		}
-
 		return records;
 	}
 
@@ -381,10 +404,7 @@ export class AsyncStorageAdapter implements Adapter {
 				const isValid = validatePredicate(fromDB, type, predicateObjs);
 				if (!isValid) {
 					const msg = 'Conditional update failed';
-					logger.error(msg, {
-						model: fromDB,
-						condition: predicateObjs,
-					});
+					logger.error(msg, { model: fromDB, condition: predicateObjs });
 
 					throw new Error(msg);
 				}
