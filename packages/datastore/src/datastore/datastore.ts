@@ -1036,6 +1036,10 @@ class DataStore {
 	};
 
 	stop = async function stop() {
+		if (this.initialized !== undefined) {
+			await this.start();
+		}
+
 		if (syncSubscription && !syncSubscription.closed) {
 			syncSubscription.unsubscribe();
 		}
