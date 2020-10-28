@@ -547,7 +547,10 @@ class DataStore {
 	private sync: SyncEngine;
 	private syncPageSize: number;
 	private syncExpressions: SyncExpression<any>[];
-	private syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>;
+	private syncPredicates: WeakMap<
+		SchemaModel,
+		ModelPredicate<any>
+	> = new WeakMap<SchemaModel, ModelPredicate<any>>();
 	private syncModelsUpdated: Set<string> = new Set<string>();
 
 	getModuleName() {
@@ -1129,10 +1132,6 @@ class DataStore {
 	private compareSyncPredicates(
 		syncPredicates: [SchemaModel, ModelPredicate<any>][]
 	) {
-		if (!this.syncPredicates) {
-			return;
-		}
-
 		this.syncModelsUpdated = new Set<string>();
 
 		syncPredicates.forEach(([modelDefinition, predicate]) => {
