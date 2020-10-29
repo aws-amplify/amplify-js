@@ -551,7 +551,6 @@ class DataStore {
 		SchemaModel,
 		ModelPredicate<any>
 	> = new WeakMap<SchemaModel, ModelPredicate<any>>();
-	private syncModelsUpdated: Set<string> = new Set<string>();
 
 	getModuleName() {
 		return 'DataStore';
@@ -599,8 +598,7 @@ class DataStore {
 				this.syncPageSize,
 				this.conflictHandler,
 				this.errorHandler,
-				this.syncPredicates,
-				this.syncModelsUpdated
+				this.syncPredicates
 			);
 
 			// tslint:disable-next-line:max-line-length
@@ -1035,6 +1033,7 @@ class DataStore {
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.storage = undefined;
 		this.sync = undefined;
+		this.syncPredicates = new WeakMap<SchemaModel, ModelPredicate<any>>();
 	};
 
 	stop = async function stop() {
@@ -1113,6 +1112,10 @@ class DataStore {
 					// conditionProducer is either a predicate, e.g. (c) => c.field('eq', 1)
 					// OR a function/promise that returns a predicate
 					const condition = await this.unwrapPromise(conditionProducer);
+					if (isPredicatesAll(condition)) {
+						return [modelDefinition, null];
+					}
+
 					const predicate = this.createFromCondition(
 						modelDefinition,
 						condition
@@ -1123,32 +1126,7 @@ class DataStore {
 			)
 		);
 
-		this.compareSyncPredicates(syncPredicates);
-
 		return this.weakMapFromEntries(syncPredicates);
-	}
-
-	private compareSyncPredicates(
-		syncPredicates: [SchemaModel, ModelPredicate<any>][]
-	) {
-		this.syncModelsUpdated = new Set<string>();
-
-		syncPredicates.forEach(([modelDefinition, predicate]) => {
-			const previousPredicate = ModelPredicateCreator.getPredicates(
-				this.syncPredicates.get(modelDefinition),
-				false
-			);
-
-			const newPredicate = ModelPredicateCreator.getPredicates(
-				predicate,
-				false
-			);
-
-			const predicateChanged =
-				JSON.stringify(previousPredicate) !== JSON.stringify(newPredicate);
-
-			predicateChanged && this.syncModelsUpdated.add(modelDefinition.name);
-		});
 	}
 
 	private createFromCondition(
@@ -1188,12 +1166,15 @@ class DataStore {
 				const { name } = modelDefinition;
 				logger.warn(
 					`You can only utilize one Sync Expression per model. 
-					Subsequent sync expressions for the ${name} model will be ignored.`
+          Subsequent sync expressions for the ${name} model will be ignored.`
 				);
 				return map;
 			}
 
-			map.set(modelDefinition, predicate);
+			if (predicate) {
+				map.set(modelDefinition, predicate);
+			}
+
 			return map;
 		}, new WeakMap<SchemaModel, ModelPredicate<any>>());
 	}
