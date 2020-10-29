@@ -1033,6 +1033,7 @@ class DataStore {
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.storage = undefined;
 		this.sync = undefined;
+		this.syncPredicates = new WeakMap<SchemaModel, ModelPredicate<any>>();
 	};
 
 	stop = async function stop() {
