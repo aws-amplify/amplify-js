@@ -2,7 +2,7 @@ import { browserOrNode, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ModelInstanceCreator } from '../datastore/datastore';
-import { ModelPredicateCreator, Predicates } from '../predicates';
+import { ModelPredicateCreator } from '../predicates';
 import { ExclusiveStorage as Storage } from '../storage/storage';
 import {
 	ConflictHandler,
