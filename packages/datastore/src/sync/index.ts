@@ -69,6 +69,7 @@ declare class ModelMetadata {
 	public readonly fullSyncInterval: number;
 	public readonly lastSync?: number;
 	public readonly lastFullSync?: number;
+	public readonly lastSyncPredicate?: null | string;
 }
 
 export enum ControlMessage {
@@ -104,8 +105,7 @@ export class SyncEngine {
 		private readonly syncPageSize: number,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
-		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
-		private readonly syncModelsUpdated: ReadonlySet<string>
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -410,7 +410,14 @@ export class SyncEngine {
 	): Promise<Map<SchemaModel, [string, number]>> {
 		const modelLastSync: Map<SchemaModel, [string, number]> = new Map(
 			(await this.getModelsMetadata()).map(
-				({ namespace, model, lastSync, lastFullSync, fullSyncInterval }) => {
+				({
+					namespace,
+					model,
+					lastSync,
+					lastFullSync,
+					fullSyncInterval,
+					lastSyncPredicate,
+				}) => {
 					const nextFullSync = lastFullSync + fullSyncInterval;
 					const syncFrom =
 						!lastFullSync || nextFullSync < currentTimeStamp
@@ -694,34 +701,45 @@ export class SyncEngine {
 		const ModelMetadata = this.modelClasses
 			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
-		const models: [string, string][] = [];
+		const models: [string, SchemaModel][] = [];
+		let savedModel;
 
 		Object.values(this.schema.namespaces).forEach(namespace => {
 			Object.values(namespace.models)
 				.filter(({ syncable }) => syncable)
 				.forEach(model => {
-					models.push([namespace.name, model.name]);
+					models.push([namespace.name, model]);
 				});
 		});
 
 		const promises = models.map(async ([namespace, model]) => {
-			const modelMetadata = await this.getModelMetadata(namespace, model);
-			let savedModel: ModelMetadata;
+			const modelMetadata = await this.getModelMetadata(namespace, model.name);
+			const syncPredicate = ModelPredicateCreator.getPredicates(
+				this.syncPredicates.get(model),
+				false
+			);
+			const lastSyncPredicate = syncPredicate
+				? JSON.stringify(syncPredicate)
+				: null;
 
 			if (modelMetadata === undefined) {
 				[[savedModel]] = await this.storage.save(
 					this.modelInstanceCreator(ModelMetadata, {
-						model,
+						model: model.name,
 						namespace,
 						lastSync: null,
 						fullSyncInterval,
 						lastFullSync: null,
+						lastSyncPredicate,
 					}),
 					undefined,
 					ownSymbol
 				);
 			} else {
-				const syncPredicateUpdated = this.syncModelsUpdated.has(model);
+				const prevSyncPredicate = modelMetadata.lastSyncPredicate
+					? JSON.stringify(modelMetadata.lastSyncPredicate)
+					: null;
+				const syncPredicateUpdated = prevSyncPredicate !== lastSyncPredicate;
 
 				[[savedModel]] = await this.storage.save(
 					(this.modelClasses.ModelMetadata as PersistentModelConstructor<
@@ -733,6 +751,7 @@ export class SyncEngine {
 						if (syncPredicateUpdated) {
 							draft.lastSync = null;
 							draft.lastFullSync = null;
+							draft.lastSyncPredicate = lastSyncPredicate;
 						}
 					})
 				);
