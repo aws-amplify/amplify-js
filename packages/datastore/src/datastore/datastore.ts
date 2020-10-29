@@ -1035,7 +1035,6 @@ class DataStore {
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.storage = undefined;
 		this.sync = undefined;
-		this.syncPredicates = undefined;
 	};
 
 	stop = async function stop() {
@@ -1100,7 +1099,7 @@ class DataStore {
 		WeakMap<SchemaModel, ModelPredicate<any>>
 	> {
 		if (!this.syncExpressions || !this.syncExpressions.length) {
-			return;
+			return new WeakMap<SchemaModel, ModelPredicate<any>>();
 		}
 
 		const syncPredicates = await Promise.all(
