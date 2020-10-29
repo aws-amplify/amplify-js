@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.6.1...@aws-amplify/datastore@2.7.0) (2020-10-29)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix OIDC group auth rules ([#7011](https://github.com/aws-amplify/amplify-js/issues/7011)) ([34de0f2](https://github.com/aws-amplify/amplify-js/commit/34de0f252ddea559a6bc959610522cc19fe340f6))
+* **@aws-amplify/datastore:** initialize syncPredicates to empty WeakMap ([#7078](https://github.com/aws-amplify/amplify-js/issues/7078)) ([45d52da](https://github.com/aws-amplify/amplify-js/commit/45d52da6cec9b5e546c26e299d47e4d0b2879a7f))
+* **@aws-amplify/datastore:** return empty WeakMap ([#7079](https://github.com/aws-amplify/amplify-js/issues/7079)) ([cf511b8](https://github.com/aws-amplify/amplify-js/commit/cf511b8d3deaa58edcce8d1ec015548a801c212b))
+* **@aws-amplify/datastore:** validate model fields to allow undefined ([#7044](https://github.com/aws-amplify/amplify-js/issues/7044)) ([958f61e](https://github.com/aws-amplify/amplify-js/commit/958f61ef2918728cc46b9b210d60e868edd87f39))
+
+
+### Features
+
+* **@aws-amplify/datastore:** add Selective Sync ([#7001](https://github.com/aws-amplify/amplify-js/issues/7001)) ([8fa348b](https://github.com/aws-amplify/amplify-js/commit/8fa348b8ba708434992d97557b0fceebbf7abe9a))
+* **@aws-amplify/datastore:** selective sync enhancements ([#7083](https://github.com/aws-amplify/amplify-js/issues/7083)) ([2a4d3fd](https://github.com/aws-amplify/amplify-js/commit/2a4d3fde1b23e5be84f66721d3ef5854663081d1))
+
+
+
+
+
 ## [2.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.6.0...@aws-amplify/datastore@2.6.1) (2020-10-15)
 
 
