@@ -1,12 +1,4 @@
-import getRandomValues from './getRandomValues';
-
-/*
- * Cryptographically secure pseudorandom number generator
- * As Math.random() is cryptographically not safe to use
- */
-function cryptoSecureRandomInt() {
-	return getRandomValues(new Uint32Array(1))[0];
-}
+import cryptoSecureRandomInt from './cryptoSecureRandomInt';
 
 /**
  * Hex encoding strategy.
