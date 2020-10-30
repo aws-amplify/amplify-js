@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.7.0...@aws-amplify/core@3.8.0) (2020-10-29)
+
+
+### Features
+
+* **@aws-amplify/datastore:** add Selective Sync ([#7001](https://github.com/aws-amplify/amplify-js/issues/7001)) ([8fa348b](https://github.com/aws-amplify/amplify-js/commit/8fa348b8ba708434992d97557b0fceebbf7abe9a))
+
+
+
+
+
 # [3.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.6.0...@aws-amplify/core@3.7.0) (2020-10-15)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.7...@aws-amplify/auth@3.4.8) (2020-10-29)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** fix the way clientMetadata is passed ([#6941](https://github.com/aws-amplify/amplify-js/issues/6941)) ([a85c724](https://github.com/aws-amplify/amplify-js/commit/a85c7244b514faaaf82dc1b8f454226294747f6a))
+
+
+
+
+
 ## [3.4.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.6...@aws-amplify/auth@3.4.7) (2020-10-15)
 
 **Note:** Version bump only for package @aws-amplify/auth
