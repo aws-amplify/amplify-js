@@ -13,7 +13,7 @@ RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString*, getRandomBase64:(NSUInteger)byteL
     NSMutableData *data = [NSMutableData dataWithLength:byteLength];
     int result = SecRandomCopyBytes(kSecRandomDefault, byteLength, data.mutableBytes);
     if (result != errSecSuccess) {
-        @throw([NSException exceptionWithName:@"NO_RANDOM_BYTES" reason:@"Failed to aquire secure random bytes" userInfo:nil]);
+        @throw([NSException exceptionWithName:@"NO_RANDOM_BYTES" reason:@"Failed to acquire secure random bytes" userInfo:nil]);
     }
     return [data base64EncodedStringWithOptions:0];
 }
