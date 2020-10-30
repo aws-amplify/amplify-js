@@ -131,6 +131,8 @@ describe('DataStore tests', () => {
 			const metadata = new Metadata({
 				author: 'some author',
 				tags: [],
+				rewards: [],
+				nominations: [],
 			});
 
 			expect(metadata).toBeInstanceOf(Metadata);
@@ -193,6 +195,73 @@ describe('DataStore tests', () => {
 			expect(model1.id).toBe(model2.id);
 		});
 
+		test('Optional field can be initialized with undefined', () => {
+			const { Model } = initSchema(testSchema()) as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model1 = new Model({
+				field1: 'something',
+				optionalField1: undefined,
+			});
+
+			expect(model1.optionalField1).toBeUndefined();
+		});
+
+		test('Optional field can be initialized with null', () => {
+			const { Model } = initSchema(testSchema()) as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model1 = new Model({
+				field1: 'something',
+				optionalField1: null,
+			});
+
+			expect(model1.optionalField1).toBeNull();
+		});
+
+		test('Optional field can be changed to undefined inside copyOf', () => {
+			const { Model } = initSchema(testSchema()) as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model1 = new Model({
+				field1: 'something',
+				optionalField1: 'something-else',
+			});
+
+			const model2 = Model.copyOf(model1, draft => {
+				(<any>draft).optionalField1 = undefined;
+			});
+
+			// ID should be kept the same
+			expect(model1.id).toBe(model2.id);
+
+			expect(model1.optionalField1).toBe('something-else');
+			expect(model2.optionalField1).toBeUndefined();
+		});
+
+		test('Optional field can be set to null inside copyOf', () => {
+			const { Model } = initSchema(testSchema()) as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model1 = new Model({
+				field1: 'something',
+			});
+
+			const model2 = Model.copyOf(model1, draft => {
+				(<any>draft).optionalField1 = null;
+			});
+
+			// ID should be kept the same
+			expect(model1.id).toBe(model2.id);
+
+			expect(model1.optionalField1).toBeUndefined();
+			expect(model2.optionalField1).toBeNull();
+		});
+
 		test('Non @model - Field cannot be changed', () => {
 			const { Metadata } = initSchema(testSchema()) as {
 				Metadata: NonModelTypeConstructor<Metadata>;
@@ -200,6 +269,8 @@ describe('DataStore tests', () => {
 
 			const nonModel = new Metadata({
 				author: 'something',
+				rewards: [],
+				nominations: [],
 			});
 
 			expect(() => {
@@ -315,16 +386,57 @@ describe('DataStore tests', () => {
 				'Field field1 should be of type string, number received. 1234'
 			);
 
+			expect(
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						tags: undefined,
+						rewards: [],
+						nominations: [],
+					}),
+				}).metadata.tags
+			).toBeUndefined();
+
 			expect(() => {
 				new Model({
 					field1: 'someField',
 					metadata: new Metadata({
 						author: 'Some author',
 						tags: undefined,
+						rewards: [null],
+						nominations: [],
 					}),
 				});
 			}).toThrowError(
-				'Field tags should be of type string[], undefined received. undefined'
+				'All elements in the rewards array should be of type string, [object] received. '
+			);
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						tags: undefined,
+						rewards: [],
+						nominations: null,
+					}),
+				});
+			}).toThrowError('Field nominations is required');
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						tags: undefined,
+						rewards: [],
+						penNames: [undefined],
+						nominations: [],
+					}),
+				});
+			}).toThrowError(
+				'All elements in the penNames array should be of type string, [undefined] received. '
 			);
 
 			expect(() => {
@@ -333,10 +445,12 @@ describe('DataStore tests', () => {
 					metadata: new Metadata({
 						author: 'Some author',
 						tags: [<any>1234],
+						rewards: [],
+						nominations: [],
 					}),
 				});
 			}).toThrowError(
-				'All elements in the tags array should be of type string, [number] received. 1234'
+				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
 			);
 
 			expect(
@@ -347,9 +461,11 @@ describe('DataStore tests', () => {
 				Model.copyOf(<any>undefined, d => d);
 			}).toThrow('The source object is not a valid model');
 			expect(() => {
-				const source = new Model( {field1: 'something'});
-				Model.copyOf(source, d => d.field1 = <any>1234);
-			}).toThrow('Field field1 should be of type string, number received. 1234');
+				const source = new Model({ field1: 'something' });
+				Model.copyOf(source, d => (d.field1 = <any>1234));
+			}).toThrow(
+				'Field field1 should be of type string, number received. 1234'
+			);
 		});
 
 		test('Delete params', async () => {
@@ -417,6 +533,8 @@ describe('DataStore tests', () => {
 		const metadata = new Metadata({
 			author: 'some author',
 			tags: [],
+			rewards: [],
+			nominations: [],
 		});
 
 		await expect(DataStore.save(<any>metadata)).rejects.toThrow(
@@ -603,6 +721,7 @@ describe('DataStore tests', () => {
 declare class Model {
 	public readonly id: string;
 	public readonly field1: string;
+	public readonly optionalField1?: string;
 	public readonly metadata?: Metadata;
 
 	constructor(init: ModelInit<Model>);
@@ -616,6 +735,9 @@ declare class Model {
 export declare class Metadata {
 	readonly author: string;
 	readonly tags?: string[];
+	readonly rewards: string[];
+	readonly penNames?: string[];
+	readonly nominations: string[];
 	constructor(init: Metadata);
 }
 
@@ -639,6 +761,12 @@ function testSchema(): Schema {
 						isArray: false,
 						type: 'String',
 						isRequired: true,
+					},
+					optionalField1: {
+						name: 'optionalField1',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
 					},
 					metadata: {
 						name: 'metadata',
@@ -687,8 +815,31 @@ function testSchema(): Schema {
 						isArray: true,
 						type: 'String',
 						isRequired: false,
+						isArrayNullable: true,
 						attributes: [],
 					},
+					rewards: {
+						name: 'rewards',
+						isArray: true,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					penNames: {
+						name: 'penNames',
+						isArray: true,
+						type: 'String',
+						isRequired: true,
+						isArrayNullable: true,
+						attributes: [],
+					},
+					nominations: {
+						name: 'nominations',
+						isArray: true,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					}
 				},
 			},
 		},

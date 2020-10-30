@@ -20,9 +20,10 @@ import CryptoJS from 'crypto-js/core';
 import 'crypto-js/lib-typedarrays'; // necessary for crypto js
 import SHA256 from 'crypto-js/sha256';
 import HmacSHA256 from 'crypto-js/hmac-sha256';
+import WordArray from './utils/WordArray';
 
 const randomBytes = function(nBytes) {
-	return Buffer.from(CryptoJS.lib.WordArray.random(nBytes).toString(), 'hex');
+	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
 };
 
 import BigInteger from './BigInteger';
