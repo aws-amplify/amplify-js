@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.35](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.34...aws-amplify-angular@5.0.35) (2020-10-31)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
 ## [5.0.34](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@5.0.33...aws-amplify-angular@5.0.34) (2020-10-29)
 
 **Note:** Version bump only for package aws-amplify-angular
