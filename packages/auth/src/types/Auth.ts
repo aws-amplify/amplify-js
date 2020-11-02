@@ -14,7 +14,7 @@
 import {
 	ICookieStorageData,
 	ICognitoStorage,
-	CognitoUserAttribute,
+	ICognitoUserAttributeData,
 } from 'amazon-cognito-identity-js';
 
 /**
@@ -24,7 +24,7 @@ export interface SignUpParams {
 	username: string;
 	password: string;
 	attributes?: object;
-	validationData?: CognitoUserAttribute[];
+	validationData?: ICognitoUserAttributeData[];
 	clientMetadata?: { [key: string]: string };
 }
 
