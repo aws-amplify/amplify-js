@@ -448,21 +448,19 @@ export type DataStoreConfig = {
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
 		fullSyncInterval?: number;
-		syncExpressions?: SyncExpression<PersistentModel>[];
+		syncExpressions?: SyncExpression[];
 	};
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
 	fullSyncInterval?: number;
-	syncExpressions?: SyncExpression<PersistentModel>[];
+	syncExpressions?: SyncExpression[];
 };
 
-export type SyncExpression<T extends PersistentModel> = Promise<{
-	modelConstructor: PersistentModelConstructor<T>;
-	conditionProducer:
-		| ProducerModelPredicate<T>
-		| (() => ProducerModelPredicate<T>);
+export type SyncExpression = Promise<{
+	modelConstructor: any;
+	conditionProducer: (c?: any) => any;
 }>;
 
 /*
@@ -479,20 +477,28 @@ syncExpressions: [
 	}),
 ]
 */
-export async function syncExpression<T extends PersistentModel, P>(
+type Option0 = [];
+type Option1<T extends PersistentModel> = [ModelPredicate<T> | undefined];
+type Option<T extends PersistentModel> = Option0 | Option1<T>;
+
+type Lookup<T extends PersistentModel> = {
+	0: ProducerModelPredicate<T> | Promise<ProducerModelPredicate<T>>;
+	1: ModelPredicate<T> | undefined;
+};
+
+type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (
+	...args: A
+) => A['length'] extends keyof Lookup<T> ? Lookup<T>[A['length']] : never;
+
+export async function syncExpression<
+	T extends PersistentModel,
+	A extends Option<T>
+>(
 	modelConstructor: PersistentModelConstructor<T>,
-	conditionProducer: (
-		condition: P | ModelPredicate<T>
-	) => P extends ModelPredicate<T>
-		? ModelPredicate<T>
-		: ProducerModelPredicate<T>
+	conditionProducer: ConditionProducer<T, A>
 ): Promise<{
 	modelConstructor: PersistentModelConstructor<T>;
-	conditionProducer: (
-		condition: P | ModelPredicate<T>
-	) => P extends ModelPredicate<T>
-		? ModelPredicate<T>
-		: ProducerModelPredicate<T>;
+	conditionProducer: ConditionProducer<T, A>;
 }> {
 	return {
 		modelConstructor,
