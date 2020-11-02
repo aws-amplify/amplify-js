@@ -1,3 +1,9 @@
+/**
+ * @prop --footer-font-family: Font family of the footer
+ * @prop --footer-font-size: Font size of the footer
+ * @prop --footer-color: Font color of the footer
+ * @prop --footer-weight: Font weight of the footer
+ */
 :host {
   --footer-font-family: var(--amplify-font-family);
   --footer-font-size: var(--amplify-text-sm);
@@ -15,12 +21,18 @@
   flex-direction: column-reverse;
   align-items: center;
   justify-content: space-around;
+  amplify-button {
+    margin-bottom: 0.625rem;
+  }
 
   @include md {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: baseline;
+    amplify-button {
+      margin-bottom: 0;
+    }
   }
 
   * + * {

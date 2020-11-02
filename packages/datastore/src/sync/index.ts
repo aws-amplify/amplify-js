@@ -1,4 +1,4 @@
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { browserOrNode, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ModelInstanceCreator } from '../datastore/datastore';
@@ -14,10 +14,12 @@ import {
 	MutableModel,
 	NamespaceResolver,
 	OpType,
+	PersistentModel,
 	PersistentModelConstructor,
 	SchemaModel,
 	SchemaNamespace,
 	TypeConstructorMap,
+	ModelPredicate,
 } from '../types';
 import { exhaustiveCheck, getNow, SYNC } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
@@ -32,6 +34,7 @@ import {
 	TransformerMutationType,
 } from './utils';
 
+const { isNode } = browserOrNode();
 const logger = new Logger('DataStore');
 
 const ownSymbol = Symbol('sync');
@@ -66,6 +69,7 @@ declare class ModelMetadata {
 	public readonly fullSyncInterval: number;
 	public readonly lastSync?: number;
 	public readonly lastFullSync?: number;
+	public readonly lastSyncPredicate?: null | string;
 }
 
 export enum ControlMessage {
@@ -100,7 +104,8 @@ export class SyncEngine {
 		private readonly maxRecordsToSync: number,
 		private readonly syncPageSize: number,
 		conflictHandler: ConflictHandler,
-		errorHandler: ErrorHandler
+		errorHandler: ErrorHandler,
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -118,9 +123,13 @@ export class SyncEngine {
 		this.syncQueriesProcessor = new SyncProcessor(
 			this.schema,
 			this.maxRecordsToSync,
-			this.syncPageSize
+			this.syncPageSize,
+			this.syncPredicates
 		);
-		this.subscriptionsProcessor = new SubscriptionProcessor(this.schema);
+		this.subscriptionsProcessor = new SubscriptionProcessor(
+			this.schema,
+			this.syncPredicates
+		);
 		this.mutationsProcessor = new MutationProcessor(
 			this.schema,
 			this.storage,
@@ -162,31 +171,48 @@ export class SyncEngine {
 								},
 							});
 
-							//#region GraphQL Subscriptions
-							const [
-								ctlSubsObservable,
-								dataSubsObservable,
-							] = this.subscriptionsProcessor.start();
+							let ctlSubsObservable: Observable<CONTROL_MSG>;
+							let dataSubsObservable: Observable<[
+								TransformerMutationType,
+								SchemaModel,
+								PersistentModel
+							]>;
 
-							try {
-								subscriptions.push(
-									await this.waitForSubscriptionsReady(
-										ctlSubsObservable,
-										datastoreConnectivity
-									)
+							if (isNode) {
+								logger.warn(
+									'Realtime disabled when in a server-side environment'
 								);
-							} catch (err) {
-								observer.error(err);
-								return;
+							} else {
+								//#region GraphQL Subscriptions
+								[
+									// const ctlObservable: Observable<CONTROL_MSG>
+									ctlSubsObservable,
+									// const dataObservable: Observable<[TransformerMutationType, SchemaModel, Readonly<{
+									// id: string;
+									// } & Record<string, any>>]>
+									dataSubsObservable,
+								] = this.subscriptionsProcessor.start();
+
+								try {
+									subscriptions.push(
+										await this.waitForSubscriptionsReady(
+											ctlSubsObservable,
+											datastoreConnectivity
+										)
+									);
+								} catch (err) {
+									observer.error(err);
+									return;
+								}
+
+								logger.log('Realtime ready');
+
+								observer.next({
+									type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
+								});
+
+								//#endregion
 							}
-
-							logger.log('Realtime ready');
-
-							observer.next({
-								type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
-							});
-
-							//#endregion
 
 							//#region Base & Sync queries
 							try {
@@ -262,24 +288,26 @@ export class SyncEngine {
 
 							//#region Merge subscriptions buffer
 							// TODO: extract to function
-							subscriptions.push(
-								dataSubsObservable.subscribe(
-									([_transformerMutationType, modelDefinition, item]) => {
-										const modelConstructor = this.userModelClasses[
-											modelDefinition.name
-										] as PersistentModelConstructor<any>;
+							if (!isNode) {
+								subscriptions.push(
+									dataSubsObservable.subscribe(
+										([_transformerMutationType, modelDefinition, item]) => {
+											const modelConstructor = this.userModelClasses[
+												modelDefinition.name
+											] as PersistentModelConstructor<any>;
 
-										const model = this.modelInstanceCreator(
-											modelConstructor,
-											item
-										);
+											const model = this.modelInstanceCreator(
+												modelConstructor,
+												item
+											);
 
-										this.storage.runExclusive(storage =>
-											this.modelMerger.merge(storage, model)
-										);
-									}
-								)
-							);
+											this.storage.runExclusive(storage =>
+												this.modelMerger.merge(storage, model)
+											);
+										}
+									)
+								);
+							}
 							//#endregion
 						} else if (!online) {
 							this.online = online;
@@ -382,7 +410,14 @@ export class SyncEngine {
 	): Promise<Map<SchemaModel, [string, number]>> {
 		const modelLastSync: Map<SchemaModel, [string, number]> = new Map(
 			(await this.getModelsMetadata()).map(
-				({ namespace, model, lastSync, lastFullSync, fullSyncInterval }) => {
+				({
+					namespace,
+					model,
+					lastSync,
+					lastFullSync,
+					fullSyncInterval,
+					lastSyncPredicate,
+				}) => {
 					const nextFullSync = lastFullSync + fullSyncInterval;
 					const syncFrom =
 						!lastFullSync || nextFullSync < currentTimeStamp
@@ -652,7 +687,10 @@ export class SyncEngine {
 				},
 				error: err => {
 					reject(err);
-					this.disconnectionHandler(datastoreConnectivity);
+					const handleDisconnect = this.disconnectionHandler(
+						datastoreConnectivity
+					);
+					handleDisconnect(err);
 				},
 			});
 		});
@@ -663,38 +701,58 @@ export class SyncEngine {
 		const ModelMetadata = this.modelClasses
 			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
-		const models: [string, string][] = [];
+		const models: [string, SchemaModel][] = [];
+		let savedModel;
 
 		Object.values(this.schema.namespaces).forEach(namespace => {
 			Object.values(namespace.models)
 				.filter(({ syncable }) => syncable)
 				.forEach(model => {
-					models.push([namespace.name, model.name]);
+					models.push([namespace.name, model]);
 				});
 		});
 
 		const promises = models.map(async ([namespace, model]) => {
-			const modelMetadata = await this.getModelMetadata(namespace, model);
-			let savedModel: ModelMetadata;
+			const modelMetadata = await this.getModelMetadata(namespace, model.name);
+			const syncPredicate = ModelPredicateCreator.getPredicates(
+				this.syncPredicates.get(model),
+				false
+			);
+			const lastSyncPredicate = syncPredicate
+				? JSON.stringify(syncPredicate)
+				: null;
 
 			if (modelMetadata === undefined) {
 				[[savedModel]] = await this.storage.save(
 					this.modelInstanceCreator(ModelMetadata, {
-						model,
+						model: model.name,
 						namespace,
 						lastSync: null,
 						fullSyncInterval,
 						lastFullSync: null,
+						lastSyncPredicate,
 					}),
 					undefined,
 					ownSymbol
 				);
 			} else {
+				const prevSyncPredicate = modelMetadata.lastSyncPredicate
+					? JSON.stringify(modelMetadata.lastSyncPredicate)
+					: null;
+				const syncPredicateUpdated = prevSyncPredicate !== lastSyncPredicate;
+
 				[[savedModel]] = await this.storage.save(
 					(this.modelClasses.ModelMetadata as PersistentModelConstructor<
 						any
 					>).copyOf(modelMetadata, draft => {
 						draft.fullSyncInterval = fullSyncInterval;
+						// perform a base sync if the syncPredicate changed in between calls to DataStore.start
+						// ensures that the local store contains all the data specified by the syncExpression
+						if (syncPredicateUpdated) {
+							draft.lastSync = null;
+							draft.lastFullSync = null;
+							draft.lastSyncPredicate = lastSyncPredicate;
+						}
 					})
 				);
 			}

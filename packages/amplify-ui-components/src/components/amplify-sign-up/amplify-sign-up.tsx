@@ -1,6 +1,6 @@
 import { I18n } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
-import { Component, Prop, h, State, Watch } from '@stencil/core';
+import { Component, Prop, h, State, Watch, Host } from '@stencil/core';
 import {
   FormFieldTypes,
   PhoneNumberInterface,
@@ -18,9 +18,11 @@ import {
   handlePhoneNumberChange,
 } from '../../common/helpers';
 import { Translations } from '../../common/Translations';
+import { handleSignIn } from '../../common/auth-helpers';
 
 /**
- * @slot footer - Content is place in the footer of the component
+ * @slot header-subtitle - Subtitle content placed below header text
+ * @slot footer - Content placed in the footer of the component
  * @slot primary-footer-content - Content placed on the right side of the footer
  * @slot secondary-footer-content - Content placed on the left side of the footer
  */
@@ -35,13 +37,13 @@ export class AmplifySignUp {
   /** Engages when invalid actions occur, such as missing field, etc. */
   @Prop() validationErrors: string;
   /** Used for header text in sign up component */
-  @Prop() headerText: string = I18n.get(Translations.SIGN_UP_HEADER_TEXT);
+  @Prop() headerText: string = Translations.SIGN_UP_HEADER_TEXT;
   /** Used for the submit button text in sign up component */
-  @Prop() submitButtonText: string = I18n.get(Translations.SIGN_UP_SUBMIT_BUTTON_TEXT);
+  @Prop() submitButtonText: string = Translations.SIGN_UP_SUBMIT_BUTTON_TEXT;
   /** Used for the submit button text in sign up component */
-  @Prop() haveAccountText: string = I18n.get(Translations.SIGN_UP_HAVE_ACCOUNT_TEXT);
-  /** Used for the submit button text in sign up component */
-  @Prop() signInText: string = I18n.get(Translations.SIGN_IN_TEXT);
+  @Prop() haveAccountText: string = Translations.SIGN_UP_HAVE_ACCOUNT_TEXT;
+  /** Text used for the sign in hyperlink */
+  @Prop() signInText: string = Translations.SIGN_IN_TEXT;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing
@@ -132,7 +134,15 @@ export class AmplifySignUp {
 
     try {
       const data = await Auth.signUp(this.signUpAttributes);
-      this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
+      if (!data) {
+        throw new Error(Translations.SIGN_UP_FAILED);
+      }
+      if (data.userConfirmed) {
+        await handleSignIn(this.signUpAttributes.username, this.signUpAttributes.password, this.handleAuthStateChange);
+      } else {
+        const signUpAttrs = { ...this.signUpAttributes };
+        this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs });
+      }
     } catch (error) {
       dispatchToastHubEvent(error);
     }
@@ -301,30 +311,39 @@ export class AmplifySignUp {
 
   render() {
     return (
-      <amplify-form-section headerText={this.headerText} handleSubmit={this.handleSubmit} testDataPrefix={'sign-up'}>
-        <amplify-auth-fields formFields={this.newFormFields} />
-        <div class="sign-up-form-footer" slot="amplify-form-section-footer">
-          <slot name="footer">
-            <slot name="secondary-footer-content">
-              <span>
-                {this.haveAccountText}{' '}
-                <amplify-button
-                  variant="anchor"
-                  onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
-                  data-test="sign-up-sign-in-link"
-                >
-                  {this.signInText}
+      <Host>
+        <amplify-form-section
+          headerText={I18n.get(this.headerText)}
+          handleSubmit={this.handleSubmit}
+          testDataPrefix={'sign-up'}
+        >
+          <div slot="subtitle">
+            <slot name="header-subtitle"></slot>
+          </div>
+          <amplify-auth-fields formFields={this.newFormFields} />
+          <div class="sign-up-form-footer" slot="amplify-form-section-footer">
+            <slot name="footer">
+              <slot name="secondary-footer-content">
+                <span>
+                  {I18n.get(this.haveAccountText)}{' '}
+                  <amplify-button
+                    variant="anchor"
+                    onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
+                    data-test="sign-up-sign-in-link"
+                  >
+                    {I18n.get(this.signInText)}
+                  </amplify-button>
+                </span>
+              </slot>
+              <slot name="primary-footer-content">
+                <amplify-button type="submit" data-test="sign-up-create-account-button">
+                  {this.loading ? <amplify-loading-spinner /> : <span>{I18n.get(this.submitButtonText)}</span>}
                 </amplify-button>
-              </span>
+              </slot>
             </slot>
-            <slot name="primary-footer-content">
-              <amplify-button type="submit" data-test="sign-up-create-account-button">
-                {this.loading ? <amplify-loading-spinner /> : <span>{this.submitButtonText}</span>}
-              </amplify-button>
-            </slot>
-          </slot>
-        </div>
-      </amplify-form-section>
+          </div>
+        </amplify-form-section>
+      </Host>
     );
   }
 }

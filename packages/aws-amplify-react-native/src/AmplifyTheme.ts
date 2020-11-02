@@ -19,7 +19,6 @@ export type AmplifyThemeType = Record<string, any>;
 // Colors
 export const deepSquidInk = '#152939';
 export const linkUnderlayColor = '#FFF';
-export const errorIconColor = '#DD3F5B';
 export const textInputColor = '#000000';
 export const textInputBorderColor = '#C4C4C4';
 export const placeholderColor = '#C7C7CD';
@@ -96,6 +95,10 @@ export default StyleSheet.create({
 	errorRow: {
 		flexDirection: 'row',
 		justifyContent: 'center',
+	},
+	errorRowIcon: {
+		height: 25,
+		width: 25,
 	},
 	errorRowText: {
 		marginLeft: 10,

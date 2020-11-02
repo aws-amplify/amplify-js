@@ -17,6 +17,11 @@
   </a>
 </p>
 
+### Reporting Bugs/Feature Requests
+[![Open Bugs](https://img.shields.io/github/issues/aws-amplify/amplify-js/bug?color=d73a4a&label=bugs)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+[![Feature Requests](https://img.shields.io/github/issues/aws-amplify/amplify-js/feature-request?color=ff9001&label=feature%20requests)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+label%3Afeature-request+is%3Aopen)
+[![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-js?color=%2325CC00&label=issues%20closed)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+is%3Aclosed+)
+
 ### AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications
 
 AWS Amplify provides a declarative and easy-to-use interface across different categories of cloud operations. AWS Amplify goes well with any JavaScript based frontend workflow, and React Native for mobile developers.
@@ -72,6 +77,7 @@ If you can't migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) or
 - [Documentation](https://docs.amplify.aws/)
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [Demo Applications](https://github.com/aws-amplify/amplify-js-samples)
 - [Examples](#examples)
 - [Contributing](https://github.com/aws-amplify/amplify-js/blob/main/CONTRIBUTING.md)
 

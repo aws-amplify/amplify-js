@@ -5,14 +5,14 @@
 
 ## Properties
 
-| Property          | Attribute          | Description                                            | Type                   | Default                                                |
-| ----------------- | ------------------ | ------------------------------------------------------ | ---------------------- | ------------------------------------------------------ |
-| `buttonText`      | `button-text`      | Picker button text as string                           | `string`               | `I18n.get(Translations.PHOTO_PICKER_BUTTON_TEXT)`      |
-| `handleClick`     | --                 | Function that handles file pick onClick                | `(file: File) => void` | `() => {}`                                             |
-| `headerHint`      | `header-hint`      | Header Hint value in string                            | `string`               | `I18n.get(Translations.PHOTO_PICKER_HINT)`             |
-| `headerTitle`     | `header-title`     | Title string value                                     | `string`               | `I18n.get(Translations.PHOTO_PICKER_TITLE)`            |
-| `placeholderHint` | `placeholder-hint` | Placeholder hint that goes under the placeholder image | `string`               | `I18n.get(Translations.PHOTO_PICKER_PLACEHOLDER_HINT)` |
-| `previewSrc`      | `preview-src`      | Source of the image to be previewed                    | `object \| string`     | `undefined`                                            |
+| Property          | Attribute          | Description                                            | Type                   | Default                                      |
+| ----------------- | ------------------ | ------------------------------------------------------ | ---------------------- | -------------------------------------------- |
+| `buttonText`      | `button-text`      | Picker button text as string                           | `string`               | `Translations.PHOTO_PICKER_BUTTON_TEXT`      |
+| `handleClick`     | --                 | Function that handles file pick onClick                | `(file: File) => void` | `() => {}`                                   |
+| `headerHint`      | `header-hint`      | Header Hint value in string                            | `string`               | `Translations.PHOTO_PICKER_HINT`             |
+| `headerTitle`     | `header-title`     | Title string value                                     | `string`               | `Translations.PHOTO_PICKER_TITLE`            |
+| `placeholderHint` | `placeholder-hint` | Placeholder hint that goes under the placeholder image | `string`               | `Translations.PHOTO_PICKER_PLACEHOLDER_HINT` |
+| `previewSrc`      | `preview-src`      | Source of the image to be previewed                    | `object \| string`     | `undefined`                                  |
 
 
 ## Dependencies
@@ -36,6 +36,7 @@ graph TD;
   amplify-photo-picker --> amplify-icon
   amplify-photo-picker --> amplify-button
   amplify-picker --> amplify-button
+  amplify-button --> amplify-icon
   amplify-s3-image-picker --> amplify-photo-picker
   style amplify-photo-picker fill:#f9f,stroke:#333,stroke-width:4px
 ```

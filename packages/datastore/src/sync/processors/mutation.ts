@@ -310,7 +310,7 @@ class MutationProcessor {
 											: null,
 									});
 								} catch (err) {
-									logger.warn({ _err: err });
+									logger.warn('failed to execute errorHandler', err);
 								} finally {
 									// Return empty tuple, dequeues the mutation
 									return error.data

@@ -9,12 +9,16 @@ import {
 	PersistentModel,
 	SchemaModel,
 	SchemaNamespace,
+	PredicatesGroup,
+	ModelPredicate,
 } from '../../types';
 import {
 	buildSubscriptionGraphQLOperation,
 	getAuthorizationRules,
 	TransformerMutationType,
 } from '../utils';
+import { ModelPredicateCreator } from '../../predicates';
+import { validatePredicate } from '../../util';
 
 const logger = new Logger('DataStore');
 
@@ -40,7 +44,10 @@ class SubscriptionProcessor {
 	][] = [];
 	private dataObserver: ZenObservable.Observer<any>;
 
-	constructor(private readonly schema: InternalSchema) {}
+	constructor(
+		private readonly schema: InternalSchema,
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>
+	) {}
 
 	private buildSubscription(
 		namespace: SchemaNamespace,
@@ -61,7 +68,6 @@ class SubscriptionProcessor {
 		const { authMode, isOwner, ownerField, ownerValue } =
 			this.getAuthorizationInfo(
 				model,
-				transformerMutationType,
 				userCredentials,
 				cognitoTokenPayload,
 				oidcTokenPayload
@@ -79,7 +85,6 @@ class SubscriptionProcessor {
 
 	private getAuthorizationInfo(
 		model: SchemaModel,
-		transformerMutationType: TransformerMutationType,
 		userCredentials: USER_CREDENTIALS,
 		cognitoTokenPayload: { [field: string]: any } = {},
 		oidcTokenPayload: { [field: string]: any } = {}
@@ -90,7 +95,7 @@ class SubscriptionProcessor {
 		ownerValue?: string;
 	} {
 		let result;
-		const rules = getAuthorizationRules(model, transformerMutationType);
+		const rules = getAuthorizationRules(model);
 
 		// check if has apiKey and public authorization
 		const apiKeyAuth = rules.find(
@@ -127,11 +132,11 @@ class SubscriptionProcessor {
 
 		// if not check if has groups authorization and token has groupClaim allowed for cognito token
 		let groupAuthRules = rules.filter(
-			rule => rule.authStrategy === 'group' && rule.provider === 'userPools'
+			rule => rule.authStrategy === 'groups' && rule.provider === 'userPools'
 		);
 
 		const validCognitoGroup = groupAuthRules.find(groupAuthRule => {
-			// validate token agains groupClaim
+			// validate token against groupClaim
 			const userGroups: string[] =
 				cognitoTokenPayload[groupAuthRule.groupClaim] || [];
 
@@ -149,15 +154,15 @@ class SubscriptionProcessor {
 
 		// if not check if has groups authorization and token has groupClaim allowed for oidc token
 		groupAuthRules = rules.filter(
-			rule => rule.authStrategy === 'group' && rule.provider === 'oidc'
+			rule => rule.authStrategy === 'groups' && rule.provider === 'oidc'
 		);
 
 		const validOidcGroup = groupAuthRules.find(groupAuthRule => {
-			// validate token agains groupClaim
+			// validate token against groupClaim
 			const userGroups: string[] =
 				oidcTokenPayload[groupAuthRule.groupClaim] || [];
 
-			userGroups.find(userGroup => {
+			return userGroups.find(userGroup => {
 				return groupAuthRule.groups.find(group => group === userGroup);
 			});
 		});
@@ -239,6 +244,7 @@ class SubscriptionProcessor {
 			(async () => {
 				try {
 					// retrieving current AWS Credentials
+					// TODO Should this use `this.amplify.Auth` for SSR?
 					const credentials = await Auth.currentCredentials();
 					userCredentials = credentials.authenticated
 						? USER_CREDENTIALS.auth
@@ -249,6 +255,7 @@ class SubscriptionProcessor {
 
 				try {
 					// retrieving current token info from Cognito UserPools
+					// TODO Should this use `this.amplify.Auth` for SSR?
 					const session = await Auth.currentSession();
 					cognitoTokenPayload = session.getIdToken().decodePayload();
 				} catch (err) {
@@ -256,15 +263,26 @@ class SubscriptionProcessor {
 				}
 
 				try {
-					// retrieving token info from OIDC
+					let token;
+					// backwards compatibility
 					const federatedInfo = await Cache.getItem('federatedInfo');
-					const { token } = federatedInfo;
-					const payload = token.split('.')[1];
+					if (federatedInfo) {
+						token = federatedInfo.token;
+					} else {
+						const currentUser = await Auth.currentAuthenticatedUser();
+						if (currentUser) {
+							token = currentUser.token;
+						}
+					}
 
-					oidcTokenPayload = JSON.parse(
-						Buffer.from(payload, 'base64').toString('utf8')
-					);
+					if (token) {
+						const payload = token.split('.')[1];
+						oidcTokenPayload = JSON.parse(
+							Buffer.from(payload, 'base64').toString('utf8')
+						);
+					}
 				} catch (err) {
+					logger.debug('error getting OIDC JWT', err);
 					// best effort to get oidc jwt
 				}
 
@@ -341,14 +359,29 @@ class SubscriptionProcessor {
 														return;
 													}
 
-													const { [opName]: record } = data;
-
-													this.pushToBuffer(
-														transformerMutationType,
-														modelDefinition,
-														record
+													const predicatesGroup = ModelPredicateCreator.getPredicates(
+														this.syncPredicates.get(modelDefinition),
+														false
 													);
 
+													const { [opName]: record } = data;
+
+													// checking incoming subscription against syncPredicate.
+													// once AppSync implements filters on subscriptions, we'll be
+													// able to set these when establishing the subscription instead.
+													// Until then, we'll need to filter inbound
+													if (
+														this.passesPredicateValidation(
+															record,
+															predicatesGroup
+														)
+													) {
+														this.pushToBuffer(
+															transformerMutationType,
+															modelDefinition,
+															record
+														);
+													}
 													this.drainBuffer();
 												},
 												error: subscriptionError => {
@@ -357,11 +390,17 @@ class SubscriptionProcessor {
 															errors: [],
 														},
 													} = subscriptionError;
-													logger.warn(message);
+													logger.warn('subscriptionError', message);
 
 													if (typeof subscriptionReadyCallback === 'function') {
 														subscriptionReadyCallback();
 													}
+
+													if (message.includes('"errorType":"Unauthorized"')) {
+														return;
+													}
+
+													observer.error(message);
 												},
 											})
 									);
@@ -405,6 +444,19 @@ class SubscriptionProcessor {
 		});
 
 		return [ctlObservable, dataObservable];
+	}
+
+	private passesPredicateValidation(
+		record: PersistentModel,
+		predicatesGroup: PredicatesGroup<any>
+	): boolean {
+		if (!predicatesGroup) {
+			return true;
+		}
+
+		const { predicates, type } = predicatesGroup;
+
+		return validatePredicate(record, type, predicates);
 	}
 
 	private pushToBuffer(

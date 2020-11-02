@@ -2,6 +2,8 @@ import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
 	GraphQLCondition,
+	GraphQLFilter,
+	GraphQLField,
 	isEnumFieldType,
 	isGraphQLScalarType,
 	isPredicateObj,
@@ -154,8 +156,7 @@ function getNonModelFields(
 }
 
 export function getAuthorizationRules(
-	modelDefinition: SchemaModel,
-	transformerOpType: TransformerMutationType
+	modelDefinition: SchemaModel
 ): AuthorizationRule[] {
 	// Searching for owner authorization on attributes
 	const authConfig = []
@@ -171,49 +172,54 @@ export function getAuthorizationRules(
 		const {
 			identityClaim = 'cognito:username',
 			ownerField = 'owner',
-			operations = ['create', 'update', 'delete'],
+			operations = ['create', 'update', 'delete', 'read'],
 			provider = 'userPools',
 			groupClaim = 'cognito:groups',
 			allow: authStrategy = 'iam',
 			groups = [],
 		} = rule;
 
-		const isOperationAuthorized = operations.find(
-			operation => operation.toLowerCase() === transformerOpType.toLowerCase()
-		);
+		const isReadAuthorized = operations.includes('read');
+		const isOwnerAuth = authStrategy === 'owner';
 
-		if (isOperationAuthorized) {
-			const rule: AuthorizationRule = {
-				identityClaim,
-				ownerField,
-				provider,
-				groupClaim,
-				authStrategy,
-				groups,
-				areSubscriptionsPublic: false,
-			};
-
-			if (authStrategy === 'owner') {
-				// look for the subscription level override
-				// only pay attention to the public level
-				const modelConfig = (<typeof modelDefinition.attributes>[])
-					.concat(modelDefinition.attributes)
-					.find(attr => attr && attr.type === 'model');
-
-				// find the subscriptions level. ON is default
-				const { properties: { subscriptions: { level = 'on' } = {} } = {} } =
-					modelConfig || {};
-
-				rule.areSubscriptionsPublic = level === 'public';
-			}
-
-			// owner rules has least priority
-			if (authStrategy === 'owner') {
-				resultRules.push(rule);
-			} else {
-				resultRules.unshift(rule);
-			}
+		if (!isReadAuthorized && !isOwnerAuth) {
+			return;
 		}
+
+		const authRule: AuthorizationRule = {
+			identityClaim,
+			ownerField,
+			provider,
+			groupClaim,
+			authStrategy,
+			groups,
+			areSubscriptionsPublic: false,
+		};
+
+		if (isOwnerAuth) {
+			// look for the subscription level override
+			// only pay attention to the public level
+			const modelConfig = (<typeof modelDefinition.attributes>[])
+				.concat(modelDefinition.attributes)
+				.find(attr => attr && attr.type === 'model');
+
+			// find the subscriptions level. ON is default
+			const { properties: { subscriptions: { level = 'on' } = {} } = {} } =
+				modelConfig || {};
+
+			// treat subscriptions as public for owner auth with unprotected reads
+			// when `read` is omitted from `operations`
+			authRule.areSubscriptionsPublic =
+				!operations.includes('read') || level === 'public';
+		}
+
+		if (isOwnerAuth) {
+			// owner rules has least priority
+			resultRules.push(authRule);
+			return;
+		}
+
+		resultRules.unshift(authRule);
 	});
 
 	return resultRules;
@@ -267,9 +273,9 @@ export function buildGraphQLOperation(
 	switch (graphQLOpType) {
 		case 'LIST':
 			operation = `sync${pluralTypeName}`;
-			documentArgs = `($limit: Int, $nextToken: String, $lastSync: AWSTimestamp)`;
+			documentArgs = `($limit: Int, $nextToken: String, $lastSync: AWSTimestamp, $filter: Model${typeName}FilterInput)`;
 			operationArgs =
-				'(limit: $limit, nextToken: $nextToken, lastSync: $lastSync)';
+				'(limit: $limit, nextToken: $nextToken, lastSync: $lastSync, filter: $filter)';
 			selectionSet = `items {
 							${selectionSet}
 						}
@@ -380,6 +386,41 @@ export function predicateToGraphQLCondition(
 		} else {
 			result[p.type] = predicateToGraphQLCondition(p);
 		}
+	});
+
+	return result;
+}
+
+export function predicateToGraphQLFilter(
+	predicatesGroup: PredicatesGroup<any>
+): GraphQLFilter {
+	const result: GraphQLFilter = {};
+
+	if (!predicatesGroup || !Array.isArray(predicatesGroup.predicates)) {
+		return result;
+	}
+
+	const { type, predicates } = predicatesGroup;
+	const isList = type === 'and' || type === 'or';
+
+	result[type] = isList ? [] : {};
+
+	const appendToFilter = value =>
+		isList ? result[type].push(value) : (result[type] = value);
+
+	predicates.forEach(predicate => {
+		if (isPredicateObj(predicate)) {
+			const { field, operator, operand } = predicate;
+
+			const gqlField: GraphQLField = {
+				[field]: { [operator]: operand },
+			};
+
+			appendToFilter(gqlField);
+			return;
+		}
+
+		appendToFilter(predicateToGraphQLFilter(predicate));
 	});
 
 	return result;

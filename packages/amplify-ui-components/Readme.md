@@ -351,6 +351,7 @@ Theming for the UI components can be achieved by using [CSS Variables](https://d
 | `--amplify-light-grey`         | #c4c4c4              |
 | `--amplify-white`              | #ffffff              |
 | `--amplify-red`                | #dd3f5b              |
+| `--amplify-blue`               | #099ac8              |
 
 ## Amplify Authenticator `usernameAlias`
 

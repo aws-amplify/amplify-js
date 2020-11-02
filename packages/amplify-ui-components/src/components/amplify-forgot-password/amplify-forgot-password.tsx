@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
-import { Component, Prop, State, h, Watch } from '@stencil/core';
+import { Component, Prop, State, h, Watch, Host } from '@stencil/core';
 
 import {
   FormFieldTypes,
@@ -29,11 +29,11 @@ const logger = new Logger('ForgotPassword');
 })
 export class AmplifyForgotPassword {
   /** The header text of the forgot password section */
-  @Prop() headerText: string = I18n.get(Translations.RESET_YOUR_PASSWORD);
+  @Prop() headerText: string = Translations.RESET_YOUR_PASSWORD;
   /** The text displayed inside of the send code button for the form */
-  @Prop() sendButtonText: string = I18n.get(Translations.SEND_CODE);
+  @Prop() sendButtonText: string = Translations.SEND_CODE;
   /** The text displayed inside of the submit button for the form */
-  @Prop() submitButtonText: string = I18n.get(Translations.SUBMIT);
+  @Prop() submitButtonText: string = Translations.SUBMIT;
   /** The form fields displayed inside of the forgot password form */
   @Prop() formFields: FormFieldTypes | string[] = [];
   /** The function called when making a request to reset password */
@@ -249,24 +249,26 @@ export class AmplifyForgotPassword {
     const submitFn = this.delivery ? event => this.handleSubmit(event) : event => this.handleSend(event);
     const submitButtonText = this.delivery ? this.submitButtonText : this.sendButtonText;
     return (
-      <amplify-form-section
-        headerText={this.headerText}
-        handleSubmit={submitFn}
-        loading={this.loading}
-        secondaryFooterContent={
-          <amplify-button
-            variant="anchor"
-            onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
-            data-test="forgot-password-back-to-sign-in-link"
-          >
-            {I18n.get(Translations.BACK_TO_SIGN_IN)}
-          </amplify-button>
-        }
-        testDataPrefix={'forgot-password'}
-        submitButtonText={submitButtonText}
-      >
-        <amplify-auth-fields formFields={this.newFormFields} />
-      </amplify-form-section>
+      <Host>
+        <amplify-form-section
+          headerText={I18n.get(this.headerText)}
+          handleSubmit={submitFn}
+          loading={this.loading}
+          secondaryFooterContent={
+            <amplify-button
+              variant="anchor"
+              onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
+              data-test="forgot-password-back-to-sign-in-link"
+            >
+              {I18n.get(Translations.BACK_TO_SIGN_IN)}
+            </amplify-button>
+          }
+          testDataPrefix={'forgot-password'}
+          submitButtonText={I18n.get(submitButtonText)}
+        >
+          <amplify-auth-fields formFields={this.newFormFields} />
+        </amplify-form-section>
+      </Host>
     );
   }
 }

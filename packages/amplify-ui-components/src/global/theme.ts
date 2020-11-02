@@ -26,6 +26,7 @@ if (browserOrNode().isBrowser) {
       --amplify-text-xs: 0.81rem;
       --amplify-text-sm: 0.875rem;
       --amplify-text-md: 1rem;
+      --amplify-text-md-sub: 1.15rem;
       --amplify-text-lg: 1.5rem;
       --amplify-text-xl: 2rem;
       --amplify-text-xxl: 2.5rem;
@@ -53,8 +54,8 @@ if (browserOrNode().isBrowser) {
       --amplify-light-grey: #c4c4c4;
       --amplify-white: #ffffff;
       --amplify-smoke-white: #f5f5f5;
-
       --amplify-red: #dd3f5b;
+      --amplify-blue: #099ac8;
     }
   `),
   );

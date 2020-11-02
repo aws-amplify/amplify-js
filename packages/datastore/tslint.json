@@ -39,7 +39,12 @@
 			"allow-snake-case",
 			"allow-leading-underscore"
 		],
-		"semicolon": [true, "always", "ignore-interfaces"]
+		"semicolon": [
+			true,
+			"always",
+			"ignore-interfaces",
+			"ignore-bound-class-methods"
+		]
 	},
 	"rulesDirectory": []
 }

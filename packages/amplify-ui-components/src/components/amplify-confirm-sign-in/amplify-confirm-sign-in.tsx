@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
-import { I18n, isEmpty } from '@aws-amplify/core';
-import { Component, Prop, State, h } from '@stencil/core';
+import { I18n } from '@aws-amplify/core';
+import { Component, Prop, State, h, Host } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
   AuthState,
@@ -12,6 +12,7 @@ import {
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 import { Translations } from '../../common/Translations';
+import { checkContact } from '../../common/auth-helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-in',
@@ -21,9 +22,9 @@ export class AmplifyConfirmSignIn {
   /** Fires when confirm sign in form is submitted */
   @Prop() handleSubmit: (event: Event) => void = event => this.confirm(event);
   /** Used for header text in confirm sign in component */
-  @Prop() headerText: string = I18n.get(Translations.CONFIRM_SMS_CODE);
+  @Prop() headerText: string = Translations.CONFIRM_SMS_CODE;
   /** Used for the submit button text in confirm sign in component */
-  @Prop() submitButtonText: string = I18n.get(Translations.CONFIRM);
+  @Prop() submitButtonText: string = Translations.CONFIRM;
   /** Auth state change handler for this component */
   @Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
   /**
@@ -62,28 +63,14 @@ export class AmplifyConfirmSignIn {
     if (this.user && this.user['challengeName'] === ChallengeName.SoftwareTokenMFA) {
       this.mfaOption = MfaOption.TOTP;
       // If header text is using default use TOTP string
-      if (this.headerText === I18n.get(Translations.CONFIRM_SMS_CODE)) {
-        this.headerText = I18n.get(Translations.CONFIRM_TOTP_CODE);
+      if (this.headerText === Translations.CONFIRM_SMS_CODE) {
+        this.headerText = Translations.CONFIRM_TOTP_CODE;
       }
     }
   }
 
   private handleCodeChange(event) {
     this.code = event.target.value;
-  }
-
-  private checkContact(user) {
-    if (!Auth || typeof Auth.verifiedContact !== 'function') {
-      throw new Error(NO_AUTH_MODULE_FOUND);
-    }
-    Auth.verifiedContact(user).then(data => {
-      if (!isEmpty(data.verified)) {
-        this.handleAuthStateChange(AuthState.SignedIn, user);
-      } else {
-        user = Object.assign(user, data);
-        this.handleAuthStateChange(AuthState.VerifyContact, user);
-      }
-    });
   }
 
   private async confirm(event: Event) {
@@ -99,7 +86,7 @@ export class AmplifyConfirmSignIn {
     this.loading = true;
     try {
       await Auth.confirmSignIn(this.user, this.code, mfaType);
-      this.checkContact(this.user);
+      await checkContact(this.user, this.handleAuthStateChange);
     } catch (error) {
       dispatchToastHubEvent(error);
     } finally {
@@ -109,21 +96,23 @@ export class AmplifyConfirmSignIn {
 
   render() {
     return (
-      <amplify-form-section
-        headerText={this.headerText}
-        handleSubmit={this.handleSubmit}
-        submitButtonText={this.submitButtonText}
-        loading={this.loading}
-        secondaryFooterContent={
-          <span>
-            <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
-              {I18n.get(Translations.BACK_TO_SIGN_IN)}
-            </amplify-button>
-          </span>
-        }
-      >
-        <amplify-auth-fields formFields={this.formFields} />
-      </amplify-form-section>
+      <Host>
+        <amplify-form-section
+          headerText={I18n.get(this.headerText)}
+          handleSubmit={this.handleSubmit}
+          submitButtonText={I18n.get(this.submitButtonText)}
+          loading={this.loading}
+          secondaryFooterContent={
+            <span>
+              <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
+                {I18n.get(Translations.BACK_TO_SIGN_IN)}
+              </amplify-button>
+            </span>
+          }
+        >
+          <amplify-auth-fields formFields={this.formFields} />
+        </amplify-form-section>
+      </Host>
     );
   }
 }

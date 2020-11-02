@@ -1,6 +1,9 @@
 import { Component, h, Prop } from '@stencil/core';
 import { icons, IconNameType } from '../amplify-icon/icons';
 
+/**
+ * @slot (default) - Content placed inside the button
+ */
 @Component({
   tag: 'amplify-sign-in-button',
   styleUrl: 'amplify-sign-in-button.scss',

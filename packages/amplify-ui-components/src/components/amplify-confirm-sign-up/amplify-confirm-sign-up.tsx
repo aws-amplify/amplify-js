@@ -1,5 +1,5 @@
 import { I18n } from '@aws-amplify/core';
-import { Component, Prop, h, State, Watch } from '@stencil/core';
+import { Component, Prop, h, State, Watch, Host } from '@stencil/core';
 import {
   FormFieldTypes,
   FormFieldType,
@@ -19,6 +19,7 @@ import {
   composePhoneNumberInput,
   handlePhoneNumberChange,
 } from '../../common/helpers';
+import { handleSignIn } from '../../common/auth-helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-up',
@@ -28,9 +29,9 @@ export class AmplifyConfirmSignUp {
   /** Fires when sign up form is submitted */
   @Prop() handleSubmit: (submitEvent: Event) => void = event => this.confirmSignUp(event);
   /** Used for header text in confirm sign up component */
-  @Prop() headerText: string = I18n.get(Translations.CONFIRM_SIGN_UP_HEADER_TEXT);
+  @Prop() headerText: string = Translations.CONFIRM_SIGN_UP_HEADER_TEXT;
   /** Used for the submit button text in confirm sign up component */
-  @Prop() submitButtonText: string = I18n.get(Translations.CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT);
+  @Prop() submitButtonText: string = Translations.CONFIRM_SIGN_UP_SUBMIT_BUTTON_TEXT;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
    * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing
@@ -214,9 +215,16 @@ export class AmplifyConfirmSignUp {
     }
     try {
       const confirmSignUpResult = await Auth.confirmSignUp(this.userInput, this.code);
-      const user =
-        confirmSignUpResult && this._signUpAttrs && (await Auth.signIn(this.userInput, this._signUpAttrs.password));
-      this.handleAuthStateChange(AuthState.SignedIn, user);
+
+      if (!confirmSignUpResult) {
+        throw new Error(I18n.get(Translations.CONFIRM_SIGN_UP_FAILED));
+      }
+      if (this._signUpAttrs && this._signUpAttrs.password && this._signUpAttrs.password !== '') {
+        // Auto sign in user if password is available from previous workflow
+        await handleSignIn(this.userInput, this._signUpAttrs.password, this.handleAuthStateChange);
+      } else {
+        this.handleAuthStateChange(AuthState.SignIn);
+      }
     } catch (error) {
       dispatchToastHubEvent(error);
     } finally {
@@ -226,22 +234,24 @@ export class AmplifyConfirmSignUp {
 
   render() {
     return (
-      <amplify-form-section
-        headerText={this.headerText}
-        submitButtonText={this.submitButtonText}
-        handleSubmit={this.handleSubmit}
-        secondaryFooterContent={
-          <div>
-            <span>
-              <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
-                {I18n.get(Translations.BACK_TO_SIGN_IN)}
-              </amplify-button>
-            </span>
-          </div>
-        }
-      >
-        <amplify-auth-fields formFields={this.newFormFields} />
-      </amplify-form-section>
+      <Host>
+        <amplify-form-section
+          headerText={I18n.get(this.headerText)}
+          submitButtonText={I18n.get(this.submitButtonText)}
+          handleSubmit={this.handleSubmit}
+          secondaryFooterContent={
+            <div>
+              <span>
+                <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
+                  {I18n.get(Translations.BACK_TO_SIGN_IN)}
+                </amplify-button>
+              </span>
+            </div>
+          }
+        >
+          <amplify-auth-fields formFields={this.newFormFields} />
+        </amplify-form-section>
+      </Host>
     );
   }
 }

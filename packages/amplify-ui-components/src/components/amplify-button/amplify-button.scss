@@ -1,3 +1,20 @@
+/**
+ * @prop --background-color: Background color of the button
+ * @prop --background-color-active: Background color of the button when it's active
+ * @prop --background-color-disable: Background color of the button when it's disabled
+ * @prop --color: Text color within the button
+ * @prop --border-width: Border width of the button
+ * @prop --border-color: Border color of the button
+ * @prop --border-style: Border style of the button
+ * @prop --link-color: Text color within an anchor variant button
+ * @prop --link-hover: Text color within an anchor variant button when hovering
+ * @prop --link-active: Text color within the anchor variant button when active
+ * @prop --text-transform: Text capitalization transform within the button
+ * @prop --icon-fill: Icon fill color within an icon variant button
+ * @prop --icon-height: Icon height within an icon variant button
+ * @prop --padding: Padding within the button
+ * @prop --width: Width of the button
+ */
 :host {
   --background-color: var(--amplify-primary-color);
   --background-color-active: var(--amplify-primary-shade);
@@ -10,8 +27,12 @@
   --link-hover: var(--amplify-primary-tint);
   --link-active: var(--amplify-primary-shade);
   --text-transform: uppercase;
+  --icon-fill: var(--amplify-white);
+  --icon-height: 1.25rem;
+  --padding: 1rem;
+  --width: 100%;
 
-  width: 100%;
+  width: var(--width);
   text-align: center;
 
   @include md {
@@ -35,7 +56,7 @@
   user-select: none;
   background-image: none;
   color: var(--color);
-  padding: 1rem;
+  padding: var(--padding);
   letter-spacing: 0.75px;
   text-transform: var(--text-transform);
   background-color: var(--background-color);
@@ -56,6 +77,18 @@
     opacity: 0.65;
     cursor: auto;
     background-color: var(--background-color-disable);
+  }
+}
+
+.icon {
+  background-color: inherit;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  padding: var(--padding);
+  amplify-icon {
+    --icon-fill-color: var(--icon-fill);
+    --height: var(--icon-height);
   }
 }
 

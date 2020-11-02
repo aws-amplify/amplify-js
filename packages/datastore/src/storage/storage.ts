@@ -181,7 +181,7 @@ class StorageClass implements StorageFacade {
 	async query<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		predicate?: ModelPredicate<T>,
-		pagination?: PaginationInput
+		pagination?: PaginationInput<T>
 	): Promise<T[]> {
 		await this.init();
 
@@ -333,7 +333,7 @@ class ExclusiveStorage implements StorageFacade {
 	async query<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		predicate?: ModelPredicate<T>,
-		pagination?: PaginationInput
+		pagination?: PaginationInput<T>
 	): Promise<T[]> {
 		return this.runExclusive<T[]>(storage =>
 			storage.query<T>(modelConstructor, predicate, pagination)

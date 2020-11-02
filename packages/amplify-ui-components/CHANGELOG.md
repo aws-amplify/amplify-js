@@ -3,6 +3,144 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.0...@aws-amplify/ui-components@0.9.1) (2020-10-31)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** center amplify-authenticator ([#7041](https://github.com/aws-amplify/amplify-js/issues/7041)) ([f9f7c2d](https://github.com/aws-amplify/amplify-js/commit/f9f7c2d0fd363c1a26dbb580f36e73bb6bb166fe))
+
+
+
+
+
+# [0.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.7...@aws-amplify/ui-components@0.9.0) (2020-10-29)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** auto-document slots and css variables ([#6914](https://github.com/aws-amplify/amplify-js/issues/6914)) ([5b00c91](https://github.com/aws-amplify/amplify-js/commit/5b00c9143f8250d9d64d7e1cb14a4f1c2a93d166))
+
+
+
+
+
+## [0.8.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.6...@aws-amplify/ui-components@0.8.7) (2020-10-15)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.8.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.5...@aws-amplify/ui-components@0.8.6) (2020-10-01)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.8.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.4...@aws-amplify/ui-components@0.8.5) (2020-09-25)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.8.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.3...@aws-amplify/ui-components@0.8.4) (2020-09-16)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.8.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.2...@aws-amplify/ui-components@0.8.3) (2020-09-15)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.8.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.1...@aws-amplify/ui-components@0.8.2) (2020-09-10)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.8.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.0...@aws-amplify/ui-components@0.8.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+# [0.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.7.0...@aws-amplify/ui-components@0.8.0) (2020-09-03)
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+# [0.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.6.2...@aws-amplify/ui-components@0.7.0) (2020-09-01)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** Add Chatbot UI to main ([#6684](https://github.com/aws-amplify/amplify-js/issues/6684)) ([4e25f92](https://github.com/aws-amplify/amplify-js/commit/4e25f923723441c6fb705584fcc3349214806558)), closes [#5024](https://github.com/aws-amplify/amplify-js/issues/5024) [#6648](https://github.com/aws-amplify/amplify-js/issues/6648) [#6652](https://github.com/aws-amplify/amplify-js/issues/6652) [#6678](https://github.com/aws-amplify/amplify-js/issues/6678)
+
+
+
+
+
+## [0.6.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.6.1...@aws-amplify/ui-components@0.6.2) (2020-08-19)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.6.0...@aws-amplify/ui-components@0.6.1) (2020-08-06)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+# [0.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.5.5...@aws-amplify/ui-components@0.6.0) (2020-07-27)
+
+
+### Features
+
+* add branding prop for customise QR branding ([#6333](https://github.com/aws-amplify/amplify-js/issues/6333)) ([28efe52](https://github.com/aws-amplify/amplify-js/commit/28efe520ec6e6f2f8518ab7ce7b1d9a0c00534ad))
+
+
+
+
+
+## [0.5.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.5.4...@aws-amplify/ui-components@0.5.5) (2020-07-22)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Update authState after a successful Auth.signIn call ([#6276](https://github.com/aws-amplify/amplify-js/issues/6276)) ([e79a805](https://github.com/aws-amplify/amplify-js/commit/e79a805534c25dcd52ea4e55ef8b4fbd0f5dce36))
+
+
+
+
+
 ## [0.5.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.5.3...@aws-amplify/ui-components@0.5.4) (2020-07-09)
 
 **Note:** Version bump only for package @aws-amplify/ui-components
