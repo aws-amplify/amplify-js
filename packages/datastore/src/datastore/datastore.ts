@@ -546,7 +546,7 @@ class DataStore {
 	private storage: Storage;
 	private sync: SyncEngine;
 	private syncPageSize: number;
-	private syncExpressions: SyncExpression<any>[];
+	private syncExpressions: SyncExpression[];
 	private syncPredicates: WeakMap<
 		SchemaModel,
 		ModelPredicate<any>
@@ -1103,8 +1103,8 @@ class DataStore {
 
 		const syncPredicates = await Promise.all(
 			this.syncExpressions.map(
-				async <T extends PersistentModel>(
-					syncExpression: SyncExpression<T>
+				async (
+					syncExpression: SyncExpression
 				): Promise<[SchemaModel, ModelPredicate<any>]> => {
 					const { modelConstructor, conditionProducer } = await syncExpression;
 					const modelDefinition = getModelDefinition(modelConstructor);
