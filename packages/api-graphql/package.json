@@ -44,11 +44,11 @@
     "@types/zen-observable": "^0.8.0"
   },
   "dependencies": {
-    "@aws-amplify/api-rest": "^1.2.10",
-    "@aws-amplify/auth": "^3.4.10",
-    "@aws-amplify/cache": "^3.1.35",
-    "@aws-amplify/core": "^3.8.2",
-    "@aws-amplify/pubsub": "^3.2.8",
+    "@aws-amplify/api-rest": "1.2.10",
+    "@aws-amplify/auth": "3.4.10",
+    "@aws-amplify/cache": "3.1.35",
+    "@aws-amplify/core": "3.8.2",
+    "@aws-amplify/pubsub": "3.2.8",
     "graphql": "14.0.0",
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"

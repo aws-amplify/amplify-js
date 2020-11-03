@@ -40,8 +40,8 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"dependencies": {
-		"@aws-amplify/core": "^3.8.2",
-		"@aws-amplify/storage": "^3.3.10",
+		"@aws-amplify/core": "3.8.2",
+		"@aws-amplify/storage": "3.3.10",
 		"@aws-sdk/client-comprehend": "1.0.0-gamma.8",
 		"@aws-sdk/client-polly": "1.0.0-gamma.8",
 		"@aws-sdk/client-rekognition": "1.0.0-gamma.8",

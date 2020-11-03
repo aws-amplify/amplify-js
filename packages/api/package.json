@@ -44,8 +44,8 @@
 		"@types/zen-observable": "^0.8.0"
 	},
 	"dependencies": {
-		"@aws-amplify/api-graphql": "^1.2.10",
-		"@aws-amplify/api-rest": "^1.2.10"
+		"@aws-amplify/api-graphql": "1.2.10",
+		"@aws-amplify/api-rest": "1.2.10"
 	},
 	"jest": {
 		"globals": {
