@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.7.1...@aws-amplify/datastore@2.7.2) (2020-11-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix syncExpression types ([#7097](https://github.com/aws-amplify/amplify-js/issues/7097)) ([947197d](https://github.com/aws-amplify/amplify-js/commit/947197d39e4136af1d114ef716fe77725712f51f))
+
+
+
+
+
 ## [2.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.7.0...@aws-amplify/datastore@2.7.1) (2020-10-31)
 
 
