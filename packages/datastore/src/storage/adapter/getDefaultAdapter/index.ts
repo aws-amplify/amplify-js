@@ -5,10 +5,10 @@ const getDefaultAdapter: () => Adapter = () => {
 	const { isBrowser } = browserOrNode();
 
 	if ((isBrowser && window.indexedDB) || (isWebWorker() && self.indexedDB)) {
-		return require('../indexeddb').default;
+		return require('../IndexedDBAdapter').default;
 	}
 
-	const { AsyncStorageAdapter } = require('../asyncstorage');
+	const { AsyncStorageAdapter } = require('../AsyncStorageAdapter');
 
 	return new AsyncStorageAdapter();
 };
