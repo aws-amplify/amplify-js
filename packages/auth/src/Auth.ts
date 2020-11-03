@@ -160,6 +160,7 @@ export class AuthClass {
 			identityPoolRegion,
 			clientMetadata,
 			endpoint,
+			fetchOptions,
 		} = this._config;
 
 		if (!this._config.storage) {
@@ -188,6 +189,7 @@ export class AuthClass {
 				UserPoolId: userPoolId,
 				ClientId: userPoolWebClientId,
 				endpoint,
+				fetchOptions,
 			};
 			userPoolData.Storage = this._storage;
 
