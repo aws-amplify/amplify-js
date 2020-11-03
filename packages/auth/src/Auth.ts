@@ -84,6 +84,8 @@ const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
 
+type NodeCallback = (error: Error, data: any) => any;
+
 /**
  * Provide authentication steps
  */
@@ -180,7 +182,10 @@ export class AuthClass {
 			};
 			userPoolData.Storage = this._storage;
 
-			this.userPool = new CognitoUserPool(userPoolData);
+			this.userPool = new CognitoUserPool(
+				userPoolData,
+				this.wrapRefreshSessionCallback
+			);
 		}
 
 		this.Credentials.configure({
@@ -244,6 +249,22 @@ export class AuthClass {
 		);
 		return this._config;
 	}
+
+	private wrapRefreshSessionCallback = (callback: NodeCallback) => {
+		const wrapped: NodeCallback = (error, data) => {
+			if (data) {
+				dispatchAuthEvent('token_refresh', undefined, `New token retrieved`);
+			} else {
+				dispatchAuthEvent(
+					'token_refresh_failure',
+					error,
+					`Failed to retrieve new token`
+				);
+			}
+			return callback(error, data);
+		};
+		return wrapped;
+	};
 
 	/**
 	 * Sign up with username, password and other attributes like phone, email
