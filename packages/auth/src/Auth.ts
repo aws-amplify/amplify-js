@@ -61,6 +61,7 @@ import {
 	CognitoIdToken,
 	CognitoRefreshToken,
 	CognitoAccessToken,
+	NodeCallback,
 } from 'amazon-cognito-identity-js';
 
 import { parse } from 'url';
@@ -83,8 +84,6 @@ typeof Symbol.for === 'function'
 const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
-
-type NodeCallback = (error: Error, data: any) => any;
 
 /**
  * Provide authentication steps
@@ -250,8 +249,8 @@ export class AuthClass {
 		return this._config;
 	}
 
-	private wrapRefreshSessionCallback = (callback: NodeCallback) => {
-		const wrapped: NodeCallback = (error, data) => {
+	private wrapRefreshSessionCallback = (callback: NodeCallback.Any) => {
+		const wrapped: NodeCallback.Any = (error, data) => {
 			if (data) {
 				dispatchAuthEvent('token_refresh', undefined, `New token retrieved`);
 			} else {
