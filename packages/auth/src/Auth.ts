@@ -263,7 +263,7 @@ export class AuthClass {
 			return callback(error, data);
 		};
 		return wrapped;
-	};
+	} // prettier-ignore
 
 	/**
 	 * Sign up with username, password and other attributes like phone, email
