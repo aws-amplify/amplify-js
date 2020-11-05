@@ -35,8 +35,8 @@
     "clean": "rimraf dist .stencil"
   },
   "dependencies": {
-    "@aws-amplify/auth": "3.4.10",
-    "@aws-amplify/core": "3.8.2",
+    "@aws-amplify/auth": "3.x.x",
+    "@aws-amplify/core": "3.x.x",
     "@aws-amplify/interactions": "3.x.x",
     "@aws-amplify/storage": "3.x.x",
     "@aws-amplify/xr": "2.x.x",
