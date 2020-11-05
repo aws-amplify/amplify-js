@@ -1,5 +1,6 @@
 import OAuth from '../src/OAuth/OAuth';
 import * as oauthStorage from '../src/OAuth/oauthStorage';
+import { NodeCallback } from 'amazon-cognito-identity-js';
 
 jest.mock('crypto-js/sha256', () => {
 	return {
@@ -238,6 +239,7 @@ import {
 } from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
 import { AuthErrorTypes } from '../src/types/Auth';
+import { reject } from 'q';
 
 const authOptions: AuthOptions = {
 	userPoolId: 'awsUserPoolsId',
@@ -693,6 +695,57 @@ describe('auth unit test', () => {
 			expect.assertions(2);
 			expect(auth.resendSignUp(null).then()).rejects.toThrow(AuthError);
 			expect(auth.resendSignUp(null).then()).rejects.toEqual(errorMessage);
+		});
+	});
+
+	describe('events', () => {
+		test('token events', async () => {
+			expect.assertions(2);
+
+			// calling the `wrappedCallback` (a node callback) manually lets us trigger hub events
+			const auth = new Auth(authOptions);
+			const callback: NodeCallback.Any = (error, result) => {};
+			const wrappedCallback = auth.wrapRefreshSessionCallback(callback);
+
+			// saving a reference to this fn's return before triggering `wrappedCallback` lets us capture the payload
+			const captureEvent = () => {
+				return new Promise(resolve => {
+					Hub.listen('auth', capsule => {
+						switch (capsule.payload.event) {
+							case 'token_refresh': {
+								return resolve(true);
+							}
+
+							case 'token_refresh_failure': {
+								return resolve(capsule.payload.data);
+							}
+
+							default: {
+								break;
+							}
+						}
+					});
+				});
+			};
+
+			// for successful token refresh
+			const successEventPending = captureEvent();
+			wrappedCallback(undefined, true);
+
+			// for failed token refresh
+			const syntheticError = new Error();
+			const failureEventPending = captureEvent();
+			wrappedCallback(syntheticError, undefined);
+
+			// gather the payloads
+			const [successEvent, failureEvent] = await Promise.all([
+				successEventPending,
+				failureEventPending,
+			]);
+
+			// make assertions
+			expect(successEvent).toBeTruthy();
+			expect(failureEvent).toBe(syntheticError);
 		});
 	});
 

@@ -249,7 +249,7 @@ export class AuthClass {
 		return this._config;
 	}
 
-	private wrapRefreshSessionCallback = (callback: NodeCallback.Any) => {
+	wrapRefreshSessionCallback = (callback: NodeCallback.Any) => {
 		const wrapped: NodeCallback.Any = (error, data) => {
 			if (data) {
 				dispatchAuthEvent('token_refresh', undefined, `New token retrieved`);
