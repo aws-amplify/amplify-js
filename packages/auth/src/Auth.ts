@@ -1281,7 +1281,7 @@ export class AuthClass {
 					);
 				}
 				logger.debug('The user is not authenticated by the error', e);
-				throw 'not authenticated';
+				return Promise.reject('The user is not authenticator');
 			}
 			this.user = user;
 			return this.user;
