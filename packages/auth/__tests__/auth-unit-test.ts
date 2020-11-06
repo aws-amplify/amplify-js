@@ -239,7 +239,6 @@ import {
 } from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
 import { AuthErrorTypes } from '../src/types/Auth';
-import { reject } from 'q';
 
 const authOptions: AuthOptions = {
 	userPoolId: 'awsUserPoolsId',
