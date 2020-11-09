@@ -711,11 +711,11 @@ describe('auth unit test', () => {
 				return new Promise(resolve => {
 					Hub.listen('auth', capsule => {
 						switch (capsule.payload.event) {
-							case 'token_refresh': {
+							case 'tokenRefresh': {
 								return resolve(true);
 							}
 
-							case 'token_refresh_failure': {
+							case 'tokenRefresh_failure': {
 								return resolve(capsule.payload.data);
 							}
 
