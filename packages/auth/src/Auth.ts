@@ -252,10 +252,10 @@ export class AuthClass {
 	wrapRefreshSessionCallback = (callback: NodeCallback.Any) => {
 		const wrapped: NodeCallback.Any = (error, data) => {
 			if (data) {
-				dispatchAuthEvent('token_refresh', undefined, `New token retrieved`);
+				dispatchAuthEvent('tokenRefresh', undefined, `New token retrieved`);
 			} else {
 				dispatchAuthEvent(
-					'token_refresh_failure',
+					'tokenRefresh_failure',
 					error,
 					`Failed to retrieve new token`
 				);
