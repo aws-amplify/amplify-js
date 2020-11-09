@@ -26,6 +26,30 @@ const cacheClass = {
 };
 
 describe('Credentials test', () => {
+	describe('.Auth', () => {
+		it('should be undefined by default', async () => {
+			const credentials = new Credentials(null);
+
+			expect(credentials.Auth).toBeUndefined();
+
+			expect(credentials.get()).rejects.toMatchInlineSnapshot(
+				`"No Auth module registered in Amplify"`
+			);
+		});
+
+		it('should be Amplify.Auth if configured through Amplify', () => {
+			const credentials = new Credentials(null);
+
+			Amplify.register(authClass);
+			Amplify.register(credentials);
+
+			Amplify.configure({});
+
+			expect(credentials.Auth).toBe(authClass);
+			expect(credentials.get()).resolves.toBe('cred');
+		});
+	});
+
 	describe('configure test', () => {
 		test('happy case', () => {
 			const config = {

@@ -16,12 +16,18 @@ import {
 	RelationshipType,
 	RelationType,
 	SchemaNamespace,
+	SortPredicatesGroup,
+	SortDirection,
 } from './types';
 
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
 		throw new Error(`Invalid ${obj}`);
 	}
+};
+
+export const isNullOrUndefined = (val: any): boolean => {
+	return typeof val === 'undefined' || val === undefined || val === null;
 };
 
 export const validatePredicate = <T extends PersistentModel>(
@@ -401,4 +407,29 @@ export function getNow() {
 	} else {
 		return Date.now();
 	}
+}
+
+export function sortCompareFunction<T extends PersistentModel>(
+	sortPredicates: SortPredicatesGroup<T>
+) {
+	return function compareFunction(a, b) {
+		// enable multi-field sort by iterating over predicates until
+		// a comparison returns -1 or 1
+		for (const predicate of sortPredicates) {
+			const { field, sortDirection } = predicate;
+
+			// reverse result when direction is descending
+			const sortMultiplier = sortDirection === SortDirection.ASCENDING ? 1 : -1;
+
+			if (a[field] < b[field]) {
+				return -1 * sortMultiplier;
+			}
+
+			if (a[field] > b[field]) {
+				return 1 * sortMultiplier;
+			}
+		}
+
+		return 0;
+	};
 }

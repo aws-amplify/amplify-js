@@ -246,6 +246,13 @@ const options = {
 			maxEntities: 50,
 		},
 	},
+	identifyText: {
+		proxy: false,
+		region: 'us-west-2',
+		defaults: {
+			format: 'PLAIN',
+		},
+	},
 	identifyLabels: {
 		proxy: false,
 		region: 'us-west-2',

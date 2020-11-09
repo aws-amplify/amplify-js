@@ -3,6 +3,111 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.2.9...@aws-amplify/xr@2.2.10) (2020-11-03)
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+
+
+
+
+## [2.2.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.2.8...@aws-amplify/xr@2.2.9) (2020-10-31)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** update random implementation ([#7090](https://github.com/aws-amplify/amplify-js/issues/7090)) ([7048453](https://github.com/aws-amplify/amplify-js/commit/70484532da8a9953384b00b223b2b3ba0c0e845e))
+
+
+
+
+
+## [2.2.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.2.7...@aws-amplify/xr@2.2.8) (2020-10-29)
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+
+
+
+
+## [2.2.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.2.6...@aws-amplify/xr@2.2.7) (2020-10-15)
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+
+
+
+
+## [2.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.2.5...@aws-amplify/xr@2.2.6) (2020-10-01)
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+
+
+
+
+## [2.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.2.4...@aws-amplify/xr@2.2.5) (2020-09-25)
+
+
+### Bug Fixes
+
+* Add files with Amplify.register to sideEffects array ([#6867](https://github.com/aws-amplify/amplify-js/issues/6867)) ([58ddbf8](https://github.com/aws-amplify/amplify-js/commit/58ddbf8811e44695d97b6ab8be8f7cd2a2242921))
+
+
+
+
+
+## [2.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.2.3...@aws-amplify/xr@2.2.4) (2020-09-16)
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+
+
+
+
+## [2.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.2.2...@aws-amplify/xr@2.2.3) (2020-09-15)
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+
+
+
+
+## [2.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.2.1...@aws-amplify/xr@2.2.2) (2020-09-10)
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+
+
+
+
+## [2.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.2.0...@aws-amplify/xr@2.2.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+
+
+
+
+# [2.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.1.24...@aws-amplify/xr@2.2.0) (2020-09-03)
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+## [2.1.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.1.23...@aws-amplify/xr@2.1.24) (2020-09-01)
+
+**Note:** Version bump only for package @aws-amplify/xr
+
+
+
+
+
 ## [2.1.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/xr@2.1.22...@aws-amplify/xr@2.1.23) (2020-08-19)
 
 **Note:** Version bump only for package @aws-amplify/xr

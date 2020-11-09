@@ -1,3 +1,9 @@
+/**
+ * @prop --font-family: Font family of the text placed within the tooltip
+ * @prop --background-color: Background color of the tooltip
+ * @prop --color: Text color within the tooltip
+ * @prop --border-color: Border color of the tooltip
+ */
 :host {
   --font-family: var(--amplify-font-family);
   --background-color: var(--amplify-secondary-color);

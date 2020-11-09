@@ -3,6 +3,157 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.7.1...@aws-amplify/datastore@2.7.2) (2020-11-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix syncExpression types ([#7097](https://github.com/aws-amplify/amplify-js/issues/7097)) ([947197d](https://github.com/aws-amplify/amplify-js/commit/947197d39e4136af1d114ef716fe77725712f51f))
+
+
+
+
+
+## [2.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.7.0...@aws-amplify/datastore@2.7.1) (2020-10-31)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** update random implementation ([#7090](https://github.com/aws-amplify/amplify-js/issues/7090)) ([7048453](https://github.com/aws-amplify/amplify-js/commit/70484532da8a9953384b00b223b2b3ba0c0e845e))
+
+
+
+
+
+# [2.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.6.1...@aws-amplify/datastore@2.7.0) (2020-10-29)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix OIDC group auth rules ([#7011](https://github.com/aws-amplify/amplify-js/issues/7011)) ([34de0f2](https://github.com/aws-amplify/amplify-js/commit/34de0f252ddea559a6bc959610522cc19fe340f6))
+* **@aws-amplify/datastore:** initialize syncPredicates to empty WeakMap ([#7078](https://github.com/aws-amplify/amplify-js/issues/7078)) ([45d52da](https://github.com/aws-amplify/amplify-js/commit/45d52da6cec9b5e546c26e299d47e4d0b2879a7f))
+* **@aws-amplify/datastore:** return empty WeakMap ([#7079](https://github.com/aws-amplify/amplify-js/issues/7079)) ([cf511b8](https://github.com/aws-amplify/amplify-js/commit/cf511b8d3deaa58edcce8d1ec015548a801c212b))
+* **@aws-amplify/datastore:** validate model fields to allow undefined ([#7044](https://github.com/aws-amplify/amplify-js/issues/7044)) ([958f61e](https://github.com/aws-amplify/amplify-js/commit/958f61ef2918728cc46b9b210d60e868edd87f39))
+
+
+### Features
+
+* **@aws-amplify/datastore:** add Selective Sync ([#7001](https://github.com/aws-amplify/amplify-js/issues/7001)) ([8fa348b](https://github.com/aws-amplify/amplify-js/commit/8fa348b8ba708434992d97557b0fceebbf7abe9a))
+* **@aws-amplify/datastore:** selective sync enhancements ([#7083](https://github.com/aws-amplify/amplify-js/issues/7083)) ([2a4d3fd](https://github.com/aws-amplify/amplify-js/commit/2a4d3fde1b23e5be84f66721d3ef5854663081d1))
+
+
+
+
+
+## [2.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.6.0...@aws-amplify/datastore@2.6.1) (2020-10-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix DS subscriptions involving read operation ([#6954](https://github.com/aws-amplify/amplify-js/issues/6954)) ([2f74c6b](https://github.com/aws-amplify/amplify-js/commit/2f74c6b74d38af570017139f2ba8269dc1009135))
+
+
+
+
+
+# [2.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.5.2...@aws-amplify/datastore@2.6.0) (2020-10-01)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** add token to currentAuthenticatedUser for OIDC  ([#6858](https://github.com/aws-amplify/amplify-js/issues/6858)) ([61f7478](https://github.com/aws-amplify/amplify-js/commit/61f7478609fce7dd2f25c562aeb887d3f3db4a67))
+* **@aws-amplify/datastore:** check for token before getting payload ([#6893](https://github.com/aws-amplify/amplify-js/issues/6893)) ([880e1da](https://github.com/aws-amplify/amplify-js/commit/880e1da9d85b1caa3992bc7b4b6ace1a32eee525))
+* **@aws-amplify/datastore:** correct validation for array values in models ([#6784](https://github.com/aws-amplify/amplify-js/issues/6784)) ([95f73e2](https://github.com/aws-amplify/amplify-js/commit/95f73e2d1b8eab2d9b8fc474ca2986f84d2a68e3))
+* **@aws-amplify/datastore:** fix import isNullOrUndefined ([#6883](https://github.com/aws-amplify/amplify-js/issues/6883)) ([a55168b](https://github.com/aws-amplify/amplify-js/commit/a55168b0c6b794b337a5b2258fc22b5721a82e85))
+
+
+### Features
+
+* **@aws-amplify/datastore:** support indexeddb adapter on web worker ([#6874](https://github.com/aws-amplify/amplify-js/issues/6874)) ([e43e181](https://github.com/aws-amplify/amplify-js/commit/e43e18195ca201fa61bd0dfb1b18c06c3262f825))
+
+
+
+
+
+## [2.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.5.1...@aws-amplify/datastore@2.5.2) (2020-09-25)
+
+
+### Bug Fixes
+
+* Add files with Amplify.register to sideEffects array ([#6867](https://github.com/aws-amplify/amplify-js/issues/6867)) ([58ddbf8](https://github.com/aws-amplify/amplify-js/commit/58ddbf8811e44695d97b6ab8be8f7cd2a2242921))
+* **@aws-amplify/datastore:** use runExclusive when enqueuing ([#6828](https://github.com/aws-amplify/amplify-js/issues/6828)) ([26ce5df](https://github.com/aws-amplify/amplify-js/commit/26ce5dfb0270009fc10f003f5627046ddaf5ae4e))
+
+
+
+
+
+## [2.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.5.0...@aws-amplify/datastore@2.5.1) (2020-09-16)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+# [2.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.4.0...@aws-amplify/datastore@2.5.0) (2020-09-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** Allow subscribing and querying with partial auth ([#6458](https://github.com/aws-amplify/amplify-js/issues/6458)) ([6abbf50](https://github.com/aws-amplify/amplify-js/commit/6abbf5053978420ef008fc45968a54d0762943de))
+
+
+### Features
+
+* **@aws-amplify/datastore:** add query sorting ([#6785](https://github.com/aws-amplify/amplify-js/issues/6785)) ([d9c2f5e](https://github.com/aws-amplify/amplify-js/commit/d9c2f5efbd5ad5dd97e441d7f453f8358f615199))
+
+
+
+
+
+# [2.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.3.1...@aws-amplify/datastore@2.4.0) (2020-09-10)
+
+
+### Features
+
+* **@aws-amplify/datastore:** Add SSR support for DataStore ([#6726](https://github.com/aws-amplify/amplify-js/issues/6726)) ([e56aba6](https://github.com/aws-amplify/amplify-js/commit/e56aba642acc7eb3482f0e69454a530409d1b3ac))
+
+
+
+
+
+## [2.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.3.0...@aws-amplify/datastore@2.3.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+# [2.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.11...@aws-amplify/datastore@2.3.0) (2020-09-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** DataStore regression with AsyncStorage ([#6712](https://github.com/aws-amplify/amplify-js/issues/6712)) ([7059556](https://github.com/aws-amplify/amplify-js/commit/7059556f693b4a52143ecaa9934a14f7195caee8))
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+## [2.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.10...@aws-amplify/datastore@2.2.11) (2020-09-01)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
 ## [2.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.2.9...@aws-amplify/datastore@2.2.10) (2020-08-19)
 
 **Note:** Version bump only for package @aws-amplify/datastore

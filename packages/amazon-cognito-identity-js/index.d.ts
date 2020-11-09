@@ -74,7 +74,9 @@ declare module 'amazon-cognito-identity-js' {
 			authenticationFlowType: string
 		): string;
 
-		public getSession(callback: Function): any;
+		public getSession(
+			callback: ((error: Error, session: null) => void) | ((error: null, session: CognitoUserSession) => void)
+		): void;
 		public refreshSession(
 			refreshToken: CognitoRefreshToken,
 			callback: NodeCallback<any, any>,
@@ -272,8 +274,11 @@ declare module 'amazon-cognito-identity-js' {
 		Value: string;
 	}
 
-	export class CognitoUserAttribute {
+	export class CognitoUserAttribute implements ICognitoUserAttributeData {
 		constructor(data: ICognitoUserAttributeData);
+		
+		Name: string;
+		Value: string;
 
 		public getValue(): string;
 		public setValue(value: string): CognitoUserAttribute;
@@ -368,7 +373,7 @@ declare module 'amazon-cognito-identity-js' {
 		path?: string;
 		expires?: number;
 		secure?: boolean;
-		sameSite?: 'strict' | 'lax';
+		sameSite?: 'strict' | 'lax' | 'none';
 	}
 	export class CookieStorage implements ICognitoStorage {
 		constructor(data: ICookieStorageData);

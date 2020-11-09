@@ -1473,7 +1473,10 @@ describe('auth unit test', () => {
 						setItem() {},
 						getItem() {
 							return JSON.stringify({
-								user: 'federated_user',
+								user: {
+									name: 'federated user',
+								},
+								token: '12345',
 							});
 						},
 						removeItem() {},
@@ -1487,7 +1490,10 @@ describe('auth unit test', () => {
 			});
 
 			expect.assertions(1);
-			expect(await auth.currentAuthenticatedUser()).toBe('federated_user');
+			expect(await auth.currentAuthenticatedUser()).toStrictEqual({
+				name: 'federated user',
+				token: '12345',
+			});
 
 			spyon.mockClear();
 		});
@@ -2371,7 +2377,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyon3 = jest
-				.spyOn(Auth.prototype, 'currentCredentials')
+				.spyOn(auth, 'currentCredentials')
 				.mockImplementationOnce(() => {
 					return Promise.resolve({
 						identityId: 'identityId',

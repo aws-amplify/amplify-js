@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.7...aws-amplify-react-native@4.2.8) (2020-10-29)
+
+
+### Bug Fixes
+
+* rewrite "forget password" to "forgot password" ([#7009](https://github.com/aws-amplify/amplify-js/issues/7009)) ([fd989e4](https://github.com/aws-amplify/amplify-js/commit/fd989e405a7bc024f780cc7df552ebd489e0be60)), closes [#6921](https://github.com/aws-amplify/amplify-js/issues/6921)
+
+
+
+
+
+## [4.2.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.6...aws-amplify-react-native@4.2.7) (2020-09-25)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** remove react-native-elements dependency ([#6817](https://github.com/aws-amplify/amplify-js/issues/6817)) ([5651365](https://github.com/aws-amplify/amplify-js/commit/5651365e75f2989238110660f5c4dfc7adcfd45d))
+
+
+
+
+
+## [4.2.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.5...aws-amplify-react-native@4.2.6) (2020-09-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify-react-native:**  Add missing testID attributes in RequireNewPassword component. ([#6780](https://github.com/aws-amplify/amplify-js/issues/6780)) ([acda4a6](https://github.com/aws-amplify/amplify-js/commit/acda4a690117d0867b077db6a001545a9c9c1e42))
+
+
+
+
+
 ## [4.2.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.4...aws-amplify-react-native@4.2.5) (2020-08-19)
 
 **Note:** Version bump only for package aws-amplify-react-native
