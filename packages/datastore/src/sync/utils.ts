@@ -52,7 +52,7 @@ export function getMetadataFields(): ReadonlyArray<string> {
 	return metadataFields;
 }
 
-function generateSelectionSet(
+export function generateSelectionSet(
 	namespace: SchemaNamespace,
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string {
