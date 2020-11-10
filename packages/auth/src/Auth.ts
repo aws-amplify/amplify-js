@@ -61,6 +61,7 @@ import {
 	CognitoIdToken,
 	CognitoRefreshToken,
 	CognitoAccessToken,
+	NodeCallback,
 } from 'amazon-cognito-identity-js';
 
 import { parse } from 'url';
@@ -180,7 +181,10 @@ export class AuthClass {
 			};
 			userPoolData.Storage = this._storage;
 
-			this.userPool = new CognitoUserPool(userPoolData);
+			this.userPool = new CognitoUserPool(
+				userPoolData,
+				this.wrapRefreshSessionCallback
+			);
 		}
 
 		this.Credentials.configure({
@@ -244,6 +248,22 @@ export class AuthClass {
 		);
 		return this._config;
 	}
+
+	wrapRefreshSessionCallback = (callback: NodeCallback.Any) => {
+		const wrapped: NodeCallback.Any = (error, data) => {
+			if (data) {
+				dispatchAuthEvent('tokenRefresh', undefined, `New token retrieved`);
+			} else {
+				dispatchAuthEvent(
+					'tokenRefresh_failure',
+					error,
+					`Failed to retrieve new token`
+				);
+			}
+			return callback(error, data);
+		};
+		return wrapped;
+	} // prettier-ignore
 
 	/**
 	 * Sign up with username, password and other attributes like phone, email
