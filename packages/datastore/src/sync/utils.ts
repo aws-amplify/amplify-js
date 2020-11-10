@@ -2,6 +2,8 @@ import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
 	GraphQLCondition,
+	GraphQLFilter,
+	GraphQLField,
 	isEnumFieldType,
 	isGraphQLScalarType,
 	isPredicateObj,
@@ -271,9 +273,9 @@ export function buildGraphQLOperation(
 	switch (graphQLOpType) {
 		case 'LIST':
 			operation = `sync${pluralTypeName}`;
-			documentArgs = `($limit: Int, $nextToken: String, $lastSync: AWSTimestamp)`;
+			documentArgs = `($limit: Int, $nextToken: String, $lastSync: AWSTimestamp, $filter: Model${typeName}FilterInput)`;
 			operationArgs =
-				'(limit: $limit, nextToken: $nextToken, lastSync: $lastSync)';
+				'(limit: $limit, nextToken: $nextToken, lastSync: $lastSync, filter: $filter)';
 			selectionSet = `items {
 							${selectionSet}
 						}
@@ -384,6 +386,41 @@ export function predicateToGraphQLCondition(
 		} else {
 			result[p.type] = predicateToGraphQLCondition(p);
 		}
+	});
+
+	return result;
+}
+
+export function predicateToGraphQLFilter(
+	predicatesGroup: PredicatesGroup<any>
+): GraphQLFilter {
+	const result: GraphQLFilter = {};
+
+	if (!predicatesGroup || !Array.isArray(predicatesGroup.predicates)) {
+		return result;
+	}
+
+	const { type, predicates } = predicatesGroup;
+	const isList = type === 'and' || type === 'or';
+
+	result[type] = isList ? [] : {};
+
+	const appendToFilter = value =>
+		isList ? result[type].push(value) : (result[type] = value);
+
+	predicates.forEach(predicate => {
+		if (isPredicateObj(predicate)) {
+			const { field, operator, operand } = predicate;
+
+			const gqlField: GraphQLField = {
+				[field]: { [operator]: operand },
+			};
+
+			appendToFilter(gqlField);
+			return;
+		}
+
+		appendToFilter(predicateToGraphQLFilter(predicate));
 	});
 
 	return result;
