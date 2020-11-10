@@ -39,7 +39,7 @@
     "@aws-amplify/core": "^3.0.0",
     "@aws-amplify/interactions": "^3.0.0",
     "@aws-amplify/storage": "^3.0.0",
-    "@aws-amplify/xr": "^3.0.0",
+    "@aws-amplify/xr": "^2.0.0",
     "qrcode": "^1.4.4",
     "uuid": "^8.2.0"
   },
