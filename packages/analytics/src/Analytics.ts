@@ -251,8 +251,8 @@ export class AnalyticsClass {
 
 	public async updateEndpoint(attrs, provider?) {
 		const event = { ...attrs, name: '_update_endpoint' };
-
-		return this.record(event, provider);
+		const { metrics } = attrs;
+		return this.record(event, provider, metrics);
 	}
 
 	private _sendEvent(params) {
