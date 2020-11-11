@@ -3,11 +3,17 @@ import { SchemaNamespace } from '../src';
 import {
 	buildGraphQLOperation,
 	buildSubscriptionGraphQLOperation,
+	generateSelectionSet,
 	TransformerMutationType,
 	predicateToGraphQLFilter,
 } from '../src/sync/utils';
 import { PredicatesGroup } from '../src/types';
-import { newSchema } from './schema';
+import {
+	explicitOwnerSchema,
+	groupSchema,
+	implicitOwnerSchema,
+	newSchema,
+} from './schema';
 
 const postSelectionSet = `
 id
@@ -31,6 +37,19 @@ blog {
 	_deleted
 }
 `;
+
+const ownerAuthPostSelectionSet = `id
+title
+owner
+_version
+_lastChangedAt
+_deleted`;
+
+const groupAuthPostSelectionSet = `id
+title
+_version
+_lastChangedAt
+_deleted`;
 
 describe('DataStore GraphQL generation', () => {
 	test.each([
@@ -171,6 +190,44 @@ describe('DataStore GraphQL generation', () => {
 			expect(print(parse(query))).toStrictEqual(print(parse(expectedGraphQL)));
 		}
 	);
+});
+
+describe('DataStore GraphQL selection set generation', () => {
+	test('Implicit owner auth - owner field is added', () => {
+		const namespace = <SchemaNamespace>(<unknown>implicitOwnerSchema);
+
+		const {
+			models: { Post: postModelDefinition },
+		} = namespace;
+
+		const selectionSet = generateSelectionSet(namespace, postModelDefinition);
+
+		expect(selectionSet).toStrictEqual(ownerAuthPostSelectionSet);
+	});
+
+	test('Explicit owner auth - owner field is added', () => {
+		const namespace = <SchemaNamespace>(<unknown>explicitOwnerSchema);
+
+		const {
+			models: { Post: postModelDefinition },
+		} = namespace;
+
+		const selectionSet = generateSelectionSet(namespace, postModelDefinition);
+
+		expect(selectionSet).toStrictEqual(ownerAuthPostSelectionSet);
+	});
+
+	test('Group auth - owner field is NOT added', () => {
+		const namespace = <SchemaNamespace>(<unknown>groupSchema);
+
+		const {
+			models: { Post: postModelDefinition },
+		} = namespace;
+
+		const selectionSet = generateSelectionSet(namespace, postModelDefinition);
+
+		expect(selectionSet).toStrictEqual(groupAuthPostSelectionSet);
+	});
 });
 
 describe('DataStore PredicateGroups to GraphQL filter', () => {
