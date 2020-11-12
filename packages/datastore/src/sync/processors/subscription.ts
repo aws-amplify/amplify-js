@@ -32,6 +32,13 @@ export enum USER_CREDENTIALS {
 	'auth',
 }
 
+type AuthorizationInfo = {
+	authMode: GRAPHQL_AUTH_MODE;
+	isOwner: boolean;
+	ownerField?: string;
+	ownerValue?: string;
+};
+
 class SubscriptionProcessor {
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
@@ -46,7 +53,8 @@ class SubscriptionProcessor {
 
 	constructor(
 		private readonly schema: InternalSchema,
-		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly amplifyConfig: Record<string, any> = {}
 	) {}
 
 	private buildSubscription(
@@ -65,10 +73,12 @@ class SubscriptionProcessor {
 		ownerField?: string;
 		ownerValue?: string;
 	} {
+		const { aws_appsync_authenticationType } = this.amplifyConfig;
 		const { authMode, isOwner, ownerField, ownerValue } =
 			this.getAuthorizationInfo(
 				model,
 				userCredentials,
+				aws_appsync_authenticationType,
 				cognitoTokenPayload,
 				oidcTokenPayload
 			) || {};
@@ -86,104 +96,75 @@ class SubscriptionProcessor {
 	private getAuthorizationInfo(
 		model: SchemaModel,
 		userCredentials: USER_CREDENTIALS,
+		defaultAuthType: GRAPHQL_AUTH_MODE,
 		cognitoTokenPayload: { [field: string]: any } = {},
 		oidcTokenPayload: { [field: string]: any } = {}
-	): {
-		authMode: GRAPHQL_AUTH_MODE;
-		isOwner: boolean;
-		ownerField?: string;
-		ownerValue?: string;
-	} {
-		let result;
+	): AuthorizationInfo {
 		const rules = getAuthorizationRules(model);
 
-		// check if has apiKey and public authorization
-		const apiKeyAuth = rules.find(
-			rule => rule.authStrategy === 'public' && rule.provider === 'apiKey'
-		);
+		// TODO: Use default auth type from config as the authMode for subscriptions
+		// let authInfo: AuthorizationInfo;
 
-		if (apiKeyAuth) {
-			return { authMode: GRAPHQL_AUTH_MODE.API_KEY, isOwner: false };
-		}
-
-		// check if has iam authorization
-		if (
-			userCredentials === USER_CREDENTIALS.unauth ||
-			userCredentials === USER_CREDENTIALS.auth
-		) {
-			const iamPublicAuth = rules.find(
-				rule => rule.authStrategy === 'public' && rule.provider === 'iam'
+		// Return null if user doesn't have proper credentials for private API with IAM auth
+		const iamPrivateAuth =
+			defaultAuthType === GRAPHQL_AUTH_MODE.AWS_IAM &&
+			rules.find(
+				rule => rule.authStrategy === 'private' && rule.provider === 'iam'
 			);
 
-			if (iamPublicAuth) {
-				return { authMode: GRAPHQL_AUTH_MODE.AWS_IAM, isOwner: false };
-			}
-
-			const iamPrivateAuth =
-				userCredentials === USER_CREDENTIALS.auth &&
-				rules.find(
-					rule => rule.authStrategy === 'private' && rule.provider === 'iam'
-				);
-
-			if (iamPrivateAuth) {
-				return { authMode: GRAPHQL_AUTH_MODE.AWS_IAM, isOwner: false };
-			}
+		if (iamPrivateAuth && userCredentials === USER_CREDENTIALS.unauth) {
+			return null;
 		}
 
-		// if not check if has groups authorization and token has groupClaim allowed for cognito token
-		let groupAuthRules = rules.filter(
-			rule => rule.authStrategy === 'groups' && rule.provider === 'userPools'
+		// Group auth should take precedence over owner auth, so we are checking
+		// if rule(s) have group authorization as well as if either the Cognito or
+		// OIDC token has a groupClaim. If so, we are returning auth info before
+		// any further owner-based auth checks.
+		const groupAuthRules = rules.filter(
+			rule =>
+				rule.authStrategy === 'groups' &&
+				['userPools', 'oidc'].includes(rule.provider)
 		);
 
-		const validCognitoGroup = groupAuthRules.find(groupAuthRule => {
-			// validate token against groupClaim
-			const userGroups: string[] =
-				cognitoTokenPayload[groupAuthRule.groupClaim] || [];
+		const validGroup =
+			(defaultAuthType === GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS ||
+				defaultAuthType === GRAPHQL_AUTH_MODE.OPENID_CONNECT) &&
+			groupAuthRules.find(groupAuthRule => {
+				// validate token against groupClaim
+				const cognitoUserGroups: string[] =
+					cognitoTokenPayload[groupAuthRule.groupClaim] || [];
+				const oidcUserGroups: string[] =
+					oidcTokenPayload[groupAuthRule.groupClaim] || [];
 
-			return userGroups.find(userGroup => {
-				return groupAuthRule.groups.find(group => group === userGroup);
+				return [...cognitoUserGroups, ...oidcUserGroups].find(userGroup => {
+					return groupAuthRule.groups.find(group => group === userGroup);
+				});
 			});
-		});
 
-		if (validCognitoGroup) {
+		if (validGroup) {
 			return {
-				authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				authMode: defaultAuthType,
 				isOwner: false,
 			};
 		}
 
-		// if not check if has groups authorization and token has groupClaim allowed for oidc token
-		groupAuthRules = rules.filter(
-			rule => rule.authStrategy === 'groups' && rule.provider === 'oidc'
-		);
+		// Owner auth needs additional values to be returned in order to create the subscription with
+		// the correct parameters so we are getting the owner value from the Cognito token via the
+		// identityClaim from the auth rule.
+		const cognitoOwnerAuthRules =
+			defaultAuthType === GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+				? rules.filter(
+						rule =>
+							rule.authStrategy === 'owner' && rule.provider === 'userPools'
+				  )
+				: [];
 
-		const validOidcGroup = groupAuthRules.find(groupAuthRule => {
-			// validate token against groupClaim
-			const userGroups: string[] =
-				oidcTokenPayload[groupAuthRule.groupClaim] || [];
-
-			return userGroups.find(userGroup => {
-				return groupAuthRule.groups.find(group => group === userGroup);
-			});
-		});
-
-		if (validOidcGroup) {
-			return {
-				authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-				isOwner: false,
-			};
-		}
-
-		// check if has owner auth authorization and token ownerField for cognito token
-		let ownerAuthRules = rules.filter(
-			rule => rule.authStrategy === 'owner' && rule.provider === 'userPools'
-		);
-
-		ownerAuthRules.forEach(ownerAuthRule => {
+		let ownerAuthInfo: AuthorizationInfo;
+		cognitoOwnerAuthRules.forEach(ownerAuthRule => {
 			const ownerValue = cognitoTokenPayload[ownerAuthRule.identityClaim];
 
 			if (ownerValue) {
-				result = {
+				ownerAuthInfo = {
 					authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
 					isOwner: ownerAuthRule.areSubscriptionsPublic ? false : true,
 					ownerField: ownerAuthRule.ownerField,
@@ -192,20 +173,25 @@ class SubscriptionProcessor {
 			}
 		});
 
-		if (result) {
-			return result;
+		if (ownerAuthInfo) {
+			return ownerAuthInfo;
 		}
 
-		// check if has owner auth authorization and token ownerField for oidc token
-		ownerAuthRules = rules.filter(
-			rule => rule.authStrategy === 'owner' && rule.provider === 'oidc'
-		);
+		// Owner auth needs additional values to be returned in order to create the subscription with
+		// the correct parameters so we are getting the owner value from the OIDC token via the
+		// identityClaim from the auth rule.
+		const oidcOwnerAuthRules =
+			defaultAuthType === GRAPHQL_AUTH_MODE.OPENID_CONNECT
+				? rules.filter(
+						rule => rule.authStrategy === 'owner' && rule.provider === 'oidc'
+				  )
+				: [];
 
-		ownerAuthRules.forEach(ownerAuthRule => {
+		oidcOwnerAuthRules.forEach(ownerAuthRule => {
 			const ownerValue = oidcTokenPayload[ownerAuthRule.identityClaim];
 
 			if (ownerValue) {
-				result = {
+				ownerAuthInfo = {
 					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
 					isOwner: ownerAuthRule.areSubscriptionsPublic ? false : true,
 					ownerField: ownerAuthRule.ownerField,
@@ -214,11 +200,15 @@ class SubscriptionProcessor {
 			}
 		});
 
-		if (result) {
-			return result;
+		if (ownerAuthInfo) {
+			return ownerAuthInfo;
 		}
 
-		return null;
+		// Fallback: return default auth type
+		return {
+			authMode: defaultAuthType,
+			isOwner: false,
+		};
 	}
 
 	private hubQueryCompletionListener(completed: Function, capsule: HubCapsule) {

@@ -598,7 +598,8 @@ class DataStore {
 				this.syncPageSize,
 				this.conflictHandler,
 				this.errorHandler,
-				this.syncPredicates
+				this.syncPredicates,
+				this.amplifyConfig
 			);
 
 			// tslint:disable-next-line:max-line-length
