@@ -102,9 +102,6 @@ class SubscriptionProcessor {
 	): AuthorizationInfo {
 		const rules = getAuthorizationRules(model);
 
-		// TODO: Use default auth type from config as the authMode for subscriptions
-		// let authInfo: AuthorizationInfo;
-
 		// Return null if user doesn't have proper credentials for private API with IAM auth
 		const iamPrivateAuth =
 			defaultAuthType === GRAPHQL_AUTH_MODE.AWS_IAM &&
