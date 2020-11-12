@@ -21,7 +21,7 @@ import {
 	S3Client,
 	GetObjectCommand,
 	DeleteObjectCommand,
-	ListObjectsCommand,
+	ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
@@ -399,7 +399,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, track, maxKeys } = opt;
+		const { bucket, track, maxKeys, continuationToken } = opt;
 
 		const prefix = this._prefix(opt);
 		const final_path = prefix + path;
@@ -410,15 +410,21 @@ export class AWSS3Provider implements StorageProvider {
 			Bucket: bucket,
 			Prefix: final_path,
 			MaxKeys: maxKeys,
+			ContinuationToken: continuationToken,
 		};
 
-		const listObjectsCommand = new ListObjectsCommand(params);
+		const listObjectsV2Command = new ListObjectsV2Command(params);
 
 		try {
-			const response = await s3.send(listObjectsCommand);
+			const response = await s3.send(listObjectsV2Command);
+			const {
+				Contents: contents,
+				IsTruncated: isTruncated,
+				NextContinuationToken: nextContinuationToken,
+			} = response || {};
 			let list = [];
-			if (response && response.Contents) {
-				list = response.Contents.map(item => {
+			if (contents) {
+				list = contents.map(item => {
 					return {
 						key: item.Key.substr(prefix.length),
 						eTag: item.ETag,
@@ -430,7 +436,7 @@ export class AWSS3Provider implements StorageProvider {
 			dispatchStorageEvent(
 				track,
 				'list',
-				{ method: 'list', result: 'success' },
+				{ method: 'list', result: 'success', isTruncated, nextContinuationToken },
 				null,
 				`${list.length} items returned from list operation`
 			);

@@ -13,7 +13,7 @@
 import StorageProvider from '../../src/providers/AWSS3Provider';
 import { Hub, Credentials } from '@aws-amplify/core';
 import * as formatURL from '@aws-sdk/util-format-url';
-import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3';
+import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 
 /**
@@ -22,20 +22,38 @@ import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
  */
 
 S3Client.prototype.send = jest.fn(async command => {
-	if (command instanceof ListObjectsCommand) {
+	if (command instanceof ListObjectsV2Command) {
 		if (command.input.Prefix === 'public/emptyListResultsPath') {
-			return {};
+			return {
+				IsTruncated: false,
+			};
 		}
-		return {
-			Contents: [
-				{
-					Key: 'public/path/itemsKey',
-					ETag: 'etag',
-					LastModified: 'lastmodified',
-					Size: 'size',
-				},
-			],
-		};
+		if (command.input.ContinuationToken) {
+			return {
+				Contents: [
+					{
+						Key: 'public/path/itemsKey2',
+						ETag: 'etag',
+						LastModified: 'lastmodified',
+						Size: 'size',
+					},
+				],
+				IsTruncated: false,
+			};
+		} else {
+			return {
+				Contents: [
+					{
+						Key: 'public/path/itemsKey',
+						ETag: 'etag',
+						LastModified: 'lastmodified',
+						Size: 'size',
+					},
+				],
+				IsTruncated: true,
+				NextContinuationToken: 'fake-continuation-token',
+			};
+		}
 	}
 	return 'data';
 });
@@ -777,7 +795,138 @@ describe('StorageProvider test', () => {
 				{
 					event: 'list',
 					data: {
-						attrs: { method: 'list', result: 'success' },
+						attrs: {
+							method: 'list',
+							result: 'success',
+							isTruncated: true,
+							nextContinuationToken: 'fake-continuation-token',
+						},
+					},
+					message: '1 items returned from list operation',
+				},
+				'Storage',
+				Symbol.for('amplify_default')
+			);
+		});
+
+		test('list object with continuation token', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res({});
+				});
+			});
+
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const spyon = jest.spyOn(S3Client.prototype, 'send');
+			const spyon2 = jest.spyOn(Hub, 'dispatch');
+			const continuationToken = 'fake-continuation-token';
+
+			expect.assertions(3);
+			expect(
+				await storage.list('path', { level: 'public', track: true, continuationToken })
+			).toEqual([
+				{
+					eTag: 'etag',
+					key: 'path/itemsKey2',
+					lastModified: 'lastmodified',
+					size: 'size',
+				},
+			]);
+			expect(spyon.mock.calls[0][0].input).toEqual({
+				Bucket: 'bucket',
+				ContinuationToken: continuationToken,
+				Prefix: 'public/path',
+			});
+			expect(spyon2).toBeCalledWith(
+				'storage',
+				{
+					event: 'list',
+					data: {
+						attrs: {
+							method: 'list',
+							result: 'success',
+							isTruncated: false,
+						},
+					},
+					message: '1 items returned from list operation',
+				},
+				'Storage',
+				Symbol.for('amplify_default')
+			);
+		});
+
+		test('list object with paging', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return new Promise((res, rej) => {
+					res({});
+				});
+			});
+
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const spyon = jest.spyOn(S3Client.prototype, 'send');
+			const spyon2 = jest.spyOn(Hub, 'dispatch');
+			const continuationToken = 'fake-continuation-token';
+
+			expect.assertions(6);
+			expect(
+				await storage.list('path', { level: 'public', track: true })
+			).toEqual([
+				{
+					eTag: 'etag',
+					key: 'path/itemsKey',
+					lastModified: 'lastmodified',
+					size: 'size',
+				},
+			]);
+			expect(spyon.mock.calls[0][0].input).toEqual({
+				Bucket: 'bucket',
+				Prefix: 'public/path',
+			});
+			expect(spyon2).toBeCalledWith(
+				'storage',
+				{
+					event: 'list',
+					data: {
+						attrs: {
+							method: 'list',
+							result: 'success',
+							isTruncated: true,
+							nextContinuationToken : continuationToken,
+						},
+					},
+					message: '1 items returned from list operation',
+				},
+				'Storage',
+				Symbol.for('amplify_default')
+			);
+			spyon.mockClear();
+			expect(
+				await storage.list('path', { level: 'public', track: true, continuationToken })
+			).toEqual([
+				{
+					eTag: 'etag',
+					key: 'path/itemsKey2',
+					lastModified: 'lastmodified',
+					size: 'size',
+				},
+			]);
+			expect(spyon.mock.calls[0][0].input).toEqual({
+				Bucket: 'bucket',
+				ContinuationToken: continuationToken,
+				Prefix: 'public/path',
+			});
+			expect(spyon2).toBeCalledWith(
+				'storage',
+				{
+					event: 'list',
+					data: {
+						attrs: {
+							method: 'list',
+							result: 'success',
+							isTruncated: false,
+						},
 					},
 					message: '1 items returned from list operation',
 				},
