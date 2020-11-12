@@ -31,7 +31,7 @@
 		"dist/"
 	],
 	"dependencies": {
-		"@aws-amplify/ui-components": "^0.9.2"
+		"@aws-amplify/ui-components": "0.9.2"
 	},
 	"devDependencies": {
 		"@angular/compiler-cli": "^7.2.1",
