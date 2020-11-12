@@ -35,11 +35,11 @@
     "clean": "rimraf dist .stencil"
   },
   "dependencies": {
-    "@aws-amplify/auth": "^3.4.10",
-    "@aws-amplify/core": "^3.8.2",
-    "@aws-amplify/interactions": "^3.3.10",
-    "@aws-amplify/storage": "^3.3.10",
-    "@aws-amplify/xr": "^2.2.10",
+    "@aws-amplify/auth": "3.4.10",
+    "@aws-amplify/core": "3.8.2",
+    "@aws-amplify/interactions": "3.3.10",
+    "@aws-amplify/storage": "3.3.10",
+    "@aws-amplify/xr": "2.2.10",
     "qrcode": "^1.4.4",
     "uuid": "^8.2.0"
   },
