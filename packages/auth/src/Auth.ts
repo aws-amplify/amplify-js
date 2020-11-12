@@ -935,7 +935,11 @@ export class AuthClass {
 						} finally {
 							that.user = user;
 
-							dispatchAuthEvent('signIn', user, `${user} has signed in`);
+							dispatchAuthEvent(
+								'signIn',
+								user,
+								`A user ${user.getUsername()} has been signed in`
+							);
 							resolve(user);
 						}
 					},
@@ -976,7 +980,11 @@ export class AuthClass {
 							logger.debug('cannot get cognito credentials', e);
 						} finally {
 							that.user = user;
-							dispatchAuthEvent('signIn', user, `${user} has signed in`);
+							dispatchAuthEvent(
+								'signIn',
+								user,
+								`A user ${user.getUsername()} has been signed in`
+							);
 							resolve(user);
 						}
 					},
