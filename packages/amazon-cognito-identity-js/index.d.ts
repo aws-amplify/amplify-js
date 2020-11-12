@@ -76,6 +76,7 @@ declare module 'amazon-cognito-identity-js' {
 		public setAuthenticationFlowType(
 			authenticationFlowType: string
 		): string;
+        public getCachedDeviceKeyAndPassword(): void;
 
 		public getSession(
 			callback:
