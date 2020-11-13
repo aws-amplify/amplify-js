@@ -84,7 +84,7 @@ export default class CognitoUser {
 	 */
 	constructor(data) {
 		if (data == null || data.Username == null || data.Pool == null) {
-			throw new Error('Username and pool information are required.');
+			throw new Error('Username and Pool information are required.');
 		}
 
 		this.username = data.Username || '';
