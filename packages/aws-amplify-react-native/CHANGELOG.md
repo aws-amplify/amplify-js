@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.8...aws-amplify-react-native@4.2.9) (2020-11-13)
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+
+
+
+
 ## [4.2.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.7...aws-amplify-react-native@4.2.8) (2020-10-29)
 
 
