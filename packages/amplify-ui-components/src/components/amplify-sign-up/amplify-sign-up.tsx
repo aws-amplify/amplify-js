@@ -115,6 +115,7 @@ export class AmplifySignUp {
     if (!Auth || typeof Auth.signUp !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
+    this.loading = true;
     if (this.phoneNumber.phoneNumberValue) {
       try {
         this.signUpAttributes.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
@@ -145,6 +146,8 @@ export class AmplifySignUp {
       }
     } catch (error) {
       dispatchToastHubEvent(error);
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -336,7 +339,7 @@ export class AmplifySignUp {
                 </span>
               </slot>
               <slot name="primary-footer-content">
-                <amplify-button type="submit" data-test="sign-up-create-account-button">
+                <amplify-button type="submit" disabled={this.loading} data-test="sign-up-create-account-button">
                   {this.loading ? <amplify-loading-spinner /> : <span>{I18n.get(this.submitButtonText)}</span>}
                 </amplify-button>
               </slot>
