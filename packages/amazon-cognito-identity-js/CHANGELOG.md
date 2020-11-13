@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.4](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.3...amazon-cognito-identity-js@4.5.4) (2020-11-13)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** set crypto for Node ([#7136](https://github.com/aws-amplify/amplify-js/issues/7136)) ([5173a99](https://github.com/aws-amplify/amplify-js/commit/5173a9911096627ce1b45067808af249668b260b))
+
+
+
+
+
 ## [4.5.3](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.2...amazon-cognito-identity-js@4.5.3) (2020-11-03)
 
 **Note:** Version bump only for package amazon-cognito-identity-js
