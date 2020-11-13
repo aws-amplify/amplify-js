@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.2...@aws-amplify/ui-components@0.9.3) (2020-11-13)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.9.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.1...@aws-amplify/ui-components@0.9.2) (2020-11-03)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.9.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.0...@aws-amplify/ui-components@0.9.1) (2020-10-31)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** center amplify-authenticator ([#7041](https://github.com/aws-amplify/amplify-js/issues/7041)) ([f9f7c2d](https://github.com/aws-amplify/amplify-js/commit/f9f7c2d0fd363c1a26dbb580f36e73bb6bb166fe))
+
+
+
+
+
+# [0.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.7...@aws-amplify/ui-components@0.9.0) (2020-10-29)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** auto-document slots and css variables ([#6914](https://github.com/aws-amplify/amplify-js/issues/6914)) ([5b00c91](https://github.com/aws-amplify/amplify-js/commit/5b00c9143f8250d9d64d7e1cb14a4f1c2a93d166))
+
+
+
+
+
 ## [0.8.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.6...@aws-amplify/ui-components@0.8.7) (2020-10-15)
 
 **Note:** Version bump only for package @aws-amplify/ui-components

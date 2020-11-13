@@ -326,17 +326,31 @@ export enum QueryOne {
 	FIRST,
 	LAST,
 }
+export type GraphQLField = {
+	[field: string]: {
+		[operator: string]: string | number | [number, number];
+	};
+};
 
 export type GraphQLCondition = Partial<
-	| {
-			[field: string]: {
-				[operator: string]: string | number | [number, number];
-			};
-	  }
+	| GraphQLField
 	| {
 			and: [GraphQLCondition];
 			or: [GraphQLCondition];
 			not: GraphQLCondition;
+	  }
+>;
+
+export type GraphQLFilter = Partial<
+	| GraphQLField
+	| {
+			and: GraphQLFilter[];
+	  }
+	| {
+			or: GraphQLFilter[];
+	  }
+	| {
+			not: GraphQLFilter;
 	  }
 >;
 
@@ -434,13 +448,63 @@ export type DataStoreConfig = {
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
 		fullSyncInterval?: number;
+		syncExpressions?: SyncExpression[];
 	};
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
 	fullSyncInterval?: number;
+	syncExpressions?: SyncExpression[];
 };
+
+export type SyncExpression = Promise<{
+	modelConstructor: any;
+	conditionProducer: (c?: any) => any;
+}>;
+
+/*
+Adds Intellisense when passing a function | promise that returns a predicate
+Or just a predicate. E.g.,
+
+syncExpressions: [
+	syncExpression(Post, c => c.rating('gt', 5)),
+
+	OR
+
+	syncExpression(Post, async () => {
+		return c => c.rating('gt', 5)
+	}),
+]
+*/
+type Option0 = [];
+type Option1<T extends PersistentModel> = [ModelPredicate<T> | undefined];
+type Option<T extends PersistentModel> = Option0 | Option1<T>;
+
+type Lookup<T extends PersistentModel> = {
+	0: ProducerModelPredicate<T> | Promise<ProducerModelPredicate<T>>;
+	1: ModelPredicate<T> | undefined;
+};
+
+type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (
+	...args: A
+) => A['length'] extends keyof Lookup<T> ? Lookup<T>[A['length']] : never;
+
+export async function syncExpression<
+	T extends PersistentModel,
+	A extends Option<T>
+>(
+	modelConstructor: PersistentModelConstructor<T>,
+	conditionProducer: ConditionProducer<T, A>
+): Promise<{
+	modelConstructor: PersistentModelConstructor<T>;
+	conditionProducer: ConditionProducer<T, A>;
+}> {
+	return {
+		modelConstructor,
+		conditionProducer,
+	};
+}
 
 export type SyncConflict = {
 	modelConstructor: PersistentModelConstructor<any>;

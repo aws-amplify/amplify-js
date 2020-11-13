@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.10...@aws-amplify/auth@3.4.11) (2020-11-13)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** fix signIn event message ([#7151](https://github.com/aws-amplify/amplify-js/issues/7151)) ([60b0f9c](https://github.com/aws-amplify/amplify-js/commit/60b0f9cdc80a80f69fe4cfddf48f07166bc0f7de))
+
+
+
+
+
+## [3.4.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.9...@aws-amplify/auth@3.4.10) (2020-11-03)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [3.4.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.8...@aws-amplify/auth@3.4.9) (2020-10-31)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** update random implementation ([#7090](https://github.com/aws-amplify/amplify-js/issues/7090)) ([7048453](https://github.com/aws-amplify/amplify-js/commit/70484532da8a9953384b00b223b2b3ba0c0e845e))
+
+
+
+
+
+## [3.4.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.7...@aws-amplify/auth@3.4.8) (2020-10-29)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** fix the way clientMetadata is passed ([#6941](https://github.com/aws-amplify/amplify-js/issues/6941)) ([a85c724](https://github.com/aws-amplify/amplify-js/commit/a85c7244b514faaaf82dc1b8f454226294747f6a))
+
+
+
+
+
 ## [3.4.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.6...@aws-amplify/auth@3.4.7) (2020-10-15)
 
 **Note:** Version bump only for package @aws-amplify/auth

@@ -2,6 +2,8 @@ import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
 	GraphQLCondition,
+	GraphQLFilter,
+	GraphQLField,
 	isEnumFieldType,
 	isGraphQLScalarType,
 	isPredicateObj,
@@ -50,15 +52,20 @@ export function getMetadataFields(): ReadonlyArray<string> {
 	return metadataFields;
 }
 
-function generateSelectionSet(
+export function generateSelectionSet(
 	namespace: SchemaNamespace,
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string {
 	const scalarFields = getScalarFields(modelDefinition);
 	const nonModelFields = getNonModelFields(namespace, modelDefinition);
+	const implicitOwnerField = getImplicitOwnerField(
+		modelDefinition,
+		scalarFields
+	);
 
 	let scalarAndMetadataFields = Object.values(scalarFields)
 		.map(({ name }) => name)
+		.concat(implicitOwnerField)
 		.concat(nonModelFields);
 
 	if (isSchemaModel(modelDefinition)) {
@@ -70,6 +77,29 @@ function generateSelectionSet(
 	const result = scalarAndMetadataFields.join('\n');
 
 	return result;
+}
+
+function getImplicitOwnerField(
+	modelDefinition: SchemaModel | SchemaNonModel,
+	scalarFields: ModelFields
+) {
+	if (!scalarFields.owner && isOwnerBasedModel(modelDefinition)) {
+		return ['owner'];
+	}
+	return [];
+}
+
+function isOwnerBasedModel(modelDefinition: SchemaModel | SchemaNonModel) {
+	return (
+		isSchemaModel(modelDefinition) &&
+		modelDefinition.attributes &&
+		modelDefinition.attributes.some(
+			attr =>
+				attr.properties &&
+				attr.properties.rules &&
+				attr.properties.rules.some(rule => rule.allow === 'owner')
+		)
+	);
 }
 
 function getScalarFields(
@@ -271,9 +301,9 @@ export function buildGraphQLOperation(
 	switch (graphQLOpType) {
 		case 'LIST':
 			operation = `sync${pluralTypeName}`;
-			documentArgs = `($limit: Int, $nextToken: String, $lastSync: AWSTimestamp)`;
+			documentArgs = `($limit: Int, $nextToken: String, $lastSync: AWSTimestamp, $filter: Model${typeName}FilterInput)`;
 			operationArgs =
-				'(limit: $limit, nextToken: $nextToken, lastSync: $lastSync)';
+				'(limit: $limit, nextToken: $nextToken, lastSync: $lastSync, filter: $filter)';
 			selectionSet = `items {
 							${selectionSet}
 						}
@@ -384,6 +414,41 @@ export function predicateToGraphQLCondition(
 		} else {
 			result[p.type] = predicateToGraphQLCondition(p);
 		}
+	});
+
+	return result;
+}
+
+export function predicateToGraphQLFilter(
+	predicatesGroup: PredicatesGroup<any>
+): GraphQLFilter {
+	const result: GraphQLFilter = {};
+
+	if (!predicatesGroup || !Array.isArray(predicatesGroup.predicates)) {
+		return result;
+	}
+
+	const { type, predicates } = predicatesGroup;
+	const isList = type === 'and' || type === 'or';
+
+	result[type] = isList ? [] : {};
+
+	const appendToFilter = value =>
+		isList ? result[type].push(value) : (result[type] = value);
+
+	predicates.forEach(predicate => {
+		if (isPredicateObj(predicate)) {
+			const { field, operator, operand } = predicate;
+
+			const gqlField: GraphQLField = {
+				[field]: { [operator]: operand },
+			};
+
+			appendToFilter(gqlField);
+			return;
+		}
+
+		appendToFilter(predicateToGraphQLFilter(predicate));
 	});
 
 	return result;
