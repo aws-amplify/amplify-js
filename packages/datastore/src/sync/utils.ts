@@ -52,15 +52,20 @@ export function getMetadataFields(): ReadonlyArray<string> {
 	return metadataFields;
 }
 
-function generateSelectionSet(
+export function generateSelectionSet(
 	namespace: SchemaNamespace,
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string {
 	const scalarFields = getScalarFields(modelDefinition);
 	const nonModelFields = getNonModelFields(namespace, modelDefinition);
+	const implicitOwnerField = getImplicitOwnerField(
+		modelDefinition,
+		scalarFields
+	);
 
 	let scalarAndMetadataFields = Object.values(scalarFields)
 		.map(({ name }) => name)
+		.concat(implicitOwnerField)
 		.concat(nonModelFields);
 
 	if (isSchemaModel(modelDefinition)) {
@@ -72,6 +77,29 @@ function generateSelectionSet(
 	const result = scalarAndMetadataFields.join('\n');
 
 	return result;
+}
+
+function getImplicitOwnerField(
+	modelDefinition: SchemaModel | SchemaNonModel,
+	scalarFields: ModelFields
+) {
+	if (!scalarFields.owner && isOwnerBasedModel(modelDefinition)) {
+		return ['owner'];
+	}
+	return [];
+}
+
+function isOwnerBasedModel(modelDefinition: SchemaModel | SchemaNonModel) {
+	return (
+		isSchemaModel(modelDefinition) &&
+		modelDefinition.attributes &&
+		modelDefinition.attributes.some(
+			attr =>
+				attr.properties &&
+				attr.properties.rules &&
+				attr.properties.rules.some(rule => rule.allow === 'owner')
+		)
+	);
 }
 
 function getScalarFields(

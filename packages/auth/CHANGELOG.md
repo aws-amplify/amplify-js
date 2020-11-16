@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.10...@aws-amplify/auth@3.4.11) (2020-11-13)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** fix signIn event message ([#7151](https://github.com/aws-amplify/amplify-js/issues/7151)) ([60b0f9c](https://github.com/aws-amplify/amplify-js/commit/60b0f9cdc80a80f69fe4cfddf48f07166bc0f7de))
+
+
+
+
+
 ## [3.4.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.9...@aws-amplify/auth@3.4.10) (2020-11-03)
 
 **Note:** Version bump only for package @aws-amplify/auth
