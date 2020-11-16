@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.7.2...@aws-amplify/datastore@2.7.3) (2020-11-13)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** add implicit owner to selection set ([#7159](https://github.com/aws-amplify/amplify-js/issues/7159)) ([256ffa8](https://github.com/aws-amplify/amplify-js/commit/256ffa8b20d41a9e97a7dc2db38a3453d885c0cd))
+
+
+
+
+
 ## [2.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.7.1...@aws-amplify/datastore@2.7.2) (2020-11-03)
 
 
