@@ -737,7 +737,7 @@ export class SyncEngine {
 				);
 			} else {
 				const prevSyncPredicate = modelMetadata.lastSyncPredicate
-					? JSON.stringify(modelMetadata.lastSyncPredicate)
+					? modelMetadata.lastSyncPredicate
 					: null;
 				const syncPredicateUpdated = prevSyncPredicate !== lastSyncPredicate;
 
