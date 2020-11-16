@@ -453,3 +453,22 @@ export function predicateToGraphQLFilter(
 
 	return result;
 }
+
+export function getUserGroupsFromToken(
+	token: { [field: string]: any },
+	rule: AuthorizationRule
+): string[] {
+	// validate token against groupClaim
+	let userGroups: string[] | string = token[rule.groupClaim] || [];
+
+	if (typeof userGroups === 'string') {
+		const parsedGroups = JSON.parse(userGroups);
+		if (Array.isArray(parsedGroups)) {
+			userGroups = parsedGroups;
+		} else {
+			userGroups = [parsedGroups];
+		}
+	}
+
+	return userGroups;
+}
