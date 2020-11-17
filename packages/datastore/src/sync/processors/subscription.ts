@@ -15,6 +15,7 @@ import {
 import {
 	buildSubscriptionGraphQLOperation,
 	getAuthorizationRules,
+	getUserGroupsFromToken,
 	TransformerMutationType,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
@@ -137,8 +138,10 @@ class SubscriptionProcessor {
 
 		const validCognitoGroup = groupAuthRules.find(groupAuthRule => {
 			// validate token against groupClaim
-			const userGroups: string[] =
-				cognitoTokenPayload[groupAuthRule.groupClaim] || [];
+			const userGroups = getUserGroupsFromToken(
+				cognitoTokenPayload,
+				groupAuthRule
+			);
 
 			return userGroups.find(userGroup => {
 				return groupAuthRule.groups.find(group => group === userGroup);
@@ -159,8 +162,10 @@ class SubscriptionProcessor {
 
 		const validOidcGroup = groupAuthRules.find(groupAuthRule => {
 			// validate token against groupClaim
-			const userGroups: string[] =
-				oidcTokenPayload[groupAuthRule.groupClaim] || [];
+			const userGroups = getUserGroupsFromToken(
+				oidcTokenPayload,
+				groupAuthRule
+			);
 
 			return userGroups.find(userGroup => {
 				return groupAuthRule.groups.find(group => group === userGroup);
