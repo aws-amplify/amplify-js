@@ -1,5 +1,6 @@
 import { ModelInstanceCreator } from './datastore/datastore';
 import { exhaustiveCheck } from './util';
+import { PredicateAll } from './predicates';
 
 //#region Schema types
 export type Schema = UserSchema & {
@@ -482,7 +483,10 @@ type Option1<T extends PersistentModel> = [ModelPredicate<T> | undefined];
 type Option<T extends PersistentModel> = Option0 | Option1<T>;
 
 type Lookup<T extends PersistentModel> = {
-	0: ProducerModelPredicate<T> | Promise<ProducerModelPredicate<T>>;
+	0:
+		| ProducerModelPredicate<T>
+		| Promise<ProducerModelPredicate<T>>
+		| typeof PredicateAll;
 	1: ModelPredicate<T> | undefined;
 };
 
