@@ -908,8 +908,8 @@ function testSchema(): Schema {
 						isArray: true,
 						type: 'String',
 						isRequired: false,
+						isArrayNullable: true,
 						attributes: [],
-						isArrayNullable: true
 					}
 				},
 			},
