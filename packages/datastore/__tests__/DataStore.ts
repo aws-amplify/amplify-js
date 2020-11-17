@@ -409,7 +409,7 @@ describe('DataStore tests', () => {
 					}),
 				});
 			}).toThrowError(
-				'All elements in the rewards array should be of type string, [object] received. '
+				'All elements in the rewards array should be of type string, [null] received. '
 			);
 
 			expect(() => {
@@ -488,7 +488,7 @@ describe('DataStore tests', () => {
 					}),
 				});
 			}).toThrowError(
-				'All elements in the misc array should be of type string | null | undefined, [object,number] received. ,123'
+				'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
 			)
 
 			expect(

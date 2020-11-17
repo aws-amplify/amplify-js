@@ -274,7 +274,7 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 						e => isNullOrUndefined(e) ? isRequired : typeof e !== jsType
 					)
 				) {
-					const elemTypes = (<[]>v).map(e => typeof e).join(',');
+					const elemTypes = (<[]>v).map(e => e === null ? 'null' : typeof e).join(',');
 
 					throw new Error(
 						`All elements in the ${name} array should be of type ${errorTypeText}, [${elemTypes}] received. ${v}`
