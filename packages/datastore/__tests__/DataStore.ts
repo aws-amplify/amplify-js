@@ -472,6 +472,30 @@ describe('DataStore tests', () => {
 						author: 'Some author',
 						rewards: [],
 						nominations: [],
+						misc: [undefined],
+					}),
+				});
+			}).not.toThrow();
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						rewards: [],
+						nominations: [],
+						misc: [undefined, null],
+					}),
+				});
+			}).not.toThrow();
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						rewards: [],
+						nominations: [],
 						misc: [null, 'ok'],
 					}),
 				});
@@ -489,7 +513,7 @@ describe('DataStore tests', () => {
 				});
 			}).toThrowError(
 				'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
-			)
+			);
 
 			expect(
 				new Model(<any>{ extraAttribute: 'some value', field1: 'some value' })
