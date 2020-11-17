@@ -463,11 +463,7 @@ export function getUserGroupsFromToken(
 
 	if (typeof userGroups === 'string') {
 		const parsedGroups = JSON.parse(userGroups);
-		if (Array.isArray(parsedGroups)) {
-			userGroups = parsedGroups;
-		} else {
-			userGroups = [parsedGroups];
-		}
+		userGroups = [].concat(parsedGroups);
 	}
 
 	return userGroups;
