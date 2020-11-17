@@ -4,10 +4,10 @@ exports[`amplify-phone-field spec: Render logic -> should render \`placeholder\`
 <amplify-phone-field label="New phone *" placeholder="Enter new phone">
   <mock:shadow-root>
     <div>
-      <amplify-form-field label="New phone *" type="tel">
+      <amplify-form-field label="New phone *">
         <div class="phone-field" slot="input">
           <amplify-country-dial-code></amplify-country-dial-code>
-          <amplify-input fieldid="phone" name="phone" placeholder="Enter new phone"></amplify-input>
+          <amplify-input fieldid="phone" name="phone" placeholder="Enter new phone" type="tel"></amplify-input>
         </div>
       </amplify-form-field>
     </div>
@@ -19,10 +19,10 @@ exports[`amplify-phone-field spec: Render logic -> should render default values 
 <amplify-phone-field>
   <mock:shadow-root>
     <div>
-      <amplify-form-field label="Phone Number *" type="tel">
+      <amplify-form-field label="Phone Number *">
         <div class="phone-field" slot="input">
           <amplify-country-dial-code></amplify-country-dial-code>
-          <amplify-input fieldid="phone" name="phone" placeholder="(555) 555-1212"></amplify-input>
+          <amplify-input fieldid="phone" name="phone" placeholder="(555) 555-1212" type="tel"></amplify-input>
         </div>
       </amplify-form-field>
     </div>

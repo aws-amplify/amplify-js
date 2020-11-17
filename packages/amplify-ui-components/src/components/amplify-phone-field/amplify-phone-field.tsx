@@ -33,11 +33,12 @@ export class AmplifyPhoneField {
   render() {
     return (
       <div>
-        <amplify-form-field label={I18n.get(this.label)} type="tel" hint={this.hint} required={this.required}>
+        <amplify-form-field label={I18n.get(this.label)} hint={this.hint} required={this.required}>
           <div class="phone-field" slot="input">
             <amplify-country-dial-code dialCode={this.dialCode} handleInputChange={this.handleInputChange} />
             <amplify-input
               fieldId={this.fieldId}
+              type="tel"
               handleInputChange={this.handleInputChange}
               placeholder={I18n.get(this.placeholder)}
               name={this.fieldId}
