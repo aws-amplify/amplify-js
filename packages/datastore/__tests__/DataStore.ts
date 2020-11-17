@@ -453,6 +453,44 @@ describe('DataStore tests', () => {
 				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
 			);
 
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						rewards: [],
+						nominations: [],
+						misc: [null],
+					}),
+				});
+			}).not.toThrow();
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						rewards: [],
+						nominations: [],
+						misc: [null, 'ok'],
+					}),
+				});
+			}).not.toThrow();
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					metadata: new Metadata({
+						author: 'Some author',
+						rewards: [],
+						nominations: [],
+						misc: [null, <any>123],
+					}),
+				});
+			}).toThrowError(
+				'All elements in the misc array should be of type string | null | undefined, [object,number] received. ,123'
+			)
+
 			expect(
 				new Model(<any>{ extraAttribute: 'some value', field1: 'some value' })
 			).toHaveProperty('extraAttribute');
@@ -738,6 +776,7 @@ export declare class Metadata {
 	readonly rewards: string[];
 	readonly penNames?: string[];
 	readonly nominations: string[];
+	readonly misc?: (string | null)[];
 	constructor(init: Metadata);
 }
 
@@ -839,6 +878,14 @@ function testSchema(): Schema {
 						type: 'String',
 						isRequired: false,
 						attributes: [],
+					},
+					misc: {
+						name: 'misc',
+						isArray: true,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true
 					}
 				},
 			},

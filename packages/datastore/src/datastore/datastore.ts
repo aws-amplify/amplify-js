@@ -271,7 +271,7 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 				if (
 					!isNullOrUndefined(v) &&
 					(<[]>v).some(
-						e => typeof e !== jsType || (isNullOrUndefined(e) && isRequired)
+						e => isNullOrUndefined(e) ? isRequired : typeof e !== jsType
 					)
 				) {
 					const elemTypes = (<[]>v).map(e => typeof e).join(',');
@@ -1165,7 +1165,7 @@ class DataStore {
 			if (map.has(modelDefinition)) {
 				const { name } = modelDefinition;
 				logger.warn(
-					`You can only utilize one Sync Expression per model. 
+					`You can only utilize one Sync Expression per model.
           Subsequent sync expressions for the ${name} model will be ignored.`
 				);
 				return map;
