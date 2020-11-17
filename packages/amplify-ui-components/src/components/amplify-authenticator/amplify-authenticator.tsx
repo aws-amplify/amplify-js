@@ -88,30 +88,31 @@ export class AmplifyAuthenticator {
     if (byHostedUI !== 'true') await this.checkUser();
   }
 
-  private async checkUser() {
+  private async checkUser(): Promise<void> {
     if (!Auth || typeof Auth.currentAuthenticatedUser !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
-    try {
-      const user = await Auth.currentAuthenticatedUser();
-      dispatchAuthStateChangeEvent(AuthState.SignedIn, user);
-    } catch (error) {
-      let cachedAuthState = null;
-      try {
-        cachedAuthState = localStorage.getItem(AUTHENTICATOR_AUTHSTATE);
-      } catch (error) {
-        logger.debug('Failed to get the auth state from local storage', error);
-      }
-      try {
-        if (cachedAuthState === AuthState.SignedIn) {
-          await Auth.signOut();
+    return Auth.currentAuthenticatedUser()
+      .then(user => {
+        dispatchAuthStateChangeEvent(AuthState.SignedIn, user);
+      })
+      .catch(async () => {
+        let cachedAuthState = null;
+        try {
+          cachedAuthState = localStorage.getItem(AUTHENTICATOR_AUTHSTATE);
+        } catch (error) {
+          logger.debug('Failed to get the auth state from local storage', error);
         }
-        dispatchAuthStateChangeEvent(this.initialAuthState);
-      } catch (error) {
-        logger.debug('Failed to sign out', error);
-      }
-    }
+        try {
+          if (cachedAuthState === AuthState.SignedIn) {
+            await Auth.signOut();
+          }
+          dispatchAuthStateChangeEvent(this.initialAuthState);
+        } catch (error) {
+          logger.debug('Failed to sign out', error);
+        }
+      });
   }
 
   private async onAuthStateChange(nextAuthState: AuthState, data?: CognitoUserInterface) {
