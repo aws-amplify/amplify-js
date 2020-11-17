@@ -19,6 +19,8 @@ describe('aws-amplify', () => {
 			  "graphqlOperation",
 			  "DataStore",
 			  "Predicates",
+			  "SortDirection",
+			  "syncExpression",
 			  "PubSub",
 			  "Cache",
 			  "Interactions",
