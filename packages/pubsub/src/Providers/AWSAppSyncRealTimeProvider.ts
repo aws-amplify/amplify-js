@@ -333,7 +333,9 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				this._timeoutStartSubscriptionAck.call(this, subscriptionId);
 			}, START_ACK_TIMEOUT),
 		});
-		this.awsRealTimeSocket.send(stringToAWSRealTime);
+		if (this.awsRealTimeSocket) {
+			this.awsRealTimeSocket.send(stringToAWSRealTime);
+		}
 	}
 
 	// Waiting that subscription has been connected before trying to unsubscribe
