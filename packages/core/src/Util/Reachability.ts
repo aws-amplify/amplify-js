@@ -1,4 +1,4 @@
-import { browserOrNode, isWebWorker } from '@aws-amplify/core';
+import { browserOrNode } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 
 type NetworkStatus = {
@@ -14,8 +14,6 @@ export default class ReachabilityNavigator implements Reachability {
 		if (browserOrNode().isNode) {
 			return Observable.from([{ online: true }]);
 		}
-
-		const globalObj = isWebWorker() ? self : window;
 
 		return new Observable(observer => {
 			observer.next({ online: globalObj.navigator.onLine });

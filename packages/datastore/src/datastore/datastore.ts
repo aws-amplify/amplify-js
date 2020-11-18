@@ -546,11 +546,6 @@ class DataStore {
 	private storage: Storage;
 	private sync: SyncEngine;
 	private syncPageSize: number;
-	private syncExpressions: SyncExpression[];
-	private syncPredicates: WeakMap<
-		SchemaModel,
-		ModelPredicate<any>
-	> = new WeakMap<SchemaModel, ModelPredicate<any>>();
 
 	getModuleName() {
 		return 'DataStore';
@@ -585,8 +580,6 @@ class DataStore {
 		if (aws_appsync_graphqlEndpoint) {
 			logger.debug('GraphQL endpoint available', aws_appsync_graphqlEndpoint);
 
-			this.syncPredicates = await this.processSyncExpressions();
-
 			this.sync = new SyncEngine(
 				schema,
 				namespaceResolver,
@@ -597,8 +590,7 @@ class DataStore {
 				this.maxRecordsToSync,
 				this.syncPageSize,
 				this.conflictHandler,
-				this.errorHandler,
-				this.syncPredicates
+				this.errorHandler
 			);
 
 			// tslint:disable-next-line:max-line-length
@@ -690,6 +682,8 @@ class DataStore {
 					modelDefinition,
 					idOrCriteria
 				);
+
+				logger.debug('after createFromExisting - predicate', predicate);
 			}
 		}
 
@@ -988,7 +982,6 @@ class DataStore {
 			maxRecordsToSync: configMaxRecordsToSync,
 			syncPageSize: configSyncPageSize,
 			fullSyncInterval: configFullSyncInterval,
-			syncExpressions: configSyncExpressions,
 			...configFromAmplify
 		} = config;
 
@@ -997,25 +990,20 @@ class DataStore {
 		this.conflictHandler = this.setConflictHandler(config);
 		this.errorHandler = this.setErrorHandler(config);
 
-		this.syncExpressions =
-			(configDataStore && configDataStore.syncExpressions) ||
-			this.syncExpressions ||
-			configSyncExpressions;
-
 		this.maxRecordsToSync =
 			(configDataStore && configDataStore.maxRecordsToSync) ||
 			this.maxRecordsToSync ||
-			configMaxRecordsToSync;
+			config.maxRecordsToSync;
 
 		this.syncPageSize =
 			(configDataStore && configDataStore.syncPageSize) ||
 			this.syncPageSize ||
-			configSyncPageSize;
+			config.syncPageSize;
 
 		this.fullSyncInterval =
 			(configDataStore && configDataStore.fullSyncInterval) ||
-			this.fullSyncInterval ||
 			configFullSyncInterval ||
+			config.fullSyncInterval ||
 			24 * 60; // 1 day
 	};
 
@@ -1032,20 +1020,6 @@ class DataStore {
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.storage = undefined;
-		this.sync = undefined;
-		this.syncPredicates = new WeakMap<SchemaModel, ModelPredicate<any>>();
-	};
-
-	stop = async function stop() {
-		if (this.initialized !== undefined) {
-			await this.start();
-		}
-
-		if (syncSubscription && !syncSubscription.closed) {
-			syncSubscription.unsubscribe();
-		}
-
-		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.sync = undefined;
 	};
 
@@ -1092,91 +1066,6 @@ class DataStore {
 			page,
 			sort: sortPredicate,
 		};
-	}
-
-	private async processSyncExpressions(): Promise<
-		WeakMap<SchemaModel, ModelPredicate<any>>
-	> {
-		if (!this.syncExpressions || !this.syncExpressions.length) {
-			return new WeakMap<SchemaModel, ModelPredicate<any>>();
-		}
-
-		const syncPredicates = await Promise.all(
-			this.syncExpressions.map(
-				async (
-					syncExpression: SyncExpression
-				): Promise<[SchemaModel, ModelPredicate<any>]> => {
-					const { modelConstructor, conditionProducer } = await syncExpression;
-					const modelDefinition = getModelDefinition(modelConstructor);
-
-					// conditionProducer is either a predicate, e.g. (c) => c.field('eq', 1)
-					// OR a function/promise that returns a predicate
-					const condition = await this.unwrapPromise(conditionProducer);
-					if (isPredicatesAll(condition)) {
-						return [modelDefinition, null];
-					}
-
-					const predicate = this.createFromCondition(
-						modelDefinition,
-						condition
-					);
-
-					return [modelDefinition, predicate];
-				}
-			)
-		);
-
-		return this.weakMapFromEntries(syncPredicates);
-	}
-
-	private createFromCondition(
-		modelDefinition: SchemaModel,
-		condition: ProducerModelPredicate<PersistentModel>
-	) {
-		try {
-			return ModelPredicateCreator.createFromExisting(
-				modelDefinition,
-				condition
-			);
-		} catch (error) {
-			logger.error('Error creating Sync Predicate');
-			throw error;
-		}
-	}
-
-	private async unwrapPromise<T extends PersistentModel>(
-		conditionProducer
-	): Promise<ProducerModelPredicate<T>> {
-		try {
-			const condition = await conditionProducer();
-			return condition;
-		} catch (error) {
-			if (error instanceof TypeError) {
-				return conditionProducer;
-			}
-			throw error;
-		}
-	}
-
-	private weakMapFromEntries(
-		entries: [SchemaModel, ModelPredicate<any>][]
-	): WeakMap<SchemaModel, ModelPredicate<any>> {
-		return entries.reduce((map, [modelDefinition, predicate]) => {
-			if (map.has(modelDefinition)) {
-				const { name } = modelDefinition;
-				logger.warn(
-					`You can only utilize one Sync Expression per model. 
-          Subsequent sync expressions for the ${name} model will be ignored.`
-				);
-				return map;
-			}
-
-			if (predicate) {
-				map.set(modelDefinition, predicate);
-			}
-
-			return map;
-		}, new WeakMap<SchemaModel, ModelPredicate<any>>());
 	}
 }
 

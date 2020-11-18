@@ -31,23 +31,7 @@
 
 | Slot       | Description                     |
 | ---------- | ------------------------------- |
-| `"header"` | Title content placed at the top |
-
-
-## CSS Custom Properties
-
-| Name                      | Description                                  |
-| ------------------------- | -------------------------------------------- |
-| `--bot-background-color`  | Background color of bot messages             |
-| `--bot-dot-color`         | Base color of bot loading message animation  |
-| `--bot-text-color`        | Text color of bot messages                   |
-| `--header-color`          | Text color within the header                 |
-| `--header-size`           | Text size within the header                  |
-| `--height`                | Height of the container                      |
-| `--user-background-color` | Background color of user messages            |
-| `--user-dot-color`        | Base color of user loading message animation |
-| `--user-text-color`       | Text color of user messages                  |
-| `--width`                 | Width of the container                       |
+| `"header"` | title content placed at the top |
 
 
 ## Dependencies
