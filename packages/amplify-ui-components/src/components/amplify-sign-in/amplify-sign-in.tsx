@@ -254,17 +254,18 @@ export class AmplifySignIn {
 
   render() {
     return (
-      <amplify-form-section
-        headerText={I18n.get(this.headerText)}
-        handleSubmit={this.handleSubmit}
-        testDataPrefix={'sign-in'}
-      >
-        <div slot="subtitle">
-          <slot name="header-subtitle"></slot>
-        </div>
-        <slot name="federated-buttons">
-          <amplify-federated-buttons handleAuthStateChange={this.handleAuthStateChange} federated={this.federated} />
-        </slot>
+      <Host>
+        <amplify-form-section
+          headerText={I18n.get(this.headerText)}
+          handleSubmit={this.handleSubmit}
+          testDataPrefix={'sign-in'}
+        >
+          <div slot="subtitle">
+            <slot name="header-subtitle"></slot>
+          </div>
+          <slot name="federated-buttons">
+            <amplify-federated-buttons handleAuthStateChange={this.handleAuthStateChange} federated={this.federated} />
+          </slot>
 
           {!isEmpty(this.federated) && <amplify-strike>or</amplify-strike>}
 

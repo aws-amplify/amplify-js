@@ -679,26 +679,6 @@ datastore_auth_scenarios: &datastore_auth_scenarios
       owner-custom-claim-default,
     ]
 
-test_browsers: &test_browsers
-  browser: [chrome, firefox]
-
-datastore_auth_scenarios: &datastore_auth_scenarios
-  scenario: [
-      owner-based-default, # TODO: Add `owner-based-operations` when tests pass
-      static-user-pool-groups-default,
-      static-user-pool-groups-operations,
-      owner-and-group-different-models-default,
-      owner-and-group-same-model-default,
-      owner-and-group-same-model-operations,
-      dynamic-user-pool-groups-default,
-      dynamic-user-pool-groups-owner-based-default,
-      private-auth-default,
-      private-auth-iam,
-      public-auth-default,
-      public-auth-iam,
-      owner-custom-claim-default,
-    ]
-
 workflows:
   build_test_deploy:
     jobs:

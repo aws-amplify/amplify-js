@@ -38,7 +38,7 @@ interface ChatError {
 }
 
 /**
- * @slot header - title content placed at the top
+ * @slot header - Title content placed at the top
  */
 @Component({
   tag: 'amplify-chatbot',
