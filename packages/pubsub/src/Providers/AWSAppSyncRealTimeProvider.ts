@@ -617,8 +617,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					}
 					this.awsRealTimeSocket = null;
 					this.socketStatus = SOCKET_STATUS.CLOSED;
-
-					throw err;
 				}
 			}
 		});
