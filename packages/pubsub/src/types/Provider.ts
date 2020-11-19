@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import Observable from 'zen-observable-ts';
+import Observable from 'zen-observable';
 import { ProvidertOptions } from './PubSub';
 
 export interface PubSubProvider {

@@ -1,5 +1,5 @@
 import API, { GraphQLResult } from '@aws-amplify/api';
-import Observable from 'zen-observable-ts';
+import Observable from 'zen-observable';
 import {
 	InternalSchema,
 	ModelInstanceMetadata,

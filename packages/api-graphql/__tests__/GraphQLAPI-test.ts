@@ -13,7 +13,7 @@ import {
 } from '@aws-amplify/core';
 import PubSub from '@aws-amplify/pubsub';
 import Cache from '@aws-amplify/cache';
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable';
 import axios, { CancelTokenStatic } from 'axios';
 
 axios.CancelToken = <CancelTokenStatic>{

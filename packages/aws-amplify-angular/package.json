@@ -36,7 +36,6 @@
 		"@types/lodash": "^4.14.106",
 		"@types/node": "^9.4.6",
 		"@types/paho-mqtt": "^1.0.3",
-		"@types/zen-observable": "^0.5.3",
 		"angular2-template-loader": "^0.6.2",
 		"awesome-typescript-loader": "^4.0.1",
 		"aws-amplify": "3.3.8",

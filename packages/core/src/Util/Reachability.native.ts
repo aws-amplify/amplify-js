@@ -1,4 +1,4 @@
-import Observable from 'zen-observable-ts';
+import Observable from 'zen-observable';
 import { ConsoleLogger as Logger } from '../Logger';
 
 const logger = new Logger('Reachability', 'DEBUG');

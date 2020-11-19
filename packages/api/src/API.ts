@@ -23,7 +23,7 @@ import {
 	ConsoleLogger as Logger,
 	Credentials,
 } from '@aws-amplify/core';
-import Observable from 'zen-observable-ts';
+import Observable from 'zen-observable';
 
 const logger = new Logger('API');
 /**

@@ -41,7 +41,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
-    "@types/zen-observable": "^0.8.0",
+    "@types/zen-observable": "^0.8.1",
     "cpx": "^1.5.0"
   },
   "dependencies": {
@@ -51,7 +51,7 @@
     "graphql": "14.0.0",
     "paho-mqtt": "^1.1.0",
     "uuid": "^3.2.1",
-    "zen-observable-ts": "0.8.19"
+    "zen-observable": "0.8.15"
   },
   "jest": {
     "globals": {

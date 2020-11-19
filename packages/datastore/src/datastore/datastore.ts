@@ -1,7 +1,7 @@
 import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
 import { Draft, immerable, produce, setAutoFreeze } from 'immer';
 import { v4 as uuid4 } from 'uuid';
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import Observable from 'zen-observable';
 import {
 	isPredicatesAll,
 	ModelPredicateCreator,

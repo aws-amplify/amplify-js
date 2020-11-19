@@ -9,7 +9,7 @@ jest.mock('@aws-amplify/core', () => ({
 	},
 }));
 
-import Observable from 'zen-observable-ts';
+import Observable from 'zen-observable';
 import { Amplify } from '@aws-amplify/core';
 import { PubSub } from '../src/PubSub';
 

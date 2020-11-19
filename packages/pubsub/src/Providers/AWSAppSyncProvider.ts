@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 import { Client } from 'paho-mqtt';
-import Observable from 'zen-observable-ts';
+import Observable from 'zen-observable';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import { MqttOverWSProvider } from './MqttOverWSProvider';

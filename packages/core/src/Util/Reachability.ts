@@ -1,5 +1,5 @@
 import { browserOrNode, isWebWorker } from '@aws-amplify/core';
-import Observable, { ZenObservable } from 'zen-observable-ts';
+import Observable from 'zen-observable';
 
 type NetworkStatus = {
 	online: boolean;

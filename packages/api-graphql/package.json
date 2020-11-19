@@ -41,7 +41,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "devDependencies": {
-    "@types/zen-observable": "^0.8.0"
+    "@types/zen-observable": "^0.8.1"
   },
   "dependencies": {
     "@aws-amplify/api-rest": "1.2.11",
@@ -51,7 +51,7 @@
     "@aws-amplify/pubsub": "3.2.9",
     "graphql": "14.0.0",
     "uuid": "^3.2.1",
-    "zen-observable-ts": "0.8.19"
+    "zen-observable": "0.8.15"
   },
   "jest": {
     "globals": {
