@@ -458,7 +458,7 @@ describe('DataStore tests', () => {
 					emails: [null],
 				});
 			}).toThrowError(
-				'All elements in the emails array should be of type string, [object] received. '
+				'All elements in the emails array should be of type string, [null] received. '
 			);
 
 			expect(() => {
@@ -467,9 +467,7 @@ describe('DataStore tests', () => {
 					dateCreated: new Date().toISOString(),
 					ips: [null],
 				});
-			}).toThrowError(
-				'All elements in the ips array should be of type string | null | undefined, [object] received. '
-			);
+			}).not.toThrow();
 
 			expect(() => {
 				new Model({
@@ -583,6 +581,7 @@ describe('DataStore tests', () => {
 			expect(() => {
 				new Model({
 					field1: 'someField',
+					dateCreated: new Date().toISOString(),
 					metadata: new Metadata({
 						author: 'Some author',
 						rewards: [],
@@ -595,6 +594,7 @@ describe('DataStore tests', () => {
 			expect(() => {
 				new Model({
 					field1: 'someField',
+					dateCreated: new Date().toISOString(),
 					metadata: new Metadata({
 						author: 'Some author',
 						rewards: [],
@@ -607,6 +607,7 @@ describe('DataStore tests', () => {
 			expect(() => {
 				new Model({
 					field1: 'someField',
+					dateCreated: new Date().toISOString(),
 					metadata: new Metadata({
 						author: 'Some author',
 						rewards: [],
@@ -619,6 +620,7 @@ describe('DataStore tests', () => {
 			expect(() => {
 				new Model({
 					field1: 'someField',
+					dateCreated: new Date().toISOString(),
 					metadata: new Metadata({
 						author: 'Some author',
 						rewards: [],
@@ -631,6 +633,7 @@ describe('DataStore tests', () => {
 			expect(() => {
 				new Model({
 					field1: 'someField',
+					dateCreated: new Date().toISOString(),
 					metadata: new Metadata({
 						author: 'Some author',
 						rewards: [],
