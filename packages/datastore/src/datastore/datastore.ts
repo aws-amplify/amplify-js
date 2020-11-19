@@ -255,6 +255,7 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 
 		if (isGraphQLScalarType(type)) {
 			const jsType = GraphQLScalarType.getJSType(type);
+			const validateScalar = GraphQLScalarType.getValidationFunction(type);
 
 			if (isArray) {
 				let errorTypeText: string = jsType;
@@ -280,11 +281,38 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 						`All elements in the ${name} array should be of type ${errorTypeText}, [${elemTypes}] received. ${v}`
 					);
 				}
+
+				if (
+					validateScalar &&
+					!isNullOrUndefined(v)
+				) {
+					const validationStatus = (<[]>v).map(
+						e => {
+							if (!isNullOrUndefined(e)) {
+								return validateScalar(e);
+							} else if (isNullOrUndefined(e) && !isRequired) {
+								return true;
+							} else {
+								return false;
+							}
+						}
+					);
+
+					if (!validationStatus.every(s => s)) {
+						throw new Error(
+							`All elements in the ${name} array should be of type ${type}, validation failed for one or more elements. ${v}`
+						);
+					}
+				}
 			} else if (!isRequired && v === undefined) {
 				return;
 			} else if (typeof v !== jsType && v !== null) {
 				throw new Error(
 					`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`
+				);
+			} else if (!isNullOrUndefined(v) && validateScalar && !validateScalar(v)) {
+				throw new Error(
+					`Field ${name} should be of type ${type}, validation failed. ${v}`
 				);
 			}
 		}
