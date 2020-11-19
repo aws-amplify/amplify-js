@@ -9,12 +9,17 @@ import {
 	PersistentModel,
 	SchemaModel,
 	SchemaNamespace,
+	PredicatesGroup,
+	ModelPredicate,
 } from '../../types';
 import {
 	buildSubscriptionGraphQLOperation,
 	getAuthorizationRules,
+	getUserGroupsFromToken,
 	TransformerMutationType,
 } from '../utils';
+import { ModelPredicateCreator } from '../../predicates';
+import { validatePredicate } from '../../util';
 
 const logger = new Logger('DataStore');
 
@@ -40,7 +45,10 @@ class SubscriptionProcessor {
 	][] = [];
 	private dataObserver: ZenObservable.Observer<any>;
 
-	constructor(private readonly schema: InternalSchema) {}
+	constructor(
+		private readonly schema: InternalSchema,
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>
+	) {}
 
 	private buildSubscription(
 		namespace: SchemaNamespace,
@@ -61,7 +69,6 @@ class SubscriptionProcessor {
 		const { authMode, isOwner, ownerField, ownerValue } =
 			this.getAuthorizationInfo(
 				model,
-				transformerMutationType,
 				userCredentials,
 				cognitoTokenPayload,
 				oidcTokenPayload
@@ -79,7 +86,6 @@ class SubscriptionProcessor {
 
 	private getAuthorizationInfo(
 		model: SchemaModel,
-		transformerMutationType: TransformerMutationType,
 		userCredentials: USER_CREDENTIALS,
 		cognitoTokenPayload: { [field: string]: any } = {},
 		oidcTokenPayload: { [field: string]: any } = {}
@@ -90,7 +96,7 @@ class SubscriptionProcessor {
 		ownerValue?: string;
 	} {
 		let result;
-		const rules = getAuthorizationRules(model, transformerMutationType);
+		const rules = getAuthorizationRules(model);
 
 		// check if has apiKey and public authorization
 		const apiKeyAuth = rules.find(
@@ -131,9 +137,11 @@ class SubscriptionProcessor {
 		);
 
 		const validCognitoGroup = groupAuthRules.find(groupAuthRule => {
-			// validate token agains groupClaim
-			const userGroups: string[] =
-				cognitoTokenPayload[groupAuthRule.groupClaim] || [];
+			// validate token against groupClaim
+			const userGroups = getUserGroupsFromToken(
+				cognitoTokenPayload,
+				groupAuthRule
+			);
 
 			return userGroups.find(userGroup => {
 				return groupAuthRule.groups.find(group => group === userGroup);
@@ -153,11 +161,13 @@ class SubscriptionProcessor {
 		);
 
 		const validOidcGroup = groupAuthRules.find(groupAuthRule => {
-			// validate token agains groupClaim
-			const userGroups: string[] =
-				oidcTokenPayload[groupAuthRule.groupClaim] || [];
+			// validate token against groupClaim
+			const userGroups = getUserGroupsFromToken(
+				oidcTokenPayload,
+				groupAuthRule
+			);
 
-			userGroups.find(userGroup => {
+			return userGroups.find(userGroup => {
 				return groupAuthRule.groups.find(group => group === userGroup);
 			});
 		});
@@ -354,14 +364,29 @@ class SubscriptionProcessor {
 														return;
 													}
 
-													const { [opName]: record } = data;
-
-													this.pushToBuffer(
-														transformerMutationType,
-														modelDefinition,
-														record
+													const predicatesGroup = ModelPredicateCreator.getPredicates(
+														this.syncPredicates.get(modelDefinition),
+														false
 													);
 
+													const { [opName]: record } = data;
+
+													// checking incoming subscription against syncPredicate.
+													// once AppSync implements filters on subscriptions, we'll be
+													// able to set these when establishing the subscription instead.
+													// Until then, we'll need to filter inbound
+													if (
+														this.passesPredicateValidation(
+															record,
+															predicatesGroup
+														)
+													) {
+														this.pushToBuffer(
+															transformerMutationType,
+															modelDefinition,
+															record
+														);
+													}
 													this.drainBuffer();
 												},
 												error: subscriptionError => {
@@ -424,6 +449,19 @@ class SubscriptionProcessor {
 		});
 
 		return [ctlObservable, dataObservable];
+	}
+
+	private passesPredicateValidation(
+		record: PersistentModel,
+		predicatesGroup: PredicatesGroup<any>
+	): boolean {
+		if (!predicatesGroup) {
+			return true;
+		}
+
+		const { predicates, type } = predicatesGroup;
+
+		return validatePredicate(record, type, predicates);
 	}
 
 	private pushToBuffer(

@@ -4,9 +4,16 @@ import {
 	InternalSchema,
 	ModelInstanceMetadata,
 	SchemaModel,
+	ModelPredicate,
+	PredicatesGroup,
+	GraphQLFilter,
 } from '../../types';
-import { buildGraphQLOperation } from '../utils';
-import { jitteredExponentialRetry, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { buildGraphQLOperation, predicateToGraphQLFilter } from '../utils';
+import {
+	jitteredExponentialRetry,
+	ConsoleLogger as Logger,
+} from '@aws-amplify/core';
+import { ModelPredicateCreator } from '../../predicates';
 
 const logger = new Logger('DataStore');
 
@@ -19,7 +26,8 @@ class SyncProcessor {
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly maxRecordsToSync: number = DEFAULT_MAX_RECORDS_TO_SYNC,
-		private readonly syncPageSize: number = DEFAULT_PAGINATION_LIMIT
+		private readonly syncPageSize: number = DEFAULT_PAGINATION_LIMIT,
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>
 	) {
 		this.generateQueries();
 	}
@@ -40,13 +48,30 @@ class SyncProcessor {
 		});
 	}
 
+	private graphqlFilterFromPredicate(model: SchemaModel): GraphQLFilter {
+		if (!this.syncPredicates) {
+			return null;
+		}
+		const predicatesGroup: PredicatesGroup<any> = ModelPredicateCreator.getPredicates(
+			this.syncPredicates.get(model),
+			false
+		);
+
+		if (!predicatesGroup) {
+			return null;
+		}
+
+		return predicateToGraphQLFilter(predicatesGroup);
+	}
+
 	private async retrievePage<
 		T extends ModelInstanceMetadata = ModelInstanceMetadata
 	>(
 		modelDefinition: SchemaModel,
 		lastSync: number,
 		nextToken: string,
-		limit: number = null
+		limit: number = null,
+		filter: GraphQLFilter
 	): Promise<{ nextToken: string; startedAt: number; items: T[] }> {
 		const [opName, query] = this.typeQuery.get(modelDefinition);
 
@@ -54,6 +79,7 @@ class SyncProcessor {
 			limit,
 			nextToken,
 			lastSync,
+			filter,
 		};
 
 		const { data } = <
@@ -95,11 +121,18 @@ class SyncProcessor {
 					});
 				} catch (error) {
 					// If the error is unauthorized, filter out unauthorized items and return accessible items
-					const unauthorized = (error.errors as [any]).some(err => err.errorType === 'Unauthorized');
+					const unauthorized = (error.errors as [any]).some(
+						err => err.errorType === 'Unauthorized'
+					);
 					if (unauthorized) {
 						const result = error;
-						result.data[opName].items = result.data[opName].items.filter(item => item !== null);
-						logger.warn('queryError', 'User is unauthorized, some items could not be returned.');
+						result.data[opName].items = result.data[opName].items.filter(
+							item => item !== null
+						);
+						logger.warn(
+							'queryError',
+							'User is unauthorized, some items could not be returned.'
+						);
 						return result;
 					} else {
 						throw error;
@@ -150,6 +183,7 @@ class SyncProcessor {
 					let items: ModelInstanceMetadata[] = null;
 
 					let recordsReceived = 0;
+					const filter = this.graphqlFilterFromPredicate(modelDefinition);
 
 					const parents = this.schema.namespaces[
 						namespace
@@ -175,7 +209,8 @@ class SyncProcessor {
 								modelDefinition,
 								lastSync,
 								nextToken,
-								limit
+								limit,
+								filter
 							));
 
 							recordsReceived += items.length;

@@ -2,6 +2,9 @@ declare module 'amazon-cognito-identity-js' {
 	//import * as AWS from "aws-sdk";
 
 	export type NodeCallback<E, T> = (err?: E, result?: T) => void;
+	export namespace NodeCallback {
+		export type Any = NodeCallback<Error | undefined, any>;
+	}
 
 	export interface CodeDeliveryDetails {
 		AttributeName: string;
@@ -73,8 +76,13 @@ declare module 'amazon-cognito-identity-js' {
 		public setAuthenticationFlowType(
 			authenticationFlowType: string
 		): string;
+        public getCachedDeviceKeyAndPassword(): void;
 
-		public getSession(callback: Function): any;
+		public getSession(
+			callback:
+				| ((error: Error, session: null) => void)
+				| ((error: null, session: CognitoUserSession) => void)
+		): void;
 		public refreshSession(
 			refreshToken: CognitoRefreshToken,
 			callback: NodeCallback<any, any>,
@@ -219,7 +227,10 @@ declare module 'amazon-cognito-identity-js' {
 		public enableMFA(callback: NodeCallback<Error, string>): void;
 		public disableMFA(callback: NodeCallback<Error, string>): void;
 		public getMFAOptions(callback: NodeCallback<Error, MFAOption[]>): void;
-		public getUserData(callback: NodeCallback<Error, UserData>, params?: any): void;
+		public getUserData(
+			callback: NodeCallback<Error, UserData>,
+			params?: any
+		): void;
 		public associateSoftwareToken(callbacks: {
 			associateSecretCode: (secretCode: string) => void;
 			onFailure: (err: any) => void;
@@ -272,8 +283,11 @@ declare module 'amazon-cognito-identity-js' {
 		Value: string;
 	}
 
-	export class CognitoUserAttribute {
+	export class CognitoUserAttribute implements ICognitoUserAttributeData {
 		constructor(data: ICognitoUserAttributeData);
+
+		Name: string;
+		Value: string;
 
 		public getValue(): string;
 		public setValue(value: string): CognitoUserAttribute;
@@ -299,7 +313,12 @@ declare module 'amazon-cognito-identity-js' {
 	}
 
 	export class CognitoUserPool {
-		constructor(data: ICognitoUserPoolData);
+		constructor(
+			data: ICognitoUserPoolData,
+			wrapRefreshSessionCallback?: (
+				target: NodeCallback.Any
+			) => NodeCallback.Any
+		);
 
 		public getUserPoolId(): string;
 		public getClientId(): string;

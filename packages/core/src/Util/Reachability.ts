@@ -15,24 +15,22 @@ export default class ReachabilityNavigator implements Reachability {
 			return Observable.from([{ online: true }]);
 		}
 
-		return new Observable(observer => {
-			const online = isWebWorker()
-				? self.navigator.onLine
-				: window.navigator.onLine;
+		const globalObj = isWebWorker() ? self : window;
 
-			observer.next({ online });
+		return new Observable(observer => {
+			observer.next({ online: globalObj.navigator.onLine });
 
 			const notifyOnline = () => observer.next({ online: true });
 			const notifyOffline = () => observer.next({ online: false });
 
-			window.addEventListener('online', notifyOnline);
-			window.addEventListener('offline', notifyOffline);
+			globalObj.addEventListener('online', notifyOnline);
+			globalObj.addEventListener('offline', notifyOffline);
 
 			ReachabilityNavigator._observers.push(observer);
 
 			return () => {
-				window.removeEventListener('online', notifyOnline);
-				window.removeEventListener('offline', notifyOffline);
+				globalObj.removeEventListener('online', notifyOnline);
+				globalObj.removeEventListener('offline', notifyOffline);
 
 				ReachabilityNavigator._observers = ReachabilityNavigator._observers.filter(
 					_observer => _observer !== observer

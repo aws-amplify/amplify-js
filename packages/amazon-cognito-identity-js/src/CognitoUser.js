@@ -84,7 +84,7 @@ export default class CognitoUser {
 	 */
 	constructor(data) {
 		if (data == null || data.Username == null || data.Pool == null) {
-			throw new Error('Username and pool information are required.');
+			throw new Error('Username and Pool information are required.');
 		}
 
 		this.username = data.Username || '';
@@ -1377,7 +1377,7 @@ export default class CognitoUser {
 
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
 			this.username
-			}`;
+		}`;
 		const idTokenKey = `${keyPrefix}.idToken`;
 		const accessTokenKey = `${keyPrefix}.accessToken`;
 		const refreshTokenKey = `${keyPrefix}.refreshToken`;
@@ -1434,6 +1434,9 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	refreshSession(refreshToken, callback, clientMetadata) {
+		const wrappedCallback = this.pool.wrapRefreshSessionCallback
+			? this.pool.wrapRefreshSessionCallback(callback)
+			: callback;
 		const authParameters = {};
 		authParameters.REFRESH_TOKEN = refreshToken.getToken();
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
@@ -1460,7 +1463,7 @@ export default class CognitoUser {
 				if (err.code === 'NotAuthorizedException') {
 					this.clearCachedUser();
 				}
-				return callback(err, null);
+				return wrappedCallback(err, null);
 			}
 			if (authResult) {
 				const authenticationResult = authResult.AuthenticationResult;
@@ -1476,7 +1479,7 @@ export default class CognitoUser {
 					authenticationResult
 				);
 				this.cacheTokens();
-				return callback(null, this.signInUserSession);
+				return wrappedCallback(null, this.signInUserSession);
 			}
 			return undefined;
 		});
@@ -1539,7 +1542,7 @@ export default class CognitoUser {
 	cacheDeviceKeyAndPassword() {
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
 			this.username
-			}`;
+		}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1556,7 +1559,7 @@ export default class CognitoUser {
 	getCachedDeviceKeyAndPassword() {
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
 			this.username
-			}`;
+		}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1575,7 +1578,7 @@ export default class CognitoUser {
 	clearCachedDeviceKeyAndPassword() {
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
 			this.username
-			}`;
+		}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;

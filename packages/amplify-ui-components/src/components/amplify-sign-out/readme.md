@@ -11,6 +11,13 @@
 | `handleAuthStateChange` | --            | Auth state change handler for this component | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent` |
 
 
+## Slots
+
+| Slot         | Description                 |
+| ------------ | --------------------------- |
+| `"sign-out"` | The sign out button element |
+
+
 ## Dependencies
 
 ### Used by

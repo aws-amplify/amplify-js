@@ -6,6 +6,10 @@ executors:
   build-executor:
     docker:
       - image: cypress/base:12
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
+
     resource_class: large
     working_directory: ~/amplify-js
 
@@ -13,6 +17,9 @@ executors:
     docker:
       - image: cypress/included:5.2.0
       - image: verdaccio/verdaccio
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
     resource_class: large
 
   macos-executor:
@@ -650,6 +657,7 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/main
       - 1.0-stable
+      - native
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]

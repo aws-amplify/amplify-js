@@ -2,7 +2,6 @@ import {
 	SubscriptionProcessor,
 	USER_CREDENTIALS,
 } from '../src/sync/processors/subscription';
-import { TransformerMutationType } from '../src/sync/utils';
 import { SchemaModel } from '../src/types';
 
 describe('sync engine subscription module', () => {
@@ -22,7 +21,7 @@ describe('sync engine subscription module', () => {
 								ownerField: 'owner',
 								allow: 'owner',
 								identityClaim: 'cognito:username',
-								operations: ['create', 'update', 'delete'],
+								operations: ['create', 'update', 'delete', 'read'],
 							},
 						],
 					},
@@ -79,26 +78,96 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
 				USER_CREDENTIALS.auth,
 				tokenPayload
 			)
 		).toEqual(authInfo);
 	});
-	test('owner authorization with public subscription', () => {
+	test('owner authorization with only read operation', () => {
 		const model: SchemaModel = {
 			syncable: true,
 			name: 'Post',
 			pluralName: 'Posts',
 			attributes: [
+				{ type: 'model', properties: {} },
 				{
-					type: 'model',
+					type: 'auth',
 					properties: {
-						subscriptions: {
-							level: 'public',
-						},
+						rules: [
+							{
+								provider: 'userPools',
+								ownerField: 'owner',
+								allow: 'owner',
+								identityClaim: 'cognito:username',
+								operations: ['read'],
+							},
+						],
 					},
 				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				title: {
+					name: 'title',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				owner: {
+					name: 'owner',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+			},
+		};
+		const tokenPayload = {
+			sub: 'xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
+			'cognito:groups': ['mygroup'],
+			email_verified: true,
+			iss: 'https://cognito-idp.us-west-2.amazonaws.com/us-west-2_XXXXXXXX',
+			phone_number_verified: false,
+			'cognito:username': 'user1',
+			aud: '6l99pm4b729dn8c7bj7d3t1lnc',
+			event_id: 'b4c25daa-0c03-4617-aab8-e5c74403536b',
+			token_use: 'id',
+			auth_time: 1578541322,
+			phone_number: '+12068220398',
+			exp: 1578544922,
+			iat: 1578541322,
+			email: 'user1@user.com',
+		};
+		const authInfo = {
+			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			isOwner: true,
+			ownerField: 'owner',
+			ownerValue: 'user1',
+		};
+
+		expect(
+			// @ts-ignore
+			SubscriptionProcessor.prototype.getAuthorizationInfo(
+				model,
+				USER_CREDENTIALS.auth,
+				tokenPayload
+			)
+		).toEqual(authInfo);
+	});
+	test('owner authorization without read operation', () => {
+		const model: SchemaModel = {
+			syncable: true,
+			name: 'Post',
+			pluralName: 'Posts',
+			attributes: [
+				{ type: 'model', properties: {} },
 				{
 					type: 'auth',
 					properties: {
@@ -165,7 +234,91 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
+				USER_CREDENTIALS.auth,
+				tokenPayload
+			)
+		).toEqual(authInfo);
+	});
+	test('owner authorization with public subscription', () => {
+		const model: SchemaModel = {
+			syncable: true,
+			name: 'Post',
+			pluralName: 'Posts',
+			attributes: [
+				{
+					type: 'model',
+					properties: {
+						subscriptions: {
+							level: 'public',
+						},
+					},
+				},
+				{
+					type: 'auth',
+					properties: {
+						rules: [
+							{
+								provider: 'userPools',
+								ownerField: 'owner',
+								allow: 'owner',
+								identityClaim: 'cognito:username',
+								operations: ['create', 'update', 'delete', 'read'],
+							},
+						],
+					},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				title: {
+					name: 'title',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				owner: {
+					name: 'owner',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+			},
+		};
+		const tokenPayload = {
+			sub: 'xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
+			'cognito:groups': ['mygroup'],
+			email_verified: true,
+			iss: 'https://cognito-idp.us-west-2.amazonaws.com/us-west-2_XXXXXXXX',
+			phone_number_verified: false,
+			'cognito:username': 'user1',
+			aud: '6l99pm4b729dn8c7bj7d3t1lnc',
+			event_id: 'b4c25daa-0c03-4617-aab8-e5c74403536b',
+			token_use: 'id',
+			auth_time: 1578541322,
+			phone_number: '+12068220398',
+			exp: 1578544922,
+			iat: 1578541322,
+			email: 'user1@user.com',
+		};
+		const authInfo = {
+			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			isOwner: false,
+			ownerField: 'owner',
+			ownerValue: 'user1',
+		};
+
+		expect(
+			// @ts-ignore
+			SubscriptionProcessor.prototype.getAuthorizationInfo(
+				model,
 				USER_CREDENTIALS.auth,
 				tokenPayload
 			)
@@ -188,7 +341,7 @@ describe('sync engine subscription module', () => {
 								allow: 'groups',
 								groups: ['mygroup'],
 								identityClaim: 'cognito:username',
-								operations: ['create', 'update', 'delete'],
+								operations: ['create', 'update', 'delete', 'read'],
 							},
 						],
 					},
@@ -243,7 +396,162 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
+				USER_CREDENTIALS.auth,
+				tokenPayload
+			)
+		).toEqual(authInfo);
+	});
+	test('groups authorization with groupClaim (array as string)', () => {
+		const model: SchemaModel = {
+			syncable: true,
+			name: 'Post',
+			pluralName: 'Posts',
+			attributes: [
+				{ type: 'model', properties: {} },
+				{
+					type: 'auth',
+					properties: {
+						rules: [
+							{
+								provider: 'userPools',
+								ownerField: 'owner',
+								allow: 'groups',
+								groups: ['mygroup'],
+								groupClaim: 'custom:groups',
+								identityClaim: 'cognito:username',
+								operations: ['create', 'update', 'delete', 'read'],
+							},
+						],
+					},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				title: {
+					name: 'title',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				owner: {
+					name: 'owner',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+			},
+		};
+		const tokenPayload = {
+			sub: 'xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
+			'custom:groups': '["mygroup"]',
+			email_verified: true,
+			iss: 'https://cognito-idp.us-west-2.amazonaws.com/us-west-2_XXXXXXXXX',
+			phone_number_verified: false,
+			'cognito:username': 'user1',
+			aud: '6l99pm4b729dn8c7bj7d3t1lnc',
+			event_id: 'b4c25daa-0c03-4617-aab8-e5c74403536b',
+			token_use: 'id',
+			auth_time: 1578541322,
+			phone_number: '+12068220398',
+			exp: 1578544922,
+			iat: 1578541322,
+			email: 'user1@user.com',
+		};
+		const authInfo = {
+			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			isOwner: false,
+		};
+
+		expect(
+			// @ts-ignore
+			SubscriptionProcessor.prototype.getAuthorizationInfo(
+				model,
+				USER_CREDENTIALS.auth,
+				tokenPayload
+			)
+		).toEqual(authInfo);
+	});
+	test('groups authorization with groupClaim (string)', () => {
+		const model: SchemaModel = {
+			syncable: true,
+			name: 'Post',
+			pluralName: 'Posts',
+			attributes: [
+				{ type: 'model', properties: {} },
+				{
+					type: 'auth',
+					properties: {
+						rules: [
+							{
+								provider: 'userPools',
+								ownerField: 'owner',
+								allow: 'groups',
+								groups: ['mygroup'],
+								groupClaim: 'custom:group',
+								identityClaim: 'cognito:username',
+								operations: ['create', 'update', 'delete', 'read'],
+							},
+						],
+					},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				title: {
+					name: 'title',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				owner: {
+					name: 'owner',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+			},
+		};
+		const tokenPayload = {
+			sub: 'xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
+			'custom:group': '"mygroup"',
+			email_verified: true,
+			iss: 'https://cognito-idp.us-west-2.amazonaws.com/us-west-2_XXXXXXXXX',
+			phone_number_verified: false,
+			'cognito:username': 'user1',
+			aud: '6l99pm4b729dn8c7bj7d3t1lnc',
+			event_id: 'b4c25daa-0c03-4617-aab8-e5c74403536b',
+			token_use: 'id',
+			auth_time: 1578541322,
+			phone_number: '+12068220398',
+			exp: 1578544922,
+			iat: 1578541322,
+			email: 'user1@user.com',
+		};
+		const authInfo = {
+			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			isOwner: false,
+		};
+
+		expect(
+			// @ts-ignore
+			SubscriptionProcessor.prototype.getAuthorizationInfo(
+				model,
 				USER_CREDENTIALS.auth,
 				tokenPayload
 			)
@@ -263,7 +571,7 @@ describe('sync engine subscription module', () => {
 							{
 								provider: 'iam',
 								allow: 'public',
-								operations: ['create', 'update', 'delete'],
+								operations: ['create', 'update', 'delete', 'read'],
 							},
 						],
 					},
@@ -302,7 +610,6 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
 				USER_CREDENTIALS.unauth
 			)
 		).toEqual(authInfo);
@@ -321,7 +628,7 @@ describe('sync engine subscription module', () => {
 							{
 								provider: 'iam',
 								allow: 'private',
-								operations: ['create', 'update', 'delete'],
+								operations: ['create', 'update', 'delete', 'read'],
 							},
 						],
 					},
@@ -360,7 +667,6 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
 				USER_CREDENTIALS.unauth
 			)
 		).toEqual(null);
@@ -379,7 +685,7 @@ describe('sync engine subscription module', () => {
 							{
 								provider: 'iam',
 								allow: 'private',
-								operations: ['create', 'update', 'delete'],
+								operations: ['create', 'update', 'delete', 'read'],
 							},
 						],
 					},
@@ -418,7 +724,6 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
 				USER_CREDENTIALS.auth
 			)
 		).toEqual(authInfo);
@@ -437,7 +742,7 @@ describe('sync engine subscription module', () => {
 							{
 								provider: 'apiKey',
 								allow: 'public',
-								operations: ['create', 'update', 'delete'],
+								operations: ['create', 'update', 'delete', 'read'],
 							},
 						],
 					},
@@ -476,7 +781,6 @@ describe('sync engine subscription module', () => {
 			// @ts-ignore
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
-				TransformerMutationType.CREATE,
 				USER_CREDENTIALS.none
 			)
 		).toEqual(authInfo);
