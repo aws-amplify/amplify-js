@@ -759,7 +759,7 @@ describe('AnalyticsProvider test', () => {
 
 				await analytics.record(params, { resolve, reject });
 
-				expect(spyonUpdateEndpoint).toHaveBeenCalledTimes(1); // 1 failed + 1 successful call
+				expect(spyonUpdateEndpoint).toHaveBeenCalledTimes(1);
 
 				spyonUpdateEndpoint.mockRestore();
 			});
