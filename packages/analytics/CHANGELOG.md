@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.3.11...@aws-amplify/analytics@4.0.0) (2020-11-20)
+
+
+* fix(@aws-amplify/analytics)!: do not attempt to delete unused endpoints (#7245) ([d11009a](https://github.com/aws-amplify/amplify-js/commit/d11009a8f6c7fc7245eeb397eba39f468935ac16)), closes [#7245](https://github.com/aws-amplify/amplify-js/issues/7245)
+
+
+### BREAKING CHANGES
+
+* Analytics will no longer attempt to automatically delete old endpoints on updateEndpoint
+
+
+
+
+
 ## [3.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.3.10...@aws-amplify/analytics@3.3.11) (2020-11-13)
 
 **Note:** Version bump only for package @aws-amplify/analytics
