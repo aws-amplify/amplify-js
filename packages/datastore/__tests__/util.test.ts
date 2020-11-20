@@ -232,14 +232,19 @@ describe('datastore util', () => {
 		];
 		const invalid = [
 			'',
+			' ',
 			':',
 			'1.',
 			'test',
 			'999.1.1.1',
+			' 1.1.1.1',
+			'1.1.1.1 ',
 			'-1.1.1.1',
 			'1111.111.111.111',
 			'1.0.0',
+			'::1 ',
 			'::ffff:10.0.0',
+			' ::ffff:10.0.0',
 		];
 		valid.forEach(test => {
 			expect(isAWSIPAddress(test)).toBe(true);
