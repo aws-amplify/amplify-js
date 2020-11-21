@@ -194,12 +194,24 @@ export class SyncEngine {
 								] = this.subscriptionsProcessor.start();
 
 								try {
-									subscriptions.push(
-										await this.waitForSubscriptionsReady(
-											ctlSubsObservable,
-											datastoreConnectivity
-										)
-									);
+									await new Promise((resolve, reject) => {
+										const ctlSubsSubscription = ctlSubsObservable.subscribe({
+											next: msg => {
+												if (msg === CONTROL_MSG.CONNECTED) {
+													resolve();
+												}
+											},
+											error: err => {
+												reject(err);
+												const handleDisconnect = this.disconnectionHandler(
+													datastoreConnectivity
+												);
+												handleDisconnect(err);
+											},
+										});
+
+										subscriptions.push(ctlSubsSubscription);
+									});
 								} catch (err) {
 									observer.error(err);
 									return;
@@ -672,28 +684,6 @@ export class SyncEngine {
 				datastoreConnectivity.socketDisconnected();
 			}
 		};
-	}
-
-	private async waitForSubscriptionsReady(
-		ctlSubsObservable: Observable<CONTROL_MSG>,
-		datastoreConnectivity: DataStoreConnectivity
-	): Promise<ZenObservable.Subscription> {
-		return new Promise((resolve, reject) => {
-			const subscription = ctlSubsObservable.subscribe({
-				next: msg => {
-					if (msg === CONTROL_MSG.CONNECTED) {
-						resolve(subscription);
-					}
-				},
-				error: err => {
-					reject(err);
-					const handleDisconnect = this.disconnectionHandler(
-						datastoreConnectivity
-					);
-					handleDisconnect(err);
-				},
-			});
-		});
 	}
 
 	private async setupModels(params: StartParams) {
