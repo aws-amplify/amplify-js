@@ -94,7 +94,8 @@
 	"resolutions": {
 		"@types/babel__traverse": "7.0.8",
 		"terser": "4.6.7",
-		"npm-packlist": "1.1.12"
+		"npm-packlist": "1.1.12",
+		"@types/react": "16.9.10"
 	},
 	"jest": {
 		"resetMocks": true,
