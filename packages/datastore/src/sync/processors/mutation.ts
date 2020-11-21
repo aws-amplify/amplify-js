@@ -232,7 +232,7 @@ class MutationProcessor {
 
 							if (
 								error.message === 'Network Error' ||
-								code === 'ECONNABORTED'
+								code === 'ECONNABORTED' // refers to axios timeout error caused by device's bad network condition
 							) {
 								if (!this.processing) {
 									throw new NonRetryableError('Offline');
