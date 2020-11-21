@@ -228,10 +228,11 @@ class MutationProcessor {
 					} catch (err) {
 						if (err.errors && err.errors.length > 0) {
 							const [error] = err.errors;
+							const { originalError: { code = null } = {} } = error;
 
 							if (
 								error.message === 'Network Error' ||
-								error.message === 'timeout of 0ms exceeded'
+								code === 'ECONNABORTED'
 							) {
 								if (!this.processing) {
 									throw new NonRetryableError('Offline');
