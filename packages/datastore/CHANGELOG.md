@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.7.3...@aws-amplify/datastore@2.8.0) (2020-11-20)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** extend Lookup type to allow Predicates.ALL ([#7218](https://github.com/aws-amplify/amplify-js/issues/7218)) ([be1a746](https://github.com/aws-amplify/amplify-js/commit/be1a746fe7c0e8a41e4c773c03689a6d6d76b380))
+* **@aws-amplify/datastore:** fix sel. sync delta ([#7200](https://github.com/aws-amplify/amplify-js/issues/7200)) ([dbd4629](https://github.com/aws-amplify/amplify-js/commit/dbd46299af9c558251b8c652c3e50208982655c8))
+* **@aws-amplify/datastore:** fix validation for array with optional element ([#7216](https://github.com/aws-amplify/amplify-js/issues/7216)) ([31c7199](https://github.com/aws-amplify/amplify-js/commit/31c7199c1c0abe77f59ac24739667503f266b4d1))
+* **@aws-amplify/datastore:** handle groupClaim as string ([#7208](https://github.com/aws-amplify/amplify-js/issues/7208)) ([17b62dd](https://github.com/aws-amplify/amplify-js/commit/17b62dd216f7fdf5b21ae9ba2a2c170fb86a4d73))
+
+
+### Features
+
+* **@aws-amplify/datastore:** add local validations for AppSync scalars ([#7212](https://github.com/aws-amplify/amplify-js/issues/7212)) ([f277a7e](https://github.com/aws-amplify/amplify-js/commit/f277a7e4bb9d4cf67e2b4353c09b1e3f92bcd5c2))
+* **@aws-amplify/datastore:** add local validations for AppSync scalars (update) ([#7234](https://github.com/aws-amplify/amplify-js/issues/7234)) ([7477d27](https://github.com/aws-amplify/amplify-js/commit/7477d272587212c2a3cf0e86806f8ff4a03881e0))
+
+
+
+
+
 ## [2.7.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.7.2...@aws-amplify/datastore@2.7.3) (2020-11-13)
 
 
