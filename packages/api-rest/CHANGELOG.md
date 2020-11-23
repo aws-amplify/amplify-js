@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.12...@aws-amplify/api-rest@1.2.13) (2020-11-23)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api-rest:** Gate usage of FormData, since Node doesn't support it ([#7237](https://github.com/aws-amplify/amplify-js/issues/7237)) ([f9e6774](https://github.com/aws-amplify/amplify-js/commit/f9e6774f5fa7a8100a7dc99b53c563221b4773e7))
+
+
+
+
+
+## [1.2.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.11...@aws-amplify/api-rest@1.2.12) (2020-11-20)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api-rest:** Pass client FormData to axios ([#6899](https://github.com/aws-amplify/amplify-js/issues/6899)) ([863daba](https://github.com/aws-amplify/amplify-js/commit/863daba34d30b16b2c381a8e4ba9a8379f7d290f))
+
+
+
+
+
 ## [1.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.10...@aws-amplify/api-rest@1.2.11) (2020-11-13)
 
 **Note:** Version bump only for package @aws-amplify/api-rest
