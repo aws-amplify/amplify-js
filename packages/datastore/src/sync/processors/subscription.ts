@@ -15,6 +15,7 @@ import {
 import {
 	buildSubscriptionGraphQLOperation,
 	getAuthorizationRules,
+	getUserGroupsFromToken,
 	TransformerMutationType,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
@@ -128,10 +129,14 @@ class SubscriptionProcessor {
 				defaultAuthType === GRAPHQL_AUTH_MODE.OPENID_CONNECT) &&
 			groupAuthRules.find(groupAuthRule => {
 				// validate token against groupClaim
-				const cognitoUserGroups: string[] =
-					cognitoTokenPayload[groupAuthRule.groupClaim] || [];
-				const oidcUserGroups: string[] =
-					oidcTokenPayload[groupAuthRule.groupClaim] || [];
+				const cognitoUserGroups = getUserGroupsFromToken(
+					cognitoTokenPayload,
+					groupAuthRule
+				);
+				const oidcUserGroups = getUserGroupsFromToken(
+					oidcTokenPayload,
+					groupAuthRule
+				);
 
 				return [...cognitoUserGroups, ...oidcUserGroups].find(userGroup => {
 					return groupAuthRule.groups.find(group => group === userGroup);
