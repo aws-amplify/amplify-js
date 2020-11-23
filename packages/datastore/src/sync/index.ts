@@ -105,7 +105,8 @@ export class SyncEngine {
 		private readonly syncPageSize: number,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
-		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly amplifyConfig: Record<string, any> = {}
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -128,7 +129,8 @@ export class SyncEngine {
 		);
 		this.subscriptionsProcessor = new SubscriptionProcessor(
 			this.schema,
-			this.syncPredicates
+			this.syncPredicates,
+			this.amplifyConfig
 		);
 		this.mutationsProcessor = new MutationProcessor(
 			this.schema,
