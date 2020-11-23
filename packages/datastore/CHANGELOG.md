@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.8.0...@aws-amplify/datastore@2.8.1) (2020-11-23)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** use default auth for subscriptions ([#7172](https://github.com/aws-amplify/amplify-js/issues/7172)) ([7428c74](https://github.com/aws-amplify/amplify-js/commit/7428c74bb7402fe230def58e501d6e58ec351f3e))
+
+
+
+
+
 # [2.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.7.3...@aws-amplify/datastore@2.8.0) (2020-11-20)
 
 
