@@ -481,6 +481,7 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
 				tokenPayload
 			)
 		).toEqual(authInfo);
@@ -559,6 +560,7 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
 				tokenPayload
 			)
 		).toEqual(authInfo);
