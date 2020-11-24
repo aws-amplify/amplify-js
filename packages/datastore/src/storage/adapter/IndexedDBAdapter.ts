@@ -1,7 +1,10 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import * as idb from 'idb';
 import { ModelInstanceCreator } from '../../datastore/datastore';
-import { ModelPredicateCreator } from '../../predicates';
+import {
+	ModelPredicateCreator,
+	ModelSortPredicateCreator,
+} from '../../predicates';
 import {
 	InternalSchema,
 	isPredicateObj,
@@ -24,6 +27,7 @@ import {
 	isPrivateMode,
 	traverseModel,
 	validatePredicate,
+	sortCompareFunction,
 } from '../../util';
 import { Adapter } from './index';
 
@@ -362,6 +366,7 @@ class IndexedDBAdapter implements Adapter {
 		await this.checkPrivate();
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
+		const sortSpecified = pagination && pagination.sort;
 
 		if (predicate) {
 			const predicates = ModelPredicateCreator.getPredicates(predicate);
@@ -403,6 +408,15 @@ class IndexedDBAdapter implements Adapter {
 			}
 		}
 
+		if (sortSpecified) {
+			const all = <T[]>await this.db.getAll(storeName);
+			return await this.load(
+				namespaceName,
+				modelConstructor.name,
+				this.inMemoryPagination(all, pagination)
+			);
+		}
+
 		return await this.load(
 			namespaceName,
 			modelConstructor.name,
@@ -415,6 +429,17 @@ class IndexedDBAdapter implements Adapter {
 		pagination?: PaginationInput<T>
 	): T[] {
 		if (pagination) {
+			if (pagination.sort) {
+				const sortPredicates = ModelSortPredicateCreator.getPredicates(
+					pagination.sort
+				);
+
+				if (sortPredicates.length) {
+					const compareFn = sortCompareFunction(sortPredicates);
+					records.sort(compareFn);
+				}
+			}
+
 			const { page = 0, limit = 0 } = pagination;
 			const start = Math.max(0, page * limit) || 0;
 
