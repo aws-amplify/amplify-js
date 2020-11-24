@@ -1383,6 +1383,7 @@ export class AuthClass {
 	 * @return - A promise resolves to be current user's credentials
 	 */
 	public async currentUserCredentials(): Promise<ICredentials> {
+		console.log('currentUserCredentials called');
 		logger.debug('Getting current user credentials');
 
 		try {

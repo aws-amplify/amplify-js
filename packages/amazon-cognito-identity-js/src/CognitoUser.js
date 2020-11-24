@@ -1403,10 +1403,15 @@ export default class CognitoUser {
 			};
 			const cachedSession = new CognitoUserSession(sessionData);
 
+			console.error('is cachedSession valid?');
+
 			if (cachedSession.isValid()) {
+				console.error('cachedSession is valid!');
 				this.signInUserSession = cachedSession;
 				return callback(null, this.signInUserSession);
 			}
+
+			console.error('cachedSession is not valid!');
 
 			if (!refreshToken.getToken()) {
 				return callback(
@@ -1415,6 +1420,7 @@ export default class CognitoUser {
 				);
 			}
 
+			console.error('about to refresh session!');
 			this.refreshSession(refreshToken, callback);
 		} else {
 			callback(
@@ -1434,6 +1440,7 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	refreshSession(refreshToken, callback, clientMetadata) {
+		console.error('refreshSession called');
 		const wrappedCallback = this.pool.wrapRefreshSessionCallback
 			? this.pool.wrapRefreshSessionCallback(callback)
 			: callback;

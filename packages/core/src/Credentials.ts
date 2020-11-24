@@ -20,7 +20,7 @@ import { CredentialProvider } from '@aws-sdk/types';
 
 const logger = new Logger('Credentials');
 
-const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
+const CREDENTIALS_TTL = 10 * 1000; // 10 sec for testing
 
 export class CredentialsClass {
 	private _config;
@@ -109,6 +109,8 @@ export class CredentialsClass {
 		const { Auth = Amplify.Auth } = this;
 
 		if (Auth && typeof Auth.currentUserCredentials === 'function') {
+			// let's refresh session here, if cached session is valid but 50 minutes has passed
+
 			return Auth.currentUserCredentials();
 		} else {
 			return Promise.reject('No Auth module registered in Amplify');
@@ -200,6 +202,19 @@ export class CredentialsClass {
 			https://github.com/aws/aws-sdk-js-v3/blob/v1.0.0-beta.1/packages/types/src/credentials.ts#L26
 		*/
 		const { expiration } = credentials;
+		console.error(
+			'current time',
+			ts,
+			'expiration',
+			expiration.getTime(),
+			'nextRefresh',
+			this._nextCredentialsRefresh
+		);
+		const remainingTimeUntilRefresh =
+			(this._nextCredentialsRefresh as number) - ts;
+		console.log(
+			`next refresh required in ${remainingTimeUntilRefresh / 1000} seconds.`
+		);
 		if (
 			expiration.getTime() > ts + delta &&
 			ts < this._nextCredentialsRefresh
@@ -509,6 +524,7 @@ export class CredentialsClass {
 	}
 
 	public set(params, source): Promise<ICredentials> {
+		console.error('Credentials.set called');
 		if (source === 'session') {
 			return this._setCredentialsFromSession(params);
 		} else if (source === 'federation') {
