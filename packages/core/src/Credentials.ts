@@ -94,10 +94,10 @@ export class CredentialsClass {
 		return this._gettingCredPromise;
 	}
 
-	private _keepAlive() {
+	private async _keepAlive() {
 		logger.debug('checking if credentials exists and not expired');
 		const cred = this._credentials;
-		if (cred && !this._isExpired(cred)) {
+		if (cred && !this._isExpired(cred) && !this._isPastTTL()) {
 			logger.debug('credentials not changed and not expired, directly return');
 			return Promise.resolve(cred);
 		}
@@ -108,13 +108,26 @@ export class CredentialsClass {
 		// Prefer locally scoped `Auth`, but fallback to registered `Amplify.Auth` global otherwise.
 		const { Auth = Amplify.Auth } = this;
 
-		if (Auth && typeof Auth.currentUserCredentials === 'function') {
-			// let's refresh session here, if cached session is valid but 50 minutes has passed
-
-			return Auth.currentUserCredentials();
-		} else {
+		if (!Auth || typeof Auth.currentUserCredentials !== 'function') {
 			return Promise.reject('No Auth module registered in Amplify');
 		}
+
+		if (!this._isExpired(cred) && this._isPastTTL()) {
+			logger.debug('ttl has passed but token is not yet expired');
+			try {
+				const user = await Auth.currentUserPoolUser();
+				const session = await Auth.currentSession();
+				const refreshToken = session.refreshToken;
+				user.refreshSession(refreshToken, (err, data) => {
+					err && logger.debug('refresh session called but unsuccessful', err);
+					data && logger.debug('refresh session successful', data);
+				});
+			} catch (err) {
+				// do not throw an error because user might be on guest access or is authenticated through federation
+				logger.debug('Error attempting to refreshing the session', err);
+			}
+		}
+		return Auth.currentUserCredentials();
 	}
 
 	public refreshFederatedToken(federatedInfo) {
@@ -215,13 +228,11 @@ export class CredentialsClass {
 		console.log(
 			`next refresh required in ${remainingTimeUntilRefresh / 1000} seconds.`
 		);
-		if (
-			expiration.getTime() > ts + delta &&
-			ts < this._nextCredentialsRefresh
-		) {
-			return false;
-		}
-		return true;
+		return expiration.getTime() <= ts + delta;
+	}
+
+	private _isPastTTL(): boolean {
+		return this._nextCredentialsRefresh <= Date.now();
 	}
 
 	private async _setCredentialsForGuest() {
