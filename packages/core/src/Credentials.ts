@@ -20,7 +20,7 @@ import { CredentialProvider } from '@aws-sdk/types';
 
 const logger = new Logger('Credentials');
 
-const CREDENTIALS_TTL = 10 * 1000; // 10 sec for testing
+const CREDENTIALS_TTL = 50 * 60 * 1000; // 50 min, can be modified on config if required in the future
 
 export class CredentialsClass {
 	private _config;
@@ -215,19 +215,6 @@ export class CredentialsClass {
 			https://github.com/aws/aws-sdk-js-v3/blob/v1.0.0-beta.1/packages/types/src/credentials.ts#L26
 		*/
 		const { expiration } = credentials;
-		console.error(
-			'current time',
-			ts,
-			'expiration',
-			expiration.getTime(),
-			'nextRefresh',
-			this._nextCredentialsRefresh
-		);
-		const remainingTimeUntilRefresh =
-			(this._nextCredentialsRefresh as number) - ts;
-		console.log(
-			`next refresh required in ${remainingTimeUntilRefresh / 1000} seconds.`
-		);
 		return expiration.getTime() <= ts + delta;
 	}
 
@@ -535,7 +522,6 @@ export class CredentialsClass {
 	}
 
 	public set(params, source): Promise<ICredentials> {
-		console.error('Credentials.set called');
 		if (source === 'session') {
 			return this._setCredentialsFromSession(params);
 		} else if (source === 'federation') {
