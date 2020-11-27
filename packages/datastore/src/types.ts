@@ -221,7 +221,7 @@ export type TypeConstructorMap = Record<
 
 // Instance of model
 export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
-export type ModelInit<T> = Omit<T, 'id'>;
+export type ModelInit<T> = Partial<T>;
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
 		? T[P]

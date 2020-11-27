@@ -1,6 +1,7 @@
 import 'fake-indexeddb/auto';
 import { decodeTime } from 'ulid';
 import uuidValidate from 'uuid-validate';
+import { v4 as uuidv4 } from 'uuid';
 import Observable from 'zen-observable-ts';
 import {
 	DataStore as DataStoreType,
@@ -372,6 +373,37 @@ describe('DataStore tests', () => {
 			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
 
 			model = new Model({
+				field1: 'Some value',
+				dateCreated: new Date().toISOString(),
+			});
+
+			const result = await DataStore.save(model);
+
+			expect(result).toMatchObject(model);
+		});
+
+		test('Save returns the saved model with a client side set id', async () => {
+			let model: Model;
+
+			jest.resetModules();
+			jest.doMock('../src/storage/storage', () => {
+				const mock = jest.fn().mockImplementation(() => ({
+					init: jest.fn(),
+					runExclusive: jest.fn(() => [model]),
+				}));
+
+				(<any>mock).getNamespace = () => ({ models: {} });
+
+				return { ExclusiveStorage: mock };
+			});
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+
+			model = new Model({
+				id: uuidv4(),
 				field1: 'Some value',
 				dateCreated: new Date().toISOString(),
 			});
