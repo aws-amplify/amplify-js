@@ -96,7 +96,10 @@ export enum GraphQLScalarType {
 
 export namespace GraphQLScalarType {
 	export function getJSType(
-		scalar: keyof Omit<typeof GraphQLScalarType, 'getJSType' | 'getValidationFunction'>
+		scalar: keyof Omit<
+			typeof GraphQLScalarType,
+			'getJSType' | 'getValidationFunction'
+		>
 	): 'string' | 'number' | 'boolean' {
 		switch (scalar) {
 			case 'Boolean':
@@ -122,7 +125,10 @@ export namespace GraphQLScalarType {
 	}
 
 	export function getValidationFunction(
-		scalar: keyof Omit<typeof GraphQLScalarType, 'getJSType' | 'getValidationFunction'>
+		scalar: keyof Omit<
+			typeof GraphQLScalarType,
+			'getJSType' | 'getValidationFunction'
+		>
 	): ((val: string | number) => boolean) | undefined {
 		switch (scalar) {
 			case 'AWSDate':
@@ -161,7 +167,10 @@ export type AuthorizationRule = {
 
 export function isGraphQLScalarType(
 	obj: any
-): obj is keyof Omit<typeof GraphQLScalarType, 'getJSType' | 'getValidationFunction'> {
+): obj is keyof Omit<
+	typeof GraphQLScalarType,
+	'getJSType' | 'getValidationFunction'
+> {
 	return obj && GraphQLScalarType[obj] !== undefined;
 }
 
@@ -192,7 +201,10 @@ export function isEnumFieldType(obj: any): obj is EnumFieldType {
 type ModelField = {
 	name: string;
 	type:
-		| keyof Omit<typeof GraphQLScalarType, 'getJSType' | 'getValidationFunction'>
+		| keyof Omit<
+				typeof GraphQLScalarType,
+				'getJSType' | 'getValidationFunction'
+		  >
 		| ModelFieldType
 		| NonModelFieldType
 		| EnumFieldType;
@@ -449,7 +461,8 @@ export type SystemComponent = {
 		getModelConstructorByModelName: (
 			namsespaceName: string,
 			modelName: string
-		) => PersistentModelConstructor<any>
+		) => PersistentModelConstructor<any>,
+		appId: string
 	): Promise<void>;
 };
 

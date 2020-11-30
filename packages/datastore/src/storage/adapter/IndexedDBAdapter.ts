@@ -47,6 +47,7 @@ class IndexedDBAdapter implements Adapter {
 	private initPromise: Promise<void>;
 	private resolve: (value?: any) => void;
 	private reject: (value?: any) => void;
+	private dbName: string = DB_NAME;
 
 	private async checkPrivate() {
 		const isPrivate = await isPrivateMode().then(isPrivate => {
@@ -84,7 +85,8 @@ class IndexedDBAdapter implements Adapter {
 		getModelConstructorByModelName: (
 			namsespaceName: string,
 			modelName: string
-		) => PersistentModelConstructor<any>
+		) => PersistentModelConstructor<any>,
+		sessionId?: string
 	) {
 		await this.checkPrivate();
 		if (!this.initPromise) {
@@ -95,7 +97,9 @@ class IndexedDBAdapter implements Adapter {
 		} else {
 			await this.initPromise;
 		}
-
+		if (sessionId) {
+			this.dbName = `${DB_NAME}-${sessionId}`;
+		}
 		this.schema = theSchema;
 		this.namespaceResolver = namespaceResolver;
 		this.modelInstanceCreator = modelInstanceCreator;
@@ -104,7 +108,7 @@ class IndexedDBAdapter implements Adapter {
 		try {
 			if (!this.db) {
 				const VERSION = 2;
-				this.db = await idb.openDB(DB_NAME, VERSION, {
+				this.db = await idb.openDB(this.dbName, VERSION, {
 					upgrade: async (db, oldVersion, newVersion, txn) => {
 						if (oldVersion === 0) {
 							Object.keys(theSchema.namespaces).forEach(namespaceName => {
@@ -758,7 +762,7 @@ class IndexedDBAdapter implements Adapter {
 
 		this.db.close();
 
-		await idb.deleteDB(DB_NAME);
+		await idb.deleteDB(this.dbName);
 
 		this.db = undefined;
 		this.initPromise = undefined;
