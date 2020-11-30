@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.1...@aws-amplify/analytics@4.0.2) (2020-11-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** send events when autoSessionRecord is disabled ([#7308](https://github.com/aws-amplify/amplify-js/issues/7308)) ([039aa95](https://github.com/aws-amplify/amplify-js/commit/039aa95f9a3e791f09d7566bd7baecf68c7c8cb6))
+
+
+
+
+
 ## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.0...@aws-amplify/analytics@4.0.1) (2020-11-23)
 
 **Note:** Version bump only for package @aws-amplify/analytics
