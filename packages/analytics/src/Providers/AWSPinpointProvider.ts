@@ -119,6 +119,10 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		const conf = config || {};
 		this._config = Object.assign({}, this._config, conf);
 
+		// If autoSessionRecord is enabled, we need to wait for the endpoint to be
+		// updated before sending any events. See `sendEvents` in `Analytics.ts`
+		this._endpointGenerating = !!config['autoSessionRecord'];
+
 		if (this._config.appId && !this._config.disabled) {
 			if (!this._config.endpointId) {
 				const cacheKey = this.getProviderName() + '_' + this._config.appId;
