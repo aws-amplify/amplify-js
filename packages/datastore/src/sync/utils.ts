@@ -462,7 +462,12 @@ export function getUserGroupsFromToken(
 	let userGroups: string[] | string = token[rule.groupClaim] || [];
 
 	if (typeof userGroups === 'string') {
-		const parsedGroups = JSON.parse(userGroups);
+		let parsedGroups;
+		try {
+			parsedGroups = JSON.parse(userGroups);
+		} catch (e) {
+			parsedGroups = userGroups;
+		}
 		userGroups = [].concat(parsedGroups);
 	}
 
