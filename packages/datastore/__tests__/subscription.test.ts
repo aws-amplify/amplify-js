@@ -329,6 +329,88 @@ describe('sync engine subscription module', () => {
 			)
 		).toEqual(authInfo);
 	});
+	test('owner authorization with custom owner (explicit)', () => {
+		const model: SchemaModel = {
+			name: 'Post',
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				title: {
+					name: 'title',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				customOwner: {
+					name: 'customOwner',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+			},
+			syncable: true,
+			pluralName: 'Posts',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+				{
+					type: 'auth',
+					properties: {
+						rules: [
+							{
+								provider: 'userPools',
+								ownerField: 'customOwner',
+								allow: 'owner',
+								identityClaim: 'cognito:username',
+								operations: ['create', 'update', 'delete', 'read'],
+							},
+						],
+					},
+				},
+			],
+		};
+		const tokenPayload = {
+			sub: 'xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx',
+			'cognito:groups': ['mygroup'],
+			email_verified: true,
+			iss: 'https://cognito-idp.us-west-2.amazonaws.com/us-west-2_XXXXXXXX',
+			phone_number_verified: false,
+			'cognito:username': 'user1',
+			aud: '6l99pm4b729dn8c7bj7d3t1lnc',
+			event_id: 'b4c25daa-0c03-4617-aab8-e5c74403536b',
+			token_use: 'id',
+			auth_time: 1578541322,
+			phone_number: '+12068220398',
+			exp: 1578544922,
+			iat: 1578541322,
+			email: 'user1@user.com',
+		};
+		const authInfo = {
+			authMode: 'AMAZON_COGNITO_USER_POOLS',
+			isOwner: true,
+			ownerField: 'customOwner',
+			ownerValue: 'user1',
+		};
+
+		expect(
+			// @ts-ignore
+			SubscriptionProcessor.prototype.getAuthorizationInfo(
+				model,
+				USER_CREDENTIALS.auth,
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				tokenPayload
+			)
+		).toEqual(authInfo);
+	});
 	test('groups authorization', () => {
 		const model: SchemaModel = {
 			syncable: true,
