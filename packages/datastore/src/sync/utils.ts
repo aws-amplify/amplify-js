@@ -83,23 +83,31 @@ function getImplicitOwnerField(
 	modelDefinition: SchemaModel | SchemaNonModel,
 	scalarFields: ModelFields
 ) {
-	if (!scalarFields.owner && isOwnerBasedModel(modelDefinition)) {
+	const ownerField = getOwnerField(modelDefinition);
+
+	if (!scalarFields.owner && ownerField === 'owner') {
 		return ['owner'];
 	}
 	return [];
 }
 
-function isOwnerBasedModel(modelDefinition: SchemaModel | SchemaNonModel) {
-	return (
-		isSchemaModel(modelDefinition) &&
-		modelDefinition.attributes &&
-		modelDefinition.attributes.some(
-			attr =>
-				attr.properties &&
-				attr.properties.rules &&
-				attr.properties.rules.some(rule => rule.allow === 'owner')
-		)
-	);
+function getOwnerField(
+	modelDefinition: SchemaModel | SchemaNonModel
+): string | undefined {
+	let ownerField;
+	if (isSchemaModel(modelDefinition) && modelDefinition.attributes) {
+		let rule;
+		modelDefinition.attributes.forEach(attr => {
+			if (attr.properties && attr.properties.rules) {
+				rule = attr.properties.rules.find(rule => rule.allow === 'owner');
+			}
+		});
+
+		if (rule && rule.ownerField) {
+			ownerField = rule.ownerField;
+		}
+	}
+	return ownerField;
 }
 
 function getScalarFields(
