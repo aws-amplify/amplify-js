@@ -255,6 +255,15 @@ class SubscriptionProcessor {
 				}
 
 				try {
+					// Checking for `region` in Auth config to see if Auth is configured
+					// before attempting to get federated token. We're using `region` because
+					// it will be there regardless of user/identity pool being present.
+					// See `parseMobileHubConfig` in `Parser.ts` for more info.
+					const { region } = Auth.configure();
+					if (!region) {
+						throw 'Auth is not configured';
+					}
+
 					let token;
 					// backwards compatibility
 					const federatedInfo = await Cache.getItem('federatedInfo');
