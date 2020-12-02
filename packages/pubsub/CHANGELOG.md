@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.11...@aws-amplify/pubsub@3.2.12) (2020-11-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pubsub:** AppSyncRealTimeProvider - fix unhandled promise rejection ([#7225](https://github.com/aws-amplify/amplify-js/issues/7225)) ([ba8a73f](https://github.com/aws-amplify/amplify-js/commit/ba8a73f41db6411b91b208fea3202408c55f029b))
+
+
+
+
+
 ## [3.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.10...@aws-amplify/pubsub@3.2.11) (2020-11-23)
 
 
