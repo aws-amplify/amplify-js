@@ -216,6 +216,14 @@ export interface IdentifyLabelsInput {
 	};
 }
 
+export interface IdentifyCustomLabelsInput {
+	customlabels: {
+		source: IdentifySource;
+		projectVersionArn: string;
+		type: 'LABELS';
+	};
+}
+
 export interface Point {
 	x?: Number;
 	y?: Number;
@@ -237,6 +245,13 @@ export interface IdentifyLabelsOutput {
 		metadata?: Object;
 	}[];
 	unsafe?: 'YES' | 'NO' | 'UNKNOWN';
+}
+
+export interface IdentifyCustomLabelsOutput {
+	customlabels?: {
+		name: string;
+		metadata?: Object;
+	}[];
 }
 
 export interface IdentifyEntitiesInput {
@@ -338,6 +353,13 @@ export function isIdentifyTextInput(obj: any): obj is IdentifyTextInput {
 
 export function isIdentifyLabelsInput(obj: any): obj is IdentifyLabelsInput {
 	const key: keyof IdentifyLabelsInput = 'labels';
+	return obj && obj.hasOwnProperty(key);
+}
+
+export function isIdentifyCustomLabelsInput(
+	obj: any
+): obj is IdentifyCustomLabelsInput {
+	const key: keyof IdentifyCustomLabelsInput = 'customlabels';
 	return obj && obj.hasOwnProperty(key);
 }
 

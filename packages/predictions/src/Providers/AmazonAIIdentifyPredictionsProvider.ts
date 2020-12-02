@@ -12,6 +12,8 @@ import {
 	DetectTextCommandInput,
 	DetectLabelsCommand,
 	DetectLabelsCommandInput,
+	DetectCustomLabelsCommand,
+	DetectCustomLabelsCommandInput,
 	DetectFacesCommand,
 	DetectModerationLabelsCommand,
 	DetectModerationLabelsCommandInput,
@@ -20,6 +22,8 @@ import {
 import {
 	IdentifyLabelsInput,
 	IdentifyLabelsOutput,
+	IdentifyCustomLabelsInput,
+	IdentifyCustomLabelsOutput,
 	IdentifySource,
 	IdentifyEntitiesInput,
 	IdentifyEntitiesOutput,
@@ -277,6 +281,63 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 	}
 
 	/**
+	 * Identify custom labels of real world entities from an image and if it contains unsafe content.
+	 * @param {IdentifyCustomLabelsInput} input - Object containing the source image and entity type to identify.
+	 * @return {Promise<IdentifyCustomLabelsOutput>} - Promise resolving to an array of identified entities.
+	 */
+	protected async identifyCustomLabels(
+		input: IdentifyCustomLabelsInput
+	): Promise<IdentifyCustomLabelsOutput> {
+		try {
+			const credentials = await Credentials.get();
+			if (!credentials) return Promise.reject('No credentials');
+			const {
+				identifyCustomLabels: {
+					region = '',
+					defaults: { type = 'LABELS' } = {},
+				} = {},
+			} = this._config;
+			this.rekognitionClient = new RekognitionClient({
+				region,
+				credentials,
+				customUserAgent: getAmplifyUserAgent(),
+			});
+			let inputImage: Image;
+			await this.configureSource(input.customlabels.source)
+				.then(data => {
+					inputImage = data;
+				})
+				.catch(err => {
+					return Promise.reject(err);
+				});
+			const param = {
+				Image: inputImage,
+				ProjectVersionArn: input.customlabels.projectVersionArn,
+			};
+			const servicePromises = [];
+
+			// get default argument
+			const entityType = input.customlabels.type || type;
+			if (entityType === 'LABELS') {
+				servicePromises.push(this.detectCustomLabels(param));
+			}
+
+			return Promise.all(servicePromises)
+				.then(data => {
+					let identifyResult: IdentifyCustomLabelsOutput = {};
+					// concatenate resolved promises to a single object
+					data.forEach(val => {
+						identifyResult = { ...identifyResult, ...val };
+					});
+					return identifyResult;
+				})
+				.catch(err => Promise.reject(err));
+		} catch (err) {
+			return Promise.reject(err);
+		}
+	}
+
+	/**
 	 * Calls Rekognition.detectLabels and organizes the returned data.
 	 * @param {DetectLabelsInput} param - parameter to be passed onto Rekognition
 	 * @return {Promise<IdentifyLabelsOutput>} - Promise resolving to organized detectLabels response.
@@ -302,6 +363,33 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				};
 			});
 			return { labels: detectLabelData };
+		} catch (err) {
+			return Promise.reject(err);
+		}
+	}
+
+	/**
+	 * Calls Rekognition.detectCustomLabels and organizes the returned data.
+	 * @param {DetectCustomLabelsInput} param - parameter to be passed onto Rekognition
+	 * @return {Promise<IdentifyCustomLabelsOutput>} - Promise resolving to organized detectCustomLabels response.
+	 */
+	private async detectCustomLabels(
+		param: DetectCustomLabelsCommandInput
+	): Promise<IdentifyCustomLabelsOutput> {
+		try {
+			const detectCustomLabelsCommand = new DetectCustomLabelsCommand(param);
+			const data = await this.rekognitionClient.send(detectCustomLabelsCommand);
+			if (!data.CustomLabels) return { customlabels: null }; // no image was detected
+			const detectCustomLabelData = data.CustomLabels.map(val => {
+				return {
+					name: val.Name,
+					metadata: {
+						confidence: val.Confidence,
+						geometry: val.Geometry,
+					},
+				};
+			});
+			return { customlabels: detectCustomLabelData };
 		} catch (err) {
 			return Promise.reject(err);
 		}
