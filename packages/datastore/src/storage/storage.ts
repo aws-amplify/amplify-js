@@ -48,7 +48,8 @@ class StorageClass implements StorageFacade {
 			modelName: string
 		) => PersistentModelConstructor<any>,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
-		private readonly adapter?: Adapter
+		private readonly adapter?: Adapter,
+		private readonly sessionId?: string
 	) {
 		this.adapter = getDefaultAdapter();
 		this.pushStream = new PushStream();
@@ -86,7 +87,8 @@ class StorageClass implements StorageFacade {
 				this.schema,
 				this.namespaceResolver,
 				this.modelInstanceCreator,
-				this.getModelConstructorByModelName
+				this.getModelConstructorByModelName,
+				this.sessionId
 			)
 			.then(resolve, reject);
 
@@ -277,14 +279,16 @@ class ExclusiveStorage implements StorageFacade {
 			modelName: string
 		) => PersistentModelConstructor<any>,
 		modelInstanceCreator: ModelInstanceCreator,
-		adapter?: Adapter
+		adapter?: Adapter,
+		sessionId?: string
 	) {
 		this.storage = new StorageClass(
 			schema,
 			namespaceResolver,
 			getModelConstructorByModelName,
 			modelInstanceCreator,
-			adapter
+			adapter,
+			sessionId
 		);
 	}
 
