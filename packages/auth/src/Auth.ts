@@ -1021,6 +1021,22 @@ export class AuthClass {
 		});
 	}
 
+	public completeConfirmNewPassword(
+		user: CognitoUser | any,
+		password: string,
+		confirmedPassword: string,
+		requiredAttributes: any = {},
+		clientMetadata: ClientMetaData = this._config.clientMetadata
+	): Promise<CognitoUser | any> {
+		if (!password) {
+			return this.rejectAuthError(AuthErrorTypes.EmptyPassword);
+		}
+		if (password !== confirmedPassword) {
+			return this.rejectAuthError(AuthErrorTypes.UnequalPasswords)
+		}
+		return this.completeNewPassword(user, password, requiredAttributes, clientMetadata);
+	}
+
 	/**
 	 * Send the answer to a custom challenge
 	 * @param {CognitoUser} user - The CognitoUser object

@@ -9,4 +9,5 @@ export enum AuthErrorStrings {
 	INVALID_MFA = 'Invalid MFA type',
 	EMPTY_CHALLENGE = 'Challenge response cannot be empty',
 	NO_USER_SESSION = 'Failed to get the session because the user is empty',
+	UNEQUAL_PASSWORDS = 'Password and Confirmation Password do not match',
 }

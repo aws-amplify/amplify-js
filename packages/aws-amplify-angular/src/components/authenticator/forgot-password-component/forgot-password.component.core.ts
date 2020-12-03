@@ -50,6 +50,8 @@ const template = `
         data-test="${auth.forgotPassword.codeInput}"
       />
       </div>
+      
+      
       <div class="amplify-form-row" *ngIf="code_sent">
       <label class="amplify-input-label" for="password">
         {{ this.amplifyService.i18n().get('New Password *') }}
@@ -64,6 +66,25 @@ const template = `
         data-test="${auth.forgotPassword.newPasswordInput}"
       />
       </div>
+      
+      
+      <div class="amplify-form-row" *ngIf="code_sent">
+      <label class="amplify-input-label" for="confirm-password">
+        {{ this.amplifyService.i18n().get('Confirm Password *') }}
+      </label>
+      <input #confirmPassword
+        (keyup)="setConfirmPassword(confirmPassword.value)"
+        (keyup.enter)="onSubmit()"
+        class="amplify-form-input"
+        type="password"
+        autocomplete="off"
+        placeholder="{{ this.amplifyService.i18n().get('Confirm Password') }}"
+        data-test="${auth.forgotPassword.confirmNewPasswordInput}"
+      />
+      </div>
+      
+      
+      
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-right">
           <button class="amplify-form-button"
@@ -72,6 +93,9 @@ const template = `
             data-test="${auth.forgotPassword.sendCodeButton}"
             >
               {{ this.amplifyService.i18n().get('Submit') }}</button>
+              
+              
+              
           <button class="amplify-form-button"
             *ngIf="code_sent"
             (click)="onSubmit()"
@@ -79,6 +103,8 @@ const template = `
             >
               {{ this.amplifyService.i18n().get('Verify') }}</button>
         </div>
+        
+        
         <div class="amplify-form-cell-left">
           <div class="amplify-form-actions-left">
             <a

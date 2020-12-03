@@ -136,6 +136,7 @@ const forgotPassword = {
 	usernameInput: 'username-input',
 	codeInput: 'forgot-password-code-input',
 	newPasswordInput: 'forgot-password-new-password-input',
+	confirmNewPasswordInput: 'forgot-password-confirm-new-password-input',
 };
 
 export const sumerianScene = {

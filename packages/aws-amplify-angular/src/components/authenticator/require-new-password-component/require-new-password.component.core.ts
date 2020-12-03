@@ -72,6 +72,7 @@ export class RequireNewPasswordComponentCore implements OnInit {
 	_authState: AuthState;
 	_show: boolean;
 	password: string;
+	confirmPassword: string;
 	errorMessage: string;
 	protected logger: any;
 
@@ -108,12 +109,16 @@ export class RequireNewPasswordComponentCore implements OnInit {
 		this.password = password;
 	}
 
+	setConfirmPassword(confirmPassword: string) {
+		this.confirmPassword = confirmPassword;
+	}
+
 	onSubmit() {
 		const { user } = this._authState;
 		const { requiredAttributes } = user.challengeParam;
 		this.amplifyService
 			.auth()
-			.completeNewPassword(user, this.password, requiredAttributes)
+			.completeConfirmNewPassword(user, this.password, this.confirmPassword, requiredAttributes)
 			.then(() => {
 				this.onAlertClose();
 				this.amplifyService.setAuthState({ state: 'signIn', user });
