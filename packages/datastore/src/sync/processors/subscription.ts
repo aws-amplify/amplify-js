@@ -255,6 +255,14 @@ class SubscriptionProcessor {
 				}
 
 				try {
+					// Checking for the Cognito region in config to see if Auth is configured
+					// before attempting to get federated token. We're using the Cognito region
+					// because it will be there regardless of user/identity pool being present.
+					const { aws_cognito_region, Auth: AuthConfig } = this.amplifyConfig;
+					if (!aws_cognito_region || (AuthConfig && !AuthConfig.region)) {
+						throw 'Auth is not configured';
+					}
+
 					let token;
 					// backwards compatibility
 					const federatedInfo = await Cache.getItem('federatedInfo');

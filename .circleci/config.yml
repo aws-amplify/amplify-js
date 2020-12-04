@@ -677,6 +677,7 @@ datastore_auth_scenarios: &datastore_auth_scenarios
       public-auth-default,
       public-auth-iam,
       owner-custom-claim-default,
+      owner-custom-field-default,
     ]
 
 workflows:
