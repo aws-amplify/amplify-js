@@ -1049,6 +1049,35 @@ export class AuthClass {
 	}
 
 	/**
+	 * Delete an authenticated users' attributes
+	 * @param {CognitoUser} - The currently logged in user object
+	 * @return {Promise}
+	 **/
+	public deleteUserAttributes(
+		user: CognitoUser | any,
+		attributeNames: string[],
+		clientMetadata: ClientMetaData = this._config.clientMetadata
+	) {
+		const that = this;
+		return new Promise((resolve, reject) => {
+			that.userSession(user).then(session => {
+				user.deleteAttributes(
+					attributeNames,
+					(err, result) => {
+						if (err) {
+							return reject(err);
+						} else {
+							return resolve(result);
+						}
+					},
+					clientMetadata
+				);
+			});
+		});
+
+	}
+
+	/**
 	 * Update an authenticated users' attributes
 	 * @param {CognitoUser} - The currently logged in user object
 	 * @return {Promise}
