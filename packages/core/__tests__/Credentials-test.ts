@@ -4,7 +4,9 @@ import Amplify from '../src/Amplify';
 const session = {};
 
 const user = {
-	refreshSession: () => {},
+	refreshSession: (_token, callback) => {
+		callback(null, 'success');
+	},
 };
 
 const authClass = {

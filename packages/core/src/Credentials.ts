@@ -118,12 +118,14 @@ export class CredentialsClass {
 				const user = await Auth.currentUserPoolUser();
 				const session = await Auth.currentSession();
 				const refreshToken = session.refreshToken;
-				user.refreshSession(refreshToken, (err, data) => {
-					err && logger.debug('refresh session called but unsuccessful', err);
-					data && logger.debug('refresh session successful', data);
+				const refreshRequest = new Promise((res, rej) => {
+					user.refreshSession(refreshToken, (err, data) => {
+						return err ? rej(err) : res(data);
+					});
 				});
+				await refreshRequest; // note that rejections will be caught and handled in the catch block.
 			} catch (err) {
-				// do not throw an error because user might be on guest access or is authenticated through federation
+				// should not throw because user might just be on guest access or is authenticated through federation
 				logger.debug('Error attempting to refreshing the session', err);
 			}
 		}
