@@ -209,13 +209,12 @@ export class CredentialsClass {
 		}
 		logger.debug('are these credentials expired?', credentials);
 		const ts = Date.now();
-		const delta = 10 * 60 * 1000; // 10 minutes in milli seconds
 
 		/* returns date object.
 			https://github.com/aws/aws-sdk-js-v3/blob/v1.0.0-beta.1/packages/types/src/credentials.ts#L26
 		*/
 		const { expiration } = credentials;
-		return expiration.getTime() <= ts + delta;
+		return expiration.getTime() <= ts;
 	}
 
 	private _isPastTTL(): boolean {
