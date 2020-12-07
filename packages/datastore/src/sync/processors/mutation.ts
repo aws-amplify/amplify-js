@@ -156,7 +156,7 @@ class MutationProcessor {
 			}
 
 			const record = result.data[opName];
-			await this.outbox.dequeue(this.storage);
+			await this.outbox.dequeue(this.storage, record);
 
 			const hasMore = (await this.outbox.peek(this.storage)) !== undefined;
 
