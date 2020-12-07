@@ -58,9 +58,6 @@
 		"zen-observable-ts": "0.8.19",
 		"zen-push": "0.2.1"
 	},
-	"peerDependencies": {
-		"@react-native-community/netinfo": "^5.5.0"
-	},
 	"jest": {
 		"globals": {
 			"ts-jest": {
