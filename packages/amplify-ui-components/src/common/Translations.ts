@@ -19,7 +19,7 @@ export enum AuthStrings {
   EMAIL_LABEL = 'Email Address *',
   EMAIL_PLACEHOLDER = 'Enter your email address',
   FORGOT_PASSWORD_TEXT = 'Forgot your password?',
-  LESS_THAN_TWO_MFA_VALUES_MESSAGE = 'Less than two mfa types available',
+  LESS_THAN_TWO_MFA_VALUES_MESSAGE = 'Less than two MFA types available',
   NEW_PASSWORD_LABEL = 'New password',
   NEW_PASSWORD_PLACEHOLDER = 'Enter your new password',
   NO_ACCOUNT_TEXT = 'No account?',

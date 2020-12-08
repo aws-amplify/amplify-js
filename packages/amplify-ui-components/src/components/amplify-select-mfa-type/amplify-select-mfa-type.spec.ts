@@ -18,7 +18,7 @@ describe('amplify-select-mfa-type spec:', () => {
     });
   });
   describe('Render logic ->', () => {
-    it('should render a `less than 2 mfa types available` message by default', async () => {
+    it('should render a `less than 2 MFA types available` message by default', async () => {
       const page = await newSpecPage({
         components: [AmplifySelectMFAType],
         html: `<amplify-select-mfa-type></amplify-select-mfa-type>`,
