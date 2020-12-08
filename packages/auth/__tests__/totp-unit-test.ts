@@ -9,7 +9,6 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserSession', () => {
 	CognitoUserSession.prototype.getIdToken = () => {
 		return {
 			getJwtToken: () => {
-				jest;
 				return null;
 			},
 		};
