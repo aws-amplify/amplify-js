@@ -84,7 +84,9 @@ export class UniversalStorage implements Storage {
 
 			// Required for CognitoUserSession
 			case 'idToken':
-				this.setUniversalItem(key, value);
+				isBrowser
+					? this.setUniversalItem(key, value)
+					: this.setLocalItem(key, value);
 
 			// userData is used when `Auth.currentAuthenticatedUser({ bypassCache: false })`.
 			// Can be persisted to speed up calls to `Auth.currentAuthenticatedUser()`
