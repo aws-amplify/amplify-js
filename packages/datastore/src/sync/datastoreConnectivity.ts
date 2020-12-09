@@ -14,6 +14,7 @@ type ConnectionStatus = {
 export default class DataStoreConnectivity {
 	private connectionStatus: ConnectionStatus;
 	private observer: ZenObservable.SubscriptionObserver<ConnectionStatus>;
+	private subscription: ZenObservable.Subscription;
 	constructor() {
 		this.connectionStatus = {
 			online: false,
@@ -28,7 +29,7 @@ export default class DataStoreConnectivity {
 			this.observer = observer;
 			// Will be used to forward socket connection changes, enhancing Reachability
 
-			const subs = ReachabilityMonitor.subscribe(({ online }) => {
+			this.subscription = ReachabilityMonitor.subscribe(({ online }) => {
 				this.connectionStatus.online = online;
 
 				const observerResult = { ...this.connectionStatus }; // copyOf status
@@ -37,9 +38,15 @@ export default class DataStoreConnectivity {
 			});
 
 			return () => {
-				subs.unsubscribe();
+				this.unsubscribe();
 			};
 		});
+	}
+
+	unsubscribe() {
+		if (this.subscription) {
+			this.subscription.unsubscribe();
+		}
 	}
 
 	socketDisconnected() {
