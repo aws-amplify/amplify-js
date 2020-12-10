@@ -174,6 +174,10 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		});
 	};
 
+	CognitoUser.prototype.getUsername = () => {
+		return 'testUsername';
+	};
+
 	return CognitoUser;
 });
 
@@ -346,12 +350,17 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptions);
 
 			const spyon = jest.spyOn(CognitoUser.prototype, 'verifySoftwareToken');
+			const spyon2 = jest.spyOn(CognitoUser.prototype, 'getUsername');
+
 			expect(await auth.verifyTotpToken(user, 'challengeAnswer')).toBe(
 				'Success'
 			);
+
 			expect(spyon).toBeCalled();
+			expect(spyon2).toBeCalled();
 
 			spyon.mockClear();
+			spyon2.mockClear();
 		});
 
 		test('err case', async () => {

@@ -913,6 +913,11 @@ export class AuthClass {
 					return;
 				},
 				onSuccess: data => {
+					dispatchAuthEvent(
+						'signIn',
+						user,
+						`A user ${user.getUsername()} has been signed in`
+					);
 					logger.debug('verifyTotpToken success', data);
 					res(data);
 					return;

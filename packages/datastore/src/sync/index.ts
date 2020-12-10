@@ -93,6 +93,7 @@ export class SyncEngine {
 	private readonly mutationsProcessor: MutationProcessor;
 	private readonly modelMerger: ModelMerger;
 	private readonly outbox: MutationEventOutbox;
+	private readonly datastoreConnectivity: DataStoreConnectivity;
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -142,6 +143,7 @@ export class SyncEngine {
 			conflictHandler,
 			errorHandler
 		);
+		this.datastoreConnectivity = new DataStoreConnectivity();
 	}
 
 	start(params: StartParams) {
@@ -158,10 +160,8 @@ export class SyncEngine {
 					return;
 				}
 
-				const datastoreConnectivity = new DataStoreConnectivity();
-
 				const startPromise = new Promise(resolve => {
-					datastoreConnectivity.status().subscribe(async ({ online }) => {
+					this.datastoreConnectivity.status().subscribe(async ({ online }) => {
 						// From offline to online
 						if (online && !this.online) {
 							this.online = online;
@@ -205,9 +205,7 @@ export class SyncEngine {
 											},
 											error: err => {
 												reject(err);
-												const handleDisconnect = this.disconnectionHandler(
-													datastoreConnectivity
-												);
+												const handleDisconnect = this.disconnectionHandler();
 												handleDisconnect(err);
 											},
 										});
@@ -674,18 +672,20 @@ export class SyncEngine {
 		});
 	}
 
-	private disconnectionHandler(
-		datastoreConnectivity: DataStoreConnectivity
-	): (msg: string) => void {
+	private disconnectionHandler(): (msg: string) => void {
 		return (msg: string) => {
-			// This implementation is tight to AWSAppSyncRealTimeProvider 'Connection closed', 'Timeout disconnect' msg
+			// This implementation is tied to AWSAppSyncRealTimeProvider 'Connection closed', 'Timeout disconnect' msg
 			if (
 				PUBSUB_CONTROL_MSG.CONNECTION_CLOSED === msg ||
 				PUBSUB_CONTROL_MSG.TIMEOUT_DISCONNECT === msg
 			) {
-				datastoreConnectivity.socketDisconnected();
+				this.datastoreConnectivity.socketDisconnected();
 			}
 		};
+	}
+
+	public unsubscribeConnectivity() {
+		this.datastoreConnectivity.unsubscribe();
 	}
 
 	private async setupModels(params: StartParams) {
