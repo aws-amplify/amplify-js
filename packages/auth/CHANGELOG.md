@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.14...@aws-amplify/auth@3.4.15) (2020-12-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** refresh manually after TTL has passed ([#7288](https://github.com/aws-amplify/amplify-js/issues/7288)) ([74b895c](https://github.com/aws-amplify/amplify-js/commit/74b895c45e629edc5ecf333e2769f222ae500834))
+* **6774:** fixed 'signIn' not being called on successful verification of totp token ([15e7257](https://github.com/aws-amplify/amplify-js/commit/15e7257a306f4e773f0f71617cf569baaae4af9b))
+* **tidy:** tidying up ([5956694](https://github.com/aws-amplify/amplify-js/commit/59566947078952aaedfa33a43b3418103dc07bcd))
+
+
+
+
+
 ## [3.4.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.13...@aws-amplify/auth@3.4.14) (2020-11-30)
 
 **Note:** Version bump only for package @aws-amplify/auth

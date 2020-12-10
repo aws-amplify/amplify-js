@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.10](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.9...aws-amplify-react-native@4.2.10) (2020-12-10)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** remove peerDependencies ([#7384](https://github.com/aws-amplify/amplify-js/issues/7384)) ([30463fb](https://github.com/aws-amplify/amplify-js/commit/30463fb0b8a7001d722a079da3535093f86c3702))
+
+
+
+
+
 ## [4.2.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.8...aws-amplify-react-native@4.2.9) (2020-11-13)
 
 **Note:** Version bump only for package aws-amplify-react-native
