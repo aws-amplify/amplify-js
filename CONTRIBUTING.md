@@ -149,7 +149,7 @@ Verdaccio is a lightweight private npm proxy registry built in Node.js. Install 
 To publish in Verdaccio, start a verdaccio instance and then,
 
 ```
-npm set registry http://localhost:4873/
+yarn config set registry http://localhost:4873/
 yarn lerna publish --skip-git --force-publish
 ```
 
@@ -157,13 +157,13 @@ To publish a local version of a specific package,
 
 ```
 cd packages/<category>
-npm publish --registry http://localhost:4873 (http://localhost:4873/)
+yarn publish --registry http://localhost:4873/
 ```
 
-Once you are done with Verdaccio, you can reset to npm registry by doing,
+Once you are done with Verdaccio, you can reset to the default registry by doing,
 
 ```
-npm set registry https://registry.npmjs.com/
+yarn config set registry https://registry.yarnpkg.com
 ```
 
 # Pull Requests
