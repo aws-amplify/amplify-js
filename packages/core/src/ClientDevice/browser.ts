@@ -66,7 +66,7 @@ function browserTimezone() {
 	return tzMatch ? tzMatch[1] || '' : '';
 }
 
-function browserType(userAgent) {
+export function browserType(userAgent: string) {
 	const operaMatch = /.+(Opera[\s[A-Z]*|OPR[\sA-Z]*)\/([0-9\.]+).*/i.exec(
 		userAgent
 	);
