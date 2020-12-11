@@ -10,8 +10,6 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
-import { Hub } from '../Hub';
 import { ConsoleLogger as Logger } from '../Logger';
 
 const logger = new Logger('ClientDevice_Browser');
