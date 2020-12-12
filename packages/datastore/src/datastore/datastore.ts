@@ -1065,6 +1065,10 @@ class DataStore {
 
 		await this.storage.clear();
 
+		if (this.sync) {
+			this.sync.unsubscribeConnectivity();
+		}
+
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.storage = undefined;
 		this.sync = undefined;
@@ -1078,6 +1082,10 @@ class DataStore {
 
 		if (syncSubscription && !syncSubscription.closed) {
 			syncSubscription.unsubscribe();
+		}
+
+		if (this.sync) {
+			this.sync.unsubscribeConnectivity();
 		}
 
 		this.initialized = undefined; // Should re-initialize when start() is called.

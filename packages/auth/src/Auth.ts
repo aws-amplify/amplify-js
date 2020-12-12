@@ -96,6 +96,7 @@ export class AuthClass {
 	private _storage;
 	private _storageSync;
 	private oAuthFlowInProgress: boolean = false;
+	private pendingSignIn: ReturnType<AuthClass['signInWithPassword']> | null;
 
 	Credentials = Credentials;
 
@@ -585,14 +586,30 @@ export class AuthClass {
 	private signInWithPassword(
 		authDetails: AuthenticationDetails
 	): Promise<CognitoUser | any> {
+		if (this.pendingSignIn) {
+			throw new Error('Pending sign-in attempt already in progress');
+		}
+
 		const user = this.createCognitoUser(authDetails.getUsername());
 
-		return new Promise((resolve, reject) => {
+		this.pendingSignIn = new Promise((resolve, reject) => {
 			user.authenticateUser(
 				authDetails,
-				this.authCallbacks(user, resolve, reject)
+				this.authCallbacks(
+					user,
+					value => {
+						this.pendingSignIn = null;
+						resolve(value);
+					},
+					error => {
+						this.pendingSignIn = null;
+						reject(error);
+					}
+				)
 			);
 		});
+
+		return this.pendingSignIn;
 	}
 
 	/**
@@ -896,6 +913,11 @@ export class AuthClass {
 					return;
 				},
 				onSuccess: data => {
+					dispatchAuthEvent(
+						'signIn',
+						user,
+						`A user ${user.getUsername()} has been signed in`
+					);
 					logger.debug('verifyTotpToken success', data);
 					res(data);
 					return;
@@ -1379,7 +1401,7 @@ export class AuthClass {
 	}
 
 	/**
-	 * Get  authenticated credentials of current user.
+	 * Get authenticated credentials of current user.
 	 * @return - A promise resolves to be current user's credentials
 	 */
 	public async currentUserCredentials(): Promise<ICredentials> {

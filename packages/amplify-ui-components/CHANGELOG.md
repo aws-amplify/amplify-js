@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.6...@aws-amplify/ui-components@0.9.7) (2020-12-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** flatten `injectGlobalPaths` array ([ccd7c2e](https://github.com/aws-amplify/amplify-js/commit/ccd7c2e5c8320fac0e01d59a509c7c9a08f65b9f))
+
+
+
+
+
 ## [0.9.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.5...@aws-amplify/ui-components@0.9.6) (2020-11-30)
 
 **Note:** Version bump only for package @aws-amplify/ui-components

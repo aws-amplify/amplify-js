@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.2.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.31...@aws-amplify/ui-react@0.2.32) (2020-12-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-react:** fix cant resolve 'fs' when bundling with webpack on windows ([#7222](https://github.com/aws-amplify/amplify-js/issues/7222)) ([a3f572e](https://github.com/aws-amplify/amplify-js/commit/a3f572ef0f6a8d30a08c859fe3d2107ccbf8e5ff))
+
+
+
+
+
 ## [0.2.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@0.2.30...@aws-amplify/ui-react@0.2.31) (2020-11-30)
 
 **Note:** Version bump only for package @aws-amplify/ui-react
