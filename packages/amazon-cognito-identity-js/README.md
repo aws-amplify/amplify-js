@@ -918,7 +918,7 @@ cognitoUser.getUserData(
 **Use case 32.** Handling expiration of the Id Token.
 
 ```js
-refresh_token = session.getRefreshToken(); // receive session from calling cognitoUser.getSession()
+var refresh_token = session.getRefreshToken(); // receive session from calling cognitoUser.getSession()
 if (AWS.config.credentials.needsRefresh()) {
 	cognitoUser.refreshSession(refresh_token, (err, session) => {
 		if (err) {
