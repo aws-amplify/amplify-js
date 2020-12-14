@@ -50,13 +50,16 @@ export const handleSignIn = async (username: string, password: string, handleAut
       await checkContact(user, handleAuthStateChange);
     }
   } catch (error) {
-    dispatchToastHubEvent(error);
     if (error.code === 'UserNotConfirmedException') {
       logger.debug('the user is not confirmed');
       handleAuthStateChange(AuthState.ConfirmSignUp, { username });
     } else if (error.code === 'PasswordResetRequiredException') {
       logger.debug('the user requires a new password');
       handleAuthStateChange(AuthState.ForgotPassword, { username });
+    } else if (error.code === 'InvalidParameterException' && password === '') {
+      logger.debug('Password cannot be empty');
+      error.message = 'Password cannot be empty.';
     }
+    dispatchToastHubEvent(error);
   }
 };
