@@ -843,7 +843,7 @@ cognitoUser.authenticateUser(authenticationDetails, {
 **Use case 28.** Enabling and setting SMS MFA as the preferred MFA method for the user.
 
 ```js
-smsMfaSettings = {
+var smsMfaSettings = {
 	PreferredMfa: true,
 	Enabled: true,
 };
@@ -858,7 +858,7 @@ cognitoUser.setUserMfaPreference(smsMfaSettings, null, function(err, result) {
 **Use case 29.** Enabling and setting TOTP MFA as the preferred MFA method for the user.
 
 ```js
-totpMfaSettings = {
+var totpMfaSettings = {
 	PreferredMfa: true,
 	Enabled: true,
 };
