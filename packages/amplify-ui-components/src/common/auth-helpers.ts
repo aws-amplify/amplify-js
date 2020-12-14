@@ -57,7 +57,7 @@ export const handleSignIn = async (username: string, password: string, handleAut
       logger.debug('the user requires a new password');
       handleAuthStateChange(AuthState.ForgotPassword, { username });
     } else if (error.code === 'InvalidParameterException' && password === '') {
-      logger.debug('No password was passed and custom auth lambda triggers are not configured.', error);
+      logger.debug('Empty password was passed, with no custom auth lambda triggers configured', error);
       error.message = 'Password cannot be empty.';
     }
     dispatchToastHubEvent(error);
