@@ -1,7 +1,10 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import * as idb from 'idb';
 import { ModelInstanceCreator } from '../../datastore/datastore';
-import { ModelPredicateCreator } from '../../predicates';
+import {
+	ModelPredicateCreator,
+	ModelSortPredicateCreator,
+} from '../../predicates';
 import {
 	InternalSchema,
 	isPredicateObj,
@@ -24,6 +27,7 @@ import {
 	isPrivateMode,
 	traverseModel,
 	validatePredicate,
+	sortCompareFunction,
 } from '../../util';
 import { Adapter } from './index';
 
@@ -43,6 +47,7 @@ class IndexedDBAdapter implements Adapter {
 	private initPromise: Promise<void>;
 	private resolve: (value?: any) => void;
 	private reject: (value?: any) => void;
+	private dbName: string = DB_NAME;
 
 	private async checkPrivate() {
 		const isPrivate = await isPrivateMode().then(isPrivate => {
@@ -80,7 +85,8 @@ class IndexedDBAdapter implements Adapter {
 		getModelConstructorByModelName: (
 			namsespaceName: string,
 			modelName: string
-		) => PersistentModelConstructor<any>
+		) => PersistentModelConstructor<any>,
+		sessionId?: string
 	) {
 		await this.checkPrivate();
 		if (!this.initPromise) {
@@ -91,7 +97,9 @@ class IndexedDBAdapter implements Adapter {
 		} else {
 			await this.initPromise;
 		}
-
+		if (sessionId) {
+			this.dbName = `${DB_NAME}-${sessionId}`;
+		}
 		this.schema = theSchema;
 		this.namespaceResolver = namespaceResolver;
 		this.modelInstanceCreator = modelInstanceCreator;
@@ -100,7 +108,7 @@ class IndexedDBAdapter implements Adapter {
 		try {
 			if (!this.db) {
 				const VERSION = 2;
-				this.db = await idb.openDB(DB_NAME, VERSION, {
+				this.db = await idb.openDB(this.dbName, VERSION, {
 					upgrade: async (db, oldVersion, newVersion, txn) => {
 						if (oldVersion === 0) {
 							Object.keys(theSchema.namespaces).forEach(namespaceName => {
@@ -362,6 +370,7 @@ class IndexedDBAdapter implements Adapter {
 		await this.checkPrivate();
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
+		const sortSpecified = pagination && pagination.sort;
 
 		if (predicate) {
 			const predicates = ModelPredicateCreator.getPredicates(predicate);
@@ -403,6 +412,15 @@ class IndexedDBAdapter implements Adapter {
 			}
 		}
 
+		if (sortSpecified) {
+			const all = <T[]>await this.db.getAll(storeName);
+			return await this.load(
+				namespaceName,
+				modelConstructor.name,
+				this.inMemoryPagination(all, pagination)
+			);
+		}
+
 		return await this.load(
 			namespaceName,
 			modelConstructor.name,
@@ -415,6 +433,17 @@ class IndexedDBAdapter implements Adapter {
 		pagination?: PaginationInput<T>
 	): T[] {
 		if (pagination) {
+			if (pagination.sort) {
+				const sortPredicates = ModelSortPredicateCreator.getPredicates(
+					pagination.sort
+				);
+
+				if (sortPredicates.length) {
+					const compareFn = sortCompareFunction(sortPredicates);
+					records.sort(compareFn);
+				}
+			}
+
 			const { page = 0, limit = 0 } = pagination;
 			const start = Math.max(0, page * limit) || 0;
 
@@ -733,7 +762,7 @@ class IndexedDBAdapter implements Adapter {
 
 		this.db.close();
 
-		await idb.deleteDB(DB_NAME);
+		await idb.deleteDB(this.dbName);
 
 		this.db = undefined;
 		this.initPromise = undefined;

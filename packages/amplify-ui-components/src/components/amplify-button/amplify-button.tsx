@@ -3,6 +3,9 @@ import { ButtonTypes, ButtonVariant } from '../../common/types/ui-types';
 import { hasShadowDom } from '../../common/helpers';
 import { IconNameType } from '../amplify-icon/icons';
 
+/**
+ * @slot (default) - content placed within the button
+ */
 @Component({
   tag: 'amplify-button',
   styleUrl: 'amplify-button.scss',
@@ -12,7 +15,7 @@ export class AmplifyButton {
   @Element() el!: HTMLAmplifyButtonElement;
   /** Type of the button: 'button', 'submit' or 'reset' */
   @Prop() type: ButtonTypes = 'button';
-  /** Variant of a button: 'button' | 'anchor' */
+  /** Variant of a button: 'button' | 'anchor | 'icon' */
   @Prop() variant: ButtonVariant = 'button';
   /** (Optional) Callback called when a user clicks on the button */
   @Prop() handleButtonClick: (evt: Event) => void;

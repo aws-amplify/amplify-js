@@ -3,6 +3,90 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.6...@aws-amplify/core@3.8.7) (2020-12-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** refresh manually after TTL has passed ([#7288](https://github.com/aws-amplify/amplify-js/issues/7288)) ([74b895c](https://github.com/aws-amplify/amplify-js/commit/74b895c45e629edc5ecf333e2769f222ae500834))
+
+
+
+
+
+## [3.8.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.5...@aws-amplify/core@3.8.6) (2020-11-30)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.4...@aws-amplify/core@3.8.5) (2020-11-23)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.3...@aws-amplify/core@3.8.4) (2020-11-20)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.2...@aws-amplify/core@3.8.3) (2020-11-13)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.1...@aws-amplify/core@3.8.2) (2020-11-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.0...@aws-amplify/core@3.8.1) (2020-10-31)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** update random implementation ([#7090](https://github.com/aws-amplify/amplify-js/issues/7090)) ([7048453](https://github.com/aws-amplify/amplify-js/commit/70484532da8a9953384b00b223b2b3ba0c0e845e))
+
+
+
+
+
+# [3.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.7.0...@aws-amplify/core@3.8.0) (2020-10-29)
+
+
+### Features
+
+* **@aws-amplify/datastore:** add Selective Sync ([#7001](https://github.com/aws-amplify/amplify-js/issues/7001)) ([8fa348b](https://github.com/aws-amplify/amplify-js/commit/8fa348b8ba708434992d97557b0fceebbf7abe9a))
+
+
+
+
+
+# [3.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.6.0...@aws-amplify/core@3.7.0) (2020-10-15)
+
+
+### Features
+
+* **@aws-amplify/core:** add worker support to reachability ([#6956](https://github.com/aws-amplify/amplify-js/issues/6956)) ([ebb20c1](https://github.com/aws-amplify/amplify-js/commit/ebb20c1c970eea5dc32288f4dfda9c2cc959ac10))
+
+
+
+
+
 # [3.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.5.5...@aws-amplify/core@3.6.0) (2020-10-01)
 
 

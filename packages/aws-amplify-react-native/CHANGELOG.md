@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.10](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.9...aws-amplify-react-native@4.2.10) (2020-12-10)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** remove peerDependencies ([#7384](https://github.com/aws-amplify/amplify-js/issues/7384)) ([30463fb](https://github.com/aws-amplify/amplify-js/commit/30463fb0b8a7001d722a079da3535093f86c3702))
+
+
+
+
+
+## [4.2.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.8...aws-amplify-react-native@4.2.9) (2020-11-13)
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+
+
+
+
+## [4.2.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.7...aws-amplify-react-native@4.2.8) (2020-10-29)
+
+
+### Bug Fixes
+
+* rewrite "forget password" to "forgot password" ([#7009](https://github.com/aws-amplify/amplify-js/issues/7009)) ([fd989e4](https://github.com/aws-amplify/amplify-js/commit/fd989e405a7bc024f780cc7df552ebd489e0be60)), closes [#6921](https://github.com/aws-amplify/amplify-js/issues/6921)
+
+
+
+
+
 ## [4.2.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.6...aws-amplify-react-native@4.2.7) (2020-09-25)
 
 

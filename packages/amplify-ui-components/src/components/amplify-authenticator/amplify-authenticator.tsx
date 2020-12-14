@@ -21,6 +21,18 @@ import { checkContact } from '../../common/auth-helpers';
 
 const logger = new Logger('Authenticator');
 
+/**
+ * @slot sign-in - Content placed inside of the sign in workflow for when a user wants to sign into their account
+ * @slot confirm-sign-in - Content placed inside of the confirm sign in workflow for when a user needs to confirm the account they signed in with
+ * @slot sign-up - Content placed inside of the sign up workflow for when a user wants to register a new account
+ * @slot confirm-sign-up - Content placed inside of the confirm sign up workflow for when a user needs to confirm the account they signed up with
+ * @slot forgot-password - Content placed inside of the forgot password workflow for when a user wants to reset their password
+ * @slot require-new-password - Content placed inside of the require new password workflow for when a user is required to update their password
+ * @slot verify-contact - Content placed inside of the verify-contact workflow for when a user must verify their contact information
+ * @slot totp-setup - Content placed inside of the totp-setup workflow for when a user opts to use TOTP MFA
+ * @slot greetings - Content placed inside of the greetings navigation for when a user is signed in
+ * @slot loading - Content placed inside of the loading workflow for when the app is loading
+ */
 @Component({
   tag: 'amplify-authenticator',
   styleUrl: 'amplify-authenticator.scss',
@@ -76,30 +88,31 @@ export class AmplifyAuthenticator {
     if (byHostedUI !== 'true') await this.checkUser();
   }
 
-  private async checkUser() {
+  private async checkUser(): Promise<void> {
     if (!Auth || typeof Auth.currentAuthenticatedUser !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
-    try {
-      const user = await Auth.currentAuthenticatedUser();
-      dispatchAuthStateChangeEvent(AuthState.SignedIn, user);
-    } catch (error) {
-      let cachedAuthState = null;
-      try {
-        cachedAuthState = localStorage.getItem(AUTHENTICATOR_AUTHSTATE);
-      } catch (error) {
-        logger.debug('Failed to get the auth state from local storage', error);
-      }
-      try {
-        if (cachedAuthState === AuthState.SignedIn) {
-          await Auth.signOut();
+    return Auth.currentAuthenticatedUser()
+      .then(user => {
+        dispatchAuthStateChangeEvent(AuthState.SignedIn, user);
+      })
+      .catch(async () => {
+        let cachedAuthState = null;
+        try {
+          cachedAuthState = localStorage.getItem(AUTHENTICATOR_AUTHSTATE);
+        } catch (error) {
+          logger.debug('Failed to get the auth state from local storage', error);
         }
-        dispatchAuthStateChangeEvent(this.initialAuthState);
-      } catch (error) {
-        logger.debug('Failed to sign out', error);
-      }
-    }
+        try {
+          if (cachedAuthState === AuthState.SignedIn) {
+            await Auth.signOut();
+          }
+          dispatchAuthStateChangeEvent(this.initialAuthState);
+        } catch (error) {
+          logger.debug('Failed to sign out', error);
+        }
+      });
   }
 
   private async onAuthStateChange(nextAuthState: AuthState, data?: CognitoUserInterface) {
