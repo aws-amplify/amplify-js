@@ -30,7 +30,8 @@ export class AmplifyInput {
     composed: true,
     cancelable: true,
     bubbles: true,
-  }) formSubmit: EventEmitter; 
+  })
+  formSubmit: EventEmitter;
 
   // eslint-disable-next-line
   @Listen('keydown')
@@ -47,7 +48,9 @@ export class AmplifyInput {
           id={this.fieldId}
           aria-describedby={this.fieldId && this.description ? `${this.fieldId}-description` : null}
           type={this.type}
-          onInput={event => this.handleInputChange(event)}
+          onInput={event => {
+            this.handleInputChange(event);
+          }}
           placeholder={this.placeholder}
           name={this.name}
           class="input"

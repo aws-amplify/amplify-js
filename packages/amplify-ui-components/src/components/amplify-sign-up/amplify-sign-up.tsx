@@ -131,7 +131,10 @@ export class AmplifySignUp {
       default:
         break;
     }
-
+    this.signUpAttributes.username = this.signUpAttributes.username.trim();
+    if (this.signUpAttributes.password !== this.signUpAttributes.password.trim()) {
+      dispatchToastHubEvent(new Error(Translations.PASSWORD_REMOVE_WHITESPACE));
+    }
     try {
       const data = await Auth.signUp(this.signUpAttributes);
       if (!data) {
