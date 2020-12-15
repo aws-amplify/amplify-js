@@ -131,7 +131,7 @@ export class AmplifySignIn {
         break;
     }
 
-    await handleSignIn(this.signInAttributes.userInput, this.signInAttributes.password, this.handleAuthStateChange);
+    await handleSignIn(this.signInAttributes.userInput.trim(), this.signInAttributes.password.trim(), this.handleAuthStateChange);
     this.loading = false;
   }
 
