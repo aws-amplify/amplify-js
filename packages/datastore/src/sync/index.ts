@@ -93,6 +93,7 @@ export class SyncEngine {
 	private readonly mutationsProcessor: MutationProcessor;
 	private readonly modelMerger: ModelMerger;
 	private readonly outbox: MutationEventOutbox;
+	private readonly datastoreConnectivity: DataStoreConnectivity;
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -142,6 +143,7 @@ export class SyncEngine {
 			conflictHandler,
 			errorHandler
 		);
+		this.datastoreConnectivity = new DataStoreConnectivity();
 	}
 
 	start(params: StartParams) {
@@ -158,10 +160,8 @@ export class SyncEngine {
 					return;
 				}
 
-				const datastoreConnectivity = new DataStoreConnectivity();
-
 				const startPromise = new Promise(resolve => {
-					datastoreConnectivity.status().subscribe(async ({ online }) => {
+					this.datastoreConnectivity.status().subscribe(async ({ online }) => {
 						// From offline to online
 						if (online && !this.online) {
 							this.online = online;
@@ -196,12 +196,22 @@ export class SyncEngine {
 								] = this.subscriptionsProcessor.start();
 
 								try {
-									subscriptions.push(
-										await this.waitForSubscriptionsReady(
-											ctlSubsObservable,
-											datastoreConnectivity
-										)
-									);
+									await new Promise((resolve, reject) => {
+										const ctlSubsSubscription = ctlSubsObservable.subscribe({
+											next: msg => {
+												if (msg === CONTROL_MSG.CONNECTED) {
+													resolve();
+												}
+											},
+											error: err => {
+												reject(err);
+												const handleDisconnect = this.disconnectionHandler();
+												handleDisconnect(err);
+											},
+										});
+
+										subscriptions.push(ctlSubsSubscription);
+									});
 								} catch (err) {
 									observer.error(err);
 									return;
@@ -662,40 +672,20 @@ export class SyncEngine {
 		});
 	}
 
-	private disconnectionHandler(
-		datastoreConnectivity: DataStoreConnectivity
-	): (msg: string) => void {
+	private disconnectionHandler(): (msg: string) => void {
 		return (msg: string) => {
-			// This implementation is tight to AWSAppSyncRealTimeProvider 'Connection closed', 'Timeout disconnect' msg
+			// This implementation is tied to AWSAppSyncRealTimeProvider 'Connection closed', 'Timeout disconnect' msg
 			if (
 				PUBSUB_CONTROL_MSG.CONNECTION_CLOSED === msg ||
 				PUBSUB_CONTROL_MSG.TIMEOUT_DISCONNECT === msg
 			) {
-				datastoreConnectivity.socketDisconnected();
+				this.datastoreConnectivity.socketDisconnected();
 			}
 		};
 	}
 
-	private async waitForSubscriptionsReady(
-		ctlSubsObservable: Observable<CONTROL_MSG>,
-		datastoreConnectivity: DataStoreConnectivity
-	): Promise<ZenObservable.Subscription> {
-		return new Promise((resolve, reject) => {
-			const subscription = ctlSubsObservable.subscribe({
-				next: msg => {
-					if (msg === CONTROL_MSG.CONNECTED) {
-						resolve(subscription);
-					}
-				},
-				error: err => {
-					reject(err);
-					const handleDisconnect = this.disconnectionHandler(
-						datastoreConnectivity
-					);
-					handleDisconnect(err);
-				},
-			});
-		});
+	public unsubscribeConnectivity() {
+		this.datastoreConnectivity.unsubscribe();
 	}
 
 	private async setupModels(params: StartParams) {

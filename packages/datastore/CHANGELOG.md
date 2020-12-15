@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.0...@aws-amplify/datastore@2.9.1) (2020-12-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** check auth config before getting token ([#7325](https://github.com/aws-amplify/amplify-js/issues/7325)) ([d9aa328](https://github.com/aws-amplify/amplify-js/commit/d9aa32837f15f408daba0a0104bb27042b9331da))
+* **@aws-amplify/datastore:** Fix ctlSubsSubscription not getting unsubscribed when device goes offline ([#7250](https://github.com/aws-amplify/amplify-js/issues/7250)) ([4d0a2e3](https://github.com/aws-amplify/amplify-js/commit/4d0a2e34a21eb96b9085efcdd8f7846734bf33f7))
+* **@aws-amplify/datastore:** fix custom ownerField selection set ([#7317](https://github.com/aws-amplify/amplify-js/issues/7317)) ([0b82781](https://github.com/aws-amplify/amplify-js/commit/0b82781e946e6bef15f7b162d0ea538fc8ac5100))
+* **@aws-amplify/datastore:** remove netinfo from peer deps to prevent npm7 error ([#7349](https://github.com/aws-amplify/amplify-js/issues/7349)) ([88e2413](https://github.com/aws-amplify/amplify-js/commit/88e2413701cae673043c2fe42b490d279e7e51c9))
+
+
+
+
+
+# [2.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.8.1...@aws-amplify/datastore@2.9.0) (2020-11-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** handle groupClaim as plain string ([#7261](https://github.com/aws-amplify/amplify-js/issues/7261)) ([63e5baa](https://github.com/aws-amplify/amplify-js/commit/63e5baa4293bf6688962007137377d19c5ef8904))
+
+
+### Features
+
+* **@aws-amplify/datastore:** handle sessionId ([#7304](https://github.com/aws-amplify/amplify-js/issues/7304)) ([6e28eaf](https://github.com/aws-amplify/amplify-js/commit/6e28eaf37525ce231d7793bf82a960046fc7f8f4))
+
+
+
+
+
 ## [2.8.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.8.0...@aws-amplify/datastore@2.8.1) (2020-11-23)
 
 
