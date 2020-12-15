@@ -3,6 +3,7 @@ import { Logger, isEmpty } from '@aws-amplify/core';
 import { AuthState, ChallengeName, CognitoUserInterface, AuthStateHandler } from './types/auth-types';
 import { dispatchToastHubEvent } from './helpers';
 import { NO_AUTH_MODULE_FOUND } from '../common/constants';
+import { Translations } from '../common/Translations';
 
 const logger = new Logger('auth-helpers');
 
@@ -58,7 +59,7 @@ export const handleSignIn = async (username: string, password: string, handleAut
       handleAuthStateChange(AuthState.ForgotPassword, { username });
     } else if (error.code === 'InvalidParameterException' && password === '') {
       logger.debug('Password cannot be empty');
-      error.message = 'Password cannot be empty.';
+      error.message = Translations.EMPTY_PASSWORD;
     }
     dispatchToastHubEvent(error);
   }
