@@ -26,6 +26,8 @@ export default class ReachabilityNavigator implements Reachability {
 
 			const unsubscribe = netInfo.addEventListener(
 				({ isInternetReachable }) => {
+					// `isInternetReachable` can sometimes be `null` initially, so we want
+					// to make sure it is a boolean first before sending it to the observer.
 					if (typeof isInternetReachable === 'boolean') {
 						const online = isInternetReachable;
 						logger.log('Notifying reachability change', online);
