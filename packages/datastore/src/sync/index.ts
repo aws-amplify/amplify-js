@@ -162,12 +162,6 @@ export class SyncEngine {
 
 				const startPromise = new Promise(resolve => {
 					this.datastoreConnectivity.status().subscribe(async ({ online }) => {
-						// skip if connectivity isn't available yet. This is mostly relevant for
-						// @react-native-community/netinfo, as the initial value can be `null`.
-						if (typeof online !== 'boolean') {
-							return;
-						}
-
 						// From offline to online
 						if (online && !this.online) {
 							this.online = online;
