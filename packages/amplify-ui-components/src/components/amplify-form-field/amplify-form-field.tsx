@@ -60,6 +60,7 @@ export class AmplifyFormField {
               value={this.value}
               inputProps={this.inputProps}
               disabled={this.disabled}
+              required={this.required}
             />
           </slot>
         </div>

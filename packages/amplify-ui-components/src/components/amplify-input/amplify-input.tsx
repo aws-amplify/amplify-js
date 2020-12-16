@@ -24,13 +24,15 @@ export class AmplifyInput {
   @Prop() inputProps?: object;
   /** Will disable the input if set to true */
   @Prop() disabled?: boolean;
+  /**The required flag in order to make an input required prior to submitting a form */
+  @Prop() required?: boolean;
   /** Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form */
   @Event({
     eventName: 'formSubmit',
     composed: true,
     cancelable: true,
     bubbles: true,
-  }) formSubmit: EventEmitter; 
+  }) formSubmit: EventEmitter;
 
   // eslint-disable-next-line
   @Listen('keydown')
@@ -53,6 +55,7 @@ export class AmplifyInput {
           class="input"
           value={this.value}
           disabled={this.disabled}
+          required={this.required}
           {...this.inputProps}
         />
       </Host>

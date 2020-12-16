@@ -513,6 +513,10 @@ export namespace Components {
          */
         "placeholder"?: string;
         /**
+          * The required flag in order to make an input required prior to submitting a form
+         */
+        "required"?: boolean;
+        /**
           * The input type.  Can be any HTML input type.
          */
         "type"?: TextFieldTypes;
@@ -2020,6 +2024,10 @@ declare namespace LocalJSX {
           * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
          */
         "placeholder"?: string;
+        /**
+          * The required flag in order to make an input required prior to submitting a form
+         */
+        "required"?: boolean;
         /**
           * The input type.  Can be any HTML input type.
          */

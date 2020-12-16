@@ -80,6 +80,20 @@ exports[`amplify-form-field spec: Render logic -> renders with an name, if it is
 </amplify-form-field>
 `;
 
+exports[`amplify-form-field spec: Render logic -> renders with an required, if it is provided 1`] = `
+<amplify-form-field required="required">
+  <mock:shadow-root>
+    <div class="form-field">
+      <div>
+        <slot name="input">
+          <amplify-input placeholder="" required="" type="text"></amplify-input>
+        </slot>
+      </div>
+    </div>
+  </mock:shadow-root>
+</amplify-form-field>
+`;
+
 exports[`amplify-form-field spec: Render logic -> renders without Emotion CSS classes 1`] = `
 <amplify-form-field description="description" field-id="id" label="label">
   <mock:shadow-root>

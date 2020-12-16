@@ -62,7 +62,11 @@ describe('amplify-input spec:', () => {
     });
 
     it('`formSubmit` should be defined', () => {
-      expect(input.formSubmit).toBeDefined()
+      expect(input.formSubmit).toBeDefined();
+    });
+
+    it('required should be undefined by default', () => {
+      expect(input.required).toBeUndefined();
     });
   });
 });

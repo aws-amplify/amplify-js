@@ -71,4 +71,12 @@ describe('amplify-form-field e2e:', () => {
     const input = await page.find('input');
     expect(input).toEqualAttribute('type', 'number');
   });
+
+  it('can have a required input', async () => {
+    await page.setContent(`<amplify-form-field required='required'></amplify-form-field>`);
+    await page.waitForChanges();
+
+    const input = await page.find('input');
+    expect(input).toEqualAttribute('required', 'required');
+  });
 });

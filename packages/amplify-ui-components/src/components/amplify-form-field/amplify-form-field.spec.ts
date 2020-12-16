@@ -65,6 +65,14 @@ describe('amplify-form-field spec:', () => {
       expect(page.root).toMatchSnapshot();
     });
 
+    it('renders with an required, if it is provided', async () => {
+      const page = await newSpecPage({
+        components: [AmplifyFormField],
+        html: `<amplify-form-field required='required'></amplify-form-field>`,
+      });
+      expect(page.root).toMatchSnapshot();
+    });
+
     it('renders with an name, if it is provided', async () => {
       const page = await newSpecPage({
         components: [AmplifyFormField],
