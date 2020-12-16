@@ -24,12 +24,10 @@ export default class ReachabilityNavigator implements Reachability {
 		return new Observable(observer => {
 			logger.log('subscribing to reachability in React Native');
 
-			let online;
-
 			const unsubscribe = netInfo.addEventListener(
 				({ isInternetReachable }) => {
 					if (typeof isInternetReachable === 'boolean') {
-						online = isInternetReachable;
+						const online = isInternetReachable;
 						logger.log('Notifying reachability change', online);
 						observer.next({ online });
 					}
