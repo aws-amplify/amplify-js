@@ -184,6 +184,7 @@ export class AmplifyConfirmSignUp {
     }
     try {
       if (!this.userInput) throw new Error('Username can not be empty');
+      this.userInput.trim();
       await Auth.resendSignUp(this.userInput);
       this.handleAuthStateChange(AuthState.ConfirmSignUp);
     } catch (error) {
@@ -214,6 +215,8 @@ export class AmplifyConfirmSignUp {
         break;
     }
     try {
+      if (!this.userInput) throw new Error('Username can not be empty');
+      this.userInput = this.userInput.trim();
       const confirmSignUpResult = await Auth.confirmSignUp(this.userInput, this.code);
 
       if (!confirmSignUpResult) {
