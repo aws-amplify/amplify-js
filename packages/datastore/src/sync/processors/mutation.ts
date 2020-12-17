@@ -323,6 +323,7 @@ class MutationProcessor {
 								}
 							}
 						} else if (err === 'No current user') {
+							try {
 							this.errorHandler({
 								localModel: this.modelInstanceCreator(modelConstructor, variables.input),
 								message: err,
@@ -331,9 +332,13 @@ class MutationProcessor {
 								errorInfo: null,
 								remoteModel: null,
 							});
-
+							} catch (err) {
+								logger.warn('failed to execute errorHandler', err);
+							} finally {
+								// Return empty tuple, dequeues the mutation
 							return [];
 						}
+					}
 					}
 				} while (tryWith);
 			},
