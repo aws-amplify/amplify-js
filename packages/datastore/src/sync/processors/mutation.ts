@@ -322,6 +322,17 @@ class MutationProcessor {
 										: [];
 								}
 							}
+						} else if (err === 'No current user') {
+							this.errorHandler({
+								localModel: this.modelInstanceCreator(modelConstructor, variables.input),
+								message: err,
+								operation,
+								errorType: err,
+								errorInfo: null,
+								remoteModel: null,
+							});
+
+							return [];
 						}
 					}
 				} while (tryWith);
