@@ -95,7 +95,7 @@ describe('Util', () => {
 
 		function subscribeWithNetInfo() {
 			// Pass an object that has a fetch attribute (imitate NetInfo)
-			subscribe({ fetch: {} });
+			subscribe({ addEventListener: {} });
 		}
 
 		expect(subscribe).toThrowError(
