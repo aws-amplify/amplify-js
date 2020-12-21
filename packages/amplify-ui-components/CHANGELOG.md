@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.7...@aws-amplify/ui-components@0.9.8) (2020-12-17)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** display friendly error for empty password ([#7401](https://github.com/aws-amplify/amplify-js/issues/7401)) ([72997e8](https://github.com/aws-amplify/amplify-js/commit/72997e863f0e508904a2ea9ee485e75359e3fed7))
+* **@aws-amplify/ui-components:** fixes typo Ancilliary => Ancillary ([#7355](https://github.com/aws-amplify/amplify-js/issues/7355)) ([547d88b](https://github.com/aws-amplify/amplify-js/commit/547d88b61c240c2418fc815c902670f52b386c1d))
+* **@aws-amplify/ui-componets:** Use constant for empty password error ([#7403](https://github.com/aws-amplify/amplify-js/issues/7403)) ([1ee7ebc](https://github.com/aws-amplify/amplify-js/commit/1ee7ebcce75fd2076fa69c970e5a0c538a16e737))
+
+
+
+
+
 ## [0.9.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.6...@aws-amplify/ui-components@0.9.7) (2020-12-10)
 
 
