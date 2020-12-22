@@ -97,7 +97,10 @@
 			}
 		},
 		"coveragePathIgnorePatterns": [
-			"/node_modules/"
+			"/node_modules/",
+			"dist",
+			"lib",
+			"lib-esm"
 		],
 		"moduleNameMapper": {
 			"\\.(css|less|scss|sass)$": "<rootDir>/__mocks__/styleMock.ts"
