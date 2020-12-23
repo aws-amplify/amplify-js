@@ -33,7 +33,7 @@ describe('amplify-select-mfa-type spec:', () => {
         html: `<div></div>`,
       });
 
-      let component = page.doc.createElement('amplify-select-mfa-type');
+      const component = page.doc.createElement('amplify-select-mfa-type');
       (component as any).MFATypes = {
         SMS: true,
         Optional: true,
