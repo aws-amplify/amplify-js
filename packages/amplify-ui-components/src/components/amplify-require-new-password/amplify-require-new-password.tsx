@@ -78,7 +78,7 @@ export class AmplifyRequireNewPassword {
     }
     if (this.currentUser && this.currentUser.challengeParam?.requiredAttributes) {
       const userRequiredAttributes = this.currentUser.challengeParam.requiredAttributes;
-      userRequiredAttributes.forEach(attribute => {
+      userRequiredAttributes.forEach((attribute: string) => {
         const formField = {
           type: attribute,
           required: true,
@@ -135,7 +135,6 @@ export class AmplifyRequireNewPassword {
   }
 
   render() {
-    console.log(this.newFormFields);
     return (
       <Host>
         <amplify-form-section
