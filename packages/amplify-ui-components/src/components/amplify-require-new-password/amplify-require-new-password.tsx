@@ -93,7 +93,7 @@ export class AmplifyRequireNewPassword {
     }
   }
 
-  async componentWillLoad() {
+  componentWillLoad() {
     return this.setCurrentUser();
   }
 
