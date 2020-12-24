@@ -68,7 +68,6 @@ export class AmplifyRequireNewPassword {
       // Check for authenticated user
       try {
         const user = await Auth.currentAuthenticatedUser();
-        console.log(user);
         if (user) this.currentUser = user;
       } catch (error) {
         dispatchToastHubEvent(error);
