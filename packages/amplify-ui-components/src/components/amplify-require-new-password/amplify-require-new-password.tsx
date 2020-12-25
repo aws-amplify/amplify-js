@@ -55,9 +55,9 @@ export class AmplifyRequireNewPassword {
     this.setCurrentUser();
   }
 
-  private requiredAttributes: object = {};
+  private requiredAttributes: Record<PropertyKey, string> = {};
   private newFormFields: FormFieldTypes = this.formFields;
-  private currentUser: CognitoUserInterface = null;
+  private currentUser: CognitoUserInterface;
 
   private handleRequiredAttributeInputChange(attribute, event) {
     this.requiredAttributes[attribute] = event.target.value;
