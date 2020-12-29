@@ -1,6 +1,7 @@
 import { Logger, Mutex } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import PushStream from 'zen-push';
+import { applyPatches, Patch } from 'immer';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
 import {
@@ -98,17 +99,31 @@ class StorageClass implements StorageFacade {
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>,
-		mutator?: Symbol
+		mutator?: Symbol,
+		patches?: Patch[]
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		await this.init();
 
 		const result = await this.adapter.save(model, condition);
 
 		result.forEach(r => {
-			const [element, opType] = r;
+			const [originalElement, opType] = r;
 
-			const modelConstructor = (Object.getPrototypeOf(element) as Object)
-				.constructor as PersistentModelConstructor<T>;
+			let updatedElement;
+			if (opType === OpType.UPDATE && patches && patches.length) {
+				const { id, _version, _lastChangedAt, _deleted } = originalElement;
+
+				updatedElement = applyPatches(
+					{ id, _version, _lastChangedAt, _deleted },
+					patches
+				);
+			}
+
+			const element = updatedElement || originalElement;
+
+			const modelConstructor = (Object.getPrototypeOf(
+				originalElement
+			) as Object).constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
 				model: modelConstructor,
@@ -299,10 +314,11 @@ class ExclusiveStorage implements StorageFacade {
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>,
-		mutator?: Symbol
+		mutator?: Symbol,
+		patches?: Patch[]
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>(storage =>
-			storage.save<T>(model, condition, mutator)
+			storage.save<T>(model, condition, mutator, patches)
 		);
 	}
 
