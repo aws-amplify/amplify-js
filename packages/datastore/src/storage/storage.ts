@@ -111,8 +111,12 @@ class StorageClass implements StorageFacade {
 
 			let updatedElement;
 			if (opType === OpType.UPDATE && patches && patches.length) {
+				// TODO: create a method that creates the object from internal fields
+				// && also includes any fields in the patch.path
 				const { id, _version, _lastChangedAt, _deleted } = originalElement;
 
+				// For update mutations we only want to send fields with changes
+				// As well as the internal fields
 				updatedElement = applyPatches(
 					{ id, _version, _lastChangedAt, _deleted },
 					patches

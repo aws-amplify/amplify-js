@@ -1,4 +1,5 @@
 import 'fake-indexeddb/auto';
+import FDBCursor from 'fake-indexeddb/build/FDBCursor';
 import { decodeTime } from 'ulid';
 import uuidValidate from 'uuid-validate';
 import Observable from 'zen-observable-ts';
@@ -28,6 +29,7 @@ beforeEach(() => {
 			init: jest.fn(),
 			runExclusive: jest.fn(),
 			query: jest.fn(() => []),
+			save: jest.fn(() => []),
 			observe: jest.fn(() => Observable.of()),
 		}));
 
@@ -353,18 +355,27 @@ describe('DataStore tests', () => {
 
 		test('Save returns the saved model', async () => {
 			let model: Model;
+			let save = jest.fn(() => [model]);
+			let query = jest.fn(() => [model]);
 
 			jest.resetModules();
 			jest.doMock('../src/storage/storage', () => {
-				const mock = jest.fn().mockImplementation(() => ({
-					init: jest.fn(),
-					runExclusive: jest.fn(() => [model]),
-				}));
+				const mock = jest.fn().mockImplementation(() => {
+					const _mock = {
+						init: jest.fn(),
+						save,
+						query,
+						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+					};
+
+					return _mock;
+				});
 
 				(<any>mock).getNamespace = () => ({ models: {} });
 
 				return { ExclusiveStorage: mock };
 			});
+
 			({ initSchema, DataStore } = require('../src/datastore/datastore'));
 
 			const classes = initSchema(testSchema());
@@ -378,7 +389,122 @@ describe('DataStore tests', () => {
 
 			const result = await DataStore.save(model);
 
+			const [settingsSave, modelCall] = <any>save.mock.calls;
+			const [_model, _condition, _mutator, patches] = modelCall;
+
 			expect(result).toMatchObject(model);
+			expect(patches).toBeUndefined();
+		});
+
+		test('Save returns the updated model and patches', async () => {
+			let model: Model;
+			let save = jest.fn(() => [model]);
+			let query = jest.fn(() => [model]);
+
+			jest.resetModules();
+			jest.doMock('../src/storage/storage', () => {
+				const mock = jest.fn().mockImplementation(() => {
+					const _mock = {
+						init: jest.fn(),
+						save,
+						query,
+						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+					};
+
+					return _mock;
+				});
+
+				(<any>mock).getNamespace = () => ({ models: {} });
+
+				return { ExclusiveStorage: mock };
+			});
+
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+
+			model = new Model({
+				field1: 'something',
+				dateCreated: new Date().toISOString(),
+			});
+
+			await DataStore.save(model);
+
+			model = Model.copyOf(model, draft => {
+				draft.field1 = 'edited';
+			});
+
+			const result = await DataStore.save(model);
+
+			const [settingsSave, modelSave, modelUpdate] = <any>save.mock.calls;
+			const [_model, _condition, _mutator, patches] = modelUpdate;
+
+			const expectedPatches = [
+				{ op: 'replace', path: ['field1'], value: 'edited' },
+			];
+
+			expect(result).toMatchObject(model);
+			expect(patches).toMatchObject(expectedPatches);
+		});
+
+		test('Save returns the updated model and patches - list field', async () => {
+			let model: Model;
+			let save = jest.fn(() => [model]);
+			let query = jest.fn(() => [model]);
+
+			jest.resetModules();
+			jest.doMock('../src/storage/storage', () => {
+				const mock = jest.fn().mockImplementation(() => {
+					const _mock = {
+						init: jest.fn(),
+						save,
+						query,
+						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+					};
+
+					return _mock;
+				});
+
+				(<any>mock).getNamespace = () => ({ models: {} });
+
+				return { ExclusiveStorage: mock };
+			});
+
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+
+			model = new Model({
+				field1: 'something',
+				dateCreated: new Date().toISOString(),
+				emails: ['john@doe.com', 'jane@doe.com'],
+			});
+
+			await DataStore.save(model);
+
+			model = Model.copyOf(model, draft => {
+				draft.emails.push('joe@doe.com');
+			});
+
+			const result = await DataStore.save(model);
+
+			const [settingsSave, modelSave, modelUpdate] = <any>save.mock.calls;
+			const [_model, _condition, _mutator, patches] = modelUpdate;
+
+			const expectedPatches = [
+				{
+					op: 'replace',
+					path: ['emails'],
+					value: ['john@doe.com', 'jane@doe.com', 'joe@doe.com'],
+				},
+			];
+
+			expect(result).toMatchObject(model);
+			expect(patches).toMatchObject(expectedPatches);
 		});
 
 		test('Instantiation validations', async () => {
@@ -685,10 +811,13 @@ describe('DataStore tests', () => {
 			);
 
 			await expect(
-				DataStore.delete(new Model({
-					field1: 'somevalue',
-					dateCreated: new Date().toISOString(),
-				}), <any>{})
+				DataStore.delete(
+					new Model({
+						field1: 'somevalue',
+						dateCreated: new Date().toISOString(),
+					}),
+					<any>{}
+				)
 			).rejects.toThrow('Invalid criteria');
 		});
 
@@ -927,9 +1056,9 @@ declare class Model {
 	public readonly id: string;
 	public readonly field1: string;
 	public readonly optionalField1?: string;
-  public readonly dateCreated: string;
-  public readonly emails?: string[];
-  public readonly ips?: (string | null)[];
+	public readonly dateCreated: string;
+	public readonly emails?: string[];
+	public readonly ips?: (string | null)[];
 	public readonly metadata?: Metadata;
 
 	constructor(init: ModelInit<Model>);
@@ -978,27 +1107,27 @@ function testSchema(): Schema {
 						isRequired: false,
 					},
 					dateCreated: {
-							name: 'dateCreated',
-							isArray: false,
-							type: 'AWSDateTime',
-							isRequired: true,
-							attributes: []
+						name: 'dateCreated',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: true,
+						attributes: [],
 					},
 					emails: {
-							name: 'emails',
-							isArray: true,
-							type: 'AWSEmail',
-							isRequired: true,
-							attributes: [],
-							isArrayNullable: true
+						name: 'emails',
+						isArray: true,
+						type: 'AWSEmail',
+						isRequired: true,
+						attributes: [],
+						isArrayNullable: true,
 					},
 					ips: {
-							name: 'ips',
-							isArray: true,
-							type: 'AWSIPAddress',
-							isRequired: false,
-							attributes: [],
-							isArrayNullable: true
+						name: 'ips',
+						isArray: true,
+						type: 'AWSIPAddress',
+						isRequired: false,
+						attributes: [],
+						isArrayNullable: true,
 					},
 					metadata: {
 						name: 'metadata',
@@ -1079,7 +1208,7 @@ function testSchema(): Schema {
 						isRequired: false,
 						isArrayNullable: true,
 						attributes: [],
-					}
+					},
 				},
 			},
 		},

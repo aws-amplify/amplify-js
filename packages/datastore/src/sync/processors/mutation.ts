@@ -374,7 +374,13 @@ class MutationProcessor {
 								return false;
 							}
 
-							return parsedData.hasOwnProperty(name);
+							if (operation === TransformerMutationType.UPDATE) {
+								// this limits the update mutation input to changed fields only
+								return parsedData.hasOwnProperty(name);
+							}
+
+							// scalars and non-model types
+							return true;
 						})
 						.map(({ name, type, association }) => {
 							let fieldName = name;

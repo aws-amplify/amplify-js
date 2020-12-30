@@ -525,7 +525,10 @@ async function checkSchemaVersion(
 			{ page: 0, limit: 1 }
 		);
 
-		if (schemaVersionSetting !== undefined) {
+		if (
+			schemaVersionSetting !== undefined &&
+			schemaVersionSetting.value !== undefined
+		) {
 			const storedValue = JSON.parse(schemaVersionSetting.value);
 
 			if (storedValue !== version) {
@@ -776,6 +779,8 @@ class DataStore {
 	): Promise<T> => {
 		await this.start();
 
+		// Immer patches for constructing a correct update mutation input
+		// Allows us to only include changed fields for updates
 		const patches = modelPatchesMap.get(model);
 
 		const modelConstructor: PersistentModelConstructor<T> = model
