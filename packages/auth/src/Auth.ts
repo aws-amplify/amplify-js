@@ -355,7 +355,7 @@ export class AuthClass {
 	}
 
 	/**
-	 * Send the verfication code to confirm sign up
+	 * Send the verification code to confirm sign up
 	 * @param {String} username - The username to be confirmed
 	 * @param {String} code - The verification code
 	 * @param {ConfirmSignUpOptions} options - other options for confirm signup
@@ -904,7 +904,7 @@ export class AuthClass {
 		user: CognitoUser | any,
 		challengeAnswer: string
 	): Promise<CognitoUserSession> {
-		logger.debug('verfication totp token', user, challengeAnswer);
+		logger.debug('verification totp token', user, challengeAnswer);
 		return new Promise((res, rej) => {
 			user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
 				onFailure: err => {
