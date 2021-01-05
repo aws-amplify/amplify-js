@@ -18,7 +18,4 @@ jobs:
       - name: Run bundlewatch
         run: yarn run bundlewatch
         env:
-          BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
           CI_BRANCH_BASE: main
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
