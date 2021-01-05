@@ -12,6 +12,9 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Build packages
+        run: yarn workspace @aws-amplify/core build
+
       - name: Run bundlewatch
         run: yarn run bundlewatch packages/*/dist/*.min.js --max-size 400kb
         env:
