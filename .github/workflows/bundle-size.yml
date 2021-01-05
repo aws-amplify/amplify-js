@@ -18,7 +18,7 @@ jobs:
         run: yarn install
 
       - name: Build packages
-        run: yarn workspace build
+        run: yarn build
 
       - name: Run bundlewatch
         run: yarn run bundlewatch
