@@ -13,7 +13,7 @@ jobs:
         run: yarn install
 
       - name: Build packages
-        run: yarn workspace @aws-amplify/core build
+        run: yarn workspace build
 
       - name: Run bundlewatch
         run: yarn run bundlewatch
