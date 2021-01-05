@@ -99,6 +99,14 @@
 		"terser": "4.6.7",
 		"npm-packlist": "1.1.12"
 	},
+	"bundlewatch": {
+		"files": [
+			{
+				"path": "packages/*/dist/*.min.js",
+				"maxSize": "400kB"
+			}
+		]
+	},
 	"jest": {
 		"resetMocks": true,
 		"verbose": true
