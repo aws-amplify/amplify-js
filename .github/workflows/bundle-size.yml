@@ -4,7 +4,7 @@ on: [pull_request]
 
 jobs:
   bundle-size:
-    name: Calculate
+    name: dist
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.1.0
