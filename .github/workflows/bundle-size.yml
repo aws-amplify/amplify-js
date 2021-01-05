@@ -18,5 +18,5 @@ jobs:
       - name: Run bundlewatch
         run: yarn run bundlewatch packages/*/dist/*.min.js --max-size 400kb
         env:
-          DEFAULT_BRANCH: main
+          BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
