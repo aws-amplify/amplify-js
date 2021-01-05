@@ -1,0 +1,14 @@
+name: Bundle Size
+
+on: [pull_request]
+
+jobs:
+  bundle-size:
+    name: Compare bundle sizes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run bundlewatch
+        run: yarn run bundlewatch packages/*/dist/*.min.js --max-size 400kb
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
