@@ -52,7 +52,7 @@ export class AmplifyAuthenticator {
   @State() authData: CognitoUserInterface;
   @State() toastMessage: string = '';
 
-  @Element() el: HTMLElement;
+  @Element() el: HTMLAmplifyAuthenticatorElement;
 
   private handleExternalAuthEvent = ({ payload }) => {
     switch (payload.event) {
