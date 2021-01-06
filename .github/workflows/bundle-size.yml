@@ -28,7 +28,12 @@ jobs:
       - name: Build packages
         run: yarn build
 
+      # TODO Publish to verdaccio
+      # https://verdaccio.org/docs/en/github-actions
+      # But does this persist for the next step?
+
       - name: Run bundlewatch
-        run: yarn run bundlewatch
+        working-directory: packages/aws-amplify/__tests__/bundle-size
+        run: yarn && yarn calculate
         env:
           CI_BRANCH_BASE: main
