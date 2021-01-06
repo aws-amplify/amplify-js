@@ -75,6 +75,7 @@ export class AmplifyTOTPSetup {
     // ensure setup is only run once after totp setup is available
     if (!this.user || !this.user.associateSoftwareToken || this.loading || this.qrCodeImageSource) return;
 
+    this.loading = true;
     this.setupMessage = null;
     const encodedIssuer = encodeURI(I18n.get(this.issuer));
 
@@ -82,7 +83,6 @@ export class AmplifyTOTPSetup {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
-    this.loading = true;
     try {
       const secretKey = await Auth.setupTOTP(this.user);
 
@@ -138,7 +138,7 @@ export class AmplifyTOTPSetup {
           loading={this.loading}
         >
           <div class="totp-setup">
-            {this.qrCodeImageSource && <img src={this.qrCodeImageSource} alt={I18n.get(Translations.QR_CODE_ALT)} />}
+            <img src={this.qrCodeImageSource} alt={I18n.get(Translations.QR_CODE_ALT)} />
             <amplify-form-field
               label={I18n.get(Translations.TOTP_LABEL)}
               inputProps={this.inputProps}

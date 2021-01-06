@@ -1,4 +1,4 @@
-import { Component, State, Prop, h, Host } from '@stencil/core';
+import { Component, State, Prop, h, Host, Element } from '@stencil/core';
 import {
   AuthState,
   CognitoUserInterface,
@@ -51,6 +51,8 @@ export class AmplifyAuthenticator {
   @State() authState: AuthState = AuthState.Loading;
   @State() authData: CognitoUserInterface;
   @State() toastMessage: string = '';
+
+  @Element() el: HTMLElement;
 
   private handleExternalAuthEvent = ({ payload }) => {
     switch (payload.event) {
@@ -180,11 +182,9 @@ export class AmplifyAuthenticator {
           </slot>
         );
       case AuthState.TOTPSetup:
-        return (
-          <slot name="totp-setup">
-            <amplify-totp-setup user={this.authData} />
-          </slot>
-        );
+        // avoid race conditions with duplicate amplify-totp-setup
+        const totpSlotIsOccupied = !!this.el.querySelector('[slot="totp-setup"]');
+        return <slot name="totp-setup">{!totpSlotIsOccupied && <amplify-totp-setup user={this.authData} />}</slot>;
       case AuthState.Loading:
         return (
           <slot name="loading">
