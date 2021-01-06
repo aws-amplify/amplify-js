@@ -73,7 +73,7 @@ export class AmplifyTOTPSetup {
 
   private async setup() {
     // ensure setup is only run once after totp setup is available
-    if (!this.user || !this.user.associateSoftwareToken || this.qrCodeImageSource || this.loading) return;
+    if (!this.user || !this.user.associateSoftwareToken || this.loading || this.qrCodeImageSource) return;
 
     this.setupMessage = null;
     const encodedIssuer = encodeURI(I18n.get(this.issuer));
