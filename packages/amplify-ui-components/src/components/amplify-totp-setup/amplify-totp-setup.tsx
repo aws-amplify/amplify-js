@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
-import { Component, Prop, State, h, Host } from '@stencil/core';
+import { Component, Prop, State, h, Host, Watch } from '@stencil/core';
 import QRCode from 'qrcode';
 
 import { CognitoUserInterface, AuthStateHandler, MfaOption } from '../../common/types/auth-types';
@@ -37,6 +37,11 @@ export class AmplifyTOTPSetup {
   @State() qrCodeInput: string | null = null;
   @State() loading: boolean = false;
 
+  @Watch('user')
+  onUserChange() {
+    this.setup();
+  }
+
   componentWillLoad() {
     this.setup();
   }
@@ -67,6 +72,9 @@ export class AmplifyTOTPSetup {
   }
 
   private async setup() {
+    // ensure setup is only run once after totp setup is available
+    if (!this.user || !this.user.associateSoftwareToken || this.qrCodeImageSource || this.loading) return;
+
     this.setupMessage = null;
     const encodedIssuer = encodeURI(I18n.get(this.issuer));
 
@@ -130,7 +138,7 @@ export class AmplifyTOTPSetup {
           loading={this.loading}
         >
           <div class="totp-setup">
-            <img src={this.qrCodeImageSource} alt={I18n.get(Translations.QR_CODE_ALT)} />
+            {this.qrCodeImageSource && <img src={this.qrCodeImageSource} alt={I18n.get(Translations.QR_CODE_ALT)} />}
             <amplify-form-field
               label={I18n.get(Translations.TOTP_LABEL)}
               inputProps={this.inputProps}
