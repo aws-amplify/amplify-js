@@ -82,7 +82,10 @@
 			}
 		},
 		"coveragePathIgnorePatterns": [
-			"/node_modules/"
+			"/node_modules/",
+			"dist",
+			"lib",
+			"lib-esm"
 		]
 	}
 }
