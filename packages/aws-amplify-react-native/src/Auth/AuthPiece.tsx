@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-
+import { Keyboard } from 'react-native';
 import { Auth, Logger, JS, I18n } from 'aws-amplify';
 
 import AmplifyTheme, { AmplifyThemeType } from '../AmplifyTheme';
@@ -161,6 +161,7 @@ export default class AuthPiece<
 			this.props.errorMessage || this.props.messageMap || AmplifyMessageMap;
 		msg = typeof map === 'string' ? map : map(msg);
 		this.setState({ error: msg });
+		Keyboard.dismiss();
 	}
 
 	render() {
