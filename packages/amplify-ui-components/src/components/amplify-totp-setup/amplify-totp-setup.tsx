@@ -138,7 +138,7 @@ export class AmplifyTOTPSetup {
           loading={this.loading}
         >
           <div class="totp-setup">
-            <img src={this.qrCodeImageSource} alt={I18n.get(Translations.QR_CODE_ALT)} />
+            {this.qrCodeImageSource && <img src={this.qrCodeImageSource} alt={I18n.get(Translations.QR_CODE_ALT)} />}
             <amplify-form-field
               label={I18n.get(Translations.TOTP_LABEL)}
               inputProps={this.inputProps}
