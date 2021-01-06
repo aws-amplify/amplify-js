@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/core",
-	"version": "3.8.6",
+	"version": "3.8.8",
 	"description": "Core category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -57,12 +57,9 @@
 		"@aws-crypto/sha256-js": "1.0.0-alpha.0",
 		"@aws-sdk/client-cognito-identity": "1.0.0-rc.4",
 		"@aws-sdk/credential-provider-cognito-identity": "1.0.0-rc.4",
-		"@aws-sdk/node-http-handler": "1.0.0-rc.3",
 		"@aws-sdk/types": "1.0.0-rc.3",
 		"@aws-sdk/util-hex-encoding": "1.0.0-rc.3",
-		"@aws-sdk/util-user-agent-browser": "1.0.0-rc.3",
 		"universal-cookie": "^4.0.4",
-		"url": "^0.11.0",
 		"zen-observable-ts": "0.8.19"
 	},
 	"jest": {

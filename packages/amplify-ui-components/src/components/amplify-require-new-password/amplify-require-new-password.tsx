@@ -1,5 +1,5 @@
 import { I18n } from '@aws-amplify/core';
-import { Component, Prop, State, h, Host } from '@stencil/core';
+import { Component, Prop, State, Watch, h, Host } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import {
   AuthState,
@@ -47,18 +47,23 @@ export class AmplifyRequireNewPassword {
     },
   ];
 
-  @State() currentUser: CognitoUserInterface = this.user;
   @State() password: string;
   @State() loading: boolean = false;
-  private requiredAttributes: object = {};
 
+  @Watch('user')
+  watchHandler() {
+    this.setCurrentUser();
+  }
+
+  private requiredAttributes: Record<PropertyKey, string> = {};
   private newFormFields: FormFieldTypes = this.formFields;
+  private currentUser: CognitoUserInterface;
 
   private handleRequiredAttributeInputChange(attribute, event) {
     this.requiredAttributes[attribute] = event.target.value;
   }
 
-  async componentWillLoad() {
+  async setCurrentUser(): Promise<void> {
     if (!this.user) {
       // Check for authenticated user
       try {
@@ -67,11 +72,12 @@ export class AmplifyRequireNewPassword {
       } catch (error) {
         dispatchToastHubEvent(error);
       }
+    } else {
+      this.currentUser = this.user;
     }
-    if (this.currentUser && this.currentUser.challengeParam.requiredAttributes) {
+    if (this.currentUser && this.currentUser.challengeParam && this.currentUser.challengeParam.requiredAttributes) {
       const userRequiredAttributes = this.currentUser.challengeParam.requiredAttributes;
-
-      userRequiredAttributes.forEach(attribute => {
+      userRequiredAttributes.forEach((attribute: string) => {
         const formField = {
           type: attribute,
           required: true,
@@ -82,9 +88,13 @@ export class AmplifyRequireNewPassword {
             'data-test': `require-new-password-${attribute}-input`,
           },
         };
-        this.newFormFields.push(formField);
+        this.newFormFields = [...this.newFormFields, formField];
       });
     }
+  }
+
+  componentWillLoad() {
+    return this.setCurrentUser();
   }
 
   private handlePasswordChange(event) {

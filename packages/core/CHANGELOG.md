@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.7...@aws-amplify/core@3.8.8) (2020-12-17)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** use addEventListener for Reachability ([#7407](https://github.com/aws-amplify/amplify-js/issues/7407)) ([cd1db8f](https://github.com/aws-amplify/amplify-js/commit/cd1db8f99aa2499936792ddb8267a8a951603434))
+
+
+
+
+
+## [3.8.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.6...@aws-amplify/core@3.8.7) (2020-12-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** refresh manually after TTL has passed ([#7288](https://github.com/aws-amplify/amplify-js/issues/7288)) ([74b895c](https://github.com/aws-amplify/amplify-js/commit/74b895c45e629edc5ecf333e2769f222ae500834))
+
+
+
+
+
 ## [3.8.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.5...@aws-amplify/core@3.8.6) (2020-11-30)
 
 **Note:** Version bump only for package @aws-amplify/core
