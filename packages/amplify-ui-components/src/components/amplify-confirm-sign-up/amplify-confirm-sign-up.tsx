@@ -183,7 +183,7 @@ export class AmplifyConfirmSignUp {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
     try {
-      if (!this.userInput) throw new Error('Username can not be empty');
+      if (!this.userInput) throw new Error(Translations.EMPTY_USERNAME);
       this.userInput = this.userInput.trim();
       await Auth.resendSignUp(this.userInput);
       this.handleAuthStateChange(AuthState.ConfirmSignUp);
