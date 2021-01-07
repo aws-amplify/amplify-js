@@ -183,8 +183,8 @@ export class AmplifyAuthenticator {
         );
       case AuthState.TOTPSetup:
         // avoid race conditions with duplicate amplify-totp-setup
-        const totpSlotIsOccupied = !!this.el.querySelector('[slot="totp-setup"]');
-        return <slot name="totp-setup">{!totpSlotIsOccupied && <amplify-totp-setup user={this.authData} />}</slot>;
+        const totpSlotIsUnused = this.el.querySelector('[slot="totp-setup"]') === null;
+        return <slot name="totp-setup">{totpSlotIsUnused && <amplify-totp-setup user={this.authData} />}</slot>;
       case AuthState.Loading:
         return (
           <slot name="loading">
