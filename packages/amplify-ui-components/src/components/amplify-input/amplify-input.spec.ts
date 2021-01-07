@@ -27,7 +27,7 @@ describe('amplify-input spec:', () => {
         html: `<div></div>`,
       });
 
-      let cmp = page.doc.createElement('amplify-input');
+      const cmp = page.doc.createElement('amplify-input');
       (cmp as any).inputProps = {
         autocomplete: 'off',
         min: '3',
@@ -62,7 +62,7 @@ describe('amplify-input spec:', () => {
     });
 
     it('`formSubmit` should be defined', () => {
-      expect(input.formSubmit).toBeDefined()
+      expect(input.formSubmit).toBeDefined();
     });
   });
 });
