@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-angular@0.4.16...@aws-amplify/ui-angular@0.4.17) (2021-01-07)
+
+**Note:** Version bump only for package @aws-amplify/ui-angular
+
+
+
+
+
 ## [0.4.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-angular@0.4.15...@aws-amplify/ui-angular@0.4.16) (2020-12-17)
 
 **Note:** Version bump only for package @aws-amplify/ui-angular

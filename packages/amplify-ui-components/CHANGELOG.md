@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.8...@aws-amplify/ui-components@0.10.0) (2021-01-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** display spinner during submission of sign-up and confirm-sign-up form ([#7436](https://github.com/aws-amplify/amplify-js/issues/7436)) ([2a53bef](https://github.com/aws-amplify/amplify-js/commit/2a53beff4ffbeeb9857dd8c144fcf950ba09f7e8))
+* **@aws-amplify/ui-components:** fix typo ([#7485](https://github.com/aws-amplify/amplify-js/issues/7485)) ([9baa022](https://github.com/aws-amplify/amplify-js/commit/9baa02212d4e99f723e431f54e857dd0523dfe84))
+* watch for user prop update ([#7442](https://github.com/aws-amplify/amplify-js/issues/7442)) ([06bfecb](https://github.com/aws-amplify/amplify-js/commit/06bfecbd32751dee61d5abb6d5be9430ecaeca5a))
+
+
+### Features
+
+* **@aws-amplify/ui-components:** Trim inputs before submit ([#7408](https://github.com/aws-amplify/amplify-js/issues/7408)) ([b5de2c9](https://github.com/aws-amplify/amplify-js/commit/b5de2c99a6aafbafe961849c8066631c2a03151a))
+
+
+
+
+
 ## [0.9.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.7...@aws-amplify/ui-components@0.9.8) (2020-12-17)
 
 
