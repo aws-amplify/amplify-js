@@ -131,7 +131,12 @@ export class AmplifySignUp {
       default:
         break;
     }
-
+    if (this.signUpAttributes.username.indexOf(' ') >= 0) {
+      dispatchToastHubEvent(new Error(Translations.USERNAME_REMOVE_WHITESPACE));
+    }
+    if (this.signUpAttributes.password !== this.signUpAttributes.password.trim()) {
+      dispatchToastHubEvent(new Error(Translations.PASSWORD_REMOVE_WHITESPACE));
+    }
     try {
       const data = await Auth.signUp(this.signUpAttributes);
       if (!data) {
