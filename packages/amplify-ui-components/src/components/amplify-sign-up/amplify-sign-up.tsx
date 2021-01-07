@@ -115,6 +115,7 @@ export class AmplifySignUp {
     if (!Auth || typeof Auth.signUp !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
+    this.loading = true;
     if (this.phoneNumber.phoneNumberValue) {
       try {
         this.signUpAttributes.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
@@ -150,6 +151,8 @@ export class AmplifySignUp {
       }
     } catch (error) {
       dispatchToastHubEvent(error);
+    } finally {
+      this.loading = false;
     }
   }
 

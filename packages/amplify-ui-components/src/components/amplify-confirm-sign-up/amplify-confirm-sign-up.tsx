@@ -242,6 +242,7 @@ export class AmplifyConfirmSignUp {
           headerText={I18n.get(this.headerText)}
           submitButtonText={I18n.get(this.submitButtonText)}
           handleSubmit={this.handleSubmit}
+          loading={this.loading}
           secondaryFooterContent={
             <div>
               <span>
