@@ -115,6 +115,7 @@ export class AmplifySignUp {
     if (!Auth || typeof Auth.signUp !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
+    this.loading = true;
     if (this.phoneNumber.phoneNumberValue) {
       try {
         this.signUpAttributes.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
@@ -131,7 +132,12 @@ export class AmplifySignUp {
       default:
         break;
     }
-
+    if (this.signUpAttributes.username.indexOf(' ') >= 0) {
+      dispatchToastHubEvent(new Error(Translations.USERNAME_REMOVE_WHITESPACE));
+    }
+    if (this.signUpAttributes.password !== this.signUpAttributes.password.trim()) {
+      dispatchToastHubEvent(new Error(Translations.PASSWORD_REMOVE_WHITESPACE));
+    }
     try {
       const data = await Auth.signUp(this.signUpAttributes);
       if (!data) {
@@ -145,6 +151,8 @@ export class AmplifySignUp {
       }
     } catch (error) {
       dispatchToastHubEvent(error);
+    } finally {
+      this.loading = false;
     }
   }
 
