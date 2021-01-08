@@ -74,6 +74,21 @@ export interface CognitoUserInterface {
   [attributes: string]: any;
 }
 
+export interface AmplifySignUpAttributes {
+  username: string;
+  password: string;
+  attributes?: {
+    [userAttributes: string]: string;
+  };
+}
+
+export interface AmplifySignUpFormFooterProps {
+  submitButtonText: string;
+  haveAcccountText: string;
+  signInText: string;
+  handleAuthStateChange?: any;
+}
+
 export type AuthStateHandler = (nextAuthState: AuthState, data?: object) => void;
 
 export enum MfaOption {

@@ -9,7 +9,7 @@ import {
 } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import { COUNTRY_DIAL_CODE_DEFAULT, NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
-import { AmplifySignUpAttributes } from './amplify-sign-up-interface';
+import { AmplifySignUpAttributes } from '../../common/types/auth-types';
 import {
   dispatchAuthStateChangeEvent,
   dispatchToastHubEvent,
