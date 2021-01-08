@@ -31,6 +31,8 @@ jobs:
       # TODO Publish to verdaccio
       # https://verdaccio.org/docs/en/github-actions
       # But does this persist for the next step?
+      - name: Publish with Verdaccio
+        uses: verdaccio/github-actions/publish@master
 
       - name: Run bundlewatch
         working-directory: packages/aws-amplify/__tests__/bundle-size
