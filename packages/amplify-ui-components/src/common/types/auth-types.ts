@@ -82,13 +82,6 @@ export interface AmplifySignUpAttributes {
   };
 }
 
-export interface AmplifySignUpFormFooterProps {
-  submitButtonText: string;
-  haveAcccountText: string;
-  signInText: string;
-  handleAuthStateChange?: any;
-}
-
 export type AuthStateHandler = (nextAuthState: AuthState, data?: object) => void;
 
 export enum MfaOption {
