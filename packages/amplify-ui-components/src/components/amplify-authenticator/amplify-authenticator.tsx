@@ -14,7 +14,7 @@ import {
   UI_AUTH_CHANNEL,
   TOAST_AUTH_ERROR_EVENT,
 } from '../../common/constants';
-import { authSlotNames } from './auth-slot-names.tsx';
+import { authSlotNames } from './auth-slot-names';
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
 import { Hub, Logger } from '@aws-amplify/core';
 import { dispatchAuthStateChangeEvent, onAuthUIStateChange } from '../../common/helpers';
