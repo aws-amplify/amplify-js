@@ -172,8 +172,8 @@ export class AmplifyAuthenticator {
     const slotIsEmpty = this.el.querySelector(`[slot="${slotName}"]`) === null; // true if no element has been inserted to the slot
 
     /**
-     * Render the inner auth component only if the slot hasn't been overwritten. This avoids race condition between the
-     * lifecycle methodsoverriden and overriding one.
+     * Connect the inner auth component to DOM only if the slot hasn't been overwritten. This prevents
+     * the overwritten component from calling its lifecycle methods.
      */
     return <slot name={slotName}>{slotIsEmpty && authComponent}</slot>;
   }
