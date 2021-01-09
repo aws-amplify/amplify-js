@@ -139,6 +139,7 @@ export class AmplifyAuthenticator {
     }
   }
 
+  // Returns the auth component corresponding to the given authState.
   private getAuthComponent(authState: AuthState): JSXBase.IntrinsicElements {
     switch (authState) {
       case AuthState.SignIn:
@@ -164,12 +165,16 @@ export class AmplifyAuthenticator {
     }
   }
 
-  private renderAuthComponent(authState: AuthState): JSXBase.IntrinsicElements {
+  // Returns a slot containing the Auth component corresponding to the given authState
+  private getSlotWithAuthCompoent(authState: AuthState): JSXBase.IntrinsicElements {
     const authComponent = this.getAuthComponent(authState);
     const slotName = authSlotNames[authState];
-    const slotIsEmpty = this.el.querySelector(`[slot="${slotName}"]`) === null;
+    const slotIsEmpty = this.el.querySelector(`[slot="${slotName}"]`) === null; // true if no element has been inserted to the slot
 
-    // Do not render the auth component if it is overridden by custom implementation, to avoid race conditions from lifecycle methods.
+    /**
+     * Render the inner auth component only if the slot hasn't been overwritten. This avoids race condition between the
+     * lifecycle methodsoverriden and overriding one.
+     */
     return <slot name={slotName}>{slotIsEmpty && authComponent}</slot>;
   }
 
@@ -194,7 +199,7 @@ export class AmplifyAuthenticator {
         {this.authState === AuthState.SignedIn ? (
           [<slot name="greetings"></slot>, <slot></slot>]
         ) : (
-          <div class="auth-container">{this.renderAuthComponent(this.authState)}</div>
+          <div class="auth-container">{this.getSlotWithAuthCompoent(this.authState)}</div>
         )}
       </Host>
     );
