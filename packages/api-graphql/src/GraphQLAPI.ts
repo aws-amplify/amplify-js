@@ -302,8 +302,14 @@ export class GraphQLAPIClass {
 			if (this._api.isCancel(err)) {
 				throw err;
 			}
+
+			// We can access the data from the error response
+			// because under the hood the API module uses Axios.
+			// https://github.com/axios/axios#handling-errors
+			const errData = err.response.data;
+
 			response = {
-				data: {},
+				data: errData || {},
 				errors: [new GraphQLError(err.message)],
 			};
 		}
