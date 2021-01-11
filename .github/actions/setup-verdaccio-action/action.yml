@@ -18,7 +18,7 @@ runs:
   steps:
     - name: Install dependencies
       run: |
-        yarn global add verdaccio verdaccio-auth-memory verdaccio-memory npm-auth-to-token
+        npm install -g verdaccio verdaccio-auth-memory verdaccio-memory npm-auth-to-token
       shell: bash
 
     - name: Create temporary log folder
