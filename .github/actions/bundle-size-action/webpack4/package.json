@@ -15,7 +15,19 @@
     "files": [
       {
         "path": "dist/*.min.js",
-        "maxSize": "175kB"
+        "maxSize": "200kB"
+      },
+      {
+        "path": "dist/amazon-cognito-identity-js.js.min.js",
+        "maxSize": "150kB"
+      },
+      {
+        "path": "dist/Amplify.js.min.js",
+        "maxSize": "2kB"
+      },
+      {
+        "path": "dist/Amplify+Auth.js.min.js",
+        "maxSize": "200kB"
       }
     ]
   },
@@ -26,7 +38,7 @@
     "bundlewatch": "^0.3.1",
     "glob": "^7.1.6",
     "rimraf": "^3.0.2",
-    "webpack": "^5.11.1",
+    "webpack": "webpack-4",
     "webpack-cli": "^4.3.1"
   }
 }

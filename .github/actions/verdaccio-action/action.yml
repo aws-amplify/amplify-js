@@ -1,0 +1,17 @@
+name: Verdaccio
+description: Publishes to Verdaccio
+runs:
+  using: 'composite'
+  steps:
+    - name: Install dependencies
+      run: yarn install
+      shell: bash
+
+    - name: Build packages
+      run: yarn build
+      shell: bash
+    # TODO Publish to verdaccio
+    # https://verdaccio.org/docs/en/github-actions
+    # But does this persist for the next step?
+    # - name: Publish with Verdaccio
+    #   uses: verdaccio/github-actions/publish@master

@@ -4,8 +4,14 @@ on: [pull_request]
 
 jobs:
   bundle-size:
-    name: Tree-shaking
+    name: Calculate
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        stack: [webpack4, webpack]
     steps:
       - uses: actions/checkout@v2.1.0
+      - uses: ./.github/actions/verdaccio-action
       - uses: ./.github/actions/bundle-size-action
+        with:
+          stack: ${{ matrix.stack }}
