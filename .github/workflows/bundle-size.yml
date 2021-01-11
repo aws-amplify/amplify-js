@@ -11,10 +11,6 @@ jobs:
         stack: [webpack4, webpack]
     steps:
       - uses: actions/checkout@v2.1.0
-      - uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: node_modules-${{ hashFiles('**/package.json') }}
       - uses: ./.github/actions/setup-verdaccio-action
       - uses: actions/setup-node@v2
         with:
