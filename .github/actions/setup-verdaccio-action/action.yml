@@ -39,7 +39,7 @@ runs:
 
     - name: Start Verdaccio
       run: |
-        echo nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &>${{ steps.tmp.outputs.value }} &
+        echo nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &>${{ steps.tmp.outputs.dir }} &
       shell: bash
 
     - name: Add test user to Verdaccio
