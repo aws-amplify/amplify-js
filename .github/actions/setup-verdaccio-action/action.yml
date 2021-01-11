@@ -32,10 +32,10 @@ runs:
         mkdir $HOME/.config/verdaccio
       shell: bash
 
-    - name: Copy Verdaccio config.yaml
-      run: |
-        cp --verbose ${{ github.action_path }}/config.yaml $HOME/.config/verdaccio/config.yaml
-      shell: bash
+    # - name: Copy Verdaccio config.yaml
+    #   run: |
+    #     cp --verbose ${{ github.action_path }}/config.yaml $HOME/.config/verdaccio/config.yaml
+    #   shell: bash
 
     - name: Start Verdaccio
       run: |
