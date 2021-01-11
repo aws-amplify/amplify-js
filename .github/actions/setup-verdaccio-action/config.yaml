@@ -1,0 +1,23 @@
+auth:
+  auth-memory:
+    users:
+      foo:
+        name: test
+        password: test
+store:
+  memory:
+    limit: 1000
+## we don't need any remote request
+uplinks:
+packages:
+  '@*/*':
+    access: $all
+    publish: $all
+  '**':
+    access: $all
+    publish: $all
+middlewares:
+  audit:
+    enabled: true
+logs:
+ - {type: stdout, format: pretty, level: trace}
