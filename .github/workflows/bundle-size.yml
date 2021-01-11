@@ -15,6 +15,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           registry-url: 'http://localhost:4873'
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: node_modules-${{ hashFiles('**/package.json') }}
       # - uses: ./.github/actions/publish-verdaccio-action
       - uses: ./.github/actions/bundle-size-action
         with:
