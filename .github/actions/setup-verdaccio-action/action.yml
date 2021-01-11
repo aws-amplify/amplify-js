@@ -1,12 +1,48 @@
-name: 'Verdaccio Publish Action v2'
-description: 'This action will deploy your package to Verdaccio Registry'
-author: 'GitHub'
-inputs:
-  debug:
-    description: 'npm debug level'
-    default: '-ddd'
+# name: 'Verdaccio Publish Action v2'
+# description: 'This action will deploy your package to Verdaccio Registry'
+# author: 'GitHub'
+# inputs:
+#   debug:
+#     description: 'npm debug level'
+#     default: '-ddd'
+# runs:
+#   using: 'docker'
+#   image: 'Dockerfile'
+#   args:
+#     - ${{ inputs.debug }}
+
+name: Setup Verdaccio
+description: Installs & runs Verdaccio
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.debug }}
+  using: 'composite'
+  steps:
+    - name: Install dependencies
+      run: |
+        yarn global add verdaccio verdaccio-auth-memory verdaccio-memory npm-auth-to-token
+      shell: bash
+
+    - name: Create temporary log folder
+      id: tmp
+      run: |
+        echo "::set-output name=dir::$(mktemp)"
+      shell: bash
+
+    - name: Create Verdaccio .config/
+      run: |
+        mkdir $HOME/.config/verdaccio
+      shell: bash
+
+    - name: Copy Verdaccio config.yaml
+      run: |
+        cp --verbose ${{ github.action_path }}/config.yaml $HOME/.config/verdaccio/config.yaml
+      shell: bash
+
+    - name: Start Verdaccio
+      run: |
+        nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &> ${{ steps.tmp.outputs.value }} &
+      shell: bash
+
+    - name: Add test user to Verdaccio
+      run: |
+        npm-auth-to-token -u test -p test -e test@test.com -r http://localhost:4873
+      shell: bash
