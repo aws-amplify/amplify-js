@@ -10,8 +10,7 @@ runs:
     - name: Build packages
       run: yarn build
       shell: bash
-    # TODO Publish to verdaccio
-    # https://verdaccio.org/docs/en/github-actions
-    # But does this persist for the next step?
-    # - name: Publish with Verdaccio
-    #   uses: verdaccio/github-actions/publish@master
+
+    - name: Publish to Verdaccio
+      run: yarn publish:verdaccio
+      shell: bash

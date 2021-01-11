@@ -24,7 +24,9 @@ jobs:
         with:
           registry-url: 'http://localhost:4873'
 
-      # - uses: ./.github/actions/publish-verdaccio-action
+      - name: Publish PR to Verdaccio
+        uses: ./.github/actions/publish-verdaccio-action
+
       - name: Calculate bundle sizes
         uses: ./.github/actions/bundle-size-action
         with:
