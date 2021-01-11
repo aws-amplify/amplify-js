@@ -37,11 +37,6 @@ runs:
         cp --verbose ${{ github.action_path }}/config.yaml $HOME/.config/verdaccio/config.yaml
       shell: bash
 
-    - name: Test
-      run: |
-        echo "What's the value of dir? ${{ steps.tmp.outputs.dir }} <~--"
-      shell: bash
-
     - name: Start Verdaccio
       run: |
         nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &>${{ steps.tmp.outputs.dir }} &
