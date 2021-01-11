@@ -7,6 +7,7 @@ runs:
     - name: Get yarn cache directory path
       id: yarn-cache-dir-path
       run: echo "::set-output name=dir::$(yarn cache dir)"
+      shell: bash
 
     - uses: actions/cache@v2
       id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
@@ -18,9 +19,11 @@ runs:
 
     - name: Install dependencies
       run: yarn install
+      shell: bash
 
     - name: Build packages
       run: yarn build
+      shell: bash
 
     # TODO Publish to verdaccio
     # https://verdaccio.org/docs/en/github-actions
@@ -31,5 +34,6 @@ runs:
     - name: Run bundlewatch
       working-directory: packages/aws-amplify/__tests__/bundle-size
       run: yarn && yarn calculate
+      shell: bash
       env:
         CI_BRANCH_BASE: main
