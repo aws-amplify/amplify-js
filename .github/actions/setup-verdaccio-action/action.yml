@@ -21,7 +21,7 @@ runs:
         sudo npm install -g verdaccio verdaccio-auth-memory verdaccio-memory npm-auth-to-token
       shell: bash
 
-    - name: Create temporary log folder
+    - name: Create temporary Verdaccio log
       id: tmp
       run: |
         echo "::set-output name=dir::$(mktemp)"
@@ -37,9 +37,15 @@ runs:
         cp --verbose ${{ github.action_path }}/config.yaml $HOME/.config/verdaccio/config.yaml
       shell: bash
 
+    - name: Test
+      run: |
+        echo "What's the value of dir? ${{ steps.tmp.outputs.dir }} <~--"
+      shell: bash
+
     - name: Start Verdaccio
       run: |
         nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &>${{ steps.tmp.outputs.dir }} &
+        grep -q 'http address' <(tail -f ${{ steps.tmp.outputs.dir }})
       shell: bash
 
     - name: Add test user to Verdaccio
