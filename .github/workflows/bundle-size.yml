@@ -11,7 +11,7 @@ jobs:
         stack: [webpack4, webpack]
     steps:
       - name: Checkout Amplify JS
-        uses: actions/checkout@v2.1.0
+        uses: actions/checkout@v2
 
       - name: Setup Node + NPM
         uses: actions/setup-node@v2
