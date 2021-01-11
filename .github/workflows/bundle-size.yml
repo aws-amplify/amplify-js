@@ -11,6 +11,9 @@ jobs:
         stack: [webpack4, webpack]
     steps:
       - uses: actions/checkout@v2.1.0
+      - uses: actions/setup-node@v2
+        with:
+          registry-url: 'http://localhost:4873'
       - uses: ./.github/actions/verdaccio-action
       - uses: ./.github/actions/bundle-size-action
         with:
