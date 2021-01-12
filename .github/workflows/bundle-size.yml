@@ -31,7 +31,7 @@ jobs:
           registry-url: 'http://localhost:4873'
 
       - name: Publish to Verdaccio
-        run: yarn publish:verdaccio
+        run: npm run publish:verdaccio
         shell: bash
 
       - name: Calculate bundle sizes
