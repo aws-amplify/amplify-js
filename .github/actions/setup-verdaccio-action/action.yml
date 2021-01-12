@@ -1,16 +1,4 @@
-# name: 'Verdaccio Publish Action v2'
-# description: 'This action will deploy your package to Verdaccio Registry'
-# author: 'GitHub'
-# inputs:
-#   debug:
-#     description: 'npm debug level'
-#     default: '-ddd'
-# runs:
-#   using: 'docker'
-#   image: 'Dockerfile'
-#   args:
-#     - ${{ inputs.debug }}
-
+# Based on https://github.com/verdaccio/github-actions/tree/master/publish
 name: Setup Verdaccio
 description: Installs & runs Verdaccio
 runs:
