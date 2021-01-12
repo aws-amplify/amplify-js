@@ -16,13 +16,8 @@ jobs:
       - name: Setup Node + NPM
         uses: actions/setup-node@v2
 
-      - uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package.json') }}
-
       - name: Install dependencies
-        run: yarn install --prefer-offline
+        run: yarn install
 
       - name: Build packages
         run: yarn build
