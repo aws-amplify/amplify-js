@@ -16,6 +16,12 @@ jobs:
       - name: Setup Node + NPM
         uses: actions/setup-node@v2
 
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build packages
+        run: yarn build
+
       - name: Setup Verdaccio
         uses: ./.github/actions/setup-verdaccio-action
 
@@ -24,8 +30,9 @@ jobs:
         with:
           registry-url: 'http://localhost:4873'
 
-      - name: Publish PR to Verdaccio
-        uses: ./.github/actions/publish-verdaccio-action
+      - name: Publish to Verdaccio
+        run: yarn publish:verdaccio
+        shell: bash
 
       - name: Calculate bundle sizes
         uses: ./.github/actions/bundle-size-action
