@@ -75,7 +75,6 @@ export class AmplifyTOTPSetup {
     // ensure setup is only run once after totp setup is available
     if (!this.user || !this.user.associateSoftwareToken || this.loading || this.qrCodeImageSource) return;
 
-    this.loading = true;
     this.setupMessage = null;
     const encodedIssuer = encodeURI(I18n.get(this.issuer));
 
@@ -83,6 +82,7 @@ export class AmplifyTOTPSetup {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
+    this.loading = true;
     try {
       const secretKey = await Auth.setupTOTP(this.user);
 
