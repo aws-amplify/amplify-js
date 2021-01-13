@@ -13,7 +13,7 @@ import {
   CognitoUserInterface,
   AuthStateHandler,
   UsernameAliasStrings,
-  AmplifySignUpAttributes,
+  SignUpAttributes,
 } from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
@@ -68,7 +68,7 @@ export class AmplifyConfirmSignUp {
   @State() loading: boolean = false;
   @State() userInput: string;
 
-  private _signUpAttrs: AmplifySignUpAttributes;
+  private _signUpAttrs: SignUpAttributes;
   private newFormFields: FormFieldTypes | string[] = [];
   private phoneNumber: PhoneNumberInterface = {
     countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
@@ -90,8 +90,9 @@ export class AmplifyConfirmSignUp {
   }
 
   private setup() {
-    this.userInput = this.user ? this.user.username : null;
-    this._signUpAttrs = this.user && this.user.signUpAttrs ? this.user.signUpAttrs : null;
+    // TODO: Use optional chaining instead
+    this.userInput = this.user && this.user.userInput;
+    this._signUpAttrs = this.user && this.user.signUpAttrs;
     checkUsernameAlias(this.usernameAlias);
     this.buildFormFields();
   }

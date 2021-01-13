@@ -74,7 +74,7 @@ export interface CognitoUserInterface {
   [attributes: string]: any;
 }
 
-export interface AmplifySignUpAttributes {
+export interface SignUpAttributes {
   username: string;
   password: string;
   attributes?: {
