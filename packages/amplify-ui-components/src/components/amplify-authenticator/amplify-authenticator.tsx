@@ -166,7 +166,7 @@ export class AmplifyAuthenticator {
   }
 
   // Returns a slot containing the Auth component corresponding to the given authState
-  private getSlotWithAuthCompoent(authState: AuthState): JSXBase.IntrinsicElements {
+  private getSlotWithAuthComponent(authState: AuthState): JSXBase.IntrinsicElements {
     const authComponent = this.getAuthComponent(authState);
     const slotName = authSlotNames[authState];
     const slotIsEmpty = this.el.querySelector(`[slot="${slotName}"]`) === null; // true if no element has been inserted to the slot
@@ -199,7 +199,7 @@ export class AmplifyAuthenticator {
         {this.authState === AuthState.SignedIn ? (
           [<slot name="greetings"></slot>, <slot></slot>]
         ) : (
-          <div class="auth-container">{this.getSlotWithAuthCompoent(this.authState)}</div>
+          <div class="auth-container">{this.getSlotWithAuthComponent(this.authState)}</div>
         )}
       </Host>
     );
