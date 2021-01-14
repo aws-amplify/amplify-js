@@ -13,6 +13,7 @@ inputs:
     required: false
   state:
     description: '`success`, `error`, `failure`, or `pending`'
+    default: pending
     required: true
 
 runs:
@@ -31,5 +32,7 @@ runs:
         CONTEXT: ${{ inputs.context }}
         DESCRIPTION: ${{ inputs.description }}
         GITHUB_TOKEN: ${{ inputs.authToken }}
+        OWNER: ${{ github.repository_owner }}
+        REPOSITORY: ${{ github.repository }}
         SHA: ${{ github.sha }}
         STATE: ${{ inputs.state }}

@@ -8,16 +8,14 @@ function assert(message) {
 const {
 	CONTEXT,
 	DESCRIPTION,
-	GITHUB_REPOSITORY = assert('Missing GITHUB_REPOSITORY'),
-	GITHUB_SHA = execSync('git rev-parse head')
+	OWNER = assert('Missing OWNER'),
+	REPOSITORY = assert('Missing REPOSITORY'),
 	SHA = execSync('git rev-parse head')
 		.toString()
 		.trim(),
 	GITHUB_TOKEN = assert('Missing GITHUB_TOKEN'),
 	STATE = 'pending',
 } = process.env;
-
-const [owner, repo] = GITHUB_REPOSITORY.split('/');
 
 const { repos } = new Octokit({
 	auth: GITHUB_TOKEN,
@@ -40,7 +38,7 @@ await repos.createCommitStatus({
 	context: CONTEXT,
 	description: DESCRIPTION,
 	state: STATE,
-	owner,
-	repo,
+	owner: OWNER,
+	repo: REPOSITORY,
 	sha: SHA,
 });

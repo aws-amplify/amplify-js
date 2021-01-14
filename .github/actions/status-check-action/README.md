@@ -11,10 +11,11 @@ Your `GITHUB_TOKEN` will need `public_repo, repo:status` permissions.
 ### Manually
 
 ```shell
-GITHUB_REPOSITORY=aws-amplify/amplify-js \
-GITHUB_TOKEN=... \
 CONTEXT="My Status check" \
 DESCRIPTION="± 5kB" \
+GITHUB_TOKEN=... \
+OWNER=amplify-js \
+REPOSITORY=aws-amplify \
 STATE=success \
 node index.js
 ```
@@ -28,3 +29,8 @@ node index.js
 		state: success
 		context: PR stats for ${{ matrix.stack }}
 ```
+
+## Prior Art
+
+- https://github.com/Sibz/github-status-action
+- https://github.com/mitchheddles/github-action-status-check
