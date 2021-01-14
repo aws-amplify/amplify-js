@@ -34,7 +34,19 @@ jobs:
         run: npm run publish:verdaccio
         shell: bash
 
+      - name: Pending check
+        uses: ./.github/actions/status-check-actions
+        with:
+          state: pending
+          context: PR stats for ${{ matrix.stack }}
+
       - name: Calculate bundle sizes
         uses: ./.github/actions/bundle-size-action
         with:
           stack: ${{ matrix.stack }}
+
+      - name: Finished check
+        uses: ./.github/actions/status-check-actions
+        with:
+          state: success
+          context: PR stats for ${{ matrix.stack }}
