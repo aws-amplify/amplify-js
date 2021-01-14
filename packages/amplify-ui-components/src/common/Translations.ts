@@ -23,7 +23,7 @@ export enum AuthStrings {
   NEW_PASSWORD_LABEL = 'New password',
   NEW_PASSWORD_PLACEHOLDER = 'Enter your new password',
   NO_ACCOUNT_TEXT = 'No account?',
-  USERNAME_REMOVE_WHITESPACE = 'Username cannot contains whitespace',
+  USERNAME_REMOVE_WHITESPACE = 'Username cannot contain whitespace',
   PASSWORD_REMOVE_WHITESPACE = 'Password cannot start or end with whitespace',
   PASSWORD_LABEL = 'Password *',
   PASSWORD_PLACEHOLDER = 'Enter your password',
