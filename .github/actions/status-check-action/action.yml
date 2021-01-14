@@ -34,5 +34,5 @@ runs:
         GITHUB_TOKEN: ${{ inputs.authToken }}
         OWNER: ${{ github.repository_owner }}
         REPOSITORY: ${{ github.repository }}
-        SHA: ${{ github.sha }}
+        SHA: ${{ github.event.pull_request.head.sha }}
         STATE: ${{ inputs.state }}
