@@ -3,7 +3,7 @@ description: Creates & Updates GitHub status checks
 
 inputs:
   state:
-    description: `success`, `error`, `failure`, or `pending`
+    description: '`success`, `error`, `failure`, or `pending`'
     required: true
   context:
     description: Display name of the check
