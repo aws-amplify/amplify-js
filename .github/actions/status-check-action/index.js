@@ -10,6 +10,7 @@ const {
 	DESCRIPTION,
 	GITHUB_REPOSITORY = assert('Missing GITHUB_REPOSITORY'),
 	GITHUB_SHA = execSync('git rev-parse head')
+	SHA = execSync('git rev-parse head')
 		.toString()
 		.trim(),
 	GITHUB_TOKEN = assert('Missing GITHUB_TOKEN'),
@@ -41,5 +42,5 @@ await repos.createCommitStatus({
 	state: STATE,
 	owner,
 	repo,
-	sha: GITHUB_SHA,
+	sha: SHA,
 });

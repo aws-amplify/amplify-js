@@ -31,4 +31,5 @@ runs:
         CONTEXT: ${{ inputs.context }}
         DESCRIPTION: ${{ inputs.description }}
         GITHUB_TOKEN: ${{ inputs.authToken }}
+        SHA: ${{ github.sha }}
         STATE: ${{ inputs.state }}
