@@ -21,9 +21,10 @@ jobs:
       - name: Pending check
         uses: ./.github/actions/status-check-action
         with:
-          authToken: ${{ secrets.BUNDLE_SIZE_GITHUB_TOKEN }}
           context: PR stats for ${{ matrix.stack }}
           state: pending
+        env:
+          GITHUB_TOKEN: ${{ secrets.BUNDLE_SIZE_GITHUB_TOKEN }}
 
       - name: Install dependencies
         run: yarn install

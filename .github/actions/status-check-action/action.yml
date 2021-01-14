@@ -2,9 +2,9 @@ name: PR Status Check
 description: Creates & Updates GitHub status checks
 
 inputs:
-  authToken:
-    description: 'GITHUB_TOKEN with repo permissions'
-    required: true
+  # authToken:
+  #   description: 'GITHUB_TOKEN with repo permissions'
+  #   required: true
   context:
     description: Display name of the check
     required: true
@@ -32,6 +32,6 @@ runs:
         CONTEXT: ${{ inputs.context }}
         DESCRIPTION: ${{ inputs.description }}
         GITHUB_REPOSITORY: ${{ github.repository }}
-        GITHUB_TOKEN: ${{ inputs.authToken }}
+        # GITHUB_TOKEN: ${{ inputs.authToken }}
         SHA: ${{ github.event.pull_request.head.sha }}
         STATE: ${{ inputs.state }}
