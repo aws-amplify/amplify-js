@@ -31,8 +31,7 @@ runs:
       env:
         CONTEXT: ${{ inputs.context }}
         DESCRIPTION: ${{ inputs.description }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_TOKEN: ${{ inputs.authToken }}
-        OWNER: ${{ github.repository_owner }}
-        REPOSITORY: ${{ github.repository }}
         SHA: ${{ github.event.pull_request.head.sha }}
         STATE: ${{ inputs.state }}

@@ -14,8 +14,7 @@ Your `GITHUB_TOKEN` will need `public_repo, repo:status` permissions.
 CONTEXT="My Status check" \
 DESCRIPTION="± 5kB" \
 GITHUB_TOKEN=... \
-OWNER=amplify-js \
-REPOSITORY=aws-amplify \
+GITHUB_REPOSITORY=aws-amplify/amplify-js \
 STATE=success \
 node index.js
 ```
