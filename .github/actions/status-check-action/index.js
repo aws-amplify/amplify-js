@@ -16,6 +16,10 @@ const {
 	STATE = 'pending',
 } = process.env;
 
+if (!GITHUB_TOKEN) {
+	throw new Error('GITHUB_TOKEN is provided, but empty');
+}
+
 const [owner, repo] = GITHUB_REPOSITORY.split('/');
 
 const { repos } = new Octokit({
