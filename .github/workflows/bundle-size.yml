@@ -19,9 +19,9 @@ jobs:
       - name: Pending check
         uses: ./.github/actions/status-check-action
         with:
-          state: pending
+          authToken: ${{ secrets.BUNDLE_SIZE_GITHUB_TOKEN }}
           context: PR stats for ${{ matrix.stack }}
-          authToken: ${{ secrets.GITHUB_TOKEN }}
+          state: pending
 
       - name: Install dependencies
         run: yarn install
@@ -49,5 +49,6 @@ jobs:
       - name: Finished check
         uses: ./.github/actions/status-check-actions
         with:
-          state: success
+          authToken: ${{ secrets.BUNDLE_SIZE_GITHUB_TOKEN }}
           context: PR stats for ${{ matrix.stack }}
+          state: success
