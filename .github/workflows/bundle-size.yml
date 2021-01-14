@@ -1,6 +1,8 @@
 name: Bundle Size
 
-on: [pull_request]
+on:
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
   bundle-size:
