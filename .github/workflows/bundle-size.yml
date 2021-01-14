@@ -16,6 +16,12 @@ jobs:
       - name: Setup Node + NPM
         uses: actions/setup-node@v2
 
+      - name: Pending check
+        uses: ./.github/actions/status-check-action
+        with:
+          state: pending
+          context: PR stats for ${{ matrix.stack }}
+
       - name: Install dependencies
         run: yarn install
 
@@ -33,12 +39,6 @@ jobs:
       - name: Publish to Verdaccio
         run: npm run publish:verdaccio
         shell: bash
-
-      - name: Pending check
-        uses: ./.github/actions/status-check-actions
-        with:
-          state: pending
-          context: PR stats for ${{ matrix.stack }}
 
       - name: Calculate bundle sizes
         uses: ./.github/actions/bundle-size-action
