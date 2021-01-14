@@ -1,0 +1,30 @@
+name: PR Status Check
+description: Creates & Updates GitHub status checks
+
+inputs:
+  state:
+    description: `success`, `error`, `failure`, or `pending`
+    required: true
+  context:
+    description: Display name of the check
+    required: true
+  description:
+    description: Optional status information to display
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install status check dependencies
+      working-directory: ${{ github.action_path }}
+      run: yarn install
+      shell: bash
+
+    - name: Update status check
+      run: |
+        node ${{ github.action_path }}/index.js
+      env:
+        CONTEXT: ${{ inputs.context }}
+        DESCRIPTION: ${{ inputs.description }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        STATE: ${{ inputs.state }}
