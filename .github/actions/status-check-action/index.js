@@ -9,14 +9,14 @@ const {
 	CONTEXT,
 	DESCRIPTION,
 	GITHUB_REPOSITORY = assert('Missing GITHUB_REPOSITORY'),
+	GITHUB_SHA = execSync('git rev-parse head')
+		.toString()
+		.trim(),
 	GITHUB_TOKEN = assert('Missing GITHUB_TOKEN'),
 	STATE = 'pending',
 } = process.env;
 
 const [owner, repo] = GITHUB_REPOSITORY.split('/');
-const sha = execSync('git rev-parse head')
-	.toString()
-	.trim();
 
 const { repos } = new Octokit({
 	auth: GITHUB_TOKEN,
@@ -41,5 +41,5 @@ await repos.createCommitStatus({
 	state: STATE,
 	owner,
 	repo,
-	sha,
+	sha: GITHUB_SHA,
 });
