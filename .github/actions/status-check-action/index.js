@@ -6,7 +6,7 @@ function assert(message) {
 }
 
 const {
-	CONTEXT,
+	CONTEXT = assert('Missing CONTEXT for status check name'),
 	DESCRIPTION,
 	GITHUB_REPOSITORY = assert('Missing GITHUB_REPOSITORY'),
 	GITHUB_TOKEN = assert('Missing GITHUB_TOKEN'),
