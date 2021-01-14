@@ -1,14 +1,15 @@
 name: Bundle Size
 
 on:
+  [pull_request]
   # https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows#pull_request_target
-  pull_request_review:
-    types: [submitted]
-    branches: [main]
+  # pull_request_review:
+  #   types: [submitted]
+  #   branches: [main]
 
 jobs:
   bundle-size:
-    if: github.event.review.state == 'approved'
+    # if: github.event.review.state == 'approved'
     name: Calculate
     runs-on: ubuntu-latest
     strategy:
