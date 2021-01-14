@@ -26,6 +26,7 @@ runs:
     - name: Update status check
       run: |
         node ${{ github.action_path }}/index.js
+      shell: bash
       env:
         CONTEXT: ${{ inputs.context }}
         DESCRIPTION: ${{ inputs.description }}
