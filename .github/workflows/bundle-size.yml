@@ -1,7 +1,8 @@
 name: Bundle Size
 
 on:
-  pull_request:
+  # https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows#pull_request_target
+  pull_request_target:
     types: [opened, synchronize]
 
 jobs:
