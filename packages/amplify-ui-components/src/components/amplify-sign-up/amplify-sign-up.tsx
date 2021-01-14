@@ -115,6 +115,7 @@ export class AmplifySignUp {
     if (!Auth || typeof Auth.signUp !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
+    this.loading = true;
     if (this.phoneNumber.phoneNumberValue) {
       try {
         this.signUpAttributes.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
@@ -131,8 +132,14 @@ export class AmplifySignUp {
       default:
         break;
     }
-
     try {
+      if (this.signUpAttributes.username.indexOf(' ') >= 0) {
+        throw new Error(Translations.USERNAME_REMOVE_WHITESPACE);
+      }
+      if (this.signUpAttributes.password !== this.signUpAttributes.password.trim()) {
+        throw new Error(Translations.PASSWORD_REMOVE_WHITESPACE);
+      }
+
       const data = await Auth.signUp(this.signUpAttributes);
       if (!data) {
         throw new Error(Translations.SIGN_UP_FAILED);
@@ -145,6 +152,8 @@ export class AmplifySignUp {
       }
     } catch (error) {
       dispatchToastHubEvent(error);
+    } finally {
+      this.loading = false;
     }
   }
 

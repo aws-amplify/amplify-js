@@ -96,6 +96,7 @@ export class AuthClass {
 	private _storage;
 	private _storageSync;
 	private oAuthFlowInProgress: boolean = false;
+	private pendingSignIn: ReturnType<AuthClass['signInWithPassword']> | null;
 
 	Credentials = Credentials;
 
@@ -354,7 +355,7 @@ export class AuthClass {
 	}
 
 	/**
-	 * Send the verfication code to confirm sign up
+	 * Send the verification code to confirm sign up
 	 * @param {String} username - The username to be confirmed
 	 * @param {String} code - The verification code
 	 * @param {ConfirmSignUpOptions} options - other options for confirm signup
@@ -585,14 +586,30 @@ export class AuthClass {
 	private signInWithPassword(
 		authDetails: AuthenticationDetails
 	): Promise<CognitoUser | any> {
+		if (this.pendingSignIn) {
+			throw new Error('Pending sign-in attempt already in progress');
+		}
+
 		const user = this.createCognitoUser(authDetails.getUsername());
 
-		return new Promise((resolve, reject) => {
+		this.pendingSignIn = new Promise((resolve, reject) => {
 			user.authenticateUser(
 				authDetails,
-				this.authCallbacks(user, resolve, reject)
+				this.authCallbacks(
+					user,
+					value => {
+						this.pendingSignIn = null;
+						resolve(value);
+					},
+					error => {
+						this.pendingSignIn = null;
+						reject(error);
+					}
+				)
 			);
 		});
+
+		return this.pendingSignIn;
 	}
 
 	/**
@@ -887,7 +904,7 @@ export class AuthClass {
 		user: CognitoUser | any,
 		challengeAnswer: string
 	): Promise<CognitoUserSession> {
-		logger.debug('verfication totp token', user, challengeAnswer);
+		logger.debug('verification totp token', user, challengeAnswer);
 		return new Promise((res, rej) => {
 			user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
 				onFailure: err => {
@@ -896,6 +913,11 @@ export class AuthClass {
 					return;
 				},
 				onSuccess: data => {
+					dispatchAuthEvent(
+						'signIn',
+						user,
+						`A user ${user.getUsername()} has been signed in`
+					);
 					logger.debug('verifyTotpToken success', data);
 					res(data);
 					return;
