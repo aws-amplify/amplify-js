@@ -2,8 +2,8 @@ name: PR Status Check
 description: Creates & Updates GitHub status checks
 
 inputs:
-  state:
-    description: '`success`, `error`, `failure`, or `pending`'
+  authToken:
+    description: 'GITHUB_TOKEN with repo permissions'
     required: true
   context:
     description: Display name of the check
@@ -11,6 +11,9 @@ inputs:
   description:
     description: Optional status information to display
     required: false
+  state:
+    description: '`success`, `error`, `failure`, or `pending`'
+    required: true
 
 runs:
   using: 'composite'
@@ -26,5 +29,5 @@ runs:
       env:
         CONTEXT: ${{ inputs.context }}
         DESCRIPTION: ${{ inputs.description }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.authToken }}
         STATE: ${{ inputs.state }}
