@@ -91,7 +91,7 @@ export class AmplifyConfirmSignUp {
 
   private setup() {
     // TODO: Use optional chaining instead
-    this.userInput = this.user && this.user.userInput;
+    this.userInput = this.user && this.user.username;
     this._signUpAttrs = this.user && this.user.signUpAttrs;
     checkUsernameAlias(this.usernameAlias);
     this.buildFormFields();
