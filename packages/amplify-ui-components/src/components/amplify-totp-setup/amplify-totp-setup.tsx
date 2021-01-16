@@ -42,8 +42,8 @@ export class AmplifyTOTPSetup {
     this.setup();
   }
 
-  componentWillLoad() {
-    this.setup();
+  async componentWillLoad() {
+    await this.setup();
   }
 
   private buildOtpAuthPath(user: CognitoUserInterface, issuer: string, secretKey: string) {
@@ -72,9 +72,8 @@ export class AmplifyTOTPSetup {
   }
 
   private async setup() {
-    // ensure setup is only run once after totp setup is available
     if (!this.user || !this.user.associateSoftwareToken || this.loading || this.qrCodeImageSource) return;
-
+    console.log('running setup with user', this.user, this.user === undefined);
     this.setupMessage = null;
     const encodedIssuer = encodeURI(I18n.get(this.issuer));
 
@@ -85,13 +84,17 @@ export class AmplifyTOTPSetup {
     this.loading = true;
     try {
       const secretKey = await Auth.setupTOTP(this.user);
-
       logger.debug('secret key', secretKey);
-      this.code = this.buildOtpAuthPath(this.user, encodedIssuer, secretKey);
 
+      this.code = this.buildOtpAuthPath(this.user, encodedIssuer, secretKey);
       this.generateQRCode(this.code);
     } catch (error) {
-      dispatchToastHubEvent(error);
+      /**
+       * When user has slotted totp-setup and signs out, this component unfortunately still remains in DOM and calls setup
+       * whenever `user` prop updates. The problem is that `this.user` can lose its value during the execution and throw
+       * an error here. We only display toast message if this is not the case, ie. `this.user` is still present.
+       */
+      if (this.user) dispatchToastHubEvent(error);
       logger.debug(I18n.get(Translations.TOTP_SETUP_FAILURE), error);
     } finally {
       this.loading = false;
