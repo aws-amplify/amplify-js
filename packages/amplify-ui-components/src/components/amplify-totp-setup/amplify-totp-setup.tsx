@@ -73,7 +73,6 @@ export class AmplifyTOTPSetup {
 
   private async setup() {
     if (!this.user || !this.user.associateSoftwareToken || this.loading || this.qrCodeImageSource) return;
-    console.log('running setup with user', this.user, this.user === undefined);
     this.setupMessage = null;
     const encodedIssuer = encodeURI(I18n.get(this.issuer));
 
