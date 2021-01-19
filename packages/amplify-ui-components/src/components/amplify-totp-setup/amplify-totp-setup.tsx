@@ -90,9 +90,9 @@ export class AmplifyTOTPSetup {
       this.generateQRCode(this.code);
     } catch (error) {
       /**
-       * When user has slotted totp-setup and signs out, this component unfortunately still remains in DOM and calls setup
-       * whenever `user` prop updates. The problem is that `this.user` can lose its value during the execution and throw
-       * an error here. We only display toast message if this is not the case, ie. `this.user` is still present.
+       * When user has slotted totp-setup and signs out, this component still remains in DOM and calls setup whenever
+       * `user` prop updates. The problem is that `this.user` can lose its value during the execution and throw an
+       * error here. We only display toast message if this is not the case, ie. `this.user` is still present.
        */
       if (this.user) dispatchToastHubEvent(error);
       logger.debug(I18n.get(Translations.TOTP_SETUP_FAILURE), error);
