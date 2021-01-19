@@ -64,7 +64,7 @@ export class AmplifyConfirmSignIn {
   }
 
   @Watch('user')
-  handleUser() {
+  userHandler() {
     this.setup();
   }
 
