@@ -5,11 +5,49 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "precalculate": "$_ run build",
+    "calculate": "bundlewatch"
+  },
+  "bundlewatch": {
+    "files": [
+      {
+        "path": ".next/static/chunks/*.js",
+        "maxSize": "175kB"
+      },
+      {
+        "path": ".next/static/chunks/*.*.js",
+        "maxSize": "15kB"
+      },
+      {
+        "path": ".next/static/chunks/framework.*.js",
+        "maxSize": "45kB"
+      },
+      {
+        "path": ".next/static/chunks/main-*.js",
+        "maxSize": "10kB"
+      },
+      {
+        "path": ".next/static/chunks/polyfills-*.js",
+        "maxSize": "35kB"
+      },
+      {
+        "path": ".next/static/chunks/webpack-*.js",
+        "maxSize": "1kB"
+      },
+      {
+        "path": ".next/static/chunks/pages/index-*.js",
+        "maxSize": "5kB"
+      }
+    ]
   },
   "dependencies": {
+    "aws-amplify": "unstable",
     "next": "10.0.5",
     "react": "17.0.1",
     "react-dom": "17.0.1"
+  },
+  "devDependencies": {
+    "bundlewatch": "^0.3.1"
   }
 }
