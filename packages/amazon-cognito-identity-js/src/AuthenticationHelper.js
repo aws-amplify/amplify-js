@@ -22,11 +22,21 @@ import SHA256 from 'crypto-js/sha256';
 import HmacSHA256 from 'crypto-js/hmac-sha256';
 import WordArray from './utils/WordArray';
 
-const randomBytes = function(nBytes) {
+const randomBytes = function (nBytes) {
 	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
 };
 
 import BigInteger from './BigInteger';
+
+/**
+ * Tests if a string is a hex value with an optional negative sign in the front
+ */
+const HEX_REGEX = /^(-)?([\da-f]+)$/i;
+
+/**
+ * Tests if a hex string has it most significant bit set
+ */
+const HEX_MSB_REGEX = /^[89a-f]/i;
 
 const initN =
 	'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD1' +
@@ -63,7 +73,7 @@ export default class AuthenticationHelper {
 		);
 
 		this.smallAValue = this.generateRandomSmallA();
-		this.getLargeAValue(() => {});
+		this.getLargeAValue(() => { });
 
 		this.infoBits = Buffer.from('Caldera Derived Key', 'utf8');
 
@@ -152,8 +162,7 @@ export default class AuthenticationHelper {
 		const combinedString = `${deviceGroupKey}${username}:${this.randomPassword}`;
 		const hashedString = this.hash(combinedString);
 
-		const hexRandom = randomBytes(16).toString('hex');
-		this.SaltToHashDevices = this.padHex(new BigInteger(hexRandom, 16));
+		this.SaltToHashDevices = randomBytes(16).toString('hex');
 
 		this.g.modPow(
 			new BigInteger(this.hexHash(this.SaltToHashDevices + hashedString), 16),
@@ -337,17 +346,52 @@ export default class AuthenticationHelper {
 	}
 
 	/**
-	 * Converts a BigInteger (or hex string) to hex format padded with zeroes for hashing
-	 * @param {BigInteger|String} bigInt Number or string to pad.
+	 * Converts a BigInteger to hex format, left padded with zeroes to an even number of digits for hashing
+	 * 
+	 * It never returns a negative sign, for negatives it returns hex representation of two's complement
+	 * 
+	 * @param {BigInteger} bigInt Number or string to pad.
 	 * @returns {String} Padded hex string.
 	 */
 	padHex(bigInt) {
-		let hashStr = bigInt.toString(16);
-		if (hashStr.length % 2 === 1) {
-			hashStr = `0${hashStr}`;
-		} else if ('89ABCDEFabcdef'.indexOf(hashStr[0]) !== -1) {
-			hashStr = `00${hashStr}`;
+		if (!(bigInt instanceof BigInteger)) {
+			throw new Error('Not a BigInteger');
 		}
-		return hashStr;
+
+		const [, negativeSign, hexNumber] = bigInt.toString(16).match(HEX_REGEX);
+
+		let hex = hexNumber.length % 2 === 1 ? `0${hexNumber}` : hexNumber;
+
+		if (negativeSign) {
+			hex = this.twosComplement(bigInt).toString(16);
+
+			hex = hex.length % 2 !== 0 ? `0${hex}` : hex;
+
+			hex = HEX_MSB_REGEX.test(hex) ? hex : `FF${hex}`;
+		} else {
+			hex = hex.length % 2 === 1 ? `0${hex}` : hex;
+
+			hex = HEX_MSB_REGEX.test(hex) ? `00${hex}` : hex;
+		}
+
+		return hex;
+	}
+
+	twosComplement(bigInt) {
+		if (!(bigInt instanceof BigInteger)) {
+			throw new Error('Not a BigInteger');
+		}
+
+		const hashStr = bigInt.abs().toString(16);
+
+		hashStr = hashStr.length % 2 !== 0 ? `0${hashStr}` : hashStr;
+
+		let invertedNibbles = hashStr.split('').map(x => {
+			const invertedNibble = ~parseInt(x, 16) & 0xf;
+
+			return '0123456789ABCDEF'.charAt(invertedNibble);
+		}).join('');
+
+		return new BigInteger(invertedNibbles, 16).add(BigInteger.ONE);
 	}
 }
