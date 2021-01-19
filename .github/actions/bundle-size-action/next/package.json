@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "rimraf .next",
     "build": "next build",
     "start": "next start",
     "precalculate": "$_ run build",
@@ -12,32 +13,8 @@
   "bundlewatch": {
     "files": [
       {
-        "path": ".next/static/chunks/*.js",
-        "maxSize": "175kB"
-      },
-      {
-        "path": ".next/static/chunks/*.*.js",
-        "maxSize": "15kB"
-      },
-      {
-        "path": ".next/static/chunks/framework.*.js",
-        "maxSize": "45kB"
-      },
-      {
-        "path": ".next/static/chunks/main-*.js",
-        "maxSize": "10kB"
-      },
-      {
-        "path": ".next/static/chunks/polyfills-*.js",
-        "maxSize": "35kB"
-      },
-      {
-        "path": ".next/static/chunks/webpack-*.js",
-        "maxSize": "1kB"
-      },
-      {
-        "path": ".next/static/chunks/pages/index-*.js",
-        "maxSize": "5kB"
+        "path": ".next/static/chunks/pages/index-d6a61784a8ae4ca7feaf.js",
+        "maxSize": "215kB"
       }
     ]
   },
@@ -48,6 +25,7 @@
     "react-dom": "17.0.1"
   },
   "devDependencies": {
-    "bundlewatch": "^0.3.1"
+    "bundlewatch": "^0.3.1",
+    "rimraf": "^3.0.2"
   }
 }
