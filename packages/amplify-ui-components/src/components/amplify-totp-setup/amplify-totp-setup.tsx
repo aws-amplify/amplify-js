@@ -1,13 +1,13 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
-import { Component, Prop, State, h, Host } from '@stencil/core';
+import { Component, Prop, State, h, Host, Watch } from '@stencil/core';
 import QRCode from 'qrcode';
 
-import { CognitoUserInterface, AuthStateHandler, MfaOption, AuthState } from '../../common/types/auth-types';
+import { CognitoUserInterface, AuthStateHandler, MfaOption } from '../../common/types/auth-types';
 import { Translations } from '../../common/Translations';
 import { TOTPSetupEventType } from './amplify-totp-setup-interface';
 import { NO_AUTH_MODULE_FOUND, SETUP_TOTP, SUCCESS } from '../../common/constants';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, onAuthUIStateChange } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 import { checkContact } from '../../common/auth-helpers';
 
 const logger = new Logger('TOTP');
@@ -35,19 +35,14 @@ export class AmplifyTOTPSetup {
   @State() qrCodeImageSource: string;
   @State() qrCodeInput: string | null = null;
   @State() loading: boolean = false;
-  @State() isVisible: boolean = false; // whether the component is visible on user side
-  private removeHubListener: () => void; // unsubscribe function returned by onAuthUIStateChange
 
-  async componentWillLoad() {
-    this.removeHubListener = onAuthUIStateChange(authState => {
-      this.isVisible = authState === AuthState.TOTPSetup;
-      if (this.isVisible) this.setup(); // only run setup again if we're in AuthState.TOTPSetup
-    });
-    await this.setup();
+  @Watch('user')
+  userHandler() {
+    this.setup();
   }
 
-  disconnectedCallback() {
-    this.removeHubListener(); // stop listening to `onAuthUIStateChange`
+  async componentWillLoad() {
+    await this.setup();
   }
 
   private buildOtpAuthPath(user: CognitoUserInterface, issuer: string, secretKey: string) {
@@ -77,7 +72,7 @@ export class AmplifyTOTPSetup {
 
   private async setup() {
     // ensure setup is only run once after totp setup is available
-    if (!this.user || !this.user.associateSoftwareToken || !this.isVisible || this.loading) return;
+    if (!this.user || this.user.challengeName !== 'MFA_SETUP' || this.loading) return;
     this.setupMessage = null;
     const encodedIssuer = encodeURI(I18n.get(this.issuer));
 
