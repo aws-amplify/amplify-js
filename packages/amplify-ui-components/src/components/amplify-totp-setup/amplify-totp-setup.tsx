@@ -38,6 +38,11 @@ export class AmplifyTOTPSetup {
   private removeHubListener: () => void; // unsubscribe function returned by onAuthUIStateChange
 
   async componentWillLoad() {
+    /**
+     * We didn't use `@Watch` here because it doesn't fire when we go from require-new-password to totp-setup.
+     * That is because `Auth.completeNewPassword` only changes `user` in place and Watch doesn't detect changes
+     * unless we make a deep clone.
+     */
     this.removeHubListener = onAuthUIStateChange(authState => {
       if (authState === AuthState.TOTPSetup) this.setup();
     });
@@ -45,7 +50,7 @@ export class AmplifyTOTPSetup {
   }
 
   disconnectedCallback() {
-    this.removeHubListener && this.removeHubListener(); // stop listening to `onAuthUIStateChange`	    this.removeHubListener(); // stop listening to `onAuthUIStateChange`
+    this.removeHubListener && this.removeHubListener(); // stop listening to `onAuthUIStateChange`
   }
 
   private buildOtpAuthPath(user: CognitoUserInterface, issuer: string, secretKey: string) {
