@@ -41,7 +41,7 @@ export class AmplifyTOTPSetup {
     /**
      * We didn't use `@Watch` here because it doesn't fire when we go from require-new-password to totp-setup.
      * That is because `Auth.completeNewPassword` only changes `user` in place and Watch doesn't detect changes
-     * unless we make a deep clone.
+     * unless we make a clone.
      */
     this.removeHubListener = onAuthUIStateChange(authState => {
       if (authState === AuthState.TOTPSetup) this.setup();
