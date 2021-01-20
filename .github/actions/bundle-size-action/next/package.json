@@ -13,7 +13,7 @@
   "bundlewatch": {
     "files": [
       {
-        "path": ".next/static/chunks/pages/index-d6a61784a8ae4ca7feaf.js",
+        "path": ".next/static/chunks/pages/index-*.js",
         "maxSize": "215kB"
       }
     ]
