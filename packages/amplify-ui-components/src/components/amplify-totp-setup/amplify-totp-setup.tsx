@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
-import { Component, Prop, State, h, Host, Watch } from '@stencil/core';
+import { Component, Prop, State, h, Host } from '@stencil/core';
 import QRCode from 'qrcode';
 
 import { CognitoUserInterface, AuthStateHandler, MfaOption, AuthState } from '../../common/types/auth-types';
@@ -35,17 +35,13 @@ export class AmplifyTOTPSetup {
   @State() qrCodeImageSource: string;
   @State() qrCodeInput: string | null = null;
   @State() loading: boolean = false;
-  @State() isRendered: boolean = false;
-  private removeHubListener: () => void;
-
-  @Watch('user')
-  onUserChange() {
-    this.setup();
-  }
+  @State() isVisible: boolean = false; // whether the component is visible on user side
+  private removeHubListener: () => void; // unsubscribe function returned by onAuthUIStateChange
 
   async componentWillLoad() {
     this.removeHubListener = onAuthUIStateChange(authState => {
-      this.isRendered = authState === AuthState.TOTPSetup;
+      this.isVisible = authState === AuthState.TOTPSetup;
+      if (this.isVisible) this.setup(); // only run setup again if we're in AuthState.TOTPSetup
     });
     await this.setup();
   }
@@ -81,7 +77,7 @@ export class AmplifyTOTPSetup {
 
   private async setup() {
     // ensure setup is only run once after totp setup is available
-    if (!this.user || !this.user.associateSoftwareToken || this.loading || !this.isRendered) return;
+    if (!this.user || !this.user.associateSoftwareToken || !this.isVisible || this.loading) return;
     this.setupMessage = null;
     const encodedIssuer = encodeURI(I18n.get(this.issuer));
 
