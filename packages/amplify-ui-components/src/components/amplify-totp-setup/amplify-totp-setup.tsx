@@ -92,10 +92,11 @@ export class AmplifyTOTPSetup {
     try {
       const secretKey = await Auth.setupTOTP(this.user);
       logger.debug('secret key', secretKey);
-
       this.code = this.buildOtpAuthPath(this.user, encodedIssuer, secretKey);
+
       this.generateQRCode(this.code);
     } catch (error) {
+      dispatchToastHubEvent(error);
       logger.debug(I18n.get(Translations.TOTP_SETUP_FAILURE), error);
     } finally {
       this.loading = false;
