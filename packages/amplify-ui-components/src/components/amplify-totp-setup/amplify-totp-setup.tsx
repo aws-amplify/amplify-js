@@ -1,13 +1,13 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
-import { Component, Prop, State, h, Host, Watch } from '@stencil/core';
+import { Component, Prop, State, h, Host } from '@stencil/core';
 import QRCode from 'qrcode';
 
-import { CognitoUserInterface, AuthStateHandler, MfaOption } from '../../common/types/auth-types';
+import { CognitoUserInterface, AuthStateHandler, MfaOption, AuthState } from '../../common/types/auth-types';
 import { Translations } from '../../common/Translations';
 import { TOTPSetupEventType } from './amplify-totp-setup-interface';
 import { NO_AUTH_MODULE_FOUND, SETUP_TOTP, SUCCESS } from '../../common/constants';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, onAuthUIStateChange } from '../../common/helpers';
 import { checkContact } from '../../common/auth-helpers';
 
 const logger = new Logger('TOTP');
@@ -35,14 +35,17 @@ export class AmplifyTOTPSetup {
   @State() qrCodeImageSource: string;
   @State() qrCodeInput: string | null = null;
   @State() loading: boolean = false;
-
-  @Watch('user')
-  userHandler() {
-    this.setup();
-  }
+  private removeHubListener: () => void; // unsubscribe function returned by onAuthUIStateChange
 
   async componentWillLoad() {
+    this.removeHubListener = onAuthUIStateChange(authState => {
+      if (authState === AuthState.TOTPSetup) this.setup();
+    });
     await this.setup();
+  }
+
+  disconnectedCallback() {
+    this.removeHubListener && this.removeHubListener(); // stop listening to `onAuthUIStateChange`	    this.removeHubListener(); // stop listening to `onAuthUIStateChange`
   }
 
   private buildOtpAuthPath(user: CognitoUserInterface, issuer: string, secretKey: string) {
