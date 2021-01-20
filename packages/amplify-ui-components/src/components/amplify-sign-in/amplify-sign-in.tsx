@@ -130,8 +130,8 @@ export class AmplifySignIn {
       default:
         break;
     }
-
-    await handleSignIn(this.signInAttributes.userInput, this.signInAttributes.password, this.handleAuthStateChange);
+    const username = this.signInAttributes.userInput.trim();
+    await handleSignIn(username, this.signInAttributes.password, this.handleAuthStateChange);
     this.loading = false;
   }
 

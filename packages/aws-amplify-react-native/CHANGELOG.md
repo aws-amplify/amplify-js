@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.10...aws-amplify-react-native@4.3.0) (2021-01-07)
+
+
+### Features
+
+* **aws-amplify-react-native:** Added Keyboard.dismiss() to display errors ([#7509](https://github.com/aws-amplify/amplify-js/issues/7509)) ([a83b6b8](https://github.com/aws-amplify/amplify-js/commit/a83b6b86989baf7ffbca584b939704a45fa7b864))
+
+
+
+
+
+## [4.2.10](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.9...aws-amplify-react-native@4.2.10) (2020-12-10)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** remove peerDependencies ([#7384](https://github.com/aws-amplify/amplify-js/issues/7384)) ([30463fb](https://github.com/aws-amplify/amplify-js/commit/30463fb0b8a7001d722a079da3535093f86c3702))
+
+
+
+
+
+## [4.2.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.8...aws-amplify-react-native@4.2.9) (2020-11-13)
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+
+
+
+
 ## [4.2.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.7...aws-amplify-react-native@4.2.8) (2020-10-29)
 
 

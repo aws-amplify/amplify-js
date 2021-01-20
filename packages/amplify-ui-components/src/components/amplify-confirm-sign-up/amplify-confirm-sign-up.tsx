@@ -183,7 +183,8 @@ export class AmplifyConfirmSignUp {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
     try {
-      if (!this.userInput) throw new Error('Username can not be empty');
+      if (!this.userInput) throw new Error(Translations.EMPTY_USERNAME);
+      this.userInput = this.userInput.trim();
       await Auth.resendSignUp(this.userInput);
       this.handleAuthStateChange(AuthState.ConfirmSignUp);
     } catch (error) {
@@ -214,6 +215,8 @@ export class AmplifyConfirmSignUp {
         break;
     }
     try {
+      if (!this.userInput) throw new Error(Translations.EMPTY_USERNAME);
+      this.userInput = this.userInput.trim();
       const confirmSignUpResult = await Auth.confirmSignUp(this.userInput, this.code);
 
       if (!confirmSignUpResult) {
@@ -239,6 +242,7 @@ export class AmplifyConfirmSignUp {
           headerText={I18n.get(this.headerText)}
           submitButtonText={I18n.get(this.submitButtonText)}
           handleSubmit={this.handleSubmit}
+          loading={this.loading}
           secondaryFooterContent={
             <div>
               <span>

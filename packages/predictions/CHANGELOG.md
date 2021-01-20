@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.16...@aws-amplify/predictions@3.2.17) (2021-01-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/predictions:** decode Uint8Array as UTF-8 ([#7449](https://github.com/aws-amplify/amplify-js/issues/7449)) ([b3761ae](https://github.com/aws-amplify/amplify-js/commit/b3761aea625e4e1c266d5170a6cdc247eaa54bba))
+
+
+
+
+
+## [3.2.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.15...@aws-amplify/predictions@3.2.16) (2020-12-17)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.14...@aws-amplify/predictions@3.2.15) (2020-12-10)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.13...@aws-amplify/predictions@3.2.14) (2020-11-30)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.12...@aws-amplify/predictions@3.2.13) (2020-11-23)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.11...@aws-amplify/predictions@3.2.12) (2020-11-20)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.10...@aws-amplify/predictions@3.2.11) (2020-11-13)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
 ## [3.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.9...@aws-amplify/predictions@3.2.10) (2020-11-03)
 
 **Note:** Version bump only for package @aws-amplify/predictions

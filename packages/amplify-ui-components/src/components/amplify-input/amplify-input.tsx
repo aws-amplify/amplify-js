@@ -30,7 +30,7 @@ export class AmplifyInput {
     composed: true,
     cancelable: true,
     bubbles: true,
-  }) formSubmit: EventEmitter; 
+  }) formSubmit: EventEmitter;
 
   // eslint-disable-next-line
   @Listen('keydown')
