@@ -3,15 +3,14 @@ import { I18n, Logger } from '@aws-amplify/core';
 import { Component, Prop, State, h, Host, Watch } from '@stencil/core';
 import QRCode from 'qrcode';
 
-import { CognitoUserInterface, AuthStateHandler, MfaOption } from '../../common/types/auth-types';
+import { CognitoUserInterface, AuthStateHandler, MfaOption, AuthState } from '../../common/types/auth-types';
 import { Translations } from '../../common/Translations';
 import { TOTPSetupEventType } from './amplify-totp-setup-interface';
 import { NO_AUTH_MODULE_FOUND, SETUP_TOTP, SUCCESS } from '../../common/constants';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, onAuthUIStateChange } from '../../common/helpers';
 import { checkContact } from '../../common/auth-helpers';
 
 const logger = new Logger('TOTP');
-
 @Component({
   tag: 'amplify-totp-setup',
   styleUrl: 'amplify-totp-setup.scss',
@@ -36,6 +35,8 @@ export class AmplifyTOTPSetup {
   @State() qrCodeImageSource: string;
   @State() qrCodeInput: string | null = null;
   @State() loading: boolean = false;
+  @State() isRendered: boolean = false;
+  private removeHubListener: () => void;
 
   @Watch('user')
   onUserChange() {
@@ -43,7 +44,14 @@ export class AmplifyTOTPSetup {
   }
 
   async componentWillLoad() {
+    this.removeHubListener = onAuthUIStateChange(authState => {
+      this.isRendered = authState === AuthState.TOTPSetup;
+    });
     await this.setup();
+  }
+
+  disconnectedCallback() {
+    this.removeHubListener(); // stop listening to `onAuthUIStateChange`
   }
 
   private buildOtpAuthPath(user: CognitoUserInterface, issuer: string, secretKey: string) {
@@ -73,7 +81,8 @@ export class AmplifyTOTPSetup {
 
   private async setup() {
     // ensure setup is only run once after totp setup is available
-    if (!this.user || !this.user.associateSoftwareToken || this.loading || this.qrCodeImageSource) return;
+    if (!this.user || !this.user.associateSoftwareToken || this.loading || !this.isRendered) return;
+
     this.setupMessage = null;
     const encodedIssuer = encodeURI(I18n.get(this.issuer));
 
@@ -89,12 +98,6 @@ export class AmplifyTOTPSetup {
       this.code = this.buildOtpAuthPath(this.user, encodedIssuer, secretKey);
       this.generateQRCode(this.code);
     } catch (error) {
-      /**
-       * When user has slotted totp-setup and signs out, this component still remains in DOM and calls setup whenever
-       * `user` prop updates. The problem is that `this.user` can lose its value during the execution and throw an
-       * error here. We only display toast message if this is not the case, ie. `this.user` is still present.
-       */
-      if (this.user) dispatchToastHubEvent(error);
       logger.debug(I18n.get(Translations.TOTP_SETUP_FAILURE), error);
     } finally {
       this.loading = false;
