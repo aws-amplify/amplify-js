@@ -1,0 +1,37 @@
+name: PR Status Check
+description: Creates & Updates GitHub status checks
+
+inputs:
+  # authToken:
+  #   description: 'GITHUB_TOKEN with repo permissions'
+  #   required: true
+  context:
+    description: Display name of the check
+    required: true
+  description:
+    description: Optional status information to display
+    required: false
+  state:
+    description: '`success`, `error`, `failure`, or `pending`'
+    default: pending
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install status check dependencies
+      working-directory: ${{ github.action_path }}
+      run: yarn install
+      shell: bash
+
+    - name: Update status check
+      run: |
+        node ${{ github.action_path }}/index.js
+      shell: bash
+      env:
+        CONTEXT: ${{ inputs.context }}
+        DESCRIPTION: ${{ inputs.description }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        # GITHUB_TOKEN: ${{ inputs.authToken }}
+        SHA: ${{ github.event.pull_request.head.sha }}
+        STATE: ${{ inputs.state }}
