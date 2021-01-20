@@ -14,7 +14,7 @@ export async function checkContact(user: CognitoUserInterface, handleAuthStateCh
 
   // If `user` is a federated user, we shouldn't call `verifiedContact`
   // since `user` isn't `CognitoUser`
-  if (!(user instanceof CognitoUser)) {
+  if (!isCognitoUser(user)) {
     handleAuthStateChange(AuthState.SignedIn, user);
     return;
   }
@@ -71,4 +71,8 @@ export const handleSignIn = async (username: string, password: string, handleAut
     }
     dispatchToastHubEvent(error);
   }
+};
+
+export const isCognitoUser = (user: CognitoUserInterface) => {
+  return user instanceof CognitoUser;
 };
