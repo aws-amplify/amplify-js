@@ -394,8 +394,20 @@ export class AuthClass {
 				forceAliasCreation,
 				(err, data) => {
 					if (err) {
+						dispatchAuthEvent(
+							'confirmSignUp_failure',
+							err,
+							`${username} failed to confirm registration`
+						);
+
 						reject(err);
 					} else {
+						dispatchAuthEvent(
+							'confirmSignUp',
+							data,
+							`${username} has confirmed registration`
+						);
+
 						resolve(data);
 					}
 				},

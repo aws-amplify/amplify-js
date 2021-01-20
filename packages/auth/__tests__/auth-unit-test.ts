@@ -491,7 +491,21 @@ describe('auth unit test', () => {
 			const spyon = jest.spyOn(CognitoUser.prototype, 'confirmRegistration');
 			const auth = new Auth(authOptions);
 
-			expect.assertions(1);
+			const unsubscribe = Hub.listen('auth', capsule => {
+				switch (capsule.payload.event) {
+					case 'confirmSignUp': {
+						unsubscribe();
+						return expect(capsule.payload.data).toBe('Success');
+					}
+
+					case 'confirmSignUp_failure': {
+						unsubscribe();
+						return expect(capsule.payload.data).toBe('false');
+					}
+				}
+			});
+
+			expect.assertions(2);
 			expect(await auth.confirmSignUp('username', 'code')).toBe('Success');
 
 			spyon.mockClear();
@@ -560,12 +574,28 @@ describe('auth unit test', () => {
 
 			const auth = new Auth(authOptions);
 
-			expect.assertions(1);
+			const unsubscribe = Hub.listen('auth', capsule => {
+				switch (capsule.payload.event) {
+					case 'confirmSignUp': {
+						unsubscribe();
+						return expect(capsule.payload.data).toBe('Should not be called');
+					}
+
+					case 'confirmSignUp_failure': {
+						unsubscribe();
+						return expect(capsule.payload.data).toBe('err');
+					}
+				}
+			});
+
+			expect.assertions(2);
 			try {
 				await auth.confirmSignUp('username', 'code');
 			} catch (e) {
 				expect(e).toBe('err');
 			}
+
+			expect.assertions(2);
 
 			spyon.mockClear();
 		});
