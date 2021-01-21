@@ -36,6 +36,7 @@ import AmplifyTheme, {
 import countryDialCodes from './CountryDialCodes';
 import TEST_ID from './AmplifyTestIDs';
 import icons from './icons';
+import { setTestId } from './Utils'
 
 interface IContainerProps {
 	theme?: AmplifyThemeType;
@@ -162,7 +163,7 @@ export const LinkCell: FC<ILinkCellProps> = props => {
 			<TouchableHighlight
 				onPress={props.onPress}
 				underlayColor={linkUnderlayColor}
-				testID={props.testID}
+				{...setTestId(props.testID)}
 				disabled={disabled}
 			>
 				<Text
@@ -186,7 +187,7 @@ export const Header: FC<IHeaderProps> = props => {
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.sectionHeader}>
-			<Text style={theme.sectionHeaderText} testID={props.testID}>
+			<Text style={theme.sectionHeaderText} {...setTestId(props.testID)}>
 				{props.children}
 			</Text>
 		</View>
@@ -203,7 +204,7 @@ export const ErrorRow: FC<IErrorRowProps> = props => {
 	return (
 		<View style={theme.errorRow}>
 			<Image source={icons.warning} style={theme.errorRowIcon} />
-			<Text style={theme.errorRowText} testID={TEST_ID.AUTH.ERROR_ROW_TEXT}>
+			<Text style={theme.errorRowText} {...setTestId(TEST_ID.AUTH.ERROR_ROW_TEXT)}>
 				{props.children}
 			</Text>
 		</View>
@@ -268,7 +269,7 @@ export const SignedOutMessage = props => {
 	return (
 		<Text
 			style={theme.signedOutMessage}
-			testID={TEST_ID.AUTH.GREETING_SIGNED_OUT_TEXT}
+			{...setTestId(TEST_ID.AUTH.GREETING_SIGNED_OUT_TEXT)}
 		>
 			{message}
 		</Text>

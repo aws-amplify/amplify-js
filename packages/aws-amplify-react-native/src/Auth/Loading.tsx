@@ -18,6 +18,7 @@ import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { Header } from '../AmplifyUI';
 import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
+import { setTestId } from '../Utils'
 
 export default class Loading extends AuthPiece<
 	IAuthPieceProps,
@@ -32,7 +33,7 @@ export default class Loading extends AuthPiece<
 	showComponent(theme: AmplifyThemeType) {
 		return (
 			<View style={theme.section}>
-				<Header theme={theme} testID={TEST_ID.AUTH.LOADING_TEXT}>
+				<Header theme={theme} {...setTestId(TEST_ID.AUTH.LOADING_TEXT)}>
 					{I18n.get('Loading...')}
 				</Header>
 			</View>

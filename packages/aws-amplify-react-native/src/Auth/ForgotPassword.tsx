@@ -26,6 +26,7 @@ import {
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
+import { setTestId } from '../Utils'
 
 const logger = new Logger('ForgotPassword');
 
@@ -95,7 +96,7 @@ export default class ForgotPassword extends AuthPiece<
 					theme={theme}
 					onPress={this.send}
 					disabled={!this.getUsernameFromInput()}
-					testID={TEST_ID.AUTH.SEND_BUTTON}
+					{...setTestId(TEST_ID.AUTH.SEND_BUTTON)}
 				/>
 			</View>
 		);
@@ -110,7 +111,7 @@ export default class ForgotPassword extends AuthPiece<
 					label={I18n.get('Confirmation Code')}
 					placeholder={I18n.get('Enter your confirmation code')}
 					required={true}
-					testID={TEST_ID.AUTH.CONFIRMATION_CODE_INPUT}
+					{...setTestId(TEST_ID.AUTH.CONFIRMATION_CODE_INPUT)}
 				/>
 				<FormField
 					theme={theme}
@@ -119,14 +120,14 @@ export default class ForgotPassword extends AuthPiece<
 					placeholder={I18n.get('Enter your new password')}
 					secureTextEntry={true}
 					required={true}
-					testID={TEST_ID.AUTH.PASSWORD_INPUT}
+					{...setTestId(TEST_ID.AUTH.PASSWORD_INPUT)}
 				/>
 				<AmplifyButton
 					text={I18n.get('Submit')}
 					theme={theme}
 					onPress={this.submit}
 					disabled={!(this.state.code && this.state.password)}
-					testID={TEST_ID.AUTH.SUBMIT_BUTTON}
+					{...setTestId(TEST_ID.AUTH.SUBMIT_BUTTON)}
 				/>
 			</View>
 		);
@@ -137,7 +138,7 @@ export default class ForgotPassword extends AuthPiece<
 			<Wrapper>
 				<View style={theme.section}>
 					<View>
-						<Header theme={theme} testID={TEST_ID.AUTH.FORGOT_PASSWORD_TEXT}>
+						<Header theme={theme} {...setTestId(TEST_ID.AUTH.FORGOT_PASSWORD_TEXT)}>
 							{I18n.get('Reset your password')}
 						</Header>
 						<View style={theme.sectionBody}>
@@ -148,7 +149,7 @@ export default class ForgotPassword extends AuthPiece<
 							<LinkCell
 								theme={theme}
 								onPress={() => this.changeState('signIn')}
-								testID={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
+								{...setTestId(TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON)}
 							>
 								{I18n.get('Back to Sign In')}
 							</LinkCell>
