@@ -51,13 +51,13 @@ export namespace Components {
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
+          * Hide amplify-toast for auth errors
+         */
+        "hideToast": boolean;
+        /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
         "initialAuthState": AuthState.SignIn | AuthState.SignUp;
-        /**
-          * Show amplify-toast for auth errors
-         */
-        "showToasts": boolean;
         /**
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */
@@ -1555,13 +1555,13 @@ declare namespace LocalJSX {
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
+          * Hide amplify-toast for auth errors
+         */
+        "hideToast"?: boolean;
+        /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
         "initialAuthState"?: AuthState.SignIn | AuthState.SignUp;
-        /**
-          * Show amplify-toast for auth errors
-         */
-        "showToasts"?: boolean;
         /**
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */

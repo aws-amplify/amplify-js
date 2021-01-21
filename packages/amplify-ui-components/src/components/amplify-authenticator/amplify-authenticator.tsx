@@ -47,8 +47,8 @@ export class AmplifyAuthenticator {
   @Prop() usernameAlias: UsernameAliasStrings;
   /** Callback for Authenticator state machine changes */
   @Prop() handleAuthStateChange: AuthStateHandler = () => {};
-  /** Show amplify-toast for auth errors */
-  @Prop() showToasts: boolean = true;
+  /** Hide amplify-toast for auth errors */
+  @Prop() hideToast: boolean = false;
 
   @State() authState: AuthState = AuthState.Loading;
   @State() authData: CognitoUserInterface;
@@ -209,7 +209,7 @@ export class AmplifyAuthenticator {
   render() {
     return (
       <Host>
-        {this.showToasts && this.toastMessage ? (
+        {!this.hideToast && this.toastMessage && (
           <amplify-toast
             message={this.toastMessage}
             handleClose={() => {
@@ -217,7 +217,7 @@ export class AmplifyAuthenticator {
             }}
             data-test="authenticator-error"
           />
-        ) : null}
+        )}
         {this.authState === AuthState.SignedIn ? (
           this.renderAuthComponent(this.authState)
         ) : (
