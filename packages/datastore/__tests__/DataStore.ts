@@ -10,13 +10,11 @@ import {
 import { Predicates } from '../src/predicates';
 import { ExclusiveStorage as StorageType } from '../src/storage/storage';
 import {
-	ModelInit,
-	MutableModel,
 	NonModelTypeConstructor,
 	PersistentModel,
 	PersistentModelConstructor,
-	Schema,
 } from '../src/types';
+import { Model, Metadata, testSchema } from './helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -355,8 +353,8 @@ describe('DataStore tests', () => {
 
 		test('Save returns the saved model', async () => {
 			let model: Model;
-			let save = jest.fn(() => [model]);
-			let query = jest.fn(() => [model]);
+			const save = jest.fn(() => [model]);
+			const query = jest.fn(() => [model]);
 
 			jest.resetModules();
 			jest.doMock('../src/storage/storage', () => {
@@ -398,8 +396,8 @@ describe('DataStore tests', () => {
 
 		test('Save returns the updated model and patches', async () => {
 			let model: Model;
-			let save = jest.fn(() => [model]);
-			let query = jest.fn(() => [model]);
+			const save = jest.fn(() => [model]);
+			const query = jest.fn(() => [model]);
 
 			jest.resetModules();
 			jest.doMock('../src/storage/storage', () => {
@@ -451,8 +449,8 @@ describe('DataStore tests', () => {
 
 		test('Save returns the updated model and patches - list field', async () => {
 			let model: Model;
-			let save = jest.fn(() => [model]);
-			let query = jest.fn(() => [model]);
+			const save = jest.fn(() => [model]);
+			const query = jest.fn(() => [model]);
 
 			jest.resetModules();
 			jest.doMock('../src/storage/storage', () => {
@@ -487,13 +485,27 @@ describe('DataStore tests', () => {
 			await DataStore.save(model);
 
 			model = Model.copyOf(model, draft => {
+				draft.emails = [...draft.emails, 'joe@doe.com'];
+			});
+
+			let result = await DataStore.save(model);
+
+			expect(result).toMatchObject(model);
+
+			model = Model.copyOf(model, draft => {
 				draft.emails.push('joe@doe.com');
 			});
 
-			const result = await DataStore.save(model);
+			result = await DataStore.save(model);
 
-			const [settingsSave, modelSave, modelUpdate] = <any>save.mock.calls;
+			expect(result).toMatchObject(model);
+
+			const [settingsSave, modelSave, modelUpdate, modelUpdate2] = <any>(
+				save.mock.calls
+			);
+
 			const [_model, _condition, _mutator, patches] = modelUpdate;
+			const [_model2, _condition2, _mutator2, patches2] = modelUpdate2;
 
 			const expectedPatches = [
 				{
@@ -503,8 +515,16 @@ describe('DataStore tests', () => {
 				},
 			];
 
-			expect(result).toMatchObject(model);
+			const expectedPatches2 = [
+				{
+					op: 'add',
+					path: ['emails', 3],
+					value: 'joe@doe.com',
+				},
+			];
+
 			expect(patches).toMatchObject(expectedPatches);
+			expect(patches2).toMatchObject(expectedPatches2);
 		});
 
 		test('Instantiation validations', async () => {
@@ -1049,171 +1069,3 @@ describe('DataStore tests', () => {
 		});
 	});
 });
-
-//#region Test helpers
-
-declare class Model {
-	public readonly id: string;
-	public readonly field1: string;
-	public readonly optionalField1?: string;
-	public readonly dateCreated: string;
-	public readonly emails?: string[];
-	public readonly ips?: (string | null)[];
-	public readonly metadata?: Metadata;
-
-	constructor(init: ModelInit<Model>);
-
-	static copyOf(
-		src: Model,
-		mutator: (draft: MutableModel<Model>) => void | Model
-	): Model;
-}
-
-export declare class Metadata {
-	readonly author: string;
-	readonly tags?: string[];
-	readonly rewards: string[];
-	readonly penNames?: string[];
-	readonly nominations: string[];
-	readonly misc?: (string | null)[];
-	constructor(init: Metadata);
-}
-
-function testSchema(): Schema {
-	return {
-		enums: {},
-		models: {
-			Model: {
-				name: 'Model',
-				pluralName: 'Models',
-				syncable: true,
-				fields: {
-					id: {
-						name: 'id',
-						isArray: false,
-						type: 'ID',
-						isRequired: true,
-					},
-					field1: {
-						name: 'field1',
-						isArray: false,
-						type: 'String',
-						isRequired: true,
-					},
-					optionalField1: {
-						name: 'optionalField1',
-						isArray: false,
-						type: 'String',
-						isRequired: false,
-					},
-					dateCreated: {
-						name: 'dateCreated',
-						isArray: false,
-						type: 'AWSDateTime',
-						isRequired: true,
-						attributes: [],
-					},
-					emails: {
-						name: 'emails',
-						isArray: true,
-						type: 'AWSEmail',
-						isRequired: true,
-						attributes: [],
-						isArrayNullable: true,
-					},
-					ips: {
-						name: 'ips',
-						isArray: true,
-						type: 'AWSIPAddress',
-						isRequired: false,
-						attributes: [],
-						isArrayNullable: true,
-					},
-					metadata: {
-						name: 'metadata',
-						isArray: false,
-						type: {
-							nonModel: 'Metadata',
-						},
-						isRequired: false,
-						attributes: [],
-					},
-				},
-			},
-			LocalModel: {
-				name: 'LocalModel',
-				pluralName: 'LocalModels',
-				syncable: false,
-				fields: {
-					id: {
-						name: 'id',
-						isArray: false,
-						type: 'ID',
-						isRequired: true,
-					},
-					field1: {
-						name: 'field1',
-						isArray: false,
-						type: 'String',
-						isRequired: true,
-					},
-				},
-			},
-		},
-		nonModels: {
-			Metadata: {
-				name: 'Metadata',
-				fields: {
-					author: {
-						name: 'author',
-						isArray: false,
-						type: 'String',
-						isRequired: true,
-						attributes: [],
-					},
-					tags: {
-						name: 'tags',
-						isArray: true,
-						type: 'String',
-						isRequired: false,
-						isArrayNullable: true,
-						attributes: [],
-					},
-					rewards: {
-						name: 'rewards',
-						isArray: true,
-						type: 'String',
-						isRequired: true,
-						attributes: [],
-					},
-					penNames: {
-						name: 'penNames',
-						isArray: true,
-						type: 'String',
-						isRequired: true,
-						isArrayNullable: true,
-						attributes: [],
-					},
-					nominations: {
-						name: 'nominations',
-						isArray: true,
-						type: 'String',
-						isRequired: false,
-						attributes: [],
-					},
-					misc: {
-						name: 'misc',
-						isArray: true,
-						type: 'String',
-						isRequired: false,
-						isArrayNullable: true,
-						attributes: [],
-					},
-				},
-			},
-		},
-		version: '1',
-	};
-}
-
-//#endregion

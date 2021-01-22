@@ -1,298 +1,214 @@
 import 'fake-indexeddb/auto';
-import { ExclusiveStorage as Storage } from '../src/storage/storage';
-import { InternalSchema } from '../src/types';
+import {
+	DataStore as DataStoreType,
+	initSchema as initSchemaType,
+} from '../src/datastore/datastore';
+import { PersistentModelConstructor } from '../src/types';
+import { Model, testSchema } from './helpers';
 
-// let schema = testSchema();
-// let storage = new Storage(schema, undefined, undefined, undefined);
-
-beforeAll(() => {});
-
-beforeEach(() => {
-	jest.resetModules();
-});
+let initSchema: typeof initSchemaType;
+let DataStore: typeof DataStoreType;
 
 describe('Storage tests', () => {
-	test('true', () => {
-		expect(true).toEqual(true);
+	describe('Update', () => {
+		let zenNext;
+
+		beforeEach(() => {
+			jest.resetModules();
+			jest.resetAllMocks();
+
+			zenNext = jest.fn();
+
+			jest.doMock('zen-push', () => {
+				class zenPush {
+					constructor() {}
+					next = zenNext;
+				}
+
+				return zenPush;
+			});
+
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+		});
+
+		test('Only include changed fields - scalar', async () => {
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const dateCreated = new Date().toISOString();
+
+			const model = await DataStore.save(
+				new Model({
+					field1: 'Some value',
+					dateCreated,
+				})
+			);
+
+			await DataStore.save(
+				Model.copyOf(model, draft => {
+					draft.field1 = 'edited';
+				})
+			);
+
+			const [_settingsSave, [modelSave], [modelUpdate]] = zenNext.mock.calls;
+
+			// Save should include
+			expect(modelSave.element.dateCreated).toEqual(dateCreated);
+
+			// Update mutation should only include updated fields
+			// => dateCreated should be undefined
+			expect(modelUpdate.element.dateCreated).toBeUndefined();
+			expect(modelUpdate.element.field1).toEqual('edited');
+		});
+
+		test('Only include changed fields - list (destructured)', async () => {
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model = await DataStore.save(
+				new Model({
+					field1: 'Some value',
+					dateCreated: new Date().toISOString(),
+					emails: ['john@doe.com', 'jane@doe.com'],
+				})
+			);
+
+			await DataStore.save(
+				Model.copyOf(model, draft => {
+					draft.emails = [...draft.emails, 'joe@doe.com'];
+				})
+			);
+
+			const [[modelSave], [modelUpdate]] = zenNext.mock.calls;
+
+			const expectedValueEmails = [
+				'john@doe.com',
+				'jane@doe.com',
+				'joe@doe.com',
+			];
+
+			expect(modelUpdate.element.dateCreated).toBeUndefined();
+			expect(modelUpdate.element.field1).toBeUndefined();
+			expect(modelUpdate.element.emails).toMatchObject(expectedValueEmails);
+		});
+
+		test('Only include changed fields - list (push)', async () => {
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model = await DataStore.save(
+				new Model({
+					field1: 'Some value',
+					dateCreated: new Date().toISOString(),
+					emails: ['john@doe.com', 'jane@doe.com'],
+				})
+			);
+
+			await DataStore.save(
+				Model.copyOf(model, draft => {
+					draft.emails.push('joe@doe.com');
+				})
+			);
+
+			const [[modelSave], [modelUpdate]] = zenNext.mock.calls;
+
+			const expectedValueEmails = [
+				'john@doe.com',
+				'jane@doe.com',
+				'joe@doe.com',
+			];
+
+			expect(modelUpdate.element.dateCreated).toBeUndefined();
+			expect(modelUpdate.element.field1).toBeUndefined();
+			expect(modelUpdate.element.emails).toMatchObject(expectedValueEmails);
+		});
+
+		test('Only include changed fields - custom type (destructured)', async () => {
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model = await DataStore.save(
+				new Model({
+					field1: 'Some value',
+					dateCreated: new Date().toISOString(),
+					metadata: {
+						author: 'some author',
+						rewards: [],
+						penNames: [],
+					},
+				})
+			);
+
+			await DataStore.save(
+				Model.copyOf(model, draft => {
+					draft.metadata = {
+						...draft.metadata,
+						penNames: ['bob'],
+					};
+				})
+			);
+
+			const [[modelSave], [modelUpdate]] = zenNext.mock.calls;
+
+			const expectedValueMetadata = {
+				author: 'some author',
+				rewards: [],
+				penNames: ['bob'],
+			};
+
+			expect(modelUpdate.element.dateCreated).toBeUndefined();
+			expect(modelUpdate.element.field1).toBeUndefined();
+			expect(modelUpdate.element.metadata).toMatchObject(expectedValueMetadata);
+		});
+
+		test('Only include changed fields - custom type (accessor)', async () => {
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model = await DataStore.save(
+				new Model({
+					field1: 'Some value',
+					dateCreated: new Date().toISOString(),
+					metadata: {
+						author: 'some author',
+						rewards: [],
+						penNames: [],
+					},
+				})
+			);
+
+			await DataStore.save(
+				Model.copyOf(model, draft => {
+					draft.metadata.penNames = ['bob'];
+				})
+			);
+
+			const [[modelSave], [modelUpdate]] = zenNext.mock.calls;
+
+			const expectedValueMetadata = {
+				author: 'some author',
+				rewards: [],
+				penNames: ['bob'],
+			};
+
+			expect(modelUpdate.element.dateCreated).toBeUndefined();
+			expect(modelUpdate.element.field1).toBeUndefined();
+			expect(modelUpdate.element.metadata).toMatchObject(expectedValueMetadata);
+		});
 	});
 });
-
-/* function testSchema(): InternalSchema {
-	return {
-		namespaces: {
-			datastore: {
-				name: 'datastore',
-				relationships: {},
-				enums: {},
-				nonModels: {},
-				models: {
-					Setting: {
-						name: 'Setting',
-						pluralName: 'Settings',
-						syncable: false,
-						fields: {
-							id: {
-								name: 'id',
-								type: 'ID',
-								isRequired: true,
-								isArray: false,
-							},
-							key: {
-								name: 'key',
-								type: 'String',
-								isRequired: true,
-								isArray: false,
-							},
-							value: {
-								name: 'value',
-								type: 'String',
-								isRequired: true,
-								isArray: false,
-							},
-						},
-					},
-				},
-			},
-			user: {
-				name: 'user',
-				enums: {},
-				models: {
-					Model: {
-						name: 'Model',
-						pluralName: 'Models',
-						syncable: true,
-						fields: {
-							id: {
-								name: 'id',
-								isArray: false,
-								type: 'ID',
-								isRequired: true,
-							},
-							field1: {
-								name: 'field1',
-								isArray: false,
-								type: 'String',
-								isRequired: true,
-							},
-							optionalField1: {
-								name: 'optionalField1',
-								isArray: false,
-								type: 'String',
-								isRequired: false,
-							},
-							dateCreated: {
-								name: 'dateCreated',
-								isArray: false,
-								type: 'AWSDateTime',
-								isRequired: true,
-								attributes: [],
-							},
-							emails: {
-								name: 'emails',
-								isArray: true,
-								type: 'AWSEmail',
-								isRequired: true,
-								attributes: [],
-								isArrayNullable: true,
-							},
-							ips: {
-								name: 'ips',
-								isArray: true,
-								type: 'AWSIPAddress',
-								isRequired: false,
-								attributes: [],
-								isArrayNullable: true,
-							},
-							metadata: {
-								name: 'metadata',
-								isArray: false,
-								type: {
-									nonModel: 'Metadata',
-								},
-								isRequired: false,
-								attributes: [],
-							},
-						},
-					},
-					LocalModel: {
-						name: 'LocalModel',
-						pluralName: 'LocalModels',
-						syncable: false,
-						fields: {
-							id: {
-								name: 'id',
-								isArray: false,
-								type: 'ID',
-								isRequired: true,
-							},
-							field1: {
-								name: 'field1',
-								isArray: false,
-								type: 'String',
-								isRequired: true,
-							},
-						},
-					},
-				},
-				nonModels: {
-					Metadata: {
-						name: 'Metadata',
-						fields: {
-							author: {
-								name: 'author',
-								isArray: false,
-								type: 'String',
-								isRequired: true,
-								attributes: [],
-							},
-							tags: {
-								name: 'tags',
-								isArray: true,
-								type: 'String',
-								isRequired: false,
-								isArrayNullable: true,
-								attributes: [],
-							},
-							rewards: {
-								name: 'rewards',
-								isArray: true,
-								type: 'String',
-								isRequired: true,
-								attributes: [],
-							},
-							penNames: {
-								name: 'penNames',
-								isArray: true,
-								type: 'String',
-								isRequired: true,
-								isArrayNullable: true,
-								attributes: [],
-							},
-							nominations: {
-								name: 'nominations',
-								isArray: true,
-								type: 'String',
-								isRequired: false,
-								attributes: [],
-							},
-							misc: {
-								name: 'misc',
-								isArray: true,
-								type: 'String',
-								isRequired: false,
-								isArrayNullable: true,
-								attributes: [],
-							},
-						},
-					},
-				},
-				version: '1',
-			},
-			undefined: {
-				models: {},
-			},
-			sync: {
-				name: 'sync',
-				relationships: {},
-				enums: {
-					OperationType: {
-						name: 'OperationType',
-						values: ['CREATE', 'UPDATE', 'DELETE'],
-					},
-				},
-				nonModels: {},
-				models: {
-					MutationEvent: {
-						name: 'MutationEvent',
-						pluralName: 'MutationEvents',
-						syncable: false,
-						fields: {
-							id: {
-								name: 'id',
-								type: 'ID',
-								isRequired: true,
-								isArray: false,
-							},
-							model: {
-								name: 'model',
-								type: 'String',
-								isRequired: true,
-								isArray: false,
-							},
-							data: {
-								name: 'data',
-								type: 'String',
-								isRequired: true,
-								isArray: false,
-							},
-							modelId: {
-								name: 'modelId',
-								type: 'String',
-								isRequired: true,
-								isArray: false,
-							},
-							operation: {
-								name: 'operation',
-								type: {
-									enum: 'Operationtype',
-								},
-								isArray: false,
-								isRequired: true,
-							},
-							condition: {
-								name: 'condition',
-								type: 'String',
-								isArray: false,
-								isRequired: true,
-							},
-						},
-					},
-					ModelMetadata: {
-						name: 'ModelMetadata',
-						pluralName: 'ModelsMetadata',
-						syncable: false,
-						fields: {
-							id: {
-								name: 'id',
-								type: 'ID',
-								isRequired: true,
-								isArray: false,
-							},
-							namespace: {
-								name: 'namespace',
-								type: 'String',
-								isRequired: true,
-								isArray: false,
-							},
-							model: {
-								name: 'model',
-								type: 'String',
-								isRequired: true,
-								isArray: false,
-							},
-							lastSync: {
-								name: 'lastSync',
-								type: 'Int',
-								isRequired: false,
-								isArray: false,
-							},
-							lastFullSync: {
-								name: 'lastFullSync',
-								type: 'Int',
-								isRequired: false,
-								isArray: false,
-							},
-							fullSyncInterval: {
-								name: 'fullSyncInterval',
-								type: 'Int',
-								isRequired: true,
-								isArray: false,
-							},
-						},
-					},
-				},
-			},
-		},
-		version: '1',
-	};
-} */
