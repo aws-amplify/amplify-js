@@ -134,6 +134,7 @@ describe('DataStore tests', () => {
 				author: 'some author',
 				tags: [],
 				rewards: [],
+				penNames: [],
 				nominations: [],
 			});
 
@@ -279,6 +280,7 @@ describe('DataStore tests', () => {
 			const nonModel = new Metadata({
 				author: 'something',
 				rewards: [],
+				penNames: [],
 				nominations: [],
 			});
 
@@ -568,6 +570,7 @@ describe('DataStore tests', () => {
 						author: 'Some author',
 						tags: undefined,
 						rewards: [],
+						penNames: [],
 						nominations: [],
 					}),
 				}).metadata.tags
@@ -581,6 +584,7 @@ describe('DataStore tests', () => {
 						author: 'Some author',
 						tags: undefined,
 						rewards: [null],
+						penNames: [],
 						nominations: [],
 					}),
 				});
@@ -688,6 +692,7 @@ describe('DataStore tests', () => {
 						author: 'Some author',
 						tags: undefined,
 						rewards: [],
+						penNames: [],
 						nominations: null,
 					}),
 				});
@@ -717,6 +722,7 @@ describe('DataStore tests', () => {
 						author: 'Some author',
 						tags: [<any>1234],
 						rewards: [],
+						penNames: [],
 						nominations: [],
 					}),
 				});
@@ -731,6 +737,7 @@ describe('DataStore tests', () => {
 					metadata: new Metadata({
 						author: 'Some author',
 						rewards: [],
+						penNames: [],
 						nominations: [],
 						misc: [null],
 					}),
@@ -744,6 +751,7 @@ describe('DataStore tests', () => {
 					metadata: new Metadata({
 						author: 'Some author',
 						rewards: [],
+						penNames: [],
 						nominations: [],
 						misc: [undefined],
 					}),
@@ -757,6 +765,7 @@ describe('DataStore tests', () => {
 					metadata: new Metadata({
 						author: 'Some author',
 						rewards: [],
+						penNames: [],
 						nominations: [],
 						misc: [undefined, null],
 					}),
@@ -770,6 +779,7 @@ describe('DataStore tests', () => {
 					metadata: new Metadata({
 						author: 'Some author',
 						rewards: [],
+						penNames: [],
 						nominations: [],
 						misc: [null, 'ok'],
 					}),
@@ -783,6 +793,7 @@ describe('DataStore tests', () => {
 					metadata: new Metadata({
 						author: 'Some author',
 						rewards: [],
+						penNames: [],
 						nominations: [],
 						misc: [null, <any>123],
 					}),
@@ -881,6 +892,7 @@ describe('DataStore tests', () => {
 			author: 'some author',
 			tags: [],
 			rewards: [],
+			penNames: [],
 			nominations: [],
 		});
 
