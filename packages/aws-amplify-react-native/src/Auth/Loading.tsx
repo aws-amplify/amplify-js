@@ -18,7 +18,6 @@ import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { Header } from '../AmplifyUI';
 import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
-import { setTestId } from '../Utils'
 
 export default class Loading extends AuthPiece<
 	IAuthPieceProps,
