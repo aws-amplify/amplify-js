@@ -74,6 +74,14 @@ export interface CognitoUserInterface {
   [attributes: string]: any;
 }
 
+export interface SignUpAttributes {
+  username: string;
+  password: string;
+  attributes?: {
+    [userAttributes: string]: string;
+  };
+}
+
 export type AuthStateHandler = (nextAuthState: AuthState, data?: object) => void;
 
 export enum MfaOption {

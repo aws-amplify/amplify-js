@@ -134,7 +134,7 @@ $ yarn link-all # Make all the packages available to link
 $ yarn build:esm:watch # All packages are building ES6 modules in watch mode
 ```
 
-In you sample project, you can now link specific packages
+In your sample project, you can now link specific packages
 
 ```
 $ yarn link @aws-amplify/auth
@@ -176,13 +176,13 @@ _[Skip step 1 to 3 if you have already done this]_
 2. Clone your fork locally: `git clone git@github.com:YOUR_GITHUB_USERNAME/amplify-js.git`
 3. Run `yarn && yarn bootstrap` in the repository root
 4. Within your fork, create a new branch based on the issue (e.g. Issue #123) you're addressing - `git checkout -b "group-token/short-token-[branch-name]"` or `git checkout -b "short-token/[branch-name]"`
-   - Use grouping tokens at the beginning of the branch names. \_For e.g, if you are working on changes specific to `amplify-ui-components`, then you could start the branch name as `ui-components/...`
+   - Use grouping tokens at the beginning of the branch names. For e.g, if you are working on changes specific to `amplify-ui-components`, then you could start the branch name as `ui-components/...`
    - short token
      - feat
      - chore
      - bug
    - use slashes to seperate parts of branch names
-   - Hyphenate well defined branch name
+   - Hyphenate well-defined branch name
 5. Once your work is committed and you're ready to share, run test `yarn test`.
    **Note:** Manually test your changes in a sample app with different edge cases and also test across different browsers and platform
 6. Then, Push your branch `git push origin -u`

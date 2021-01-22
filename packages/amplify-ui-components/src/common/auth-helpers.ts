@@ -1,4 +1,4 @@
-import { Auth } from '@aws-amplify/auth';
+import { Auth, CognitoUser } from '@aws-amplify/auth';
 import { Logger, isEmpty } from '@aws-amplify/core';
 import { AuthState, ChallengeName, CognitoUserInterface, AuthStateHandler } from './types/auth-types';
 import { dispatchToastHubEvent } from './helpers';
@@ -11,6 +11,14 @@ export async function checkContact(user: CognitoUserInterface, handleAuthStateCh
   if (!Auth || typeof Auth.verifiedContact !== 'function') {
     throw new Error(NO_AUTH_MODULE_FOUND);
   }
+
+  // If `user` is a federated user, we shouldn't call `verifiedContact`
+  // since `user` isn't `CognitoUser`
+  if (!isCognitoUser(user)) {
+    handleAuthStateChange(AuthState.SignedIn, user);
+    return;
+  }
+
   try {
     const data = await Auth.verifiedContact(user);
     if (!isEmpty(data.verified) || isEmpty(data.unverified)) {
@@ -63,4 +71,8 @@ export const handleSignIn = async (username: string, password: string, handleAut
     }
     dispatchToastHubEvent(error);
   }
+};
+
+export const isCognitoUser = (user: CognitoUserInterface) => {
+  return user instanceof CognitoUser;
 };
