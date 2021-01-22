@@ -8,7 +8,13 @@ import {
 } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import { NO_AUTH_MODULE_FOUND, COUNTRY_DIAL_CODE_DEFAULT } from '../../common/constants';
 import { Translations } from '../../common/Translations';
-import { AuthState, CognitoUserInterface, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
+import {
+  AuthState,
+  CognitoUserInterface,
+  AuthStateHandler,
+  UsernameAliasStrings,
+  SignUpAttributes,
+} from '../../common/types/auth-types';
 
 import { Auth } from '@aws-amplify/auth';
 import {
@@ -60,9 +66,9 @@ export class AmplifyConfirmSignUp {
 
   @State() code: string;
   @State() loading: boolean = false;
-  @State() userInput: string = this.user ? this.user.username : null;
+  @State() userInput: string;
 
-  private _signUpAttrs = this.user && this.user.signUpAttrs ? this.user.signUpAttrs : null;
+  private _signUpAttrs: SignUpAttributes;
   private newFormFields: FormFieldTypes | string[] = [];
   private phoneNumber: PhoneNumberInterface = {
     countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
@@ -70,12 +76,24 @@ export class AmplifyConfirmSignUp {
   };
 
   componentWillLoad() {
-    checkUsernameAlias(this.usernameAlias);
-    this.buildFormFields();
+    this.setup();
   }
 
   @Watch('formFields')
   formFieldsHandler() {
+    this.buildFormFields();
+  }
+
+  @Watch('user')
+  userHandler() {
+    this.setup();
+  }
+
+  private setup() {
+    // TODO: Use optional chaining instead
+    this.userInput = this.user && this.user.username;
+    this._signUpAttrs = this.user && this.user.signUpAttrs;
+    checkUsernameAlias(this.usernameAlias);
     this.buildFormFields();
   }
 
