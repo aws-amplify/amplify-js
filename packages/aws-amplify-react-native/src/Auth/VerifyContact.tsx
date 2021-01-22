@@ -200,7 +200,7 @@ export default class VerifyContact extends AuthPiece<
 			<Wrapper>
 				<View style={theme.section}>
 					<View>
-						<Header theme={theme} {...setTestId(TEST_ID.AUTH.VERIFY_CONTACT_TEXT)}>
+						<Header theme={theme} id={TEST_ID.AUTH.VERIFY_CONTACT_TEXT}>
 							{I18n.get('Verify Contact')}
 						</Header>
 						{!this.state.verifyAttr && this.verifyBody(theme)}
@@ -209,7 +209,7 @@ export default class VerifyContact extends AuthPiece<
 							<LinkCell
 								theme={theme}
 								onPress={() => this.changeState('signedIn')}
-								{...setTestId(TEST_ID.AUTH.SKIP_BUTTON)}
+								id={TEST_ID.AUTH.SKIP_BUTTON}
 							>
 								{I18n.get('Skip')}
 							</LinkCell>

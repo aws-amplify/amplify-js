@@ -67,7 +67,7 @@ export default class ConfirmSignIn extends AuthPiece<
 			<Wrapper>
 				<View style={theme.section}>
 					<View>
-						<Header theme={theme} {...setTestId(TEST_ID.AUTH.CONFIRM_SIGN_IN_TEXT)}>
+						<Header theme={theme} id={TEST_ID.AUTH.CONFIRM_SIGN_IN_TEXT}>
 							{I18n.get('Confirm Sign In')}
 						</Header>
 						<View style={theme.sectionBody}>
@@ -91,7 +91,7 @@ export default class ConfirmSignIn extends AuthPiece<
 							<LinkCell
 								theme={theme}
 								onPress={() => this.changeState('signIn')}
-								{...setTestId(TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON)}
+								id={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
 							>
 								{I18n.get('Back to Sign In')}
 							</LinkCell>

@@ -33,7 +33,7 @@ export default class Loading extends AuthPiece<
 	showComponent(theme: AmplifyThemeType) {
 		return (
 			<View style={theme.section}>
-				<Header theme={theme} {...setTestId(TEST_ID.AUTH.LOADING_TEXT)}>
+				<Header theme={theme} id={TEST_ID.AUTH.LOADING_TEXT}>
 					{I18n.get('Loading...')}
 				</Header>
 			</View>

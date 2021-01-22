@@ -246,7 +246,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 		return (
 			<Wrapper>
 				<ScrollView style={theme.sectionScroll}>
-					<Header theme={theme} {...setTestId(TEST_ID.AUTH.SIGN_UP_TEXT)}>
+					<Header theme={theme} id={TEST_ID.AUTH.SIGN_UP_TEXT}>
 						{I18n.get(this.header)}
 					</Header>
 					<View style={theme.sectionBody}>
@@ -294,14 +294,14 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 						<LinkCell
 							theme={theme}
 							onPress={() => this.changeState('confirmSignUp')}
-							{...setTestId(TEST_ID.AUTH.CONFIRM_A_CODE_BUTTON)}
+							id={TEST_ID.AUTH.CONFIRM_A_CODE_BUTTON}
 						>
 							{I18n.get('Confirm a Code')}
 						</LinkCell>
 						<LinkCell
 							theme={theme}
 							onPress={() => this.changeState('signIn')}
-							{...setTestId(TEST_ID.AUTH.SIGN_IN_BUTTON)}
+							id={TEST_ID.AUTH.SIGN_IN_BUTTON}
 						>
 							{I18n.get('Sign In')}
 						</LinkCell>
