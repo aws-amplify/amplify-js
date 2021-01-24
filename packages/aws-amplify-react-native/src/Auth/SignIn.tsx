@@ -85,7 +85,7 @@ export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 					<View>
 						<Header
 							theme={theme}
-							id={TEST_ID.AUTH.SIGN_IN_TO_YOUR_ACCOUNT_TEXT}
+							testID={TEST_ID.AUTH.SIGN_IN_TO_YOUR_ACCOUNT_TEXT}
 						>
 							{I18n.get('Sign in to your account')}
 						</Header>
@@ -114,14 +114,14 @@ export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 							<LinkCell
 								theme={theme}
 								onPress={() => this.changeState('forgotPassword')}
-								id={TEST_ID.AUTH.FORGOT_PASSWORD_BUTTON}
+								testID={TEST_ID.AUTH.FORGOT_PASSWORD_BUTTON}
 							>
 								{I18n.get('Forgot Password')}
 							</LinkCell>
 							<LinkCell
 								theme={theme}
 								onPress={() => this.changeState('signUp')}
-								id={TEST_ID.AUTH.SIGN_UP_BUTTON}
+								testID={TEST_ID.AUTH.SIGN_UP_BUTTON}
 							>
 								{I18n.get('Sign Up')}
 							</LinkCell>

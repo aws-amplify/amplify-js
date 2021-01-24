@@ -151,7 +151,7 @@ export class PhoneField extends Component<IPhoneProps, IPhoneState> {
 interface ILinkCellProps {
 	disabled?: boolean;
 	onPress: () => void;
-	id?: string;
+	testID?: string;
 	theme?: AmplifyThemeType;
 }
 
@@ -163,7 +163,7 @@ export const LinkCell: FC<ILinkCellProps> = props => {
 			<TouchableHighlight
 				onPress={props.onPress}
 				underlayColor={linkUnderlayColor}
-				{...setTestId(props.id)}
+				{...setTestId(props.testID)}
 				disabled={disabled}
 			>
 				<Text
@@ -179,7 +179,7 @@ export const LinkCell: FC<ILinkCellProps> = props => {
 };
 
 interface IHeaderProps {
-	id?: string;
+	testID?: string;
 	theme?: AmplifyThemeType;
 }
 
@@ -187,7 +187,7 @@ export const Header: FC<IHeaderProps> = props => {
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<View style={theme.sectionHeader}>
-			<Text style={theme.sectionHeaderText} {...setTestId(props.id)}>
+			<Text style={theme.sectionHeaderText} {...setTestId(props.testID)}>
 				{props.children}
 			</Text>
 		</View>

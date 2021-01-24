@@ -138,7 +138,7 @@ export default class ForgotPassword extends AuthPiece<
 			<Wrapper>
 				<View style={theme.section}>
 					<View>
-						<Header theme={theme} id={TEST_ID.AUTH.FORGOT_PASSWORD_TEXT}>
+						<Header theme={theme} testID={TEST_ID.AUTH.FORGOT_PASSWORD_TEXT}>
 							{I18n.get('Reset your password')}
 						</Header>
 						<View style={theme.sectionBody}>
@@ -149,7 +149,7 @@ export default class ForgotPassword extends AuthPiece<
 							<LinkCell
 								theme={theme}
 								onPress={() => this.changeState('signIn')}
-								id={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
+								testID={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
 							>
 								{I18n.get('Back to Sign In')}
 							</LinkCell>

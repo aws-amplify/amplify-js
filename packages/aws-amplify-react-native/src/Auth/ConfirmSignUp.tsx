@@ -86,7 +86,7 @@ export default class ConfirmSignUp extends AuthPiece<
 			<Wrapper>
 				<View style={theme.section}>
 					<View>
-						<Header theme={theme} id={TEST_ID.AUTH.CONFIRM_SIGN_UP_TEXT}>
+						<Header theme={theme} testID={TEST_ID.AUTH.CONFIRM_SIGN_UP_TEXT}>
 							{I18n.get('Confirm Sign Up')}
 						</Header>
 						<View style={theme.sectionBody}>
@@ -112,14 +112,14 @@ export default class ConfirmSignUp extends AuthPiece<
 								theme={theme}
 								onPress={this.resend}
 								disabled={!this.state.username}
-								id={TEST_ID.AUTH.RESEND_CODE_BUTTON}
+								testID={TEST_ID.AUTH.RESEND_CODE_BUTTON}
 							>
 								{I18n.get('Resend code')}
 							</LinkCell>
 							<LinkCell
 								theme={theme}
 								onPress={() => this.changeState('signIn')}
-								id={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
+								testID={TEST_ID.AUTH.BACK_TO_SIGN_IN_BUTTON}
 							>
 								{I18n.get('Back to Sign In')}
 							</LinkCell>
