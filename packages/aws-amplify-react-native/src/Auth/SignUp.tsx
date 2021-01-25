@@ -32,6 +32,7 @@ import signUpWithUsernameFields, {
 } from './common/default-sign-up-fields';
 import TEST_ID from '../AmplifyTestIDs';
 import { ISignUpField } from '../../types';
+import { setTestId } from '../Utils'
 
 const logger = new Logger('SignUp');
 
@@ -265,7 +266,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 									label={I18n.get(field.label)}
 									placeholder={I18n.get(field.placeholder)}
 									required={field.required}
-									testID={field.testID}
+									{...setTestId(field.testID)}
 								/>
 							) : (
 								<PhoneField
@@ -277,7 +278,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 									keyboardType="phone-pad"
 									required={field.required}
 									defaultDialCode={this.getDefaultDialCode()}
-									testID={field.testID}
+									{...setTestId(field.testID)}
 								/>
 							);
 						})}
@@ -286,7 +287,7 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 							theme={theme}
 							onPress={this.signUp}
 							disabled={!this.isValid()}
-							testID={TEST_ID.AUTH.SIGN_UP_BUTTON}
+							{...setTestId(TEST_ID.AUTH.SIGN_UP_BUTTON)}
 						/>
 					</View>
 					<View style={theme.sectionFooter}>
