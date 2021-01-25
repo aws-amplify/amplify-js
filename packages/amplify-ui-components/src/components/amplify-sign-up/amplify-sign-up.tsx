@@ -9,7 +9,7 @@ import {
 } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import { COUNTRY_DIAL_CODE_DEFAULT, NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
-import { AmplifySignUpAttributes } from './amplify-sign-up-interface';
+import { SignUpAttributes } from '../../common/types/auth-types';
 import {
   dispatchAuthStateChangeEvent,
   dispatchToastHubEvent,
@@ -75,7 +75,7 @@ export class AmplifySignUp {
   };
 
   @State() loading: boolean = false;
-  @State() signUpAttributes: AmplifySignUpAttributes = {
+  @State() signUpAttributes: SignUpAttributes = {
     username: '',
     password: '',
     attributes: {},
@@ -277,7 +277,7 @@ export class AmplifySignUp {
     }
   }
 
-  setFieldValue(field: PhoneFormFieldType | FormFieldType, formAttributes: AmplifySignUpAttributes) {
+  setFieldValue(field: PhoneFormFieldType | FormFieldType, formAttributes: SignUpAttributes) {
     switch (field.type) {
       case 'username':
         if (field.value === undefined) {

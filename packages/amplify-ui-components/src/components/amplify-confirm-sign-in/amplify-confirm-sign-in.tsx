@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n } from '@aws-amplify/core';
-import { Component, Prop, State, h, Host } from '@stencil/core';
+import { Component, Prop, State, h, Host, Watch } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
   AuthState,
@@ -60,6 +60,15 @@ export class AmplifyConfirmSignIn {
   @State() code: string;
 
   componentWillLoad() {
+    this.setup();
+  }
+
+  @Watch('user')
+  userHandler() {
+    this.setup();
+  }
+
+  private setup() {
     if (this.user && this.user['challengeName'] === ChallengeName.SoftwareTokenMFA) {
       this.mfaOption = MfaOption.TOTP;
       // If header text is using default use TOTP string
