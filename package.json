@@ -61,6 +61,7 @@
 		"@types/node": "^8.9.5",
 		"@types/puppeteer": "1.3.0",
 		"babel-loader": "^8.0.0",
+		"bundlewatch": "^0.3.1",
 		"codecov": "^3.6.5",
 		"compression-webpack-plugin": "^1.1.3",
 		"cypress": "^3.2.0",
@@ -97,6 +98,14 @@
 		"@types/react": "16.9.10",
 		"terser": "4.6.7",
 		"npm-packlist": "1.1.12"
+	},
+	"bundlewatch": {
+		"files": [
+			{
+				"path": "packages/*/dist/*.min.js",
+				"maxSize": "400kB"
+			}
+		]
 	},
 	"jest": {
 		"resetMocks": true,
