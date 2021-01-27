@@ -362,7 +362,7 @@ export class CredentialsClass {
 		const logins = {};
 		logins[domain] = token;
 
-		const { identityPoolId, region } = this._config;
+		const { identityPoolId, region, customRoleArn } = this._config;
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
@@ -385,6 +385,7 @@ export class CredentialsClass {
 				identityId: identity_id,
 				logins,
 				client: cognitoClient,
+				customRoleArn: customRoleArn && customRoleArn(token),
 			};
 			credentials = fromCognitoIdentity(cognitoIdentityParams)();
 		} else {
@@ -392,6 +393,7 @@ export class CredentialsClass {
 				logins,
 				identityPoolId,
 				client: cognitoClient,
+				customRoleArn: customRoleArn && customRoleArn(token),
 			};
 			credentials = fromCognitoIdentityPool(cognitoIdentityParams)();
 		}
@@ -401,7 +403,7 @@ export class CredentialsClass {
 	private _setCredentialsFromSession(session): Promise<ICredentials> {
 		logger.debug('set credentials from session');
 		const idToken = session.getIdToken().getJwtToken();
-		const { region, userPoolId, identityPoolId } = this._config;
+		const { region, userPoolId, identityPoolId, customRoleArn } = this._config;
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
 			return Promise.reject('No Cognito Federated Identity pool provided');
@@ -440,6 +442,7 @@ export class CredentialsClass {
 				client: cognitoClient,
 				logins,
 				identityId: IdentityId,
+				customRoleArn: customRoleArn && customRoleArn(idToken)
 			};
 
 			const credentialsFromCognitoIdentity = fromCognitoIdentity(

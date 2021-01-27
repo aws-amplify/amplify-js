@@ -151,6 +151,7 @@ export class AuthClass {
 			identityPoolRegion,
 			clientMetadata,
 			endpoint,
+			customRoleArn,
 		} = this._config;
 
 		if (!this._config.storage) {
@@ -195,6 +196,7 @@ export class AuthClass {
 			identityPoolId,
 			refreshHandlers,
 			storage: this._storage,
+			customRoleArn,
 		});
 
 		// initiailize cognitoauth client if hosted ui options provided
