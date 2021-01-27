@@ -29,12 +29,14 @@ const randomBytes = function (nBytes) {
 import BigInteger from './BigInteger';
 
 /**
- * Tests if a string is a hex value with an optional negative sign in the front
+ * Tests if a string is a hex value with an optional negative sign in the front (case-insensitive regex)
+ * 
+ * It captures the magnitude
  */
-const HEX_REGEX = /^(-)?([\da-f]+)$/i;
+const HEX_REGEX = /^-?([\da-f]+)$/i;
 
 /**
- * Tests if a hex string has it most significant bit set
+ * Tests if a hex string has it most significant bit set (case-insensitive regex)
  */
 const HEX_MSB_REGEX = /^[89a-f]/i;
 
@@ -68,7 +70,7 @@ export default class AuthenticationHelper {
 		this.N = new BigInteger(initN, 16);
 		this.g = new BigInteger('2', 16);
 		this.k = new BigInteger(
-			this.hexHash(`00${this.N.toString(16)}0${this.g.toString(16)}`),
+			this.hexHash(`${this.padHex(this.N)}${this.padHex(this.g)}`),
 			16
 		);
 
@@ -115,9 +117,10 @@ export default class AuthenticationHelper {
 		const hexRandom = randomBytes(128).toString('hex');
 
 		const randomBigInt = new BigInteger(hexRandom, 16);
-		const smallABigInt = randomBigInt.mod(this.N);
 
-		return smallABigInt;
+		// There is no need to do randomBigInt.mod(this.N - 1) as N (3072-bit) is > 128 bytes (1024-bit)
+
+		return randomBigInt;
 	}
 
 	/**
@@ -302,7 +305,7 @@ export default class AuthenticationHelper {
 
 			const hkdf = this.computehkdf(
 				Buffer.from(this.padHex(sValue), 'hex'),
-				Buffer.from(this.padHex(this.UValue.toString(16)), 'hex')
+				Buffer.from(this.padHex(this.UValue), 'hex')
 			);
 
 			callback(null, hkdf);
@@ -346,11 +349,9 @@ export default class AuthenticationHelper {
 	}
 
 	/**
-	 * Converts a BigInteger to hex format, left padded with zeroes to an even number of digits for hashing
+	 * Returns an unambiguous, even-length hex string of the two's complement encoding of an integer
 	 * 
-	 * It never returns a negative sign, for negatives it returns hex representation of two's complement
-	 * 
-	 * @param {BigInteger} bigInt Number or string to pad.
+	 * @param {BigInteger} bigInt Number to pad.
 	 * @returns {String} Padded hex string.
 	 */
 	padHex(bigInt) {
@@ -358,11 +359,12 @@ export default class AuthenticationHelper {
 			throw new Error('Not a BigInteger');
 		}
 
-		const [, negativeSign, hexNumber] = bigInt.toString(16).match(HEX_REGEX);
+		const isNegative = bigInt.compareTo(BigInteger.ZERO) < 0;
+		const [, magnitude] = bigInt.toString(16).match(HEX_REGEX);
 
-		let hex = hexNumber.length % 2 === 1 ? `0${hexNumber}` : hexNumber;
+		let hex = magnitude.length % 2 === 1 ? `0${magnitude}` : magnitude;
 
-		if (negativeSign) {
+		if (isNegative) {
 			hex = this.twosComplement(bigInt).toString(16);
 
 			hex = hex.length % 2 !== 0 ? `0${hex}` : hex;
