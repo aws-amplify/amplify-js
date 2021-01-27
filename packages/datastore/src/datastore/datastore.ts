@@ -38,6 +38,7 @@ import {
 	SyncError,
 	TypeConstructorMap,
 	ErrorHandler,
+	SyncExpression,
 } from '../types';
 import {
 	DATASTORE,
@@ -254,6 +255,7 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 
 		if (isGraphQLScalarType(type)) {
 			const jsType = GraphQLScalarType.getJSType(type);
+			const validateScalar = GraphQLScalarType.getValidationFunction(type);
 
 			if (isArray) {
 				let errorTypeText: string = jsType;
@@ -269,19 +271,49 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 
 				if (
 					!isNullOrUndefined(v) &&
-					(<[]>v).some(
-						e => typeof e !== jsType || (isNullOrUndefined(e) && isRequired)
+					(<[]>v).some(e =>
+						isNullOrUndefined(e) ? isRequired : typeof e !== jsType
 					)
 				) {
-					const elemTypes = (<[]>v).map(e => typeof e).join(',');
+					const elemTypes = (<[]>v)
+						.map(e => (e === null ? 'null' : typeof e))
+						.join(',');
 
 					throw new Error(
 						`All elements in the ${name} array should be of type ${errorTypeText}, [${elemTypes}] received. ${v}`
 					);
 				}
+
+				if (validateScalar && !isNullOrUndefined(v)) {
+					const validationStatus = (<[]>v).map(e => {
+						if (!isNullOrUndefined(e)) {
+							return validateScalar(e);
+						} else if (isNullOrUndefined(e) && !isRequired) {
+							return true;
+						} else {
+							return false;
+						}
+					});
+
+					if (!validationStatus.every(s => s)) {
+						throw new Error(
+							`All elements in the ${name} array should be of type ${type}, validation failed for one or more elements. ${v}`
+						);
+					}
+				}
+			} else if (!isRequired && v === undefined) {
+				return;
 			} else if (typeof v !== jsType && v !== null) {
 				throw new Error(
 					`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`
+				);
+			} else if (
+				!isNullOrUndefined(v) &&
+				validateScalar &&
+				!validateScalar(v)
+			) {
+				throw new Error(
+					`Field ${name} should be of type ${type}, validation failed. ${v}`
 				);
 			}
 		}
@@ -543,6 +575,12 @@ class DataStore {
 	private storage: Storage;
 	private sync: SyncEngine;
 	private syncPageSize: number;
+	private syncExpressions: SyncExpression[];
+	private syncPredicates: WeakMap<
+		SchemaModel,
+		ModelPredicate<any>
+	> = new WeakMap<SchemaModel, ModelPredicate<any>>();
+	private sessionId: string;
 
 	getModuleName() {
 		return 'DataStore';
@@ -565,7 +603,9 @@ class DataStore {
 			schema,
 			namespaceResolver,
 			getModelConstructorByModelName,
-			modelInstanceCreator
+			modelInstanceCreator,
+			undefined,
+			this.sessionId
 		);
 
 		await this.storage.init();
@@ -577,6 +617,8 @@ class DataStore {
 		if (aws_appsync_graphqlEndpoint) {
 			logger.debug('GraphQL endpoint available', aws_appsync_graphqlEndpoint);
 
+			this.syncPredicates = await this.processSyncExpressions();
+
 			this.sync = new SyncEngine(
 				schema,
 				namespaceResolver,
@@ -587,7 +629,9 @@ class DataStore {
 				this.maxRecordsToSync,
 				this.syncPageSize,
 				this.conflictHandler,
-				this.errorHandler
+				this.errorHandler,
+				this.syncPredicates,
+				this.amplifyConfig
 			);
 
 			// tslint:disable-next-line:max-line-length
@@ -679,8 +723,6 @@ class DataStore {
 					modelDefinition,
 					idOrCriteria
 				);
-
-				logger.debug('after createFromExisting - predicate', predicate);
 			}
 		}
 
@@ -979,6 +1021,7 @@ class DataStore {
 			maxRecordsToSync: configMaxRecordsToSync,
 			syncPageSize: configSyncPageSize,
 			fullSyncInterval: configFullSyncInterval,
+			syncExpressions: configSyncExpressions,
 			...configFromAmplify
 		} = config;
 
@@ -987,21 +1030,28 @@ class DataStore {
 		this.conflictHandler = this.setConflictHandler(config);
 		this.errorHandler = this.setErrorHandler(config);
 
+		this.syncExpressions =
+			(configDataStore && configDataStore.syncExpressions) ||
+			this.syncExpressions ||
+			configSyncExpressions;
+
 		this.maxRecordsToSync =
 			(configDataStore && configDataStore.maxRecordsToSync) ||
 			this.maxRecordsToSync ||
-			config.maxRecordsToSync;
+			configMaxRecordsToSync;
 
 		this.syncPageSize =
 			(configDataStore && configDataStore.syncPageSize) ||
 			this.syncPageSize ||
-			config.syncPageSize;
+			configSyncPageSize;
 
 		this.fullSyncInterval =
 			(configDataStore && configDataStore.fullSyncInterval) ||
+			this.fullSyncInterval ||
 			configFullSyncInterval ||
-			config.fullSyncInterval ||
 			24 * 60; // 1 day
+
+		this.sessionId = this.retrieveSessionId();
 	};
 
 	clear = async function clear() {
@@ -1015,8 +1065,30 @@ class DataStore {
 
 		await this.storage.clear();
 
+		if (this.sync) {
+			this.sync.unsubscribeConnectivity();
+		}
+
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.storage = undefined;
+		this.sync = undefined;
+		this.syncPredicates = new WeakMap<SchemaModel, ModelPredicate<any>>();
+	};
+
+	stop = async function stop() {
+		if (this.initialized !== undefined) {
+			await this.start();
+		}
+
+		if (syncSubscription && !syncSubscription.closed) {
+			syncSubscription.unsubscribe();
+		}
+
+		if (this.sync) {
+			this.sync.unsubscribeConnectivity();
+		}
+
+		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.sync = undefined;
 	};
 
@@ -1063,6 +1135,109 @@ class DataStore {
 			page,
 			sort: sortPredicate,
 		};
+	}
+
+	private async processSyncExpressions(): Promise<
+		WeakMap<SchemaModel, ModelPredicate<any>>
+	> {
+		if (!this.syncExpressions || !this.syncExpressions.length) {
+			return new WeakMap<SchemaModel, ModelPredicate<any>>();
+		}
+
+		const syncPredicates = await Promise.all(
+			this.syncExpressions.map(
+				async (
+					syncExpression: SyncExpression
+				): Promise<[SchemaModel, ModelPredicate<any>]> => {
+					const { modelConstructor, conditionProducer } = await syncExpression;
+					const modelDefinition = getModelDefinition(modelConstructor);
+
+					// conditionProducer is either a predicate, e.g. (c) => c.field('eq', 1)
+					// OR a function/promise that returns a predicate
+					const condition = await this.unwrapPromise(conditionProducer);
+					if (isPredicatesAll(condition)) {
+						return [modelDefinition, null];
+					}
+
+					const predicate = this.createFromCondition(
+						modelDefinition,
+						condition
+					);
+
+					return [modelDefinition, predicate];
+				}
+			)
+		);
+
+		return this.weakMapFromEntries(syncPredicates);
+	}
+
+	private createFromCondition(
+		modelDefinition: SchemaModel,
+		condition: ProducerModelPredicate<PersistentModel>
+	) {
+		try {
+			return ModelPredicateCreator.createFromExisting(
+				modelDefinition,
+				condition
+			);
+		} catch (error) {
+			logger.error('Error creating Sync Predicate');
+			throw error;
+		}
+	}
+
+	private async unwrapPromise<T extends PersistentModel>(
+		conditionProducer
+	): Promise<ProducerModelPredicate<T>> {
+		try {
+			const condition = await conditionProducer();
+			return condition;
+		} catch (error) {
+			if (error instanceof TypeError) {
+				return conditionProducer;
+			}
+			throw error;
+		}
+	}
+
+	private weakMapFromEntries(
+		entries: [SchemaModel, ModelPredicate<any>][]
+	): WeakMap<SchemaModel, ModelPredicate<any>> {
+		return entries.reduce((map, [modelDefinition, predicate]) => {
+			if (map.has(modelDefinition)) {
+				const { name } = modelDefinition;
+				logger.warn(
+					`You can only utilize one Sync Expression per model.
+          Subsequent sync expressions for the ${name} model will be ignored.`
+				);
+				return map;
+			}
+
+			if (predicate) {
+				map.set(modelDefinition, predicate);
+			}
+
+			return map;
+		}, new WeakMap<SchemaModel, ModelPredicate<any>>());
+	}
+
+	// database separation for Amplify Console. Not a public API
+	private retrieveSessionId(): string | undefined {
+		try {
+			const sessionId = sessionStorage.getItem('datastoreSessionId');
+
+			if (sessionId) {
+				const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
+
+				const appSyncUrl = aws_appsync_graphqlEndpoint.split('/')[2];
+				const [appSyncId] = appSyncUrl.split('.');
+
+				return `${sessionId}-${appSyncId}`;
+			}
+		} catch {
+			return undefined;
+		}
 	}
 }
 

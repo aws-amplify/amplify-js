@@ -68,6 +68,7 @@ describe('DataStore tests', () => {
 
 			const model = new Model({
 				field1: 'something',
+				dateCreated: new Date().toISOString(),
 			});
 
 			expect(model).toBeInstanceOf(Model);
@@ -86,6 +87,7 @@ describe('DataStore tests', () => {
 			const now = Date.now();
 			const model = new LocalModel({
 				field1: 'something',
+				dateCreated: new Date().toISOString(),
 			});
 
 			expect(model).toBeInstanceOf(LocalModel);
@@ -149,6 +151,7 @@ describe('DataStore tests', () => {
 
 			const model = new Model({
 				field1: 'something',
+				dateCreated: new Date().toISOString(),
 			});
 
 			expect(() => {
@@ -163,6 +166,7 @@ describe('DataStore tests', () => {
 
 			const model1 = new Model({
 				field1: 'something',
+				dateCreated: new Date().toISOString(),
 			});
 
 			const model2 = Model.copyOf(model1, draft => {
@@ -185,6 +189,7 @@ describe('DataStore tests', () => {
 
 			const model1 = new Model({
 				field1: 'something',
+				dateCreated: new Date().toISOString(),
 			});
 
 			const model2 = Model.copyOf(model1, draft => {
@@ -193,6 +198,77 @@ describe('DataStore tests', () => {
 
 			// ID should be kept the same
 			expect(model1.id).toBe(model2.id);
+		});
+
+		test('Optional field can be initialized with undefined', () => {
+			const { Model } = initSchema(testSchema()) as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model1 = new Model({
+				field1: 'something',
+				dateCreated: new Date().toISOString(),
+				optionalField1: undefined,
+			});
+
+			expect(model1.optionalField1).toBeUndefined();
+		});
+
+		test('Optional field can be initialized with null', () => {
+			const { Model } = initSchema(testSchema()) as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model1 = new Model({
+				field1: 'something',
+				dateCreated: new Date().toISOString(),
+				optionalField1: null,
+			});
+
+			expect(model1.optionalField1).toBeNull();
+		});
+
+		test('Optional field can be changed to undefined inside copyOf', () => {
+			const { Model } = initSchema(testSchema()) as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model1 = new Model({
+				field1: 'something',
+				dateCreated: new Date().toISOString(),
+				optionalField1: 'something-else',
+			});
+
+			const model2 = Model.copyOf(model1, draft => {
+				(<any>draft).optionalField1 = undefined;
+			});
+
+			// ID should be kept the same
+			expect(model1.id).toBe(model2.id);
+
+			expect(model1.optionalField1).toBe('something-else');
+			expect(model2.optionalField1).toBeUndefined();
+		});
+
+		test('Optional field can be set to null inside copyOf', () => {
+			const { Model } = initSchema(testSchema()) as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const model1 = new Model({
+				field1: 'something',
+				dateCreated: new Date().toISOString(),
+			});
+
+			const model2 = Model.copyOf(model1, draft => {
+				(<any>draft).optionalField1 = null;
+			});
+
+			// ID should be kept the same
+			expect(model1.id).toBe(model2.id);
+
+			expect(model1.optionalField1).toBeUndefined();
+			expect(model2.optionalField1).toBeNull();
 		});
 
 		test('Non @model - Field cannot be changed', () => {
@@ -297,6 +373,7 @@ describe('DataStore tests', () => {
 
 			model = new Model({
 				field1: 'Some value',
+				dateCreated: new Date().toISOString(),
 			});
 
 			const result = await DataStore.save(model);
@@ -306,22 +383,41 @@ describe('DataStore tests', () => {
 
 		test('Instantiation validations', async () => {
 			expect(() => {
-				new Model({ field1: undefined });
+				new Model({
+					field1: undefined,
+					dateCreated: new Date().toISOString(),
+				});
 			}).toThrowError('Field field1 is required');
 
 			expect(() => {
-				new Model({ field1: null });
+				new Model({
+					field1: null,
+					dateCreated: new Date().toISOString(),
+				});
 			}).toThrowError('Field field1 is required');
 
 			expect(() => {
-				new Model({ field1: <any>1234 });
+				new Model({
+					field1: <any>1234,
+					dateCreated: new Date().toISOString(),
+				});
 			}).toThrowError(
 				'Field field1 should be of type string, number received. 1234'
+			);
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: 'not-a-date',
+				});
+			}).toThrowError(
+				'Field dateCreated should be of type AWSDateTime, validation failed. not-a-date'
 			);
 
 			expect(
 				new Model({
 					field1: 'someField',
+					dateCreated: new Date().toISOString(),
 					metadata: new Metadata({
 						author: 'Some author',
 						tags: undefined,
@@ -334,6 +430,7 @@ describe('DataStore tests', () => {
 			expect(() => {
 				new Model({
 					field1: 'someField',
+					dateCreated: new Date().toISOString(),
 					metadata: new Metadata({
 						author: 'Some author',
 						tags: undefined,
@@ -342,12 +439,105 @@ describe('DataStore tests', () => {
 					}),
 				});
 			}).toThrowError(
-				'All elements in the rewards array should be of type string, [object] received. '
+				'All elements in the rewards array should be of type string, [null] received. '
 			);
 
 			expect(() => {
 				new Model({
 					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					emails: null,
+					ips: null,
+				});
+			}).not.toThrow();
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					emails: [null],
+				});
+			}).toThrowError(
+				'All elements in the emails array should be of type string, [null] received. '
+			);
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					ips: [null],
+				});
+			}).not.toThrow();
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					ips: ['1.1.1.1'],
+				});
+			}).not.toThrow();
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					ips: ['not.an.ip'],
+				});
+			}).toThrowError(
+				`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. not.an.ip`
+			);
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					ips: ['1.1.1.1', 'not.an.ip'],
+				});
+			}).toThrowError(
+				`All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. 1.1.1.1,not.an.ip`
+			);
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					emails: ['test@example.com'],
+				});
+			}).not.toThrow();
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					emails: [],
+					ips: [],
+				});
+			}).not.toThrow();
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					emails: ['not-an-email'],
+				});
+			}).toThrowError(
+				'All elements in the emails array should be of type AWSEmail, validation failed for one or more elements. not-an-email'
+			);
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					ips: ['not-an-ip'],
+				});
+			}).toThrowError(
+				'All elements in the ips array should be of type AWSIPAddress, validation failed for one or more elements. not-an-ip'
+			);
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
 					metadata: new Metadata({
 						author: 'Some author',
 						tags: undefined,
@@ -360,6 +550,7 @@ describe('DataStore tests', () => {
 			expect(() => {
 				new Model({
 					field1: 'someField',
+					dateCreated: new Date().toISOString(),
 					metadata: new Metadata({
 						author: 'Some author',
 						tags: undefined,
@@ -375,6 +566,7 @@ describe('DataStore tests', () => {
 			expect(() => {
 				new Model({
 					field1: 'someField',
+					dateCreated: new Date().toISOString(),
 					metadata: new Metadata({
 						author: 'Some author',
 						tags: [<any>1234],
@@ -386,6 +578,73 @@ describe('DataStore tests', () => {
 				'All elements in the tags array should be of type string | null | undefined, [number] received. 1234'
 			);
 
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: new Metadata({
+						author: 'Some author',
+						rewards: [],
+						nominations: [],
+						misc: [null],
+					}),
+				});
+			}).not.toThrow();
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: new Metadata({
+						author: 'Some author',
+						rewards: [],
+						nominations: [],
+						misc: [undefined],
+					}),
+				});
+			}).not.toThrow();
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: new Metadata({
+						author: 'Some author',
+						rewards: [],
+						nominations: [],
+						misc: [undefined, null],
+					}),
+				});
+			}).not.toThrow();
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: new Metadata({
+						author: 'Some author',
+						rewards: [],
+						nominations: [],
+						misc: [null, 'ok'],
+					}),
+				});
+			}).not.toThrow();
+
+			expect(() => {
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: new Metadata({
+						author: 'Some author',
+						rewards: [],
+						nominations: [],
+						misc: [null, <any>123],
+					}),
+				});
+			}).toThrowError(
+				'All elements in the misc array should be of type string | null | undefined, [null,number] received. ,123'
+			);
+
 			expect(
 				new Model(<any>{ extraAttribute: 'some value', field1: 'some value' })
 			).toHaveProperty('extraAttribute');
@@ -394,7 +653,10 @@ describe('DataStore tests', () => {
 				Model.copyOf(<any>undefined, d => d);
 			}).toThrow('The source object is not a valid model');
 			expect(() => {
-				const source = new Model({ field1: 'something' });
+				const source = new Model({
+					field1: 'something',
+					dateCreated: new Date().toISOString(),
+				});
 				Model.copyOf(source, d => (d.field1 = <any>1234));
 			}).toThrow(
 				'Field field1 should be of type string, number received. 1234'
@@ -423,7 +685,10 @@ describe('DataStore tests', () => {
 			);
 
 			await expect(
-				DataStore.delete(new Model({ field1: 'somevalue' }), <any>{})
+				DataStore.delete(new Model({
+					field1: 'somevalue',
+					dateCreated: new Date().toISOString(),
+				}), <any>{})
 			).rejects.toThrow('Invalid criteria');
 		});
 
@@ -502,6 +767,7 @@ describe('DataStore tests', () => {
 
 			model = new Model({
 				field1: 'Some value',
+				dateCreated: new Date().toISOString(),
 			});
 		});
 
@@ -585,7 +851,10 @@ describe('DataStore tests', () => {
 				});
 			});
 			test('subscribe to model instance', async () => {
-				const model = new Model({ field1: 'somevalue' });
+				const model = new Model({
+					field1: 'somevalue',
+					dateCreated: new Date().toISOString(),
+				});
 
 				DataStore.observe(model).subscribe(({ element, model }) => {
 					expectType<PersistentModelConstructor<Model>>(model);
@@ -616,7 +885,10 @@ describe('DataStore tests', () => {
 
 		describe('Observe with generic type', () => {
 			test('subscribe to model instance', async () => {
-				const model = new Model({ field1: 'somevalue' });
+				const model = new Model({
+					field1: 'somevalue',
+					dateCreated: new Date().toISOString(),
+				});
 
 				DataStore.observe<Model>(model).subscribe(({ element, model }) => {
 					expectType<PersistentModelConstructor<Model>>(model);
@@ -654,6 +926,10 @@ describe('DataStore tests', () => {
 declare class Model {
 	public readonly id: string;
 	public readonly field1: string;
+	public readonly optionalField1?: string;
+  public readonly dateCreated: string;
+  public readonly emails?: string[];
+  public readonly ips?: (string | null)[];
 	public readonly metadata?: Metadata;
 
 	constructor(init: ModelInit<Model>);
@@ -670,6 +946,7 @@ export declare class Metadata {
 	readonly rewards: string[];
 	readonly penNames?: string[];
 	readonly nominations: string[];
+	readonly misc?: (string | null)[];
 	constructor(init: Metadata);
 }
 
@@ -693,6 +970,35 @@ function testSchema(): Schema {
 						isArray: false,
 						type: 'String',
 						isRequired: true,
+					},
+					optionalField1: {
+						name: 'optionalField1',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+					},
+					dateCreated: {
+							name: 'dateCreated',
+							isArray: false,
+							type: 'AWSDateTime',
+							isRequired: true,
+							attributes: []
+					},
+					emails: {
+							name: 'emails',
+							isArray: true,
+							type: 'AWSEmail',
+							isRequired: true,
+							attributes: [],
+							isArrayNullable: true
+					},
+					ips: {
+							name: 'ips',
+							isArray: true,
+							type: 'AWSIPAddress',
+							isRequired: false,
+							attributes: [],
+							isArrayNullable: true
 					},
 					metadata: {
 						name: 'metadata',
@@ -764,6 +1070,14 @@ function testSchema(): Schema {
 						isArray: true,
 						type: 'String',
 						isRequired: false,
+						attributes: [],
+					},
+					misc: {
+						name: 'misc',
+						isArray: true,
+						type: 'String',
+						isRequired: false,
+						isArrayNullable: true,
 						attributes: [],
 					}
 				},

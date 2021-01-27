@@ -131,8 +131,16 @@ export class RestClient {
 		const initParams = Object.assign({}, init);
 		const isAllResponse = initParams.response;
 		if (initParams.body) {
-			libraryHeaders['Content-Type'] = 'application/json; charset=UTF-8';
-			params.data = JSON.stringify(initParams.body);
+			if (
+				typeof FormData === 'function' &&
+				initParams.body instanceof FormData
+			) {
+				libraryHeaders['Content-Type'] = 'multipart/form-data';
+				params.data = initParams.body;
+			} else {
+				libraryHeaders['Content-Type'] = 'application/json; charset=UTF-8';
+				params.data = JSON.stringify(initParams.body);
+			}
 		}
 		if (initParams.responseType) {
 			params.responseType = initParams.responseType;

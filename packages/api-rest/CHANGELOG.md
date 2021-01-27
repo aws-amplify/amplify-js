@@ -3,6 +3,87 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.15...@aws-amplify/api-rest@1.2.16) (2020-12-17)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+
+
+
+
+## [1.2.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.14...@aws-amplify/api-rest@1.2.15) (2020-12-10)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+
+
+
+
+## [1.2.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.13...@aws-amplify/api-rest@1.2.14) (2020-11-30)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+
+
+
+
+## [1.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.12...@aws-amplify/api-rest@1.2.13) (2020-11-23)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api-rest:** Gate usage of FormData, since Node doesn't support it ([#7237](https://github.com/aws-amplify/amplify-js/issues/7237)) ([f9e6774](https://github.com/aws-amplify/amplify-js/commit/f9e6774f5fa7a8100a7dc99b53c563221b4773e7))
+
+
+
+
+
+## [1.2.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.11...@aws-amplify/api-rest@1.2.12) (2020-11-20)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api-rest:** Pass client FormData to axios ([#6899](https://github.com/aws-amplify/amplify-js/issues/6899)) ([863daba](https://github.com/aws-amplify/amplify-js/commit/863daba34d30b16b2c381a8e4ba9a8379f7d290f))
+
+
+
+
+
+## [1.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.10...@aws-amplify/api-rest@1.2.11) (2020-11-13)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+
+
+
+
+## [1.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.9...@aws-amplify/api-rest@1.2.10) (2020-11-03)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+
+
+
+
+## [1.2.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.8...@aws-amplify/api-rest@1.2.9) (2020-10-31)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** update random implementation ([#7090](https://github.com/aws-amplify/amplify-js/issues/7090)) ([7048453](https://github.com/aws-amplify/amplify-js/commit/70484532da8a9953384b00b223b2b3ba0c0e845e))
+
+
+
+
+
+## [1.2.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.7...@aws-amplify/api-rest@1.2.8) (2020-10-29)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+
+
+
+
 ## [1.2.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.6...@aws-amplify/api-rest@1.2.7) (2020-10-15)
 
 **Note:** Version bump only for package @aws-amplify/api-rest

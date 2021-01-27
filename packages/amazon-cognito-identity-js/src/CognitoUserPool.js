@@ -35,7 +35,7 @@ export default class CognitoUserPool {
 	 *        to support cognito advanced security features. By default, this
 	 *        flag is set to true.
 	 */
-	constructor(data) {
+	constructor(data, wrapRefreshSessionCallback) {
 		const {
 			UserPoolId,
 			ClientId,
@@ -64,6 +64,10 @@ export default class CognitoUserPool {
 			AdvancedSecurityDataCollectionFlag !== false;
 
 		this.storage = data.Storage || new StorageHelper().getStorage();
+
+		if (wrapRefreshSessionCallback) {
+			this.wrapRefreshSessionCallback = wrapRefreshSessionCallback;
+		}
 	}
 
 	/**
@@ -143,9 +147,7 @@ export default class CognitoUserPool {
 	 * @returns {CognitoUser} the user retrieved from storage
 	 */
 	getCurrentUser() {
-		const lastUserKey = `CognitoIdentityServiceProvider.${
-			this.clientId
-		}.LastAuthUser`;
+		const lastUserKey = `CognitoIdentityServiceProvider.${this.clientId}.LastAuthUser`;
 
 		const lastAuthUser = this.storage.getItem(lastUserKey);
 		if (lastAuthUser) {
