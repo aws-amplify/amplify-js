@@ -11,8 +11,8 @@ if (Vue) {
 	Vue.config.ignoredElements = [/amplify-\w*/];
 } else {
 	throw new Error(
-		'No Vue 2 export was found. For later versions of vue, please use `@aws-amplify/ui-components` according to this \
-		guide: https://docs.amplify.aws/start/getting-started/setup/q/integration/vue. Otherwise, make sure `Vue 2` is installed.'
+		'No Vue 2 export was found. For later versions of Vue, please use `@aws-amplify/ui-components` ' +
+			'according to this guide: https://docs.amplify.aws/start/getting-started/setup/q/integration/vue.'
 	);
 }
 // Bind the custom elements to the window object
