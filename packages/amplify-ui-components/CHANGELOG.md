@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.10.0...@aws-amplify/ui-components@0.10.1) (2021-01-29)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** exit early for invalid inputs ([#7543](https://github.com/aws-amplify/amplify-js/issues/7543)) ([760374e](https://github.com/aws-amplify/amplify-js/commit/760374ee94e740d8772db9913eebb5019d0d7c97))
+* **@aws-amplify/ui-components:** handle federated user in checkContact ([#7562](https://github.com/aws-amplify/amplify-js/issues/7562)) ([537c9c5](https://github.com/aws-amplify/amplify-js/commit/537c9c5e27372e02e220069456f6cabbc95e7fc8))
+* **@aws-amplify/ui-components:** handle slotted elements properly ([#7522](https://github.com/aws-amplify/amplify-js/issues/7522)) ([286c9e8](https://github.com/aws-amplify/amplify-js/commit/286c9e8fbec3ccdc5bf24edf3cbfb2bae370d751))
+* **@aws-amplify/ui-components:** revise word mfa=> MFA ([#7359](https://github.com/aws-amplify/amplify-js/issues/7359)) ([843183b](https://github.com/aws-amplify/amplify-js/commit/843183b094281b42ec829b010dd41d214899c23d))
+
+
+
+
+
 # [0.10.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.8...@aws-amplify/ui-components@0.10.0) (2021-01-07)
 
 
