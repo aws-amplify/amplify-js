@@ -49,6 +49,12 @@ if (browserOrNode().isBrowser) {
 
       --amplify-background-color: var(--amplify-white);
 
+      /* Amplify Brand */
+      --amplify-brand-color: #ff9900;
+      --amplify-brand-contrast: var(--amplify-white);
+      --amplify-brand-tint: #ffac31;
+      --amplify-brand-shade: #e88b01;
+
       /* Neutral */
       --amplify-grey: #828282;
       --amplify-light-grey: #c4c4c4;
