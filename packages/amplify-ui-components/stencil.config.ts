@@ -27,6 +27,16 @@ export const config: Config = {
       injectGlobalPaths: ['src/global/breakpoint.scss'],
     }),
   ],
+  bundles: [
+    { components: ['amplify-authenticator'] },
+    { components: ['amplify-sign-out'] },
+    { components: ['amplify-chatbot'] },
+    { components: ['amplify-s3-album'] },
+    { components: ['amplify-s3-image'] },
+    { components: ['amplify-s3-image-picker'] },
+    { components: ['amplify-s3-text'] },
+    { components: ['amplify-s3-text-picker'] },
+  ],
   nodeResolve: {
     browser: true,
   },
@@ -59,6 +69,7 @@ export const config: Config = {
       proxiesFile: '../amplify-ui-react/src/components.ts',
     }),
     { type: 'dist' },
+    { type: 'dist-custom-elements-bundle', dir: 'dist/components' },
     { type: 'docs-readme' },
     { type: 'docs-json', file: 'dist/docs.json' },
     {
