@@ -32,10 +32,10 @@ if (browserOrNode().isBrowser) {
       --amplify-text-xxl: 2.5rem;
 
       /* Colors */
-      --amplify-primary-color: #ff9900;
+      --amplify-primary-color: #222;
       --amplify-primary-contrast: var(--amplify-white);
-      --amplify-primary-tint: #ffac31;
-      --amplify-primary-shade: #e88b01;
+      --amplify-primary-tint: #333;
+      --amplify-primary-shade: #111;
 
       --amplify-secondary-color: #152939;
       --amplify-secondary-contrast: var(--amplify-white);
