@@ -86,7 +86,7 @@ declare module 'amazon-cognito-identity-js' {
 			callback:
 				| ((error: Error, session: null) => void)
 				| ((error: null, session: CognitoUserSession) => void),
-			options: GetSessionOptions
+			options?: GetSessionOptions
 		): void;
 		public refreshSession(
 			refreshToken: CognitoRefreshToken,
