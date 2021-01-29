@@ -20,7 +20,7 @@ if (browserOrNode().isBrowser) {
     document.createTextNode(`
     :root {
       /* Typography */
-      --amplify-font-family: 'Amazon Ember', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+      --amplify-font-family: 'Inter var', 'Amazon Ember', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
       --amplify-text-xxs: 0.75rem;
       --amplify-text-xs: 0.81rem;
