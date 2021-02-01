@@ -126,22 +126,18 @@ export class AmplifySignUp {
     switch (this.usernameAlias) {
       case 'email':
       case 'phone_number':
-        this.signUpAttributes.username = this.signUpAttributes.attributes[this.usernameAlias] || '';
+        this.signUpAttributes.username = this.signUpAttributes.attributes[this.usernameAlias];
         break;
       case 'username':
       default:
         break;
     }
     try {
+      if (!this.signUpAttributes.username) {
+        throw new Error(Translations.EMPTY_USERNAME);
+      }
       if (this.signUpAttributes.username.indexOf(' ') >= 0) {
-        switch (this.usernameAlias) {
-          case 'username':
-            throw new Error(Translations.USERNAME_REMOVE_WHITESPACE);
-          case 'email':
-            throw new Error(Translations.EMAIL_REMOVE_WHITESPACE);
-          case 'phone_number':
-            throw new Error(Translations.PHONE_REMOVE_WHITESPACE);
-        }
+        throw new Error(Translations.USERNAME_REMOVE_WHITESPACE);
       }
       if (this.signUpAttributes.password !== this.signUpAttributes.password.trim()) {
         throw new Error(Translations.PASSWORD_REMOVE_WHITESPACE);
