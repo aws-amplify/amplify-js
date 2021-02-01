@@ -414,17 +414,24 @@ jobs:
     steps:
       - prepare_test_env
       - integ_test_js:
-          test_name: 'Vue Authenticator'
+          test_name: 'Legacy Vue Authenticator'
           framework: vue
           category: auth
           sample_name: amplify-authenticator-legacy
           spec: authenticator
           browser: << parameters.browser >>
       - integ_test_js:
-          test_name: 'Vue Authenticator'
+          test_name: 'Vue 2 Authenticator'
           framework: vue
           category: auth
           sample_name: amplify-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Vue 3 Authenticator'
+          framework: vue
+          category: auth
+          sample_name: authenticator-vue3
           spec: ui-amplify-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
@@ -478,13 +485,19 @@ jobs:
     steps:
       - prepare_test_env
       - integ_test_js:
-          test_name: 'Vue Interactions'
+          test_name: 'Vue 2 Interactions'
           framework: vue
           category: interactions
           sample_name: chatbot-component
           spec: chatbot-component
           browser: << parameters.browser >>
-
+      - integ_test_js:
+          test_name: 'Vue 3 Interactions'
+          framework: vue
+          category: interactions
+          sample_name: chatbot-component-vue3
+          spec: chatbot-component
+          browser: << parameters.browser >>
   integ_angular_interactions:
     parameters:
       browser:
