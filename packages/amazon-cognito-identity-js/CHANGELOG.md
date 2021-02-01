@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.5.9](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.8...amazon-cognito-identity-js@4.5.9) (2021-02-01)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** make options optional ([#7654](https://github.com/aws-amplify/amplify-js/issues/7654)) ([08277af](https://github.com/aws-amplify/amplify-js/commit/08277aff76688c091e05c593cb802f90a9c771a6))
+
+
+
+
+
 ## [4.5.8](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.7...amazon-cognito-identity-js@4.5.8) (2021-01-29)
 
 
