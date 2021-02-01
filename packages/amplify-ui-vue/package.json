@@ -19,6 +19,9 @@
 	"dependencies": {
 		"@aws-amplify/ui-components": "0.10.1"
 	},
+	"peerDependencies": {
+		"vue": "2.x.x"
+	},
 	"scripts": {
 		"build": "npm run clean && npm run compile",
 		"clean": "rm -rf dist",
