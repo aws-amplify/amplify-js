@@ -89,17 +89,6 @@ class MutationEventOutbox {
 	): Promise<MutationEvent> {
 		const head = await this.peek(storage);
 
-		const mutationEventModelDefinition = this.schema.namespaces[SYNC].models[
-			'MutationEvent'
-		];
-
-		const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
-			mutationEventModelDefinition,
-			c => c.modelId('eq', record.id)
-		);
-
-		const all = await storage.query(this.MutationEvent, predicate);
-
 		if (record) {
 			await this.reconcileOutboxOnDequeue(storage, record);
 		}
