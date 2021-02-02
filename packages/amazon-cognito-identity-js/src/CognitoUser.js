@@ -1376,7 +1376,7 @@ export default class CognitoUser {
 	 * @param {GetSessionOptions} options
 	 * @returns {void}
 	 */
-	getSession(callback, options) {
+	getSession(callback, options = {}) {
 		if (this.username == null) {
 			return callback(
 				new Error('Username is null. Cannot retrieve a new session'),
