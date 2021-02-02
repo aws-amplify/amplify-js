@@ -349,51 +349,80 @@ export default class AuthenticationHelper {
 	}
 
 	/**
-	 * Returns an unambiguous, even-length hex string of the two's complement encoding of an integer
+	 * Returns an unambiguous, even-length hex string of the two's complement encoding of an integer.
 	 * 
-	 * @param {BigInteger} bigInt Number to pad.
-	 * @returns {String} Padded hex string.
+	 * It is compatible with the hex encoding of Java's BigInteger's toByteArray(), wich returns a 
+	 * byte array containing the two's-complement representation of a BigInteger. The array contains
+	 * the minimum number of bytes required to represent the BigInteger, including at least one sign bit.
+	 * 
+	 * Examples showing how ambiguity is avoided by left padding with:
+	 * 	"00" (for positive values where the most-significant-bit is set)
+	 *  "FF" (for negative values where the most-significant-bit is set)
+	 * 
+	 * padHex(bigInteger.fromInt(-236))  === "FF14"
+	 * padHex(bigInteger.fromInt(20))    === "14"
+	 * 
+	 * padHex(bigInteger.fromInt(-200))  === "FF38"
+	 * padHex(bigInteger.fromInt(56))    === "38"
+	 * 
+	 * padHex(bigInteger.fromInt(-20))   === "EC"
+	 * padHex(bigInteger.fromInt(236))   === "00EC"
+	 * 
+	 * padHex(bigInteger.fromInt(-56))   === "C8"
+	 * padHex(bigInteger.fromInt(200))   === "00C8"
+	 * 
+	 * @param {BigInteger} bigInt Number to encode.
+	 * @returns {String} even-length hex string of the two's complement encoding.
 	 */
 	padHex(bigInt) {
 		if (!(bigInt instanceof BigInteger)) {
 			throw new Error('Not a BigInteger');
 		}
 
-		const isNegative = bigInt.compareTo(BigInteger.ZERO) < 0;
-		const [, magnitude] = bigInt.toString(16).match(HEX_REGEX);
+		let hexStr;
 
-		let hex = magnitude.length % 2 === 1 ? `0${magnitude}` : magnitude;
+		const isNegative = bigInt.compareTo(BigInteger.ZERO) < 0;
 
 		if (isNegative) {
-			hex = this.twosComplement(bigInt).toString(16);
+			/* Hex string for abs(bigInt) */
+			const absHexStr = bigIntToEvenLengthHex(bigInt.abs());
 
-			hex = hex.length % 2 !== 0 ? `0${hex}` : hex;
+			/* Flip the bits of the representation */
+			const invertedNibbles = absHexStr.split('').map(x => {
+				const invertedNibble = ~parseInt(x, 16) & 0xf;
+				return '0123456789ABCDEF'.charAt(invertedNibble);
+			}).join('');
 
-			hex = HEX_MSB_REGEX.test(hex) ? hex : `FF${hex}`;
+			/* After flipping the bits, add one to get the 2's complement representation */
+			const flippedBitsBI = new BigInteger(invertedNibbles, 16).add(BigInteger.ONE);
+
+			hexStr = bigIntToEvenLengthHex(flippedBitsBI);
+
+			/* Prepend "FF" if the most significant bit is set */
+			hexStr = HEX_MSB_REGEX.test(hexStr) ? hexStr : `FF${hexStr}`;
 		} else {
-			hex = hex.length % 2 === 1 ? `0${hex}` : hex;
+			hexStr = bigIntToEvenLengthHex(bigInt);
 
-			hex = HEX_MSB_REGEX.test(hex) ? `00${hex}` : hex;
+			/* Prepend "00" if the most significant bit is set */
+			hexStr = HEX_MSB_REGEX.test(hexStr) ? `00${hexStr}` : hexStr;
 		}
 
-		return hex;
+		return hexStr;
+	}
 	}
 
-	twosComplement(bigInt) {
+	/**
+ * Returns an even-length hex string representation of a BigInteger
+ * 
+ * @param {BigInteger} A Big Integer
+ * @returns {string} The even-length hex representation of the Big Integer
+	 */
+function bigIntToEvenLengthHex(bigInt) {
 		if (!(bigInt instanceof BigInteger)) {
 			throw new Error('Not a BigInteger');
 		}
 
-		const hashStr = bigInt.abs().toString(16);
+	const hexStr = bigInt.toString(16);
 
-		hashStr = hashStr.length % 2 !== 0 ? `0${hashStr}` : hashStr;
-
-		let invertedNibbles = hashStr.split('').map(x => {
-			const invertedNibble = ~parseInt(x, 16) & 0xf;
-
-			return '0123456789ABCDEF'.charAt(invertedNibble);
-		}).join('');
-
-		return new BigInteger(invertedNibbles, 16).add(BigInteger.ONE);
+	return hexStr.length % 2 !== 0 ? `0${hexStr}` : hexStr;
 	}
-}

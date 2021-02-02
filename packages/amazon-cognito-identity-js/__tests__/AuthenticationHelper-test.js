@@ -6,7 +6,7 @@ describe('AuthenticatorHelper', () => {
 	const instance = new AuthenticationHelper('TestPoolName');
 
 	/*
-	Test cases generated in java with:
+	Test cases generated in Java with:
 
 	import java.math.BigInteger;
 	public class Main
@@ -24,7 +24,6 @@ describe('AuthenticatorHelper', () => {
 		public static void main(String[] args) {
 			for(int i = -256; i <=256; i++) {
 				byte arr[] = BigInteger.valueOf(i).toByteArray();
-				byte[] x = {(byte)i};
 				System.out.println("[" + i +", '" + bytesToHex(arr) + "'],");
 			}
 		}
@@ -544,7 +543,7 @@ describe('AuthenticatorHelper', () => {
 		[254, '00FE'],
 		[255, '00FF'],
 		[256, '0100'],
-	])('padHex(bigInteger.fromInt(%s)) === %s', (i, expected) => {
+	])('padHex(bigInteger.fromInt(%p))\t=== %p', (i, expected) => {
 		const bigInt = new BigInteger();
 		bigInt.fromInt(i);
 
