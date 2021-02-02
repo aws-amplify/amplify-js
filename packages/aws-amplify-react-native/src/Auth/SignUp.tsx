@@ -245,7 +245,10 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 		this.sortFields();
 		return (
 			<Wrapper>
-				<ScrollView style={theme.sectionScroll}>
+				<ScrollView 
+					style={theme.sectionScroll}
+					keyboardShouldPersistTaps='handled'
+					>
 					<Header theme={theme} testID={TEST_ID.AUTH.SIGN_UP_TEXT}>
 						{I18n.get(this.header)}
 					</Header>
