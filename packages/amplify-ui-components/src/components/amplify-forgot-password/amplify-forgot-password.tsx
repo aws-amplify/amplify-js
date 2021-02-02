@@ -197,7 +197,7 @@ export class AmplifyForgotPassword {
     }
 
     try {
-      const data = await Auth.forgotPassword(this.forgotPasswordAttrs.userInput);
+      const data = await Auth.forgotPassword(this.forgotPasswordAttrs.userInput.trim());
       logger.debug(data);
       this.newFormFields = [
         {

@@ -62,7 +62,7 @@ export const getStorageObject = async (
 
 const readFileAsync = (blob: Blob) => {
   return new Promise((resolve, reject) => {
-    let reader = new FileReader();
+    const reader = new FileReader();
 
     reader.onload = () => {
       resolve(reader.result as string);
@@ -95,7 +95,7 @@ export const getTextSource = async (
       identityId,
     });
     logger.debug(textSrc);
-    let text = (await readFileAsync(textSrc['Body'])) as string;
+    const text = (await readFileAsync(textSrc['Body'])) as string;
     return text;
   } catch (error) {
     throw new Error(error);

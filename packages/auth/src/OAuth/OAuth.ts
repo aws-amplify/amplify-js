@@ -125,7 +125,7 @@ export default class OAuth {
 			.map(pairings => pairings.split('='))
 			.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), { code: undefined });
 
-		if (!code) {
+		if (!code || parse(currentUrl).pathname !== parse(this._config.redirectSignIn).pathname) {
 			return;
 		}
 
