@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/storage",
-  "version": "3.3.19",
+  "version": "3.3.20",
   "description": "Storage category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -41,7 +41,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "3.8.11",
+    "@aws-amplify/core": "3.8.12",
     "@aws-sdk/client-s3": "1.0.0-rc.4",
     "@aws-sdk/s3-request-presigner": "1.0.0-rc.4",
     "@aws-sdk/util-create-request": "1.0.0-rc.4",
