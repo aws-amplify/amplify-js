@@ -29,13 +29,6 @@ const randomBytes = function (nBytes) {
 import BigInteger from './BigInteger';
 
 /**
- * Tests if a string is a hex value with an optional negative sign in the front (case-insensitive regex)
- * 
- * It captures the magnitude
- */
-const HEX_REGEX = /^-?([\da-f]+)$/i;
-
-/**
  * Tests if a hex string has it most significant bit set (case-insensitive regex)
  */
 const HEX_MSB_REGEX = /^[89a-f]/i;
