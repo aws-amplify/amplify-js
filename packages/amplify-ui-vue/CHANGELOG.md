@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@0.2.34...@aws-amplify/ui-vue@0.3.0) (2021-02-01)
+
+
+### Features
+
+* **@aws-amplify/ui-vue:** Use `@aws-amplify/ui-components` for Vue 3 ([#7634](https://github.com/aws-amplify/amplify-js/issues/7634)) ([5574d95](https://github.com/aws-amplify/amplify-js/commit/5574d956d635c45a9c6e1f48fd03c96b0a8c336c))
+
+
+
+
+
 ## [0.2.34](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@0.2.33...@aws-amplify/ui-vue@0.2.34) (2021-01-29)
 
 **Note:** Version bump only for package @aws-amplify/ui-vue
