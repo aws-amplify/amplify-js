@@ -107,6 +107,7 @@ export default class AuthenticationHelper {
 	 * @private
 	 */
 	generateRandomSmallA() {
+		// This will be interpreted as a postive 128-bit integer
 		const hexRandom = randomBytes(128).toString('hex');
 
 		const randomBigInt = new BigInteger(hexRandom, 16);
