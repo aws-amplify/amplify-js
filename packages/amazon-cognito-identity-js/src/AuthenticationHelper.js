@@ -396,18 +396,18 @@ export default class AuthenticationHelper {
 			const flippedBitsBI = new BigInteger(invertedNibbles, 16).add(BigInteger.ONE);
 
 			hexStr = flippedBitsBI.toString(16);
-		}
 
-		/*
-		For hex strings starting with 'FF8', 'FF' can be dropped, e.g. 0xFFFF80=0xFF80=0x80=-128
+			/*
+			For hex strings starting with 'FF8', 'FF' can be dropped, e.g. 0xFFFF80=0xFF80=0x80=-128
 
-		Any sequence of '1' bits on the left can always be substituted with a single '1' bit
-		without changing the represented value.
+			Any sequence of '1' bits on the left can always be substituted with a single '1' bit
+			without changing the represented value.
 
-		This only happens in the case when the input is 80...00
-		*/
-		if(hexStr.toUpperCase().startsWith('FF8')) {
-			hexStr = hexStr.substring(2);
+			This only happens in the case when the input is 80...00
+			*/
+			if(hexStr.toUpperCase().startsWith('FF8')) {
+				hexStr = hexStr.substring(2);
+			}
 		}
 
 		return hexStr;
