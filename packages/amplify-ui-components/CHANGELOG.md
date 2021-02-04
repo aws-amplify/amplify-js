@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.10.2...@aws-amplify/ui-components@0.10.3) (2021-02-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** handle non-username alias ([#7663](https://github.com/aws-amplify/amplify-js/issues/7663)) ([651c3b2](https://github.com/aws-amplify/amplify-js/commit/651c3b29f39dd5beb563b5084ff74f7cbcc94368))
+
+
+
+
+
 ## [0.10.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.10.1...@aws-amplify/ui-components@0.10.2) (2021-02-01)
 
 
