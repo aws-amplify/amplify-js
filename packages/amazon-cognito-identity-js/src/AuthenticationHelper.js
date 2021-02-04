@@ -158,6 +158,7 @@ export default class AuthenticationHelper {
 		const combinedString = `${deviceGroupKey}${username}:${this.randomPassword}`;
 		const hashedString = this.hash(combinedString);
 
+		// This will be interpreted as a postive 128-bit integer
 		this.SaltToHashDevices = randomBytes(16).toString('hex');
 
 		this.g.modPow(
