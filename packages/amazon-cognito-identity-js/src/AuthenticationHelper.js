@@ -374,16 +374,20 @@ export default class AuthenticationHelper {
 			throw new Error('Not a BigInteger');
 		}
 
-		let hexStr;
-
 		const isNegative = bigInt.compareTo(BigInteger.ZERO) < 0;
 
-		if (isNegative) {
-			/* Hex string for abs(bigInt) */
-			const absHexStr = bigIntToEvenLengthHex(bigInt.abs());
+		/* Get a hex string for abs(bigInt) */
+		let hexStr = bigInt.abs().toString(16);
 
+		/* Pad hex to even length if needed */
+		hexStr = hexStr.length % 2 !== 0 ? `0${hexStr}` : hexStr;
+
+		/* Prepend "00" if the most significant bit is set */
+		hexStr = HEX_MSB_REGEX.test(hexStr) ? `00${hexStr}` : hexStr;
+
+		if(isNegative) {
 			/* Flip the bits of the representation */
-			const invertedNibbles = absHexStr.split('').map(x => {
+			const invertedNibbles = hexStr.split('').map(x => {
 				const invertedNibble = ~parseInt(x, 16) & 0xf;
 				return '0123456789ABCDEF'.charAt(invertedNibble);
 			}).join('');
@@ -391,33 +395,21 @@ export default class AuthenticationHelper {
 			/* After flipping the bits, add one to get the 2's complement representation */
 			const flippedBitsBI = new BigInteger(invertedNibbles, 16).add(BigInteger.ONE);
 
-			hexStr = bigIntToEvenLengthHex(flippedBitsBI);
+			hexStr = flippedBitsBI.toString(16);
+		}
 
-			/* Prepend "FF" if the most significant bit is set */
-			hexStr = HEX_MSB_REGEX.test(hexStr) ? hexStr : `FF${hexStr}`;
-		} else {
-			hexStr = bigIntToEvenLengthHex(bigInt);
+		/*
+		For hex strings starting with 'FF8', 'FF' can be dropped, e.g. 0xFFFF80=0xFF80=0x80=-128
 
-			/* Prepend "00" if the most significant bit is set */
-			hexStr = HEX_MSB_REGEX.test(hexStr) ? `00${hexStr}` : hexStr;
+		Any sequence of '1' bits on the left can always be substituted with a single '1' bit
+		without changing the represented value.
+
+		This only happens in the case when the input is 80...00
+		*/
+		if(hexStr.toUpperCase().startsWith('FF8')) {
+			hexStr = hexStr.substring(2);
 		}
 
 		return hexStr;
 	}
-	}
-
-	/**
- * Returns an even-length hex string representation of a BigInteger
- * 
- * @param {BigInteger} A Big Integer
- * @returns {string} The even-length hex representation of the Big Integer
-	 */
-function bigIntToEvenLengthHex(bigInt) {
-		if (!(bigInt instanceof BigInteger)) {
-			throw new Error('Not a BigInteger');
-		}
-
-	const hexStr = bigInt.toString(16);
-
-	return hexStr.length % 2 !== 0 ? `0${hexStr}` : hexStr;
-	}
+}
