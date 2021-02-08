@@ -2893,7 +2893,7 @@ describe('auth unit test', () => {
 			    "Hub.dispatch('auth', { data: ..., event: 'parsingCallbackUrl' })",
 			  ],
 			  Array [
-			    "window.history.replaceState({}, null, 'http://localhost:3000/')",
+			    "window.history.replaceState(null, \\"\\", 'http://localhost:3000/')",
 			  ],
 			  Array [
 			    "Hub.dispatch('auth', { data: ..., event: 'signIn' })",
