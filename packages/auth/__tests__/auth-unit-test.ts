@@ -2880,8 +2880,8 @@ describe('auth unit test', () => {
 
 			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
 			expect(replaceStateSpy).toHaveBeenCalledWith(
-				{},
-				null,
+				window.history.state,
+				'',
 				(options.oauth as AwsCognitoOAuthOpts).redirectSignIn
 			);
 
@@ -2945,8 +2945,8 @@ describe('auth unit test', () => {
 
 			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
 			expect(replaceStateSpy).toHaveBeenCalledWith(
-				{},
-				null,
+				window.history.state,
+				'',
 				(options.oauth as AwsCognitoOAuthOpts).redirectSignIn
 			);
 		});
@@ -3009,8 +3009,8 @@ describe('auth unit test', () => {
 
 			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
 			expect(replaceStateSpy).toHaveBeenCalledWith(
-				{},
-				null,
+				window.history.state,
+				'',
 				(options.oauth as AwsCognitoOAuthOpts).redirectSignIn
 			);
 		});
