@@ -160,7 +160,7 @@ export default class AuthenticationHelper {
 		const hashedString = this.hash(combinedString);
 
 		// This will be interpreted as a postive 128-bit integer
-		this.SaltToHashDevices = randomBytes(16).toString('hex');
+		this.SaltToHashDevices = this.padHex(new BigInteger(randomBytes(16).toString('hex'), 16));
 
 		this.g.modPow(
 			new BigInteger(this.hexHash(this.SaltToHashDevices + hashedString), 16),
