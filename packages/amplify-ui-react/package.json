@@ -35,7 +35,7 @@
 		"@aws-amplify/ui-components": "0.10.3"
 	},
 	"peerDependencies": {
-		"react": "^16.7.0",
-		"react-dom": "^16.7.0"
+		"react": ">= 16.7.0",
+		"react-dom": ">= 16.7.0"
 	}
 }
