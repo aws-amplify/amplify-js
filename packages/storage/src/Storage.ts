@@ -73,7 +73,7 @@ export class Storage {
 	 */
 	public getPluggable(providerName: string) {
 		const pluggable = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === providerName
+			(pluggable) => pluggable.getProviderName() === providerName
 		);
 		if (pluggable === undefined) {
 			logger.debug('No plugin found with providerName', providerName);
@@ -87,7 +87,7 @@ export class Storage {
 	 */
 	public removePluggable(providerName: string) {
 		this._pluggables = this._pluggables.filter(
-			pluggable => pluggable.getProviderName() !== providerName
+			(pluggable) => pluggable.getProviderName() !== providerName
 		);
 		return;
 	}
@@ -110,6 +110,7 @@ export class Storage {
 			'region',
 			'level',
 			'track',
+			'exact',
 			'customPrefix',
 			'serverSideEncryption',
 			'SSECustomerAlgorithm',
@@ -119,9 +120,9 @@ export class Storage {
 		];
 
 		const isInStorageArrayKeys = (k: string) =>
-			storageArrayKeys.some(x => x === k);
+			storageArrayKeys.some((x) => x === k);
 		const checkConfigKeysFromArray = (k: string[]) =>
-			k.find(k => isInStorageArrayKeys(k));
+			k.find((k) => isInStorageArrayKeys(k));
 
 		if (
 			storageKeysFromConfig &&
@@ -139,7 +140,7 @@ export class Storage {
 		});
 
 		// only update new values for each provider
-		Object.keys(amplifyConfig.Storage).forEach(providerName => {
+		Object.keys(amplifyConfig.Storage).forEach((providerName) => {
 			if (typeof amplifyConfig.Storage[providerName] !== 'string') {
 				this._config[providerName] = {
 					...this._config[providerName],
@@ -148,7 +149,7 @@ export class Storage {
 			}
 		});
 
-		this._pluggables.forEach(pluggable => {
+		this._pluggables.forEach((pluggable) => {
 			pluggable.configure(this._config[pluggable.getProviderName()]);
 		});
 
@@ -169,7 +170,7 @@ export class Storage {
 	public async get(key: string, config?): Promise<String | Object> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
+			(pluggable) => pluggable.getProviderName() === provider
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
@@ -189,7 +190,7 @@ export class Storage {
 	public async put(key: string, object, config?): Promise<Object> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
+			(pluggable) => pluggable.getProviderName() === provider
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
@@ -207,7 +208,7 @@ export class Storage {
 	public async remove(key: string, config?): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
+			(pluggable) => pluggable.getProviderName() === provider
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
@@ -225,7 +226,7 @@ export class Storage {
 	public async list(path, config?): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
+			(pluggable) => pluggable.getProviderName() === provider
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);

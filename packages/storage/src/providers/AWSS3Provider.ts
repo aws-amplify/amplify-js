@@ -298,7 +298,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		try {
-			emitter.on('sendProgress', progress => {
+			emitter.on('sendProgress', (progress) => {
 				if (progressCallback) {
 					if (typeof progressCallback === 'function') {
 						progressCallback(progress);
@@ -418,7 +418,7 @@ export class AWSS3Provider implements StorageProvider {
 			const response = await s3.send(listObjectsCommand);
 			let list = [];
 			if (response && response.Contents) {
-				list = response.Contents.map(item => {
+				list = response.Contents.map((item) => {
 					return {
 						key: item.Key.substr(prefix.length),
 						eTag: item.ETag,
@@ -454,7 +454,7 @@ export class AWSS3Provider implements StorageProvider {
 	 */
 	_ensureCredentials() {
 		return Credentials.get()
-			.then(credentials => {
+			.then((credentials) => {
 				if (!credentials) return false;
 				const cred = Credentials.shear(credentials);
 				logger.debug('set credentials for storage', cred);
@@ -462,7 +462,7 @@ export class AWSS3Provider implements StorageProvider {
 
 				return true;
 			})
-			.catch(error => {
+			.catch((error) => {
 				logger.warn('ensure credentials error', error);
 				return false;
 			});
@@ -475,7 +475,9 @@ export class AWSS3Provider implements StorageProvider {
 		const { credentials, level } = config;
 
 		const customPrefix = config.customPrefix || {};
-		const identityId = config.identityId || credentials.identityId;
+		const identityId = config.exact
+			? ''
+			: config.identityId || credentials.identityId;
 		const privatePath =
 			(customPrefix.private !== undefined ? customPrefix.private : 'private/') +
 			identityId +
