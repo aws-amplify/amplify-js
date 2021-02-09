@@ -88,7 +88,7 @@ class MutationEventOutbox {
 		const head = await this.peek(storage);
 
 		if (record) {
-			await this.reconcileOutboxOnDequeue(storage, record);
+			await this.syncOutboxVersionsOnDequeue(storage, record);
 		}
 
 		await storage.delete(head);
@@ -139,7 +139,7 @@ class MutationEventOutbox {
 		return result;
 	}
 
-	private async reconcileOutboxOnDequeue(
+	private async syncOutboxVersionsOnDequeue(
 		storage: StorageClass,
 		record: PersistentModel
 	): Promise<void> {
