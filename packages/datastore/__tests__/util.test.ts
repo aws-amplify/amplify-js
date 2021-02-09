@@ -121,7 +121,7 @@ describe('datastore util', () => {
 	});
 
 	test('isAWSEmail', () => {
-		const valid = ['a@b', 'a@b.c', 'jeff@amazon.com'];
+		const valid = ['a@b', 'a@b.c', 'john@doe.com'];
 		const invalid = [
 			'',
 			'@',
