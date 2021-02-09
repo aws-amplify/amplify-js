@@ -11,7 +11,6 @@ import { Translations } from '../../common/Translations';
  */
 @Component({
   tag: 'amplify-sign-out',
-  shadow: true,
 })
 export class AmplifySignOut {
   /** Auth state change handler for this component */

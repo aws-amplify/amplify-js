@@ -25,7 +25,6 @@ const logger = new Logger('ForgotPassword');
 
 @Component({
   tag: 'amplify-forgot-password',
-  shadow: true,
 })
 export class AmplifyForgotPassword {
   /** The header text of the forgot password section */

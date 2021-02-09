@@ -6,7 +6,6 @@ import { Component, Prop, h } from '@stencil/core';
 @Component({
   tag: 'amplify-toast',
   styleUrl: 'amplify-toast.scss',
-  shadow: true,
 })
 export class AmplifyToast {
   /** Used in order to add a dismissable `x` for the Toast component */

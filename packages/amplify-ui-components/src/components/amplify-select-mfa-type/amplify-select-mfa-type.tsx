@@ -13,7 +13,6 @@ const logger = new Logger('SelectMFAType');
 
 @Component({
   tag: 'amplify-select-mfa-type',
-  shadow: true,
 })
 export class AmplifySelectMFAType {
   /** Types of MFA options */

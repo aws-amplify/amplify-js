@@ -38,7 +38,6 @@ const logger = new Logger('Authenticator');
 @Component({
   tag: 'amplify-authenticator',
   styleUrl: 'amplify-authenticator.scss',
-  shadow: true,
 })
 export class AmplifyAuthenticator {
   /** Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp */

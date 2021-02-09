@@ -7,7 +7,6 @@ import { AuthState, FederatedConfig, AuthStateHandler } from '../../common/types
 
 @Component({
   tag: 'amplify-federated-buttons',
-  shadow: true,
 })
 export class AmplifyFederatedButtons {
   /** The current authentication state. */

@@ -5,7 +5,6 @@ import { Translations } from '../../common/Translations';
 
 @Component({
   tag: 'amplify-email-field',
-  shadow: true,
 })
 export class AmplifyEmailField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */

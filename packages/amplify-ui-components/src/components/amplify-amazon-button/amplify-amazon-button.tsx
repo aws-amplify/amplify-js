@@ -11,7 +11,6 @@ const logger = new Logger('amplify-amazon-button');
 
 @Component({
   tag: 'amplify-amazon-button',
-  shadow: true,
 })
 export class AmplifyAmazonButton {
   /** App-specific client ID from Google */

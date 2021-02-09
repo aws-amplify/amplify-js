@@ -29,7 +29,6 @@ import { handleSignIn } from '../../common/auth-helpers';
 @Component({
   tag: 'amplify-sign-up',
   styleUrl: 'amplify-sign-up.scss',
-  shadow: true,
 })
 export class AmplifySignUp {
   /** Fires when sign up form is submitted */

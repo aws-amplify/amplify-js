@@ -10,7 +10,6 @@ const logger = new Logger('amplify-google-button');
 
 @Component({
   tag: 'amplify-google-button',
-  shadow: true,
 })
 export class AmplifyGoogleButton {
   /** Auth state change handler for this component

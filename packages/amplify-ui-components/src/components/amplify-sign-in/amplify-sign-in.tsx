@@ -31,7 +31,6 @@ import { SignInAttributes } from './amplify-sign-in-interface';
 @Component({
   tag: 'amplify-sign-in',
   styleUrl: 'amplify-sign-in.scss',
-  shadow: true,
 })
 export class AmplifySignIn {
   /** Fires when sign in form is submitted */

@@ -12,7 +12,6 @@ const logger = new Logger('S3Album');
 @Component({
   tag: 'amplify-s3-album',
   styleUrl: 'amplify-s3-album.scss',
-  shadow: true,
 })
 export class AmplifyS3Album {
   /** String representing directory location of image files to be listed */

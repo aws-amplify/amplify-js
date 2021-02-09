@@ -11,7 +11,6 @@ const logger = new Logger('amplify-facebook-button');
 
 @Component({
   tag: 'amplify-facebook-button',
-  shadow: true,
 })
 export class AmplifyFacebookButton {
   /** App-specific client ID from Facebook */

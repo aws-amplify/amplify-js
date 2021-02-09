@@ -5,7 +5,6 @@ import { Translations } from '../../common/Translations';
 
 @Component({
   tag: 'amplify-password-field',
-  shadow: true,
 })
 export class AmplifyPasswordField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */

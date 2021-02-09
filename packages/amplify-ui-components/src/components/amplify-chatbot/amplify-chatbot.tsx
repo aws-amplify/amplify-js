@@ -43,7 +43,6 @@ interface ChatError {
 @Component({
   tag: 'amplify-chatbot',
   styleUrl: 'amplify-chatbot.scss',
-  shadow: true,
 })
 export class AmplifyChatbot {
   /** Name of the bot */

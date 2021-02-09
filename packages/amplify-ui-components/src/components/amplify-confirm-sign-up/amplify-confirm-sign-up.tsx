@@ -29,7 +29,6 @@ import { handleSignIn } from '../../common/auth-helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-up',
-  shadow: true,
 })
 export class AmplifyConfirmSignUp {
   /** Fires when sign up form is submitted */

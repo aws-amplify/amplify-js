@@ -4,7 +4,6 @@ import { IconNameType } from '../amplify-icon/icons';
 @Component({
   tag: 'amplify-icon-button',
   styleUrl: 'amplify-icon-button.scss',
-  shadow: true,
 })
 export class AmplifyIconButton {
   /**  The name of the icon used inside of the button */
