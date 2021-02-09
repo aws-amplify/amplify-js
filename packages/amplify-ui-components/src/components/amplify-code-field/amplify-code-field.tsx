@@ -5,6 +5,7 @@ import { Translations } from '../../common/Translations';
 
 @Component({
   tag: 'amplify-code-field',
+  scoped: true,
 })
 export class AmplifyCodeField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */

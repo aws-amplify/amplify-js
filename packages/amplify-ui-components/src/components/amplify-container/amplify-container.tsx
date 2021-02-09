@@ -6,6 +6,7 @@ import { Component, h, Host } from '@stencil/core';
 @Component({
   tag: 'amplify-container',
   styleUrl: 'amplify-container.scss',
+  scoped: true,
 })
 export class AmplifyContainer {
   render() {

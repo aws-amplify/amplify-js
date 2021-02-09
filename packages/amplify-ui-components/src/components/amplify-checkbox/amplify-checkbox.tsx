@@ -3,6 +3,7 @@ import { Component, Prop, h } from '@stencil/core';
 @Component({
   tag: 'amplify-checkbox',
   styleUrl: 'amplify-checkbox.scss',
+  scoped: true,
 })
 export class AmplifyCheckbox {
   /** Name of the checkbox */

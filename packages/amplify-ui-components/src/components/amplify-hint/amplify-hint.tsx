@@ -6,6 +6,7 @@ import { Component, h } from '@stencil/core';
 @Component({
   tag: 'amplify-hint',
   styleUrl: 'amplify-hint.scss',
+  scoped: true,
 })
 export class AmplifyHint {
   render() {

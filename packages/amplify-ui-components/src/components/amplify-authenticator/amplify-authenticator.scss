@@ -11,7 +11,8 @@
  * @prop --container-justify: `justify-content` property of a flex container
  * @prop --container-align: `align-items` property of a flex container
  */
-:host {
+:host,
+amplify-authenticator {
   --background-color: var(--amplify-background-color);
   --width: 28.75rem;
   --min-width: 20rem;

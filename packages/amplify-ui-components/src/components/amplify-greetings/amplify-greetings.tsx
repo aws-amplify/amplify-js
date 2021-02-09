@@ -10,6 +10,7 @@ import { dispatchAuthStateChangeEvent } from '../../common/helpers';
 @Component({
   tag: 'amplify-greetings',
   styleUrl: 'amplify-greetings.scss',
+  scoped: true,
 })
 export class AmplifyGreetings {
   /** Username displayed in the greetings */

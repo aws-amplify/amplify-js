@@ -4,7 +4,8 @@
  * @prop --color: Text color within the tooltip
  * @prop --border-color: Border color of the tooltip
  */
-:host {
+:host,
+amplify-tooltip {
   --font-family: var(--amplify-font-family);
   --background-color: var(--amplify-secondary-color);
   --color: var(--amplify-secondary-contrast);

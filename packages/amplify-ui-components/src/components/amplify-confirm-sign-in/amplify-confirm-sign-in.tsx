@@ -16,6 +16,7 @@ import { checkContact } from '../../common/auth-helpers';
 
 @Component({
   tag: 'amplify-confirm-sign-in',
+  scoped: true,
 })
 export class AmplifyConfirmSignIn {
   /** Fires when confirm sign in form is submitted */

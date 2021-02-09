@@ -5,6 +5,7 @@ import componentFieldMapping from './component-field-mapping';
 @Component({
   tag: 'amplify-auth-fields',
   styleUrl: 'amplify-auth-fields.scss',
+  scoped: true,
 })
 export class AmplifyAuthFields {
   /**

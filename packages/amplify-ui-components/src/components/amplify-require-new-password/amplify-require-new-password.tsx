@@ -20,6 +20,7 @@ const logger = new Logger('amplify-require-new-password');
 
 @Component({
   tag: 'amplify-require-new-password',
+  scoped: true,
 })
 export class AmplifyRequireNewPassword {
   /** The header text of the forgot password section */

@@ -3,7 +3,8 @@
  * @prop --border-color: Border color of the container
  * @prop --font-family: Font family of the text
  */
-:host {
+:host,
+amplify-greetings {
   --background-color: var(--amplify-white);
   --border-color: var(--amplify-light-grey);
   --font-family: var(--amplify-font-family);

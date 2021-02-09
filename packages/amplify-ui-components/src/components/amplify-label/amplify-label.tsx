@@ -6,6 +6,7 @@ import { Component, Prop, h } from '@stencil/core';
 @Component({
   tag: 'amplify-label',
   styleUrl: 'amplify-label.scss',
+  scoped: true,
 })
 export class AmplifyLabel {
   /** Reflects the value of the for content property of html element */

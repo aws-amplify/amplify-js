@@ -7,6 +7,7 @@ import { TextFieldTypes } from '../../common/types/ui-types';
 @Component({
   tag: 'amplify-form-field',
   styleUrl: 'amplify-form-field.scss',
+  scoped: true,
 })
 export class AmplifyFormField {
   /** The ID of the field. Should match with its corresponding input's ID. */

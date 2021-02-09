@@ -1,4 +1,5 @@
-:host {
+:host,
+amplify-loading-spinner {
   --spinner-circle-fill: var(--amplify-smoke-white);
   --spinner-bar-fill: var(--amplify-primary-color);
   --width: 0.875rem;

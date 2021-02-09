@@ -2,7 +2,8 @@
  * @prop --button-color: Text color of the button
  * @prop --button-background-hover: Background color of the button when it's hovered
  */
-:host {
+:host,
+amplify-icon-button {
   --button-color: var(--amplify-secondary-contrast);
   --button-background-hover: var(--amplify-secondary-color);
 }

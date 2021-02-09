@@ -1,7 +1,8 @@
 /**
  * @prop --label-color: Text color within the label
  */
-:host {
+:host,
+amplify-label {
   --label-color: var(--amplify-secondary-color);
 }
 

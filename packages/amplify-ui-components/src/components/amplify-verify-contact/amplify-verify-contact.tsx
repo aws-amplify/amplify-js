@@ -10,6 +10,7 @@ const logger = new Logger('AmplifyVerifyContact');
 
 @Component({
   tag: 'amplify-verify-contact',
+  scoped: true,
 })
 export class AmplifyVerifyContact {
   /** Authentication state handler */

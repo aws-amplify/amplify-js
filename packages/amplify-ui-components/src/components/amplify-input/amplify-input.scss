@@ -5,7 +5,8 @@
  * @prop --border-color-focus: Border color of the input when focused on
  * @prop --margin: Margin around the input
  */
-:host {
+:host,
+amplify-input {
   --color: var(--amplify-secondary-color);
   --background-color: var(--amplify-secondary-contrast);
   --border-color: var(--amplify-light-grey);

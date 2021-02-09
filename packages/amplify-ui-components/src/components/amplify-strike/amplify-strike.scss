@@ -3,7 +3,8 @@
  * @prop --border-color: Color of the horizontal rules
  * @prop --content-background: Background color of the container placed between the horizontal rules
  */
-:host {
+:host,
+amplify-strike {
   --color: var(--amplify-grey);
   --border-color: var(--amplify-light-grey);
   --content-background: var(--amplify-white);

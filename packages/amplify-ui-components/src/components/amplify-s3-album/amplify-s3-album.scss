@@ -1,7 +1,8 @@
 /**
  * @prop --overlay-bg-color: Image overlay color on hover
  */
-:host {
+:host,
+amplify-s3-album {
   --overlay-bg-color: rgba(0, 0, 0, 0.15);
 }
 

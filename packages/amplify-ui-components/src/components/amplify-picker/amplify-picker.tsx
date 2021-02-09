@@ -5,6 +5,7 @@ import { Translations } from '../../common/Translations';
 @Component({
   tag: 'amplify-picker',
   styleUrl: 'amplify-picker.scss',
+  scoped: true,
 })
 export class AmplifyPicker {
   /** Picker button text */

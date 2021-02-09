@@ -3,6 +3,7 @@ import { Component, h } from '@stencil/core';
 @Component({
   tag: 'amplify-loading-spinner',
   styleUrl: 'amplify-loading-spinner.scss',
+  scoped: true,
 })
 export class AmplifyLoadingSpinner {
   render() {

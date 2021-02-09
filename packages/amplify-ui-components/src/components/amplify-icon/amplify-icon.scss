@@ -3,7 +3,8 @@
  * @prop --height: Height of the icon
  * @prop --icon-fill-color: Fill color of the icon
  */
-:host {
+:host,
+amplify-icon {
   --width: auto;
   --height: auto;
   --icon-fill-color: var(--amplify-white);

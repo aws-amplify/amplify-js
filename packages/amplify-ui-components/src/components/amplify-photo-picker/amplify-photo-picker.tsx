@@ -5,6 +5,7 @@ import { Translations } from '../../common/Translations';
 @Component({
   tag: 'amplify-photo-picker',
   styleUrl: 'amplify-photo-picker.scss',
+  scoped: true,
 })
 export class AmplifyPhotoPicker {
   /** Title string value */

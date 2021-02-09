@@ -1,4 +1,5 @@
-:host {
+:host,
+amplify-link {
   --link-color: var(--amplify-primary-color);
   --link-hover: var(--amplify-primary-tint);
   --link-active: var(--amplify-primary-shade);

@@ -4,7 +4,8 @@
  * @prop --footer-color: Font color of the footer
  * @prop --footer-weight: Font weight of the footer
  */
-:host {
+:host,
+amplify-sign-up {
   --footer-font-family: var(--amplify-font-family);
   --footer-font-size: var(--amplify-text-sm);
   --footer-color: var(--amplify-grey);

@@ -5,6 +5,7 @@ import { Translations } from '../../common/Translations';
 
 @Component({
   tag: 'amplify-username-field',
+  scoped: true,
 })
 export class AmplifyUsernameField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */

@@ -1,4 +1,5 @@
-:host {
+:host,
+amplify-sign-in-button {
   --button-color: var(--amplify-secondary-color);
   --amazon-button-background: var(--amplify-primary-color);
   --amazon-button-color: var(--amplify-primary-contrast);

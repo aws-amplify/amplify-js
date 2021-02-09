@@ -1,7 +1,8 @@
 /**
  * @prop --font-family: Text font family
  */
-:host {
+:host,
+amplify-checkbox {
   --font-family: var(--amplify-font-family);
 }
 

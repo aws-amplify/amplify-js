@@ -6,6 +6,7 @@ import { PHONE_SUFFIX } from '../../common/constants';
 @Component({
   tag: 'amplify-phone-field',
   styleUrl: 'amplify-phone-field.scss',
+  scoped: true,
 })
 export class AmplifyPhoneField {
   /** Based on the type of field e.g. sign in, sign up, forgot password, etc. */

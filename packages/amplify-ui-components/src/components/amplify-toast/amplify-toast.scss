@@ -5,7 +5,8 @@
  * @prop --close-icon-color: Fill color of the close icon
  * @prop --close-icon-hover: Fill color of the close icon when hovering
  */
-:host {
+:host,
+amplify-toast {
   --background-color: var(--amplify-secondary-tint);
   --color: var(--amplify-white);
   --font-size: var(--amplify-text-sm);

@@ -10,6 +10,7 @@ const logger = new Logger('amplify-auth0-button');
 
 @Component({
   tag: 'amplify-auth0-button',
+  scoped: true,
 })
 export class AmplifyAuth0Button {
   /** See: https://auth0.com/docs/libraries/auth0js/v9#available-parameters */

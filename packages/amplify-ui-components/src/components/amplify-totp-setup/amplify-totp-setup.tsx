@@ -14,6 +14,7 @@ const logger = new Logger('TOTP');
 @Component({
   tag: 'amplify-totp-setup',
   styleUrl: 'amplify-totp-setup.scss',
+  scoped: true,
 })
 export class AmplifyTOTPSetup {
   private inputProps: object = {

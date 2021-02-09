@@ -4,7 +4,8 @@
  * @prop --font-size: Font size of the text
  * @prop --font-weight: Font weight of the text
  */
-:host {
+:host,
+amplify-hint {
   --color: var(--amplify-grey);
   --font-family: var(--amplify-font-family);
   --font-size: var(--amplify-text-xs);

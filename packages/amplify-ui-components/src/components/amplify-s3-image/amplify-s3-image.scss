@@ -2,7 +2,8 @@
  * @prop --height: Image height
  * @prop --width: Image width
  */
-:host {
+:host,
+amplify-s3-image {
   height: inherit;
   width: inherit;
 

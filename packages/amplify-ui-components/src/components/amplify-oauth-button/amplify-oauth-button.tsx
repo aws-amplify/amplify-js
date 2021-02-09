@@ -7,6 +7,7 @@ import { Translations } from '../../common/Translations';
 
 @Component({
   tag: 'amplify-oauth-button',
+  scoped: true,
 })
 export class AmplifyOAuthButton {
   /** Federated credentials & configuration. */

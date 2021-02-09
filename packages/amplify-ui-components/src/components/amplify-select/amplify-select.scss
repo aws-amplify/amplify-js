@@ -5,7 +5,8 @@
  * @prop --border-focus: Border color of the input container when focused on
  * @prop --background-image: Image of the icon displayed next to text. Defaults to an upside down triangle.
  */
-:host {
+:host,
+amplify-select {
   --color: var(--amplify-secondary-color);
   --background-color: var(--amplify-secondary-contrast);
   --border-color: var(--amplify-light-grey);

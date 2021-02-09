@@ -11,7 +11,8 @@
  * @prop --user-dot-color: Base color of user loading message animation
  */
 @import 'animation.scss';
-:host {
+:host,
+amplify-chatbot {
   --width: 28.75rem;
   --height: 37.5rem;
   --header-color: var(--amplify-secondary-color);
