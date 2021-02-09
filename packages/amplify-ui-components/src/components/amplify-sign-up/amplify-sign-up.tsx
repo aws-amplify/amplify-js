@@ -133,6 +133,9 @@ export class AmplifySignUp {
         break;
     }
     try {
+      if (!this.signUpAttributes.username) {
+        throw new Error(Translations.EMPTY_USERNAME);
+      }
       if (this.signUpAttributes.username.indexOf(' ') >= 0) {
         throw new Error(Translations.USERNAME_REMOVE_WHITESPACE);
       }

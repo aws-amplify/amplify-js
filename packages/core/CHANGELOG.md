@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.11...@aws-amplify/core@3.8.12) (2021-02-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.10...@aws-amplify/core@3.8.11) (2021-02-01)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
 ## [3.8.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.9...@aws-amplify/core@3.8.10) (2021-01-29)
 
 **Note:** Version bump only for package @aws-amplify/core
