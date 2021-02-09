@@ -27,7 +27,7 @@
       },
       {
         "path": "dist/Amplify+Auth.js.min.js",
-        "maxSize": "215kB"
+        "maxSize": "200kB"
       }
     ]
   },
