@@ -45,11 +45,11 @@
 	"dependencies": {
 		"@aws-amplify/cache": "3.1.46",
 		"@aws-amplify/core": "3.8.13",
-		"@aws-sdk/client-firehose": "1.0.0-rc.4",
-		"@aws-sdk/client-kinesis": "1.0.0-rc.4",
-		"@aws-sdk/client-personalize-events": "1.0.0-rc.4",
-		"@aws-sdk/client-pinpoint": "1.0.0-rc.4",
-		"@aws-sdk/util-utf8-browser": "1.0.0-rc.3",
+		"@aws-sdk/client-firehose": "1.0.0-rc.9",
+		"@aws-sdk/client-kinesis": "1.0.0-rc.9",
+		"@aws-sdk/client-personalize-events": "1.0.0-rc.9",
+		"@aws-sdk/client-pinpoint": "1.0.0-rc.9",
+		"@aws-sdk/util-utf8-browser": "1.0.0-rc.8",
 		"lodash": "^4.17.20",
 		"uuid": "^3.2.1"
 	},
