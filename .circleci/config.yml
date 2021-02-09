@@ -599,6 +599,13 @@ jobs:
     steps:
       - integ_test_rn_ios
 
+  integ_rn_ios_storage_multipart_progress:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
+    steps:
+      - integ_test_rn_ios
+
   integ_rn_ios_push_notifications:
     executor: macos-executor
     <<: *test_env_vars
@@ -610,6 +617,13 @@ jobs:
     executor: macos-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+    steps:
+      - integ_test_rn_android
+
+  integ_rn_android_storage_multipart_progress:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
     steps:
       - integ_test_rn_android
 
@@ -830,6 +844,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_rn_ios_storage_multipart_progress:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_rn_ios_push_notifications:
           requires:
             - integ_setup
@@ -837,6 +857,12 @@ workflows:
           filters:
             <<: *releasable_branches
       - integ_rn_android_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_android_storage_multipart_progress:
           requires:
             - integ_setup
             - build
@@ -870,8 +896,12 @@ workflows:
             - integ_angular_auth
             - integ_vue_auth
             - integ_rn_ios_storage
+            # Removing this until AWS SDK issue is resolved: https://github.com/aws/aws-sdk-js-v3/issues/2000
+            # - integ_rn_ios_storage_multipart_progress
             - integ_rn_ios_push_notifications
             - integ_rn_android_storage
+            # Removing this until AWS SDK issue is resolved: https://github.com/aws/aws-sdk-js-v3/issues/2000
+            # - integ_rn_android_storage_multipart_progress
             - integ_datastore_auth
       - post_release:
           filters:
