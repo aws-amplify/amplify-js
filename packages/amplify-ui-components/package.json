@@ -34,12 +34,10 @@
     "build:watch": "npm run clean && npm run stencil:watch",
     "clean": "rimraf dist .stencil"
   },
+  "peerDependencies": {
+    "aws-amplify": "3.x.x"
+  },
   "dependencies": {
-    "@aws-amplify/auth": "3.4.20",
-    "@aws-amplify/core": "3.8.12",
-    "@aws-amplify/interactions": "3.3.20",
-    "@aws-amplify/storage": "3.3.20",
-    "@aws-amplify/xr": "2.2.20",
     "qrcode": "^1.4.4",
     "uuid": "^8.2.0"
   },
