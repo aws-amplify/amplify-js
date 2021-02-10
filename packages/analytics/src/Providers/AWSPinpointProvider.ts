@@ -21,12 +21,12 @@ import {
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import {
+	EventsBatch,
 	PinpointClient,
 	PutEventsCommand,
 	PutEventsCommandInput,
 	UpdateEndpointCommand,
 } from '@aws-sdk/client-pinpoint';
-import { EventsBatch } from '@aws-sdk/client-pinpoint/models';
 import Cache from '@aws-amplify/cache';
 
 import {
