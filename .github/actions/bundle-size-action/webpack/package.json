@@ -31,11 +31,11 @@
       },
       {
         "path": "dist/Amplify+Auth.js.min.js",
-        "maxSize": "70kB"
+        "maxSize": "75kB"
       },
       {
         "path": "dist/Amplify+Auth+Storage.js.min.js",
-        "maxSize": "110kB"
+        "maxSize": "115kB"
       },
       {
         "path": "dist/Amplify+Storage.js.min.js",
@@ -43,11 +43,11 @@
       },
       {
         "path": "dist/withSSRContext.js.min.js",
-        "maxSize": "140kB"
+        "maxSize": "145kB"
       },
       {
         "path": "dist/withSSRContext+Storage.js.min.js",
-        "maxSize": "175kB"
+        "maxSize": "180kB"
       }
     ]
   },
