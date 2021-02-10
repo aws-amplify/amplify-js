@@ -26,7 +26,7 @@
 		"publish:1.0-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-1.0 --message 'chore(release): Publish [ci skip]'",
 		"publish:ui-components/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=ui-preview --preid=ui-preview --exact",
 		"publish:native": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=native --preid=native --exact",
-		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes"
+		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=verdaccio --preid=verdaccio --exact --force-publish --yes"
 	},
 	"husky": {
 		"hooks": {
