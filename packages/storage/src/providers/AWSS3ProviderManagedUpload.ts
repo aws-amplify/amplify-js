@@ -139,6 +139,19 @@ export class AWSS3ProviderManagedUpload {
 			this.params
 		);
 		const s3 = await this._createNewS3Client(this.opts);
+
+		s3.middlewareStack.add(
+			next => (args: any) => {
+				if (this.params.ContentType && args.request && args.request.headers) {
+					args.request.headers['Content-Type'] = this.params.ContentType;
+				}
+				return next(args);
+			},
+			{
+				step: 'build',
+			}
+		);
+
 		const response = await s3.send(createMultiPartUploadCommand);
 		logger.debug(response.UploadId);
 		return response.UploadId;
