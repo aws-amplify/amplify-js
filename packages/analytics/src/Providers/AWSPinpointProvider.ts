@@ -14,6 +14,7 @@
 import {
 	ConsoleLogger as Logger,
 	ClientDevice,
+	Platform,
 	Credentials,
 	Signer,
 	JS,
@@ -26,6 +27,7 @@ import {
 	PutEventsCommand,
 	PutEventsCommandInput,
 	UpdateEndpointCommand,
+	GetUserEndpointsCommand,
 } from '@aws-sdk/client-pinpoint';
 import Cache from '@aws-amplify/cache';
 
@@ -53,6 +55,7 @@ const logger = new Logger('AWSPinpointProvider');
 const RETRYABLE_CODES = [429, 500];
 const ACCEPTED_CODES = [202];
 const FORBIDDEN_CODE = 403;
+const BAD_REQUEST_CODE = 400;
 const MOBILE_SERVICE_NAME = 'mobiletargeting';
 const EXPIRED_TOKEN_CODE = 'ExpiredTokenException';
 const UPDATE_ENDPOINT = '_update_endpoint';
@@ -127,12 +130,12 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			if (!this._config.endpointId) {
 				const cacheKey = this.getProviderName() + '_' + this._config.appId;
 				this._getEndpointId(cacheKey)
-					.then(endpointId => {
+					.then((endpointId) => {
 						logger.debug('setting endpoint id from the cache', endpointId);
 						this._config.endpointId = endpointId;
 						dispatchAnalyticsEvent('pinpointProvider_configured', null);
 					})
-					.catch(err => {
+					.catch((err) => {
 						logger.debug('Failed to generate endpointId', err);
 					});
 			} else {
@@ -437,6 +440,8 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		logger.debug('updateEndpoint error', err);
 
 		switch (statusCode) {
+			case BAD_REQUEST_CODE:
+				return this._handleEndpointUpdateBadRequest(failureData);
 			case FORBIDDEN_CODE:
 				return this._handleEndpointUpdateForbidden(failureData);
 			default:
@@ -447,6 +452,37 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 				}
 				logger.error('updateEndpoint failed', err);
 				endpointObject.handlers.reject(err);
+		}
+	}
+
+	private async _handleEndpointUpdateBadRequest(
+		failureData: EndpointFailureData
+	) {
+		const { err, update_params, endpointObject } = failureData;
+		const { message } = err;
+		const { ApplicationId, EndpointRequest } = update_params;
+
+		if (
+			!String(message).startsWith('Exceeded maximum endpoint per user count')
+		) {
+			return endpointObject.handlers.reject(err);
+		}
+
+		try {
+			await this._removeUnusedEndpoints(
+				ApplicationId,
+				EndpointRequest.User.UserId
+			);
+			logger.debug('Removed unused endpoints successfully');
+			this._retryEndpointUpdate(endpointObject);
+		} catch (err) {
+			logger.warn(`Failed to remove unused endpoints with error: ${err}`);
+			logger.warn(
+				`Please ensure you have updated your Pinpoint IAM Policy ` +
+					`with the Action: "mobiletargeting:GetUserEndpoints" ` +
+					`in order to get endpoints info of the user`
+			);
+			return endpointObject.handlers.reject(err);
 		}
 	}
 
@@ -497,6 +533,69 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		}
 	}
 
+	private async _removeUnusedEndpoints(appId, userId) {
+		try {
+			// TODO: re-write with Promise (during refactor pt. 2)
+			const command: GetUserEndpointsCommand = new GetUserEndpointsCommand({
+				ApplicationId: appId,
+				UserId: userId,
+			});
+			const data = await this.pinpointClient.send(command);
+			const endpoints = data.EndpointsResponse.Item;
+			logger.debug(
+				`get endpoints associated with the userId: ${userId} with data`,
+				endpoints
+			);
+			let endpointToBeDeleted = endpoints[0];
+			for (let i = 1; i < endpoints.length; i++) {
+				const timeStamp1 = Date.parse(endpointToBeDeleted['EffectiveDate']);
+				const timeStamp2 = Date.parse(endpoints[i]['EffectiveDate']);
+				// delete the one with invalid effective date
+				if (isNaN(timeStamp1)) break;
+				if (isNaN(timeStamp2)) {
+					endpointToBeDeleted = endpoints[i];
+					break;
+				}
+
+				if (timeStamp2 < timeStamp1) {
+					endpointToBeDeleted = endpoints[i];
+				}
+			}
+			// update the endpoint's user id with an empty string
+			const update_params = {
+				ApplicationId: appId,
+				EndpointId: endpointToBeDeleted['Id'],
+				EndpointRequest: {
+					User: {
+						UserId: '',
+					},
+				},
+			};
+
+			try {
+				const updateEndPointcommand: UpdateEndpointCommand = new UpdateEndpointCommand(
+					update_params
+				);
+				const updateEndPointData = await this.pinpointClient.send(
+					updateEndPointcommand
+				);
+				logger.debug(
+					'The old endpoint is updated with an empty string for user id'
+				);
+				return updateEndPointData;
+			} catch (err) {
+				logger.debug('Failed to update the endpoint', err);
+				throw err;
+			}
+		} catch (err) {
+			logger.debug(
+				`Failed to get endpoints associated with the userId: ${userId} with error`,
+				err
+			);
+			throw err;
+		}
+	}
+
 	/**
 	 * @private
 	 * @param config
@@ -530,7 +629,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 		// TODO: remove this middleware once a long term fix is implemented by aws-sdk-js team.
 		this.pinpointClient.middlewareStack.addRelativeTo(
-			next => args => {
+			(next) => (args) => {
 				delete args.request.headers['amz-sdk-invocation-id'];
 				delete args.request.headers['amz-sdk-request'];
 				return next(args);
