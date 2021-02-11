@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.8...@aws-amplify/analytics@4.0.9) (2021-02-09)
+
+
+### Reverts
+
+* Revert "chore: bump aws-sdk to 3.4.1 (#7674)" (#7716) ([f142314](https://github.com/aws-amplify/amplify-js/commit/f1423144cf73304f3dc048233b35c831c9a1742d)), closes [#7674](https://github.com/aws-amplify/amplify-js/issues/7674) [#7716](https://github.com/aws-amplify/amplify-js/issues/7716)
+
+
+
+
+
 ## [4.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.7...@aws-amplify/analytics@4.0.8) (2021-02-03)
 
 **Note:** Version bump only for package @aws-amplify/analytics
