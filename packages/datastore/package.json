@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/datastore",
-	"version": "2.7.3",
+	"version": "2.7.4-hotfix.0",
 	"description": "AppSyncLocal support for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -48,9 +48,9 @@
 		"fake-indexeddb": "3.0.0"
 	},
 	"dependencies": {
-		"@aws-amplify/api": "3.2.11",
-		"@aws-amplify/core": "3.8.3",
-		"@aws-amplify/pubsub": "3.2.9",
+		"@aws-amplify/api": "3.2.12-hotfix.0",
+		"@aws-amplify/core": "3.8.4-hotfix.0",
+		"@aws-amplify/pubsub": "3.2.10-hotfix.0",
 		"idb": "5.0.6",
 		"immer": "8.0.1",
 		"ulid": "2.3.0",
