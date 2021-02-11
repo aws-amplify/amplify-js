@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/ui-storybook",
-	"version": "0.2.38",
+	"version": "1.0.0",
 	"private": true,
 	"dependencies": {
 		"@aws-amplify/ui-react": "0.2.38",
