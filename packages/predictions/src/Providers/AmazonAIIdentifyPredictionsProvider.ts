@@ -367,7 +367,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				return Promise.reject(err);
 			});
 
-		const param = { Image: inputImage };
+		const param = { Attributes: ['ALL'], Image: inputImage };
 
 		if (
 			isIdentifyCelebrities(input.entities) &&
