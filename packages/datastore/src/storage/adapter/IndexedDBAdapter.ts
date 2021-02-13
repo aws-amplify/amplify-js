@@ -370,62 +370,77 @@ class IndexedDBAdapter implements Adapter {
 		await this.checkPrivate();
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
-		const sortSpecified = pagination && pagination.sort;
 
-		if (predicate) {
-			const predicates = ModelPredicateCreator.getPredicates(predicate);
-			if (predicates) {
-				const { predicates: predicateObjs, type } = predicates;
-				const idPredicate =
-					predicateObjs.length === 1 &&
-					(predicateObjs.find(
-						p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
-					) as PredicateObject<T>);
+		const hasPredicate = !!predicate;
+		const hasSort = pagination && pagination.sort;
+		const hasPagination = pagination && pagination.limit;
 
-				if (idPredicate) {
-					const { operand: id } = idPredicate;
+		let records: T[];
 
-					const record = <any>await this._get(storeName, id);
-
-					if (record) {
-						const [x] = await this.load(namespaceName, modelConstructor.name, [
-							record,
-						]);
-
-						return [x];
-					}
-					return [];
-				}
-
-				// TODO: Use indices if possible
-				const all = <T[]>await this.db.getAll(storeName);
-
-				const filtered = predicateObjs
-					? all.filter(m => validatePredicate(m, type, predicateObjs))
-					: all;
-
-				return await this.load(
-					namespaceName,
-					modelConstructor.name,
-					this.inMemoryPagination(filtered, pagination)
-				);
-			}
-		}
-
-		if (sortSpecified) {
-			const all = <T[]>await this.db.getAll(storeName);
-			return await this.load(
-				namespaceName,
-				modelConstructor.name,
-				this.inMemoryPagination(all, pagination)
+		if (hasPredicate) {
+			const filtered = await this.filterOnPredicate(
+				modelConstructor,
+				predicate
 			);
+			records = this.inMemoryPagination(filtered, pagination);
+		} else if (hasSort) {
+			const all = await this.getAll(storeName);
+			records = <T[]>this.inMemoryPagination(all, pagination);
+		} else if (hasPagination) {
+			records = await this.enginePagination(storeName, pagination);
+		} else {
+			records = await this.getAll(storeName);
 		}
 
-		return await this.load(
-			namespaceName,
-			modelConstructor.name,
-			await this.enginePagination(storeName, pagination)
-		);
+		return await this.load(namespaceName, modelConstructor.name, records);
+	}
+
+	private async getAll<T extends PersistentModel>(
+		storeName: string
+	): Promise<T[]> {
+		return await this.db.getAll(storeName);
+	}
+
+	private async filterOnPredicate<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
+		predicate: ModelPredicate<T>
+	) {
+		const storeName = this.getStorenameForModel(modelConstructor);
+		const namespaceName = this.namespaceResolver(modelConstructor);
+
+		const predicates = ModelPredicateCreator.getPredicates(predicate);
+		if (predicates) {
+			const { predicates: predicateObjs, type } = predicates;
+			const idPredicate =
+				predicateObjs.length === 1 &&
+				(predicateObjs.find(
+					p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
+				) as PredicateObject<T>);
+
+			if (idPredicate) {
+				const { operand: id } = idPredicate;
+
+				const record = <any>await this._get(storeName, id);
+
+				if (record) {
+					const [x] = await this.load(namespaceName, modelConstructor.name, [
+						record,
+					]);
+
+					return [x];
+				}
+				return [];
+			}
+
+			// TODO: Use indices if possible
+			const all = <T[]>await this.getAll(storeName);
+
+			const filtered = predicateObjs
+				? all.filter(m => validatePredicate(m, type, predicateObjs))
+				: all;
+
+			return filtered;
+		}
 	}
 
 	private inMemoryPagination<T extends PersistentModel>(
@@ -451,7 +466,6 @@ class IndexedDBAdapter implements Adapter {
 
 			return records.slice(start, end);
 		}
-
 		return records;
 	}
 
@@ -475,21 +489,16 @@ class IndexedDBAdapter implements Adapter {
 			}
 
 			const pageResults: T[] = [];
-
 			const hasLimit = typeof limit === 'number' && limit > 0;
-			let moreRecords = true;
-			let itemsLeft = limit;
-			while (moreRecords && cursor && cursor.value) {
+
+			while (cursor && cursor.value) {
 				pageResults.push(cursor.value);
 
-				cursor = await cursor.continue();
-
-				if (hasLimit) {
-					itemsLeft--;
-					moreRecords = itemsLeft > 0 && cursor !== null;
-				} else {
-					moreRecords = cursor !== null;
+				if (hasLimit && pageResults.length === limit) {
+					break;
 				}
+
+				cursor = await cursor.continue();
 			}
 
 			result = pageResults;
