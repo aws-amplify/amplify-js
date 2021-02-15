@@ -64,7 +64,7 @@
   "jsnext:main": "es/index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "buffer": "4.9.1",
+    "buffer": "4.9.2",
     "crypto-js": "^3.3.0",
     "fast-base64-decode": "^1.0.0",
     "isomorphic-unfetch": "^3.0.0",
