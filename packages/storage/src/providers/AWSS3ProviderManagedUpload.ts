@@ -139,6 +139,27 @@ export class AWSS3ProviderManagedUpload {
 			this.params
 		);
 		const s3 = await this._createNewS3Client(this.opts);
+
+		// @aws-sdk/client-s3 seems to be ignoring the `ContentType` parameter, so we
+		// are explicitly adding it via middleware.
+		// https://github.com/aws/aws-sdk-js-v3/issues/2000
+		s3.middlewareStack.add(
+			next => (args: any) => {
+				if (
+					this.params.ContentType &&
+					args &&
+					args.request &&
+					args.request.headers
+				) {
+					args.request.headers['Content-Type'] = this.params.ContentType;
+				}
+				return next(args);
+			},
+			{
+				step: 'build',
+			}
+		);
+
 		const response = await s3.send(createMultiPartUploadCommand);
 		logger.debug(response.UploadId);
 		return response.UploadId;
