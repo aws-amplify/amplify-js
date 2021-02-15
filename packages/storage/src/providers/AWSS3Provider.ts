@@ -234,6 +234,7 @@ export class AWSS3Provider implements StorageProvider {
 		const {
 			contentType,
 			contentDisposition,
+			contentEncoding,
 			cacheControl,
 			expires,
 			metadata,
@@ -264,6 +265,9 @@ export class AWSS3Provider implements StorageProvider {
 		}
 		if (contentDisposition) {
 			params.ContentDisposition = contentDisposition;
+		}
+		if (contentEncoding) {
+			params.ContentEncoding = contentEncoding;
 		}
 		if (expires) {
 			params.Expires = expires;
