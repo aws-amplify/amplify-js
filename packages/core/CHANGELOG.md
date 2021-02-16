@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.13...@aws-amplify/core@3.8.14) (2021-02-15)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.12...@aws-amplify/core@3.8.13) (2021-02-09)
+
+
+### Reverts
+
+* Revert "chore: bump aws-sdk to 3.4.1 (#7674)" (#7716) ([f142314](https://github.com/aws-amplify/amplify-js/commit/f1423144cf73304f3dc048233b35c831c9a1742d)), closes [#7674](https://github.com/aws-amplify/amplify-js/issues/7674) [#7716](https://github.com/aws-amplify/amplify-js/issues/7716)
+
+
+
+
+
 ## [3.8.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.11...@aws-amplify/core@3.8.12) (2021-02-03)
 
 **Note:** Version bump only for package @aws-amplify/core

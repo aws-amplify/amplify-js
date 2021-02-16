@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/predictions",
-	"version": "3.2.20",
+	"version": "3.2.22",
 	"description": "Machine learning category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -40,15 +40,15 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"dependencies": {
-		"@aws-amplify/core": "3.8.12",
-		"@aws-amplify/storage": "3.3.20",
-		"@aws-sdk/client-comprehend": "^3.4.1",
-		"@aws-sdk/client-polly": "^3.4.1",
-		"@aws-sdk/client-rekognition": "^3.4.1",
-		"@aws-sdk/client-textract": "^3.4.1",
-		"@aws-sdk/client-translate": "^3.4.1",
-		"@aws-sdk/eventstream-marshaller": "^3.4.1",
-		"@aws-sdk/util-utf8-node": "^3.4.1",
+		"@aws-amplify/core": "3.8.14",
+		"@aws-amplify/storage": "3.3.22",
+		"@aws-sdk/client-comprehend": "3.4.1",
+		"@aws-sdk/client-polly": "3.4.1",
+		"@aws-sdk/client-rekognition": "3.4.1",
+		"@aws-sdk/client-textract": "3.4.1",
+		"@aws-sdk/client-translate": "3.4.1",
+		"@aws-sdk/eventstream-marshaller": "3.4.1",
+		"@aws-sdk/util-utf8-node": "3.4.1",
 		"uuid": "^3.2.1"
 	},
 	"jest": {

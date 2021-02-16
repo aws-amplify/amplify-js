@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.21...@aws-amplify/interactions@3.3.22) (2021-02-15)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.20...@aws-amplify/interactions@3.3.21) (2021-02-09)
+
+
+### Reverts
+
+* Revert "chore: bump aws-sdk to 3.4.1 (#7674)" (#7716) ([f142314](https://github.com/aws-amplify/amplify-js/commit/f1423144cf73304f3dc048233b35c831c9a1742d)), closes [#7674](https://github.com/aws-amplify/amplify-js/issues/7674) [#7716](https://github.com/aws-amplify/amplify-js/issues/7716)
+
+
+
+
+
 ## [3.3.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.19...@aws-amplify/interactions@3.3.20) (2021-02-03)
 
 **Note:** Version bump only for package @aws-amplify/interactions
