@@ -22,7 +22,13 @@ import SHA256 from 'crypto-js/sha256';
 import HmacSHA256 from 'crypto-js/hmac-sha256';
 import WordArray from './utils/WordArray';
 
-const randomBytes = function (nBytes) {
+/**
+ * Returns a Buffer with a sequence of random nBytes
+ * 
+ * @param {number} nBytes 
+ * @returns {Buffer} fixed-length sequence of random bytes
+ */
+function randomBytes(nBytes) {
 	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
 };
 
@@ -159,8 +165,10 @@ export default class AuthenticationHelper {
 		const combinedString = `${deviceGroupKey}${username}:${this.randomPassword}`;
 		const hashedString = this.hash(combinedString);
 
-		// This will be interpreted as a postive 128-bit integer
-		this.SaltToHashDevices = this.padHex(new BigInteger(randomBytes(16).toString('hex'), 16));
+		const hexRandom = randomBytes(16).toString('hex');
+
+		// The random hex will be unambiguously represented as a postive integer
+		this.SaltToHashDevices = this.padHex(new BigInteger(hexRandom, 16));
 
 		this.g.modPow(
 			new BigInteger(this.hexHash(this.SaltToHashDevices + hashedString), 16),
@@ -385,7 +393,7 @@ export default class AuthenticationHelper {
 		/* Prepend "00" if the most significant bit is set */
 		hexStr = HEX_MSB_REGEX.test(hexStr) ? `00${hexStr}` : hexStr;
 
-		if(isNegative) {
+		if (isNegative) {
 			/* Flip the bits of the representation */
 			const invertedNibbles = hexStr.split('').map(x => {
 				const invertedNibble = ~parseInt(x, 16) & 0xf;
@@ -405,7 +413,7 @@ export default class AuthenticationHelper {
 
 			This only happens in the case when the input is 80...00
 			*/
-			if(hexStr.toUpperCase().startsWith('FF8')) {
+			if (hexStr.toUpperCase().startsWith('FF8')) {
 				hexStr = hexStr.substring(2);
 			}
 		}
