@@ -12,7 +12,9 @@ import { buildGraphQLOperation, predicateToGraphQLFilter } from '../utils';
 import {
 	jitteredExponentialRetry,
 	ConsoleLogger as Logger,
+	Hub,
 } from '@aws-amplify/core';
+import { ControlMessage } from '../';
 import { ModelPredicateCreator } from '../../predicates';
 
 const logger = new Logger('DataStore');
@@ -120,19 +122,27 @@ class SyncProcessor {
 						variables,
 					});
 				} catch (error) {
-					// If the error is unauthorized, filter out unauthorized items and return accessible items
-					const unauthorized = (error.errors as [any]).some(
-						err => err.errorType === 'Unauthorized'
+					const hasItems = Boolean(
+						error &&
+							error.data &&
+							error.data[opName] &&
+							error.data[opName].items
 					);
-					if (unauthorized) {
+
+					if (hasItems) {
 						const result = error;
 						result.data[opName].items = result.data[opName].items.filter(
 							item => item !== null
 						);
-						logger.warn(
-							'queryError',
-							'User is unauthorized, some items could not be returned.'
-						);
+
+						if (error.errors) {
+							Hub.dispatch('datastore', {
+								event:
+									ControlMessage.SYNC_ENGINE_SYNC_QUERIES_PARTIAL_SYNC_ERROR,
+								data: error.errors,
+							});
+						}
+
 						return result;
 					} else {
 						throw error;
