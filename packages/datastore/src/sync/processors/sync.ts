@@ -9,15 +9,9 @@ import {
 	GraphQLFilter,
 } from '../../types';
 import { buildGraphQLOperation, predicateToGraphQLFilter } from '../utils';
-import {
-	jitteredExponentialRetry,
-	ConsoleLogger as Logger,
-	Hub,
-} from '@aws-amplify/core';
+import { jitteredExponentialRetry, Hub } from '@aws-amplify/core';
 import { ControlMessage } from '../';
 import { ModelPredicateCreator } from '../../predicates';
-
-const logger = new Logger('DataStore');
 
 const DEFAULT_PAGINATION_LIMIT = 1000;
 const DEFAULT_MAX_RECORDS_TO_SYNC = 10000;
