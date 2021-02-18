@@ -88,7 +88,7 @@ class MutationEventOutbox {
 		const head = await this.peek(storage);
 
 		if (record) {
-			await this.syncOutboxVersionsOnDequeue(storage, record);
+			await this.syncOutboxVersionsOnDequeue(storage, record, head);
 		}
 
 		await storage.delete(head);
@@ -141,8 +141,26 @@ class MutationEventOutbox {
 
 	private async syncOutboxVersionsOnDequeue(
 		storage: StorageClass,
-		record: PersistentModel
+		record: PersistentModel,
+		head: PersistentModel
 	): Promise<void> {
+		const { _version, _lastChangedAt, ...incomingData } = record;
+		const {
+			_version: __version,
+			_lastChangedAt: __lastChangedAt,
+			...outgoingData
+		} = JSON.parse(head.data);
+
+		if (head.operation !== TransformerMutationType.UPDATE) {
+			return;
+		}
+
+		// Don't sync the version when the data in the response does not match the data
+		// in the request, i.e., when there's a handled conflict
+		if (this.recordsDontMatch(incomingData, outgoingData)) {
+			return;
+		}
+
 		const mutationEventModelDefinition = this.schema.namespaces[SYNC].models[
 			'MutationEvent'
 		];
@@ -161,8 +179,6 @@ class MutationEventOutbox {
 			return;
 		}
 
-		const { _version, _lastChangedAt } = record;
-
 		const reconciledMutations = outdatedMutations.map(m => {
 			const oldData = JSON.parse(m.data);
 
@@ -180,6 +196,35 @@ class MutationEventOutbox {
 				async m => await storage.save(m, undefined, this.ownSymbol)
 			)
 		);
+	}
+
+	// TODO: move to util and rename to e.g., deep compare
+	private recordsDontMatch(
+		outgoing: PersistentModel,
+		incoming: PersistentModel
+	): boolean {
+		const outgoingKeys = Object.keys(outgoing);
+		const incomingKeys = Object.keys(incoming);
+
+		if (outgoingKeys.length !== incomingKeys.length) {
+			return false;
+		}
+
+		for (const key of outgoingKeys) {
+			const outgoingVal = outgoing[key];
+			const incomingVal = incoming[key];
+
+			if (outgoingVal && typeof outgoingVal === 'object') {
+				// since we can't guarantee the order of object keys, we'll have to recursively
+				// call this method for values containing objects
+				if (this.recordsDontMatch(outgoingVal, incomingVal)) {
+					return true;
+				}
+			} else if (outgoingVal !== incomingVal) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 
