@@ -1,4 +1,4 @@
-import BigInteger from './BigInteger';
+import BigInteger from '../src/BigInteger';
 
 describe('BigInteger', () => {
 	describe('.toString(radix)', () => {

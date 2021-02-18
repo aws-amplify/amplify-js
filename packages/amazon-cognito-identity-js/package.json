@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "4.5.7",
+  "version": "4.5.10",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
@@ -52,7 +52,7 @@
     "doc": "jsdoc src -d docs",
     "lint": "eslint src",
     "lint2": "eslint enhance-rn.js",
-    "test": "jest -w 1 --passWithNoTests",
+    "test": "jest -w 1",
     "format": "echo \"Not implemented\""
   },
   "main": "lib/index.js",
@@ -102,7 +102,8 @@
             "esnext.asynciterable",
             "es2017.object"
           ],
-          "allowJs": true
+          "allowJs": true,
+          "esModuleInterop": true
         }
       }
     },
