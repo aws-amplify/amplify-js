@@ -395,6 +395,13 @@ class IndexedDBAdapter implements Adapter {
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
 
+	private async getOne<T extends PersistentModel>(
+		id: string,
+		storeName: string
+	): Promise<T> {
+		return await this._get(id, storeName);
+	}
+
 	private async getAll<T extends PersistentModel>(
 		storeName: string
 	): Promise<T[]> {
@@ -420,7 +427,7 @@ class IndexedDBAdapter implements Adapter {
 			if (idPredicate) {
 				const { operand: id } = idPredicate;
 
-				const record = <any>await this._get(storeName, id);
+				const record = <any>await this.getOne(storeName, id);
 
 				if (record) {
 					const [x] = await this.load(namespaceName, modelConstructor.name, [

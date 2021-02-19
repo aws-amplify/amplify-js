@@ -241,65 +241,85 @@ export class AsyncStorageAdapter implements Adapter {
 	): Promise<T[]> {
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
-		const sortSpecified = pagination && pagination.sort;
 
-		if (predicate) {
-			const predicates = ModelPredicateCreator.getPredicates(predicate);
-			if (predicates) {
-				const { predicates: predicateObjs, type } = predicates;
-				const idPredicate =
-					predicateObjs.length === 1 &&
-					(predicateObjs.find(
-						p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
-					) as PredicateObject<T>);
+		const hasPredicate = !!predicate;
+		const hasSort = pagination && pagination.sort;
+		const hasPagination = pagination && pagination.limit;
 
-				if (idPredicate) {
-					const { operand: id } = idPredicate;
+		let records: T[];
 
-					const record = <any>await this.db.get(id, storeName);
+		if (hasPredicate) {
+			records = await this.filterOnPredicate(modelConstructor, predicate);
+		} else {
+			records = await this.getAll(storeName);
+		}
 
-					if (record) {
-						const [x] = await this.load(namespaceName, modelConstructor.name, [
-							record,
-						]);
-						return [x];
-					}
-					return [];
+		if (hasSort || hasPagination) {
+			records = this.inMemoryPagination(records, pagination);
+		}
+
+		return await this.load(namespaceName, modelConstructor.name, records);
+	}
+
+	private async getOne<T extends PersistentModel>(
+		id: string,
+		storeName: string
+	): Promise<T> {
+		return await this.db.get(id, storeName);
+	}
+
+	private async getAll<T extends PersistentModel>(
+		storeName: string
+	): Promise<T[]> {
+		return await this.db.getAll(storeName);
+	}
+
+	private async filterOnPredicate<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
+		predicate: ModelPredicate<T>
+	) {
+		const storeName = this.getStorenameForModel(modelConstructor);
+		const namespaceName = this.namespaceResolver(modelConstructor);
+
+		const predicates = ModelPredicateCreator.getPredicates(predicate);
+
+		if (predicates) {
+			const { predicates: predicateObjs, type } = predicates;
+			const idPredicate =
+				predicateObjs.length === 1 &&
+				(predicateObjs.find(
+					p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
+				) as PredicateObject<T>);
+
+			if (idPredicate) {
+				const { operand: id } = idPredicate;
+
+				const record = <T>await this.getOne(id, storeName);
+
+				if (record) {
+					const [x] = await this.load(namespaceName, modelConstructor.name, [
+						record,
+					]);
+					return [x];
 				}
-
-				const all = <T[]>await this.db.getAll(storeName);
-
-				const filtered = predicateObjs
-					? all.filter(m => validatePredicate(m, type, predicateObjs))
-					: all;
-
-				return await this.load(
-					namespaceName,
-					modelConstructor.name,
-					this.inMemoryPagination(filtered, pagination)
-				);
+				return [];
 			}
+
+			const all = <T[]>await this.getAll(storeName);
+
+			const filtered = predicateObjs
+				? all.filter(m => validatePredicate(m, type, predicateObjs))
+				: all;
+
+			return filtered;
 		}
-
-		if (sortSpecified) {
-			const all = <T[]>await this.db.getAll(storeName);
-			return await this.load(
-				namespaceName,
-				modelConstructor.name,
-				this.inMemoryPagination(all, pagination)
-			);
-		}
-
-		const all = <T[]>await this.db.getAll(storeName, pagination);
-
-		return await this.load(namespaceName, modelConstructor.name, all);
 	}
 
 	private inMemoryPagination<T extends PersistentModel>(
 		records: T[],
 		pagination?: PaginationInput<T>
 	): T[] {
-		if (pagination) {
+		if (pagination && records.length > 1) {
 			if (pagination.sort) {
 				const sortPredicates = ModelSortPredicateCreator.getPredicates(
 					pagination.sort
