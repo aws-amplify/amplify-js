@@ -16,7 +16,7 @@ describe('AsyncStorageAdapter tests', () => {
 	describe('Query', () => {
 		let Model: PersistentModelConstructor<Model>;
 		let model1Id: string;
-		const spyOnGet = jest.spyOn(ASAdapter, 'getOne');
+		const spyOnGetOne = jest.spyOn(ASAdapter, 'getOne');
 		const spyOnGetAll = jest.spyOn(ASAdapter, 'getAll');
 		const spyOnMemory = jest.spyOn(ASAdapter, 'inMemoryPagination');
 
@@ -64,7 +64,7 @@ describe('AsyncStorageAdapter tests', () => {
 			const result = await DataStore.query(Model, model1Id);
 
 			expect(result.field1).toEqual('Some value');
-			expect(spyOnGet).toHaveBeenCalled();
+			expect(spyOnGetOne).toHaveBeenCalled();
 			expect(spyOnGetAll).not.toHaveBeenCalled();
 			expect(spyOnMemory).not.toHaveBeenCalled();
 		});

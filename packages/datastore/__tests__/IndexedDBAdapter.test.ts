@@ -17,7 +17,7 @@ describe('IndexedDBAdapter tests', () => {
 	describe('Query', () => {
 		let Model: PersistentModelConstructor<Model>;
 		let model1Id: string;
-		const spyOnGet = jest.spyOn(IDBAdapter, 'getOne');
+		const spyOnGetOne = jest.spyOn(IDBAdapter, 'getOne');
 		const spyOnGetAll = jest.spyOn(IDBAdapter, 'getAll');
 		const spyOnEngine = jest.spyOn(IDBAdapter, 'enginePagination');
 		const spyOnMemory = jest.spyOn(IDBAdapter, 'inMemoryPagination');
@@ -55,11 +55,11 @@ describe('IndexedDBAdapter tests', () => {
 			jest.clearAllMocks();
 		});
 
-		it('Should call _get & inMemoryPagination for query by id', async () => {
+		it('Should call getOne & inMemoryPagination for query by id', async () => {
 			const result = await DataStore.query(Model, model1Id);
 
 			expect(result.field1).toEqual('Some value');
-			expect(spyOnGet).toHaveBeenCalled();
+			expect(spyOnGetOne).toHaveBeenCalled();
 			expect(spyOnGetAll).not.toHaveBeenCalled();
 			expect(spyOnEngine).not.toHaveBeenCalled();
 			expect(spyOnMemory).toHaveBeenCalled();
