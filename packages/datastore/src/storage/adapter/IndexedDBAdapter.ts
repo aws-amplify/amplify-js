@@ -447,7 +447,7 @@ class IndexedDBAdapter implements Adapter {
 		records: T[],
 		pagination?: PaginationInput<T>
 	): T[] {
-		if (pagination) {
+		if (pagination && records.length > 1) {
 			if (pagination.sort) {
 				const sortPredicates = ModelSortPredicateCreator.getPredicates(
 					pagination.sort

@@ -16,6 +16,8 @@ const IDBAdapter = <any>Adapter;
 describe('IndexedDBAdapter tests', () => {
 	describe('Query', () => {
 		let Model: PersistentModelConstructor<Model>;
+		let model1Id: string;
+		const spyOnGet = jest.spyOn(IDBAdapter, '_get');
 		const spyOnGetAll = jest.spyOn(IDBAdapter, 'getAll');
 		const spyOnEngine = jest.spyOn(IDBAdapter, 'enginePagination');
 		const spyOnMemory = jest.spyOn(IDBAdapter, 'inMemoryPagination');
@@ -29,12 +31,12 @@ describe('IndexedDBAdapter tests', () => {
 				Model: PersistentModelConstructor<Model>;
 			});
 
-			await DataStore.save(
+			({ id: model1Id } = await DataStore.save(
 				new Model({
 					field1: 'Some value',
 					dateCreated: new Date().toISOString(),
 				})
-			);
+			));
 			await DataStore.save(
 				new Model({
 					field1: 'another value',
@@ -53,8 +55,18 @@ describe('IndexedDBAdapter tests', () => {
 			jest.clearAllMocks();
 		});
 
+		test('Should call _get & inMemoryPagination for query by id', async () => {
+			const result = await DataStore.query(Model, model1Id);
+
+			expect(result.field1).toEqual('Some value');
+			expect(spyOnGet).toHaveBeenCalled();
+			expect(spyOnGetAll).not.toHaveBeenCalled();
+			expect(spyOnEngine).not.toHaveBeenCalled();
+			expect(spyOnMemory).toHaveBeenCalled();
+		});
+
 		test('Should call getAll & inMemoryPagination for query with a predicate', async () => {
-			const results = await DataStore.query(Model, (c) =>
+			const results = await DataStore.query(Model, c =>
 				c.field1('eq', 'another value')
 			);
 
@@ -66,7 +78,7 @@ describe('IndexedDBAdapter tests', () => {
 
 		test('Should call getAll & inMemoryPagination for query with sort', async () => {
 			const results = await DataStore.query(Model, Predicates.ALL, {
-				sort: (s) => s.dateCreated(SortDirection.DESCENDING),
+				sort: s => s.dateCreated(SortDirection.DESCENDING),
 			});
 
 			expect(results.length).toEqual(3);
