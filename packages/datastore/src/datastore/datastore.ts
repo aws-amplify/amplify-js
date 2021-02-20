@@ -760,7 +760,10 @@ class DataStore {
 			predicate: ModelPredicateCreator.getPredicates(predicate, false),
 			pagination: {
 				...pagination,
-				sort: ModelSortPredicateCreator.getPredicates(pagination.sort, false),
+				sort: ModelSortPredicateCreator.getPredicates(
+					pagination && pagination.sort,
+					false
+				),
 			},
 		});
 
@@ -1121,9 +1124,13 @@ class DataStore {
 	private processPagination<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		paginationProducer: ProducerPaginationInput<T>
-	): PaginationInput<T> {
+	): PaginationInput<T> | undefined {
 		let sortPredicate: SortPredicate<T>;
 		const { limit, page, sort } = paginationProducer || {};
+
+		if (limit === undefined && page === undefined && sort === undefined) {
+			return undefined;
+		}
 
 		if (page !== undefined && limit === undefined) {
 			throw new Error('Limit is required when requesting a page');
