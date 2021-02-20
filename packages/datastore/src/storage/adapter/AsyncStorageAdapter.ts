@@ -17,6 +17,7 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicateObject,
+	PredicatesGroup,
 	QueryOne,
 	RelationType,
 } from '../../types';
@@ -242,30 +243,40 @@ export class AsyncStorageAdapter implements Adapter {
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
-		const hasPredicate = !!predicate;
+		const predicates =
+			predicate && ModelPredicateCreator.getPredicates(predicate);
+		const queryById = predicates && this.idFromPredicate(predicates);
 		const hasSort = pagination && pagination.sort;
 		const hasPagination = pagination && pagination.limit;
 
-		let records: T[];
+		const records: T[] = await (async () => {
+			if (queryById) {
+				const record = await this.getById(storeName, queryById);
+				return record ? [record] : [];
+			}
 
-		if (hasPredicate) {
-			records = await this.filterOnPredicate(modelConstructor, predicate);
-		} else {
-			records = await this.getAll(storeName);
-		}
+			if (predicates) {
+				const filtered = await this.filterOnPredicate(storeName, predicates);
+				return this.inMemoryPagination(filtered, pagination);
+			}
 
-		if (hasSort || hasPagination) {
-			records = this.inMemoryPagination(records, pagination);
-		}
+			if (hasSort || hasPagination) {
+				const all = await this.getAll(storeName);
+				return this.inMemoryPagination(all, pagination);
+			}
+
+			return this.getAll(storeName);
+		})();
 
 		return await this.load(namespaceName, modelConstructor.name, records);
 	}
 
-	private async getOne<T extends PersistentModel>(
-		id: string,
-		storeName: string
+	private async getById<T extends PersistentModel>(
+		storeName: string,
+		id: string
 	): Promise<T> {
-		return await this.db.get(id, storeName);
+		const record = <T>await this.db.get(id, storeName);
+		return record;
 	}
 
 	private async getAll<T extends PersistentModel>(
@@ -274,45 +285,32 @@ export class AsyncStorageAdapter implements Adapter {
 		return await this.db.getAll(storeName);
 	}
 
-	private async filterOnPredicate<T extends PersistentModel>(
-		modelConstructor: PersistentModelConstructor<T>,
-		predicate: ModelPredicate<T>
+	private idFromPredicate<T extends PersistentModel>(
+		predicates: PredicatesGroup<T>
 	) {
-		const storeName = this.getStorenameForModel(modelConstructor);
-		const namespaceName = this.namespaceResolver(modelConstructor);
+		const { predicates: predicateObjs } = predicates;
+		const idPredicate =
+			predicateObjs.length === 1 &&
+			(predicateObjs.find(
+				p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
+			) as PredicateObject<T>);
 
-		const predicates = ModelPredicateCreator.getPredicates(predicate);
+		return idPredicate && idPredicate.operand;
+	}
 
-		if (predicates) {
-			const { predicates: predicateObjs, type } = predicates;
-			const idPredicate =
-				predicateObjs.length === 1 &&
-				(predicateObjs.find(
-					p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
-				) as PredicateObject<T>);
+	private async filterOnPredicate<T extends PersistentModel>(
+		storeName: string,
+		predicates: PredicatesGroup<T>
+	) {
+		const { predicates: predicateObjs, type } = predicates;
 
-			if (idPredicate) {
-				const { operand: id } = idPredicate;
+		const all = <T[]>await this.getAll(storeName);
 
-				const record = <T>await this.getOne(id, storeName);
+		const filtered = predicateObjs
+			? all.filter(m => validatePredicate(m, type, predicateObjs))
+			: all;
 
-				if (record) {
-					const [x] = await this.load(namespaceName, modelConstructor.name, [
-						record,
-					]);
-					return [x];
-				}
-				return [];
-			}
-
-			const all = <T[]>await this.getAll(storeName);
-
-			const filtered = predicateObjs
-				? all.filter(m => validatePredicate(m, type, predicateObjs))
-				: all;
-
-			return filtered;
-		}
+		return filtered;
 	}
 
 	private inMemoryPagination<T extends PersistentModel>(
