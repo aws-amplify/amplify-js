@@ -96,12 +96,10 @@ const isValidModelConstructor = <T extends PersistentModel>(
 const namespaceResolver: NamespaceResolver = modelConstructor =>
 	modelNamespaceMap.get(modelConstructor);
 
+// exporting for testing purposes
+export let syncClasses: TypeConstructorMap;
 let dataStoreClasses: TypeConstructorMap;
-
 let userClasses: TypeConstructorMap;
-
-let syncClasses: TypeConstructorMap;
-
 let storageClasses: TypeConstructorMap;
 
 const initSchema = (userSchema: Schema) => {

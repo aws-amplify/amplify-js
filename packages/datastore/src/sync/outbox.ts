@@ -12,7 +12,7 @@ import {
 	PersistentModelConstructor,
 	QueryOne,
 } from '../types';
-import { SYNC } from '../util';
+import { SYNC, objectsEqual } from '../util';
 import { TransformerMutationType } from './utils';
 
 // TODO: Persist deleted ids
@@ -31,7 +31,7 @@ class MutationEventOutbox {
 		storage: Storage,
 		mutationEvent: MutationEvent
 	): Promise<void> {
-		storage.runExclusive(async s => {
+		return storage.runExclusive(async s => {
 			const mutationEventModelDefinition = this.schema.namespaces[SYNC].models[
 				'MutationEvent'
 			];
@@ -72,6 +72,7 @@ class MutationEventOutbox {
 
 				// If no condition
 				if (Object.keys(incomingCondition).length === 0) {
+					// delete all for model
 					await s.delete(this.MutationEvent, predicate);
 				}
 
@@ -92,7 +93,6 @@ class MutationEventOutbox {
 		}
 
 		await storage.delete(head);
-
 		this.inProgressMutationEventId = undefined;
 
 		return head;
@@ -139,6 +139,8 @@ class MutationEventOutbox {
 		return result;
 	}
 
+	// applies _version from the AppSync mutation response to other items in the mutation queue with the same id
+	// see https://github.com/aws-amplify/amplify-js/pull/7354 for more details
 	private async syncOutboxVersionsOnDequeue(
 		storage: StorageClass,
 		record: PersistentModel,
@@ -157,7 +159,7 @@ class MutationEventOutbox {
 
 		// Don't sync the version when the data in the response does not match the data
 		// in the request, i.e., when there's a handled conflict
-		if (this.recordsDontMatch(incomingData, outgoingData)) {
+		if (!objectsEqual(incomingData, outgoingData)) {
 			return;
 		}
 
@@ -196,35 +198,6 @@ class MutationEventOutbox {
 				async m => await storage.save(m, undefined, this.ownSymbol)
 			)
 		);
-	}
-
-	// TODO: move to util and rename to e.g., deep compare
-	private recordsDontMatch(
-		outgoing: PersistentModel,
-		incoming: PersistentModel
-	): boolean {
-		const outgoingKeys = Object.keys(outgoing);
-		const incomingKeys = Object.keys(incoming);
-
-		if (outgoingKeys.length !== incomingKeys.length) {
-			return false;
-		}
-
-		for (const key of outgoingKeys) {
-			const outgoingVal = outgoing[key];
-			const incomingVal = incoming[key];
-
-			if (outgoingVal && typeof outgoingVal === 'object') {
-				// since we can't guarantee the order of object keys, we'll have to recursively
-				// call this method for values containing objects
-				if (this.recordsDontMatch(outgoingVal, incomingVal)) {
-					return true;
-				}
-			} else if (outgoingVal !== incomingVal) {
-				return true;
-			}
-		}
-		return false;
 	}
 }
 
