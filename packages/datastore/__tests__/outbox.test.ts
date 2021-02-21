@@ -33,7 +33,7 @@ describe('Outbox tests', () => {
 	beforeAll(async () => {
 		jest.resetAllMocks();
 
-		await initializeOutbox();
+		await instantiateOutbox();
 
 		const newModel = new Model({
 			field1: 'Some value',
@@ -207,13 +207,13 @@ describe('Outbox tests', () => {
 
 		await Storage.runExclusive(async s => {
 			// process mutation response, which dequeues updatedModel1
-			// and syncs its version to the remaining item in the mutation queue
+			// but SHOULD NOT sync the _version, since the data in the response is different
 			await processMutationResponse(s, response);
 
 			const inProgress = await outbox.peek(s);
 			const inProgressData = JSON.parse(inProgress.data);
-			// updatedModel3 should now be in progress with the _version from the mutation response
 
+			// updatedModel2 should now be in progress with the _version from the mutation response
 			expect(inProgressData.field1).toEqual('another value2');
 
 			const oldVersion = (modelData as any)._version;
@@ -231,7 +231,7 @@ describe('Outbox tests', () => {
 
 // performs all the required dependency injection
 // in order to have a functional Outbox without the Sync Engine
-async function initializeOutbox(): Promise<void> {
+async function instantiateOutbox(): Promise<void> {
 	({ initSchema, DataStore } = require('../src/datastore/datastore'));
 	const classes = initSchema(testSchema());
 	const ownSymbol = Symbol('sync');
