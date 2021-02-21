@@ -468,15 +468,19 @@ export function objectsEqual(objA: object, objB: object): boolean {
 	let a = objA;
 	let b = objB;
 
+	if (Array.isArray(a) && !Array.isArray(b)) {
+		return false;
+	}
+
 	if (a instanceof Set && b instanceof Set) {
 		a = [...a];
 		b = [...b];
 	}
 
-	// if (a instanceof Map && b instanceof Map) {
-	// 	a = Object.fromEntries(a);
-	// 	b = Object.fromEntries(b);
-	// }
+	if (a instanceof Map && b instanceof Map) {
+		a = Object.fromEntries(a);
+		b = Object.fromEntries(b);
+	}
 
 	const aKeys = Object.keys(a);
 	const bKeys = Object.keys(b);

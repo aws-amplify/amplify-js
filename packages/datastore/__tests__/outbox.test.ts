@@ -31,7 +31,6 @@ describe('Outbox tests', () => {
 	let modelId: string;
 
 	beforeAll(async () => {
-		// jest.resetModules();
 		jest.resetAllMocks();
 
 		await initializeOutbox();
