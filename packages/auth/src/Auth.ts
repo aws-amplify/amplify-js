@@ -61,6 +61,7 @@ import {
 	CognitoIdToken,
 	CognitoRefreshToken,
 	CognitoAccessToken,
+	NodeCallback,
 } from 'amazon-cognito-identity-js';
 
 import { parse } from 'url';
@@ -89,12 +90,13 @@ const dispatchAuthEvent = (event: string, data: any, message: string) => {
  */
 export class AuthClass {
 	private _config: AuthOptions;
-	private userPool = null;
+	private userPool: CognitoUserPool = null;
 	private user: any = null;
 	private _oAuthHandler: OAuth;
 	private _storage;
 	private _storageSync;
 	private oAuthFlowInProgress: boolean = false;
+	private pendingSignIn: ReturnType<AuthClass['signInWithPassword']> | null;
 
 	Credentials = Credentials;
 
@@ -180,7 +182,10 @@ export class AuthClass {
 			};
 			userPoolData.Storage = this._storage;
 
-			this.userPool = new CognitoUserPool(userPoolData);
+			this.userPool = new CognitoUserPool(
+				userPoolData,
+				this.wrapRefreshSessionCallback
+			);
 		}
 
 		this.Credentials.configure({
@@ -245,6 +250,22 @@ export class AuthClass {
 		return this._config;
 	}
 
+	wrapRefreshSessionCallback = (callback: NodeCallback.Any) => {
+		const wrapped: NodeCallback.Any = (error, data) => {
+			if (data) {
+				dispatchAuthEvent('tokenRefresh', undefined, `New token retrieved`);
+			} else {
+				dispatchAuthEvent(
+					'tokenRefresh_failure',
+					error,
+					`Failed to retrieve new token`
+				);
+			}
+			return callback(error, data);
+		};
+		return wrapped;
+	} // prettier-ignore
+
 	/**
 	 * Sign up with username, password and other attributes like phone, email
 	 * @param {String | object} params - The user attributes used for signin
@@ -261,8 +282,8 @@ export class AuthClass {
 
 		let username: string = null;
 		let password: string = null;
-		const attributes: object[] = [];
-		let validationData: object[] = null;
+		const attributes: CognitoUserAttribute[] = [];
+		let validationData: CognitoUserAttribute[] = null;
 		let clientMetadata;
 
 		if (params && typeof params === 'string') {
@@ -270,9 +291,19 @@ export class AuthClass {
 			password = restOfAttrs ? restOfAttrs[0] : null;
 			const email: string = restOfAttrs ? restOfAttrs[1] : null;
 			const phone_number: string = restOfAttrs ? restOfAttrs[2] : null;
-			if (email) attributes.push({ Name: 'email', Value: email });
+
+			if (email)
+				attributes.push(
+					new CognitoUserAttribute({ Name: 'email', Value: email })
+				);
+
 			if (phone_number)
-				attributes.push({ Name: 'phone_number', Value: phone_number });
+				attributes.push(
+					new CognitoUserAttribute({
+						Name: 'phone_number',
+						Value: phone_number,
+					})
+				);
 		} else if (params && typeof params === 'object') {
 			username = params['username'];
 			password = params['password'];
@@ -286,11 +317,21 @@ export class AuthClass {
 			const attrs = params['attributes'];
 			if (attrs) {
 				Object.keys(attrs).map(key => {
-					const ele: object = { Name: key, Value: attrs[key] };
-					attributes.push(ele);
+					attributes.push(
+						new CognitoUserAttribute({ Name: key, Value: attrs[key] })
+					);
 				});
 			}
-			validationData = params['validationData'] || null;
+
+			const validationDataObject = params['validationData'];
+			if (validationDataObject) {
+				validationData = [];
+				Object.keys(validationDataObject).map(key => {
+					validationData.push(
+						new CognitoUserAttribute({ Name: key, Value: validationDataObject[key] })
+					);
+				});
+			}
 		} else {
 			return this.rejectAuthError(AuthErrorTypes.SignUpError);
 		}
@@ -334,7 +375,7 @@ export class AuthClass {
 	}
 
 	/**
-	 * Send the verfication code to confirm sign up
+	 * Send the verification code to confirm sign up
 	 * @param {String} username - The username to be confirmed
 	 * @param {String} code - The verification code
 	 * @param {ConfirmSignUpOptions} options - other options for confirm signup
@@ -565,14 +606,30 @@ export class AuthClass {
 	private signInWithPassword(
 		authDetails: AuthenticationDetails
 	): Promise<CognitoUser | any> {
+		if (this.pendingSignIn) {
+			throw new Error('Pending sign-in attempt already in progress');
+		}
+
 		const user = this.createCognitoUser(authDetails.getUsername());
 
-		return new Promise((resolve, reject) => {
+		this.pendingSignIn = new Promise((resolve, reject) => {
 			user.authenticateUser(
 				authDetails,
-				this.authCallbacks(user, resolve, reject)
+				this.authCallbacks(
+					user,
+					value => {
+						this.pendingSignIn = null;
+						resolve(value);
+					},
+					error => {
+						this.pendingSignIn = null;
+						reject(error);
+					}
+				)
 			);
 		});
+
+		return this.pendingSignIn;
 	}
 
 	/**
@@ -625,6 +682,8 @@ export class AuthClass {
 	): Promise<string> {
 		const that = this;
 		return new Promise((res, rej) => {
+			const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
 			const bypassCache = params ? params.bypassCache : false;
 			user.getUserData(
 				(err, data) => {
@@ -643,7 +702,7 @@ export class AuthClass {
 						return;
 					}
 				},
-				{ bypassCache }
+				{ bypassCache, clientMetadata }
 			);
 		});
 	}
@@ -703,8 +762,11 @@ export class AuthClass {
 		user: CognitoUser | any,
 		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA'
 	): Promise<string> {
+		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
 		const userData = await this._getUserData(user, {
 			bypassCache: true,
+			clientMetadata,
 		});
 		let smsMfaSettings = null;
 		let totpMfaSettings = null;
@@ -786,7 +848,10 @@ export class AuthClass {
 								return res(result);
 							}
 						},
-						{ bypassCache: true }
+						{
+							bypassCache: true,
+							clientMetadata,
+						}
 					);
 				}
 			);
@@ -867,7 +932,7 @@ export class AuthClass {
 		user: CognitoUser | any,
 		challengeAnswer: string
 	): Promise<CognitoUserSession> {
-		logger.debug('verfication totp token', user, challengeAnswer);
+		logger.debug('verification totp token', user, challengeAnswer);
 		return new Promise((res, rej) => {
 			user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
 				onFailure: err => {
@@ -876,6 +941,11 @@ export class AuthClass {
 					return;
 				},
 				onSuccess: data => {
+					dispatchAuthEvent(
+						'signIn',
+						user,
+						`A user ${user.getUsername()} has been signed in`
+					);
 					logger.debug('verifyTotpToken success', data);
 					res(data);
 					return;
@@ -915,7 +985,11 @@ export class AuthClass {
 						} finally {
 							that.user = user;
 
-							dispatchAuthEvent('signIn', user, `${user} has signed in`);
+							dispatchAuthEvent(
+								'signIn',
+								user,
+								`A user ${user.getUsername()} has been signed in`
+							);
 							resolve(user);
 						}
 					},
@@ -956,7 +1030,11 @@ export class AuthClass {
 							logger.debug('cannot get cognito credentials', e);
 						} finally {
 							that.user = user;
-							dispatchAuthEvent('signIn', user, `${user} has signed in`);
+							dispatchAuthEvent(
+								'signIn',
+								user,
+								`A user ${user.getUsername()} has been signed in`
+							);
 							resolve(user);
 						}
 					},
@@ -1159,68 +1237,75 @@ export class AuthClass {
 						return;
 					}
 
+					const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
 					// refresh the session if the session expired.
-					user.getSession(async (err, session) => {
-						if (err) {
-							logger.debug('Failed to get the user session', err);
-							rej(err);
-							return;
-						}
+					user.getSession(
+						async (err, session) => {
+							if (err) {
+								logger.debug('Failed to get the user session', err);
+								rej(err);
+								return;
+							}
 
-						// get user data from Cognito
-						const bypassCache = params ? params.bypassCache : false;
+							// get user data from Cognito
+							const bypassCache = params ? params.bypassCache : false;
 
-						if (bypassCache) {
-							await this.Credentials.clear();
-						}
+							if (bypassCache) {
+								await this.Credentials.clear();
+							}
 
-						// validate the token's scope first before calling this function
-						const { scope = '' } = session.getAccessToken().decodePayload();
-						if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
-							user.getUserData(
-								(err, data) => {
-									if (err) {
-										logger.debug('getting user data failed', err);
-										// Make sure the user is still valid
-										if (
-											err.message === 'User is disabled.' ||
-											err.message === 'User does not exist.' ||
-											err.message === 'Access Token has been revoked' // Session revoked by another app
-										) {
-											rej(err);
-										} else {
-											// the error may also be thrown when lack of permissions to get user info etc
-											// in that case we just bypass the error
-											res(user);
+							const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
+							// validate the token's scope first before calling this function
+							const { scope = '' } = session.getAccessToken().decodePayload();
+							if (scope.split(' ').includes(USER_ADMIN_SCOPE)) {
+								user.getUserData(
+									(err, data) => {
+										if (err) {
+											logger.debug('getting user data failed', err);
+											// Make sure the user is still valid
+											if (
+												err.message === 'User is disabled.' ||
+												err.message === 'User does not exist.' ||
+												err.message === 'Access Token has been revoked' // Session revoked by another app
+											) {
+												rej(err);
+											} else {
+												// the error may also be thrown when lack of permissions to get user info etc
+												// in that case we just bypass the error
+												res(user);
+											}
+											return;
 										}
-										return;
-									}
-									const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
-									const attributeList = [];
+										const preferredMFA = data.PreferredMfaSetting || 'NOMFA';
+										const attributeList = [];
 
-									for (let i = 0; i < data.UserAttributes.length; i++) {
-										const attribute = {
-											Name: data.UserAttributes[i].Name,
-											Value: data.UserAttributes[i].Value,
-										};
-										const userAttribute = new CognitoUserAttribute(attribute);
-										attributeList.push(userAttribute);
-									}
+										for (let i = 0; i < data.UserAttributes.length; i++) {
+											const attribute = {
+												Name: data.UserAttributes[i].Name,
+												Value: data.UserAttributes[i].Value,
+											};
+											const userAttribute = new CognitoUserAttribute(attribute);
+											attributeList.push(userAttribute);
+										}
 
-									const attributes = this.attributesToObject(attributeList);
-									Object.assign(user, { attributes, preferredMFA });
-									return res(user);
-								},
-								{ bypassCache }
-							);
-						} else {
-							logger.debug(
-								`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
-									`is not in the scopes of the access token`
-							);
-							return res(user);
-						}
-					});
+										const attributes = this.attributesToObject(attributeList);
+										Object.assign(user, { attributes, preferredMFA });
+										return res(user);
+									},
+									{ bypassCache, clientMetadata }
+								);
+							} else {
+								logger.debug(
+									`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
+										`is not in the scopes of the access token`
+								);
+								return res(user);
+							}
+						},
+						{ clientMetadata }
+					);
 				})
 				.catch(e => {
 					logger.debug('Failed to sync cache info into memory', e);
@@ -1281,7 +1366,7 @@ export class AuthClass {
 					);
 				}
 				logger.debug('The user is not authenticated by the error', e);
-				throw 'not authenticated';
+				return Promise.reject('The user is not authenticated');
 			}
 			this.user = user;
 			return this.user;
@@ -1334,24 +1419,29 @@ export class AuthClass {
 			logger.debug('the user is null');
 			return this.rejectAuthError(AuthErrorTypes.NoUserSession);
 		}
+		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
 		return new Promise((resolve, reject) => {
 			logger.debug('Getting the session from this user:', user);
-			user.getSession((err, session) => {
-				if (err) {
-					logger.debug('Failed to get the session from user', user);
-					reject(err);
-					return;
-				} else {
-					logger.debug('Succeed to get the user session', session);
-					resolve(session);
-					return;
-				}
-			});
+			user.getSession(
+				(err, session) => {
+					if (err) {
+						logger.debug('Failed to get the session from user', user);
+						reject(err);
+						return;
+					} else {
+						logger.debug('Succeed to get the user session', session);
+						resolve(session);
+						return;
+					}
+				},
+				{ clientMetadata }
+			);
 		});
 	}
 
 	/**
-	 * Get  authenticated credentials of current user.
+	 * Get authenticated credentials of current user.
 	 * @return - A promise resolves to be current user's credentials
 	 */
 	public async currentUserCredentials(): Promise<ICredentials> {
@@ -1495,26 +1585,31 @@ export class AuthClass {
 				logger.debug('user global sign out', user);
 				// in order to use global signout
 				// we must validate the user as an authenticated user by using getSession
-				user.getSession((err, result) => {
-					if (err) {
-						logger.debug('failed to get the user session', err);
-						return rej(err);
-					}
-					user.globalSignOut({
-						onSuccess: data => {
-							logger.debug('global sign out success');
-							if (isSignedInHostedUI) {
-								this.oAuthSignOutRedirect(res, rej);
-							} else {
-								return res();
-							}
-						},
-						onFailure: err => {
-							logger.debug('global sign out failed', err);
+				const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
+
+				user.getSession(
+					(err, result) => {
+						if (err) {
+							logger.debug('failed to get the user session', err);
 							return rej(err);
-						},
-					});
-				});
+						}
+						user.globalSignOut({
+							onSuccess: data => {
+								logger.debug('global sign out success');
+								if (isSignedInHostedUI) {
+									this.oAuthSignOutRedirect(res, rej);
+								} else {
+									return res();
+								}
+							},
+							onFailure: err => {
+								logger.debug('global sign out failed', err);
+								return rej(err);
+							},
+						});
+					},
+					{ clientMetadata }
+				);
 			} else {
 				logger.debug('user sign out', user);
 				user.signOut();

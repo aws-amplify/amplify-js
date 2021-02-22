@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.3.0...aws-amplify-react-native@4.3.1) (2021-01-29)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** Added Accessibility Labels to UI components ([#7596](https://github.com/aws-amplify/amplify-js/issues/7596)) ([3ce644c](https://github.com/aws-amplify/amplify-js/commit/3ce644c0166fd224064a018f63ac6aa1af1d0f84)), closes [#7595](https://github.com/aws-amplify/amplify-js/issues/7595)
+* **aws-amplify-react-native:** Fixed error msg display on SignUp Screen ([#7632](https://github.com/aws-amplify/amplify-js/issues/7632)) ([74dc3b1](https://github.com/aws-amplify/amplify-js/commit/74dc3b12f29691db549dc51b41dbbe45266f6adf))
+
+
+
+
+
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.10...aws-amplify-react-native@4.3.0) (2021-01-07)
+
+
+### Features
+
+* **aws-amplify-react-native:** Added Keyboard.dismiss() to display errors ([#7509](https://github.com/aws-amplify/amplify-js/issues/7509)) ([a83b6b8](https://github.com/aws-amplify/amplify-js/commit/a83b6b86989baf7ffbca584b939704a45fa7b864))
+
+
+
+
+
+## [4.2.10](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.9...aws-amplify-react-native@4.2.10) (2020-12-10)
+
+
+### Bug Fixes
+
+* **aws-amplify-react-native:** remove peerDependencies ([#7384](https://github.com/aws-amplify/amplify-js/issues/7384)) ([30463fb](https://github.com/aws-amplify/amplify-js/commit/30463fb0b8a7001d722a079da3535093f86c3702))
+
+
+
+
+
+## [4.2.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.8...aws-amplify-react-native@4.2.9) (2020-11-13)
+
+**Note:** Version bump only for package aws-amplify-react-native
+
+
+
+
+
 ## [4.2.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.2.7...aws-amplify-react-native@4.2.8) (2020-10-29)
 
 

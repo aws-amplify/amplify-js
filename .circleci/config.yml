@@ -414,17 +414,24 @@ jobs:
     steps:
       - prepare_test_env
       - integ_test_js:
-          test_name: 'Vue Authenticator'
+          test_name: 'Legacy Vue Authenticator'
           framework: vue
           category: auth
           sample_name: amplify-authenticator-legacy
           spec: authenticator
           browser: << parameters.browser >>
       - integ_test_js:
-          test_name: 'Vue Authenticator'
+          test_name: 'Vue 2 Authenticator'
           framework: vue
           category: auth
           sample_name: amplify-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Vue 3 Authenticator'
+          framework: vue
+          category: auth
+          sample_name: authenticator-vue3
           spec: ui-amplify-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
@@ -478,13 +485,19 @@ jobs:
     steps:
       - prepare_test_env
       - integ_test_js:
-          test_name: 'Vue Interactions'
+          test_name: 'Vue 2 Interactions'
           framework: vue
           category: interactions
           sample_name: chatbot-component
           spec: chatbot-component
           browser: << parameters.browser >>
-
+      - integ_test_js:
+          test_name: 'Vue 3 Interactions'
+          framework: vue
+          category: interactions
+          sample_name: chatbot-component-vue3
+          spec: chatbot-component
+          browser: << parameters.browser >>
   integ_angular_interactions:
     parameters:
       browser:
@@ -534,6 +547,22 @@ jobs:
           sample_name: storageApp
           spec: storage
           browser: << parameters.browser >>
+  integ_react_storage_multipart_progress:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/multi-part-upload-with-progress
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Storage Multi-Part Upload with Progress'
+          framework: react
+          category: storage
+          sample_name: multi-part-upload-with-progress
+          spec: multi-part-upload-with-progress
+          browser: << parameters.browser >>
   integ_react_storage_ui:
     executor: js-test-executor
     <<: *test_env_vars
@@ -570,6 +599,13 @@ jobs:
     steps:
       - integ_test_rn_ios
 
+  integ_rn_ios_storage_multipart_progress:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
+    steps:
+      - integ_test_rn_ios
+
   integ_rn_ios_push_notifications:
     executor: macos-executor
     <<: *test_env_vars
@@ -581,6 +617,13 @@ jobs:
     executor: macos-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+    steps:
+      - integ_test_rn_android
+
+  integ_rn_android_storage_multipart_progress:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
     steps:
       - integ_test_rn_android
 
@@ -657,6 +700,7 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/main
       - 1.0-stable
+      - native
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -676,6 +720,7 @@ datastore_auth_scenarios: &datastore_auth_scenarios
       public-auth-default,
       public-auth-iam,
       owner-custom-claim-default,
+      owner-custom-field-default,
     ]
 
 workflows:
@@ -769,6 +814,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_storage_multipart_progress:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_storage_ui:
           requires:
             - integ_setup
@@ -790,6 +844,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_rn_ios_storage_multipart_progress:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_rn_ios_push_notifications:
           requires:
             - integ_setup
@@ -797,6 +857,12 @@ workflows:
           filters:
             <<: *releasable_branches
       - integ_rn_android_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_android_storage_multipart_progress:
           requires:
             - integ_setup
             - build
@@ -819,6 +885,7 @@ workflows:
             - integ_react_predictions
             - integ_react_datastore
             - integ_react_storage
+            - integ_react_storage_multipart_progress
             - integ_react_storage_ui
             - integ_react_interactions
             - integ_angular_interactions
@@ -828,8 +895,10 @@ workflows:
             - integ_angular_auth
             - integ_vue_auth
             - integ_rn_ios_storage
+            - integ_rn_ios_storage_multipart_progress
             - integ_rn_ios_push_notifications
             - integ_rn_android_storage
+            - integ_rn_android_storage_multipart_progress
             - integ_datastore_auth
       - post_release:
           filters:
