@@ -1,6 +1,6 @@
 import { I18n } from '@aws-amplify/core';
 import { Component, Prop, State, Watch, h, Host } from '@stencil/core';
-import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
+import { FormFieldTypes, PhoneNumberInterface } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import {
   AuthState,
   ChallengeName,
@@ -8,12 +8,21 @@ import {
   AuthFormField,
   AuthStateHandler,
 } from '../../common/types/auth-types';
-import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
+import {
+  NO_AUTH_MODULE_FOUND,
+  COUNTRY_DIAL_CODE_DEFAULT,
+} from '../../common/constants';
 import { Translations } from '../../common/Translations';
 
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, requiredAttributesMap } from '../../common/helpers';
+import {
+  dispatchToastHubEvent,
+  dispatchAuthStateChangeEvent,
+  requiredAttributesMap,
+  composePhoneNumberInput,
+  handlePhoneNumberChange,
+} from '../../common/helpers';
 import { checkContact } from '../../common/auth-helpers';
 
 const logger = new Logger('amplify-require-new-password');
@@ -58,9 +67,20 @@ export class AmplifyRequireNewPassword {
   private requiredAttributes: Record<PropertyKey, string> = {};
   private newFormFields: FormFieldTypes = this.formFields;
   private currentUser: CognitoUserInterface;
+  private phoneNumber: PhoneNumberInterface = {
+    countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
+    phoneNumberValue: null,
+  };
 
   private handleRequiredAttributeInputChange(attribute, event) {
-    this.requiredAttributes[attribute] = event.target.value;
+    if (attribute === 'phone_number') {
+      handlePhoneNumberChange(event, this.phoneNumber);
+      this.requiredAttributes[attribute] = composePhoneNumberInput(
+        this.phoneNumber
+      );
+    } else {
+      this.requiredAttributes[attribute] = event.target.value;
+    }
   }
 
   async setCurrentUser(): Promise<void> {
