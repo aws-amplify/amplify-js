@@ -1,5 +1,4 @@
 import 'fake-indexeddb/auto';
-import FDBCursor from 'fake-indexeddb/build/FDBCursor';
 import { decodeTime } from 'ulid';
 import uuidValidate from 'uuid-validate';
 import Observable from 'zen-observable-ts';
