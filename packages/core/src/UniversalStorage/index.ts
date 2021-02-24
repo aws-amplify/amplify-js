@@ -26,7 +26,7 @@ export class UniversalStorage implements Storage {
 
 	clear() {
 		Array.from(new Array(this.length))
-			.map((value, i) => this.key(i))
+			.map((_, i) => this.key(i))
 			.forEach(key => this.removeItem(key));
 	}
 
@@ -58,7 +58,9 @@ export class UniversalStorage implements Storage {
 	}
 
 	protected removeUniversalItem(key: keyof Store) {
-		this.cookies.remove(key);
+		this.cookies.remove(key, {
+			path: '/',
+		});
 	}
 
 	setItem(key: keyof Store, value: string) {

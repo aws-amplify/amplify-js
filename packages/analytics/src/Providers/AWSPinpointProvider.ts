@@ -21,12 +21,12 @@ import {
 	getAmplifyUserAgent,
 } from '@aws-amplify/core';
 import {
+	EventsBatch,
 	PinpointClient,
 	PutEventsCommand,
 	PutEventsCommandInput,
 	UpdateEndpointCommand,
 } from '@aws-sdk/client-pinpoint';
-import { EventsBatch } from '@aws-sdk/client-pinpoint/models';
 import Cache from '@aws-amplify/cache';
 
 import {
@@ -118,6 +118,10 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		logger.debug('configure Analytics', config);
 		const conf = config || {};
 		this._config = Object.assign({}, this._config, conf);
+
+		// If autoSessionRecord is enabled, we need to wait for the endpoint to be
+		// updated before sending any events. See `sendEvents` in `Analytics.ts`
+		this._endpointGenerating = !!config['autoSessionRecord'];
 
 		if (this._config.appId && !this._config.disabled) {
 			if (!this._config.endpointId) {
