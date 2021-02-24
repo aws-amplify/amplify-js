@@ -86,7 +86,12 @@ class SyncProcessor {
 					startedAt: number;
 				};
 			}>
-		>await this.jitteredRetry<T>(query, variables, opName);
+		>await this.jitteredRetry<T>({
+			query,
+			variables,
+			opName,
+			modelDefinition,
+		});
 
 		const { [opName]: opResult } = data;
 
@@ -95,11 +100,17 @@ class SyncProcessor {
 		return { nextToken: newNextToken, startedAt, items };
 	}
 
-	private async jitteredRetry<T>(
-		query: string,
-		variables: { limit: number; lastSync: number; nextToken: string },
-		opName: string
-	): Promise<
+	private async jitteredRetry<T>({
+		query,
+		variables,
+		opName,
+		modelDefinition,
+	}: {
+		query: string;
+		variables: { limit: number; lastSync: number; nextToken: string };
+		opName: string;
+		modelDefinition: SchemaModel;
+	}): Promise<
 		GraphQLResult<{
 			[opName: string]: {
 				items: T[];
@@ -133,7 +144,10 @@ class SyncProcessor {
 							Hub.dispatch('datastore', {
 								event:
 									ControlMessage.SYNC_ENGINE_SYNC_QUERIES_PARTIAL_SYNC_ERROR,
-								data: error.errors,
+								data: {
+									errors: error.errors,
+									modelName: modelDefinition.name,
+								},
 							});
 						}
 
