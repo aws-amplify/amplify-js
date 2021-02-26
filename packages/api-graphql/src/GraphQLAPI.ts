@@ -113,7 +113,7 @@ export class GraphQLAPIClass {
 		}
 	}
 
-	private async _headerBasedAuth(defaultAuthenticationType?, Authentication) {
+	private async _headerBasedAuth(defaultAuthenticationType?, Authorization?) {
 		const {
 			aws_appsync_authenticationType,
 			aws_appsync_apiKey: apiKey,
