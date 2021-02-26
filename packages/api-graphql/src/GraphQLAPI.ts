@@ -160,7 +160,7 @@ export class GraphQLAPIClass {
 			case 'AMAZON_COGNITO_USER_POOLS':
 				const session = await this.Auth.currentSession();
 				headers = {
-					Authorization: session.getAccessToken().getJwtToken(),
+					Authorization: Authorization || session.getAccessToken().getJwtToken(),
 				};
 				break;
 			default:
@@ -194,7 +194,7 @@ export class GraphQLAPIClass {
 	 * @returns {Promise<GraphQLResult> | Observable<object>}
 	 */
 	graphql(
-		{ query: paramQuery, variables = {}, authMode }: GraphQLOptions,
+		{ query: paramQuery, variables = {}, authMode, Authorization }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	) {
 		const query =
@@ -215,7 +215,7 @@ export class GraphQLAPIClass {
 				const cancellableToken = this._api.getCancellableToken();
 				const initParams = { cancellableToken };
 				const responsePromise = this._graphql(
-					{ query, variables, authMode },
+					{ query, variables, authMode, Authorization },
 					additionalHeaders,
 					initParams
 				);
@@ -235,7 +235,7 @@ export class GraphQLAPIClass {
 	}
 
 	private async _graphql(
-		{ query, variables, authMode }: GraphQLOptions,
+		{ query, variables, authMode, Authorization }: GraphQLOptions,
 		additionalHeaders = {},
 		initParams = {}
 	): Promise<GraphQLResult> {
@@ -252,7 +252,7 @@ export class GraphQLAPIClass {
 		} = this._options;
 
 		const headers = {
-			...(!customGraphqlEndpoint && (await this._headerBasedAuth(authMode))),
+			...(!customGraphqlEndpoint && (await this._headerBasedAuth(authMode, Authorization))),
 			...(customGraphqlEndpoint &&
 				(customEndpointRegion
 					? await this._headerBasedAuth(authMode)
