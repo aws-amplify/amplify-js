@@ -18,7 +18,7 @@ export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: object;
 	authMode?: GRAPHQL_AUTH_MODE;
-	Authorization: string;
+	Authorization?: string;
 }
 
 export enum GRAPHQL_AUTH_MODE {
