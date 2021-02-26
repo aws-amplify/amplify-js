@@ -23,6 +23,38 @@ describe('Sync', () => {
 			jest.resetAllMocks();
 		});
 
+		it('should return all data', async () => {
+			const resolveResponse = {
+				data: {
+					syncPosts: {
+						items: [
+							{
+								id: '1',
+								title: 'Item 1',
+							},
+							{
+								id: '2',
+								title: 'Item 2',
+							},
+						],
+					},
+				},
+			};
+
+			const SyncProcessor = jitteredRetrySyncProcessorSetup({
+				resolveResponse,
+			});
+
+			const data = await SyncProcessor.jitteredRetry({
+				query: defaultQuery,
+				variables: defaultVariables,
+				opName: defaultOpName,
+				modelDefinition: defaultModelDefinition,
+			});
+
+			expect(data).toMatchSnapshot();
+		});
+
 		it('should return partial data and send Hub event', async () => {
 			const rejectResponse = {
 				data: {
