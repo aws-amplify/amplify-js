@@ -113,7 +113,7 @@ export class GraphQLAPIClass {
 		}
 	}
 
-	private async _headerBasedAuth(defaultAuthenticationType?) {
+	private async _headerBasedAuth(defaultAuthenticationType?, Authentication) {
 		const {
 			aws_appsync_authenticationType,
 			aws_appsync_apiKey: apiKey,
@@ -255,7 +255,7 @@ export class GraphQLAPIClass {
 			...(!customGraphqlEndpoint && (await this._headerBasedAuth(authMode, Authorization))),
 			...(customGraphqlEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(authMode)
+					? await this._headerBasedAuth(authMode, Authorization)
 					: { Authorization: null })),
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
