@@ -28,6 +28,8 @@ import { fromUtf8, toUtf8 } from '@aws-sdk/util-utf8-node';
 const logger = new Logger('AmazonAIConvertPredictionsProvider');
 const eventBuilder = new EventStreamMarshaller(toUtf8, fromUtf8);
 
+const LANGUAGES_CODE_IN_8KHZ = ['fr-FR', 'en-AU', 'en-GB', 'fr-CA'];
+
 export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictionsProvider {
 	private translateClient: TranslateClient;
 	private pollyClient: PollyClient;
@@ -178,10 +180,17 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 					languageCode: language,
 				});
 
+				let sourceBytes = source.bytes;
+				if (LANGUAGES_CODE_IN_8KHZ.includes(languageCode)) {
+					sourceBytes = this.downsampleBuffer({
+						buffer: source.bytes,
+						outputSampleRate: 8000,
+					});
+				}
 				try {
 					const fullText = await this.sendDataToTranscribe({
 						connection,
-						raw: source.bytes,
+						raw: sourceBytes,
 					});
 					return {
 						transcription: {
@@ -206,9 +215,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		const transcribeMessage = eventBuilder.unmarshall(
 			Buffer.from(message.data)
 		);
-		const transcribeMessageJson = JSON.parse(
-			toUtf8(transcribeMessage.body)
-		);
+		const transcribeMessageJson = JSON.parse(toUtf8(transcribeMessage.body));
 		if (transcribeMessage.headers[':message-type'].value === 'exception') {
 			logger.debug(
 				'exception',
@@ -327,14 +334,13 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 	}
 
 	private inputSampleRate = 44100;
-	private outputSampleRate = 16000;
 
-	private downsampleBuffer({ buffer }) {
-		if (this.outputSampleRate === this.inputSampleRate) {
+	private downsampleBuffer({ buffer, outputSampleRate = 16000 }) {
+		if (outputSampleRate === this.inputSampleRate) {
 			return buffer;
 		}
 
-		const sampleRateRatio = this.inputSampleRate / this.outputSampleRate;
+		const sampleRateRatio = this.inputSampleRate / outputSampleRate;
 		const newLength = Math.round(buffer.length / sampleRateRatio);
 		const result = new Float32Array(newLength);
 		let offsetResult = 0;
@@ -399,7 +405,9 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			`wss://transcribestreaming.${region}.amazonaws.com:8443`,
 			'/stream-transcription-websocket?',
 			`media-encoding=pcm&`,
-			`sample-rate=16000&`,
+			`sample-rate=${
+				LANGUAGES_CODE_IN_8KHZ.includes(languageCode) ? '8000' : '16000'
+			}&`,
 			`language-code=${languageCode}`,
 		].join('');
 
