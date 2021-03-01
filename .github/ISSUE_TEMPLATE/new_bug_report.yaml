@@ -30,7 +30,7 @@ body:
     description: |
       Are you experiencing this issue with a production application where end users are affected?
     options:
-      - label: (check box if **yes**)
+      - label: (check box if yes)
 - type: markdown
   attributes:
     value: |
