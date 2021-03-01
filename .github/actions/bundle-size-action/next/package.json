@@ -14,8 +14,20 @@
 	"bundlewatch": {
 		"files": [
 			{
+				"path": ".next/static/chunks/pages/Amplify-*.js",
+				"maxSize": "1kB"
+			},
+			{
+				"path": ".next/static/chunks/pages/Amplify+Auth-*.js",
+				"maxSize": "175kB"
+			},
+			{
+				"path": ".next/static/chunks/pages/Amplify+Storage-*.js",
+				"maxSize": "40kB"
+			},
+			{
 				"path": ".next/static/chunks/pages/index-*.js",
-				"maxSize": "215kB"
+				"maxSize": "5kB"
 			}
 		]
 	},
