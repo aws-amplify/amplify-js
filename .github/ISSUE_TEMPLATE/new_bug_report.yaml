@@ -1,4 +1,4 @@
-name: Bug report
+name: New Bug report
 about: Create a report to help us improve Amplify JS
 title: ""
 labels: to-be-reproduced
@@ -16,14 +16,21 @@ body:
     label: |
       Before opening, please confirm.
     options:
-      - label: I have installed the latest version of the Amplify CLI (<img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />), and confirmed that the issue still persists.
-        required: true
+      # - label: I have installed the latest version of the Amplify CLI (<img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />), and confirmed that the issue still persists.
+      #   required: true
       - label: I have [searched for duplicate or closed issues](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+).
         required: true
       - label: I have read the guide for [submitting bug reports](https://github.com/aws-amplify/amplify-js/blob/master/CONTRIBUTING.md#bug-reports).
         required: true
       - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
       - required: true
+- type: checkboxes
+  attributes:
+    label: Is this a production issue?
+    description: |
+      Are you experiencing this issue with a production application where end users are affected?
+    options:
+      - label: (check box if **yes**)
 - type: markdown
   attributes:
     value: |
@@ -232,10 +239,10 @@ body:
     attributes:
       value: |
         ## Additional information
-  - type: markdown
-    attributes:
-      value: >
-        If you have any additional information (i.e. `package.json`), workarounds, etc. for us, use the field below.
-        Please note, you can attach screenshots or screen recordings here, by
-        dragging and dropping files in the field below.
+- type: markdown
+  attributes:
+    value: >
+      If you have any additional information (i.e. `package.json`), workarounds, etc. for us, use the field below.
+      Please note, you can attach screenshots or screen recordings here, by
+      dragging and dropping files in the field below.
 
