@@ -844,12 +844,15 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      - integ_rn_ios_storage_multipart_progress:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
+      # TODO: re-enable these when merging native -> main
+      # Disabling because this test would require us to manually install
+      # @react-native-async-storage/async-storage as a dependency
+      # - integ_rn_ios_storage_multipart_progress:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
       - integ_rn_ios_push_notifications:
           requires:
             - integ_setup
@@ -862,12 +865,13 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      - integ_rn_android_storage_multipart_progress:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
+      # Same callout as with the ios multipart test
+      # - integ_rn_android_storage_multipart_progress:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
       - integ_datastore_auth:
           requires:
             - integ_setup
@@ -895,10 +899,10 @@ workflows:
             - integ_angular_auth
             - integ_vue_auth
             - integ_rn_ios_storage
-            - integ_rn_ios_storage_multipart_progress
+            # - integ_rn_ios_storage_multipart_progress
+            # - integ_rn_android_storage_multipart_progress
             - integ_rn_ios_push_notifications
             - integ_rn_android_storage
-            - integ_rn_android_storage_multipart_progress
             - integ_datastore_auth
       - post_release:
           filters:
