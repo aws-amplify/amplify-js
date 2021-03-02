@@ -87,4 +87,9 @@ npx envinfo --system --binaries --browsers --npmPackages --npmGlobalPackages
 **Additional context**
 Add any other context about the problem here.
 
+**Is this a production issue?**
+Are you experiencing this issue with a production application where end users are affected?
+
+- [ ] (check box if yes)
+
 **_You can turn on the debug mode to provide more info for us by setting window.LOG_LEVEL = 'DEBUG'; in your app._**
