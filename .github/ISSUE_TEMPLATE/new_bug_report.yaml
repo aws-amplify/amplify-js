@@ -34,7 +34,7 @@ body:
         ## Environment
   - type: textarea
     attributes:
-      label: Expected behavior
+      label: Environment information
       description: |
         Please run the following command inside your project and copy/paste the output below:
         ```
