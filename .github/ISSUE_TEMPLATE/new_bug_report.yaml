@@ -1,7 +1,6 @@
 name: New Bug report
 description: Create a report to help us improve Amplify JS
 title: ''
-labels: to-be-reproduced
 issue_body: true
 body:
   - type: markdown
@@ -85,7 +84,7 @@ body:
     attributes:
       label: Amplify APIs
       description: |
-        What [Amplify APIs](https://github.com/aws-amplify/amplify-js#features--apis) are being used?
+        What [Amplify APIs](https://docs.amplify.aws/lib/q/platform/js) are being used?
       multiple: true
       options:
         - Authentication
