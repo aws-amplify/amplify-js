@@ -8,6 +8,7 @@ Thank you for your interest in contributing to our project! <3 Whether it's a bu
   - [Setting up for local development](#setting-up-for-local-development)
   - [Architecture of the codebase](#architecture-of-the-codebase)
   - [Steps towards contributions](#steps-towards-contributions)
+- [Bug Reports](#bug-reports)
 - [Pull Requests](#pull-requests)
 - [Debugging](#debugging)
 - [Release](#release)
@@ -166,6 +167,27 @@ Once you are done with Verdaccio, you can reset to the default registry by doing
 yarn config set registry https://registry.yarnpkg.com
 ```
 
+## Bug Reports
+
+Bug reports and feature requests are always welcome. Good bug reports are extremely helpful, so thanks in advance!
+
+When filing a bug, please try to be as detailed as possible. In addition to the bug report form information, details like these are incredibly useful:
+
+- A reproducible test case or series of steps
+- The date/commit/version(s) of the code you're running
+- Any modifications you've made relevant to the bug
+- Anything unusual about your environment or deployment
+
+Guidelines for bug reports:
+
+- Check to see if a [duplicate or closed issue](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+) already exists!
+- Provide a short and descriptive issue title
+- Remove any sensitive data from your examples or snippets
+- Format any code snippets using [Markdown](https://docs.github.com/en/github/writing-on-github/creating-and-highlighting-code-blocks) syntax
+- If you're not using the latest version of a [specific package](#packages-inside-amplify-js), see if the issue still persists after upgrading - this helps to isolate regressions!
+
+Finally, thank you for taking the time to read this, and taking the time to write a good bug report.
+
 # Pull Requests
 
 This is mostly the same as GitHub's guide on creating a pull request.
@@ -181,7 +203,7 @@ _[Skip step 1 to 3 if you have already done this]_
      - feat
      - chore
      - bug
-   - use slashes to seperate parts of branch names
+   - use slashes to separate parts of branch names
    - Hyphenate well-defined branch name
 5. Once your work is committed and you're ready to share, run test `yarn test`.
    **Note:** Manually test your changes in a sample app with different edge cases and also test across different browsers and platform
