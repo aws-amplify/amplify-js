@@ -78,8 +78,6 @@ body:
         - predictions
         - xr
         - Not applicable
-    validations:
-      required: true
   - type: dropdown
     attributes:
       label: Amplify APIs
