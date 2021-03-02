@@ -3,15 +3,14 @@ import { I18n, Logger } from '@aws-amplify/core';
 import { Component, Prop, State, h, Host } from '@stencil/core';
 import QRCode from 'qrcode';
 
-import { CognitoUserInterface, AuthStateHandler, MfaOption } from '../../common/types/auth-types';
+import { CognitoUserInterface, AuthStateHandler, MfaOption, AuthState } from '../../common/types/auth-types';
 import { Translations } from '../../common/Translations';
 import { TOTPSetupEventType } from './amplify-totp-setup-interface';
 import { NO_AUTH_MODULE_FOUND, SETUP_TOTP, SUCCESS } from '../../common/constants';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, onAuthUIStateChange } from '../../common/helpers';
 import { checkContact } from '../../common/auth-helpers';
 
 const logger = new Logger('TOTP');
-
 @Component({
   tag: 'amplify-totp-setup',
   styleUrl: 'amplify-totp-setup.scss',
@@ -36,9 +35,22 @@ export class AmplifyTOTPSetup {
   @State() qrCodeImageSource: string;
   @State() qrCodeInput: string | null = null;
   @State() loading: boolean = false;
+  private removeHubListener: () => void; // unsubscribe function returned by onAuthUIStateChange
 
-  componentWillLoad() {
-    this.setup();
+  async componentWillLoad() {
+    /**
+     * We didn't use `@Watch` here because it doesn't fire when we go from require-new-password to totp-setup.
+     * That is because `Auth.completeNewPassword` only changes `user` in place and Watch doesn't detect changes
+     * unless we make a clone.
+     */
+    this.removeHubListener = onAuthUIStateChange(authState => {
+      if (authState === AuthState.TOTPSetup) this.setup();
+    });
+    await this.setup();
+  }
+
+  disconnectedCallback() {
+    this.removeHubListener && this.removeHubListener(); // stop listening to `onAuthUIStateChange`
   }
 
   private buildOtpAuthPath(user: CognitoUserInterface, issuer: string, secretKey: string) {
@@ -67,6 +79,8 @@ export class AmplifyTOTPSetup {
   }
 
   private async setup() {
+    // ensure setup is only run once after totp setup is available
+    if (!this.user || this.user.challengeName !== 'MFA_SETUP' || this.loading) return;
     this.setupMessage = null;
     const encodedIssuer = encodeURI(I18n.get(this.issuer));
 
@@ -77,7 +91,6 @@ export class AmplifyTOTPSetup {
     this.loading = true;
     try {
       const secretKey = await Auth.setupTOTP(this.user);
-
       logger.debug('secret key', secretKey);
       this.code = this.buildOtpAuthPath(this.user, encodedIssuer, secretKey);
 
@@ -130,7 +143,7 @@ export class AmplifyTOTPSetup {
           loading={this.loading}
         >
           <div class="totp-setup">
-            <img src={this.qrCodeImageSource} alt={I18n.get(Translations.QR_CODE_ALT)} />
+            {this.qrCodeImageSource && <img src={this.qrCodeImageSource} alt={I18n.get(Translations.QR_CODE_ALT)} />}
             <amplify-form-field
               label={I18n.get(Translations.TOTP_LABEL)}
               inputProps={this.inputProps}

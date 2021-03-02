@@ -3,6 +3,121 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.21](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.20...aws-amplify@3.3.21) (2021-02-25)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.20](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.19...aws-amplify@3.3.20) (2021-02-18)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.19](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.18...aws-amplify@3.3.19) (2021-02-15)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.18](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.17...aws-amplify@3.3.18) (2021-02-09)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.17](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.16...aws-amplify@3.3.17) (2021-02-03)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.16](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.15...aws-amplify@3.3.16) (2021-02-01)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.15](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.14...aws-amplify@3.3.15) (2021-01-29)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.14](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.13...aws-amplify@3.3.14) (2021-01-07)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.13](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.12...aws-amplify@3.3.13) (2020-12-17)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.12](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.11...aws-amplify@3.3.12) (2020-12-10)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.11](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.10...aws-amplify@3.3.11) (2020-11-30)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.10](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.9...aws-amplify@3.3.10) (2020-11-23)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.8...aws-amplify@3.3.9) (2020-11-20)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.7...aws-amplify@3.3.8) (2020-11-13)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** export SortDirection and syncExpression from aws-amplify ([#7104](https://github.com/aws-amplify/amplify-js/issues/7104)) ([8b3183f](https://github.com/aws-amplify/amplify-js/commit/8b3183f4d2ec7289044e2b6700e3ff4df3f98ce4))
+
+
+
+
+
 ## [3.3.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.6...aws-amplify@3.3.7) (2020-11-03)
 
 **Note:** Version bump only for package aws-amplify

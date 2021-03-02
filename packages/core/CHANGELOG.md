@@ -3,6 +3,127 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.15...@aws-amplify/core@3.8.16) (2021-02-25)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.14...@aws-amplify/core@3.8.15) (2021-02-18)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.13...@aws-amplify/core@3.8.14) (2021-02-15)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.12...@aws-amplify/core@3.8.13) (2021-02-09)
+
+
+### Reverts
+
+* Revert "chore: bump aws-sdk to 3.4.1 (#7674)" (#7716) ([f142314](https://github.com/aws-amplify/amplify-js/commit/f1423144cf73304f3dc048233b35c831c9a1742d)), closes [#7674](https://github.com/aws-amplify/amplify-js/issues/7674) [#7716](https://github.com/aws-amplify/amplify-js/issues/7716)
+
+
+
+
+
+## [3.8.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.11...@aws-amplify/core@3.8.12) (2021-02-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.10...@aws-amplify/core@3.8.11) (2021-02-01)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.9...@aws-amplify/core@3.8.10) (2021-01-29)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.8...@aws-amplify/core@3.8.9) (2021-01-07)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.7...@aws-amplify/core@3.8.8) (2020-12-17)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** use addEventListener for Reachability ([#7407](https://github.com/aws-amplify/amplify-js/issues/7407)) ([cd1db8f](https://github.com/aws-amplify/amplify-js/commit/cd1db8f99aa2499936792ddb8267a8a951603434))
+
+
+
+
+
+## [3.8.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.6...@aws-amplify/core@3.8.7) (2020-12-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** refresh manually after TTL has passed ([#7288](https://github.com/aws-amplify/amplify-js/issues/7288)) ([74b895c](https://github.com/aws-amplify/amplify-js/commit/74b895c45e629edc5ecf333e2769f222ae500834))
+
+
+
+
+
+## [3.8.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.5...@aws-amplify/core@3.8.6) (2020-11-30)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.4...@aws-amplify/core@3.8.5) (2020-11-23)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.3...@aws-amplify/core@3.8.4) (2020-11-20)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.2...@aws-amplify/core@3.8.3) (2020-11-13)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
 ## [3.8.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.1...@aws-amplify/core@3.8.2) (2020-11-03)
 
 **Note:** Version bump only for package @aws-amplify/core

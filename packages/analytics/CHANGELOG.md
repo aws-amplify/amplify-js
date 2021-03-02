@@ -3,6 +3,130 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.11...@aws-amplify/analytics@4.0.12) (2021-02-25)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.10...@aws-amplify/analytics@4.0.11) (2021-02-18)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.9...@aws-amplify/analytics@4.0.10) (2021-02-15)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.8...@aws-amplify/analytics@4.0.9) (2021-02-09)
+
+
+### Reverts
+
+* Revert "chore: bump aws-sdk to 3.4.1 (#7674)" (#7716) ([f142314](https://github.com/aws-amplify/amplify-js/commit/f1423144cf73304f3dc048233b35c831c9a1742d)), closes [#7674](https://github.com/aws-amplify/amplify-js/issues/7674) [#7716](https://github.com/aws-amplify/amplify-js/issues/7716)
+
+
+
+
+
+## [4.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.7...@aws-amplify/analytics@4.0.8) (2021-02-03)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.6...@aws-amplify/analytics@4.0.7) (2021-02-01)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.5...@aws-amplify/analytics@4.0.6) (2021-01-29)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.4...@aws-amplify/analytics@4.0.5) (2021-01-07)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.3...@aws-amplify/analytics@4.0.4) (2020-12-17)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.2...@aws-amplify/analytics@4.0.3) (2020-12-10)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.1...@aws-amplify/analytics@4.0.2) (2020-11-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/analytics:** send events when autoSessionRecord is disabled ([#7308](https://github.com/aws-amplify/amplify-js/issues/7308)) ([039aa95](https://github.com/aws-amplify/amplify-js/commit/039aa95f9a3e791f09d7566bd7baecf68c7c8cb6))
+
+
+
+
+
+## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.0...@aws-amplify/analytics@4.0.1) (2020-11-23)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+# [4.0.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.3.11...@aws-amplify/analytics@4.0.0) (2020-11-20)
+
+
+* fix(@aws-amplify/analytics)!: do not attempt to delete unused endpoints (#7245) ([d11009a](https://github.com/aws-amplify/amplify-js/commit/d11009a8f6c7fc7245eeb397eba39f468935ac16)), closes [#7245](https://github.com/aws-amplify/amplify-js/issues/7245)
+
+
+### BREAKING CHANGES
+
+* Analytics will no longer attempt to automatically delete old endpoints on updateEndpoint
+
+
+
+
+
+## [3.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.3.10...@aws-amplify/analytics@3.3.11) (2020-11-13)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
 ## [3.3.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@3.3.9...@aws-amplify/analytics@3.3.10) (2020-11-03)
 
 **Note:** Version bump only for package @aws-amplify/analytics

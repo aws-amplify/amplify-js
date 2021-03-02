@@ -15,8 +15,8 @@ import Auth from '@aws-amplify/auth';
 const logger = new Logger('helpers');
 
 export interface ToastError {
-  code: string;
-  name: string;
+  code?: string;
+  name?: string;
   message: string;
 }
 

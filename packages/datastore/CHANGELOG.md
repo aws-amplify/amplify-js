@@ -3,6 +3,159 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.9...@aws-amplify/datastore@2.9.10) (2021-02-25)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** improve IDB query performance ([#7746](https://github.com/aws-amplify/amplify-js/issues/7746)) ([5b87ad4](https://github.com/aws-amplify/amplify-js/commit/5b87ad485be5521a3ca91aa7bb00bba178e6c8b9))
+
+
+
+
+
+## [2.9.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.8...@aws-amplify/datastore@2.9.9) (2021-02-18)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.7...@aws-amplify/datastore@2.9.8) (2021-02-15)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.6...@aws-amplify/datastore@2.9.7) (2021-02-09)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** align AWSTime validation with AppSync ([#7717](https://github.com/aws-amplify/amplify-js/issues/7717)) ([feae503](https://github.com/aws-amplify/amplify-js/commit/feae503ba2ad22738e4a16639441f4dec6077f7a))
+
+
+
+
+
+## [2.9.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.5...@aws-amplify/datastore@2.9.6) (2021-02-03)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.4...@aws-amplify/datastore@2.9.5) (2021-02-01)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.3...@aws-amplify/datastore@2.9.4) (2021-01-29)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** only include changed fields in update mutation input ([#7466](https://github.com/aws-amplify/amplify-js/issues/7466)) ([7b5b23f](https://github.com/aws-amplify/amplify-js/commit/7b5b23f9fa6f1c4934c631ab6bfc363b8d3eeac2))
+
+
+
+
+
+## [2.9.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.2...@aws-amplify/datastore@2.9.3) (2021-01-07)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.1...@aws-amplify/datastore@2.9.2) (2020-12-17)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.0...@aws-amplify/datastore@2.9.1) (2020-12-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** check auth config before getting token ([#7325](https://github.com/aws-amplify/amplify-js/issues/7325)) ([d9aa328](https://github.com/aws-amplify/amplify-js/commit/d9aa32837f15f408daba0a0104bb27042b9331da))
+* **@aws-amplify/datastore:** Fix ctlSubsSubscription not getting unsubscribed when device goes offline ([#7250](https://github.com/aws-amplify/amplify-js/issues/7250)) ([4d0a2e3](https://github.com/aws-amplify/amplify-js/commit/4d0a2e34a21eb96b9085efcdd8f7846734bf33f7))
+* **@aws-amplify/datastore:** fix custom ownerField selection set ([#7317](https://github.com/aws-amplify/amplify-js/issues/7317)) ([0b82781](https://github.com/aws-amplify/amplify-js/commit/0b82781e946e6bef15f7b162d0ea538fc8ac5100))
+* **@aws-amplify/datastore:** remove netinfo from peer deps to prevent npm7 error ([#7349](https://github.com/aws-amplify/amplify-js/issues/7349)) ([88e2413](https://github.com/aws-amplify/amplify-js/commit/88e2413701cae673043c2fe42b490d279e7e51c9))
+
+
+
+
+
+# [2.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.8.1...@aws-amplify/datastore@2.9.0) (2020-11-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** handle groupClaim as plain string ([#7261](https://github.com/aws-amplify/amplify-js/issues/7261)) ([63e5baa](https://github.com/aws-amplify/amplify-js/commit/63e5baa4293bf6688962007137377d19c5ef8904))
+
+
+### Features
+
+* **@aws-amplify/datastore:** handle sessionId ([#7304](https://github.com/aws-amplify/amplify-js/issues/7304)) ([6e28eaf](https://github.com/aws-amplify/amplify-js/commit/6e28eaf37525ce231d7793bf82a960046fc7f8f4))
+
+
+
+
+
+## [2.8.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.8.0...@aws-amplify/datastore@2.8.1) (2020-11-23)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** use default auth for subscriptions ([#7172](https://github.com/aws-amplify/amplify-js/issues/7172)) ([7428c74](https://github.com/aws-amplify/amplify-js/commit/7428c74bb7402fe230def58e501d6e58ec351f3e))
+
+
+
+
+
+# [2.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.7.3...@aws-amplify/datastore@2.8.0) (2020-11-20)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** extend Lookup type to allow Predicates.ALL ([#7218](https://github.com/aws-amplify/amplify-js/issues/7218)) ([be1a746](https://github.com/aws-amplify/amplify-js/commit/be1a746fe7c0e8a41e4c773c03689a6d6d76b380))
+* **@aws-amplify/datastore:** fix sel. sync delta ([#7200](https://github.com/aws-amplify/amplify-js/issues/7200)) ([dbd4629](https://github.com/aws-amplify/amplify-js/commit/dbd46299af9c558251b8c652c3e50208982655c8))
+* **@aws-amplify/datastore:** fix validation for array with optional element ([#7216](https://github.com/aws-amplify/amplify-js/issues/7216)) ([31c7199](https://github.com/aws-amplify/amplify-js/commit/31c7199c1c0abe77f59ac24739667503f266b4d1))
+* **@aws-amplify/datastore:** handle groupClaim as string ([#7208](https://github.com/aws-amplify/amplify-js/issues/7208)) ([17b62dd](https://github.com/aws-amplify/amplify-js/commit/17b62dd216f7fdf5b21ae9ba2a2c170fb86a4d73))
+
+
+### Features
+
+* **@aws-amplify/datastore:** add local validations for AppSync scalars ([#7212](https://github.com/aws-amplify/amplify-js/issues/7212)) ([f277a7e](https://github.com/aws-amplify/amplify-js/commit/f277a7e4bb9d4cf67e2b4353c09b1e3f92bcd5c2))
+* **@aws-amplify/datastore:** add local validations for AppSync scalars (update) ([#7234](https://github.com/aws-amplify/amplify-js/issues/7234)) ([7477d27](https://github.com/aws-amplify/amplify-js/commit/7477d272587212c2a3cf0e86806f8ff4a03881e0))
+
+
+
+
+
+## [2.7.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.7.2...@aws-amplify/datastore@2.7.3) (2020-11-13)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** add implicit owner to selection set ([#7159](https://github.com/aws-amplify/amplify-js/issues/7159)) ([256ffa8](https://github.com/aws-amplify/amplify-js/commit/256ffa8b20d41a9e97a7dc2db38a3453d885c0cd))
+
+
+
+
+
 ## [2.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.7.1...@aws-amplify/datastore@2.7.2) (2020-11-03)
 
 
