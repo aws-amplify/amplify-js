@@ -187,15 +187,17 @@ export class AmplifyAuthenticator {
   render() {
     return (
       <Host>
-        {this.toastMessage ? (
-          <amplify-toast
-            message={this.toastMessage}
-            handleClose={() => {
-              this.toastMessage = '';
-            }}
-            data-test="authenticator-error"
-          />
-        ) : null}
+        <slot name="alert">
+          {this.toastMessage && (
+            <amplify-toast
+              message={this.toastMessage}
+              handleClose={() => {
+                this.toastMessage = '';
+              }}
+              data-test="authenticator-error"
+            />
+          )}
+        </slot>
         {this.authState === AuthState.SignedIn ? (
           [<slot name="greetings"></slot>, <slot></slot>]
         ) : (
