@@ -26,6 +26,7 @@ import {
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
+import { setTestId } from '../Utils'
 
 const logger = new Logger('RequireNewPassword');
 
@@ -104,7 +105,7 @@ export default class RequireNewPassword extends AuthPiece<
 							placeholder={I18n.get('Enter your password')}
 							secureTextEntry={true}
 							required={true}
-							testID={TEST_ID.AUTH.PASSWORD_INPUT}
+							{...setTestId(TEST_ID.AUTH.PASSWORD_INPUT)}
 						/>
 						{requiredAttributes.map(attribute => {
 							logger.debug('attributes', attribute);
@@ -121,7 +122,7 @@ export default class RequireNewPassword extends AuthPiece<
 										Object.keys(requiredAttributes).length
 								)
 							}
-							testID={TEST_ID.AUTH.CHANGE_PASSWORD_BUTTON}
+							{...setTestId(TEST_ID.AUTH.CHANGE_PASSWORD_BUTTON)}
 						/>
 					</View>
 					<View style={theme.sectionFooter}>

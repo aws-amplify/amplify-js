@@ -83,23 +83,29 @@ function getImplicitOwnerField(
 	modelDefinition: SchemaModel | SchemaNonModel,
 	scalarFields: ModelFields
 ) {
-	if (!scalarFields.owner && isOwnerBasedModel(modelDefinition)) {
+	const ownerFields = getOwnerFields(modelDefinition);
+
+	if (!scalarFields.owner && ownerFields.includes('owner')) {
 		return ['owner'];
 	}
 	return [];
 }
 
-function isOwnerBasedModel(modelDefinition: SchemaModel | SchemaNonModel) {
-	return (
-		isSchemaModel(modelDefinition) &&
-		modelDefinition.attributes &&
-		modelDefinition.attributes.some(
-			attr =>
-				attr.properties &&
-				attr.properties.rules &&
-				attr.properties.rules.some(rule => rule.allow === 'owner')
-		)
-	);
+function getOwnerFields(
+	modelDefinition: SchemaModel | SchemaNonModel
+): string[] {
+	const ownerFields: string[] = [];
+	if (isSchemaModel(modelDefinition) && modelDefinition.attributes) {
+		modelDefinition.attributes.forEach(attr => {
+			if (attr.properties && attr.properties.rules) {
+				const rule = attr.properties.rules.find(rule => rule.allow === 'owner');
+				if (rule && rule.ownerField) {
+					ownerFields.push(rule.ownerField);
+				}
+			}
+		});
+	}
+	return ownerFields;
 }
 
 function getScalarFields(
@@ -452,4 +458,24 @@ export function predicateToGraphQLFilter(
 	});
 
 	return result;
+}
+
+export function getUserGroupsFromToken(
+	token: { [field: string]: any },
+	rule: AuthorizationRule
+): string[] {
+	// validate token against groupClaim
+	let userGroups: string[] | string = token[rule.groupClaim] || [];
+
+	if (typeof userGroups === 'string') {
+		let parsedGroups;
+		try {
+			parsedGroups = JSON.parse(userGroups);
+		} catch (e) {
+			parsedGroups = userGroups;
+		}
+		userGroups = [].concat(parsedGroups);
+	}
+
+	return userGroups;
 }

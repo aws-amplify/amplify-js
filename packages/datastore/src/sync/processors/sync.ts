@@ -12,13 +12,14 @@ import { buildGraphQLOperation, predicateToGraphQLFilter } from '../utils';
 import {
 	jitteredExponentialRetry,
 	ConsoleLogger as Logger,
+	Hub,
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
 
-const logger = new Logger('DataStore');
-
 const DEFAULT_PAGINATION_LIMIT = 1000;
 const DEFAULT_MAX_RECORDS_TO_SYNC = 10000;
+
+const logger = new Logger('DataStore');
 
 class SyncProcessor {
 	private readonly typeQuery = new WeakMap<SchemaModel, [string, string]>();
@@ -90,7 +91,12 @@ class SyncProcessor {
 					startedAt: number;
 				};
 			}>
-		>await this.jitteredRetry<T>(query, variables, opName);
+		>await this.jitteredRetry<T>({
+			query,
+			variables,
+			opName,
+			modelDefinition,
+		});
 
 		const { [opName]: opResult } = data;
 
@@ -99,11 +105,27 @@ class SyncProcessor {
 		return { nextToken: newNextToken, startedAt, items };
 	}
 
-	private async jitteredRetry<T>(
-		query: string,
-		variables: { limit: number; lastSync: number; nextToken: string },
-		opName: string
-	): Promise<
+	// Partial data private feature flag. Not a public API. This will be removed in a future release.
+	private partialDataFeatureFlagEnabled() {
+		try {
+			const flag = sessionStorage.getItem('datastorePartialData');
+			return Boolean(flag);
+		} catch (e) {
+			return false;
+		}
+	}
+
+	private async jitteredRetry<T>({
+		query,
+		variables,
+		opName,
+		modelDefinition,
+	}: {
+		query: string;
+		variables: { limit: number; lastSync: number; nextToken: string };
+		opName: string;
+		modelDefinition: SchemaModel;
+	}): Promise<
 		GraphQLResult<{
 			[opName: string]: {
 				items: T[];
@@ -120,6 +142,36 @@ class SyncProcessor {
 						variables,
 					});
 				} catch (error) {
+					if (this.partialDataFeatureFlagEnabled()) {
+						const hasItems = Boolean(
+							error &&
+								error.data &&
+								error.data[opName] &&
+								error.data[opName].items
+						);
+
+						if (hasItems) {
+							const result = error;
+							result.data[opName].items = result.data[opName].items.filter(
+								item => item !== null
+							);
+
+							if (error.errors) {
+								Hub.dispatch('datastore', {
+									event: 'syncQueriesPartialSyncError',
+									data: {
+										errors: error.errors,
+										modelName: modelDefinition.name,
+									},
+								});
+							}
+
+							return result;
+						} else {
+							throw error;
+						}
+					}
+
 					// If the error is unauthorized, filter out unauthorized items and return accessible items
 					const unauthorized = (error.errors as [any]).some(
 						err => err.errorType === 'Unauthorized'

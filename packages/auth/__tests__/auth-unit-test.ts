@@ -2201,7 +2201,7 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
-		test('inputVerficationCode', async () => {
+		test('inputVerificationCode', async () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'forgotPassword')
 				.mockImplementationOnce(callback => {

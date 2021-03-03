@@ -1,5 +1,12 @@
 import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
-import { Draft, immerable, produce, setAutoFreeze } from 'immer';
+import {
+	Draft,
+	immerable,
+	produce,
+	setAutoFreeze,
+	enablePatches,
+	Patch,
+} from 'immer';
 import { v4 as uuid4 } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import {
@@ -54,6 +61,7 @@ import {
 } from '../util';
 
 setAutoFreeze(true);
+enablePatches();
 
 const logger = new Logger('DataStore');
 
@@ -78,6 +86,7 @@ const modelNamespaceMap = new WeakMap<
 	PersistentModelConstructor<any>,
 	string
 >();
+const modelPatchesMap = new WeakMap<PersistentModel, Patch[]>();
 
 const getModelDefinition = (
 	modelConstructor: PersistentModelConstructor<any>
@@ -255,6 +264,7 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 
 		if (isGraphQLScalarType(type)) {
 			const jsType = GraphQLScalarType.getJSType(type);
+			const validateScalar = GraphQLScalarType.getValidationFunction(type);
 
 			if (isArray) {
 				let errorTypeText: string = jsType;
@@ -270,21 +280,49 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 
 				if (
 					!isNullOrUndefined(v) &&
-					(<[]>v).some(
-						e => typeof e !== jsType || (isNullOrUndefined(e) && isRequired)
+					(<[]>v).some(e =>
+						isNullOrUndefined(e) ? isRequired : typeof e !== jsType
 					)
 				) {
-					const elemTypes = (<[]>v).map(e => typeof e).join(',');
+					const elemTypes = (<[]>v)
+						.map(e => (e === null ? 'null' : typeof e))
+						.join(',');
 
 					throw new Error(
 						`All elements in the ${name} array should be of type ${errorTypeText}, [${elemTypes}] received. ${v}`
 					);
+				}
+
+				if (validateScalar && !isNullOrUndefined(v)) {
+					const validationStatus = (<[]>v).map(e => {
+						if (!isNullOrUndefined(e)) {
+							return validateScalar(e);
+						} else if (isNullOrUndefined(e) && !isRequired) {
+							return true;
+						} else {
+							return false;
+						}
+					});
+
+					if (!validationStatus.every(s => s)) {
+						throw new Error(
+							`All elements in the ${name} array should be of type ${type}, validation failed for one or more elements. ${v}`
+						);
+					}
 				}
 			} else if (!isRequired && v === undefined) {
 				return;
 			} else if (typeof v !== jsType && v !== null) {
 				throw new Error(
 					`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`
+				);
+			} else if (
+				!isNullOrUndefined(v) &&
+				validateScalar &&
+				!validateScalar(v)
+			) {
+				throw new Error(
+					`Field ${name} should be of type ${type}, validation failed. ${v}`
 				);
 			}
 		}
@@ -353,14 +391,24 @@ const createModelClass = <T extends PersistentModel>(
 				logger.error(msg, { source });
 				throw new Error(msg);
 			}
-			return produce(source, draft => {
-				fn(<MutableModel<T>>draft);
-				draft.id = source.id;
-				const modelValidator = validateModelFields(modelDefinition);
-				Object.entries(draft).forEach(([k, v]) => {
-					modelValidator(k, v);
-				});
-			});
+
+			let patches;
+			const model = produce(
+				source,
+				draft => {
+					fn(<MutableModel<T>>draft);
+					draft.id = source.id;
+					const modelValidator = validateModelFields(modelDefinition);
+					Object.entries(draft).forEach(([k, v]) => {
+						modelValidator(k, v);
+					});
+				},
+				p => (patches = p)
+			);
+
+			patches.length && modelPatchesMap.set(model, patches);
+
+			return model;
 		}
 
 		// "private" method (that's hidden via `Setting`) for `withSSRContext` to use
@@ -477,7 +525,10 @@ async function checkSchemaVersion(
 			{ page: 0, limit: 1 }
 		);
 
-		if (schemaVersionSetting !== undefined) {
+		if (
+			schemaVersionSetting !== undefined &&
+			schemaVersionSetting.value !== undefined
+		) {
 			const storedValue = JSON.parse(schemaVersionSetting.value);
 
 			if (storedValue !== version) {
@@ -551,6 +602,7 @@ class DataStore {
 		SchemaModel,
 		ModelPredicate<any>
 	> = new WeakMap<SchemaModel, ModelPredicate<any>>();
+	private sessionId: string;
 
 	getModuleName() {
 		return 'DataStore';
@@ -573,7 +625,9 @@ class DataStore {
 			schema,
 			namespaceResolver,
 			getModelConstructorByModelName,
-			modelInstanceCreator
+			modelInstanceCreator,
+			undefined,
+			this.sessionId
 		);
 
 		await this.storage.init();
@@ -598,7 +652,8 @@ class DataStore {
 				this.syncPageSize,
 				this.conflictHandler,
 				this.errorHandler,
-				this.syncPredicates
+				this.syncPredicates,
+				this.amplifyConfig
 			);
 
 			// tslint:disable-next-line:max-line-length
@@ -705,7 +760,10 @@ class DataStore {
 			predicate: ModelPredicateCreator.getPredicates(predicate, false),
 			pagination: {
 				...pagination,
-				sort: ModelSortPredicateCreator.getPredicates(pagination.sort, false),
+				sort: ModelSortPredicateCreator.getPredicates(
+					pagination && pagination.sort,
+					false
+				),
 			},
 		});
 
@@ -723,6 +781,10 @@ class DataStore {
 		condition?: ProducerModelPredicate<T>
 	): Promise<T> => {
 		await this.start();
+
+		// Immer patches for constructing a correct update mutation input
+		// Allows us to only include changed fields for updates
+		const patches = modelPatchesMap.get(model);
 
 		const modelConstructor: PersistentModelConstructor<T> = model
 			? <PersistentModelConstructor<T>>model.constructor
@@ -743,7 +805,7 @@ class DataStore {
 		);
 
 		const [savedModel] = await this.storage.runExclusive(async s => {
-			await s.save(model, producedCondition);
+			await s.save(model, producedCondition, undefined, patches);
 
 			return s.query(
 				modelConstructor,
@@ -1017,6 +1079,8 @@ class DataStore {
 			this.fullSyncInterval ||
 			configFullSyncInterval ||
 			24 * 60; // 1 day
+
+		this.sessionId = this.retrieveSessionId();
 	};
 
 	clear = async function clear() {
@@ -1029,6 +1093,10 @@ class DataStore {
 		}
 
 		await this.storage.clear();
+
+		if (this.sync) {
+			this.sync.unsubscribeConnectivity();
+		}
 
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.storage = undefined;
@@ -1045,6 +1113,10 @@ class DataStore {
 			syncSubscription.unsubscribe();
 		}
 
+		if (this.sync) {
+			this.sync.unsubscribeConnectivity();
+		}
+
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.sync = undefined;
 	};
@@ -1052,9 +1124,13 @@ class DataStore {
 	private processPagination<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		paginationProducer: ProducerPaginationInput<T>
-	): PaginationInput<T> {
+	): PaginationInput<T> | undefined {
 		let sortPredicate: SortPredicate<T>;
 		const { limit, page, sort } = paginationProducer || {};
+
+		if (limit === undefined && page === undefined && sort === undefined) {
+			return undefined;
+		}
 
 		if (page !== undefined && limit === undefined) {
 			throw new Error('Limit is required when requesting a page');
@@ -1165,7 +1241,7 @@ class DataStore {
 			if (map.has(modelDefinition)) {
 				const { name } = modelDefinition;
 				logger.warn(
-					`You can only utilize one Sync Expression per model. 
+					`You can only utilize one Sync Expression per model.
           Subsequent sync expressions for the ${name} model will be ignored.`
 				);
 				return map;
@@ -1177,6 +1253,24 @@ class DataStore {
 
 			return map;
 		}, new WeakMap<SchemaModel, ModelPredicate<any>>());
+	}
+
+	// database separation for Amplify Console. Not a public API
+	private retrieveSessionId(): string | undefined {
+		try {
+			const sessionId = sessionStorage.getItem('datastoreSessionId');
+
+			if (sessionId) {
+				const { aws_appsync_graphqlEndpoint } = this.amplifyConfig;
+
+				const appSyncUrl = aws_appsync_graphqlEndpoint.split('/')[2];
+				const [appSyncId] = appSyncUrl.split('.');
+
+				return `${sessionId}-${appSyncId}`;
+			}
+		} catch {
+			return undefined;
+		}
 	}
 }
 

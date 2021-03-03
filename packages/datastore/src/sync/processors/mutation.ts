@@ -359,7 +359,7 @@ class MutationProcessor {
 			operation === TransformerMutationType.DELETE
 				? <ModelInstanceMetadata>{ id: parsedData.id } // For DELETE mutations, only ID is sent
 				: Object.values(modelDefinition.fields)
-						.filter(({ type, association }) => {
+						.filter(({ name, type, association }) => {
 							// connections
 							if (isModelFieldType(type)) {
 								// BELONGS_TO
@@ -372,6 +372,11 @@ class MutationProcessor {
 
 								// All other connections
 								return false;
+							}
+
+							if (operation === TransformerMutationType.UPDATE) {
+								// this limits the update mutation input to changed fields only
+								return parsedData.hasOwnProperty(name);
 							}
 
 							// scalars and non-model types

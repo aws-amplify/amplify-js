@@ -8,6 +8,7 @@ Thank you for your interest in contributing to our project! <3 Whether it's a bu
   - [Setting up for local development](#setting-up-for-local-development)
   - [Architecture of the codebase](#architecture-of-the-codebase)
   - [Steps towards contributions](#steps-towards-contributions)
+- [Bug Reports](#bug-reports)
 - [Pull Requests](#pull-requests)
 - [Debugging](#debugging)
 - [Release](#release)
@@ -134,7 +135,7 @@ $ yarn link-all # Make all the packages available to link
 $ yarn build:esm:watch # All packages are building ES6 modules in watch mode
 ```
 
-In you sample project, you can now link specific packages
+In your sample project, you can now link specific packages
 
 ```
 $ yarn link @aws-amplify/auth
@@ -149,7 +150,7 @@ Verdaccio is a lightweight private npm proxy registry built in Node.js. Install 
 To publish in Verdaccio, start a verdaccio instance and then,
 
 ```
-npm set registry http://localhost:4873/
+yarn config set registry http://localhost:4873/
 yarn lerna publish --skip-git --force-publish
 ```
 
@@ -157,14 +158,35 @@ To publish a local version of a specific package,
 
 ```
 cd packages/<category>
-npm publish --registry http://localhost:4873 (http://localhost:4873/)
+yarn publish --registry http://localhost:4873/
 ```
 
-Once you are done with Verdaccio, you can reset to npm registry by doing,
+Once you are done with Verdaccio, you can reset to the default registry by doing,
 
 ```
-npm set registry https://registry.npmjs.com/
+yarn config set registry https://registry.yarnpkg.com
 ```
+
+## Bug Reports
+
+Bug reports and feature requests are always welcome. Good bug reports are extremely helpful, so thanks in advance!
+
+When filing a bug, please try to be as detailed as possible. In addition to the bug report form information, details like these are incredibly useful:
+
+- A reproducible test case or series of steps
+- The date/commit/version(s) of the code you're running
+- Any modifications you've made relevant to the bug
+- Anything unusual about your environment or deployment
+
+Guidelines for bug reports:
+
+- Check to see if a [duplicate or closed issue](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+) already exists!
+- Provide a short and descriptive issue title
+- Remove any sensitive data from your examples or snippets
+- Format any code snippets using [Markdown](https://docs.github.com/en/github/writing-on-github/creating-and-highlighting-code-blocks) syntax
+- If you're not using the latest version of a [specific package](#packages-inside-amplify-js), see if the issue still persists after upgrading - this helps to isolate regressions!
+
+Finally, thank you for taking the time to read this, and taking the time to write a good bug report.
 
 # Pull Requests
 
@@ -176,13 +198,13 @@ _[Skip step 1 to 3 if you have already done this]_
 2. Clone your fork locally: `git clone git@github.com:YOUR_GITHUB_USERNAME/amplify-js.git`
 3. Run `yarn && yarn bootstrap` in the repository root
 4. Within your fork, create a new branch based on the issue (e.g. Issue #123) you're addressing - `git checkout -b "group-token/short-token-[branch-name]"` or `git checkout -b "short-token/[branch-name]"`
-   - Use grouping tokens at the beginning of the branch names. \_For e.g, if you are working on changes specific to `amplify-ui-components`, then you could start the branch name as `ui-components/...`
+   - Use grouping tokens at the beginning of the branch names. For e.g, if you are working on changes specific to `amplify-ui-components`, then you could start the branch name as `ui-components/...`
    - short token
      - feat
      - chore
      - bug
-   - use slashes to seperate parts of branch names
-   - Hyphenate well defined branch name
+   - use slashes to separate parts of branch names
+   - Hyphenate well-defined branch name
 5. Once your work is committed and you're ready to share, run test `yarn test`.
    **Note:** Manually test your changes in a sample app with different edge cases and also test across different browsers and platform
 6. Then, Push your branch `git push origin -u`

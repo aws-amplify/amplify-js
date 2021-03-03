@@ -213,7 +213,7 @@ export class SignUpComponentCore implements OnInit {
 	}
 
 	onSignUp() {
-		// validate  required inputs
+		// validate required inputs
 		const validation = this.validate();
 		if (validation && validation.length > 0) {
 			return this._setError(
