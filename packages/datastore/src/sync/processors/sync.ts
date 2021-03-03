@@ -159,8 +159,7 @@ class SyncProcessor {
 
 							if (error.errors) {
 								Hub.dispatch('datastore', {
-									event:
-										ControlMessage.SYNC_ENGINE_SYNC_QUERIES_PARTIAL_SYNC_ERROR,
+									event: 'syncQueriesPartialSyncError',
 									data: {
 										errors: error.errors,
 										modelName: modelDefinition.name,

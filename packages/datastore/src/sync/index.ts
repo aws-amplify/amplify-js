@@ -77,7 +77,6 @@ export enum ControlMessage {
 	SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED = 'subscriptionsEstablished',
 	SYNC_ENGINE_SYNC_QUERIES_STARTED = 'syncQueriesStarted',
 	SYNC_ENGINE_SYNC_QUERIES_READY = 'syncQueriesReady',
-	SYNC_ENGINE_SYNC_QUERIES_PARTIAL_SYNC_ERROR = 'syncQueriesPartialSyncError',
 	SYNC_ENGINE_MODEL_SYNCED = 'modelSynced',
 	SYNC_ENGINE_OUTBOX_MUTATION_ENQUEUED = 'outboxMutationEnqueued',
 	SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED = 'outboxMutationProcessed',
