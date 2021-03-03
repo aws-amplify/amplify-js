@@ -328,7 +328,7 @@ export class AuthClass {
 				validationData = [];
 				Object.keys(validationDataObject).map(key => {
 					validationData.push(
-						new CognitoUserAttribute({ Name: key, Value: attrs[key] })
+						new CognitoUserAttribute({ Name: key, Value: validationDataObject[key] })
 					);
 				});
 			}
