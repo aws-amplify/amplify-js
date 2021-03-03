@@ -14,7 +14,6 @@ import {
 	ConsoleLogger as Logger,
 	Hub,
 } from '@aws-amplify/core';
-import { ControlMessage } from '../';
 import { ModelPredicateCreator } from '../../predicates';
 
 const DEFAULT_PAGINATION_LIMIT = 1000;
