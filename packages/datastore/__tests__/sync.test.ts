@@ -1,3 +1,5 @@
+// These tests should be replaced once SyncEngine.partialDataFeatureFlagEnabled is removed.
+
 const sessionStorageMock = (() => {
 	let store = {};
 
