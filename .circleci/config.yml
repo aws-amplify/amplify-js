@@ -111,6 +111,26 @@ commands:
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/screenshots
 
+  integ_test_node_js:
+    parameters:
+      test_name:
+        type: string
+      category:
+        type: string
+      sample_name:
+        type: string
+    steps:
+      - run:
+          name: 'Install << parameters.test_name >> sample'
+          command: |
+            echo "Current NPM registry: " $(yarn config get registry)
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
+      - run:
+          name: 'Run Node tests for << parameters.test_name >> sample'
+          command: |
+            cd ~/amplify-js-samples-staging
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test node << parameters.category >> << parameters.sample_name >> dev' -n 3
+
   install_verdaccio:
     steps:
       - run:
@@ -575,7 +595,7 @@ jobs:
           category: storage
           sample_name: storageComp
           spec: storage-comp
-  integ_amazon_cognito_identity_js:
+  integ_react_amazon_cognito_identity_js:
     parameters:
       browser:
         type: string
@@ -591,7 +611,16 @@ jobs:
           sample_name: amazon-cognito-identity-js
           spec: amazon-cognito-identity-js
           browser: << parameters.browser >>
-
+  integ_node_amazon_cognito_identity_js:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/node/auth/amazon-cognito-identity-js
+    steps:
+      - prepare_test_env
+      - integ_test_node_js:
+          test_name: 'amazon-cognito-identity-js'
+          category: auth
+          sample_name: amazon-cognito-identity-js
   integ_rn_ios_storage:
     executor: macos-executor
     <<: *test_env_vars
@@ -829,7 +858,7 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      - integ_amazon_cognito_identity_js:
+      - integ_react_amazon_cognito_identity_js:
           requires:
             - integ_setup
             - build
@@ -838,6 +867,12 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_node_amazon_cognito_identity_js:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_rn_ios_storage:
           requires:
             - integ_setup
@@ -890,7 +925,8 @@ workflows:
             - integ_react_interactions
             - integ_angular_interactions
             - integ_vue_interactions
-            - integ_amazon_cognito_identity_js
+            - integ_react_amazon_cognito_identity_js
+            - integ_node_amazon_cognito_identity_js
             - integ_react_auth
             - integ_angular_auth
             - integ_vue_auth
