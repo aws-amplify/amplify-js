@@ -35,6 +35,7 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
 
 - `AWS.credentials` and `AWS.config` don’t exist anymore anywhere in Amplify JavaScript.
   - Both options will not be available to use in version 3. You will not be able to use and set your own credentials.
+  - For more information on this change, please see the [AWS SDK for JavaScript v3](https://github.com/aws/aws-sdk-js-v3/#configuration)
 - `aws-sdk@2.x` has been removed from `Amplify@3.x.x` in favor of [version 3 of aws-sdk-js](https://github.com/aws/aws-sdk-js-v3). We recommend to migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) if you rely on AWS services that are not supported by Amplify, since [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) is imported modularly.
 
 If you can't migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) or rely on aws-sdk@2.x, you will need to import it separately.
