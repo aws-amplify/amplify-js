@@ -22,6 +22,7 @@
 | `"forgot-password"`      | Content placed inside of the forgot password workflow for when a user wants to reset their password                    |
 | `"greetings"`            | Content placed inside of the greetings navigation for when a user is signed in                                         |
 | `"loading"`              | Content placed inside of the loading workflow for when the app is loading                                              |
+| `"notification"`         | Component for displaying auth messages                                                                                 |
 | `"require-new-password"` | Content placed inside of the require new password workflow for when a user is required to update their password        |
 | `"sign-in"`              | Content placed inside of the sign in workflow for when a user wants to sign into their account                         |
 | `"sign-up"`              | Content placed inside of the sign up workflow for when a user wants to register a new account                          |
