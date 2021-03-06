@@ -34,7 +34,7 @@ const logger = new Logger('Authenticator');
  * @slot totp-setup - Content placed inside of the totp-setup workflow for when a user opts to use TOTP MFA
  * @slot greetings - Content placed inside of the greetings navigation for when a user is signed in
  * @slot loading - Content placed inside of the loading workflow for when the app is loading
- * @slot notification - Component for displaying auth messages
+ * @slot notification - Component for displaying auth error messages
  */
 @Component({
   tag: 'amplify-authenticator',
@@ -188,8 +188,8 @@ export class AmplifyAuthenticator {
   render() {
     return (
       <Host>
-        <slot name="notification">
-          {this.toastMessage && (
+        {this.toastMessage && (
+          <slot name="notification">
             <amplify-toast
               message={this.toastMessage}
               handleClose={() => {
@@ -197,8 +197,8 @@ export class AmplifyAuthenticator {
               }}
               data-test="authenticator-error"
             />
-          )}
-        </slot>
+          </slot>
+        )}
         {this.authState === AuthState.SignedIn ? (
           [<slot name="greetings"></slot>, <slot></slot>]
         ) : (
