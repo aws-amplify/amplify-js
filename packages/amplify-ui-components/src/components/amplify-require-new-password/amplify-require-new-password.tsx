@@ -51,7 +51,7 @@ export class AmplifyRequireNewPassword {
   @State() loading: boolean = false;
 
   @Watch('user')
-  watchHandler() {
+  userHandler() {
     this.setCurrentUser();
   }
 

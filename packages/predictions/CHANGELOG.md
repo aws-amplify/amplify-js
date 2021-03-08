@@ -3,6 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.26](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.25...@aws-amplify/predictions@3.2.26) (2021-03-08)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.24...@aws-amplify/predictions@3.2.25) (2021-03-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/predictions:** Missing return in AmazonAIConvertPredictionsProvider.ts ([#7803](https://github.com/aws-amplify/amplify-js/issues/7803)) ([ad2dd86](https://github.com/aws-amplify/amplify-js/commit/ad2dd864ffbe3bc5c620c3078f82805a4ed83439))
+
+
+
+
+
+## [3.2.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.23...@aws-amplify/predictions@3.2.24) (2021-02-25)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.22...@aws-amplify/predictions@3.2.23) (2021-02-18)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.21...@aws-amplify/predictions@3.2.22) (2021-02-15)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.20...@aws-amplify/predictions@3.2.21) (2021-02-09)
+
+
+### Reverts
+
+* Revert "chore: bump aws-sdk to 3.4.1 (#7674)" (#7716) ([f142314](https://github.com/aws-amplify/amplify-js/commit/f1423144cf73304f3dc048233b35c831c9a1742d)), closes [#7674](https://github.com/aws-amplify/amplify-js/issues/7674) [#7716](https://github.com/aws-amplify/amplify-js/issues/7716)
+
+
+
+
+
+## [3.2.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.19...@aws-amplify/predictions@3.2.20) (2021-02-03)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.18...@aws-amplify/predictions@3.2.19) (2021-02-01)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.17...@aws-amplify/predictions@3.2.18) (2021-01-29)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
 ## [3.2.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.16...@aws-amplify/predictions@3.2.17) (2021-01-07)
 
 

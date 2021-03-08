@@ -8,7 +8,7 @@ import {
 	isAWSURL,
 	isAWSPhone,
 	isAWSIPAddress,
-} from "../src/util";
+} from '../src/util';
 
 describe('datastore util', () => {
 	test('isAWSDate', () => {
@@ -43,6 +43,10 @@ describe('datastore util', () => {
 			'12:30',
 			'12:30Z',
 			'12:30:24Z',
+			'12:30:24.1Z',
+			'12:30:24.12Z',
+			'12:30:24.123Z',
+			'12:30:24.1234Z',
 			'12:30:24-07:00',
 			'12:30:24.500+05:30',
 			'12:30:24.500+05:30:00',
@@ -72,6 +76,11 @@ describe('datastore util', () => {
 			'2021-01-11T12:30',
 			'2021-01-11T12:30Z',
 			'2021-01-11T12:30:24Z',
+			'2021-01-11T12:30:24.5Z',
+			'2021-01-11T12:30:24.50Z',
+			'2021-01-11T12:30:24.500Z',
+			'2021-01-11T12:30:24.5000Z',
+			'2021-02-09T06:19:04.49Z',
 			'2021-01-11T12:30:24-07:00',
 			'2021-01-11T12:30:24.500+05:30',
 			'2021-01-11T12:30:24.500+05:30:00',
@@ -101,18 +110,8 @@ describe('datastore util', () => {
 	});
 
 	test('isAWSTimestamp', () => {
-		const valid = [
-			0,
-			123,
-			123456,
-			123456789,
-		];
-		const invalid = [
-			-1,
-			-123,
-			-123456,
-			-1234567
-		];
+		const valid = [0, 123, 123456, 123456789];
+		const invalid = [-1, -123, -123456, -1234567];
 		valid.forEach(test => {
 			expect(isAWSTimestamp(test)).toBe(true);
 		});
@@ -122,11 +121,7 @@ describe('datastore util', () => {
 	});
 
 	test('isAWSEmail', () => {
-		const valid = [
-			'a@b',
-			'a@b.c',
-			'jeff@amazon.com',
-		];
+		const valid = ['a@b', 'a@b.c', 'john@doe.com'];
 		const invalid = [
 			'',
 			'@',
@@ -177,17 +172,8 @@ describe('datastore util', () => {
 	});
 
 	test('isAWSURL', () => {
-		const valid = [
-			'http://localhost/',
-			'schema://anything',
-			'smb://a/b/c?d=e',
-		];
-		const invalid = [
-			'',
-			'//',
-			'//example',
-			'example',
-		];
+		const valid = ['http://localhost/', 'schema://anything', 'smb://a/b/c?d=e'];
+		const invalid = ['', '//', '//example', 'example'];
 		valid.forEach(test => {
 			expect(isAWSURL(test)).toBe(true);
 		});
@@ -204,13 +190,7 @@ describe('datastore util', () => {
 			'123-456-7890',
 			'+44123456789',
 		];
-		const invalid = [
-			'',
-			'+',
-			'+-',
-			'a',
-			'bad-number',
-		];
+		const invalid = ['', '+', '+-', 'a', 'bad-number'];
 		valid.forEach(test => {
 			expect(isAWSPhone(test)).toBe(true);
 		});
