@@ -85,7 +85,7 @@ export class AmplifyAuthenticator {
       this.onAuthStateChange(authState, authData as CognitoUserInterface);
       this.toastMessage = '';
     });
-    Hub.listen(UI_AUTH_CHANNEL, this.handleToastEvent);
+    if (!this.hideToast) Hub.listen(UI_AUTH_CHANNEL, this.handleToastEvent);
     Hub.listen(AUTH_CHANNEL, this.handleExternalAuthEvent);
 
     appendToCognitoUserAgent('amplify-authenticator');
@@ -182,7 +182,7 @@ export class AmplifyAuthenticator {
 
   componentWillUnload() {
     Hub.remove(AUTH_CHANNEL, this.handleExternalAuthEvent);
-    Hub.remove(UI_AUTH_CHANNEL, this.handleToastEvent);
+    if (!this.hideToast) Hub.remove(UI_AUTH_CHANNEL, this.handleToastEvent);
     return onAuthUIStateChange;
   }
 
