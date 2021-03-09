@@ -11,7 +11,6 @@
 		"cypress:open": "lerna run cypress:open",
 		"coverage": "codecov || exit 0",
 		"docs": "typedoc packages/**/src --name amplify-js --hideGenerator --excludePrivate --ignoreCompilerErrors --mode file --out docs/api --theme docs/amplify-theme/typedoc/ --readme README.md",
-		"prepare": "npm run build",
 		"build": "lerna run build --stream",
 		"build:watch": "concurrently 'lerna run build:cjs:watch --parallel' 'lerna run build:esm:watch --parallel' --raw",
 		"build:esm:watch": "lerna run build:esm:watch --parallel",
@@ -45,7 +44,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Knowt/amplify-js.git"
+		"url": "https://github.com/aws-amplify/amplify-js.git"
 	},
 	"author": "Amazon Web Services",
 	"license": "Apache-2.0",
