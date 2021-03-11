@@ -689,17 +689,13 @@ jobs:
       - run:
           name: 'Publish to Amplify Package'
           command: |
-            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
-              echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-              npm whoami
-              git config --global user.email $GITHUB_EMAIL
-              git config --global user.name $GITHUB_USER
-              git status
-              git --no-pager diff
-              yarn publish:$CIRCLE_BRANCH
-            else
-              echo "Skipping deploy."
-            fi
+            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+            npm whoami
+            git config --global user.email $GITHUB_EMAIL
+            git config --global user.name $GITHUB_USER
+            git status
+            git --no-pager diff
+            yarn publish:$CIRCLE_BRANCH
 
   post_release:
     executor: build-executor
