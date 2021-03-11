@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.23](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.22...aws-amplify@3.3.23) (2021-03-08)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.3.22](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.21...aws-amplify@3.3.22) (2021-03-03)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
 ## [3.3.21](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.20...aws-amplify@3.3.21) (2021-02-25)
 
 **Note:** Version bump only for package aws-amplify
