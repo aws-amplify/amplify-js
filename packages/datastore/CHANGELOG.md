@@ -3,6 +3,120 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.11...@aws-amplify/datastore@2.9.12) (2021-03-08)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.10...@aws-amplify/datastore@2.9.11) (2021-03-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** return partial data when available ([#7775](https://github.com/aws-amplify/amplify-js/issues/7775)) ([715aa7e](https://github.com/aws-amplify/amplify-js/commit/715aa7e1d8ea1797784d37ab706c12b133fca4f0))
+
+
+
+
+
+## [2.9.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.9...@aws-amplify/datastore@2.9.10) (2021-02-25)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** improve IDB query performance ([#7746](https://github.com/aws-amplify/amplify-js/issues/7746)) ([5b87ad4](https://github.com/aws-amplify/amplify-js/commit/5b87ad485be5521a3ca91aa7bb00bba178e6c8b9))
+
+
+
+
+
+## [2.9.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.8...@aws-amplify/datastore@2.9.9) (2021-02-18)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.7...@aws-amplify/datastore@2.9.8) (2021-02-15)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.6...@aws-amplify/datastore@2.9.7) (2021-02-09)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** align AWSTime validation with AppSync ([#7717](https://github.com/aws-amplify/amplify-js/issues/7717)) ([feae503](https://github.com/aws-amplify/amplify-js/commit/feae503ba2ad22738e4a16639441f4dec6077f7a))
+
+
+
+
+
+## [2.9.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.5...@aws-amplify/datastore@2.9.6) (2021-02-03)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.4...@aws-amplify/datastore@2.9.5) (2021-02-01)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.3...@aws-amplify/datastore@2.9.4) (2021-01-29)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** only include changed fields in update mutation input ([#7466](https://github.com/aws-amplify/amplify-js/issues/7466)) ([7b5b23f](https://github.com/aws-amplify/amplify-js/commit/7b5b23f9fa6f1c4934c631ab6bfc363b8d3eeac2))
+
+
+
+
+
+## [2.9.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.2...@aws-amplify/datastore@2.9.3) (2021-01-07)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.1...@aws-amplify/datastore@2.9.2) (2020-12-17)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.0...@aws-amplify/datastore@2.9.1) (2020-12-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** check auth config before getting token ([#7325](https://github.com/aws-amplify/amplify-js/issues/7325)) ([d9aa328](https://github.com/aws-amplify/amplify-js/commit/d9aa32837f15f408daba0a0104bb27042b9331da))
+* **@aws-amplify/datastore:** Fix ctlSubsSubscription not getting unsubscribed when device goes offline ([#7250](https://github.com/aws-amplify/amplify-js/issues/7250)) ([4d0a2e3](https://github.com/aws-amplify/amplify-js/commit/4d0a2e34a21eb96b9085efcdd8f7846734bf33f7))
+* **@aws-amplify/datastore:** fix custom ownerField selection set ([#7317](https://github.com/aws-amplify/amplify-js/issues/7317)) ([0b82781](https://github.com/aws-amplify/amplify-js/commit/0b82781e946e6bef15f7b162d0ea538fc8ac5100))
+* **@aws-amplify/datastore:** remove netinfo from peer deps to prevent npm7 error ([#7349](https://github.com/aws-amplify/amplify-js/issues/7349)) ([88e2413](https://github.com/aws-amplify/amplify-js/commit/88e2413701cae673043c2fe42b490d279e7e51c9))
+
+
+
+
+
 # [2.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.8.1...@aws-amplify/datastore@2.9.0) (2020-11-30)
 
 

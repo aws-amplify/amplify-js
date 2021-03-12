@@ -63,6 +63,10 @@ declare module 'amazon-cognito-identity-js' {
 		Storage?: ICognitoStorage;
 	}
 
+	export interface GetSessionOptions {
+		clientMetadata: Record<string, string>;
+	}
+
 	export class CognitoUser {
 		constructor(data: ICognitoUserData);
 
@@ -76,12 +80,13 @@ declare module 'amazon-cognito-identity-js' {
 		public setAuthenticationFlowType(
 			authenticationFlowType: string
 		): string;
-        public getCachedDeviceKeyAndPassword(): void;
+		public getCachedDeviceKeyAndPassword(): void;
 
 		public getSession(
 			callback:
 				| ((error: Error, session: null) => void)
-				| ((error: null, session: CognitoUserSession) => void)
+				| ((error: null, session: CognitoUserSession) => void),
+			options?: GetSessionOptions
 		): void;
 		public refreshSession(
 			refreshToken: CognitoRefreshToken,
@@ -159,7 +164,7 @@ declare module 'amazon-cognito-identity-js' {
 		public sendMFACode(
 			confirmationCode: string,
 			callbacks: {
-				onSuccess: (session: CognitoUserSession) => void;
+				onSuccess: (session: CognitoUserSession, userConfirmationNecessary?: boolean) => void;
 				onFailure: (err: any) => void;
 			},
 			mfaType?: string,

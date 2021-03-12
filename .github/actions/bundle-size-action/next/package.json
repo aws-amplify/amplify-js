@@ -1,0 +1,31 @@
+{
+  "name": "next",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "prebuild": "rimraf .next",
+    "build": "next build",
+    "start": "next start",
+    "precalculate": "$_ run build",
+    "calculate": "bundlewatch"
+  },
+  "bundlewatch": {
+    "files": [
+      {
+        "path": ".next/static/chunks/pages/index-*.js",
+        "maxSize": "215kB"
+      }
+    ]
+  },
+  "dependencies": {
+    "aws-amplify": "unstable",
+    "next": "10.0.5",
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
+  },
+  "devDependencies": {
+    "bundlewatch": "^0.3.1",
+    "rimraf": "^3.0.2"
+  }
+}
