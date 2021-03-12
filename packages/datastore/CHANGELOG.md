@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.12...@aws-amplify/datastore@2.9.13) (2021-03-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** handle sync query unauthorized ([#7926](https://github.com/aws-amplify/amplify-js/issues/7926)) ([4b37112](https://github.com/aws-amplify/amplify-js/commit/4b371125fa60362b2e4a648e0cb18b8f8a853956))
+
+
+
+
+
 ## [2.9.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.11...@aws-amplify/datastore@2.9.12) (2021-03-08)
 
 **Note:** Version bump only for package @aws-amplify/datastore
