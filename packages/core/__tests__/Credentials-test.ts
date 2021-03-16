@@ -9,9 +9,16 @@ const user = {
 	},
 };
 
+const token = {
+	getJwtToken: () => 'token',
+};
+
 const authClass = {
 	getModuleName() {
 		return 'Auth';
+	},
+	getIdToken() {
+		return token;
 	},
 	currentUserCredentials() {
 		return Promise.resolve('cred');
@@ -164,6 +171,36 @@ describe('Credentials test', () => {
 			const credentials = new Credentials(null);
 
 			expect(await credentials.get()).toBe('cred');
+		});
+	});
+
+	describe('set credentials from session', () => {
+		let credentials: Credentials;
+
+		beforeAll(() => {
+			const credentials = new Credentials(null);
+			Amplify.register(authClass);
+			Amplify.register(credentials);
+		});
+
+		test('session could not contain identifyPoolId', async () => {
+			const config = {
+				region: 'region',
+				// identityPoolId: null,
+			};
+
+			Amplify.configure(config);
+
+			expect.assertions(1);
+			try {
+				expect(await credentials.set(authClass, 'session')).resolves.toBe(
+					'cred'
+				);
+			} catch (err) {
+				expect(err.message).not.toEqual(
+					'No Cognito Federated Identity pool provided'
+				);
+			}
 		});
 	});
 });

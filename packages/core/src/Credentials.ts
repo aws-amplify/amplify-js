@@ -404,7 +404,7 @@ export class CredentialsClass {
 		const { region, userPoolId, identityPoolId } = this._config;
 		if (!identityPoolId) {
 			logger.debug('No Cognito Federated Identity pool provided');
-			return Promise.reject('No Cognito Federated Identity pool provided');
+			// return Promise.reject('No Cognito Federated Identity pool provided');
 		}
 		if (!region) {
 			logger.debug('region is not configured for getting the credentials');
@@ -421,7 +421,7 @@ export class CredentialsClass {
 			customUserAgent: getAmplifyUserAgent(),
 		});
 
-		/* 
+		/*
 			Retreiving identityId with GetIdCommand to mimic the behavior in the following code in aws-sdk-v3:
 			https://git.io/JeDxU
 
