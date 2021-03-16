@@ -60,6 +60,9 @@
     "lib/index.js": "./enhance-rn.js",
     "./src/StorageHelper": "./src/StorageHelper-rn.js"
   },
+  "browser": {
+    "crypto": false
+  },
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
   "types": "./index.d.ts",
