@@ -1,6 +1,9 @@
+import { Amplify } from 'aws-amplify';
 import Head from 'next/head';
 
 import styles from '../styles/Home.module.css';
+
+Amplify.configure();
 
 export default function Home() {
 	return (
