@@ -1,4 +1,4 @@
-name: New Bug report
+name: Bug report
 description: Create a report to help us improve Amplify JS
 title: ''
 issue_body: true
@@ -10,9 +10,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        For reference, the current versions of the Amplify JS packages are listed below.
-
-        Please verify your issue against the latest version(s).
+        For reference, the current versions of the Amplify JS packages are listed below. Please verify your issue against the latest version(s) of the relevant package(s).
 
         <details>
           <summary>Click to expand version list</summary>
