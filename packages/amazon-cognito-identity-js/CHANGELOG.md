@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.14...amazon-cognito-identity-js@4.6.0) (2021-03-18)
+
+
+### Features
+
+* Improve Next.js/CRA/Angular bundle sizes ([#7842](https://github.com/aws-amplify/amplify-js/issues/7842)) ([2e0dc61](https://github.com/aws-amplify/amplify-js/commit/2e0dc61fa9e4399351a59a7e8fe801027b6587d5))
+
+
+
+
+
 ## [4.5.14](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.13...amazon-cognito-identity-js@4.5.14) (2021-03-12)
 
 
