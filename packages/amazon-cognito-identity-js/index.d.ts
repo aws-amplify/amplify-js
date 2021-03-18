@@ -164,7 +164,7 @@ declare module 'amazon-cognito-identity-js' {
 		public sendMFACode(
 			confirmationCode: string,
 			callbacks: {
-				onSuccess: (session: CognitoUserSession) => void;
+				onSuccess: (session: CognitoUserSession, userConfirmationNecessary?: boolean) => void;
 				onFailure: (err: any) => void;
 			},
 			mfaType?: string,
