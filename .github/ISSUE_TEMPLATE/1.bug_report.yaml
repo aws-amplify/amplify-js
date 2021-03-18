@@ -10,7 +10,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        For reference, the current versions of the Amplify JS packages are listed below. Please verify your issue against the latest version(s) of the relevant package(s).
+        For reference, the current versions of the Amplify JS packages are listed below. Please verify your issue against the latest version(s) of the relevant package(s):
 
         <details>
           <summary>Click to expand version list</summary>
@@ -59,13 +59,6 @@ body:
     attributes:
       value: |
         ---
-  - type: checkboxes
-    attributes:
-      label: Is this a production issue?
-      description: |
-        Are you experiencing this issue with a production application where end users are affected?
-      options:
-        - label: (check box if yes)
   - type: markdown
     attributes:
       value: |
