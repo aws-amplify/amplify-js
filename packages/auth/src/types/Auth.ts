@@ -14,6 +14,7 @@
 import {
 	ICookieStorageData,
 	ICognitoStorage,
+	IFetchOptions,
 } from 'amazon-cognito-identity-js';
 
 /**
@@ -50,7 +51,7 @@ export interface AuthOptions {
 	identityPoolRegion?: string;
 	clientMetadata?: any;
 	endpoint?: string;
-	fetchOptions?: any;
+	fetchOptions?: IFetchOptions;
 }
 
 export enum CognitoHostedUIIdentityProvider {
