@@ -29,6 +29,7 @@ graph TD;
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-loading-spinner
+  amplify-button --> amplify-icon
   amplify-loading-spinner --> amplify-icon
   amplify-radio-button --> amplify-label
   amplify-totp-setup --> amplify-form-section

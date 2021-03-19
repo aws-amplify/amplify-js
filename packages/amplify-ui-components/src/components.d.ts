@@ -8,9 +8,10 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AuthState, AuthStateHandler, CognitoUserInterface, FederatedConfig, MFATypesInterface, UsernameAliasStrings } from "./common/types/auth-types";
 import { FormFieldTypes } from "./components/amplify-auth-fields/amplify-auth-fields-interface";
 import { ButtonTypes, ButtonVariant, InputEvent, TextFieldTypes } from "./common/types/ui-types";
+import { IconNameType } from "./components/amplify-icon/icons";
+import { ChatResult } from "./common/types/interactions-types";
 import { FunctionalComponent } from "@stencil/core";
 import { CountryCodeDialOptions } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
-import { IconNameType } from "./components/amplify-icon/icons";
 import { AccessLevel, StorageObject } from "./common/types/storage-types";
 import { SelectOptionsNumber, SelectOptionsString } from "./components/amplify-select/amplify-select-interface";
 export namespace Components {
@@ -50,6 +51,10 @@ export namespace Components {
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
+          * Hide amplify-toast for auth errors
+         */
+        "hideToast": boolean;
+        /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
         "initialAuthState": AuthState.SignIn | AuthState.SignUp;
@@ -68,13 +73,55 @@ export namespace Components {
          */
         "handleButtonClick": (evt: Event) => void;
         /**
+          * Name of icon to be placed inside the button
+         */
+        "icon"?: IconNameType;
+        /**
           * Type of the button: 'button', 'submit' or 'reset'
          */
         "type": ButtonTypes;
         /**
-          * Variant of a button: 'button' | 'anchor'
+          * Variant of a button: 'button' | 'anchor | 'icon'
          */
         "variant": ButtonVariant;
+    }
+    interface AmplifyChatbot {
+        /**
+          * Name of the bot
+         */
+        "botName": string;
+        /**
+          * Text placed in the top header
+         */
+        "botTitle": string;
+        /**
+          * Clear messages when conversation finishes
+         */
+        "clearOnComplete": boolean;
+        /**
+          * Continue listening to users after they send the message
+         */
+        "conversationModeOn": boolean;
+        /**
+          * Noise threshold between -1 and 1. Anything below is considered a silence.
+         */
+        "silenceThreshold": number;
+        /**
+          * Amount of silence (in ms) to wait for
+         */
+        "silenceTime": number;
+        /**
+          * Whether text chat is enabled
+         */
+        "textEnabled": boolean;
+        /**
+          * Whether voice chat is enabled
+         */
+        "voiceEnabled": boolean;
+        /**
+          * Greeting message displayed to users
+         */
+        "welcomeMessage": string;
     }
     interface AmplifyCheckbox {
         /**
@@ -328,7 +375,7 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
-          * The ID of the field.  Should match with its corresponding input's ID.
+          * The ID of the field. Should match with its corresponding input's ID.
          */
         "fieldId": string;
         /**
@@ -336,7 +383,7 @@ export namespace Components {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
-          * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
+          * The text of a hint to the user as to how to fill out the input. Goes just below the input.
          */
         "hint": string | FunctionalComponent | null;
         /**
@@ -344,7 +391,7 @@ export namespace Components {
          */
         "inputProps"?: object;
         /**
-          * The text of the label.  Goes above the input. Ex: 'First name'
+          * The text of the label. Goes above the input. Ex: 'First name'
          */
         "label": string | null;
         /**
@@ -988,7 +1035,7 @@ export namespace Components {
          */
         "headerText": string;
         /**
-          * Used for the submit button text in sign up component
+          * Text used for the sign in hyperlink
          */
         "signInText": string;
         /**
@@ -1119,6 +1166,12 @@ declare global {
     var HTMLAmplifyButtonElement: {
         prototype: HTMLAmplifyButtonElement;
         new (): HTMLAmplifyButtonElement;
+    };
+    interface HTMLAmplifyChatbotElement extends Components.AmplifyChatbot, HTMLStencilElement {
+    }
+    var HTMLAmplifyChatbotElement: {
+        prototype: HTMLAmplifyChatbotElement;
+        new (): HTMLAmplifyChatbotElement;
     };
     interface HTMLAmplifyCheckboxElement extends Components.AmplifyCheckbox, HTMLStencilElement {
     }
@@ -1414,6 +1467,7 @@ declare global {
         "amplify-auth0-button": HTMLAmplifyAuth0ButtonElement;
         "amplify-authenticator": HTMLAmplifyAuthenticatorElement;
         "amplify-button": HTMLAmplifyButtonElement;
+        "amplify-chatbot": HTMLAmplifyChatbotElement;
         "amplify-checkbox": HTMLAmplifyCheckboxElement;
         "amplify-code-field": HTMLAmplifyCodeFieldElement;
         "amplify-confirm-sign-in": HTMLAmplifyConfirmSignInElement;
@@ -1501,6 +1555,10 @@ declare namespace LocalJSX {
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
+          * Hide amplify-toast for auth errors
+         */
+        "hideToast"?: boolean;
+        /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
         "initialAuthState"?: AuthState.SignIn | AuthState.SignUp;
@@ -1519,13 +1577,59 @@ declare namespace LocalJSX {
          */
         "handleButtonClick"?: (evt: Event) => void;
         /**
+          * Name of icon to be placed inside the button
+         */
+        "icon"?: IconNameType;
+        /**
           * Type of the button: 'button', 'submit' or 'reset'
          */
         "type"?: ButtonTypes;
         /**
-          * Variant of a button: 'button' | 'anchor'
+          * Variant of a button: 'button' | 'anchor | 'icon'
          */
         "variant"?: ButtonVariant;
+    }
+    interface AmplifyChatbot {
+        /**
+          * Name of the bot
+         */
+        "botName"?: string;
+        /**
+          * Text placed in the top header
+         */
+        "botTitle"?: string;
+        /**
+          * Clear messages when conversation finishes
+         */
+        "clearOnComplete"?: boolean;
+        /**
+          * Continue listening to users after they send the message
+         */
+        "conversationModeOn"?: boolean;
+        /**
+          * Event emitted when conversation is completed
+         */
+        "onChatCompleted"?: (event: CustomEvent<ChatResult>) => void;
+        /**
+          * Noise threshold between -1 and 1. Anything below is considered a silence.
+         */
+        "silenceThreshold"?: number;
+        /**
+          * Amount of silence (in ms) to wait for
+         */
+        "silenceTime"?: number;
+        /**
+          * Whether text chat is enabled
+         */
+        "textEnabled"?: boolean;
+        /**
+          * Whether voice chat is enabled
+         */
+        "voiceEnabled"?: boolean;
+        /**
+          * Greeting message displayed to users
+         */
+        "welcomeMessage"?: string;
     }
     interface AmplifyCheckbox {
         /**
@@ -1779,7 +1883,7 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
-          * The ID of the field.  Should match with its corresponding input's ID.
+          * The ID of the field. Should match with its corresponding input's ID.
          */
         "fieldId"?: string;
         /**
@@ -1787,7 +1891,7 @@ declare namespace LocalJSX {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
-          * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
+          * The text of a hint to the user as to how to fill out the input. Goes just below the input.
          */
         "hint"?: string | FunctionalComponent | null;
         /**
@@ -1795,7 +1899,7 @@ declare namespace LocalJSX {
          */
         "inputProps"?: object;
         /**
-          * The text of the label.  Goes above the input. Ex: 'First name'
+          * The text of the label. Goes above the input. Ex: 'First name'
          */
         "label"?: string | null;
         /**
@@ -2443,7 +2547,7 @@ declare namespace LocalJSX {
          */
         "headerText"?: string;
         /**
-          * Used for the submit button text in sign up component
+          * Text used for the sign in hyperlink
          */
         "signInText"?: string;
         /**
@@ -2549,6 +2653,7 @@ declare namespace LocalJSX {
         "amplify-auth0-button": AmplifyAuth0Button;
         "amplify-authenticator": AmplifyAuthenticator;
         "amplify-button": AmplifyButton;
+        "amplify-chatbot": AmplifyChatbot;
         "amplify-checkbox": AmplifyCheckbox;
         "amplify-code-field": AmplifyCodeField;
         "amplify-confirm-sign-in": AmplifyConfirmSignIn;
@@ -2608,6 +2713,7 @@ declare module "@stencil/core" {
             "amplify-auth0-button": LocalJSX.AmplifyAuth0Button & JSXBase.HTMLAttributes<HTMLAmplifyAuth0ButtonElement>;
             "amplify-authenticator": LocalJSX.AmplifyAuthenticator & JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement>;
             "amplify-button": LocalJSX.AmplifyButton & JSXBase.HTMLAttributes<HTMLAmplifyButtonElement>;
+            "amplify-chatbot": LocalJSX.AmplifyChatbot & JSXBase.HTMLAttributes<HTMLAmplifyChatbotElement>;
             "amplify-checkbox": LocalJSX.AmplifyCheckbox & JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement>;
             "amplify-code-field": LocalJSX.AmplifyCodeField & JSXBase.HTMLAttributes<HTMLAmplifyCodeFieldElement>;
             "amplify-confirm-sign-in": LocalJSX.AmplifyConfirmSignIn & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignInElement>;

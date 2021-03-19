@@ -33,10 +33,17 @@ export class CredentialsClass {
 	private _identityId;
 	private _nextCredentialsRefresh: Number;
 
+	// Allow `Auth` to be injected for SSR, but Auth isn't a required dependency for Credentials
+	Auth = undefined;
+
 	constructor(config) {
 		this.configure(config);
 		this._refreshHandlers['google'] = GoogleOAuth.refreshGoogleToken;
 		this._refreshHandlers['facebook'] = FacebookOAuth.refreshFacebookToken;
+	}
+
+	public getModuleName() {
+		return 'Credentials';
 	}
 
 	public getCredSource() {
@@ -58,6 +65,7 @@ export class CredentialsClass {
 		}
 
 		this._storage = this._config.storage;
+
 		if (!this._storage) {
 			this._storage = new StorageHelper().getStorage();
 		}
@@ -86,23 +94,42 @@ export class CredentialsClass {
 		return this._gettingCredPromise;
 	}
 
-	private _keepAlive() {
+	private async _keepAlive() {
 		logger.debug('checking if credentials exists and not expired');
 		const cred = this._credentials;
-		if (cred && !this._isExpired(cred)) {
+		if (cred && !this._isExpired(cred) && !this._isPastTTL()) {
 			logger.debug('credentials not changed and not expired, directly return');
 			return Promise.resolve(cred);
 		}
 
 		logger.debug('need to get a new credential or refresh the existing one');
-		if (
-			Amplify.Auth &&
-			typeof Amplify.Auth.currentUserCredentials === 'function'
-		) {
-			return Amplify.Auth.currentUserCredentials();
-		} else {
+
+		// Some use-cases don't require Auth for signing in, but use Credentials for guest users (e.g. Analytics)
+		// Prefer locally scoped `Auth`, but fallback to registered `Amplify.Auth` global otherwise.
+		const { Auth = Amplify.Auth } = this;
+
+		if (!Auth || typeof Auth.currentUserCredentials !== 'function') {
 			return Promise.reject('No Auth module registered in Amplify');
 		}
+
+		if (!this._isExpired(cred) && this._isPastTTL()) {
+			logger.debug('ttl has passed but token is not yet expired');
+			try {
+				const user = await Auth.currentUserPoolUser();
+				const session = await Auth.currentSession();
+				const refreshToken = session.refreshToken;
+				const refreshRequest = new Promise((res, rej) => {
+					user.refreshSession(refreshToken, (err, data) => {
+						return err ? rej(err) : res(data);
+					});
+				});
+				await refreshRequest; // note that rejections will be caught and handled in the catch block.
+			} catch (err) {
+				// should not throw because user might just be on guest access or is authenticated through federation
+				logger.debug('Error attempting to refreshing the session', err);
+			}
+		}
+		return Auth.currentUserCredentials();
 	}
 
 	public refreshFederatedToken(federatedInfo) {
@@ -184,19 +211,16 @@ export class CredentialsClass {
 		}
 		logger.debug('are these credentials expired?', credentials);
 		const ts = Date.now();
-		const delta = 10 * 60 * 1000; // 10 minutes in milli seconds
 
 		/* returns date object.
 			https://github.com/aws/aws-sdk-js-v3/blob/v1.0.0-beta.1/packages/types/src/credentials.ts#L26
 		*/
 		const { expiration } = credentials;
-		if (
-			expiration.getTime() > ts + delta &&
-			ts < this._nextCredentialsRefresh
-		) {
-			return false;
-		}
-		return true;
+		return expiration.getTime() <= ts;
+	}
+
+	private _isPastTTL(): boolean {
+		return this._nextCredentialsRefresh <= Date.now();
 	}
 
 	private async _setCredentialsForGuest() {
@@ -281,7 +305,42 @@ export class CredentialsClass {
 				return res;
 			})
 			.catch(async e => {
-				return e;
+				// If identity id is deleted in the console, we make one attempt to recreate it
+				// and remove existing id from cache.
+				if (
+					e.name === 'ResourceNotFoundException' &&
+					e.message === `Identity '${identityId}' not found.`
+				) {
+					logger.debug('Failed to load guest credentials');
+					this._storage.removeItem('CognitoIdentityId-' + identityPoolId);
+
+					const credentialsProvider: CredentialProvider = async () => {
+						const { IdentityId } = await cognitoClient.send(
+							new GetIdCommand({
+								IdentityPoolId: identityPoolId,
+							})
+						);
+						this._identityId = IdentityId;
+						const cognitoIdentityParams: FromCognitoIdentityParameters = {
+							client: cognitoClient,
+							identityId: IdentityId,
+						};
+
+						const credentialsFromCognitoIdentity = fromCognitoIdentity(
+							cognitoIdentityParams
+						);
+
+						return credentialsFromCognitoIdentity();
+					};
+
+					credentials = credentialsProvider().catch(async err => {
+						throw err;
+					});
+
+					return this._loadCredentials(credentials, 'guest', false, null);
+				} else {
+					return e;
+				}
 			});
 	}
 
@@ -500,6 +559,8 @@ export class CredentialsClass {
 }
 
 export const Credentials = new CredentialsClass(null);
+
+Amplify.register(Credentials);
 
 /**
  * @deprecated use named import

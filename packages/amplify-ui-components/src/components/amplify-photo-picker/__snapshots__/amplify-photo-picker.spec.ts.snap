@@ -9,7 +9,7 @@ exports[`amplify-photo-picker spec: Render logic -> should render a picker by de
           Picker Title
         </div>
         <div class="header-hint">
-          Ancilliary text or content may occupy this space here
+          Ancillary text or content may occupy this space here
         </div>
         <amplify-picker acceptvalue="image/*">
           <div class="picker-body" slot="picker">

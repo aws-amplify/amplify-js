@@ -1,5 +1,17 @@
 import { ModelInstanceCreator } from './datastore/datastore';
-import { exhaustiveCheck } from './util';
+import {
+	exhaustiveCheck,
+	isAWSDate,
+	isAWSTime,
+	isAWSDateTime,
+	isAWSTimestamp,
+	isAWSEmail,
+	isAWSJSON,
+	isAWSURL,
+	isAWSPhone,
+	isAWSIPAddress,
+} from './util';
+import { PredicateAll } from './predicates';
 
 //#region Schema types
 export type Schema = UserSchema & {
@@ -84,7 +96,10 @@ export enum GraphQLScalarType {
 
 export namespace GraphQLScalarType {
 	export function getJSType(
-		scalar: keyof Omit<typeof GraphQLScalarType, 'getJSType'>
+		scalar: keyof Omit<
+			typeof GraphQLScalarType,
+			'getJSType' | 'getValidationFunction'
+		>
 	): 'string' | 'number' | 'boolean' {
 		switch (scalar) {
 			case 'Boolean':
@@ -108,6 +123,36 @@ export namespace GraphQLScalarType {
 				exhaustiveCheck(scalar);
 		}
 	}
+
+	export function getValidationFunction(
+		scalar: keyof Omit<
+			typeof GraphQLScalarType,
+			'getJSType' | 'getValidationFunction'
+		>
+	): ((val: string | number) => boolean) | undefined {
+		switch (scalar) {
+			case 'AWSDate':
+				return isAWSDate;
+			case 'AWSTime':
+				return isAWSTime;
+			case 'AWSDateTime':
+				return isAWSDateTime;
+			case 'AWSTimestamp':
+				return isAWSTimestamp;
+			case 'AWSEmail':
+				return isAWSEmail;
+			case 'AWSJSON':
+				return isAWSJSON;
+			case 'AWSURL':
+				return isAWSURL;
+			case 'AWSPhone':
+				return isAWSPhone;
+			case 'AWSIPAddress':
+				return isAWSIPAddress;
+			default:
+				return undefined;
+		}
+	}
 }
 
 export type AuthorizationRule = {
@@ -116,13 +161,16 @@ export type AuthorizationRule = {
 	provider: 'userPools' | 'oidc' | 'iam' | 'apiKey';
 	groupClaim: string;
 	groups: [string];
-	authStrategy: 'owner' | 'group' | 'private' | 'public';
+	authStrategy: 'owner' | 'groups' | 'private' | 'public';
 	areSubscriptionsPublic: boolean;
 };
 
 export function isGraphQLScalarType(
 	obj: any
-): obj is keyof Omit<typeof GraphQLScalarType, 'getJSType'> {
+): obj is keyof Omit<
+	typeof GraphQLScalarType,
+	'getJSType' | 'getValidationFunction'
+> {
 	return obj && GraphQLScalarType[obj] !== undefined;
 }
 
@@ -153,12 +201,16 @@ export function isEnumFieldType(obj: any): obj is EnumFieldType {
 type ModelField = {
 	name: string;
 	type:
-		| keyof Omit<typeof GraphQLScalarType, 'getJSType'>
+		| keyof Omit<
+				typeof GraphQLScalarType,
+				'getJSType' | 'getValidationFunction'
+		  >
 		| ModelFieldType
 		| NonModelFieldType
 		| EnumFieldType;
 	isArray: boolean;
 	isRequired?: boolean;
+	isArrayNullable?: boolean;
 	association?: ModelAssociation;
 	attributes?: ModelAttributes[];
 };
@@ -168,6 +220,8 @@ type ModelField = {
 export type NonModelTypeConstructor<T> = {
 	new (init: T): T;
 };
+
+// Class for model
 export type PersistentModelConstructor<T extends PersistentModel> = {
 	new (init: ModelInit<T>): T;
 	copyOf(src: T, mutator: (draft: MutableModel<T>) => void): T;
@@ -176,6 +230,8 @@ export type TypeConstructorMap = Record<
 	string,
 	PersistentModelConstructor<any> | NonModelTypeConstructor<any>
 >;
+
+// Instance of model
 export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
 export type ModelInit<T> = Omit<T, 'id'>;
 type DeepWritable<T> = {
@@ -210,11 +266,13 @@ export type SubscriptionMessage<T extends PersistentModel> = {
 //#endregion
 
 //#region Predicates
+
 export type PredicateExpression<M extends PersistentModel, FT> = TypeName<
 	FT
 > extends keyof MapTypeToOperands<FT>
 	? (
 			operator: keyof MapTypeToOperands<FT>[TypeName<FT>],
+			// make the operand type match the type they're trying to filter on
 			operand: MapTypeToOperands<FT>[TypeName<FT>][keyof MapTypeToOperands<
 				FT
 			>[TypeName<FT>]]
@@ -319,13 +377,14 @@ export enum QueryOne {
 	FIRST,
 	LAST,
 }
+export type GraphQLField = {
+	[field: string]: {
+		[operator: string]: string | number | [number, number];
+	};
+};
 
 export type GraphQLCondition = Partial<
-	| {
-			[field: string]: {
-				[operator: string]: string | number | [number, number];
-			};
-	  }
+	| GraphQLField
 	| {
 			and: [GraphQLCondition];
 			or: [GraphQLCondition];
@@ -333,13 +392,61 @@ export type GraphQLCondition = Partial<
 	  }
 >;
 
+export type GraphQLFilter = Partial<
+	| GraphQLField
+	| {
+			and: GraphQLFilter[];
+	  }
+	| {
+			or: GraphQLFilter[];
+	  }
+	| {
+			not: GraphQLFilter;
+	  }
+>;
+
 //#endregion
 
 //#region Pagination
 
-export type PaginationInput = {
+export type ProducerPaginationInput<T extends PersistentModel> = {
+	sort?: ProducerSortPredicate<T>;
 	limit?: number;
 	page?: number;
+};
+
+export type PaginationInput<T extends PersistentModel> = {
+	sort?: SortPredicate<T>;
+	limit?: number;
+	page?: number;
+};
+
+export type ProducerSortPredicate<M extends PersistentModel> = (
+	condition: SortPredicate<M>
+) => SortPredicate<M>;
+
+export type SortPredicate<T extends PersistentModel> = {
+	[K in keyof T]-?: SortPredicateExpression<T, NonNullable<T[K]>>;
+};
+
+export type SortPredicateExpression<M extends PersistentModel, FT> = TypeName<
+	FT
+> extends keyof MapTypeToOperands<FT>
+	? (sortDirection: keyof typeof SortDirection) => SortPredicate<M>
+	: never;
+
+export enum SortDirection {
+	ASCENDING = 'ASCENDING',
+	DESCENDING = 'DESCENDING',
+}
+
+export type SortPredicatesGroup<
+	T extends PersistentModel
+> = SortPredicateObject<T>[];
+
+export type SortPredicateObject<T extends PersistentModel> = {
+	field: keyof T;
+	sortDirection: keyof typeof SortDirection;
 };
 
 //#endregion
@@ -354,7 +461,8 @@ export type SystemComponent = {
 		getModelConstructorByModelName: (
 			namsespaceName: string,
 			modelName: string
-		) => PersistentModelConstructor<any>
+		) => PersistentModelConstructor<any>,
+		appId: string
 	): Promise<void>;
 };
 
@@ -392,13 +500,66 @@ export type DataStoreConfig = {
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
 		fullSyncInterval?: number;
+		syncExpressions?: SyncExpression[];
 	};
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
 	fullSyncInterval?: number;
+	syncExpressions?: SyncExpression[];
 };
+
+export type SyncExpression = Promise<{
+	modelConstructor: any;
+	conditionProducer: (c?: any) => any;
+}>;
+
+/*
+Adds Intellisense when passing a function | promise that returns a predicate
+Or just a predicate. E.g.,
+
+syncExpressions: [
+	syncExpression(Post, c => c.rating('gt', 5)),
+
+	OR
+
+	syncExpression(Post, async () => {
+		return c => c.rating('gt', 5)
+	}),
+]
+*/
+type Option0 = [];
+type Option1<T extends PersistentModel> = [ModelPredicate<T> | undefined];
+type Option<T extends PersistentModel> = Option0 | Option1<T>;
+
+type Lookup<T extends PersistentModel> = {
+	0:
+		| ProducerModelPredicate<T>
+		| Promise<ProducerModelPredicate<T>>
+		| typeof PredicateAll;
+	1: ModelPredicate<T> | undefined;
+};
+
+type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (
+	...args: A
+) => A['length'] extends keyof Lookup<T> ? Lookup<T>[A['length']] : never;
+
+export async function syncExpression<
+	T extends PersistentModel,
+	A extends Option<T>
+>(
+	modelConstructor: PersistentModelConstructor<T>,
+	conditionProducer: ConditionProducer<T, A>
+): Promise<{
+	modelConstructor: PersistentModelConstructor<T>;
+	conditionProducer: ConditionProducer<T, A>;
+}> {
+	return {
+		modelConstructor,
+		conditionProducer,
+	};
+}
 
 export type SyncConflict = {
 	modelConstructor: PersistentModelConstructor<any>;

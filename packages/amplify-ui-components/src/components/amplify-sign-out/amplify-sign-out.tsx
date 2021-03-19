@@ -6,6 +6,9 @@ import { AuthState, AuthStateHandler } from '../../common/types/auth-types';
 import { dispatchToastHubEvent, dispatchAuthStateChangeEvent } from '../../common/helpers';
 import { Translations } from '../../common/Translations';
 
+/**
+ * @slot sign-out - The sign out button element
+ */
 @Component({
   tag: 'amplify-sign-out',
   shadow: true,

@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n } from '@aws-amplify/core';
-import { Component, Prop, State, h } from '@stencil/core';
+import { Component, Prop, State, h, Host, Watch } from '@stencil/core';
 import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
   AuthState,
@@ -60,6 +60,15 @@ export class AmplifyConfirmSignIn {
   @State() code: string;
 
   componentWillLoad() {
+    this.setup();
+  }
+
+  @Watch('user')
+  userHandler() {
+    this.setup();
+  }
+
+  private setup() {
     if (this.user && this.user['challengeName'] === ChallengeName.SoftwareTokenMFA) {
       this.mfaOption = MfaOption.TOTP;
       // If header text is using default use TOTP string
@@ -96,21 +105,23 @@ export class AmplifyConfirmSignIn {
 
   render() {
     return (
-      <amplify-form-section
-        headerText={I18n.get(this.headerText)}
-        handleSubmit={this.handleSubmit}
-        submitButtonText={I18n.get(this.submitButtonText)}
-        loading={this.loading}
-        secondaryFooterContent={
-          <span>
-            <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
-              {I18n.get(Translations.BACK_TO_SIGN_IN)}
-            </amplify-button>
-          </span>
-        }
-      >
-        <amplify-auth-fields formFields={this.formFields} />
-      </amplify-form-section>
+      <Host>
+        <amplify-form-section
+          headerText={I18n.get(this.headerText)}
+          handleSubmit={this.handleSubmit}
+          submitButtonText={I18n.get(this.submitButtonText)}
+          loading={this.loading}
+          secondaryFooterContent={
+            <span>
+              <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
+                {I18n.get(Translations.BACK_TO_SIGN_IN)}
+              </amplify-button>
+            </span>
+          }
+        >
+          <amplify-auth-fields formFields={this.formFields} />
+        </amplify-form-section>
+      </Host>
     );
   }
 }

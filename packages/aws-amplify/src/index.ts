@@ -33,7 +33,12 @@ export {
 export { Auth } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
 export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
-export { DataStore, Predicates } from '@aws-amplify/datastore';
+export {
+	DataStore,
+	Predicates,
+	SortDirection,
+	syncExpression,
+} from '@aws-amplify/datastore';
 export { PubSub } from '@aws-amplify/pubsub';
 export { default as Cache } from '@aws-amplify/cache';
 export { Interactions } from '@aws-amplify/interactions';
@@ -49,6 +54,7 @@ export {
 	I18n,
 	ServiceWorker,
 } from '@aws-amplify/core';
+export { withSSRContext } from './withSSRContext';
 
 export { Amplify };
 

@@ -17,6 +17,11 @@
   </a>
 </p>
 
+### Reporting Bugs/Feature Requests
+[![Open Bugs](https://img.shields.io/github/issues/aws-amplify/amplify-js/bug?color=d73a4a&label=bugs)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+[![Feature Requests](https://img.shields.io/github/issues/aws-amplify/amplify-js/feature-request?color=ff9001&label=feature%20requests)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+label%3Afeature-request+is%3Aopen)
+[![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-js?color=%2325CC00&label=issues%20closed)](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+is%3Aclosed+)
+
 ### AWS Amplify is a JavaScript library for frontend and mobile developers building cloud-enabled applications
 
 AWS Amplify provides a declarative and easy-to-use interface across different categories of cloud operations. AWS Amplify goes well with any JavaScript based frontend workflow, and React Native for mobile developers.
@@ -59,6 +64,7 @@ If you can't migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) or
 - [**Analytics**](https://docs.amplify.aws/lib/analytics/getting-started/q/platform/js): Easily collect analytics data for your app. Analytics data includes user sessions and other custom events that you want to track in your app.
 - [**REST API**](https://docs.amplify.aws/lib/restapi/getting-started/q/platform/js): Provides a simple solution when making HTTP requests. It provides an automatic, lightweight signing process which complies with AWS Signature Version 4.
 - [**GraphQL API**](https://docs.amplify.aws/lib/graphqlapi/getting-started/q/platform/js): Interact with your GraphQL server or AWS AppSync API with an easy-to-use & configured GraphQL client.
+- [**DataStore**](https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js): A programming model for leveraging shared and distributed data without writing additional code for offline and online scenarios, which makes working with distributed, cross-user data just as simple as working with local-only data.
 - [**Storage**](https://docs.amplify.aws/lib/storage/getting-started/q/platform/js): Provides a simple mechanism for managing user content for your app in public, protected or private storage buckets.
 - [**Push Notifications**](https://docs.amplify.aws/lib/push-notifications/getting-started/q/platform/js): Allows you to integrate push notifications in your app with Amazon Pinpoint targeting and campaign management support.
 - [**Interactions**](https://docs.amplify.aws/lib/interactions/getting-started/q/platform/js#interactions-with-aws): Create conversational bots powered by deep learning technologies.

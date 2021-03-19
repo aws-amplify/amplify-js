@@ -1,6 +1,6 @@
 import { I18n } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
-import { Component, Prop, h, State, Watch } from '@stencil/core';
+import { Component, Prop, h, State, Watch, Host } from '@stencil/core';
 import {
   FormFieldTypes,
   PhoneNumberInterface,
@@ -9,7 +9,7 @@ import {
 } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import { COUNTRY_DIAL_CODE_DEFAULT, NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { AuthState, AuthStateHandler, UsernameAliasStrings } from '../../common/types/auth-types';
-import { AmplifySignUpAttributes } from './amplify-sign-up-interface';
+import { SignUpAttributes } from '../../common/types/auth-types';
 import {
   dispatchAuthStateChangeEvent,
   dispatchToastHubEvent,
@@ -22,7 +22,7 @@ import { handleSignIn } from '../../common/auth-helpers';
 
 /**
  * @slot header-subtitle - Subtitle content placed below header text
- * @slot footer - Content is place in the footer of the component
+ * @slot footer - Content placed in the footer of the component
  * @slot primary-footer-content - Content placed on the right side of the footer
  * @slot secondary-footer-content - Content placed on the left side of the footer
  */
@@ -42,7 +42,7 @@ export class AmplifySignUp {
   @Prop() submitButtonText: string = Translations.SIGN_UP_SUBMIT_BUTTON_TEXT;
   /** Used for the submit button text in sign up component */
   @Prop() haveAccountText: string = Translations.SIGN_UP_HAVE_ACCOUNT_TEXT;
-  /** Used for the submit button text in sign up component */
+  /** Text used for the sign in hyperlink */
   @Prop() signInText: string = Translations.SIGN_IN_TEXT;
   /**
    * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
@@ -75,7 +75,7 @@ export class AmplifySignUp {
   };
 
   @State() loading: boolean = false;
-  @State() signUpAttributes: AmplifySignUpAttributes = {
+  @State() signUpAttributes: SignUpAttributes = {
     username: '',
     password: '',
     attributes: {},
@@ -115,6 +115,7 @@ export class AmplifySignUp {
     if (!Auth || typeof Auth.signUp !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
+    this.loading = true;
     if (this.phoneNumber.phoneNumberValue) {
       try {
         this.signUpAttributes.attributes.phone_number = composePhoneNumberInput(this.phoneNumber);
@@ -131,8 +132,17 @@ export class AmplifySignUp {
       default:
         break;
     }
-
     try {
+      if (!this.signUpAttributes.username) {
+        throw new Error(Translations.EMPTY_USERNAME);
+      }
+      if (this.signUpAttributes.username.indexOf(' ') >= 0) {
+        throw new Error(Translations.USERNAME_REMOVE_WHITESPACE);
+      }
+      if (this.signUpAttributes.password !== this.signUpAttributes.password.trim()) {
+        throw new Error(Translations.PASSWORD_REMOVE_WHITESPACE);
+      }
+
       const data = await Auth.signUp(this.signUpAttributes);
       if (!data) {
         throw new Error(Translations.SIGN_UP_FAILED);
@@ -140,10 +150,13 @@ export class AmplifySignUp {
       if (data.userConfirmed) {
         await handleSignIn(this.signUpAttributes.username, this.signUpAttributes.password, this.handleAuthStateChange);
       } else {
-        this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs: this.signUpAttributes });
+        const signUpAttrs = { ...this.signUpAttributes };
+        this.handleAuthStateChange(AuthState.ConfirmSignUp, { ...data.user, signUpAttrs });
       }
     } catch (error) {
       dispatchToastHubEvent(error);
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -267,7 +280,7 @@ export class AmplifySignUp {
     }
   }
 
-  setFieldValue(field: PhoneFormFieldType | FormFieldType, formAttributes: AmplifySignUpAttributes) {
+  setFieldValue(field: PhoneFormFieldType | FormFieldType, formAttributes: SignUpAttributes) {
     switch (field.type) {
       case 'username':
         if (field.value === undefined) {
@@ -310,37 +323,39 @@ export class AmplifySignUp {
 
   render() {
     return (
-      <amplify-form-section
-        headerText={I18n.get(this.headerText)}
-        handleSubmit={this.handleSubmit}
-        testDataPrefix={'sign-up'}
-      >
-        <div slot="subtitle">
-          <slot name="header-subtitle"></slot>
-        </div>
-        <amplify-auth-fields formFields={this.newFormFields} />
-        <div class="sign-up-form-footer" slot="amplify-form-section-footer">
-          <slot name="footer">
-            <slot name="secondary-footer-content">
-              <span>
-                {I18n.get(this.haveAccountText)}{' '}
-                <amplify-button
-                  variant="anchor"
-                  onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
-                  data-test="sign-up-sign-in-link"
-                >
-                  {I18n.get(this.signInText)}
+      <Host>
+        <amplify-form-section
+          headerText={I18n.get(this.headerText)}
+          handleSubmit={this.handleSubmit}
+          testDataPrefix={'sign-up'}
+        >
+          <div slot="subtitle">
+            <slot name="header-subtitle"></slot>
+          </div>
+          <amplify-auth-fields formFields={this.newFormFields} />
+          <div class="sign-up-form-footer" slot="amplify-form-section-footer">
+            <slot name="footer">
+              <slot name="secondary-footer-content">
+                <span>
+                  {I18n.get(this.haveAccountText)}{' '}
+                  <amplify-button
+                    variant="anchor"
+                    onClick={() => this.handleAuthStateChange(AuthState.SignIn)}
+                    data-test="sign-up-sign-in-link"
+                  >
+                    {I18n.get(this.signInText)}
+                  </amplify-button>
+                </span>
+              </slot>
+              <slot name="primary-footer-content">
+                <amplify-button type="submit" data-test="sign-up-create-account-button">
+                  {this.loading ? <amplify-loading-spinner /> : <span>{I18n.get(this.submitButtonText)}</span>}
                 </amplify-button>
-              </span>
+              </slot>
             </slot>
-            <slot name="primary-footer-content">
-              <amplify-button type="submit" data-test="sign-up-create-account-button">
-                {this.loading ? <amplify-loading-spinner /> : <span>{I18n.get(this.submitButtonText)}</span>}
-              </amplify-button>
-            </slot>
-          </slot>
-        </div>
-      </amplify-form-section>
+          </div>
+        </amplify-form-section>
+      </Host>
     );
   }
 }

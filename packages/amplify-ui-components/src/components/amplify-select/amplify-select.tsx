@@ -48,7 +48,7 @@ export class AmplifySelect {
   private contructSelectOptions(opts: SelectOptionsString | SelectOptionsNumber) {
     this.isSelectedOptionValid(this.selected);
 
-    let content = [];
+    const content = [];
     opts.forEach((opt: SelectOptionString | SelectOptionNumber) => {
       content.push(
         <option value={opt.value} selected={opt.value === this.selected}>

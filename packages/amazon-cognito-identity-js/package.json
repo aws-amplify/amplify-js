@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "4.3.4",
+  "version": "4.6.0",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
@@ -43,14 +43,16 @@
   ],
   "scripts": {
     "clean": "rimraf lib es",
-    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
-    "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
+    "build:cjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
+    "build:cjs:watch": "cross-env BABEL_ENV=commonjs babel src --out-dir lib --watch",
+    "build:esm": "cross-env BABEL_ENV=es babel src --out-dir es",
+    "build:esm:watch": "cross-env BABEL_ENV=es babel src --out-dir es --watch",
     "build:umd": "webpack",
-    "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:umd",
     "doc": "jsdoc src -d docs",
     "lint": "eslint src",
     "lint2": "eslint enhance-rn.js",
-    "test": "jest -w 1 --passWithNoTests",
+    "test": "jest -w 1",
     "format": "echo \"Not implemented\""
   },
   "main": "lib/index.js",
@@ -58,12 +60,17 @@
     "lib/index.js": "./enhance-rn.js",
     "./src/StorageHelper": "./src/StorageHelper-rn.js"
   },
+  "browser": {
+    "crypto": false
+  },
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "buffer": "4.9.1",
+    "buffer": "4.9.2",
     "crypto-js": "^3.3.0",
+    "fast-base64-decode": "^1.0.0",
+    "isomorphic-unfetch": "^3.0.0",
     "js-cookie": "^2.2.1"
   },
   "devDependencies": {
@@ -98,7 +105,8 @@
             "esnext.asynciterable",
             "es2017.object"
           ],
-          "allowJs": true
+          "allowJs": true,
+          "esModuleInterop": true
         }
       }
     },
@@ -125,7 +133,10 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "dist",
+      "es",
+      "lib"
     ]
   }
 }

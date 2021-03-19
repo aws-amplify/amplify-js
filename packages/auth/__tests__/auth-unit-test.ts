@@ -1,5 +1,6 @@
 import OAuth from '../src/OAuth/OAuth';
 import * as oauthStorage from '../src/OAuth/oauthStorage';
+import { NodeCallback } from 'amazon-cognito-identity-js';
 
 jest.mock('crypto-js/sha256', () => {
 	return {
@@ -693,6 +694,57 @@ describe('auth unit test', () => {
 			expect.assertions(2);
 			expect(auth.resendSignUp(null).then()).rejects.toThrow(AuthError);
 			expect(auth.resendSignUp(null).then()).rejects.toEqual(errorMessage);
+		});
+	});
+
+	describe('events', () => {
+		test('token events', async () => {
+			expect.assertions(2);
+
+			// calling the `wrappedCallback` (a node callback) manually lets us trigger hub events
+			const auth = new Auth(authOptions);
+			const callback: NodeCallback.Any = (error, result) => {};
+			const wrappedCallback = auth.wrapRefreshSessionCallback(callback);
+
+			// saving a reference to this fn's return before triggering `wrappedCallback` lets us capture the payload
+			const captureEvent = () => {
+				return new Promise(resolve => {
+					Hub.listen('auth', capsule => {
+						switch (capsule.payload.event) {
+							case 'tokenRefresh': {
+								return resolve(true);
+							}
+
+							case 'tokenRefresh_failure': {
+								return resolve(capsule.payload.data);
+							}
+
+							default: {
+								break;
+							}
+						}
+					});
+				});
+			};
+
+			// for successful token refresh
+			const successEventPending = captureEvent();
+			wrappedCallback(undefined, true);
+
+			// for failed token refresh
+			const syntheticError = new Error();
+			const failureEventPending = captureEvent();
+			wrappedCallback(syntheticError, undefined);
+
+			// gather the payloads
+			const [successEvent, failureEvent] = await Promise.all([
+				successEventPending,
+				failureEventPending,
+			]);
+
+			// make assertions
+			expect(successEvent).toBeTruthy();
+			expect(failureEvent).toBe(syntheticError);
 		});
 	});
 
@@ -1473,7 +1525,10 @@ describe('auth unit test', () => {
 						setItem() {},
 						getItem() {
 							return JSON.stringify({
-								user: 'federated_user',
+								user: {
+									name: 'federated user',
+								},
+								token: '12345',
 							});
 						},
 						removeItem() {},
@@ -1487,7 +1542,10 @@ describe('auth unit test', () => {
 			});
 
 			expect.assertions(1);
-			expect(await auth.currentAuthenticatedUser()).toBe('federated_user');
+			expect(await auth.currentAuthenticatedUser()).toStrictEqual({
+				name: 'federated user',
+				token: '12345',
+			});
 
 			spyon.mockClear();
 		});
@@ -2143,7 +2201,7 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
-		test('inputVerficationCode', async () => {
+		test('inputVerificationCode', async () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'forgotPassword')
 				.mockImplementationOnce(callback => {
@@ -2371,7 +2429,7 @@ describe('auth unit test', () => {
 				});
 
 			const spyon3 = jest
-				.spyOn(Auth.prototype, 'currentCredentials')
+				.spyOn(auth, 'currentCredentials')
 				.mockImplementationOnce(() => {
 					return Promise.resolve({
 						identityId: 'identityId',
