@@ -40,6 +40,7 @@ declare module 'amazon-cognito-identity-js' {
 		Password?: string;
 		ValidationData?: { [key: string]: any };
 		ClientMetadata?: ClientMetadata;
+		SecretHash?: string;
 	}
 
 	export class AuthenticationDetails {
