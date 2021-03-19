@@ -142,14 +142,14 @@ class SyncProcessor {
 						variables,
 					});
 				} catch (error) {
-					if (this.partialDataFeatureFlagEnabled()) {
-						const hasItems = Boolean(
-							error &&
-								error.data &&
-								error.data[opName] &&
-								error.data[opName].items
-						);
+					const hasItems = Boolean(
+						error &&
+							error.data &&
+							error.data[opName] &&
+							error.data[opName].items
+					);
 
+					if (this.partialDataFeatureFlagEnabled()) {
 						if (hasItems) {
 							const result = error;
 							result.data[opName].items = result.data[opName].items.filter(
@@ -178,12 +178,26 @@ class SyncProcessor {
 					);
 					if (unauthorized) {
 						const result = error;
-						result.data[opName].items = result.data[opName].items.filter(
-							item => item !== null
-						);
+
+						const opResultDefaults = {
+							items: [],
+							nextToken: null,
+							startedAt: null,
+						};
+
+						if (hasItems) {
+							result.data[opName].items = result.data[opName].items.filter(
+								item => item !== null
+							);
+						} else {
+							result.data[opName] = {
+								...opResultDefaults,
+								...result.data[opName],
+							};
+						}
 						logger.warn(
 							'queryError',
-							'User is unauthorized, some items could not be returned.'
+							`User is unauthorized to query ${opName}, some items could not be returned.`
 						);
 						return result;
 					} else {

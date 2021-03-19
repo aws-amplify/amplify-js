@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.3.1...aws-amplify-react-native@4.3.2) (2021-03-12)
+
+
+### Bug Fixes
+
+* **rn-ui:** respect user provided theme ([64357b1](https://github.com/aws-amplify/amplify-js/commit/64357b109dbf098c5b4050b698d43ab32f51e0d4))
+
+
+
+
+
 ## [4.3.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@4.3.0...aws-amplify-react-native@4.3.1) (2021-01-29)
 
 
