@@ -117,7 +117,7 @@ Veuillez utiliser un format de numéro de téléphone du +12345678900`,
 
 	es: {
 		'Loading...': 'Espere por favor',
-		'Sign In': 'Registrarse',
+		'Sign In': 'Iniciar sesión',
 		'Sign Up': 'Regístrate',
 		'Sign Out': 'Desconectar',
 		'Forgot Password': 'Se te olvidó tu contraseña',
