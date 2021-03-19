@@ -189,7 +189,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 						},
 					};
 				} catch (err) {
-					Promise.reject(err);
+					return Promise.reject(err);
 				}
 			}
 
@@ -207,7 +207,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			Buffer.from(message.data)
 		);
 		const transcribeMessageJson = JSON.parse(
-			String.fromCharCode.apply(String, transcribeMessage.body)
+			toUtf8(transcribeMessage.body)
 		);
 		if (transcribeMessage.headers[':message-type'].value === 'exception') {
 			logger.debug(

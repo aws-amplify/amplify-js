@@ -89,7 +89,7 @@ const encodeWAV = (samples: Float32Array, exportSampleRate?: number) => {
   // fmt subchunk
   writeString(view, 12, 'fmt '); //chunkdId 'fmt '
   view.setUint32(16, fmtSize - 8, true); // fmt subchunk size below this value. We set 8 bytes already, so subtract 8 bytes from fmtSize.
-  view.setUint16(20, 1, true); // Audiio format code, which is 1 for PCM.
+  view.setUint16(20, 1, true); // Audio format code, which is 1 for PCM.
   view.setUint16(22, 1, true); // Number of audio channels. We use mono, ie 1.
   view.setUint32(24, exportSampleRate, true); // Sample rate of the audio file.
   view.setUint32(28, exportSampleRate * 2, true); // Data rate, or # of data bytes per second. Since each sample is 2 bytes, this is 2 * sampleRate.

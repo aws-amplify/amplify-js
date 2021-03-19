@@ -1,4 +1,4 @@
-import { Component, State, Prop, h, Host } from '@stencil/core';
+import { Component, State, Prop, h, Host, Element } from '@stencil/core';
 import {
   AuthState,
   CognitoUserInterface,
@@ -14,10 +14,12 @@ import {
   UI_AUTH_CHANNEL,
   TOAST_AUTH_ERROR_EVENT,
 } from '../../common/constants';
+import { authSlotNames } from './auth-slot-names';
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
 import { Hub, Logger } from '@aws-amplify/core';
 import { dispatchAuthStateChangeEvent, onAuthUIStateChange } from '../../common/helpers';
 import { checkContact } from '../../common/auth-helpers';
+import { JSXBase } from '@stencil/core/internal';
 
 const logger = new Logger('Authenticator');
 
@@ -47,10 +49,14 @@ export class AmplifyAuthenticator {
   @Prop() usernameAlias: UsernameAliasStrings;
   /** Callback for Authenticator state machine changes */
   @Prop() handleAuthStateChange: AuthStateHandler = () => {};
+  /** Hide amplify-toast for auth errors */
+  @Prop() hideToast: boolean = false;
 
   @State() authState: AuthState = AuthState.Loading;
   @State() authData: CognitoUserInterface;
   @State() toastMessage: string = '';
+
+  @Element() el: HTMLAmplifyAuthenticatorElement;
 
   private handleExternalAuthEvent = ({ payload }) => {
     switch (payload.event) {
@@ -79,7 +85,7 @@ export class AmplifyAuthenticator {
       this.onAuthStateChange(authState, authData as CognitoUserInterface);
       this.toastMessage = '';
     });
-    Hub.listen(UI_AUTH_CHANNEL, this.handleToastEvent);
+    if (!this.hideToast) Hub.listen(UI_AUTH_CHANNEL, this.handleToastEvent);
     Hub.listen(AUTH_CHANNEL, this.handleExternalAuthEvent);
 
     appendToCognitoUserAgent('amplify-authenticator');
@@ -88,30 +94,31 @@ export class AmplifyAuthenticator {
     if (byHostedUI !== 'true') await this.checkUser();
   }
 
-  private async checkUser() {
+  private async checkUser(): Promise<void> {
     if (!Auth || typeof Auth.currentAuthenticatedUser !== 'function') {
       throw new Error(NO_AUTH_MODULE_FOUND);
     }
 
-    try {
-      const user = await Auth.currentAuthenticatedUser();
-      dispatchAuthStateChangeEvent(AuthState.SignedIn, user);
-    } catch (error) {
-      let cachedAuthState = null;
-      try {
-        cachedAuthState = localStorage.getItem(AUTHENTICATOR_AUTHSTATE);
-      } catch (error) {
-        logger.debug('Failed to get the auth state from local storage', error);
-      }
-      try {
-        if (cachedAuthState === AuthState.SignedIn) {
-          await Auth.signOut();
+    return Auth.currentAuthenticatedUser()
+      .then(user => {
+        dispatchAuthStateChangeEvent(AuthState.SignedIn, user);
+      })
+      .catch(async () => {
+        let cachedAuthState = null;
+        try {
+          cachedAuthState = localStorage.getItem(AUTHENTICATOR_AUTHSTATE);
+        } catch (error) {
+          logger.debug('Failed to get the auth state from local storage', error);
         }
-        dispatchAuthStateChangeEvent(this.initialAuthState);
-      } catch (error) {
-        logger.debug('Failed to sign out', error);
-      }
-    }
+        try {
+          if (cachedAuthState === AuthState.SignedIn) {
+            await Auth.signOut();
+          }
+          dispatchAuthStateChangeEvent(this.initialAuthState);
+        } catch (error) {
+          logger.debug('Failed to sign out', error);
+        }
+      });
   }
 
   private async onAuthStateChange(nextAuthState: AuthState, data?: CognitoUserInterface) {
@@ -134,79 +141,55 @@ export class AmplifyAuthenticator {
     }
   }
 
-  private renderAuthComponent(authState: AuthState) {
+  // Returns the auth component corresponding to the given authState.
+  private getAuthComponent(authState: AuthState): JSXBase.IntrinsicElements {
     switch (authState) {
       case AuthState.SignIn:
-        return (
-          <slot name="sign-in">
-            <amplify-sign-in federated={this.federated} usernameAlias={this.usernameAlias} />
-          </slot>
-        );
+        return <amplify-sign-in federated={this.federated} usernameAlias={this.usernameAlias} />;
       case AuthState.ConfirmSignIn:
-        return (
-          <slot name="confirm-sign-in">
-            <amplify-confirm-sign-in user={this.authData} />
-          </slot>
-        );
+        return <amplify-confirm-sign-in user={this.authData} />;
       case AuthState.SignUp:
-        return (
-          <slot name="sign-up">
-            <amplify-sign-up usernameAlias={this.usernameAlias} />
-          </slot>
-        );
+        return <amplify-sign-up usernameAlias={this.usernameAlias} />;
       case AuthState.ConfirmSignUp:
-        return (
-          <slot name="confirm-sign-up">
-            <amplify-confirm-sign-up user={this.authData} usernameAlias={this.usernameAlias} />
-          </slot>
-        );
+        return <amplify-confirm-sign-up user={this.authData} usernameAlias={this.usernameAlias} />;
       case AuthState.ForgotPassword:
-        return (
-          <slot name="forgot-password">
-            <amplify-forgot-password usernameAlias={this.usernameAlias} />
-          </slot>
-        );
+        return <amplify-forgot-password usernameAlias={this.usernameAlias} />;
       case AuthState.ResetPassword:
-        return (
-          <slot name="require-new-password">
-            <amplify-require-new-password user={this.authData} />
-          </slot>
-        );
+        return <amplify-require-new-password user={this.authData} />;
       case AuthState.VerifyContact:
-        return (
-          <slot name="verify-contact">
-            <amplify-verify-contact user={this.authData} />
-          </slot>
-        );
+        return <amplify-verify-contact user={this.authData} />;
       case AuthState.TOTPSetup:
-        return (
-          <slot name="totp-setup">
-            <amplify-totp-setup user={this.authData} />
-          </slot>
-        );
+        return <amplify-totp-setup user={this.authData} />;
       case AuthState.Loading:
-        return (
-          <slot name="loading">
-            <div>Loading...</div>
-          </slot>
-        );
-      case AuthState.SignedIn:
-        return [<slot name="greetings"></slot>, <slot></slot>];
+        return <div>Loading...</div>;
       default:
         throw new Error(`Unhandled auth state: ${authState}`);
     }
   }
 
+  // Returns a slot containing the Auth component corresponding to the given authState
+  private getSlotWithAuthComponent(authState: AuthState): JSXBase.IntrinsicElements {
+    const authComponent = this.getAuthComponent(authState);
+    const slotName = authSlotNames[authState];
+    const slotIsEmpty = this.el.querySelector(`[slot="${slotName}"]`) === null; // true if no element has been inserted to the slot
+
+    /**
+     * Connect the inner auth component to DOM only if the slot hasn't been overwritten. This prevents
+     * the overwritten component from calling its lifecycle methods.
+     */
+    return <slot name={slotName}>{slotIsEmpty && authComponent}</slot>;
+  }
+
   componentWillUnload() {
     Hub.remove(AUTH_CHANNEL, this.handleExternalAuthEvent);
-    Hub.remove(UI_AUTH_CHANNEL, this.handleToastEvent);
+    if (!this.hideToast) Hub.remove(UI_AUTH_CHANNEL, this.handleToastEvent);
     return onAuthUIStateChange;
   }
 
   render() {
     return (
       <Host>
-        {this.toastMessage ? (
+        {!this.hideToast && this.toastMessage && (
           <amplify-toast
             message={this.toastMessage}
             handleClose={() => {
@@ -214,11 +197,11 @@ export class AmplifyAuthenticator {
             }}
             data-test="authenticator-error"
           />
-        ) : null}
+        )}
         {this.authState === AuthState.SignedIn ? (
-          this.renderAuthComponent(this.authState)
+          [<slot name="greetings"></slot>, <slot></slot>]
         ) : (
-          <div class="auth-container">{this.renderAuthComponent(this.authState)}</div>
+          <div class="auth-container">{this.getSlotWithAuthComponent(this.authState)}</div>
         )}
       </Host>
     );
