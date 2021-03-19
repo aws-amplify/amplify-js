@@ -32,12 +32,12 @@ export default class AuthenticationDetails {
 			Password,
 			AuthParameters,
 			ClientMetadata,
+			SecretHash,
 		} = data || {};
 		this.validationData = ValidationData || {};
 		this.authParameters = AuthParameters || {};
-		this.clientMetadata = ClientMetadata || {};
-		this.username = Username;
-		this.password = Password;
+		this.clientMetadata = ClientMetadata;
+		this.secretHash = SecretHash ? SecretHash : null;
 	}
 
 	/**
@@ -52,6 +52,13 @@ export default class AuthenticationDetails {
 	 */
 	getPassword() {
 		return this.password;
+	}
+
+	/**
+	 * @returns {string} the record's secret hash
+	 */
+	getSecretHash() {
+		return this.secretHash;
 	}
 
 	/**

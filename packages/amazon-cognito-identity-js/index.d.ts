@@ -47,6 +47,7 @@ declare module 'amazon-cognito-identity-js' {
 
 		public getUsername(): string;
 		public getPassword(): string;
+		public getSecretHash(): string | null;
 		public getValidationData(): any[];
 	}
 
@@ -70,16 +71,12 @@ declare module 'amazon-cognito-identity-js' {
 	export class CognitoUser {
 		constructor(data: ICognitoUserData);
 
-		public setSignInUserSession(
-			signInUserSession: CognitoUserSession
-		): void;
+		public setSignInUserSession(signInUserSession: CognitoUserSession): void;
 		public getSignInUserSession(): CognitoUserSession | null;
 		public getUsername(): string;
 
 		public getAuthenticationFlowType(): string;
-		public setAuthenticationFlowType(
-			authenticationFlowType: string
-		): string;
+		public setAuthenticationFlowType(authenticationFlowType: string): string;
 		public getCachedDeviceKeyAndPassword(): void;
 
 		public getSession(
@@ -164,7 +161,10 @@ declare module 'amazon-cognito-identity-js' {
 		public sendMFACode(
 			confirmationCode: string,
 			callbacks: {
-				onSuccess: (session: CognitoUserSession, userConfirmationNecessary?: boolean) => void;
+				onSuccess: (
+					session: CognitoUserSession,
+					userConfirmationNecessary?: boolean
+				) => void;
 				onFailure: (err: any) => void;
 			},
 			mfaType?: string,
@@ -184,15 +184,9 @@ declare module 'amazon-cognito-identity-js' {
 			callbacks: {
 				onSuccess: (session: CognitoUserSession) => void;
 				onFailure: (err: any) => void;
-				mfaRequired?: (
-					challengeName: any,
-					challengeParameters: any
-				) => void;
+				mfaRequired?: (challengeName: any, challengeParameters: any) => void;
 				customChallenge?: (challengeParameters: any) => void;
-				mfaSetup?: (
-					challengeName: any,
-					challengeParameters: any
-				) => void;
+				mfaSetup?: (challengeName: any, challengeParameters: any) => void;
 			},
 			clientMetadata?: ClientMetadata
 		): void;
@@ -258,14 +252,8 @@ declare module 'amazon-cognito-identity-js' {
 			callbacks: {
 				onSuccess: (session: CognitoUserSession) => void;
 				onFailure: (err: any) => void;
-				mfaRequired?: (
-					challengeName: any,
-					challengeParameters: any
-				) => void;
-				totpRequired?: (
-					challengeName: any,
-					challengeParameters: any
-				) => void;
+				mfaRequired?: (challengeName: any, challengeParameters: any) => void;
+				totpRequired?: (challengeName: any, challengeParameters: any) => void;
 			}
 		): void;
 	}
