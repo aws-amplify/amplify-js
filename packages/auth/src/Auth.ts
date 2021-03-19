@@ -197,7 +197,7 @@ export class AuthClass {
 			storage: this._storage,
 		});
 
-		// initiailize cognitoauth client if hosted ui options provided
+		// initialize cognitoauth client if hosted ui options provided
 		// to keep backward compatibility:
 		const cognitoHostedUIConfig = oauth
 			? isCognitoHostedOpts(this._config.oauth)
