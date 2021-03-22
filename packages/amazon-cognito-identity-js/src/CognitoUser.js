@@ -1966,9 +1966,105 @@ export default class CognitoUser {
 	 * This is used for the user to signOut of the application and clear the cached tokens.
 	 * @returns {void}
 	 */
-	signOut() {
+	signOut(revokeTokenCallback) {
+		// If tokens won't be revoked, we just clean the client data.
+		if (!revokeTokenCallback || typeof revokeTokenCallback !== "function") {
+			this.cleanClientData();
+
+			return;
+		}
+
+		this.getSession((error, _session) => {
+			if (error) {
+				return revokeTokenCallback(error);
+			}
+
+			this.revokeTokens((err) => {
+				this.cleanClientData();
+
+				revokeTokenCallback(err);
+			});
+		});
+	}
+
+	revokeTokens(revokeTokenCallback = () => { }) {
+		if (typeof revokeTokenCallback !== 'function') {
+			throw new Error('Invalid revokeTokenCallback. It should be a function.')
+		}
+
+		const tokensToBeRevoked = [];
+
+		if (!this.signInUserSession) {
+			const error = new Error('User is not authenticated');
+
+			return revokeTokenCallback(error);
+		}
+
+		if (!this.signInUserSession || !this.signInUserSession.getIdToken()) {
+			const error = new Error('No ID token available');
+
+			return revokeTokenCallback(error);
+		}
+
+		const refreshToken = this.signInUserSession.getRefreshToken().getToken();
+		const idToken = this.signInUserSession.getIdToken();
+
+		if (this.isSessionRevocable(idToken)) {
+			if (refreshToken) { // Assuming Cognito service will revoke access/id token automatically
+				tokensToBeRevoked.push(refreshToken);
+			} else {
+				tokensToBeRevoked.push(this.signInUserSession.getAccessToken().getJwtToken());
+				tokensToBeRevoked.push(idToken.getJwtToken());
+			}
+
+			const tokenRevocationPromises = tokensToBeRevoked.map(token => new Promise((res, rej) => {
+				this.revokeToken({ token, successCallback: res, rejectCallback: rej })
+			}));
+
+			Promise.all(tokenRevocationPromises).then(() => {
+				revokeTokenCallback();
+			}).catch(err => {
+				revokeTokenCallback(err);
+			});
+		} else {
+			revokeTokenCallback();
+		}
+	}
+
+	isSessionRevocable(idToken) {
+		if (idToken && typeof idToken.decodePayload === 'function') {
+			try {
+				const { jti } = idToken.decodePayload();
+				return !!jti;
+			} catch (err) {
+				// Nothing to do, idToken doesnt have jti claim
+			}
+		}
+
+		return false;
+	}
+
+	cleanClientData() {
 		this.signInUserSession = null;
 		this.clearCachedUser();
+	}
+
+	revokeToken({ token, successCallback, rejectCallback }) {
+		this.client.requestWithRetry(
+			'RevokeToken',
+			{
+				Token: token,
+				ClientId: this.pool.getClientId()
+			},
+			err => {
+
+				if (err) {
+					return rejectCallback(err);
+				}
+
+				successCallback();
+			}
+		)
 	}
 
 	/**
