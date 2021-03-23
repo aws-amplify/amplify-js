@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.6.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.14...amazon-cognito-identity-js@4.6.0) (2021-03-18)
+
+
+### Features
+
+* Improve Next.js/CRA/Angular bundle sizes ([#7842](https://github.com/aws-amplify/amplify-js/issues/7842)) ([2e0dc61](https://github.com/aws-amplify/amplify-js/commit/2e0dc61fa9e4399351a59a7e8fe801027b6587d5))
+
+
+
+
+
+## [4.5.14](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.13...amazon-cognito-identity-js@4.5.14) (2021-03-12)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** update podspec dep ([#7873](https://github.com/aws-amplify/amplify-js/issues/7873)) ([6c9c4ef](https://github.com/aws-amplify/amplify-js/commit/6c9c4efde6d4da48f5add075ef2f4c3d112c7dea))
+* **amazon-cognito-identity-js:** update sendMFACode callback type ([#7801](https://github.com/aws-amplify/amplify-js/issues/7801)) ([5cce7e6](https://github.com/aws-amplify/amplify-js/commit/5cce7e66ddc5de1ffa190710a7d5847851ec83e5))
+
+
+
+
+
+## [4.5.13](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.12...amazon-cognito-identity-js@4.5.13) (2021-03-08)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** set userDataKey with updated username ([#7903](https://github.com/aws-amplify/amplify-js/issues/7903)) ([8d30ce5](https://github.com/aws-amplify/amplify-js/commit/8d30ce5633fd19acadf621cedc338a4e7504481b))
+
+
+
+
+
+## [4.5.12](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.11...amazon-cognito-identity-js@4.5.12) (2021-02-25)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+
+
+
+
 ## [4.5.11](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.10...amazon-cognito-identity-js@4.5.11) (2021-02-18)
 
 

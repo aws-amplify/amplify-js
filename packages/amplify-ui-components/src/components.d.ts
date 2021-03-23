@@ -51,6 +51,10 @@ export namespace Components {
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
+          * Hide amplify-toast for auth errors
+         */
+        "hideToast": boolean;
+        /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
         "initialAuthState": AuthState.SignIn | AuthState.SignUp;
@@ -1550,6 +1554,10 @@ declare namespace LocalJSX {
           * Callback for Authenticator state machine changes
          */
         "handleAuthStateChange"?: AuthStateHandler;
+        /**
+          * Hide amplify-toast for auth errors
+         */
+        "hideToast"?: boolean;
         /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */

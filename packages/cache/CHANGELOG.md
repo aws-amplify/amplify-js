@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.53](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@3.1.52...@aws-amplify/cache@3.1.53) (2021-03-18)
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+
+
+
+
+## [3.1.52](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@3.1.51...@aws-amplify/cache@3.1.52) (2021-03-12)
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+
+
+
+
+## [3.1.51](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@3.1.50...@aws-amplify/cache@3.1.51) (2021-03-08)
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+
+
+
+
+## [3.1.50](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@3.1.49...@aws-amplify/cache@3.1.50) (2021-03-03)
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+
+
+
+
+## [3.1.49](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@3.1.48...@aws-amplify/cache@3.1.49) (2021-02-25)
+
+**Note:** Version bump only for package @aws-amplify/cache
+
+
+
+
+
 ## [3.1.48](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/cache@3.1.47...@aws-amplify/cache@3.1.48) (2021-02-18)
 
 **Note:** Version bump only for package @aws-amplify/cache
