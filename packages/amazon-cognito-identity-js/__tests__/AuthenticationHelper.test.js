@@ -552,5 +552,3 @@ describe('AuthenticatorHelper', () => {
 		expect(x.toLowerCase()).toBe(expected.toLowerCase());
 	});
 });
-
-describe()
