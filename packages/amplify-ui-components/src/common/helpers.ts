@@ -15,8 +15,8 @@ import Auth from '@aws-amplify/auth';
 const logger = new Logger('helpers');
 
 export interface ToastError {
-  code: string;
-  name: string;
+  code?: string;
+  name?: string;
   message: string;
 }
 
@@ -128,7 +128,7 @@ export const requiredAttributesMap = {
   },
   given_name: {
     label: I18n.get(Translations.GIVEN_NAME_LABEL),
-    placeholder: I18n.get(Translations.GIVEN_NAME_LABEL),
+    placeholder: I18n.get(Translations.GIVEN_NAME_PLACEHOLDER),
   },
   zoneinfo: {
     label: I18n.get(Translations.ZONEINFO_LABEL),

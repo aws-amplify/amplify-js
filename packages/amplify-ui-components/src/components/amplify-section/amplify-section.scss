@@ -9,20 +9,20 @@
 
 .section {
   position: relative;
-  margin-bottom: var(--margin-bottom);
+  margin-bottom: var(--margin-bottom, 20px);
   background-color: var(--background-color);
-  padding: var(--padding);
+  padding: var(--padding, 35px 40px);
   text-align: left;
   display: inline-block;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius, 6px);
+  box-shadow: var(--box-shadow, 1px 1px 4px 0 rgba(0, 0, 0, 0.15));
   box-sizing: border-box;
   font-family: var(--font-family);
 
   width: 100%;
-  min-width: var(--min-width);
+  min-width: var(--min-width, 20rem);
 
   @include md {
-    width: var(--width);
+    width: var(--width, 28.75rem);
   }
 }

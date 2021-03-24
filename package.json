@@ -25,6 +25,7 @@
 		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]'",
 		"publish:1.0-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-1.0 --message 'chore(release): Publish [ci skip]'",
 		"publish:ui-components/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=ui-preview --preid=ui-preview --exact",
+		"publish:native": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=native --preid=native --exact",
 		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes"
 	},
 	"husky": {
@@ -60,6 +61,7 @@
 		"@types/node": "^8.9.5",
 		"@types/puppeteer": "1.3.0",
 		"babel-loader": "^8.0.0",
+		"bundlewatch": "^0.3.1",
 		"codecov": "^3.6.5",
 		"compression-webpack-plugin": "^1.1.3",
 		"cypress": "^3.2.0",
@@ -91,9 +93,19 @@
 		"winston": "^3.2.1"
 	},
 	"resolutions": {
+		"@babel/types": "7.12.10",
 		"@types/babel__traverse": "7.0.8",
+		"@types/react": "16.9.10",
 		"terser": "4.6.7",
 		"npm-packlist": "1.1.12"
+	},
+	"bundlewatch": {
+		"files": [
+			{
+				"path": "packages/*/dist/*.min.js",
+				"maxSize": "400kB"
+			}
+		]
 	},
 	"jest": {
 		"resetMocks": true,
