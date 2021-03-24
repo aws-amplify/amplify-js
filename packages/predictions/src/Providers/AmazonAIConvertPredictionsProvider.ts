@@ -192,7 +192,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 						},
 					};
 				} catch (err) {
-					Promise.reject(err);
+					return Promise.reject(err);
 				}
 			}
 

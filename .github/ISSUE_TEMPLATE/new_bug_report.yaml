@@ -1,0 +1,244 @@
+name: New Bug report
+description: Create a report to help us improve Amplify JS
+title: ''
+issue_body: true
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to fill out this bug report! Try to include as much information as you can.
+  - type: markdown
+    attributes:
+      value: |
+        > **Note**: If your issue is regarding the AWS Amplify CLI, please log it in the [Amplify CLI GitHub Issue Tracker](https://github.com/aws-amplify/amplify-cli/issues).
+  - type: checkboxes
+    attributes:
+      label: |
+        Before opening, please confirm:
+      options:
+        - label: I have [searched for duplicate or closed issues](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+).
+          required: true
+        - label: I have read the guide for [submitting bug reports](https://github.com/aws-amplify/amplify-js/blob/master/CONTRIBUTING.md#bug-reports).
+          required: true
+        - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
+          required: true
+  - type: checkboxes
+    attributes:
+      label: Is this a production issue?
+      description: |
+        Are you experiencing this issue with a production application where end users are affected?
+      options:
+        - label: (check box if yes)
+  - type: markdown
+    attributes:
+      value: |
+        ## Environment
+  - type: textarea
+    attributes:
+      label: Environment information
+      description: |
+        Please run the following command inside your project and copy/paste the output below:
+        ```
+        npx envinfo --system --binaries --browsers --npmPackages --npmGlobalPackages
+        ```
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        ## Configuration
+  - type: dropdown
+    attributes:
+      label: JavaScript Framework
+      description: What JavaScript framework is being used?
+      multiple: true
+      options:
+        - Angular
+        - React
+        - React Native
+        - Vue
+        - Web Components
+        - Not applicable
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Amplify Categories
+      description: |
+        What [Amplify categories](https://github.com/aws-amplify/amplify-cli#category-specific-commands) are being used?
+      multiple: true
+      options:
+        - auth
+        - storage
+        - function
+        - api
+        - analytics
+        - hosting
+        - notifications
+        - interactions
+        - predictions
+        - xr
+        - Not applicable
+  - type: dropdown
+    attributes:
+      label: Amplify APIs
+      description: |
+        What [Amplify APIs](https://docs.amplify.aws/lib/q/platform/js) are being used?
+      multiple: true
+      options:
+        - Authentication
+        - Analytics
+        - REST API
+        - GraphQL API
+        - DataStore
+        - Storage
+        - Push Notifications
+        - Interactions
+        - PubSub
+        - Internationalization
+        - Cache
+        - Predictions
+        - Not applicable
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: aws-exports
+      description: If applicable, please provide your `aws-exports.js` file.
+      value: |
+        ```javascript
+          // -- If not provided, please remove placeholder below --
+          const awsmobile = {
+              "aws_project_region": "us-east-1",
+              "aws_cognito_identity_pool_id": "us-east-1:xxx-xxxx-xxxx-xxxx-xxxxxxxx",
+              "aws_cognito_region": "us-east-1",
+              "aws_user_pools_id": "us-east-1_xxx",
+              "aws_user_pools_web_client_id": "xxxx",
+              "oauth": {}
+          };
+        ```
+  - type: textarea
+    attributes:
+      label: Manual configuration
+      description: If applicable, please provide your **manual configuration** example.
+      value: |
+        ```json
+          // -- If not provided, please remove placeholder below -- 
+          {
+            Auth: {
+                identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
+                region: 'XX-XXXX-X',
+                identityPoolRegion: 'XX-XXXX-X',
+                userPoolId: 'XX-XXXX-X_abcd1234',
+                userPoolWebClientId: 'a1b2c3d4e5f6g7h8i9j0k1l2m3',
+                mandatorySignIn: false,
+                authenticationFlowType: 'USER_PASSWORD_AUTH',
+                oauth: {
+                    domain: 'your_cognito_domain',
+                    scope: ['phone', 'email', 'profile', 'openid', 'aws.cognito.signin.user.admin'],
+                    redirectSignIn: 'http://localhost:3000/',
+                    redirectSignOut: 'http://localhost:3000/',
+                    responseType: 'code' // or 'token', note that REFRESH token will only be generated when the responseType is code
+                  }
+              }
+          }
+        ```
+  - type: textarea
+    attributes:
+      label: Additional configuration
+      description: |
+        If applicable, provide more configuration data. 
+
+        For example, for Amazon Cognito, run `aws cognito-idp describe-user-pool --user-pool-id us-west-2_xxxxxx`. 
+
+        **Be sure to remove any sensitive data***
+
+      value: |
+        ```json
+
+
+        ```
+  - type: markdown
+    attributes:
+      value: |
+        ## Details
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is. Markdown formatting supported.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen. Markdown formatting supported.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction steps
+      description: How do you trigger this bug? Please walk us through it step by step. Screenshots can be provided in the issue body below. Markdown formatting supported.
+      placeholder: |
+        1. Install '...'
+        2. Configure '...'
+        3. Go to '...'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Code Snippet
+      description: |
+        Please provide a code snippet or a link to sample code of the issue you are experiencing to help us reproduce the issue. 
+
+        **Be sure to remove any sensitive data.**
+      value: |
+        ```javascript
+        // Put your code below this line.
+        ```
+  - type: textarea
+    attributes:
+      label: Log output
+      description: |
+        For example, error messages, or stack traces.
+
+        You can turn on the debug mode to provide more info for us 
+        by using the below statement in your app/
+
+        ```javascript
+        window.LOG_LEVEL = 'DEBUG';
+        ``` 
+        **Be sure to remove any sensitive data.**
+      value: |
+        ```
+        # Put your logs below this line.
+        ```
+  - type: markdown
+    attributes:
+      value: |
+        ## Smartphone (Optional)
+  - type: input
+    attributes:
+      label: Mobile Device
+      description: e.g. iPhone6
+  - type: input
+    attributes:
+      label: Mobile Operating System
+      description: For example, iOS8.1
+  - type: input
+    attributes:
+      label: Mobile Browser
+      description: For example, stock browser, Safari, Chrome
+  - type: input
+    attributes:
+      label: Mobile Browser Version
+      description: For example, 22
+  - type: markdown
+    attributes:
+      value: |
+        ## Additional information
+  - type: markdown
+    attributes:
+      value: >
+        If you have any additional information (i.e. `package.json`), workarounds, etc. for us, use the field below.
+        Please note, you can attach screenshots or screen recordings here, by
+        dragging and dropping files in the field below.
