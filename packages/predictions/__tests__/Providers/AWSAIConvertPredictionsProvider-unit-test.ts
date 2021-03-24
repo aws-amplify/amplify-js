@@ -299,7 +299,9 @@ describe('Predictions convert provider test', () => {
 			});
 
 			await predictionsProvider.convert(validSpeechToTextInput);
-			expect(downsampleBufferSpyon).toBeCalled();
+			expect(downsampleBufferSpyon).toBeCalledWith(
+				expect.objectContaining({ outputSampleRate: 8000 })
+			);
 			downsampleBufferSpyon.mockClear();
 		});
 	});

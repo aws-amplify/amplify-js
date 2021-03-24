@@ -180,17 +180,11 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 					languageCode: language,
 				});
 
-				let sourceBytes = source.bytes;
-				if (LANGUAGES_CODE_IN_8KHZ.includes(languageCode)) {
-					sourceBytes = this.downsampleBuffer({
-						buffer: source.bytes,
-						outputSampleRate: 8000,
-					});
-				}
 				try {
 					const fullText = await this.sendDataToTranscribe({
 						connection,
-						raw: sourceBytes,
+						raw: source.bytes,
+						languageCode: language,
 					});
 					return {
 						transcription: {
@@ -251,7 +245,11 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		return decodedMessage;
 	}
 
-	private sendDataToTranscribe({ connection, raw }): Promise<string> {
+	private sendDataToTranscribe({
+		connection,
+		raw,
+		languageCode,
+	}): Promise<string> {
 		return new Promise((res, rej) => {
 			let fullText = '';
 			connection.onmessage = message => {
@@ -283,8 +281,11 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			if (Array.isArray(raw)) {
 				for (let i = 0; i < raw.length - 1023; i += 1024) {
 					const data = raw.slice(i, i + 1024);
-					this.sendEncodedDataToTranscribe(connection, data);
+					this.sendEncodedDataToTranscribe(connection, data, languageCode);
 				}
+			} else {
+				// If Buffer
+				this.sendEncodedDataToTranscribe(connection, raw, languageCode);
 			}
 
 			// sending end frame
@@ -294,8 +295,13 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		});
 	}
 
-	private sendEncodedDataToTranscribe(connection, data) {
-		const downsampledBuffer = this.downsampleBuffer({ buffer: data });
+	private sendEncodedDataToTranscribe(connection, data, languageCode) {
+		const downsampledBuffer = this.downsampleBuffer({
+			buffer: data,
+			outputSampleRate: LANGUAGES_CODE_IN_8KHZ.includes(languageCode)
+				? 8000
+				: 16000,
+		});
 		const pcmEncodedBuffer = this.pcmEncode(downsampledBuffer);
 		const audioEventMessage = this.getAudioEventMessage(
 			Buffer.from(pcmEncodedBuffer)
