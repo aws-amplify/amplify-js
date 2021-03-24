@@ -1,10 +1,13 @@
+import { randomBytes } from '../src/AuthenticationHelper';
 import AuthenticationHelper from '../src/AuthenticationHelper';
 
 import BigInteger from '../src/BigInteger';
+import { SHA256 } from 'crypto-js';
+
+const instance = new AuthenticationHelper('TestPoolName');
+
 
 describe('AuthenticatorHelper', () => {
-	const instance = new AuthenticationHelper('TestPoolName');
-
 	/*
 	Test cases generated in Java with:
 
@@ -553,4 +556,108 @@ describe('AuthenticatorHelper', () => {
 	});
 });
 
-describe()
+describe('Getters for AuthenticationHelper class', () => {
+
+	test('Instance variable small A', () => {
+		expect(instance.getSmallAValue()).toBe(instance.smallAValue)
+	})
+
+	test('Instance variable randomPassword', () => {
+		expect(instance.getRandomPassword()).toBe(instance.randomPassword)
+	})
+
+	test('Instance variable SaltDevices', () => {
+		expect(instance.getSaltDevices()).toBe(instance.SaltToHashDevices)
+	})
+
+	test('Instance variable verifierDevices', () => {
+		expect(instance.getVerifierDevices()).toBe(instance.verifierDevices)
+	})
+
+	test('Constant prefix for new password challenge', () => {
+		expect(instance.getNewPasswordRequiredChallengeUserAttributePrefix()).toEqual('userAttributes.')
+	})
+
+})
+
+describe('Calculations for AuthenticationHelper class', () => {
+
+	test('Generate Random Small A is generating a BigInteger', () => {
+		expect(instance.generateRandomSmallA()).toBeInstanceOf(BigInteger)
+	})
+
+	test('Ensure that generateRandomSmallA is non deterministic', () => {
+		const firstSmallA = instance.generateRandomSmallA()
+		const secondSmallA = instance.generateRandomSmallA()
+		expect(firstSmallA).not.toEqual(secondSmallA)
+	})
+
+	test('Generate random strings', () => {
+		expect(typeof instance.generateRandomString()).toEqual('string')
+	})
+
+	test('Generate random strings', () => {
+		expect(instance.generateRandomString()).not.toEqual(instance.generateRandomString())
+	})
+
+	//TODO: fix callback
+	// test('Get the client\'s large A value', () => {
+
+	// var callback = function (error, retval) {
+	// 	if (error) {
+	// 		return err;
+	// 	}
+	// 	return retval;
+	// }
+
+
+	// console.log(instance.getLargeAValue(callback))
+	// expect(instance.largeAValue).toBe(console.log(instance.getLargeAValue(callback)))
+	// })
+
+	test('Calculate the client\'s value U', () => {
+		//example hex values
+		const hexA = new BigInteger('abcd1234', 16);
+		const hexB = new BigInteger('deadbeef', 16);
+
+		const hashed = instance.hexHash(instance.padHex(hexA) + instance.padHex(hexB))
+		const expected = new BigInteger(hashed, 16)
+
+		const result = instance.calculateU(hexA, hexB)
+
+		expect(expected).toEqual(result)
+	})
+
+	test('Test hash function produces a valid hex string with regex', () => {
+		const regEx = /[0-9a-f]/g
+		const hexStr = SHA256("testString").toString()
+
+		expect(regEx.test(instance.hexHash(hexStr))).toBe(true)
+	})
+})
+
+describe('Password Auth Key', () => {
+
+	const dummyUsername = "cognitoUser"
+	const dummyPassword = "cognitoPassword"
+	const badServerValue = new BigInteger(0, 16)
+	const salt = new BigInteger('deadbeef', 16);
+	const cbFunction = function (err, hkdfValue) {
+		if (err) {
+			throw new Error(err)
+		}
+		console.log(hkdfValue)
+	}
+
+	// try {
+	// 	expect(instance.getPasswordAuthenticationKey(dummyUsername, dummyPassword, badServerValue, salt, cbFunction)
+	// } catch (error) {
+	// 	expect(error).toThrowError('B cannot be zero.')
+	// }
+	test("Getting a bad server value to authKeyAccessor function.", () => {
+		expect(() => {
+			instance.getPasswordAuthenticationKey(dummyUsername, dummyPassword, badServerValue, salt, cbFunction)
+		}).toThrow('B cannot be zero.')
+
+	})
+})
