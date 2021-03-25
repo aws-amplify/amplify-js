@@ -1,4 +1,5 @@
 import {
+	objectsEqual,
 	isAWSDate,
 	isAWSDateTime,
 	isAWSEmail,
@@ -11,6 +12,36 @@ import {
 } from '../src/util';
 
 describe('datastore util', () => {
+	test('objectsEqual', () => {
+		expect(objectsEqual({}, {})).toEqual(true);
+		expect(objectsEqual([], [])).toEqual(true);
+		expect(objectsEqual([], {})).toEqual(false);
+		expect(objectsEqual([1, 2, 3], [1, 2, 3])).toEqual(true);
+		expect(objectsEqual([1, 2, 3], [1, 2, 3, 4])).toEqual(false);
+		expect(objectsEqual({ a: 1 }, { a: 1 })).toEqual(true);
+		expect(objectsEqual({ a: 1 }, { a: 2 })).toEqual(false);
+		expect(
+			objectsEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 3 }] })
+		).toEqual(true);
+		expect(
+			objectsEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 4 }] })
+		).toEqual(false);
+		expect(objectsEqual(new Set([1, 2, 3]), new Set([1, 2, 3]))).toEqual(true);
+		expect(objectsEqual(new Set([1, 2, 3]), new Set([1, 2, 3, 4]))).toEqual(
+			false
+		);
+
+		const map1 = new Map();
+		map1.set('a', 1);
+
+		const map2 = new Map();
+		map2.set('a', 1);
+
+		expect(objectsEqual(map1, map2)).toEqual(true);
+		map2.set('b', 2);
+		expect(objectsEqual(map1, map2)).toEqual(false);
+	});
+
 	test('isAWSDate', () => {
 		const valid = [
 			'2020-01-01',

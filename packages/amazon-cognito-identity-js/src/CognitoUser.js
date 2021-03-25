@@ -287,6 +287,7 @@ export default class CognitoUser {
 				const challengeParameters = data.ChallengeParameters;
 
 				this.username = challengeParameters.USER_ID_FOR_SRP;
+				this.userDataKey = `${this.keyPrefix}.${this.username}.userData`;
 				serverBValue = new BigInteger(challengeParameters.SRP_B, 16);
 				salt = new BigInteger(challengeParameters.SALT, 16);
 				this.getCachedDeviceKeyAndPassword();
@@ -1233,11 +1234,10 @@ export default class CognitoUser {
 	}
 
 	/**
-	 * @typedef {Object} GetUserDataOptions 
+	 * @typedef {Object} GetUserDataOptions
 	 * @property {boolean} bypassCache - force getting data from Cognito service
 	 * @property {Record<string, string>} clientMetadata - clientMetadata for getSession
-	*/
-
+	 */
 
 	/**
 	 * This is used by an authenticated users to get the userData
@@ -1364,9 +1364,9 @@ export default class CognitoUser {
 	}
 
 	/**
-	 * @typedef {Object} GetSessionOptions 
+	 * @typedef {Object} GetSessionOptions
 	 * @property {Record<string, string>} clientMetadata - clientMetadata for getSession
-	*/
+	 */
 
 	/**
 	 * This is used to get a session, either from the session object
@@ -1388,8 +1388,9 @@ export default class CognitoUser {
 			return callback(null, this.signInUserSession);
 		}
 
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
-			}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
+			this.username
+		}`;
 		const idTokenKey = `${keyPrefix}.idToken`;
 		const accessTokenKey = `${keyPrefix}.accessToken`;
 		const refreshTokenKey = `${keyPrefix}.refreshToken`;
@@ -1552,8 +1553,9 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	cacheDeviceKeyAndPassword() {
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
-			}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
+			this.username
+		}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1568,8 +1570,9 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	getCachedDeviceKeyAndPassword() {
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
-			}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
+			this.username
+		}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1586,8 +1589,9 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	clearCachedDeviceKeyAndPassword() {
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
-			}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
+			this.username
+		}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
