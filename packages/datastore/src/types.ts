@@ -12,6 +12,7 @@ import {
 	isAWSIPAddress,
 } from './util';
 import { PredicateAll } from './predicates';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 
 //#region Schema types
 export type Schema = UserSchema & {
@@ -495,6 +496,7 @@ export type RelationshipType = {
 //#region DataStore config types
 export type DataStoreConfig = {
 	DataStore?: {
+		authModeStrategy?: AuthModeStrategy;
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 		errorHandler?: (error: SyncError) => void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
@@ -502,6 +504,7 @@ export type DataStoreConfig = {
 		fullSyncInterval?: number;
 		syncExpressions?: SyncExpression[];
 	};
+	authModeStrategy?: AuthModeStrategy;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
@@ -509,6 +512,35 @@ export type DataStoreConfig = {
 	fullSyncInterval?: number;
 	syncExpressions?: SyncExpression[];
 };
+
+export type AuthModeStrategyReturn =
+	| GRAPHQL_AUTH_MODE
+	| GRAPHQL_AUTH_MODE[]
+	| undefined
+	| null;
+
+export type AuthModeStrategyParams = {
+	modelName: String;
+	operation: ModelOperation;
+};
+
+export type AuthModeStrategy = (
+	authModeStrategyParams: AuthModeStrategyParams
+) => AuthModeStrategyReturn | Promise<AuthModeStrategyReturn>;
+
+export enum ModelOperation {
+	CREATE = 'CREATE',
+	READ = 'READ',
+	UPDATE = 'UPDATE',
+	DELETE = 'DELETE',
+}
+
+export type ModelAuthModes = Record<
+	string,
+	{
+		[Property in ModelOperation]: GRAPHQL_AUTH_MODE[];
+	}
+>;
 
 export type SyncExpression = Promise<{
 	modelConstructor: any;

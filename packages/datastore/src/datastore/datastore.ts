@@ -1,4 +1,5 @@
 import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import {
 	Draft,
 	immerable,
@@ -18,11 +19,13 @@ import {
 import { ExclusiveStorage as Storage } from '../storage/storage';
 import { ControlMessage, SyncEngine } from '../sync';
 import {
+	AuthModeStrategy,
 	ConflictHandler,
 	DataStoreConfig,
 	GraphQLScalarType,
 	InternalSchema,
 	isGraphQLScalarType,
+	ModelAuthModes,
 	ModelFieldType,
 	ModelInit,
 	ModelInstanceMetadata,
@@ -587,6 +590,7 @@ function getNamespace(): SchemaNamespace {
 
 class DataStore {
 	private amplifyConfig: Record<string, any> = {};
+	private authModeStrategy: AuthModeStrategy;
 	private conflictHandler: ConflictHandler;
 	private errorHandler: (error: SyncError) => void;
 	private fullSyncInterval: number;
@@ -594,6 +598,7 @@ class DataStore {
 	private initReject: Function;
 	private initResolve: Function;
 	private maxRecordsToSync: number;
+	private modelAuthModes: ModelAuthModes;
 	private storage: Storage;
 	private sync: SyncEngine;
 	private syncPageSize: number;
@@ -641,6 +646,8 @@ class DataStore {
 
 			this.syncPredicates = await this.processSyncExpressions();
 
+			this.modelAuthModes = await this.processAuthModeStrategy();
+
 			this.sync = new SyncEngine(
 				schema,
 				namespaceResolver,
@@ -653,7 +660,8 @@ class DataStore {
 				this.conflictHandler,
 				this.errorHandler,
 				this.syncPredicates,
-				this.amplifyConfig
+				this.amplifyConfig,
+				this.modelAuthModes
 			);
 
 			// tslint:disable-next-line:max-line-length
@@ -1045,6 +1053,7 @@ class DataStore {
 	configure = (config: DataStoreConfig = {}) => {
 		const {
 			DataStore: configDataStore,
+			authModeStrategy: configAuthModeStrategy,
 			conflictHandler: configConflictHandler,
 			errorHandler: configErrorHandler,
 			maxRecordsToSync: configMaxRecordsToSync,
@@ -1058,6 +1067,11 @@ class DataStore {
 
 		this.conflictHandler = this.setConflictHandler(config);
 		this.errorHandler = this.setErrorHandler(config);
+
+		this.authModeStrategy =
+			(configDataStore && configDataStore.authModeStrategy) ||
+			this.authModeStrategy ||
+			configAuthModeStrategy;
 
 		this.syncExpressions =
 			(configDataStore && configDataStore.syncExpressions) ||
@@ -1120,6 +1134,31 @@ class DataStore {
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.sync = undefined;
 	};
+
+	private processAuthModeStrategy(): ModelAuthModes {
+		// TODO: inspect `schema` and pass it to authModeStrategy in order to determine
+		// what auth modes to use for each operation
+		return {
+			Todo: {
+				CREATE: [
+					GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+					GRAPHQL_AUTH_MODE.API_KEY,
+				],
+				READ: [
+					GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+					GRAPHQL_AUTH_MODE.API_KEY,
+				],
+				UPDATE: [
+					GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+					GRAPHQL_AUTH_MODE.API_KEY,
+				],
+				DELETE: [
+					GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+					GRAPHQL_AUTH_MODE.API_KEY,
+				],
+			},
+		};
+	}
 
 	private processPagination<T extends PersistentModel>(
 		modelDefinition: SchemaModel,

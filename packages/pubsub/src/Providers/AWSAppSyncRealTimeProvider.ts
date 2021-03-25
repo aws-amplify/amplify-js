@@ -186,6 +186,16 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					options,
 					observer,
 					subscriptionId,
+				}).catch(err => {
+					// TODO: find a better way to specifically identify this particular error downstream
+					observer.error({
+						errors: [
+							{
+								...new GraphQLError(`Error creating subscription: ${err}`),
+							},
+						],
+					});
+					observer.complete();
 				});
 
 				return async () => {

@@ -1,4 +1,4 @@
-import API, { GraphQLResult } from '@aws-amplify/api';
+import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import Observable from 'zen-observable-ts';
 import {
 	InternalSchema,
@@ -7,12 +7,14 @@ import {
 	ModelPredicate,
 	PredicatesGroup,
 	GraphQLFilter,
+	ModelAuthModes,
 } from '../../types';
 import { buildGraphQLOperation, predicateToGraphQLFilter } from '../utils';
 import {
 	jitteredExponentialRetry,
 	ConsoleLogger as Logger,
 	Hub,
+	NonRetryableError,
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
 
@@ -28,7 +30,8 @@ class SyncProcessor {
 		private readonly schema: InternalSchema,
 		private readonly maxRecordsToSync: number = DEFAULT_MAX_RECORDS_TO_SYNC,
 		private readonly syncPageSize: number = DEFAULT_PAGINATION_LIMIT,
-		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly modelAuthModes: ModelAuthModes
 	) {
 		this.generateQueries();
 	}
@@ -83,26 +86,38 @@ class SyncProcessor {
 			filter,
 		};
 
-		const { data } = <
-			GraphQLResult<{
-				[opName: string]: {
-					items: T[];
-					nextToken: string;
-					startedAt: number;
-				};
-			}>
-		>await this.jitteredRetry<T>({
-			query,
-			variables,
-			opName,
-			modelDefinition,
-		});
+		const readAuthModes = this.modelAuthModes[modelDefinition.name].READ;
+
+		const authModeJitteredRetry = async (index = 0) => {
+			try {
+				return await this.jitteredRetry<T>({
+					query,
+					variables,
+					opName,
+					modelDefinition,
+					authMode: readAuthModes[index],
+				});
+			} catch (error) {
+				// TODO: Should something else happen here, depending on the error type?
+				index++;
+				if (index > readAuthModes.length) {
+					throw error;
+				}
+				return await authModeJitteredRetry(index);
+			}
+		};
+
+		const { data } = await authModeJitteredRetry();
 
 		const { [opName]: opResult } = data;
 
 		const { items, nextToken: newNextToken, startedAt } = opResult;
 
-		return { nextToken: newNextToken, startedAt, items };
+		return {
+			nextToken: newNextToken,
+			startedAt,
+			items,
+		};
 	}
 
 	// Partial data private feature flag. Not a public API. This will be removed in a future release.
@@ -120,11 +135,13 @@ class SyncProcessor {
 		variables,
 		opName,
 		modelDefinition,
+		authMode,
 	}: {
 		query: string;
 		variables: { limit: number; lastSync: number; nextToken: string };
 		opName: string;
 		modelDefinition: SchemaModel;
+		authMode: GRAPHQL_AUTH_MODE;
 	}): Promise<
 		GraphQLResult<{
 			[opName: string]: {
@@ -140,8 +157,15 @@ class SyncProcessor {
 					return await API.graphql({
 						query,
 						variables,
+						authMode,
 					});
 				} catch (error) {
+					// TODO: Need to update this to handle error that happen during query building
+					// as well as network unauthorized error. What does unauthorized error look like?
+					if (error && typeof error === 'string') {
+						throw new NonRetryableError(error);
+					}
+
 					const hasItems = Boolean(
 						error &&
 							error.data &&
@@ -173,9 +197,12 @@ class SyncProcessor {
 					}
 
 					// If the error is unauthorized, filter out unauthorized items and return accessible items
-					const unauthorized = (error.errors as [any]).some(
-						err => err.errorType === 'Unauthorized'
-					);
+					const unauthorized =
+						error &&
+						error.errors &&
+						(error.errors as [any]).some(
+							err => err.errorType === 'Unauthorized'
+						);
 					if (unauthorized) {
 						const result = error;
 

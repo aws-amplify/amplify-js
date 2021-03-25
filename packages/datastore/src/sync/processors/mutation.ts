@@ -16,6 +16,7 @@ import {
 	InternalSchema,
 	isModelFieldType,
 	isTargetNameAssociation,
+	ModelAuthModes,
 	ModelInstanceMetadata,
 	OpType,
 	PersistentModel,
@@ -42,6 +43,8 @@ type MutationProcessorEvent = {
 	hasMore: boolean;
 };
 
+// TODO: Add multi-auth
+
 class MutationProcessor {
 	private observer: ZenObservable.Observer<MutationProcessorEvent>;
 	private readonly typeQuery = new WeakMap<
@@ -57,6 +60,7 @@ class MutationProcessor {
 		private readonly outbox: MutationEventOutbox,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
+		private readonly modelAuthModes: ModelAuthModes,
 		private readonly conflictHandler?: ConflictHandler,
 		private readonly errorHandler?: ErrorHandler
 	) {
