@@ -227,6 +227,39 @@ describe('Outbox tests', () => {
 			expect(head).toBeFalsy();
 		});
 	});
+	// https://github.com/aws-amplify/amplify-js/issues/7888
+	it('Should retain the fields from the create mutation in the queue when it gets merged with an enqueued update mutation', async () => {
+		const field1 = 'Some value';
+		const currentTimestamp = new Date().toISOString();
+		const optionalField1 = 'Optional value';
+
+		const newModel = new Model({
+			field1,
+			dateCreated: currentTimestamp,
+		});
+
+		const mutationEvent = await createMutationEvent(newModel);
+		({ modelId } = mutationEvent);
+
+		await outbox.enqueue(Storage, mutationEvent);
+
+		const updatedModel = Model.copyOf(newModel, updated => {
+			updated.optionalField1 = optionalField1;
+		});
+
+		const updateMutationEvent = await createMutationEvent(updatedModel);
+
+		await outbox.enqueue(Storage, updateMutationEvent);
+
+		await Storage.runExclusive(async s => {
+			const head = await outbox.peek(s);
+			const headData = JSON.parse(head.data);
+
+			expect(headData.field1).toEqual(field1);
+			expect(headData.dateCreated).toEqual(currentTimestamp);
+			expect(headData.optionalField1).toEqual(optionalField1);
+		});
+	});
 });
 
 // performs all the required dependency injection
