@@ -70,10 +70,7 @@ If you can't migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) or
 #### Visit our [Web Site](https://docs.amplify.aws/) to learn more about AWS Amplify.
 
 - [Documentation](https://docs.amplify.aws/)
-- [Installation](#installation)
-- [Configuration](#configuration)
 - [Demo Applications](https://github.com/aws-amplify/amplify-js-samples)
-- [Examples](#examples)
 - [Contributing](https://github.com/aws-amplify/amplify-js/blob/main/CONTRIBUTING.md)
 
 ## Getting Started
