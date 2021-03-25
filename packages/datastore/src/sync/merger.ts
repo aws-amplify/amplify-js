@@ -5,7 +5,6 @@ import {
 	PersistentModelConstructor,
 } from '../types';
 import { MutationEventOutbox } from './outbox';
-
 class ModelMerger {
 	constructor(
 		private readonly outbox: MutationEventOutbox,
