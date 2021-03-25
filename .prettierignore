@@ -9,3 +9,4 @@ package-lock.json
 www
 .stencil
 PULL_REQUEST_TEMPLATE.md
+ISSUE_TEMPLATE/*.md

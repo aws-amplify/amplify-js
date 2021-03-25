@@ -128,7 +128,7 @@ export const requiredAttributesMap = {
   },
   given_name: {
     label: I18n.get(Translations.GIVEN_NAME_LABEL),
-    placeholder: I18n.get(Translations.GIVEN_NAME_LABEL),
+    placeholder: I18n.get(Translations.GIVEN_NAME_PLACEHOLDER),
   },
   zoneinfo: {
     label: I18n.get(Translations.ZONEINFO_LABEL),

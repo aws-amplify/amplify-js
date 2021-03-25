@@ -389,13 +389,12 @@ describe('DataStore tests', () => {
 			const result = await DataStore.save(model);
 
 			const [settingsSave, modelCall] = <any>save.mock.calls;
-			const [_model, _condition, _mutator, patches] = modelCall;
+			const [_model, _condition, _mutator] = modelCall;
 
 			expect(result).toMatchObject(model);
-			expect(patches).toBeUndefined();
 		});
 
-		test('Save returns the updated model and patches', async () => {
+		test('Save returns the updated model', async () => {
 			let model: Model;
 			const save = jest.fn(() => [model]);
 			const query = jest.fn(() => [model]);
@@ -438,17 +437,12 @@ describe('DataStore tests', () => {
 			const result = await DataStore.save(model);
 
 			const [settingsSave, modelSave, modelUpdate] = <any>save.mock.calls;
-			const [_model, _condition, _mutator, patches] = modelUpdate;
-
-			const expectedPatches = [
-				{ op: 'replace', path: ['field1'], value: 'edited' },
-			];
+			const [_model, _condition, _mutator] = modelUpdate;
 
 			expect(result).toMatchObject(model);
-			expect(patches).toMatchObject(expectedPatches);
 		});
 
-		test('Save returns the updated model and patches - list field', async () => {
+		test('Save returns the updated model - list field', async () => {
 			let model: Model;
 			const save = jest.fn(() => [model]);
 			const query = jest.fn(() => [model]);
@@ -505,27 +499,8 @@ describe('DataStore tests', () => {
 				save.mock.calls
 			);
 
-			const [_model, _condition, _mutator, patches] = modelUpdate;
-			const [_model2, _condition2, _mutator2, patches2] = modelUpdate2;
-
-			const expectedPatches = [
-				{
-					op: 'replace',
-					path: ['emails'],
-					value: ['john@doe.com', 'jane@doe.com', 'joe@doe.com'],
-				},
-			];
-
-			const expectedPatches2 = [
-				{
-					op: 'add',
-					path: ['emails', 3],
-					value: 'joe@doe.com',
-				},
-			];
-
-			expect(patches).toMatchObject(expectedPatches);
-			expect(patches2).toMatchObject(expectedPatches2);
+			const [_model, _condition, _mutator] = modelUpdate;
+			const [_model2, _condition2, _mutator2] = modelUpdate2;
 		});
 
 		test('Instantiation validations', async () => {
