@@ -16,7 +16,6 @@ export declare class Model {
 		mutator: (draft: MutableModel<Model>) => void | Model
 	): Model;
 }
-
 export declare class Metadata {
 	readonly author: string;
 	readonly tags?: string[];
@@ -25,6 +24,17 @@ export declare class Metadata {
 	readonly nominations?: string[];
 	readonly misc?: (string | null)[];
 	constructor(init: Metadata);
+}
+
+export declare class Post {
+	public readonly id: string;
+	public readonly title: string;
+}
+
+export declare class Comment {
+	public readonly id: string;
+	public readonly content: string;
+	public readonly post: Post;
 }
 
 export function testSchema(): Schema {
@@ -87,6 +97,94 @@ export function testSchema(): Schema {
 						attributes: [],
 					},
 				},
+			},
+			Post: {
+				name: 'Post',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					comments: {
+						name: 'comments',
+						isArray: true,
+						type: {
+							model: 'Comment',
+						},
+						isRequired: true,
+						attributes: [],
+						isArrayNullable: true,
+						association: {
+							connectionType: 'HAS_MANY',
+							associatedWith: 'postId',
+						},
+					},
+				},
+				syncable: true,
+				pluralName: 'Posts',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
+			Comment: {
+				name: 'Comment',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					content: {
+						name: 'content',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					post: {
+						name: 'post',
+						isArray: false,
+						type: {
+							model: 'Post',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'BELONGS_TO',
+							targetName: 'postId',
+						},
+					},
+				},
+				syncable: true,
+				pluralName: 'Comments',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'byPost',
+							fields: ['postId'],
+						},
+					},
+				],
 			},
 			LocalModel: {
 				name: 'LocalModel',

@@ -434,6 +434,34 @@ export function sortCompareFunction<T extends PersistentModel>(
 	};
 }
 
+export function getUpdateMutationInput<T extends PersistentModel>(
+	original: T,
+	updated: T
+): { [key: string]: any } {
+	const mutationInput: { [key: string]: any } = {
+		id: original.id,
+		_version: original._version,
+		_lastChangedAt: original._lastChangedAt,
+		_deleted: original._deleted,
+	};
+
+	for (const field in original) {
+		let originalValue: any = original[field];
+		let updatedValue: any = updated[field];
+
+		if (typeof originalValue === 'object') {
+			originalValue = JSON.stringify(originalValue);
+			updatedValue = JSON.stringify(updatedValue);
+		}
+
+		if (originalValue !== updatedValue) {
+			mutationInput[field] = updated[field];
+		}
+	}
+
+	return mutationInput;
+}
+
 export const isAWSDate = (val: string): boolean => {
 	return !!/^\d{4}-\d{2}-\d{2}(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(val);
 };
