@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.14...@aws-amplify/datastore@2.9.15) (2021-03-25)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix consecutive updates ([#7354](https://github.com/aws-amplify/amplify-js/issues/7354)) ([efd2e41](https://github.com/aws-amplify/amplify-js/commit/efd2e41d13fa6417ecddf153d7d0461060e45621))
+* **@aws-amplify/datastore:** keep syncing when subs disabled ([#7987](https://github.com/aws-amplify/amplify-js/issues/7987)) ([0e8968f](https://github.com/aws-amplify/amplify-js/commit/0e8968f9125b1b5f76389abe3d77986c1f65e32f))
+* **@aws-amplify/datastore:** update mutation input - use diff with DB instead of patches ([#7935](https://github.com/aws-amplify/amplify-js/issues/7935)) ([638c94d](https://github.com/aws-amplify/amplify-js/commit/638c94de30df179ef5f0d03ac8c97cecb683bb53))
+
+
+
+
+
 ## [2.9.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.13...@aws-amplify/datastore@2.9.14) (2021-03-18)
 
 **Note:** Version bump only for package @aws-amplify/datastore
