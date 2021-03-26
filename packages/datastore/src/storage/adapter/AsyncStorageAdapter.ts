@@ -2,7 +2,10 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import AsyncStorageDatabase from './AsyncStorageDatabase';
 import { Adapter } from './index';
 import { ModelInstanceCreator } from '../../datastore/datastore';
-import { ModelPredicateCreator } from '../../predicates';
+import {
+	ModelPredicateCreator,
+	ModelSortPredicateCreator,
+} from '../../predicates';
 import {
 	InternalSchema,
 	isPredicateObj,
@@ -14,6 +17,7 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicateObject,
+	PredicatesGroup,
 	QueryOne,
 	RelationType,
 } from '../../types';
@@ -24,6 +28,7 @@ import {
 	isModelConstructor,
 	traverseModel,
 	validatePredicate,
+	sortCompareFunction,
 } from '../../util';
 
 const logger = new Logger('DataStore');
@@ -92,7 +97,7 @@ export class AsyncStorageAdapter implements Adapter {
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>
-	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
+	): Promise<[T, OpType.INSERT | OpType.UPDATE, T?][]> {
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
 		const storeName = this.getStorenameForModel(modelConstructor);
@@ -128,25 +133,21 @@ export class AsyncStorageAdapter implements Adapter {
 			}
 		}
 
-		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
+		const result: [T, OpType.INSERT | OpType.UPDATE, T?][] = [];
 
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
-
 			const { id } = item;
 
-			const opType: OpType = (await this.db.get(id, storeName))
-				? OpType.UPDATE
-				: OpType.INSERT;
+			const fromDB = <T>await this.db.get(id, storeName);
+			const opType: OpType = fromDB ? OpType.UPDATE : OpType.INSERT;
 
-			if (id === model.id) {
+			if (id === model.id || opType === OpType.INSERT) {
 				await this.db.save(item, storeName);
 
-				result.push([instance, opType]);
-			} else {
-				if (opType === OpType.INSERT) {
-					await this.db.save(item, storeName);
-
+				if (opType === OpType.UPDATE) {
+					result.push([instance, opType, fromDB]);
+				} else {
 					result.push([instance, opType]);
 				}
 			}
@@ -238,54 +239,91 @@ export class AsyncStorageAdapter implements Adapter {
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
-		if (predicate) {
-			const predicates = ModelPredicateCreator.getPredicates(predicate);
-			if (predicates) {
-				const { predicates: predicateObjs, type } = predicates;
-				const idPredicate =
-					predicateObjs.length === 1 &&
-					(predicateObjs.find(
-						p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
-					) as PredicateObject<T>);
+		const predicates =
+			predicate && ModelPredicateCreator.getPredicates(predicate);
+		const queryById = predicates && this.idFromPredicate(predicates);
+		const hasSort = pagination && pagination.sort;
+		const hasPagination = pagination && pagination.limit;
 
-				if (idPredicate) {
-					const { operand: id } = idPredicate;
-
-					const record = <any>await this.db.get(id, storeName);
-
-					if (record) {
-						const [x] = await this.load(namespaceName, modelConstructor.name, [
-							record,
-						]);
-						return [x];
-					}
-					return [];
-				}
-
-				const all = <T[]>await this.db.getAll(storeName);
-
-				const filtered = predicateObjs
-					? all.filter(m => validatePredicate(m, type, predicateObjs))
-					: all;
-
-				return await this.load(
-					namespaceName,
-					modelConstructor.name,
-					this.inMemoryPagination(filtered, pagination)
-				);
+		const records: T[] = await (async () => {
+			if (queryById) {
+				const record = await this.getById(storeName, queryById);
+				return record ? [record] : [];
 			}
-		}
 
-		const all = <T[]>await this.db.getAll(storeName, pagination);
+			if (predicates) {
+				const filtered = await this.filterOnPredicate(storeName, predicates);
+				return this.inMemoryPagination(filtered, pagination);
+			}
 
-		return await this.load(namespaceName, modelConstructor.name, all);
+			if (hasSort || hasPagination) {
+				const all = await this.getAll(storeName);
+				return this.inMemoryPagination(all, pagination);
+			}
+
+			return this.getAll(storeName);
+		})();
+
+		return await this.load(namespaceName, modelConstructor.name, records);
+	}
+
+	private async getById<T extends PersistentModel>(
+		storeName: string,
+		id: string
+	): Promise<T> {
+		const record = <T>await this.db.get(id, storeName);
+		return record;
+	}
+
+	private async getAll<T extends PersistentModel>(
+		storeName: string
+	): Promise<T[]> {
+		return await this.db.getAll(storeName);
+	}
+
+	private idFromPredicate<T extends PersistentModel>(
+		predicates: PredicatesGroup<T>
+	) {
+		const { predicates: predicateObjs } = predicates;
+		const idPredicate =
+			predicateObjs.length === 1 &&
+			(predicateObjs.find(
+				p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
+			) as PredicateObject<T>);
+
+		return idPredicate && idPredicate.operand;
+	}
+
+	private async filterOnPredicate<T extends PersistentModel>(
+		storeName: string,
+		predicates: PredicatesGroup<T>
+	) {
+		const { predicates: predicateObjs, type } = predicates;
+
+		const all = <T[]>await this.getAll(storeName);
+
+		const filtered = predicateObjs
+			? all.filter(m => validatePredicate(m, type, predicateObjs))
+			: all;
+
+		return filtered;
 	}
 
 	private inMemoryPagination<T extends PersistentModel>(
 		records: T[],
 		pagination?: PaginationInput<T>
 	): T[] {
-		if (pagination) {
+		if (pagination && records.length > 1) {
+			if (pagination.sort) {
+				const sortPredicates = ModelSortPredicateCreator.getPredicates(
+					pagination.sort
+				);
+
+				if (sortPredicates.length) {
+					const compareFn = sortCompareFunction(sortPredicates);
+					records.sort(compareFn);
+				}
+			}
 			const { page = 0, limit = 0 } = pagination;
 			const start = Math.max(0, page * limit) || 0;
 
@@ -293,7 +331,6 @@ export class AsyncStorageAdapter implements Adapter {
 
 			return records.slice(start, end);
 		}
-
 		return records;
 	}
 
@@ -381,10 +418,7 @@ export class AsyncStorageAdapter implements Adapter {
 				const isValid = validatePredicate(fromDB, type, predicateObjs);
 				if (!isValid) {
 					const msg = 'Conditional update failed';
-					logger.error(msg, {
-						model: fromDB,
-						condition: predicateObjs,
-					});
+					logger.error(msg, { model: fromDB, condition: predicateObjs });
 
 					throw new Error(msg);
 				}

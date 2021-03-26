@@ -151,14 +151,21 @@ class MutationProcessor {
 
 			if (result === undefined) {
 				logger.debug('done retrying');
-				await this.outbox.dequeue(this.storage);
+				await this.storage.runExclusive(async storage => {
+					await this.outbox.dequeue(storage);
+				});
 				continue;
 			}
 
 			const record = result.data[opName];
-			await this.outbox.dequeue(this.storage);
+			let hasMore = false;
 
-			const hasMore = (await this.outbox.peek(this.storage)) !== undefined;
+			await this.storage.runExclusive(async storage => {
+				// using runExclusive to prevent possible race condition
+				// when another record gets enqueued between dequeue and peek
+				await this.outbox.dequeue(storage, record);
+				hasMore = (await this.outbox.peek(storage)) !== undefined;
+			});
 
 			this.observer.next({
 				operation,
@@ -359,7 +366,7 @@ class MutationProcessor {
 			operation === TransformerMutationType.DELETE
 				? <ModelInstanceMetadata>{ id: parsedData.id } // For DELETE mutations, only ID is sent
 				: Object.values(modelDefinition.fields)
-						.filter(({ type, association }) => {
+						.filter(({ name, type, association }) => {
 							// connections
 							if (isModelFieldType(type)) {
 								// BELONGS_TO
@@ -372,6 +379,11 @@ class MutationProcessor {
 
 								// All other connections
 								return false;
+							}
+
+							if (operation === TransformerMutationType.UPDATE) {
+								// this limits the update mutation input to changed fields only
+								return parsedData.hasOwnProperty(name);
 							}
 
 							// scalars and non-model types

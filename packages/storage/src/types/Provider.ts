@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 export interface StorageProvider {
-	// you need to implement those  methods
+	// you need to implement those methods
 
 	// configure your provider
 	configure(config: object): object;

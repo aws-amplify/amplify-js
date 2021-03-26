@@ -4,12 +4,12 @@
 
 ## Frameworks
 
-| Framework          | Package                                                                                  | Version                                                                                                                                        |                    READMEs                     | Quick Start                         |
-| ------------------ | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------: | ----------------------------------- |
-| **React**          | [`@aws-amplify/ui-react`](https://www.npmjs.com/package/@aws-amplify/ui-react)           | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-react/ui-preview.svg)](https://www.npmjs.com/package/@aws-amplify/ui-react)           |  [`README.md`](../amplify-ui-react/README.md)  | [`React`](#react)                   |
-| **Angular**        | [`@aws-amplify/ui-angular`](https://www.npmjs.com/package/@aws-amplify/ui-angular)       | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-angular/ui-preview.svg)](https://www.npmjs.com/package/@aws-amplify/ui-angular)       | [`README.md`](../amplify-ui-angular/README.md) | [`Angular`](#angular)               |
-| **Vue**            | [`@aws-amplify/ui-vue`](https://www.npmjs.com/package/@aws-amplify/ui-vue)               | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-vue/ui-preview.svg)](https://www.npmjs.com/package/@aws-amplify/ui-vue)               |   [`README.md`](../amplify-ui-vue/README.md)   | [`Vue`](#vue)                       |
-| **Web Components** | [`@aws-amplify/ui-components`](https://www.npmjs.com/package/@aws-amplify/ui-components) | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-components/ui-preview.svg)](https://www.npmjs.com/package/@aws-amplify/ui-components) |            [`README.md`](README.md)            | [`Web Components`](#web-components) |
+| Framework          | Package                                                                                  | Version                                                                                                                                    |                    READMEs                     | Quick Start                         |
+| ------------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | :--------------------------------------------: | ----------------------------------- |
+| **React**          | [`@aws-amplify/ui-react`](https://www.npmjs.com/package/@aws-amplify/ui-react)           | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-react/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-react)           |  [`README.md`](../amplify-ui-react/README.md)  | [`React`](#react)                   |
+| **Angular**        | [`@aws-amplify/ui-angular`](https://www.npmjs.com/package/@aws-amplify/ui-angular)       | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-angular/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-angular)       | [`README.md`](../amplify-ui-angular/README.md) | [`Angular`](#angular)               |
+| **Vue**            | [`@aws-amplify/ui-vue`](https://www.npmjs.com/package/@aws-amplify/ui-vue)               | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-vue/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-vue)               |   [`README.md`](../amplify-ui-vue/README.md)   | [`Vue`](#vue)                       |
+| **Web Components** | [`@aws-amplify/ui-components`](https://www.npmjs.com/package/@aws-amplify/ui-components) | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-components/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-components) |            [`README.md`](README.md)            | [`Web Components`](#web-components) |
 
 ## Quick Start
 
@@ -32,7 +32,7 @@ In this Quick Start guide you will set up an Authenticator component and the clo
 ##### Installation
 
 ```
-yarn add aws-amplify@ui-preview @aws-amplify/ui-react@ui-preview
+yarn add aws-amplify @aws-amplify/ui-react
 ```
 
 ##### Usage
@@ -46,12 +46,12 @@ import awsconfig from './aws-exports';
 Amplify.configure(awsconfig);
 
 const App = () => {
-  <AmplifyAuthenticator>
-    <div>
-      My App
-      <AmplifySignOut />
-    </div>
-  </AmplifyAuthenticator>;
+	<AmplifyAuthenticator>
+		<div>
+			My App
+			<AmplifySignOut />
+		</div>
+	</AmplifyAuthenticator>;
 };
 ```
 
@@ -60,7 +60,7 @@ const App = () => {
 ##### Installation
 
 ```
-yarn add aws-amplify@ui-preview @aws-amplify/ui-angular@ui-preview
+yarn add aws-amplify @aws-amplify/ui-angular
 ```
 
 ##### Usage
@@ -79,10 +79,10 @@ import awsconfig from './aws-exports';
 Amplify.configure(awsconfig);
 
 @NgModule({
-  declarations: [AppComponent],
-  imports: [AmplifyUIAngularModule, BrowserModule],
-  providers: [],
-  bootstrap: [AppComponent],
+	declarations: [AppComponent],
+	imports: [AmplifyUIAngularModule, BrowserModule],
+	providers: [],
+	bootstrap: [AppComponent],
 })
 export class AppModule {}
 ```
@@ -91,10 +91,10 @@ _app.component.html_
 
 ```html
 <amplify-authenticator>
-  <div>
-    My App
-    <amplify-sign-out></amplify-sign-out>
-  </div>
+	<div>
+		My App
+		<amplify-sign-out></amplify-sign-out>
+	</div>
 </amplify-authenticator>
 ```
 
@@ -103,7 +103,7 @@ _app.component.html_
 ##### Installation
 
 ```
-yarn add aws-amplify@ui-preview @aws-amplify/ui-vue@ui-preview
+yarn add aws-amplify @aws-amplify/ui-vue
 ```
 
 ##### Usage
@@ -120,7 +120,7 @@ import awsconfig from './aws-exports';
 Amplify.configure(awsconfig);
 
 new Vue({
-  render: h => h(App),
+	render: h => h(App),
 }).$mount('#app');
 ```
 
@@ -128,12 +128,12 @@ _App.vue_
 
 ```html
 <template>
-  <amplify-authenticator>
-    <div>
-      My App
-      <amplify-sign-out></amplify-sign-out>
-    </div>
-  </amplify-authenticator>
+	<amplify-authenticator>
+		<div>
+			My App
+			<amplify-sign-out></amplify-sign-out>
+		</div>
+	</amplify-authenticator>
 </template>
 ```
 
@@ -142,7 +142,7 @@ _App.vue_
 ##### Installation
 
 ```
-yarn add aws-amplify@ui-preview @aws-amplify/ui-components@ui-preview
+yarn add aws-amplify @aws-amplify/ui-components
 ```
 
 ##### Usage
@@ -150,11 +150,17 @@ yarn add aws-amplify@ui-preview @aws-amplify/ui-components@ui-preview
 _app.js_
 
 ```js
-import '@aws-amplify/ui-vue';
 import Amplify from 'aws-amplify';
 import awsconfig from './aws-exports';
-
 Amplify.configure(awsconfig);
+import {
+	applyPolyfills,
+	defineCustomElements,
+} from '@aws-amplify/ui-components/loader';
+
+applyPolyfills().then(() => {
+	defineCustomElements(window);
+});
 ```
 
 _index.html_
@@ -162,16 +168,16 @@ _index.html_
 ```html
 <!DOCTYPE html>
 <html lang="en">
-  <body>
-    <amplify-authenticator>
-      <div>
-        My App
-        <amplify-sign-out></amplify-sign-out>
-      </div>
-    </amplify-authenticator>
+	<body>
+		<amplify-authenticator>
+			<div>
+				My App
+				<amplify-sign-out></amplify-sign-out>
+			</div>
+		</amplify-authenticator>
 
-    <script src="app.js"></script>
-  </body>
+		<script src="app.js"></script>
+	</body>
 </html>
 ```
 
@@ -231,18 +237,22 @@ Amplify UI Components use [slots](https://developer.mozilla.org/en-US/docs/Web/H
 #### React
 
 ```js
-import { AmplifyAuthenticator, AmplifySignIn, AmplifySignUp } from '@aws-amplify/ui-react';
+import {
+	AmplifyAuthenticator,
+	AmplifySignIn,
+	AmplifySignUp,
+} from '@aws-amplify/ui-react';
 
 const App = () => {
-  <AmplifyAuthenticator>
-    <AmplifySignIn headerText="My Custom Sign In Header" slot="sign-in" />
-    <AmplifySignUp headerText="My Custom Sign Up Header" slot="sign-up" />
+	<AmplifyAuthenticator>
+		<AmplifySignIn headerText="My Custom Sign In Header" slot="sign-in" />
+		<AmplifySignUp headerText="My Custom Sign Up Header" slot="sign-up" />
 
-    <div>
-      My App
-      <AmplifySignOut />
-    </div>
-  </AmplifyAuthenticator>;
+		<div>
+			My App
+			<AmplifySignOut />
+		</div>
+	</AmplifyAuthenticator>;
 };
 ```
 
@@ -263,13 +273,13 @@ export default withAuthenticator(App, { /* ...amplifyAuthenticatorSettings */ })
 
 ```html
 <amplify-authenticator>
-  <amplify-sign-in header-text="My Custom Sign In Header" slot="sign-in" />
-  <amplify-sign-up header-text="My Custom Sign In Header" slot="sign-up" />
+	<amplify-sign-in header-text="My Custom Sign In Header" slot="sign-in" />
+	<amplify-sign-up header-text="My Custom Sign In Header" slot="sign-up" />
 
-  <div>
-    My App
-    <amplify-sign-out></amplify-sign-out>
-  </div>
+	<div>
+		My App
+		<amplify-sign-out></amplify-sign-out>
+	</div>
 </amplify-authenticator>
 ```
 
@@ -277,13 +287,13 @@ export default withAuthenticator(App, { /* ...amplifyAuthenticatorSettings */ })
 
 ```html
 <amplify-authenticator>
-  <amplify-sign-in header-text="My Custom Sign In Header" slot="sign-in" />
-  <amplify-sign-up header-text="My Custom Sign In Header" slot="sign-up" />
+	<amplify-sign-in header-text="My Custom Sign In Header" slot="sign-in" />
+	<amplify-sign-up header-text="My Custom Sign In Header" slot="sign-up" />
 
-  <div>
-    My App
-    <amplify-sign-out></amplify-sign-out>
-  </div>
+	<div>
+		My App
+		<amplify-sign-out></amplify-sign-out>
+	</div>
 </amplify-authenticator>
 ```
 
@@ -291,13 +301,13 @@ export default withAuthenticator(App, { /* ...amplifyAuthenticatorSettings */ })
 
 ```html
 <amplify-authenticator>
-  <amplify-sign-in header-text="My Custom Sign In Header" slot="sign-in" />
-  <amplify-sign-up header-text="My Custom Sign In Header" slot="sign-up" />
+	<amplify-sign-in header-text="My Custom Sign In Header" slot="sign-in" />
+	<amplify-sign-up header-text="My Custom Sign In Header" slot="sign-up" />
 
-  <div>
-    My App
-    <amplify-sign-out></amplify-sign-out>
-  </div>
+	<div>
+		My App
+		<amplify-sign-out></amplify-sign-out>
+	</div>
 </amplify-authenticator>
 ```
 
@@ -375,21 +385,21 @@ The `federated` prop implements the `FederatedConfig`:
 
 ```ts
 export interface FederatedConfig {
-  auth0Config?: {
-    audience?: string;
-    clientID: string;
-    domain: string;
-    responseType: string;
-    redirectUri: string;
-    returnTo?: string;
-    scope?: string;
-  };
-  amazonClientId?: string;
-  facebookAppId?: string;
-  googleClientId?: string;
-  oauthConfig?: {
-    [key: string]: any;
-  };
+	auth0Config?: {
+		audience?: string;
+		clientID: string;
+		domain: string;
+		responseType: string;
+		redirectUri: string;
+		returnTo?: string;
+		scope?: string;
+	};
+	amazonClientId?: string;
+	facebookAppId?: string;
+	googleClientId?: string;
+	oauthConfig?: {
+		[key: string]: any;
+	};
 }
 ```
 
@@ -426,7 +436,7 @@ const federated = {
 
 ```diff
 - yarn add aws-amplify-react
-+ yarn add @aws-amplify/ui-react@ui-preview
++ yarn add @aws-amplify/ui-react
 ```
 
 ##### Usage
@@ -469,7 +479,7 @@ export default withAuthenticator(App);
 
 ```diff
 - yarn add aws-amplify-angular
-+ yarn add @aws-amplify/ui-angular@ui-preview
++ yarn add @aws-amplify/ui-angular
 ```
 
 ##### Usage
@@ -504,7 +514,7 @@ export class AppModule {}
 
 ```diff
 - yarn add aws-amplify-vue
-+ yarn add @aws-amplify/ui-vue@ui-preview
++ yarn add @aws-amplify/ui-vue
 ```
 
 ##### Usage
