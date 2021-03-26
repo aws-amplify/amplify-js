@@ -1,12 +1,5 @@
 import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
-import {
-	Draft,
-	immerable,
-	produce,
-	setAutoFreeze,
-	enablePatches,
-	Patch,
-} from 'immer';
+import { Draft, immerable, produce, setAutoFreeze } from 'immer';
 import { v4 as uuid4 } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import {
@@ -61,7 +54,6 @@ import {
 } from '../util';
 
 setAutoFreeze(true);
-enablePatches();
 
 const logger = new Logger('DataStore');
 
@@ -86,7 +78,6 @@ const modelNamespaceMap = new WeakMap<
 	PersistentModelConstructor<any>,
 	string
 >();
-const modelPatchesMap = new WeakMap<PersistentModel, Patch[]>();
 
 const getModelDefinition = (
 	modelConstructor: PersistentModelConstructor<any>
@@ -105,12 +96,10 @@ const isValidModelConstructor = <T extends PersistentModel>(
 const namespaceResolver: NamespaceResolver = modelConstructor =>
 	modelNamespaceMap.get(modelConstructor);
 
+// exporting for testing purposes
+export let syncClasses: TypeConstructorMap;
 let dataStoreClasses: TypeConstructorMap;
-
 let userClasses: TypeConstructorMap;
-
-let syncClasses: TypeConstructorMap;
-
 let storageClasses: TypeConstructorMap;
 
 const initSchema = (userSchema: Schema) => {
@@ -392,23 +381,14 @@ const createModelClass = <T extends PersistentModel>(
 				throw new Error(msg);
 			}
 
-			let patches;
-			const model = produce(
-				source,
-				draft => {
-					fn(<MutableModel<T>>draft);
-					draft.id = source.id;
-					const modelValidator = validateModelFields(modelDefinition);
-					Object.entries(draft).forEach(([k, v]) => {
-						modelValidator(k, v);
-					});
-				},
-				p => (patches = p)
-			);
-
-			patches.length && modelPatchesMap.set(model, patches);
-
-			return model;
+			return produce(source, draft => {
+				fn(<MutableModel<T>>draft);
+				draft.id = source.id;
+				const modelValidator = validateModelFields(modelDefinition);
+				Object.entries(draft).forEach(([k, v]) => {
+					modelValidator(k, v);
+				});
+			});
 		}
 
 		// "private" method (that's hidden via `Setting`) for `withSSRContext` to use
@@ -782,10 +762,6 @@ class DataStore {
 	): Promise<T> => {
 		await this.start();
 
-		// Immer patches for constructing a correct update mutation input
-		// Allows us to only include changed fields for updates
-		const patches = modelPatchesMap.get(model);
-
 		const modelConstructor: PersistentModelConstructor<T> = model
 			? <PersistentModelConstructor<T>>model.constructor
 			: undefined;
@@ -805,7 +781,7 @@ class DataStore {
 		);
 
 		const [savedModel] = await this.storage.runExclusive(async s => {
-			await s.save(model, producedCondition, undefined, patches);
+			await s.save(model, producedCondition);
 
 			return s.query(
 				modelConstructor,

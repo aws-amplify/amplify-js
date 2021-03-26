@@ -434,6 +434,79 @@ export function sortCompareFunction<T extends PersistentModel>(
 	};
 }
 
+export function getUpdateMutationInput<T extends PersistentModel>(
+	original: T,
+	updated: T
+): { [key: string]: any } {
+	const mutationInput: { [key: string]: any } = {
+		id: original.id,
+		_version: original._version,
+		_lastChangedAt: original._lastChangedAt,
+		_deleted: original._deleted,
+	};
+
+	for (const field in original) {
+		let originalValue: any = original[field];
+		let updatedValue: any = updated[field];
+
+		if (typeof originalValue === 'object') {
+			originalValue = JSON.stringify(originalValue);
+			updatedValue = JSON.stringify(updatedValue);
+		}
+
+		if (originalValue !== updatedValue) {
+			mutationInput[field] = updated[field];
+		}
+	}
+
+	return mutationInput;
+}
+
+// deep compare any 2 objects (including arrays, Sets, and Maps)
+// returns true if equal
+export function objectsEqual(objA: object, objB: object): boolean {
+	let a = objA;
+	let b = objB;
+
+	if (
+		(Array.isArray(a) && !Array.isArray(b)) ||
+		(Array.isArray(b) && !Array.isArray(a))
+	) {
+		return false;
+	}
+
+	if (a instanceof Set && b instanceof Set) {
+		a = [...a];
+		b = [...b];
+	}
+
+	if (a instanceof Map && b instanceof Map) {
+		a = Object.fromEntries(a);
+		b = Object.fromEntries(b);
+	}
+
+	const aKeys = Object.keys(a);
+	const bKeys = Object.keys(b);
+
+	if (aKeys.length !== bKeys.length) {
+		return false;
+	}
+
+	for (const key of aKeys) {
+		const aVal = a[key];
+		const bVal = b[key];
+
+		if (aVal && typeof aVal === 'object') {
+			if (!objectsEqual(aVal, bVal)) {
+				return false;
+			}
+		} else if (aVal !== bVal) {
+			return false;
+		}
+	}
+	return true;
+}
+
 export const isAWSDate = (val: string): boolean => {
 	return !!/^\d{4}-\d{2}-\d{2}(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(val);
 };
