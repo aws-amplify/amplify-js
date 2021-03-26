@@ -7,9 +7,13 @@ import {
 	ModelPredicate,
 	PredicatesGroup,
 	GraphQLFilter,
-	ModelAuthModes,
+	AuthModeStrategy,
 } from '../../types';
-import { buildGraphQLOperation, predicateToGraphQLFilter } from '../utils';
+import {
+	buildGraphQLOperation,
+	getModelAuthModes,
+	predicateToGraphQLFilter,
+} from '../utils';
 import {
 	jitteredExponentialRetry,
 	ConsoleLogger as Logger,
@@ -31,7 +35,8 @@ class SyncProcessor {
 		private readonly maxRecordsToSync: number = DEFAULT_MAX_RECORDS_TO_SYNC,
 		private readonly syncPageSize: number = DEFAULT_PAGINATION_LIMIT,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
-		private readonly modelAuthModes: ModelAuthModes
+		private readonly amplifyConfig: Record<string, any> = {},
+		private readonly authModeStrategy: AuthModeStrategy
 	) {
 		this.generateQueries();
 	}
@@ -86,28 +91,35 @@ class SyncProcessor {
 			filter,
 		};
 
-		const readAuthModes = this.modelAuthModes[modelDefinition.name].READ;
+		const modelAuthModes = await getModelAuthModes({
+			authModeStrategy: this.authModeStrategy,
+			defaultAuthMode: this.amplifyConfig.aws_appsync_authenticationType,
+			modelName: modelDefinition.name,
+			schema: this.schema,
+		});
 
-		const authModeJitteredRetry = async (index = 0) => {
+		// sync only needs the READ auth mode(s)
+		const readAuthModes = modelAuthModes.READ;
+
+		const authModeRetry = async (authModeAttempts = 0) => {
 			try {
 				return await this.jitteredRetry<T>({
 					query,
 					variables,
 					opName,
 					modelDefinition,
-					authMode: readAuthModes[index],
+					authMode: readAuthModes[authModeAttempts],
 				});
 			} catch (error) {
-				// TODO: Should something else happen here, depending on the error type?
-				index++;
-				if (index > readAuthModes.length) {
+				authModeAttempts++;
+				if (authModeAttempts > readAuthModes.length) {
 					throw error;
 				}
-				return await authModeJitteredRetry(index);
+				return await authModeRetry(authModeAttempts);
 			}
 		};
 
-		const { data } = await authModeJitteredRetry();
+		const { data } = await authModeRetry();
 
 		const { [opName]: opResult } = data;
 
@@ -160,9 +172,23 @@ class SyncProcessor {
 						authMode,
 					});
 				} catch (error) {
-					// TODO: Need to update this to handle error that happen during query building
-					// as well as network unauthorized error. What does unauthorized error look like?
-					if (error && typeof error === 'string') {
+					// Client-side errors that are sent are strings
+					const authClientSideErrors = [
+						'No current user',
+						'No credentials',
+						'No federated jwt',
+						'The user is not authenticated',
+					];
+
+					const forbiddenError =
+						error &&
+						error.errors &&
+						(error.errors as [any]).some(
+							err => err.message === 'Request failed with status code 403'
+						);
+
+					// Catch client-side & 403 errors here so that we don't continue to retry
+					if (authClientSideErrors.includes(error) || forbiddenError) {
 						throw new NonRetryableError(error);
 					}
 

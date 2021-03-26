@@ -520,6 +520,7 @@ export type AuthModeStrategyReturn =
 	| null;
 
 export type AuthModeStrategyParams = {
+	schema: InternalSchema;
 	modelName: String;
 	operation: ModelOperation;
 };

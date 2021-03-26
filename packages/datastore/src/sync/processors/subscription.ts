@@ -10,12 +10,13 @@ import {
 	SchemaModel,
 	SchemaNamespace,
 	PredicatesGroup,
-	ModelAuthModes,
 	ModelPredicate,
+	AuthModeStrategy,
 } from '../../types';
 import {
 	buildSubscriptionGraphQLOperation,
 	getAuthorizationRules,
+	getModelAuthModes,
 	getUserGroupsFromToken,
 	TransformerMutationType,
 } from '../utils';
@@ -57,7 +58,7 @@ class SubscriptionProcessor {
 		private readonly schema: InternalSchema,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
-		private readonly modelAuthModes: ModelAuthModes
+		private readonly authModeStrategy: AuthModeStrategy
 	) {}
 
 	private buildSubscription(
@@ -304,9 +305,16 @@ class SubscriptionProcessor {
 					Object.values(namespace.models)
 						.filter(({ syncable }) => syncable)
 						.forEach(async modelDefinition => {
+							const modelAuthModes = await getModelAuthModes({
+								authModeStrategy: this.authModeStrategy,
+								defaultAuthMode: this.amplifyConfig
+									.aws_appsync_authenticationType,
+								modelName: modelDefinition.name,
+								schema: this.schema,
+							});
+
 							// subscriptions are created only based on the READ auth mode(s)
-							const readAuthModes = this.modelAuthModes[modelDefinition.name]
-								.READ;
+							const readAuthModes = modelAuthModes.READ;
 
 							subscriptions = {
 								...subscriptions,
@@ -324,7 +332,7 @@ class SubscriptionProcessor {
 							];
 
 							// Retry failed subscriptions with next auth mode (if available)
-							const authModeRetry = (operation, index = 0) => {
+							const authModeRetry = (operation, authModeAttempts = 0) => {
 								const {
 									opType: transformerMutationType,
 									opName,
@@ -340,7 +348,7 @@ class SubscriptionProcessor {
 									userCredentials,
 									cognitoTokenPayload,
 									oidcTokenPayload,
-									readAuthModes[index]
+									readAuthModes[authModeAttempts]
 								);
 
 								const variables = {};
@@ -356,6 +364,7 @@ class SubscriptionProcessor {
 
 									variables[ownerField] = ownerValue;
 								}
+
 								const queryObservable = <
 									Observable<{
 										value: GraphQLResult<Record<string, PersistentModel>>;
@@ -419,18 +428,13 @@ class SubscriptionProcessor {
 													},
 												} = subscriptionError;
 
-												if (typeof subscriptionReadyCallback === 'function') {
-													subscriptionReadyCallback();
-												}
-
-												// TODO: Find a better way to catch this particular error
-												if (message.includes('Error creating subscription:')) {
-													// TODO: Need to test failures at the network request level
-													// as well as when the subscription is being built since it uses Auth (which
-													// gives an error if to current user, for example)
-													// TODO: Should something happen here, depending on the error type?
-
-													// Unsubscribe and clear subscription array
+												if (
+													message.includes(
+														PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR
+													) ||
+													message.includes(PUBSUB_CONTROL_MSG.CONNECTION_FAILED)
+												) {
+													// Unsubscribe and clear subscription array for model/operation
 													subscriptions[modelDefinition.name][
 														transformerMutationType
 													].forEach(subscription => subscription.unsubscribe());
@@ -438,13 +442,17 @@ class SubscriptionProcessor {
 														transformerMutationType
 													] = [];
 
-													index++;
-													if (index > readAuthModes.length) {
+													authModeAttempts++;
+													if (authModeAttempts > readAuthModes.length) {
 														throw message;
 													} else {
-														authModeRetry(operation, index);
+														authModeRetry(operation, authModeAttempts);
 														return;
 													}
+												}
+
+												if (typeof subscriptionReadyCallback === 'function') {
+													subscriptionReadyCallback();
 												}
 
 												logger.warn('subscriptionError', message);

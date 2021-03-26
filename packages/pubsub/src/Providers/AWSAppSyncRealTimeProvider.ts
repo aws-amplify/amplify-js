@@ -187,11 +187,12 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					observer,
 					subscriptionId,
 				}).catch(err => {
-					// TODO: find a better way to specifically identify this particular error downstream
 					observer.error({
 						errors: [
 							{
-								...new GraphQLError(`Error creating subscription: ${err}`),
+								...new GraphQLError(
+									`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`
+								),
 							},
 						],
 					});
@@ -306,7 +307,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			observer.error({
 				errors: [
 					{
-						...new GraphQLError(`Connection failed: ${message}`),
+						...new GraphQLError(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`),
 					},
 				],
 			});
@@ -506,7 +507,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				errors: [
 					{
 						...new GraphQLError(
-							`Connection failed: ${JSON.stringify(payload)}`
+							`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload)}`
 						),
 					},
 				],

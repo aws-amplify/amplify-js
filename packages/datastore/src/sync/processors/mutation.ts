@@ -1,4 +1,4 @@
-import API, { GraphQLResult } from '@aws-amplify/api';
+import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import {
 	ConsoleLogger as Logger,
 	jitteredExponentialRetry,
@@ -9,6 +9,7 @@ import { MutationEvent } from '../';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ExclusiveStorage as Storage } from '../../storage/storage';
 import {
+	AuthModeStrategy,
 	ConflictHandler,
 	DISCARD,
 	ErrorHandler,
@@ -16,7 +17,6 @@ import {
 	InternalSchema,
 	isModelFieldType,
 	isTargetNameAssociation,
-	ModelAuthModes,
 	ModelInstanceMetadata,
 	OpType,
 	PersistentModel,
@@ -29,6 +29,7 @@ import { MutationEventOutbox } from '../outbox';
 import {
 	buildGraphQLOperation,
 	createMutationInstanceFromModelOperation,
+	getModelAuthModes,
 	TransformerMutationType,
 } from '../utils';
 
@@ -60,7 +61,8 @@ class MutationProcessor {
 		private readonly outbox: MutationEventOutbox,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
-		private readonly modelAuthModes: ModelAuthModes,
+		private readonly amplifyConfig: Record<string, any> = {},
+		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly conflictHandler?: ConflictHandler,
 		private readonly errorHandler?: ErrorHandler
 	) {
@@ -137,16 +139,38 @@ class MutationProcessor {
 			let opName: string;
 			let modelDefinition: SchemaModel;
 			try {
-				[result, opName, modelDefinition] = await this.jitteredRetry(
-					namespaceName,
-					model,
-					operation,
-					data,
-					condition,
-					modelConstructor,
-					this.MutationEvent,
-					head
-				);
+				const modelAuthModes = await getModelAuthModes({
+					authModeStrategy: this.authModeStrategy,
+					defaultAuthMode: this.amplifyConfig.aws_appsync_authenticationType,
+					modelName: model,
+					schema: this.schema,
+				});
+
+				const operationAuthModes = modelAuthModes[operation.toUpperCase()];
+
+				const authModeRetry = async (authModeAttempts = 0) => {
+					try {
+						return await this.jitteredRetry(
+							namespaceName,
+							model,
+							operation,
+							data,
+							condition,
+							modelConstructor,
+							this.MutationEvent,
+							head,
+							operationAuthModes[authModeAttempts]
+						);
+					} catch (error) {
+						authModeAttempts++;
+						if (authModeAttempts > operationAuthModes.length) {
+							throw error;
+						}
+						return await authModeRetry(authModeAttempts);
+					}
+				};
+
+				[result, opName, modelDefinition] = await authModeRetry();
 			} catch (error) {
 				if (error.message === 'Offline' || error.message === 'RetryMutation') {
 					continue;
@@ -184,7 +208,8 @@ class MutationProcessor {
 		condition: string,
 		modelConstructor: PersistentModelConstructor<PersistentModel>,
 		MutationEvent: PersistentModelConstructor<MutationEvent>,
-		mutationEvent: MutationEvent
+		mutationEvent: MutationEvent,
+		authMode: GRAPHQL_AUTH_MODE
 	): Promise<
 		[GraphQLResult<Record<string, PersistentModel>>, string, SchemaModel]
 	> {
@@ -211,7 +236,7 @@ class MutationProcessor {
 					data,
 					condition
 				);
-				const tryWith = { query, variables };
+				const tryWith = { query, variables, authMode };
 				let attempt = 0;
 
 				const opType = this.opTypeFromTransformerOperation(operation);
@@ -275,6 +300,7 @@ class MutationProcessor {
 									>await API.graphql({
 										query,
 										variables: { id: variables.input.id },
+										authMode,
 									});
 
 									return [serverData, opName, modelDefinition];
@@ -326,6 +352,10 @@ class MutationProcessor {
 										: [];
 								}
 							}
+						} else {
+							// Catch-all for client-side errors that don't come back in the `GraphQLError` format.
+							// These errors should not be retried.
+							throw new NonRetryableError(err);
 						}
 					}
 				} while (tryWith);

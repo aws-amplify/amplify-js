@@ -1,5 +1,4 @@
 import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
-import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import {
 	Draft,
 	immerable,
@@ -10,6 +9,7 @@ import {
 } from 'immer';
 import { v4 as uuid4 } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
+import { multiAuthStrategy } from '../authModeStrategies';
 import {
 	isPredicatesAll,
 	ModelPredicateCreator,
@@ -25,7 +25,6 @@ import {
 	GraphQLScalarType,
 	InternalSchema,
 	isGraphQLScalarType,
-	ModelAuthModes,
 	ModelFieldType,
 	ModelInit,
 	ModelInstanceMetadata,
@@ -598,7 +597,6 @@ class DataStore {
 	private initReject: Function;
 	private initResolve: Function;
 	private maxRecordsToSync: number;
-	private modelAuthModes: ModelAuthModes;
 	private storage: Storage;
 	private sync: SyncEngine;
 	private syncPageSize: number;
@@ -646,8 +644,6 @@ class DataStore {
 
 			this.syncPredicates = await this.processSyncExpressions();
 
-			this.modelAuthModes = await this.processAuthModeStrategy();
-
 			this.sync = new SyncEngine(
 				schema,
 				namespaceResolver,
@@ -661,7 +657,7 @@ class DataStore {
 				this.errorHandler,
 				this.syncPredicates,
 				this.amplifyConfig,
-				this.modelAuthModes
+				this.authModeStrategy
 			);
 
 			// tslint:disable-next-line:max-line-length
@@ -1068,10 +1064,13 @@ class DataStore {
 		this.conflictHandler = this.setConflictHandler(config);
 		this.errorHandler = this.setErrorHandler(config);
 
+		// TODO: Need to define customer API for enabling multi-auth.
+		// Otherwise, use defaultAuthStrategy
 		this.authModeStrategy =
 			(configDataStore && configDataStore.authModeStrategy) ||
 			this.authModeStrategy ||
-			configAuthModeStrategy;
+			configAuthModeStrategy ||
+			multiAuthStrategy;
 
 		this.syncExpressions =
 			(configDataStore && configDataStore.syncExpressions) ||
@@ -1134,31 +1133,6 @@ class DataStore {
 		this.initialized = undefined; // Should re-initialize when start() is called.
 		this.sync = undefined;
 	};
-
-	private processAuthModeStrategy(): ModelAuthModes {
-		// TODO: inspect `schema` and pass it to authModeStrategy in order to determine
-		// what auth modes to use for each operation
-		return {
-			Todo: {
-				CREATE: [
-					GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-					GRAPHQL_AUTH_MODE.API_KEY,
-				],
-				READ: [
-					GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-					GRAPHQL_AUTH_MODE.API_KEY,
-				],
-				UPDATE: [
-					GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-					GRAPHQL_AUTH_MODE.API_KEY,
-				],
-				DELETE: [
-					GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-					GRAPHQL_AUTH_MODE.API_KEY,
-				],
-			},
-		};
-	}
 
 	private processPagination<T extends PersistentModel>(
 		modelDefinition: SchemaModel,

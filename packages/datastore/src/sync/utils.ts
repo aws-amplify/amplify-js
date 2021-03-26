@@ -1,3 +1,4 @@
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
@@ -20,6 +21,9 @@ import {
 	SchemaModel,
 	SchemaNamespace,
 	SchemaNonModel,
+	ModelOperation,
+	InternalSchema,
+	AuthModeStrategy,
 } from '../types';
 import { exhaustiveCheck } from '../util';
 import { MutationEvent } from './';
@@ -478,4 +482,52 @@ export function getUserGroupsFromToken(
 	}
 
 	return userGroups;
+}
+
+export async function getModelAuthModes({
+	authModeStrategy,
+	defaultAuthMode,
+	modelName,
+	schema,
+}: {
+	authModeStrategy: AuthModeStrategy;
+	defaultAuthMode: GRAPHQL_AUTH_MODE;
+	modelName: string;
+	schema: InternalSchema;
+}): Promise<
+	{
+		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+	}
+> {
+	const operations = Object.values(ModelOperation);
+
+	const modelAuthModes: {
+		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+	} = {
+		CREATE: [],
+		READ: [],
+		UPDATE: [],
+		DELETE: [],
+	};
+
+	await Promise.all(
+		operations.map(async operation => {
+			const authModes = await authModeStrategy({
+				schema,
+				modelName,
+				operation,
+			});
+
+			if (typeof authModes === 'string') {
+				modelAuthModes[operation] = [authModes];
+			} else if (Array.isArray(authModes)) {
+				// TODO: remove duplicates (keep first instance)
+				modelAuthModes[operation] = authModes;
+			} else {
+				// Use default auth mode if nothing is returned from authModeStrategy
+				modelAuthModes[operation] = [defaultAuthMode];
+			}
+		})
+	);
+	return modelAuthModes;
 }
