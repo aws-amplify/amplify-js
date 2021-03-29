@@ -88,8 +88,10 @@ export class AuthPiece<
 		switch (usernameAttributes) {
 			case UsernameAttributes.EMAIL:
 				username = this.inputs.email;
+				break;
 			case UsernameAttributes.PHONE_NUMBER:
 				username = this.phone_number;
+				break;
 			default:
 				username = this.inputs.username || this.state.username;
 		}
