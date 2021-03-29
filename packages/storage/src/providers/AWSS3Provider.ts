@@ -29,7 +29,7 @@ import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
-import * as events from 'events';
+import EventEmitter from 'events';
 
 const logger = new Logger('AWSS3Provider');
 
@@ -290,7 +290,7 @@ export class AWSS3Provider implements StorageProvider {
 			}
 		}
 
-		const emitter = new events.EventEmitter();
+		const emitter = new EventEmitter();
 		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
 
 		if (acl) {
