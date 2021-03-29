@@ -464,7 +464,13 @@ export function getUpdateMutationInput<T extends PersistentModel>(
 
 // deep compare any 2 objects (including arrays, Sets, and Maps)
 // returns true if equal
-export function objectsEqual(objA: object, objB: object): boolean {
+// if nullish is true, treat undefined and null values as equal
+// to normalize for GQL response values for undefined fields
+export function objectsEqual(
+	objA: object,
+	objB: object,
+	nullish: boolean = false
+): boolean {
 	let a = objA;
 	let b = objB;
 
@@ -488,7 +494,7 @@ export function objectsEqual(objA: object, objB: object): boolean {
 	const aKeys = Object.keys(a);
 	const bKeys = Object.keys(b);
 
-	if (aKeys.length !== bKeys.length) {
+	if (!nullish && aKeys.length !== bKeys.length) {
 		return false;
 	}
 
@@ -501,7 +507,19 @@ export function objectsEqual(objA: object, objB: object): boolean {
 				return false;
 			}
 		} else if (aVal !== bVal) {
-			return false;
+			if (nullish) {
+				if (
+					// returns false if it's NOT a nullish match
+					!(
+						(aVal === undefined || aVal === null) &&
+						(bVal === undefined || bVal === null)
+					)
+				) {
+					return false;
+				}
+			} else {
+				return false;
+			}
 		}
 	}
 	return true;
