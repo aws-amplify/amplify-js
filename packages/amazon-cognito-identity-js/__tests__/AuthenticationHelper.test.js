@@ -1,20 +1,19 @@
-import { randomBytes } from '../src/AuthenticationHelper';
+import 'regenerator-runtime/runtime';
 import AuthenticationHelper from '../src/AuthenticationHelper';
 
 import BigInteger from '../src/BigInteger';
 import { SHA256 } from 'crypto-js';
-
+import { promisify } from '../Utils'
 const instance = new AuthenticationHelper('TestPoolName');
 
-
-describe('AuthenticatorHelper', () => {
+describe('AuthenticatorHelper for padHex ', () => {
 	/*
 	Test cases generated in Java with:
 
 	import java.math.BigInteger;
 	public class Main
 	{
-		private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+		private static final char[] HEX_ARRAY = '0123456789ABCDEF'.toCharArray();
 		public static String bytesToHex(byte[] bytes) {
 			char[] hexChars = new char[bytes.length * 2];
 			for (int j = 0; j < bytes.length; j++) {
@@ -27,7 +26,7 @@ describe('AuthenticatorHelper', () => {
 		public static void main(String[] args) {
 			for(int i = -256; i <=256; i++) {
 				byte arr[] = BigInteger.valueOf(i).toByteArray();
-				System.out.println("[" + i +", '" + bytesToHex(arr) + "'],");
+				System.out.println('[' + i +', '' + bytesToHex(arr) + ''],');
 			}
 		}
 	}
@@ -556,7 +555,7 @@ describe('AuthenticatorHelper', () => {
 	});
 });
 
-describe('Getters for AuthenticationHelper class', () => {
+describe('Getters for AuthHelper class', () => {
 
 	test('Instance variable small A', () => {
 		expect(instance.getSmallAValue()).toBe(instance.smallAValue)
@@ -578,9 +577,22 @@ describe('Getters for AuthenticationHelper class', () => {
 		expect(instance.getNewPasswordRequiredChallengeUserAttributePrefix()).toEqual('userAttributes.')
 	})
 
+	test('Get large A value', async () => {
+		const result = await promisify(instance, 'getLargeAValue')
+		expect(result).toBe(instance.largeAValue)
+	})
 })
 
-describe('Calculations for AuthenticationHelper class', () => {
+describe('Generation functions test', () => {
+	test('Test generate hash devices', async () => {
+		const deviceGroupKey = instance.generateRandomString()
+		const username = instance.generateRandomString()
+		const result = await promisify(instance, 'generateHashDevice', deviceGroupKey, username)
+		expect(result).toBe(null)
+	})
+})
+
+describe('Calculations for AuthHelper class', () => {
 
 	test('Generate Random Small A is generating a BigInteger', () => {
 		expect(instance.generateRandomSmallA()).toBeInstanceOf(BigInteger)
@@ -596,24 +608,33 @@ describe('Calculations for AuthenticationHelper class', () => {
 		expect(typeof instance.generateRandomString()).toEqual('string')
 	})
 
-	test('Generate random strings', () => {
+	test('Generate random strings is non-deterministic', () => {
 		expect(instance.generateRandomString()).not.toEqual(instance.generateRandomString())
 	})
 
-	//TODO: fix callback
-	// test('Get the client\'s large A value', () => {
+	test('Calculate A works successfully', async () => {
 
-	// var callback = function (error, retval) {
-	// 	if (error) {
-	// 		return err;
-	// 	}
-	// 	return retval;
-	// }
+		const result = await promisify(instance, 'calculateA', instance.smallAValue)
 
+		if (typeof result === Error) {
+			if (result.mod(instance.N).equals(BigInteger.ZERO)) {
+				expect(result).toMatchObject(new Error('Illegal paramater. A mod N cannot be 0.'))
+			} else {
+				expect(result.toMatchObject(new Error()))
+			}
+		} else {
+			expect(result).toMatchObject(new BigInteger)
+		}
+	})
 
-	// console.log(instance.getLargeAValue(callback))
-	// expect(instance.largeAValue).toBe(console.log(instance.getLargeAValue(callback)))
-	// })
+	test('Calculate S works', async () => {
+		const xValue = new BigInteger('deadbeef', 16)
+		const serverValue = new BigInteger('deadbeef', 16)
+		instance.k = new BigInteger('deadbeef', 16)
+		instance.UValue = instance.calculateU(instance.largeAValue, xValue)
+		const result = await promisify(instance, 'calculateS', xValue, serverValue)
+		expect(result).toMatchObject(new BigInteger())
+	})
 
 	test('Calculate the client\'s value U', () => {
 		//example hex values
@@ -628,36 +649,52 @@ describe('Calculations for AuthenticationHelper class', () => {
 		expect(expected).toEqual(result)
 	})
 
-	test('Test hash function produces a valid hex string with regex', () => {
+	test('Test hexHash function produces a valid hex string with regex', () => {
 		const regEx = /[0-9a-f]/g
-		const hexStr = SHA256("testString").toString()
-
+		const hexStr = SHA256('testString').toString()
 		expect(regEx.test(instance.hexHash(hexStr))).toBe(true)
 	})
-})
 
-describe('Password Auth Key', () => {
+	test('Hashing a buffer returns a string', () => {
+		const buf = Buffer.from('7468697320697320612074c3a97374', 'binary');
+		expect(typeof instance.hash(buf)).toBe('string')
+	})
 
-	const dummyUsername = "cognitoUser"
-	const dummyPassword = "cognitoPassword"
-	const badServerValue = new BigInteger(0, 16)
-	const salt = new BigInteger('deadbeef', 16);
-	const cbFunction = function (err, hkdfValue) {
-		if (err) {
-			throw new Error(err)
-		}
-		console.log(hkdfValue)
-	}
-
-	// try {
-	// 	expect(instance.getPasswordAuthenticationKey(dummyUsername, dummyPassword, badServerValue, salt, cbFunction)
-	// } catch (error) {
-	// 	expect(error).toThrowError('B cannot be zero.')
-	// }
-	test("Getting a bad server value to authKeyAccessor function.", () => {
-		expect(() => {
-			instance.getPasswordAuthenticationKey(dummyUsername, dummyPassword, badServerValue, salt, cbFunction)
-		}).toThrow('B cannot be zero.')
-
+	//treating the hkdf algorithm as a blackbox
+	test('Ensure that hkdf algorithm returns a strong hex string', () => {
+		const inputKey = Buffer.from('secretInputKey', 'ascii')
+		const salt = Buffer.from('7468697320697320612074c3a97374', 'hex')
+		const key = instance.computehkdf(inputKey, salt)
+		expect(key).toBeInstanceOf(Buffer)
 	})
 })
+
+//TODO: Refactor to have the if-done pattern
+describe('Password Auth Key', () => {
+	const username = 'cognitoUser'
+	const password = 'cognitoPassword'
+	const badServerValue = BigInteger.ZERO
+	const salt = new BigInteger('deadbeef', 16);
+
+	test('Getting a bad server value', async () => {
+		await promisify(instance, 'getPasswordAuthenticationKey', username, password, badServerValue, salt).catch(e => {
+			expect(e).toEqual(new Error('B cannot be zero.'))
+		})
+	})
+
+	test('Getting a U Value of zero', async () => {
+		instance.UValue = BigInteger.ZERO
+		const realServerValue = new BigInteger('deadbeef', 16)
+		await promisify(instance, 'getPasswordAuthenticationKey', username, password, realServerValue, salt).catch(e => {
+			expect(e).toEqual(new Error('U cannot be zero.'))
+		})
+	})
+
+	test('Getting the password auth key', async () => {
+		const realServerValue = new BigInteger('deadbeef', 16)
+		const result = await promisify(instance, 'getPasswordAuthenticationKey', username, password, realServerValue, salt)
+
+		expect(result).toBeInstanceOf(Buffer)
+	})
+})
+
