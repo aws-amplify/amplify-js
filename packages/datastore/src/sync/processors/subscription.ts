@@ -365,6 +365,10 @@ class SubscriptionProcessor {
 									variables[ownerField] = ownerValue;
 								}
 
+								logger.debug(
+									`Attempting ${operation} subscription with authMode: ${readAuthModes[authModeAttempts]}`
+								);
+
 								const queryObservable = <
 									Observable<{
 										value: GraphQLResult<Record<string, PersistentModel>>;
@@ -444,8 +448,20 @@ class SubscriptionProcessor {
 
 													authModeAttempts++;
 													if (authModeAttempts > readAuthModes.length) {
+														logger.debug(
+															`${operation} subscription failed with authMode: ${
+																readAuthModes[authModeAttempts - 1]
+															}`
+														);
 														throw message;
 													} else {
+														logger.debug(
+															`${operation} subscription failed with authMode: ${
+																readAuthModes[authModeAttempts - 1]
+															}. Retrying with authMode: ${
+																readAuthModes[authModeAttempts]
+															}`
+														);
 														authModeRetry(operation, authModeAttempts);
 														return;
 													}

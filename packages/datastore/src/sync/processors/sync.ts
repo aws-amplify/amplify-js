@@ -103,18 +103,33 @@ class SyncProcessor {
 
 		const authModeRetry = async (authModeAttempts = 0) => {
 			try {
-				return await this.jitteredRetry<T>({
+				logger.debug(
+					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`
+				);
+				const response = await this.jitteredRetry<T>({
 					query,
 					variables,
 					opName,
 					modelDefinition,
 					authMode: readAuthModes[authModeAttempts],
 				});
+				logger.debug(
+					`Sync successful with authMode: ${readAuthModes[authModeAttempts]}`
+				);
+				return response;
 			} catch (error) {
 				authModeAttempts++;
 				if (authModeAttempts > readAuthModes.length) {
+					logger.debug(
+						`Sync failed with authMode: ${readAuthModes[authModeAttempts - 1]}`
+					);
 					throw error;
 				}
+				logger.debug(
+					`Sync failed with authMode: ${
+						readAuthModes[authModeAttempts - 1]
+					}. Retrying with authMode: ${readAuthModes[authModeAttempts]}`
+				);
 				return await authModeRetry(authModeAttempts);
 			}
 		};

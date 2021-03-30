@@ -150,7 +150,10 @@ class MutationProcessor {
 
 				const authModeRetry = async (authModeAttempts = 0) => {
 					try {
-						return await this.jitteredRetry(
+						logger.debug(
+							`Attempting mutation with authMode: ${operationAuthModes[authModeAttempts]}`
+						);
+						const response = await this.jitteredRetry(
 							namespaceName,
 							model,
 							operation,
@@ -161,11 +164,29 @@ class MutationProcessor {
 							head,
 							operationAuthModes[authModeAttempts]
 						);
+
+						logger.debug(
+							`Mutation sent successfully with authMode: ${operationAuthModes[authModeAttempts]}`
+						);
+
+						return response;
 					} catch (error) {
 						authModeAttempts++;
 						if (authModeAttempts > operationAuthModes.length) {
+							logger.debug(
+								`Mutation failed with authMode: ${
+									operationAuthModes[authModeAttempts - 1]
+								}`
+							);
 							throw error;
 						}
+						logger.debug(
+							`Mutation failed with authMode: ${
+								operationAuthModes[authModeAttempts - 1]
+							}. Retrying with authMode: ${
+								operationAuthModes[authModeAttempts]
+							}`
+						);
 						return await authModeRetry(authModeAttempts);
 					}
 				};
