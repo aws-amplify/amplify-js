@@ -669,7 +669,6 @@ describe('Calculations for AuthHelper class', () => {
 	})
 })
 
-//TODO: Refactor to have the if-done pattern
 describe('Password Auth Key', () => {
 	const username = 'cognitoUser'
 	const password = 'cognitoPassword'
