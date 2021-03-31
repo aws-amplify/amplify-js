@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.1.0...@aws-amplify/ui-components@1.1.1) (2021-03-25)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** update required attributes given name placeholder ([#7961](https://github.com/aws-amplify/amplify-js/issues/7961)) ([dd98afb](https://github.com/aws-amplify/amplify-js/commit/dd98afb272e0ffe39c1b9e6a9ca08e6b15ae53fb))
+
+
+
+
+
+# [1.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.0.4...@aws-amplify/ui-components@1.1.0) (2021-03-12)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** add hideToast prop to authenticator ([#7129](https://github.com/aws-amplify/amplify-js/issues/7129)) ([bf2f048](https://github.com/aws-amplify/amplify-js/commit/bf2f04888ea7e1e5364e1f669bb2847040fde684))
+
+
+
+
+
+## [1.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.0.3...@aws-amplify/ui-components@1.0.4) (2021-03-08)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
 ## [1.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.0.2...@aws-amplify/ui-components@1.0.3) (2021-02-25)
 
 **Note:** Version bump only for package @aws-amplify/ui-components

@@ -8,3 +8,5 @@ package-lock.json
 .eslintrc.js
 www
 .stencil
+PULL_REQUEST_TEMPLATE.md
+ISSUE_TEMPLATE/*.md

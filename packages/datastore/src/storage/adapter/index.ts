@@ -14,7 +14,7 @@ export interface Adapter extends SystemComponent {
 	save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>
-	): Promise<[T, OpType.INSERT | OpType.UPDATE][]>;
+	): Promise<[T, OpType.INSERT | OpType.UPDATE, T?][]>;
 	delete: <T extends PersistentModel>(
 		modelOrModelConstructor: T | PersistentModelConstructor<T>,
 		condition?: ModelPredicate<T>

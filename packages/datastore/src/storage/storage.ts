@@ -1,7 +1,6 @@
 import { Logger, Mutex } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import PushStream from 'zen-push';
-import { Patch } from 'immer';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
 import {
@@ -18,7 +17,12 @@ import {
 	SchemaNamespace,
 	SubscriptionMessage,
 } from '../types';
-import { isModelConstructor, STORAGE, validatePredicate } from '../util';
+import {
+	isModelConstructor,
+	STORAGE,
+	validatePredicate,
+	getUpdateMutationInput,
+} from '../util';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
@@ -99,45 +103,26 @@ class StorageClass implements StorageFacade {
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>,
-		mutator?: Symbol,
-		patches?: Patch[]
-	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
+		mutator?: Symbol
+	): Promise<[T, OpType.INSERT | OpType.UPDATE, T?][]> {
 		await this.init();
 
 		const result = await this.adapter.save(model, condition);
 
 		result.forEach(r => {
-			const [originalElement, opType] = r;
+			const [savedElement, opType, fromDB] = r;
 
 			let updatedElement;
-			if (opType === OpType.UPDATE && patches && patches.length) {
-				updatedElement = {};
-				// extract array of updated fields from patches
-				const updatedFields = patches.map(patch => patch.path && patch.path[0]);
-
-				// set original values for these fields
-				updatedFields.forEach(field => {
-					updatedElement[field] = originalElement[field];
-				});
-
-				const { id, _version, _lastChangedAt, _deleted } = originalElement;
-
+			if (opType === OpType.UPDATE && fromDB) {
 				// For update mutations we only want to send fields with changes
 				// and the required internal fields
-				updatedElement = {
-					...updatedElement,
-					id,
-					_version,
-					_lastChangedAt,
-					_deleted,
-				};
+				updatedElement = getUpdateMutationInput(fromDB, savedElement);
 			}
 
-			const element = updatedElement || originalElement;
+			const element = updatedElement || savedElement;
 
-			const modelConstructor = (Object.getPrototypeOf(
-				originalElement
-			) as Object).constructor as PersistentModelConstructor<T>;
+			const modelConstructor = (Object.getPrototypeOf(savedElement) as Object)
+				.constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
 				model: modelConstructor,
@@ -328,11 +313,10 @@ class ExclusiveStorage implements StorageFacade {
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>,
-		mutator?: Symbol,
-		patches?: Patch[]
-	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
-		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>(storage =>
-			storage.save<T>(model, condition, mutator, patches)
+		mutator?: Symbol
+	): Promise<[T, OpType.INSERT | OpType.UPDATE, T?][]> {
+		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE, T?][]>(
+			storage => storage.save<T>(model, condition, mutator)
 		);
 	}
 
