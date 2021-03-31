@@ -77,6 +77,30 @@ export function isTargetNameAssociation(
 type ModelAttributes = ModelAttribute[];
 type ModelAttribute = { type: string; properties?: Record<string, any> };
 
+export type ModelAttributeAuthProperty = {
+	allow: ModelAttributeAuthAllow;
+	identityClaim?: string;
+	groupClaim?: string;
+	groups?: string[];
+	operations?: string[];
+	ownerField?: string;
+	provider?: ModelAttributeAuthProvider;
+};
+
+export enum ModelAttributeAuthAllow {
+	OWNER = 'owner',
+	GROUPS = 'groups',
+	PRIVATE = 'private',
+	PUBLIC = 'public',
+}
+
+export enum ModelAttributeAuthProvider {
+	USER_POOLS = 'userPools',
+	OIDC = 'oidc',
+	IAM = 'iam',
+	API_KEY = 'apiKey',
+}
+
 export type ModelFields = Record<string, ModelField>;
 export enum GraphQLScalarType {
 	ID,
@@ -521,7 +545,7 @@ export type AuthModeStrategyReturn =
 
 export type AuthModeStrategyParams = {
 	schema: InternalSchema;
-	modelName: String;
+	modelName: string;
 	operation: ModelOperation;
 };
 

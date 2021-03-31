@@ -49,6 +49,7 @@
 	},
 	"dependencies": {
 		"@aws-amplify/api": "3.2.27",
+		"@aws-amplify/auth": "3.4.27",
 		"@aws-amplify/core": "3.8.19",
 		"@aws-amplify/pubsub": "3.2.25",
 		"idb": "5.0.6",
