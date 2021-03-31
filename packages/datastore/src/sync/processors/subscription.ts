@@ -466,13 +466,16 @@ class SubscriptionProcessor {
 													}
 												}
 
+												logger.warn('subscriptionError', message);
+
 												if (typeof subscriptionReadyCallback === 'function') {
 													subscriptionReadyCallback();
 												}
 
-												logger.warn('subscriptionError', message);
-
-												if (message.includes('"errorType":"Unauthorized"')) {
+												if (
+													message.includes('"errorType":"Unauthorized"') ||
+													message.includes('"errorType":"OperationDisabled"')
+												) {
 													return;
 												}
 
