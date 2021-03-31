@@ -44,8 +44,6 @@ type MutationProcessorEvent = {
 	hasMore: boolean;
 };
 
-// TODO: Add multi-auth
-
 class MutationProcessor {
 	private observer: ZenObservable.Observer<MutationProcessorEvent>;
 	private readonly typeQuery = new WeakMap<

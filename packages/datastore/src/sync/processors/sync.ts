@@ -187,6 +187,9 @@ class SyncProcessor {
 						authMode,
 					});
 				} catch (error) {
+					// TODO: Make this more resilient to changes in client side errors
+					// - Remove hard-coded error strings
+
 					// Client-side errors that are sent are strings
 					const authClientSideErrors = [
 						'No current user',

@@ -236,7 +236,7 @@ class SubscriptionProcessor {
 		const ctlObservable = new Observable<CONTROL_MSG>(observer => {
 			const promises: Promise<void>[] = [];
 
-			// Creating subs for each model/operation combo so they can be manged
+			// Creating subs for each model/operation combo so they can be unsubscribed
 			// independently, since the auth retry behavior is asynchronous.
 			let subscriptions: {
 				[modelName: string]: {
@@ -355,7 +355,6 @@ class SubscriptionProcessor {
 
 								if (isOwner) {
 									if (!ownerValue) {
-										// Check if there is an owner field, check where this error should be located
 										observer.error(
 											'Owner field required, sign in is needed in order to perform this operation'
 										);
