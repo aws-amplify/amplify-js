@@ -14,7 +14,7 @@ function getProviderFromRule(
 		return ModelAttributeAuthProvider.USER_POOLS;
 	}
 	// public with no provider means apiKey
-	if (rule.allow === 'public' && ~rule.provider) {
+	if (rule.allow === 'public' && !rule.provider) {
 		return ModelAttributeAuthProvider.API_KEY;
 	}
 	return rule.provider;
