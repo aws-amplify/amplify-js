@@ -28,7 +28,8 @@ import WordArray from './utils/WordArray';
  * @param {number} nBytes 
  * @returns {Buffer} fixed-length sequence of random bytes
  */
-export function randomBytes(nBytes) {
+
+function randomBytes(nBytes) {
 	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
 };
 
