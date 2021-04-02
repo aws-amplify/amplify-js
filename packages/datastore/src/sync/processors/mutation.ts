@@ -228,7 +228,12 @@ class MutationProcessor {
 					} catch (err) {
 						if (err.errors && err.errors.length > 0) {
 							const [error] = err.errors;
-							if (error.message === 'Network Error') {
+							const { originalError: { code = null } = {} } = error;
+
+							if (
+								error.message === 'Network Error' ||
+								code === 'ECONNABORTED' // refers to axios timeout error caused by device's bad network condition
+							) {
 								if (!this.processing) {
 									throw new NonRetryableError('Offline');
 								}
