@@ -3,7 +3,7 @@ import AuthenticationHelper from '../src/AuthenticationHelper';
 
 import BigInteger from '../src/BigInteger';
 import { SHA256 } from 'crypto-js';
-import { promisify } from '../Utils'
+import { promisifyCallback } from '../utils/Utils'
 const instance = new AuthenticationHelper('TestPoolName');
 
 describe('AuthenticatorHelper for padHex ', () => {
@@ -578,7 +578,7 @@ describe('Getters for AuthHelper class', () => {
 	})
 
 	test('Get large A value', async () => {
-		const result = await promisify(instance, 'getLargeAValue')
+		const result = await promisifyCallback(instance, 'getLargeAValue')
 		expect(result).toBe(instance.largeAValue)
 	})
 })
@@ -587,7 +587,7 @@ describe('Generation functions test', () => {
 	test('Test generate hash devices', async () => {
 		const deviceGroupKey = instance.generateRandomString()
 		const username = instance.generateRandomString()
-		const result = await promisify(instance, 'generateHashDevice', deviceGroupKey, username)
+		const result = await promisifyCallback(instance, 'generateHashDevice', deviceGroupKey, username)
 		expect(result).toBe(null)
 	})
 })
@@ -614,7 +614,7 @@ describe('Calculations for AuthHelper class', () => {
 
 	test('Calculate A works successfully', async () => {
 
-		const result = await promisify(instance, 'calculateA', instance.smallAValue)
+		const result = await promisifyCallback(instance, 'calculateA', instance.smallAValue)
 
 		if (typeof result === Error) {
 			if (result.mod(instance.N).equals(BigInteger.ZERO)) {
@@ -632,12 +632,11 @@ describe('Calculations for AuthHelper class', () => {
 		const serverValue = new BigInteger('deadbeef', 16)
 		instance.k = new BigInteger('deadbeef', 16)
 		instance.UValue = instance.calculateU(instance.largeAValue, xValue)
-		const result = await promisify(instance, 'calculateS', xValue, serverValue)
+		const result = await promisifyCallback(instance, 'calculateS', xValue, serverValue)
 		expect(result).toMatchObject(new BigInteger())
 	})
 
 	test('Calculate the client\'s value U', () => {
-		//example hex values
 		const hexA = new BigInteger('abcd1234', 16);
 		const hexB = new BigInteger('deadbeef', 16);
 
@@ -676,7 +675,7 @@ describe('Password Auth Key', () => {
 	const salt = new BigInteger('deadbeef', 16);
 
 	test('Getting a bad server value', async () => {
-		await promisify(instance, 'getPasswordAuthenticationKey', username, password, badServerValue, salt).catch(e => {
+		await promisifyCallback(instance, 'getPasswordAuthenticationKey', username, password, badServerValue, salt).catch(e => {
 			expect(e).toEqual(new Error('B cannot be zero.'))
 		})
 	})
@@ -684,14 +683,14 @@ describe('Password Auth Key', () => {
 	test('Getting a U Value of zero', async () => {
 		instance.UValue = BigInteger.ZERO
 		const realServerValue = new BigInteger('deadbeef', 16)
-		await promisify(instance, 'getPasswordAuthenticationKey', username, password, realServerValue, salt).catch(e => {
+		await promisifyCallback(instance, 'getPasswordAuthenticationKey', username, password, realServerValue, salt).catch(e => {
 			expect(e).toEqual(new Error('U cannot be zero.'))
 		})
 	})
 
 	test('Getting the password auth key', async () => {
 		const realServerValue = new BigInteger('deadbeef', 16)
-		const result = await promisify(instance, 'getPasswordAuthenticationKey', username, password, realServerValue, salt)
+		const result = await promisifyCallback(instance, 'getPasswordAuthenticationKey', username, password, realServerValue, salt)
 
 		expect(result).toBeInstanceOf(Buffer)
 	})
