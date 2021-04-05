@@ -26,7 +26,7 @@ import {
 import PubSub from '@aws-amplify/pubsub';
 import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
-import { GraphQLOptions, GraphQLResult } from './types';
+import { GraphQLAuthError, GraphQLOptions, GraphQLResult } from './types';
 import { RestClient } from '@aws-amplify/api-rest';
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -125,7 +125,7 @@ export class GraphQLAPIClass {
 		switch (authenticationType) {
 			case 'API_KEY':
 				if (!apiKey) {
-					throw new Error('No api-key configured');
+					throw new Error(GraphQLAuthError.NO_API_KEY);
 				}
 				headers = {
 					Authorization: null,
@@ -135,33 +135,41 @@ export class GraphQLAPIClass {
 			case 'AWS_IAM':
 				const credentialsOK = await this._ensureCredentials();
 				if (!credentialsOK) {
-					throw new Error('No credentials');
+					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				}
 				break;
 			case 'OPENID_CONNECT':
-				let token;
-				// backwards compatibility
-				const federatedInfo = await Cache.getItem('federatedInfo');
-				if (federatedInfo) {
-					token = federatedInfo.token;
-				} else {
-					const currentUser = await Auth.currentAuthenticatedUser();
-					if (currentUser) {
-						token = currentUser.token;
+				try {
+					let token;
+					// backwards compatibility
+					const federatedInfo = await Cache.getItem('federatedInfo');
+					if (federatedInfo) {
+						token = federatedInfo.token;
+					} else {
+						const currentUser = await Auth.currentAuthenticatedUser();
+						if (currentUser) {
+							token = currentUser.token;
+						}
 					}
+					if (!token) {
+						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
+					}
+					headers = {
+						Authorization: token,
+					};
+				} catch (e) {
+					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
 				}
-				if (!token) {
-					throw new Error('No federated jwt');
-				}
-				headers = {
-					Authorization: token,
-				};
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
-				const session = await this.Auth.currentSession();
-				headers = {
-					Authorization: session.getAccessToken().getJwtToken(),
-				};
+				try {
+					const session = await this.Auth.currentSession();
+					headers = {
+						Authorization: session.getAccessToken().getJwtToken(),
+					};
+				} catch (e) {
+					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
+				}
 				break;
 			default:
 				headers = {

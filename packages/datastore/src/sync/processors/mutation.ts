@@ -170,7 +170,7 @@ class MutationProcessor {
 						return response;
 					} catch (error) {
 						authModeAttempts++;
-						if (authModeAttempts > operationAuthModes.length) {
+						if (authModeAttempts >= operationAuthModes.length) {
 							logger.debug(
 								`Mutation failed with authMode: ${
 									operationAuthModes[authModeAttempts - 1]

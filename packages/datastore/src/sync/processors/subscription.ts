@@ -446,7 +446,7 @@ class SubscriptionProcessor {
 													] = [];
 
 													authModeAttempts++;
-													if (authModeAttempts > readAuthModes.length) {
+													if (authModeAttempts >= readAuthModes.length) {
 														logger.debug(
 															`${operation} subscription failed with authMode: ${
 																readAuthModes[authModeAttempts - 1]

@@ -1,4 +1,8 @@
-import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import API, {
+	GraphQLAuthError,
+	GraphQLResult,
+	GRAPHQL_AUTH_MODE,
+} from '@aws-amplify/api';
 import Observable from 'zen-observable-ts';
 import {
 	InternalSchema,
@@ -119,7 +123,7 @@ class SyncProcessor {
 				return response;
 			} catch (error) {
 				authModeAttempts++;
-				if (authModeAttempts > readAuthModes.length) {
+				if (authModeAttempts >= readAuthModes.length) {
 					logger.debug(
 						`Sync failed with authMode: ${readAuthModes[authModeAttempts - 1]}`
 					);
@@ -187,26 +191,22 @@ class SyncProcessor {
 						authMode,
 					});
 				} catch (error) {
-					// TODO: Make this more resilient to changes in client side errors
-					// - Remove hard-coded error strings
+					const clientSideAuthErrors = Object.values(GraphQLAuthError);
 
-					// Client-side errors that are sent are strings
-					const authClientSideErrors = [
-						'No current user',
-						'No credentials',
-						'No federated jwt',
-						'The user is not authenticated',
-					];
+					const hasClientSideAuthError =
+						error &&
+						error.message &&
+						clientSideAuthErrors.includes(error.message);
 
-					const forbiddenError =
+					const hasForbiddenError =
 						error &&
 						error.errors &&
 						(error.errors as [any]).some(
 							err => err.message === 'Request failed with status code 403'
 						);
 
-					// Catch client-side & 403 errors here so that we don't continue to retry
-					if (authClientSideErrors.includes(error) || forbiddenError) {
+					// Catch client-side (GraphQLAuthError) & 403 errors here so that we don't continue to retry
+					if (hasClientSideAuthError || hasForbiddenError) {
 						throw new NonRetryableError(error);
 					}
 
