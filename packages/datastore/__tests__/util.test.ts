@@ -67,6 +67,25 @@ describe('datastore util', () => {
 		expect(objectsEqual(new Set([null]), new Set([undefined]), true)).toEqual(
 			false
 		);
+
+		// should return false for non-object types
+		expect(objectsEqual(null, undefined)).toEqual(false);
+		expect(objectsEqual(null, undefined, true)).toEqual(false);
+
+		expect(objectsEqual(undefined, undefined)).toEqual(false);
+		expect(objectsEqual(undefined, undefined, true)).toEqual(false);
+
+		expect(objectsEqual(null, null)).toEqual(false);
+		expect(objectsEqual(null, null, true)).toEqual(false);
+
+		expect(objectsEqual('string' as any, 'string' as any)).toEqual(false);
+		expect(objectsEqual('string' as any, 'string' as any, true)).toEqual(false);
+
+		expect(objectsEqual(123 as any, 123 as any)).toEqual(false);
+		expect(objectsEqual(123 as any, 123 as any, true)).toEqual(false);
+
+		expect(objectsEqual(true as any, true as any)).toEqual(false);
+		expect(objectsEqual(true as any, true as any, true)).toEqual(false);
 	});
 
 	test('isAWSDate', () => {

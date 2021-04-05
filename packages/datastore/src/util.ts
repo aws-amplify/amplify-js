@@ -474,6 +474,14 @@ export function objectsEqual(
 	let a = objA;
 	let b = objB;
 
+	if (typeof a !== 'object' || typeof b !== 'object') {
+		return false;
+	}
+
+	if (a === null || b === null) {
+		return false;
+	}
+
 	if (
 		(Array.isArray(a) && !Array.isArray(b)) ||
 		(Array.isArray(b) && !Array.isArray(a))
