@@ -89,7 +89,7 @@ class MutationEventOutbox {
 	public async dequeue(
 		storage: StorageClass,
 		record?: PersistentModel,
-		recordOp?: string
+		recordOp?: TransformerMutationType
 	): Promise<MutationEvent> {
 		const head = await this.peek(storage);
 

@@ -260,7 +260,6 @@ export enum OpType {
 export type SubscriptionMessage<T extends PersistentModel> = {
 	opType: OpType;
 	element: T;
-	fromDb?: T;
 	model: PersistentModelConstructor<T>;
 	condition: PredicatesGroup<T> | null;
 };

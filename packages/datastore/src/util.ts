@@ -507,7 +507,8 @@ export function objectsEqual(
 				return false;
 			}
 		} else if (aVal !== bVal) {
-			if (nullish) {
+			// nullish comparison should only apply to objects and Maps
+			if (nullish && !Array.isArray(a) && !(a instanceof Set)) {
 				if (
 					// returns false if it's NOT a nullish match
 					!(
