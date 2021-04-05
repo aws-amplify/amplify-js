@@ -3,7 +3,7 @@ import AuthenticationHelper from '../src/AuthenticationHelper';
 
 import BigInteger from '../src/BigInteger';
 import { SHA256 } from 'crypto-js';
-import { promisifyCallback } from '../utils/Utils';
+import { promisifyCallback } from './util';
 const instance = new AuthenticationHelper('TestPoolName');
 
 describe('AuthenticatorHelper for padHex ', () => {
