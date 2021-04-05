@@ -7,10 +7,11 @@ import {
 } from '../storage/storage';
 import {
 	InternalSchema,
-	NamespaceResolver,
+	TypeConstructorMap,
 	PersistentModel,
 	PersistentModelConstructor,
 	QueryOne,
+	SchemaModel,
 } from '../types';
 import { SYNC, objectsEqual } from '../util';
 import { TransformerMutationType } from './utils';
@@ -22,16 +23,19 @@ class MutationEventOutbox {
 
 	constructor(
 		private readonly schema: InternalSchema,
-		private readonly namespaceResolver: NamespaceResolver,
+		private readonly userModelClasses: TypeConstructorMap,
 		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
-		private readonly ownSymbol: Symbol
+		private readonly ownSymbol: Symbol,
+		private readonly getModelDefinition: (
+			modelConstructor: PersistentModelConstructor<any>
+		) => SchemaModel
 	) {}
 
 	public async enqueue(
 		storage: Storage,
 		mutationEvent: MutationEvent
 	): Promise<void> {
-		return storage.runExclusive(async s => {
+		storage.runExclusive(async s => {
 			const mutationEventModelDefinition = this.schema.namespaces[SYNC].models[
 				'MutationEvent'
 			];
@@ -84,12 +88,13 @@ class MutationEventOutbox {
 
 	public async dequeue(
 		storage: StorageClass,
-		record?: PersistentModel
+		record?: PersistentModel,
+		recordOp?: TransformerMutationType
 	): Promise<MutationEvent> {
 		const head = await this.peek(storage);
 
 		if (record) {
-			await this.syncOutboxVersionsOnDequeue(storage, record, head);
+			await this.syncOutboxVersionsOnDequeue(storage, record, head, recordOp);
 		}
 
 		await storage.delete(head);
@@ -139,27 +144,43 @@ class MutationEventOutbox {
 		return result;
 	}
 
-	// applies _version from the AppSync mutation response to other items in the mutation queue with the same id
+	// applies _version from the AppSync mutation response to other items
+	// in the mutation queue with the same id
 	// see https://github.com/aws-amplify/amplify-js/pull/7354 for more details
 	private async syncOutboxVersionsOnDequeue(
 		storage: StorageClass,
 		record: PersistentModel,
-		head: PersistentModel
+		head: PersistentModel,
+		recordOp: string
 	): Promise<void> {
-		const { _version, _lastChangedAt, ...incomingData } = record;
-		const {
-			_version: __version,
-			_lastChangedAt: __lastChangedAt,
-			...outgoingData
-		} = JSON.parse(head.data);
-
-		if (head.operation !== TransformerMutationType.UPDATE) {
+		if (head.operation !== recordOp) {
 			return;
 		}
 
+		const { _version, _lastChangedAt, _deleted, ...incomingData } = record;
+
+		let data;
+
+		if (recordOp !== TransformerMutationType.UPDATE) {
+			data = JSON.parse(head.data);
+		} else {
+			data = await this.getUpdateRecord(storage, head);
+		}
+
+		if (!data) {
+			return;
+		}
+
+		const {
+			_version: __version,
+			_lastChangedAt: __lastChangedAt,
+			_deleted: __deleted,
+			...outgoingData
+		} = data;
+
 		// Don't sync the version when the data in the response does not match the data
 		// in the request, i.e., when there's a handled conflict
-		if (!objectsEqual(incomingData, outgoingData)) {
+		if (!objectsEqual(incomingData, outgoingData, true)) {
 			return;
 		}
 
@@ -198,6 +219,35 @@ class MutationEventOutbox {
 				async m => await storage.save(m, undefined, this.ownSymbol)
 			)
 		);
+	}
+
+	private async getUpdateRecord(
+		storage: StorageClass,
+		head: PersistentModel
+	): Promise<PersistentModel> {
+		const modelConstructor = <PersistentModelConstructor<PersistentModel>>(
+			this.userModelClasses[head.model]
+		);
+
+		const modelDefinition = this.getModelDefinition(modelConstructor);
+
+		if (!(modelConstructor && head && head.modelId)) {
+			return;
+		}
+
+		const results = <any>await storage.query(
+			modelConstructor,
+			ModelPredicateCreator.createFromExisting(modelDefinition, c =>
+				c.id('eq', head.modelId)
+			)
+		);
+
+		const fromDb = results[0];
+
+		// merge data from the mutationEvent with data from the query
+		// so that we can perform a comparison to determine whether
+		// the request record matches the response
+		return { ...fromDb, ...JSON.parse(head.data) };
 	}
 }
 
