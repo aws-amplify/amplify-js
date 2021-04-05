@@ -40,6 +40,33 @@ describe('datastore util', () => {
 		expect(objectsEqual(map1, map2)).toEqual(true);
 		map2.set('b', 2);
 		expect(objectsEqual(map1, map2)).toEqual(false);
+
+		// nullish - treat null and undefined as equal in Objects and Maps
+		expect(objectsEqual({ a: 1, b: null }, { a: 1 }, true)).toEqual(true);
+		expect(
+			objectsEqual({ a: 1, b: null }, { a: 1, b: undefined }, true)
+		).toEqual(true);
+		expect(objectsEqual({ a: 1, b: false }, { a: 1 }, true)).toEqual(false);
+
+		const map3 = new Map();
+		map3.set('a', null);
+		const map4 = new Map();
+
+		expect(objectsEqual(map3, map4, true)).toEqual(true);
+
+		const map5 = new Map();
+		map5.set('a', false);
+		const map6 = new Map();
+
+		expect(objectsEqual(map5, map6, true)).toEqual(false);
+
+		// should not attempt nullish comparison for arrays/sets
+		expect(objectsEqual([null], [], true)).toEqual(false);
+		expect(objectsEqual([null], [undefined], true)).toEqual(false);
+		expect(objectsEqual(new Set([null]), new Set([]), true)).toEqual(false);
+		expect(objectsEqual(new Set([null]), new Set([undefined]), true)).toEqual(
+			false
+		);
 	});
 
 	test('isAWSDate', () => {

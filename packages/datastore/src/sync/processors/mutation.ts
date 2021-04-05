@@ -163,7 +163,7 @@ class MutationProcessor {
 			await this.storage.runExclusive(async storage => {
 				// using runExclusive to prevent possible race condition
 				// when another record gets enqueued between dequeue and peek
-				await this.outbox.dequeue(storage, record);
+				await this.outbox.dequeue(storage, record, operation);
 				hasMore = (await this.outbox.peek(storage)) !== undefined;
 			});
 
