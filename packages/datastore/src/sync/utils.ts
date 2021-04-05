@@ -524,7 +524,7 @@ export async function getModelAuthModes({
 
 				if (typeof authModes === 'string') {
 					modelAuthModes[operation] = [authModes];
-				} else if (Array.isArray(authModes)) {
+				} else if (Array.isArray(authModes) && authModes.length) {
 					modelAuthModes[operation] = authModes;
 				} else {
 					// Use default auth mode if nothing is returned from authModeStrategy

@@ -212,9 +212,9 @@ class SubscriptionProcessor {
 			return ownerAuthInfo;
 		}
 
-		// Fallback: return default auth type
+		// Fallback: return authMode or default auth type
 		return {
-			authMode: defaultAuthType,
+			authMode: authMode || defaultAuthType,
 			isOwner: false,
 		};
 	}
