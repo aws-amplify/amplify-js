@@ -105,7 +105,8 @@ class SyncProcessor {
 		// sync only needs the READ auth mode(s)
 		const readAuthModes = modelAuthModes.READ;
 
-		const authModeRetry = async (authModeAttempts = 0) => {
+		let authModeAttempts = 0;
+		const authModeRetry = async () => {
 			try {
 				logger.debug(
 					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`
@@ -134,7 +135,7 @@ class SyncProcessor {
 						readAuthModes[authModeAttempts - 1]
 					}. Retrying with authMode: ${readAuthModes[authModeAttempts]}`
 				);
-				return await authModeRetry(authModeAttempts);
+				return await authModeRetry();
 			}
 		};
 

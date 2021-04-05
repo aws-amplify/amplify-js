@@ -81,7 +81,9 @@ describe('sync engine subscription module', () => {
 				model,
 				USER_CREDENTIALS.auth,
 				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-				tokenPayload
+				tokenPayload,
+				undefined, // No OIDC token
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
 			)
 		).toEqual(authInfo);
 	});
@@ -160,7 +162,9 @@ describe('sync engine subscription module', () => {
 				model,
 				USER_CREDENTIALS.auth,
 				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-				tokenPayload
+				tokenPayload,
+				undefined, // No OIDC token
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
 			)
 		).toEqual(authInfo);
 	});
@@ -239,7 +243,9 @@ describe('sync engine subscription module', () => {
 				model,
 				USER_CREDENTIALS.auth,
 				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-				tokenPayload
+				tokenPayload,
+				undefined, // No OIDC token
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
 			)
 		).toEqual(authInfo);
 	});
@@ -325,7 +331,9 @@ describe('sync engine subscription module', () => {
 				model,
 				USER_CREDENTIALS.auth,
 				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-				tokenPayload
+				tokenPayload,
+				undefined, // No OIDC token
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
 			)
 		).toEqual(authInfo);
 	});
@@ -407,7 +415,9 @@ describe('sync engine subscription module', () => {
 				model,
 				USER_CREDENTIALS.auth,
 				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-				tokenPayload
+				tokenPayload,
+				undefined, // No OIDC token
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
 			)
 		).toEqual(authInfo);
 	});
@@ -485,7 +495,9 @@ describe('sync engine subscription module', () => {
 				model,
 				USER_CREDENTIALS.auth,
 				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-				tokenPayload
+				tokenPayload,
+				undefined, // No OIDC token
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
 			)
 		).toEqual(authInfo);
 	});
@@ -564,7 +576,9 @@ describe('sync engine subscription module', () => {
 				model,
 				USER_CREDENTIALS.auth,
 				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-				tokenPayload
+				tokenPayload,
+				undefined, // No OIDC token
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
 			)
 		).toEqual(authInfo);
 	});
@@ -643,7 +657,9 @@ describe('sync engine subscription module', () => {
 				model,
 				USER_CREDENTIALS.auth,
 				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-				tokenPayload
+				tokenPayload,
+				undefined, // No OIDC token
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
 			)
 		).toEqual(authInfo);
 	});
@@ -722,7 +738,9 @@ describe('sync engine subscription module', () => {
 				model,
 				USER_CREDENTIALS.auth,
 				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-				tokenPayload
+				tokenPayload,
+				undefined, // No OIDC token
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
 			)
 		).toEqual(authInfo);
 	});
@@ -780,6 +798,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.unauth,
+				GRAPHQL_AUTH_MODE.AWS_IAM,
+				undefined, // No Cognito token
+				undefined, // No OIDC token
 				GRAPHQL_AUTH_MODE.AWS_IAM
 			)
 		).toEqual(authInfo);
@@ -838,6 +859,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.unauth,
+				GRAPHQL_AUTH_MODE.AWS_IAM,
+				undefined, // No Cognito token
+				undefined, // No OIDC token
 				GRAPHQL_AUTH_MODE.AWS_IAM
 			)
 		).toEqual(null);
@@ -896,6 +920,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.auth,
+				GRAPHQL_AUTH_MODE.AWS_IAM,
+				undefined, // No Cognito token
+				undefined, // No OIDC token
 				GRAPHQL_AUTH_MODE.AWS_IAM
 			)
 		).toEqual(authInfo);
@@ -954,6 +981,9 @@ describe('sync engine subscription module', () => {
 			SubscriptionProcessor.prototype.getAuthorizationInfo(
 				model,
 				USER_CREDENTIALS.none,
+				GRAPHQL_AUTH_MODE.API_KEY,
+				undefined, // No Cognito token
+				undefined, // No OIDC token
 				GRAPHQL_AUTH_MODE.API_KEY
 			)
 		).toEqual(authInfo);
@@ -1030,8 +1060,9 @@ describe('sync engine subscription module', () => {
 				model,
 				USER_CREDENTIALS.auth,
 				GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-				undefined,
-				oidcTokenPayload
+				undefined, // No Cognito token
+				oidcTokenPayload,
+				GRAPHQL_AUTH_MODE.OPENID_CONNECT
 			)
 		).toEqual(authInfo);
 	});
@@ -1117,7 +1148,9 @@ describe('sync engine subscription module', () => {
 				model,
 				USER_CREDENTIALS.auth,
 				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-				tokenPayload
+				tokenPayload,
+				undefined, // No OIDC token
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
 			)
 		).toEqual(authInfo);
 	});

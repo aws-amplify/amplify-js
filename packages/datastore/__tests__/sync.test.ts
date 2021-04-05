@@ -1,5 +1,8 @@
 // These tests should be replaced once SyncEngine.partialDataFeatureFlagEnabled is removed.
 
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { defaultAuthStrategy } from '../src/authModeStrategies';
+
 const sessionStorageMock = (() => {
 	let store = {};
 
@@ -42,6 +45,7 @@ describe('Sync', () => {
 		const defaultVariables = {};
 		const defaultOpName = 'syncPosts';
 		const defaultModelDefinition = { name: 'Post' };
+		const defaultAuthMode = GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS;
 
 		beforeEach(() => {
 			window.sessionStorage.clear();
@@ -125,6 +129,7 @@ describe('Sync', () => {
 				variables: defaultVariables,
 				opName: defaultOpName,
 				modelDefinition: defaultModelDefinition,
+				authMode: defaultAuthMode,
 			});
 
 			expect(data).toMatchSnapshot();
@@ -185,6 +190,7 @@ describe('Sync', () => {
 					variables: defaultVariables,
 					opName: defaultOpName,
 					modelDefinition: defaultModelDefinition,
+					authMode: defaultAuthMode,
 				});
 			} catch (e) {
 				expect(e).toMatchSnapshot();
@@ -212,6 +218,7 @@ describe('Sync', () => {
 					variables: defaultVariables,
 					opName: defaultOpName,
 					modelDefinition: defaultModelDefinition,
+					authMode: defaultAuthMode,
 				});
 			} catch (e) {
 				expect(e).toMatchSnapshot();
@@ -230,6 +237,7 @@ function jitteredRetrySyncProcessorSetup({
 	coreMocks?: object;
 }) {
 	jest.mock('@aws-amplify/api', () => ({
+		...jest.requireActual('@aws-amplify/api'),
 		graphql: () =>
 			new Promise((res, rej) => {
 				if (resolveResponse) {
@@ -260,7 +268,9 @@ function jitteredRetrySyncProcessorSetup({
 		testInternalSchema,
 		1000, // default maxRecordsToSync
 		10000, // default syncPageSize
-		null
+		null, // syncPredicates
+		{ aws_appsync_authenticationType: 'userPools' },
+		defaultAuthStrategy
 	);
 
 	return SyncProcessor;

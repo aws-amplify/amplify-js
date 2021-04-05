@@ -146,7 +146,8 @@ class MutationProcessor {
 
 				const operationAuthModes = modelAuthModes[operation.toUpperCase()];
 
-				const authModeRetry = async (authModeAttempts = 0) => {
+				let authModeAttempts = 0;
+				const authModeRetry = async () => {
 					try {
 						logger.debug(
 							`Attempting mutation with authMode: ${operationAuthModes[authModeAttempts]}`
@@ -185,7 +186,7 @@ class MutationProcessor {
 								operationAuthModes[authModeAttempts]
 							}`
 						);
-						return await authModeRetry(authModeAttempts);
+						return await authModeRetry();
 					}
 				};
 

@@ -151,7 +151,7 @@ class SubscriptionProcessor {
 
 		if (validGroup) {
 			return {
-				authMode: authMode,
+				authMode,
 				isOwner: false,
 			};
 		}
@@ -331,8 +331,14 @@ class SubscriptionProcessor {
 								TransformerMutationType.DELETE,
 							];
 
+							const operationAuthModeAttempts = {
+								[TransformerMutationType.CREATE]: 0,
+								[TransformerMutationType.UPDATE]: 0,
+								[TransformerMutationType.DELETE]: 0,
+							};
+
 							// Retry failed subscriptions with next auth mode (if available)
-							const authModeRetry = (operation, authModeAttempts = 0) => {
+							const authModeRetry = operation => {
 								const {
 									opType: transformerMutationType,
 									opName,
@@ -348,7 +354,7 @@ class SubscriptionProcessor {
 									userCredentials,
 									cognitoTokenPayload,
 									oidcTokenPayload,
-									readAuthModes[authModeAttempts]
+									readAuthModes[operationAuthModeAttempts[operation]]
 								);
 
 								const variables = {};
@@ -365,7 +371,9 @@ class SubscriptionProcessor {
 								}
 
 								logger.debug(
-									`Attempting ${operation} subscription with authMode: ${readAuthModes[authModeAttempts]}`
+									`Attempting ${operation} subscription with authMode: ${
+										readAuthModes[operationAuthModeAttempts[operation]]
+									}`
 								);
 
 								const queryObservable = <
@@ -445,23 +453,32 @@ class SubscriptionProcessor {
 														transformerMutationType
 													] = [];
 
-													authModeAttempts++;
-													if (authModeAttempts >= readAuthModes.length) {
+													operationAuthModeAttempts[operation]++;
+													if (
+														operationAuthModeAttempts[operation] >=
+														readAuthModes.length
+													) {
 														logger.debug(
 															`${operation} subscription failed with authMode: ${
-																readAuthModes[authModeAttempts - 1]
+																readAuthModes[
+																	operationAuthModeAttempts[operation] - 1
+																]
 															}`
 														);
 														throw message;
 													} else {
 														logger.debug(
 															`${operation} subscription failed with authMode: ${
-																readAuthModes[authModeAttempts - 1]
+																readAuthModes[
+																	operationAuthModeAttempts[operation] - 1
+																]
 															}. Retrying with authMode: ${
-																readAuthModes[authModeAttempts]
+																readAuthModes[
+																	operationAuthModeAttempts[operation]
+																]
 															}`
 														);
-														authModeRetry(operation, authModeAttempts);
+														authModeRetry(operation);
 														return;
 													}
 												}
