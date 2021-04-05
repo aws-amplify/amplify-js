@@ -10,7 +10,11 @@
 async function promisifyCallback(obj, fn, ...args) {
 	return new Promise((resolve, reject) => {
 		let callback = (err, data) => { err ? reject(err) : resolve(data) }
-		obj[fn].apply(obj, [...args, callback]);
+		try { //in case .apply() fails
+			obj[fn].apply(obj, [...args, callback]);
+		} catch (error) {
+			reject(error)
+		}
 	});
 }
 
