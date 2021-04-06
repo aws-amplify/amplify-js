@@ -139,7 +139,7 @@ export class AmplifyVerifyContact {
             value="phone_number"
             handleInputChange={event => this.handleInputChange(event)}
             inputProps={{
-              'data-test': 'verify-contact-email-radio',
+              'data-test': 'verify-contact-phone-number-radio',
             }}
           />
         )}
@@ -159,6 +159,7 @@ export class AmplifyVerifyContact {
               <amplify-button
                 variant="anchor"
                 onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}
+                data-test="verify-contact-skip-link"
               >
                 Skip
               </amplify-button>
