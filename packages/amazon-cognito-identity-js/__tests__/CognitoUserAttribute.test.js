@@ -3,7 +3,6 @@ import CognitoUserAttribute from '../src/CognitoUserAttribute'
 const cognitoUserAttribute = new CognitoUserAttribute({ Name: 'testName', Value: 'testValue' })
 describe('Getters and Setters', () => {
 
-
     test('Get value', () => {
         expect(cognitoUserAttribute.getValue()).toBe('testValue')
     })
