@@ -159,7 +159,7 @@ export class AmplifyVerifyContact {
               <amplify-button
                 variant="anchor"
                 onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}
-                data-test="verify-contact-skip-button"
+                data-test="verify-contact-skip-link"
               >
                 Skip
               </amplify-button>
