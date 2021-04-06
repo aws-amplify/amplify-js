@@ -5,30 +5,25 @@ import {
 	StorageFacade,
 	Storage as StorageClass,
 } from '../storage/storage';
+import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	InternalSchema,
-	TypeConstructorMap,
 	PersistentModel,
 	PersistentModelConstructor,
 	QueryOne,
-	SchemaModel,
 } from '../types';
 import { SYNC, objectsEqual } from '../util';
 import { TransformerMutationType } from './utils';
 
 // TODO: Persist deleted ids
-
 class MutationEventOutbox {
 	private inProgressMutationEventId: string;
 
 	constructor(
 		private readonly schema: InternalSchema,
-		private readonly userModelClasses: TypeConstructorMap,
 		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
-		private readonly ownSymbol: Symbol,
-		private readonly getModelDefinition: (
-			modelConstructor: PersistentModelConstructor<any>
-		) => SchemaModel
+		private readonly modelInstanceCreator: ModelInstanceCreator,
+		private readonly ownSymbol: Symbol
 	) {}
 
 	public async enqueue(
@@ -73,15 +68,20 @@ class MutationEventOutbox {
 			} else {
 				const { condition: incomingConditionJSON } = mutationEvent;
 				const incomingCondition = JSON.parse(incomingConditionJSON);
+				let merged: MutationEvent;
 
 				// If no condition
 				if (Object.keys(incomingCondition).length === 0) {
+					merged = this.mergeUserFields(first, mutationEvent);
+
 					// delete all for model
 					await s.delete(this.MutationEvent, predicate);
 				}
 
+				merged = merged || mutationEvent;
+
 				// Enqueue new one
-				await s.save(mutationEvent, undefined, this.ownSymbol);
+				await s.save(merged, undefined, this.ownSymbol);
 			}
 		});
 	}
@@ -159,13 +159,13 @@ class MutationEventOutbox {
 
 		const { _version, _lastChangedAt, _deleted, ...incomingData } = record;
 
-		let data;
+		const data = JSON.parse(head.data);
 
-		if (recordOp !== TransformerMutationType.UPDATE) {
-			data = JSON.parse(head.data);
-		} else {
-			data = await this.getUpdateRecord(storage, head);
-		}
+		// if (recordOp !== TransformerMutationType.UPDATE) {
+		// 	data = JSON.parse(head.data);
+		// } else {
+		// 	data = await this.getUpdateRecord(storage, head);
+		// }
 
 		if (!data) {
 			return;
@@ -221,33 +221,39 @@ class MutationEventOutbox {
 		);
 	}
 
-	private async getUpdateRecord(
-		storage: StorageClass,
-		head: PersistentModel
-	): Promise<PersistentModel> {
-		const modelConstructor = <PersistentModelConstructor<PersistentModel>>(
-			this.userModelClasses[head.model]
-		);
+	private mergeUserFields(
+		previous: MutationEvent,
+		current: MutationEvent
+	): MutationEvent {
+		const {
+			_version,
+			id,
+			_lastChangedAt,
+			_deleted,
+			...previousData
+		} = JSON.parse(previous.data);
 
-		const modelDefinition = this.getModelDefinition(modelConstructor);
+		const {
+			id: __id,
+			_version: __version,
+			_lastChangedAt: __lastChangedAt,
+			_deleted: __deleted,
+			...currentData
+		} = JSON.parse(current.data);
 
-		if (!(modelConstructor && head && head.modelId)) {
-			return;
-		}
+		const data = JSON.stringify({
+			id,
+			_version,
+			_lastChangedAt,
+			_deleted,
+			...previousData,
+			...currentData,
+		});
 
-		const results = <any>await storage.query(
-			modelConstructor,
-			ModelPredicateCreator.createFromExisting(modelDefinition, c =>
-				c.id('eq', head.modelId)
-			)
-		);
-
-		const fromDb = results[0];
-
-		// merge data from the mutationEvent with data from the query
-		// so that we can perform a comparison to determine whether
-		// the request record matches the response
-		return { ...fromDb, ...JSON.parse(head.data) };
+		return this.modelInstanceCreator(this.MutationEvent, {
+			...current,
+			data,
+		});
 	}
 }
 

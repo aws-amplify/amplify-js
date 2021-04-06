@@ -133,36 +133,6 @@ describe('Storage tests', () => {
 				expect(modelUpdate.element.emails).toMatchObject(expectedValueEmails);
 			});
 
-			test('list unchanged', async () => {
-				const classes = initSchema(testSchema());
-
-				const { Model } = classes as {
-					Model: PersistentModelConstructor<Model>;
-				};
-
-				const model = await DataStore.save(
-					new Model({
-						field1: 'Some value',
-						dateCreated: new Date().toISOString(),
-						emails: ['john@doe.com', 'jane@doe.com'],
-					})
-				);
-
-				await DataStore.save(
-					Model.copyOf(model, draft => {
-						draft.field1 = 'Updated value';
-						// same as above. should not be included in mutation input
-						draft.emails = ['john@doe.com', 'jane@doe.com'];
-					})
-				);
-
-				const [[modelSave], [modelUpdate]] = zenNext.mock.calls;
-
-				expect(modelUpdate.element.dateCreated).toBeUndefined();
-				expect(modelUpdate.element.field1).toEqual('Updated value');
-				expect(modelUpdate.element.emails).toBeUndefined();
-			});
-
 			test('custom type (destructured)', async () => {
 				const classes = initSchema(testSchema());
 
@@ -244,43 +214,6 @@ describe('Storage tests', () => {
 				expect(modelUpdate.element.metadata).toMatchObject(
 					expectedValueMetadata
 				);
-			});
-
-			test('custom type unchanged', async () => {
-				const classes = initSchema(testSchema());
-
-				const { Model } = classes as {
-					Model: PersistentModelConstructor<Model>;
-				};
-
-				const model = await DataStore.save(
-					new Model({
-						field1: 'Some value',
-						dateCreated: new Date().toISOString(),
-						metadata: {
-							author: 'some author',
-							rewards: [],
-							penNames: [],
-						},
-					})
-				);
-
-				await DataStore.save(
-					Model.copyOf(model, draft => {
-						draft.field1 = 'Updated value';
-						draft.metadata = {
-							author: 'some author',
-							rewards: [],
-							penNames: [],
-						};
-					})
-				);
-
-				const [[modelSave], [modelUpdate]] = zenNext.mock.calls;
-
-				expect(modelUpdate.element.dateCreated).toBeUndefined();
-				expect(modelUpdate.element.field1).toEqual('Updated value');
-				expect(modelUpdate.element.metadata).toBeUndefined();
 			});
 
 			test('relation', async () => {

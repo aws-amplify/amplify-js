@@ -1,6 +1,7 @@
 import { Logger, Mutex } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import PushStream from 'zen-push';
+import { Patch } from 'immer';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
 import {
@@ -16,13 +17,9 @@ import {
 	QueryOne,
 	SchemaNamespace,
 	SubscriptionMessage,
+	isTargetNameAssociation,
 } from '../types';
-import {
-	isModelConstructor,
-	STORAGE,
-	validatePredicate,
-	getUpdateMutationInput,
-} from '../util';
+import { isModelConstructor, STORAGE, validatePredicate } from '../util';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
@@ -103,26 +100,26 @@ class StorageClass implements StorageFacade {
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>,
-		mutator?: Symbol
-	): Promise<[T, OpType.INSERT | OpType.UPDATE, T?][]> {
+		mutator?: Symbol,
+		patches?: Patch[]
+	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		await this.init();
 
 		const result = await this.adapter.save(model, condition);
 
 		result.forEach(r => {
-			const [savedElement, opType, fromDB] = r;
+			const [originalElement, opType] = r;
 
-			let updatedElement;
-			if (opType === OpType.UPDATE && fromDB) {
-				// For update mutations we only want to send fields with changes
-				// and the required internal fields
-				updatedElement = getUpdateMutationInput(fromDB, savedElement);
-			}
+			const updateWithPatches =
+				opType === OpType.UPDATE && patches && patches.length;
 
-			const element = updatedElement || savedElement;
+			const element = updateWithPatches
+				? this.getUpdateMutationInput(model, originalElement, patches)
+				: originalElement;
 
-			const modelConstructor = (Object.getPrototypeOf(savedElement) as Object)
-				.constructor as PersistentModelConstructor<T>;
+			const modelConstructor = (Object.getPrototypeOf(
+				originalElement
+			) as Object).constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
 				model: modelConstructor,
@@ -280,6 +277,52 @@ class StorageClass implements StorageFacade {
 
 		return result as any;
 	}
+
+	private getUpdateMutationInput<T extends PersistentModel>(
+		model: T,
+		originalElement: T,
+		patches?: Patch[]
+	): PersistentModel {
+		const updatedElement = {};
+		// extract array of updated fields from patches
+		const updatedFields = <string[]>(
+			patches.map(patch => patch.path && patch.path[0])
+		);
+
+		// check model def for association and replace with targetName if exists
+		const modelConstructor = Object.getPrototypeOf(model)
+			.constructor as PersistentModelConstructor<T>;
+		const namespace = this.namespaceResolver(modelConstructor);
+		const { fields } = this.schema.namespaces[namespace].models[
+			modelConstructor.name
+		];
+
+		// set original values for these fields
+		updatedFields.forEach((field: string) => {
+			const targetName: any = isTargetNameAssociation(
+				fields[field].association
+			);
+
+			// if field refers to a belongsTo relation, use the target field instead
+			if (targetName) {
+				updatedElement[targetName] = originalElement[targetName];
+			} else {
+				updatedElement[field] = originalElement[field];
+			}
+		});
+
+		const { id, _version, _lastChangedAt, _deleted } = originalElement;
+
+		// For update mutations we only want to send fields with changes
+		// and the required internal fields
+		return {
+			...updatedElement,
+			id,
+			_version,
+			_lastChangedAt,
+			_deleted,
+		};
+	}
 }
 
 class ExclusiveStorage implements StorageFacade {
@@ -313,10 +356,11 @@ class ExclusiveStorage implements StorageFacade {
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>,
-		mutator?: Symbol
-	): Promise<[T, OpType.INSERT | OpType.UPDATE, T?][]> {
-		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE, T?][]>(
-			storage => storage.save<T>(model, condition, mutator)
+		mutator?: Symbol,
+		patches?: Patch[]
+	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
+		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>(storage =>
+			storage.save<T>(model, condition, mutator, patches)
 		);
 	}
 

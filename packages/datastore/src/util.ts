@@ -434,34 +434,6 @@ export function sortCompareFunction<T extends PersistentModel>(
 	};
 }
 
-export function getUpdateMutationInput<T extends PersistentModel>(
-	original: T,
-	updated: T
-): { [key: string]: any } {
-	const mutationInput: { [key: string]: any } = {
-		id: original.id,
-		_version: original._version,
-		_lastChangedAt: original._lastChangedAt,
-		_deleted: original._deleted,
-	};
-
-	for (const field in original) {
-		let originalValue: any = original[field];
-		let updatedValue: any = updated[field];
-
-		if (typeof originalValue === 'object') {
-			originalValue = JSON.stringify(originalValue);
-			updatedValue = JSON.stringify(updatedValue);
-		}
-
-		if (originalValue !== updatedValue) {
-			mutationInput[field] = updated[field];
-		}
-	}
-
-	return mutationInput;
-}
-
 // deep compare any 2 objects (including arrays, Sets, and Maps)
 // returns true if equal
 // if nullish is true, treat undefined and null values as equal
