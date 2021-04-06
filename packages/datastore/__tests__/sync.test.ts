@@ -224,6 +224,64 @@ describe('Sync', () => {
 				expect(e).toMatchSnapshot();
 			}
 		});
+
+		it('should return NonRetryableError for 403 error', async () => {
+			const rejectResponse = {
+				data: null,
+				errors: [
+					{
+						message: 'Request failed with status code 403',
+					},
+				],
+			};
+
+			const SyncProcessor = jitteredRetrySyncProcessorSetup({
+				rejectResponse,
+			});
+
+			try {
+				await SyncProcessor.jitteredRetry({
+					query: defaultQuery,
+					variables: defaultVariables,
+					opName: defaultOpName,
+					modelDefinition: defaultModelDefinition,
+					authMode: defaultAuthMode,
+				});
+			} catch (e) {
+				// NonRetryableError has a `nonRetryable` property
+				expect(e).toHaveProperty('nonRetryable');
+			}
+		});
+
+		[
+			'No api-key configured',
+			'No current user',
+			'No credentials',
+			'No federated jwt',
+		].forEach(authError => {
+			it(`should return NonRetryableError for client-side error: ${authError}`, async () => {
+				const rejectResponse = {
+					message: authError,
+				};
+
+				const SyncProcessor = jitteredRetrySyncProcessorSetup({
+					rejectResponse,
+				});
+
+				try {
+					await SyncProcessor.jitteredRetry({
+						query: defaultQuery,
+						variables: defaultVariables,
+						opName: defaultOpName,
+						modelDefinition: defaultModelDefinition,
+						authMode: defaultAuthMode,
+					});
+				} catch (e) {
+					// NonRetryableError has a `nonRetryable` property
+					expect(e).toHaveProperty('nonRetryable');
+				}
+			});
+		});
 	});
 });
 
