@@ -206,7 +206,7 @@ class IndexedDBAdapter implements Adapter {
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>
-	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
+	): Promise<[T, OpType.INSERT | OpType.UPDATE, T?][]> {
 		await this.checkPrivate();
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
@@ -250,31 +250,25 @@ class IndexedDBAdapter implements Adapter {
 			}
 		}
 
-		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
+		const result: [T, OpType.INSERT | OpType.UPDATE, T?][] = [];
 
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
 			const store = tx.objectStore(storeName);
-
 			const { id } = item;
 
+			const fromDB = <T>await this._get(store, id);
 			const opType: OpType =
-				(await this._get(store, id)) === undefined
-					? OpType.INSERT
-					: OpType.UPDATE;
+				fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
 
-			// It is me
-			if (id === model.id) {
+			// Even if the parent is an INSERT, the child might not be, so we need to get its key
+			if (id === model.id || opType === OpType.INSERT) {
 				const key = await store.index('byId').getKey(item.id);
 				await store.put(item, key);
 
-				result.push([instance, opType]);
-			} else {
-				if (opType === OpType.INSERT) {
-					// Even if the parent is an INSERT, the child might not be, so we need to get its key
-					const key = await store.index('byId').getKey(item.id);
-					await store.put(item, key);
-
+				if (opType === OpType.UPDATE) {
+					result.push([instance, opType, fromDB]);
+				} else {
 					result.push([instance, opType]);
 				}
 			}
