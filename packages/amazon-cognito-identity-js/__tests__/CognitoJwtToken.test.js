@@ -1,9 +1,6 @@
 import CognitoJwtToken from '../src/CognitoJwtToken';
-const subDecoded = '1234567890'
-const nameDecoded = 'John Doe'
-const iatDecoded = 1516239022
+import {sampleEncodedToken, expDecoded, nameDecoded, iatDecoded } from './constants'
 
-const sampleEncodedToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
 describe('Accessor methods', () => {
     const cognitoJwtToken = new CognitoJwtToken(sampleEncodedToken)
     
@@ -21,7 +18,7 @@ describe('Accessor methods', () => {
 
     test('Testing decode payload method returns an object', () =>{
         const decodedPayload = cognitoJwtToken.decodePayload()
-        expect(decodedPayload.sub).toBe(subDecoded)
+        expect(decodedPayload.exp).toBe(expDecoded)
         expect(decodedPayload.name).toBe(nameDecoded)
         expect(decodedPayload.iat).toBe(iatDecoded)
     })
