@@ -18,7 +18,7 @@ import { AmplifyButton } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import TEST_ID from '../AmplifyTestIDs';
-import { setTestId } from '../Utils'
+import { setTestId } from '../Utils';
 
 interface IGreetingsProps extends IAuthPieceProps {
 	signedInMessage?: string;

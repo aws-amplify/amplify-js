@@ -60,16 +60,16 @@ export const Loading = props => {
 						{props.sceneError.displayText}
 					</div>
 				) : (
+					<div
+						className={AmplifyUI.loadingBar}
+						data-test={sumerianScene.loadingBar}
+					>
 						<div
-							className={AmplifyUI.loadingBar}
-							data-test={sumerianScene.loadingBar}
-						>
-							<div
-								className={AmplifyUI.loadingBarFill}
-								style={{ width: `${props.percentage}%` }}
-							/>
-						</div>
-					)}
+							className={AmplifyUI.loadingBarFill}
+							style={{ width: `${props.percentage}%` }}
+						/>
+					</div>
+				)}
 			</div>
 		</div>
 	);

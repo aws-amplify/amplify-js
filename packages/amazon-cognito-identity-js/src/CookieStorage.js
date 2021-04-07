@@ -33,7 +33,7 @@ export default class CookieStorage {
 			this.secure = true;
 		}
 		if (Object.prototype.hasOwnProperty.call(data, 'sameSite')) {
-			if (!['strict','lax','none'].includes(data.sameSite)) {
+			if (!['strict', 'lax', 'none'].includes(data.sameSite)) {
 				throw new Error(
 					'The sameSite value of cookieStorage must be "lax", "strict" or "none".'
 				);

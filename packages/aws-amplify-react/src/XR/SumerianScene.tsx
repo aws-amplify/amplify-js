@@ -41,7 +41,7 @@ interface ISumerianSceneState {
 export class SumerianScene extends React.Component<
 	ISumerianSceneProps,
 	ISumerianSceneState
-	> {
+> {
 	constructor(props) {
 		super(props);
 

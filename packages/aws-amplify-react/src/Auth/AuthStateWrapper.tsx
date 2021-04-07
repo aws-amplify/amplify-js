@@ -22,7 +22,7 @@ export interface IAuthStateWrapperState {
 export class AuthStateWrapper extends React.Component<
 	IAuthStateWrapperProps,
 	IAuthStateWrapperState
-> {	
+> {
 	constructor(props) {
 		super(props);
 

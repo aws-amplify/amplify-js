@@ -51,7 +51,7 @@ export interface ISelectMFATypeState {
 export class SelectMFAType extends React.Component<
 	ISelectMFATypeProps,
 	ISelectMFATypeState
-	> {
+> {
 	public inputs: any;
 	constructor(props) {
 		super(props);

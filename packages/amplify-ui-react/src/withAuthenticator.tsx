@@ -19,14 +19,14 @@ export function withAuthenticator(
 
 		React.useEffect(() => {
 			appendToCognitoUserAgent('withAuthenticator');
-			
+
 			// checkUser returns an "unsubscribe" function to stop side-effects
 			return checkUser();
 		}, []);
 
 		function checkUser() {
 			setUser();
-			
+
 			return onAuthUIStateChange(authState => {
 				if (authState === AuthState.SignedIn) {
 					setSignedIn(true);
@@ -43,7 +43,7 @@ export function withAuthenticator(
 			} catch (err) {
 				logger.debug(err);
 			}
-		};
+		}
 
 		if (!signedIn) {
 			return (

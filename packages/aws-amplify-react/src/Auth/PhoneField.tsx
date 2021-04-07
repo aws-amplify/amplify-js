@@ -19,7 +19,7 @@ interface IPhoneFieldProps {
 	theme?: any;
 }
 
-interface IPhoneFieldState { }
+interface IPhoneFieldState {}
 
 class PhoneField extends React.Component<IPhoneFieldProps, IPhoneFieldState> {
 	private inputs: any;
@@ -67,8 +67,8 @@ class PhoneField extends React.Component<IPhoneFieldProps, IPhoneFieldState> {
 				{required ? (
 					<InputLabel theme={theme}>{I18n.get(label)} *</InputLabel>
 				) : (
-						<InputLabel theme={theme}>{I18n.get(label)}</InputLabel>
-					)}
+					<InputLabel theme={theme}>{I18n.get(label)}</InputLabel>
+				)}
 				<SelectInput theme={theme}>
 					<select
 						name="dial_code"

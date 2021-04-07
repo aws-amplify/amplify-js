@@ -167,8 +167,10 @@ export const isWebWorker = () => {
 		return false;
 	}
 	const selfContext = self as { WorkerGlobalScope? };
-	return typeof selfContext.WorkerGlobalScope !== 'undefined' &&
-		self instanceof selfContext.WorkerGlobalScope;
+	return (
+		typeof selfContext.WorkerGlobalScope !== 'undefined' &&
+		self instanceof selfContext.WorkerGlobalScope
+	);
 };
 
 export const browserOrNode = () => {

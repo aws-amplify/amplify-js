@@ -16,7 +16,7 @@ import * as React from 'react';
 import { I18n, ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 
-import { AuthPiece, IAuthPieceProps, IAuthPieceState  } from './AuthPiece';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import {
 	FormSection,
 	SectionHeader,

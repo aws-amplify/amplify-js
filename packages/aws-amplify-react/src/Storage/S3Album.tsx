@@ -294,18 +294,18 @@ export class S3Album extends React.Component<IS3AlbumProps, IS3AlbumState> {
 					onClick={() => this.handleClick(item)}
 				/>
 			) : (
-					<S3Image
-						key={item.key}
-						imgKey={item.key}
-						theme={theme}
-						style={theme.albumPhoto}
-						selected={item.selected}
-						translate={translateItem}
-						level={level}
-						identityId={identityId}
-						onClick={() => this.handleClick(item)}
-					/>
-				);
+				<S3Image
+					key={item.key}
+					imgKey={item.key}
+					theme={theme}
+					style={theme.albumPhoto}
+					selected={item.selected}
+					translate={translateItem}
+					level={level}
+					identityId={identityId}
+					onClick={() => this.handleClick(item)}
+				/>
+			);
 		});
 		return (
 			<div>

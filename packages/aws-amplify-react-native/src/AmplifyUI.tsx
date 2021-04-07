@@ -36,7 +36,7 @@ import AmplifyTheme, {
 import countryDialCodes from './CountryDialCodes';
 import TEST_ID from './AmplifyTestIDs';
 import icons from './icons';
-import { setTestId } from './Utils'
+import { setTestId } from './Utils';
 
 interface IContainerProps {
 	theme?: AmplifyThemeType;
@@ -204,7 +204,10 @@ export const ErrorRow: FC<IErrorRowProps> = props => {
 	return (
 		<View style={theme.errorRow}>
 			<Image source={icons.warning} style={theme.errorRowIcon} />
-			<Text style={theme.errorRowText} {...setTestId(TEST_ID.AUTH.ERROR_ROW_TEXT)}>
+			<Text
+				style={theme.errorRowText}
+				{...setTestId(TEST_ID.AUTH.ERROR_ROW_TEXT)}
+			>
 				{props.children}
 			</Text>
 		</View>

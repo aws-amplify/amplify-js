@@ -206,9 +206,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 		const transcribeMessage = eventBuilder.unmarshall(
 			Buffer.from(message.data)
 		);
-		const transcribeMessageJson = JSON.parse(
-			toUtf8(transcribeMessage.body)
-		);
+		const transcribeMessageJson = JSON.parse(toUtf8(transcribeMessage.body));
 		if (transcribeMessage.headers[':message-type'].value === 'exception') {
 			logger.debug(
 				'exception',

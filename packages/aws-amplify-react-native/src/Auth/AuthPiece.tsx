@@ -20,7 +20,7 @@ import AmplifyMessageMap from '../AmplifyMessageMap';
 import { FormField, PhoneField } from '../AmplifyUI';
 import TEST_ID from '../AmplifyTestIDs';
 import { OnStateChangeType, UsernameAttributesType } from '../../types';
-import { setTestId } from '../Utils'
+import { setTestId } from '../Utils';
 
 const logger = new Logger('AuthPiece');
 

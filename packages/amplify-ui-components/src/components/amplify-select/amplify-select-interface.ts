@@ -1,6 +1,6 @@
 interface SelectOption<T> {
-  label: string;
-  value: T;
+	label: string;
+	value: T;
 }
 
 interface SelectOptions<T extends string | number> extends Array<SelectOption<T>> {}

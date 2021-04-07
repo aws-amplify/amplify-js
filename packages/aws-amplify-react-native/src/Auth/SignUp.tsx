@@ -32,7 +32,7 @@ import signUpWithUsernameFields, {
 } from './common/default-sign-up-fields';
 import TEST_ID from '../AmplifyTestIDs';
 import { ISignUpField } from '../../types';
-import { setTestId } from '../Utils'
+import { setTestId } from '../Utils';
 
 const logger = new Logger('SignUp');
 
@@ -245,10 +245,10 @@ export default class SignUp extends AuthPiece<ISignUpProps, ISignUpState> {
 		this.sortFields();
 		return (
 			<Wrapper>
-				<ScrollView 
+				<ScrollView
 					style={theme.sectionScroll}
-					keyboardShouldPersistTaps='handled'
-					>
+					keyboardShouldPersistTaps="handled"
+				>
 					<Header theme={theme} testID={TEST_ID.AUTH.SIGN_UP_TEXT}>
 						{I18n.get(this.header)}
 					</Header>

@@ -26,8 +26,8 @@ export interface IS3TextProps {
 	body?: any;
 	contentType?: any;
 	fileToKey?:
-	| string
-	| ((param: { name: string; size: number; type: string }) => string);
+		| string
+		| ((param: { name: string; size: number; type: string }) => string);
 	hidden?: any;
 	identityId?: any;
 	level?: string;
@@ -43,8 +43,8 @@ export interface IS3TextProps {
 	textKey?: string;
 	track?: any;
 	translate?:
-	| string
-	| ((params: { type: string; key: string; content: string }) => string);
+		| string
+		| ((params: { type: string; key: string; content: string }) => string);
 }
 
 export interface IS3TextState {
@@ -224,10 +224,10 @@ export class S3Text extends React.Component<IS3TextProps, IS3TextState> {
 				typeof translate === 'string'
 					? translate
 					: translate({
-						type: 'text',
-						key: textKey,
-						content: text,
-					});
+							type: 'text',
+							key: textKey,
+							content: text,
+					  });
 		}
 		if (!text && !picker) {
 			return null;
