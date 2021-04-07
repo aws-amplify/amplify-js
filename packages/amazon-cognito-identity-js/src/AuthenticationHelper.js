@@ -28,6 +28,7 @@ import WordArray from './utils/WordArray';
  * @param {number} nBytes 
  * @returns {Buffer} fixed-length sequence of random bytes
  */
+
 function randomBytes(nBytes) {
 	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
 };
@@ -407,10 +408,10 @@ export default class AuthenticationHelper {
 
 			/*
 			For hex strings starting with 'FF8', 'FF' can be dropped, e.g. 0xFFFF80=0xFF80=0x80=-128
-
+	
 			Any sequence of '1' bits on the left can always be substituted with a single '1' bit
 			without changing the represented value.
-
+	
 			This only happens in the case when the input is 80...00
 			*/
 			if (hexStr.toUpperCase().startsWith('FF8')) {

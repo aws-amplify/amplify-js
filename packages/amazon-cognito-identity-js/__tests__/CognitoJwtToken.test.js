@@ -1,30 +1,40 @@
 import CognitoJwtToken from '../src/CognitoJwtToken';
+import {
+	sampleEncodedToken,
+	expDecoded,
+	nameDecoded,
+	iatDecoded,
+} from './constants';
 
-describe('AuthenticationDetails getter methods', () => {
-	const token =
-		'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJBbWF6b24gQ29nbml0byBJZGVudGl0eSBKUyIsImlhdCI6MTYxNjYxOTk4OSwiZXhwIjoxNjQ4MTU1OTg5LCJhdWQiOiJBbXBsaWZ5IEpTIiwic3ViIjoiSm9obiBEb2UifQ.mVLc52533pWSad8vhD56JJsE-E-gdLJO-IeB-ojYsl4';
-	const tokenDecoded = {
-		iss: 'Amazon Cognito Identity JS',
-		iat: 1616619989,
-		exp: 1648155989,
-		aud: 'Amplify JS',
-		sub: 'John Doe',
-	};
-	const cognitoJwtToken = new CognitoJwtToken(token);
+describe('Accessor methods', () => {
+	const cognitoJwtToken = new CognitoJwtToken(sampleEncodedToken);
 
-	test('getJwtToken()', () => {
-		expect(cognitoJwtToken.getJwtToken()).toEqual(token);
+	test('Getting JWT Token', () => {
+		expect(cognitoJwtToken.getJwtToken()).toBe(sampleEncodedToken);
 	});
 
-	test('getExpiration()', () => {
-		expect(cognitoJwtToken.getExpiration()).toEqual(tokenDecoded.exp);
+	test('Getting expiration for JWT', () => {
+		expect(cognitoJwtToken.getExpiration()).toBe(cognitoJwtToken.payload.exp);
 	});
 
-	test('getIssuedAt()', () => {
-		expect(cognitoJwtToken.getIssuedAt()).toEqual(tokenDecoded.iat);
+	test('Get time issued at for JWT', () => {
+		expect(cognitoJwtToken.getIssuedAt()).toBe(cognitoJwtToken.payload.iat);
 	});
 
-	test('decodePayload()', () => {
-		expect(cognitoJwtToken.decodePayload()).toMatchObject(tokenDecoded);
+	test('Testing decode payload method returns an object', () => {
+		const decodedPayload = cognitoJwtToken.decodePayload();
+		expect(decodedPayload.exp).toBe(expDecoded);
+		expect(decodedPayload.name).toBe(nameDecoded);
+		expect(decodedPayload.iat).toBe(iatDecoded);
+	});
+
+	test('Decoding error', () => {
+		const badJWT = new CognitoJwtToken('incorrect Encoding');
+		expect(badJWT.decodePayload()).toEqual({});
+	});
+
+	test('Bad parameters', () => {
+		const noPayloadToken = new CognitoJwtToken();
+		expect(noPayloadToken.getJwtToken()).toBe('');
 	});
 });

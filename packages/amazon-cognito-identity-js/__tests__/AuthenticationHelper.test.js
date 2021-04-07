@@ -1,17 +1,19 @@
+import 'regenerator-runtime/runtime';
 import AuthenticationHelper from '../src/AuthenticationHelper';
 
 import BigInteger from '../src/BigInteger';
+import { SHA256 } from 'crypto-js';
+import { promisifyCallback } from './util';
+const instance = new AuthenticationHelper('TestPoolName');
 
-describe('AuthenticatorHelper', () => {
-	const instance = new AuthenticationHelper('TestPoolName');
-
+describe('AuthenticatorHelper for padHex ', () => {
 	/*
 	Test cases generated in Java with:
 
 	import java.math.BigInteger;
 	public class Main
 	{
-		private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+		private static final char[] HEX_ARRAY = '0123456789ABCDEF'.toCharArray();
 		public static String bytesToHex(byte[] bytes) {
 			char[] hexChars = new char[bytes.length * 2];
 			for (int j = 0; j < bytes.length; j++) {
@@ -24,7 +26,7 @@ describe('AuthenticatorHelper', () => {
 		public static void main(String[] args) {
 			for(int i = -256; i <=256; i++) {
 				byte arr[] = BigInteger.valueOf(i).toByteArray();
-				System.out.println("[" + i +", '" + bytesToHex(arr) + "'],");
+				System.out.println('[' + i +', '' + bytesToHex(arr) + ''],');
 			}
 		}
 	}
@@ -550,5 +552,186 @@ describe('AuthenticatorHelper', () => {
 		const x = instance.padHex(bigInt);
 
 		expect(x.toLowerCase()).toBe(expected.toLowerCase());
+	});
+});
+
+describe('Getters for AuthHelper class', () => {
+	test('Instance variable small A', () => {
+		expect(instance.getSmallAValue()).toBe(instance.smallAValue);
+	});
+
+	test('Instance variable randomPassword', () => {
+		expect(instance.getRandomPassword()).toBe(instance.randomPassword);
+	});
+
+	test('Instance variable SaltDevices', () => {
+		expect(instance.getSaltDevices()).toBe(instance.SaltToHashDevices);
+	});
+
+	test('Instance variable verifierDevices', () => {
+		expect(instance.getVerifierDevices()).toBe(instance.verifierDevices);
+	});
+
+	test('Constant prefix for new password challenge', () => {
+		expect(
+			instance.getNewPasswordRequiredChallengeUserAttributePrefix()
+		).toEqual('userAttributes.');
+	});
+
+	test('Get large A value', async () => {
+		const result = await promisifyCallback(instance, 'getLargeAValue');
+		expect(result).toBe(instance.largeAValue);
+	});
+});
+
+describe('Generation functions test', () => {
+	test('Test generate hash devices', async () => {
+		const deviceGroupKey = instance.generateRandomString();
+		const username = instance.generateRandomString();
+		const result = await promisifyCallback(
+			instance,
+			'generateHashDevice',
+			deviceGroupKey,
+			username
+		);
+		expect(result).toBe(null);
+	});
+});
+
+describe('Calculations for AuthHelper class', () => {
+	test('Generate Random Small A is generating a BigInteger', () => {
+		expect(instance.generateRandomSmallA()).toBeInstanceOf(BigInteger);
+	});
+
+	test('Ensure that generateRandomSmallA is non deterministic', () => {
+		const firstSmallA = instance.generateRandomSmallA();
+		const secondSmallA = instance.generateRandomSmallA();
+		expect(firstSmallA).not.toEqual(secondSmallA);
+	});
+
+	test('Generate random strings', () => {
+		expect(typeof instance.generateRandomString()).toEqual('string');
+	});
+
+	test('Generate random strings is non-deterministic', () => {
+		expect(instance.generateRandomString()).not.toEqual(
+			instance.generateRandomString()
+		);
+	});
+
+	test('Calculate A works successfully', async () => {
+		const result = await promisifyCallback(
+			instance,
+			'calculateA',
+			instance.smallAValue
+		);
+
+		if (typeof result === Error) {
+			if (result.mod(instance.N).equals(BigInteger.ZERO)) {
+				expect(result).toMatchObject(
+					new Error('Illegal paramater. A mod N cannot be 0.')
+				);
+			} else {
+				expect(result.toMatchObject(new Error()));
+			}
+		} else {
+			expect(result).toMatchObject(new BigInteger());
+		}
+	});
+
+	test('Calculate S works', async () => {
+		const xValue = new BigInteger('deadbeef', 16);
+		const serverValue = new BigInteger('deadbeef', 16);
+		instance.k = new BigInteger('deadbeef', 16);
+		instance.UValue = instance.calculateU(instance.largeAValue, xValue);
+		const result = await promisifyCallback(
+			instance,
+			'calculateS',
+			xValue,
+			serverValue
+		);
+		expect(result).toMatchObject(new BigInteger());
+	});
+
+	test("Calculate the client's value U", () => {
+		const hexA = new BigInteger('abcd1234', 16);
+		const hexB = new BigInteger('deadbeef', 16);
+
+		const hashed = instance.hexHash(
+			instance.padHex(hexA) + instance.padHex(hexB)
+		);
+		const expected = new BigInteger(hashed, 16);
+
+		const result = instance.calculateU(hexA, hexB);
+
+		expect(expected).toEqual(result);
+	});
+
+	test('Test hexHash function produces a valid hex string with regex', () => {
+		const regEx = /[0-9a-f]/g;
+		const hexStr = SHA256('testString').toString();
+		expect(regEx.test(instance.hexHash(hexStr))).toBe(true);
+	});
+
+	test('Hashing a buffer returns a string', () => {
+		const buf = Buffer.from('7468697320697320612074c3a97374', 'binary');
+		expect(typeof instance.hash(buf)).toBe('string');
+	});
+
+	//treating the hkdf algorithm as a blackbox
+	test('Ensure that hkdf algorithm returns a strong hex string', () => {
+		const inputKey = Buffer.from('secretInputKey', 'ascii');
+		const salt = Buffer.from('7468697320697320612074c3a97374', 'hex');
+		const key = instance.computehkdf(inputKey, salt);
+		expect(key).toBeInstanceOf(Buffer);
+	});
+});
+
+describe('Password Auth Key', () => {
+	const username = 'cognitoUser';
+	const password = 'cognitoPassword';
+	const badServerValue = BigInteger.ZERO;
+	const salt = new BigInteger('deadbeef', 16);
+
+	test('Getting a bad server value', async () => {
+		await promisifyCallback(
+			instance,
+			'getPasswordAuthenticationKey',
+			username,
+			password,
+			badServerValue,
+			salt
+		).catch(e => {
+			expect(e).toEqual(new Error('B cannot be zero.'));
+		});
+	});
+
+	test('Getting a U Value of zero', async () => {
+		instance.UValue = BigInteger.ZERO;
+		const realServerValue = new BigInteger('deadbeef', 16);
+		await promisifyCallback(
+			instance,
+			'getPasswordAuthenticationKey',
+			username,
+			password,
+			realServerValue,
+			salt
+		).catch(e => {
+			expect(e).toEqual(new Error('U cannot be zero.'));
+		});
+	});
+
+	test('Getting the password auth key', async () => {
+		const realServerValue = new BigInteger('deadbeef', 16);
+		const result = await promisifyCallback(
+			instance,
+			'getPasswordAuthenticationKey',
+			username,
+			password,
+			realServerValue,
+			salt
+		);
+
+		expect(result).toBeInstanceOf(Buffer);
 	});
 });
