@@ -14,6 +14,12 @@ declare module 'amazon-cognito-identity-js' {
 
 	export type ClientMetadata = { [key: string]: string } | undefined;
 
+	export type AuthChallengeName =
+		| 'NEW_PASSWORD_REQUIRED'
+		| 'SMS_MFA'
+		| 'SOFTWARE_TOKEN_MFA'
+		| 'MFA_SETUP';
+
 	export interface IAuthenticationCallback {
 		onSuccess: (
 			session: CognitoUserSession,
@@ -24,11 +30,11 @@ declare module 'amazon-cognito-identity-js' {
 			userAttributes: any,
 			requiredAttributes: any
 		) => void;
-		mfaRequired?: (challengeName: any, challengeParameters: any) => void;
-		totpRequired?: (challengeName: any, challengeParameters: any) => void;
+		mfaRequired?: (challengeName: AuthChallengeName, challengeParameters: any) => void;
+		totpRequired?: (challengeName: AuthChallengeName, challengeParameters: any) => void;
 		customChallenge?: (challengeParameters: any) => void;
-		mfaSetup?: (challengeName: any, challengeParameters: any) => void;
-		selectMFAType?: (challengeName: any, challengeParameters: any) => void;
+		mfaSetup?: (challengeName: AuthChallengeName, challengeParameters: any) => void;
+		selectMFAType?: (challengeName: AuthChallengeName, challengeParameters: any) => void;
 	}
 
 	export interface IMfaSettings {
@@ -82,6 +88,7 @@ declare module 'amazon-cognito-identity-js' {
 		): string;
 		public getCachedDeviceKeyAndPassword(): void;
 
+		public challengeName: AuthChallengeName;
 		public getSession(
 			callback:
 				| ((error: Error, session: null) => void)
@@ -185,12 +192,12 @@ declare module 'amazon-cognito-identity-js' {
 				onSuccess: (session: CognitoUserSession) => void;
 				onFailure: (err: any) => void;
 				mfaRequired?: (
-					challengeName: any,
+					challengeName: AuthChallengeName,
 					challengeParameters: any
 				) => void;
 				customChallenge?: (challengeParameters: any) => void;
 				mfaSetup?: (
-					challengeName: any,
+					challengeName: AuthChallengeName,
 					challengeParameters: any
 				) => void;
 			},
@@ -259,11 +266,11 @@ declare module 'amazon-cognito-identity-js' {
 				onSuccess: (session: CognitoUserSession) => void;
 				onFailure: (err: any) => void;
 				mfaRequired?: (
-					challengeName: any,
+					challengeName: AuthChallengeName,
 					challengeParameters: any
 				) => void;
 				totpRequired?: (
-					challengeName: any,
+					challengeName: AuthChallengeName,
 					challengeParameters: any
 				) => void;
 			}
