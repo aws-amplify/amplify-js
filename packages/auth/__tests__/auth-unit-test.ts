@@ -818,7 +818,7 @@ describe('auth unit test', () => {
 			const spyon = jest.spyOn(CognitoUserPool.prototype, 'signUp');
 			const auth = new Auth(authOptionsWithClientMetadata);
 
-			const attrs = {
+			const attrs: SignUpParams = {
 				username: 'username',
 				password: 'password',
 				attributes: {
