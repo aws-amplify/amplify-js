@@ -4,7 +4,7 @@ import DateHelper from '../src/DateHelper'
 describe('DateHelper unit tests', () => {
     test('Expect getNowString() to return the date in the correct format', () => {
         const result = new DateHelper()
-        const year = new Date().getUTCFullYear
+        const year = new Date().getUTCFullYear()
         expect(result.getNowString()).toContain(year);
     })
 });
