@@ -1,4 +1,5 @@
 import {
+	objectsEqual,
 	isAWSDate,
 	isAWSDateTime,
 	isAWSEmail,
@@ -11,6 +12,82 @@ import {
 } from '../src/util';
 
 describe('datastore util', () => {
+	test('objectsEqual', () => {
+		expect(objectsEqual({}, {})).toEqual(true);
+		expect(objectsEqual([], [])).toEqual(true);
+		expect(objectsEqual([], {})).toEqual(false);
+		expect(objectsEqual([1, 2, 3], [1, 2, 3])).toEqual(true);
+		expect(objectsEqual([1, 2, 3], [1, 2, 3, 4])).toEqual(false);
+		expect(objectsEqual({ a: 1 }, { a: 1 })).toEqual(true);
+		expect(objectsEqual({ a: 1 }, { a: 2 })).toEqual(false);
+		expect(
+			objectsEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 3 }] })
+		).toEqual(true);
+		expect(
+			objectsEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 4 }] })
+		).toEqual(false);
+		expect(objectsEqual(new Set([1, 2, 3]), new Set([1, 2, 3]))).toEqual(true);
+		expect(objectsEqual(new Set([1, 2, 3]), new Set([1, 2, 3, 4]))).toEqual(
+			false
+		);
+
+		const map1 = new Map();
+		map1.set('a', 1);
+
+		const map2 = new Map();
+		map2.set('a', 1);
+
+		expect(objectsEqual(map1, map2)).toEqual(true);
+		map2.set('b', 2);
+		expect(objectsEqual(map1, map2)).toEqual(false);
+
+		// nullish - treat null and undefined as equal in Objects and Maps
+		expect(objectsEqual({ a: 1, b: null }, { a: 1 }, true)).toEqual(true);
+		expect(
+			objectsEqual({ a: 1, b: null }, { a: 1, b: undefined }, true)
+		).toEqual(true);
+		expect(objectsEqual({ a: 1, b: false }, { a: 1 }, true)).toEqual(false);
+
+		const map3 = new Map();
+		map3.set('a', null);
+		const map4 = new Map();
+
+		expect(objectsEqual(map3, map4, true)).toEqual(true);
+
+		const map5 = new Map();
+		map5.set('a', false);
+		const map6 = new Map();
+
+		expect(objectsEqual(map5, map6, true)).toEqual(false);
+
+		// should not attempt nullish comparison for arrays/sets
+		expect(objectsEqual([null], [], true)).toEqual(false);
+		expect(objectsEqual([null], [undefined], true)).toEqual(false);
+		expect(objectsEqual(new Set([null]), new Set([]), true)).toEqual(false);
+		expect(objectsEqual(new Set([null]), new Set([undefined]), true)).toEqual(
+			false
+		);
+
+		// should return false for non-object types
+		expect(objectsEqual(null, undefined)).toEqual(false);
+		expect(objectsEqual(null, undefined, true)).toEqual(false);
+
+		expect(objectsEqual(undefined, undefined)).toEqual(false);
+		expect(objectsEqual(undefined, undefined, true)).toEqual(false);
+
+		expect(objectsEqual(null, null)).toEqual(false);
+		expect(objectsEqual(null, null, true)).toEqual(false);
+
+		expect(objectsEqual('string' as any, 'string' as any)).toEqual(false);
+		expect(objectsEqual('string' as any, 'string' as any, true)).toEqual(false);
+
+		expect(objectsEqual(123 as any, 123 as any)).toEqual(false);
+		expect(objectsEqual(123 as any, 123 as any, true)).toEqual(false);
+
+		expect(objectsEqual(true as any, true as any)).toEqual(false);
+		expect(objectsEqual(true as any, true as any, true)).toEqual(false);
+	});
+
 	test('isAWSDate', () => {
 		const valid = [
 			'2020-01-01',

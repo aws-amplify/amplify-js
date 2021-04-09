@@ -32,3 +32,4 @@ export const password = 'Very$ecur3'
 
 /** CookieStorage */
 export const cookieStorageDomain = "https://testdomain.com"
+
