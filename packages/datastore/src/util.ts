@@ -434,26 +434,43 @@ export function sortCompareFunction<T extends PersistentModel>(
 	};
 }
 
-// deep compare any 2 objects (including arrays, Sets, and Maps)
-// returns true if equal
+// deep compare any 2 values
+// primitives or object types (including arrays, Sets, and Maps)
+// returns true if equal by value
 // if nullish is true, treat undefined and null values as equal
 // to normalize for GQL response values for undefined fields
-export function objectsEqual(
-	objA: object,
-	objB: object,
+export function valuesEqual(
+	valA: any,
+	valB: any,
 	nullish: boolean = false
 ): boolean {
-	let a = objA;
-	let b = objB;
+	let a = valA;
+	let b = valB;
 
-	if (typeof a !== 'object' || typeof b !== 'object') {
+	const nullishCompare = (_a, _b) => {
+		return (
+			(_a === undefined || _a === null) && (_b === undefined || _b === null)
+		);
+	};
+
+	// if one of the values is a primitive and the other is an object
+	if (
+		(a instanceof Object && !(b instanceof Object)) ||
+		(!(a instanceof Object) && b instanceof Object)
+	) {
 		return false;
 	}
 
-	if (a === null || b === null) {
-		return false;
+	// compare primitive types
+	if (!(a instanceof Object)) {
+		if (nullish && nullishCompare(a, b)) {
+			return true;
+		}
+
+		return a === b;
 	}
 
+	// make sure object types match
 	if (
 		(Array.isArray(a) && !Array.isArray(b)) ||
 		(Array.isArray(b) && !Array.isArray(a))
@@ -474,35 +491,24 @@ export function objectsEqual(
 	const aKeys = Object.keys(a);
 	const bKeys = Object.keys(b);
 
-	if (!nullish && aKeys.length !== bKeys.length) {
+	if (aKeys.length !== bKeys.length && !nullish) {
 		return false;
 	}
 
-	for (const key of aKeys) {
+	// iterate through the longer set of keys
+	// e.g., for a nullish comparison of a={ a: 1 } and b={ a: 1, b: null }
+	// we want to iterate through bKeys
+	const keys = aKeys.length >= bKeys.length ? aKeys : bKeys;
+
+	for (const key of keys) {
 		const aVal = a[key];
 		const bVal = b[key];
 
-		if (aVal && typeof aVal === 'object') {
-			if (!objectsEqual(aVal, bVal)) {
-				return false;
-			}
-		} else if (aVal !== bVal) {
-			// nullish comparison should only apply to objects and Maps
-			if (nullish && !Array.isArray(a) && !(a instanceof Set)) {
-				if (
-					// returns false if it's NOT a nullish match
-					!(
-						(aVal === undefined || aVal === null) &&
-						(bVal === undefined || bVal === null)
-					)
-				) {
-					return false;
-				}
-			} else {
-				return false;
-			}
+		if (!valuesEqual(aVal, bVal, nullish)) {
+			return false;
 		}
 	}
+
 	return true;
 }
 

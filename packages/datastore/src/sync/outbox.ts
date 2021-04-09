@@ -12,7 +12,7 @@ import {
 	PersistentModelConstructor,
 	QueryOne,
 } from '../types';
-import { SYNC, objectsEqual } from '../util';
+import { SYNC, valuesEqual } from '../util';
 import { TransformerMutationType } from './utils';
 
 // TODO: Persist deleted ids
@@ -158,14 +158,7 @@ class MutationEventOutbox {
 		}
 
 		const { _version, _lastChangedAt, _deleted, ...incomingData } = record;
-
 		const data = JSON.parse(head.data);
-
-		// if (recordOp !== TransformerMutationType.UPDATE) {
-		// 	data = JSON.parse(head.data);
-		// } else {
-		// 	data = await this.getUpdateRecord(storage, head);
-		// }
 
 		if (!data) {
 			return;
@@ -180,7 +173,7 @@ class MutationEventOutbox {
 
 		// Don't sync the version when the data in the response does not match the data
 		// in the request, i.e., when there's a handled conflict
-		if (!objectsEqual(incomingData, outgoingData, true)) {
+		if (!valuesEqual(incomingData, outgoingData, true)) {
 			return;
 		}
 

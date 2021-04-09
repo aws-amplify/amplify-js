@@ -65,6 +65,62 @@ describe('Storage tests', () => {
 				expect(modelUpdate.element.field1).toEqual('edited');
 			});
 
+			test('scalar - unchanged', async () => {
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
+
+				const dateCreated = new Date().toISOString();
+
+				const model = await DataStore.save(
+					new Model({
+						field1: 'Some value',
+						dateCreated,
+					})
+				);
+
+				await DataStore.save(
+					Model.copyOf(model, draft => {
+						draft.field1 = 'Some value';
+					})
+				);
+
+				const [[_modelSave], modelUpdate] = zenNext.mock.calls;
+
+				expect(modelUpdate).toBeUndefined();
+				expect(modelUpdate).toBeUndefined();
+
+				expect(true).toBeTruthy();
+			});
+
+			test('update by nulling previous value', async () => {
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
+
+				const model = await DataStore.save(
+					new Model({
+						field1: 'Some value',
+						optionalField1: 'Some optional value',
+						dateCreated: new Date().toISOString(),
+					})
+				);
+
+				await DataStore.save(
+					Model.copyOf(model, draft => {
+						draft.optionalField1 = null;
+					})
+				);
+
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
+
+				expect(modelUpdate.element.optionalField1).toBeNull();
+			});
+
 			test('list (destructured)', async () => {
 				const classes = initSchema(testSchema());
 
@@ -86,7 +142,7 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [[modelSave], [modelUpdate]] = zenNext.mock.calls;
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
 
 				const expectedValueEmails = [
 					'john@doe.com',
@@ -120,7 +176,7 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [[modelSave], [modelUpdate]] = zenNext.mock.calls;
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
 
 				const expectedValueEmails = [
 					'john@doe.com',
@@ -131,6 +187,89 @@ describe('Storage tests', () => {
 				expect(modelUpdate.element.dateCreated).toBeUndefined();
 				expect(modelUpdate.element.field1).toBeUndefined();
 				expect(modelUpdate.element.emails).toMatchObject(expectedValueEmails);
+			});
+
+			test('update with changed field and list unchanged', async () => {
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
+
+				const model = await DataStore.save(
+					new Model({
+						field1: 'Some value',
+						dateCreated: new Date().toISOString(),
+						emails: ['john@doe.com', 'jane@doe.com'],
+					})
+				);
+
+				await DataStore.save(
+					Model.copyOf(model, draft => {
+						draft.field1 = 'Updated value';
+						// same as above. should not be included in mutation input
+						draft.emails = ['john@doe.com', 'jane@doe.com'];
+					})
+				);
+
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
+
+				expect(modelUpdate.element.dateCreated).toBeUndefined();
+				expect(modelUpdate.element.field1).toEqual('Updated value');
+				expect(modelUpdate.element.emails).toBeUndefined();
+			});
+
+			test('update with list unchanged', async () => {
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
+
+				const model = await DataStore.save(
+					new Model({
+						field1: 'Some value',
+						dateCreated: new Date().toISOString(),
+						emails: ['john@doe.com', 'jane@doe.com'],
+					})
+				);
+
+				await DataStore.save(
+					Model.copyOf(model, draft => {
+						// same as above. should not result in mutation event
+						draft.emails = ['john@doe.com', 'jane@doe.com'];
+					})
+				);
+
+				const [[_modelSave], modelUpdate] = zenNext.mock.calls;
+
+				expect(modelUpdate).toBeUndefined();
+			});
+
+			test('update by nulling list', async () => {
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
+
+				const model = await DataStore.save(
+					new Model({
+						field1: 'Some value',
+						dateCreated: new Date().toISOString(),
+						emails: ['john@doe.com', 'jane@doe.com'],
+					})
+				);
+
+				await DataStore.save(
+					Model.copyOf(model, draft => {
+						draft.emails = null;
+					})
+				);
+
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
+
+				expect(modelUpdate.element.emails).toBeNull();
 			});
 
 			test('custom type (destructured)', async () => {
@@ -161,7 +300,7 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [[modelSave], [modelUpdate]] = zenNext.mock.calls;
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
 
 				const expectedValueMetadata = {
 					author: 'some author',
@@ -201,7 +340,7 @@ describe('Storage tests', () => {
 					})
 				);
 
-				const [[modelSave], [modelUpdate]] = zenNext.mock.calls;
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
 
 				const expectedValueMetadata = {
 					author: 'some author',
@@ -214,6 +353,43 @@ describe('Storage tests', () => {
 				expect(modelUpdate.element.metadata).toMatchObject(
 					expectedValueMetadata
 				);
+			});
+
+			test('custom type unchanged', async () => {
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
+
+				const model = await DataStore.save(
+					new Model({
+						field1: 'Some value',
+						dateCreated: new Date().toISOString(),
+						metadata: {
+							author: 'some author',
+							rewards: [],
+							penNames: [],
+						},
+					})
+				);
+
+				await DataStore.save(
+					Model.copyOf(model, draft => {
+						draft.field1 = 'Updated value';
+						draft.metadata = {
+							author: 'some author',
+							rewards: [],
+							penNames: [],
+						};
+					})
+				);
+
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
+
+				expect(modelUpdate.element.dateCreated).toBeUndefined();
+				expect(modelUpdate.element.field1).toEqual('Updated value');
+				expect(modelUpdate.element.metadata).toBeUndefined();
 			});
 
 			test('relation', async () => {

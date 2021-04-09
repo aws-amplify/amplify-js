@@ -86,7 +86,13 @@ const modelNamespaceMap = new WeakMap<
 	PersistentModelConstructor<any>,
 	string
 >();
-const modelPatchesMap = new WeakMap<PersistentModel, Patch[]>();
+// stores data for crafting the correct update mutation input for a model
+// Patch[] - array of changed fields and metadata
+// PersistentModel - the source model, used for diffing object-type fields
+const modelPatchesMap = new WeakMap<
+	PersistentModel,
+	[Patch[], PersistentModel]
+>();
 
 const getModelDefinition = (
 	modelConstructor: PersistentModelConstructor<any>
@@ -404,7 +410,9 @@ const createModelClass = <T extends PersistentModel>(
 				p => (patches = p)
 			);
 
-			patches.length && modelPatchesMap.set(model, patches);
+			if (patches.length) {
+				modelPatchesMap.set(model, [patches, source]);
+			}
 
 			return model;
 		}
@@ -782,7 +790,7 @@ class DataStore {
 
 		// Immer patches for constructing a correct update mutation input
 		// Allows us to only include changed fields for updates
-		const patches = modelPatchesMap.get(model);
+		const patchesTuple = modelPatchesMap.get(model);
 
 		const modelConstructor: PersistentModelConstructor<T> = model
 			? <PersistentModelConstructor<T>>model.constructor
@@ -803,7 +811,7 @@ class DataStore {
 		);
 
 		const [savedModel] = await this.storage.runExclusive(async s => {
-			await s.save(model, producedCondition, undefined, patches);
+			await s.save(model, producedCondition, undefined, patchesTuple);
 
 			return s.query(
 				modelConstructor,

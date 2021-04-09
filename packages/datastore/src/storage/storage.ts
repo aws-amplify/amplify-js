@@ -19,7 +19,12 @@ import {
 	SubscriptionMessage,
 	isTargetNameAssociation,
 } from '../types';
-import { isModelConstructor, STORAGE, validatePredicate } from '../util';
+import {
+	isModelConstructor,
+	STORAGE,
+	validatePredicate,
+	valuesEqual,
+} from '../util';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
@@ -101,7 +106,7 @@ class StorageClass implements StorageFacade {
 		model: T,
 		condition?: ModelPredicate<T>,
 		mutator?: Symbol,
-		patches?: Patch[]
+		patchesTuple?: [Patch[], PersistentModel]
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		await this.init();
 
@@ -110,12 +115,28 @@ class StorageClass implements StorageFacade {
 		result.forEach(r => {
 			const [originalElement, opType] = r;
 
-			const updateWithPatches =
-				opType === OpType.UPDATE && patches && patches.length;
+			const containsPatches = patchesTuple && patchesTuple.length;
 
-			const element = updateWithPatches
-				? this.getUpdateMutationInput(model, originalElement, patches)
-				: originalElement;
+			// an update without patches means no fields were changed
+			// => don't create mutationEvent
+			if (opType === OpType.UPDATE && !containsPatches) {
+				return result;
+			}
+
+			let updateMutationInput;
+			if (opType === OpType.UPDATE && containsPatches) {
+				updateMutationInput = this.getUpdateMutationInput(
+					model,
+					originalElement,
+					patchesTuple
+				);
+
+				if (updateMutationInput === null) {
+					return result;
+				}
+			}
+
+			const element = updateMutationInput || originalElement;
 
 			const modelConstructor = (Object.getPrototypeOf(
 				originalElement
@@ -278,11 +299,13 @@ class StorageClass implements StorageFacade {
 		return result as any;
 	}
 
+	// returns null if no user fields were changed (determined by value comparison)
 	private getUpdateMutationInput<T extends PersistentModel>(
 		model: T,
 		originalElement: T,
-		patches?: Patch[]
-	): PersistentModel {
+		patchesTuple?: [Patch[], PersistentModel]
+	): PersistentModel | null {
+		const [patches, source] = patchesTuple;
 		const updatedElement = {};
 		// extract array of updated fields from patches
 		const updatedFields = <string[]>(
@@ -296,7 +319,6 @@ class StorageClass implements StorageFacade {
 		const { fields } = this.schema.namespaces[namespace].models[
 			modelConstructor.name
 		];
-
 		// set original values for these fields
 		updatedFields.forEach((field: string) => {
 			const targetName: any = isTargetNameAssociation(
@@ -304,12 +326,17 @@ class StorageClass implements StorageFacade {
 			);
 
 			// if field refers to a belongsTo relation, use the target field instead
-			if (targetName) {
-				updatedElement[targetName] = originalElement[targetName];
-			} else {
-				updatedElement[field] = originalElement[field];
+			const key = targetName || field;
+
+			// check field values by value. Ignore unchanged fields
+			if (!valuesEqual(source[key], originalElement[key])) {
+				updatedElement[key] = originalElement[key];
 			}
 		});
+
+		if (Object.keys(updatedElement).length === 0) {
+			return null;
+		}
 
 		const { id, _version, _lastChangedAt, _deleted } = originalElement;
 
@@ -357,10 +384,10 @@ class ExclusiveStorage implements StorageFacade {
 		model: T,
 		condition?: ModelPredicate<T>,
 		mutator?: Symbol,
-		patches?: Patch[]
+		patchesTuple?: [Patch[], PersistentModel]
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>(storage =>
-			storage.save<T>(model, condition, mutator, patches)
+			storage.save<T>(model, condition, mutator, patchesTuple)
 		);
 	}
 
