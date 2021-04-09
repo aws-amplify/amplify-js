@@ -4,7 +4,8 @@ module.exports = {
     testPathIgnorePatterns: [
         ...defaults.testPathIgnorePatterns,
         '__tests__/util.js',
-        '__tests__/constants.js'
+        '__tests__/constants.js',
+        '__tests__/__mocks__/*'
     ],
     collectCoverage: true,
     collectCoverageFrom: ['src/**/*.js'],

@@ -18,7 +18,7 @@
 let dataMemory = {};
 
 /** @class */
-class MemoryStorage {
+export class MemoryStorage {
 	/**
 	 * This is used to set a specific item in storage
 	 * @param {string} key - the key for the item
@@ -45,7 +45,7 @@ class MemoryStorage {
 	/**
 	 * This is used to remove an item from storage
 	 * @param {string} key - the key being set
-	 * @returns {string} value - value that was deleted
+	 * @returns {boolean} return true
 	 */
 	static removeItem(key) {
 		return delete dataMemory[key];
