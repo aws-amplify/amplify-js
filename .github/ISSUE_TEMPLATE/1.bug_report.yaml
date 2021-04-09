@@ -1,7 +1,7 @@
 name: Bug report
 description: Create a report to help us improve Amplify JS
 title: ''
-issue_body: true
+
 body:
   - type: markdown
     attributes:
@@ -49,7 +49,7 @@ body:
       label: |
         Before opening, please confirm:
       options:
-        - label: I have [searched for duplicate or closed issues](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+).
+        - label: I have [searched for duplicate or closed issues](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+) and [discussions](https://github.com/aws-amplify/amplify-js/discussions).
           required: true
         - label: I have read the guide for [submitting bug reports](https://github.com/aws-amplify/amplify-js/blob/main/CONTRIBUTING.md#bug-reports).
           required: true
@@ -144,20 +144,20 @@ body:
   - type: textarea
     attributes:
       label: Describe the bug
-      description: A clear and concise description of what the bug is. Markdown formatting supported.
+      description: A clear and concise description of what the bug is.
     validations:
       required: true
   - type: textarea
     attributes:
       label: Expected behavior
-      description: A clear and concise description of what you expected to happen. Markdown formatting supported.
+      description: A clear and concise description of what you expected to happen.
     validations:
       required: true
   - type: textarea
     attributes:
       label: Reproduction steps
       description: |
-        How do you trigger this bug? Please walk us through it step by step. Screenshots can be provided in the issue body below. Markdown formatting supported.
+        How do you trigger this bug? Please walk us through it step by step. Screenshots can be attached in textarea below.
       placeholder: |
         1. Install '...'
         2. Configure '...'
@@ -279,13 +279,10 @@ body:
     attributes:
       label: Mobile Browser Version
       description: For example, 22
-  - type: markdown
+  - type: textarea
     attributes:
-      value: |
-        ## Additional information and screenshots
-  - type: markdown
-    attributes:
-      value: >
+      label: Additional information and screenshots
+      description: |
         If you have any additional information (i.e. `package.json`), workarounds, etc. for us, use the field below.
         Please note, you can attach screenshots or screen recordings here, by
         dragging and dropping files in the field below.
