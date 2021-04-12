@@ -287,6 +287,7 @@ export default class CognitoUser {
 				const challengeParameters = data.ChallengeParameters;
 
 				this.username = challengeParameters.USER_ID_FOR_SRP;
+				this.userDataKey = `${this.keyPrefix}.${this.username}.userData`;
 				serverBValue = new BigInteger(challengeParameters.SRP_B, 16);
 				salt = new BigInteger(challengeParameters.SALT, 16);
 				this.getCachedDeviceKeyAndPassword();
@@ -1220,17 +1221,23 @@ export default class CognitoUser {
 	 * PRIVATE ONLY: This is an internal only method and should not
 	 * be directly called by the consumers.
 	 */
-	refreshSessionIfPossible() {
+	refreshSessionIfPossible(options = {}) {
 		// best effort, if not possible
 		return new Promise(resolve => {
 			const refresh = this.signInUserSession.getRefreshToken();
 			if (refresh && refresh.getToken()) {
-				this.refreshSession(refresh, resolve);
+				this.refreshSession(refresh, resolve, options.clientMetadata);
 			} else {
 				resolve();
 			}
 		});
 	}
+
+	/**
+	 * @typedef {Object} GetUserDataOptions
+	 * @property {boolean} bypassCache - force getting data from Cognito service
+	 * @property {Record<string, string>} clientMetadata - clientMetadata for getSession
+	 */
 
 	/**
 	 * This is used by an authenticated users to get the userData
@@ -1258,7 +1265,7 @@ export default class CognitoUser {
 		if (this.isFetchUserDataAndTokenRequired(params)) {
 			this.fetchUserData()
 				.then(data => {
-					return this.refreshSessionIfPossible().then(() => data);
+					return this.refreshSessionIfPossible(params).then(() => data);
 				})
 				.then(data => callback(null, data))
 				.catch(callback);
@@ -1357,13 +1364,19 @@ export default class CognitoUser {
 	}
 
 	/**
+	 * @typedef {Object} GetSessionOptions
+	 * @property {Record<string, string>} clientMetadata - clientMetadata for getSession
+	 */
+
+	/**
 	 * This is used to get a session, either from the session object
 	 * or from  the local storage, or by using a refresh token
 	 *
 	 * @param {nodeCallback<CognitoUserSession>} callback Called on success or error.
+	 * @param {GetSessionOptions} options
 	 * @returns {void}
 	 */
-	getSession(callback) {
+	getSession(callback, options = {}) {
 		if (this.username == null) {
 			return callback(
 				new Error('Username is null. Cannot retrieve a new session'),
@@ -1415,7 +1428,7 @@ export default class CognitoUser {
 				);
 			}
 
-			this.refreshSession(refreshToken, callback);
+			this.refreshSession(refreshToken, callback, options.clientMetadata);
 		} else {
 			callback(
 				new Error('Local storage is missing an ID Token, Please authenticate'),

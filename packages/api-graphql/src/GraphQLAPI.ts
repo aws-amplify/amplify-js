@@ -304,7 +304,7 @@ export class GraphQLAPIClass {
 			}
 			response = {
 				data: {},
-				errors: [new GraphQLError(err.message)],
+				errors: [new GraphQLError(err.message, null, null, null, null, err)],
 			};
 		}
 

@@ -17,7 +17,12 @@ import {
 	SchemaNamespace,
 	SubscriptionMessage,
 } from '../types';
-import { isModelConstructor, STORAGE, validatePredicate } from '../util';
+import {
+	isModelConstructor,
+	STORAGE,
+	validatePredicate,
+	getUpdateMutationInput,
+} from '../util';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
@@ -99,15 +104,24 @@ class StorageClass implements StorageFacade {
 		model: T,
 		condition?: ModelPredicate<T>,
 		mutator?: Symbol
-	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
+	): Promise<[T, OpType.INSERT | OpType.UPDATE, T?][]> {
 		await this.init();
 
 		const result = await this.adapter.save(model, condition);
 
 		result.forEach(r => {
-			const [element, opType] = r;
+			const [savedElement, opType, fromDB] = r;
 
-			const modelConstructor = (Object.getPrototypeOf(element) as Object)
+			let updatedElement;
+			if (opType === OpType.UPDATE && fromDB) {
+				// For update mutations we only want to send fields with changes
+				// and the required internal fields
+				updatedElement = getUpdateMutationInput(fromDB, savedElement);
+			}
+
+			const element = updatedElement || savedElement;
+
+			const modelConstructor = (Object.getPrototypeOf(savedElement) as Object)
 				.constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
@@ -300,9 +314,9 @@ class ExclusiveStorage implements StorageFacade {
 		model: T,
 		condition?: ModelPredicate<T>,
 		mutator?: Symbol
-	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
-		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>(storage =>
-			storage.save<T>(model, condition, mutator)
+	): Promise<[T, OpType.INSERT | OpType.UPDATE, T?][]> {
+		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE, T?][]>(
+			storage => storage.save<T>(model, condition, mutator)
 		);
 	}
 

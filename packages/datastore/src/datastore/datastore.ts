@@ -96,12 +96,10 @@ const isValidModelConstructor = <T extends PersistentModel>(
 const namespaceResolver: NamespaceResolver = modelConstructor =>
 	modelNamespaceMap.get(modelConstructor);
 
-let dataStoreClasses: TypeConstructorMap;
-
+// exporting syncClasses for testing outbox.test.ts
+export let syncClasses: TypeConstructorMap;
 let userClasses: TypeConstructorMap;
-
-let syncClasses: TypeConstructorMap;
-
+let dataStoreClasses: TypeConstructorMap;
 let storageClasses: TypeConstructorMap;
 
 const initSchema = (userSchema: Schema) => {
@@ -382,6 +380,7 @@ const createModelClass = <T extends PersistentModel>(
 				logger.error(msg, { source });
 				throw new Error(msg);
 			}
+
 			return produce(source, draft => {
 				fn(<MutableModel<T>>draft);
 				draft.id = source.id;
@@ -506,7 +505,10 @@ async function checkSchemaVersion(
 			{ page: 0, limit: 1 }
 		);
 
-		if (schemaVersionSetting !== undefined) {
+		if (
+			schemaVersionSetting !== undefined &&
+			schemaVersionSetting.value !== undefined
+		) {
 			const storedValue = JSON.parse(schemaVersionSetting.value);
 
 			if (storedValue !== version) {
@@ -738,7 +740,10 @@ class DataStore {
 			predicate: ModelPredicateCreator.getPredicates(predicate, false),
 			pagination: {
 				...pagination,
-				sort: ModelSortPredicateCreator.getPredicates(pagination.sort, false),
+				sort: ModelSortPredicateCreator.getPredicates(
+					pagination && pagination.sort,
+					false
+				),
 			},
 		});
 
@@ -1095,9 +1100,13 @@ class DataStore {
 	private processPagination<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		paginationProducer: ProducerPaginationInput<T>
-	): PaginationInput<T> {
+	): PaginationInput<T> | undefined {
 		let sortPredicate: SortPredicate<T>;
 		const { limit, page, sort } = paginationProducer || {};
+
+		if (limit === undefined && page === undefined && sort === undefined) {
+			return undefined;
+		}
 
 		if (page !== undefined && limit === undefined) {
 			throw new Error('Limit is required when requesting a page');

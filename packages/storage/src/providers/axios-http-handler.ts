@@ -16,14 +16,14 @@ import { HttpHandler, HttpRequest, HttpResponse } from '@aws-sdk/protocol-http';
 import { buildQueryString } from '@aws-sdk/querystring-builder';
 import axios, { AxiosRequestConfig, Method } from 'axios';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { BrowserHttpOptions } from '@aws-sdk/fetch-http-handler';
+import { FetchHttpHandlerOptions } from '@aws-sdk/fetch-http-handler';
 
 const logger = new Logger('axios-http-handler');
 export const SEND_PROGRESS_EVENT = 'sendProgress';
 
 export class AxiosHttpHandler implements HttpHandler {
 	constructor(
-		private readonly httpOptions: BrowserHttpOptions = {},
+		private readonly httpOptions: FetchHttpHandlerOptions = {},
 		private readonly emitter?: any
 	) {}
 

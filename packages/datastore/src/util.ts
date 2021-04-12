@@ -434,16 +434,120 @@ export function sortCompareFunction<T extends PersistentModel>(
 	};
 }
 
+export function getUpdateMutationInput<T extends PersistentModel>(
+	original: T,
+	updated: T
+): { [key: string]: any } {
+	const mutationInput: { [key: string]: any } = {
+		id: original.id,
+		_version: original._version,
+		_lastChangedAt: original._lastChangedAt,
+		_deleted: original._deleted,
+	};
+
+	for (const field in original) {
+		let originalValue: any = original[field];
+		let updatedValue: any = updated[field];
+
+		if (typeof originalValue === 'object') {
+			originalValue = JSON.stringify(originalValue);
+			updatedValue = JSON.stringify(updatedValue);
+		}
+
+		if (originalValue !== updatedValue) {
+			mutationInput[field] = updated[field];
+		}
+	}
+
+	return mutationInput;
+}
+
+// deep compare any 2 objects (including arrays, Sets, and Maps)
+// returns true if equal
+// if nullish is true, treat undefined and null values as equal
+// to normalize for GQL response values for undefined fields
+export function objectsEqual(
+	objA: object,
+	objB: object,
+	nullish: boolean = false
+): boolean {
+	let a = objA;
+	let b = objB;
+
+	if (typeof a !== 'object' || typeof b !== 'object') {
+		return false;
+	}
+
+	if (a === null || b === null) {
+		return false;
+	}
+
+	if (
+		(Array.isArray(a) && !Array.isArray(b)) ||
+		(Array.isArray(b) && !Array.isArray(a))
+	) {
+		return false;
+	}
+
+	if (a instanceof Set && b instanceof Set) {
+		a = [...a];
+		b = [...b];
+	}
+
+	if (a instanceof Map && b instanceof Map) {
+		a = Object.fromEntries(a);
+		b = Object.fromEntries(b);
+	}
+
+	const aKeys = Object.keys(a);
+	const bKeys = Object.keys(b);
+
+	if (!nullish && aKeys.length !== bKeys.length) {
+		return false;
+	}
+
+	for (const key of aKeys) {
+		const aVal = a[key];
+		const bVal = b[key];
+
+		if (aVal && typeof aVal === 'object') {
+			if (!objectsEqual(aVal, bVal)) {
+				return false;
+			}
+		} else if (aVal !== bVal) {
+			// nullish comparison should only apply to objects and Maps
+			if (nullish && !Array.isArray(a) && !(a instanceof Set)) {
+				if (
+					// returns false if it's NOT a nullish match
+					!(
+						(aVal === undefined || aVal === null) &&
+						(bVal === undefined || bVal === null)
+					)
+				) {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 export const isAWSDate = (val: string): boolean => {
 	return !!/^\d{4}-\d{2}-\d{2}(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(val);
 };
 
 export const isAWSTime = (val: string): boolean => {
-	return !!/^\d{2}:\d{2}(:\d{2}(.\d{3})?)?(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(val);
+	return !!/^\d{2}:\d{2}(:\d{2}(.\d+)?)?(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(
+		val
+	);
 };
 
 export const isAWSDateTime = (val: string): boolean => {
-	return !!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(.\d{3})?)?(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(val);
+	return !!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(.\d+)?)?(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(
+		val
+	);
 };
 
 export const isAWSTimestamp = (val: number): boolean => {
@@ -451,7 +555,9 @@ export const isAWSTimestamp = (val: number): boolean => {
 };
 
 export const isAWSEmail = (val: string): boolean => {
-	return !!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.exec(val);
+	return !!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.exec(
+		val
+	);
 };
 
 export const isAWSJSON = (val: string): boolean => {
@@ -476,5 +582,7 @@ export const isAWSPhone = (val: string): boolean => {
 };
 
 export const isAWSIPAddress = (val: string): boolean => {
-	return !!/((^((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))$)|(^((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?$))$/.exec(val);
+	return !!/((^((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))$)|(^((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?$))$/.exec(
+		val
+	);
 };

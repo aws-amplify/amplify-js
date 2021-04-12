@@ -1,4 +1,5 @@
 import {
+	objectsEqual,
 	isAWSDate,
 	isAWSDateTime,
 	isAWSEmail,
@@ -8,9 +9,85 @@ import {
 	isAWSURL,
 	isAWSPhone,
 	isAWSIPAddress,
-} from "../src/util";
+} from '../src/util';
 
 describe('datastore util', () => {
+	test('objectsEqual', () => {
+		expect(objectsEqual({}, {})).toEqual(true);
+		expect(objectsEqual([], [])).toEqual(true);
+		expect(objectsEqual([], {})).toEqual(false);
+		expect(objectsEqual([1, 2, 3], [1, 2, 3])).toEqual(true);
+		expect(objectsEqual([1, 2, 3], [1, 2, 3, 4])).toEqual(false);
+		expect(objectsEqual({ a: 1 }, { a: 1 })).toEqual(true);
+		expect(objectsEqual({ a: 1 }, { a: 2 })).toEqual(false);
+		expect(
+			objectsEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 3 }] })
+		).toEqual(true);
+		expect(
+			objectsEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 4 }] })
+		).toEqual(false);
+		expect(objectsEqual(new Set([1, 2, 3]), new Set([1, 2, 3]))).toEqual(true);
+		expect(objectsEqual(new Set([1, 2, 3]), new Set([1, 2, 3, 4]))).toEqual(
+			false
+		);
+
+		const map1 = new Map();
+		map1.set('a', 1);
+
+		const map2 = new Map();
+		map2.set('a', 1);
+
+		expect(objectsEqual(map1, map2)).toEqual(true);
+		map2.set('b', 2);
+		expect(objectsEqual(map1, map2)).toEqual(false);
+
+		// nullish - treat null and undefined as equal in Objects and Maps
+		expect(objectsEqual({ a: 1, b: null }, { a: 1 }, true)).toEqual(true);
+		expect(
+			objectsEqual({ a: 1, b: null }, { a: 1, b: undefined }, true)
+		).toEqual(true);
+		expect(objectsEqual({ a: 1, b: false }, { a: 1 }, true)).toEqual(false);
+
+		const map3 = new Map();
+		map3.set('a', null);
+		const map4 = new Map();
+
+		expect(objectsEqual(map3, map4, true)).toEqual(true);
+
+		const map5 = new Map();
+		map5.set('a', false);
+		const map6 = new Map();
+
+		expect(objectsEqual(map5, map6, true)).toEqual(false);
+
+		// should not attempt nullish comparison for arrays/sets
+		expect(objectsEqual([null], [], true)).toEqual(false);
+		expect(objectsEqual([null], [undefined], true)).toEqual(false);
+		expect(objectsEqual(new Set([null]), new Set([]), true)).toEqual(false);
+		expect(objectsEqual(new Set([null]), new Set([undefined]), true)).toEqual(
+			false
+		);
+
+		// should return false for non-object types
+		expect(objectsEqual(null, undefined)).toEqual(false);
+		expect(objectsEqual(null, undefined, true)).toEqual(false);
+
+		expect(objectsEqual(undefined, undefined)).toEqual(false);
+		expect(objectsEqual(undefined, undefined, true)).toEqual(false);
+
+		expect(objectsEqual(null, null)).toEqual(false);
+		expect(objectsEqual(null, null, true)).toEqual(false);
+
+		expect(objectsEqual('string' as any, 'string' as any)).toEqual(false);
+		expect(objectsEqual('string' as any, 'string' as any, true)).toEqual(false);
+
+		expect(objectsEqual(123 as any, 123 as any)).toEqual(false);
+		expect(objectsEqual(123 as any, 123 as any, true)).toEqual(false);
+
+		expect(objectsEqual(true as any, true as any)).toEqual(false);
+		expect(objectsEqual(true as any, true as any, true)).toEqual(false);
+	});
+
 	test('isAWSDate', () => {
 		const valid = [
 			'2020-01-01',
@@ -43,6 +120,10 @@ describe('datastore util', () => {
 			'12:30',
 			'12:30Z',
 			'12:30:24Z',
+			'12:30:24.1Z',
+			'12:30:24.12Z',
+			'12:30:24.123Z',
+			'12:30:24.1234Z',
 			'12:30:24-07:00',
 			'12:30:24.500+05:30',
 			'12:30:24.500+05:30:00',
@@ -72,6 +153,11 @@ describe('datastore util', () => {
 			'2021-01-11T12:30',
 			'2021-01-11T12:30Z',
 			'2021-01-11T12:30:24Z',
+			'2021-01-11T12:30:24.5Z',
+			'2021-01-11T12:30:24.50Z',
+			'2021-01-11T12:30:24.500Z',
+			'2021-01-11T12:30:24.5000Z',
+			'2021-02-09T06:19:04.49Z',
 			'2021-01-11T12:30:24-07:00',
 			'2021-01-11T12:30:24.500+05:30',
 			'2021-01-11T12:30:24.500+05:30:00',
@@ -101,18 +187,8 @@ describe('datastore util', () => {
 	});
 
 	test('isAWSTimestamp', () => {
-		const valid = [
-			0,
-			123,
-			123456,
-			123456789,
-		];
-		const invalid = [
-			-1,
-			-123,
-			-123456,
-			-1234567
-		];
+		const valid = [0, 123, 123456, 123456789];
+		const invalid = [-1, -123, -123456, -1234567];
 		valid.forEach(test => {
 			expect(isAWSTimestamp(test)).toBe(true);
 		});
@@ -122,11 +198,7 @@ describe('datastore util', () => {
 	});
 
 	test('isAWSEmail', () => {
-		const valid = [
-			'a@b',
-			'a@b.c',
-			'jeff@amazon.com',
-		];
+		const valid = ['a@b', 'a@b.c', 'john@doe.com'];
 		const invalid = [
 			'',
 			'@',
@@ -177,17 +249,8 @@ describe('datastore util', () => {
 	});
 
 	test('isAWSURL', () => {
-		const valid = [
-			'http://localhost/',
-			'schema://anything',
-			'smb://a/b/c?d=e',
-		];
-		const invalid = [
-			'',
-			'//',
-			'//example',
-			'example',
-		];
+		const valid = ['http://localhost/', 'schema://anything', 'smb://a/b/c?d=e'];
+		const invalid = ['', '//', '//example', 'example'];
 		valid.forEach(test => {
 			expect(isAWSURL(test)).toBe(true);
 		});
@@ -204,13 +267,7 @@ describe('datastore util', () => {
 			'123-456-7890',
 			'+44123456789',
 		];
-		const invalid = [
-			'',
-			'+',
-			'+-',
-			'a',
-			'bad-number',
-		];
+		const invalid = ['', '+', '+-', 'a', 'bad-number'];
 		valid.forEach(test => {
 			expect(isAWSPhone(test)).toBe(true);
 		});

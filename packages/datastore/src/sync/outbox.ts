@@ -1,14 +1,19 @@
 import { MutationEvent } from './index';
 import { ModelPredicateCreator } from '../predicates';
-import { ExclusiveStorage as Storage, StorageFacade } from '../storage/storage';
+import {
+	ExclusiveStorage as Storage,
+	StorageFacade,
+	Storage as StorageClass,
+} from '../storage/storage';
 import {
 	InternalSchema,
-	NamespaceResolver,
+	TypeConstructorMap,
 	PersistentModel,
 	PersistentModelConstructor,
 	QueryOne,
+	SchemaModel,
 } from '../types';
-import { SYNC } from '../util';
+import { SYNC, objectsEqual } from '../util';
 import { TransformerMutationType } from './utils';
 
 // TODO: Persist deleted ids
@@ -18,9 +23,12 @@ class MutationEventOutbox {
 
 	constructor(
 		private readonly schema: InternalSchema,
-		private readonly namespaceResolver: NamespaceResolver,
+		private readonly userModelClasses: TypeConstructorMap,
 		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
-		private readonly ownSymbol: Symbol
+		private readonly ownSymbol: Symbol,
+		private readonly getModelDefinition: (
+			modelConstructor: PersistentModelConstructor<any>
+		) => SchemaModel
 	) {}
 
 	public async enqueue(
@@ -51,10 +59,9 @@ class MutationEventOutbox {
 
 			if (first.operation === TransformerMutationType.CREATE) {
 				if (incomingMutationType === TransformerMutationType.DELETE) {
-					// delete all for model
 					await s.delete(this.MutationEvent, predicate);
 				} else {
-					// first gets updated with incoming's data, condition intentionally skiped
+					// first gets updated with incoming's data, condition intentionally skipped
 					await s.save(
 						this.MutationEvent.copyOf(first, draft => {
 							draft.data = mutationEvent.data;
@@ -79,11 +86,18 @@ class MutationEventOutbox {
 		});
 	}
 
-	public async dequeue(storage: StorageFacade): Promise<MutationEvent> {
+	public async dequeue(
+		storage: StorageClass,
+		record?: PersistentModel,
+		recordOp?: TransformerMutationType
+	): Promise<MutationEvent> {
 		const head = await this.peek(storage);
 
-		await storage.delete(head);
+		if (record) {
+			await this.syncOutboxVersionsOnDequeue(storage, record, head, recordOp);
+		}
 
+		await storage.delete(head);
 		this.inProgressMutationEventId = undefined;
 
 		return head;
@@ -128,6 +142,112 @@ class MutationEventOutbox {
 		mutationEvents.forEach(({ modelId }) => result.add(modelId));
 
 		return result;
+	}
+
+	// applies _version from the AppSync mutation response to other items
+	// in the mutation queue with the same id
+	// see https://github.com/aws-amplify/amplify-js/pull/7354 for more details
+	private async syncOutboxVersionsOnDequeue(
+		storage: StorageClass,
+		record: PersistentModel,
+		head: PersistentModel,
+		recordOp: string
+	): Promise<void> {
+		if (head.operation !== recordOp) {
+			return;
+		}
+
+		const { _version, _lastChangedAt, _deleted, ...incomingData } = record;
+
+		let data;
+
+		if (recordOp !== TransformerMutationType.UPDATE) {
+			data = JSON.parse(head.data);
+		} else {
+			data = await this.getUpdateRecord(storage, head);
+		}
+
+		if (!data) {
+			return;
+		}
+
+		const {
+			_version: __version,
+			_lastChangedAt: __lastChangedAt,
+			_deleted: __deleted,
+			...outgoingData
+		} = data;
+
+		// Don't sync the version when the data in the response does not match the data
+		// in the request, i.e., when there's a handled conflict
+		if (!objectsEqual(incomingData, outgoingData, true)) {
+			return;
+		}
+
+		const mutationEventModelDefinition = this.schema.namespaces[SYNC].models[
+			'MutationEvent'
+		];
+
+		const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
+			mutationEventModelDefinition,
+			c => c.modelId('eq', record.id).id('ne', this.inProgressMutationEventId)
+		);
+
+		const outdatedMutations = await storage.query(
+			this.MutationEvent,
+			predicate
+		);
+
+		if (!outdatedMutations.length) {
+			return;
+		}
+
+		const reconciledMutations = outdatedMutations.map(m => {
+			const oldData = JSON.parse(m.data);
+
+			const newData = { ...oldData, _version, _lastChangedAt };
+
+			return this.MutationEvent.copyOf(m, draft => {
+				draft.data = JSON.stringify(newData);
+			});
+		});
+
+		await storage.delete(this.MutationEvent, predicate);
+
+		await Promise.all(
+			reconciledMutations.map(
+				async m => await storage.save(m, undefined, this.ownSymbol)
+			)
+		);
+	}
+
+	private async getUpdateRecord(
+		storage: StorageClass,
+		head: PersistentModel
+	): Promise<PersistentModel> {
+		const modelConstructor = <PersistentModelConstructor<PersistentModel>>(
+			this.userModelClasses[head.model]
+		);
+
+		const modelDefinition = this.getModelDefinition(modelConstructor);
+
+		if (!(modelConstructor && head && head.modelId)) {
+			return;
+		}
+
+		const results = <any>await storage.query(
+			modelConstructor,
+			ModelPredicateCreator.createFromExisting(modelDefinition, c =>
+				c.id('eq', head.modelId)
+			)
+		);
+
+		const fromDb = results[0];
+
+		// merge data from the mutationEvent with data from the query
+		// so that we can perform a comparison to determine whether
+		// the request record matches the response
+		return { ...fromDb, ...JSON.parse(head.data) };
 	}
 }
 

@@ -3,6 +3,122 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.14...@aws-amplify/datastore@2.9.15) (2021-03-25)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix consecutive updates ([#7354](https://github.com/aws-amplify/amplify-js/issues/7354)) ([efd2e41](https://github.com/aws-amplify/amplify-js/commit/efd2e41d13fa6417ecddf153d7d0461060e45621))
+* **@aws-amplify/datastore:** keep syncing when subs disabled ([#7987](https://github.com/aws-amplify/amplify-js/issues/7987)) ([0e8968f](https://github.com/aws-amplify/amplify-js/commit/0e8968f9125b1b5f76389abe3d77986c1f65e32f))
+* **@aws-amplify/datastore:** update mutation input - use diff with DB instead of patches ([#7935](https://github.com/aws-amplify/amplify-js/issues/7935)) ([638c94d](https://github.com/aws-amplify/amplify-js/commit/638c94de30df179ef5f0d03ac8c97cecb683bb53))
+
+
+
+
+
+## [2.9.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.13...@aws-amplify/datastore@2.9.14) (2021-03-18)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.12...@aws-amplify/datastore@2.9.13) (2021-03-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** handle sync query unauthorized ([#7926](https://github.com/aws-amplify/amplify-js/issues/7926)) ([4b37112](https://github.com/aws-amplify/amplify-js/commit/4b371125fa60362b2e4a648e0cb18b8f8a853956))
+
+
+
+
+
+## [2.9.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.11...@aws-amplify/datastore@2.9.12) (2021-03-08)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.10...@aws-amplify/datastore@2.9.11) (2021-03-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** return partial data when available ([#7775](https://github.com/aws-amplify/amplify-js/issues/7775)) ([715aa7e](https://github.com/aws-amplify/amplify-js/commit/715aa7e1d8ea1797784d37ab706c12b133fca4f0))
+
+
+
+
+
+## [2.9.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.9...@aws-amplify/datastore@2.9.10) (2021-02-25)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** improve IDB query performance ([#7746](https://github.com/aws-amplify/amplify-js/issues/7746)) ([5b87ad4](https://github.com/aws-amplify/amplify-js/commit/5b87ad485be5521a3ca91aa7bb00bba178e6c8b9))
+
+
+
+
+
+## [2.9.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.8...@aws-amplify/datastore@2.9.9) (2021-02-18)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.7...@aws-amplify/datastore@2.9.8) (2021-02-15)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.6...@aws-amplify/datastore@2.9.7) (2021-02-09)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** align AWSTime validation with AppSync ([#7717](https://github.com/aws-amplify/amplify-js/issues/7717)) ([feae503](https://github.com/aws-amplify/amplify-js/commit/feae503ba2ad22738e4a16639441f4dec6077f7a))
+
+
+
+
+
+## [2.9.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.5...@aws-amplify/datastore@2.9.6) (2021-02-03)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.4...@aws-amplify/datastore@2.9.5) (2021-02-01)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.3...@aws-amplify/datastore@2.9.4) (2021-01-29)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** only include changed fields in update mutation input ([#7466](https://github.com/aws-amplify/amplify-js/issues/7466)) ([7b5b23f](https://github.com/aws-amplify/amplify-js/commit/7b5b23f9fa6f1c4934c631ab6bfc363b8d3eeac2))
+
+
+
+
+
 ## [2.9.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.2...@aws-amplify/datastore@2.9.3) (2021-01-07)
 
 **Note:** Version bump only for package @aws-amplify/datastore

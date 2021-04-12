@@ -31,7 +31,6 @@ import {
 } from '@aws-sdk/client-s3';
 import { AxiosHttpHandler, SEND_PROGRESS_EVENT } from './axios-http-handler';
 import * as events from 'events';
-import { parseUrl } from '@aws-sdk/url-parser-node';
 import { streamCollector } from '@aws-sdk/fetch-http-handler';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
@@ -140,6 +139,27 @@ export class AWSS3ProviderManagedUpload {
 			this.params
 		);
 		const s3 = await this._createNewS3Client(this.opts);
+
+		// @aws-sdk/client-s3 seems to be ignoring the `ContentType` parameter, so we
+		// are explicitly adding it via middleware.
+		// https://github.com/aws/aws-sdk-js-v3/issues/2000
+		s3.middlewareStack.add(
+			next => (args: any) => {
+				if (
+					this.params.ContentType &&
+					args &&
+					args.request &&
+					args.request.headers
+				) {
+					args.request.headers['Content-Type'] = this.params.ContentType;
+				}
+				return next(args);
+			},
+			{
+				step: 'build',
+			}
+		);
+
 		const response = await s3.send(createMultiPartUploadCommand);
 		logger.debug(response.UploadId);
 		return response.UploadId;
@@ -350,7 +370,6 @@ export class AWSS3ProviderManagedUpload {
 			...localTestingConfig,
 			requestHandler: new AxiosHttpHandler({}, emitter),
 			customUserAgent: getAmplifyUserAgent(),
-			urlParser: parseUrl,
 		});
 		client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		return client;

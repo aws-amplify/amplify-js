@@ -49,6 +49,8 @@ export class AmplifyAuthenticator {
   @Prop() usernameAlias: UsernameAliasStrings;
   /** Callback for Authenticator state machine changes */
   @Prop() handleAuthStateChange: AuthStateHandler = () => {};
+  /** Hide amplify-toast for auth errors */
+  @Prop() hideToast: boolean = false;
 
   @State() authState: AuthState = AuthState.Loading;
   @State() authData: CognitoUserInterface;
@@ -83,7 +85,7 @@ export class AmplifyAuthenticator {
       this.onAuthStateChange(authState, authData as CognitoUserInterface);
       this.toastMessage = '';
     });
-    Hub.listen(UI_AUTH_CHANNEL, this.handleToastEvent);
+    if (!this.hideToast) Hub.listen(UI_AUTH_CHANNEL, this.handleToastEvent);
     Hub.listen(AUTH_CHANNEL, this.handleExternalAuthEvent);
 
     appendToCognitoUserAgent('amplify-authenticator');
@@ -180,14 +182,14 @@ export class AmplifyAuthenticator {
 
   componentWillUnload() {
     Hub.remove(AUTH_CHANNEL, this.handleExternalAuthEvent);
-    Hub.remove(UI_AUTH_CHANNEL, this.handleToastEvent);
+    if (!this.hideToast) Hub.remove(UI_AUTH_CHANNEL, this.handleToastEvent);
     return onAuthUIStateChange;
   }
 
   render() {
     return (
       <Host>
-        {this.toastMessage ? (
+        {!this.hideToast && this.toastMessage && (
           <amplify-toast
             message={this.toastMessage}
             handleClose={() => {
@@ -195,7 +197,7 @@ export class AmplifyAuthenticator {
             }}
             data-test="authenticator-error"
           />
-        ) : null}
+        )}
         {this.authState === AuthState.SignedIn ? (
           [<slot name="greetings"></slot>, <slot></slot>]
         ) : (

@@ -13,7 +13,7 @@ import { Translations } from '../../common/Translations';
 
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, requiredAttributesMap } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, getRequiredAttributesMap } from '../../common/helpers';
 import { checkContact } from '../../common/auth-helpers';
 
 const logger = new Logger('amplify-require-new-password');
@@ -77,6 +77,7 @@ export class AmplifyRequireNewPassword {
     }
     if (this.currentUser && this.currentUser.challengeParam && this.currentUser.challengeParam.requiredAttributes) {
       const userRequiredAttributes = this.currentUser.challengeParam.requiredAttributes;
+      const requiredAttributesMap = getRequiredAttributesMap();
       userRequiredAttributes.forEach((attribute: string) => {
         const formField = {
           type: attribute,

@@ -3,6 +3,102 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.26...@aws-amplify/pubsub@3.2.27) (2021-03-25)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.26](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.25...@aws-amplify/pubsub@3.2.26) (2021-03-18)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.24...@aws-amplify/pubsub@3.2.25) (2021-03-12)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.23...@aws-amplify/pubsub@3.2.24) (2021-03-08)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.22...@aws-amplify/pubsub@3.2.23) (2021-03-03)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.21...@aws-amplify/pubsub@3.2.22) (2021-02-25)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.20...@aws-amplify/pubsub@3.2.21) (2021-02-18)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.19...@aws-amplify/pubsub@3.2.20) (2021-02-15)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.18...@aws-amplify/pubsub@3.2.19) (2021-02-09)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.17...@aws-amplify/pubsub@3.2.18) (2021-02-03)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.16...@aws-amplify/pubsub@3.2.17) (2021-02-01)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.15...@aws-amplify/pubsub@3.2.16) (2021-01-29)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
 ## [3.2.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.14...@aws-amplify/pubsub@3.2.15) (2021-01-07)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
