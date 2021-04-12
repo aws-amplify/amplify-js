@@ -17,7 +17,12 @@ import {
 	SchemaNamespace,
 	SubscriptionMessage,
 } from '../types';
-import { isModelConstructor, STORAGE, validatePredicate } from '../util';
+import {
+	isModelConstructor,
+	STORAGE,
+	validatePredicate,
+	getUpdateMutationInput,
+} from '../util';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
@@ -48,7 +53,8 @@ class StorageClass implements StorageFacade {
 			modelName: string
 		) => PersistentModelConstructor<any>,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
-		private readonly adapter?: Adapter
+		private readonly adapter?: Adapter,
+		private readonly sessionId?: string
 	) {
 		this.adapter = getDefaultAdapter();
 		this.pushStream = new PushStream();
@@ -86,7 +92,8 @@ class StorageClass implements StorageFacade {
 				this.schema,
 				this.namespaceResolver,
 				this.modelInstanceCreator,
-				this.getModelConstructorByModelName
+				this.getModelConstructorByModelName,
+				this.sessionId
 			)
 			.then(resolve, reject);
 
@@ -97,15 +104,24 @@ class StorageClass implements StorageFacade {
 		model: T,
 		condition?: ModelPredicate<T>,
 		mutator?: Symbol
-	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
+	): Promise<[T, OpType.INSERT | OpType.UPDATE, T?][]> {
 		await this.init();
 
 		const result = await this.adapter.save(model, condition);
 
 		result.forEach(r => {
-			const [element, opType] = r;
+			const [savedElement, opType, fromDB] = r;
 
-			const modelConstructor = (Object.getPrototypeOf(element) as Object)
+			let updatedElement;
+			if (opType === OpType.UPDATE && fromDB) {
+				// For update mutations we only want to send fields with changes
+				// and the required internal fields
+				updatedElement = getUpdateMutationInput(fromDB, savedElement);
+			}
+
+			const element = updatedElement || savedElement;
+
+			const modelConstructor = (Object.getPrototypeOf(savedElement) as Object)
 				.constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
@@ -181,7 +197,7 @@ class StorageClass implements StorageFacade {
 	async query<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		predicate?: ModelPredicate<T>,
-		pagination?: PaginationInput
+		pagination?: PaginationInput<T>
 	): Promise<T[]> {
 		await this.init();
 
@@ -277,14 +293,16 @@ class ExclusiveStorage implements StorageFacade {
 			modelName: string
 		) => PersistentModelConstructor<any>,
 		modelInstanceCreator: ModelInstanceCreator,
-		adapter?: Adapter
+		adapter?: Adapter,
+		sessionId?: string
 	) {
 		this.storage = new StorageClass(
 			schema,
 			namespaceResolver,
 			getModelConstructorByModelName,
 			modelInstanceCreator,
-			adapter
+			adapter,
+			sessionId
 		);
 	}
 
@@ -296,9 +314,9 @@ class ExclusiveStorage implements StorageFacade {
 		model: T,
 		condition?: ModelPredicate<T>,
 		mutator?: Symbol
-	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
-		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>(storage =>
-			storage.save<T>(model, condition, mutator)
+	): Promise<[T, OpType.INSERT | OpType.UPDATE, T?][]> {
+		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE, T?][]>(
+			storage => storage.save<T>(model, condition, mutator)
 		);
 	}
 
@@ -333,7 +351,7 @@ class ExclusiveStorage implements StorageFacade {
 	async query<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		predicate?: ModelPredicate<T>,
-		pagination?: PaginationInput
+		pagination?: PaginationInput<T>
 	): Promise<T[]> {
 		return this.runExclusive<T[]>(storage =>
 			storage.query<T>(modelConstructor, predicate, pagination)

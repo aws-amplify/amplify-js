@@ -19,6 +19,8 @@ describe('aws-amplify', () => {
 			  "graphqlOperation",
 			  "DataStore",
 			  "Predicates",
+			  "SortDirection",
+			  "syncExpression",
 			  "PubSub",
 			  "Cache",
 			  "Interactions",
@@ -88,6 +90,7 @@ describe('aws-amplify', () => {
 			  "Signer",
 			  "I18n",
 			  "ServiceWorker",
+			  "withSSRContext",
 			  "default",
 			]
 		`);

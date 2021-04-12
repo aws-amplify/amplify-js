@@ -14,7 +14,13 @@ export const config: Config = {
   plugins: [
     externals({
       // deps to include in externals (default: [])
-      include: ['@aws-amplify/auth', '@aws-amplify/core', '@aws-amplify/storage', '@aws-amplify/xr'],
+      include: [
+        '@aws-amplify/auth',
+        '@aws-amplify/core',
+        '@aws-amplify/storage',
+        '@aws-amplify/xr',
+        '@aws-amplify/interactions',
+      ],
     }),
     nodePolyfills(),
     sass({
@@ -53,6 +59,7 @@ export const config: Config = {
       proxiesFile: '../amplify-ui-react/src/components.ts',
     }),
     { type: 'dist' },
+    { type: 'dist-custom-elements-bundle', dir: 'dist/components' },
     { type: 'docs-readme' },
     { type: 'docs-json', file: 'dist/docs.json' },
     {

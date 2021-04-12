@@ -33,7 +33,7 @@ depending on your project setup and experience with modern JavaScript build tool
 ```javascript
 // Using ES6 modules
 import 'cross-fetch/polyfill';
-import { AmazonCognitoIdentity } from 'amazon-cognito-identity-js';
+import AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
 // Or, using CommonJS modules
 require('cross-fetch/polyfill');
@@ -843,7 +843,7 @@ cognitoUser.authenticateUser(authenticationDetails, {
 **Use case 28.** Enabling and setting SMS MFA as the preferred MFA method for the user.
 
 ```js
-smsMfaSettings = {
+var smsMfaSettings = {
 	PreferredMfa: true,
 	Enabled: true,
 };
@@ -858,7 +858,7 @@ cognitoUser.setUserMfaPreference(smsMfaSettings, null, function(err, result) {
 **Use case 29.** Enabling and setting TOTP MFA as the preferred MFA method for the user.
 
 ```js
-totpMfaSettings = {
+var totpMfaSettings = {
 	PreferredMfa: true,
 	Enabled: true,
 };
@@ -918,7 +918,7 @@ cognitoUser.getUserData(
 **Use case 32.** Handling expiration of the Id Token.
 
 ```js
-refresh_token = session.getRefreshToken(); // receive session from calling cognitoUser.getSession()
+var refresh_token = session.getRefreshToken(); // receive session from calling cognitoUser.getSession()
 if (AWS.config.credentials.needsRefresh()) {
 	cognitoUser.refreshSession(refresh_token, (err, session) => {
 		if (err) {

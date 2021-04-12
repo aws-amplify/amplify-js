@@ -3,6 +3,278 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.26...@aws-amplify/pubsub@3.2.27) (2021-03-25)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.26](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.25...@aws-amplify/pubsub@3.2.26) (2021-03-18)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.24...@aws-amplify/pubsub@3.2.25) (2021-03-12)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.23...@aws-amplify/pubsub@3.2.24) (2021-03-08)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.22...@aws-amplify/pubsub@3.2.23) (2021-03-03)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.21...@aws-amplify/pubsub@3.2.22) (2021-02-25)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.20...@aws-amplify/pubsub@3.2.21) (2021-02-18)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.19...@aws-amplify/pubsub@3.2.20) (2021-02-15)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.18...@aws-amplify/pubsub@3.2.19) (2021-02-09)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.17...@aws-amplify/pubsub@3.2.18) (2021-02-03)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.16...@aws-amplify/pubsub@3.2.17) (2021-02-01)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.15...@aws-amplify/pubsub@3.2.16) (2021-01-29)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.14...@aws-amplify/pubsub@3.2.15) (2021-01-07)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.13...@aws-amplify/pubsub@3.2.14) (2020-12-17)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.12...@aws-amplify/pubsub@3.2.13) (2020-12-10)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.11...@aws-amplify/pubsub@3.2.12) (2020-11-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pubsub:** AppSyncRealTimeProvider - fix unhandled promise rejection ([#7225](https://github.com/aws-amplify/amplify-js/issues/7225)) ([ba8a73f](https://github.com/aws-amplify/amplify-js/commit/ba8a73f41db6411b91b208fea3202408c55f029b))
+
+
+
+
+
+## [3.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.10...@aws-amplify/pubsub@3.2.11) (2020-11-23)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pubsub:** Subscriptions are prevented in Node for SSR ([#7236](https://github.com/aws-amplify/amplify-js/issues/7236)) ([c7b82f2](https://github.com/aws-amplify/amplify-js/commit/c7b82f2a8914cad917f448eca2d7dc3360a3f50c))
+
+
+
+
+
+## [3.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.9...@aws-amplify/pubsub@3.2.10) (2020-11-20)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.8...@aws-amplify/pubsub@3.2.9) (2020-11-13)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.7...@aws-amplify/pubsub@3.2.8) (2020-11-03)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.6...@aws-amplify/pubsub@3.2.7) (2020-10-31)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** update random implementation ([#7090](https://github.com/aws-amplify/amplify-js/issues/7090)) ([7048453](https://github.com/aws-amplify/amplify-js/commit/70484532da8a9953384b00b223b2b3ba0c0e845e))
+
+
+
+
+
+## [3.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.5...@aws-amplify/pubsub@3.2.6) (2020-10-29)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.4...@aws-amplify/pubsub@3.2.5) (2020-10-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/pubsub:** Block subscriptions for SSR, not Node ([#6937](https://github.com/aws-amplify/amplify-js/issues/6937)) ([e1d122b](https://github.com/aws-amplify/amplify-js/commit/e1d122bec0fb67eab0a696ee6e0ffa976631e4f0))
+
+
+
+
+
+## [3.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.3...@aws-amplify/pubsub@3.2.4) (2020-10-01)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** add token to currentAuthenticatedUser for OIDC  ([#6858](https://github.com/aws-amplify/amplify-js/issues/6858)) ([61f7478](https://github.com/aws-amplify/amplify-js/commit/61f7478609fce7dd2f25c562aeb887d3f3db4a67))
+
+
+
+
+
+## [3.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.2...@aws-amplify/pubsub@3.2.3) (2020-09-25)
+
+
+### Bug Fixes
+
+* Add files with Amplify.register to sideEffects array ([#6867](https://github.com/aws-amplify/amplify-js/issues/6867)) ([58ddbf8](https://github.com/aws-amplify/amplify-js/commit/58ddbf8811e44695d97b6ab8be8f7cd2a2242921))
+
+
+
+
+
+## [3.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.1...@aws-amplify/pubsub@3.2.2) (2020-09-16)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [3.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.2.0...@aws-amplify/pubsub@3.2.1) (2020-09-15)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.1.1...@aws-amplify/pubsub@3.2.0) (2020-09-10)
+
+
+### Features
+
+* **@aws-amplify/datastore:** Add SSR support for DataStore ([#6726](https://github.com/aws-amplify/amplify-js/issues/6726)) ([e56aba6](https://github.com/aws-amplify/amplify-js/commit/e56aba642acc7eb3482f0e69454a530409d1b3ac))
+
+
+
+
+
+## [3.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.1.0...@aws-amplify/pubsub@3.1.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.0.25...@aws-amplify/pubsub@3.1.0) (2020-09-03)
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+## [3.0.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.0.24...@aws-amplify/pubsub@3.0.25) (2020-09-01)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
 ## [3.0.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@3.0.23...@aws-amplify/pubsub@3.0.24) (2020-08-19)
 
 

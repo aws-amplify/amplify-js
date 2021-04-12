@@ -10,6 +10,13 @@
 | `provider` | `provider` | Specifies the federation provider. | `"amazon" \| "auth0" \| "facebook" \| "google" \| "oauth"` | `undefined` |
 
 
+## Slots
+
+| Slot          | Description                      |
+| ------------- | -------------------------------- |
+| `"(default)"` | Content placed inside the button |
+
+
 ## Dependencies
 
 ### Used by

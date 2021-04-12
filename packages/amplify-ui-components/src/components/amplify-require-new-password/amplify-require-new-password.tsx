@@ -1,5 +1,5 @@
 import { I18n } from '@aws-amplify/core';
-import { Component, Prop, State, h } from '@stencil/core';
+import { Component, Prop, State, Watch, h, Host } from '@stencil/core';
 import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
 import {
   AuthState,
@@ -13,7 +13,7 @@ import { Translations } from '../../common/Translations';
 
 import { Auth } from '@aws-amplify/auth';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, requiredAttributesMap } from '../../common/helpers';
+import { dispatchToastHubEvent, dispatchAuthStateChangeEvent, getRequiredAttributesMap } from '../../common/helpers';
 import { checkContact } from '../../common/auth-helpers';
 
 const logger = new Logger('amplify-require-new-password');
@@ -47,18 +47,23 @@ export class AmplifyRequireNewPassword {
     },
   ];
 
-  @State() currentUser: CognitoUserInterface = this.user;
   @State() password: string;
   @State() loading: boolean = false;
-  private requiredAttributes: object = {};
 
+  @Watch('user')
+  userHandler() {
+    this.setCurrentUser();
+  }
+
+  private requiredAttributes: Record<PropertyKey, string> = {};
   private newFormFields: FormFieldTypes = this.formFields;
+  private currentUser: CognitoUserInterface;
 
   private handleRequiredAttributeInputChange(attribute, event) {
     this.requiredAttributes[attribute] = event.target.value;
   }
 
-  async componentWillLoad() {
+  async setCurrentUser(): Promise<void> {
     if (!this.user) {
       // Check for authenticated user
       try {
@@ -67,11 +72,13 @@ export class AmplifyRequireNewPassword {
       } catch (error) {
         dispatchToastHubEvent(error);
       }
+    } else {
+      this.currentUser = this.user;
     }
-    if (this.currentUser && this.currentUser.challengeParam.requiredAttributes) {
+    if (this.currentUser && this.currentUser.challengeParam && this.currentUser.challengeParam.requiredAttributes) {
       const userRequiredAttributes = this.currentUser.challengeParam.requiredAttributes;
-
-      userRequiredAttributes.forEach(attribute => {
+      const requiredAttributesMap = getRequiredAttributesMap();
+      userRequiredAttributes.forEach((attribute: string) => {
         const formField = {
           type: attribute,
           required: true,
@@ -82,9 +89,13 @@ export class AmplifyRequireNewPassword {
             'data-test': `require-new-password-${attribute}-input`,
           },
         };
-        this.newFormFields.push(formField);
+        this.newFormFields = [...this.newFormFields, formField];
       });
     }
+  }
+
+  componentWillLoad() {
+    return this.setCurrentUser();
   }
 
   private handlePasswordChange(event) {
@@ -125,19 +136,21 @@ export class AmplifyRequireNewPassword {
 
   render() {
     return (
-      <amplify-form-section
-        headerText={I18n.get(this.headerText)}
-        handleSubmit={this.handleSubmit}
-        loading={this.loading}
-        secondaryFooterContent={
-          <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
-            {I18n.get(Translations.BACK_TO_SIGN_IN)}
-          </amplify-button>
-        }
-        submitButtonText={I18n.get(this.submitButtonText)}
-      >
-        <amplify-auth-fields formFields={this.newFormFields} />
-      </amplify-form-section>
+      <Host>
+        <amplify-form-section
+          headerText={I18n.get(this.headerText)}
+          handleSubmit={this.handleSubmit}
+          loading={this.loading}
+          secondaryFooterContent={
+            <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignIn)}>
+              {I18n.get(Translations.BACK_TO_SIGN_IN)}
+            </amplify-button>
+          }
+          submitButtonText={I18n.get(this.submitButtonText)}
+        >
+          <amplify-auth-fields formFields={this.newFormFields} />
+        </amplify-form-section>
+      </Host>
     );
   }
 }

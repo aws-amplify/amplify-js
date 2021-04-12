@@ -24,6 +24,7 @@ import {
 	MessageHeaderValue,
 } from '@aws-sdk/eventstream-marshaller';
 import { fromUtf8, toUtf8 } from '@aws-sdk/util-utf8-node';
+
 const logger = new Logger('AmazonAIConvertPredictionsProvider');
 const eventBuilder = new EventStreamMarshaller(toUtf8, fromUtf8);
 
@@ -188,7 +189,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 						},
 					};
 				} catch (err) {
-					Promise.reject(err);
+					return Promise.reject(err);
 				}
 			}
 
@@ -206,7 +207,7 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 			Buffer.from(message.data)
 		);
 		const transcribeMessageJson = JSON.parse(
-			String.fromCharCode.apply(String, transcribeMessage.body)
+			toUtf8(transcribeMessage.body)
 		);
 		if (transcribeMessage.headers[':message-type'].value === 'exception') {
 			logger.debug(

@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
-import { Component, h, Prop, State } from '@stencil/core';
+import { Component, h, Prop, State, Host } from '@stencil/core';
 import { AuthState, AuthStateHandler, CognitoUserInterface } from '../../common/types/auth-types';
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import { dispatchAuthStateChangeEvent, dispatchToastHubEvent } from '../../common/helpers';
@@ -139,7 +139,7 @@ export class AmplifyVerifyContact {
             value="phone_number"
             handleInputChange={event => this.handleInputChange(event)}
             inputProps={{
-              'data-test': 'verify-contact-email-radio',
+              'data-test': 'verify-contact-phone-number-radio',
             }}
           />
         )}
@@ -149,25 +149,31 @@ export class AmplifyVerifyContact {
 
   render() {
     return (
-      <amplify-form-section
-        handleSubmit={event => this.handleSubmit(event)}
-        headerText={I18n.get(Translations.VERIFY_CONTACT_HEADER_TEXT)}
-        loading={this.loading}
-        secondaryFooterContent={
-          <span>
-            <amplify-button variant="anchor" onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}>
-              Skip
-            </amplify-button>
-          </span>
-        }
-        submitButtonText={
-          this.verifyAttr
-            ? I18n.get(Translations.VERIFY_CONTACT_SUBMIT_LABEL)
-            : I18n.get(Translations.VERIFY_CONTACT_VERIFY_LABEL)
-        }
-      >
-        {this.verifyAttr ? this.renderSubmit() : this.renderVerify()}
-      </amplify-form-section>
+      <Host>
+        <amplify-form-section
+          handleSubmit={event => this.handleSubmit(event)}
+          headerText={I18n.get(Translations.VERIFY_CONTACT_HEADER_TEXT)}
+          loading={this.loading}
+          secondaryFooterContent={
+            <span>
+              <amplify-button
+                variant="anchor"
+                onClick={() => this.handleAuthStateChange(AuthState.SignedIn, this.user)}
+                data-test="verify-contact-skip-link"
+              >
+                Skip
+              </amplify-button>
+            </span>
+          }
+          submitButtonText={
+            this.verifyAttr
+              ? I18n.get(Translations.VERIFY_CONTACT_SUBMIT_LABEL)
+              : I18n.get(Translations.VERIFY_CONTACT_VERIFY_LABEL)
+          }
+        >
+          {this.verifyAttr ? this.renderSubmit() : this.renderVerify()}
+        </amplify-form-section>
+      </Host>
     );
   }
 }
