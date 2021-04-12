@@ -163,7 +163,7 @@ class MutationProcessor {
 			await this.storage.runExclusive(async storage => {
 				// using runExclusive to prevent possible race condition
 				// when another record gets enqueued between dequeue and peek
-				await this.outbox.dequeue(storage, record);
+				await this.outbox.dequeue(storage, record, operation);
 				hasMore = (await this.outbox.peek(storage)) !== undefined;
 			});
 
@@ -228,7 +228,12 @@ class MutationProcessor {
 					} catch (err) {
 						if (err.errors && err.errors.length > 0) {
 							const [error] = err.errors;
-							if (error.message === 'Network Error') {
+							const { originalError: { code = null } = {} } = error;
+
+							if (
+								error.message === 'Network Error' ||
+								code === 'ECONNABORTED' // refers to axios timeout error caused by device's bad network condition
+							) {
 								if (!this.processing) {
 									throw new NonRetryableError('Offline');
 								}

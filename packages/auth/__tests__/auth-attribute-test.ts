@@ -87,7 +87,7 @@ describe('User-Attribute-validation', () => {
 
 		const spyUserGetSession = jest
 			.spyOn(CognitoUser.prototype, 'getSession')
-			.mockImplementation(callback => {
+			.mockImplementation((callback: any) => {
 				const session = new CognitoUserSession({
 					AccessToken: new CognitoAccessToken({ AccessToken: 'accesstoken' }),
 					IdToken: new CognitoIdToken({ IdToken: 'Idtoken' }),

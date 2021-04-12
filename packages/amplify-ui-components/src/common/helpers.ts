@@ -85,7 +85,7 @@ export const isHintValid = field => {
 };
 
 // Required attributes come from https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
-export const requiredAttributesMap = {
+export const getRequiredAttributesMap = () => ({
   address: {
     label: I18n.get(Translations.ADDRESS_LABEL),
     placeholder: I18n.get(Translations.ADDRESS_PLACEHOLDER),
@@ -154,7 +154,7 @@ export const requiredAttributesMap = {
     label: I18n.get(Translations.NAME_LABEL),
     placeholder: I18n.get(Translations.NAME_PLACEHOLDER),
   },
-};
+});
 
 export function handlePhoneNumberChange(event, phoneNumber: PhoneNumberInterface) {
   const name = event.target.name;

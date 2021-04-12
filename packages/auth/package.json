@@ -52,7 +52,7 @@
   "jest": {
     "globals": {
       "ts-jest": {
-        "diagnostics": false,
+        "diagnostics": true,
         "tsConfig": {
           "lib": [
             "es5",
