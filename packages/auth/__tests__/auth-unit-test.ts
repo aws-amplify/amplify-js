@@ -836,7 +836,7 @@ describe('auth unit test', () => {
 			};
 			await auth.signUp(attrs);
 
-			expect(await CognitoUserPool.prototype.signUp).toBeCalledWith(
+			expect(await spyon).toBeCalledWith(
 				attrs.username,
 				attrs.password,
 				[
