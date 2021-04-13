@@ -38,7 +38,7 @@ describe('Calculations for Cognito User Attributes', () => {
     })
 
     test('Getting undefined clock drift', () => {
-        expect(cognitoUserSession.getClockDrift()).toBe(cognitoUserSession.calculateClockDrift())
+        expect(cognitoUserSession.getClockDrift()).toEqual(cognitoUserSession.calculateClockDrift())
     })
 
     test('JWT Expiration was hard-coded to be a time in the past so that this is guaranteed to be an invalid token', () => {
