@@ -1,5 +1,3 @@
-import { throws } from 'assert';
-import { exception } from 'console';
 import StorageHelper from '../src/StorageHelper'
 import { MemoryStorage } from '../src/StorageHelper'
 

@@ -9,6 +9,11 @@ export const authDetailData = {
     ClientMetadata: {},
 };
 
+/** Client */
+export const region = 'us-east-1'
+export const endpoint = 'https://cognito-idp.us-east-1.amazonaws.com/'
+export const fetchOptions = {}
+
 /** CognitoJWT */
 export const expDecoded = 1217742717705
 export const nameDecoded = "John Doe"
