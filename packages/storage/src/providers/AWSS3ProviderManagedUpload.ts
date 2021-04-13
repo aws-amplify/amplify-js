@@ -352,7 +352,11 @@ export class AWSS3ProviderManagedUpload {
 	 */
 	protected async _createNewS3Client(config, emitter?) {
 		const credentials = await this._getCredentials();
-		const { region, dangerouslyConnectToHttpEndpointForTesting, cancelToken } = config;
+		const {
+			region,
+			dangerouslyConnectToHttpEndpointForTesting,
+			cancelTokenSource,
+		} = config;
 		let localTestingConfig = {};
 
 		if (dangerouslyConnectToHttpEndpointForTesting) {
@@ -368,7 +372,7 @@ export class AWSS3ProviderManagedUpload {
 			region,
 			credentials,
 			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler({}, emitter, cancelToken),
+			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
 			customUserAgent: getAmplifyUserAgent(),
 		});
 		client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
