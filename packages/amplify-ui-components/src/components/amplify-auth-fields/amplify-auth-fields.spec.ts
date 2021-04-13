@@ -30,7 +30,7 @@ describe('amplify-auth-fields spec:', () => {
     it('should return form fields as being defined when passing `username` and `password` as parameter', () => {
       const constructFormFieldOptionsMock = jest.spyOn(authFields, 'constructFormFieldOptions');
       const result = ['username', 'password'];
-      
+
       authFields.formFields = ['username', 'password'];
 
       authFields.constructFormFieldOptions();
@@ -48,9 +48,13 @@ describe('amplify-auth-fields spec:', () => {
       const usernameField = ['username', 'password'];
 
       const page = await newSpecPage({
-        components: [AmplifyAuthFields],
-        html: `<amplify-auth-fields formFields=${usernameField}></amplify-auth-fields>`
+        components: [AmplifyAuthFields]
       });
+
+      const component = page.doc.createElement("amplify-auth-fields");
+      (component as any).formFields = usernameField;
+      page.body.appendChild(component);
+      await page.waitForChanges();
 
       expect(page.root).toMatchSnapshot();
     });
@@ -60,6 +64,21 @@ describe('amplify-auth-fields spec:', () => {
         components: [AmplifyAuthFields],
         html: `<amplify-auth-fields></amplify-auth-fields>`
       });
+
+      expect(page.root).toMatchSnapshot();
+    });
+
+    it('should render custom type fields', async () => {
+      const customField = [{'label': 'date', 'type': 'date'}];
+
+      const page = await newSpecPage({
+        components: [AmplifyAuthFields]
+      });
+
+      const component = page.doc.createElement("amplify-auth-fields");
+      (component as any).formFields = customField;
+      page.body.appendChild(component);
+      await page.waitForChanges();
 
       expect(page.root).toMatchSnapshot();
     });
