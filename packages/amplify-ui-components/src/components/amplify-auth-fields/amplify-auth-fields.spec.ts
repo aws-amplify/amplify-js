@@ -75,7 +75,7 @@ describe('amplify-auth-fields spec:', () => {
         components: [AmplifyAuthFields]
       });
 
-      let component = page.doc.createElement("amplify-auth-fields");
+      const component = page.doc.createElement("amplify-auth-fields");
       (component as any).formFields = customField;
       page.body.appendChild(component);
       await page.waitForChanges();
