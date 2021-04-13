@@ -59,7 +59,7 @@ export const authErrorMessages: AuthErrorMessages = {
                 See https://aws-amplify.github.io/docs/js/authentication#configure-your-app for more information
             
             2. There might be multiple conflicting versions of aws-amplify or amplify packages in your node_modules.
-                Try deleting your node_modules folder and reinstalling the dependencies with \`yarn install\`
+				Refer to our docs site for help Upgrading Amplify packages (https://docs.amplify.aws/lib/troubleshooting/upgrading/q/platform/js)
         `,
 	},
 	missingAuthConfig: {
@@ -69,6 +69,7 @@ export const authErrorMessages: AuthErrorMessages = {
             The configuration object is missing required auth properties. 
             Did you run \`amplify push\` after adding auth via \`amplify add auth\`?
             See https://aws-amplify.github.io/docs/js/authentication#amplify-project-setup for more information
+			This could also be caused by multiple conflicting versions of amplify packages, see (https://docs.amplify.aws/lib/troubleshooting/upgrading/q/platform/js) for help Upgrading Amplify packages.
         `,
 	},
 	emptyUsername: {
