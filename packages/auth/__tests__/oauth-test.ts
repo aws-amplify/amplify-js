@@ -50,7 +50,7 @@ describe('OAuth', () => {
 			};
 			const oAuth = new OAuth({
 				scopes: [],
-				config: config,
+				config,
 				cognitoClientId: '',
 			});
 
@@ -71,7 +71,7 @@ describe('OAuth', () => {
 			};
 			const oAuth = new OAuth({
 				scopes: [],
-				config: config,
+				config,
 				cognitoClientId: '',
 			});
 			const mockAccessToken = 'mockAccessToken';
@@ -107,7 +107,7 @@ describe('OAuth', () => {
 			};
 			const oAuth = new OAuth({
 				scopes: [],
-				config: config,
+				config,
 				cognitoClientId: '',
 			});
 
@@ -130,7 +130,7 @@ describe('OAuth', () => {
 			};
 			const oAuth = new OAuth({
 				scopes: [],
-				config: config,
+				config,
 				cognitoClientId: '',
 			});
 			const mockError = 'mock error';
