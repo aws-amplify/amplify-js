@@ -2,7 +2,7 @@ import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
 import { Draft, immerable, produce, setAutoFreeze } from 'immer';
 import { v4 as uuid4 } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
-import { multiAuthStrategy } from '../authModeStrategies';
+import { defaultAuthStrategy, multiAuthStrategy } from '../authModeStrategies';
 import {
 	isPredicatesAll,
 	ModelPredicateCreator,
@@ -41,6 +41,7 @@ import {
 	TypeConstructorMap,
 	ErrorHandler,
 	SyncExpression,
+	AuthModeStrategyType,
 } from '../types';
 import {
 	DATASTORE,
@@ -1025,7 +1026,7 @@ class DataStore {
 	configure = (config: DataStoreConfig = {}) => {
 		const {
 			DataStore: configDataStore,
-			authModeStrategy: configAuthModeStrategy,
+			authModeStrategyType: configAuthModeStrategyType,
 			conflictHandler: configConflictHandler,
 			errorHandler: configErrorHandler,
 			maxRecordsToSync: configMaxRecordsToSync,
@@ -1040,13 +1041,22 @@ class DataStore {
 		this.conflictHandler = this.setConflictHandler(config);
 		this.errorHandler = this.setErrorHandler(config);
 
-		// TODO: Need to define customer API for enabling multi-auth.
-		// Otherwise, use defaultAuthStrategy
-		this.authModeStrategy =
-			(configDataStore && configDataStore.authModeStrategy) ||
-			this.authModeStrategy ||
-			configAuthModeStrategy ||
-			multiAuthStrategy;
+		const authModeStrategyType =
+			(configDataStore && configDataStore.authModeStrategyType) ||
+			configAuthModeStrategyType ||
+			AuthModeStrategyType.DEFAULT;
+
+		switch (authModeStrategyType) {
+			case AuthModeStrategyType.MULTI_AUTH:
+				this.authModeStrategy = multiAuthStrategy;
+				break;
+			case AuthModeStrategyType.DEFAULT:
+				this.authModeStrategy = defaultAuthStrategy;
+				break;
+			default:
+				this.authModeStrategy = defaultAuthStrategy;
+				break;
+		}
 
 		this.syncExpressions =
 			(configDataStore && configDataStore.syncExpressions) ||

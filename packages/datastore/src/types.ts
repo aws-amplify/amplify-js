@@ -520,7 +520,7 @@ export type RelationshipType = {
 //#region DataStore config types
 export type DataStoreConfig = {
 	DataStore?: {
-		authModeStrategy?: AuthModeStrategy;
+		authModeStrategyType?: AuthModeStrategyType;
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 		errorHandler?: (error: SyncError) => void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
@@ -528,7 +528,7 @@ export type DataStoreConfig = {
 		fullSyncInterval?: number;
 		syncExpressions?: SyncExpression[];
 	};
-	authModeStrategy?: AuthModeStrategy;
+	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
@@ -536,6 +536,11 @@ export type DataStoreConfig = {
 	fullSyncInterval?: number;
 	syncExpressions?: SyncExpression[];
 };
+
+export enum AuthModeStrategyType {
+	DEFAULT = 'DEFAULT',
+	MULTI_AUTH = 'MULTI_AUTH',
+}
 
 export type AuthModeStrategyReturn =
 	| GRAPHQL_AUTH_MODE
