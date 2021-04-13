@@ -1,6 +1,7 @@
 import AWSStorageProvider from '../src/providers/AWSS3Provider';
 import { Storage as StorageClass } from '../src/Storage';
 import { Storage as StorageCategory } from '../src';
+import axios from 'axios';
 
 const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -16,7 +17,6 @@ const options = {
 	credentials,
 	level: 'level',
 };
-
 describe('Storage', () => {
 	describe('constructor test', () => {
 		test('happy case', () => {
@@ -465,7 +465,7 @@ describe('Storage', () => {
 			const get_spyon = jest
 				.spyOn(AWSStorageProvider.prototype, 'get')
 				.mockImplementation(() => {
-					return;
+					return Promise.resolve('https://this-url-doesnt-exist.gg');
 				});
 			const storage = new StorageClass();
 			const provider = new AWSStorageProvider();
@@ -489,7 +489,7 @@ describe('Storage', () => {
 			const put_spyon = jest
 				.spyOn(AWSStorageProvider.prototype, 'put')
 				.mockImplementation(() => {
-					return;
+					return Promise.resolve({ key: 'new_object' });
 				});
 			const storage = new StorageClass();
 			const provider = new AWSStorageProvider();
@@ -553,6 +553,77 @@ describe('Storage', () => {
 			});
 			expect(list_spyon).toBeCalled();
 			list_spyon.mockClear();
+		});
+	});
+
+	describe('cancel test', () => {
+		let isCancelSpy = null;
+		let cancelTokenSpy = null;
+		let cancelMock = null;
+		let tokenMock = null;
+
+		beforeEach(() => {
+			cancelMock = jest.fn();
+			tokenMock = jest.fn();
+			isCancelSpy = jest.spyOn(axios, 'isCancel').mockReturnValue(true);
+			cancelTokenSpy = jest
+				.spyOn(axios.CancelToken, 'source')
+				.mockImplementation(() => {
+					return { token: tokenMock, cancel: cancelMock };
+				});
+		});
+
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
+		test('happy case - cancel upload', () => {
+			jest.spyOn(AWSStorageProvider.prototype, 'put').mockImplementation(() => {
+				return Promise.resolve({ key: 'new_object' });
+			});
+			const storage = new StorageClass();
+			const provider = new AWSStorageProvider();
+			storage.addPluggable(provider);
+			storage.configure(options);
+			const request = storage.put('test.txt', 'test upload', {
+				Storage: {
+					AWSS3: {
+						bucket: 'bucket',
+						region: 'us-east-1',
+					},
+				},
+			});
+			storage.cancel(request);
+			expect(cancelTokenSpy).toBeCalledTimes(1);
+			expect(cancelMock).toHaveBeenCalledTimes(1);
+		});
+
+		test('happy case - cancel download', () => {
+			jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
+				return Promise.resolve('some_file_content');
+			});
+			const storage = new StorageClass();
+			const provider = new AWSStorageProvider();
+			storage.addPluggable(provider);
+			storage.configure(options);
+			const request = storage.get('test.txt', {
+				Storage: {
+					AWSS3: {
+						bucket: 'bucket',
+						region: 'us-east-1',
+					},
+				},
+				download: true,
+			});
+			storage.cancel(request, {}, 'request cancelled');
+			expect(cancelTokenSpy).toHaveBeenCalledTimes(1);
+			expect(cancelMock).toHaveBeenCalledWith('request cancelled');
+		});
+
+		test('isCancel called', () => {
+			const storage = new StorageClass();
+			storage.isCancel({});
+			expect(isCancelSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 });
