@@ -2,7 +2,7 @@ import { Logger, Mutex } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import PushStream from 'zen-push';
 import { Patch } from 'immer';
-import { ModelInstanceCreator } from '../datastore/datastore';
+import { DataStore, ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
 import {
 	InternalSchema,
@@ -38,8 +38,6 @@ export type StorageFacade = Omit<Adapter, 'setUp'>;
 export type Storage = InstanceType<typeof StorageClass>;
 
 const logger = new Logger('DataStore');
-const syncSymbol = Symbol('sync');
-
 class StorageClass implements StorageFacade {
 	private initialized: Promise<void>;
 	private readonly pushStream: {
@@ -116,20 +114,14 @@ class StorageClass implements StorageFacade {
 		result.forEach(r => {
 			const [originalElement, opType] = r;
 
-			const containsPatches = patchesTuple && patchesTuple.length;
 			// true when save is called by the Mutator
-			const syncResponse =
-				mutator && mutator.toString() === syncSymbol.toString();
+			const syncResponse = !!mutator;
 
 			// an update without patches means no fields were changed
 			// => don't create mutationEvent
 			// unless the save is coming from the Mutator (i.e., from an AppSync response)
-			if (opType === OpType.UPDATE && !containsPatches && !syncResponse) {
-				return result;
-			}
-
 			let updateMutationInput;
-			if (opType === OpType.UPDATE && containsPatches && !syncResponse) {
+			if (opType === OpType.UPDATE && !syncResponse) {
 				updateMutationInput = this.getUpdateMutationInput(
 					model,
 					originalElement,
@@ -310,6 +302,11 @@ class StorageClass implements StorageFacade {
 		originalElement: T,
 		patchesTuple?: [Patch[], PersistentModel]
 	): PersistentModel | null {
+		const containsPatches = patchesTuple && patchesTuple.length;
+		if (!containsPatches) {
+			return null;
+		}
+
 		const [patches, source] = patchesTuple;
 		const updatedElement = {};
 		// extract array of updated fields from patches
