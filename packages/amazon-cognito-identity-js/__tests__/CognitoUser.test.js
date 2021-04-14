@@ -1,4 +1,5 @@
 import CognitoUser from '../src/CognitoUser';
+
 import CognitoUserPool from '../src/CognitoUserPool';
 import { clientId, userPoolId } from './constants';
 
@@ -43,4 +44,3 @@ describe('CognitoUser constructor', () => {
 
 		expect(spyon).toBeCalled();
 	});
-});
