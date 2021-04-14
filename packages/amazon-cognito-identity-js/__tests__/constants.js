@@ -2,6 +2,7 @@ import {
 	CognitoAccessToken,
 	CognitoIdToken,
 	CognitoRefreshToken,
+	CognitoUserSession,
 } from 'amazon-cognito-identity-js';
 
 /** AuthDetails */
@@ -13,10 +14,18 @@ export const authDetailData = {
 	ClientMetadata: {},
 };
 
+export const authDetailDataWithValidationData = {
+	...authDetailData,
+	ValidationData: {
+		testKey: 'test value',
+		anotherKey: 'another value',
+	},
+};
+
 /** Client */
-export const region = 'us-east-1'
-export const endpoint = 'https://cognito-idp.us-east-1.amazonaws.com/'
-export const fetchOptions = {}
+export const region = 'us-east-1';
+export const endpoint = 'https://cognito-idp.us-east-1.amazonaws.com/';
+export const fetchOptions = {};
 
 /** CognitoJWT */
 export const expDecoded = 1217742717705;
@@ -41,6 +50,12 @@ export const refreshToken = new CognitoRefreshToken({
 export const accessToken = new CognitoAccessToken({
 	AccessToken:
 		'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOiIxMjE3NzQyNzE3NzA1IiwibmFtZSI6IkFjY2VzcyBUb2tlbiIsImlhdCI6MTYxNzU2NjI0NDAwMH0.fov43VHqnJGFEzwHublLSDoL4RSZJCnoBuL-HLfoDHc',
+});
+export const cognitoUserSession = new CognitoUserSession({
+	IdToken: cognitoIdToken,
+	RefreshToken: refreshToken,
+	AccessToken: accessToken,
+	ClockDrift: undefined,
 });
 
 /** CognitoUserPool */
