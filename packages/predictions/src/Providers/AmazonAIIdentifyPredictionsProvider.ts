@@ -367,8 +367,8 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				return Promise.reject(err);
 			});
 
-		const param = { Image: inputImage };
-
+		const param = { Attributes: ['ALL'], Image: inputImage };
+			
 		if (
 			isIdentifyCelebrities(input.entities) &&
 			input.entities.celebrityDetection
@@ -452,12 +452,14 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 						'EyesOpen',
 						'MouthOpen',
 					];
-					const faceAttributes = makeCamelCase(detail, attributeKeys);
 					if (detail.Emotions) {
 						faceAttributes['emotions'] = detail.Emotions.map(
 							emotion => emotion.Type
 						);
 					}
+					
+					const faceAttributes = makeCamelCase(detail, attributeKeys);
+
 					return {
 						boundingBox: makeCamelCase(detail.BoundingBox),
 						landmarks: makeCamelCaseArray(detail.Landmarks),
