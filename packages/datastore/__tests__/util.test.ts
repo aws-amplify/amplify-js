@@ -62,6 +62,20 @@ describe('datastore util', () => {
 
 		expect(valuesEqual(map5, map6, true)).toEqual(false);
 
+		// array nullish
+		expect(valuesEqual([null], [], true)).toEqual(true);
+		expect(valuesEqual([null], [undefined], true)).toEqual(true);
+		expect(valuesEqual(new Set([null]), new Set([]), true)).toEqual(true);
+		expect(valuesEqual(new Set([null]), new Set([undefined]), true)).toEqual(
+			true
+		);
+		expect(valuesEqual([null], [], false)).toEqual(false);
+		expect(valuesEqual([null], [undefined], false)).toEqual(false);
+		expect(valuesEqual(new Set([null]), new Set([]), false)).toEqual(false);
+		expect(valuesEqual(new Set([null]), new Set([undefined]), false)).toEqual(
+			false
+		);
+
 		// primitive types
 		expect(valuesEqual(null, undefined)).toEqual(false);
 		expect(valuesEqual(null, undefined, true)).toEqual(true);
