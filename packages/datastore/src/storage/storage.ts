@@ -2,7 +2,7 @@ import { Logger, Mutex } from '@aws-amplify/core';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import PushStream from 'zen-push';
 import { Patch } from 'immer';
-import { DataStore, ModelInstanceCreator } from '../datastore/datastore';
+import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
 import {
 	InternalSchema,
@@ -114,20 +114,20 @@ class StorageClass implements StorageFacade {
 		result.forEach(r => {
 			const [originalElement, opType] = r;
 
-			// true when save is called by the Mutator
+			// truthy when save is called by the Merger
 			const syncResponse = !!mutator;
 
-			// an update without patches means no fields were changed
-			// => don't create mutationEvent
-			// unless the save is coming from the Mutator (i.e., from an AppSync response)
 			let updateMutationInput;
+			// don't attempt to calc mutation input when storage.save
+			// is called by Merger, i.e., when processing an AppSync response
 			if (opType === OpType.UPDATE && !syncResponse) {
 				updateMutationInput = this.getUpdateMutationInput(
 					model,
 					originalElement,
 					patchesTuple
 				);
-
+				// // an update without changed user fields
+				// => don't create mutationEvent
 				if (updateMutationInput === null) {
 					return result;
 				}
