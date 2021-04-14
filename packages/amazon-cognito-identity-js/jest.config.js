@@ -27,7 +27,6 @@ module.exports = {
 				esModuleInterop: true,
 			},
 		},
-		__DEV__: true,
 	},
 
 	transform: {

@@ -1,4 +1,5 @@
 import CognitoUser from '../src/CognitoUser';
+
 import CognitoUserPool from '../src/CognitoUserPool';
 import AuthenticationDetails from '../src/AuthenticationDetails';
 import Client from '../src/Client';
