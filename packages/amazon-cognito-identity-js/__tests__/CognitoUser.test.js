@@ -227,5 +227,5 @@ describe('authenticateUser()', () => {
 });
 
 // Progress Report:
-// All files      -    56.46 |    41.78 |     56.6 |    57.07
+// All files      -    58.67 |    42.43 |    61.11 |    59.29
 // CognitoUser.js -    22.43 |       10 |    15.52 |     22.8
