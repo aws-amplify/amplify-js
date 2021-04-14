@@ -184,21 +184,14 @@ export class Storage {
 	 * Cancels an inflight request
 	 *
 	 * @param {Promise<any>} request - The request to cancel
-	 * @param {Object} [config] - { provider: string }
 	 * @param {string} [message] - A message to include in the cancelation exception
 	 */
-	public cancel(request: Promise<any>, config?, message?: string) {
-		const { provider = DEFAULT_PROVIDER } = config || {};
-		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
-		);
-		if (prov === undefined) {
-			logger.debug('No plugin found with providerName', provider);
-			Promise.reject('No plugin found in Storage for the provider');
-		}
+	public cancel(request: Promise<any>, message?: string) {
 		const cancelTokenSource = this._cancelTokenSourceMap.get(request);
 		if (cancelTokenSource) {
 			cancelTokenSource.cancel(message);
+		} else {
+			logger.debug('The request does not map to any cancel token');
 		}
 	}
 
@@ -216,7 +209,7 @@ export class Storage {
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			Promise.reject('No plugin found in Storage for the provider');
+			return Promise.reject('No plugin found in Storage for the provider');
 		}
 		const cancelTokenSource = this.getCancellableTokenSource();
 		const responsePromise = prov.get(key, {
@@ -227,7 +220,7 @@ export class Storage {
 		return responsePromise;
 	}
 
-	public isCancel(error: any) {
+	public isCancelError(error: any) {
 		return axios.isCancel(error);
 	}
 
@@ -246,7 +239,7 @@ export class Storage {
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			Promise.reject('No plugin found in Storage for the provider');
+			return Promise.reject('No plugin found in Storage for the provider');
 		}
 		const cancelTokenSource = this.getCancellableTokenSource();
 		const responsePromise = prov.put(key, object, {
@@ -270,7 +263,7 @@ export class Storage {
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			Promise.reject('No plugin found in Storage for the provider');
+			return Promise.reject('No plugin found in Storage for the provider');
 		}
 		return prov.remove(key, config);
 	}
@@ -288,7 +281,7 @@ export class Storage {
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			Promise.reject('No plugin found in Storage for the provider');
+			return Promise.reject('No plugin found in Storage for the provider');
 		}
 		return prov.list(path, config);
 	}

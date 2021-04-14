@@ -482,6 +482,14 @@ describe('Storage', () => {
 			expect(get_spyon).toBeCalled();
 			get_spyon.mockClear();
 		});
+		test('get without provider', async () => {
+			const storage = new StorageClass();
+			try {
+				await storage.get('key');
+			} catch (err) {
+				expect(err).toEqual('No plugin found in Storage for the provider');
+			}
+		});
 	});
 
 	describe('put test', () => {
@@ -505,6 +513,14 @@ describe('Storage', () => {
 			});
 			expect(put_spyon).toBeCalled();
 			put_spyon.mockClear();
+		});
+		test('put without provider', async () => {
+			const storage = new StorageClass();
+			try {
+				await storage.put('key', 'test upload');
+			} catch (err) {
+				expect(err).toEqual('No plugin found in Storage for the provider');
+			}
 		});
 	});
 
@@ -530,6 +546,14 @@ describe('Storage', () => {
 			expect(remove_spyon).toBeCalled();
 			remove_spyon.mockClear();
 		});
+		test('remove without provider', async () => {
+			const storage = new StorageClass();
+			try {
+				await storage.remove('key');
+			} catch (err) {
+				expect(err).toEqual('No plugin found in Storage for the provider');
+			}
+		});
 	});
 
 	describe('list test', () => {
@@ -554,6 +578,14 @@ describe('Storage', () => {
 			expect(list_spyon).toBeCalled();
 			list_spyon.mockClear();
 		});
+		test('list without provider', async () => {
+			const storage = new StorageClass();
+			try {
+				await storage.list('');
+			} catch (err) {
+				expect(err).toEqual('No plugin found in Storage for the provider');
+			}
+		});
 	});
 
 	describe('cancel test', () => {
@@ -577,7 +609,7 @@ describe('Storage', () => {
 			jest.clearAllMocks();
 		});
 
-		test('happy case - cancel upload', () => {
+		test('happy case - cancel upload', async () => {
 			jest.spyOn(AWSStorageProvider.prototype, 'put').mockImplementation(() => {
 				return Promise.resolve({ key: 'new_object' });
 			});
@@ -593,12 +625,18 @@ describe('Storage', () => {
 					},
 				},
 			});
-			storage.cancel(request);
+			storage.cancel(request, 'request cancelled');
 			expect(cancelTokenSpy).toBeCalledTimes(1);
 			expect(cancelMock).toHaveBeenCalledTimes(1);
+			try {
+				await request;
+			} catch (err) {
+				expect(err).toEqual('request cancelled');
+				expect(storage.isCancelError(err)).toBeTruthy();
+			}
 		});
 
-		test('happy case - cancel download', () => {
+		test('happy case - cancel download', async () => {
 			jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
 				return Promise.resolve('some_file_content');
 			});
@@ -615,14 +653,20 @@ describe('Storage', () => {
 				},
 				download: true,
 			});
-			storage.cancel(request, {}, 'request cancelled');
+			storage.cancel(request, 'request cancelled');
 			expect(cancelTokenSpy).toHaveBeenCalledTimes(1);
 			expect(cancelMock).toHaveBeenCalledWith('request cancelled');
+			try {
+				await request;
+			} catch (err) {
+				expect(err).toEqual('request cancelled');
+				expect(storage.isCancelError(err)).toBeTruthy();
+			}
 		});
 
-		test('isCancel called', () => {
+		test('isCancelError called', () => {
 			const storage = new StorageClass();
-			storage.isCancel({});
+			storage.isCancelError({});
 			expect(isCancelSpy).toHaveBeenCalledTimes(1);
 		});
 	});
