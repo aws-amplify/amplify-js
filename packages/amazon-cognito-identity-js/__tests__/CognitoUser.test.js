@@ -1,5 +1,5 @@
 import CognitoUser from '../src/CognitoUser';
-import { promisifyCallback } from './util';
+
 import CognitoUserPool from '../src/CognitoUserPool';
 import { clientId, userPoolId } from './constants';
 
@@ -44,24 +44,3 @@ describe('CognitoUser constructor', () => {
 
 		expect(spyon).toBeCalled();
 	});
-
-	describe('Name of the group', () => {
-		const cognitoUser = new CognitoUser(minimalData);
-		afterAll(() => {
-			jest.restoreAllMocks();
-		});
-		test('Verify Software Token Happy case', () => {
-			jest.spyOn(Client.prototype, 'request').mockImplementation(
-				(...args) => {
-					console.log(args);
-					args[2](null, {})
-				});
-	
-			//returns a function that records everything being done to it
-			const callback = jest.fn()
-
-			cognitoUser.verifySoftwareToken()
-		});
-	});
-	describe('Name of the group', () => {});
-});
