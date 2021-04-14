@@ -176,7 +176,6 @@ describe('initiateAuth()', () => {
 		);
 
 		user.initiateAuth(authDetails, callback);
-		// expect(authDetails.getAuthParameters().USERNAME).toEqual(user.username);
 	});
 });
 
