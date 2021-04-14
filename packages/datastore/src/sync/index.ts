@@ -115,9 +115,10 @@ export class SyncEngine {
 
 		this.outbox = new MutationEventOutbox(
 			this.schema,
-			this.namespaceResolver,
+			this.userModelClasses,
 			MutationEvent,
-			ownSymbol
+			ownSymbol,
+			this.getModelDefinition.bind(this)
 		);
 
 		this.modelMerger = new ModelMerger(this.outbox, ownSymbol);
