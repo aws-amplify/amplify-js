@@ -7,7 +7,7 @@ module.exports = {
 		'__tests__/__mocks__/*',
 	],
 	collectCoverage: true,
-	collectCoverageFrom: ['src/**/*.js'],
+	collectCoverageFrom: ['src/*.js'],
 
 	coverageThreshold: {
 		global: {
