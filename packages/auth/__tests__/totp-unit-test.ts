@@ -149,7 +149,6 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 
 	CognitoUser.prototype.associateSoftwareToken = callback => {
 		callback.associateSecretCode('secretCode');
-		//callback.onFailure()
 	};
 
 	CognitoUser.prototype.verifySoftwareToken = (

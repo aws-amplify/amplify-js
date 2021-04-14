@@ -1,9 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`amplify-auth-fields spec: Render logic -> should render with a \`username\` and \`password\` field 1`] = `
-<amplify-auth-fields formfields="username,password">
+exports[`amplify-auth-fields spec: Render logic -> should render custom type fields 1`] = `
+<amplify-auth-fields>
   <mock:shadow-root>
-    <div class="auth-fields"></div>
+    <div class="auth-fields">
+      <amplify-form-field label="date" type="date"></amplify-form-field>
+    </div>
+  </mock:shadow-root>
+</amplify-auth-fields>
+`;
+
+exports[`amplify-auth-fields spec: Render logic -> should render with a \`username\` and \`password\` field 1`] = `
+<amplify-auth-fields>
+  <mock:shadow-root>
+    <div class="auth-fields">
+      <amplify-username-field></amplify-username-field>
+      <amplify-password-field></amplify-password-field>
+    </div>
   </mock:shadow-root>
 </amplify-auth-fields>
 `;

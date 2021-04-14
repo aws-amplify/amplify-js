@@ -1,5 +1,6 @@
 import { h } from '@stencil/core';
 import { FormFieldType, PhoneFormFieldType } from './amplify-auth-fields-interface';
+import { TextFieldTypes } from '../../common/types/ui-types';
 
 const componentFieldMapping = {
   username: (ff: FormFieldType) => (
@@ -64,6 +65,7 @@ const componentFieldMapping = {
   default: (ff: FormFieldType) => (
     <amplify-form-field
       label={ff.label}
+      type={ff.type as TextFieldTypes}
       placeholder={ff.placeholder}
       required={ff.required}
       handleInputChange={ff.handleInputChange}
