@@ -38,6 +38,7 @@ export type StorageFacade = Omit<Adapter, 'setUp'>;
 export type Storage = InstanceType<typeof StorageClass>;
 
 const logger = new Logger('DataStore');
+const syncSymbol = Symbol('sync');
 
 class StorageClass implements StorageFacade {
 	private initialized: Promise<void>;
@@ -116,15 +117,19 @@ class StorageClass implements StorageFacade {
 			const [originalElement, opType] = r;
 
 			const containsPatches = patchesTuple && patchesTuple.length;
+			// true when save is called by the Mutator
+			const syncResponse =
+				mutator && mutator.toString() === syncSymbol.toString();
 
 			// an update without patches means no fields were changed
 			// => don't create mutationEvent
-			if (opType === OpType.UPDATE && !containsPatches) {
+			// unless the save is coming from the Mutator (i.e., from an AppSync response)
+			if (opType === OpType.UPDATE && !containsPatches && !syncResponse) {
 				return result;
 			}
 
 			let updateMutationInput;
-			if (opType === OpType.UPDATE && containsPatches) {
+			if (opType === OpType.UPDATE && containsPatches && !syncResponse) {
 				updateMutationInput = this.getUpdateMutationInput(
 					model,
 					originalElement,
