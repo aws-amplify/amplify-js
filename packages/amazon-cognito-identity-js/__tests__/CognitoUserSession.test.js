@@ -1,24 +1,24 @@
 import CognitoUserSession from '../src/CognitoUserSession'
-import { cognitoIdToken, refreshToken, accessToken } from './constants.js'
+import { ivCognitoUserSession, ivRefreshToken, ivAccessToken, ivCognitoIdToken, ivRefreshToken } from './constants.js'
 
-const cognitoUserSession = new CognitoUserSession({ IdToken: cognitoIdToken, RefreshToken: refreshToken, AccessToken: accessToken, ClockDrift: undefined })
+
 describe('Getters for Cognito User Session', () => {
 
     test('Getting access token', () => {
-        expect(cognitoUserSession.getIdToken()).toBe(cognitoIdToken)
+        expect(ivCognitoUserSession.getIdToken()).toBe(ivCognitoIdToken)
     })
 
     test('Getting refresh token', () => {
-        expect(cognitoUserSession.getRefreshToken()).toBe(refreshToken)
+        expect(ivCognitoUserSession.getRefreshToken()).toBe(ivRefreshToken)
     })
 
     test('Getting access token', () => {
-        expect(cognitoUserSession.getAccessToken()).toBe(accessToken)
+        expect(ivCognitoUserSession.getAccessToken()).toBe(ivAccessToken)
     })
 
     test('Access token undefined', () => {
         expect(() => {
-            new CognitoUserSession({ IdToken: cognitoIdToken, RefreshToken: refreshToken, AccessToken: null, ClockDrift: undefined })
+            new CognitoUserSession({ IdToken: ivCognitoIdToken, RefreshToken: ivRefreshToken, AccessToken: null, ClockDrift: undefined })
         })
             .toThrowError('Id token and Access Token must be present.')
     })
@@ -32,17 +32,15 @@ describe('Getters for Cognito User Session', () => {
 describe('Calculations for Cognito User Attributes', () => {
     test('Calculate a clock drift', () => {
         const currDate = Math.floor(new Date() / 1000);
-        const cognitoUserSessionClockDrift = new CognitoUserSession({ IdToken: cognitoIdToken, RefreshToken: refreshToken, AccessToken: accessToken, ClockDrift: currDate });
-
-        expect(cognitoUserSessionClockDrift.getClockDrift()).toBe(currDate)
+        expect(ivCognitoUserSession.getClockDrift()).toBe(currDate)
     })
 
     test('Getting undefined clock drift', () => {
-        expect(cognitoUserSession.getClockDrift()).toEqual(cognitoUserSession.calculateClockDrift())
+        expect(ivCognitoUserSession.getClockDrift()).toEqual(ivCognitoUserSession.calculateClockDrift())
     })
 
     test('JWT Expiration was hard-coded to be a time in the past so that this is guaranteed to be an invalid token', () => {
-        expect(cognitoUserSession.isValid()).toBe(false)
+        expect(ivCognitoUserSession.isValid()).toBe(false)
     })
 
 })

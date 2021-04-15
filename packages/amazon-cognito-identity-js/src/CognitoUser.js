@@ -2011,7 +2011,7 @@ export default class CognitoUser {
 
 	/**
 	 * This returns the user context data for advanced security feature.
-	 * @returns {void}
+	 * @returns {string} the user context data from CognitoUserPool
 	 */
 	getUserContextData() {
 		const pool = this.pool;
