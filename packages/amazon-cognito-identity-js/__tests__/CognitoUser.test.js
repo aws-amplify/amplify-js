@@ -11,7 +11,8 @@ import {
 	authDetailDataWithValidationData,
 	vCognitoUserSession,
 	deviceName,
-	totpCode
+	totpCode,
+	ivCognitoUserSession
 } from './constants';
 
 
@@ -466,6 +467,72 @@ describe('Testing Verifity Software Token with a signed in user', () => {
 			expect(res).toEqual(undefined)
 			
 		});
+	});
+
+	describe('Signout and globalSignOut', () => {
+		const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
+		const cognitoUserPool = new CognitoUserPool(minimalData);
+		const cognitoUser = new CognitoUser({
+			Username: 'username',
+			Pool: cognitoUserPool,
+		});
+
+		const callback = {
+			onSuccess: jest.fn(),
+			onFailure: jest.fn(),
+		}
+		afterAll(() => {
+			jest.restoreAllMocks();
+		});
+
+		afterEach(() => {
+			callback.onSuccess.mockClear();
+			callback.onFailure.mockClear();
+		});
+	
+		test('signOut expected behavior', () => {
+			cognitoUser.signOut()
+			expect(cognitoUser.signInUserSession).toEqual(null)
+		});
+
+		test('global signOut Happy Path', () => {
+			jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2]();
+			});
+			cognitoUser.setSignInUserSession(vCognitoUserSession)
+			cognitoUser.globalSignOut(callback)
+			expect(callback.onSuccess.mock.calls.length).toEqual(1)
+		});
+
+		test('global signOut catching a error', () => {
+			jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](err => { console.log(err)});
+			});
+			cognitoUser.setSignInUserSession(vCognitoUserSession)
+			cognitoUser.globalSignOut(callback)
+			expect(callback.onFailure.mock.calls.length).toEqual(1)
+		});
+
+		test('Global signout when user session is null', () => {
+			cognitoUser.signInUserSession = null
+			cognitoUser.globalSignOut(callback)
+			expect(callback.onFailure.mock.calls.length).toEqual(1)
+		});
+
+		test('client request does not have a callback', () => {
+			jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2]();
+			});
+			cognitoUser.setSignInUserSession(vCognitoUserSession)
+			expect(cognitoUser.globalSignOut(callback)).toEqual(undefined)
+		});
+
 	});
 })
 
