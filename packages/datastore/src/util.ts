@@ -491,7 +491,8 @@ export function valuesEqual(
 	const aKeys = Object.keys(a);
 	const bKeys = Object.keys(b);
 
-	if (aKeys.length !== bKeys.length && !nullish) {
+	// last condition is to ensure that [] !== [null] even if nullish. However [undefined] === [null] when nullish
+	if (aKeys.length !== bKeys.length && (!nullish || Array.isArray(a))) {
 		return false;
 	}
 
