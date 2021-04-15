@@ -61,7 +61,6 @@ export class AmplifyAuthenticator {
 	@State() toastMessage: string = '';
 
 	@Element() el: HTMLAmplifyAuthenticatorElement;
-	private slotsToHide: Element[] = [];
 
 	private handleExternalAuthEvent = ({ payload }) => {
 		switch (payload.event) {
@@ -141,14 +140,6 @@ export class AmplifyAuthenticator {
 			this.authState
 		);
 
-		if (this.authState !== nextAuthState) {
-			console.log('to hide', this.slotsToHide);
-			this.slotsToHide.forEach(slotEl => {
-				slotEl.setAttribute('hidden', '');
-			});
-			this.slotsToHide = [];
-		}
-
 		if (nextAuthState === AuthState.SignedOut) {
 			this.authState = this.initialAuthState;
 		} else {
@@ -209,11 +200,6 @@ export class AmplifyAuthenticator {
 		const slottedEl = this.el.querySelector(`[slot="${slotName}"]`);
 		const slotIsEmpty = slottedEl === null; // true if no element has been inserted to the slot
 
-		console.log(this.el.children);
-		if (slottedEl) {
-			slottedEl.removeAttribute('hidden');
-			this.slotsToHide.push(slottedEl);
-		}
 		/**
 		 * Connect the inner auth component to DOM only if the slot hasn't been overwritten. This prevents
 		 * the overwritten component from calling its lifecycle methods.
@@ -243,7 +229,6 @@ export class AmplifyAuthenticator {
 					[<slot name="greetings"></slot>, <slot></slot>]
 				) : (
 					<div class="auth-container">
-						<slot name="sign-in"></slot>
 						{this.getSlotWithAuthComponent(this.authState)}
 					</div>
 				)}

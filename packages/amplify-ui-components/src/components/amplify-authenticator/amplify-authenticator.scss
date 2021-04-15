@@ -35,11 +35,6 @@ amplify-authenticator {
 	min-height: var(--container-height);
 }
 
-amplify-authenticator > [slot] {
-	visibility: hidden;
-	display: none;
-}
-
 slot-fb [name='footer'] {
 	display: contents;
 }
