@@ -12,6 +12,8 @@ body:
       value: |
         For reference, the current versions of the Amplify JS packages are listed below. Please verify your issue against the latest version(s) of the relevant package(s):
 
+        You can find information in our docs site regarding [Upgrading Amplify packages](https://docs.amplify.aws/lib/troubleshooting/upgrading/q/platform/js).
+
         <details>
           <summary>Click to expand version list</summary>
 
@@ -123,7 +125,7 @@ body:
       description: |
         Please run the following command inside your project and copy/paste the output below:
         ```
-        npx envinfo --system --binaries --browsers --npmPackages --npmGlobalPackages
+        npx envinfo --system --binaries --browsers --npmPackages --duplicates --npmGlobalPackages
         ```
       value: |
         <details>
