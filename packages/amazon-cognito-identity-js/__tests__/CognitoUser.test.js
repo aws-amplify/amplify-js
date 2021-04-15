@@ -75,6 +75,7 @@ describe('getters and setters', () => {
 
 		// getter after set explicitly
 		expect(user.getSignInUserSession()).toEqual(vCognitoUserSession);
+
 	});
 
 	test('getUsername()', () => {
@@ -143,6 +144,7 @@ describe('initiateAuth()', () => {
 
 		const authDetails = new AuthenticationDetails(authDetailData);
 		user.initiateAuth(authDetails, callback);
+
 
 		expect(user.Session).toMatchObject(vCognitoUserSession);
 		expect(callback.customChallenge.mock.calls.length).toBe(1);
@@ -229,8 +231,7 @@ describe('authenticateUser()', () => {
 	});
 });
 
-
-describe('Testing Verifity Software Token with a signed in user', () => {
+describe('Testing verify Software Token with a signed in user', () => {
 	const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
 	const cognitoUserPool = new CognitoUserPool(minimalData);
 	const cognitoUser = new CognitoUser({
@@ -261,11 +262,10 @@ describe('Testing Verifity Software Token with a signed in user', () => {
 		expect(callback.onSuccess.mock.calls.length).toBe(1)
 	});
 	
-	test('Verify Software Token First Callback fails', () => { 
+	test('Verify software token first callback fails', () => { 
 		jest
 			.spyOn(Client.prototype, 'request')
 			.mockImplementationOnce((...args) => {
-				
 				args[2](new Error('Network Error'), null);
 			});
 			
