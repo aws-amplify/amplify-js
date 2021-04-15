@@ -56,10 +56,14 @@ class MutationEventOutbox {
 				if (incomingMutationType === TransformerMutationType.DELETE) {
 					await s.delete(this.MutationEvent, predicate);
 				} else {
-					// first gets updated with incoming's data, condition intentionally skipped
+					// first gets updated with the incoming mutation's data, condition intentionally skipped
+
+					// we need to merge the fields for a create and update mutation to prevent
+					// data loss, since update mutations only include changed fields
+					const merged = this.mergeUserFields(first, mutationEvent);
 					await s.save(
 						this.MutationEvent.copyOf(first, draft => {
-							draft.data = mutationEvent.data;
+							draft.data = merged.data;
 						}),
 						undefined,
 						this.ownSymbol
