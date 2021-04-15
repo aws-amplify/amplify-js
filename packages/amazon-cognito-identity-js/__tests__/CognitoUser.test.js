@@ -408,6 +408,65 @@ describe('Testing Verifity Software Token with a signed in user', () => {
 		});
 		
 	});
+
+	describe('sendMFASelectionAnswer()', () => {
+		const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
+		const cognitoUserPool = new CognitoUserPool(minimalData);
+		const cognitoUser = new CognitoUser({
+			Username: 'username',
+			Pool: cognitoUserPool,
+		});
+
+		const callback = {
+			mfaRequired: jest.fn(),
+			onFailure: jest.fn(),
+			totpRequired: jest.fn()
+		}
+
+		afterAll(() => {
+			jest.restoreAllMocks();
+		});
+	
+		test('happy case with SMS_MFA', () => {
+			jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](null, {Session: 'sessionData'});
+			});
+			cognitoUser.sendMFASelectionAnswer('SMS_MFA',callback)
+			expect(callback.mfaRequired.mock.calls.length).toEqual(1)
+		});
+
+		test('happy case with software token MFA', () => {
+			jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](null, {Session: 'sessionData'});
+			});
+			cognitoUser.sendMFASelectionAnswer('SOFTWARE_TOKEN_MFA',callback)
+			expect(callback.totpRequired.mock.calls.length).toEqual(1)
+		});
+
+		test('error case with software token MFA', () => {
+			jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](new Error('Network Error'), null);
+			});
+			cognitoUser.sendMFASelectionAnswer('SOFTWARE_TOKEN_MFA',callback)
+			expect(callback.onFailure.mock.calls.length).toEqual(1)
+		});
+		test('error case with undefined answer challenge', () => {
+			jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](null, {Session:'sessionData'});
+			});
+			const res = cognitoUser.sendMFASelectionAnswer('WRONG_CHALLENGE',callback)
+			expect(res).toEqual(undefined)
+			
+		});
+	});
 })
 
 
