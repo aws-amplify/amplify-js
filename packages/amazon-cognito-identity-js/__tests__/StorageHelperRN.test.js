@@ -1,4 +1,4 @@
-describe('Name of the group', () => {
+describe('React native storage helper unit tests', () => {
 	describe('Accessor methods', () => {
 		beforeEach(() => {
 			jest.resetModules();

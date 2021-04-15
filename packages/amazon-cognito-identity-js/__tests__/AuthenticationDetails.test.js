@@ -1,8 +1,7 @@
 import AuthenticationDetails from '../src/AuthenticationDetails';
-import { authDetailData } from './constants'
+import { authDetailData } from './constants';
 
 describe('AuthenticationDetails getter methods', () => {
-
 	const authDetails = new AuthenticationDetails(authDetailData);
 
 	test('getUsername()', () => {
