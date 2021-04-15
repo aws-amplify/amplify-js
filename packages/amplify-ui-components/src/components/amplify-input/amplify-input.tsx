@@ -25,13 +25,13 @@ export class AmplifyInput {
 	/** Will disable the input if set to true */
 	@Prop() disabled?: boolean;
 	/** Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form */
+	// prettier-ignore
 	@Event({
 		eventName: 'formSubmit',
 		composed: true,
 		cancelable: true,
 		bubbles: true,
-	})
-	formSubmit: EventEmitter;
+	}) formSubmit: EventEmitter;
 
 	// eslint-disable-next-line
 

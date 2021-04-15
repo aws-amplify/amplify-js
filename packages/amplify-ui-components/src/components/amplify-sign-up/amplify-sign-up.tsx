@@ -71,8 +71,8 @@ export class AmplifySignUp {
 	/** Auth state change handler for this component
 	 * e.g. SignIn -> 'Create Account' link -> SignUp
 	 */
-	@Prop()
-	handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
+	// prettier-ignore
+	@Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 	/** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
 	@Prop() usernameAlias: UsernameAliasStrings = 'username';
 	// private userInput: string | PhoneNumberInterface;
