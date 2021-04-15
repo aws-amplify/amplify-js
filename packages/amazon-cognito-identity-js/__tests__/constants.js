@@ -67,7 +67,7 @@ export const vAccessToken = new CognitoAccessToken({AccessToken: 'eyJhbGciOiJIUz
 export const vRefreshToken = new CognitoRefreshToken({RefreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOiIxNzE3NTY2MjQ0MDAwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNjE3NTY2MjQ0MDAwfQ.zp6ciAC6pOozeyGKqVwCCxKwj_LspauWe8e1LGOpih4'})
 
 //valid cognitoUserSession
-export const vCognitoUserSssion = new CognitoUserSession({
+export const vCognitoUserSession = new CognitoUserSession({
 	IdToken: vCognitoIdToken,
 	RefreshToken: vRefreshToken,
 	AccessToken: vAccessToken,
@@ -83,3 +83,8 @@ export const password = 'Very$ecur3';
 
 /** CookieStorage */
 export const cookieStorageDomain = 'https://testdomain.com';
+
+
+/** CognitoUser */
+export const deviceName = 'friendlyMacbookPro';
+export const totpCode = '492432'

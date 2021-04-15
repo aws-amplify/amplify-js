@@ -9,7 +9,7 @@ import {
 	userPoolId,
 	authDetailData,
 	authDetailDataWithValidationData,
-	vCognitoUserSssion,
+	vCognitoUserSession,
 	deviceName,
 	totpCode
 } from './constants';
@@ -69,11 +69,11 @@ describe('getters and setters', () => {
 		expect(user.getSignInUserSession()).toEqual(null);
 
 		// setting explicitly
-		user.setSignInUserSession(vCognitoUserSssion);
-		expect(user.signInUserSession).toEqual(vCognitoUserSssion);
+		user.setSignInUserSession(vCognitoUserSession);
+		expect(user.signInUserSession).toEqual(vCognitoUserSession);
 
 		// getter after set explicitly
-		expect(user.getSignInUserSession()).toEqual(vCognitoUserSssion);
+		expect(user.getSignInUserSession()).toEqual(vCognitoUserSession);
 	});
 
 	test('getUsername()', () => {
@@ -130,7 +130,7 @@ describe('initiateAuth()', () => {
 		jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
 			args[2](null, {
 				ChallengeName: 'CUSTOM_CHALLENGE',
-				Session: vCognitoUserSssion,
+				Session: vCognitoUserSession,
 				ChallengeParameters: 'Custom challenge params',
 			});
 		});
@@ -143,7 +143,7 @@ describe('initiateAuth()', () => {
 		const authDetails = new AuthenticationDetails(authDetailData);
 		user.initiateAuth(authDetails, callback);
 
-		expect(user.Session).toMatchObject(vCognitoUserSssion);
+		expect(user.Session).toMatchObject(vCognitoUserSession);
 		expect(callback.customChallenge.mock.calls.length).toBe(1);
 		expect(callback.customChallenge).toBeCalledWith('Custom challenge params');
 	});
@@ -314,7 +314,7 @@ describe('Testing Verifity Software Token with a signed in user', () => {
 				onSuccess: jest.fn()
 			}
 
-			cognitoUser.setSignInUserSession(vCognitoUserSssion)
+			cognitoUser.setSignInUserSession(vCognitoUserSession)
 			cognitoUser.verifySoftwareToken(totpCode, deviceName, callback);
 			expect(callback.onSuccess.mock.calls.length).toBe(1);			
 		});
@@ -328,11 +328,17 @@ describe('Testing Verifity Software Token with a signed in user', () => {
 			const callback = {
 				onFailure: jest.fn()
 			}
-
-			cognitoUser.setSignInUserSession(vCognitoUserSssion)
+			
+			cognitoUser.setSignInUserSession(vCognitoUserSession)
 			cognitoUser.verifySoftwareToken(totpCode, deviceName, callback);
 			expect(callback.onFailure.mock.calls.length).toBe(1);		
 		});
+	});
+	describe('Testing Associate Software Token', () => {
+		test('Happy path for associate software token ', () => {
+			
+		});
+		
 	});
 })
 
