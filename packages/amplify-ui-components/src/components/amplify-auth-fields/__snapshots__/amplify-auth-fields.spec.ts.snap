@@ -2,16 +2,12 @@
 
 exports[`amplify-auth-fields spec: Render logic -> should render with a \`username\` and \`password\` field 1`] = `
 <amplify-auth-fields formfields="username,password">
-  <mock:shadow-root>
-    <div class="auth-fields"></div>
-  </mock:shadow-root>
+  <div class="auth-fields"></div>
 </amplify-auth-fields>
 `;
 
 exports[`amplify-auth-fields spec: Render logic -> should render with no default values and a empty string 1`] = `
 <amplify-auth-fields>
-  <mock:shadow-root>
-    <div class="auth-fields"></div>
-  </mock:shadow-root>
+  <div class="auth-fields"></div>
 </amplify-auth-fields>
 `;
