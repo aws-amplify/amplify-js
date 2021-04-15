@@ -334,9 +334,77 @@ describe('Testing Verifity Software Token with a signed in user', () => {
 			expect(callback.onFailure.mock.calls.length).toBe(1);		
 		});
 	});
+
 	describe('Testing Associate Software Token', () => {
-		test('Happy path for associate software token ', () => {
+		const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
+		const cognitoUserPool = new CognitoUserPool(minimalData);
+		const cognitoUser = new CognitoUser({
+			Username: 'username',
+			Pool: cognitoUserPool,
+		});
+
+		const callback = {
+			associateSecretCode: jest.fn(),
+			onFailure: jest.fn()
+		}
+
+		afterAll(() => {
+			jest.restoreAllMocks();
+		});
+	
+		afterEach(() => {
+			callback.associateSecretCode.mockClear();
+			callback.onFailure.mockClear();
+		});
+
+		test('Happy path for associate software token without a userSession ', () => {
 			
+			jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](null, {});
+			});
+
+			cognitoUser.associateSoftwareToken(callback)
+			expect(callback.associateSecretCode.mock.calls.length).toBe(1);
+		});
+
+		test('Failing in the first requeset to client', () => {
+			
+			jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](new Error('Network Error'), null);
+			});
+
+			cognitoUser.associateSoftwareToken(callback)
+			expect(callback.onFailure.mock.calls.length).toBe(1);
+		});
+		test('Happy path for a user with a validUserSession ', () => {
+			
+			jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](null, {});
+			});
+
+			cognitoUser.setSignInUserSession(vCognitoUserSession)
+			cognitoUser.associateSoftwareToken(callback)
+
+			expect(callback.associateSecretCode.mock.calls.length).toBe(1);
+		});
+		test('Error path for a user with a validUserSession ', () => {
+			
+			jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](new Error('Network Error'), null);
+			});
+
+			cognitoUser.setSignInUserSession(vCognitoUserSession)
+			cognitoUser.associateSoftwareToken(callback)
+
+			expect(callback.onFailure.mock.calls.length).toBe(1);
 		});
 		
 	});
