@@ -2104,6 +2104,7 @@ export default class CognitoUser {
 				}
 			);
 		} else {
+			console.log('inside else case');
 			this.client.request(
 				'VerifySoftwareToken',
 				{
