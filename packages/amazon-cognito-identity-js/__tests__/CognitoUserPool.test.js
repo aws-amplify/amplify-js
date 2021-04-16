@@ -80,12 +80,12 @@ describe('Testing signUp of a user into a user pool', () => {
         jest.spyOn(Client.prototype, 'request').mockImplementation(
             (...args) => {
                 const err = new Error('Network Error')
-                args[2](err, null)
+                args[2](null, {})
             });
 
         //returns a function that records everything being done to it
         const callback = jest.fn()
         cognitoUserPool.signUp(userName, password, [], [], callback, [])
-        expect(() => { callback.mock.calls[0][0]() }).toThrow();
+        expect(callback.mock.calls.length).toBe(1);
     })
 });
