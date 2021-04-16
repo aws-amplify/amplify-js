@@ -8,11 +8,7 @@ import Client from '../src/Client';
 import {
 	clientId,
 	userPoolId,
-	cognitoUserSession,
 	authDetailData,
-	authDetailDataWithValidationData,
-	authDetailData,
-	authDetailDataWithValidationData,
 	vCognitoUserSession,
 	deviceName,
 	totpCode,
@@ -255,7 +251,7 @@ describe('authenticateUserDefaultAuth()', () => {
 		jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
 			args[2](null, {
 				ChallengeName: 'CUSTOM_CHALLENGE',
-				Session: cognitoUserSession,
+				Session: vCognitoUserSession,
 				ChallengeParameters: {
 					USER_ID_FOR_SRP: 'abc123',
 					SRP_B: 'abc123',
