@@ -667,9 +667,9 @@ describe('Testing verify Software Token with a signed in user', () => {
 			expect(cognitoUser.listDevices(1, null, callback)).toEqual(undefined);
 		});
 	});
-	describe('setDeviceStatusNotRemembered test suite', () => {
-		const cognitoUser = new CognitoUser({ ...userDefaults });
 
+	describe('Include unit tests for setDeviceStatus[remembered,notRemembered]', () => {
+		const cognitoUser = new CognitoUser({ ...userDefaults });
 		const callback = {
 			onSuccess: jest.fn(),
 			onFailure: jest.fn(),
@@ -690,7 +690,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 			});
 
 			cognitoUser.setSignInUserSession(vCognitoUserSession);
-			cognitoUser.setDeviceStatusNotRemembered(callback)
+			cognitoUser.setDeviceStatusNotRemembered(callback);
 			expect(callback.onSuccess.mock.calls.length).toEqual(1);
 		});
 
@@ -700,23 +700,103 @@ describe('Testing verify Software Token with a signed in user', () => {
 			});
 
 			cognitoUser.setSignInUserSession(vCognitoUserSession);
-			cognitoUser.setDeviceStatusNotRemembered(callback)
+			cognitoUser.setDeviceStatusNotRemembered(callback);
 			expect(callback.onFailure.mock.calls.length).toEqual(1);
 		});
 
 		test('Invalid user session throws an error', () => {
 			cognitoUser.setSignInUserSession(ivCognitoUserSession);
-			cognitoUser.setDeviceStatusNotRemembered(callback)
+			cognitoUser.setDeviceStatusNotRemembered(callback);
 			expect(callback.onFailure.mock.calls.length).toEqual(1);
 		});
 
 		test('Client request does not work and method returns undefined', () => {
 			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			expect(cognitoUser.setDeviceStatusNotRemembered(callback)).toEqual(
+				undefined
+			);
+		});
+
+		test('Happy path for setDeviceStatusRemembered should callback with onSuccess ', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](null);
+			});
+
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			cognitoUser.setDeviceStatusRemembered(callback);
+			expect(callback.onSuccess.mock.calls.length).toEqual(1);
+		});
+
+		test('Client throws and error should callback onFailure', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](new Error('Network Error'));
+			});
+
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			cognitoUser.setDeviceStatusRemembered(callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+
+		test('Invalid user session throws an error', () => {
+			cognitoUser.setSignInUserSession(ivCognitoUserSession);
+			cognitoUser.setDeviceStatusRemembered(callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+
+		test('Client request does not work and method returns undefined', () => {
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			expect(cognitoUser.setDeviceStatusRemembered(callback)).toEqual(
+				undefined
+			);
+		});
+	});
+	describe('ForgetDevices test suite', () => {
+		const cognitoUser = new CognitoUser({ ...userDefaults });
+		cognitoUser.setSignInUserSession(vCognitoUserSession)
+		const callback = {
+			onSuccess: jest.fn(),
+			onFailure: jest.fn(),
+		};
+
+		afterAll(() => {
+			jest.restoreAllMocks();
+		});
+
+		afterEach(() => {
+			callback.onSuccess.mockClear();
+			callback.onFailure.mockClear();
+		});
+
+		test('Forget specific device happy path should callback onSuccess', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](null);
+			});	
+			cognitoUser.forgetSpecificDevice('deviceKey',callback)
+			expect(callback.onSuccess.mock.calls.length).toEqual(1);
+		});
+		test('Client request throws an error for forget specific device', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](new Error('Network Error'));
+			});	
+			cognitoUser.forgetSpecificDevice('deviceKey',callback)
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+		test('Invalid user session throws and error for forget specific device', () => {
+			cognitoUser.setSignInUserSession(ivCognitoUserSession)
+			cognitoUser.forgetSpecificDevice('deviceKey',callback)
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+		test('Returns undefined when client request does not work properly', () => {
+			cognitoUser.setSignInUserSession(vCognitoUserSession)
+			expect(cognitoUser.forgetSpecificDevice('deviceKey',callback)).toEqual(undefined)
+		});
+		test('forgetSpecificDevice happy path should callback onSuccess', () => {
 			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
 				args[2]();
 			});
-			expect(cognitoUser.setDeviceStatusNotRemembered(callback)).toEqual(undefined)
-			
+			cognitoUser.setSignInUserSession(vCognitoUserSession)
+			cognitoUser.forgetDevice(callback)
+			expect(callback.onSuccess.mock.calls.length).toEqual(1)
 		});
 	});
 });
