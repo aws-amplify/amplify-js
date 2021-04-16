@@ -661,7 +661,62 @@ describe('Testing verify Software Token with a signed in user', () => {
 
 		test('Valid userSession but no return from client.request returns undefined', () => {
 			cognitoUser.setSignInUserSession(vCognitoUserSession);
-			expect(cognitoUser.listDevices(1, null, callback)).toEqual(undefined)
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2]();
+			});
+			expect(cognitoUser.listDevices(1, null, callback)).toEqual(undefined);
+		});
+	});
+	describe('setDeviceStatusNotRemembered test suite', () => {
+		const cognitoUser = new CognitoUser({ ...userDefaults });
+
+		const callback = {
+			onSuccess: jest.fn(),
+			onFailure: jest.fn(),
+		};
+
+		afterAll(() => {
+			jest.restoreAllMocks();
+		});
+
+		afterEach(() => {
+			callback.onSuccess.mockClear();
+			callback.onFailure.mockClear();
+		});
+
+		test('Happy path should callback success', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](null);
+			});
+
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			cognitoUser.setDeviceStatusNotRemembered(callback)
+			expect(callback.onSuccess.mock.calls.length).toEqual(1);
+		});
+
+		test('Callback catches an error from client request', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](new Error('Network Error'));
+			});
+
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			cognitoUser.setDeviceStatusNotRemembered(callback)
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+
+		test('Invalid user session throws an error', () => {
+			cognitoUser.setSignInUserSession(ivCognitoUserSession);
+			cognitoUser.setDeviceStatusNotRemembered(callback)
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+
+		test('Client request does not work and method returns undefined', () => {
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2]();
+			});
+			expect(cognitoUser.setDeviceStatusNotRemembered(callback)).toEqual(undefined)
+			
 		});
 	});
 });
