@@ -750,7 +750,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 			);
 		});
 	});
-	
+
 	describe('ForgetDevices test suite', () => {
 		const cognitoUser = new CognitoUser({ ...userDefaults });
 		cognitoUser.setSignInUserSession(vCognitoUserSession);
@@ -782,7 +782,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 			cognitoUser.forgetSpecificDevice('deviceKey', callback);
 			expect(callback.onFailure.mock.calls.length).toEqual(1);
 		});
-		
+
 		test('Returns undefined when client request does not work properly', () => {
 			expect(cognitoUser.forgetSpecificDevice('deviceKey', callback)).toEqual(
 				undefined
@@ -823,27 +823,120 @@ describe('Testing verify Software Token with a signed in user', () => {
 			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
 				args[2](null);
 			});
-			cognitoUser.getDevice(callback)
-			expect(callback.onSuccess.mock.calls.length).toEqual(1)
+			cognitoUser.getDevice(callback);
+			expect(callback.onSuccess.mock.calls.length).toEqual(1);
 		});
 
 		test('client request returns an error and onFailure is called', () => {
 			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
 				args[2](new Error('Network Error'));
 			});
-			cognitoUser.getDevice(callback)
-			expect(callback.onFailure.mock.calls.length).toEqual(1)
+			cognitoUser.getDevice(callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
 		});
 
 		test('No client request method implementations, return undefined', () => {
-			expect(cognitoUser.getDevice(callback)).toEqual(undefined)
+			expect(cognitoUser.getDevice(callback)).toEqual(undefined);
 		});
 
 		test('invalid user session should callback onFailure', () => {
-			cognitoUser.setSignInUserSession(ivCognitoUserSession)
-			cognitoUser.getDevice(callback)
-			expect(callback.onFailure.mock.calls.length).toEqual(1)
+			cognitoUser.setSignInUserSession(ivCognitoUserSession);
+			cognitoUser.getDevice(callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
 		});
 
+		describe('verifyAttribute() and getAttributeVerificationCode', () => {
+			const cognitoUser = new CognitoUser({ ...userDefaults });
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			const callback = {
+				onSuccess: jest.fn(),
+				onFailure: jest.fn(),
+				inputVerificationCode: jest.fn(),
+			};
+			const verifyAttributeDefaults = ['username', '123456', callback];
+
+			afterAll(() => {
+				jest.restoreAllMocks();
+			});
+
+			afterEach(() => {
+				callback.onSuccess.mockClear();
+				callback.onFailure.mockClear();
+				callback.inputVerificationCode.mockClear();
+			});
+
+			test('Happy path for verifyAttribute should callback onSuccess', () => {
+				jest
+					.spyOn(Client.prototype, 'request')
+					.mockImplementation((...args) => {
+						args[2](null);
+					});
+				cognitoUser.verifyAttribute(...verifyAttributeDefaults);
+				expect(callback.onSuccess.mock.calls.length).toEqual(1);
+			});
+
+			test('client request returns an error and onFailure is called', () => {
+				jest
+					.spyOn(Client.prototype, 'request')
+					.mockImplementation((...args) => {
+						args[2](new Error('Network Error'));
+					});
+				cognitoUser.verifyAttribute(...verifyAttributeDefaults);
+				expect(callback.onFailure.mock.calls.length).toEqual(1);
+			});
+
+			test('No client request method implementations, return undefined', () => {
+				expect(cognitoUser.verifyAttribute(...verifyAttributeDefaults)).toEqual(
+					undefined
+				);
+			});
+
+			const getAttrsVerifCodeDefaults = ['username', callback, {}];
+			test('happy path for getAttributeVerificationCode', () => {
+				callback.inputVerificationCode = null;
+				jest
+					.spyOn(Client.prototype, 'request')
+					.mockImplementation((...args) => {
+						args[2](null);
+					});
+				cognitoUser.getAttributeVerificationCode(...getAttrsVerifCodeDefaults);
+				callback.inputVerificationCode = jest.fn();
+				expect(callback.onSuccess.mock.calls.length).toEqual(1);
+			});
+
+			test('when inputVerificationCode exists in the callback, call inputVerifier with the data', () => {
+				jest
+					.spyOn(Client.prototype, 'request')
+					.mockImplementation((...args) => {
+						console.log(args[2]);
+						args[2](null);
+					});
+
+				cognitoUser.getAttributeVerificationCode(...getAttrsVerifCodeDefaults);
+				expect(callback.inputVerificationCode.mock.calls.length).toEqual(1);
+			});
+
+			test('when inputVerificationCode exists in the callback, call inputVerifier with the data', () => {
+				jest
+					.spyOn(Client.prototype, 'request')
+					.mockImplementation((...args) => {
+						args[2](new Error('Network error'));
+					});
+
+				cognitoUser.getAttributeVerificationCode(...getAttrsVerifCodeDefaults);
+				expect(callback.onFailure.mock.calls.length).toEqual(1);
+			});
+
+			test('invalid user session should callback onFailure for verifyAttributes', () => {
+				cognitoUser.setSignInUserSession(ivCognitoUserSession);
+				cognitoUser.verifyAttribute(...verifyAttributeDefaults);
+				expect(callback.onFailure.mock.calls.length).toEqual(1);
+			});
+
+			test('invalid user session should callback onFailure for getAttrsVerifCodeDefaults', () => {
+				cognitoUser.getAttributeVerificationCode(...getAttrsVerifCodeDefaults);
+				expect(callback.onFailure.mock.calls.length).toEqual(1);
+			});
+		});
 	});
 });
