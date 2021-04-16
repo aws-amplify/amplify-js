@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.9.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.15...@aws-amplify/datastore@2.9.16) (2021-04-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** add additional type check to util.objectsEqual ([#8027](https://github.com/aws-amplify/amplify-js/issues/8027)) ([dee1971](https://github.com/aws-amplify/amplify-js/commit/dee1971285682170dc1828204273d34a69145aa3))
+* **@aws-amplify/datastore:** consecutive saves ([#8000](https://github.com/aws-amplify/amplify-js/issues/8000)) ([7b478a5](https://github.com/aws-amplify/amplify-js/commit/7b478a58b73d8f321523d3a80a9b85e88afcc5d0))
+* **@aws-amplify/datastore:** consecutive saves 2 ([#8038](https://github.com/aws-amplify/amplify-js/issues/8038)) ([a15b8f0](https://github.com/aws-amplify/amplify-js/commit/a15b8f044597da68442e4c51e67c35772aed1d7c))
+* **@aws-amplify/datastore:** handle merging queued create with incoming update ([#8102](https://github.com/aws-amplify/amplify-js/issues/8102)) ([d84cf34](https://github.com/aws-amplify/amplify-js/commit/d84cf34d32e077554951e2fd7a383c6cfe3f536c))
+* **@aws-amplify/datastore:** Retry mutation after GraphQL request timeout due to bad network condition. ([#6542](https://github.com/aws-amplify/amplify-js/issues/6542)) ([9fe6b7f](https://github.com/aws-amplify/amplify-js/commit/9fe6b7fa58aadb061a742b32c6a9cc1fd76dae6d))
+
+
+
+
+
 ## [2.9.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.14...@aws-amplify/datastore@2.9.15) (2021-03-25)
 
 
