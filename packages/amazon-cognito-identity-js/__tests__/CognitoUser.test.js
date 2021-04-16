@@ -404,12 +404,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 	});
 
 	describe('Verify Software Token with an invalid signin user session', () => {
-		const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
-		const cognitoUserPool = new CognitoUserPool(minimalData);
-		const cognitoUser = new CognitoUser({
-			Username: 'username',
-			Pool: cognitoUserPool,
-		});
+		const cognitoUser = new CognitoUser({ ...userDefaults });
 
 		test('Happy case for non-signed in user session', () => {
 			jest
@@ -443,12 +438,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 	});
 
 	describe('Testing Associate Software Token', () => {
-		const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
-		const cognitoUserPool = new CognitoUserPool(minimalData);
-		const cognitoUser = new CognitoUser({
-			Username: 'username',
-			Pool: cognitoUserPool,
-		});
+		const cognitoUser = new CognitoUser({ ...userDefaults });
 
 		const callback = {
 			associateSecretCode: jest.fn(),
@@ -512,12 +502,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 	});
 
 	describe('sendMFASelectionAnswer()', () => {
-		const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
-		const cognitoUserPool = new CognitoUserPool(minimalData);
-		const cognitoUser = new CognitoUser({
-			Username: 'username',
-			Pool: cognitoUserPool,
-		});
+		const cognitoUser = new CognitoUser({ ...userDefaults });
 
 		const callback = {
 			mfaRequired: jest.fn(),
@@ -573,12 +558,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 	});
 
 	describe('Signout and globalSignOut', () => {
-		const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
-		const cognitoUserPool = new CognitoUserPool(minimalData);
-		const cognitoUser = new CognitoUser({
-			Username: 'username',
-			Pool: cognitoUserPool,
-		});
+		const cognitoUser = new CognitoUser({ ...userDefaults });
 
 		const callback = {
 			onSuccess: jest.fn(),
@@ -593,7 +573,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 			callback.onFailure.mockClear();
 		});
 
-		test('signOut expected behavior', () => {
+		test('signOut expected to set signinUserSession to equal null', () => {
 			cognitoUser.signOut();
 			expect(cognitoUser.signInUserSession).toEqual(null);
 		});
@@ -609,7 +589,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 			expect(callback.onSuccess.mock.calls.length).toEqual(1);
 		});
 
-		test('global signOut catching a error', () => {
+		test('global signOut catching an error', () => {
 			jest
 				.spyOn(Client.prototype, 'request')
 				.mockImplementationOnce((...args) => {
@@ -636,6 +616,52 @@ describe('Testing verify Software Token with a signed in user', () => {
 				});
 			cognitoUser.setSignInUserSession(vCognitoUserSession);
 			expect(cognitoUser.globalSignOut(callback)).toEqual(undefined);
+		});
+	});
+
+	describe('List devices test suite', () => {
+		const cognitoUser = new CognitoUser({ ...userDefaults });
+
+		const callback = {
+			onSuccess: jest.fn(),
+			onFailure: jest.fn(),
+		};
+
+		afterAll(() => {
+			jest.restoreAllMocks();
+		});
+
+		afterEach(() => {
+			callback.onSuccess.mockClear();
+			callback.onFailure.mockClear();
+		});
+
+		test('Happy path for device list', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](null, ['deviceName', 'device2Name']);
+			});
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			cognitoUser.listDevices(1, 'paginationToken', callback);
+			expect(callback.onSuccess.mock.calls.length).toEqual(1);
+		});
+
+		test('Client request throws an error', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](new Error('network error'), null);
+			});
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			cognitoUser.listDevices(1, null, callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+		test('Invalid userSession throws an error', () => {
+			cognitoUser.setSignInUserSession(ivCognitoUserSession);
+			cognitoUser.listDevices(1, null, callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+
+		test('Valid userSession but no return from client.request returns undefined', () => {
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			expect(cognitoUser.listDevices(1, null, callback)).toEqual(undefined)
 		});
 	});
 });
