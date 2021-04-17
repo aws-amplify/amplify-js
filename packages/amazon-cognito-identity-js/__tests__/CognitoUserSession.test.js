@@ -1,7 +1,6 @@
 import CognitoUserSession from '../src/CognitoUserSession'
 import { ivCognitoUserSession, ivRefreshToken, ivAccessToken, ivCognitoIdToken, ivRefreshToken } from './constants.js'
 
-
 describe('Getters for Cognito User Session', () => {
 
     test('Getting access token', () => {
@@ -24,15 +23,15 @@ describe('Getters for Cognito User Session', () => {
     })
 })
 
-/**
- * Clock drift is a unix timestamp and calc clock drift finds the minimum between issued time of the access token and the id token
- * and subtracts the current clock time from that minimum.
- */
-
 describe('Calculations for Cognito User Attributes', () => {
-    test('Calculate a clock drift', () => {
+    test('Calculate a clock drift to be the difference from now and the min of idToken and access token', () => {
         const currDate = Math.floor(new Date() / 1000);
-        expect(ivCognitoUserSession.getClockDrift()).toBe(currDate)
+        const idToken = ivCognitoUserSession.getIdToken().getIssuedAt()
+        const accessToken = ivCognitoUserSession.getAccessToken().getIssuedAt()
+        const min = Math.min(idToken,accessToken)
+        const expectedValue = currDate - min
+
+        expect(ivCognitoUserSession.calculateClockDrift()).toBe(expectedValue)
     })
 
     test('Getting undefined clock drift', () => {
