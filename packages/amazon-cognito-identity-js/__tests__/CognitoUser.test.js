@@ -168,8 +168,6 @@ describe('authenticateUser()', () => {
 	const authDetails = new AuthenticationDetails(authDetailData);
 	const callback = {
 		onFailure: jest.fn(),
-		onSuccess: jest.fn(),
-		customChallenge: jest.fn(),
 	};
 
 	test('USER_PASSWORD_AUTH flow type', () => {
@@ -207,14 +205,12 @@ describe('authenticateUserDefaultAuth()', () => {
 	const authDetails = new AuthenticationDetails(authDetailData);
 	const callback = {
 		onFailure: jest.fn(),
-		onSuccess: jest.fn(),
 		customChallenge: jest.fn(),
 	};
 
 	afterEach(() => {
 		jest.restoreAllMocks();
 		callback.onFailure.mockClear();
-		callback.onSuccess.mockClear();
 		callback.customChallenge.mockClear();
 	});
 
@@ -277,15 +273,11 @@ describe('authenticateUserPlainUsernamePassword()', () => {
 	const user = new CognitoUser({ ...userDefaults });
 	const callback = {
 		onFailure: jest.fn(),
-		onSuccess: jest.fn(),
-		customChallenge: jest.fn(),
 	};
 
 	afterEach(() => {
 		jest.restoreAllMocks();
 		callback.onFailure.mockClear();
-		callback.onSuccess.mockClear();
-		callback.customChallenge.mockClear();
 	});
 
 	test('Missing password throws an error', () => {
@@ -338,6 +330,99 @@ describe('authenticateUserPlainUsernamePassword()', () => {
 		expect(userSpy3.mock.results[0].value).toBe('test return value');
 	});
 });
+
+describe('authenticateUserInternal()', () => {
+	const user = new CognitoUser({ ...userDefaults });
+	const callback = {
+		mfaRequired: jest.fn(),
+		selectMFAType: jest.fn(),
+		mfaSetup: jest.fn(),
+		totpRequired: jest.fn(),
+		customChallenge: jest.fn(),
+		newPasswordRequired: jest.fn(),
+	};
+
+	// same approach as used in CognitoUser.js
+	const authHelper = new AuthenticationHelper(
+		user.pool.getUserPoolId().split('_')[1]
+	);
+
+	const authData = Object.assign(vCognitoUserSession, {
+		ChallengeParameters: {
+			userAttributes: '[]',
+			requiredAttributes: '[]',
+		},
+		AuthenticationResult: {
+			NewDeviceMetadata: {
+				DeviceGroupKey: 'abc123',
+				DeviceKey: '123abc',
+			},
+		},
+		Session: vCognitoUserSession,
+	});
+
+	afterEach(() => {
+		jest.restoreAllMocks();
+	});
+
+	test.each([
+		['SMS_MFA', callback.mfaRequired],
+		['SELECT_MFA_TYPE', callback.selectMFAType],
+		['MFA_SETUP', callback.mfaSetup],
+		['SOFTWARE_TOKEN_MFA', callback.totpRequired],
+		['CUSTOM_CHALLENGE', callback.customChallenge],
+	])(
+		'%s challenge sets user session and calls the corresponding cb',
+		(challengeName, cbMethod) => {
+			Object.assign(authData, { ChallengeName: challengeName });
+
+			user.authenticateUserInternal(authData, authHelper, callback);
+
+			expect(user.Session).toMatchObject(vCognitoUserSession);
+
+			if (challengeName === 'CUSTOM_CHALLENGE') {
+				// this cb signature only expects one arg
+				expect(cbMethod).toHaveBeenCalledWith(authData.ChallengeParameters);
+			} else {
+				// the rest expect two args
+				expect(cbMethod).toHaveBeenCalledWith(
+					challengeName,
+					authData.ChallengeParameters
+				);
+			}
+
+			// clear the respective mock
+			cbMethod.mockClear();
+		}
+	);
+
+	test('user and required attributes get parsed and call newPasswordRequired', () => {
+		Object.assign(authData, { ChallengeName: 'NEW_PASSWORD_REQUIRED' });
+
+		expect(user.Session).toMatchObject(vCognitoUserSession);
+
+		const spyon = jest.spyOn(
+			authHelper,
+			'getNewPasswordRequiredChallengeUserAttributePrefix'
+		);
+		user.authenticateUserInternal(authData, authHelper, callback);
+		expect(spyon).toHaveBeenCalledTimes(1);
+		expect(callback.newPasswordRequired).toHaveBeenCalledTimes(1);
+		callback.newPasswordRequired.mockClear();
+	});
+
+	test('DEVICE_SRP_AUTH calls getDeviceResponse and returns undefined', () => {
+		Object.assign(authData, { ChallengeName: 'DEVICE_SRP_AUTH' });
+
+		const spyon = jest.spyOn(user, 'getDeviceResponse');
+
+		user.authenticateUserInternal(authData, authHelper, callback);
+
+		expect(spyon).toHaveBeenCalledTimes(1);
+		spyon.mockClear();
+	});
+});
+
 describe('Testing verify Software Token with a signed in user', () => {
 	const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
 	const cognitoUserPool = new CognitoUserPool(minimalData);
