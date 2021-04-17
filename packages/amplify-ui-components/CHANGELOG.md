@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.1.1...@aws-amplify/ui-components@1.2.0) (2021-04-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** fix required attributes translations in require new password component ([#7998](https://github.com/aws-amplify/amplify-js/issues/7998)) ([1f25f23](https://github.com/aws-amplify/amplify-js/commit/1f25f238ef5efe66e714e59042d58fd2a5334534))
+
+
+### Features
+
+* **@aws-amplify/ui-components:** AmplifyAuthFields accept type for default fields ([#6690](https://github.com/aws-amplify/amplify-js/issues/6690)) ([c4ccc17](https://github.com/aws-amplify/amplify-js/commit/c4ccc17db78521d8650fe91fc77587d9ddfbe162))
+
+
+
+
+
 ## [1.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.1.0...@aws-amplify/ui-components@1.1.1) (2021-03-25)
 
 

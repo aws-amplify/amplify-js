@@ -489,12 +489,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 	});
 
 	describe('Verify Software Token with an invalid signin user session', () => {
-		const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
-		const cognitoUserPool = new CognitoUserPool(minimalData);
-		const cognitoUser = new CognitoUser({
-			Username: 'username',
-			Pool: cognitoUserPool,
-		});
+		const cognitoUser = new CognitoUser({ ...userDefaults });
 
 		test('Happy case for non-signed in user session', () => {
 			jest
@@ -528,12 +523,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 	});
 
 	describe('Testing Associate Software Token', () => {
-		const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
-		const cognitoUserPool = new CognitoUserPool(minimalData);
-		const cognitoUser = new CognitoUser({
-			Username: 'username',
-			Pool: cognitoUserPool,
-		});
+		const cognitoUser = new CognitoUser({ ...userDefaults });
 
 		const callback = {
 			associateSecretCode: jest.fn(),
@@ -597,12 +587,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 	});
 
 	describe('sendMFASelectionAnswer()', () => {
-		const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
-		const cognitoUserPool = new CognitoUserPool(minimalData);
-		const cognitoUser = new CognitoUser({
-			Username: 'username',
-			Pool: cognitoUserPool,
-		});
+		const cognitoUser = new CognitoUser({ ...userDefaults });
 
 		const callback = {
 			mfaRequired: jest.fn(),
@@ -658,12 +643,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 	});
 
 	describe('Signout and globalSignOut', () => {
-		const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
-		const cognitoUserPool = new CognitoUserPool(minimalData);
-		const cognitoUser = new CognitoUser({
-			Username: 'username',
-			Pool: cognitoUserPool,
-		});
+		const cognitoUser = new CognitoUser({ ...userDefaults });
 
 		const callback = {
 			onSuccess: jest.fn(),
@@ -678,7 +658,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 			callback.onFailure.mockClear();
 		});
 
-		test('signOut expected behavior', () => {
+		test('signOut expected to set signinUserSession to equal null', () => {
 			cognitoUser.signOut();
 			expect(cognitoUser.signInUserSession).toEqual(null);
 		});
@@ -694,7 +674,7 @@ describe('Testing verify Software Token with a signed in user', () => {
 			expect(callback.onSuccess.mock.calls.length).toEqual(1);
 		});
 
-		test('global signOut catching a error', () => {
+		test('global signOut catching an error', () => {
 			jest
 				.spyOn(Client.prototype, 'request')
 				.mockImplementationOnce((...args) => {
@@ -721,6 +701,327 @@ describe('Testing verify Software Token with a signed in user', () => {
 				});
 			cognitoUser.setSignInUserSession(vCognitoUserSession);
 			expect(cognitoUser.globalSignOut(callback)).toEqual(undefined);
+		});
+	});
+
+	describe('List devices test suite', () => {
+		const cognitoUser = new CognitoUser({ ...userDefaults });
+
+		const callback = {
+			onSuccess: jest.fn(),
+			onFailure: jest.fn(),
+		};
+
+		afterAll(() => {
+			jest.restoreAllMocks();
+		});
+
+		afterEach(() => {
+			callback.onSuccess.mockClear();
+			callback.onFailure.mockClear();
+		});
+
+		test('Happy path for device list', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](null, ['deviceName', 'device2Name']);
+			});
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			cognitoUser.listDevices(1, 'paginationToken', callback);
+			expect(callback.onSuccess.mock.calls.length).toEqual(1);
+		});
+
+		test('Client request throws an error', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](new Error('network error'), null);
+			});
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			cognitoUser.listDevices(1, null, callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+		test('Invalid userSession throws an error', () => {
+			cognitoUser.setSignInUserSession(ivCognitoUserSession);
+			cognitoUser.listDevices(1, null, callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+
+		test('Valid userSession but no return from client.request returns undefined', () => {
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2]();
+			});
+			expect(cognitoUser.listDevices(1, null, callback)).toEqual(undefined);
+		});
+	});
+
+	describe('Include unit tests for setDeviceStatus[remembered,notRemembered]', () => {
+		const cognitoUser = new CognitoUser({ ...userDefaults });
+		const callback = {
+			onSuccess: jest.fn(),
+			onFailure: jest.fn(),
+		};
+
+		afterAll(() => {
+			jest.restoreAllMocks();
+		});
+
+		afterEach(() => {
+			callback.onSuccess.mockClear();
+			callback.onFailure.mockClear();
+		});
+
+		test('Happy path should callback success', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](null);
+			});
+
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			cognitoUser.setDeviceStatusNotRemembered(callback);
+			expect(callback.onSuccess.mock.calls.length).toEqual(1);
+		});
+
+		test('Callback catches an error from client request', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](new Error('Network Error'));
+			});
+
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			cognitoUser.setDeviceStatusNotRemembered(callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+
+		test('Invalid user session throws an error', () => {
+			cognitoUser.setSignInUserSession(ivCognitoUserSession);
+			cognitoUser.setDeviceStatusNotRemembered(callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+
+		test('Client request does not work and method returns undefined', () => {
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			expect(cognitoUser.setDeviceStatusNotRemembered(callback)).toEqual(
+				undefined
+			);
+		});
+
+		test('Happy path for setDeviceStatusRemembered should callback with onSuccess ', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](null);
+			});
+
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			cognitoUser.setDeviceStatusRemembered(callback);
+			expect(callback.onSuccess.mock.calls.length).toEqual(1);
+		});
+
+		test('Client throws and error should callback onFailure', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](new Error('Network Error'));
+			});
+
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			cognitoUser.setDeviceStatusRemembered(callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+
+		test('Invalid user session throws an error', () => {
+			cognitoUser.setSignInUserSession(ivCognitoUserSession);
+			cognitoUser.setDeviceStatusRemembered(callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+
+		test('Client request does not work and method returns undefined', () => {
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			expect(cognitoUser.setDeviceStatusRemembered(callback)).toEqual(
+				undefined
+			);
+		});
+	});
+
+	describe('ForgetDevices test suite', () => {
+		const cognitoUser = new CognitoUser({ ...userDefaults });
+		cognitoUser.setSignInUserSession(vCognitoUserSession);
+		const callback = {
+			onSuccess: jest.fn(),
+			onFailure: jest.fn(),
+		};
+
+		afterAll(() => {
+			jest.restoreAllMocks();
+		});
+
+		afterEach(() => {
+			callback.onSuccess.mockClear();
+			callback.onFailure.mockClear();
+		});
+
+		test('Forget specific device happy path should callback onSuccess', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](null);
+			});
+			cognitoUser.forgetSpecificDevice('deviceKey', callback);
+			expect(callback.onSuccess.mock.calls.length).toEqual(1);
+		});
+		test('Client request throws an error for forget specific device', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](new Error('Network Error'));
+			});
+			cognitoUser.forgetSpecificDevice('deviceKey', callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+
+		test('Returns undefined when client request does not work properly', () => {
+			expect(cognitoUser.forgetSpecificDevice('deviceKey', callback)).toEqual(
+				undefined
+			);
+		});
+		test('forgetSpecificDevice happy path should callback onSuccess', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2]();
+			});
+			cognitoUser.forgetDevice(callback);
+			expect(callback.onSuccess.mock.calls.length).toEqual(1);
+		});
+		test('Invalid user session throws and error for forget specific device', () => {
+			cognitoUser.setSignInUserSession(ivCognitoUserSession);
+			cognitoUser.forgetSpecificDevice('deviceKey', callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+	});
+
+	describe('getDevice()', () => {
+		const cognitoUser = new CognitoUser({ ...userDefaults });
+		cognitoUser.setSignInUserSession(vCognitoUserSession);
+		const callback = {
+			onSuccess: jest.fn(),
+			onFailure: jest.fn(),
+		};
+
+		afterAll(() => {
+			jest.restoreAllMocks();
+		});
+
+		afterEach(() => {
+			callback.onSuccess.mockClear();
+			callback.onFailure.mockClear();
+		});
+
+		test('Happy path for getDevice should callback onSuccess', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](null);
+			});
+			cognitoUser.getDevice(callback);
+			expect(callback.onSuccess.mock.calls.length).toEqual(1);
+		});
+
+		test('client request returns an error and onFailure is called', () => {
+			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+				args[2](new Error('Network Error'));
+			});
+			cognitoUser.getDevice(callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+
+		test('No client request method implementations, return undefined', () => {
+			expect(cognitoUser.getDevice(callback)).toEqual(undefined);
+		});
+
+		test('invalid user session should callback onFailure', () => {
+			cognitoUser.setSignInUserSession(ivCognitoUserSession);
+			cognitoUser.getDevice(callback);
+			expect(callback.onFailure.mock.calls.length).toEqual(1);
+		});
+
+		describe('verifyAttribute() and getAttributeVerificationCode', () => {
+			const cognitoUser = new CognitoUser({ ...userDefaults });
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			const callback = {
+				onSuccess: jest.fn(),
+				onFailure: jest.fn(),
+				inputVerificationCode: jest.fn(),
+			};
+			const verifyAttributeDefaults = ['username', '123456', callback];
+
+			afterAll(() => {
+				jest.restoreAllMocks();
+			});
+
+			afterEach(() => {
+				callback.onSuccess.mockClear();
+				callback.onFailure.mockClear();
+				callback.inputVerificationCode.mockClear();
+			});
+
+			test('Happy path for verifyAttribute should callback onSuccess', () => {
+				jest
+					.spyOn(Client.prototype, 'request')
+					.mockImplementation((...args) => {
+						args[2](null);
+					});
+				cognitoUser.verifyAttribute(...verifyAttributeDefaults);
+				expect(callback.onSuccess.mock.calls.length).toEqual(1);
+			});
+
+			test('client request returns an error and onFailure is called', () => {
+				jest
+					.spyOn(Client.prototype, 'request')
+					.mockImplementation((...args) => {
+						args[2](new Error('Network Error'));
+					});
+				cognitoUser.verifyAttribute(...verifyAttributeDefaults);
+				expect(callback.onFailure.mock.calls.length).toEqual(1);
+			});
+
+			test('No client request method implementations, return undefined', () => {
+				expect(cognitoUser.verifyAttribute(...verifyAttributeDefaults)).toEqual(
+					undefined
+				);
+			});
+
+			const getAttrsVerifCodeDefaults = ['username', callback, {}];
+			test('happy path for getAttributeVerificationCode', () => {
+				callback.inputVerificationCode = null;
+				jest
+					.spyOn(Client.prototype, 'request')
+					.mockImplementation((...args) => {
+						args[2](null);
+					});
+				cognitoUser.getAttributeVerificationCode(...getAttrsVerifCodeDefaults);
+				callback.inputVerificationCode = jest.fn();
+				expect(callback.onSuccess.mock.calls.length).toEqual(1);
+			});
+
+			test('when inputVerificationCode exists in the callback, call inputVerifier with the data', () => {
+				jest
+					.spyOn(Client.prototype, 'request')
+					.mockImplementation((...args) => {
+						console.log(args[2]);
+						args[2](null);
+					});
+
+				cognitoUser.getAttributeVerificationCode(...getAttrsVerifCodeDefaults);
+				expect(callback.inputVerificationCode.mock.calls.length).toEqual(1);
+			});
+
+			test('when inputVerificationCode exists in the callback, call inputVerifier with the data', () => {
+				jest
+					.spyOn(Client.prototype, 'request')
+					.mockImplementation((...args) => {
+						args[2](new Error('Network error'));
+					});
+
+				cognitoUser.getAttributeVerificationCode(...getAttrsVerifCodeDefaults);
+				expect(callback.onFailure.mock.calls.length).toEqual(1);
+			});
+
+			test('invalid user session should callback onFailure for verifyAttributes', () => {
+				cognitoUser.setSignInUserSession(ivCognitoUserSession);
+				cognitoUser.verifyAttribute(...verifyAttributeDefaults);
+				expect(callback.onFailure.mock.calls.length).toEqual(1);
+			});
+
+			test('invalid user session should callback onFailure for getAttrsVerifCodeDefaults', () => {
+				cognitoUser.getAttributeVerificationCode(...getAttrsVerifCodeDefaults);
+				expect(callback.onFailure.mock.calls.length).toEqual(1);
+			});
 		});
 	});
 });
