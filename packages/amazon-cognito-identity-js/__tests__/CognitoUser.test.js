@@ -334,6 +334,8 @@ describe('authenticateUserPlainUsernamePassword()', () => {
 describe('authenticateUserInternal()', () => {
 	const user = new CognitoUser({ ...userDefaults });
 	const callback = {
+		onSuccess: jest.fn(),
+		onFailure: jest.fn(),
 		mfaRequired: jest.fn(),
 		selectMFAType: jest.fn(),
 		mfaSetup: jest.fn(),
@@ -419,7 +421,135 @@ describe('authenticateUserInternal()', () => {
 		user.authenticateUserInternal(authData, authHelper, callback);
 
 		expect(spyon).toHaveBeenCalledTimes(1);
+
+		// TODO: test that user.authenticateUserInternal() returns undefined (line 507)
 		spyon.mockClear();
+	});
+
+	test('All other challenge names trigger method calls and success cb', () => {
+		Object.assign(authData, {
+			AuthenticationResult: {
+				NewDeviceMetadata: null,
+			},
+			ChallengeName: 'random challenge',
+		});
+
+		const spyon = jest.spyOn(user, 'getCognitoUserSession');
+		const spyon2 = jest.spyOn(user, 'cacheTokens');
+
+		user.authenticateUserInternal(authData, authHelper, callback);
+
+		expect(user.challengeName).toBe(authData.ChallengeName);
+		expect(spyon).toHaveBeenCalledWith(authData.AuthenticationResult);
+		expect(spyon2).toBeCalledTimes(1);
+
+		const signInUserSession = user.getCognitoUserSession(
+			authData.AuthenticationResult
+		);
+		expect(callback.onSuccess).toBeCalledWith(signInUserSession);
+
+		spyon.mockClear();
+		spyon2.mockClear();
+		callback.onSuccess.mockClear();
+	});
+
+	test('AuthHelper generateHashDevice is called and can log errors properly', () => {
+		Object.assign(authData, {
+			AuthenticationResult: {
+				NewDeviceMetadata: {
+					DeviceGroupKey: 'abc123',
+					DeviceKey: '123abc',
+				},
+			},
+			ChallengeName: 'random challenge',
+		});
+
+		const err = new Error('Very critical and descriptive error.');
+
+		const spyon = jest
+			.spyOn(AuthenticationHelper.prototype, 'generateHashDevice')
+			.mockImplementation((...args) => {
+				args[2](err);
+			});
+
+		user.authenticateUserInternal(authData, authHelper, callback);
+
+		expect(spyon).toBeCalledTimes(1);
+		expect(callback.onFailure).toBeCalledWith(err);
+
+		spyon.mockClear();
+		callback.onFailure.mockClear();
+	});
+
+	test('AuthHelper generateHashDevice with no error calls auth methods', () => {
+		const spyon1 = jest.spyOn(
+			AuthenticationHelper.prototype,
+			'getRandomPassword'
+		);
+		const spyon2 = jest.spyOn(
+			AuthenticationHelper.prototype,
+			'getVerifierDevices'
+		);
+		const spyon3 = jest.spyOn(
+			AuthenticationHelper.prototype,
+			'getRandomPassword'
+		);
+
+		user.authenticateUserInternal(authData, authHelper, callback);
+
+		expect(spyon1).toBeCalledTimes(1);
+		expect(spyon2).toBeCalledTimes(1);
+		expect(spyon3).toBeCalledTimes(1);
+
+		spyon1.mockClear();
+		spyon2.mockClear();
+		spyon3.mockClear();
+	});
+
+	test('Client request fails gracefully', () => {
+		const err = new Error('Client request error.');
+
+		jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](err, {});
+			});
+
+		user.authenticateUserInternal(authData, authHelper, callback);
+
+		expect(callback.onFailure).toBeCalledWith(err);
+
+		callback.onFailure.mockClear();
+	});
+
+	test('Successful client request passes data properly to cb', () => {
+		const spyon = jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](null, {
+					UserConfirmationNecessary: true,
+				});
+			});
+
+		user.authenticateUserInternal(authData, authHelper, callback);
+
+		expect(callback.onSuccess).toBeCalledWith(user.signInUserSession, true);
+
+		spyon.mockClear();
+		callback.onSuccess.mockClear();
+
+		const spyon2 = jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](null, {});
+			});
+
+		user.authenticateUserInternal(authData, authHelper, callback);
+
+		expect(callback.onSuccess).toBeCalledWith(user.signInUserSession);
+
+		spyon2.mockClear();
+		callback.onSuccess.mockClear();
 	});
 });
 
@@ -993,7 +1123,6 @@ describe('Testing verify Software Token with a signed in user', () => {
 				jest
 					.spyOn(Client.prototype, 'request')
 					.mockImplementation((...args) => {
-						console.log(args[2]);
 						args[2](null);
 					});
 
