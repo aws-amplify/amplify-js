@@ -1788,9 +1788,10 @@ describe('refreshSession()', () => {
 				clockDriftKey,
 				vCognitoUserSession.getClockDrift()
 			);
+			cognitoUser.getSession(callback)
 			expect(callback.mock.calls[0][0]).toEqual(null)
 		});
-		
+
 		test('when a valid userSession exists, return callback(null, signInUserSession) from instance vars', () => {
 			cognitoUser.setSignInUserSession(vCognitoUserSession);
 			cognitoUser.getSession(callback);
