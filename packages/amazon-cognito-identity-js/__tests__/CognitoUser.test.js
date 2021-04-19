@@ -553,6 +553,104 @@ describe('authenticateUserInternal()', () => {
 	});
 });
 
+describe('completeNewPasswordChallenge()', () => {
+	const user = new CognitoUser({ ...userDefaults });
+	const callback = {
+		onSuccess: jest.fn(),
+		onFailure: jest.fn(),
+	};
+	const requiredAttributeData = {
+		attr1: true,
+		attr2: 'important',
+		attr3: [123, 'abc', true],
+	};
+	const clientMetadata = {
+		meta1: false,
+		meta2: 'test val',
+		meta3: [456, 'xyz', false],
+	};
+
+	afterEach(() => {
+		jest.restoreAllMocks();
+	});
+
+	test('No newPassword triggers an error', () => {
+		const err = new Error('New password is required.');
+
+		user.completeNewPasswordChallenge(null, null, callback, null);
+
+		expect(callback.onFailure).toBeCalledWith(err);
+	});
+
+	test('No newPassword triggers an error', () => {
+		const err = new Error('New password is required.');
+
+		user.completeNewPasswordChallenge(null, null, callback, null);
+
+		expect(callback.onFailure).toBeCalledWith(err);
+	});
+
+	test('completeNewPasswordChallenge calls expected helper methods', () => {
+		const spyon = jest.spyOn(
+			AuthenticationHelper.prototype,
+			'getNewPasswordRequiredChallengeUserAttributePrefix'
+		);
+		const spyon2 = jest.spyOn(user, 'getUserContextData');
+
+		user.completeNewPasswordChallenge(
+			'NEWp@ssw0rd',
+			requiredAttributeData,
+			callback,
+			clientMetadata
+		);
+
+		expect(spyon).toBeCalledTimes(1);
+		expect(spyon2).toHaveBeenCalled();
+		spyon.mockClear();
+		spyon2.mockClear();
+	});
+
+	test('Client request fails gracefully', () => {
+		const err = new Error('Respond to auth challenge error.');
+
+		jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](err, {});
+			});
+
+		user.completeNewPasswordChallenge(
+			'NEWp@ssw0rd',
+			requiredAttributeData,
+			callback,
+			clientMetadata
+		);
+
+		expect(callback.onFailure).toBeCalledWith(err);
+		callback.onFailure.mockClear();
+	});
+
+	test('Client request happy path', () => {
+		const spyon = jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](null, vCognitoUserSession);
+			});
+		const spyon2 = jest.spyOn(user, 'authenticateUserInternal');
+
+		user.completeNewPasswordChallenge(
+			'NEWp@ssw0rd',
+			requiredAttributeData,
+			callback,
+			clientMetadata
+		);
+
+		expect(spyon2).toBeCalledTimes(1);
+		spyon.mockClear();
+		spyon2.mockClear();
+	});
+});
+
 describe('Testing verify Software Token with a signed in user', () => {
 	const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
 	const cognitoUserPool = new CognitoUserPool(minimalData);
