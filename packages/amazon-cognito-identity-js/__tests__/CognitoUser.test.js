@@ -4,6 +4,9 @@ import CognitoUserPool from '../src/CognitoUserPool';
 import AuthenticationDetails from '../src/AuthenticationDetails';
 import AuthenticationHelper from '../src/AuthenticationHelper';
 import Client from '../src/Client';
+import CognitoIdToken from '../src/CognitoIdToken';
+import CognitoAccessToken from '../src/CognitoAccessToken';
+import CognitoRefreshToken from '../src/CognitoRefreshToken';
 
 import {
 	clientId,
@@ -14,6 +17,7 @@ import {
 	totpCode,
 	ivCognitoUserSession,
 } from './constants';
+import { CognitoUserSession } from 'amazon-cognito-identity-js';
 
 const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
 const cognitoUserPool = new CognitoUserPool(minimalData);
@@ -1573,9 +1577,7 @@ describe('getMFAOptions()', () => {
 		cognitoUser.getMFAOptions(callback);
 		expect(callback.mock.calls[0][0]).toMatchObject(new Error('Network Error'));
 	});
-	test('non-existent client request throws an error and should callback with (err, null)', () => {
-		expect(cognitoUser.getMFAOptions(callback)).toEqual(undefined);
-	});
+
 	test('when user is invalid, return callback with error', () => {
 		cognitoUser.setSignInUserSession(ivCognitoUserSession);
 		cognitoUser.getMFAOptions(callback);
@@ -1618,10 +1620,6 @@ describe('deleteUser()', () => {
 		expect(callback.mock.calls[0][0]).toMatchObject(new Error('Network Error'));
 	});
 
-	test('no network request returns undefined', () => {
-		expect(cognitoUser.deleteUser(callback, {})).toEqual(undefined);
-	});
-
 	test('having an invalid user session should callback with a new error', () => {
 		cognitoUser.setSignInUserSession(ivCognitoUserSession);
 		cognitoUser.deleteUser(callback, {});
@@ -1645,18 +1643,18 @@ describe('getUserAttributes()', () => {
 	});
 
 	test('happy path for getUserAttributes', () => {
-		
 		const userAttributesObject = {
 			UserAttributes: [{ Name: 'name1', Value: 'value1' }],
 		};
 		jest
 			.spyOn(Client.prototype, 'request')
 			.mockImplementationOnce((...args) => {
-				
 				args[2](null, userAttributesObject);
 			});
 		cognitoUser.getUserAttributes(callback);
-		expect(callback.mock.calls[0][1]).toMatchObject(userAttributesObject.UserAttributes);
+		expect(callback.mock.calls[0][1]).toMatchObject(
+			userAttributesObject.UserAttributes
+		);
 	});
 
 	test('client request throws an error', () => {
@@ -1669,11 +1667,6 @@ describe('getUserAttributes()', () => {
 		expect(callback.mock.calls[0][0]).toMatchObject(new Error('Network Error'));
 	});
 
-
-	test('no network request returns undefined', () => {
-		expect(cognitoUser.getUserAttributes(callback)).toEqual(undefined);
-});
-
 	test('having an invalid user session should callback with a new error', () => {
 		cognitoUser.setSignInUserSession(ivCognitoUserSession);
 		cognitoUser.getUserAttributes(callback);
@@ -1683,30 +1676,134 @@ describe('getUserAttributes()', () => {
 	});
 });
 
-describe.skip('Test suite for caching and modifying caches', () => {
-	test('clearCachedTokens should leave the cognitoUser storage to be equal to an empty dict', async () => {
-		const cognitoUser = new CognitoUser({ ...userDefaults });
-		cognitoUser.setSignInUserSession(vCognitoUserSession);
-		console.log(cognitoUser);
-		cognitoUser.cacheTokens();
-		console.log(cognitoUser);
-		cognitoUser.clearCachedTokens(
-			expect(cognitoUser.storage).toMatchObject({})
+describe('getCognitoUserSession()', () => {
+	const cognitoUser = new CognitoUser({ ...userDefaults });
+
+	const idToken = new CognitoIdToken();
+	const accessToken = new CognitoAccessToken();
+	const refreshToken = new CognitoRefreshToken();
+
+	const sessionData = {
+		IdToken: idToken,
+		AccessToken: accessToken,
+		RefreshToken: refreshToken,
+	};
+	cognitoUser.setSignInUserSession(vCognitoUserSession);
+	test('happy path should return a new CognitoUserSession', () => {
+		expect(cognitoUser.getCognitoUserSession({})).toMatchObject(
+			new CognitoUserSession(sessionData)
 		);
 	});
+});
 
-	test.skip('clearCachedTokens should leave the cognitoUser storage to be equal to an empty dict', () => {
-		const cognitoUser = new CognitoUser({ ...userDefaults });
-		cognitoUser.clearCachedDeviceKeyAndPassword();
-		expect(cognitoUser.storage).toMatchObject({});
+describe('refreshSession()', () => {
+	const cognitoUser = new CognitoUser({ ...userDefaults });
+	const callback = jest.fn();
+	const refreshSessionDefaults = [new CognitoRefreshToken(), callback, {}];
+
+	const idToken = new CognitoIdToken();
+	const accessToken = new CognitoAccessToken();
+	const refreshToken = new CognitoRefreshToken();
+	const sessionData = {
+		IdToken: idToken,
+		AccessToken: accessToken,
+		RefreshToken: refreshToken,
+	};
+
+	afterAll(() => {
+		jest.restoreAllMocks();
 	});
-	test.skip('clear cachedUser should leave the cognitoUser storage to be equal to an empty dict', async () => {
+
+	afterEach(() => {
+		callback.mockClear();
+	});
+
+	test('happy path for refresh session ', () => {
+		jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](null, { AuthenticationResult: { RefreshToken: null } });
+			});
+		cognitoUser.refreshSession(...refreshSessionDefaults);
+		expect(callback.mock.calls[0][1]).toMatchObject(
+			new CognitoUserSession(sessionData)
+		);
+	});
+	test('client throws an error ', () => {
+		jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](new Error('Network Error'), null);
+			});
+		cognitoUser.refreshSession(...refreshSessionDefaults);
+		expect(callback.mock.calls[0][0]).toMatchObject(new Error('Network Error'));
+	});
+
+	describe('getSession()', () => {
 		const cognitoUser = new CognitoUser({ ...userDefaults });
-		const testCognitoUser = cognitoUser;
-		cognitoUser.cacheUserData({ language: 'EN', age: 23 });
-		// console.log('pre',cognitoUser);
-		cognitoUser.clearCachedUserData();
-		// console.log('post',testCognitoUser);
-		// expect(cognitoUser.storage).toMatchObject({});
+		const callback = jest.fn();
+
+		const idToken = new CognitoIdToken();
+		const accessToken = new CognitoAccessToken();
+		const refreshToken = new CognitoRefreshToken();
+		const sessionData = {
+			IdToken: idToken,
+			AccessToken: accessToken,
+			RefreshToken: refreshToken,
+		};
+		const testSession = new CognitoUserSession(sessionData);
+
+		afterAll(() => {
+			jest.restoreAllMocks();
+		});
+
+		afterEach(() => {
+			callback.mockClear();
+		});
+
+		const keyPrefix = `CognitoIdentityServiceProvider.${cognitoUser.pool.getClientId()}.${
+			cognitoUser.username
+		}`;
+
+		const idTokenKey = `${keyPrefix}.idToken`;
+		const accessTokenKey = `${keyPrefix}.accessToken`;
+		const refreshTokenKey = `${keyPrefix}.refreshToken`;
+		const clockDriftKey = `${keyPrefix}.clockDrift`;
+
+		test('when an invalid userSession exists, get signinUserSession from cache', () => {
+			cognitoUser.setSignInUserSession(ivCognitoUserSession);
+			cognitoUser.storage.setItem(
+				idTokenKey,
+				vCognitoUserSession.getIdToken().getJwtToken()
+			);
+			cognitoUser.storage.setItem(
+				accessTokenKey,
+				vCognitoUserSession.getAccessToken().getJwtToken()
+			);
+			cognitoUser.storage.setItem(
+				refreshTokenKey,
+				vCognitoUserSession.getRefreshToken().getToken()
+			);
+			cognitoUser.storage.setItem(
+				clockDriftKey,
+				vCognitoUserSession.getClockDrift()
+			);
+			expect(callback.mock.calls[0][0]).toEqual(null)
+		});
+		
+		test('when a valid userSession exists, return callback(null, signInUserSession) from instance vars', () => {
+			cognitoUser.setSignInUserSession(vCognitoUserSession);
+			cognitoUser.getSession(callback);
+			expect(callback.mock.calls[0][1]).toMatchObject(
+				cognitoUser.signInUserSession
+			);
+		});
+		test('when a username is null, callback with an error', () => {
+			cognitoUser.username = null;
+			cognitoUser.getSession(callback);
+			expect(callback.mock.calls[0][0]).toMatchObject(
+				new Error('Username is null. Cannot retrieve a new session')
+			);
+		});
 	});
 });
