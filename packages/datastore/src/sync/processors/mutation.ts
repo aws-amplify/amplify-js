@@ -164,6 +164,8 @@ class MutationProcessor {
 							operationAuthModes[authModeAttempts]
 						);
 
+						console.log(response);
+
 						logger.debug(
 							`Mutation sent successfully with authMode: ${operationAuthModes[authModeAttempts]}`
 						);
@@ -277,6 +279,11 @@ class MutationProcessor {
 					} catch (err) {
 						if (err.errors && err.errors.length > 0) {
 							const [error] = err.errors;
+
+							if (error.errorType === 'Unauthorized') {
+								throw new NonRetryableError('Unauthorized');
+							}
+
 							if (error.message === 'Network Error') {
 								if (!this.processing) {
 									throw new NonRetryableError('Offline');
@@ -285,8 +292,8 @@ class MutationProcessor {
 								throw new Error('Network Error');
 							}
 
-							// TODO: add on ConflictConditionalCheck error query last from server
 							if (error.errorType === 'ConflictUnhandled') {
+								// TODO: add on ConflictConditionalCheck error query last from server
 								attempt++;
 								let retryWith: PersistentModel | typeof DISCARD;
 

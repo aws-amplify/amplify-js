@@ -202,11 +202,14 @@ class SyncProcessor {
 					const hasForbiddenError =
 						error &&
 						error.errors &&
-						(error.errors as [any]).some(
-							err => err.message === 'Request failed with status code 403'
+						(error.errors as [any]).some(err =>
+							[
+								'Request failed with status code 401',
+								'Request failed with status code 403',
+							].includes(err.message)
 						);
 
-					// Catch client-side (GraphQLAuthError) & 403 errors here so that we don't continue to retry
+					// Catch client-side (GraphQLAuthError) & 401/403 errors here so that we don't continue to retry
 					if (hasClientSideAuthError || hasForbiddenError) {
 						throw new NonRetryableError(error);
 					}
