@@ -569,6 +569,23 @@ jobs:
           spec: subs-disabled
           browser: << parameters.browser >>
 
+  integ_react_datastore_consecutive_saves:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/consecutive-saves
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Subs Disabled'
+          framework: react
+          category: datastore
+          sample_name: consecutive-saves
+          spec: consecutive-saves
+          browser: << parameters.browser >>
+
   integ_react_storage:
     parameters:
       browser:
@@ -849,6 +866,15 @@ workflows:
             parameters:
               <<: *test_browsers
       - integ_react_datastore_subs_disabled:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_consecutive_saves:
           requires:
             - integ_setup
             - build

@@ -206,7 +206,7 @@ class IndexedDBAdapter implements Adapter {
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>
-	): Promise<[T, OpType.INSERT | OpType.UPDATE, T?][]> {
+	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		await this.checkPrivate();
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
@@ -250,7 +250,7 @@ class IndexedDBAdapter implements Adapter {
 			}
 		}
 
-		const result: [T, OpType.INSERT | OpType.UPDATE, T?][] = [];
+		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
 
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
@@ -266,11 +266,7 @@ class IndexedDBAdapter implements Adapter {
 				const key = await store.index('byId').getKey(item.id);
 				await store.put(item, key);
 
-				if (opType === OpType.UPDATE) {
-					result.push([instance, opType, fromDB]);
-				} else {
-					result.push([instance, opType]);
-				}
+				result.push([instance, opType]);
 			}
 		}
 

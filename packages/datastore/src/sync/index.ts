@@ -52,9 +52,9 @@ export declare class MutationEvent {
 	public readonly id: string;
 	public readonly model: string;
 	public readonly operation: TransformerMutationType;
-	public readonly data: string;
 	public readonly modelId: string;
 	public readonly condition: string;
+	public data: string;
 }
 
 declare class ModelMetadata {
@@ -115,8 +115,8 @@ export class SyncEngine {
 
 		this.outbox = new MutationEventOutbox(
 			this.schema,
-			this.namespaceResolver,
 			MutationEvent,
+			modelInstanceCreator,
 			ownSymbol
 		);
 
