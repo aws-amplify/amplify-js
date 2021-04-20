@@ -328,6 +328,13 @@ export class AmplifySignIn {
 						</slot>
 					</div>
 				</amplify-form-section>
+				<div slot="lightDomForm" onChange={console.log}>
+					<form autoComplete="on" hidden>
+						<input name="username"></input>
+						<input name="password" type="password"></input>
+						<input type="submit"></input>
+					</form>
+				</div>
 			</Host>
 		);
 	}
