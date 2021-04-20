@@ -556,7 +556,6 @@ describe('authenticateUserInternal()', () => {
 describe('completeNewPasswordChallenge()', () => {
 	const user = new CognitoUser({ ...userDefaults });
 	const callback = {
-		onSuccess: jest.fn(),
 		onFailure: jest.fn(),
 	};
 	const requiredAttributeData = {
@@ -648,6 +647,176 @@ describe('completeNewPasswordChallenge()', () => {
 		expect(spyon2).toBeCalledTimes(1);
 		spyon.mockClear();
 		spyon2.mockClear();
+	});
+});
+
+describe('getDeviceResponse()', () => {
+	const user = new CognitoUser({ ...userDefaults });
+	const callback = {
+		onFailure: jest.fn(),
+		onSuccess: jest.fn(),
+	};
+
+	afterAll(() => {
+		jest.restoreAllMocks();
+	});
+
+	test('Auth helper bad getLargeAValue fails gracefully', () => {
+		const err = new Error('Cannot get large A value for some reason.');
+		const spyon = jest
+			.spyOn(AuthenticationHelper.prototype, 'getLargeAValue')
+			.mockImplementation(cb => cb(err, 12345));
+
+		user.getDeviceResponse(callback, {});
+
+		expect(callback.onFailure).toBeCalledWith(err);
+
+		callback.onFailure.mockClear();
+		spyon.mockClear();
+	});
+
+	test('Auth helper bad getLargeAValue fails gracefully', () => {
+		const err = new Error('Cannot get large A value for some reason.');
+		const spyon = jest
+			.spyOn(AuthenticationHelper.prototype, 'getLargeAValue')
+			.mockImplementation(cb => cb(err, 12345));
+
+		user.getDeviceResponse(callback, {});
+
+		expect(callback.onFailure).toBeCalledWith(err);
+		callback.onFailure.mockClear();
+		spyon.mockClear();
+	});
+
+	test('Auth helper getLargeAValue happy path', () => {
+		const spyon = jest
+			.spyOn(AuthenticationHelper.prototype, 'getLargeAValue')
+			.mockImplementation(cb => cb(null, 12345));
+		const spyon2 = jest.spyOn(user, 'getUserContextData');
+
+		user.getDeviceResponse(callback, {});
+
+		expect(callback.onFailure).not.toBeCalled();
+		expect(spyon2).toBeCalled();
+
+		callback.onFailure.mockClear();
+		spyon.mockClear();
+		spyon2.mockClear();
+	});
+
+	test('Client request RespondToAuthChallenge fails gracefully', () => {
+		const err = new Error('RespondToAuthChallenge error');
+
+		const spyon = jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementationOnce((...args) => {
+				args[2](err, vCognitoUserSession);
+			});
+
+		user.getDeviceResponse(callback, {});
+
+		expect(callback.onFailure).toBeCalledWith(err);
+
+		callback.onFailure.mockClear();
+		spyon.mockClear();
+	});
+
+	describe('RespondToAuthChallenge nested Client method suite', () => {
+		let clientRequestSpy;
+		let defaultConfig = {
+			ChallengeName: 'CUSTOM_CHALLENGE',
+			Session: vCognitoUserSession,
+			ChallengeParameters: {
+				USER_ID_FOR_SRP: 'abc123',
+				SRP_B: 'abc123',
+				SALT: 'abc123',
+				SECRET_BLOCK: 'verysecret',
+			},
+		};
+
+		beforeEach(() => {
+			user.deviceGroupKey = 'abc123';
+			user.deviceKey = '123abc';
+
+			clientRequestSpy = jest
+				.spyOn(Client.prototype, 'request')
+				.mockImplementation((...args) => {
+					args[2](null, defaultConfig);
+				});
+		});
+
+		afterEach(() => {
+			clientRequestSpy.mockClear();
+		});
+
+		test('Client request RespondToAuthChallenge - getPasswordAuthenticationKey cb fails gracefully', () => {
+			const err = new Error('errHkdf Error');
+
+			const spyon = jest
+				.spyOn(AuthenticationHelper.prototype, 'getPasswordAuthenticationKey')
+				.mockImplementation((...args) => {
+					args[4](err, null);
+				});
+
+			user.getDeviceResponse(callback, {});
+
+			expect(callback.onFailure).toBeCalledWith(err);
+
+			callback.onFailure.mockClear();
+
+			spyon.mockClear();
+		});
+
+		test('Client request RespondToAuthChallenge - getPasswordAuthenticationKey CryptoJS code runs smoothly', () => {
+			const spyon = jest
+				.spyOn(AuthenticationHelper.prototype, 'getPasswordAuthenticationKey')
+				.mockImplementation((...args) => {
+					args[4](null, 'hkdf value');
+				});
+
+			const spyon2 = jest.spyOn(user, 'getUserContextData');
+
+			user.getDeviceResponse(callback, {});
+
+			expect(spyon2).toBeCalled();
+
+			callback.onFailure.mockClear();
+
+			spyon.mockClear();
+			spyon2.mockClear();
+		});
+
+		test('Client request RespondToAuthChallenge nested client fails gracefully', () => {
+			const err = new Error('RespondToAuthChallenge nested Client error');
+
+			const spyon = jest
+				.spyOn(Client.prototype, 'request')
+				.mockImplementation((...args) => {
+					args[2](err, {});
+				});
+
+			user.getDeviceResponse(callback, {});
+
+			expect(callback.onFailure).toBeCalledWith(err);
+
+			callback.onFailure.mockClear();
+			spyon.mockClear();
+		});
+
+		test('Client request RespondToAuthChallenge nested client calls success callbacks', () => {
+			const spyon = jest.spyOn(user, 'getCognitoUserSession');
+			const spyon2 = jest.spyOn(user, 'cacheTokens');
+
+			user.getDeviceResponse(callback, {});
+
+			expect(spyon).toBeCalledTimes(1);
+			expect(spyon2).toBeCalledTimes(1);
+			expect(callback.onSuccess).toBeCalledWith(user.signInUserSession);
+
+			callback.onSuccess.mockClear();
+			spyon.mockClear();
+			spyon2.mockClear();
+		});
 	});
 });
 
