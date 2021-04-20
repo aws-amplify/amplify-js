@@ -225,7 +225,7 @@ describe('authenticateUserDefaultAuth()', () => {
 	});
 
 	test('errOnAValue fails gracefully', () => {
-		jest
+		const spyon = jest
 			.spyOn(AuthenticationHelper.prototype, 'getLargeAValue')
 			.mockImplementation(cb => cb('test error', 12345));
 
@@ -233,43 +233,23 @@ describe('authenticateUserDefaultAuth()', () => {
 
 		expect(callback.onFailure.mock.calls.length).toBe(1);
 		expect(callback.onFailure).toBeCalledWith('test error');
+
+		spyon.mockClear();
 	});
 
 	test('Client request fails gracefully', () => {
 		const err = new Error('Test error');
-		jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
-			args[2](err, {});
-		});
+		const spyon = jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementation((...args) => {
+				args[2](err, {});
+			});
 
 		user.authenticateUserDefaultAuth(authDetails, callback);
 
 		expect(callback.onFailure).toBeCalledWith(err);
-	});
 
-	// TODO: gotta come back to this one...
-	test.skip('this.client.request(InitiateAuth', () => {
-		jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
-			args[2](null, {
-				ChallengeName: 'CUSTOM_CHALLENGE',
-				Session: vCognitoUserSession,
-				ChallengeParameters: {
-					USER_ID_FOR_SRP: 'abc123',
-					SRP_B: 'abc123',
-					SALT: 'abc123',
-				},
-			});
-			jest
-				.spyOn(AuthenticationHelper.prototype, 'getPasswordAuthenticationKey')
-				.mockImplementation((...args) => {
-					console.log({ args });
-				});
-			// expect(spy).toBeCalled();
-		});
-
-		user.authenticateUserDefaultAuth(authDetails, callback);
-
-		// expect(callback.customChallenge.mock.calls.length).toBe(1);
-		// expect(callback.customChallenge).toBeCalledWith('Custom challenge params');
+		spyon.mockClear();
 	});
 });
 
@@ -330,7 +310,6 @@ describe('authenticateUserPlainUsernamePassword()', () => {
 			userSpy3.mock.calls[0][1],
 			callback
 		);
-		// TODO: not sure this test holds water
 		expect(userSpy3.mock.results[0].value).toBe('test return value');
 	});
 });
@@ -426,7 +405,6 @@ describe('authenticateUserInternal()', () => {
 
 		expect(spyon).toHaveBeenCalledTimes(1);
 
-		// TODO: test that user.authenticateUserInternal() returns undefined (line 507)
 		spyon.mockClear();
 	});
 
@@ -929,6 +907,26 @@ describe('sendCustomChallengeAnswer()', () => {
 		user.sendCustomChallengeAnswer(answerChallenge, callback, clientMetadata);
 
 		expect(callback.onFailure).toBeCalledWith(err);
+
+		spyon.mockClear();
+	});
+});
+
+describe('sendMFACode()', () => {
+	const user = new CognitoUser({ ...userDefaults });
+	const confirmationCode = 'abc123';
+	const callback = {
+		onFailure: jest.fn(),
+	};
+	let mfaType;
+	const clientMetadata = { meta1: 'value 1', meta2: 'value 2' };
+
+	test('sendMFACode gets initialized properly', () => {
+		const spyon = jest.spyOn(user, 'getUserContextData');
+
+		user.sendMFACode(confirmationCode, callback, mfaType, clientMetadata);
+
+		expect(spyon).toHaveBeenCalled();
 
 		spyon.mockClear();
 	});
