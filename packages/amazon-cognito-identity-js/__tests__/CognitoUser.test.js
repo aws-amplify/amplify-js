@@ -878,6 +878,62 @@ describe('confirmRegistration()', () => {
 	});
 });
 
+describe('sendCustomChallengeAnswer()', () => {
+	const user = new CognitoUser({ ...userDefaults });
+	const callback = {
+		onSuccess: jest.fn(),
+		onFailure: jest.fn(),
+	};
+	let answerChallenge = 'the answer';
+	let clientMetadata = { meta1: 'value 1', meta2: 'value2' };
+
+	user.Session = vCognitoUserSession;
+	Object.assign(vCognitoUserSession, {
+		AuthenticationResult: {
+			NewDeviceMetadata: {
+				DeviceGroupKey: 'abc123',
+				DeviceKey: '123abc',
+			},
+		},
+		ChallengeName: 'random challenge',
+	});
+
+	test('send custom challenge happy path', () => {
+		const spyon = jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementation((...args) => {
+				args[2](null, vCognitoUserSession);
+			});
+
+		const spyon2 = jest.spyOn(user, 'getCachedDeviceKeyAndPassword');
+		const spyon3 = jest.spyOn(user, 'authenticateUserInternal');
+
+		user.sendCustomChallengeAnswer(answerChallenge, callback, clientMetadata);
+
+		expect(spyon2).toBeCalledTimes(1);
+		expect(spyon3).toBeCalled();
+
+		spyon.mockClear();
+		spyon2.mockClear();
+		spyon3.mockClear();
+	});
+
+	test('send custom challenge fails gracefully', () => {
+		const err = new Error('RespondToAuthChallenge error.');
+		const spyon = jest
+			.spyOn(Client.prototype, 'request')
+			.mockImplementation((...args) => {
+				args[2](err, vCognitoUserSession);
+			});
+
+		user.sendCustomChallengeAnswer(answerChallenge, callback, clientMetadata);
+
+		expect(callback.onFailure).toBeCalledWith(err);
+
+		spyon.mockClear();
+	});
+});
+
 describe('Testing verify Software Token with a signed in user', () => {
 	const minimalData = { UserPoolId: userPoolId, ClientId: clientId };
 	const cognitoUserPool = new CognitoUserPool(minimalData);
