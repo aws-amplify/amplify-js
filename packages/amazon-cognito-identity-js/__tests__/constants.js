@@ -111,3 +111,7 @@ export const cookieStorageDomain = 'https://testdomain.com';
 /** CognitoUser */
 export const deviceName = 'friendlyMacbookPro';
 export const totpCode = '492432';
+export const networkError = new Error('Network Error');
+export const genHashDevices = 'generateHashDevice';
+export const getSalt = 'getSaltDevices';
+export const getVerifiers = 'getVerifierDevices';
