@@ -8,7 +8,11 @@ import CognitoIdToken from '../src/CognitoIdToken';
 import CognitoAccessToken from '../src/CognitoAccessToken';
 import CognitoRefreshToken from '../src/CognitoRefreshToken';
 
-import { authHelperMock, netRequestMockSuccess } from '../__mocks__/mocks';
+import {
+	callback,
+	authHelperMock,
+	netRequestMockSuccess,
+} from '../__mocks__/mocks';
 
 import {
 	clientId,
@@ -102,12 +106,6 @@ describe('getters and setters', () => {
 });
 
 describe('initiateAuth()', () => {
-	const callback = {
-		onFailure: jest.fn(),
-		onSuccess: jest.fn(),
-		customChallenge: jest.fn(),
-	};
-
 	let user;
 	beforeEach(() => {
 		user = new CognitoUser({ ...userDefaults });
@@ -168,9 +166,6 @@ describe('authenticateUser()', () => {
 
 	const user = new CognitoUser({ ...userDefaults });
 	const authDetails = new AuthenticationDetails(authDetailData);
-	const callback = {
-		onFailure: jest.fn(),
-	};
 
 	test('USER_PASSWORD_AUTH flow type', () => {
 		const spyon = jest.spyOn(user, 'authenticateUserPlainUsernamePassword');
@@ -205,10 +200,6 @@ describe('authenticateUser()', () => {
 describe('authenticateUserDefaultAuth()', () => {
 	const user = new CognitoUser({ ...userDefaults });
 	const authDetails = new AuthenticationDetails(authDetailData);
-	const callback = {
-		onFailure: jest.fn(),
-		customChallenge: jest.fn(),
-	};
 
 	afterEach(() => {
 		jest.restoreAllMocks();
@@ -245,9 +236,6 @@ describe('authenticateUserDefaultAuth()', () => {
 
 describe('authenticateUserPlainUsernamePassword()', () => {
 	const user = new CognitoUser({ ...userDefaults });
-	const callback = {
-		onFailure: jest.fn(),
-	};
 
 	afterEach(() => {
 		jest.restoreAllMocks();
@@ -300,16 +288,6 @@ describe('authenticateUserPlainUsernamePassword()', () => {
 
 describe('authenticateUserInternal()', () => {
 	const user = new CognitoUser({ ...userDefaults });
-	const callback = {
-		onSuccess: jest.fn(),
-		onFailure: jest.fn(),
-		mfaRequired: jest.fn(),
-		selectMFAType: jest.fn(),
-		mfaSetup: jest.fn(),
-		totpRequired: jest.fn(),
-		customChallenge: jest.fn(),
-		newPasswordRequired: jest.fn(),
-	};
 
 	// same approach as used in CognitoUser.js
 	const authHelper = new AuthenticationHelper(
@@ -475,9 +453,6 @@ describe('authenticateUserInternal()', () => {
 
 describe('completeNewPasswordChallenge()', () => {
 	const user = new CognitoUser({ ...userDefaults });
-	const callback = {
-		onFailure: jest.fn(),
-	};
 	const requiredAttributeData = {
 		attr1: true,
 		attr2: 'important',
@@ -561,10 +536,6 @@ describe('completeNewPasswordChallenge()', () => {
 
 describe('getDeviceResponse()', () => {
 	const user = new CognitoUser({ ...userDefaults });
-	const callback = {
-		onFailure: jest.fn(),
-		onSuccess: jest.fn(),
-	};
 
 	afterAll(() => {
 		jest.restoreAllMocks();
@@ -723,10 +694,6 @@ describe('confirmRegistration()', () => {
 
 describe('sendCustomChallengeAnswer()', () => {
 	const user = new CognitoUser({ ...userDefaults });
-	const callback = {
-		onSuccess: jest.fn(),
-		onFailure: jest.fn(),
-	};
 	let answerChallenge = 'the answer';
 	let clientMetadata = { meta1: 'value 1', meta2: 'value2' };
 
@@ -773,9 +740,6 @@ describe('sendCustomChallengeAnswer()', () => {
 describe('sendMFACode()', () => {
 	const user = new CognitoUser({ ...userDefaults });
 	const confirmationCode = 'abc123';
-	const callback = {
-		onFailure: jest.fn(),
-	};
 	let mfaType;
 	const clientMetadata = { meta1: 'value 1', meta2: 'value 2' };
 
@@ -790,10 +754,6 @@ describe('sendMFACode()', () => {
 describe('verifySoftwareToken()', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 
-	const callback = {
-		onSuccess: jest.fn(),
-		onFailure: jest.fn(),
-	};
 	afterEach(() => {
 		callback.onSuccess.mockClear();
 		callback.onFailure.mockClear();
@@ -842,11 +802,6 @@ describe('verifySoftwareToken()', () => {
 describe('associateSoftwareToken()', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 
-	const callback = {
-		associateSecretCode: jest.fn(),
-		onFailure: jest.fn(),
-	};
-
 	afterAll(() => {
 		jest.restoreAllMocks();
 	});
@@ -883,12 +838,6 @@ describe('associateSoftwareToken()', () => {
 describe('sendMFASelectionAnswer()', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 
-	const callback = {
-		mfaRequired: jest.fn(),
-		onFailure: jest.fn(),
-		totpRequired: jest.fn(),
-	};
-
 	afterAll(() => {
 		jest.restoreAllMocks();
 	});
@@ -920,10 +869,6 @@ describe('sendMFASelectionAnswer()', () => {
 describe('signOut() and globalSignOut', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 
-	const callback = {
-		onSuccess: jest.fn(),
-		onFailure: jest.fn(),
-	};
 	afterAll(() => {
 		jest.restoreAllMocks();
 	});
@@ -961,11 +906,6 @@ describe('signOut() and globalSignOut', () => {
 describe('listDevices', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 
-	const callback = {
-		onSuccess: jest.fn(),
-		onFailure: jest.fn(),
-	};
-
 	afterAll(() => {
 		jest.restoreAllMocks();
 	});
@@ -997,10 +937,6 @@ describe('listDevices', () => {
 describe('setDeviceStatus[remembered,notRemembered]()', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 	cognitoUser.setSignInUserSession(vCognitoUserSession);
-	const callback = {
-		onSuccess: jest.fn(),
-		onFailure: jest.fn(),
-	};
 
 	afterAll(() => {
 		jest.restoreAllMocks();
@@ -1061,10 +997,6 @@ describe('setDeviceStatus[remembered,notRemembered]()', () => {
 describe('forgetDevices()', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 	cognitoUser.setSignInUserSession(vCognitoUserSession);
-	const callback = {
-		onSuccess: jest.fn(),
-		onFailure: jest.fn(),
-	};
 
 	afterAll(() => {
 		jest.restoreAllMocks();
@@ -1106,10 +1038,6 @@ describe('forgetDevices()', () => {
 describe('getDevice()', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 	cognitoUser.setSignInUserSession(vCognitoUserSession);
-	const callback = {
-		onSuccess: jest.fn(),
-		onFailure: jest.fn(),
-	};
 
 	afterAll(() => {
 		jest.restoreAllMocks();
@@ -1146,11 +1074,6 @@ describe('getDevice()', () => {
 describe('verifyAttribute(), getAttributeVerificationCode', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 	cognitoUser.setSignInUserSession(vCognitoUserSession);
-	const callback = {
-		onSuccess: jest.fn(),
-		onFailure: jest.fn(),
-		inputVerificationCode: jest.fn(),
-	};
 	const verifyAttributeDefaults = ['username', '123456', callback];
 
 	afterAll(() => {
@@ -1218,10 +1141,6 @@ describe('verifyAttribute(), getAttributeVerificationCode', () => {
 describe('confirmPassword() and forgotPassword()', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 	cognitoUser.setSignInUserSession(vCognitoUserSession);
-	const callback = {
-		onSuccess: jest.fn(),
-		onFailure: jest.fn(),
-	};
 	const confirmPasswordDefaults = [
 		'confirmCode',
 		'newSecurePassword',
@@ -1251,6 +1170,7 @@ describe('confirmPassword() and forgotPassword()', () => {
 	});
 
 	test('happy path should callback onSuccess', () => {
+		callback.inputVerificationCode = null;
 		netRequestMockSuccess(true);
 		cognitoUser.forgotPassword(...forgotPasswordDefaults);
 		expect(callback.onSuccess.mock.calls.length).toEqual(1);
@@ -1273,10 +1193,6 @@ describe('confirmPassword() and forgotPassword()', () => {
 describe('MFA test suite', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 	cognitoUser.setSignInUserSession(vCognitoUserSession);
-	const callback = {
-		onSuccess: jest.fn(),
-		onFailure: jest.fn(),
-	};
 
 	const sendMfaDefaults = ['abc123', callback, 'SMS_MFA', {}];
 

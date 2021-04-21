@@ -54,3 +54,19 @@ export function authHelperMock(fnName) {
 			});
 	}
 }
+
+export const callback = {
+	onSuccess: jest.fn(),
+	onFailure: jest.fn(),
+	mfaRequired: jest.fn(),
+	selectMFAType: jest.fn(),
+	mfaSetup: jest.fn(),
+	totpRequired: jest.fn(),
+	customChallenge: jest.fn(),
+	newPasswordRequired: jest.fn(),
+	associateSecretCode: jest.fn(),
+	inputVerificationCode: jest.fn(),
+	associateSecretCode: jest.fn(),
+};
+
+export default callback;
