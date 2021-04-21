@@ -12,7 +12,7 @@ const componentFieldMapping = {
 			required={ff.required}
 			handleInputChange={ff.handleInputChange}
 			value={ff.value}
-			inputProps={{ ...ff.inputProps, autocomplete: 'username' }}
+			inputProps={{ ...ff.inputProps}}
 			disabled={ff.disabled}
 		/>
 	),

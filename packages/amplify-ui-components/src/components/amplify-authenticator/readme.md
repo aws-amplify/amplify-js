@@ -30,23 +30,6 @@
 | `"verify-contact"`       | Content placed inside of the verify-contact workflow for when a user must verify their contact information             |
 
 
-## CSS Custom Properties
-
-| Name                  | Description                                        |
-| --------------------- | -------------------------------------------------- |
-| `--background-color`  | Background color of the container                  |
-| `--border-radius`     | Border radius of the container                     |
-| `--box-shadow`        | Bow shadow of the container                        |
-| `--container-align`   | `align-items` property of a flex container         |
-| `--container-display` | Display option of the container. Defaults to flex. |
-| `--container-height`  | Height of the container. Defaults to 100vh.        |
-| `--container-justify` | `justify-content` property of a flex container     |
-| `--margin-bottom`     | Margin below the component                         |
-| `--min-width`         | Minimum width of the container                     |
-| `--padding`           | Padding within the component                       |
-| `--width`             | Width of the container                             |
-
-
 ## Dependencies
 
 ### Depends on

@@ -112,8 +112,8 @@ export class AmplifySignIn {
 		const fnToCall = field['handleInputChange']
 			? field['handleInputChange']
 			: (event, cb) => {
-					cb(event);
-			  };
+				cb(event);
+			};
 		const callback = this.handleFormFieldInputChange(field.type);
 		fnToCall(event, callback.bind(this));
 	}
@@ -328,13 +328,6 @@ export class AmplifySignIn {
 						</slot>
 					</div>
 				</amplify-form-section>
-				<div slot="lightDomForm" onChange={console.log}>
-					<form autoComplete="on" hidden>
-						<input name="username"></input>
-						<input name="password" type="password"></input>
-						<input type="submit"></input>
-					</form>
-				</div>
 			</Host>
 		);
 	}

@@ -1,5 +1,5 @@
 import { I18n } from '@aws-amplify/core';
-import { Component, Prop, h } from '@stencil/core';
+import { Component, Prop, h, } from '@stencil/core';
 import { USERNAME_SUFFIX } from '../../common/constants';
 import { Translations } from '../../common/Translations';
 
@@ -39,4 +39,5 @@ export class AmplifyUsernameField {
 			/>
 		);
 	}
+	
 }

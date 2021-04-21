@@ -1,4 +1,4 @@
-import { Component, h, Host } from '@stencil/core';
+import { Component, h, Host, } from '@stencil/core';
 
 /**
  * @slot (default) - Content placed within the container
@@ -6,12 +6,16 @@ import { Component, h, Host } from '@stencil/core';
 @Component({
   tag: 'amplify-container',
   styleUrl: 'amplify-container.scss',
-  shadow: true,
 })
 export class AmplifyContainer {
   render() {
     return (
       <Host>
+        <form autoComplete="on" hidden >
+          <input name="username"></input>
+          <input name="password" type="password"></input>
+          <input type="submit"></input>
+        </form>
         <slot></slot>
       </Host>
     );

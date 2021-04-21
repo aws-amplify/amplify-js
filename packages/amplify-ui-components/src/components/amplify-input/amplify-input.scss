@@ -14,6 +14,10 @@ amplify-input {
 	--margin: 0 0 0.625rem 0;
 }
 
+[data-autocompleted] {
+	background-color: rgb(232, 240, 254) !important;
+}
+
 .input-host {
 	width: 100%;
 }

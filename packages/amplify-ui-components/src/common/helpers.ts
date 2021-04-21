@@ -24,6 +24,20 @@ export const hasShadowDom = (el: HTMLElement) => {
   return !!el.shadowRoot && !!(el as any).attachShadow;
 };
 
+export const closestElement = (selector, base) => {
+  function __closestFrom(el): Element {
+      if (!el || el === document || el === window)
+          return null;
+      if (el.assignedSlot)
+          el = el.assignedSlot;
+      let found = el.closest(selector);
+      return found
+          ? found
+          : __closestFrom(el.getRootNode().host);
+  }
+  return __closestFrom(base);
+}
+
 export const dispatchToastHubEvent = (error: ToastError) => {
   Hub.dispatch(UI_AUTH_CHANNEL, {
     event: TOAST_AUTH_ERROR_EVENT,

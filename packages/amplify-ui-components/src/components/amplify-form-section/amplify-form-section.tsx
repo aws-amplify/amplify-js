@@ -31,7 +31,7 @@ export class AmplifyFormSection {
 
 	render() {
 		return (
-			<form onSubmit={this.handleSubmit} autoComplete="on">
+			<form onSubmit={this.handleSubmit}>
 				<amplify-section>
 					<div>
 						<slot name="amplify-form-section-header">

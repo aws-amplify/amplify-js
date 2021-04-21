@@ -232,9 +232,6 @@ export class AmplifyAuthenticator {
 						{this.getSlotWithAuthComponent(this.authState)}
 					</div>
 				)}
-				<div>
-					<slot name="lightDomForm"></slot>
-				</div>
 			</Host>
 		);
 	}
