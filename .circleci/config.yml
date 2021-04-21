@@ -326,7 +326,7 @@ jobs:
       - run:
           name: 'Run Amplify JS unit tests'
           command: |
-            yarn test dmesg
+            yarn test
             yarn coverage
 
   integ_setup:
