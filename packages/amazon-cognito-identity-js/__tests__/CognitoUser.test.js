@@ -464,7 +464,9 @@ describe('authenticateUserInternal()', () => {
 	});
 
 	test('Successful client request passing empty object to cb', () => {
-		netRequestMockSuccess(true);
+		netRequestMockSuccess(true, {
+			UserConfirmationNecessary: true,
+		});
 
 		user.authenticateUserInternal(authData, authHelper, callback);
 		expect(callback.onSuccess).toBeCalledWith(user.signInUserSession, true);
