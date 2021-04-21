@@ -10,6 +10,16 @@ executors:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
 
+    resource_class: large
+    working_directory: ~/amplify-js
+
+  unit-test-executor:
+    docker:
+      - image: cypress/base:12
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
+
     resource_class: xlarge
     working_directory: ~/amplify-js
 
@@ -319,7 +329,7 @@ jobs:
             - amplify-js
 
   unit_test:
-    executor: build-executor
+    executor: unit-test-executor
     steps:
       - attach_workspace:
           at: /root
