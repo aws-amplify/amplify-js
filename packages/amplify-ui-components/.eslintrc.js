@@ -36,5 +36,6 @@ module.exports = {
 		'@typescript-eslint/no-empty-function': 0,
 		'@typescript-eslint/ban-ts-comment': 0,
 		'@typescript-eslint/ban-types': 0,
+		'@stencil/decorators-style': 0
 	},
 };
