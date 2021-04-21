@@ -10,7 +10,7 @@ executors:
           username: $DOCKERHUB_USERNAME
           password: $DOCKERHUB_ACCESS_TOKEN
 
-    resource_class: large
+    resource_class: xlarge
     working_directory: ~/amplify-js
 
   js-test-executor:
