@@ -30,7 +30,7 @@ export const closestElement = (selector, base) => {
           return null;
       if (el.assignedSlot)
           el = el.assignedSlot;
-      let found = el.closest(selector);
+      const found = el.closest(selector);
       return found
           ? found
           : __closestFrom(el.getRootNode().host);

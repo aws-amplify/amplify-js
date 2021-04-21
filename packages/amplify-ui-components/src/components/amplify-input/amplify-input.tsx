@@ -35,7 +35,7 @@ export class AmplifyInput {
 	}) formSubmit: EventEmitter;
 	@State() autoCompleted;
 
-	@Element() el: HTMLElement;
+	@Element() el: HTMLAmplifyInputElement;
 
 	private setAutoCompleteValue(event) {
 		const target: HTMLInputElement = event.target

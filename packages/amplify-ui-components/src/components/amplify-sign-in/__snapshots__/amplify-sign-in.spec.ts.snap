@@ -31,13 +31,6 @@ exports[`amplify-sign-in spec: Render logic -> should render a \`sign in\` form 
         </slot>
       </div>
     </amplify-form-section>
-    <div slot="lightDomForm">
-      <form autocomplete="on" hidden="">
-        <input name="username">
-        <input name="password" type="password">
-        <input type="submit">
-      </form>
-    </div>
   </mock:shadow-root>
 </amplify-sign-in>
 `;
@@ -73,13 +66,6 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withEmptyFederate
         </slot>
       </div>
     </amplify-form-section>
-    <div slot="lightDomForm">
-      <form autocomplete="on" hidden="">
-        <input name="username">
-        <input name="password" type="password">
-        <input type="submit">
-      </form>
-    </div>
   </mock:shadow-root>
 </amplify-sign-in>
 `;
@@ -118,13 +104,6 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederated 1`]
         </slot>
       </div>
     </amplify-form-section>
-    <div slot="lightDomForm">
-      <form autocomplete="on" hidden="">
-        <input name="username">
-        <input name="password" type="password">
-        <input type="submit">
-      </form>
-    </div>
   </mock:shadow-root>
 </amplify-sign-in>
 `;

@@ -8,9 +8,6 @@ exports[`amplify-authenticator spec: Render logic -> should render a \`forgot pa
         <amplify-forgot-password></amplify-forgot-password>
       </slot>
     </div>
-    <div>
-      <slot name="lightDomForm"></slot>
-    </div>
   </mock:shadow-root>
 </amplify-authenticator>
 `;
@@ -23,9 +20,6 @@ exports[`amplify-authenticator spec: Render logic -> should render a \`sign in\`
         <amplify-sign-in></amplify-sign-in>
       </slot>
     </div>
-    <div>
-      <slot name="lightDomForm"></slot>
-    </div>
   </mock:shadow-root>
 </amplify-authenticator>
 `;
@@ -37,9 +31,6 @@ exports[`amplify-authenticator spec: Render logic -> should render a \`sign up\`
       <slot name="sign-up">
         <amplify-sign-up></amplify-sign-up>
       </slot>
-    </div>
-    <div>
-      <slot name="lightDomForm"></slot>
     </div>
   </mock:shadow-root>
 </amplify-authenticator>

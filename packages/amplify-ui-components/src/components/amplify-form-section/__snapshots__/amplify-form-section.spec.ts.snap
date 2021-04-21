@@ -3,7 +3,7 @@
 exports[`amplify-form-section spec: Render logic -> should render a form section with a default button of \`Submit\` 1`] = `
 <amplify-form-section>
   <!---->
-  <form autocomplete="on">
+  <form>
     <amplify-section>
       <div>
         <slot-fb name="amplify-form-section-header">
@@ -32,7 +32,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
 exports[`amplify-form-section spec: Render logic -> should render a form section with a submit button text of \`Go\` 1`] = `
 <amplify-form-section submit-button-text="Go">
   <!---->
-  <form autocomplete="on">
+  <form>
     <amplify-section>
       <div>
         <slot-fb name="amplify-form-section-header">
@@ -61,7 +61,7 @@ exports[`amplify-form-section spec: Render logic -> should render a form section
 exports[`amplify-form-section spec: Render logic -> should render form section 1`] = `
 <amplify-form-section>
   <!---->
-  <form autocomplete="on">
+  <form>
     <amplify-section>
       <div>
         <slot-fb name="amplify-form-section-header">
