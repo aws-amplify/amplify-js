@@ -43,12 +43,6 @@ describe('Calculations for Cognito User Attributes', () => {
 		expect(ivCognitoUserSession.calculateClockDrift()).toBe(expectedValue);
 	});
 
-	test('Getting undefined clock drift', () => {
-		expect(ivCognitoUserSession.getClockDrift()).toEqual(
-			ivCognitoUserSession.calculateClockDrift()
-		);
-	});
-
 	test('JWT Expiration was hard-coded to be a time in the past so that this is guaranteed to be an invalid token', () => {
 		expect(ivCognitoUserSession.isValid()).toBe(false);
 	});
