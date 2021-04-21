@@ -48,7 +48,7 @@ export class AmplifyInput {
 
 	componentWillLoad() {
 		if (/Firefox/.test(navigator.userAgent)) return; // firefox autofill works
-		const container = closestElement('amplify-container', this.el)
+		const container = closestElement('amplify-auth-container', this.el)
 		if (!container) return;
 
 		const username: HTMLInputElement = container.querySelector("input[name='username']");

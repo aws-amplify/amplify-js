@@ -6,7 +6,7 @@ import { Component, h, Host, } from '@stencil/core';
 @Component({
   tag: 'amplify-auth-container',
 })
-export class AmplifyContainer {
+export class AmplifyAuthContainer {
   render() {
     return (
       <Host>
