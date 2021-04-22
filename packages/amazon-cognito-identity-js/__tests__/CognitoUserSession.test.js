@@ -1,13 +1,42 @@
 import CognitoUserSession from '../src/CognitoUserSession';
 import {
 	ivCognitoUserSession,
-	ivRefreshToken,
 	ivAccessToken,
 	ivCognitoIdToken,
 	ivRefreshToken,
+	vRefreshToken,
+	vAccessToken,
+	vCognitoIdToken,
+	vRefreshToken,
+	vCognitoUserSession,
 } from './constants.js';
 
-describe('Getters for Cognito User Session', () => {
+describe('Getters for a valid Cognito Session', () => {
+	test('Getting access token', () => {
+		expect(vCognitoUserSession.getIdToken()).toBe(vCognitoIdToken);
+	});
+
+	test('Getting refresh token', () => {
+		expect(vCognitoUserSession.getRefreshToken()).toBe(vRefreshToken);
+	});
+
+	test('Getting access token', () => {
+		expect(vCognitoUserSession.getAccessToken()).toBe(vAccessToken);
+	});
+
+	test('Access token undefined', () => {
+		expect(() => {
+			new CognitoUserSession({
+				IdToken: vCognitoIdToken,
+				RefreshToken: vRefreshToken,
+				AccessToken: null,
+				ClockDrift: undefined,
+			});
+		}).toThrowError('Id token and Access Token must be present.');
+	});
+});
+
+describe('Getters for an invalid Cognito Session', () => {
 	test('Getting access token', () => {
 		expect(ivCognitoUserSession.getIdToken()).toBe(ivCognitoIdToken);
 	});

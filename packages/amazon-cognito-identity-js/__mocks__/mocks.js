@@ -16,14 +16,14 @@ export function netRequestMockSuccess(success, data = {}) {
 	if (success) {
 		jest
 			.spyOn(Client.prototype, 'request')
-			.mockImplementationOnce((...args) => {
-				args[2](null, data);
+			.mockImplementationOnce((...[, , callback]) => {
+				callback(null, data);
 			});
 	} else {
 		jest
 			.spyOn(Client.prototype, 'request')
-			.mockImplementationOnce((...args) => {
-				args[2](networkError, null);
+			.mockImplementationOnce((...[, , callback]) => {
+				callback(networkError, null);
 			});
 	}
 }
@@ -34,25 +34,25 @@ export function netRequestMockSuccess(success, data = {}) {
  * @returns mockImplemntation of the fnName or throw error
  */
 export function authHelperMock(fnName) {
-	const fnNames = Object.getOwnPropertyNames(AuthenticationHelper.prototype);
-	if (fnNames.indexOf(fnName) < 0) {
-		throw new Error(
-			`${fnName} provided does not exist in Authentication Helper class`
-		);
-	}
-	if (fnName === genHashDevices) {
-		jest
-			.spyOn(AuthenticationHelper.prototype, fnName)
-			.mockImplementationOnce((...args) => {
-				args[2](null, null);
-			});
-	} else if (fnName === getSalt || fnName === getVerifiers) {
-		jest
-			.spyOn(AuthenticationHelper.prototype, fnName)
-			.mockImplementationOnce(() => {
+	let implementation = () => {
+		throw new Error('Invalid property');
+	};
+	switch (fnName) {
+		case genHashDevices:
+			implementation = (...[, , callback]) => {
+				callback(null, null);
+			};
+			break;
+		case getSalt:
+		case getVerifiers:
+			implementation = () => {
 				return 'deadbeef';
-			});
+			};
+			break;
 	}
+	jest
+		.spyOn(AuthenticationHelper.prototype, fnName)
+		.mockImplementationOnce(implementation);
 }
 
 export const callback = {

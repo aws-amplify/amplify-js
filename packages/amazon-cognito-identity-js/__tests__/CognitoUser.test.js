@@ -422,10 +422,6 @@ describe('authenticateUserInternal()', () => {
 		expect(randomPasswordSpy).toBeCalledTimes(1);
 		expect(getVerifierDevicesSpy).toBeCalledTimes(1);
 		expect(spyon3).toBeCalledTimes(1);
-
-		randomPasswordSpy.mockClear();
-		getVerifierDevicesSpy.mockClear();
-		spyon3.mockClear();
 	});
 
 	test('Client request fails gracefully', () => {
@@ -673,11 +669,9 @@ describe('confirmRegistration()', () => {
 	});
 
 	test('ConfirmSignUp returns SUCCESS', () => {
-		const spyon = jest
-			.spyOn(Client.prototype, 'request')
-			.mockImplementation((...args) => {
-				args[2](null);
-			});
+		jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
+			args[2](null);
+		});
 
 		const spyon2 = jest.spyOn(user, 'getUserContextData');
 		user.confirmRegistration(

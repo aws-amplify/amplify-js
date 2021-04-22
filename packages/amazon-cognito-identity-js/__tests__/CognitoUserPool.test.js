@@ -10,11 +10,11 @@ describe('Constructor and accessor methods', () => {
 		jest.restoreAllMocks();
 	});
 
-	test('Improper data supplied', () => {
+	test('when either userPoolId or clientId is null throw a requirement error', () => {
 		const data = { UserPoolId: null, ClientId: clientId };
 		expect(() => {
 			new CognitoUserPool(data);
-		}).toThrowError();
+		}).toThrowError('Both UserPoolId and ClientId are required.');
 	});
 
 	test('Getting clientId from CognitoUserPool', () => {
@@ -35,8 +35,6 @@ describe('Constructor and accessor methods', () => {
 	});
 	test('When a user has been logged in, return the CognitoUser getting the current user', async () => {
 		jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
-			// need to mock the implementation of storage.getItem() to give us a
-			// hard-coded CognitoUser with username:'userame'
 			return 'username';
 		});
 
@@ -55,20 +53,15 @@ describe('Testing signUp of a user into a user pool', () => {
 		jest.restoreAllMocks();
 	});
 
-	test('Signing up a user happy path', async () => {
+	test('signUp()', async () => {
 		jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
 			args[2](null, {});
 		});
 
-		//returns a function that records everything being done to it
 		const callback = jest.fn();
 
 		cognitoUserPool.signUp(userName, password, [], [], callback, []);
-		//mockCallback.mock.calls[1][0]).toBe(1);
 
-		// looking at all the recorded calls to the jest.fn()
-		// 1st param is number of times invoked
-		// 2nd param is the index of the argument passed in
 		expect(callback.mock.calls[0][1]).toMatchObject({
 			user: { username: userName },
 		});

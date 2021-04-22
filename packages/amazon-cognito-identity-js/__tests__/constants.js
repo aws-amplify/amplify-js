@@ -22,6 +22,9 @@ export const authDetailDataWithValidationData = {
 	},
 };
 
+/** AuthHelper */
+export const bigIntError = new Error('BigInteger Error');
+
 /** Client */
 export const region = 'us-east-1';
 export const endpoint = 'https://cognito-idp.us-east-1.amazonaws.com/';

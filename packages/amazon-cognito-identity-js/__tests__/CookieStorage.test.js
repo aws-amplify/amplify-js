@@ -1,9 +1,13 @@
 import CookieStorage from '../src/CookieStorage';
 import { cookieStorageDomain } from './constants';
 
+/**
+ * @jest-environment jsdom
+ */
+
 describe('Cookie Storage Unit Tests', () => {
 	//defining a DOM to attach a cookie to
-	Object.defineProperty(window.document, 'cookie', { writable: true });
+	Object.defineProperty(document, 'cookie', { writable: true });
 
 	describe('Constructor methods', () => {
 		test('Domain not supplied', () => {
@@ -42,8 +46,8 @@ describe('Cookie Storage Unit Tests', () => {
 		});
 
 		describe('Setters and getters', () => {
-			const data = { path: '/', domain: cookieStorageDomain };
-			const cookieStore = new CookieStorage(data);
+			const cookieStoreData = { path: '/', domain: cookieStorageDomain };
+			const cookieStore = new CookieStorage(cookieStorageData);
 
 			test('getting an item', () => {
 				cookieStore.setItem('testKey', 'testValue');
@@ -56,8 +60,14 @@ describe('Cookie Storage Unit Tests', () => {
 				);
 			});
 
-			test('Clearing cookies should return an empty object', () => {
-				expect(cookieStore.clear()).toEqual({});
+			test('Clearing cookies should remove all items within the storage', () => {
+				const emptyCookieStore = new CookieStorage(data);
+				realCookieStore.setItem('testKey2', 'testValue');
+				console.log(emptyCookieStore.getItem());
+				console.log(realCookieStore.getItem());
+				expect(emptyCookieStore.getItem()).not.toEqual(cookieStore.getItem());
+				cookieStore.clear();
+				expect(realCookieStore).toEqual(emptyCookieStore);
 			});
 		});
 	});

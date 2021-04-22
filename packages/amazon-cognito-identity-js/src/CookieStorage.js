@@ -33,7 +33,7 @@ export default class CookieStorage {
 			this.secure = true;
 		}
 		if (Object.prototype.hasOwnProperty.call(data, 'sameSite')) {
-			if (!['strict','lax','none'].includes(data.sameSite)) {
+			if (!['strict', 'lax', 'none'].includes(data.sameSite)) {
 				throw new Error(
 					'The sameSite value of cookieStorage must be "lax", "strict" or "none".'
 				);
@@ -108,7 +108,10 @@ export default class CookieStorage {
 	clear() {
 		const cookies = Cookies.get();
 		let index;
-		for (index = 0; index < cookies.length; ++index) {
+		let numKeys = Object.keys(cookies).length; // 4
+		console.log(cookies);
+		for (index = 0; index < numKeys; ++index) {
+			console.log('test');
 			Cookies.remove(cookies[index]);
 		}
 		return {};
