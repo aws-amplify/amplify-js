@@ -1,8 +1,22 @@
-import * as index from '../src/index';
+import * as exported from '../src/index';
 
-test('Index modules are imported/exported properly', () => {
-	const modules = Object.keys(index);
-	modules.forEach(module => {
-		expect(module).toBeTruthy();
+describe('import * keys', () => {
+	it('should match snapshot', () => {
+		expect(Object.keys(exported)).toMatchInlineSnapshot(`
+		Array [
+		  "AuthenticationDetails",
+		  "AuthenticationHelper",
+		  "CognitoAccessToken",
+		  "CognitoIdToken",
+		  "CognitoRefreshToken",
+		  "CognitoUser",
+		  "CognitoUserAttribute",
+		  "CognitoUserPool",
+		  "CognitoUserSession",
+		  "CookieStorage",
+		  "DateHelper",
+		  "appendToCognitoUserAgent",
+		]
+	`);
 	});
 });
