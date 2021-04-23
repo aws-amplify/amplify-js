@@ -102,17 +102,15 @@ export default class CookieStorage {
 	}
 
 	/**
-	 * This is used to clear the storage
-	 * @returns {string} nothing
+	 * This is used to clear the storage of optional
+	 * items that were previously set
+	 * @returns {} an empty object
 	 */
 	clear() {
 		const cookies = Cookies.get();
-		let index;
-		let numKeys = Object.keys(cookies).length; // 4
-		console.log(cookies);
-		for (index = 0; index < numKeys; ++index) {
-			console.log('test');
-			Cookies.remove(cookies[index]);
+		let numKeys = Object.keys(cookies).length;
+		for (let index = 0; index < numKeys; ++index) {
+			this.removeItem(Object.keys(cookies)[index]);
 		}
 		return {};
 	}

@@ -11,12 +11,13 @@ import {
  *
  * @param {boolean} success defines if a network request is successful
  * @param {object?} optional data to return onSuccess, some tests requires specific object values
+ * @param {string?} optional operationName to provide clarity inside the testing function
  */
-export function netRequestMockSuccess(success, data = {}) {
+export function netRequestMockSuccess(success, data = {}, operationName = '') {
 	if (success) {
 		jest
 			.spyOn(Client.prototype, 'request')
-			.mockImplementationOnce((...[, , callback]) => {
+			.mockImplementationOnce((...[operationName, , callback]) => {
 				callback(null, data);
 			});
 	} else {

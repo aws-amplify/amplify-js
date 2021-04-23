@@ -25,8 +25,7 @@ describe('StorageHelper unit test', () => {
 			writable: true,
 		});
 		const storageHelper = new StorageHelper();
-
-		expect(storageHelper.getStorage()).toEqual(storageHelper.storageWindow);
+		expect(storageHelper.getStorage()).toBe(localStorageMock);
 	});
 
 	describe('operations when local storage is undefined', () => {

@@ -77,10 +77,12 @@ describe('React native storage helper unit tests', () => {
 			const storageHelper = new StorageHelper();
 			const callback = jest.fn();
 
-			//localStorage would then be out of sync with AsyncStorage
-			storageHelper.getStorage().setItem('key', 'value');
+			// MemoryStorage would then be out of sync with AsyncStorage
+			expect(storageHelper.getStorage().getItem('key')).toBeUndefined();
+			storageHelper.getStorage().setItem('key', 'value1');
 			storageHelper.getStorage().sync(callback);
 			expect(callback.mock.calls[0][1]).toEqual('SUCCESS');
+			expect(storageHelper.getStorage().getItem('key')).toEqual('value1');
 		});
 
 		test('Get all keys throws errors', () => {

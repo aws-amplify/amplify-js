@@ -27,6 +27,8 @@ import {
 	getSalt,
 	getVerifiers,
 	passwordErr,
+	vRefreshToken,
+	ivRefreshToken,
 } from './constants';
 import { CognitoUserSession } from 'amazon-cognito-identity-js';
 
@@ -76,17 +78,42 @@ describe('CognitoUser constructor', () => {
 
 describe('getters and setters', () => {
 	const user = new CognitoUser({ ...userDefaults });
+	const refreshTokenKey =
+		'CognitoIdentityServiceProvider.3pu8tnp684l4lmlfoth25ojmd2.username.refreshToken';
 
-	test('get and set SignInUserSession', () => {
-		// initial state
-		expect(user.getSignInUserSession()).toEqual(null);
+	describe('setSignInUserSession()', () => {
+		const cacheSpy = jest.spyOn(CognitoUser.prototype, 'clearCachedUserData');
+		const cacheTokenSpy = jest.spyOn(CognitoUser.prototype, 'cacheTokens');
 
-		// setting explicitly
-		user.setSignInUserSession(vCognitoUserSession);
-		expect(user.signInUserSession).toEqual(vCognitoUserSession);
+		test('happy path should have an empty cache, after user session is set, cache tokens', () => {
+			// precondition
+			expect(user.getSignInUserSession()).toEqual(null);
+			expect(user.storage.getItem('')).toEqual(null);
 
-		// getter after set explicitly
-		expect(user.getSignInUserSession()).toEqual(vCognitoUserSession);
+			user.setSignInUserSession(vCognitoUserSession);
+			expect(cacheSpy).toBeCalled();
+			expect(cacheTokenSpy).toBeCalled();
+
+			// post-condition
+			expect(user.getSignInUserSession()).toEqual(vCognitoUserSession);
+			expect(user.storage.getItem(refreshTokenKey)).toEqual(
+				vRefreshToken.token
+			);
+		});
+
+		test('checking that tokens are cleared properly', () => {
+			// precondition
+			expect(user.getSignInUserSession()).toEqual(vCognitoUserSession);
+			user.setSignInUserSession(ivCognitoUserSession);
+			expect(cacheSpy).toBeCalled();
+			expect(cacheTokenSpy).toBeCalled();
+
+			// post-condition
+			expect(user.getSignInUserSession()).toEqual(ivCognitoUserSession);
+			expect(user.storage.getItem(refreshTokenKey)).toEqual(
+				ivRefreshToken.token
+			);
+		});
 	});
 
 	test('getUsername()', () => {
@@ -402,7 +429,6 @@ describe('authenticateUserInternal()', () => {
 		expect(callback.onFailure).toBeCalledWith(networkError);
 	});
 
-	//TODO: review this
 	test('AuthHelper generateHashDevice with no error calls auth methods', () => {
 		const randomPasswordSpy = jest.spyOn(
 			AuthenticationHelper.prototype,
@@ -412,16 +438,16 @@ describe('authenticateUserInternal()', () => {
 			AuthenticationHelper.prototype,
 			'getVerifierDevices'
 		);
-		const spyon3 = jest.spyOn(
+		const hashDeviceSpy = jest.spyOn(
 			AuthenticationHelper.prototype,
-			'getRandomPassword'
+			'generateHashDevice'
 		);
 
 		user.authenticateUserInternal(authData, authHelper, callback);
 
 		expect(randomPasswordSpy).toBeCalledTimes(1);
 		expect(getVerifierDevicesSpy).toBeCalledTimes(1);
-		expect(spyon3).toBeCalledTimes(1);
+		expect(hashDeviceSpy).toBeCalledTimes(1);
 	});
 
 	test('Client request fails gracefully', () => {
@@ -463,11 +489,6 @@ describe('completeNewPasswordChallenge()', () => {
 	afterEach(() => {
 		jest.restoreAllMocks();
 		callback.onFailure.mockClear();
-	});
-
-	test('No newPassword triggers an error', () => {
-		user.completeNewPasswordChallenge(null, null, callback, null);
-		expect(callback.onFailure).toBeCalledWith(passwordErr);
 	});
 
 	test('No newPassword triggers an error', () => {
@@ -717,7 +738,11 @@ describe('sendCustomChallengeAnswer()', () => {
 		user.sendCustomChallengeAnswer(answerChallenge, callback, clientMetadata);
 
 		expect(spyon2).toBeCalledTimes(1);
-		expect(spyon3).toBeCalled();
+		expect(spyon3).toBeCalledWith(
+			vCognitoUserSession,
+			expect.any(AuthenticationHelper),
+			callback
+		);
 	});
 
 	test('send custom challenge fails gracefully', () => {
@@ -728,20 +753,6 @@ describe('sendCustomChallengeAnswer()', () => {
 
 		user.sendCustomChallengeAnswer(answerChallenge, callback, clientMetadata);
 		expect(callback.onFailure).toBeCalledWith(err);
-	});
-});
-
-describe('sendMFACode()', () => {
-	const user = new CognitoUser({ ...userDefaults });
-	const confirmationCode = 'abc123';
-	let mfaType;
-	const clientMetadata = { meta1: 'value 1', meta2: 'value 2' };
-
-	test('sendMFACode gets initialized properly', () => {
-		const spyon = jest.spyOn(user, 'getUserContextData');
-		user.sendMFACode(confirmationCode, callback, mfaType, clientMetadata);
-		expect(spyon).toHaveBeenCalled();
-		spyon.mockClear();
 	});
 });
 
@@ -758,8 +769,8 @@ describe('verifySoftwareToken()', () => {
 	});
 
 	test('happy case should callback onSuccess with the token', () => {
-		netRequestMockSuccess(true);
-		netRequestMockSuccess(true);
+		netRequestMockSuccess(true, {}, 'verifySoftwareToken');
+		netRequestMockSuccess(true, {}, 'RespondToAuthChallenge');
 
 		cognitoUser.verifySoftwareToken(totpCode, deviceName, callback);
 		expect(callback.onSuccess.mock.calls.length).toBe(1);
@@ -772,8 +783,8 @@ describe('verifySoftwareToken()', () => {
 	});
 
 	test('Verify Software Token second callback fails', () => {
-		netRequestMockSuccess(true);
-		netRequestMockSuccess(false);
+		netRequestMockSuccess(true, {}, 'verifySoftwareToken');
+		netRequestMockSuccess(false, {}, 'RespondToAuthChallenge');
 
 		cognitoUser.verifySoftwareToken(totpCode, deviceName, callback);
 		expect(callback.onFailure.mock.calls.length).toBe(1);
@@ -786,7 +797,7 @@ describe('verifySoftwareToken()', () => {
 		expect(callback.onSuccess.mock.calls.length).toBe(1);
 	});
 
-	test('Error case for non-signed in user session', () => {
+	test('Error case for signed in user session', () => {
 		netRequestMockSuccess(false);
 		cognitoUser.verifySoftwareToken(totpCode, deviceName, callback);
 		expect(callback.onFailure.mock.calls.length).toBe(1);
@@ -874,6 +885,7 @@ describe('signOut() and globalSignOut', () => {
 
 	test('signOut expected to set signinUserSession to equal null', () => {
 		cognitoUser.signOut();
+		expect(cognitoUser.storage.getItem('')).toEqual(null);
 		expect(cognitoUser.signInUserSession).toEqual(null);
 	});
 
@@ -1113,9 +1125,8 @@ describe('verifyAttribute(), getAttributeVerificationCode', () => {
 		expect(callback.inputVerificationCode.mock.calls.length).toEqual(1);
 	});
 
-	test('when inputVerificationCode exists in the callback, call inputVerifier with the data', () => {
+	test('when inputVerificationCode with a failed network request', () => {
 		netRequestMockSuccess(false);
-
 		cognitoUser.getAttributeVerificationCode(...getAttrsVerifCodeDefaults);
 		expect(callback.onFailure.mock.calls.length).toEqual(1);
 	});
@@ -1187,7 +1198,6 @@ describe('confirmPassword() and forgotPassword()', () => {
 describe('MFA test suite', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 	cognitoUser.setSignInUserSession(vCognitoUserSession);
-
 	const sendMfaDefaults = ['abc123', callback, 'SMS_MFA', {}];
 
 	afterAll(() => {
@@ -1497,7 +1507,6 @@ describe('getUserAttributes()', () => {
 
 describe('getCognitoUserSession()', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
-
 	const idToken = new CognitoIdToken();
 	const accessToken = new CognitoAccessToken();
 	const refreshToken = new CognitoRefreshToken();
@@ -1507,9 +1516,8 @@ describe('getCognitoUserSession()', () => {
 		AccessToken: accessToken,
 		RefreshToken: refreshToken,
 	};
-	cognitoUser.setSignInUserSession(vCognitoUserSession);
 	test('happy path should return a new CognitoUserSession', () => {
-		expect(cognitoUser.getCognitoUserSession({})).toMatchObject(
+		expect(cognitoUser.getCognitoUserSession({ sessionData })).toMatchObject(
 			new CognitoUserSession(sessionData)
 		);
 	});
@@ -1519,6 +1527,15 @@ describe('refreshSession()', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 	const callback = jest.fn();
 	const refreshSessionDefaults = [new CognitoRefreshToken(), callback, {}];
+
+	const keyPrefix = `CognitoIdentityServiceProvider.${cognitoUser.pool.getClientId()}.${
+		cognitoUser.username
+	}`;
+
+	const idTokenKey = `${keyPrefix}.idToken`;
+	const accessTokenKey = `${keyPrefix}.accessToken`;
+	const refreshTokenKey = `${keyPrefix}.refreshToken`;
+	const clockDriftKey = `${keyPrefix}.clockDrift`;
 
 	const idToken = new CognitoIdToken();
 	const accessToken = new CognitoAccessToken();
@@ -1552,72 +1569,41 @@ describe('refreshSession()', () => {
 		expect(callback.mock.calls[0][0]).toMatchObject(new Error('Network Error'));
 	});
 
-	describe('getSession()', () => {
-		const cognitoUser = new CognitoUser({ ...userDefaults });
-		const callback = jest.fn();
+	test('getSession()', () => {
+		cognitoUser.setSignInUserSession(ivCognitoUserSession);
+		cognitoUser.storage.setItem(
+			idTokenKey,
+			vCognitoUserSession.getIdToken().getJwtToken()
+		);
+		cognitoUser.storage.setItem(
+			accessTokenKey,
+			vCognitoUserSession.getAccessToken().getJwtToken()
+		);
+		cognitoUser.storage.setItem(
+			refreshTokenKey,
+			vCognitoUserSession.getRefreshToken().getToken()
+		);
+		cognitoUser.storage.setItem(
+			clockDriftKey,
+			vCognitoUserSession.getClockDrift()
+		);
+		cognitoUser.getSession(callback);
+		expect(callback.mock.calls[0][0]).toEqual(null);
+	});
 
-		const idToken = new CognitoIdToken();
-		const accessToken = new CognitoAccessToken();
-		const refreshToken = new CognitoRefreshToken();
-		const sessionData = {
-			IdToken: idToken,
-			AccessToken: accessToken,
-			RefreshToken: refreshToken,
-		};
-		const testSession = new CognitoUserSession(sessionData);
+	test('when a valid userSession exists, return callback(null, signInUserSession) from instance vars', () => {
+		cognitoUser.setSignInUserSession(vCognitoUserSession);
+		cognitoUser.getSession(callback);
+		expect(callback.mock.calls[0][1]).toMatchObject(
+			cognitoUser.signInUserSession
+		);
+	});
 
-		afterAll(() => {
-			jest.restoreAllMocks();
-		});
-
-		afterEach(() => {
-			callback.mockClear();
-		});
-
-		const keyPrefix = `CognitoIdentityServiceProvider.${cognitoUser.pool.getClientId()}.${
-			cognitoUser.username
-		}`;
-
-		const idTokenKey = `${keyPrefix}.idToken`;
-		const accessTokenKey = `${keyPrefix}.accessToken`;
-		const refreshTokenKey = `${keyPrefix}.refreshToken`;
-		const clockDriftKey = `${keyPrefix}.clockDrift`;
-
-		test('when an invalid userSession exists, get signinUserSession from cache', () => {
-			cognitoUser.setSignInUserSession(ivCognitoUserSession);
-			cognitoUser.storage.setItem(
-				idTokenKey,
-				vCognitoUserSession.getIdToken().getJwtToken()
-			);
-			cognitoUser.storage.setItem(
-				accessTokenKey,
-				vCognitoUserSession.getAccessToken().getJwtToken()
-			);
-			cognitoUser.storage.setItem(
-				refreshTokenKey,
-				vCognitoUserSession.getRefreshToken().getToken()
-			);
-			cognitoUser.storage.setItem(
-				clockDriftKey,
-				vCognitoUserSession.getClockDrift()
-			);
-			cognitoUser.getSession(callback);
-			expect(callback.mock.calls[0][0]).toEqual(null);
-		});
-
-		test('when a valid userSession exists, return callback(null, signInUserSession) from instance vars', () => {
-			cognitoUser.setSignInUserSession(vCognitoUserSession);
-			cognitoUser.getSession(callback);
-			expect(callback.mock.calls[0][1]).toMatchObject(
-				cognitoUser.signInUserSession
-			);
-		});
-		test('when a username is null, callback with an error', () => {
-			cognitoUser.username = null;
-			cognitoUser.getSession(callback);
-			expect(callback.mock.calls[0][0]).toMatchObject(
-				new Error('Username is null. Cannot retrieve a new session')
-			);
-		});
+	test('when a username is null, callback with an error', () => {
+		cognitoUser.username = null;
+		cognitoUser.getSession(callback);
+		expect(callback.mock.calls[0][0]).toMatchObject(
+			new Error('Username is null. Cannot retrieve a new session')
+		);
 	});
 });
