@@ -1,4 +1,13 @@
-import { Component, Prop, Host, h, Event, EventEmitter, Element, State } from '@stencil/core';
+import {
+	Component,
+	Prop,
+	Host,
+	h,
+	Event,
+	EventEmitter,
+	Element,
+	State,
+} from '@stencil/core';
 import { closestElement } from '../../common/helpers';
 import { TextFieldTypes, InputEvent } from '../../common/types/ui-types';
 
@@ -38,37 +47,42 @@ export class AmplifyInput {
 	@Element() el: HTMLAmplifyInputElement;
 
 	private setAutoCompleteValue(event) {
-		const target: HTMLInputElement = event.target
+		const target: HTMLInputElement = event.target;
 		const value = target.value;
 
 		this.value = value;
 		this.autoCompleted = true;
-		this.handleInputChange(event)
+		this.handleInputChange(event);
 	}
 
 	componentWillLoad() {
 		if (/Firefox/.test(navigator.userAgent)) return; // firefox autofill works
-		const container = closestElement('amplify-auth-container', this.el)
+		const container = closestElement('amplify-auth-container', this.el);
 		if (!container) return;
 
-		const username: HTMLInputElement = container.querySelector("input[name='username']");
-		const password: HTMLInputElement = container.querySelector("input[name='password']");
+		const username: HTMLInputElement = container.querySelector(
+			"input[name='username']"
+		);
+		const password: HTMLInputElement = container.querySelector(
+			"input[name='password']"
+		);
 
 		if (!username || !password) return;
 
 		if (closestElement('amplify-sign-in', this.el)) {
-			if (this.name === 'username' || this.name === 'email' || this.name === 'phone_number') {
-				username.addEventListener('input', (e) => {
+			if (
+				this.name === 'username' ||
+				this.name === 'email' ||
+				this.name === 'phone'
+			) {
+				username.addEventListener('input', e => {
 					this.setAutoCompleteValue(e);
-				}, false);
+				});
 			}
 			if (this.name === 'password') {
-				password.addEventListener('input', (e) => {
+				password.addEventListener('input', e => {
 					this.setAutoCompleteValue(e);
-				}, false);
-			}
-			if (username) {
-				username.click();
+				});
 			}
 		}
 	}
@@ -85,7 +99,10 @@ export class AmplifyInput {
 					}
 					data-autocompleted={this.autoCompleted}
 					type={this.type}
-					onInput={event => { this.autoCompleted = false; this.handleInputChange(event) }}
+					onInput={event => {
+						this.autoCompleted = false;
+						this.handleInputChange(event);
+					}}
 					placeholder={this.placeholder}
 					name={this.name}
 					class="input"

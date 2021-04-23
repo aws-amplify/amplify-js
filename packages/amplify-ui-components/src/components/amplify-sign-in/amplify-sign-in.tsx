@@ -112,8 +112,8 @@ export class AmplifySignIn {
 		const fnToCall = field['handleInputChange']
 			? field['handleInputChange']
 			: (event, cb) => {
-				cb(event);
-			};
+					cb(event);
+			  };
 		const callback = this.handleFormFieldInputChange(field.type);
 		fnToCall(event, callback.bind(this));
 	}
@@ -157,6 +157,7 @@ export class AmplifySignIn {
 					handleInputChange: this.handleFormFieldInputChange('email'),
 					inputProps: {
 						'data-test': 'sign-in-email-input',
+						autocomplete: 'username',
 					},
 				});
 				break;
@@ -167,6 +168,7 @@ export class AmplifySignIn {
 					handleInputChange: this.handleFormFieldInputChange('phone_number'),
 					inputProps: {
 						'data-test': 'sign-in-phone-number-input',
+						autocomplete: 'username',
 					},
 				});
 				break;
@@ -178,6 +180,7 @@ export class AmplifySignIn {
 					handleInputChange: this.handleFormFieldInputChange('username'),
 					inputProps: {
 						'data-test': 'sign-in-username-input',
+						autocomplete: 'username',
 					},
 				});
 				break;

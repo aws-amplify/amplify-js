@@ -31,6 +31,7 @@ export class AmplifyEmailField {
 				label={I18n.get(this.label)}
 				placeholder={I18n.get(this.placeholder)}
 				type="email"
+				name="email"
 				required={this.required}
 				handleInputChange={this.handleInputChange}
 				value={this.value}

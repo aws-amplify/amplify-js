@@ -12,7 +12,7 @@ const componentFieldMapping = {
 			required={ff.required}
 			handleInputChange={ff.handleInputChange}
 			value={ff.value}
-			inputProps={{ ...ff.inputProps}}
+			inputProps={{ ...ff.inputProps, autocomplete: 'username' }}
 			disabled={ff.disabled}
 		/>
 	),
@@ -24,7 +24,7 @@ const componentFieldMapping = {
 			required={ff.required}
 			handleInputChange={ff.handleInputChange}
 			value={ff.value}
-			inputProps={{ ...ff.inputProps, autocomplete: 'current-password' }}
+			inputProps={ff.inputProps}
 			disabled={ff.disabled}
 		/>
 	),
@@ -35,7 +35,7 @@ const componentFieldMapping = {
 			required={ff.required}
 			handleInputChange={ff.handleInputChange}
 			value={ff.value}
-			inputProps={{ ...ff.inputProps, autocomplete: 'email' }}
+			inputProps={ff.inputProps}
 			disabled={ff.disabled}
 		/>
 	),

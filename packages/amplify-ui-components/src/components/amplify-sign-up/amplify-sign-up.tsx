@@ -194,6 +194,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('email'),
 						inputProps: {
 							'data-test': 'sign-up-email-input',
+							autocomplete: 'username',
 						},
 					},
 					{
@@ -203,6 +204,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('password'),
 						inputProps: {
 							'data-test': 'sign-up-password-input',
+							autocomplete: 'new-password',
 						},
 					},
 					{
@@ -211,6 +213,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('phone_number'),
 						inputProps: {
 							'data-test': 'sign-up-phone-number-input',
+							autocomplete: 'tel-national',
 						},
 					},
 				];
@@ -223,6 +226,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('phone_number'),
 						inputProps: {
 							'data-test': 'sign-up-phone-number-input',
+							autocomplete: 'username',
 						},
 					},
 					{
@@ -232,6 +236,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('password'),
 						inputProps: {
 							'data-test': 'sign-up-password-input',
+							autocomplete: 'new-password',
 						},
 					},
 					{
@@ -241,6 +246,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('email'),
 						inputProps: {
 							'data-test': 'sign-up-email-input',
+							autocomplete: 'email',
 						},
 					},
 				];
