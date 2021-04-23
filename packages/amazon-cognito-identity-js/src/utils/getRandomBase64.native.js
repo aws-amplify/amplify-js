@@ -6,7 +6,7 @@ const getRandomBase64 = NativeModules.ExpoRandom
 	? NativeModules.RNAWSCognito.getRandomBase64
 	: () => {
 			throw new Error(
-				'Could not find a native getRandomBase64 implementation.'
+				'Could not find a native getRandomBase64 implementation. Validate that amazon-cognito-identity-js is linked.'
 			);
 	  };
 export default getRandomBase64;
