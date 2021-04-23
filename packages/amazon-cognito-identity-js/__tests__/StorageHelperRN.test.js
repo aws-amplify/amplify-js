@@ -52,7 +52,9 @@ describe('React native storage helper unit tests', () => {
 			jest.resetModules();
 		});
 		test('Happy case for syncing', () => {
-			var items = { key: 'value1', key2: 'value2' };
+			const items = {
+				'@MemoryStorage:key': 'value1',
+			};
 			jest.mock('react-native', () => ({
 				AsyncStorage: {
 					setItem: jest.fn((item, value) => {
