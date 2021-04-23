@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.29...@aws-amplify/auth@3.4.30) (2021-04-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** define validationData type as object literal ([#8045](https://github.com/aws-amplify/amplify-js/issues/8045)) ([6d0b67c](https://github.com/aws-amplify/amplify-js/commit/6d0b67c4ee4e2275707f462a315b9c8ea536b91d))
+
+
+
+
+
+## [3.4.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.28...@aws-amplify/auth@3.4.29) (2021-03-25)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
 ## [3.4.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.27...@aws-amplify/auth@3.4.28) (2021-03-18)
 
 **Note:** Version bump only for package @aws-amplify/auth

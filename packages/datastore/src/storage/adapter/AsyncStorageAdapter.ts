@@ -137,23 +137,15 @@ export class AsyncStorageAdapter implements Adapter {
 
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
-
 			const { id } = item;
 
-			const opType: OpType = (await this.db.get(id, storeName))
-				? OpType.UPDATE
-				: OpType.INSERT;
+			const fromDB = <T>await this.db.get(id, storeName);
+			const opType: OpType = fromDB ? OpType.UPDATE : OpType.INSERT;
 
-			if (id === model.id) {
+			if (id === model.id || opType === OpType.INSERT) {
 				await this.db.save(item, storeName);
 
 				result.push([instance, opType]);
-			} else {
-				if (opType === OpType.INSERT) {
-					await this.db.save(item, storeName);
-
-					result.push([instance, opType]);
-				}
 			}
 		}
 
