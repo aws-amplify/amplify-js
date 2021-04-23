@@ -8,16 +8,16 @@ import {
 } from '../__tests__/constants';
 
 /**
- *
+ * Mock a single network request to be either successful or fail with an optional data object
  * @param {boolean} success defines if a network request is successful
  * @param {object?} optional data to return onSuccess, some tests requires specific object values
  * @param {string?} optional operationName to provide clarity inside the testing function
  */
-export function netRequestMockSuccess(success, data = {}, operationName = '') {
+export function netRequestMockSuccess(success, data = {}) {
 	if (success) {
 		jest
 			.spyOn(Client.prototype, 'request')
-			.mockImplementationOnce((...[operationName, , callback]) => {
+			.mockImplementationOnce((...[, , callback]) => {
 				callback(null, data);
 			});
 	} else {

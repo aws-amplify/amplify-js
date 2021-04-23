@@ -769,8 +769,8 @@ describe('verifySoftwareToken()', () => {
 	});
 
 	test('happy case should callback onSuccess with the token', () => {
-		netRequestMockSuccess(true, {}, 'verifySoftwareToken');
-		netRequestMockSuccess(true, {}, 'RespondToAuthChallenge');
+		netRequestMockSuccess(true);
+		netRequestMockSuccess(true);
 
 		cognitoUser.verifySoftwareToken(totpCode, deviceName, callback);
 		expect(callback.onSuccess.mock.calls.length).toBe(1);
@@ -783,8 +783,8 @@ describe('verifySoftwareToken()', () => {
 	});
 
 	test('Verify Software Token second callback fails', () => {
-		netRequestMockSuccess(true, {}, 'verifySoftwareToken');
-		netRequestMockSuccess(false, {}, 'RespondToAuthChallenge');
+		netRequestMockSuccess(true);
+		netRequestMockSuccess(false);
 
 		cognitoUser.verifySoftwareToken(totpCode, deviceName, callback);
 		expect(callback.onFailure.mock.calls.length).toBe(1);
