@@ -24,16 +24,21 @@ export const hasShadowDom = (el: HTMLElement) => {
   return !!el.shadowRoot && !!(el as any).attachShadow;
 };
 
-export const closestElement = (selector, base) => {
+
+/**
+ * Finds closest element that matches the selector from the ancestor tree. 
+ * Trasverses through shadow DOM and slots.
+ */
+export const closestElement = (selector: string, base: HTMLElement) => {
   function __closestFrom(el): Element {
-      if (!el || el === document || el === window)
-          return null;
-      if (el.assignedSlot)
-          el = el.assignedSlot;
-      const found = el.closest(selector);
-      return found
-          ? found
-          : __closestFrom(el.getRootNode().host);
+    if (!el || el === document || el === window)
+      return null;
+    if (el.assignedSlot)
+      el = el.assignedSlot;
+    const found = el.closest(selector);
+    return found
+      ? found
+      : __closestFrom(el.getRootNode().host);
   }
   return __closestFrom(base);
 }
