@@ -1,6 +1,7 @@
 import Client from '../src/Client';
 import { promisifyCallback } from './util';
-import { region, endpoint } from './constants';
+import { region, endpoint, networkError } from './constants';
+import { netRequestMockSuccess } from '../__mocks__/mocks';
 
 describe('Client unit test suite', () => {
 	beforeAll(() => {
@@ -14,9 +15,7 @@ describe('Client unit test suite', () => {
 		});
 
 		test('Promisify request happy case', () => {
-			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
-				args[2](null, {});
-			});
+			netRequestMockSuccess(true);
 			const data = client.promisifyRequest({}, {});
 			Promise.resolve(data).then(res => {
 				expect(res).toEqual({});
@@ -24,13 +23,10 @@ describe('Client unit test suite', () => {
 		});
 
 		test('Promisify request throws an error', () => {
-			jest.spyOn(Client.prototype, 'request').mockImplementation((...args) => {
-				const err = new Error('Network error');
-				args[2](err, null);
-			});
+			netRequestMockSuccess(false);
 			const error = client.promisifyRequest({}, {});
 			Promise.resolve(error).catch(err => {
-				expect(err).toMatchObject(new Error('Network error'));
+				expect(err).toMatchObject(networkError);
 			});
 		});
 	});
