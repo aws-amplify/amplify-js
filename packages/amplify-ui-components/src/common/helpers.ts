@@ -28,24 +28,19 @@ export const hasShadowDom = (el: HTMLElement) => {
 	return !!el.shadowRoot && !!(el as any).attachShadow;
 };
 
-
 /**
- * Finds closest element that matches the selector from the ancestor tree. 
+ * Finds closest element that matches the selector from the ancestor tree.
  * Trasverses through shadow DOM and slots.
  */
-export const closestElement = (selector: string, base: HTMLElement) => {
-  function __closestFrom(el): Element {
-    if (!el || el === document || el === window)
-      return null;
-    if (el.assignedSlot)
-      el = el.assignedSlot;
-    const found = el.closest(selector);
-    return found
-      ? found
-      : __closestFrom(el.getRootNode().host);
-  }
-  return __closestFrom(base);
-}
+export const closestElement = (selector: string, base: Element) => {
+	function _closestFrom(el): Element {
+		if (!el || el === document || el === window) return null;
+		if (el.assignedSlot) el = el.assignedSlot;
+		const found = el.closest(selector);
+		return found ? found : _closestFrom(el.getRootNode().host);
+	}
+	return _closestFrom(base);
+};
 
 export const dispatchToastHubEvent = (error: ToastError) => {
 	Hub.dispatch(UI_AUTH_CHANNEL, {
