@@ -25,3 +25,18 @@ export type DelayFunction = (
 	args?: any[],
 	error?: Error
 ) => number | false;
+
+export interface PromiseHandlers {
+	resolve: Function;
+	reject: Function;
+}
+
+export interface LoggingProvider {
+	// you need to implement those methods
+
+	// return 'Logging';
+	getCategory(): string;
+
+	// return the name of you provider
+	getProviderName(): string;
+}

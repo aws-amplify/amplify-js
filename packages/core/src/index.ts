@@ -16,13 +16,18 @@ import { Platform } from './Platform';
 
 export { AmplifyClass } from './Amplify';
 export { ClientDevice } from './ClientDevice';
-export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
+export {
+	CloudWatchLogger,
+	ConsoleLogger,
+	ConsoleLogger as Logger,
+} from './Logger';
 export * from './Errors';
 export { Hub, HubCapsule, HubCallback, HubPayload } from './Hub';
 export { I18n } from './I18n';
 export * from './JS';
 export { Signer } from './Signer';
 export * from './Parser';
+export * from './Providers';
 export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export * from './RNComponents';
 export { Credentials, CredentialsClass } from './Credentials';
