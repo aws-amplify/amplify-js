@@ -342,10 +342,9 @@ async function instantiateOutbox(): Promise<void> {
 
 	outbox = new MutationEventOutbox(
 		schema,
-		userClasses,
 		MutationEvent,
-		ownSymbol,
-		getModelDefinition
+		modelInstanceCreator,
+		ownSymbol
 	);
 	merger = new ModelMerger(outbox, ownSymbol);
 }

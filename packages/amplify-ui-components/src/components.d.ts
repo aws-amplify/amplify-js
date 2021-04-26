@@ -945,7 +945,8 @@ export namespace Components {
         /**
           * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
          */
-        "options": SelectOptionsString | SelectOptionsNumber;
+        "options": | SelectOptionsString
+		| SelectOptionsNumber;
         /**
           * Default selected option
          */
@@ -2466,7 +2467,8 @@ declare namespace LocalJSX {
         /**
           * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
          */
-        "options"?: SelectOptionsString | SelectOptionsNumber;
+        "options"?: | SelectOptionsString
+		| SelectOptionsNumber;
         /**
           * Default selected option
          */

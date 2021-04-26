@@ -218,10 +218,8 @@ export class AmplifyConfirmSignUp {
 		}
 		try {
 			if (!this.userInput) throw new Error(Translations.EMPTY_USERNAME);
-			console.log(this.userInput);
 			this.userInput = this.userInput.trim();
 			await Auth.resendSignUp(this.userInput);
-			console.log(this.userInput);
 			this.handleAuthStateChange(AuthState.ConfirmSignUp, this.user);
 		} catch (error) {
 			dispatchToastHubEvent(error);

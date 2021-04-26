@@ -197,8 +197,7 @@ export class AmplifyAuthenticator {
 	): JSXBase.IntrinsicElements {
 		const authComponent = this.getAuthComponent(authState);
 		const slotName = authSlotNames[authState];
-		const slottedEl = this.el.querySelector(`[slot="${slotName}"]`);
-		const slotIsEmpty = slottedEl === null; // true if no element has been inserted to the slot
+		const slotIsEmpty = this.el.querySelector(`[slot="${slotName}"]`) === null; // true if no element has been inserted to the slot
 
 		/**
 		 * Connect the inner auth component to DOM only if the slot hasn't been overwritten. This prevents

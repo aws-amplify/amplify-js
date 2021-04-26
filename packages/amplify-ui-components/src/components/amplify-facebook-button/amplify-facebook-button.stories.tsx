@@ -1,5 +1,5 @@
 export default {
-  title: 'amplify-facebook-button',
+	title: 'amplify-facebook-button',
 };
 
 export const defaults = () => `<amplify-facebook-button />`;
