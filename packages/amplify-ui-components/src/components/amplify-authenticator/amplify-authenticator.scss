@@ -34,17 +34,3 @@
 	align-items: var(--container-align);
 	min-height: var(--container-height);
 }
-
-slot-fb [name='footer'] {
-	display: contents;
-}
-
-// .auth-container > [slot] {
-// 	display: none;
-// 	visibility: hidden;
-// }
-
-// [slot][authenticator-slot-active='true'] {
-// 	visibility: visible;
-// 	display: inherit;
-// }
