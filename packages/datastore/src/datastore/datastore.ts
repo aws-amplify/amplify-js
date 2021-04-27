@@ -1,5 +1,12 @@
 import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
-import { Draft, immerable, produce, setAutoFreeze } from 'immer';
+import {
+	Draft,
+	immerable,
+	produce,
+	setAutoFreeze,
+	enablePatches,
+	Patch,
+} from 'immer';
 import { v4 as uuid4 } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
 import {
@@ -54,6 +61,7 @@ import {
 } from '../util';
 
 setAutoFreeze(true);
+enablePatches();
 
 const logger = new Logger('DataStore');
 
@@ -77,6 +85,13 @@ let schema: InternalSchema;
 const modelNamespaceMap = new WeakMap<
 	PersistentModelConstructor<any>,
 	string
+>();
+// stores data for crafting the correct update mutation input for a model
+// Patch[] - array of changed fields and metadata
+// PersistentModel - the source model, used for diffing object-type fields
+const modelPatchesMap = new WeakMap<
+	PersistentModel,
+	[Patch[], PersistentModel]
 >();
 
 const getModelDefinition = (
@@ -381,14 +396,25 @@ const createModelClass = <T extends PersistentModel>(
 				throw new Error(msg);
 			}
 
-			return produce(source, draft => {
-				fn(<MutableModel<T>>draft);
-				draft.id = source.id;
-				const modelValidator = validateModelFields(modelDefinition);
-				Object.entries(draft).forEach(([k, v]) => {
-					modelValidator(k, v);
-				});
-			});
+			let patches;
+			const model = produce(
+				source,
+				draft => {
+					fn(<MutableModel<T>>draft);
+					draft.id = source.id;
+					const modelValidator = validateModelFields(modelDefinition);
+					Object.entries(draft).forEach(([k, v]) => {
+						modelValidator(k, v);
+					});
+				},
+				p => (patches = p)
+			);
+
+			if (patches.length) {
+				modelPatchesMap.set(model, [patches, source]);
+			}
+
+			return model;
 		}
 
 		// "private" method (that's hidden via `Setting`) for `withSSRContext` to use
@@ -762,6 +788,10 @@ class DataStore {
 	): Promise<T> => {
 		await this.start();
 
+		// Immer patches for constructing a correct update mutation input
+		// Allows us to only include changed fields for updates
+		const patchesTuple = modelPatchesMap.get(model);
+
 		const modelConstructor: PersistentModelConstructor<T> = model
 			? <PersistentModelConstructor<T>>model.constructor
 			: undefined;
@@ -781,7 +811,7 @@ class DataStore {
 		);
 
 		const [savedModel] = await this.storage.runExclusive(async s => {
-			await s.save(model, producedCondition);
+			await s.save(model, producedCondition, undefined, patchesTuple);
 
 			return s.query(
 				modelConstructor,
