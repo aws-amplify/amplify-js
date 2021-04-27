@@ -5,7 +5,6 @@ import { Translations } from '../../common/Translations';
 
 @Component({
 	tag: 'amplify-username-field',
-	shadow: true,
 })
 export class AmplifyUsernameField {
 	/** Based on the type of field e.g. sign in, sign up, forgot password, etc. */
@@ -28,6 +27,7 @@ export class AmplifyUsernameField {
 	render() {
 		return (
 			<amplify-form-field
+				name="username"
 				fieldId={this.fieldId}
 				label={I18n.get(this.label)}
 				placeholder={I18n.get(this.placeholder)}
