@@ -12,7 +12,11 @@ import {
 	TransformerMutationType,
 	createMutationInstanceFromModelOperation,
 } from '../src/sync/utils';
-import { PersistentModelConstructor, InternalSchema } from '../src/types';
+import {
+	PersistentModelConstructor,
+	InternalSchema,
+	SchemaModel,
+} from '../src/types';
 import { MutationEvent } from '../src/sync/';
 
 let initSchema: typeof initSchemaType;
@@ -48,7 +52,12 @@ describe('Outbox tests', () => {
 
 	it('Should return the create mutation from Outbox.peek', async () => {
 		await Storage.runExclusive(async s => {
-			let head = await outbox.peek(s);
+			let head;
+
+			while (!head) {
+				head = await outbox.peek(s);
+			}
+
 			const modelData: ModelType = JSON.parse(head.data);
 
 			expect(head.modelId).toEqual(modelId);
@@ -62,7 +71,11 @@ describe('Outbox tests', () => {
 				_deleted: false,
 			};
 
-			await processMutationResponse(s, response);
+			await processMutationResponse(
+				s,
+				response,
+				TransformerMutationType.CREATE
+			);
 
 			head = await outbox.peek(s);
 			expect(head).toBeFalsy();
@@ -82,7 +95,11 @@ describe('Outbox tests', () => {
 
 		await Storage.runExclusive(async s => {
 			// this mutation is now "in progress"
-			const head = await outbox.peek(s);
+			let head;
+
+			while (!head) {
+				head = await outbox.peek(s);
+			}
 			const modelData: ModelType = JSON.parse(head.data);
 
 			expect(head.modelId).toEqual(modelId);
@@ -130,7 +147,11 @@ describe('Outbox tests', () => {
 		await Storage.runExclusive(async s => {
 			// process mutation response, which dequeues updatedModel1
 			// and syncs its version to the remaining item in the mutation queue
-			await processMutationResponse(s, response);
+			await processMutationResponse(
+				s,
+				response,
+				TransformerMutationType.UPDATE
+			);
 
 			const inProgress = await outbox.peek(s);
 			const inProgressData = JSON.parse(inProgress.data);
@@ -147,7 +168,11 @@ describe('Outbox tests', () => {
 				_deleted: false,
 			};
 
-			await processMutationResponse(s, response2);
+			await processMutationResponse(
+				s,
+				response2,
+				TransformerMutationType.UPDATE
+			);
 
 			const head = await outbox.peek(s);
 			expect(head).toBeFalsy();
@@ -167,7 +192,11 @@ describe('Outbox tests', () => {
 
 		await Storage.runExclusive(async s => {
 			// this mutation is now "in progress"
-			const head = await outbox.peek(s);
+			let head;
+
+			while (!head) {
+				head = await outbox.peek(s);
+			}
 			const modelData: ModelType = JSON.parse(head.data);
 
 			expect(head.modelId).toEqual(modelId);
@@ -208,7 +237,11 @@ describe('Outbox tests', () => {
 		await Storage.runExclusive(async s => {
 			// process mutation response, which dequeues updatedModel1
 			// but SHOULD NOT sync the _version, since the data in the response is different
-			await processMutationResponse(s, response);
+			await processMutationResponse(
+				s,
+				response,
+				TransformerMutationType.UPDATE
+			);
 
 			const inProgress = await outbox.peek(s);
 			const inProgressData = JSON.parse(inProgress.data);
@@ -221,10 +254,48 @@ describe('Outbox tests', () => {
 			expect(inProgressData._version).toEqual(oldVersion);
 
 			// same response as above,
-			await processMutationResponse(s, response);
+			await processMutationResponse(
+				s,
+				response,
+				TransformerMutationType.UPDATE
+			);
 
 			const head = await outbox.peek(s);
 			expect(head).toBeFalsy();
+		});
+	});
+
+	// https://github.com/aws-amplify/amplify-js/issues/7888
+	it('Should retain the fields from the create mutation in the queue when it gets merged with an enqueued update mutation', async () => {
+		const field1 = 'Some value';
+		const currentTimestamp = new Date().toISOString();
+		const optionalField1 = 'Optional value';
+
+		const newModel = new Model({
+			field1,
+			dateCreated: currentTimestamp,
+		});
+
+		const mutationEvent = await createMutationEvent(newModel);
+		({ modelId } = mutationEvent);
+
+		await outbox.enqueue(Storage, mutationEvent);
+
+		const updatedModel = Model.copyOf(newModel, updated => {
+			updated.optionalField1 = optionalField1;
+		});
+
+		const updateMutationEvent = await createMutationEvent(updatedModel);
+
+		await outbox.enqueue(Storage, updateMutationEvent);
+
+		await Storage.runExclusive(async s => {
+			const head = await outbox.peek(s);
+			const headData = JSON.parse(head.data);
+
+			expect(headData.field1).toEqual(field1);
+			expect(headData.dateCreated).toEqual(currentTimestamp);
+			expect(headData.optionalField1).toEqual(optionalField1);
 		});
 	});
 });
@@ -249,9 +320,32 @@ async function instantiateOutbox(): Promise<void> {
 	Storage = <StorageType>DataStore.storage;
 	anyStorage = Storage;
 
+	const namespaceResolver = anyStorage.storage.namespaceResolver.bind(
+		anyStorage
+	);
+
 	({ modelInstanceCreator } = anyStorage.storage);
 
-	outbox = new MutationEventOutbox(schema, null, MutationEvent, ownSymbol);
+	const getModelDefinition = (
+		modelConstructor: PersistentModelConstructor<any>
+	): SchemaModel => {
+		const namespaceName = namespaceResolver(modelConstructor);
+
+		const modelDefinition =
+			schema.namespaces[namespaceName].models[modelConstructor.name];
+
+		return modelDefinition;
+	};
+
+	const userClasses = {};
+	userClasses['Model'] = Model;
+
+	outbox = new MutationEventOutbox(
+		schema,
+		MutationEvent,
+		modelInstanceCreator,
+		ownSymbol
+	);
 	merger = new ModelMerger(outbox, ownSymbol);
 }
 
@@ -277,8 +371,12 @@ async function createMutationEvent(model): Promise<MutationEvent> {
 	);
 }
 
-async function processMutationResponse(storage, record): Promise<void> {
-	await outbox.dequeue(storage, record);
+async function processMutationResponse(
+	storage,
+	record,
+	recordOp
+): Promise<void> {
+	await outbox.dequeue(storage, record, recordOp);
 
 	const modelConstructor = Model as PersistentModelConstructor<any>;
 	const model = modelInstanceCreator(modelConstructor, record);

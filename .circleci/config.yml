@@ -13,6 +13,16 @@ executors:
     resource_class: large
     working_directory: ~/amplify-js
 
+  unit-test-executor:
+    docker:
+      - image: cypress/base:12
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
+
+    resource_class: xlarge
+    working_directory: ~/amplify-js
+
   js-test-executor:
     docker:
       - image: cypress/included:5.2.0
@@ -319,7 +329,7 @@ jobs:
             - amplify-js
 
   unit_test:
-    executor: build-executor
+    executor: unit-test-executor
     steps:
       - attach_workspace:
           at: /root
@@ -567,6 +577,23 @@ jobs:
           category: datastore
           sample_name: subs-disabled
           spec: subs-disabled
+          browser: << parameters.browser >>
+
+  integ_react_datastore_consecutive_saves:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/consecutive-saves
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Subs Disabled'
+          framework: react
+          category: datastore
+          sample_name: consecutive-saves
+          spec: consecutive-saves
           browser: << parameters.browser >>
 
   integ_react_storage:
@@ -849,6 +876,15 @@ workflows:
             parameters:
               <<: *test_browsers
       - integ_react_datastore_subs_disabled:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_consecutive_saves:
           requires:
             - integ_setup
             - build

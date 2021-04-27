@@ -97,7 +97,7 @@ export class AsyncStorageAdapter implements Adapter {
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>
-	): Promise<[T, OpType.INSERT | OpType.UPDATE, T?][]> {
+	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
 		const storeName = this.getStorenameForModel(modelConstructor);
@@ -133,7 +133,7 @@ export class AsyncStorageAdapter implements Adapter {
 			}
 		}
 
-		const result: [T, OpType.INSERT | OpType.UPDATE, T?][] = [];
+		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
 
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
@@ -145,11 +145,7 @@ export class AsyncStorageAdapter implements Adapter {
 			if (id === model.id || opType === OpType.INSERT) {
 				await this.db.save(item, storeName);
 
-				if (opType === OpType.UPDATE) {
-					result.push([instance, opType, fromDB]);
-				} else {
-					result.push([instance, opType]);
-				}
+				result.push([instance, opType]);
 			}
 		}
 
