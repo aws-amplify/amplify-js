@@ -65,6 +65,9 @@ export class AmplifyInput {
 	}
 
 	componentWillLoad() {
+		// the below behaviors are only applicable if `amplify-input` is used by `amplify-authenticator`.
+		if (!closestElement('amplify-authenticator', this.el)) return;
+
 		this.removeHubListener = onAuthUIStateChange(() => {
 			/**
 			 * When we're using slots, autofilled data will persist between different authState,
