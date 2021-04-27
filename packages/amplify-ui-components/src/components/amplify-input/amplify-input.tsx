@@ -1,13 +1,4 @@
-import {
-	Component,
-	Prop,
-	Host,
-	h,
-	Event,
-	EventEmitter,
-	Element,
-	State,
-} from '@stencil/core';
+import { Component, Prop, Host, h, Element, State } from '@stencil/core';
 import { closestElement } from '../../common/helpers';
 import { TextFieldTypes, InputEvent } from '../../common/types/ui-types';
 
@@ -34,15 +25,8 @@ export class AmplifyInput {
 	@Prop() inputProps?: object;
 	/** Will disable the input if set to true */
 	@Prop() disabled?: boolean;
-	/** Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form */
-	// prettier-ignore
-	@Event({
-		eventName: 'formSubmit',
-		composed: true,
-		cancelable: true,
-		bubbles: true,
-	}) formSubmit: EventEmitter;
-	@State() autoCompleted;
+	/** Whether the input has been autocompleted */
+	@State() autoCompleted = false;
 
 	@Element() el: HTMLAmplifyInputElement;
 
@@ -51,8 +35,13 @@ export class AmplifyInput {
 		const value = target.value;
 
 		this.value = value;
+
+		const input = this.el.querySelector('input');
+		input.value = this.value;
+		// dispatch an input event from this element to the parent form
+		input.dispatchEvent(new Event('input'));
+
 		this.autoCompleted = true;
-		this.handleInputChange(event);
 	}
 
 	componentWillLoad() {
