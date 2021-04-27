@@ -164,6 +164,11 @@ export class AmplifyChatbot {
 	/**
 	 * Handlers
 	 */
+	private handleSubmit(event) {
+		event.preventDefault();
+		this.sendTextMessage();
+	}
+
 	private handleMicButton() {
 		if (this.chatState !== ChatState.Initial) return;
 		this.audioRecorder.stop();
@@ -410,9 +415,11 @@ export class AmplifyChatbot {
 					<div class="body" data-test="chatbot-body">
 						{this.messageJSX(this.messages)}
 					</div>
-					<div class="footer" data-test="chatbot-footer">
-						{this.footerJSX()}
-					</div>
+					<form onSubmit={e => this.handleSubmit(e)}>
+						<div class="footer" data-test="chatbot-footer">
+							{this.footerJSX()}
+						</div>
+					</form>
 					{this.errorToast()}
 				</div>
 			</Host>
