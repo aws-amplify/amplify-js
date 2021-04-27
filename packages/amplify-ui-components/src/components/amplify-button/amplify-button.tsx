@@ -31,6 +31,7 @@ export class AmplifyButton {
 					}}
 					type={this.type}
 					disabled={this.disabled}
+					onClick={this.handleButtonClick}
 				>
 					{this.variant === 'icon' && (
 						<amplify-icon name={this.icon}></amplify-icon>
