@@ -1,12 +1,5 @@
-import {
-	Component,
-	Prop,
-	Host,
-	h,
-	Listen,
-	Event,
-	EventEmitter,
-} from '@stencil/core';
+import { Component, Prop, Host, h, Element, State } from '@stencil/core';
+import { closestElement, onAuthUIStateChange } from '../../common/helpers';
 import { TextFieldTypes, InputEvent } from '../../common/types/ui-types';
 
 @Component({
@@ -32,20 +25,86 @@ export class AmplifyInput {
 	@Prop() inputProps?: object;
 	/** Will disable the input if set to true */
 	@Prop() disabled?: boolean;
-	/** Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form */
-	@Event({
-		eventName: 'formSubmit',
-		composed: true,
-		cancelable: true,
-		bubbles: true,
-	})
-	formSubmit: EventEmitter;
+	/** Whether the input has been autocompleted */
+	@State() autoCompleted = false;
+	private removeHubListener: () => void;
 
-	// eslint-disable-next-line
-	@Listen('keydown')
-	handleKeyDown(ev) {
-		if (ev.key === 'Enter') {
-			this.formSubmit.emit(ev);
+	@Element() el: HTMLAmplifyInputElement;
+
+	/**
+	 * Sets the value of this input to the value in autofill input event.
+	 */
+	private setAutoCompleteValue(value: string) {
+		const input = this.el.querySelector('input');
+		input.value = value;
+		// dispatch an input event from this element to the parent form
+		input.dispatchEvent(new Event('input'));
+		this.autoCompleted = true;
+	}
+
+	/**
+	 * Checks if the target dummy input in `amplify-auth-container` is present have been autofilled.
+	 * If so, we update this.value with the autofilled value.
+	 */
+	private checkAutoCompletion(targetInput: HTMLInputElement) {
+		if (!targetInput) return;
+		if (targetInput.value) {
+			// if value is already set, we set the value directly
+			this.setAutoCompleteValue(targetInput.value);
+		} else {
+			// if value is not set, we start listening for it
+			targetInput.addEventListener('input', e => {
+				const value = (e.target as HTMLInputElement).value;
+				this.setAutoCompleteValue(value);
+			});
+		}
+	}
+
+	disconnectedCallback() {
+		this.removeHubListener && this.removeHubListener(); // stop listening to `onAuthUIStateChange`
+	}
+
+	componentWillLoad() {
+		// the below behaviors are only applicable if `amplify-input` is used by `amplify-authenticator`.
+		if (!closestElement('amplify-authenticator', this.el)) return;
+
+		this.removeHubListener = onAuthUIStateChange(() => {
+			/**
+			 * When we're using slots, autofilled data will persist between different authState,
+			 * even though input events are not triggered. This ends up in parent components
+			 * not picking up input values. For now, we're emptying the input on authState change
+			 * which is the existing behavior.
+			 */
+			const input = this.el.querySelector('input');
+			input.value = '';
+			this.autoCompleted = false;
+		});
+
+		// no-op if this field already has been autofilled or already has an value
+		if (this.autoCompleted || this.value) return;
+
+		if (/Firefox/.test(navigator.userAgent)) return; // firefox autofill works
+		const container = closestElement('amplify-auth-container', this.el);
+		const signIn = closestElement('amplify-sign-in', this.el);
+
+		// only autocomplete if `amplify-auth-container` is present and input is under `sign-in`.
+		if (!container || !signIn) return;
+
+		const username: HTMLInputElement = container.querySelector(
+			"input[name='username']"
+		);
+		const password: HTMLInputElement = container.querySelector(
+			"input[name='password']"
+		);
+
+		if (
+			this.name === 'username' ||
+			this.name === 'email' ||
+			this.name === 'phone'
+		) {
+			this.checkAutoCompletion(username);
+		} else if (this.name === 'password') {
+			this.checkAutoCompletion(password);
 		}
 	}
 
@@ -59,8 +118,12 @@ export class AmplifyInput {
 							? `${this.fieldId}-description`
 							: null
 					}
+					data-autocompleted={this.autoCompleted}
 					type={this.type}
-					onInput={event => this.handleInputChange(event)}
+					onInput={event => {
+						this.autoCompleted = false;
+						this.handleInputChange(event);
+					}}
 					placeholder={this.placeholder}
 					name={this.name}
 					class="input"

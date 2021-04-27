@@ -10,10 +10,12 @@ exports[`amplify-chatbot renders chatbot 1`] = `
         </div>
       </slot>
       <div class="body" data-test="chatbot-body"></div>
-      <div class="footer" data-test="chatbot-footer">
-        <amplify-input description="text" disabled="" placeholder="Write a message" value=""></amplify-input>
-        <amplify-button class="icon-button" data-test="chatbot-send-button" disabled="" icon="send" variant="icon"></amplify-button>
-      </div>
+      <form>
+        <div class="footer" data-test="chatbot-footer">
+          <amplify-input description="text" disabled="" placeholder="Write a message" value=""></amplify-input>
+          <amplify-button class="icon-button" data-test="chatbot-send-button" disabled="" icon="send" variant="icon"></amplify-button>
+        </div>
+      </form>
       <amplify-toast message="Error: Bot name must be provided to ChatBot"></amplify-toast>
     </div>
   </mock:shadow-root>
