@@ -74,6 +74,7 @@ export class AmplifyInput {
 			 */
 			const input = this.el.querySelector('input');
 			input.value = '';
+			this.autoCompleted = false;
 		});
 
 		// no-op if this field already has been autofilled or already has an value
