@@ -1,5 +1,5 @@
 import { Component, Prop, Host, h, Element, State } from '@stencil/core';
-import { closestElement } from '../../common/helpers';
+import { closestElement, onAuthUIStateChange } from '../../common/helpers';
 import { TextFieldTypes, InputEvent } from '../../common/types/ui-types';
 
 @Component({
@@ -27,27 +27,64 @@ export class AmplifyInput {
 	@Prop() disabled?: boolean;
 	/** Whether the input has been autocompleted */
 	@State() autoCompleted = false;
+	private removeHubListener: () => void;
 
 	@Element() el: HTMLAmplifyInputElement;
 
-	private setAutoCompleteValue(event) {
-		const target: HTMLInputElement = event.target;
-		const value = target.value;
-
-		this.value = value;
-
+	/**
+	 * Sets the value of this input to the value in autofill input event.
+	 */
+	private setAutoCompleteValue(value: string) {
 		const input = this.el.querySelector('input');
-		input.value = this.value;
+		input.value = value;
 		// dispatch an input event from this element to the parent form
 		input.dispatchEvent(new Event('input'));
-
 		this.autoCompleted = true;
 	}
 
+	/**
+	 * Checks if the target dummy input in `amplify-auth-container` is present have been autofilled.
+	 * If so, we update this.value with the autofilled value.
+	 */
+	private checkAutoCompletion(targetInput: HTMLInputElement) {
+		if (!targetInput) return;
+		if (targetInput.value) {
+			// if value is already set, we set the value directly
+			this.setAutoCompleteValue(targetInput.value);
+		} else {
+			// if value is not set, we start listening for it
+			targetInput.addEventListener('input', e => {
+				const value = (e.target as HTMLInputElement).value;
+				this.setAutoCompleteValue(value);
+			});
+		}
+	}
+
+	disconnectedCallback() {
+		this.removeHubListener && this.removeHubListener(); // stop listening to `onAuthUIStateChange`
+	}
+
 	componentWillLoad() {
+		this.removeHubListener = onAuthUIStateChange(() => {
+			/**
+			 * When we're using slots, form data will persist between different authState,
+			 * even though input events are not triggered. This ends up in parent components
+			 * not picking up input values. For now, we're emptying the input on authState change
+			 * which is the existing behavior.
+			 */
+			const input = this.el.querySelector('input');
+			input.value = '';
+		});
+
+		// no-op if this field already has been autofilled or already has an value
+		if (this.autoCompleted || this.value) return;
+
 		if (/Firefox/.test(navigator.userAgent)) return; // firefox autofill works
 		const container = closestElement('amplify-auth-container', this.el);
-		if (!container) return;
+		const signIn = closestElement('amplify-sign-in', this.el);
+
+		// only autocomplete if `amplify-auth-container` is present and input is under `sign-in`.
+		if (!container || !signIn) return;
 
 		const username: HTMLInputElement = container.querySelector(
 			"input[name='username']"
@@ -56,24 +93,14 @@ export class AmplifyInput {
 			"input[name='password']"
 		);
 
-		if (!username || !password) return;
-
-		// only autofill inputs if we're in sign-in
-		if (closestElement('amplify-sign-in', this.el)) {
-			if (
-				this.name === 'username' ||
-				this.name === 'email' ||
-				this.name === 'phone'
-			) {
-				username.addEventListener('input', e => {
-					this.setAutoCompleteValue(e);
-				});
-			}
-			if (this.name === 'password') {
-				password.addEventListener('input', e => {
-					this.setAutoCompleteValue(e);
-				});
-			}
+		if (
+			this.name === 'username' ||
+			this.name === 'email' ||
+			this.name === 'phone'
+		) {
+			this.checkAutoCompletion(username);
+		} else if (this.name === 'password') {
+			this.checkAutoCompletion(password);
 		}
 	}
 
