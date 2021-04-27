@@ -261,6 +261,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('username'),
 						inputProps: {
 							'data-test': 'sign-up-username-input',
+							autocomplete: 'username',
 						},
 					},
 					{
@@ -270,6 +271,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('password'),
 						inputProps: {
 							'data-test': 'sign-up-password-input',
+							autocomplete: 'new-password',
 						},
 					},
 					{
