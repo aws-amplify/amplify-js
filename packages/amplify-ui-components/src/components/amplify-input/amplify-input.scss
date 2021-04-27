@@ -36,6 +36,7 @@ amplify-input {
 	margin: var(--margin);
 	height: 3.125rem;
 	line-height: 1.1;
+	box-shadow: none; // to disable red outline when input is empty on firefox
 
 	&:focus {
 		outline: none;
