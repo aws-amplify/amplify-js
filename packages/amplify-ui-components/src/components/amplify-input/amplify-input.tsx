@@ -67,7 +67,7 @@ export class AmplifyInput {
 	componentWillLoad() {
 		this.removeHubListener = onAuthUIStateChange(() => {
 			/**
-			 * When we're using slots, form data will persist between different authState,
+			 * When we're using slots, autofilled data will persist between different authState,
 			 * even though input events are not triggered. This ends up in parent components
 			 * not picking up input values. For now, we're emptying the input on authState change
 			 * which is the existing behavior.
