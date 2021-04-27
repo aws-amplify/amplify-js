@@ -164,8 +164,6 @@ class MutationProcessor {
 							operationAuthModes[authModeAttempts]
 						);
 
-						console.log(response);
-
 						logger.debug(
 							`Mutation sent successfully with authMode: ${operationAuthModes[authModeAttempts]}`
 						);
