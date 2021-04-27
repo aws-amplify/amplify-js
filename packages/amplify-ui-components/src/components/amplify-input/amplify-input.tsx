@@ -69,6 +69,7 @@ export class AmplifyInput {
 
 		if (!username || !password) return;
 
+		// only autofill inputs if we're in sign-in
 		if (closestElement('amplify-sign-in', this.el)) {
 			if (
 				this.name === 'username' ||
