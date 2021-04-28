@@ -77,7 +77,7 @@ export class AmplifyInput {
 			 * which is the existing behavior.
 			 */
 			const input = this.el.querySelector('input');
-			input.value = '';
+			if (input) input.value = '';
 			this.autoCompleted = false;
 		});
 	}
