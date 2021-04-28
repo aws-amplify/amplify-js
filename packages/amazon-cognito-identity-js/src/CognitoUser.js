@@ -1182,7 +1182,7 @@ export default class CognitoUser {
 	}
 
 	/**
-	 * This was previously used by an authenticated user to get the MFAOptions,
+	 * This was previously used by an authenticated user to get MFAOptions,
 	 * but no longer returns a meaningful response. Refer to the documentation for
 	 * how to setup and use MFA: https://docs.amplify.aws/lib/auth/mfa/q/platform/js
 	 * @deprecated
