@@ -36,6 +36,7 @@ export class AmplifyInput {
 	 */
 	private setAutoCompleteValue(value: string) {
 		const input = this.el.querySelector('input');
+		if (!input) return;
 		input.value = value;
 		// dispatch an input event from this element to the parent form
 		input.dispatchEvent(new Event('input'));
@@ -79,7 +80,9 @@ export class AmplifyInput {
 			input.value = '';
 			this.autoCompleted = false;
 		});
+	}
 
+	componentDidLoad() {
 		// no-op if this field already has been autofilled or already has an value
 		if (this.autoCompleted || this.value) return;
 
