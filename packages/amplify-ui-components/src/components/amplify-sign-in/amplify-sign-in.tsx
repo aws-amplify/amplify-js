@@ -105,6 +105,8 @@ export class AmplifySignIn {
 				return event => handlePhoneNumberChange(event, this.phoneNumber);
 			case 'password':
 				return event => (this.signInAttributes.password = event.target.value);
+			default:
+				return () => {};
 		}
 	}
 
