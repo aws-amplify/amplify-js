@@ -113,7 +113,16 @@ class AsyncStorageDatabase {
 		const keysToSave = new Set<string>();
 		const allItemsKeys = [];
 		const itemsMap: Record<string, { ulid: string; model: T }> = {};
+
+		const mergedItems: Map<string, T> = new Map();
+
+		// merge items by model id. Latest record for a given id remains.
 		for (const item of items) {
+			const { id } = item;
+			mergedItems.set(id, <T>(<unknown>item));
+		}
+
+		mergedItems.forEach(item => {
 			const { id, _deleted } = item;
 			const ulid = collection.get(id) || this.getMonotonicFactory(storeName)();
 
@@ -127,7 +136,7 @@ class AsyncStorageDatabase {
 			} else {
 				keysToSave.add(key);
 			}
-		}
+		});
 
 		const existingRecordsMap: [string, string][] = await this.storage.multiGet(
 			allItemsKeys
