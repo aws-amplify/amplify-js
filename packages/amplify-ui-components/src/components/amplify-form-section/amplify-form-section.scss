@@ -8,7 +8,7 @@
  * @prop --font-family: Text font family within the footer
  * @prop --font-weight: Text weight within the footer
  */
-:host {
+amplify-form-section {
 	--header-color: var(--amplify-secondary-color);
 	--header-size: var(--amplify-text-md-sub);
 	--subtitle-size: var(--amplify-grey);

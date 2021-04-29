@@ -18,13 +18,6 @@
 | `value`             | `value`       | The value of the content inside of the input field                                                                                                 | `string`                                                                                        | `undefined`    |
 
 
-## Events
-
-| Event        | Description                                                                                        | Type               |
-| ------------ | -------------------------------------------------------------------------------------------------- | ------------------ |
-| `formSubmit` | Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form | `CustomEvent<any>` |
-
-
 ## CSS Custom Properties
 
 | Name                   | Description                               |

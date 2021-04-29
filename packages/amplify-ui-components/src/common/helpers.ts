@@ -28,6 +28,24 @@ export const hasShadowDom = (el: HTMLElement) => {
 	return !!el.shadowRoot && !!(el as any).attachShadow;
 };
 
+/**
+ * Finds closest element that matches the selector from the ancestor tree.
+ * Trasverses through shadow DOM and slots.
+ * 
+ * Adpated from: https://stackoverflow.com/a/56105394
+ */
+export const closestElement = (selector: string, base: Element) => {
+	function _closestFrom(el): Element {
+		if (!el || el === document || el === window) return null;
+		if (el.matches(selector)) return base; // return if current element matches the selector
+
+		if (el.assignedSlot) el = el.assignedSlot; // traverse up slots if slotted
+		const found = el.closest(selector);
+		return found ? found : _closestFrom(el.getRootNode().host); // try to traverse up shadows
+	}
+	return _closestFrom(base);
+};
+
 export const dispatchToastHubEvent = (error: ToastError) => {
 	Hub.dispatch(UI_AUTH_CHANNEL, {
 		event: TOAST_AUTH_ERROR_EVENT,

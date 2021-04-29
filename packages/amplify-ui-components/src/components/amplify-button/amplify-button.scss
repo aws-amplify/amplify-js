@@ -15,7 +15,7 @@
  * @prop --padding: Padding within the button
  * @prop --width: Width of the button
  */
-:host {
+amplify-button {
 	--background-color: var(--amplify-primary-color);
 	--background-color-active: var(--amplify-primary-shade);
 	--background-color-disable: var(--amplify-primary-tint);

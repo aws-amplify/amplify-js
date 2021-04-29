@@ -4,7 +4,7 @@
  * @prop --footer-color: Font color of the footer
  * @prop --footer-weight: Font weight of the footer
  */
-:host {
+amplify-sign-up {
 	--footer-font-family: var(--amplify-font-family);
 	--footer-font-size: var(--amplify-text-sm);
 	--footer-color: var(--amplify-grey);
@@ -17,13 +17,14 @@
 	color: var(--footer-color);
 	font-weight: (--font-weight);
 
+	amplify-button {
+		margin-bottom: 0.625rem;
+	}
+
 	display: flex;
 	flex-direction: column-reverse;
 	align-items: center;
 	justify-content: space-around;
-	amplify-button {
-		margin-bottom: 0.625rem;
-	}
 
 	@include md {
 		display: flex;
