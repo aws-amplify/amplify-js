@@ -75,6 +75,7 @@ body:
         - React Native
         - Vue
         - Web Components
+        - Next.js
         - Not applicable
     validations:
       required: true
