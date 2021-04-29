@@ -13,9 +13,15 @@
 import StorageProvider from '../../src/providers/AWSS3Provider';
 import { Hub, Credentials } from '@aws-amplify/core';
 import * as formatURL from '@aws-sdk/util-format-url';
-import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3';
+import {
+	S3Client,
+	ListObjectsCommand,
+	HeadObjectCommand,
+} from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
-
+import { AWSS3ProviderMultipartCopier } from '../../src/providers/AWSS3ProviderMultipartCopy';
+import * as events from 'events';
+jest.mock('../../src/providers/AWSS3ProviderMultipartCopy');
 /**
  * NOTE - These test cases use Hub.dispatch but they should
  * actually be using dispatchStorageEvent from Storage
@@ -885,6 +891,151 @@ describe('StorageProvider test', () => {
 				await storage.list('path', {});
 			} catch (e) {
 				expect(e).not.toBeNull();
+			}
+		});
+	});
+
+	describe('copy test', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+			jest.restoreAllMocks();
+		});
+
+		test('copy object successfully', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const spyon = jest.spyOn(AWSS3ProviderMultipartCopier.prototype, 'copy');
+
+			expect(
+				await storage.copy('src', 'dest', {
+					level: 'protected',
+				})
+			).toEqual({ key: 'dest' });
+
+			expect(spyon).toBeCalledTimes(1);
+		});
+
+		test('copy object with track', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const spyon = jest.spyOn(AWSS3ProviderMultipartCopier.prototype, 'copy');
+			const spyon2 = jest.spyOn(Hub, 'dispatch');
+
+			await storage.copy('src', 'dest', { track: true });
+			expect(spyon).toBeCalledTimes(1);
+			expect(spyon2).toBeCalledWith(
+				'storage',
+				{
+					event: 'copy',
+					data: {
+						attrs: {
+							method: 'copy',
+							result: 'success',
+						},
+					},
+					message: 'Copy success from src to dest',
+				},
+				'Storage',
+				Symbol.for('amplify_default')
+			);
+		});
+
+		test('copy with custom s3 configs', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const date = new Date();
+			await storage.copy('src', 'dest', {
+				acl: 'private',
+				bucket: 'bucket',
+				cacheControl: 'cacheControl',
+				contentDisposition: 'contentDisposition',
+				contentEncoding: 'contentEncoding',
+				contentType: 'contentType',
+				contentLanguage: 'contentLanguage',
+				expires: date,
+				serverSideEncryption: 'serverSideEncryption',
+				SSECustomerAlgorithm: 'SSECustomerAlgorithm',
+				SSECustomerKey: 'SSECustomerKey',
+				SSECustomerKeyMD5: 'SSECustomerKeyMD5',
+				SSEKMSKeyId: 'SSEKMSKeyId',
+				level: 'protected',
+			});
+
+			expect(AWSS3ProviderMultipartCopier.mock.calls[0][0]).toStrictEqual({
+				ACL: 'private',
+				Bucket: 'bucket',
+				CopySource: 'bucket/protected/identityId/src',
+				CacheControl: 'cacheControl',
+				ContentDisposition: 'contentDisposition',
+				ContentEncoding: 'contentEncoding',
+				ContentType: 'contentType',
+				ContentLanguage: 'contentLanguage',
+				Expires: date,
+				ServerSideEncryption: 'serverSideEncryption',
+				Key: 'protected/identityId/dest',
+				SSECustomerAlgorithm: 'SSECustomerAlgorithm',
+				SSECustomerKey: 'SSECustomerKey',
+				SSECustomerKeyMD5: 'SSECustomerKeyMD5',
+				SSEKMSKeyId: 'SSEKMSKeyId',
+			});
+		});
+
+		test('copy object progress callback', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+			const mockProgressCallback = jest.fn();
+			jest.mock('events', () => ({
+				// on: jest.fn().mockImplementation((eventName, event) => {
+				// 	mockProgressCallback(event);
+				// }),
+				// emit: jest.fn().mockImplementation(() => {
+				// 	mockProgressCallback();
+				// }),
+			}));
+			const storage = new StorageProvider();
+			storage.configure(options);
+			await storage.copy('src', 'dest', {
+				progressCallback: mockProgressCallback,
+			});
+			expect(mockProgressCallback).toHaveBeenCalled();
+		});
+
+		test('copy object failed', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const spyon = jest
+				.spyOn(AWSS3ProviderMultipartCopier.prototype, 'copy')
+				.mockImplementation(async () => {
+					throw new Error('err');
+				});
+			await expect(storage.copy('src', 'dest')).rejects.toThrow('err');
+			expect(spyon).toBeCalledTimes(1);
+		});
+
+		test('credentials not ok', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.reject('err');
+			});
+			const storage = new StorageProvider();
+			storage.configure(options_no_cred);
+			try {
+				await storage.copy('src', 'dest');
+			} catch (e) {
+				expect(e).toEqual('err');
 			}
 		});
 	});

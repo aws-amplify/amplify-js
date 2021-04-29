@@ -22,14 +22,49 @@ import {
 	GetObjectCommand,
 	DeleteObjectCommand,
 	ListObjectsCommand,
+	CopyObjectCommandInput,
+	HeadObjectCommandInput,
+	HeadObjectCommand,
 } from '@aws-sdk/client-s3';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
+import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
+import {
+	AWSS3ProviderMultipartCopier,
+	COPY_PROGRESS,
+} from './AWSS3ProviderMultipartCopy';
 import * as events from 'events';
+
+type StorageLevel = 'public' | 'protected' | 'private';
+
+export type Progress = {
+	loaded: number;
+	total: number;
+};
+
+export type CopyObjectConfig = {
+	level?: StorageLevel;
+	acl?: string;
+	bucket?: string;
+	cacheControl?: string;
+	contentDisposition?: string;
+	contentEncoding?: string;
+	contentLanguage?: string;
+	contentType?: string;
+	expires?: Date;
+	track?: boolean;
+	progressCallback?: (progress: Progress) => any;
+	serverSideEncryption?: string;
+	SSECustomerAlgorithm?: string;
+	SSECustomerKey?: string;
+	SSECustomerKeyMD5?: string;
+	SSEKMSKeyId?: string;
+	[key: string]: any;
+};
 
 const logger = new Logger('AWSS3Provider');
 
@@ -114,6 +149,111 @@ export class AWSS3Provider implements StorageProvider {
 		return this._config;
 	}
 
+	public async copy(
+		src: string,
+		dest: string,
+		config?: CopyObjectConfig
+	): Promise<any> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			return Promise.reject('err');
+		}
+		const opt: CopyObjectConfig = Object.assign({}, this._config, config);
+		const {
+			acl,
+			bucket,
+			cacheControl,
+			contentDisposition,
+			contentEncoding,
+			contentLanguage,
+			contentType,
+			expires,
+			track,
+			progressCallback,
+			serverSideEncryption,
+			SSECustomerAlgorithm,
+			SSECustomerKey,
+			SSECustomerKeyMD5,
+			SSEKMSKeyId,
+		} = opt;
+		const prefix = this._prefix(opt);
+		// In copyObjectCommand, the full object key is required
+		const finalSrcKey = `${bucket}/${prefix}${src}`;
+		const finalDestKey = `${prefix}${dest}`;
+		logger.debug(`copying ${finalSrcKey} to ${finalDestKey}`);
+
+		const params: CopyObjectCommandInput = {
+			Bucket: bucket,
+			CopySource: finalSrcKey,
+			Key: finalDestKey,
+		};
+
+		if (cacheControl) params.CacheControl = cacheControl;
+		if (contentDisposition) params.ContentDisposition = contentDisposition;
+		if (contentEncoding) params.ContentEncoding = contentEncoding;
+		if (contentLanguage) params.ContentLanguage = contentLanguage;
+		if (contentType) params.ContentType = contentType;
+		if (expires) params.Expires = expires;
+		if (serverSideEncryption) {
+			params.ServerSideEncryption = serverSideEncryption;
+			if (SSECustomerAlgorithm) {
+				params.SSECustomerAlgorithm = SSECustomerAlgorithm;
+			}
+			if (SSECustomerKey) {
+				params.SSECustomerKey = SSECustomerKey;
+			}
+			if (SSECustomerKeyMD5) {
+				params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
+			}
+			if (SSEKMSKeyId) {
+				params.SSEKMSKeyId = SSEKMSKeyId;
+			}
+		}
+		if (acl) params.ACL = acl;
+
+		const emitter = new events.EventEmitter();
+		const s3 = this._createNewS3Client(opt, emitter);
+		s3.middlewareStack.remove('contentLengthMiddleware');
+		const copier = new AWSS3ProviderMultipartCopier(params, opt, emitter, s3);
+		emitter.on(COPY_PROGRESS, progress => {
+			if (progressCallback) {
+				progressCallback(progress);
+			} else {
+				logger.warn(
+					`progressCallback should be a function, not a ${typeof progressCallback}`
+				);
+			}
+		});
+		try {
+			await copier.copy();
+			dispatchStorageEvent(
+				track,
+				'copy',
+				{
+					method: 'copy',
+					result: 'success',
+				},
+				null,
+				`Copy success from ${src} to ${dest}`
+			);
+			return {
+				key: dest,
+			};
+		} catch (error) {
+			dispatchStorageEvent(
+				track,
+				'copy',
+				{
+					method: 'get',
+					result: 'failed',
+				},
+				null,
+				`Copy failed from ${src} to ${dest}`
+			);
+			throw error;
+		}
+	}
+
 	/**
 	 * Get a presigned URL of the file or the object data when download:true
 	 *
@@ -124,7 +264,7 @@ export class AWSS3Provider implements StorageProvider {
 	public async get(key: string, config?): Promise<string | Object> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
-			return Promise.reject('No credentials');
+			return Promise.reject(StorageErrorStrings.NO_CREDENTIALS);
 		}
 
 		const opt = Object.assign({}, this._config, config);
@@ -226,7 +366,7 @@ export class AWSS3Provider implements StorageProvider {
 	public async put(key: string, object, config?): Promise<Object> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
-			return Promise.reject('No credentials');
+			return Promise.reject(StorageErrorStrings.NO_CREDENTIALS);
 		}
 
 		const opt = Object.assign({}, this._config, config);
@@ -350,7 +490,7 @@ export class AWSS3Provider implements StorageProvider {
 	public async remove(key: string, config?): Promise<any> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
-			return Promise.reject('No credentials');
+			return Promise.reject(StorageErrorStrings.NO_CREDENTIALS);
 		}
 
 		const opt = Object.assign({}, this._config, config);
@@ -399,7 +539,7 @@ export class AWSS3Provider implements StorageProvider {
 	public async list(path, config?): Promise<any> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
-			return Promise.reject('No credentials');
+			return Promise.reject(StorageErrorStrings.NO_CREDENTIALS);
 		}
 
 		const opt = Object.assign({}, this._config, config);

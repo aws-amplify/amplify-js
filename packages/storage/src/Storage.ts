@@ -195,6 +195,24 @@ export class Storage {
 		}
 	}
 
+	public copy(src: string, dest: string, config?): Promise<any> {
+		const { provider = DEFAULT_PROVIDER } = config || {};
+		const prov = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (prov === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			return Promise.reject('No plugin found in Storage for the provider');
+		}
+		const cancelTokenSource = this.getCancellableTokenSource();
+		const responsePromise = prov.copy(src, dest, {
+			...config,
+			cancelTokenSource,
+		});
+		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);
+		return responsePromise;
+	}
+
 	/**
 	 * Get a presigned URL of the file or the object data when download:true
 	 *
