@@ -12,7 +12,7 @@
  */
 import {
 	AWSS3ProviderManagedUpload,
-	BodyPart,
+	Part,
 } from '../../src/providers/AWSS3ProviderManagedUpload';
 import { Credentials } from '@aws-amplify/core';
 import {
@@ -135,7 +135,7 @@ describe('multi part upload tests', () => {
 		 */
 		class TestClass extends AWSS3ProviderManagedUpload {
 			protected minPartSize = testMinPartSize;
-			protected async uploadParts(uploadId: string, parts: BodyPart[]) {
+			protected async uploadParts(uploadId: string, parts: Part[]) {
 				// Make service calls and set the event listeners first from the base impl
 				await super.uploadParts(uploadId, parts);
 				// Now trigger some notifications from the event listeners
@@ -237,7 +237,7 @@ describe('multi part upload tests', () => {
 		 */
 		class TestClass extends AWSS3ProviderManagedUpload {
 			protected minPartSize = testMinPartSize;
-			protected async uploadParts(uploadId: string, parts: BodyPart[]) {
+			protected async uploadParts(uploadId: string, parts: Part[]) {
 				// Make service calls and set the event listeners first
 				await super.uploadParts(uploadId, parts);
 				// Now trigger some notifications from the event listeners
