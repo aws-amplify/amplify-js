@@ -1,34 +1,36 @@
-import AsyncStorageDatabase from '../src/storage/adapter/AsyncStorageDatabase';
-import AsyncStorageAdapter from '../src/storage/adapter/AsyncStorageAdapter';
+import { ModelMerger } from '../src/sync/merger';
+import { PersistentModelConstructor } from '../src/';
 import {
 	DataStore as DataStoreType,
 	initSchema as initSchemaType,
 } from '../src/datastore/datastore';
-import { testSchema } from './helpers';
+import { Model as ModelType, testSchema } from './helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
-// using any to get access to private methods
-let asyncStorageAdapter = <any>AsyncStorageAdapter;
-const storeName = 'Model';
+let Storage: any;
+const ownSymbol = Symbol('sync');
 
-describe('AsyncStorageDatabase tests', () => {
-	describe('batchSave', () => {
-		let db: AsyncStorageDatabase;
+describe('ModelMerger tests', () => {
+	let modelMerger: ModelMerger;
+	let Model: PersistentModelConstructor<InstanceType<typeof ModelType>>;
 
+	describe('mergePage', () => {
 		beforeAll(async () => {
 			({ initSchema, DataStore } = require('../src/datastore/datastore'));
-			initSchema(testSchema());
+			({ Model } = initSchema(testSchema()) as {
+				Model: PersistentModelConstructor<ModelType>;
+			});
 
 			await DataStore.start();
 
-			asyncStorageAdapter = (DataStore as any).storage.storage.adapter;
-			({ db } = asyncStorageAdapter);
+			// mergePage doesn't rely on the outbox, so it doesn't need to be mocked
+			const outbox = (() => {}) as any;
+
+			Storage = (DataStore as any).storage;
+			modelMerger = new ModelMerger(outbox, ownSymbol);
 		});
 
-		afterAll(async () => {
-			await db.clear();
-		});
 		test('delete after create should result in delete', async () => {
 			const modelId = 'ce408429-d667-4606-bb4f-3d7e0a8e5938';
 
@@ -51,9 +53,11 @@ describe('AsyncStorageDatabase tests', () => {
 				},
 			];
 
-			await db.batchSave(storeName, items);
+			await Storage.runExclusive(async storage => {
+				await modelMerger.mergePage(storage, Model, items);
+			});
 
-			const record = await db.get(modelId, storeName);
+			const record = await DataStore.query(Model, modelId);
 
 			expect(record).toBeUndefined();
 		});
@@ -88,9 +92,11 @@ describe('AsyncStorageDatabase tests', () => {
 				},
 			];
 
-			await db.batchSave(storeName, items);
+			await Storage.runExclusive(async storage => {
+				await modelMerger.mergePage(storage, Model, items);
+			});
 
-			const record = await db.get(modelId, storeName);
+			const record = await DataStore.query(Model, modelId);
 
 			expect(record.field1).toEqual('Another Update');
 			expect(record.optionalField1).toEqual('Optional');
@@ -118,7 +124,7 @@ describe('AsyncStorageDatabase tests', () => {
 				},
 				{
 					id: modelId,
-					field1: 'Create',
+					field1: 'New Create with the same id',
 					optionalField1: null,
 					_version: 1,
 					_lastChangedAt: 1619627621329,
@@ -126,11 +132,14 @@ describe('AsyncStorageDatabase tests', () => {
 				},
 			];
 
-			await db.batchSave(storeName, items);
+			await Storage.runExclusive(async storage => {
+				await modelMerger.mergePage(storage, Model, items);
+			});
 
-			const record = await db.get(modelId, storeName);
+			const record = await DataStore.query(Model, modelId);
 
-			expect(record.field1).toEqual('Create');
+			expect(record).not.toBeUndefined();
+			expect(record.field1).toEqual('New Create with the same id');
 		});
 	});
 });
