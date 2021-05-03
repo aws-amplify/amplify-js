@@ -561,7 +561,7 @@ export function getForbiddenError(error) {
 
 export function getClientSideAuthError(error) {
 	const clientSideAuthErrors = Object.values(GraphQLAuthError);
-	let clientSideError =
+	const clientSideError =
 		error &&
 		error.message &&
 		clientSideAuthErrors.find(clientError =>
