@@ -328,7 +328,10 @@ export class AuthClass {
 				validationData = [];
 				Object.keys(validationDataObject).map(key => {
 					validationData.push(
-						new CognitoUserAttribute({ Name: key, Value: validationDataObject[key] })
+						new CognitoUserAttribute({
+							Name: key,
+							Value: validationDataObject[key],
+						})
 					);
 				});
 			}
@@ -650,8 +653,9 @@ export class AuthClass {
 	}
 
 	/**
-	 * get user current preferred mfa option
-	 * this method doesn't work with totp, we need to deprecate it.
+	 * This was previously used by an authenticated user to get MFAOptions,
+	 * but no longer returns a meaningful response. Refer to the documentation for
+	 * how to setup and use MFA: https://docs.amplify.aws/lib/auth/mfa/q/platform/js
 	 * @deprecated
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves the current preferred mfa option if success
