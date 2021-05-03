@@ -16,8 +16,8 @@ import {
 import {
 	buildGraphQLOperation,
 	getModelAuthModes,
-	hasClientSideAuthError,
-	hasForbiddenError,
+	getClientSideAuthError,
+	getForbiddenError,
 	predicateToGraphQLFilter,
 } from '../utils';
 import {
@@ -135,8 +135,7 @@ class SyncProcessor {
 				if (authModeAttempts >= readAuthModes.length) {
 					const authMode = readAuthModes[authModeAttempts - 1];
 					logger.debug(`Sync failed with authMode: ${authMode}`, error);
-
-					if (hasClientSideAuthError(error) || hasForbiddenError(error)) {
+					if (getClientSideAuthError(error) || getForbiddenError(error)) {
 						// return empty list of data so DataStore will continue to sync other models
 						logger.warn(
 							`User is unauthorized to query ${opName} with auth mode ${authMode}. No data could be returned.`
@@ -213,9 +212,10 @@ class SyncProcessor {
 					});
 				} catch (error) {
 					// Catch client-side (GraphQLAuthError) & 401/403 errors here so that we don't continue to retry
-					if (hasClientSideAuthError(error) || hasForbiddenError(error)) {
-						console.log(error);
-						throw new NonRetryableError(error);
+					const clientOrForbiddenErrorMessage =
+						getClientSideAuthError(error) || getForbiddenError(error);
+					if (clientOrForbiddenErrorMessage) {
+						throw new NonRetryableError(clientOrForbiddenErrorMessage);
 					}
 
 					const hasItems = Boolean(

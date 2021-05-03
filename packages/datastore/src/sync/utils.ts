@@ -539,26 +539,33 @@ export async function getModelAuthModes({
 	return modelAuthModes;
 }
 
-export function hasForbiddenError(error) {
-	return !!(
-		error &&
-		error.errors &&
-		(error.errors as [any]).some(err =>
-			[
-				'Request failed with status code 401',
-				'Request failed with status code 403',
-			].includes(err.message)
-		)
-	);
+export function getForbiddenError(error) {
+	const forbiddenErrorMessages = [
+		'Request failed with status code 401',
+		'Request failed with status code 403',
+	];
+	let forbiddenError;
+	if (error && error.errors) {
+		forbiddenError = (error.errors as [any]).find(err =>
+			forbiddenErrorMessages.includes(err.message)
+		);
+	} else if (error && error.message) {
+		forbiddenError = error;
+	}
+
+	if (forbiddenError) {
+		return forbiddenError.message;
+	}
+	return null;
 }
 
-export function hasClientSideAuthError(error) {
+export function getClientSideAuthError(error) {
 	const clientSideAuthErrors = Object.values(GraphQLAuthError);
-	return !!(
+	let clientSideError =
 		error &&
 		error.message &&
-		clientSideAuthErrors.some(clientError =>
+		clientSideAuthErrors.find(clientError =>
 			error.message.includes(clientError)
-		)
-	);
+		);
+	return clientSideError || null;
 }
