@@ -10,11 +10,11 @@ import { Logger } from '@aws-amplify/core';
 
 const logger = new Logger('withAuthenticator');
 
-export function withAuthenticator(
-	Component: ComponentType,
+export function withAuthenticator<T extends object>(
+	Component: ComponentType<T>,
 	authenticatorProps?: ComponentPropsWithRef<typeof AmplifyAuthenticator>
 ) {
-	const AppWithAuthenticator: FunctionComponent = props => {
+	const AppWithAuthenticator: FunctionComponent<T> = props => {
 		const [signedIn, setSignedIn] = React.useState(false);
 
 		React.useEffect(() => {
@@ -52,7 +52,8 @@ export function withAuthenticator(
 				</AmplifyContainer>
 			);
 		}
-		return <Component />;
+
+		return <Component {...props} />;
 	};
 
 	return AppWithAuthenticator;
