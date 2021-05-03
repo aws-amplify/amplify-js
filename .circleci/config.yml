@@ -788,7 +788,6 @@ releasable_branches: &releasable_branches
       - ui-components/main
       - 1.0-stable
       - native
-      - version-upgrade-circle
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
