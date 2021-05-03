@@ -1,4 +1,5 @@
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { GraphQLAuthError } from '@aws-amplify/api';
 import { Logger } from '@aws-amplify/core';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
@@ -536,4 +537,28 @@ export async function getModelAuthModes({
 		logger.debug(`Error getting auth modes for model: ${modelName}`, error);
 	}
 	return modelAuthModes;
+}
+
+export function hasForbiddenError(error) {
+	return !!(
+		error &&
+		error.errors &&
+		(error.errors as [any]).some(err =>
+			[
+				'Request failed with status code 401',
+				'Request failed with status code 403',
+			].includes(err.message)
+		)
+	);
+}
+
+export function hasClientSideAuthError(error) {
+	const clientSideAuthErrors = Object.values(GraphQLAuthError);
+	return !!(
+		error &&
+		error.message &&
+		clientSideAuthErrors.some(clientError =>
+			error.message.includes(clientError)
+		)
+	);
 }

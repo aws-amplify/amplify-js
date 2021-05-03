@@ -16,6 +16,8 @@ import {
 import {
 	buildGraphQLOperation,
 	getModelAuthModes,
+	hasClientSideAuthError,
+	hasForbiddenError,
 	predicateToGraphQLFilter,
 } from '../utils';
 import {
@@ -28,6 +30,12 @@ import { ModelPredicateCreator } from '../../predicates';
 
 const DEFAULT_PAGINATION_LIMIT = 1000;
 const DEFAULT_MAX_RECORDS_TO_SYNC = 10000;
+
+const opResultDefaults = {
+	items: [],
+	nextToken: null,
+	startedAt: null,
+};
 
 const logger = new Logger('DataStore');
 
@@ -125,9 +133,21 @@ class SyncProcessor {
 			} catch (error) {
 				authModeAttempts++;
 				if (authModeAttempts >= readAuthModes.length) {
-					logger.debug(
-						`Sync failed with authMode: ${readAuthModes[authModeAttempts - 1]}`
-					);
+					const authMode = readAuthModes[authModeAttempts - 1];
+					logger.debug(`Sync failed with authMode: ${authMode}`, error);
+
+					if (hasClientSideAuthError(error) || hasForbiddenError(error)) {
+						// return empty list of data so DataStore will continue to sync other models
+						logger.warn(
+							`User is unauthorized to query ${opName} with auth mode ${authMode}. No data could be returned.`
+						);
+
+						return {
+							data: {
+								[opName]: opResultDefaults,
+							},
+						};
+					}
 					throw error;
 				}
 				logger.debug(
@@ -192,25 +212,9 @@ class SyncProcessor {
 						authMode,
 					});
 				} catch (error) {
-					const clientSideAuthErrors = Object.values(GraphQLAuthError);
-
-					const hasClientSideAuthError =
-						error &&
-						error.message &&
-						clientSideAuthErrors.includes(error.message);
-
-					const hasForbiddenError =
-						error &&
-						error.errors &&
-						(error.errors as [any]).some(err =>
-							[
-								'Request failed with status code 401',
-								'Request failed with status code 403',
-							].includes(err.message)
-						);
-
 					// Catch client-side (GraphQLAuthError) & 401/403 errors here so that we don't continue to retry
-					if (hasClientSideAuthError || hasForbiddenError) {
+					if (hasClientSideAuthError(error) || hasForbiddenError(error)) {
+						console.log(error);
 						throw new NonRetryableError(error);
 					}
 
@@ -253,12 +257,6 @@ class SyncProcessor {
 						);
 					if (unauthorized) {
 						const result = error;
-
-						const opResultDefaults = {
-							items: [],
-							nextToken: null,
-							startedAt: null,
-						};
 
 						if (hasItems) {
 							result.data[opName].items = result.data[opName].items.filter(
