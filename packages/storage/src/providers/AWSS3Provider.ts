@@ -23,13 +23,15 @@ import {
 	DeleteObjectCommand,
 	ListObjectsCommand,
 	CopyObjectCommandInput,
-	HeadObjectCommandInput,
-	HeadObjectCommand,
 } from '@aws-sdk/client-s3';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
-import { StorageOptions, StorageProvider } from '../types';
+import {
+	StorageOptions,
+	StorageProvider,
+	CopyObjectConfig,
+} from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
@@ -39,31 +41,8 @@ import {
 } from './AWSS3ProviderMultipartCopy';
 import * as events from 'events';
 
-type StorageLevel = 'public' | 'protected' | 'private';
-
-export type Progress = {
-	loaded: number;
-	total: number;
-};
-
-export type CopyObjectConfig = {
-	level?: StorageLevel;
-	acl?: string;
-	bucket?: string;
-	cacheControl?: string;
-	contentDisposition?: string;
-	contentEncoding?: string;
-	contentLanguage?: string;
-	contentType?: string;
-	expires?: Date;
-	track?: boolean;
-	progressCallback?: (progress: Progress) => any;
-	serverSideEncryption?: string;
-	SSECustomerAlgorithm?: string;
-	SSECustomerKey?: string;
-	SSECustomerKeyMD5?: string;
-	SSEKMSKeyId?: string;
-	[key: string]: any;
+export type CopyResult = {
+	key: string;
 };
 
 const logger = new Logger('AWSS3Provider');
@@ -149,14 +128,23 @@ export class AWSS3Provider implements StorageProvider {
 		return this._config;
 	}
 
+	/**
+	 * Copy and object from a one object to a new object within the same bucket.
+	 *
+	 * @async
+	 * @param {string} src - Key of the source object.
+	 * @param {string} dest - Key of the destination object.
+	 * @param {CopyObjectConfig} [config] - Optional configuration for s3 commands.
+	 * @return {Promise<CopyResult>} The copied object's key.
+	 */
 	public async copy(
 		src: string,
 		dest: string,
 		config?: CopyObjectConfig
-	): Promise<any> {
+	): Promise<CopyResult> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
-			return Promise.reject('err');
+			return Promise.reject(StorageErrorStrings.NO_CREDENTIALS);
 		}
 		const opt: CopyObjectConfig = Object.assign({}, this._config, config);
 		const {
