@@ -15,7 +15,7 @@ import {
 	UploadPartCopyCommand,
 } from '@aws-sdk/client-s3';
 import * as events from 'events';
-import { CopyObjectConfig } from './AWSS3Provider';
+import { CopyObjectConfig } from '../types';
 
 const logger = new Logger('AWSS3ProviderMultipartCopy');
 
@@ -50,14 +50,14 @@ export class AWSS3ProviderMultipartCopier {
 		config: CopyObjectConfig,
 		emitter: events.EventEmitter,
 		s3client: S3Client,
-		concurrentUploads?: number
+		queueSize?: number
 	) {
 		this.params = params;
 		this.config = config;
 		this.emitter = emitter;
 		this.s3client = s3client;
-		if (concurrentUploads) {
-			this.queueSize = concurrentUploads;
+		if (queueSize) {
+			this.queueSize = queueSize;
 		}
 		const { CopySource, Key, Bucket } = this.params;
 		this.srcKey = CopySource.substr(CopySource.indexOf('/') + 1);
