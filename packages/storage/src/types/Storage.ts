@@ -44,4 +44,8 @@ export interface CopyObjectConfig {
 	SSECustomerKeyMD5?: string;
 	SSEKMSKeyId?: string;
 	[key: string]: any;
+}
+
+export type CopyResult = {
+	key: string;
 };
