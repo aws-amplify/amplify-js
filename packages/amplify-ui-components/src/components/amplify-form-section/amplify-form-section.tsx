@@ -8,7 +8,6 @@ import { Component, Prop, h, FunctionalComponent, Listen } from '@stencil/core';
 @Component({
 	tag: 'amplify-form-section',
 	styleUrl: 'amplify-form-section.scss',
-	shadow: true,
 })
 export class AmplifyFormSection {
 	/** (Required) Function called upon submission of form */

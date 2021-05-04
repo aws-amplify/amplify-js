@@ -48,8 +48,8 @@ export class AmplifySignIn {
 	/** Federated credentials & configuration. */
 	@Prop() federated: FederatedConfig;
 	/** Auth state change handler for this component */
-	@Prop()
-	handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
+	// prettier-ignore
+	@Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 	/** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
 	@Prop() usernameAlias: UsernameAliasStrings = 'username';
 	/**
@@ -105,6 +105,8 @@ export class AmplifySignIn {
 				return event => handlePhoneNumberChange(event, this.phoneNumber);
 			case 'password':
 				return event => (this.signInAttributes.password = event.target.value);
+			default:
+				return () => {};
 		}
 	}
 
@@ -157,6 +159,7 @@ export class AmplifySignIn {
 					handleInputChange: this.handleFormFieldInputChange('email'),
 					inputProps: {
 						'data-test': 'sign-in-email-input',
+						autocomplete: 'username',
 					},
 				});
 				break;
@@ -167,6 +170,7 @@ export class AmplifySignIn {
 					handleInputChange: this.handleFormFieldInputChange('phone_number'),
 					inputProps: {
 						'data-test': 'sign-in-phone-number-input',
+						autocomplete: 'username',
 					},
 				});
 				break;
@@ -178,6 +182,7 @@ export class AmplifySignIn {
 					handleInputChange: this.handleFormFieldInputChange('username'),
 					inputProps: {
 						'data-test': 'sign-in-username-input',
+						autocomplete: 'username',
 					},
 				});
 				break;
