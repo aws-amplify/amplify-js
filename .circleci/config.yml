@@ -725,6 +725,23 @@ jobs:
           spec: << parameters.scenario >>
           browser: firefox
 
+  integ_duplicate_packages:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/version-conflict/duplicate-packages
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Duplicate Package Errors'
+          framework: react
+          category: version-conflict
+          sample_name: duplicate-packages
+          spec: duplicate-packages
+          browser: << parameters.browser >>
+
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -971,6 +988,15 @@ workflows:
           matrix:
             parameters:
               <<: *datastore_auth_scenarios
+      - integ_duplicate_packages:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
@@ -995,6 +1021,7 @@ workflows:
             - integ_rn_android_storage
             - integ_rn_android_storage_multipart_progress
             - integ_datastore_auth
+            - integ_duplicate_packages
       - post_release:
           filters:
             branches:
