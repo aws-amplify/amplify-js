@@ -45,7 +45,10 @@
 	},
 	"dependencies": {
 		"@aws-amplify/api-graphql": "1.2.30",
-		"@aws-amplify/api-rest": "1.2.30"
+		"@aws-amplify/api-rest": "1.2.30",
+		"@aws-amplify/auth": "3.4.30",
+		"@aws-amplify/cache": "3.1.55",
+		"@aws-amplify/core": "3.8.22"
 	},
 	"jest": {
 		"globals": {
