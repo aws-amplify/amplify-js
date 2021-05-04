@@ -31,6 +31,7 @@ import {
 	StorageOptions,
 	StorageProvider,
 	CopyObjectConfig,
+	CopyResult,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { AxiosHttpHandler } from './axios-http-handler';
@@ -40,10 +41,6 @@ import {
 	COPY_PROGRESS,
 } from './AWSS3ProviderMultipartCopy';
 import * as events from 'events';
-
-export type CopyResult = {
-	key: string;
-};
 
 const logger = new Logger('AWSS3Provider');
 
