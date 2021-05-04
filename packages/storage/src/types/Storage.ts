@@ -16,7 +16,7 @@
 export interface StorageOptions {
 	bucket?: string;
 	region?: string;
-	level?: string;
+	level?: StorageLevel;
 	credentials?: object;
 }
 

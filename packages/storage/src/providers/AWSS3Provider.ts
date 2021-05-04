@@ -199,7 +199,12 @@ export class AWSS3Provider implements StorageProvider {
 		const emitter = new events.EventEmitter();
 		const s3 = this._createNewS3Client(opt, emitter);
 		s3.middlewareStack.remove('contentLengthMiddleware');
-		const copier = new AWSS3ProviderMultipartCopier(params, opt, emitter, s3);
+		const copier = new AWSS3ProviderMultipartCopier({
+			params,
+			config: opt,
+			emitter,
+			s3client: s3
+		});
 		emitter.on(COPY_PROGRESS, progress => {
 			if (progressCallback) {
 				progressCallback(progress);

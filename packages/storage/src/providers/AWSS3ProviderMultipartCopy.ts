@@ -27,10 +27,18 @@ export interface CopyPart {
 
 export const COPY_PROGRESS = 'copyProgress';
 
+export interface AWSS3ProviderMultipartCopierParams {
+	params: CopyObjectCommandInput;
+	config: CopyObjectConfig;
+	emitter: events.EventEmitter;
+	s3client: S3Client;
+	queueSize?: number;
+}
+
 export class AWSS3ProviderMultipartCopier {
 	static minPartSize = 5 * 1024 * 1024; // 5MB, minimum requirement for a multipart copy
 	static partSize = 10 * 1024 * 1024;
-	private queueSize = 10;
+	private queueSize: number;
 	private params: CopyObjectCommandInput | null = null;
 	private completedParts: CompletedPart[] = [];
 	private config: CopyObjectConfig = null;
@@ -45,20 +53,18 @@ export class AWSS3ProviderMultipartCopier {
 	private srcBucket: string;
 	private srcKey: string;
 
-	constructor(
-		params: CopyObjectCommandInput,
-		config: CopyObjectConfig,
-		emitter: events.EventEmitter,
-		s3client: S3Client,
-		queueSize?: number
-	) {
+	constructor({
+		params,
+		config,
+		emitter,
+		s3client,
+		queueSize = 10,
+	}: AWSS3ProviderMultipartCopierParams) {
 		this.params = params;
 		this.config = config;
 		this.emitter = emitter;
 		this.s3client = s3client;
-		if (queueSize) {
-			this.queueSize = queueSize;
-		}
+		this.queueSize = queueSize;
 		const { CopySource, Key, Bucket } = this.params;
 		this.srcKey = CopySource.substr(CopySource.indexOf('/') + 1);
 		this.srcBucket = CopySource.substr(0, CopySource.indexOf('/'));
