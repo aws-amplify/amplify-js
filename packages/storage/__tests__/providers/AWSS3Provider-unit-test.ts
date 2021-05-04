@@ -16,11 +16,9 @@ import * as formatURL from '@aws-sdk/util-format-url';
 import {
 	S3Client,
 	ListObjectsCommand,
-	HeadObjectCommand,
 } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { AWSS3ProviderMultipartCopier } from '../../src/providers/AWSS3ProviderMultipartCopy';
-import * as events from 'events';
 jest.mock('../../src/providers/AWSS3ProviderMultipartCopy');
 /**
  * NOTE - These test cases use Hub.dispatch but they should
@@ -962,27 +960,6 @@ describe('StorageProvider test', () => {
 			});
 		});
 
-		test('copy object progress callback', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return Promise.resolve(credentials);
-			});
-			const mockProgressCallback = jest.fn();
-			jest.mock('events', () => ({
-				// on: jest.fn().mockImplementation((eventName, event) => {
-				// 	mockProgressCallback(event);
-				// }),
-				// emit: jest.fn().mockImplementation(() => {
-				// 	mockProgressCallback();
-				// }),
-			}));
-			const storage = new StorageProvider();
-			storage.configure(options);
-			await storage.copy('src', 'dest', {
-				progressCallback: mockProgressCallback,
-			});
-			expect(mockProgressCallback).toHaveBeenCalled();
-		});
-
 		test('copy object failed', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
@@ -999,15 +976,12 @@ describe('StorageProvider test', () => {
 		});
 
 		test('credentials not ok', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return Promise.reject('err');
-			});
 			const storage = new StorageProvider();
 			storage.configure(options_no_cred);
 			try {
 				await storage.copy('src', 'dest');
 			} catch (e) {
-				expect(e).toEqual('err');
+				expect(e).toEqual('No credentials');
 			}
 		});
 	});
