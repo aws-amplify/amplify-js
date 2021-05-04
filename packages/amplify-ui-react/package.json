@@ -32,6 +32,8 @@
 		"typescript": "^3.3.4000"
 	},
 	"dependencies": {
+		"@aws-amplify/auth": "3.4.30",
+		"@aws-amplify/core": "3.8.22",
 		"@aws-amplify/ui-components": "1.2.0"
 	},
 	"peerDependencies": {
