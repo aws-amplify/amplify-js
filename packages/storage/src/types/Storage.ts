@@ -19,3 +19,29 @@ export interface StorageOptions {
 	level?: string;
 	credentials?: object;
 }
+
+export type StorageLevel = 'public' | 'protected' | 'private';
+
+export type Progress = {
+	loaded: number;
+	total: number;
+};
+
+export interface CopyObjectConfig {
+	level?: StorageLevel;
+	acl?: string;
+	cacheControl?: string;
+	contentDisposition?: string;
+	contentEncoding?: string;
+	contentLanguage?: string;
+	contentType?: string;
+	expires?: Date;
+	track?: boolean;
+	progressCallback?: (progress: Progress) => any;
+	serverSideEncryption?: string;
+	SSECustomerAlgorithm?: string;
+	SSECustomerKey?: string;
+	SSECustomerKeyMD5?: string;
+	SSEKMSKeyId?: string;
+	[key: string]: any;
+};
