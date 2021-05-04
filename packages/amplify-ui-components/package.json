@@ -38,6 +38,10 @@
 		"aws-amplify": "3.x.x"
 	},
 	"dependencies": {
+		"@aws-amplify/auth": "3.4.30",
+		"@aws-amplify/core": "3.8.22",
+		"@aws-amplify/interactions": "3.3.30",
+		"@aws-amplify/storage": "3.4.0",
 		"qrcode": "^1.4.4",
 		"uuid": "^8.2.0"
 	},
