@@ -50,7 +50,6 @@ describe('basic copy test', () => {
 			});
 		const copier = new AWSS3ProviderMultipartCopier({
 			params: testInput,
-			config: testConfig,
 			emitter: new events.EventEmitter(),
 			s3client: new S3Client(testS3ClientConfig),
 		});
@@ -73,7 +72,6 @@ describe('basic copy test', () => {
 			});
 		const copier = new AWSS3ProviderMultipartCopier({
 			params: testInput,
-			config: testConfig,
 			emitter: new events.EventEmitter(),
 			s3client: new S3Client(testS3ClientConfig),
 		});
@@ -112,7 +110,6 @@ describe('multipart copy tests', () => {
 
 		const copier = new AWSS3ProviderMultipartCopier({
 			params: testInput,
-			config: testConfig,
 			emitter: new events.EventEmitter(),
 			s3client: new S3Client(testS3ClientConfig),
 		});
@@ -218,7 +215,6 @@ describe('multipart copy tests', () => {
 			});
 		const copier = new AWSS3ProviderMultipartCopier({
 			params: testInput,
-			config: testConfig,
 			emitter: new events.EventEmitter(),
 			s3client: new S3Client(testS3ClientConfig),
 			queueSize: 1,
@@ -255,7 +251,6 @@ describe('multipart copy tests', () => {
 		});
 		const copier = new AWSS3ProviderMultipartCopier({
 			params: testInput,
-			config: testConfig,
 			emitter: new events.EventEmitter(),
 			s3client: new S3Client(testS3ClientConfig),
 		});
@@ -289,7 +284,6 @@ describe('multipart copy tests', () => {
 
 		const copier = new AWSS3ProviderMultipartCopier({
 			params: testInput,
-			config: testConfig,
 			emitter: new events.EventEmitter(),
 			s3client: new S3Client(testS3ClientConfig),
 		});
