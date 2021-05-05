@@ -141,28 +141,26 @@ export class AWSS3ProviderMultipartCopier {
 		let partNumber = 1;
 		while (this.bytesCopied < this.totalBytesToCopy) {
 			const parts = this._makeParts(partNumber);
-			partNumber += parts.length;
 			yield Promise.all(
-				parts.map(
-					async part => {
-						const output = await this.s3client.send(
-							new UploadPartCopyCommand({
-								Bucket: this.destBucket,
-								Key: this.destKey,
-								CopySource: `${this.srcBucket}/${this.srcKey}`,
-								CopySourceRange: part.copySourceRange,
-								PartNumber: part.partNumber,
-								UploadId: uploadId,
-							})
-						);
-						this.bytesCopied += part.bytes;
-						this.emitter.emit(COPY_PROGRESS, {
-							loaded: this.bytesCopied,
-							total: this.totalBytesToCopy,
-						});
-						return output;
-					}
-				)
+				parts.map(async part => {
+					const output = await this.s3client.send(
+						new UploadPartCopyCommand({
+							Bucket: this.destBucket,
+							Key: this.destKey,
+							CopySource: `${this.srcBucket}/${this.srcKey}`,
+							CopySourceRange: part.copySourceRange,
+							PartNumber: part.partNumber,
+							UploadId: uploadId,
+						})
+					);
+					partNumber++;
+					this.bytesCopied += part.bytes;
+					this.emitter.emit(COPY_PROGRESS, {
+						loaded: this.bytesCopied,
+						total: this.totalBytesToCopy,
+					});
+					return output;
+				})
 			);
 		}
 	}

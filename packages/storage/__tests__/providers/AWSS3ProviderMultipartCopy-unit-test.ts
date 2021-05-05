@@ -11,8 +11,8 @@ import {
 	AbortMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
 import { AWSS3ProviderMultipartCopier } from '../../src/providers/AWSS3ProviderMultipartCopy';
-import { CopyObjectConfig } from '../../src/providers/AWSS3Provider';
 import * as events from 'events';
+import { CopyObjectConfig } from '../../src/types';
 
 const testInput: CopyObjectRequest = {
 	Bucket: 'testBucket',
@@ -48,12 +48,12 @@ describe('basic copy test', () => {
 					};
 				}
 			});
-		const copier = new AWSS3ProviderMultipartCopier(
-			testInput,
-			testConfig,
-			new events.EventEmitter(),
-			new S3Client(testS3ClientConfig)
-		);
+		const copier = new AWSS3ProviderMultipartCopier({
+			params: testInput,
+			config: testConfig,
+			emitter: new events.EventEmitter(),
+			s3client: new S3Client(testS3ClientConfig),
+		});
 		const result = await copier.copy();
 		expect(result).toEqual('destKey');
 		expect(spyon).toBeCalledTimes(2);
@@ -71,12 +71,12 @@ describe('basic copy test', () => {
 					};
 				}
 			});
-		const copier = new AWSS3ProviderMultipartCopier(
-			testInput,
-			testConfig,
-			new events.EventEmitter(),
-			new S3Client(testS3ClientConfig)
-		);
+		const copier = new AWSS3ProviderMultipartCopier({
+			params: testInput,
+			config: testConfig,
+			emitter: new events.EventEmitter(),
+			s3client: new S3Client(testS3ClientConfig),
+		});
 		const result = await copier.copy();
 		expect(result).toEqual('destKey');
 		expect(spyon).toBeCalledTimes(2);
@@ -110,12 +110,12 @@ describe('multipart copy tests', () => {
 				}
 			});
 
-		const copier = new AWSS3ProviderMultipartCopier(
-			testInput,
-			testConfig,
-			new events.EventEmitter(),
-			new S3Client(testS3ClientConfig)
-		);
+		const copier = new AWSS3ProviderMultipartCopier({
+			params: testInput,
+			config: testConfig,
+			emitter: new events.EventEmitter(),
+			s3client: new S3Client(testS3ClientConfig),
+		});
 		const result = await copier.copy();
 		expect(spyon).toBeCalledTimes(6);
 		// Head object call to check file size
@@ -144,9 +144,9 @@ describe('multipart copy tests', () => {
 			Key: 'destKey',
 			PartNumber: 2,
 			UploadId: '123',
-			CopySourceRange: `bytes=${
-				AWSS3ProviderMultipartCopier.partSize
-			}-${AWSS3ProviderMultipartCopier.partSize * 2 - 1}`,
+			CopySourceRange: `bytes=${AWSS3ProviderMultipartCopier.partSize}-${
+				AWSS3ProviderMultipartCopier.partSize * 2 - 1
+			}`,
 		});
 		// Third UploadPartCopy call
 		expect(spyon.mock.calls[4][0].input).toStrictEqual({
@@ -155,8 +155,9 @@ describe('multipart copy tests', () => {
 			Key: 'destKey',
 			PartNumber: 3,
 			UploadId: '123',
-			CopySourceRange: `bytes=${AWSS3ProviderMultipartCopier.partSize *
-				2}-${AWSS3ProviderMultipartCopier.partSize * 3 - 1}`,
+			CopySourceRange: `bytes=${AWSS3ProviderMultipartCopier.partSize * 2}-${
+				AWSS3ProviderMultipartCopier.partSize * 3 - 1
+			}`,
 		});
 		// Finally, CompleteMultipartUpload call
 		expect(spyon.mock.calls[5][0].input).toStrictEqual({
@@ -215,13 +216,13 @@ describe('multipart copy tests', () => {
 					};
 				}
 			});
-		const copier = new AWSS3ProviderMultipartCopier(
-			testInput,
-			testConfig,
-			new events.EventEmitter(),
-			new S3Client(testS3ClientConfig),
-			1
-		);
+		const copier = new AWSS3ProviderMultipartCopier({
+			params: testInput,
+			config: testConfig,
+			emitter: new events.EventEmitter(),
+			s3client: new S3Client(testS3ClientConfig),
+			queueSize: 1,
+		});
 		await expect(copier.copy()).rejects.toThrow('err');
 	});
 
@@ -252,12 +253,12 @@ describe('multipart copy tests', () => {
 				};
 			}
 		});
-		const copier = new AWSS3ProviderMultipartCopier(
-			testInput,
-			testConfig,
-			new events.EventEmitter(),
-			new S3Client(testS3ClientConfig)
-		);
+		const copier = new AWSS3ProviderMultipartCopier({
+			params: testInput,
+			config: testConfig,
+			emitter: new events.EventEmitter(),
+			s3client: new S3Client(testS3ClientConfig),
+		});
 		await expect(copier.copy()).rejects.toThrow(
 			'Multipart copy clean up failed'
 		);
@@ -286,12 +287,12 @@ describe('multipart copy tests', () => {
 				}
 			});
 
-		const copier = new AWSS3ProviderMultipartCopier(
-			testInput,
-			testConfig,
-			new events.EventEmitter(),
-			new S3Client(testS3ClientConfig)
-		);
+		const copier = new AWSS3ProviderMultipartCopier({
+			params: testInput,
+			config: testConfig,
+			emitter: new events.EventEmitter(),
+			s3client: new S3Client(testS3ClientConfig),
+		});
 		await expect(copier.copy()).rejects.toThrow('err');
 	});
 });
