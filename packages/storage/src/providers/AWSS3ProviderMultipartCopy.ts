@@ -142,7 +142,6 @@ export class AWSS3ProviderMultipartCopier {
 		while (this.bytesCopied < this.totalBytesToCopy) {
 			const parts = this._makeParts(partNumber);
 			partNumber += parts.length;
-			// this.bytesCopied += parts.reduce((acc, cv) => acc + cv.bytes, 0);
 			yield Promise.all(
 				parts.map(
 					async part => {
@@ -163,72 +162,10 @@ export class AWSS3ProviderMultipartCopier {
 						});
 						return output;
 					}
-					// this.s3client
-					// 	.send(
-					// 		new UploadPartCopyCommand({
-					// 			Bucket: this.destBucket,
-					// 			Key: this.destKey,
-					// 			CopySource: `${this.srcBucket}/${this.srcKey}`,
-					// 			CopySourceRange: part.copySourceRange,
-					// 			PartNumber: part.partNumber,
-					// 			UploadId: uploadId,
-					// 		})
-					// 	)
-					// 	.then(output => {
-					// 		this.bytesCopied += part.bytes;
-					// 		this.emitter.emit(COPY_PROGRESS, {
-					// 			loaded: this.bytesCopied,
-					// 			total: this.totalBytesToCopy,
-					// 		});
-					// 		return output;
-					// 	})
 				)
 			);
 		}
 	}
-
-	// private async _copyParts(
-	// 	uploadId: string,
-	// 	parts: CopyPart[],
-	// 	srcKey: string
-	// ): Promise<UploadPartCopyCommandOutput[]> {
-	// 	try {
-	// 		const bytesSum = parts.reduce((acc, cv) => acc + cv.bytes, 0);
-	// 		const results = await Promise.all(
-	// 			parts.map(part =>
-	// 				this.s3client.send(
-	// 					new UploadPartCopyCommand({
-	// 						Bucket: this.params.Bucket,
-	// 						CopySource: srcKey,
-	// 						CopySourceRange: part.copySourceRange,
-	// 						Key: this.params.Key,
-	// 						PartNumber: part.partNumber,
-	// 						UploadId: uploadId,
-	// 					})
-	// 				)
-	// 			)
-	// 		);
-	// 		logger.debug('Uploaded parts: ', results);
-	// 		this.bytesCopied += bytesSum;
-	// 		this.emitter.emit(COPY_PROGRESS, {
-	// 			loaded: this.bytesCopied,
-	// 			total: this.totalBytesToCopy,
-	// 		});
-	// 		for (let i = 0; i < results.length; i++) {
-	// 			this.completedParts.push({
-	// 				PartNumber: parts[i].partNumber,
-	// 				ETag: results[i].CopyPartResult.ETag,
-	// 			});
-	// 		}
-	// 		return results;
-	// 	} catch (err) {
-	// 		logger.error(
-	// 			'error happened while copying a part. Aborting multipart copy',
-	// 			err
-	// 		);
-	// 		throw err;
-	// 	}
-	// }
 
 	private _makeParts(startPartNum: number): CopyPart[] {
 		const parts: CopyPart[] = [];
@@ -249,29 +186,6 @@ export class AWSS3ProviderMultipartCopier {
 		}
 		return parts;
 	}
-
-	/**
-	 * UploadPartCopyRequest takes a range of bytes in the form of 'bytes=first-last'.
-	 **/
-	// private _createParts(): CopyPart[] {
-	// 	const parts: CopyPart[] = [];
-	// 	for (let i = 0; i < this.totalParts; i++) {
-	// 		const startByte = i * AWSS3ProviderMultipartCopier.minPartSize;
-	// 		const endByte =
-	// 			Math.min(
-	// 				startByte + AWSS3ProviderMultipartCopier.minPartSize,
-	// 				this.totalBytesToCopy
-	// 			) - 1;
-	// 		parts.push({
-	// 			partNumber: i + 1,
-	// 			copySourceRange: `bytes=${startByte}-${endByte}`,
-	// 			// copySourceRange is 0 based, so +1 to get the size
-	// 			bytes: endByte - startByte + 1,
-	// 		});
-	// 	}
-
-	// 	return parts;
-	// }
 
 	private async _cleanup(uploadId: string) {
 		this.bytesCopied = 0;
