@@ -206,7 +206,7 @@ export class AmplifyAuthenticator {
 		return <slot name={slotName}>{slotIsEmpty && authComponent}</slot>;
 	}
 
-	componentWillUnload() {
+	disconnectedCallback() {
 		Hub.remove(AUTH_CHANNEL, this.handleExternalAuthEvent);
 		if (!this.hideToast) Hub.remove(UI_AUTH_CHANNEL, this.handleToastEvent);
 		return onAuthUIStateChange;
