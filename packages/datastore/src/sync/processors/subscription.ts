@@ -465,7 +465,7 @@ class SubscriptionProcessor {
 																]
 															}`
 														);
-														throw message;
+														logger.warn(message);
 													} else {
 														logger.debug(
 															`${operation} subscription failed with authMode: ${
