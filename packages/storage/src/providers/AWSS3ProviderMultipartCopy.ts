@@ -19,6 +19,10 @@ import { CopyObjectConfig } from '../types';
 
 const logger = new Logger('AWSS3ProviderMultipartCopy');
 
+enum AWSS3ProviderMultipartCopierErrors {
+	CLEANUP_FAILED = 'Multipart copy clean up failed'
+}
+
 export interface CopyPart {
 	partNumber: number;
 	copySourceRange: string;
@@ -41,7 +45,6 @@ export class AWSS3ProviderMultipartCopier {
 	private queueSize: number;
 	private params: CopyObjectCommandInput | null = null;
 	private completedParts: CompletedPart[] = [];
-	private config: CopyObjectConfig = null;
 
 	private bytesCopied = 0;
 	private totalBytesToCopy = 0;
@@ -55,13 +58,11 @@ export class AWSS3ProviderMultipartCopier {
 
 	constructor({
 		params,
-		config,
 		emitter,
 		s3client,
 		queueSize = 10,
 	}: AWSS3ProviderMultipartCopierParams) {
 		this.params = params;
-		this.config = config;
 		this.emitter = emitter;
 		this.s3client = s3client;
 		this.queueSize = queueSize;
@@ -91,7 +92,7 @@ export class AWSS3ProviderMultipartCopier {
 				uploadId = await this._initMultipartUpload();
 				const copyPartRequests = this._copyPartRequestsGenerator(uploadId);
 				for await (const results of copyPartRequests) {
-					results.forEach(result => {
+					results.forEach((result: UploadPartCopyCommandOutput) => {
 						this.completedParts.push({
 							PartNumber: this.completedParts.length + 1,
 							ETag: result.CopyPartResult.ETag,
@@ -185,7 +186,7 @@ export class AWSS3ProviderMultipartCopier {
 		return parts;
 	}
 
-	private async _cleanup(uploadId: string) {
+	private async _cleanup(uploadId: string): Promise<void> {
 		this.bytesCopied = 0;
 		this.completedParts = [];
 		this.totalBytesToCopy = 0;
@@ -201,7 +202,7 @@ export class AWSS3ProviderMultipartCopier {
 		const result = await this.s3client.send(new ListPartsCommand(input));
 
 		if (result && result.Parts && result.Parts.length > 0) {
-			throw new Error('Multipart copy clean up failed');
+			throw new Error(AWSS3ProviderMultipartCopierErrors.CLEANUP_FAILED);
 		}
 	}
 

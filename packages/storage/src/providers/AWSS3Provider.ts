@@ -636,7 +636,7 @@ export class AWSS3Provider implements StorageProvider {
 	/**
 	 * @private creates an S3 client with new V3 aws sdk
 	 */
-	private _createNewS3Client(config, emitter?) {
+	private _createNewS3Client(config, emitter?: events.EventEmitter) {
 		const {
 			region,
 			credentials,
