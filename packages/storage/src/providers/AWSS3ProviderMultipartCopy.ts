@@ -78,7 +78,7 @@ export class AWSS3ProviderMultipartCopier {
 		let uploadId: string = undefined;
 		try {
 			// this.totalBytesToCopy = await this._getObjectSize();
-			this.totalBytesToCopy = await this._getOneStuff();
+			this.totalBytesToCopy = await this._getObjectSize();
 			// ContentLength could be undefined if user doesn't expose the ContentLength header in CORS setting
 			// Fallback to basic CopyObject if it's the case, or if the file is smaller than 5MB.
 			if (this.totalBytesToCopy <= AWSS3ProviderMultipartCopier.minPartSize) {
@@ -218,7 +218,7 @@ export class AWSS3ProviderMultipartCopier {
 		return response.UploadId;
 	}
 
-	private async _getOneStuff(): Promise<number> {
+	private async _getObjectSize(): Promise<number> {
 		const listObjectCommand = new ListObjectsV2Command({
 			Bucket: this.srcBucket,
 			MaxKeys: 1,
@@ -231,17 +231,5 @@ export class AWSS3ProviderMultipartCopier {
 			);
 		}
 		return Contents[0].Size;
-	}
-
-	/**
-	 * Send a HEAD request to check the size of the object before doing a multipart copy.
-	 **/
-	private async _getObjectSize(): Promise<number> {
-		const headObjectCommand = new HeadObjectCommand({
-			Bucket: this.srcBucket,
-			Key: this.srcKey,
-		});
-		const { ContentLength } = await this.s3client.send(headObjectCommand);
-		return ContentLength;
 	}
 }

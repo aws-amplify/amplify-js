@@ -83,6 +83,7 @@ describe('basic copy test', () => {
 		await expect(copier.copy()).rejects.toThrow(
 			'Object does not exist, key: srcKey'
 		);
+		expect(spyon).toBeCalledTimes(1);
 	});
 });
 

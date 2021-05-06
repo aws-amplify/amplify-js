@@ -201,7 +201,6 @@ export class AWSS3Provider implements StorageProvider {
 		s3.middlewareStack.remove('contentLengthMiddleware');
 		const copier = new AWSS3ProviderMultipartCopier({
 			params,
-			config: opt,
 			emitter,
 			s3client: s3
 		});
