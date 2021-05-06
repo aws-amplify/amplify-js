@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-angular@1.0.7...@aws-amplify/ui-angular@1.0.8) (2021-05-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-angular:** Add missing angular module ([bb1b01a](https://github.com/aws-amplify/amplify-js/commit/bb1b01aaa64364c183db4ef938d61526499c2c3c))
+
+
+
+
+
 ## [1.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-angular@1.0.6...@aws-amplify/ui-angular@1.0.7) (2021-04-15)
 
 **Note:** Version bump only for package @aws-amplify/ui-angular
