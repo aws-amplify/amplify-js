@@ -465,7 +465,7 @@ class SubscriptionProcessor {
 																]
 															}`
 														);
-														logger.warn(message);
+														logger.warn('subscriptionError', message);
 														return;
 													} else {
 														logger.debug(
