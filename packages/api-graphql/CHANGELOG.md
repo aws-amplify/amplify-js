@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@1.2.30...@aws-amplify/api-graphql@1.3.0) (2021-05-06)
+
+
+### Features
+
+* **@aws-amplify/datastore:** DataStore - Multi-Auth ([#8008](https://github.com/aws-amplify/amplify-js/issues/8008)) ([dedd564](https://github.com/aws-amplify/amplify-js/commit/dedd5641dfcfce209433088fe9570874cd810997))
+
+
+
+
+
 ## [1.2.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@1.2.29...@aws-amplify/api-graphql@1.2.30) (2021-04-15)
 
 
