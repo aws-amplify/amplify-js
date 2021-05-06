@@ -657,6 +657,22 @@ jobs:
           category: storage
           sample_name: storageComp
           spec: storage-comp
+  integ_react_amazon_cognito_identity_js_cookie_storage:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/amazon-cognito-identity-js-cookie-storage
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'amazon-cognito-identity-js-cookie-storage'
+          framework: react
+          category: auth
+          sample_name: amazon-cognito-identity-js-cookie-storage
+          spec: amazon-cognito-identity-js-cookie-storage
+          browser: << parameters.browser >>
   integ_react_amazon_cognito_identity_js:
     parameters:
       browser:
@@ -680,7 +696,7 @@ jobs:
     steps:
       - prepare_test_env
       - integ_test_node_js:
-          test_name: 'amazon-cognito-identity-js'
+          test_name: 'amazon-cognito-identity-js-cookie-storage'
           category: auth
           sample_name: amazon-cognito-identity-js
   integ_rn_ios_storage:
@@ -951,15 +967,15 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_storage_ui:
+      - integ_react_amazon_cognito_identity_js_cookie_storage:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_amazon_cognito_identity_js:
           requires:
             - integ_setup
@@ -1039,6 +1055,7 @@ workflows:
             - integ_react_interactions
             - integ_angular_interactions
             - integ_vue_interactions
+            - integ_react_amazon_cognito_identity_js_cookie_storage
             - integ_react_amazon_cognito_identity_js
             - integ_node_amazon_cognito_identity_js
             - integ_react_auth
