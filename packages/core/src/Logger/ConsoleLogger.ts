@@ -21,6 +21,14 @@ const LOG_LEVELS = {
 	ERROR: 5,
 };
 
+export enum LOG_TYPE {
+	DEBUG = 'DEBUG',
+	ERROR = 'ERROR',
+	INFO = 'INFO',
+	WARN = 'WARN',
+	VERBOSE = 'VERBOSE',
+}
+
 /**
  * Write logs
  * @class Logger
@@ -59,10 +67,10 @@ export class ConsoleLogger implements Logger {
 	 * Write log
 	 * @method
 	 * @memeberof Logger
-	 * @param {string} type - log type, default INFO
+	 * @param {LOG_TYPE|string} type - log type, default INFO
 	 * @param {string|object} msg - Logging message or object
 	 */
-	_log(type: string, ...msg) {
+	_log(type: LOG_TYPE | string, ...msg) {
 		let logger_level_name = this.level;
 		if (ConsoleLogger.LOG_LEVEL) {
 			logger_level_name = ConsoleLogger.LOG_LEVEL;
@@ -78,10 +86,10 @@ export class ConsoleLogger implements Logger {
 		}
 
 		let log = console.log.bind(console);
-		if (type === 'ERROR' && console.error) {
+		if (type === LOG_TYPE.ERROR && console.error) {
 			log = console.error.bind(console);
 		}
-		if (type === 'WARN' && console.warn) {
+		if (type === LOG_TYPE.WARN && console.warn) {
 			log = console.warn.bind(console);
 		}
 
@@ -109,7 +117,7 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	log(...msg) {
-		this._log('INFO', ...msg);
+		this._log(LOG_TYPE.INFO, ...msg);
 	}
 
 	/**
@@ -119,7 +127,7 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	info(...msg) {
-		this._log('INFO', ...msg);
+		this._log(LOG_TYPE.INFO, ...msg);
 	}
 
 	/**
@@ -129,7 +137,7 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	warn(...msg) {
-		this._log('WARN', ...msg);
+		this._log(LOG_TYPE.WARN, ...msg);
 	}
 
 	/**
@@ -139,7 +147,7 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	error(...msg) {
-		this._log('ERROR', ...msg);
+		this._log(LOG_TYPE.ERROR, ...msg);
 	}
 
 	/**
@@ -149,7 +157,7 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	debug(...msg) {
-		this._log('DEBUG', ...msg);
+		this._log(LOG_TYPE.DEBUG, ...msg);
 	}
 
 	/**
@@ -159,6 +167,6 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	verbose(...msg) {
-		this._log('VERBOSE', ...msg);
+		this._log(LOG_TYPE.VERBOSE, ...msg);
 	}
 }

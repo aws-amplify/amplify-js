@@ -12,6 +12,7 @@
  */
 
 import { AWSCloudWatchProvider } from '../Providers';
+import { ConsoleLogger, LOG_TYPE } from './ConsoleLogger';
 
 export interface CloudWatchLoggerParams {
 	name: string;
@@ -24,7 +25,7 @@ export interface CloudWatchLoggerParams {
  * Write logs to CloudWatch
  * @class CloudWatchLogger
  */
-export class CloudWatchLogger {
+export class CloudWatchLogger extends ConsoleLogger {
 	name: string;
 	region: string;
 	logGroupName: string;
@@ -42,12 +43,13 @@ export class CloudWatchLogger {
 	 */
 	constructor(params: CloudWatchLoggerParams) {
 		const { name, region, logGroupName, logStreamName } = params;
+		super(name);
 
 		this.name = name;
 		this.region = region;
 		this.logGroupName = logGroupName;
 		this.logStreamName = logStreamName;
-		this.cloudWatch = new AWSCloudWatchProvider({ region });
+		this.cloudWatch = new AWSCloudWatchProvider();
 	}
 
 	/**
@@ -57,11 +59,38 @@ export class CloudWatchLogger {
 	 * exist already, then publish the messages into the stream.
 	 *
 	 */
-	public async sendToCloudWatch(...msg) {
-		await this.cloudWatch.pushLogs({
-			logEvents: [{ message: JSON.stringify(msg), timestamp: Date.now() }],
-			logGroupName: this.logGroupName,
-			logStreamName: this.logStreamName,
-		});
+	private async _sendToCloudWatch(...msg) {
+		await this.cloudWatch.pushLogs([
+			{ message: JSON.stringify(msg), timestamp: Date.now() },
+		]);
+	}
+
+	private _handleLog(type: LOG_TYPE | string, ...msg) {
+		this._log(type, ...msg);
+		this._sendToCloudWatch(...msg);
+	}
+
+	public async log(...msg) {
+		this._handleLog(LOG_TYPE.INFO, ...msg);
+	}
+
+	public async info(...msg) {
+		this._handleLog(LOG_TYPE.INFO, ...msg);
+	}
+
+	public async error(...msg) {
+		this._handleLog(LOG_TYPE.ERROR, ...msg);
+	}
+
+	public async debug(...msg) {
+		this._handleLog(LOG_TYPE.DEBUG, ...msg);
+	}
+
+	public async warn(...msg) {
+		this._handleLog(LOG_TYPE.WARN, ...msg);
+	}
+
+	public async verbose(...msg) {
+		this._handleLog(LOG_TYPE.VERBOSE, ...msg);
 	}
 }

@@ -27,6 +27,7 @@ import {
 	GetLogEventsCommand,
 	GetLogEventsCommandInput,
 	GetLogEventsCommandOutput,
+	InputLogEvent,
 	PutLogEventsCommand,
 	PutLogEventsCommandInput,
 	PutLogEventsCommandOutput,
@@ -43,9 +44,15 @@ export class AWSCloudWatchProvider implements LoggingProvider {
 	static PROVIDER_NAME = 'CloudWatch';
 
 	protected _config;
+	private logGroupName: string;
+	private logStreamName: string;
 
 	constructor(config?) {
+		console.log('config!!!');
+		console.log(config);
 		this._config = config || {};
+		this.logGroupName = this._config.logGroupName;
+		this.logStreamName = this._config.logStreamName;
 	}
 
 	public getCategory(): string {
@@ -161,39 +168,43 @@ export class AWSCloudWatchProvider implements LoggingProvider {
 	}
 
 	public async pushLogs(
-		params: PutLogEventsCommandInput
+		msgs: InputLogEvent[]
 	): Promise<PutLogEventsCommandOutput> {
+		const req: PutLogEventsCommandInput = {
+			logEvents: msgs,
+			logGroupName: this.logGroupName,
+			logStreamName: this.logStreamName,
+		};
+
 		logger.debug(
-			`checking if specified log stream ${params.logStreamName} exists...`
+			`checking if specified log stream ${this.logStreamName} exists...`
 		);
 
 		// Check if log group exists and create if it doesn't
-		const existingGroup = await this._validateLogGroupExists(
-			params.logGroupName
-		);
+		const existingGroup = await this._validateLogGroupExists(this.logGroupName);
 		if (!existingGroup) {
-			await this.createLogGroup({ logGroupName: params.logGroupName });
+			await this.createLogGroup({ logGroupName: this.logGroupName });
 		}
 
 		// Check if log stream exists and create if it doesn't
 		const existingStream = await this._validateLogStreamExists(
-			params.logGroupName,
-			params.logStreamName
+			this.logGroupName,
+			this.logStreamName
 		);
 
 		// If a stream already exists, we need to grab the next sequence token
 		if (existingStream) {
-			params.sequenceToken = existingStream.uploadSequenceToken;
+			req.sequenceToken = existingStream.uploadSequenceToken;
 		} else {
 			await this.createLogStream({
-				logGroupName: params.logGroupName,
-				logStreamName: params.logStreamName,
+				logGroupName: this.logGroupName,
+				logStreamName: this.logStreamName,
 			});
-			logger.debug(`created log stream ${params.logStreamName}`);
+			logger.debug(`created log stream ${this.logStreamName}`);
 		}
 
 		logger.debug('sending log events now');
-		const output = await this._sendLogEvents(params);
+		const output = await this._sendLogEvents(req);
 		return output;
 	}
 
@@ -218,7 +229,10 @@ export class AWSCloudWatchProvider implements LoggingProvider {
 		logGroupName: string,
 		logStreamName: string
 	) {
-		const currStreams = await this.getLogStreams({ logGroupName });
+		const currStreams = await this.getLogStreams({
+			logGroupName,
+			logStreamNamePrefix: logStreamName,
+		});
 
 		if (currStreams.logStreams) {
 			const foundStreams = currStreams.logStreams.filter(
