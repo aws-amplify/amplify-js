@@ -696,7 +696,7 @@ jobs:
     steps:
       - prepare_test_env
       - integ_test_node_js:
-          test_name: 'amazon-cognito-identity-js-cookie-storage'
+          test_name: 'amazon-cognito-identity'
           category: auth
           sample_name: amazon-cognito-identity-js
   integ_rn_ios_storage:
