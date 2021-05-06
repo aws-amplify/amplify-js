@@ -42,14 +42,14 @@ export class AWSS3ProviderMultipartCopier {
 	static minPartSize = 5 * 1024 * 1024; // 5MB, minimum requirement for a multipart copy
 	static partSize = 10 * 1024 * 1024;
 	private queueSize: number;
-	private params: CopyObjectCommandInput | null = null;
+	private params: CopyObjectCommandInput;
 	private completedParts: CompletedPart[] = [];
 
 	private bytesCopied = 0;
 	private totalBytesToCopy = 0;
 	private totalParts = 0;
 	private emitter: events.EventEmitter;
-	private s3client: S3Client = null;
+	private s3client: S3Client;
 	private destBucket: string;
 	private destKey: string;
 	private srcBucket: string;
