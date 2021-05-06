@@ -9,6 +9,7 @@ import {
 	CreateMultipartUploadCommand,
 	ListPartsCommand,
 	AbortMultipartUploadCommand,
+	ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
 import { AWSS3ProviderMultipartCopier } from '../../src/providers/AWSS3ProviderMultipartCopy';
 import * as events from 'events';
@@ -42,9 +43,13 @@ describe('basic copy test', () => {
 			.mockImplementation(command => {
 				if (command instanceof CopyObjectCommand) {
 					return Promise.resolve(command.input.Key);
-				} else if (command instanceof HeadObjectCommand) {
+				} else if (command instanceof ListObjectsV2Command) {
 					return {
-						ContentLength: 100,
+						Contents: [
+							{
+								Size: 100,
+							},
+						],
 					};
 				}
 			});
@@ -58,15 +63,15 @@ describe('basic copy test', () => {
 		expect(spyon).toBeCalledTimes(2);
 	});
 
-	test('happy case - undefined content length', async () => {
+	test('no content found', async () => {
 		const spyon = jest
 			.spyOn(S3Client.prototype, 'send')
 			.mockImplementation(async command => {
 				if (command instanceof CopyObjectCommand) {
 					return command.input.Key;
-				} else if (command instanceof HeadObjectCommand) {
+				} else if (command instanceof ListObjectsV2Command) {
 					return {
-						ContentLength: undefined,
+						Contents: [],
 					};
 				}
 			});
@@ -75,9 +80,9 @@ describe('basic copy test', () => {
 			emitter: new events.EventEmitter(),
 			s3client: new S3Client(testS3ClientConfig),
 		});
-		const result = await copier.copy();
-		expect(result).toEqual('destKey');
-		expect(spyon).toBeCalledTimes(2);
+		await expect(copier.copy()).rejects.toThrow(
+			'Object does not exist, key: srcKey'
+		);
 	});
 });
 
@@ -87,7 +92,15 @@ describe('multipart copy tests', () => {
 		const spyon = jest
 			.spyOn(S3Client.prototype, 'send')
 			.mockImplementation(async command => {
-				if (command instanceof HeadObjectCommand) {
+				if (command instanceof ListObjectsV2Command) {
+					return {
+						Contents: [
+							{
+								Size: testContentLength,
+							},
+						],
+					};
+				} else if (command instanceof HeadObjectCommand) {
 					return {
 						ContentLength: testContentLength,
 					};
@@ -115,10 +128,11 @@ describe('multipart copy tests', () => {
 		});
 		const result = await copier.copy();
 		expect(spyon).toBeCalledTimes(6);
-		// Head object call to check file size
+		// list object call to check file size
 		expect(spyon.mock.calls[0][0].input).toStrictEqual({
 			Bucket: 'srcBucket',
-			Key: 'srcKey',
+			Prefix: 'srcKey',
+			MaxKeys: 1,
 		});
 		// Initialize a multipartUpload
 		expect(spyon.mock.calls[1][0].input).toStrictEqual({
@@ -141,9 +155,9 @@ describe('multipart copy tests', () => {
 			Key: 'destKey',
 			PartNumber: 2,
 			UploadId: '123',
-			CopySourceRange: `bytes=${AWSS3ProviderMultipartCopier.partSize}-${
-				AWSS3ProviderMultipartCopier.partSize * 2 - 1
-			}`,
+			CopySourceRange: `bytes=${
+				AWSS3ProviderMultipartCopier.partSize
+			}-${AWSS3ProviderMultipartCopier.partSize * 2 - 1}`,
 		});
 		// Third UploadPartCopy call
 		expect(spyon.mock.calls[4][0].input).toStrictEqual({
@@ -152,9 +166,8 @@ describe('multipart copy tests', () => {
 			Key: 'destKey',
 			PartNumber: 3,
 			UploadId: '123',
-			CopySourceRange: `bytes=${AWSS3ProviderMultipartCopier.partSize * 2}-${
-				AWSS3ProviderMultipartCopier.partSize * 3 - 1
-			}`,
+			CopySourceRange: `bytes=${AWSS3ProviderMultipartCopier.partSize *
+				2}-${AWSS3ProviderMultipartCopier.partSize * 3 - 1}`,
 		});
 		// Finally, CompleteMultipartUpload call
 		expect(spyon.mock.calls[5][0].input).toStrictEqual({
@@ -185,7 +198,15 @@ describe('multipart copy tests', () => {
 		const spyon = jest
 			.spyOn(S3Client.prototype, 'send')
 			.mockImplementation(async command => {
-				if (command instanceof HeadObjectCommand) {
+				if (command instanceof ListObjectsV2Command) {
+					return {
+						Contents: [
+							{
+								Size: testContentLength,
+							},
+						],
+					};
+				} else if (command instanceof HeadObjectCommand) {
 					return {
 						ContentLength: testContentLength,
 					};
@@ -224,7 +245,15 @@ describe('multipart copy tests', () => {
 
 	test('Cleanup failed', async () => {
 		S3Client.prototype.send = jest.fn(async command => {
-			if (command instanceof HeadObjectCommand) {
+			if (command instanceof ListObjectsV2Command) {
+				return {
+					Contents: [
+						{
+							Size: testContentLength,
+						},
+					],
+				};
+			} else if (command instanceof HeadObjectCommand) {
 				return {
 					ContentLength: testContentLength,
 				};
@@ -263,7 +292,15 @@ describe('multipart copy tests', () => {
 		const spyon = jest
 			.spyOn(S3Client.prototype, 'send')
 			.mockImplementation(async command => {
-				if (command instanceof HeadObjectCommand) {
+				if (command instanceof ListObjectsV2Command) {
+					return {
+						Contents: [
+							{
+								Size: testContentLength,
+							},
+						],
+					};
+				} else if (command instanceof HeadObjectCommand) {
 					return {
 						ContentLength: testContentLength,
 					};

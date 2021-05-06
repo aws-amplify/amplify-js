@@ -938,7 +938,7 @@ describe('StorageProvider test', () => {
 				level: 'protected',
 			});
 
-			expect(AWSS3ProviderMultipartCopier.mock.calls[0][0]).toStrictEqual({
+			expect(AWSS3ProviderMultipartCopier.mock.calls[0][0].params).toStrictEqual({
 				ACL: 'private',
 				Bucket: 'bucket',
 				CopySource: 'bucket/protected/identityId/src',

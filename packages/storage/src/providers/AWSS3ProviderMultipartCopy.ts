@@ -13,6 +13,7 @@ import {
 	AbortMultipartUploadCommand,
 	ListPartsCommand,
 	UploadPartCopyCommand,
+	ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
 import * as events from 'events';
 import { CopyObjectConfig } from '../types';
@@ -20,7 +21,8 @@ import { CopyObjectConfig } from '../types';
 const logger = new Logger('AWSS3ProviderMultipartCopy');
 
 enum AWSS3ProviderMultipartCopierErrors {
-	CLEANUP_FAILED = 'Multipart copy clean up failed'
+	CLEANUP_FAILED = 'Multipart copy clean up failed',
+	NO_OBJECT = 'Object does not exist',
 }
 
 export interface CopyPart {
@@ -33,7 +35,6 @@ export const COPY_PROGRESS = 'copyProgress';
 
 export interface AWSS3ProviderMultipartCopierParams {
 	params: CopyObjectCommandInput;
-	config: CopyObjectConfig;
 	emitter: events.EventEmitter;
 	s3client: S3Client;
 	queueSize?: number;
@@ -76,13 +77,11 @@ export class AWSS3ProviderMultipartCopier {
 	public async copy() {
 		let uploadId: string = undefined;
 		try {
-			this.totalBytesToCopy = await this._getObjectSize();
+			// this.totalBytesToCopy = await this._getObjectSize();
+			this.totalBytesToCopy = await this._getOneStuff();
 			// ContentLength could be undefined if user doesn't expose the ContentLength header in CORS setting
 			// Fallback to basic CopyObject if it's the case, or if the file is smaller than 5MB.
-			if (
-				this.totalBytesToCopy === undefined ||
-				this.totalBytesToCopy <= AWSS3ProviderMultipartCopier.minPartSize
-			) {
+			if (this.totalBytesToCopy <= AWSS3ProviderMultipartCopier.minPartSize) {
 				const copyObjectCommand = new CopyObjectCommand(this.params);
 				return this.s3client.send(copyObjectCommand);
 			} else {
@@ -217,6 +216,21 @@ export class AWSS3ProviderMultipartCopier {
 			`Created multipart upload request with id ${response.UploadId}`
 		);
 		return response.UploadId;
+	}
+
+	private async _getOneStuff(): Promise<number> {
+		const listObjectCommand = new ListObjectsV2Command({
+			Bucket: this.srcBucket,
+			MaxKeys: 1,
+			Prefix: this.srcKey,
+		});
+		const { Contents } = await this.s3client.send(listObjectCommand);
+		if (Contents.length === 0) {
+			throw new Error(
+				`${AWSS3ProviderMultipartCopierErrors.NO_OBJECT}, key: ${this.srcKey}`
+			);
+		}
+		return Contents[0].Size;
 	}
 
 	/**
