@@ -3089,7 +3089,7 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
-		test('happy case with unverified', async () => {
+		test('happy case with verified', async () => {
 			const spyon = jest
 				.spyOn(Auth.prototype, 'userAttributes')
 				.mockImplementationOnce(() => {
@@ -3110,6 +3110,46 @@ describe('auth unit test', () => {
 							{
 								Name: 'phone_number_verified',
 								Value: true,
+							},
+						]);
+					});
+				});
+
+			const auth = new Auth(authOptions);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			expect(await auth.verifiedContact(user)).toEqual({
+				unverified: {},
+				verified: { email: 'email@amazon.com', phone_number: '+12345678901' },
+			});
+
+			spyon.mockClear();
+		});
+
+		test('happy case with verified as strings', async () => {
+			const spyon = jest
+				.spyOn(Auth.prototype, 'userAttributes')
+				.mockImplementationOnce(() => {
+					return new Promise((res: any, rej) => {
+						res([
+							{
+								Name: 'email',
+								Value: 'email@amazon.com',
+							},
+							{
+								Name: 'phone_number',
+								Value: '+12345678901',
+							},
+							{
+								Name: 'email_verified',
+								Value: 'true',
+							},
+							{
+								Name: 'phone_number_verified',
+								Value: 'True',
 							},
 						]);
 					});
