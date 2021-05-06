@@ -2,7 +2,6 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import {
 	S3Client,
 	CopyObjectCommandInput,
-	HeadObjectCommand,
 	CopyObjectCommand,
 	CreateMultipartUploadCommand,
 	UploadPartCopyCommandOutput,
@@ -16,7 +15,6 @@ import {
 	ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
 import * as events from 'events';
-import { CopyObjectConfig } from '../types';
 
 const logger = new Logger('AWSS3ProviderMultipartCopy');
 
@@ -77,10 +75,8 @@ export class AWSS3ProviderMultipartCopier {
 	public async copy() {
 		let uploadId: string = undefined;
 		try {
-			// this.totalBytesToCopy = await this._getObjectSize();
 			this.totalBytesToCopy = await this._getObjectSize();
-			// ContentLength could be undefined if user doesn't expose the ContentLength header in CORS setting
-			// Fallback to basic CopyObject if it's the case, or if the file is smaller than 5MB.
+			// Fallback to basic CopyObject if the file is smaller than 5MB.
 			if (this.totalBytesToCopy <= AWSS3ProviderMultipartCopier.minPartSize) {
 				const copyObjectCommand = new CopyObjectCommand(this.params);
 				return this.s3client.send(copyObjectCommand);
