@@ -13,15 +13,18 @@ import {
 	ListPartsCommand,
 	UploadPartCopyCommand,
 	ListObjectsV2Command,
+	CopyObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import * as events from 'events';
 
-const logger = new Logger('AWSS3ProviderMultipartCopy');
+const logger = new Logger('AWSS3ProviderMultipartCopier');
 const DEFAULT_QUEUE_SIZE = 20;
 
 enum AWSS3ProviderMultipartCopierErrors {
 	CLEANUP_FAILED = 'Multipart copy clean up failed',
-	NO_OBJECT = 'Object does not exist',
+	NO_OBJECT_FOUND = 'Object does not exist',
+	TOO_MANY_MATCH = 'More than one object matches with this prefix',
+	OBJECT_KEY_MISMATCH = 'The specified source key and object key in S3 does not match',
 }
 
 export interface CopyPart {
@@ -81,7 +84,7 @@ export class AWSS3ProviderMultipartCopier {
 	 * @throws Will throw an error if any of the requests fails, or if it's cancelled.
 	 * @return {Promise<string | CopyObjectCommandOutput>} Key of the copied object.
 	 */
-	public async copy() {
+	public async copy(): Promise<string | CopyObjectCommandOutput> {
 		let uploadId: string = undefined;
 		try {
 			this.totalBytesToCopy = await this._getObjectSize();
@@ -229,12 +232,24 @@ export class AWSS3ProviderMultipartCopier {
 			MaxKeys: 1,
 			Prefix: this.srcKey,
 		});
-		const { Contents } = await this.s3client.send(listObjectCommand);
+		const { Contents, IsTruncated } = await this.s3client.send(
+			listObjectCommand
+		);
 		if (Contents.length === 0) {
 			throw new Error(
-				`${AWSS3ProviderMultipartCopierErrors.NO_OBJECT}, key: ${this.srcKey}`
+				`${AWSS3ProviderMultipartCopierErrors.NO_OBJECT_FOUND}, key: ${this.srcKey}`
+			);
+		} else if (IsTruncated) {
+			throw new Error(
+				`${AWSS3ProviderMultipartCopierErrors.TOO_MANY_MATCH}, prefix: ${this.srcKey}`
 			);
 		}
-		return Contents[0].Size;
+		const sourceObject = Contents[0];
+		if (sourceObject.Key !== this.srcKey) {
+			throw new Error(
+				`${AWSS3ProviderMultipartCopierErrors.OBJECT_KEY_MISMATCH}, provided: ${this.srcKey}, from s3: ${sourceObject.Key}`
+			);
+		}
+		return sourceObject.Size;
 	}
 }
