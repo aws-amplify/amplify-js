@@ -202,7 +202,7 @@ export class AWSS3Provider implements StorageProvider {
 		const copier = new AWSS3ProviderMultipartCopier({
 			params,
 			emitter,
-			s3client: s3
+			s3client: s3,
 		});
 		emitter.on(COPY_PROGRESS, progress => {
 			if (progressCallback) {
