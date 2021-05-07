@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.2.0...@aws-amplify/ui-components@1.3.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** Add empty function as the default input handler for sigin form ([#8192](https://github.com/aws-amplify/amplify-js/issues/8192)) ([0d94c97](https://github.com/aws-amplify/amplify-js/commit/0d94c972a1b3d63dd224adffe2f4c7f5ffa73d1a))
+* **@aws-amplify/ui-components:** Get autofill data on `componentDidLoad` ([#8194](https://github.com/aws-amplify/amplify-js/issues/8194)) ([14db4a0](https://github.com/aws-amplify/amplify-js/commit/14db4a0dd99694823b4fe8c94c4df92a4329178c))
+* **@aws-amplify/ui-components:** use correct unmount lifecycle for authenticator ([#8227](https://github.com/aws-amplify/amplify-js/issues/8227)) ([9314112](https://github.com/aws-amplify/amplify-js/commit/9314112a4522b31cb24e523cfa5d3de4b06c8c8b))
+
+
+### Features
+
+* **@aws-amplify/ui-components:** partial shadow DOM removal + pw manager workaround ([#8181](https://github.com/aws-amplify/amplify-js/issues/8181)) ([721596f](https://github.com/aws-amplify/amplify-js/commit/721596fc7e22fa86512ba9fa7ea5d83652ada4eb))
+
+
+
+
+
 # [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.1.1...@aws-amplify/ui-components@1.2.0) (2021-04-15)
 
 

@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.10.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.16...@aws-amplify/datastore@2.10.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** correctly processing Delta Sync query response in RN ([#8196](https://github.com/aws-amplify/amplify-js/issues/8196)) ([9883974](https://github.com/aws-amplify/amplify-js/commit/98839741055ef9934565d49599e74c78e3812bba))
+* **@aws-amplify/datastore:** fix hasOne delete ([#8191](https://github.com/aws-amplify/amplify-js/issues/8191)) ([d16a8fb](https://github.com/aws-amplify/amplify-js/commit/d16a8fbc5862281121812b1f8fc7af8bb001190d))
+* **@aws-amplify/datastore:** log subscription error instead of throwing ([#8229](https://github.com/aws-amplify/amplify-js/issues/8229)) ([403de44](https://github.com/aws-amplify/amplify-js/commit/403de44496d17614a542fbcb98bab8b99898bab6))
+* **@aws-amplify/datastore:** Update CCI config & logger warning format ([#8231](https://github.com/aws-amplify/amplify-js/issues/8231)) ([d3462aa](https://github.com/aws-amplify/amplify-js/commit/d3462aab1dd4916dd757bc1c80f9a944e0bb82dd))
+
+
+### Features
+
+* **@aws-amplify/datastore:** DataStore - Multi-Auth ([#8008](https://github.com/aws-amplify/amplify-js/issues/8008)) ([dedd564](https://github.com/aws-amplify/amplify-js/commit/dedd5641dfcfce209433088fe9570874cd810997))
+
+
+
+
+
 ## [2.9.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.15...@aws-amplify/datastore@2.9.16) (2021-04-15)
 
 

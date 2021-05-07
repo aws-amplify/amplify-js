@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.30...@aws-amplify/auth@3.4.31) (2021-05-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Handle URIs with no path part ([#8198](https://github.com/aws-amplify/amplify-js/issues/8198)) ([028e4ee](https://github.com/aws-amplify/amplify-js/commit/028e4ee1f7a660ae811b0e1ee846c978958719ae)), closes [#7468](https://github.com/aws-amplify/amplify-js/issues/7468)
+* **@aws-amplify/auth:** Ignores case when converting strings to booleans for user attributes ([#8206](https://github.com/aws-amplify/amplify-js/issues/8206)) ([89a2250](https://github.com/aws-amplify/amplify-js/commit/89a225059f6c0232aca3e1f3659348a984a5f277))
+
+
+
+
+
 ## [3.4.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.29...@aws-amplify/auth@3.4.30) (2021-04-15)
 
 
