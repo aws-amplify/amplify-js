@@ -40,6 +40,7 @@ describe('basic copy test', () => {
 						Contents: [
 							{
 								Size: 100,
+								Key: 'srcKey'
 							},
 						],
 					};
@@ -77,6 +78,61 @@ describe('basic copy test', () => {
 		);
 		expect(spyon).toBeCalledTimes(1);
 	});
+
+	test('matches too many objects', async () => {
+		const spyon = jest
+		.spyOn(S3Client.prototype, 'send')
+		.mockImplementation(async command => {
+			if (command instanceof CopyObjectCommand) {
+				return command.input.Key;
+			} else if (command instanceof ListObjectsV2Command) {
+				return {
+					Contents: [
+						{
+							Size: 100,
+							Key: 'srcKey'
+						}
+					],
+					IsTruncated: true,
+				}
+			}
+		})
+		const copier = new AWSS3ProviderMultipartCopier({
+			params: testInput,
+			emitter: new events.EventEmitter(),
+			s3client: new S3Client(testS3ClientConfig),
+		});
+		await expect(copier.copy()).rejects.toThrow(
+			'More than one object matches with this prefix, prefix: srcKey'
+		)
+	})
+
+	test('list object return key does not match provided key', async () => {
+		const spyon = jest
+		.spyOn(S3Client.prototype, 'send')
+		.mockImplementation(async command => {
+			if (command instanceof CopyObjectCommand) {
+				return command.input.Key;
+			} else if (command instanceof ListObjectsV2Command) {
+				return {
+					Contents: [
+						{
+							Size: 100,
+							Key: 'srcKeyHello'
+						}
+					],
+				}
+			}
+		})
+		const copier = new AWSS3ProviderMultipartCopier({
+			params: testInput,
+			emitter: new events.EventEmitter(),
+			s3client: new S3Client(testS3ClientConfig),
+		});
+		await expect(copier.copy()).rejects.toThrow(
+			'The specified source key and object key in S3 does not match, provided: srcKey, from s3: srcKeyHello'
+		)
+	})
 });
 
 describe('multipart copy tests', () => {
@@ -90,6 +146,7 @@ describe('multipart copy tests', () => {
 						Contents: [
 							{
 								Size: testContentLength,
+								Key: 'srcKey'
 							},
 						],
 					};
@@ -192,6 +249,7 @@ describe('multipart copy tests', () => {
 						Contents: [
 							{
 								Size: testContentLength,
+								Key: 'srcKey'
 							},
 						],
 					};
@@ -235,6 +293,7 @@ describe('multipart copy tests', () => {
 					Contents: [
 						{
 							Size: testContentLength,
+							Key: 'srcKey'
 						},
 					],
 				};
@@ -278,6 +337,7 @@ describe('multipart copy tests', () => {
 						Contents: [
 							{
 								Size: testContentLength,
+								Key: 'srcKey'
 							},
 						],
 					};
