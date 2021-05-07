@@ -28,6 +28,7 @@ export type Progress = {
 };
 
 export interface CopyObjectConfig {
+	bucket: string;
 	level?: StorageLevel;
 	acl?: string;
 	cacheControl?: string;
@@ -43,7 +44,6 @@ export interface CopyObjectConfig {
 	SSECustomerKey?: string;
 	SSECustomerKeyMD5?: string;
 	SSEKMSKeyId?: string;
-	[key: string]: any;
 }
 
 export type CopyResult = {

@@ -205,7 +205,7 @@ export class AWSS3Provider implements StorageProvider {
 			s3client: s3,
 		});
 		emitter.on(COPY_PROGRESS, progress => {
-			if (progressCallback) {
+			if (progressCallback && typeof progressCallback === 'function') {
 				progressCallback(progress);
 			} else {
 				logger.warn(
