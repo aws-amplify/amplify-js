@@ -16,6 +16,7 @@ export interface StorageProvider {
 	// cancel an in-flight request
 	cancel?(request: Promise<any>): void;
 
+	// copy object from src to dest
 	copy(src: string, dest: string, options?): Promise<any>;
 
 	// configure your provider
