@@ -2,7 +2,6 @@ import {
 	S3Client,
 	CopyObjectCommand,
 	CopyObjectRequest,
-	HeadObjectCommand,
 	S3ClientConfig,
 	CompleteMultipartUploadCommand,
 	UploadPartCopyCommand,
@@ -100,10 +99,6 @@ describe('multipart copy tests', () => {
 								Size: testContentLength,
 							},
 						],
-					};
-				} else if (command instanceof HeadObjectCommand) {
-					return {
-						ContentLength: testContentLength,
 					};
 				} else if (command instanceof CreateMultipartUploadCommand) {
 					return {
@@ -207,10 +202,6 @@ describe('multipart copy tests', () => {
 							},
 						],
 					};
-				} else if (command instanceof HeadObjectCommand) {
-					return {
-						ContentLength: testContentLength,
-					};
 				} else if (command instanceof CreateMultipartUploadCommand) {
 					return {
 						UploadId: '123',
@@ -254,10 +245,6 @@ describe('multipart copy tests', () => {
 						},
 					],
 				};
-			} else if (command instanceof HeadObjectCommand) {
-				return {
-					ContentLength: testContentLength,
-				};
 			} else if (command instanceof CreateMultipartUploadCommand) {
 				return {
 					UploadId: '123',
@@ -300,10 +287,6 @@ describe('multipart copy tests', () => {
 								Size: testContentLength,
 							},
 						],
-					};
-				} else if (command instanceof HeadObjectCommand) {
-					return {
-						ContentLength: testContentLength,
 					};
 				} else if (command instanceof CreateMultipartUploadCommand) {
 					return {

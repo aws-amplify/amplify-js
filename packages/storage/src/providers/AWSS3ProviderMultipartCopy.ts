@@ -17,6 +17,7 @@ import {
 import * as events from 'events';
 
 const logger = new Logger('AWSS3ProviderMultipartCopy');
+const DEFAULT_QUEUE_SIZE = 20;
 
 enum AWSS3ProviderMultipartCopierErrors {
 	CLEANUP_FAILED = 'Multipart copy clean up failed',
@@ -39,12 +40,11 @@ export interface AWSS3ProviderMultipartCopierParams {
 }
 
 export class AWSS3ProviderMultipartCopier {
-	static minPartSize = 5 * 1024 * 1024; // 5MB, minimum requirement for a multipart copy
-	static partSize = 10 * 1024 * 1024;
+	static readonly minPartSize = 5 * 1024 * 1024; // 5MB, minimum requirement for a multipart copy
+	static readonly partSize = 10 * 1024 * 1024;
 	private queueSize: number;
 	private params: CopyObjectCommandInput;
 	private completedParts: CompletedPart[] = [];
-
 	private bytesCopied = 0;
 	private totalBytesToCopy = 0;
 	private totalParts = 0;
@@ -59,7 +59,7 @@ export class AWSS3ProviderMultipartCopier {
 		params,
 		emitter,
 		s3client,
-		queueSize = 10,
+		queueSize = DEFAULT_QUEUE_SIZE,
 	}: AWSS3ProviderMultipartCopierParams) {
 		this.params = params;
 		this.emitter = emitter;
