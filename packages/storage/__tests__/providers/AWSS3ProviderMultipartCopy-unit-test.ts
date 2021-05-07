@@ -12,18 +12,11 @@ import {
 } from '@aws-sdk/client-s3';
 import { AWSS3ProviderMultipartCopier } from '../../src/providers/AWSS3ProviderMultipartCopy';
 import * as events from 'events';
-import { CopyObjectConfig } from '../../src/types';
 
 const testInput: CopyObjectRequest = {
 	Bucket: 'testBucket',
 	CopySource: 'srcBucket/srcKey',
 	Key: 'destKey',
-};
-
-const testConfig: CopyObjectConfig = {
-	bucket: 'testBucket',
-	region: 'testRegion',
-	level: 'protected',
 };
 
 const testS3ClientConfig: S3ClientConfig = {
