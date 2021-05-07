@@ -1,0 +1,32 @@
+/**
+ * @prop --container-color: Background color of the text container
+ * @prop --border-color: Border color of the text container
+ * @prop --text-color: Font color of the text
+ * @prop --font-size: Font size of the text
+ */
+:host {
+	--container-color: var(--amplify-smoke-white);
+	--border-color: var(--amplify-light-grey);
+	--font-size: var(--amplify-text-md);
+	--text-color: var(--amplify-secondary-color);
+}
+
+.text-container {
+	background-color: var(--container-color);
+	border: 1px solid var(--border-color);
+	border-radius: 5px;
+	margin-bottom: 10px;
+}
+
+pre {
+	display: block;
+	margin: 0.5rem 0;
+	padding: 0.5rem;
+	line-height: 1rem;
+	max-height: 50rem;
+	font-size: var(--font-size);
+	color: var(--text-color);
+	word-break: break-all;
+	overflow-y: scroll;
+	overflow-x: auto;
+}

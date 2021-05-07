@@ -1,25 +1,34 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "1.4.2",
+  "version": "3.4.31",
   "description": "Auth category of aws-amplify",
-  "main": "./index.js",
+  "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
-    "./index": "./lib-esm/index.js"
+    "./lib/index": "./lib-esm/index.js"
   },
+  "sideEffects": [
+    "./src/Auth.ts",
+    "./lib/Auth.js",
+    "./lib-esm/Auth.js",
+    "./dist/aws-amplify-auth.js",
+    "./dist/aws-amplify-auth.min.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+    "test": "yarn lint && jest -w 1 --coverage",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
+    "build:cjs:watch": "node ./build es5 --watch",
+    "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'"
+    "lint": "tslint '{__tests__,src}/**/*.ts'"
   },
   "repository": {
     "type": "git",
@@ -32,15 +41,18 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/cache": "^1.1.2",
-    "@aws-amplify/core": "^1.2.2",
-    "amazon-cognito-identity-js": "^3.1.2",
-    "crypto-js": "^3.1.9-1"
+    "@aws-amplify/cache": "3.1.56",
+    "@aws-amplify/core": "3.8.23",
+    "amazon-cognito-identity-js": "4.6.1",
+    "crypto-js": "^3.3.0"
+  },
+  "devDependencies": {
+    "@jest/test-sequencer": "^24.9.0"
   },
   "jest": {
     "globals": {
       "ts-jest": {
-        "diagnostics": false,
+        "diagnostics": true,
         "tsConfig": {
           "lib": [
             "es5",
@@ -76,7 +88,11 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
-    ]
+      "/node_modules/",
+      "dist",
+      "lib",
+      "lib-esm"
+    ],
+    "testSequencer": "./testSequencer.js"
   }
 }

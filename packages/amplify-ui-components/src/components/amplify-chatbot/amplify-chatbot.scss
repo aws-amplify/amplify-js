@@ -1,0 +1,100 @@
+/**
+ * @prop --width: Width of the container
+ * @prop --height: Height of the container
+ * @prop --header-color: Text color within the header
+ * @prop --header-size: Text size within the header
+ * @prop --bot-background-color: Background color of bot messages
+ * @prop --bot-text-color: Text color of bot messages
+ * @prop --bot-dot-color: Base color of bot loading message animation
+ * @prop --user-background-color: Background color of user messages
+ * @prop --user-text-color: Text color of user messages
+ * @prop --user-dot-color: Base color of user loading message animation
+ */
+@import 'animation.scss';
+:host {
+	--width: 28.75rem;
+	--height: 37.5rem;
+	--header-color: var(--amplify-secondary-color);
+	--header-size: var(--amplify-text-lg);
+	--bot-background-color: rgb(230, 230, 230);
+	--bot-text-color: black;
+	--bot-dot-color: var(--bot-text-color);
+	--user-background-color: var(--amplify-blue);
+	--user-text-color: var(--amplify-white);
+	--user-dot-color: var(--user-text-color);
+}
+.amplify-chatbot {
+	display: inline-flex;
+	flex-direction: column;
+	background-color: var(--background-color);
+	border-radius: 0.375rem;
+	box-shadow: 0.0625rem 0rem 0.25rem 0 rgba(0, 0, 0, 0.15);
+	box-sizing: border-box;
+	font-family: var(--amplify-font-family);
+	margin-bottom: 1rem;
+	width: 100%;
+	height: var(--height);
+	@include md {
+		width: var(--width);
+	}
+	max-width: var(--width);
+}
+.header {
+	padding: 1.25rem 0.375rem 1.25rem 0.375rem;
+	color: var(--header-color);
+	font-size: var(--header-size);
+	font-weight: bold;
+	text-align: center;
+	word-wrap: break-word;
+}
+.body {
+	border-top: 0.0625rem solid rgba(0, 0, 0, 0.05);
+	padding: 1.5rem 1rem 0 1rem;
+	display: flex;
+	flex-grow: 1;
+	flex-direction: column;
+	overflow: auto;
+}
+.bubble {
+	max-width: 100%;
+	padding: 0.8em 1.4em;
+	text-align: left;
+	word-wrap: break-word;
+	margin-bottom: 0.625rem;
+}
+.bot {
+	margin-right: auto;
+	background-color: var(--bot-background-color);
+	color: var(--bot-text-color);
+	border-radius: 1.5rem 1.5rem 1.5rem 0;
+}
+.user {
+	margin-left: auto;
+	background-color: var(--user-background-color);
+	color: var(--user-text-color);
+	border-radius: 1.5rem 1.5rem 0 1.5rem;
+}
+.footer {
+	display: flex;
+	align-items: center;
+	border-top: 0.062rem solid rgba(0, 0, 0, 0.05);
+	padding-right: 0.625rem;
+	min-height: 3.125rem;
+	amplify-input {
+		--border: none;
+		--margin: 0;
+		flex-grow: 1;
+	}
+}
+canvas {
+	margin-left: 0.625rem;
+	margin-right: 0.625rem;
+	flex-grow: 1;
+	height: 3.125rem;
+}
+.icon-button {
+	--icon-height: 1.25rem;
+	--icon-fill: var(--amplify-primary-color);
+	--padding: 0.625rem;
+	--width: auto;
+}

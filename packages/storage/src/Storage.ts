@@ -12,8 +12,9 @@
  */
 
 import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
-import AWSS3Provider from './Providers/AWSS3Provider';
+import { AWSS3Provider } from './providers';
 import { StorageProvider } from './types';
+import axios, { CancelTokenSource } from 'axios';
 
 const logger = new Logger('StorageClass');
 
@@ -21,7 +22,7 @@ const DEFAULT_PROVIDER = 'AWSS3';
 /**
  * Provide storage methods to use AWS S3
  */
-export default class StorageClass {
+export class Storage {
 	/**
 	 * @private
 	 */
@@ -29,9 +30,17 @@ export default class StorageClass {
 	private _pluggables: StorageProvider[];
 
 	/**
+	 * Similar to the API module. This weak map allows users to cancel their in-flight request made using the Storage
+	 * module. For every get or put request, a unique cancel token will be generated and injected to it's underlying
+	 * AxiosHttpHandler. This map maintains a mapping of Request to CancelTokenSource. When .cancel is invoked, it will
+	 * attempt to retrieve it's corresponding cancelTokenSource and cancel the in-flight request.
+	 */
+	private _cancelTokenSourceMap: WeakMap<Promise<any>, CancelTokenSource>;
+
+	/**
 	 * @public
 	 */
-	public vault: StorageClass;
+	public vault: Storage;
 
 	/**
 	 * Initialize Storage
@@ -40,6 +49,7 @@ export default class StorageClass {
 	constructor() {
 		this._config = {};
 		this._pluggables = [];
+		this._cancelTokenSourceMap = new WeakMap<Promise<any>, CancelTokenSource>();
 		logger.debug('Storage Options', this._config);
 
 		this.get = this.get.bind(this);
@@ -159,48 +169,90 @@ export default class StorageClass {
 		return this._config;
 	}
 
+	private getCancellableTokenSource(): CancelTokenSource {
+		return axios.CancelToken.source();
+	}
+
+	private updateRequestToBeCancellable(
+		request: Promise<any>,
+		cancelTokenSource: CancelTokenSource
+	) {
+		this._cancelTokenSourceMap.set(request, cancelTokenSource);
+	}
+
+	/**
+	 * Cancels an inflight request
+	 *
+	 * @param {Promise<any>} request - The request to cancel
+	 * @param {string} [message] - A message to include in the cancelation exception
+	 */
+	public cancel(request: Promise<any>, message?: string) {
+		const cancelTokenSource = this._cancelTokenSourceMap.get(request);
+		if (cancelTokenSource) {
+			cancelTokenSource.cancel(message);
+		} else {
+			logger.debug('The request does not map to any cancel token');
+		}
+	}
+
 	/**
 	 * Get a presigned URL of the file or the object data when download:true
 	 *
-	 * @param {String} key - key of the object
+	 * @param {string} key - key of the object
 	 * @param {Object} [config] - { level : private|protected|public, download: true|false }
 	 * @return - A promise resolves to either a presigned url or the object
 	 */
-	public async get(key: string, config?): Promise<String | Object> {
+	public get(key: string, config?): Promise<String | Object> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			Promise.reject('No plugin found in Storage for the provider');
+			return Promise.reject('No plugin found in Storage for the provider');
 		}
-		return prov.get(key, config);
+		const cancelTokenSource = this.getCancellableTokenSource();
+		const responsePromise = prov.get(key, {
+			...config,
+			cancelTokenSource,
+		});
+		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);
+		return responsePromise;
+	}
+
+	public isCancelError(error: any) {
+		return axios.isCancel(error);
 	}
 
 	/**
 	 * Put a file in storage bucket specified to configure method
-	 * @param {String} key - key of the object
+	 * @param {string} key - key of the object
 	 * @param {Object} object - File to be put in bucket
 	 * @param {Object} [config] - { level : private|protected|public, contentType: MIME Types,
 	 *  progressCallback: function }
 	 * @return - promise resolves to object on success
 	 */
-	public async put(key: string, object, config?): Promise<Object> {
+	public put(key: string, object, config?): Promise<Object> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			Promise.reject('No plugin found in Storage for the provider');
+			return Promise.reject('No plugin found in Storage for the provider');
 		}
-		return prov.put(key, object, config);
+		const cancelTokenSource = this.getCancellableTokenSource();
+		const responsePromise = prov.put(key, object, {
+			...config,
+			cancelTokenSource,
+		});
+		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);
+		return responsePromise;
 	}
 
 	/**
 	 * Remove the object for specified key
-	 * @param {String} key - key of the object
+	 * @param {string} key - key of the object
 	 * @param {Object} [config] - { level : private|protected|public }
 	 * @return - Promise resolves upon successful removal of the object
 	 */
@@ -211,7 +263,7 @@ export default class StorageClass {
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			Promise.reject('No plugin found in Storage for the provider');
+			return Promise.reject('No plugin found in Storage for the provider');
 		}
 		return prov.remove(key, config);
 	}
@@ -219,7 +271,7 @@ export default class StorageClass {
 	/**
 	 * List bucket objects relative to the level and prefix specified
 	 * @param {String} path - the path that contains objects
-	 * @param {Object} [config] - { level : private|protected|public }
+	 * @param {Object} [config] - { level : private|protected|public, maxKeys: NUMBER }
 	 * @return - Promise resolves to list of keys for all objects in path
 	 */
 	public async list(path, config?): Promise<any> {
@@ -229,8 +281,13 @@ export default class StorageClass {
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			Promise.reject('No plugin found in Storage for the provider');
+			return Promise.reject('No plugin found in Storage for the provider');
 		}
 		return prov.list(path, config);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default Storage;

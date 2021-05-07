@@ -1,0 +1,15 @@
+:host {
+	--font-family: var(--amplify-font-family);
+}
+
+.radio-button {
+	display: block;
+	width: 100%;
+	padding: 16px;
+	font-size: var(--amplify-text-sm);
+	font-family: var(--font-family);
+
+	input {
+		margin-right: 12px;
+	}
+}

@@ -1,13 +1,20 @@
 {
   "name": "@aws-amplify/storage",
-  "version": "1.2.2",
+  "version": "3.4.1",
   "description": "Storage category of aws-amplify",
-  "main": "./index.js",
+  "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
-    "./index": "./lib-esm/index.js"
+    "./lib/index": "./lib-esm/index.js"
   },
+  "sideEffects": [
+    "./src/index.ts",
+    "./lib/index.js",
+    "./lib-esm/index.js",
+    "./dist/aws-amplify-storage.min.js",
+    "./dist/aws-amplify-storage.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -16,6 +23,8 @@
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
+    "build:cjs:watch": "node ./build es5 --watch",
+    "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
@@ -31,11 +40,15 @@
     "url": "https://github.com/aws/aws-amplify/issues"
   },
   "homepage": "https://aws-amplify.github.io/",
-  "devDependencies": {
-    "typescript": "^3.2.2"
-  },
   "dependencies": {
-    "@aws-amplify/core": "^1.2.2"
+    "@aws-amplify/core": "3.8.23",
+    "@aws-sdk/client-s3": "3.6.1",
+    "@aws-sdk/s3-request-presigner": "3.6.1",
+    "@aws-sdk/util-create-request": "3.6.1",
+    "@aws-sdk/util-format-url": "3.6.1",
+    "axios": "0.21.1",
+    "events": "^3.1.0",
+    "sinon": "^7.5.0"
   },
   "jest": {
     "globals": {
@@ -75,7 +88,13 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "dist",
+      "lib",
+      "lib-esm"
     ]
+  },
+  "devDependencies": {
+    "@types/sinon": "^7.5.1"
   }
 }

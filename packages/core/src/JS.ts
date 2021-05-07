@@ -22,15 +22,21 @@ const MIME_MAP = [
 	{ type: 'text/calendar', ext: 'ics' },
 	{ type: 'text/calendar', ext: 'ical' },
 
-	{ type: 'image/png', ext: 'png' },
+	{ type: 'image/apng', ext: 'apng' },
+	{ type: 'image/bmp', ext: 'bmp' },
 	{ type: 'image/gif', ext: 'gif' },
+	{ type: 'image/x-icon', ext: 'ico' },
+	{ type: 'image/x-icon', ext: 'cur' },
 	{ type: 'image/jpeg', ext: 'jpg' },
 	{ type: 'image/jpeg', ext: 'jpeg' },
-	{ type: 'image/bmp', ext: 'bmp' },
-	{ type: 'image/x-icon', ext: 'ico' },
+	{ type: 'image/jpeg', ext: 'jfif' },
+	{ type: 'image/jpeg', ext: 'pjp' },
+	{ type: 'image/jpeg', ext: 'pjpeg' },
+	{ type: 'image/png', ext: 'png' },
+	{ type: 'image/svg+xml', ext: 'svg' },
 	{ type: 'image/tiff', ext: 'tif' },
 	{ type: 'image/tiff', ext: 'tiff' },
-	{ type: 'image/svg+xml', ext: 'svg' },
+	{ type: 'image/webp', ext: 'webp' },
 
 	{ type: 'application/json', ext: 'json' },
 	{ type: 'application/xml', ext: 'xml' },
@@ -49,215 +55,236 @@ const MIME_MAP = [
 	{ type: 'message/rfc822', ext: 'eml' },
 ];
 
-export default class JS {
-	static isEmpty(obj) {
-		return Object.keys(obj).length === 0;
+export const isEmpty = (obj = {}) => Object.keys(obj).length === 0;
+
+export const sortByField = (list, field, dir) => {
+	if (!list || !list.sort) {
+		return false;
 	}
 
-	static sortByField(list, field, dir) {
-		if (!list || !list.sort) {
-			return false;
+	const dirX = dir && dir === 'desc' ? -1 : 1;
+	list.sort(function(a, b) {
+		const a_val = a[field];
+		const b_val = b[field];
+
+		if (typeof b_val === 'undefined') {
+			return typeof a_val === 'undefined' ? 0 : 1 * dirX;
 		}
 
-		const dirX = dir && dir === 'desc' ? -1 : 1;
-		list.sort(function(a, b) {
-			const a_val = a[field];
-			const b_val = b[field];
+		if (typeof a_val === 'undefined') {
+			return -1 * dirX;
+		}
 
-			if (typeof b_val === 'undefined') {
-				return typeof a_val === 'undefined' ? 0 : 1 * dirX;
-			}
+		if (a_val < b_val) {
+			return -1 * dirX;
+		}
+		if (a_val > b_val) {
+			return 1 * dirX;
+		}
 
-			if (typeof a_val === 'undefined') {
-				return -1 * dirX;
-			}
+		return 0;
+	});
 
-			if (a_val < b_val) {
-				return -1 * dirX;
-			}
-			if (a_val > b_val) {
-				return 1 * dirX;
-			}
+	return true;
+};
 
-			return 0;
-		});
+export const objectLessAttributes = (obj, less) => {
+	const ret = Object.assign({}, obj);
+	if (less) {
+		if (typeof less === 'string') {
+			delete ret[less];
+		} else {
+			less.forEach(attr => {
+				delete ret[attr];
+			});
+		}
+	}
 
+	return ret;
+};
+
+export const filenameToContentType = (
+	filename,
+	defVal = 'application/octet-stream'
+) => {
+	const name = filename.toLowerCase();
+
+	const filtered = MIME_MAP.filter(mime => name.endsWith('.' + mime.ext));
+	return filtered.length > 0 ? filtered[0].type : defVal;
+};
+
+export const isTextFile = contentType => {
+	const type = contentType.toLowerCase();
+	if (type.startsWith('text/')) {
 		return true;
 	}
+	return (
+		'application/json' === type ||
+		'application/xml' === type ||
+		'application/sh' === type
+	);
+};
 
-	static objectLessAttributes(obj, less) {
-		const ret = Object.assign({}, obj);
-		if (less) {
-			if (typeof less === 'string') {
-				delete ret[less];
-			} else {
-				less.forEach(attr => {
-					delete ret[attr];
-				});
-			}
+export const generateRandomString = () => {
+	let result = '';
+	const chars =
+		'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	for (let i = 32; i > 0; i -= 1) {
+		result += chars[Math.floor(Math.random() * chars.length)];
+	}
+	return result;
+};
+
+export const makeQuerablePromise = promise => {
+	if (promise.isResolved) return promise;
+
+	let isPending = true;
+	let isRejected = false;
+	let isFullfilled = false;
+
+	const result = promise.then(
+		data => {
+			isFullfilled = true;
+			isPending = false;
+			return data;
+		},
+		e => {
+			isRejected = true;
+			isPending = false;
+			throw e;
 		}
+	);
 
-		return ret;
+	result.isFullfilled = () => isFullfilled;
+	result.isPending = () => isPending;
+	result.isRejected = () => isRejected;
+
+	return result;
+};
+
+export const isWebWorker = () => {
+	if (typeof self === 'undefined') {
+		return false;
 	}
+	const selfContext = self as { WorkerGlobalScope? };
+	return typeof selfContext.WorkerGlobalScope !== 'undefined' &&
+		self instanceof selfContext.WorkerGlobalScope;
+};
 
-	static filenameToContentType(filename, defVal = 'application/octet-stream') {
-		const name = filename.toLowerCase();
+export const browserOrNode = () => {
+	const isBrowser =
+		typeof window !== 'undefined' && typeof window.document !== 'undefined';
+	const isNode =
+		typeof process !== 'undefined' &&
+		process.versions != null &&
+		process.versions.node != null;
 
-		const filtered = MIME_MAP.filter(mime => name.endsWith('.' + mime.ext));
-		return filtered.length > 0 ? filtered[0].type : defVal;
-	}
+	return {
+		isBrowser,
+		isNode,
+	};
+};
 
-	static isTextFile(contentType) {
-		const type = contentType.toLowerCase();
-		if (type.startsWith('text/')) {
-			return true;
+/**
+ * transfer the first letter of the keys to lowercase
+ * @param {Object} obj - the object need to be transferred
+ * @param {Array} whiteListForItself - whitelist itself from being transferred
+ * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
+ */
+export const transferKeyToLowerCase = (
+	obj,
+	whiteListForItself = [],
+	whiteListForChildren = []
+) => {
+	if (!isStrictObject(obj)) return obj;
+	const ret = {};
+
+	for (const key in obj) {
+		if (obj.hasOwnProperty(key)) {
+			const transferedKey = whiteListForItself.includes(key)
+				? key
+				: key[0].toLowerCase() + key.slice(1);
+
+			ret[transferedKey] = whiteListForChildren.includes(key)
+				? obj[key]
+				: transferKeyToLowerCase(
+						obj[key],
+						whiteListForItself,
+						whiteListForChildren
+				  );
 		}
-		return (
-			'application/json' === type ||
-			'application/xml' === type ||
-			'application/sh' === type
-		);
 	}
 
-	/**
-	 * generate random string
-	 */
-	static generateRandomString() {
-		let result = '';
-		const chars =
-			'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		for (let i = 32; i > 0; i -= 1) {
-			result += chars[Math.floor(Math.random() * chars.length)];
+	return ret;
+};
+
+/**
+ * transfer the first letter of the keys to lowercase
+ * @param {Object} obj - the object need to be transferred
+ * @param {Array} whiteListForItself - whitelist itself from being transferred
+ * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
+ */
+export const transferKeyToUpperCase = (
+	obj,
+	whiteListForItself = [],
+	whiteListForChildren = []
+) => {
+	if (!isStrictObject(obj)) return obj;
+	const ret = {};
+
+	for (const key in obj) {
+		if (obj.hasOwnProperty(key)) {
+			const transferredKey = whiteListForItself.includes(key)
+				? key
+				: key[0].toUpperCase() + key.slice(1);
+
+			ret[transferredKey] = whiteListForChildren.includes(key)
+				? obj[key]
+				: transferKeyToUpperCase(
+						obj[key],
+						whiteListForItself,
+						whiteListForChildren
+				  );
 		}
-		return result;
 	}
+	return ret;
+};
 
-	static makeQuerablePromise(promise) {
-		if (promise.isResolved) return promise;
+/**
+ * Return true if the object is a strict object
+ * which means it's not Array, Function, Number, String, Boolean or Null
+ * @param obj the Object
+ */
+export const isStrictObject = obj => {
+	return (
+		obj instanceof Object &&
+		!(obj instanceof Array) &&
+		!(obj instanceof Function) &&
+		!(obj instanceof Number) &&
+		!(obj instanceof String) &&
+		!(obj instanceof Boolean)
+	);
+};
 
-		let isPending = true;
-		let isRejected = false;
-		let isFullfilled = false;
-
-		const result = promise.then(
-			data => {
-				isFullfilled = true;
-				isPending = false;
-				return data;
-			},
-			e => {
-				isRejected = true;
-				isPending = false;
-				throw e;
-			}
-		);
-
-		result.isFullfilled = () => {
-			return isFullfilled;
-		};
-		result.isPending = () => {
-			return isPending;
-		};
-		result.isRejected = () => {
-			return isRejected;
-		};
-
-		return result;
-	}
-
-	static browserOrNode() {
-		const isBrowser =
-			typeof window !== 'undefined' && typeof window.document !== 'undefined';
-		const isNode =
-			typeof process !== 'undefined' &&
-			process.versions != null &&
-			process.versions.node != null;
-
-		return {
-			isBrowser,
-			isNode,
-		};
-	}
-
-	/**
-	 * transfer the first letter of the keys to lowercase
-	 * @param {Object} obj - the object need to be transferred
-	 * @param {Array} whiteListForItself - whitelist itself from being transferred
-	 * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
-	 */
-	static transferKeyToLowerCase(
-		obj,
-		whiteListForItself = [],
-		whiteListForChildren = []
-	) {
-		if (!JS.isStrictObject(obj)) return obj;
-		const ret = {};
-
-		for (const key in obj) {
-			if (obj.hasOwnProperty(key)) {
-				const transferedKey = whiteListForItself.includes(key)
-					? key
-					: key[0].toLowerCase() + key.slice(1);
-
-				ret[transferedKey] = whiteListForChildren.includes(key)
-					? obj[key]
-					: JS.transferKeyToLowerCase(
-							obj[key],
-							whiteListForItself,
-							whiteListForChildren
-					  );
-			}
-		}
-
-		return ret;
-	}
-
-	/**
-	 * transfer the first letter of the keys to lowercase
-	 * @param {Object} obj - the object need to be transferred
-	 * @param {Array} whiteListForItself - whitelist itself from being transferred
-	 * @param {Array} whiteListForChildren - whitelist its children keys from being transferred
-	 */
-	static transferKeyToUpperCase(
-		obj,
-		whiteListForItself = [],
-		whiteListForChildren = []
-	) {
-		if (!JS.isStrictObject(obj)) return obj;
-		const ret = {};
-
-		for (const key in obj) {
-			if (obj.hasOwnProperty(key)) {
-				const transferedKey = whiteListForItself.includes(key)
-					? key
-					: key[0].toUpperCase() + key.slice(1);
-
-				ret[transferedKey] = whiteListForChildren.includes(key)
-					? obj[key]
-					: JS.transferKeyToUpperCase(
-							obj[key],
-							whiteListForItself,
-							whiteListForChildren
-					  );
-			}
-		}
-
-		return ret;
-	}
-
-	/**
-	 * Return true if the object is a strict object
-	 * which means it's not Array, Function, Number, String, Boolean or Null
-	 * @param obj the Object
-	 */
-	static isStrictObject(obj) {
-		return (
-			obj instanceof Object &&
-			!(obj instanceof Array) &&
-			!(obj instanceof Function) &&
-			!(obj instanceof Number) &&
-			!(obj instanceof String) &&
-			!(obj instanceof Boolean)
-		);
-	}
+/**
+ * @deprecated use per-function imports
+ */
+export class JS {
+	static isEmpty = isEmpty;
+	static sortByField = sortByField;
+	static objectLessAttributes = objectLessAttributes;
+	static filenameToContentType = filenameToContentType;
+	static isTextFile = isTextFile;
+	static generateRandomString = generateRandomString;
+	static makeQuerablePromise = makeQuerablePromise;
+	static isWebWorker = isWebWorker;
+	static browserOrNode = browserOrNode;
+	static transferKeyToLowerCase = transferKeyToLowerCase;
+	static transferKeyToUpperCase = transferKeyToUpperCase;
+	static isStrictObject = isStrictObject;
 }
+
+/**
+ * @deprecated use per-function imports
+ */
+export default JS;

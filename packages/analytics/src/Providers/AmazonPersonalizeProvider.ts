@@ -11,18 +11,27 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Credentials, JS } from '@aws-amplify/core';
-import * as PersonalizeEvents from 'aws-sdk/clients/personalizeevents';
+import {
+	ConsoleLogger as Logger,
+	Credentials,
+	JS,
+	getAmplifyUserAgent,
+} from '@aws-amplify/core';
+import {
+	PersonalizeEventsClient,
+	PutEventsCommand,
+	PutEventsCommandInput,
+} from '@aws-sdk/client-personalize-events';
 import {
 	SessionInfo,
 	RequestParams,
 	RecordEventPayload,
 	SessionInfoManager,
-	RecordEventListPayload,
 	MediaAutoTrack,
 } from './AmazonPersonalizeHelper';
-import { isEmpty, isEqual, map, get } from 'lodash';
-import { v1 as uuid } from 'uuid';
+import get from 'lodash/get';
+import isEmpty from 'lodash/isEmpty';
+import isEqual from 'lodash/isEqual';
 import { AnalyticsProvider } from '../types';
 
 const logger = new Logger('AmazonPersonalizeProvider');
@@ -34,14 +43,13 @@ const FLUSH_INTERVAL = 5 * 1000; // 5s
 
 const IDENTIFY_EVENT = 'Identify';
 
-export default class AmazonPersonalizeProvider implements AnalyticsProvider {
+export class AmazonPersonalizeProvider implements AnalyticsProvider {
 	private _config;
 	private _personalize;
 	private _buffer;
 	private _timer;
 	private _sessionInfo: SessionInfo;
 	private _sessionManager;
-	private _listViewEventsCache;
 	private _isBrowser;
 
 	constructor(config?) {
@@ -49,7 +57,7 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
 		this._config = config ? config : {};
 		this._config.flushSize =
 			this._config.flushSize > 0 &&
-				this._config.flushSize <= FLUSH_SIZE_THRESHHOLD
+			this._config.flushSize <= FLUSH_SIZE_THRESHHOLD
 				? this._config.flushSize
 				: FLUSH_SIZE;
 		this._config.flushInterval = this._config.flushInterval || FLUSH_INTERVAL;
@@ -69,7 +77,7 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
 		if (this._timer) {
 			clearInterval(this._timer);
 		}
-		const { flushSize, flushInterval } = this._config;
+		const { flushInterval } = this._config;
 		const that = this;
 		this._timer = setInterval(() => {
 			that._sendFromBuffer();
@@ -89,7 +97,7 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
 		Object.assign(params, {
 			config: this._config,
 			credentials,
-			sentAt: new Date().getTime() / 1000,
+			sentAt: new Date(),
 		});
 		const { eventType, properties } = params.event;
 
@@ -137,6 +145,7 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
 			}
 			return;
 		}
+
 		return this.putToBuffer(requestParams);
 	}
 
@@ -257,12 +266,17 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
 				);
 				events.push(eventPayload);
 			}
-			const payload = <RecordEventListPayload>{};
+			const payload = <PutEventsCommandInput>{};
 			payload.trackingId = sessionInfo.trackingId;
 			payload.sessionId = sessionInfo.sessionId;
 			payload.userId = sessionInfo.userId;
-			payload.eventList = events;
-			this._personalize.putEvents(payload, (err, data) => {
+			payload.eventList = [];
+			events.forEach(event => {
+				// @ts-ignore
+				payload.eventList.push(event);
+			});
+			const command: PutEventsCommand = new PutEventsCommand(payload);
+			this._personalize.send(command, err => {
 				if (err) logger.debug('Failed to call putEvents in Personalize', err);
 				else logger.debug('Put events');
 			});
@@ -338,7 +352,8 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
 		const { eventData, sentAt } = params;
 		const trackPayload = <RecordEventPayload>{};
 		trackPayload.sentAt = sentAt;
-		trackPayload.properties = eventData.properties;
+		trackPayload.properties =
+			eventData.properties && JSON.stringify(eventData.properties);
 		trackPayload.eventId =
 			this._sessionManager.getTimerKey() + sessionInfo.sessionId;
 		trackPayload.eventType = eventData.eventType;
@@ -366,12 +381,11 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
 		this._config.credentials = credentials;
 		const { region } = config;
 		logger.debug('initialize personalize with credentials', credentials);
-		this._personalize = new PersonalizeEvents({
-			apiVersion: '2018-03-22',
+		this._personalize = new PersonalizeEventsClient({
 			region,
 			credentials,
+			customUserAgent: getAmplifyUserAgent(),
 		});
-
 		return true;
 	}
 
@@ -393,3 +407,8 @@ export default class AmazonPersonalizeProvider implements AnalyticsProvider {
 			});
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AmazonPersonalizeProvider;

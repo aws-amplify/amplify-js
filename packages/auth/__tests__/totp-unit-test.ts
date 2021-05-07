@@ -149,7 +149,6 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 
 	CognitoUser.prototype.associateSoftwareToken = callback => {
 		callback.associateSecretCode('secretCode');
-		//callback.onFailure()
 	};
 
 	CognitoUser.prototype.verifySoftwareToken = (
@@ -174,11 +173,15 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		});
 	};
 
+	CognitoUser.prototype.getUsername = () => {
+		return 'testUsername';
+	};
+
 	return CognitoUser;
 });
 
 import { AuthOptions, SignUpParams } from '../src/types';
-import Auth from '../src/Auth';
+import { AuthClass as Auth } from '../src/Auth';
 import Cache from '@aws-amplify/cache';
 import {
 	CognitoUserPool,
@@ -187,9 +190,8 @@ import {
 	CognitoIdToken,
 	CognitoAccessToken,
 } from 'amazon-cognito-identity-js';
-import { CognitoIdentityCredentials } from 'aws-sdk';
 
-const authOptions = {
+const authOptions: any = {
 	Auth: {
 		userPoolId: 'awsUserPoolsId',
 		userPoolWebClientId: 'awsUserPoolsWebClientId',
@@ -243,12 +245,12 @@ describe('auth unit test', () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'getMFAOptions')
 				.mockImplementationOnce(callback => {
-					callback('err', null);
+					callback(new Error('err'), null);
 				});
 			try {
 				await auth.getMFAOptions(user);
 			} catch (e) {
-				expect(e).toBe('err');
+				expect(e).toEqual(new Error('err'));
 			}
 			expect(spyon).toBeCalled();
 			spyon.mockClear();
@@ -272,12 +274,12 @@ describe('auth unit test', () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'disableMFA')
 				.mockImplementationOnce(callback => {
-					callback('err', null);
+					callback(new Error('err'), null);
 				});
 			try {
 				await auth.disableSMS(user);
 			} catch (e) {
-				expect(e).toBe('err');
+				expect(e).toEqual(new Error('err'));
 			}
 			expect(spyon).toBeCalled();
 			spyon.mockClear();
@@ -301,12 +303,12 @@ describe('auth unit test', () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'enableMFA')
 				.mockImplementationOnce(callback => {
-					callback('err', null);
+					callback(new Error('err'), null);
 				});
 			try {
 				await auth.enableSMS(user);
 			} catch (e) {
-				expect(e).toBe('err');
+				expect(e).toEqual(new Error('err'));
 			}
 			expect(spyon).toBeCalled();
 			spyon.mockClear();
@@ -347,12 +349,17 @@ describe('auth unit test', () => {
 			const auth = new Auth(authOptions);
 
 			const spyon = jest.spyOn(CognitoUser.prototype, 'verifySoftwareToken');
+			const spyon2 = jest.spyOn(CognitoUser.prototype, 'getUsername');
+
 			expect(await auth.verifyTotpToken(user, 'challengeAnswer')).toBe(
 				'Success'
 			);
+
 			expect(spyon).toBeCalled();
+			expect(spyon2).toBeCalled();
 
 			spyon.mockClear();
+			spyon2.mockClear();
 		});
 
 		test('err case', async () => {
@@ -361,12 +368,12 @@ describe('auth unit test', () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'verifySoftwareToken')
 				.mockImplementationOnce((challengeAnswer, device, callback) => {
-					callback.onFailure('err');
+					callback.onFailure(new Error('err'));
 				});
 			try {
 				await auth.verifyTotpToken(user, 'challengeAnswer');
 			} catch (e) {
-				expect(e).toBe('err');
+				expect(e).toEqual(new Error('err'));
 			}
 			expect(spyon).toBeCalled();
 			spyon.mockClear();
@@ -401,7 +408,7 @@ describe('auth unit test', () => {
 					const err = {
 						message: 'User has not verified software token mfa',
 					};
-					callback(err, null);
+					callback(new Error('err'), null);
 				});
 			const spyon2 = jest
 				.spyOn(Auth.prototype, 'getPreferredMFA')
@@ -423,7 +430,8 @@ describe('auth unit test', () => {
 		test('incorrect mfa type', async () => {
 			const auth = new Auth(authOptions);
 			try {
-				await auth.setPreferredMFA(user, 'incorrect mfa type');
+				// using <any> to allow us to pass an incorrect value
+				await auth.setPreferredMFA(user, 'incorrect mfa type' as any);
 			} catch (e) {
 				expect(e).not.toBeNull();
 			}
@@ -443,12 +451,12 @@ describe('auth unit test', () => {
 			const spyon = jest
 				.spyOn(CognitoUser.prototype, 'getUserData')
 				.mockImplementationOnce(callback => {
-					callback('err', null);
+					callback(new Error('err'), null);
 				});
 			try {
 				await auth.getPreferredMFA(user);
 			} catch (e) {
-				expect(e).toBe('err');
+				expect(e).toBe(new Error('err'));
 			}
 		});
 	});

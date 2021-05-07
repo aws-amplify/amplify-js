@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-select-mfa-type spec: Render logic -> should render \`TOTP, SMS, No MFA\` values 1`] = `
+<amplify-select-mfa-type>
+  <mock:shadow-root>
+    <div>
+      <amplify-form-section headertext="Select MFA Type" submitbuttontext="Verify">
+        <amplify-radio-button label="SMS" name="MFAType" value="SMS"></amplify-radio-button>
+        <amplify-radio-button label="TOTP" name="MFAType" value="TOTP"></amplify-radio-button>
+        <amplify-radio-button label="No MFA" name="MFAType" value="NOMFA"></amplify-radio-button>
+      </amplify-form-section>
+    </div>
+  </mock:shadow-root>
+</amplify-select-mfa-type>
+`;
+
+exports[`amplify-select-mfa-type spec: Render logic -> should render a \`less than 2 MFA types available\` message by default 1`] = `
+<amplify-select-mfa-type>
+  <mock:shadow-root>
+    <div>
+      <div>
+        <a>
+          Less than two MFA types available
+        </a>
+      </div>
+    </div>
+  </mock:shadow-root>
+</amplify-select-mfa-type>
+`;

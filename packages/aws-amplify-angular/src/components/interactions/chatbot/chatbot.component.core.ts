@@ -24,6 +24,7 @@ import {
 } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
 import { isUndefined } from 'util';
+import { chatBot } from '../../../assets/data-test-attributes';
 require('./aws-lex-audio.js');
 
 const template = `
@@ -42,6 +43,7 @@ const template = `
 			</div>
 			<div class="amplify-interactions-actions">
 				<input #inputValue
+					data-test="${chatBot.messageInput}"
 					type='text'
 					class="amplify-form-input"
 					placeholder="{{currentVoiceState}}"
@@ -127,7 +129,7 @@ export class ChatbotComponentCore implements OnInit {
 
 	constructor(
 		ref: ChangeDetectorRef,
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
+		@Inject(AmplifyService) public amplifyService: AmplifyService
 	) {
 		this.ref = ref;
 		this.continueConversation = false;

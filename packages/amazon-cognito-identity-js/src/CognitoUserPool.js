@@ -27,17 +27,21 @@ export default class CognitoUserPool {
 	 * @param {string} data.endpoint the base endpoint to invoke.
 	 * @param {string} data.UserPoolId Cognito user pool id.
 	 * @param {string} data.ClientId User pool application client id.
+	 * @param {string} data.endpoint Optional custom service endpoint.
+	 * @param {object} data.fetchOptions Optional options for fetch API.
+	 *        (only credentials option is supported)
 	 * @param {object} data.Storage Optional storage object.
 	 * @param {boolean} data.AdvancedSecurityDataCollectionFlag Optional:
 	 *        boolean flag indicating if the data collection is enabled
 	 *        to support cognito advanced security features. By default, this
 	 *        flag is set to true.
 	 */
-	constructor(data) {
+	constructor(data, wrapRefreshSessionCallback) {
 		const {
 			UserPoolId,
 			ClientId,
 			endpoint,
+			fetchOptions,
 			AdvancedSecurityDataCollectionFlag,
 		} = data || {};
 		if (!UserPoolId || !ClientId) {
@@ -58,7 +62,7 @@ export default class CognitoUserPool {
 		this.userPoolId = UserPoolId;
 		this.clientId = ClientId;
 
-		this.client = new Client(region, endpoint);
+		this.client = new Client(region, endpoint, fetchOptions);
 
 		/**
 		 * By default, AdvancedSecurityDataCollectionFlag is set to true,
@@ -68,6 +72,10 @@ export default class CognitoUserPool {
 			AdvancedSecurityDataCollectionFlag !== false;
 
 		this.storage = data.Storage || new StorageHelper().getStorage();
+
+		if (wrapRefreshSessionCallback) {
+			this.wrapRefreshSessionCallback = wrapRefreshSessionCallback;
+		}
 	}
 
 	/**
@@ -95,16 +103,26 @@ export default class CognitoUserPool {
 	 * @param {string} password Plain-text initial password entered by user.
 	 * @param {(AttributeArg[])=} userAttributes New user attributes.
 	 * @param {(AttributeArg[])=} validationData Application metadata.
+	 * @param {(AttributeArg[])=} clientMetadata Client metadata.
 	 * @param {nodeCallback<SignUpResult>} callback Called on error or with the new user.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
-	signUp(username, password, userAttributes, validationData, callback) {
+	signUp(
+		username,
+		password,
+		userAttributes,
+		validationData,
+		callback,
+		clientMetadata
+	) {
 		const jsonReq = {
 			ClientId: this.clientId,
 			Username: username,
 			Password: password,
 			UserAttributes: userAttributes,
 			ValidationData: validationData,
+			ClientMetadata: clientMetadata,
 		};
 		if (this.getUserContextData(username)) {
 			jsonReq.UserContextData = this.getUserContextData(username);

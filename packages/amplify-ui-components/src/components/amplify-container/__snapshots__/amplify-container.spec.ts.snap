@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-container spec: Render logic -> should render with an empty slot 1`] = `
+<amplify-container>
+  <!---->
+</amplify-container>
+`;
+
+exports[`amplify-container spec: Render logic -> should render with contained content when content is passed in 1`] = `
+<amplify-container>
+  <!---->
+  <div>
+    My App
+  </div>
+</amplify-container>
+`;

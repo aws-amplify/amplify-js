@@ -1,13 +1,20 @@
 {
   "name": "@aws-amplify/xr",
-  "version": "0.2.2",
+  "version": "2.2.31",
   "description": "XR category of aws-amplify",
-  "main": "./index.js",
+  "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
-    "./index": "./lib-esm/index.js"
+    "./lib/index": "./lib-esm/index.js"
   },
+  "sideEffects": [
+    "./src/XR.ts",
+    "./lib/XR.js",
+    "./lib-esm/XR.js",
+    "./dist/aws-amplify-xr.min.js",
+    "./dist/aws-amplify-xr.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -16,6 +23,8 @@
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
+    "build:cjs:watch": "node ./build es5 --watch",
+    "build:esm:watch": "node ./build es6 --watch",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rimraf lib-esm lib dist",
     "format": "echo \"Not implemented\"",
@@ -32,7 +41,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "^1.2.2"
+    "@aws-amplify/core": "3.8.23"
   },
   "jest": {
     "globals": {
@@ -72,7 +81,10 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "dist",
+      "lib",
+      "lib-esm"
     ]
   }
 }

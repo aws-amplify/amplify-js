@@ -1,0 +1,28 @@
+:host {
+	--spinner-circle-fill: var(--amplify-smoke-white);
+	--spinner-bar-fill: var(--amplify-primary-color);
+	--width: 0.875rem;
+	--height: 0.875rem;
+}
+
+.loading-spinner {
+	svg {
+		animation: loading-spinner 1s linear infinite;
+		width: var(--width);
+		height: var(--height);
+		#spinner-circle {
+			fill: var(--spinner-circle-fill);
+		}
+		#spinner-bar {
+			fill: var(--spinner-bar-fill);
+		}
+	}
+	@keyframes loading-spinner {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+}

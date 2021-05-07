@@ -13,13 +13,13 @@
 
 import * as React from 'react';
 import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { NavButton } from '../Amplify-UI/Amplify-UI-Components-React';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
-import Constants from './common/constants';
+import { Constants } from './common/constants';
 
 import { auth } from '../Amplify-UI/data-test-attributes';
 
@@ -39,7 +39,7 @@ export interface ISignOutState extends IAuthPieceState {
 	stateFromStorage?: any;
 }
 
-export default class SignOut extends AuthPiece<ISignOutProps, ISignOutState> {
+export class SignOut extends AuthPiece<ISignOutProps, ISignOutState> {
 	public _isMounted: boolean;
 
 	constructor(props: ISignOutProps) {
@@ -189,3 +189,8 @@ export default class SignOut extends AuthPiece<ISignOutProps, ISignOutState> {
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default SignOut;

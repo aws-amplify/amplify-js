@@ -1,0 +1,19 @@
+amplify-form-field {
+	--label-font-size: var(--amplify-text-md);
+	--description-font-size: var(--amplify-text-sm);
+}
+
+.form-field {
+	margin-bottom: 15px;
+}
+
+.form-field-label {
+	display: block;
+	font-size: var(--label-font-size);
+	padding-bottom: 0.5em;
+}
+
+.form-field-description {
+	font-size: var(--description-font-size);
+	padding-top: 0.5em;
+}

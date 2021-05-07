@@ -11,16 +11,22 @@
  * and limitations under the License.
  */
 // import '../Common/Polyfills';
-import * as Observable from 'zen-observable';
+import Observable from 'zen-observable-ts';
 
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER } from '@aws-amplify/core/lib/constants';
+import {
+	Amplify,
+	browserOrNode,
+	ConsoleLogger as Logger,
+	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
+	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
+} from '@aws-amplify/core';
 import { PubSubProvider, PubSubOptions, ProvidertOptions } from './types';
-import { AWSAppSyncProvider } from './Providers';
+import { AWSAppSyncProvider, AWSAppSyncRealTimeProvider } from './Providers';
 
+const { isNode } = browserOrNode();
 const logger = new Logger('PubSub');
 
-export default class PubSub {
+export class PubSubClass {
 	private _options: PubSubOptions;
 
 	private _pluggables: PubSubProvider[];
@@ -31,13 +37,30 @@ export default class PubSub {
 	private _awsAppSyncProvider: AWSAppSyncProvider;
 
 	/**
-	 * Lazy instantiate awsAppSyncProvider when it is required by the API category
+	 * Internal instance of AWSAppSyncRealTimeProvider used by the API category to subscribe to AppSync
+	 */
+	private _awsAppSyncRealTimeProvider: AWSAppSyncRealTimeProvider;
+
+	/**
+	 * Lazy instantiate AWSAppSyncProvider when it is required by the API category
 	 */
 	private get awsAppSyncProvider() {
 		if (!this._awsAppSyncProvider) {
 			this._awsAppSyncProvider = new AWSAppSyncProvider(this._options);
 		}
 		return this._awsAppSyncProvider;
+	}
+
+	/**
+	 * Lazy instantiate AWSAppSyncRealTimeProvider when it is required by the API category
+	 */
+	private get awsAppSyncRealTimeProvider() {
+		if (!this._awsAppSyncRealTimeProvider) {
+			this._awsAppSyncRealTimeProvider = new AWSAppSyncRealTimeProvider(
+				this._options
+			);
+		}
+		return this._awsAppSyncRealTimeProvider;
 	}
 
 	/**
@@ -91,6 +114,9 @@ export default class PubSub {
 		if (providerName === INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER) {
 			return this.awsAppSyncProvider;
 		}
+		if (providerName === INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER) {
+			return this.awsAppSyncRealTimeProvider;
+		}
 
 		return this._pluggables.find(
 			pluggable => pluggable.getProviderName() === providerName
@@ -127,6 +153,12 @@ export default class PubSub {
 		topics: string[] | string,
 		options?: ProvidertOptions
 	): Observable<any> {
+		if (isNode && this._options && this._options.ssr) {
+			throw new Error(
+				'Subscriptions are not supported for Server-Side Rendering (SSR)'
+			);
+		}
+
 		logger.debug('subscribe options', options);
 
 		const providers = this.getProviders(options);
@@ -151,3 +183,6 @@ export default class PubSub {
 		});
 	}
 }
+
+export const PubSub = new PubSubClass(null);
+Amplify.register(PubSub);

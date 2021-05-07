@@ -1,0 +1,51 @@
+/**
+ * @prop --button-color: Text color of the button
+ * @prop --button-background-hover: Background color of the button when it's hovered
+ */
+:host {
+	--button-color: var(--amplify-secondary-contrast);
+	--button-background-hover: var(--amplify-secondary-color);
+}
+
+.action-button {
+	button {
+		position: relative;
+		padding: 0;
+		background: none;
+		height: 54px;
+		width: 54px;
+		cursor: pointer;
+		outline: none;
+		text-decoration: none;
+		border: none;
+		border-radius: 30px;
+		transition: all 0.3s ease-in-out;
+		color: var(--button-color);
+		fill: currentColor;
+
+		&:hover {
+			background-color: var(--button-background-hover);
+			box-shadow: 0.3px 0.3px 0.3px rgba(0, 0, 0, 0.3);
+		}
+
+		&:hover > .tooltip {
+			display: block;
+		}
+
+		&:hover > svg {
+			-webkit-filter: none;
+			filter: none;
+		}
+
+		&:focus {
+			outline: none;
+		}
+
+		& svg {
+			width: 1.8em;
+			height: 1.8em;
+			-webkit-filter: drop-shadow(1px 1px 1px var(--amplify-grey));
+			filter: drop-shadow(1px 1px 1px var(--amplify-grey));
+		}
+	}
+}

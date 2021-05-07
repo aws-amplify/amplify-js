@@ -1,6 +1,7 @@
-import AWSStorageProvider from '../src/Providers/AWSS3Provider';
-import { default as Storage } from '../src/Storage';
-import StorageCategory from '../src';
+import AWSStorageProvider from '../src/providers/AWSS3Provider';
+import { Storage as StorageClass } from '../src/Storage';
+import { Storage as StorageCategory } from '../src';
+import axios from 'axios';
 
 const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -16,17 +17,16 @@ const options = {
 	credentials,
 	level: 'level',
 };
-
 describe('Storage', () => {
 	describe('constructor test', () => {
 		test('happy case', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 		});
 	});
 
 	describe('getPluggable test', () => {
 		test('happy case', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
@@ -39,7 +39,7 @@ describe('Storage', () => {
 
 	describe('removePluggable test', () => {
 		test('happy case', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
@@ -52,7 +52,7 @@ describe('Storage', () => {
 
 	describe('configure test', () => {
 		test('configure with aws-exports file', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
@@ -70,7 +70,7 @@ describe('Storage', () => {
 		});
 
 		test('configure with bucket and region', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				bucket: 'bucket',
@@ -88,7 +88,7 @@ describe('Storage', () => {
 		});
 
 		test('Configure with Storage object', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				Storage: {
@@ -108,7 +108,7 @@ describe('Storage', () => {
 		});
 
 		test('Configure with Provider object', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				AWSS3: {
@@ -128,7 +128,7 @@ describe('Storage', () => {
 		});
 
 		test('Configure with Storage and Provider object', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				Storage: {
@@ -150,7 +150,7 @@ describe('Storage', () => {
 		});
 
 		test('Second configure call changing bucket name only', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
@@ -168,7 +168,7 @@ describe('Storage', () => {
 		});
 
 		test('Second configure call changing bucket, region and with Storage attribute', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
@@ -188,7 +188,7 @@ describe('Storage', () => {
 		});
 
 		test('Second configure call changing bucket, region and with Provider attribute', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
@@ -207,7 +207,7 @@ describe('Storage', () => {
 			});
 		});
 		test('backwards compatible issue, second configure call', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
@@ -261,7 +261,7 @@ describe('Storage', () => {
 		});
 
 		test('backwards compatible issue, third configure call track', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
@@ -282,7 +282,7 @@ describe('Storage', () => {
 		});
 
 		test('backwards compatible issue, third configure to update level', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const aws_options = {
 				aws_user_files_s3_bucket: 'bucket',
 				aws_user_files_s3_bucket_region: 'region',
@@ -301,7 +301,7 @@ describe('Storage', () => {
 		});
 
 		test('should add server side encryption to storage config when present', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'testBucket',
 				aws_user_files_s3_bucket_region: 'imaregion',
@@ -321,7 +321,7 @@ describe('Storage', () => {
 		});
 
 		test('should add SSECustomerAlgorithm to storage config when present', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'thisIsABucket',
 				aws_user_files_s3_bucket_region: 'whatregionareyou',
@@ -339,7 +339,7 @@ describe('Storage', () => {
 		});
 
 		test('should add SSECustomerKey to storage config when present', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'buckbuckbucket',
 				aws_user_files_s3_bucket_region: 'thisisaregion',
@@ -357,7 +357,7 @@ describe('Storage', () => {
 		});
 
 		test('should add SSECustomerKeyMD5 to storage config when present', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'buckbuckbucaket',
 				aws_user_files_s3_bucket_region: 'ohnoregion',
@@ -375,7 +375,7 @@ describe('Storage', () => {
 		});
 
 		test('should add SSEKMSKeyId to storage config when present', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'bucket2',
 				aws_user_files_s3_bucket_region: 'region1',
@@ -393,7 +393,7 @@ describe('Storage', () => {
 		});
 
 		test('should not add randomKeyId to storage config object when present', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'bucket2',
 				aws_user_files_s3_bucket_region: 'region1',
@@ -410,7 +410,7 @@ describe('Storage', () => {
 		});
 
 		test('should add customPrefix to AWSS3 provider object if is defined', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'i_am_a_bucket',
 				aws_user_files_s3_bucket_region: 'IAD',
@@ -439,7 +439,7 @@ describe('Storage', () => {
 		});
 
 		test('should not add customPrefix to AWSS3 provider object if value is undefined', () => {
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const awsconfig = {
 				aws_user_files_s3_bucket: 'you_dont_know_this_bucket',
 				aws_user_files_s3_bucket_region: 'WD3',
@@ -460,14 +460,14 @@ describe('Storage', () => {
 		});
 	});
 
-	describe('get test', async () => {
+	describe('get test', () => {
 		test('get object without download', async () => {
 			const get_spyon = jest
 				.spyOn(AWSStorageProvider.prototype, 'get')
 				.mockImplementation(() => {
-					return;
+					return Promise.resolve('https://this-url-doesnt-exist.gg');
 				});
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
@@ -482,6 +482,14 @@ describe('Storage', () => {
 			expect(get_spyon).toBeCalled();
 			get_spyon.mockClear();
 		});
+		test('get without provider', async () => {
+			const storage = new StorageClass();
+			try {
+				await storage.get('key');
+			} catch (err) {
+				expect(err).toEqual('No plugin found in Storage for the provider');
+			}
+		});
 	});
 
 	describe('put test', () => {
@@ -489,9 +497,9 @@ describe('Storage', () => {
 			const put_spyon = jest
 				.spyOn(AWSStorageProvider.prototype, 'put')
 				.mockImplementation(() => {
-					return;
+					return Promise.resolve({ key: 'new_object' });
 				});
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
@@ -506,6 +514,14 @@ describe('Storage', () => {
 			expect(put_spyon).toBeCalled();
 			put_spyon.mockClear();
 		});
+		test('put without provider', async () => {
+			const storage = new StorageClass();
+			try {
+				await storage.put('key', 'test upload');
+			} catch (err) {
+				expect(err).toEqual('No plugin found in Storage for the provider');
+			}
+		});
 	});
 
 	describe('remove test', () => {
@@ -515,7 +531,7 @@ describe('Storage', () => {
 				.mockImplementation(() => {
 					return;
 				});
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
@@ -530,6 +546,14 @@ describe('Storage', () => {
 			expect(remove_spyon).toBeCalled();
 			remove_spyon.mockClear();
 		});
+		test('remove without provider', async () => {
+			const storage = new StorageClass();
+			try {
+				await storage.remove('key');
+			} catch (err) {
+				expect(err).toEqual('No plugin found in Storage for the provider');
+			}
+		});
 	});
 
 	describe('list test', () => {
@@ -539,7 +563,7 @@ describe('Storage', () => {
 				.mockImplementation(() => {
 					return;
 				});
-			const storage = new Storage();
+			const storage = new StorageClass();
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
@@ -553,6 +577,97 @@ describe('Storage', () => {
 			});
 			expect(list_spyon).toBeCalled();
 			list_spyon.mockClear();
+		});
+		test('list without provider', async () => {
+			const storage = new StorageClass();
+			try {
+				await storage.list('');
+			} catch (err) {
+				expect(err).toEqual('No plugin found in Storage for the provider');
+			}
+		});
+	});
+
+	describe('cancel test', () => {
+		let isCancelSpy = null;
+		let cancelTokenSpy = null;
+		let cancelMock = null;
+		let tokenMock = null;
+
+		beforeEach(() => {
+			cancelMock = jest.fn();
+			tokenMock = jest.fn();
+			isCancelSpy = jest.spyOn(axios, 'isCancel').mockReturnValue(true);
+			cancelTokenSpy = jest
+				.spyOn(axios.CancelToken, 'source')
+				.mockImplementation(() => {
+					return { token: tokenMock, cancel: cancelMock };
+				});
+		});
+
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
+
+		test('happy case - cancel upload', async () => {
+			jest.spyOn(AWSStorageProvider.prototype, 'put').mockImplementation(() => {
+				return Promise.resolve({ key: 'new_object' });
+			});
+			const storage = new StorageClass();
+			const provider = new AWSStorageProvider();
+			storage.addPluggable(provider);
+			storage.configure(options);
+			const request = storage.put('test.txt', 'test upload', {
+				Storage: {
+					AWSS3: {
+						bucket: 'bucket',
+						region: 'us-east-1',
+					},
+				},
+			});
+			storage.cancel(request, 'request cancelled');
+			expect(cancelTokenSpy).toBeCalledTimes(1);
+			expect(cancelMock).toHaveBeenCalledTimes(1);
+			try {
+				await request;
+			} catch (err) {
+				expect(err).toEqual('request cancelled');
+				expect(storage.isCancelError(err)).toBeTruthy();
+			}
+		});
+
+		test('happy case - cancel download', async () => {
+			jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
+				return Promise.resolve('some_file_content');
+			});
+			const storage = new StorageClass();
+			const provider = new AWSStorageProvider();
+			storage.addPluggable(provider);
+			storage.configure(options);
+			const request = storage.get('test.txt', {
+				Storage: {
+					AWSS3: {
+						bucket: 'bucket',
+						region: 'us-east-1',
+					},
+				},
+				download: true,
+			});
+			storage.cancel(request, 'request cancelled');
+			expect(cancelTokenSpy).toHaveBeenCalledTimes(1);
+			expect(cancelMock).toHaveBeenCalledWith('request cancelled');
+			try {
+				await request;
+			} catch (err) {
+				expect(err).toEqual('request cancelled');
+				expect(storage.isCancelError(err)).toBeTruthy();
+			}
+		});
+
+		test('isCancelError called', () => {
+			const storage = new StorageClass();
+			storage.isCancelError({});
+			expect(isCancelSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 });
