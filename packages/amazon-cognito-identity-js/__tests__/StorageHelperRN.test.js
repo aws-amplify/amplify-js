@@ -5,25 +5,23 @@ describe('React native storage helper unit tests', () => {
 		});
 
 		var items = {};
-		jest.mock('react-native', () => ({
-			AsyncStorage: {
-				setItem: jest.fn((item, value) => {
-					return new Promise((resolve, reject) => {
-						items[item] = value;
-						resolve(value);
-					});
-				}),
-				getItem: jest.fn((item, value) => {
-					return new Promise((resolve, reject) => {
-						resolve(items[item]);
-					});
-				}),
-				removeItem: jest.fn(item => {
-					return new Promise((resolve, reject) => {
-						resolve(delete items[item]);
-					});
-				}),
-			},
+		jest.mock('@react-native-async-storage/async-storage', () => ({
+			setItem: jest.fn((item, value) => {
+				return new Promise((resolve, reject) => {
+					items[item] = value;
+					resolve(value);
+				});
+			}),
+			getItem: jest.fn((item, value) => {
+				return new Promise((resolve, reject) => {
+					resolve(items[item]);
+				});
+			}),
+			removeItem: jest.fn(item => {
+				return new Promise((resolve, reject) => {
+					resolve(delete items[item]);
+				});
+			}),
 		}));
 
 		const StorageHelper = require('../src/StorageHelper-rn.js').default;
@@ -55,24 +53,22 @@ describe('React native storage helper unit tests', () => {
 			const items = {
 				'@MemoryStorage:key': 'value1',
 			};
-			jest.mock('react-native', () => ({
-				AsyncStorage: {
-					setItem: jest.fn((item, value) => {
-						return new Promise((resolve, reject) => {
-							items[item] = value;
-							resolve(value);
-						});
-					}),
-					getAllKeys: jest.fn(callback => {
-						callback(null, Object.keys(items));
-					}),
-					multiGet: jest.fn((keys, callback) => {
-						const values = keys.map(key => [key, items[key] || null]);
-						callback && callback(null, values);
+			jest.mock('@react-native-async-storage/async-storage', () => ({
+				setItem: jest.fn((item, value) => {
+					return new Promise((resolve, reject) => {
+						items[item] = value;
+						resolve(value);
+					});
+				}),
+				getAllKeys: jest.fn(callback => {
+					callback(null, Object.keys(items));
+				}),
+				multiGet: jest.fn((keys, callback) => {
+					const values = keys.map(key => [key, items[key] || null]);
+					callback && callback(null, values);
 
-						return values;
-					}),
-				},
+					return values;
+				}),
 			}));
 
 			const StorageHelper = require('../src/StorageHelper-rn.js').default;
@@ -86,13 +82,11 @@ describe('React native storage helper unit tests', () => {
 		});
 
 		test('Get all keys throws errors', () => {
-			jest.mock('react-native', () => ({
-				AsyncStorage: {
-					getAllKeys: jest.fn(callback => {
-						const err = ['errKey'];
-						callback(err, null);
-					}),
-				},
+			jest.mock('@react-native-async-storage/async-storage', () => ({
+				getAllKeys: jest.fn(callback => {
+					const err = ['errKey'];
+					callback(err, null);
+				}),
 			}));
 
 			const StorageHelper = require('../src/StorageHelper-rn.js').default;
@@ -103,19 +97,17 @@ describe('React native storage helper unit tests', () => {
 		});
 		test('Multiget throws errors', () => {
 			var items = {};
-			jest.mock('react-native', () => ({
-				AsyncStorage: {
-					getAllKeys: jest.fn(callback => {
-						callback(null, Object.keys(items));
-					}),
-					multiGet: jest.fn((keys, callback) => {
-						const values = keys.map(key => [key, items[key] || null]);
-						const err = new Error('Storage Error');
-						callback && callback(err, null);
+			jest.mock('@react-native-async-storage/async-storage', () => ({
+				getAllKeys: jest.fn(callback => {
+					callback(null, Object.keys(items));
+				}),
+				multiGet: jest.fn((keys, callback) => {
+					const values = keys.map(key => [key, items[key] || null]);
+					const err = new Error('Storage Error');
+					callback && callback(err, null);
 
-						return values;
-					}),
-				},
+					return values;
+				}),
 			}));
 
 			const StorageHelper = require('../src/StorageHelper-rn.js').default;
