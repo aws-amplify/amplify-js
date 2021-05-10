@@ -38,6 +38,7 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
 ```
 // React Native
 yarn add aws-amplify amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage
+npx pod-install
 
 // Expo
 yarn add aws-amplify @react-native-community/netinfo @react-native-async-storage/async-storage
