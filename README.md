@@ -33,7 +33,7 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
 
 ### Amplify 4.x.x has breaking changes for React Native. Please see the breaking changes below:
 
-- If you are using React Native or Expo, you will need add `@react-native-async-storage/async-storage` as a dependency to your application, in addition to the other React Naive dependencies:
+- If you are using React Native or Expo, you will need add `@react-native-async-storage/async-storage` as a dependency to your application, in addition to the other React Native dependencies:
 
 ```
 // React Native
