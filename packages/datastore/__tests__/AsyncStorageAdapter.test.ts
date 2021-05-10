@@ -4,7 +4,7 @@ import {
 	initSchema as initSchemaType,
 } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
-import { Model, testSchema } from './helpers';
+import { Model, User, Profile, testSchema } from './helpers';
 import { Predicates } from '../src/predicates';
 
 let initSchema: typeof initSchemaType;
@@ -121,6 +121,52 @@ describe('AsyncStorageAdapter tests', () => {
 			expect(results.length).toEqual(3);
 			expect(spyOnGetAll).toHaveBeenCalled();
 			expect(spyOnMemory).not.toHaveBeenCalled();
+		});
+	});
+	describe('Delete', () => {
+		let User: PersistentModelConstructor<User>;
+		let Profile: PersistentModelConstructor<Profile>;
+		let profile1Id: string;
+		let user1Id: string;
+
+		beforeAll(async () => {
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			({ User } = classes as {
+				User: PersistentModelConstructor<User>;
+			});
+
+			({ Profile } = classes as {
+				Profile: PersistentModelConstructor<Profile>;
+			});
+
+			({ id: profile1Id } = await DataStore.save(
+				new Profile({ firstName: 'Rick', lastName: 'Bob' })
+			));
+
+			({ id: user1Id } = await DataStore.save(
+				new User({ name: 'test', profileID: profile1Id })
+			));
+		});
+
+		it('Should perform a cascading delete on a record with a Has One relationship', async () => {
+			let user = await DataStore.query(User, user1Id);
+			let profile = await DataStore.query(Profile, profile1Id);
+
+			// double-checking that both of the records exist at first
+			expect(user.id).toEqual(user1Id);
+			expect(profile.id).toEqual(profile1Id);
+
+			await DataStore.delete(User, user1Id);
+
+			user = await DataStore.query(User, user1Id);
+			profile = await DataStore.query(Profile, profile1Id);
+
+			// both should be undefined, even though we only explicitly deleted the user
+			expect(user).toBeUndefined;
+			expect(profile).toBeUndefined;
 		});
 	});
 });

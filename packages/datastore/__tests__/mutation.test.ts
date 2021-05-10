@@ -154,7 +154,16 @@ async function instantiateMutationProcessor() {
 		userClasses,
 		outbox as any,
 		modelInstanceCreator,
-		{} as any
+		{} as any,
+		{
+			aws_project_region: 'us-west-2',
+			aws_appsync_graphqlEndpoint:
+				'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
+			aws_appsync_region: 'us-west-2',
+			aws_appsync_authenticationType: 'API_KEY',
+			aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
+		},
+		() => null
 	);
 
 	(mutationProcessor as any).observer = true;

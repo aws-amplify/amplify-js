@@ -20,6 +20,7 @@ import {
 	SchemaNamespace,
 	TypeConstructorMap,
 	ModelPredicate,
+	AuthModeStrategy,
 } from '../types';
 import { exhaustiveCheck, getNow, SYNC } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
@@ -107,7 +108,8 @@ export class SyncEngine {
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
-		private readonly amplifyConfig: Record<string, any> = {}
+		private readonly amplifyConfig: Record<string, any> = {},
+		private readonly authModeStrategy: AuthModeStrategy
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -126,12 +128,15 @@ export class SyncEngine {
 			this.schema,
 			this.maxRecordsToSync,
 			this.syncPageSize,
-			this.syncPredicates
+			this.syncPredicates,
+			this.amplifyConfig,
+			this.authModeStrategy
 		);
 		this.subscriptionsProcessor = new SubscriptionProcessor(
 			this.schema,
 			this.syncPredicates,
-			this.amplifyConfig
+			this.amplifyConfig,
+			this.authModeStrategy
 		);
 		this.mutationsProcessor = new MutationProcessor(
 			this.schema,
@@ -140,6 +145,8 @@ export class SyncEngine {
 			this.outbox,
 			this.modelInstanceCreator,
 			MutationEvent,
+			this.amplifyConfig,
+			this.authModeStrategy,
 			conflictHandler,
 			errorHandler
 		);

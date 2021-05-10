@@ -37,6 +37,17 @@ export declare class Comment {
 	public readonly post: Post;
 }
 
+export declare class User {
+	public readonly id: string;
+	public readonly name: string;
+	public readonly profileID: string;
+}
+export declare class Profile {
+	public readonly id: string;
+	public readonly firstName: string;
+	public readonly lastName: string;
+}
+
 export function testSchema(): Schema {
 	return {
 		enums: {},
@@ -204,6 +215,88 @@ export function testSchema(): Schema {
 						isRequired: true,
 					},
 				},
+			},
+			User: {
+				name: 'User',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					name: {
+						name: 'name',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					profileID: {
+						name: 'profileID',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					profile: {
+						name: 'profile',
+						isArray: false,
+						type: {
+							model: 'Profile',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'HAS_ONE',
+							associatedWith: 'id',
+							targetName: 'profileID',
+						},
+					},
+				},
+				syncable: true,
+				pluralName: 'Users',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
+			Profile: {
+				name: 'Profile',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					firstName: {
+						name: 'firstName',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					lastName: {
+						name: 'lastName',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'Profiles',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
 			},
 		},
 		nonModels: {
