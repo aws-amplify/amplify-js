@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.6.1](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.6.0...amazon-cognito-identity-js@4.6.1) (2021-05-06)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** resolve missing getRandomBase64 implementation in expo >= 41  ([#8162](https://github.com/aws-amplify/amplify-js/issues/8162)) ([2d4052d](https://github.com/aws-amplify/amplify-js/commit/2d4052da555709fe0f759fecb2df4b4b9604461c))
+
+
+
+
+
 # [4.6.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.14...amazon-cognito-identity-js@4.6.0) (2021-03-18)
 
 
