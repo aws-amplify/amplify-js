@@ -3,6 +3,91 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.10.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.16...@aws-amplify/datastore@2.10.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** correctly processing Delta Sync query response in RN ([#8196](https://github.com/aws-amplify/amplify-js/issues/8196)) ([9883974](https://github.com/aws-amplify/amplify-js/commit/98839741055ef9934565d49599e74c78e3812bba))
+* **@aws-amplify/datastore:** fix hasOne delete ([#8191](https://github.com/aws-amplify/amplify-js/issues/8191)) ([d16a8fb](https://github.com/aws-amplify/amplify-js/commit/d16a8fbc5862281121812b1f8fc7af8bb001190d))
+* **@aws-amplify/datastore:** log subscription error instead of throwing ([#8229](https://github.com/aws-amplify/amplify-js/issues/8229)) ([403de44](https://github.com/aws-amplify/amplify-js/commit/403de44496d17614a542fbcb98bab8b99898bab6))
+* **@aws-amplify/datastore:** Update CCI config & logger warning format ([#8231](https://github.com/aws-amplify/amplify-js/issues/8231)) ([d3462aa](https://github.com/aws-amplify/amplify-js/commit/d3462aab1dd4916dd757bc1c80f9a944e0bb82dd))
+
+
+### Features
+
+* **@aws-amplify/datastore:** DataStore - Multi-Auth ([#8008](https://github.com/aws-amplify/amplify-js/issues/8008)) ([dedd564](https://github.com/aws-amplify/amplify-js/commit/dedd5641dfcfce209433088fe9570874cd810997))
+
+
+
+
+
+## [2.9.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.15...@aws-amplify/datastore@2.9.16) (2021-04-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** add additional type check to util.objectsEqual ([#8027](https://github.com/aws-amplify/amplify-js/issues/8027)) ([dee1971](https://github.com/aws-amplify/amplify-js/commit/dee1971285682170dc1828204273d34a69145aa3))
+* **@aws-amplify/datastore:** consecutive saves ([#8000](https://github.com/aws-amplify/amplify-js/issues/8000)) ([7b478a5](https://github.com/aws-amplify/amplify-js/commit/7b478a58b73d8f321523d3a80a9b85e88afcc5d0))
+* **@aws-amplify/datastore:** consecutive saves 2 ([#8038](https://github.com/aws-amplify/amplify-js/issues/8038)) ([a15b8f0](https://github.com/aws-amplify/amplify-js/commit/a15b8f044597da68442e4c51e67c35772aed1d7c))
+* **@aws-amplify/datastore:** handle merging queued create with incoming update ([#8102](https://github.com/aws-amplify/amplify-js/issues/8102)) ([d84cf34](https://github.com/aws-amplify/amplify-js/commit/d84cf34d32e077554951e2fd7a383c6cfe3f536c))
+* **@aws-amplify/datastore:** Retry mutation after GraphQL request timeout due to bad network condition. ([#6542](https://github.com/aws-amplify/amplify-js/issues/6542)) ([9fe6b7f](https://github.com/aws-amplify/amplify-js/commit/9fe6b7fa58aadb061a742b32c6a9cc1fd76dae6d))
+
+
+
+
+
+## [2.9.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.14...@aws-amplify/datastore@2.9.15) (2021-03-25)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** fix consecutive updates ([#7354](https://github.com/aws-amplify/amplify-js/issues/7354)) ([efd2e41](https://github.com/aws-amplify/amplify-js/commit/efd2e41d13fa6417ecddf153d7d0461060e45621))
+* **@aws-amplify/datastore:** keep syncing when subs disabled ([#7987](https://github.com/aws-amplify/amplify-js/issues/7987)) ([0e8968f](https://github.com/aws-amplify/amplify-js/commit/0e8968f9125b1b5f76389abe3d77986c1f65e32f))
+* **@aws-amplify/datastore:** update mutation input - use diff with DB instead of patches ([#7935](https://github.com/aws-amplify/amplify-js/issues/7935)) ([638c94d](https://github.com/aws-amplify/amplify-js/commit/638c94de30df179ef5f0d03ac8c97cecb683bb53))
+
+
+
+
+
+## [2.9.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.13...@aws-amplify/datastore@2.9.14) (2021-03-18)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.12...@aws-amplify/datastore@2.9.13) (2021-03-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** handle sync query unauthorized ([#7926](https://github.com/aws-amplify/amplify-js/issues/7926)) ([4b37112](https://github.com/aws-amplify/amplify-js/commit/4b371125fa60362b2e4a648e0cb18b8f8a853956))
+
+
+
+
+
+## [2.9.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.11...@aws-amplify/datastore@2.9.12) (2021-03-08)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [2.9.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.10...@aws-amplify/datastore@2.9.11) (2021-03-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** return partial data when available ([#7775](https://github.com/aws-amplify/amplify-js/issues/7775)) ([715aa7e](https://github.com/aws-amplify/amplify-js/commit/715aa7e1d8ea1797784d37ab706c12b133fca4f0))
+
+
+
+
+
 ## [2.9.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@2.9.9...@aws-amplify/datastore@2.9.10) (2021-02-25)
 
 

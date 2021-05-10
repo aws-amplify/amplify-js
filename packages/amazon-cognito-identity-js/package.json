@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "4.5.12",
+  "version": "4.6.1",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
@@ -52,13 +52,16 @@
     "doc": "jsdoc src -d docs",
     "lint": "eslint src",
     "lint2": "eslint enhance-rn.js",
-    "test": "jest -w 1",
+    "test": "jest --config ./jest.config.js",
     "format": "echo \"Not implemented\""
   },
   "main": "lib/index.js",
   "react-native": {
     "lib/index.js": "./enhance-rn.js",
     "./src/StorageHelper": "./src/StorageHelper-rn.js"
+  },
+  "browser": {
+    "crypto": false
   },
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
@@ -74,6 +77,7 @@
     "@babel/cli": "^7.7.4",
     "@babel/core": "^7.7.4",
     "@babel/preset-env": "^7.7.4",
+    "@babel/preset-react": "^7.0.0",
     "@react-native-async-storage/async-storage": "^1.13.0",
     "babel-loader": "^8.0.6",
     "cross-env": "^3.1.4",

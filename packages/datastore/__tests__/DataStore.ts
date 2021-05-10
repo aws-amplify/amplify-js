@@ -438,7 +438,7 @@ describe('DataStore tests', () => {
 			const result = await DataStore.save(model);
 
 			const [settingsSave, modelSave, modelUpdate] = <any>save.mock.calls;
-			const [_model, _condition, _mutator, patches] = modelUpdate;
+			const [_model, _condition, _mutator, [patches]] = modelUpdate;
 
 			const expectedPatches = [
 				{ op: 'replace', path: ['field1'], value: 'edited' },
@@ -505,8 +505,8 @@ describe('DataStore tests', () => {
 				save.mock.calls
 			);
 
-			const [_model, _condition, _mutator, patches] = modelUpdate;
-			const [_model2, _condition2, _mutator2, patches2] = modelUpdate2;
+			const [_model, _condition, _mutator, [patches]] = modelUpdate;
+			const [_model2, _condition2, _mutator2, [patches2]] = modelUpdate2;
 
 			const expectedPatches = [
 				{

@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.18...@aws-amplify/analytics@4.0.19) (2021-05-06)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.17...@aws-amplify/analytics@4.0.18) (2021-04-15)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.16...@aws-amplify/analytics@4.0.17) (2021-03-25)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.15...@aws-amplify/analytics@4.0.16) (2021-03-18)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.14...@aws-amplify/analytics@4.0.15) (2021-03-12)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.13...@aws-amplify/analytics@4.0.14) (2021-03-08)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
+## [4.0.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.12...@aws-amplify/analytics@4.0.13) (2021-03-03)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+
+
+
+
 ## [4.0.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@4.0.11...@aws-amplify/analytics@4.0.12) (2021-02-25)
 
 **Note:** Version bump only for package @aws-amplify/analytics

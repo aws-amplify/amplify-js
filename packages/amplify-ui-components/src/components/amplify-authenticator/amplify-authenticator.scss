@@ -12,25 +12,25 @@
  * @prop --container-align: `align-items` property of a flex container
  */
 :host {
-  --background-color: var(--amplify-background-color);
-  --width: 28.75rem;
-  --min-width: 20rem;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  --box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.15);
-  --border-radius: 6px;
-  --padding: 35px 40px;
-  --margin-bottom: 20px;
+	--background-color: var(--amplify-background-color);
+	--width: 28.75rem;
+	--min-width: 20rem;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	--box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.15);
+	--border-radius: 6px;
+	--padding: 35px 40px;
+	--margin-bottom: 20px;
 
-  --container-height: 100vh;
-  --container-display: flex;
-  --container-justify: center;
-  --container-align: center;
+	--container-height: 100vh;
+	--container-display: flex;
+	--container-justify: center;
+	--container-align: center;
 }
 
 .auth-container {
-  display: var(--container-display);
-  justify-content: var(--container-justify);
-  align-items: var(--container-align);
-  min-height: var(--container-height);
+	display: var(--container-display);
+	justify-content: var(--container-justify);
+	align-items: var(--container-align);
+	min-height: var(--container-height);
 }
