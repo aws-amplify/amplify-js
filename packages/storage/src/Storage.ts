@@ -195,6 +195,14 @@ export class Storage {
 		}
 	}
 
+	/**
+	 * Copies a file from the src key to dest key.
+	 *
+	 * @param {string} src - key of the source object.
+	 * @param {string} dest - key of the destination object.
+	 * @param {any} [config] - config.
+	 * @return {Promise<any>} - A promise resolves to the copied object's key.
+	 */
 	public copy(src: string, dest: string, config?): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(

@@ -48,6 +48,7 @@ const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
 typeof Symbol.for === 'function'
 	? Symbol.for('amplify_default')
 	: '@@amplify_default') as Symbol;
+const SET_CONTENT_LENGTH_HEADER = 'contentLengthMiddleware';
 
 const dispatchStorageEvent = (
 	track: boolean,
@@ -198,7 +199,7 @@ export class AWSS3Provider implements StorageProvider {
 
 		const emitter = new events.EventEmitter();
 		const s3 = this._createNewS3Client(opt, emitter);
-		s3.middlewareStack.remove('contentLengthMiddleware');
+		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		const copier = new AWSS3ProviderMultipartCopier({
 			params,
 			emitter,
