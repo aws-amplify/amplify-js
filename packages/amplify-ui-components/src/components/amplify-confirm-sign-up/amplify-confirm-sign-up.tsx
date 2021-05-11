@@ -111,7 +111,7 @@ export class AmplifyConfirmSignUp {
 				handleInputChange: this.handleFormFieldInputChange(
 					`${this.usernameAlias}`
 				),
-				value: this.userInput,
+				value: this.userInput ? this.userInput : '',
 				disabled: this.userInput ? true : false,
 				inputProps: { autocomplete: 'username' },
 			},
@@ -253,13 +253,11 @@ export class AmplifyConfirmSignUp {
 		this.loading = true;
 
 		try {
-			const username = this.getUsername();
+			let username = this.getUsername();
 			if (!username) throw new Error(Translations.EMPTY_USERNAME);
+			username = username.trim();
 
-			const confirmSignUpResult = await Auth.confirmSignUp(
-				username.trim(),
-				this.code
-			);
+			const confirmSignUpResult = await Auth.confirmSignUp(username, this.code);
 
 			if (!confirmSignUpResult) {
 				throw new Error(I18n.get(Translations.CONFIRM_SIGN_UP_FAILED));
@@ -271,7 +269,7 @@ export class AmplifyConfirmSignUp {
 			) {
 				// Auto sign in user if password is available from previous workflow
 				await handleSignIn(
-					this.userInput,
+					username,
 					this._signUpAttrs.password,
 					this.handleAuthStateChange
 				);
