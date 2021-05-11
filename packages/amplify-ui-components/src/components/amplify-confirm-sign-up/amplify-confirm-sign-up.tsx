@@ -113,6 +113,7 @@ export class AmplifyConfirmSignUp {
 				),
 				value: this.userInput,
 				disabled: this.userInput ? true : false,
+				inputProps: { autocomplete: 'username' },
 			},
 			{
 				type: 'code',
@@ -233,9 +234,7 @@ export class AmplifyConfirmSignUp {
 		try {
 			const username = this.getUsername();
 			if (!username) throw new Error(Translations.EMPTY_USERNAME);
-
 			await Auth.resendSignUp(username.trim());
-			this.handleAuthStateChange(AuthState.ConfirmSignUp);
 		} catch (error) {
 			dispatchToastHubEvent(error);
 		}

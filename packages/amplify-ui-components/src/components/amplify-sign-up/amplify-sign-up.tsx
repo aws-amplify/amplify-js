@@ -71,8 +71,8 @@ export class AmplifySignUp {
 	/** Auth state change handler for this component
 	 * e.g. SignIn -> 'Create Account' link -> SignUp
 	 */
-	@Prop()
-	handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
+	// prettier-ignore
+	@Prop() handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 	/** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
 	@Prop() usernameAlias: UsernameAliasStrings = 'username';
 	// private userInput: string | PhoneNumberInterface;
@@ -194,6 +194,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('email'),
 						inputProps: {
 							'data-test': 'sign-up-email-input',
+							autocomplete: 'username',
 						},
 					},
 					{
@@ -203,6 +204,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('password'),
 						inputProps: {
 							'data-test': 'sign-up-password-input',
+							autocomplete: 'new-password',
 						},
 					},
 					{
@@ -211,6 +213,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('phone_number'),
 						inputProps: {
 							'data-test': 'sign-up-phone-number-input',
+							autocomplete: 'tel-national',
 						},
 					},
 				];
@@ -223,6 +226,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('phone_number'),
 						inputProps: {
 							'data-test': 'sign-up-phone-number-input',
+							autocomplete: 'username',
 						},
 					},
 					{
@@ -232,6 +236,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('password'),
 						inputProps: {
 							'data-test': 'sign-up-password-input',
+							autocomplete: 'new-password',
 						},
 					},
 					{
@@ -241,6 +246,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('email'),
 						inputProps: {
 							'data-test': 'sign-up-email-input',
+							autocomplete: 'email',
 						},
 					},
 				];
@@ -255,6 +261,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('username'),
 						inputProps: {
 							'data-test': 'sign-up-username-input',
+							autocomplete: 'username',
 						},
 					},
 					{
@@ -264,6 +271,7 @@ export class AmplifySignUp {
 						handleInputChange: this.handleFormFieldInputChange('password'),
 						inputProps: {
 							'data-test': 'sign-up-password-input',
+							autocomplete: 'new-password',
 						},
 					},
 					{
