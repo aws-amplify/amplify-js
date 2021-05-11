@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.6.1...amazon-cognito-identity-js@5.0.0) (2021-05-11)
+
+
+* chore!: Upgrade to @react-native-async-storage/async-storage (#8250) ([1de4853](https://github.com/aws-amplify/amplify-js/commit/1de48531b68e3c53c3b7dbf4487da4578cb79888)), closes [#8250](https://github.com/aws-amplify/amplify-js/issues/8250)
+
+
+### BREAKING CHANGES
+
+* Upgrade from React Native AsyncStorage to @react-native-async-storage/async-storage
+
+Co-authored-by: Ashish Nanda <ashish.nanda.5591@gmail.com>
+Co-authored-by: Ivan Artemiev <29709626+iartemiev@users.noreply.github.com>
+
+
+
+
+
 ## [4.6.1](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.6.0...amazon-cognito-identity-js@4.6.1) (2021-05-06)
 
 

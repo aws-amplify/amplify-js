@@ -31,7 +31,20 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
 
 ## Notice:
 
-### Amplify@3.x.x has breaking changes. Please see the breaking changes below:
+### Amplify 4.x.x has breaking changes for React Native. Please see the breaking changes below:
+
+- If you are using React Native or Expo, you will need add `@react-native-async-storage/async-storage` as a dependency to your application, in addition to the other React Native dependencies:
+
+```
+// React Native
+yarn add aws-amplify amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage
+npx pod-install
+
+// Expo
+yarn add aws-amplify @react-native-community/netinfo @react-native-async-storage/async-storage
+```
+
+### Amplify 3.x.x has breaking changes. Please see the breaking changes below:
 
 - `AWS.credentials` and `AWS.config` don’t exist anymore anywhere in Amplify JavaScript.
   - Both options will not be available to use in version 3. You will not be able to use and set your own credentials.
