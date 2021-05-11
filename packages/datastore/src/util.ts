@@ -17,6 +17,7 @@ import {
 	SchemaNamespace,
 	SortPredicatesGroup,
 	SortDirection,
+	isModelAttributeCompositeKey,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
 
@@ -158,22 +159,43 @@ export const establishRelation = (
 			}
 		});
 
-		// create indexes from key fields
+		const createCompositeKeysMap = (
+			compositeKeys = {},
+			fields: string[]
+		): { [key: string]: string[] } => {
+			for (const field of fields) {
+				const rest = fields.filter(f => f !== field);
+				if (field in compositeKeys) {
+					compositeKeys[field] = [
+						...new Set([...compositeKeys[field], ...rest]),
+					];
+					continue;
+				}
+				compositeKeys[field] = rest;
+			}
+			return compositeKeys;
+		};
+
 		if (model.attributes) {
-			model.attributes.forEach(attribute => {
+			for (const attribute of model.attributes) {
+				if (isModelAttributeCompositeKey(attribute)) {
+					model.compositeKeys = createCompositeKeysMap(
+						model.compositeKeys,
+						attribute.properties.fields
+					);
+				}
+
 				if (attribute.type === 'key') {
-					const { fields } = attribute.properties;
-					if (fields) {
-						fields.forEach(field => {
-							// only add index if it hasn't already been added
-							const exists = relationship[mKey].indexes.includes(field);
-							if (!exists) {
-								relationship[mKey].indexes.push(field);
-							}
-						});
+					const { fields = [] } = attribute.properties;
+					for (const field of fields) {
+						// only add index if it hasn't already been added
+						const exists = relationship[mKey].indexes.includes(field);
+						if (!exists) {
+							relationship[mKey].indexes.push(field);
+						}
 					}
 				}
-			});
+			}
 		}
 	});
 
