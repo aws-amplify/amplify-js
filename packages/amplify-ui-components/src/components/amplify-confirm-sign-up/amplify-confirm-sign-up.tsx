@@ -111,7 +111,7 @@ export class AmplifyConfirmSignUp {
 				handleInputChange: this.handleFormFieldInputChange(
 					`${this.usernameAlias}`
 				),
-				value: this.userInput ? this.userInput : '',
+				value: this.userInput,
 				disabled: this.userInput ? true : false,
 				inputProps: { autocomplete: 'username' },
 			},
