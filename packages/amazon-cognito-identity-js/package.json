@@ -1,7 +1,7 @@
 {
   "name": "amazon-cognito-identity-js",
   "description": "Amazon Cognito Identity Provider JavaScript SDK",
-  "version": "4.6.1",
+  "version": "5.0.0",
   "author": {
     "name": "Amazon Web Services",
     "email": "aws@amazon.com",
@@ -96,6 +96,6 @@
     "webpack": "^3.5.5"
   },
   "peerDependencies": {
-		"@react-native-async-storage/async-storage": "^1.13.0"
-	}
+    "@react-native-async-storage/async-storage": "^1.13.0"
+  }
 }
