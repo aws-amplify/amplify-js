@@ -1,7 +1,7 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n } from '@aws-amplify/core';
 import { Component, Prop, State, h, Host, Watch } from '@stencil/core';
-import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
+import { FormFieldType, FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
 	AuthState,
 	MfaOption,
@@ -112,6 +112,27 @@ export class AmplifyConfirmSignIn {
 		}
 	}
 
+	private constructFormFieldOptions(formFields: FormFieldTypes | string[]) {
+		const content = [];
+
+		if (formFields === undefined) return undefined;
+
+		formFields.forEach((formField: FormFieldType | string) => {
+			if (typeof formField === 'string') {
+				content.push(formField);
+			} else {
+				content.push({
+					type: 'code',
+					required: true,
+					handleInputChange: event => this.handleCodeChange(event),
+					...formField as FormFieldType,
+				});
+			}
+		});
+
+		return content;
+	}
+
 	render() {
 		return (
 			<Host>
@@ -131,7 +152,7 @@ export class AmplifyConfirmSignIn {
 						</span>
 					}
 				>
-					<amplify-auth-fields formFields={this.formFields} />
+					<amplify-auth-fields formFields={this.constructFormFieldOptions(this.formFields)} />
 				</amplify-form-section>
 			</Host>
 		);
