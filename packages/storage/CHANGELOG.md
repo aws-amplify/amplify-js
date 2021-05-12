@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.4.1...@aws-amplify/storage@3.4.2) (2021-05-11)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [3.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.4.0...@aws-amplify/storage@3.4.1) (2021-05-06)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+# [3.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.29...@aws-amplify/storage@3.4.0) (2021-04-15)
+
+
+### Features
+
+* **@aws-amplify/storage:** Make get and put requests cancellable ([c1ce5ac](https://github.com/aws-amplify/amplify-js/commit/c1ce5ac25cf79cfe649ed5676ef62ef7f283febe))
+
+
+
+
+
 ## [3.3.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.28...@aws-amplify/storage@3.3.29) (2021-03-25)
 
 **Note:** Version bump only for package @aws-amplify/storage

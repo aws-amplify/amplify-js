@@ -14,7 +14,7 @@
 import { HttpHandlerOptions } from '@aws-sdk/types';
 import { HttpHandler, HttpRequest, HttpResponse } from '@aws-sdk/protocol-http';
 import { buildQueryString } from '@aws-sdk/querystring-builder';
-import axios, { AxiosRequestConfig, Method } from 'axios';
+import axios, { AxiosRequestConfig, Method, CancelTokenSource } from 'axios';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { FetchHttpHandlerOptions } from '@aws-sdk/fetch-http-handler';
 
@@ -24,7 +24,8 @@ export const SEND_PROGRESS_EVENT = 'sendProgress';
 export class AxiosHttpHandler implements HttpHandler {
 	constructor(
 		private readonly httpOptions: FetchHttpHandlerOptions = {},
-		private readonly emitter?: any
+		private readonly emitter?: any,
+		private readonly cancelTokenSource?: CancelTokenSource
 	) {}
 
 	destroy(): void {
@@ -88,6 +89,10 @@ export class AxiosHttpHandler implements HttpHandler {
 				emitter.emit(SEND_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
+		}
+		// If a cancel token source is passed down from the provider, allows cancellation of in-flight requests
+		if (this.cancelTokenSource) {
+			axiosRequest.cancelToken = this.cancelTokenSource.token;
 		}
 
 		// From gamma release, aws-sdk now expects all response type to be of blob or streams
