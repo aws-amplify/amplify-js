@@ -15,8 +15,8 @@ describe('import * keys', () => {
 		  "CognitoUserSession",
 		  "CookieStorage",
 		  "DateHelper",
-		  "WordArray",
 		  "appendToCognitoUserAgent",
+		  "WordArray",
 		]
 	`);
 	});
