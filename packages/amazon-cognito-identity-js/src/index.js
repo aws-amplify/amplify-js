@@ -26,4 +26,5 @@ export { default as CognitoUserPool } from './CognitoUserPool';
 export { default as CognitoUserSession } from './CognitoUserSession';
 export { default as CookieStorage } from './CookieStorage';
 export { default as DateHelper } from './DateHelper';
+export { default as WordArray } from './utils/WordArray';
 export { appendToCognitoUserAgent } from './UserAgent';
