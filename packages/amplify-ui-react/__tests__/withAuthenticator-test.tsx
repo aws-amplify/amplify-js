@@ -9,7 +9,7 @@ describe('withAuthenticator', () => {
 		const Wrapped = withAuthenticator(App);
 
 		expect(renderToStaticMarkup(<Wrapped />)).toMatchInlineSnapshot(
-			`"<amplify-container><amplify-authenticator></amplify-authenticator></amplify-container>"`
+			`"<amplify-container><amplify-auth-container><amplify-authenticator></amplify-authenticator></amplify-auth-container></amplify-container>"`
 		);
 	});
 
@@ -22,9 +22,9 @@ describe('withAuthenticator', () => {
 
 		const Wrapped = withAuthenticator(Dummy);
 
-		expect(renderToStaticMarkup(<Wrapped prop1={mockProp}/>)).toMatchInlineSnapshot(
-			`"<div>${mockProp}</div>"`
-		);
+		expect(
+			renderToStaticMarkup(<Wrapped prop1={mockProp} />)
+		).toMatchInlineSnapshot(`"<div>${mockProp}</div>"`);
 
 		useStateSpy.mockRestore();
 	});
