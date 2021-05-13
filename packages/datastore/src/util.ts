@@ -1,5 +1,4 @@
 import { Buffer } from 'buffer';
-import CryptoJS from 'crypto-js/core';
 import { monotonicFactory, ULID } from 'ulid';
 import { v4 as uuid } from 'uuid';
 import { ModelInstanceCreator } from './datastore/datastore';
