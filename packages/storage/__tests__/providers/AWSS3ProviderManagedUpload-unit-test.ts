@@ -128,7 +128,7 @@ describe('multi part upload tests', () => {
 		// setup event handling
 		const emitter = new events.EventEmitter();
 		const eventSpy = sinon.spy();
-		emitter.on('sendProgress', eventSpy);
+		emitter.on('sendUploadProgress', eventSpy);
 
 		/** Extend our test class such that minPartSize is reasonable
 		 * and we can mock emit the progress events
@@ -140,7 +140,7 @@ describe('multi part upload tests', () => {
 				await super.uploadParts(uploadId, parts);
 				// Now trigger some notifications from the event listeners
 				for (const part of parts) {
-					part.emitter.emit('sendProgress', {
+					part.emitter.emit('sendUploadProgress', {
 						// Assume that the notification is sent when 100% of part is uploaded
 						loaded: part.bodyPart.length,
 					});
@@ -230,7 +230,7 @@ describe('multi part upload tests', () => {
 		// setup event handling
 		const emitter = new events.EventEmitter();
 		const eventSpy = sinon.spy();
-		emitter.on('sendProgress', eventSpy);
+		emitter.on('sendUploadProgress', eventSpy);
 
 		/** Extend our test class such that minPartSize is reasonable
 		 * and we can mock emit the progress events
@@ -242,7 +242,7 @@ describe('multi part upload tests', () => {
 				await super.uploadParts(uploadId, parts);
 				// Now trigger some notifications from the event listeners
 				for (const part of parts) {
-					part.emitter.emit('sendProgress', {
+					part.emitter.emit('sendUploadProgress', {
 						// Assume that the notification is send when 100% of part is uploaded
 						loaded: part.bodyPart.length,
 					});
