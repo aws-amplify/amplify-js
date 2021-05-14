@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as events from "events";
 
 import { AxiosHttpHandler } from '../../src/providers/axios-http-handler';
 
@@ -55,5 +56,18 @@ describe('AxiosHttpHandler', () => {
 				url: 'http://localhost:3000/',
 			});
 		});
+
+		it('should send upload or download progress to emitter', async () => {
+			const handler = new AxiosHttpHandler({}, new events.EventEmitter());
+			await handler.handle(request, options);
+			expect(axios.request).toHaveBeenLastCalledWith({
+				headers: {},
+				method: 'get',
+				responseType: 'blob',
+				url: 'http://localhost:3000/',
+				onUploadProgress: expect.any(Function),
+				onDownloadProgress: expect.any(Function),
+			})
+		})
 	});
 });
