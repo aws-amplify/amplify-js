@@ -29,7 +29,7 @@ import {
 	ListPartsCommand,
 	AbortMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
-import { AxiosHttpHandler, SEND_PROGRESS_EVENT } from './axios-http-handler';
+import { AxiosHttpHandler, SEND_UPLOAD_PROGRESS_EVENT } from './axios-http-handler';
 import * as events from 'events';
 import { streamCollector } from '@aws-sdk/fetch-http-handler';
 
@@ -268,7 +268,7 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	private setupEventListener(part: Part) {
-		part.emitter.on(SEND_PROGRESS_EVENT, progress => {
+		part.emitter.on(SEND_UPLOAD_PROGRESS_EVENT, progress => {
 			this.progressChanged(
 				part.partNumber,
 				progress.loaded - part._lastUploadedBytes
@@ -279,7 +279,7 @@ export class AWSS3ProviderManagedUpload {
 
 	private progressChanged(partNumber: number, incrementalUpdate: number) {
 		this.bytesUploaded += incrementalUpdate;
-		this.emitter.emit(SEND_PROGRESS_EVENT, {
+		this.emitter.emit(SEND_UPLOAD_PROGRESS_EVENT, {
 			loaded: this.bytesUploaded,
 			total: this.totalBytesToUpload,
 			part: partNumber,

@@ -19,7 +19,8 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { FetchHttpHandlerOptions } from '@aws-sdk/fetch-http-handler';
 
 const logger = new Logger('axios-http-handler');
-export const SEND_PROGRESS_EVENT = 'sendProgress';
+export const SEND_UPLOAD_PROGRESS_EVENT = 'sendProgress';
+export const SEND_DOWNLOAD_PROGRESS_EVENT = 'sendDownloadProgress';
 
 export class AxiosHttpHandler implements HttpHandler {
 	constructor(
@@ -86,9 +87,13 @@ export class AxiosHttpHandler implements HttpHandler {
 		}
 		if (emitter) {
 			axiosRequest.onUploadProgress = function(event) {
-				emitter.emit(SEND_PROGRESS_EVENT, event);
+				emitter.emit(SEND_UPLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
+			axiosRequest.onDownloadProgress = function(event) {
+				emitter.emit(SEND_DOWNLOAD_PROGRESS_EVENT, event);
+				logger.debug(event);
+			}
 		}
 		// If a cancel token source is passed down from the provider, allows cancellation of in-flight requests
 		if (this.cancelTokenSource) {

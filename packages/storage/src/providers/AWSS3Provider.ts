@@ -27,7 +27,7 @@ import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
-import { AxiosHttpHandler } from './axios-http-handler';
+import { AxiosHttpHandler, SEND_DOWNLOAD_PROGRESS_EVENT, SEND_UPLOAD_PROGRESS_EVENT } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import * as events from 'events';
 
@@ -138,10 +138,12 @@ export class AWSS3Provider implements StorageProvider {
 			contentType,
 			expires,
 			track,
+			progressCallback,
 		} = opt;
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
-		const s3 = this._createNewS3Client(opt);
+		const emitter = new events.EventEmitter();
+		const s3 = this._createNewS3Client(opt, emitter);
 		logger.debug('get ' + key + ' from ' + final_key);
 
 		const params: any = {
@@ -158,6 +160,18 @@ export class AWSS3Provider implements StorageProvider {
 		if (contentType) params.ResponseContentType = contentType;
 
 		if (download === true) {
+			emitter.on(SEND_DOWNLOAD_PROGRESS_EVENT, progress => {
+				if (progressCallback) {
+					if (typeof progressCallback === 'function') {
+						progressCallback(progress);
+					} else {
+						logger.warn(
+							'progressCallback should be a function, not a ' +
+								typeof progressCallback
+						);
+					}
+				}
+			})
 			const getObjectCommand = new GetObjectCommand(params);
 			try {
 				const response = await s3.send(getObjectCommand);
@@ -298,7 +312,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		try {
-			emitter.on('sendProgress', progress => {
+			emitter.on(SEND_UPLOAD_PROGRESS_EVENT, progress => {
 				if (progressCallback) {
 					if (typeof progressCallback === 'function') {
 						progressCallback(progress);
@@ -502,7 +516,7 @@ export class AWSS3Provider implements StorageProvider {
 	/**
 	 * @private creates an S3 client with new V3 aws sdk
 	 */
-	private _createNewS3Client(config, emitter?) {
+	private _createNewS3Client(config, emitter?: events.EventEmitter) {
 		const {
 			region,
 			credentials,
