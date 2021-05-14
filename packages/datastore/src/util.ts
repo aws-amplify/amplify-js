@@ -76,7 +76,7 @@ export const validatePredicate = <T extends PersistentModel>(
 	return isNegation ? !result : result;
 };
 
-const validatePredicateField = <T>(
+export const validatePredicateField = <T>(
 	value: T,
 	operator: keyof AllOperators,
 	operand: T | [T, T]
@@ -98,13 +98,18 @@ const validatePredicateField = <T>(
 			const [min, max] = <[T, T]>operand;
 			return value >= min && value <= max;
 		case 'beginsWith':
-			return (<string>(<unknown>value)).startsWith(<string>(<unknown>operand));
+			return (
+				!isNullOrUndefined(value) &&
+				(<string>(<unknown>value)).startsWith(<string>(<unknown>operand))
+			);
 		case 'contains':
 			return (
+				!isNullOrUndefined(value) &&
 				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) > -1
 			);
 		case 'notContains':
 			return (
+				isNullOrUndefined(value) ||
 				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) === -1
 			);
 		default:

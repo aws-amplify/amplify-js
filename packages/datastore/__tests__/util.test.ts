@@ -1,5 +1,4 @@
 import {
-	valuesEqual,
 	isAWSDate,
 	isAWSDateTime,
 	isAWSEmail,
@@ -9,9 +8,29 @@ import {
 	isAWSURL,
 	isAWSPhone,
 	isAWSIPAddress,
+	validatePredicateField,
+	valuesEqual,
 } from '../src/util';
 
 describe('datastore util', () => {
+
+	test('validatePredicateField', () => {
+		expect(validatePredicateField(undefined, 'contains', 'test')).toEqual(false);
+		expect(validatePredicateField(null, 'contains', 'test')).toEqual(false);
+		expect(validatePredicateField('some test', 'contains', 'test')).toEqual(true);
+
+		expect(validatePredicateField(undefined, 'beginsWith', 'test')).toEqual(false);
+		expect(validatePredicateField(null, 'beginsWith', 'test')).toEqual(false);
+		expect(validatePredicateField('some test', 'beginsWith', 'test')).toEqual(false);
+		expect(validatePredicateField('testing', 'beginsWith', 'test')).toEqual(true);
+
+		expect(validatePredicateField(undefined, 'notContains', 'test')).toEqual(true);
+		expect(validatePredicateField(null, 'notContains', 'test')).toEqual(true);
+		expect(validatePredicateField('abcdef', 'notContains', 'test')).toEqual(true);
+		expect(validatePredicateField('test', 'notContains', 'test')).toEqual(false);
+		expect(validatePredicateField('testing', 'notContains', 'test')).toEqual(false);
+	});
+
 	test('valuesEqual', () => {
 		expect(valuesEqual({}, {})).toEqual(true);
 		expect(valuesEqual([], [])).toEqual(true);
