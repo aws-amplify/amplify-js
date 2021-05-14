@@ -27,7 +27,11 @@ import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
-import { AxiosHttpHandler, SEND_DOWNLOAD_PROGRESS_EVENT, SEND_UPLOAD_PROGRESS_EVENT } from './axios-http-handler';
+import {
+	AxiosHttpHandler,
+	SEND_DOWNLOAD_PROGRESS_EVENT,
+	SEND_UPLOAD_PROGRESS_EVENT,
+} from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import * as events from 'events';
 
@@ -160,20 +164,25 @@ export class AWSS3Provider implements StorageProvider {
 		if (contentType) params.ResponseContentType = contentType;
 
 		if (download === true) {
-			emitter.on(SEND_DOWNLOAD_PROGRESS_EVENT, progress => {
-				if (progressCallback) {
-					if (typeof progressCallback === 'function') {
-						progressCallback(progress);
-					} else {
-						logger.warn(
-							'progressCallback should be a function, not a ' +
-								typeof progressCallback
-						);
-					}
-				}
-			})
 			const getObjectCommand = new GetObjectCommand(params);
 			try {
+				emitter.on(SEND_DOWNLOAD_PROGRESS_EVENT, progress => {
+					if (progressCallback) {
+						if (!download) {
+							logger.warn(
+								'progressCallback only works if download is set to true'
+							);
+						}
+						if (typeof progressCallback === 'function') {
+							progressCallback(progress);
+						} else {
+							logger.warn(
+								'progressCallback should be a function, not a ' +
+									typeof progressCallback
+							);
+						}
+					}
+				});
 				const response = await s3.send(getObjectCommand);
 				dispatchStorageEvent(
 					track,
