@@ -44,6 +44,19 @@ export const parseMobileHubConfig = (config): AmplifyConfig => {
 	} else {
 		storageConfig = config ? config.Storage || config : {};
 	}
+
+	// Logging
+	if (
+		config['aws_cloudwatch_log_group_name'] ||
+		config['aws_cloudwatch_log_stream_name']
+	) {
+		amplifyConfig.Logging = {
+			logGroupName: config['aws_cloudwatch_log_group_name'],
+			logStreamName: config['aws_cloudwatch_log_stream_name'],
+			region: config['aws_project_region'],
+		};
+	}
+
 	amplifyConfig.Analytics = Object.assign(
 		{},
 		amplifyConfig.Analytics,
@@ -51,6 +64,11 @@ export const parseMobileHubConfig = (config): AmplifyConfig => {
 	);
 	amplifyConfig.Auth = Object.assign({}, amplifyConfig.Auth, config.Auth);
 	amplifyConfig.Storage = Object.assign({}, storageConfig);
+	amplifyConfig.Logging = Object.assign(
+		{},
+		amplifyConfig.Logging,
+		config.Logging
+	);
 	logger.debug('parse config', config, 'to amplifyconfig', amplifyConfig);
 	return amplifyConfig;
 };

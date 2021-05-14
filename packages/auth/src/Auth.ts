@@ -35,7 +35,6 @@ import {
 
 import {
 	Amplify,
-	CloudWatchLogger,
 	ConsoleLogger as Logger,
 	Credentials,
 	Hub,
@@ -72,12 +71,6 @@ import { AuthError, NoUserPoolError } from './Errors';
 import { AuthErrorTypes, CognitoHostedUIIdentityProvider } from './types/Auth';
 
 const logger = new Logger('AuthClass');
-const cloudWatchLogger = new CloudWatchLogger({
-	name: 'cloudwatch',
-	region: 'us-west-2',
-	logGroupName: 'bingo-baby',
-	logStreamName: 'okie-dokie',
-});
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 
 // 10 sec, following this guide https://www.nngroup.com/articles/response-times-3-important-limits/
@@ -286,8 +279,6 @@ export class AuthClass {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
-
-		cloudWatchLogger.info('here we GOOOO!!!');
 
 		let username: string = null;
 		let password: string = null;

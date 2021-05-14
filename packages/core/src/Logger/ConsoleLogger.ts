@@ -35,13 +35,13 @@ export enum LOG_TYPE {
  */
 export class ConsoleLogger implements Logger {
 	name: string;
-	level: string;
+	level: LOG_TYPE | string;
 
 	/**
 	 * @constructor
 	 * @param {string} name - Name of the logger
 	 */
-	constructor(name, level = 'WARN') {
+	constructor(name: string, level: LOG_TYPE | string = LOG_TYPE.WARN) {
 		this.name = name;
 		this.level = level;
 	}

@@ -26,6 +26,7 @@ import {
 	pageViewTrackOpts,
 } from './types';
 import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
+import { AWSCloudWatchProvider } from '@aws-amplify/core';
 
 const logger = new Logger('AnalyticsClass');
 
@@ -121,6 +122,7 @@ export class AnalyticsClass {
 
 		if (this._pluggables.length === 0) {
 			this.addPluggable(new AWSPinpointProvider());
+			this.addPluggable(new AWSCloudWatchProvider());
 		}
 
 		dispatchAnalyticsEvent(

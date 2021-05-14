@@ -2,6 +2,7 @@ export interface AmplifyConfig {
 	Analytics?: object;
 	Auth?: object;
 	API?: object;
+	Logging?: object;
 	Storage?: object;
 	Cache?: object;
 	ssr?: boolean;
@@ -26,17 +27,16 @@ export type DelayFunction = (
 	error?: Error
 ) => number | false;
 
-export interface PromiseHandlers {
-	resolve: Function;
-	reject: Function;
-}
-
 export interface LoggingProvider {
-	// you need to implement those methods
-
-	// return 'Logging';
-	getCategory(): string;
-
 	// return the name of you provider
 	getProviderName(): string;
+
+	// return the name of you category
+	getCategoryName(): string;
+}
+
+export interface AWSCloudWatchProviderOptions {
+	logGroupName?: string;
+	logStreamName?: string;
+	region?: string;
 }

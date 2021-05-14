@@ -12,4 +12,4 @@
  */
 
 export * from './ConsoleLogger';
-export * from './CloudWatchLogger';
+export * from './CloudLogger';
