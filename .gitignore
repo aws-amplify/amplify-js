@@ -17,3 +17,4 @@ packages/**/cjs/
 .npm/
 packages/**/cypress/videos/
 yarn.lock
+package-lock.json

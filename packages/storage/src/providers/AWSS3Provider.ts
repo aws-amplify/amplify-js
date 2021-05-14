@@ -510,6 +510,7 @@ export class AWSS3Provider implements StorageProvider {
 		const {
 			region,
 			credentials,
+			cancelTokenSource,
 			dangerouslyConnectToHttpEndpointForTesting,
 		} = config;
 		let localTestingConfig = {};
@@ -528,7 +529,7 @@ export class AWSS3Provider implements StorageProvider {
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler({}, emitter),
+			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
 		});
 		return s3client;
 	}
