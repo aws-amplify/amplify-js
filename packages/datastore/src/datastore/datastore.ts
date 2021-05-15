@@ -9,6 +9,7 @@ import {
 } from 'immer';
 import { v4 as uuid4 } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
+import { defaultAuthStrategy, multiAuthStrategy } from '../authModeStrategies';
 import {
 	isPredicatesAll,
 	ModelPredicateCreator,
@@ -18,6 +19,7 @@ import {
 import { ExclusiveStorage as Storage } from '../storage/storage';
 import { ControlMessage, SyncEngine } from '../sync';
 import {
+	AuthModeStrategy,
 	ConflictHandler,
 	DataStoreConfig,
 	GraphQLScalarType,
@@ -46,6 +48,7 @@ import {
 	TypeConstructorMap,
 	ErrorHandler,
 	SyncExpression,
+	AuthModeStrategyType,
 } from '../types';
 import {
 	DATASTORE,
@@ -593,6 +596,7 @@ function getNamespace(): SchemaNamespace {
 
 class DataStore {
 	private amplifyConfig: Record<string, any> = {};
+	private authModeStrategy: AuthModeStrategy;
 	private conflictHandler: ConflictHandler;
 	private errorHandler: (error: SyncError) => void;
 	private fullSyncInterval: number;
@@ -659,7 +663,8 @@ class DataStore {
 				this.conflictHandler,
 				this.errorHandler,
 				this.syncPredicates,
-				this.amplifyConfig
+				this.amplifyConfig,
+				this.authModeStrategy
 			);
 
 			// tslint:disable-next-line:max-line-length
@@ -1051,6 +1056,7 @@ class DataStore {
 	configure = (config: DataStoreConfig = {}) => {
 		const {
 			DataStore: configDataStore,
+			authModeStrategyType: configAuthModeStrategyType,
 			conflictHandler: configConflictHandler,
 			errorHandler: configErrorHandler,
 			maxRecordsToSync: configMaxRecordsToSync,
@@ -1064,6 +1070,23 @@ class DataStore {
 
 		this.conflictHandler = this.setConflictHandler(config);
 		this.errorHandler = this.setErrorHandler(config);
+
+		const authModeStrategyType =
+			(configDataStore && configDataStore.authModeStrategyType) ||
+			configAuthModeStrategyType ||
+			AuthModeStrategyType.DEFAULT;
+
+		switch (authModeStrategyType) {
+			case AuthModeStrategyType.MULTI_AUTH:
+				this.authModeStrategy = multiAuthStrategy;
+				break;
+			case AuthModeStrategyType.DEFAULT:
+				this.authModeStrategy = defaultAuthStrategy;
+				break;
+			default:
+				this.authModeStrategy = defaultAuthStrategy;
+				break;
+		}
 
 		this.syncExpressions =
 			(configDataStore && configDataStore.syncExpressions) ||
