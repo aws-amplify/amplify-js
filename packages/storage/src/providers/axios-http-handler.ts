@@ -17,7 +17,7 @@ import { buildQueryString } from '@aws-sdk/querystring-builder';
 import axios, { AxiosRequestConfig, Method, CancelTokenSource } from 'axios';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { FetchHttpHandlerOptions } from '@aws-sdk/fetch-http-handler';
-import * as events from "events";
+import * as events from 'events';
 
 const logger = new Logger('axios-http-handler');
 export const SEND_UPLOAD_PROGRESS_EVENT = 'sendUploadProgress';
@@ -94,7 +94,7 @@ export class AxiosHttpHandler implements HttpHandler {
 			axiosRequest.onDownloadProgress = function(event) {
 				emitter.emit(SEND_DOWNLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
-			}
+			};
 		}
 		// If a cancel token source is passed down from the provider, allows cancellation of in-flight requests
 		if (this.cancelTokenSource) {

@@ -1,5 +1,5 @@
-import axios from 'axios';
-import * as events from "events";
+import axios, { CancelTokenSource } from 'axios';
+import * as events from 'events';
 
 import { AxiosHttpHandler } from '../../src/providers/axios-http-handler';
 
@@ -57,17 +57,54 @@ describe('AxiosHttpHandler', () => {
 			});
 		});
 
-		it('should send upload or download progress to emitter', async () => {
-			const handler = new AxiosHttpHandler({}, new events.EventEmitter());
+		it('should attach cancelToken to the request', async () => {
+			const mockCancelToken = jest.fn().mockImplementationOnce(() => ({
+				token: 'token',
+			}));
+			const handler = new AxiosHttpHandler({}, null, mockCancelToken());
 			await handler.handle(request, options);
+
 			expect(axios.request).toHaveBeenLastCalledWith({
+				headers: {},
+				method: 'get',
+				responseType: 'blob',
+				url: 'http://localhost:3000/',
+				cancelToken: 'token',
+			});
+		});
+
+		it('should track upload or download progress if emitter', async () => {
+			const mockEmit = jest.fn();
+			const mockEmitter = jest.fn().mockImplementationOnce(() => ({
+				emit: mockEmit,
+			}));
+			const handler = new AxiosHttpHandler({}, mockEmitter());
+			await handler.handle(request, options);
+			const lastCall =
+				axios.request.mock.calls[axios.request.mock.calls.length - 1][0];
+
+			expect(lastCall).toStrictEqual({
 				headers: {},
 				method: 'get',
 				responseType: 'blob',
 				url: 'http://localhost:3000/',
 				onUploadProgress: expect.any(Function),
 				onDownloadProgress: expect.any(Function),
-			})
-		})
+			});
+
+			// Invoke the request's onUploadProgress function manually
+			lastCall.onUploadProgress({ loaded: 10, total: 100 });
+			expect(mockEmit).toHaveBeenLastCalledWith('sendUploadProgress', {
+				loaded: 10,
+				total: 100,
+			});
+
+			// Invoke the request's onDownloadProgress function manually
+			lastCall.onDownloadProgress({ loaded: 10, total: 100 });
+			expect(mockEmit).toHaveBeenLastCalledWith('sendDownloadProgress', {
+				loaded: 10,
+				total: 100,
+			});
+		});
 	});
 });
