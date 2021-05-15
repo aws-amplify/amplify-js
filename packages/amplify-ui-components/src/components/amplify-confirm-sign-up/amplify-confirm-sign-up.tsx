@@ -209,6 +209,21 @@ export class AmplifyConfirmSignUp {
 		fnToCall(event, callback.bind(this));
 	}
 
+	/**
+	 * Returns the username of the user to confirm. If a valid `user.username` has been passed as a prop, we return that.
+	 * Otherwise, we return the `userInput` on the form.
+	 */
+	private getUsername(): string {
+		if (this.user && this.user.username) return this.user.username;
+		switch (this.usernameAlias) {
+			case 'username':
+			case 'email':
+				return this.userInput;
+			case 'phone_number':
+				return composePhoneNumberInput(this.phoneNumber);
+		}
+	}
+
 	private async resendConfirmCode() {
 		if (event) {
 			event.preventDefault();
@@ -217,9 +232,9 @@ export class AmplifyConfirmSignUp {
 			throw new Error(NO_AUTH_MODULE_FOUND);
 		}
 		try {
-			if (!this.userInput) throw new Error(Translations.EMPTY_USERNAME);
-			this.userInput = this.userInput.trim();
-			await Auth.resendSignUp(this.userInput);
+			const username = this.getUsername();
+			if (!username) throw new Error(Translations.EMPTY_USERNAME);
+			await Auth.resendSignUp(username.trim());
 		} catch (error) {
 			dispatchToastHubEvent(error);
 		}
@@ -237,23 +252,12 @@ export class AmplifyConfirmSignUp {
 
 		this.loading = true;
 
-		switch (this.usernameAlias) {
-			case 'phone_number':
-				try {
-					this.userInput = composePhoneNumberInput(this.phoneNumber);
-				} catch (error) {
-					dispatchToastHubEvent(error);
-				}
-			default:
-				break;
-		}
 		try {
-			if (!this.userInput) throw new Error(Translations.EMPTY_USERNAME);
-			this.userInput = this.userInput.trim();
-			const confirmSignUpResult = await Auth.confirmSignUp(
-				this.userInput,
-				this.code
-			);
+			let username = this.getUsername();
+			if (!username) throw new Error(Translations.EMPTY_USERNAME);
+			username = username.trim();
+
+			const confirmSignUpResult = await Auth.confirmSignUp(username, this.code);
 
 			if (!confirmSignUpResult) {
 				throw new Error(I18n.get(Translations.CONFIRM_SIGN_UP_FAILED));
@@ -265,7 +269,7 @@ export class AmplifyConfirmSignUp {
 			) {
 				// Auto sign in user if password is available from previous workflow
 				await handleSignIn(
-					this.userInput,
+					username,
 					this._signUpAttrs.password,
 					this.handleAuthStateChange
 				);
