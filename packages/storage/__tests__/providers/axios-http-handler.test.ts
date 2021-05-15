@@ -73,7 +73,7 @@ describe('AxiosHttpHandler', () => {
 			});
 		});
 
-		it('should track upload or download progress if emitter', async () => {
+		it('should track upload or download progress if emitter is present', async () => {
 			const mockEmit = jest.fn();
 			const mockEmitter = jest.fn().mockImplementationOnce(() => ({
 				emit: mockEmit,
