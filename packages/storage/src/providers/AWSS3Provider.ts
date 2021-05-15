@@ -168,11 +168,6 @@ export class AWSS3Provider implements StorageProvider {
 			try {
 				emitter.on(SEND_DOWNLOAD_PROGRESS_EVENT, progress => {
 					if (progressCallback) {
-						if (!download) {
-							logger.warn(
-								'progressCallback only works if download is set to true'
-							);
-						}
 						if (typeof progressCallback === 'function') {
 							progressCallback(progress);
 						} else {
