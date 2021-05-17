@@ -551,6 +551,11 @@ export class CredentialsClass {
 		this._credentials_source = null;
 		logger.debug('removing aws-amplify-federatedInfo from storage');
 		this._storage.removeItem('aws-amplify-federatedInfo');
+		logger.debug(
+			`removing ${this._getCognitoIdentityIdStorageKey(
+				identityPoolId
+			)} from storage`
+		);
 		this._storage.removeItem(
 			this._getCognitoIdentityIdStorageKey(identityPoolId)
 		);
