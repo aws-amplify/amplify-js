@@ -91,6 +91,10 @@ export class AWSS3ProviderMultipartCopier {
 			// Fallback to basic CopyObject if the file is smaller than 5MB.
 			if (this.totalBytesToCopy <= AWSS3ProviderMultipartCopier.minPartSize) {
 				const copyObjectCommand = new CopyObjectCommand(this.params);
+				this.emitter.emit(COPY_PROGRESS, {
+					loaded: this.totalBytesToCopy,
+					total: this.totalBytesToCopy,
+				});
 				return this.s3client.send(copyObjectCommand);
 			} else {
 				this.totalParts = Math.ceil(
