@@ -156,11 +156,6 @@ export class AWSS3Provider implements StorageProvider {
 			expires,
 			track,
 			progressCallback,
-			serverSideEncryption,
-			SSECustomerAlgorithm,
-			SSECustomerKey,
-			SSECustomerKeyMD5,
-			SSEKMSKeyId,
 		} = opt;
 		const prefix = this._prefix(opt);
 		// In copyObjectCommand, the full object key is required
@@ -180,8 +175,17 @@ export class AWSS3Provider implements StorageProvider {
 		if (contentLanguage) params.ContentLanguage = contentLanguage;
 		if (contentType) params.ContentType = contentType;
 		if (expires) params.Expires = expires;
-		if (serverSideEncryption) {
-			params.ServerSideEncryption = serverSideEncryption;
+		if ('serverSideEncryption' in opt) {
+			const {
+				serverSideEncryption,
+				SSECustomerAlgorithm,
+				SSECustomerKey,
+				SSECustomerKeyMD5,
+				SSEKMSKeyId,
+			} = opt;
+			if (serverSideEncryption) {
+				params.ServerSideEncryption = serverSideEncryption;
+			}
 			if (SSECustomerAlgorithm) {
 				params.SSECustomerAlgorithm = SSECustomerAlgorithm;
 			}
