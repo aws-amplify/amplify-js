@@ -1,5 +1,5 @@
 import { StorageLevel } from './Storage';
-import { CopyObjectCommandInput } from '@aws-sdk/client-s3';
+import { CopyObjectRequest } from '@aws-sdk/client-s3';
 
 export type CopyProgress = {
 	loaded: number;
@@ -7,41 +7,39 @@ export type CopyProgress = {
 };
 
 type S3ClientCopyCommandInput =
-	| ({
-			cacheControl?: CopyObjectCommandInput['CacheControl'];
-			contentDisposition?: CopyObjectCommandInput['ContentDisposition'];
-			contentEncoding?: CopyObjectCommandInput['ContentEncoding'];
-			contentLanguage?: CopyObjectCommandInput['ContentLanguage'];
-			contentType?: CopyObjectCommandInput['ContentType'];
-			expires?: CopyObjectCommandInput['Expires'];
-			tagging?: CopyObjectCommandInput['Tagging'];
-	  } & S3ClientServerSideEncryptionParams)
-	| {
-			cacheControl?: CopyObjectCommandInput['CacheControl'];
-			contentDisposition?: CopyObjectCommandInput['ContentDisposition'];
-			contentEncoding?: CopyObjectCommandInput['ContentEncoding'];
-			contentLanguage?: CopyObjectCommandInput['ContentLanguage'];
-			contentType?: CopyObjectCommandInput['ContentType'];
-			expires?: CopyObjectCommandInput['Expires'];
-			tagging?: CopyObjectCommandInput['Tagging'];
-	  };
+	| (S3ClientCopyCommandParams & S3ClientServerSideEncryptionParams)
+	| S3ClientCopyCommandParams;
 
-interface S3ClientServerSideEncryptionParams {
-	serverSideEncryption: CopyObjectCommandInput['ServerSideEncryption'];
-	SSECustomerAlgorithm?: CopyObjectCommandInput['SSECustomerAlgorithm'];
-	SSECustomerKey?: CopyObjectCommandInput['SSECustomerKey'];
-	SSECustomerKeyMD5?: CopyObjectCommandInput['SSECustomerKeyMD5'];
-	SSEKMSKeyId?: CopyObjectCommandInput['SSEKMSKeyId'];
+interface S3ClientCopyCommandParams {
+	bucket: CopyObjectRequest['Bucket'];
+	cacheControl?: CopyObjectRequest['CacheControl'];
+	contentDisposition?: CopyObjectRequest['ContentDisposition'];
+	contentEncoding?: CopyObjectRequest['ContentEncoding'];
+	contentLanguage?: CopyObjectRequest['ContentLanguage'];
+	contentType?: CopyObjectRequest['ContentType'];
+	expires?: CopyObjectRequest['Expires'];
+	tagging?: CopyObjectRequest['Tagging'];
+	acl?: CopyObjectRequest['ACL'];
 }
 
-export type CopyObjectConfig = S3ClientCopyCommandInput & {
-	bucket?: string;
+interface S3ClientServerSideEncryptionParams {
+	serverSideEncryption: CopyObjectRequest['ServerSideEncryption'];
+	SSECustomerAlgorithm?: CopyObjectRequest['SSECustomerAlgorithm'];
+	SSECustomerKey?: CopyObjectRequest['SSECustomerKey'];
+	SSECustomerKeyMD5?: CopyObjectRequest['SSECustomerKeyMD5'];
+	SSEKMSKeyId?: CopyObjectRequest['SSEKMSKeyId'];
+}
+
+interface AmplifyStorageCopyConfig {
 	level?: StorageLevel;
-	acl?: string;
 	track?: boolean;
 	multipart?: boolean;
+	provider?: string;
 	progressCallback?: (progress: CopyProgress) => any;
-};
+}
+
+export type CopyObjectConfig = S3ClientCopyCommandInput &
+	AmplifyStorageCopyConfig;
 
 export type CopyResult = {
 	key: string;
