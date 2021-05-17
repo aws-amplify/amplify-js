@@ -92,18 +92,7 @@ type ModelAttributeCompositeKey = {
 	type: 'key';
 	properties: {
 		name?: string;
-		fields: [
-			string,
-			string,
-			string,
-			string?,
-			string?,
-			string?,
-			string?,
-			string?,
-			string?,
-			string?
-		];
+		fields: [string, string, string, string?, string?];
 	};
 };
 
