@@ -218,11 +218,10 @@ export class AWSS3ProviderMultipartCopier {
 	}
 
 	private async _initMultipartUpload(): Promise<string> {
-		const { Key, Bucket } = this.params;
-		const createMultipartUploadCommand = new CreateMultipartUploadCommand({
-			Key,
-			Bucket,
-		});
+		const { CopySource, ...multipartUploadInput } = this.params;
+		const createMultipartUploadCommand = new CreateMultipartUploadCommand(
+			multipartUploadInput
+		);
 		const response = await this.s3client.send(createMultipartUploadCommand);
 		logger.debug(
 			`Created multipart upload request with id ${response.UploadId}`
