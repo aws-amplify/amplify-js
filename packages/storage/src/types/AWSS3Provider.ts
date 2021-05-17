@@ -1,4 +1,5 @@
 import { StorageLevel } from './Storage';
+import { CopyObjectCommandInput } from '@aws-sdk/client-s3';
 
 export type CopyProgress = {
 	loaded: number;
@@ -6,22 +7,23 @@ export type CopyProgress = {
 };
 
 export interface CopyObjectConfig {
-	bucket: string;
+	bucket?: string;
 	level?: StorageLevel;
 	acl?: string;
-	cacheControl?: string;
-	contentDisposition?: string;
-	contentEncoding?: string;
-	contentLanguage?: string;
-	contentType?: string;
-	expires?: Date;
 	track?: boolean;
 	progressCallback?: (progress: CopyProgress) => any;
-	serverSideEncryption?: string;
-	SSECustomerAlgorithm?: string;
-	SSECustomerKey?: string;
-	SSECustomerKeyMD5?: string;
-	SSEKMSKeyId?: string;
+	cacheControl?: CopyObjectCommandInput['CacheControl'];
+	contentDisposition?: CopyObjectCommandInput['ContentDisposition'];
+	contentEncoding?: CopyObjectCommandInput['ContentEncoding'];
+	contentLanguage?: CopyObjectCommandInput['ContentLanguage'];
+	contentType?: CopyObjectCommandInput['ContentType'];
+	expires?: CopyObjectCommandInput['Expires'];
+	tagging?: CopyObjectCommandInput['Tagging'];
+	serverSideEncryption?: CopyObjectCommandInput['ServerSideEncryption'];
+	SSECustomerAlgorithm?: CopyObjectCommandInput['SSECustomerAlgorithm'];
+	SSECustomerKey?: CopyObjectCommandInput['SSECustomerKey'];
+	SSECustomerKeyMD5?: CopyObjectCommandInput['SSECustomerKeyMD5'];
+	SSEKMSKeyId?: CopyObjectCommandInput['SSEKMSKeyId'];
 }
 
 export type CopyResult = {
