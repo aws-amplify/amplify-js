@@ -44,7 +44,7 @@ export interface AWSS3ProviderMultipartCopierParams {
 
 export class AWSS3ProviderMultipartCopier {
 	static readonly minPartSize = 5 * 1024 * 1024; // 5MB, minimum requirement for a multipart copy
-	static readonly partSize = 10 * 1024 * 1024;
+	static readonly partSize = 50 * 1024 * 1024;
 	private queueSize: number;
 	private params: CopyObjectCommandInput;
 	private completedParts: CompletedPart[] = [];
@@ -81,21 +81,29 @@ export class AWSS3ProviderMultipartCopier {
 	 * If the file size is less than 5MB, it will do a CopyObjectCommand, else, it will initiate a multipart copy.
 	 *
 	 * @async
+	 * @param {boolean} [multipart] - If true, the copy request will prioritize using multipart copy,
+	 * else it will use the basic CopyCommand.
 	 * @throws Will throw an error if any of the requests fails, or if it's cancelled.
 	 * @return {Promise<string | CopyObjectCommandOutput>} Key of the copied object.
 	 */
-	public async copy(): Promise<string | CopyObjectCommandOutput> {
+	public async copy(
+		multipart = true
+	): Promise<string | CopyObjectCommandOutput> {
 		let uploadId: string = undefined;
 		try {
 			this.totalBytesToCopy = await this._getObjectSize();
 			// Fallback to basic CopyObject if the file is smaller than 5MB.
-			if (this.totalBytesToCopy <= AWSS3ProviderMultipartCopier.minPartSize) {
+			if (
+				!multipart ||
+				this.totalBytesToCopy <= AWSS3ProviderMultipartCopier.minPartSize
+			) {
 				const copyObjectCommand = new CopyObjectCommand(this.params);
+				const result = await this.s3client.send(copyObjectCommand);
 				this.emitter.emit(COPY_PROGRESS, {
 					loaded: this.totalBytesToCopy,
 					total: this.totalBytesToCopy,
 				});
-				return this.s3client.send(copyObjectCommand);
+				return result;
 			} else {
 				this.totalParts = Math.ceil(
 					this.totalBytesToCopy / AWSS3ProviderMultipartCopier.partSize
