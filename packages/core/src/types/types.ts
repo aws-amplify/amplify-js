@@ -1,3 +1,8 @@
+import {
+	InputLogEvent,
+	PutLogEventsCommandOutput,
+} from '@aws-sdk/client-cloudwatch-logs';
+
 export interface AmplifyConfig {
 	Analytics?: object;
 	Auth?: object;
@@ -33,6 +38,12 @@ export interface LoggingProvider {
 
 	// return the name of you category
 	getCategoryName(): string;
+
+	// configure the plugin
+	configure(config?: object): object;
+
+	// take logs and push to provider
+	pushLogs(logs: InputLogEvent[]): Promise<PutLogEventsCommandOutput>;
 }
 
 export interface AWSCloudWatchProviderOptions {

@@ -122,7 +122,6 @@ export class AnalyticsClass {
 
 		if (this._pluggables.length === 0) {
 			this.addPluggable(new AWSPinpointProvider());
-			this.addPluggable(new AWSCloudWatchProvider());
 		}
 
 		dispatchAnalyticsEvent(

@@ -1,0 +1,10 @@
+// Logging constants
+const AWS_CLOUDWATCH_CATEGORY = 'Logging';
+const AWS_CLOUDWATCH_PROVIDER_NAME = 'AWSCloudWatch';
+const NO_CREDS_ERROR_STRING = 'No credentials';
+
+export {
+	AWS_CLOUDWATCH_CATEGORY,
+	AWS_CLOUDWATCH_PROVIDER_NAME,
+	NO_CREDS_ERROR_STRING,
+};

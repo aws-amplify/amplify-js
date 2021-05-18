@@ -12,4 +12,3 @@
  */
 
 export * from './ConsoleLogger';
-export * from './CloudLogger';

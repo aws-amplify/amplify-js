@@ -46,13 +46,9 @@ export const parseMobileHubConfig = (config): AmplifyConfig => {
 	}
 
 	// Logging
-	if (
-		config['aws_cloudwatch_log_group_name'] ||
-		config['aws_cloudwatch_log_stream_name']
-	) {
+	if (config['AWSCloudWatch']) {
 		amplifyConfig.Logging = {
-			logGroupName: config['aws_cloudwatch_log_group_name'],
-			logStreamName: config['aws_cloudwatch_log_stream_name'],
+			...config['AWSCloudWatch'],
 			region: config['aws_project_region'],
 		};
 	}

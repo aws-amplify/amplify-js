@@ -40,12 +40,17 @@ import { Credentials } from '../..';
 import { ConsoleLogger as Logger } from '../Logger';
 import { getAmplifyUserAgent } from '../Platform';
 import { parseMobileHubConfig } from '../Parser';
+import {
+	AWS_CLOUDWATCH_CATEGORY,
+	AWS_CLOUDWATCH_PROVIDER_NAME,
+	NO_CREDS_ERROR_STRING,
+} from '../Util/Constants';
 
 const logger = new Logger('AWSCloudWatch');
 
 class AWSCloudWatchProvider implements LoggingProvider {
-	static PROVIDER_NAME = 'CloudWatch';
-	static CATEGORY = 'Logging';
+	static PROVIDER_NAME = AWS_CLOUDWATCH_PROVIDER_NAME;
+	static CATEGORY = AWS_CLOUDWATCH_CATEGORY;
 
 	private _config;
 
@@ -79,10 +84,10 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 	public async createLogGroup(
 		params: CreateLogGroupCommandInput
-	): Promise<CreateLogGroupCommandOutput | string> {
+	): Promise<CreateLogGroupCommandOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
-			logger.error('No credentials');
+			logger.error(NO_CREDS_ERROR_STRING);
 			throw Error;
 		}
 
@@ -103,10 +108,11 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 	public async getLogGroups(
 		params: DescribeLogGroupsCommandInput
-	): Promise<DescribeLogGroupsCommandOutput | string> {
+	): Promise<DescribeLogGroupsCommandOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
-			return Promise.reject<string>('No credentials');
+			logger.error(NO_CREDS_ERROR_STRING);
+			throw Error;
 		}
 
 		logger.debug('getting list of log groups');
@@ -124,10 +130,11 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 	public async createLogStream(
 		params: CreateLogStreamCommandInput
-	): Promise<CreateLogStreamCommandOutput | string> {
+	): Promise<CreateLogStreamCommandOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
-			return Promise.reject<string>('No credentials');
+			logger.error(NO_CREDS_ERROR_STRING);
+			throw Error;
 		}
 
 		logger.debug(
@@ -147,10 +154,11 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 	public async getLogStreams(
 		params: DescribeLogStreamsCommandInput
-	): Promise<DescribeLogStreamsCommandOutput | string> {
+	): Promise<DescribeLogStreamsCommandOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
-			return Promise.reject<string>('No credentials');
+			logger.error(NO_CREDS_ERROR_STRING);
+			throw Error;
 		}
 
 		logger.debug('getting list of log streams');
@@ -167,10 +175,11 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 	public async getLogEvents(
 		params: GetLogEventsCommandInput
-	): Promise<GetLogEventsCommandOutput | string> {
+	): Promise<GetLogEventsCommandOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
-			return Promise.reject<string>('No credentials');
+			logger.error(NO_CREDS_ERROR_STRING);
+			throw Error;
 		}
 
 		logger.debug('getting log events from stream - ', params.logStreamName);
@@ -187,7 +196,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 	public async pushLogs(
 		logs: InputLogEvent[]
-	): Promise<PutLogEventsCommandOutput | string> {
+	): Promise<PutLogEventsCommandOutput> {
 		const { logStreamName, logGroupName } = this._config;
 		const req: PutLogEventsCommandInput = {
 			logEvents: logs,
@@ -220,8 +229,8 @@ class AWSCloudWatchProvider implements LoggingProvider {
 				req.sequenceToken = existingStream.uploadSequenceToken;
 			} else {
 				await this.createLogStream({
-					logGroupName: logGroupName,
-					logStreamName: logStreamName,
+					logGroupName,
+					logStreamName,
 				});
 				logger.debug(
 					`specified log stream not found. creating log stream ${logStreamName}`
@@ -236,13 +245,20 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		} catch (err) {
 			const errString = `Error occurred while pushing logs. Error - ${err}`;
 
-			return Promise.reject<string>(errString);
+			logger.error(errString);
+			throw err;
 		}
 	}
 
 	private async _validateLogGroupExists(
 		logGroupName: string
-	): Promise<LogGroup | string> {
+	): Promise<LogGroup> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			logger.error(NO_CREDS_ERROR_STRING);
+			throw Error;
+		}
+
 		try {
 			const currGroups = await this.getLogGroups({
 				logGroupNamePrefix: logGroupName,
@@ -260,15 +276,21 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			return null;
 		} catch (err) {
 			const errString = `failure during log group search: ${err}`;
-
-			return Promise.reject<string>(errString);
+			logger.error(errString);
+			throw err;
 		}
 	}
 
 	private async _validateLogStreamExists(
 		logGroupName: string,
 		logStreamName: string
-	): Promise<LogStream | string> {
+	): Promise<LogStream> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			logger.error(NO_CREDS_ERROR_STRING);
+			throw Error;
+		}
+
 		try {
 			const currStreams = await this.getLogStreams({
 				logGroupName,
@@ -287,18 +309,19 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			return null;
 		} catch (err) {
 			const errString = `failure during log stream search: ${err}`;
-
-			return Promise.reject<string>(errString);
+			logger.error(errString);
+			throw err;
 		}
 	}
 
 	private async _sendLogEvents(
 		params: PutLogEventsCommandInput
-	): Promise<PutLogEventsCommandOutput | string> {
+	): Promise<PutLogEventsCommandOutput> {
 		try {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
-				return Promise.reject<string>('No credentials');
+				logger.error(NO_CREDS_ERROR_STRING);
+				throw Error;
 			}
 
 			logger.debug('sending log events to stream - ', params.logStreamName);
@@ -309,8 +332,8 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			return output;
 		} catch (err) {
 			const errString = `failure during log stream search: ${err}`;
-
-			return Promise.reject<string>(errString);
+			logger.error(errString);
+			throw err;
 		}
 	}
 

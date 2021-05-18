@@ -54,7 +54,6 @@ export class AmplifyClass {
 
 		this._config = Object.assign(this._config, config);
 		logger.debug('amplify config', this._config);
-		console.log('got the amplify config - ', this._config);
 
 		// Dependency Injection via property-setting.
 		// This avoids introducing a public method/interface/setter that's difficult to remove later.

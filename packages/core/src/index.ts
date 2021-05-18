@@ -16,7 +16,7 @@ import { Platform } from './Platform';
 
 export { AmplifyClass } from './Amplify';
 export { ClientDevice } from './ClientDevice';
-export { CloudLogger, ConsoleLogger, ConsoleLogger as Logger } from './Logger';
+export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
 export * from './Errors';
 export { Hub, HubCapsule, HubCallback, HubPayload } from './Hub';
 export { I18n } from './I18n';

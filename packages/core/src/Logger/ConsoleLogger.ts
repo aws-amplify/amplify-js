@@ -11,7 +11,10 @@
  * and limitations under the License.
  */
 
+import { InputLogEvent } from '@aws-sdk/client-cloudwatch-logs';
+import { LoggingProvider } from '../types';
 import { Logger } from './logger-interface';
+import { Amplify } from '../Amplify';
 
 const LOG_LEVELS = {
 	VERBOSE: 1,
@@ -36,6 +39,7 @@ export enum LOG_TYPE {
 export class ConsoleLogger implements Logger {
 	name: string;
 	level: LOG_TYPE | string;
+	_pluggables: LoggingProvider[];
 
 	/**
 	 * @constructor
@@ -44,6 +48,7 @@ export class ConsoleLogger implements Logger {
 	constructor(name: string, level: LOG_TYPE | string = LOG_TYPE.WARN) {
 		this.name = name;
 		this.level = level;
+		this._pluggables = [];
 	}
 
 	static LOG_LEVEL = null;
@@ -70,7 +75,7 @@ export class ConsoleLogger implements Logger {
 	 * @param {LOG_TYPE|string} type - log type, default INFO
 	 * @param {string|object} msg - Logging message or object
 	 */
-	_log(type: LOG_TYPE | string, ...msg) {
+	async _log(type: LOG_TYPE | string, ...msg) {
 		let logger_level_name = this.level;
 		if (ConsoleLogger.LOG_LEVEL) {
 			logger_level_name = ConsoleLogger.LOG_LEVEL;
@@ -94,19 +99,29 @@ export class ConsoleLogger implements Logger {
 		}
 
 		const prefix = `[${type}] ${this._ts()} ${this.name}`;
+		let message = '';
 
 		if (msg.length === 1 && typeof msg[0] === 'string') {
-			log(`${prefix} - ${msg[0]}`);
+			message = `${prefix} - ${msg[0]}`;
+			log(message);
 		} else if (msg.length === 1) {
+			message = `${prefix} ${msg[0]}`;
 			log(prefix, msg[0]);
 		} else if (typeof msg[0] === 'string') {
 			let obj = msg.slice(1);
 			if (obj.length === 1) {
 				obj = obj[0];
 			}
+			message = `${prefix} - ${msg[0]} ${obj}`;
 			log(`${prefix} - ${msg[0]}`, obj);
 		} else {
+			message = `${prefix} ${msg}`;
 			log(prefix, msg);
+		}
+
+		for (const plugin of this._pluggables) {
+			const logEvent: InputLogEvent = { message, timestamp: Date.now() };
+			await plugin.pushLogs([logEvent]);
 		}
 	}
 
@@ -168,5 +183,13 @@ export class ConsoleLogger implements Logger {
 	 */
 	verbose(...msg) {
 		this._log(LOG_TYPE.VERBOSE, ...msg);
+	}
+
+	addPluggable(pluggable: LoggingProvider) {
+		if (pluggable && pluggable.getCategoryName() === 'Logging') {
+			this._pluggables.push(pluggable);
+			const conf = Amplify.configure();
+			pluggable.configure(conf);
+		}
 	}
 }
