@@ -17,7 +17,8 @@
 		"removeComments": false,
 		"sourceMap": true,
 		"jsx": "react",
-		"target": "es2015"
+		"target": "es2015",
+		"types": []
 	},
 	"include": ["src/**/*.ts", "src/**/*.tsx"],
 	"exclude": ["**/__tests__/**"],
