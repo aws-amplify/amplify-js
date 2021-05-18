@@ -48,6 +48,14 @@ export declare class Profile {
 	public readonly lastName: string;
 }
 
+export declare class PostComposite {
+	public readonly id: string;
+	public readonly title: string;
+	public readonly description: string;
+	public readonly created: string;
+	public readonly sort: number;
+}
+
 export function testSchema(): Schema {
 	return {
 		enums: {},
@@ -295,6 +303,68 @@ export function testSchema(): Schema {
 					{
 						type: 'model',
 						properties: {},
+					},
+				],
+			},
+			PostComposite: {
+				name: 'PostComposite',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					description: {
+						name: 'description',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					created: {
+						name: 'created',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					sort: {
+						name: 'sort',
+						isArray: false,
+						type: 'Int',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'PostComposites',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'titleSort',
+							fields: ['title', 'created', 'sort'],
+						},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'descSort',
+							fields: ['description', 'created', 'sort'],
+						},
 					},
 				],
 			},

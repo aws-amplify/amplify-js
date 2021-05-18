@@ -1,5 +1,4 @@
 import { Buffer } from 'buffer';
-import CryptoJS from 'crypto-js/core';
 import { monotonicFactory, ULID } from 'ulid';
 import { v4 as uuid } from 'uuid';
 import { ModelInstanceCreator } from './datastore/datastore';
@@ -18,7 +17,9 @@ import {
 	SchemaNamespace,
 	SortPredicatesGroup,
 	SortDirection,
+	isModelAttributeCompositeKey,
 } from './types';
+import { WordArray } from 'amazon-cognito-identity-js';
 
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
@@ -76,7 +77,7 @@ export const validatePredicate = <T extends PersistentModel>(
 	return isNegation ? !result : result;
 };
 
-const validatePredicateField = <T>(
+export const validatePredicateField = <T>(
 	value: T,
 	operator: keyof AllOperators,
 	operand: T | [T, T]
@@ -98,13 +99,18 @@ const validatePredicateField = <T>(
 			const [min, max] = <[T, T]>operand;
 			return value >= min && value <= max;
 		case 'beginsWith':
-			return (<string>(<unknown>value)).startsWith(<string>(<unknown>operand));
+			return (
+				!isNullOrUndefined(value) &&
+				(<string>(<unknown>value)).startsWith(<string>(<unknown>operand))
+			);
 		case 'contains':
 			return (
+				!isNullOrUndefined(value) &&
 				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) > -1
 			);
 		case 'notContains':
 			return (
+				isNullOrUndefined(value) ||
 				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) === -1
 			);
 		default:
@@ -153,22 +159,43 @@ export const establishRelation = (
 			}
 		});
 
-		// create indexes from key fields
+		const createCompositeKeysMap = (
+			compositeKeys = {},
+			fields: string[]
+		): { [key: string]: string[] } => {
+			for (const field of fields) {
+				const rest = fields.filter(f => f !== field);
+				if (field in compositeKeys) {
+					compositeKeys[field] = [
+						...new Set([...compositeKeys[field], ...rest]),
+					];
+					continue;
+				}
+				compositeKeys[field] = rest;
+			}
+			return compositeKeys;
+		};
+
 		if (model.attributes) {
-			model.attributes.forEach(attribute => {
+			for (const attribute of model.attributes) {
+				if (isModelAttributeCompositeKey(attribute)) {
+					model.compositeKeys = createCompositeKeysMap(
+						model.compositeKeys,
+						attribute.properties.fields
+					);
+				}
+
 				if (attribute.type === 'key') {
-					const { fields } = attribute.properties;
-					if (fields) {
-						fields.forEach(field => {
-							// only add index if it hasn't already been added
-							const exists = relationship[mKey].indexes.includes(field);
-							if (!exists) {
-								relationship[mKey].indexes.push(field);
-							}
-						});
+					const { fields = [] } = attribute.properties;
+					for (const field of fields) {
+						// only add index if it hasn't already been added
+						const exists = relationship[mKey].indexes.includes(field);
+						if (!exists) {
+							relationship[mKey].indexes.push(field);
+						}
 					}
 				}
-			});
+			}
 		}
 	});
 
@@ -374,7 +401,7 @@ export const isPrivateMode = () => {
 };
 
 const randomBytes = function(nBytes: number): Buffer {
-	return Buffer.from(CryptoJS.lib.WordArray.random(nBytes).toString(), 'hex');
+	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
 };
 const prng = () => randomBytes(1).readUInt8(0) / 0xff;
 export function monotonicUlidFactory(seed?: number): ULID {
