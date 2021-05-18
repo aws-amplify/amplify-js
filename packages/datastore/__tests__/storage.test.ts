@@ -4,7 +4,14 @@ import {
 	initSchema as initSchemaType,
 } from '../src/datastore/datastore';
 import { PersistentModelConstructor } from '../src/types';
-import { Model, Post, Comment, PostComposite, testSchema } from './helpers';
+import {
+	Model,
+	Post,
+	Comment,
+	PostKeys,
+	PostCustomPK,
+	testSchema,
+} from './helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -465,24 +472,24 @@ describe('Storage tests', () => {
 			test('composite key', async () => {
 				const classes = initSchema(testSchema());
 
-				// model has 2 composite keys defined
+				// model has 2 keys defined (1: composite & 2: hk + sort)
 				// @key(name: "titleSort", fields: ["title", "created", "sort"])
-				// @key(name: "descSort", fields: ["description", "created", "sort"])
+				// @key(name: "descSort", fields: ["description", "sort"])
 
-				// updating any of the fields that comprise the composite key should
+				// updating any of the fields that comprise a key should
 				// include all of the other fields in that key
 
-				// if a field is in multiple composite keys (e.g., sort above)
+				// if a field is in multiple keys (e.g., sort above)
 				// we should include all of the fields from all of the keys that
 				// fields is part of (sort updated => sort, title, created, description are included)
-				const { PostComposite } = classes as {
-					PostComposite: PersistentModelConstructor<PostComposite>;
+				const { PostKeys } = classes as {
+					PostKeys: PersistentModelConstructor<PostKeys>;
 				};
 
 				const createdTimestamp = String(Date.now());
 
 				const post = await DataStore.save(
-					new PostComposite({
+					new PostKeys({
 						title: 'New Post',
 						description: 'Desc',
 						created: createdTimestamp,
@@ -491,19 +498,19 @@ describe('Storage tests', () => {
 				);
 
 				const updated1 = await DataStore.save(
-					PostComposite.copyOf(post, updated => {
+					PostKeys.copyOf(post, updated => {
 						updated.title = 'Updated';
 					})
 				);
 
 				const updated2 = await DataStore.save(
-					PostComposite.copyOf(updated1, updated => {
+					PostKeys.copyOf(updated1, updated => {
 						updated.description = 'Updated Desc';
 					})
 				);
 
 				await DataStore.save(
-					PostComposite.copyOf(updated2, updated => {
+					PostKeys.copyOf(updated2, updated => {
 						updated.sort = 101;
 					})
 				);
@@ -521,14 +528,44 @@ describe('Storage tests', () => {
 				expect(postUpdate.element.description).toBeUndefined();
 
 				expect(postUpdate2.element.description).toEqual('Updated Desc');
-				expect(postUpdate2.element.created).toEqual(createdTimestamp);
 				expect(postUpdate2.element.sort).toEqual(100);
+				expect(postUpdate2.element.created).toBeUndefined();
 				expect(postUpdate2.element.title).toBeUndefined();
 
 				expect(postUpdate3.element.created).toEqual(createdTimestamp);
 				expect(postUpdate3.element.sort).toEqual(101);
 				expect(postUpdate3.element.title).toEqual('Updated');
 				expect(postUpdate3.element.description).toEqual('Updated Desc');
+			});
+
+			test('custom pk', async () => {
+				const classes = initSchema(testSchema());
+
+				// model has a custom pk defined via @key(fields: ["postId"])
+				// the PK should always be included in the mutation input
+				const { PostCustomPK } = classes as {
+					PostCustomPK: PersistentModelConstructor<PostCustomPK>;
+				};
+
+				const post = await DataStore.save(
+					new PostCustomPK({
+						postId: 100,
+						title: 'New Post',
+						description: 'Desc',
+					})
+				);
+
+				await DataStore.save(
+					PostCustomPK.copyOf(post, updated => {
+						updated.title = 'Updated';
+					})
+				);
+
+				const [[_post1Save], [postUpdate]] = zenNext.mock.calls;
+
+				expect(postUpdate.element.postId).toEqual(100);
+				expect(postUpdate.element.title).toEqual('Updated');
+				expect(postUpdate.element.description).toBeUndefined();
 			});
 		});
 	});

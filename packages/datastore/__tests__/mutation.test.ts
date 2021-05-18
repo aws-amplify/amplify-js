@@ -1,5 +1,10 @@
 import { MutationProcessor } from '../src/sync/processors/mutation';
-import { Model as ModelType, testSchema, internalTestSchema } from './helpers';
+import {
+	Model as ModelType,
+	PostCustomPK as PostCustomPKType,
+	testSchema,
+	internalTestSchema,
+} from './helpers';
 import {
 	PersistentModelConstructor,
 	InternalSchema,
@@ -10,16 +15,18 @@ import { MutationEvent } from '../src/sync/';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
+let Model: PersistentModelConstructor<ModelType>;
+let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 
 describe('MutationProcessor', () => {
+	let mutationProcessor: MutationProcessor;
+
+	beforeAll(async () => {
+		mutationProcessor = await instantiateMutationProcessor();
+	});
+
 	// Test for this PR: https://github.com/aws-amplify/amplify-js/pull/6542
 	describe('100% Packet Loss Axios Error', () => {
-		let mutationProcessor: MutationProcessor;
-
-		beforeAll(async () => {
-			mutationProcessor = await instantiateMutationProcessor();
-		});
-
 		it('Should result in Network Error and get handled without breaking the Mutation Processor', async () => {
 			const mutationProcessorSpy = jest.spyOn(mutationProcessor, 'resume');
 
@@ -37,6 +44,27 @@ describe('MutationProcessor', () => {
 			await expect(mutationProcessorSpy.mock.results[0].value).resolves.toEqual(
 				undefined
 			);
+		});
+	});
+	describe('createQueryVariables', () => {
+		it('Should correctly generate delete mutation input for models with a custom PK', async () => {
+			const deletePost = new PostCustomPK({
+				postId: 100,
+				title: 'Title',
+			});
+
+			const { data } = await createMutationEvent(deletePost, OpType.DELETE);
+
+			const [, { input }] = (mutationProcessor as any).createQueryVariables(
+				'user',
+				'PostCustomPK',
+				'Delete',
+				data,
+				'{}'
+			);
+
+			expect(input.postId).toEqual(100);
+			expect(input.id).toBeUndefined();
 		});
 	});
 	afterAll(() => {
@@ -103,7 +131,7 @@ jest.mock('@aws-amplify/core', () => {
 // instantiate a working MutationProcessor
 // includes functional mocked outbox containing a single MutationEvent
 async function instantiateMutationProcessor() {
-	const schema: InternalSchema = internalTestSchema();
+	let schema: InternalSchema = internalTestSchema();
 
 	jest.doMock('../src/sync/', () => ({
 		SyncEngine: {
@@ -113,18 +141,19 @@ async function instantiateMutationProcessor() {
 
 	const { initSchema, DataStore } = require('../src/datastore/datastore');
 	const classes = initSchema(testSchema());
-	let Model: PersistentModelConstructor<ModelType>;
 
-	({ Model } = classes as {
+	({ Model, PostCustomPK } = classes as {
 		Model: PersistentModelConstructor<ModelType>;
+		PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
 	});
 
 	const userClasses = {};
 	userClasses['Model'] = Model;
+	userClasses['PostCustomPK'] = PostCustomPK;
 
 	await DataStore.start();
 	({ syncClasses } = require('../src/datastore/datastore'));
-	({ modelInstanceCreator } = (DataStore as any).storage.storage);
+	({ modelInstanceCreator, schema } = (DataStore as any).storage.storage);
 
 	const newModel = new Model({
 		field1: 'Some value',

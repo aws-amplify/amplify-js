@@ -424,10 +424,11 @@ class MutationProcessor {
 		);
 
 		const { _version, ...parsedData } = <ModelInstanceMetadata>JSON.parse(data);
+		const pk = modelDefinition.primaryKey ? modelDefinition.primaryKey : 'id';
 
 		const filteredData =
 			operation === TransformerMutationType.DELETE
-				? <ModelInstanceMetadata>{ id: parsedData.id } // For DELETE mutations, only ID is sent
+				? <ModelInstanceMetadata>{ [pk]: parsedData[pk] } // For DELETE mutations, only PK is sent
 				: Object.values(modelDefinition.fields)
 						.filter(({ name, type, association }) => {
 							// connections

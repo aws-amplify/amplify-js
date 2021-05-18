@@ -40,7 +40,8 @@ export type SchemaModel = {
 	attributes?: ModelAttributes;
 	fields: ModelFields;
 	syncable?: boolean;
-	compositeKeys?: {
+	primaryKey?: string;
+	modelKeys?: {
 		[key: string]: string[];
 	};
 };
@@ -81,6 +82,14 @@ export function isTargetNameAssociation(
 type ModelAttributes = ModelAttribute[];
 type ModelAttribute = { type: string; properties?: Record<string, any> };
 
+type ModelAttributeKey = {
+	type: 'key';
+	properties: {
+		name?: string;
+		fields: string[];
+	};
+};
+
 type ModelAttributePrimaryKey = {
 	type: 'key';
 	properties: {
@@ -96,27 +105,27 @@ type ModelAttributeCompositeKey = {
 	};
 };
 
-export function isModelAttributePrimaryKey(
+export function isModelAttributeKey(
 	attr: ModelAttribute
-): attr is ModelAttributePrimaryKey {
+): attr is ModelAttributeKey {
 	return (
 		attr.type === 'key' &&
 		attr.properties &&
-		attr.properties.name === undefined &&
 		attr.properties.fields &&
 		attr.properties.fields.length > 0
 	);
 }
 
-export function isModelAttributeCompositeKey(
+export function isModelAttributePrimaryKey(
+	attr: ModelAttribute
+): attr is ModelAttributePrimaryKey {
+	return isModelAttributeKey(attr) && attr.properties.name === undefined;
+}
+
+export function isModelAttributeKeyWithFields(
 	attr: ModelAttribute
 ): attr is ModelAttributeCompositeKey {
-	return (
-		attr.type === 'key' &&
-		attr.properties &&
-		attr.properties.fields &&
-		attr.properties.fields.length > 2
-	);
+	return isModelAttributeKey(attr) && attr.properties.fields.length > 1;
 }
 
 export type ModelAttributeAuthProperty = {

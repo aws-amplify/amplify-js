@@ -48,12 +48,19 @@ export declare class Profile {
 	public readonly lastName: string;
 }
 
-export declare class PostComposite {
+export declare class PostKeys {
 	public readonly id: string;
 	public readonly title: string;
 	public readonly description: string;
 	public readonly created: string;
 	public readonly sort: number;
+}
+
+export declare class PostCustomPK {
+	public readonly id: string;
+	public readonly postId: number;
+	public readonly title: string;
+	public readonly description?: string;
 }
 
 export function testSchema(): Schema {
@@ -306,8 +313,8 @@ export function testSchema(): Schema {
 					},
 				],
 			},
-			PostComposite: {
-				name: 'PostComposite',
+			PostKeys: {
+				name: 'PostKeys',
 				fields: {
 					id: {
 						name: 'id',
@@ -346,7 +353,7 @@ export function testSchema(): Schema {
 					},
 				},
 				syncable: true,
-				pluralName: 'PostComposites',
+				pluralName: 'PostKeys',
 				attributes: [
 					{
 						type: 'model',
@@ -355,7 +362,7 @@ export function testSchema(): Schema {
 					{
 						type: 'key',
 						properties: {
-							name: 'titleSort',
+							name: 'titleCreatedSort',
 							fields: ['title', 'created', 'sort'],
 						},
 					},
@@ -363,7 +370,54 @@ export function testSchema(): Schema {
 						type: 'key',
 						properties: {
 							name: 'descSort',
-							fields: ['description', 'created', 'sort'],
+							fields: ['description', 'sort'],
+						},
+					},
+				],
+			},
+			PostCustomPK: {
+				name: 'PostCustomPK',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					postId: {
+						name: 'postId',
+						isArray: false,
+						type: 'Int',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					description: {
+						name: 'description',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'PostCustomPKS',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['postId'],
 						},
 					},
 				],
