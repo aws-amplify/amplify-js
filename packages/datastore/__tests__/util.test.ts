@@ -1,5 +1,4 @@
 import {
-	objectsEqual,
 	isAWSDate,
 	isAWSDateTime,
 	isAWSEmail,
@@ -9,25 +8,45 @@ import {
 	isAWSURL,
 	isAWSPhone,
 	isAWSIPAddress,
+	validatePredicateField,
+	valuesEqual,
 } from '../src/util';
 
 describe('datastore util', () => {
-	test('objectsEqual', () => {
-		expect(objectsEqual({}, {})).toEqual(true);
-		expect(objectsEqual([], [])).toEqual(true);
-		expect(objectsEqual([], {})).toEqual(false);
-		expect(objectsEqual([1, 2, 3], [1, 2, 3])).toEqual(true);
-		expect(objectsEqual([1, 2, 3], [1, 2, 3, 4])).toEqual(false);
-		expect(objectsEqual({ a: 1 }, { a: 1 })).toEqual(true);
-		expect(objectsEqual({ a: 1 }, { a: 2 })).toEqual(false);
+
+	test('validatePredicateField', () => {
+		expect(validatePredicateField(undefined, 'contains', 'test')).toEqual(false);
+		expect(validatePredicateField(null, 'contains', 'test')).toEqual(false);
+		expect(validatePredicateField('some test', 'contains', 'test')).toEqual(true);
+
+		expect(validatePredicateField(undefined, 'beginsWith', 'test')).toEqual(false);
+		expect(validatePredicateField(null, 'beginsWith', 'test')).toEqual(false);
+		expect(validatePredicateField('some test', 'beginsWith', 'test')).toEqual(false);
+		expect(validatePredicateField('testing', 'beginsWith', 'test')).toEqual(true);
+
+		expect(validatePredicateField(undefined, 'notContains', 'test')).toEqual(true);
+		expect(validatePredicateField(null, 'notContains', 'test')).toEqual(true);
+		expect(validatePredicateField('abcdef', 'notContains', 'test')).toEqual(true);
+		expect(validatePredicateField('test', 'notContains', 'test')).toEqual(false);
+		expect(validatePredicateField('testing', 'notContains', 'test')).toEqual(false);
+	});
+
+	test('valuesEqual', () => {
+		expect(valuesEqual({}, {})).toEqual(true);
+		expect(valuesEqual([], [])).toEqual(true);
+		expect(valuesEqual([], {})).toEqual(false);
+		expect(valuesEqual([1, 2, 3], [1, 2, 3])).toEqual(true);
+		expect(valuesEqual([1, 2, 3], [1, 2, 3, 4])).toEqual(false);
+		expect(valuesEqual({ a: 1 }, { a: 1 })).toEqual(true);
+		expect(valuesEqual({ a: 1 }, { a: 2 })).toEqual(false);
 		expect(
-			objectsEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 3 }] })
+			valuesEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 3 }] })
 		).toEqual(true);
 		expect(
-			objectsEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 4 }] })
+			valuesEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 4 }] })
 		).toEqual(false);
-		expect(objectsEqual(new Set([1, 2, 3]), new Set([1, 2, 3]))).toEqual(true);
-		expect(objectsEqual(new Set([1, 2, 3]), new Set([1, 2, 3, 4]))).toEqual(
+		expect(valuesEqual(new Set([1, 2, 3]), new Set([1, 2, 3]))).toEqual(true);
+		expect(valuesEqual(new Set([1, 2, 3]), new Set([1, 2, 3, 4]))).toEqual(
 			false
 		);
 
@@ -37,55 +56,71 @@ describe('datastore util', () => {
 		const map2 = new Map();
 		map2.set('a', 1);
 
-		expect(objectsEqual(map1, map2)).toEqual(true);
+		expect(valuesEqual(map1, map2)).toEqual(true);
 		map2.set('b', 2);
-		expect(objectsEqual(map1, map2)).toEqual(false);
+		expect(valuesEqual(map1, map2)).toEqual(false);
 
 		// nullish - treat null and undefined as equal in Objects and Maps
-		expect(objectsEqual({ a: 1, b: null }, { a: 1 }, true)).toEqual(true);
+		expect(valuesEqual({ a: 1, b: null }, { a: 1 }, true)).toEqual(true);
+		expect(valuesEqual({ a: 1 }, { a: 1, b: null }, true)).toEqual(true);
+		expect(valuesEqual({ a: 1 }, { a: 1, b: 2 }, true)).toEqual(false);
 		expect(
-			objectsEqual({ a: 1, b: null }, { a: 1, b: undefined }, true)
+			valuesEqual({ a: 1, b: null }, { a: 1, b: undefined }, true)
 		).toEqual(true);
-		expect(objectsEqual({ a: 1, b: false }, { a: 1 }, true)).toEqual(false);
+		expect(valuesEqual({ a: 1, b: false }, { a: 1 }, true)).toEqual(false);
 
 		const map3 = new Map();
 		map3.set('a', null);
 		const map4 = new Map();
 
-		expect(objectsEqual(map3, map4, true)).toEqual(true);
+		expect(valuesEqual(map3, map4, true)).toEqual(true);
 
 		const map5 = new Map();
 		map5.set('a', false);
 		const map6 = new Map();
 
-		expect(objectsEqual(map5, map6, true)).toEqual(false);
+		expect(valuesEqual(map5, map6, true)).toEqual(false);
 
-		// should not attempt nullish comparison for arrays/sets
-		expect(objectsEqual([null], [], true)).toEqual(false);
-		expect(objectsEqual([null], [undefined], true)).toEqual(false);
-		expect(objectsEqual(new Set([null]), new Set([]), true)).toEqual(false);
-		expect(objectsEqual(new Set([null]), new Set([undefined]), true)).toEqual(
+		// array nullish explicit undefined
+		expect(valuesEqual([null], [undefined], true)).toEqual(true);
+		expect(valuesEqual([undefined], [null], true)).toEqual(true);
+		expect(valuesEqual(new Set([null]), new Set([undefined]), true)).toEqual(
+			true
+		);
+
+		// empty list [] should not equal [null]
+		expect(valuesEqual([null], [], true)).toEqual(false);
+		expect(valuesEqual(new Set([null]), new Set([]), true)).toEqual(false);
+
+		expect(valuesEqual([null], [], false)).toEqual(false);
+		expect(valuesEqual([null], [undefined], false)).toEqual(false);
+		expect(valuesEqual(new Set([null]), new Set([]), false)).toEqual(false);
+		expect(valuesEqual(new Set([null]), new Set([undefined]), false)).toEqual(
 			false
 		);
 
-		// should return false for non-object types
-		expect(objectsEqual(null, undefined)).toEqual(false);
-		expect(objectsEqual(null, undefined, true)).toEqual(false);
+		// primitive types
+		expect(valuesEqual(null, undefined)).toEqual(false);
+		expect(valuesEqual(null, undefined, true)).toEqual(true);
+		expect(valuesEqual(undefined, null, true)).toEqual(true);
 
-		expect(objectsEqual(undefined, undefined)).toEqual(false);
-		expect(objectsEqual(undefined, undefined, true)).toEqual(false);
+		expect(valuesEqual(undefined, undefined)).toEqual(true);
+		expect(valuesEqual(undefined, undefined, true)).toEqual(true);
 
-		expect(objectsEqual(null, null)).toEqual(false);
-		expect(objectsEqual(null, null, true)).toEqual(false);
+		expect(valuesEqual(null, null)).toEqual(true);
+		expect(valuesEqual(null, null, true)).toEqual(true);
 
-		expect(objectsEqual('string' as any, 'string' as any)).toEqual(false);
-		expect(objectsEqual('string' as any, 'string' as any, true)).toEqual(false);
+		expect(valuesEqual('string', 'string')).toEqual(true);
+		expect(valuesEqual('string', 'string2')).toEqual(false);
+		expect(valuesEqual('string', 'string', true)).toEqual(true);
 
-		expect(objectsEqual(123 as any, 123 as any)).toEqual(false);
-		expect(objectsEqual(123 as any, 123 as any, true)).toEqual(false);
+		expect(valuesEqual(123, 123)).toEqual(true);
+		expect(valuesEqual(123, 1234)).toEqual(false);
+		expect(valuesEqual(123, 123, true)).toEqual(true);
 
-		expect(objectsEqual(true as any, true as any)).toEqual(false);
-		expect(objectsEqual(true as any, true as any, true)).toEqual(false);
+		expect(valuesEqual(true, true)).toEqual(true);
+		expect(valuesEqual(true, false)).toEqual(false);
+		expect(valuesEqual(true, true, true)).toEqual(true);
 	});
 
 	test('isAWSDate', () => {

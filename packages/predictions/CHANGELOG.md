@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.32...@aws-amplify/predictions@3.2.33) (2021-05-14)
+
+
+### Bug Fixes
+
+* **@aws-amplify/predictions:** Downsizing sample for some language in speech to text ([#7835](https://github.com/aws-amplify/amplify-js/issues/7835)) ([bc5a21f](https://github.com/aws-amplify/amplify-js/commit/bc5a21fcff0a326d79ddf41651a8997165d89da3)), closes [#6921](https://github.com/aws-amplify/amplify-js/issues/6921)
+
+
+
+
+
+## [3.2.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.31...@aws-amplify/predictions@3.2.32) (2021-05-11)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.30...@aws-amplify/predictions@3.2.31) (2021-05-06)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.29...@aws-amplify/predictions@3.2.30) (2021-04-15)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
 ## [3.2.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.28...@aws-amplify/predictions@3.2.29) (2021-03-25)
 
 **Note:** Version bump only for package @aws-amplify/predictions

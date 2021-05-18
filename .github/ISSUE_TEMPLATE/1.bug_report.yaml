@@ -1,6 +1,5 @@
 name: Bug report
 description: Create a report to help us improve Amplify JS
-title: ''
 
 body:
   - type: markdown
@@ -10,10 +9,12 @@ body:
   - type: markdown
     attributes:
       value: |
-        For reference, the current versions of the Amplify JS packages are listed below. Please verify your issue against the latest version(s) of the relevant package(s):
+        For reference, the current versions of the Amplify JS packages are listed below. Please verify your issue against the latest version(s) of the relevant package(s).
+
+        You can find information in our docs site regarding [Upgrading Amplify packages](https://docs.amplify.aws/lib/troubleshooting/upgrading/q/platform/js).
 
         <details>
-          <summary>Click to expand version list</summary>
+          <summary>Click to expand package version list</summary>
 
           | Package                         | Version                                                                                                                                          |
           | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -44,6 +45,7 @@ body:
           | `@aws-amplify/xr`               | [![version](https://img.shields.io/npm/v/@aws-amplify/xr/latest.svg)](https://www.npmjs.com/package/@aws-amplify/xr)                             |
 
         </details>
+
   - type: checkboxes
     attributes:
       label: |
@@ -55,10 +57,7 @@ body:
           required: true
         - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
           required: true
-  - type: markdown
-    attributes:
-      value: |
-        ---
+
   - type: markdown
     attributes:
       value: |
@@ -74,6 +73,7 @@ body:
         - React Native
         - Vue
         - Web Components
+        - Next.js
         - Not applicable
     validations:
       required: true
@@ -123,7 +123,7 @@ body:
       description: |
         Please run the following command inside your project and copy/paste the output below:
         ```
-        npx envinfo --system --binaries --browsers --npmPackages --npmGlobalPackages
+        npx envinfo --system --binaries --browsers --npmPackages --duplicates --npmGlobalPackages
         ```
       value: |
         <details>
