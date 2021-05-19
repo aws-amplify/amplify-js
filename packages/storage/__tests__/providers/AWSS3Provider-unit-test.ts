@@ -302,8 +302,6 @@ describe('StorageProvider test', () => {
 				download: true,
 				progressCallback: 'this is not a function',
 			});
-			const emitterOnFn = mockEventEmitter.on.mock.calls[0][1];
-			emitterOnFn('arg');
 			expect(loggerSpy).toHaveBeenCalledWith(
 				'WARN',
 				'progressCallback should be a function, not a string'
