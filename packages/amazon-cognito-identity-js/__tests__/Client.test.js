@@ -75,7 +75,7 @@ describe('Client unit test suite', () => {
 		});
 
 		test('uses default endpoint when none is provided', async () => {
-			const clientWithoutEndpoint = new Client(region, null, {});
+			const clientWithEndpoint = new Client(region, null, {});
 			jest.spyOn(window, 'fetch');
 			window.fetch.mockResolvedValueOnce({
 				ok: true,
@@ -83,7 +83,7 @@ describe('Client unit test suite', () => {
 			});
 			jest.fn(window, 'fetch');
 
-			await clientWithoutEndpoint.promisifyRequest('', {});
+			await clientWithEndpoint.promisifyRequest('', {});
 
 			expect(fetch).toHaveBeenCalledWith(
 				`https://cognito-idp.${region}.amazonaws.com/`,
@@ -93,14 +93,14 @@ describe('Client unit test suite', () => {
 
 		test('uses a provided endpoint for requests', async () => {
 			const MOCK_ENDPOINT = 'MOCK_ENDPOINT';
-			const clientWithoutEndpoint = new Client(region, MOCK_ENDPOINT, {});
+			const clientWithEndpoint = new Client(region, MOCK_ENDPOINT, {});
 			jest.spyOn(window, 'fetch');
 			window.fetch.mockResolvedValueOnce({
 				ok: true,
 				json: async () => ({}),
 			});
 
-			await clientWithoutEndpoint.promisifyRequest('', {});
+			await clientWithEndpoint.promisifyRequest('', {});
 
 			expect(fetch).toHaveBeenCalledWith(MOCK_ENDPOINT, expect.any(Object));
 		});
