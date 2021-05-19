@@ -855,8 +855,6 @@ describe('DataStore tests', () => {
 			const models: Model[] = [];
 			const save = jest.fn(model => {
 				model instanceof Model && models.push(model);
-				// this doesn't even need to return anything ...
-				// return [model];
 			});
 			const query = jest.fn(() => models);
 			const _delete = jest.fn(() => [models, models]);
@@ -960,12 +958,10 @@ describe('DataStore tests', () => {
 				})
 			);
 
-			console.log('here', saved);
-			const deleted = await DataStore.delete(Model, saved.id);
-			console.log({ deleted });
+			const deleted: Model[] = await DataStore.delete(Model, saved.id);
 
-			expect(deleted).toBeDefined();
-			expect(deleted.field1).toEqual('someField');
+			expect(deleted.length).toEqual(1);
+			expect(deleted[0]).toEqual(model);
 		});
 
 		test('Query params', async () => {
