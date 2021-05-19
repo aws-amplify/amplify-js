@@ -26,7 +26,6 @@ import {
 	pageViewTrackOpts,
 } from './types';
 import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
-import { AWSCloudWatchProvider } from '@aws-amplify/core';
 
 const logger = new Logger('AnalyticsClass');
 
