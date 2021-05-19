@@ -290,10 +290,7 @@ describe('StorageProvider test', () => {
 			jest
 				.spyOn(events, 'EventEmitter')
 				.mockImplementationOnce(() => mockEventEmitter);
-			const downloadOptionsWithProgressCallback = Object.assign({}, options, {
-				download: true,
-				// progressCallback: 'this is not a function',
-			});
+			const downloadOptionsWithProgressCallback = Object.assign({}, options);
 			const storage = new StorageProvider();
 			storage.configure(downloadOptionsWithProgressCallback);
 			jest
