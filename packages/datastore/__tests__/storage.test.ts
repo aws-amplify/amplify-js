@@ -121,6 +121,32 @@ describe('Storage tests', () => {
 				expect(modelUpdate.element.optionalField1).toBeNull();
 			});
 
+			test('updating value with undefined gets saved as null', async () => {
+				const classes = initSchema(testSchema());
+
+				const { Model } = classes as {
+					Model: PersistentModelConstructor<Model>;
+				};
+
+				const model = await DataStore.save(
+					new Model({
+						field1: 'Some value',
+						optionalField1: 'Some optional value',
+						dateCreated: new Date().toISOString(),
+					})
+				);
+
+				await DataStore.save(
+					Model.copyOf(model, draft => {
+						draft.optionalField1 = undefined;
+					})
+				);
+
+				const [[_modelSave], [modelUpdate]] = zenNext.mock.calls;
+
+				expect(modelUpdate.element.optionalField1).toBeNull();
+			});
+
 			test('list (destructured)', async () => {
 				const classes = initSchema(testSchema());
 

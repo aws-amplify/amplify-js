@@ -332,8 +332,9 @@ class StorageClass implements StorageFacade {
 
 			// check field values by value. Ignore unchanged fields
 			if (!valuesEqual(source[key], originalElement[key])) {
-				updatedElement[key] = originalElement[key];
-
+				// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
+				updatedElement[key] =
+					originalElement[key] === undefined ? null : originalElement[key];
 				if (key in compositeKeys) {
 					// include all of the fields that comprise the composite key
 					for (const compositeField of compositeKeys[key]) {
