@@ -166,18 +166,16 @@ export class AWSS3Provider implements StorageProvider {
 		if (download === true) {
 			const getObjectCommand = new GetObjectCommand(params);
 			try {
-				emitter.on(SEND_DOWNLOAD_PROGRESS_EVENT, progress => {
-					if (progressCallback) {
-						if (typeof progressCallback === 'function') {
-							progressCallback(progress);
-						} else {
-							logger.warn(
-								'progressCallback should be a function, not a ' +
-									typeof progressCallback
-							);
-						}
-					}
-				});
+				if (progressCallback && typeof progressCallback === 'function') {
+					emitter.on(SEND_DOWNLOAD_PROGRESS_EVENT, progress => {
+						progressCallback(progress);
+					});
+				} else if (progressCallback) {
+					logger.warn(
+						'progressCallback should be a function, not a ' +
+							typeof progressCallback
+					);
+				}
 				const response = await s3.send(getObjectCommand);
 				dispatchStorageEvent(
 					track,
