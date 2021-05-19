@@ -46,9 +46,9 @@ export const parseMobileHubConfig = (config): AmplifyConfig => {
 	}
 
 	// Logging
-	if (config['AWSCloudWatch']) {
+	if (config['Logging']) {
 		amplifyConfig.Logging = {
-			...config['AWSCloudWatch'],
+			...config['Logging'],
 			region: config['aws_project_region'],
 		};
 	}

@@ -13,8 +13,8 @@
 
 import { InputLogEvent } from '@aws-sdk/client-cloudwatch-logs';
 import { LoggingProvider } from '../types';
+import { AWS_CLOUDWATCH_CATEGORY } from '../Util/Constants';
 import { Logger } from './logger-interface';
-import { Amplify } from '../Amplify';
 
 const LOG_LEVELS = {
 	VERBOSE: 1,
@@ -39,7 +39,8 @@ export enum LOG_TYPE {
 export class ConsoleLogger implements Logger {
 	name: string;
 	level: LOG_TYPE | string;
-	_pluggables: LoggingProvider[];
+	private _pluggables: LoggingProvider[];
+	private _config: object;
 
 	/**
 	 * @constructor
@@ -66,6 +67,14 @@ export class ConsoleLogger implements Logger {
 			'.' +
 			dt.getMilliseconds()
 		);
+	}
+
+	configure(config?: object) {
+		if (!config) return this._config;
+
+		this._config = config;
+
+		return this._config;
 	}
 
 	/**
@@ -186,10 +195,13 @@ export class ConsoleLogger implements Logger {
 	}
 
 	addPluggable(pluggable: LoggingProvider) {
-		if (pluggable && pluggable.getCategoryName() === 'Logging') {
+		if (pluggable && pluggable.getCategoryName() === AWS_CLOUDWATCH_CATEGORY) {
 			this._pluggables.push(pluggable);
-			const conf = Amplify.configure();
-			pluggable.configure(conf);
+			pluggable.configure(this._config);
 		}
+	}
+
+	listPluggables() {
+		return this._pluggables;
 	}
 }
