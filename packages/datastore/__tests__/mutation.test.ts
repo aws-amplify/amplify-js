@@ -2,6 +2,7 @@ import { MutationProcessor } from '../src/sync/processors/mutation';
 import {
 	Model as ModelType,
 	PostCustomPK as PostCustomPKType,
+	PostCustomPKSort as PostCustomPKSortType,
 	testSchema,
 	internalTestSchema,
 } from './helpers';
@@ -17,6 +18,7 @@ let syncClasses: any;
 let modelInstanceCreator: any;
 let Model: PersistentModelConstructor<ModelType>;
 let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+let PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 
 describe('MutationProcessor', () => {
 	let mutationProcessor: MutationProcessor;
@@ -48,6 +50,7 @@ describe('MutationProcessor', () => {
 	});
 	describe('createQueryVariables', () => {
 		it('Should correctly generate delete mutation input for models with a custom PK', async () => {
+			// custom PK @key(fields: ["postId"])
 			const deletePost = new PostCustomPK({
 				postId: 100,
 				title: 'Title',
@@ -65,6 +68,27 @@ describe('MutationProcessor', () => {
 
 			expect(input.postId).toEqual(100);
 			expect(input.id).toBeUndefined();
+		});
+
+		it('Should correctly generate delete mutation input for models with a custom PK - multi-field', async () => {
+			// multi-key PK @key(fields: ["id", "postId"])
+			const deletePost = new PostCustomPKSort({
+				postId: 100,
+				title: 'Title',
+			});
+
+			const { data } = await createMutationEvent(deletePost, OpType.DELETE);
+
+			const [, { input }] = (mutationProcessor as any).createQueryVariables(
+				'user',
+				'PostCustomPKSort',
+				'Delete',
+				data,
+				'{}'
+			);
+
+			expect(input.id).not.toBeUndefined();
+			expect(input.postId).toEqual(100);
 		});
 	});
 	afterAll(() => {
@@ -142,14 +166,16 @@ async function instantiateMutationProcessor() {
 	const { initSchema, DataStore } = require('../src/datastore/datastore');
 	const classes = initSchema(testSchema());
 
-	({ Model, PostCustomPK } = classes as {
+	({ Model, PostCustomPK, PostCustomPKSort } = classes as {
 		Model: PersistentModelConstructor<ModelType>;
 		PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+		PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 	});
 
 	const userClasses = {};
 	userClasses['Model'] = Model;
 	userClasses['PostCustomPK'] = PostCustomPK;
+	userClasses['PostCustomPKSort'] = PostCustomPKSort;
 
 	await DataStore.start();
 	({ syncClasses } = require('../src/datastore/datastore'));

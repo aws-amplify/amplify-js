@@ -14,11 +14,14 @@ import {
 	PredicatesGroup,
 	RelationshipType,
 	RelationType,
+	ModelKeys,
+	KeyType,
 	SchemaNamespace,
 	SortPredicatesGroup,
 	SortDirection,
+	isModelAttributeKey,
 	isModelAttributePrimaryKey,
-	isModelAttributeKeyWithFields,
+	isModelAttributeCompositeKey,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
 
@@ -128,13 +131,15 @@ export const isModelConstructor = <T extends PersistentModel>(
 	);
 };
 
-export const establishRelation = (
+export const establishRelationAndKeys = (
 	namespace: SchemaNamespace
-): RelationshipType => {
+): [RelationshipType, ModelKeys] => {
 	const relationship: RelationshipType = {};
+	const keys: ModelKeys = {};
 
 	Object.keys(namespace.models).forEach((mKey: string) => {
 		relationship[mKey] = { indexes: [], relationTypes: [] };
+		keys[mKey] = {};
 
 		const model = namespace.models[mKey];
 		Object.keys(model.fields).forEach((attr: string) => {
@@ -160,47 +165,56 @@ export const establishRelation = (
 			}
 		});
 
-		const createModelKeysMap = (
-			modelKeys = {},
+		const createCompositeKeysMap = (
+			compositeKeys = {},
 			fields: string[]
 		): { [key: string]: string[] } => {
-			for (const field of fields) {
-				const rest = fields.filter(f => f !== field);
-				if (field in modelKeys) {
-					modelKeys[field] = [...new Set([...modelKeys[field], ...rest])];
+			// ignore the HK (fields[0]) we only need to include fields[1..n]
+			const [, ...compositeSortKeyFields] = fields;
+
+			for (const field of compositeSortKeyFields) {
+				const rest = compositeSortKeyFields.filter(f => f !== field);
+				if (field in compositeKeys) {
+					compositeKeys[field] = [
+						...new Set([...compositeKeys[field], ...rest]),
+					];
 					continue;
 				}
-				modelKeys[field] = rest;
+				compositeKeys[field] = rest;
 			}
-			return modelKeys;
+			return compositeKeys;
 		};
 
 		if (model.attributes) {
 			for (const attribute of model.attributes) {
-				if (isModelAttributePrimaryKey(attribute)) {
-					model.primaryKey = attribute.properties.fields[0];
+				if (!isModelAttributeKey(attribute)) {
+					continue;
 				}
 
-				if (isModelAttributeKeyWithFields(attribute)) {
-					model.modelKeys = createModelKeysMap(
-						model.modelKeys,
+				if (isModelAttributePrimaryKey(attribute)) {
+					keys[mKey].primaryKey = attribute.properties.fields;
+				}
+
+				if (isModelAttributeCompositeKey(attribute)) {
+					keys[mKey].compositeKeys = createCompositeKeysMap(
+						keys[mKey].compositeKeys,
 						attribute.properties.fields
 					);
+				}
 
-					const { fields } = attribute.properties;
-					for (const field of fields) {
-						// only add index if it hasn't already been added
-						const exists = relationship[mKey].indexes.includes(field);
-						if (!exists) {
-							relationship[mKey].indexes.push(field);
-						}
+				const { fields } = attribute.properties;
+				for (const field of fields) {
+					// only add index if it hasn't already been added
+					const exists = relationship[mKey].indexes.includes(field);
+					if (!exists) {
+						relationship[mKey].indexes.push(field);
 					}
 				}
 			}
 		}
 	});
 
-	return relationship;
+	return [relationship, keys];
 };
 
 const topologicallySortedModels = new WeakMap<SchemaNamespace, string[]>();

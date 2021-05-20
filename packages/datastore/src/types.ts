@@ -22,6 +22,7 @@ export type UserSchema = {
 	models: SchemaModels;
 	nonModels?: SchemaNonModels;
 	relationships?: RelationshipType;
+	keys?: ModelKeys;
 	enums: SchemaEnums;
 	modelTopologicalOrdering?: Map<string, string[]>;
 };
@@ -40,10 +41,6 @@ export type SchemaModel = {
 	attributes?: ModelAttributes;
 	fields: ModelFields;
 	syncable?: boolean;
-	primaryKey?: string;
-	modelKeys?: {
-		[key: string]: string[];
-	};
 };
 export function isSchemaModel(obj: any): obj is SchemaModel {
 	return obj && (<SchemaModel>obj).pluralName !== undefined;
@@ -100,7 +97,7 @@ type ModelAttributePrimaryKey = {
 type ModelAttributeCompositeKey = {
 	type: 'key';
 	properties: {
-		name?: string;
+		name: string;
 		fields: [string, string, string, string?, string?];
 	};
 };
@@ -122,10 +119,14 @@ export function isModelAttributePrimaryKey(
 	return isModelAttributeKey(attr) && attr.properties.name === undefined;
 }
 
-export function isModelAttributeKeyWithFields(
+export function isModelAttributeCompositeKey(
 	attr: ModelAttribute
 ): attr is ModelAttributeCompositeKey {
-	return isModelAttributeKey(attr) && attr.properties.fields.length > 1;
+	return (
+		isModelAttributeKey(attr) &&
+		attr.properties.name !== undefined &&
+		attr.properties.fields.length > 2
+	);
 }
 
 export type ModelAttributeAuthProperty = {
@@ -564,6 +565,20 @@ export type RelationType = {
 
 export type RelationshipType = {
 	[modelName: string]: { indexes: string[]; relationTypes: RelationType[] };
+};
+
+//#endregion
+
+//#region Key type
+export type KeyType = {
+	primaryKey?: string[];
+	compositeKeys?: {
+		[key: string]: string[];
+	};
+};
+
+export type ModelKeys = {
+	[modelName: string]: KeyType;
 };
 
 //#endregion
