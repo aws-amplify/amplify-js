@@ -15,7 +15,6 @@ import {
 	RelationshipType,
 	RelationType,
 	ModelKeys,
-	KeyType,
 	SchemaNamespace,
 	SortPredicatesGroup,
 	SortDirection,

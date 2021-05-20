@@ -87,7 +87,7 @@ describe('MutationProcessor', () => {
 				'{}'
 			);
 
-			expect(input.id).not.toBeUndefined();
+			expect(input.id).toEqual(deletePost.id);
 			expect(input.postId).toEqual(100);
 		});
 	});
