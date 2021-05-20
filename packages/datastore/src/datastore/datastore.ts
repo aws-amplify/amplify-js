@@ -867,7 +867,7 @@ class DataStore {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			id: string
-		): Promise<T>;
+		): Promise<T[]>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			condition: ProducerModelPredicate<T> | typeof PredicateAll
