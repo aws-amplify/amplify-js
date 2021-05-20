@@ -81,7 +81,7 @@ To call the Amplify library, simply use `this.$Amplify.` followed by whichever m
 
 ### Authenticator
 
-The Authenticator component provides basic basic login/logout functionality for your application, as well confirmation steps for new user registration and user login. It uses the following components as children:
+The Authenticator component provides basic login/logout functionality for your application, as well confirmation steps for new user registration and user login. It uses the following components as children:
 
 - SignIn
 - ConfirmSignIn
@@ -175,7 +175,7 @@ Config:
 Events:
 
 - `AmplifyEventBus.$emit('authState', 'confirmSignUp')`: Emitted when a user successfully enters their information but has not yet completed a required verification step.
-- `AmplifyEventBus.$emit('authState', 'signIn')`: Emitted when a user successfully provides their information and does not need to complete a required verfication step, or when they click 'Back to Sign In'.
+- `AmplifyEventBus.$emit('authState', 'signIn')`: Emitted when a user successfully provides their information and does not need to complete a required verification step, or when they click 'Back to Sign In'.
 
 ### ConfirmSignUp
 

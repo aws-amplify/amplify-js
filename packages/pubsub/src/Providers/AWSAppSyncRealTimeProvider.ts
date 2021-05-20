@@ -186,6 +186,17 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					options,
 					observer,
 					subscriptionId,
+				}).catch(err => {
+					observer.error({
+						errors: [
+							{
+								...new GraphQLError(
+									`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`
+								),
+							},
+						],
+					});
+					observer.complete();
 				});
 
 				return async () => {
@@ -296,7 +307,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			observer.error({
 				errors: [
 					{
-						...new GraphQLError(`Connection failed: ${message}`),
+						...new GraphQLError(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`),
 					},
 				],
 			});
@@ -333,7 +344,9 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				this._timeoutStartSubscriptionAck.call(this, subscriptionId);
 			}, START_ACK_TIMEOUT),
 		});
-		this.awsRealTimeSocket.send(stringToAWSRealTime);
+		if (this.awsRealTimeSocket) {
+			this.awsRealTimeSocket.send(stringToAWSRealTime);
+		}
 	}
 
 	// Waiting that subscription has been connected before trying to unsubscribe
@@ -494,7 +507,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				errors: [
 					{
 						...new GraphQLError(
-							`Connection failed: ${JSON.stringify(payload)}`
+							`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload)}`
 						),
 					},
 				],
@@ -615,8 +628,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					}
 					this.awsRealTimeSocket = null;
 					this.socketStatus = SOCKET_STATUS.CLOSED;
-
-					throw err;
 				}
 			}
 		});

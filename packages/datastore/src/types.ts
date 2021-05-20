@@ -1,5 +1,18 @@
 import { ModelInstanceCreator } from './datastore/datastore';
-import { exhaustiveCheck } from './util';
+import {
+	exhaustiveCheck,
+	isAWSDate,
+	isAWSTime,
+	isAWSDateTime,
+	isAWSTimestamp,
+	isAWSEmail,
+	isAWSJSON,
+	isAWSURL,
+	isAWSPhone,
+	isAWSIPAddress,
+} from './util';
+import { PredicateAll } from './predicates';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 
 //#region Schema types
 export type Schema = UserSchema & {
@@ -27,6 +40,9 @@ export type SchemaModel = {
 	attributes?: ModelAttributes;
 	fields: ModelFields;
 	syncable?: boolean;
+	compositeKeys?: {
+		[key: string]: string[];
+	};
 };
 export function isSchemaModel(obj: any): obj is SchemaModel {
 	return obj && (<SchemaModel>obj).pluralName !== undefined;
@@ -46,6 +62,7 @@ export type ModelAssociation = AssociatedWith | TargetNameAssociation;
 type AssociatedWith = {
 	connectionType: 'HAS_MANY' | 'HAS_ONE';
 	associatedWith: string;
+	targetName?: string;
 };
 export function isAssociatedWith(obj: any): obj is AssociatedWith {
 	return obj && obj.associatedWith;
@@ -63,6 +80,68 @@ export function isTargetNameAssociation(
 
 type ModelAttributes = ModelAttribute[];
 type ModelAttribute = { type: string; properties?: Record<string, any> };
+
+type ModelAttributePrimaryKey = {
+	type: 'key';
+	properties: {
+		fields: string[];
+	};
+};
+
+type ModelAttributeCompositeKey = {
+	type: 'key';
+	properties: {
+		name?: string;
+		fields: [string, string, string, string?, string?];
+	};
+};
+
+export function isModelAttributePrimaryKey(
+	attr: ModelAttribute
+): attr is ModelAttributePrimaryKey {
+	return (
+		attr.type === 'key' &&
+		attr.properties &&
+		attr.properties.name === undefined &&
+		attr.properties.fields &&
+		attr.properties.fields.length > 0
+	);
+}
+
+export function isModelAttributeCompositeKey(
+	attr: ModelAttribute
+): attr is ModelAttributeCompositeKey {
+	return (
+		attr.type === 'key' &&
+		attr.properties &&
+		attr.properties.fields &&
+		attr.properties.fields.length > 2
+	);
+}
+
+export type ModelAttributeAuthProperty = {
+	allow: ModelAttributeAuthAllow;
+	identityClaim?: string;
+	groupClaim?: string;
+	groups?: string[];
+	operations?: string[];
+	ownerField?: string;
+	provider?: ModelAttributeAuthProvider;
+};
+
+export enum ModelAttributeAuthAllow {
+	OWNER = 'owner',
+	GROUPS = 'groups',
+	PRIVATE = 'private',
+	PUBLIC = 'public',
+}
+
+export enum ModelAttributeAuthProvider {
+	USER_POOLS = 'userPools',
+	OIDC = 'oidc',
+	IAM = 'iam',
+	API_KEY = 'apiKey',
+}
 
 export type ModelFields = Record<string, ModelField>;
 export enum GraphQLScalarType {
@@ -84,7 +163,10 @@ export enum GraphQLScalarType {
 
 export namespace GraphQLScalarType {
 	export function getJSType(
-		scalar: keyof Omit<typeof GraphQLScalarType, 'getJSType'>
+		scalar: keyof Omit<
+			typeof GraphQLScalarType,
+			'getJSType' | 'getValidationFunction'
+		>
 	): 'string' | 'number' | 'boolean' {
 		switch (scalar) {
 			case 'Boolean':
@@ -108,6 +190,36 @@ export namespace GraphQLScalarType {
 				exhaustiveCheck(scalar);
 		}
 	}
+
+	export function getValidationFunction(
+		scalar: keyof Omit<
+			typeof GraphQLScalarType,
+			'getJSType' | 'getValidationFunction'
+		>
+	): ((val: string | number) => boolean) | undefined {
+		switch (scalar) {
+			case 'AWSDate':
+				return isAWSDate;
+			case 'AWSTime':
+				return isAWSTime;
+			case 'AWSDateTime':
+				return isAWSDateTime;
+			case 'AWSTimestamp':
+				return isAWSTimestamp;
+			case 'AWSEmail':
+				return isAWSEmail;
+			case 'AWSJSON':
+				return isAWSJSON;
+			case 'AWSURL':
+				return isAWSURL;
+			case 'AWSPhone':
+				return isAWSPhone;
+			case 'AWSIPAddress':
+				return isAWSIPAddress;
+			default:
+				return undefined;
+		}
+	}
 }
 
 export type AuthorizationRule = {
@@ -122,7 +234,10 @@ export type AuthorizationRule = {
 
 export function isGraphQLScalarType(
 	obj: any
-): obj is keyof Omit<typeof GraphQLScalarType, 'getJSType'> {
+): obj is keyof Omit<
+	typeof GraphQLScalarType,
+	'getJSType' | 'getValidationFunction'
+> {
 	return obj && GraphQLScalarType[obj] !== undefined;
 }
 
@@ -153,7 +268,10 @@ export function isEnumFieldType(obj: any): obj is EnumFieldType {
 type ModelField = {
 	name: string;
 	type:
-		| keyof Omit<typeof GraphQLScalarType, 'getJSType'>
+		| keyof Omit<
+				typeof GraphQLScalarType,
+				'getJSType' | 'getValidationFunction'
+		  >
 		| ModelFieldType
 		| NonModelFieldType
 		| EnumFieldType;
@@ -326,17 +444,31 @@ export enum QueryOne {
 	FIRST,
 	LAST,
 }
+export type GraphQLField = {
+	[field: string]: {
+		[operator: string]: string | number | [number, number];
+	};
+};
 
 export type GraphQLCondition = Partial<
-	| {
-			[field: string]: {
-				[operator: string]: string | number | [number, number];
-			};
-	  }
+	| GraphQLField
 	| {
 			and: [GraphQLCondition];
 			or: [GraphQLCondition];
 			not: GraphQLCondition;
+	  }
+>;
+
+export type GraphQLFilter = Partial<
+	| GraphQLField
+	| {
+			and: GraphQLFilter[];
+	  }
+	| {
+			or: GraphQLFilter[];
+	  }
+	| {
+			not: GraphQLFilter;
 	  }
 >;
 
@@ -396,7 +528,8 @@ export type SystemComponent = {
 		getModelConstructorByModelName: (
 			namsespaceName: string,
 			modelName: string
-		) => PersistentModelConstructor<any>
+		) => PersistentModelConstructor<any>,
+		appId: string
 	): Promise<void>;
 };
 
@@ -429,18 +562,108 @@ export type RelationshipType = {
 //#region DataStore config types
 export type DataStoreConfig = {
 	DataStore?: {
+		authModeStrategyType?: AuthModeStrategyType;
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 		errorHandler?: (error: SyncError) => void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
 		fullSyncInterval?: number;
+		syncExpressions?: SyncExpression[];
 	};
+	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
 	fullSyncInterval?: number;
+	syncExpressions?: SyncExpression[];
 };
+
+export enum AuthModeStrategyType {
+	DEFAULT = 'DEFAULT',
+	MULTI_AUTH = 'MULTI_AUTH',
+}
+
+export type AuthModeStrategyReturn =
+	| GRAPHQL_AUTH_MODE
+	| GRAPHQL_AUTH_MODE[]
+	| undefined
+	| null;
+
+export type AuthModeStrategyParams = {
+	schema: InternalSchema;
+	modelName: string;
+	operation: ModelOperation;
+};
+
+export type AuthModeStrategy = (
+	authModeStrategyParams: AuthModeStrategyParams
+) => AuthModeStrategyReturn | Promise<AuthModeStrategyReturn>;
+
+export enum ModelOperation {
+	CREATE = 'CREATE',
+	READ = 'READ',
+	UPDATE = 'UPDATE',
+	DELETE = 'DELETE',
+}
+
+export type ModelAuthModes = Record<
+	string,
+	{
+		[Property in ModelOperation]: GRAPHQL_AUTH_MODE[];
+	}
+>;
+
+export type SyncExpression = Promise<{
+	modelConstructor: any;
+	conditionProducer: (c?: any) => any;
+}>;
+
+/*
+Adds Intellisense when passing a function | promise that returns a predicate
+Or just a predicate. E.g.,
+
+syncExpressions: [
+	syncExpression(Post, c => c.rating('gt', 5)),
+
+	OR
+
+	syncExpression(Post, async () => {
+		return c => c.rating('gt', 5)
+	}),
+]
+*/
+type Option0 = [];
+type Option1<T extends PersistentModel> = [ModelPredicate<T> | undefined];
+type Option<T extends PersistentModel> = Option0 | Option1<T>;
+
+type Lookup<T extends PersistentModel> = {
+	0:
+		| ProducerModelPredicate<T>
+		| Promise<ProducerModelPredicate<T>>
+		| typeof PredicateAll;
+	1: ModelPredicate<T> | undefined;
+};
+
+type ConditionProducer<T extends PersistentModel, A extends Option<T>> = (
+	...args: A
+) => A['length'] extends keyof Lookup<T> ? Lookup<T>[A['length']] : never;
+
+export async function syncExpression<
+	T extends PersistentModel,
+	A extends Option<T>
+>(
+	modelConstructor: PersistentModelConstructor<T>,
+	conditionProducer: ConditionProducer<T, A>
+): Promise<{
+	modelConstructor: PersistentModelConstructor<T>;
+	conditionProducer: ConditionProducer<T, A>;
+}> {
+	return {
+		modelConstructor,
+		conditionProducer,
+	};
+}
 
 export type SyncConflict = {
 	modelConstructor: PersistentModelConstructor<any>;

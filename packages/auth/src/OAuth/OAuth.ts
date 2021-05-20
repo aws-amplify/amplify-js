@@ -125,7 +125,11 @@ export default class OAuth {
 			.map(pairings => pairings.split('='))
 			.reduce((accum, [k, v]) => ({ ...accum, [k]: v }), { code: undefined });
 
-		if (!code) {
+		const currentUrlPathname = parse(currentUrl).pathname || '/';
+		const redirectSignInPathname =
+			parse(this._config.redirectSignIn).pathname || '/';
+
+		if (!code || currentUrlPathname !== redirectSignInPathname) {
 			return;
 		}
 

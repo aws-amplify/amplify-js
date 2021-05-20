@@ -1,5 +1,4 @@
 import { Buffer } from 'buffer';
-import CryptoJS from 'crypto-js/core';
 import { monotonicFactory, ULID } from 'ulid';
 import { v4 as uuid } from 'uuid';
 import { ModelInstanceCreator } from './datastore/datastore';
@@ -18,7 +17,9 @@ import {
 	SchemaNamespace,
 	SortPredicatesGroup,
 	SortDirection,
+	isModelAttributeCompositeKey,
 } from './types';
+import { WordArray } from 'amazon-cognito-identity-js';
 
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
@@ -76,7 +77,7 @@ export const validatePredicate = <T extends PersistentModel>(
 	return isNegation ? !result : result;
 };
 
-const validatePredicateField = <T>(
+export const validatePredicateField = <T>(
 	value: T,
 	operator: keyof AllOperators,
 	operand: T | [T, T]
@@ -98,13 +99,18 @@ const validatePredicateField = <T>(
 			const [min, max] = <[T, T]>operand;
 			return value >= min && value <= max;
 		case 'beginsWith':
-			return (<string>(<unknown>value)).startsWith(<string>(<unknown>operand));
+			return (
+				!isNullOrUndefined(value) &&
+				(<string>(<unknown>value)).startsWith(<string>(<unknown>operand))
+			);
 		case 'contains':
 			return (
+				!isNullOrUndefined(value) &&
 				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) > -1
 			);
 		case 'notContains':
 			return (
+				isNullOrUndefined(value) ||
 				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) === -1
 			);
 		default:
@@ -153,22 +159,43 @@ export const establishRelation = (
 			}
 		});
 
-		// create indexes from key fields
+		const createCompositeKeysMap = (
+			compositeKeys = {},
+			fields: string[]
+		): { [key: string]: string[] } => {
+			for (const field of fields) {
+				const rest = fields.filter(f => f !== field);
+				if (field in compositeKeys) {
+					compositeKeys[field] = [
+						...new Set([...compositeKeys[field], ...rest]),
+					];
+					continue;
+				}
+				compositeKeys[field] = rest;
+			}
+			return compositeKeys;
+		};
+
 		if (model.attributes) {
-			model.attributes.forEach(attribute => {
+			for (const attribute of model.attributes) {
+				if (isModelAttributeCompositeKey(attribute)) {
+					model.compositeKeys = createCompositeKeysMap(
+						model.compositeKeys,
+						attribute.properties.fields
+					);
+				}
+
 				if (attribute.type === 'key') {
-					const { fields } = attribute.properties;
-					if (fields) {
-						fields.forEach(field => {
-							// only add index if it hasn't already been added
-							const exists = relationship[mKey].indexes.includes(field);
-							if (!exists) {
-								relationship[mKey].indexes.push(field);
-							}
-						});
+					const { fields = [] } = attribute.properties;
+					for (const field of fields) {
+						// only add index if it hasn't already been added
+						const exists = relationship[mKey].indexes.includes(field);
+						if (!exists) {
+							relationship[mKey].indexes.push(field);
+						}
 					}
 				}
-			});
+			}
 		}
 	});
 
@@ -374,7 +401,7 @@ export const isPrivateMode = () => {
 };
 
 const randomBytes = function(nBytes: number): Buffer {
-	return Buffer.from(CryptoJS.lib.WordArray.random(nBytes).toString(), 'hex');
+	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
 };
 const prng = () => randomBytes(1).readUInt8(0) / 0xff;
 export function monotonicUlidFactory(seed?: number): ULID {
@@ -433,3 +460,135 @@ export function sortCompareFunction<T extends PersistentModel>(
 		return 0;
 	};
 }
+
+// deep compare any 2 values
+// primitives or object types (including arrays, Sets, and Maps)
+// returns true if equal by value
+// if nullish is true, treat undefined and null values as equal
+// to normalize for GQL response values for undefined fields
+export function valuesEqual(
+	valA: any,
+	valB: any,
+	nullish: boolean = false
+): boolean {
+	let a = valA;
+	let b = valB;
+
+	const nullishCompare = (_a, _b) => {
+		return (
+			(_a === undefined || _a === null) && (_b === undefined || _b === null)
+		);
+	};
+
+	// if one of the values is a primitive and the other is an object
+	if (
+		(a instanceof Object && !(b instanceof Object)) ||
+		(!(a instanceof Object) && b instanceof Object)
+	) {
+		return false;
+	}
+
+	// compare primitive types
+	if (!(a instanceof Object)) {
+		if (nullish && nullishCompare(a, b)) {
+			return true;
+		}
+
+		return a === b;
+	}
+
+	// make sure object types match
+	if (
+		(Array.isArray(a) && !Array.isArray(b)) ||
+		(Array.isArray(b) && !Array.isArray(a))
+	) {
+		return false;
+	}
+
+	if (a instanceof Set && b instanceof Set) {
+		a = [...a];
+		b = [...b];
+	}
+
+	if (a instanceof Map && b instanceof Map) {
+		a = Object.fromEntries(a);
+		b = Object.fromEntries(b);
+	}
+
+	const aKeys = Object.keys(a);
+	const bKeys = Object.keys(b);
+
+	// last condition is to ensure that [] !== [null] even if nullish. However [undefined] === [null] when nullish
+	if (aKeys.length !== bKeys.length && (!nullish || Array.isArray(a))) {
+		return false;
+	}
+
+	// iterate through the longer set of keys
+	// e.g., for a nullish comparison of a={ a: 1 } and b={ a: 1, b: null }
+	// we want to iterate through bKeys
+	const keys = aKeys.length >= bKeys.length ? aKeys : bKeys;
+
+	for (const key of keys) {
+		const aVal = a[key];
+		const bVal = b[key];
+
+		if (!valuesEqual(aVal, bVal, nullish)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+export const isAWSDate = (val: string): boolean => {
+	return !!/^\d{4}-\d{2}-\d{2}(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(val);
+};
+
+export const isAWSTime = (val: string): boolean => {
+	return !!/^\d{2}:\d{2}(:\d{2}(.\d+)?)?(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(
+		val
+	);
+};
+
+export const isAWSDateTime = (val: string): boolean => {
+	return !!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(.\d+)?)?(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(
+		val
+	);
+};
+
+export const isAWSTimestamp = (val: number): boolean => {
+	return !!/^\d+$/.exec(String(val));
+};
+
+export const isAWSEmail = (val: string): boolean => {
+	return !!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.exec(
+		val
+	);
+};
+
+export const isAWSJSON = (val: string): boolean => {
+	try {
+		JSON.parse(val);
+		return true;
+	} catch {
+		return false;
+	}
+};
+
+export const isAWSURL = (val: string): boolean => {
+	try {
+		return !!new URL(val);
+	} catch {
+		return false;
+	}
+};
+
+export const isAWSPhone = (val: string): boolean => {
+	return !!/^\+?\d[\d\s-]+$/.exec(val);
+};
+
+export const isAWSIPAddress = (val: string): boolean => {
+	return !!/((^((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))$)|(^((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?$))$/.exec(
+		val
+	);
+};
