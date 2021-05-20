@@ -384,7 +384,7 @@ jobs:
           spec: ui-amplify-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
-          test_name: 'React Authenticator'
+          test_name: 'Guest to Authenticated User"'
           framework: react
           category: auth
           sample_name: guest-to-auth-user
