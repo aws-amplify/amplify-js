@@ -428,7 +428,7 @@ class MutationProcessor {
 
 		// include all the fields that comprise a custom PK if one is specified
 		const deleteInput = {};
-		if (primaryKey) {
+		if (primaryKey && primaryKey.length) {
 			for (const pkField of primaryKey) {
 				deleteInput[pkField] = parsedData[pkField];
 			}

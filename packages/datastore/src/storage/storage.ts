@@ -321,7 +321,6 @@ class StorageClass implements StorageFacade {
 		const { fields } = this.schema.namespaces[namespace].models[
 			modelConstructor.name
 		];
-
 		const { primaryKey, compositeKeys = {} } = this.schema.namespaces[
 			namespace
 		].keys[modelConstructor.name];
