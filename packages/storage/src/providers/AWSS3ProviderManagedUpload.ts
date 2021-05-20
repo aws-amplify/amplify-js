@@ -26,6 +26,7 @@ import {
 	CompleteMultipartUploadCommandInput,
 	ListPartsCommand,
 	AbortMultipartUploadCommand,
+	UploadPartRequest,
 } from '@aws-sdk/client-s3';
 import { AxiosHttpHandler, SEND_PROGRESS_EVENT } from './axios-http-handler';
 import * as events from 'events';
@@ -36,7 +37,7 @@ const localTestingStorageEndpoint = 'http://localhost:20005';
 
 const SET_CONTENT_LENGTH_HEADER = 'contentLengthMiddleware';
 export declare interface Part {
-	bodyPart: Blob;
+	bodyPart: UploadPartRequest['Body'];
 	partNumber: number;
 	emitter: events.EventEmitter;
 	etag?: string;
@@ -113,6 +114,10 @@ export class AWSS3ProviderManagedUpload {
 				await this.checkIfUploadCancelled(uploadId);
 			}
 
+			parts.map(part => {
+				this.removeEventListener(part);
+			});
+
 			// Step 3: Finalize the upload such that S3 can recreate the file
 			return await this.finishMultiPartUpload(uploadId);
 		}
@@ -168,7 +173,10 @@ export class AWSS3ProviderManagedUpload {
 		return response.UploadId;
 	}
 
-	private transformBlob(blob: Blob): RNBlob {
+	/**
+	 * Transforms a Blob in React Native into a axios compliant Blob.
+	 */
+	private transformBlob(blob: Blob) {
 		return new RNBlob([blob]);
 	}
 
@@ -177,19 +185,18 @@ export class AWSS3ProviderManagedUpload {
 	 * @VisibleFotTesting
 	 */
 	protected async uploadParts(uploadId: string, parts: Part[]) {
-		console.log('Uploading parts');
 		try {
 			const allResults = await Promise.all(
 				parts.map(async part => {
-					console.log(`Uploading part ${part.partNumber}`);
 					this.setupEventListener(part);
 					const s3 = await this._createNewS3Client(this.opts, part.emitter);
 					return s3.send(
 						new UploadPartCommand({
 							PartNumber: part.partNumber,
-							Body: Platform.isReactNative
-								? this.transformBlob(part.bodyPart)
-								: part.bodyPart,
+							Body:
+								Platform.isReactNative && this.isBlob(part.bodyPart)
+									? this.transformBlob(part.bodyPart)
+									: part.bodyPart,
 							UploadId: uploadId,
 							Key: this.params.Key,
 							Bucket: this.params.Bucket,
@@ -204,9 +211,6 @@ export class AWSS3ProviderManagedUpload {
 					ETag: allResults[i].ETag,
 				});
 			}
-			parts.forEach(part => {
-				this.removeEventListener(part);
-			});
 		} catch (error) {
 			logger.error(
 				'error happened while uploading a part. Cancelling the multipart upload',
