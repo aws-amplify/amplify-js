@@ -25,6 +25,8 @@ export namespace Components {
          */
         "handleAuthStateChange": AuthStateHandler;
     }
+    interface AmplifyAuthContainer {
+    }
     interface AmplifyAuthFields {
         /**
           * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: string,     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
@@ -943,7 +945,8 @@ export namespace Components {
         /**
           * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
          */
-        "options": SelectOptionsString | SelectOptionsNumber;
+        "options": | SelectOptionsString
+		| SelectOptionsNumber;
         /**
           * Default selected option
          */
@@ -1142,6 +1145,12 @@ declare global {
     var HTMLAmplifyAmazonButtonElement: {
         prototype: HTMLAmplifyAmazonButtonElement;
         new (): HTMLAmplifyAmazonButtonElement;
+    };
+    interface HTMLAmplifyAuthContainerElement extends Components.AmplifyAuthContainer, HTMLStencilElement {
+    }
+    var HTMLAmplifyAuthContainerElement: {
+        prototype: HTMLAmplifyAuthContainerElement;
+        new (): HTMLAmplifyAuthContainerElement;
     };
     interface HTMLAmplifyAuthFieldsElement extends Components.AmplifyAuthFields, HTMLStencilElement {
     }
@@ -1463,6 +1472,7 @@ declare global {
     };
     interface HTMLElementTagNameMap {
         "amplify-amazon-button": HTMLAmplifyAmazonButtonElement;
+        "amplify-auth-container": HTMLAmplifyAuthContainerElement;
         "amplify-auth-fields": HTMLAmplifyAuthFieldsElement;
         "amplify-auth0-button": HTMLAmplifyAuth0ButtonElement;
         "amplify-authenticator": HTMLAmplifyAuthenticatorElement;
@@ -1528,6 +1538,8 @@ declare namespace LocalJSX {
           * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange"?: AuthStateHandler;
+    }
+    interface AmplifyAuthContainer {
     }
     interface AmplifyAuthFields {
         /**
@@ -2021,10 +2033,6 @@ declare namespace LocalJSX {
          */
         "name"?: string;
         /**
-          * Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form
-         */
-        "onFormSubmit"?: (event: CustomEvent<any>) => void;
-        /**
           * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
          */
         "placeholder"?: string;
@@ -2455,7 +2463,8 @@ declare namespace LocalJSX {
         /**
           * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
          */
-        "options"?: SelectOptionsString | SelectOptionsNumber;
+        "options"?: | SelectOptionsString
+		| SelectOptionsNumber;
         /**
           * Default selected option
          */
@@ -2649,6 +2658,7 @@ declare namespace LocalJSX {
     }
     interface IntrinsicElements {
         "amplify-amazon-button": AmplifyAmazonButton;
+        "amplify-auth-container": AmplifyAuthContainer;
         "amplify-auth-fields": AmplifyAuthFields;
         "amplify-auth0-button": AmplifyAuth0Button;
         "amplify-authenticator": AmplifyAuthenticator;
@@ -2709,6 +2719,7 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "amplify-amazon-button": LocalJSX.AmplifyAmazonButton & JSXBase.HTMLAttributes<HTMLAmplifyAmazonButtonElement>;
+            "amplify-auth-container": LocalJSX.AmplifyAuthContainer & JSXBase.HTMLAttributes<HTMLAmplifyAuthContainerElement>;
             "amplify-auth-fields": LocalJSX.AmplifyAuthFields & JSXBase.HTMLAttributes<HTMLAmplifyAuthFieldsElement>;
             "amplify-auth0-button": LocalJSX.AmplifyAuth0Button & JSXBase.HTMLAttributes<HTMLAmplifyAuth0ButtonElement>;
             "amplify-authenticator": LocalJSX.AmplifyAuthenticator & JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement>;

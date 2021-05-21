@@ -1,5 +1,4 @@
 import { Buffer } from 'buffer';
-import CryptoJS from 'crypto-js/core';
 import { monotonicFactory, ULID } from 'ulid';
 import { v4 as uuid } from 'uuid';
 import { ModelInstanceCreator } from './datastore/datastore';
@@ -18,7 +17,9 @@ import {
 	SchemaNamespace,
 	SortPredicatesGroup,
 	SortDirection,
+	isModelAttributeCompositeKey,
 } from './types';
+import { WordArray } from 'amazon-cognito-identity-js';
 
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
@@ -76,7 +77,7 @@ export const validatePredicate = <T extends PersistentModel>(
 	return isNegation ? !result : result;
 };
 
-const validatePredicateField = <T>(
+export const validatePredicateField = <T>(
 	value: T,
 	operator: keyof AllOperators,
 	operand: T | [T, T]
@@ -98,13 +99,18 @@ const validatePredicateField = <T>(
 			const [min, max] = <[T, T]>operand;
 			return value >= min && value <= max;
 		case 'beginsWith':
-			return (<string>(<unknown>value)).startsWith(<string>(<unknown>operand));
+			return (
+				!isNullOrUndefined(value) &&
+				(<string>(<unknown>value)).startsWith(<string>(<unknown>operand))
+			);
 		case 'contains':
 			return (
+				!isNullOrUndefined(value) &&
 				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) > -1
 			);
 		case 'notContains':
 			return (
+				isNullOrUndefined(value) ||
 				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) === -1
 			);
 		default:
@@ -153,22 +159,43 @@ export const establishRelation = (
 			}
 		});
 
-		// create indexes from key fields
+		const createCompositeKeysMap = (
+			compositeKeys = {},
+			fields: string[]
+		): { [key: string]: string[] } => {
+			for (const field of fields) {
+				const rest = fields.filter(f => f !== field);
+				if (field in compositeKeys) {
+					compositeKeys[field] = [
+						...new Set([...compositeKeys[field], ...rest]),
+					];
+					continue;
+				}
+				compositeKeys[field] = rest;
+			}
+			return compositeKeys;
+		};
+
 		if (model.attributes) {
-			model.attributes.forEach(attribute => {
+			for (const attribute of model.attributes) {
+				if (isModelAttributeCompositeKey(attribute)) {
+					model.compositeKeys = createCompositeKeysMap(
+						model.compositeKeys,
+						attribute.properties.fields
+					);
+				}
+
 				if (attribute.type === 'key') {
-					const { fields } = attribute.properties;
-					if (fields) {
-						fields.forEach(field => {
-							// only add index if it hasn't already been added
-							const exists = relationship[mKey].indexes.includes(field);
-							if (!exists) {
-								relationship[mKey].indexes.push(field);
-							}
-						});
+					const { fields = [] } = attribute.properties;
+					for (const field of fields) {
+						// only add index if it hasn't already been added
+						const exists = relationship[mKey].indexes.includes(field);
+						if (!exists) {
+							relationship[mKey].indexes.push(field);
+						}
 					}
 				}
-			});
+			}
 		}
 	});
 
@@ -374,7 +401,7 @@ export const isPrivateMode = () => {
 };
 
 const randomBytes = function(nBytes: number): Buffer {
-	return Buffer.from(CryptoJS.lib.WordArray.random(nBytes).toString(), 'hex');
+	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
 };
 const prng = () => randomBytes(1).readUInt8(0) / 0xff;
 export function monotonicUlidFactory(seed?: number): ULID {
@@ -434,54 +461,43 @@ export function sortCompareFunction<T extends PersistentModel>(
 	};
 }
 
-export function getUpdateMutationInput<T extends PersistentModel>(
-	original: T,
-	updated: T
-): { [key: string]: any } {
-	const mutationInput: { [key: string]: any } = {
-		id: original.id,
-		_version: original._version,
-		_lastChangedAt: original._lastChangedAt,
-		_deleted: original._deleted,
-	};
-
-	for (const field in original) {
-		let originalValue: any = original[field];
-		let updatedValue: any = updated[field];
-
-		if (typeof originalValue === 'object') {
-			originalValue = JSON.stringify(originalValue);
-			updatedValue = JSON.stringify(updatedValue);
-		}
-
-		if (originalValue !== updatedValue) {
-			mutationInput[field] = updated[field];
-		}
-	}
-
-	return mutationInput;
-}
-
-// deep compare any 2 objects (including arrays, Sets, and Maps)
-// returns true if equal
+// deep compare any 2 values
+// primitives or object types (including arrays, Sets, and Maps)
+// returns true if equal by value
 // if nullish is true, treat undefined and null values as equal
 // to normalize for GQL response values for undefined fields
-export function objectsEqual(
-	objA: object,
-	objB: object,
+export function valuesEqual(
+	valA: any,
+	valB: any,
 	nullish: boolean = false
 ): boolean {
-	let a = objA;
-	let b = objB;
+	let a = valA;
+	let b = valB;
 
-	if (typeof a !== 'object' || typeof b !== 'object') {
+	const nullishCompare = (_a, _b) => {
+		return (
+			(_a === undefined || _a === null) && (_b === undefined || _b === null)
+		);
+	};
+
+	// if one of the values is a primitive and the other is an object
+	if (
+		(a instanceof Object && !(b instanceof Object)) ||
+		(!(a instanceof Object) && b instanceof Object)
+	) {
 		return false;
 	}
 
-	if (a === null || b === null) {
-		return false;
+	// compare primitive types
+	if (!(a instanceof Object)) {
+		if (nullish && nullishCompare(a, b)) {
+			return true;
+		}
+
+		return a === b;
 	}
 
+	// make sure object types match
 	if (
 		(Array.isArray(a) && !Array.isArray(b)) ||
 		(Array.isArray(b) && !Array.isArray(a))
@@ -502,35 +518,25 @@ export function objectsEqual(
 	const aKeys = Object.keys(a);
 	const bKeys = Object.keys(b);
 
-	if (!nullish && aKeys.length !== bKeys.length) {
+	// last condition is to ensure that [] !== [null] even if nullish. However [undefined] === [null] when nullish
+	if (aKeys.length !== bKeys.length && (!nullish || Array.isArray(a))) {
 		return false;
 	}
 
-	for (const key of aKeys) {
+	// iterate through the longer set of keys
+	// e.g., for a nullish comparison of a={ a: 1 } and b={ a: 1, b: null }
+	// we want to iterate through bKeys
+	const keys = aKeys.length >= bKeys.length ? aKeys : bKeys;
+
+	for (const key of keys) {
 		const aVal = a[key];
 		const bVal = b[key];
 
-		if (aVal && typeof aVal === 'object') {
-			if (!objectsEqual(aVal, bVal)) {
-				return false;
-			}
-		} else if (aVal !== bVal) {
-			// nullish comparison should only apply to objects and Maps
-			if (nullish && !Array.isArray(a) && !(a instanceof Set)) {
-				if (
-					// returns false if it's NOT a nullish match
-					!(
-						(aVal === undefined || aVal === null) &&
-						(bVal === undefined || bVal === null)
-					)
-				) {
-					return false;
-				}
-			} else {
-				return false;
-			}
+		if (!valuesEqual(aVal, bVal, nullish)) {
+			return false;
 		}
 	}
+
 	return true;
 }
 
