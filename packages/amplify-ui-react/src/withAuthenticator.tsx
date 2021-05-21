@@ -4,7 +4,7 @@ import React, {
 	FunctionComponent,
 } from 'react';
 import { Auth, appendToCognitoUserAgent } from '@aws-amplify/auth';
-import { AmplifyContainer, AmplifyAuthenticator } from './';
+import { AmplifyContainer, AmplifyAuthenticator, AmplifyAuthContainer } from './';
 import { onAuthUIStateChange, AuthState } from '@aws-amplify/ui-components';
 import { Logger } from '@aws-amplify/core';
 
@@ -48,7 +48,9 @@ export function withAuthenticator<T extends object>(
 		if (!signedIn) {
 			return (
 				<AmplifyContainer>
-					<AmplifyAuthenticator {...authenticatorProps} {...props} />
+					<AmplifyAuthContainer>
+						<AmplifyAuthenticator {...authenticatorProps} {...props} />
+					</AmplifyAuthContainer>
 				</AmplifyContainer>
 			);
 		}

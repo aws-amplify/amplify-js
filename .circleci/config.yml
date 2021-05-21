@@ -384,6 +384,13 @@ jobs:
           spec: ui-amplify-authenticator
           browser: << parameters.browser >>
       - integ_test_js:
+          test_name: 'Guest to Authenticated User"'
+          framework: react
+          category: auth
+          sample_name: guest-to-auth-user
+          spec: guest-to-auth-user
+          browser: << parameters.browser >>
+      - integ_test_js:
           test_name: 'React Typescript Authenticator'
           framework: react
           category: auth
@@ -657,6 +664,22 @@ jobs:
           category: storage
           sample_name: storageComp
           spec: storage-comp
+  integ_react_amazon_cognito_identity_js_cookie_storage:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/amazon-cognito-identity-js-cookie-storage
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'amazon-cognito-identity-js-cookie-storage'
+          framework: react
+          category: auth
+          sample_name: amazon-cognito-identity-js-cookie-storage
+          spec: amazon-cognito-identity-js-cookie-storage
+          browser: << parameters.browser >>
   integ_react_amazon_cognito_identity_js:
     parameters:
       browser:
@@ -804,7 +827,6 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/main
       - 1.0-stable
-      - native
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -960,6 +982,15 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_react_amazon_cognito_identity_js_cookie_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_amazon_cognito_identity_js:
           requires:
             - integ_setup
@@ -1039,6 +1070,7 @@ workflows:
             - integ_react_interactions
             - integ_angular_interactions
             - integ_vue_interactions
+            - integ_react_amazon_cognito_identity_js_cookie_storage
             - integ_react_amazon_cognito_identity_js
             - integ_node_amazon_cognito_identity_js
             - integ_react_auth
@@ -1046,9 +1078,9 @@ workflows:
             - integ_vue_auth
             - integ_rn_ios_storage
             - integ_rn_ios_storage_multipart_progress
+            - integ_rn_android_storage_multipart_progress
             - integ_rn_ios_push_notifications
             - integ_rn_android_storage
-            - integ_rn_android_storage_multipart_progress
             - integ_datastore_auth
             - integ_duplicate_packages
       - post_release:
