@@ -44,7 +44,7 @@ export declare interface Part {
 	_lastUploadedBytes: number;
 }
 
-class RNBlob extends Blob {
+export class RNBlob extends Blob {
 	get [Symbol.toStringTag]() {
 		return 'Blob';
 	}
