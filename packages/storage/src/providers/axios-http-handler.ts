@@ -14,12 +14,36 @@
 import { HttpHandlerOptions } from '@aws-sdk/types';
 import { HttpHandler, HttpRequest, HttpResponse } from '@aws-sdk/protocol-http';
 import { buildQueryString } from '@aws-sdk/querystring-builder';
-import axios, { AxiosRequestConfig, Method, CancelTokenSource } from 'axios';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import axios, {
+	AxiosRequestConfig,
+	Method,
+	CancelTokenSource,
+	AxiosTransformer,
+} from 'axios';
+import { ConsoleLogger as Logger, Platform } from '@aws-amplify/core';
 import { FetchHttpHandlerOptions } from '@aws-sdk/fetch-http-handler';
 
 const logger = new Logger('axios-http-handler');
 export const SEND_PROGRESS_EVENT = 'sendProgress';
+
+function isBlob(body: any): body is Blob {
+	return typeof Blob !== 'undefined' && body instanceof Blob;
+}
+
+function normalizeHeaders(
+	headers: Record<string, string>,
+	normalizedName: string
+) {
+	for (const [k, v] of Object.entries(headers)) {
+		if (
+			k !== normalizedName &&
+			k.toUpperCase() === normalizedName.toUpperCase()
+		) {
+			headers[normalizedName] = v;
+			delete headers[k];
+		}
+	}
+}
 
 export class AxiosHttpHandler implements HttpHandler {
 	constructor(
@@ -97,10 +121,24 @@ export class AxiosHttpHandler implements HttpHandler {
 
 		// From gamma release, aws-sdk now expects all response type to be of blob or streams
 		axiosRequest.responseType = 'blob';
+		const defaultTransformers: AxiosTransformer[] = axios.defaults
+			.transformRequest as [];
+		axiosRequest.transformRequest = [
+			function(data, headers) {
+				if (Platform.isReactNative && isBlob(data)) {
+					normalizeHeaders(headers, 'Content-Type');
+					normalizeHeaders(headers, 'Accept');
+					console.log(headers);
+					console.log('blobby blob!');
+					return data;
+				}
+				return defaultTransformers[0].call(null, data, headers);
+			},
+		];
 
 		const raceOfPromises = [
-			axios
-				.request(axiosRequest)
+			axios(axiosRequest)
+				// .request(axiosRequest)
 				.then(response => {
 					return {
 						response: new HttpResponse({

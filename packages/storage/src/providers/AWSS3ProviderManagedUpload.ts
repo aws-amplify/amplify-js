@@ -14,7 +14,6 @@
 import {
 	ConsoleLogger as Logger,
 	getAmplifyUserAgent,
-	Platform,
 	Credentials,
 } from '@aws-amplify/core';
 import {
@@ -26,7 +25,7 @@ import {
 	CompleteMultipartUploadCommandInput,
 	ListPartsCommand,
 	AbortMultipartUploadCommand,
-	UploadPartRequest,
+	CompletedPart,
 } from '@aws-sdk/client-s3';
 import { AxiosHttpHandler, SEND_PROGRESS_EVENT } from './axios-http-handler';
 import * as events from 'events';
@@ -37,17 +36,11 @@ const localTestingStorageEndpoint = 'http://localhost:20005';
 
 const SET_CONTENT_LENGTH_HEADER = 'contentLengthMiddleware';
 export declare interface Part {
-	bodyPart: UploadPartRequest['Body'];
+	bodyPart: any;
 	partNumber: number;
 	emitter: events.EventEmitter;
 	etag?: string;
 	_lastUploadedBytes: number;
-}
-
-export class RNBlob extends Blob {
-	get [Symbol.toStringTag]() {
-		return 'Blob';
-	}
 }
 
 export class AWSS3ProviderManagedUpload {
@@ -59,7 +52,7 @@ export class AWSS3ProviderManagedUpload {
 	private body = null;
 	private params = null;
 	private opts = null;
-	private multiPartMap = [];
+	private completedParts: CompletedPart[] = [];
 	private cancel: boolean = false;
 
 	// Progress reporting
@@ -174,13 +167,6 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	/**
-	 * Transforms a Blob in React Native into a axios compliant Blob.
-	 */
-	private transformBlob(blob: Blob) {
-		return new RNBlob([blob]);
-	}
-
-	/**
 	 * @private Not to be extended outside of tests
 	 * @VisibleFotTesting
 	 */
@@ -193,10 +179,7 @@ export class AWSS3ProviderManagedUpload {
 					return s3.send(
 						new UploadPartCommand({
 							PartNumber: part.partNumber,
-							Body:
-								Platform.isReactNative && this.isBlob(part.bodyPart)
-									? this.transformBlob(part.bodyPart)
-									: part.bodyPart,
+							Body: part.bodyPart,
 							UploadId: uploadId,
 							Key: this.params.Key,
 							Bucket: this.params.Bucket,
@@ -206,7 +189,7 @@ export class AWSS3ProviderManagedUpload {
 			);
 			// The order of resolved promises is the same as input promise order.
 			for (let i = 0; i < allResults.length; i++) {
-				this.multiPartMap.push({
+				this.completedParts.push({
 					PartNumber: parts[i].partNumber,
 					ETag: allResults[i].ETag,
 				});
@@ -226,8 +209,9 @@ export class AWSS3ProviderManagedUpload {
 			Bucket: this.params.Bucket,
 			Key: this.params.Key,
 			UploadId: uploadId,
-			MultipartUpload: { Parts: this.multiPartMap },
+			MultipartUpload: { Parts: this.completedParts },
 		};
+		console.log('completed parts', this.completedParts);
 		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
 		const s3 = await this._createNewS3Client(this.opts);
 		try {
@@ -262,7 +246,7 @@ export class AWSS3ProviderManagedUpload {
 	private async cleanup(uploadId: string) {
 		// Reset this's state
 		this.body = null;
-		this.multiPartMap = [];
+		this.completedParts = [];
 		this.bytesUploaded = 0;
 		this.totalBytesToUpload = 0;
 
@@ -339,10 +323,6 @@ export class AWSS3ProviderManagedUpload {
 		) {
 			return body;
 		} */
-	}
-
-	private isBlob(body: any): body is Blob {
-		return typeof Blob !== 'undefined' && body instanceof Blob;
 	}
 
 	private isGenericObject(body: any): body is Object {

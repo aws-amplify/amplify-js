@@ -13,15 +13,12 @@
 import {
 	AWSS3ProviderManagedUpload,
 	Part,
-	RNBlob,
 } from '../../src/providers/AWSS3ProviderManagedUpload';
-import { Credentials, Platform } from '@aws-amplify/core';
+import { Platform } from '@aws-amplify/core';
 import {
 	S3Client,
 	PutObjectCommand,
 	UploadPartCommand,
-	ListPartsCommand,
-	AbortMultipartUploadCommand,
 	CompleteMultipartUploadCommand,
 	CreateMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
@@ -124,13 +121,6 @@ describe('single part upload tests', () => {
 	});
 });
 
-describe('React Native Blob test', () => {
-	test('happy case: Object prototype call should return [Object Blob]', () => {
-		const o = Object.prototype.toString;
-		expect(o.call(new RNBlob())).toEqual('[Object Blob]');
-	});
-});
-
 describe('multi part upload tests', () => {
 	/** Extend our test class such that minPartSize is reasonable
 	 * and we can mock emit the progress events
@@ -144,7 +134,7 @@ describe('multi part upload tests', () => {
 			for (const part of parts) {
 				part.emitter.emit('sendProgress', {
 					// Assume that the notification is sent when 100% of part is uploaded
-					loaded: part.bodyPart.length,
+					loaded: (part.bodyPart as string).length,
 				});
 			}
 		}
@@ -274,14 +264,14 @@ describe('multi part upload tests', () => {
 
 		// Next two upload parts call
 		expect(s3ServiceCallSpy.mock.calls[1][0].input).toStrictEqual({
-			Body: expect.any(RNBlob),
+			Body: expect.any(Blob),
 			Bucket: testParams.Bucket,
 			Key: testParams.Key,
 			PartNumber: 1,
 			UploadId: testUploadId,
 		});
 		expect(s3ServiceCallSpy.mock.calls[2][0].input).toStrictEqual({
-			Body: expect.any(RNBlob),
+			Body: expect.any(Blob),
 			Bucket: testParams.Bucket,
 			Key: testParams.Key,
 			PartNumber: 2,
@@ -307,7 +297,7 @@ describe('multi part upload tests', () => {
 				for (const part of parts) {
 					part.emitter.emit('sendProgress', {
 						// Assume that the notification is send when 100% of part is uploaded
-						loaded: part.bodyPart.length,
+						loaded: (part.bodyPart as string).length,
 					});
 				}
 			}

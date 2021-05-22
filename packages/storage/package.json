@@ -62,8 +62,7 @@
             "esnext.asynciterable",
             "es2017.object"
           ],
-          "allowJs": true,
-					"target": "ES6"
+          "allowJs": true
         }
       }
     },
