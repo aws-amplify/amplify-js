@@ -122,28 +122,29 @@ describe('single part upload tests', () => {
 });
 
 describe('multi part upload tests', () => {
-	/** Extend our test class such that minPartSize is reasonable
-	 * and we can mock emit the progress events
-	 */
-	class TestClass extends AWSS3ProviderManagedUpload {
-		protected minPartSize = testMinPartSize;
-		protected async uploadParts(uploadId: string, parts: Part[]) {
-			// Make service calls and set the event listeners first from the base impl
-			await super.uploadParts(uploadId, parts);
-			// Now trigger some notifications from the event listeners
-			for (const part of parts) {
-				part.emitter.emit('sendProgress', {
-					// Assume that the notification is sent when 100% of part is uploaded
-					loaded: (part.bodyPart as string).length,
-				});
-			}
-		}
-	}
 	test('happy case: upload a string as body that splits in two parts', async () => {
 		// setup event handling
 		const emitter = new events.EventEmitter();
 		const eventSpy = sinon.spy();
 		emitter.on('sendProgress', eventSpy);
+
+		/** Extend our test class such that minPartSize is reasonable
+		 * and we can mock emit the progress events
+		 */
+		class TestClass extends AWSS3ProviderManagedUpload {
+			protected minPartSize = testMinPartSize;
+			protected async uploadParts(uploadId: string, parts: Part[]) {
+				// Make service calls and set the event listeners first from the base impl
+				await super.uploadParts(uploadId, parts);
+				// Now trigger some notifications from the event listeners
+				for (const part of parts) {
+					part.emitter.emit('sendProgress', {
+						// Assume that the notification is sent when 100% of part is uploaded
+						loaded: (part.bodyPart as string).length,
+					});
+				}
+			}
+		}
 
 		// Setup Spy for S3 service calls
 		const s3ServiceCallSpy = jest
@@ -220,62 +221,6 @@ describe('multi part upload tests', () => {
 			loaded: testParams.Body.length,
 			part: 2,
 			total: testParams.Body.length,
-		});
-	});
-
-	test('happy case: multi part upload in React Native', async () => {
-		Platform.isReactNative = true;
-		const s3ServiceCallSpy = jest
-			.spyOn(S3Client.prototype, 'send')
-			.mockImplementation(async command => {
-				if (command instanceof CreateMultipartUploadCommand) {
-					return Promise.resolve({ UploadId: testUploadId });
-				} else if (command instanceof UploadPartCommand) {
-					return Promise.resolve({
-						ETag: 'test_etag_' + command.input.PartNumber,
-					});
-				} else if (command instanceof CompleteMultipartUploadCommand) {
-					return Promise.resolve({ Key: testParams.Key });
-				}
-			});
-
-		const testBlob = new Blob(['testDataBody'], {
-			type: 'text/plain;charset=utf-8',
-		});
-		const uploader = new TestClass(
-			{
-				...testParams,
-				Body: testBlob,
-			},
-			testOpts,
-			new events.EventEmitter()
-		);
-		const data = await uploader.upload();
-
-		// Testing multi part upload functionality
-		expect(data).toBe(testParams.Key);
-		expect(s3ServiceCallSpy).toBeCalledTimes(4);
-
-		// Create multipart upload call
-		expect(s3ServiceCallSpy.mock.calls[0][0].input).toStrictEqual({
-			...testParams,
-			Body: testBlob,
-		});
-
-		// Next two upload parts call
-		expect(s3ServiceCallSpy.mock.calls[1][0].input).toStrictEqual({
-			Body: expect.any(Blob),
-			Bucket: testParams.Bucket,
-			Key: testParams.Key,
-			PartNumber: 1,
-			UploadId: testUploadId,
-		});
-		expect(s3ServiceCallSpy.mock.calls[2][0].input).toStrictEqual({
-			Body: expect.any(Blob),
-			Bucket: testParams.Bucket,
-			Key: testParams.Key,
-			PartNumber: 2,
-			UploadId: testUploadId,
 		});
 	});
 
