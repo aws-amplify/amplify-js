@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.3.0...@aws-amplify/ui-components@1.3.1) (2021-05-14)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** Prioritize using `user.username` whenever provided ([#8050](https://github.com/aws-amplify/amplify-js/issues/8050)) ([c48ad83](https://github.com/aws-amplify/amplify-js/commit/c48ad83beaac019281b735fc54d7a98b0a1a4d2e))
+
+
+
+
+
 # [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.2.0...@aws-amplify/ui-components@1.3.0) (2021-05-06)
 
 
