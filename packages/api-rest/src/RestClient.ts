@@ -205,7 +205,8 @@ export class RestClient {
 							params.headers['x-amz-date']
 						);
 
-						if (DateUtils.isClockSkewed(requestDate, responseDate)) {
+						// Compare local clock to the server clock
+						if (DateUtils.isClockSkewed(responseDate)) {
 							DateUtils.setClockOffset(
 								responseDate.getTime() - requestDate.getTime()
 							);
