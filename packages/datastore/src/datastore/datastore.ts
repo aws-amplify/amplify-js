@@ -833,7 +833,7 @@ class DataStore {
 		const conflictHandlerIsDefault: () => boolean = () =>
 			this.conflictHandler === defaultConflictHandler;
 
-		if (configDataStore) {
+		if (configDataStore && configDataStore.conflictHandler) {
 			return configDataStore.conflictHandler;
 		}
 		if (conflictHandlerIsDefault() && config.conflictHandler) {
@@ -849,7 +849,7 @@ class DataStore {
 		const errorHandlerIsDefault: () => boolean = () =>
 			this.errorHandler === defaultErrorHandler;
 
-		if (configDataStore) {
+		if (configDataStore && configDataStore.errorHandler) {
 			return configDataStore.errorHandler;
 		}
 		if (errorHandlerIsDefault() && config.errorHandler) {
