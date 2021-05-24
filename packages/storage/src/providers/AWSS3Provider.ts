@@ -148,7 +148,6 @@ export class AWSS3Provider implements StorageProvider {
 		const {
 			acl,
 			bucket,
-			multipart,
 			cacheControl,
 			contentDisposition,
 			contentEncoding,
@@ -220,7 +219,7 @@ export class AWSS3Provider implements StorageProvider {
 			}
 		});
 		try {
-			await copier.copy(multipart);
+			await copier.copy();
 			dispatchStorageEvent(
 				track,
 				'copy',
