@@ -211,7 +211,6 @@ export class AWSS3ProviderManagedUpload {
 			UploadId: uploadId,
 			MultipartUpload: { Parts: this.completedParts },
 		};
-		console.log('completed parts', this.completedParts);
 		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
 		const s3 = await this._createNewS3Client(this.opts);
 		try {

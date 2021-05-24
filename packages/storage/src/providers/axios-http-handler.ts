@@ -128,8 +128,6 @@ export class AxiosHttpHandler implements HttpHandler {
 				if (Platform.isReactNative && isBlob(data)) {
 					normalizeHeaders(headers, 'Content-Type');
 					normalizeHeaders(headers, 'Accept');
-					console.log(headers);
-					console.log('blobby blob!');
 					return data;
 				}
 				return defaultTransformers[0].call(null, data, headers);
@@ -137,8 +135,8 @@ export class AxiosHttpHandler implements HttpHandler {
 		];
 
 		const raceOfPromises = [
-			axios(axiosRequest)
-				// .request(axiosRequest)
+			axios
+				.request(axiosRequest)
 				.then(response => {
 					return {
 						response: new HttpResponse({
