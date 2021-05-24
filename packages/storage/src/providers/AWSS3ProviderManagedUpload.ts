@@ -118,7 +118,6 @@ export class AWSS3ProviderManagedUpload {
 
 	private createParts(): Part[] {
 		const parts: Part[] = [];
-		let partNumber = 0;
 		for (let bodyStart = 0; bodyStart < this.totalBytesToUpload; ) {
 			const bodyEnd = Math.min(
 				bodyStart + this.minPartSize,
@@ -126,7 +125,7 @@ export class AWSS3ProviderManagedUpload {
 			);
 			parts.push({
 				bodyPart: this.body.slice(bodyStart, bodyEnd),
-				partNumber: ++partNumber,
+				partNumber: parts.length + 1,
 				emitter: new events.EventEmitter(),
 				_lastUploadedBytes: 0,
 			});

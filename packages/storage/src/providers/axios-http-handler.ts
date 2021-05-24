@@ -30,10 +30,10 @@ function isBlob(body: any): body is Blob {
 	return typeof Blob !== 'undefined' && body instanceof Blob;
 }
 
-function normalizeHeaders(
+const normalizeHeaders = (
 	headers: Record<string, string>,
 	normalizedName: string
-) {
+) => {
 	for (const [k, v] of Object.entries(headers)) {
 		if (
 			k !== normalizedName &&
@@ -43,7 +43,19 @@ function normalizeHeaders(
 			delete headers[k];
 		}
 	}
-}
+};
+
+export const reactNativeRequestTransformer: AxiosTransformer[] = [
+	function(data, headers) {
+		if (isBlob(data)) {
+			normalizeHeaders(headers, 'Content-Type');
+			normalizeHeaders(headers, 'Accept');
+			return data;
+		}
+		// Axios' default transformRequest is an array
+		return axios.defaults.transformRequest[0].call(null, data, headers);
+	},
+];
 
 export class AxiosHttpHandler implements HttpHandler {
 	constructor(
@@ -121,18 +133,9 @@ export class AxiosHttpHandler implements HttpHandler {
 
 		// From gamma release, aws-sdk now expects all response type to be of blob or streams
 		axiosRequest.responseType = 'blob';
-		const defaultTransformers: AxiosTransformer[] = axios.defaults
-			.transformRequest as [];
-		axiosRequest.transformRequest = [
-			function(data, headers) {
-				if (Platform.isReactNative && isBlob(data)) {
-					normalizeHeaders(headers, 'Content-Type');
-					normalizeHeaders(headers, 'Accept');
-					return data;
-				}
-				return defaultTransformers[0].call(null, data, headers);
-			},
-		];
+		if (Platform.isReactNative) {
+			axiosRequest.transformRequest = reactNativeRequestTransformer;
+		}
 
 		const raceOfPromises = [
 			axios
