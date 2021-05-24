@@ -14,6 +14,8 @@ import {
 	UploadPartCopyCommand,
 	ListObjectsV2Command,
 	CopyObjectCommandOutput,
+	ListObjectsV2CommandOutput,
+	_Object,
 } from '@aws-sdk/client-s3';
 import * as events from 'events';
 
@@ -45,18 +47,19 @@ export interface AWSS3ProviderMultipartCopierParams {
 export class AWSS3ProviderMultipartCopier {
 	static readonly minPartSize = 5 * 1024 * 1024; // 5MB, minimum requirement for a multipart copy
 	static readonly partSize = 50 * 1024 * 1024;
-	private queueSize: number;
-	private params: CopyObjectCommandInput;
-	private completedParts: CompletedPart[] = [];
+	private readonly destBucket: string;
+	private readonly destKey: string;
+	private readonly emitter: events.EventEmitter;
+	private readonly queueSize: number;
+	private readonly s3client: S3Client;
+	private readonly srcBucket: string;
+	private readonly srcKey: string;
 	private bytesCopied = 0;
+	private completedParts: CompletedPart[] = [];
+	private params: CopyObjectCommandInput;
+	private srcETag: CopyObjectCommandInput['CopySourceIfMatch'];
 	private totalBytesToCopy = 0;
 	private totalParts = 0;
-	private emitter: events.EventEmitter;
-	private s3client: S3Client;
-	private destBucket: string;
-	private destKey: string;
-	private srcBucket: string;
-	private srcKey: string;
 
 	constructor({
 		params,
@@ -86,17 +89,14 @@ export class AWSS3ProviderMultipartCopier {
 	 * @throws Will throw an error if any of the requests fails, or if it's cancelled.
 	 * @return {Promise<string | CopyObjectCommandOutput>} Key of the copied object.
 	 */
-	public async copy(
-		multipart = true
-	): Promise<string | CopyObjectCommandOutput> {
+	public async copy(): Promise<string | CopyObjectCommandOutput> {
 		let uploadId: string = undefined;
 		try {
-			this.totalBytesToCopy = await this._getObjectSize();
+			const { Size, ETag } = await this._getObjectSize();
+			this.totalBytesToCopy = Size;
+			this.srcETag = ETag;
 			// Fallback to basic CopyObject if the file is smaller than 5MB.
-			if (
-				!multipart ||
-				this.totalBytesToCopy <= AWSS3ProviderMultipartCopier.minPartSize
-			) {
+			if (this.totalBytesToCopy <= AWSS3ProviderMultipartCopier.minPartSize) {
 				const copyObjectCommand = new CopyObjectCommand(this.params);
 				const result = await this.s3client.send(copyObjectCommand);
 				this.emitter.emit(COPY_PROGRESS, {
@@ -171,6 +171,7 @@ export class AWSS3ProviderMultipartCopier {
 							CopySourceRange: part.copySourceRange,
 							PartNumber: part.partNumber,
 							UploadId: uploadId,
+							...(this.srcETag && { CopySourceIfMatch: this.srcETag }),
 						})
 					);
 					partNumber++;
@@ -237,7 +238,7 @@ export class AWSS3ProviderMultipartCopier {
 		return response.UploadId;
 	}
 
-	private async _getObjectSize(): Promise<number> {
+	private async _getObjectSize(): Promise<_Object> {
 		const listObjectCommand = new ListObjectsV2Command({
 			Bucket: this.srcBucket,
 			MaxKeys: 1,
@@ -261,6 +262,6 @@ export class AWSS3ProviderMultipartCopier {
 				`${AWSS3ProviderMultipartCopierErrors.OBJECT_KEY_MISMATCH}, provided: ${this.srcKey}, from s3: ${sourceObject.Key}`
 			);
 		}
-		return sourceObject.Size;
+		return sourceObject;
 	}
 }
