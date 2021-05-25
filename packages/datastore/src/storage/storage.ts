@@ -321,7 +321,7 @@ class StorageClass implements StorageFacade {
 		const { fields } = this.schema.namespaces[namespace].models[
 			modelConstructor.name
 		];
-		const { primaryKey, compositeKeys = {} } = this.schema.namespaces[
+		const { primaryKey, compositeKeys = [] } = this.schema.namespaces[
 			namespace
 		].keys[modelConstructor.name];
 
@@ -340,10 +340,12 @@ class StorageClass implements StorageFacade {
 				updatedElement[key] =
 					originalElement[key] === undefined ? null : originalElement[key];
 
-				if (key in compositeKeys) {
+				for (const fieldSet of compositeKeys) {
 					// include all of the fields that comprise the composite key
-					for (const compositeField of compositeKeys[key]) {
-						updatedElement[compositeField] = originalElement[compositeField];
+					if (fieldSet.has(key)) {
+						for (const compositeField of fieldSet) {
+							updatedElement[compositeField] = originalElement[compositeField];
+						}
 					}
 				}
 			}

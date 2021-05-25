@@ -15,6 +15,7 @@ import {
 	RelationshipType,
 	RelationType,
 	ModelKeys,
+	ModelAttributes,
 	SchemaNamespace,
 	SortPredicatesGroup,
 	SortDirection,
@@ -130,6 +131,89 @@ export const isModelConstructor = <T extends PersistentModel>(
 	);
 };
 
+/* 
+  When we have GSI(s) with composite sort keys defined on a model
+	There are some very particular rules regarding which fields must be included in the update mutation input
+	The field selection becomes more complex as the number of GSIs with composite sort keys grows
+
+	To summarize: any time we update a field that is part of the composite sort key of a GSI, we must include:
+	 1. all of the other fields in that composite sort key
+	 2. all of the fields from any other composite sort key that intersect with the fields from 1.
+
+	 E.g.,
+	 Model @model 
+		@key(name: 'key1' fields: ['hk', 'a', 'b', 'c'])
+		@key(name: 'key2' fields: ['hk', 'a', 'b', 'd'])
+		@key(name: 'key3' fields: ['hk', 'x', 'y', 'z'])
+
+	if Model.a is updated => include ['a', 'b', 'c', 'd']
+	if Model.c is updated => include ['a', 'b', 'c', 'd']
+	if Model.d is updated => include ['a', 'b', 'c', 'd']
+	if Model.x is updated => include ['x', 'y', 'z']
+
+	This function accepts a model's attributes and returns grouped sets of composite key fields
+	Using our example Model above, the function will return:
+	[
+		Set('a', 'b', 'c', 'd'),
+		Set('x', 'y', 'z'),
+	]
+
+	This gives us the opportunity to correctly include the required fields for composite keys
+	When crafting the mutation input in Storage.getUpdateMutationInput
+*/
+export const processCompositeKeys = (
+	attributes: ModelAttributes
+): Set<string>[] => {
+	const compositeKeyFields = attributes
+		.filter(attribute => isModelAttributeCompositeKey(attribute))
+		.map(
+			({
+				properties: {
+					// ignore the HK (fields[0]) we only need to include the composite sort key fields[1...n]
+					fields: [, ...sortKeyFields],
+				},
+			}) => sortKeyFields
+		);
+
+	const combineIntersecting = (fields): Set<string>[] =>
+		fields.reduce((acc, sortKeyFields) => {
+			const sortKeyFieldsSet = new Set(sortKeyFields);
+
+			if (acc.length === 0) {
+				acc.push(sortKeyFieldsSet);
+				return acc;
+			}
+
+			for (let idx = 0; idx < acc.length; idx++) {
+				const existingFields = acc[idx];
+
+				const commonFields = new Set(
+					[...existingFields].filter(f => sortKeyFieldsSet.has(f))
+				);
+
+				if (commonFields.size > 0) {
+					const union = new Set([...existingFields, ...sortKeyFieldsSet]);
+					acc[idx] = union;
+					break;
+				}
+
+				acc.push(sortKeyFieldsSet);
+			}
+
+			return acc;
+		}, []);
+
+	let initial = combineIntersecting(compositeKeyFields);
+	let combined = combineIntersecting(initial);
+
+	while (initial.length !== combined.length) {
+		initial = combineIntersecting(combined);
+		combined = combineIntersecting(initial);
+	}
+
+	return combined;
+};
+
 export const establishRelationAndKeys = (
 	namespace: SchemaNamespace
 ): [RelationshipType, ModelKeys] => {
@@ -164,27 +248,9 @@ export const establishRelationAndKeys = (
 			}
 		});
 
-		const createCompositeKeysMap = (
-			compositeKeys = {},
-			fields: string[]
-		): { [key: string]: string[] } => {
-			// ignore the HK (fields[0]) we only need to include fields[1..n]
-			const [, ...compositeSortKeyFields] = fields;
-
-			for (const field of compositeSortKeyFields) {
-				const rest = compositeSortKeyFields.filter(f => f !== field);
-				if (field in compositeKeys) {
-					compositeKeys[field] = [
-						...new Set([...compositeKeys[field], ...rest]),
-					];
-					continue;
-				}
-				compositeKeys[field] = rest;
-			}
-			return compositeKeys;
-		};
-
 		if (model.attributes) {
+			keys[mKey].compositeKeys = processCompositeKeys(model.attributes);
+
 			for (const attribute of model.attributes) {
 				if (!isModelAttributeKey(attribute)) {
 					continue;
@@ -192,13 +258,6 @@ export const establishRelationAndKeys = (
 
 				if (isModelAttributePrimaryKey(attribute)) {
 					keys[mKey].primaryKey = attribute.properties.fields;
-				}
-
-				if (isModelAttributeCompositeKey(attribute)) {
-					keys[mKey].compositeKeys = createCompositeKeysMap(
-						keys[mKey].compositeKeys,
-						attribute.properties.fields
-					);
 				}
 
 				const { fields } = attribute.properties;

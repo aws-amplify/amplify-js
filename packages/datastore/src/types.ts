@@ -76,7 +76,7 @@ export function isTargetNameAssociation(
 	return obj && obj.targetName;
 }
 
-type ModelAttributes = ModelAttribute[];
+export type ModelAttributes = ModelAttribute[];
 type ModelAttribute = { type: string; properties?: Record<string, any> };
 
 type ModelAttributeKey = {
@@ -572,9 +572,7 @@ export type RelationshipType = {
 //#region Key type
 export type KeyType = {
 	primaryKey?: string[];
-	compositeKeys?: {
-		[key: string]: string[];
-	};
+	compositeKeys?: Set<string>[];
 };
 
 export type ModelKeys = {
