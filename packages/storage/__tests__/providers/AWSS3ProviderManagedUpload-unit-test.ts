@@ -12,15 +12,13 @@
  */
 import {
 	AWSS3ProviderManagedUpload,
-	BodyPart,
+	Part,
 } from '../../src/providers/AWSS3ProviderManagedUpload';
-import { Credentials } from '@aws-amplify/core';
+import { Platform } from '@aws-amplify/core';
 import {
 	S3Client,
 	PutObjectCommand,
 	UploadPartCommand,
-	ListPartsCommand,
-	AbortMultipartUploadCommand,
 	CompleteMultipartUploadCommand,
 	CreateMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
@@ -135,14 +133,14 @@ describe('multi part upload tests', () => {
 		 */
 		class TestClass extends AWSS3ProviderManagedUpload {
 			protected minPartSize = testMinPartSize;
-			protected async uploadParts(uploadId: string, parts: BodyPart[]) {
+			protected async uploadParts(uploadId: string, parts: Part[]) {
 				// Make service calls and set the event listeners first from the base impl
 				await super.uploadParts(uploadId, parts);
 				// Now trigger some notifications from the event listeners
 				for (const part of parts) {
 					part.emitter.emit('sendProgress', {
 						// Assume that the notification is sent when 100% of part is uploaded
-						loaded: part.bodyPart.length,
+						loaded: (part.bodyPart as string).length,
 					});
 				}
 			}
@@ -237,14 +235,14 @@ describe('multi part upload tests', () => {
 		 */
 		class TestClass extends AWSS3ProviderManagedUpload {
 			protected minPartSize = testMinPartSize;
-			protected async uploadParts(uploadId: string, parts: BodyPart[]) {
+			protected async uploadParts(uploadId: string, parts: Part[]) {
 				// Make service calls and set the event listeners first
 				await super.uploadParts(uploadId, parts);
 				// Now trigger some notifications from the event listeners
 				for (const part of parts) {
 					part.emitter.emit('sendProgress', {
 						// Assume that the notification is send when 100% of part is uploaded
-						loaded: part.bodyPart.length,
+						loaded: (part.bodyPart as string).length,
 					});
 				}
 			}
@@ -326,7 +324,6 @@ describe('multi part upload tests', () => {
 			Key: testParams.Key,
 			UploadId: testUploadId,
 		});
-
 		// Progress reporting works as well
 		expect(eventSpy.getCall(0).args[0]).toStrictEqual({
 			key: testParams.Key,
