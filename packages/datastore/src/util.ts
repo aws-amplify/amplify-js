@@ -146,10 +146,10 @@ export const isModelConstructor = <T extends PersistentModel>(
 		@key(name: 'key2' fields: ['hk', 'a', 'b', 'd'])
 		@key(name: 'key3' fields: ['hk', 'x', 'y', 'z'])
 
-	if Model.a is updated => include ['a', 'b', 'c', 'd']
-	if Model.c is updated => include ['a', 'b', 'c', 'd']
-	if Model.d is updated => include ['a', 'b', 'c', 'd']
-	if Model.x is updated => include ['x', 'y', 'z']
+	Model.a is updated => include ['a', 'b', 'c', 'd']
+	Model.c is updated => include ['a', 'b', 'c', 'd']
+	Model.d is updated => include ['a', 'b', 'c', 'd']
+	Model.x is updated => include ['x', 'y', 'z']
 
 	This function accepts a model's attributes and returns grouped sets of composite key fields
 	Using our example Model above, the function will return:
@@ -160,21 +160,27 @@ export const isModelConstructor = <T extends PersistentModel>(
 
 	This gives us the opportunity to correctly include the required fields for composite keys
 	When crafting the mutation input in Storage.getUpdateMutationInput
+
+	See 'processCompositeKeys' test in util.test.ts for more examples
 */
 export const processCompositeKeys = (
 	attributes: ModelAttributes
 ): Set<string>[] => {
-	const compositeKeyFields = attributes
-		.filter(attribute => isModelAttributeCompositeKey(attribute))
-		.map(
-			({
-				properties: {
-					// ignore the HK (fields[0]) we only need to include the composite sort key fields[1...n]
-					fields: [, ...sortKeyFields],
-				},
-			}) => sortKeyFields
-		);
+	const extractCompositeSortKey = ({
+		properties: {
+			// ignore the HK (fields[0]) we only need to include the composite sort key fields[1...n]
+			fields: [, ...sortKeyFields],
+		},
+	}) => sortKeyFields;
 
+	const compositeKeyFields = attributes
+		.filter(isModelAttributeCompositeKey)
+		.map(extractCompositeSortKey);
+
+	/* 
+		if 2 sets of fields have any intersecting fields => combine them into 1 union set
+		e.g., ['a', 'b', 'c'] and ['a', 'b', 'd'] => ['a', 'b', 'c', 'd']
+	*/
 	const combineIntersecting = (fields): Set<string>[] =>
 		fields.reduce((acc, sortKeyFields) => {
 			const sortKeyFieldsSet = new Set(sortKeyFields);
@@ -206,6 +212,8 @@ export const processCompositeKeys = (
 	let initial = combineIntersecting(compositeKeyFields);
 	let combined = combineIntersecting(initial);
 
+	// a single pass pay not be enough to correctly combine all the fields
+	// keep combining until subsequent calls to the function have no effect
 	while (initial.length !== combined.length) {
 		initial = combineIntersecting(combined);
 		combined = combineIntersecting(initial);
