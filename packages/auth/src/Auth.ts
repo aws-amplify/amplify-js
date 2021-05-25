@@ -85,6 +85,8 @@ const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
 
+const maxDevices = 60;
+
 /**
  * Provide authentication steps
  */
@@ -2137,7 +2139,8 @@ export class AuthClass {
 					attribute.Name === 'email_verified' ||
 					attribute.Name === 'phone_number_verified'
 				) {
-					obj[attribute.Name] = this.isTruthyString(attribute.Value) || attribute.Value === true;
+					obj[attribute.Name] =
+						this.isTruthyString(attribute.Value) || attribute.Value === true;
 				} else {
 					obj[attribute.Name] = attribute.Value;
 				}
@@ -2147,7 +2150,9 @@ export class AuthClass {
 	}
 
 	private isTruthyString(value: any): boolean {
-		return typeof value.toLowerCase === 'function' && value.toLowerCase() === 'true';
+		return (
+			typeof value.toLowerCase === 'function' && value.toLowerCase() === 'true'
+		);
 	}
 
 	private createCognitoUser(username: string): CognitoUser {
@@ -2193,6 +2198,42 @@ export class AuthClass {
 	private rejectNoUserPool(): Promise<never> {
 		const type = this.noUserPoolErrorHandler(this._config);
 		return Promise.reject(new NoUserPoolError(type));
+	}
+
+	public async rememberDevice(): Promise<any> {
+		const currUser = await this.currentUserPoolUser();
+		console.log('test', currUser);
+
+		currUser.getCachedDeviceKeyAndPassword();
+
+		return new Promise((res, rej) => {
+			currUser.setDeviceStatusRemembered({ onSuccess: res, onFailure: rej });
+		});
+	}
+
+	public async forgetDevice(): Promise<any> {
+		const currUser = await this.currentUserPoolUser();
+		currUser.getCachedDeviceKeyAndPassword();
+		return new Promise((res, rej) => {
+			currUser.forgetDevice({ onSuccess: res, onFailure: rej });
+		});
+	}
+
+	public async fetchDevices(): Promise<any> {
+		const currUser = await this.currentUserPoolUser();
+		currUser.getCachedDeviceKeyAndPassword();
+
+		return new Promise((res, rej) => {
+			const cb = {
+				onSuccess(data) {
+					res(data);
+				},
+				onFailure(err) {
+					rej(err);
+				},
+			};
+			currUser.listDevices(maxDevices, null, cb);
+		});
 	}
 }
 
