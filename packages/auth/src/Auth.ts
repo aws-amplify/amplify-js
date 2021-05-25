@@ -2202,8 +2202,6 @@ export class AuthClass {
 
 	public async rememberDevice(): Promise<any> {
 		const currUser = await this.currentUserPoolUser();
-		console.log('test', currUser);
-
 		currUser.getCachedDeviceKeyAndPassword();
 
 		return new Promise((res, rej) => {
@@ -2222,7 +2220,6 @@ export class AuthClass {
 	public async fetchDevices(): Promise<any> {
 		const currUser = await this.currentUserPoolUser();
 		currUser.getCachedDeviceKeyAndPassword();
-
 		return new Promise((res, rej) => {
 			const cb = {
 				onSuccess(data) {
