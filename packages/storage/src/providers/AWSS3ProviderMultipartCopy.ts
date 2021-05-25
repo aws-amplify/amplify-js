@@ -14,7 +14,6 @@ import {
 	UploadPartCopyCommand,
 	ListObjectsV2Command,
 	CopyObjectCommandOutput,
-	ListObjectsV2CommandOutput,
 	_Object,
 } from '@aws-sdk/client-s3';
 import * as events from 'events';
@@ -78,16 +77,14 @@ export class AWSS3ProviderMultipartCopier {
 		this.destBucket = Bucket;
 	}
 
-	/**
-	 * Copies a file from srcKey to destKey.
-	 * It will first make a ListObjectV2Command to make sure the file exist and get the object size.
-	 * If the file size is less than 5MB, it will do a CopyObjectCommand, else, it will initiate a multipart copy.
+	/** 
+	 * Copies a file from srcKey to destKey.  It will first make a ListObjectV2Command to make sure the file exist and get
+	 * the object size.  This function always prioritize using multipart copy, it will only do a basic CopyObjectCommand
+	 * if the file size if less than 5MB.
 	 *
 	 * @async
-	 * @param {boolean} [multipart] - If true, the copy request will prioritize using multipart copy,
-	 * else it will use the basic CopyCommand.
 	 * @throws Will throw an error if any of the requests fails, or if it's cancelled.
-	 * @return {Promise<string | CopyObjectCommandOutput>} Key of the copied object.
+	 * @return Key of the copied object.
 	 */
 	public async copy(): Promise<string | CopyObjectCommandOutput> {
 		let uploadId: string = undefined;

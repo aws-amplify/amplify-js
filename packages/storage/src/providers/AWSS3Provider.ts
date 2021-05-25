@@ -34,7 +34,7 @@ import {
 	CopyResult,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
-import { AxiosHttpHandler } from './axios-http-handler';
+import { AxiosHttpHandler, SEND_PROGRESS_EVENT } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import {
 	AWSS3ProviderMultipartCopier,
@@ -136,7 +136,7 @@ export class AWSS3Provider implements StorageProvider {
 	 * @return {Promise<CopyResult>} The copied object's key.
 	 */
 	public async copy(
-		src: string,
+		src: string | Blob,
 		dest: string,
 		config?: CopyObjectConfig
 	): Promise<CopyResult> {
@@ -202,6 +202,15 @@ export class AWSS3Provider implements StorageProvider {
 		if (acl) params.ACL = acl;
 
 		const emitter = new events.EventEmitter();
+		if (typeof Blob !== 'undefined' && src instanceof Blob) {
+			const uploader = new AWSS3ProviderManagedUpload(
+				{ ...params, Body: src },
+				opt,
+				emitter
+			);
+			// @ts-ignore
+			return await uploader.upload();
+		}
 		const s3 = this._createNewS3Client(opt, emitter);
 		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		const copier = new AWSS3ProviderMultipartCopier({
@@ -209,6 +218,15 @@ export class AWSS3Provider implements StorageProvider {
 			emitter,
 			s3client: s3,
 		});
+		emitter.on(SEND_PROGRESS_EVENT, progress => {
+			if (progressCallback) {
+				if (typeof progressCallback === 'function') {
+					progressCallback(progress);
+				} else {
+					`progressCallback should be a function, not a ${typeof progressCallback}`;
+				}
+			}
+		})
 		emitter.on(COPY_PROGRESS, progress => {
 			if (progressCallback) {
 				if (typeof progressCallback === 'function') {
