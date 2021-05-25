@@ -47,13 +47,14 @@ export class AmplifyConfirmSignIn {
 	 * ]
 	 * ```
 	 */
-	@Prop() formFields: FormFieldTypes | string[] = [
+	private defaultFormFields: FormFieldTypes = [
 		{
 			type: 'code',
 			required: true,
 			handleInputChange: event => this.handleCodeChange(event),
 		},
 	];
+	@Prop() formFields: FormFieldTypes | string[] = this.defaultFormFields;
 	/** Cognito user signing in */
 	@Prop() user: CognitoUserInterface;
 	/** The MFA option to confirm with */
@@ -116,6 +117,7 @@ export class AmplifyConfirmSignIn {
 		const content = [];
 
 		if (formFields === undefined) return undefined;
+		if (formFields.length <= 0) return this.defaultFormFields;
 
 		formFields.forEach((formField: FormFieldType | string) => {
 			if (typeof formField === 'string') {

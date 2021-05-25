@@ -36,6 +36,8 @@ describe('amplify-confirm-sign-in spec:', () => {
 
 		it('constructFormFieldOptions should work as expected', () => {
 			expect(confirmSignIn.constructFormFieldOptions()).toBeUndefined();
+			expect(confirmSignIn.constructFormFieldOptions([]))
+				.toEqual(confirmSignIn.defaultFormFields);
 			expect(confirmSignIn.constructFormFieldOptions(['foo', 'bar']))
 				.toEqual(['foo', 'bar']);
 
