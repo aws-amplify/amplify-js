@@ -19,6 +19,7 @@ import {
 import {
 	S3Client,
 	PutObjectCommand,
+	PutObjectRequest,
 	CreateMultipartUploadCommand,
 	UploadPartCommand,
 	CompleteMultipartUploadCommand,
@@ -60,7 +61,7 @@ export class AWSS3ProviderManagedUpload {
 	private totalBytesToUpload = 0;
 	private emitter = null;
 
-	constructor(params, opts, emitter: events.EventEmitter) {
+	constructor(params: PutObjectRequest, opts, emitter: events.EventEmitter) {
 		this.params = params;
 		this.opts = opts;
 		this.emitter = emitter;
