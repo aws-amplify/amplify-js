@@ -362,7 +362,7 @@ class MutationProcessor {
 								throw new NonRetryableError('RetryMutation');
 							} else {
 								try {
-									this.errorHandler({
+									await this.errorHandler({
 										localModel: this.modelInstanceCreator(
 											modelConstructor,
 											variables.input
