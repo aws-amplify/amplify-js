@@ -17,6 +17,8 @@ export interface ICredentials {
 	secretAccessKey: string;
 	identityId: string;
 	authenticated: boolean;
+	// Long term creds do not provide an expiration date
+	expiration?: Date;
 }
 
 /**

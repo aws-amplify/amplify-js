@@ -73,5 +73,36 @@ describe('Client unit test suite', () => {
 				expect(err).toMatchObject({ code: 'test' });
 			});
 		});
+
+		test('uses default endpoint when none is provided', async () => {
+			const clientWithEndpoint = new Client(region, null, {});
+			jest.spyOn(window, 'fetch');
+			window.fetch.mockResolvedValueOnce({
+				ok: true,
+				json: async () => ({}),
+			});
+			jest.fn(window, 'fetch');
+
+			await clientWithEndpoint.promisifyRequest('', {});
+
+			expect(fetch).toHaveBeenCalledWith(
+				`https://cognito-idp.${region}.amazonaws.com/`,
+				expect.any(Object)
+			);
+		});
+
+		test('uses a provided endpoint for requests', async () => {
+			const MOCK_ENDPOINT = 'MOCK_ENDPOINT';
+			const clientWithEndpoint = new Client(region, MOCK_ENDPOINT, {});
+			jest.spyOn(window, 'fetch');
+			window.fetch.mockResolvedValueOnce({
+				ok: true,
+				json: async () => ({}),
+			});
+
+			await clientWithEndpoint.promisifyRequest('', {});
+
+			expect(fetch).toHaveBeenCalledWith(MOCK_ENDPOINT, expect.any(Object));
+		});
 	});
 });
