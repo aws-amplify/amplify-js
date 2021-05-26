@@ -342,7 +342,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			.then(credentials => {
 				if (!credentials) return false;
 				const cred = Credentials.shear(credentials);
-				logger.debug('set credentials for storage', cred);
+				logger.debug('set credentials for logging', cred);
 				this._config.credentials = cred;
 
 				return true;
@@ -503,8 +503,14 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		}
 
 		this._timer = setInterval(async () => {
-			if (this._getDocUploadPermissibility()) {
-				await this._safeUploadLogEvents();
+			try {
+				if (this._getDocUploadPermissibility()) {
+					await this._safeUploadLogEvents();
+				}
+			} catch (err) {
+				logger.error(
+					`error when calling _safeUploadLogEvents in the timer interval - ${err}`
+				);
 			}
 		}, 2000);
 	}

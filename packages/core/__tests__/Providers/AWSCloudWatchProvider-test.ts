@@ -62,6 +62,25 @@ describe('AWSCloudWatchProvider', () => {
 		});
 	});
 
+	describe('credentials test', () => {
+		it('without credentials', async () => {
+			const provider = new AWSCloudWatchProvider();
+			provider.configure(testConfig);
+			const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.reject('err');
+			});
+
+			const action = async () => {
+				await provider.createLogGroup({
+					logGroupName: testConfig.logGroupName,
+				});
+			};
+
+			await expect(action()).rejects.toThrowError();
+			spyon.mockRestore();
+		});
+	});
+
 	describe('CloudWatch api tests', () => {
 		beforeEach(() => {
 			jest.spyOn(Credentials, 'get').mockImplementation(() => {
