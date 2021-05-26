@@ -120,14 +120,14 @@ export class AmplifyConfirmSignIn {
 		if (formFields.length <= 0) return this.defaultFormFields;
 
 		formFields.forEach((formField: FormFieldType | string) => {
-			if (typeof formField === 'string') {
+			if (typeof formField === 'string' || formField.type !== 'code') {
+				// This is either a `string`, and/or a custom field that isn't `code`. Pass this directly.
 				content.push(formField);
 			} else {
+				// This is a code input field. Attach input handler.
 				content.push({
-					type: 'code',
-					required: true,
+					...formField as FormFieldType, // `inputProps` will be passed over here.
 					handleInputChange: event => this.handleCodeChange(event),
-					...formField as FormFieldType,
 				});
 			}
 		});

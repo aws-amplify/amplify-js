@@ -41,12 +41,18 @@ describe('amplify-confirm-sign-in spec:', () => {
 			expect(confirmSignIn.constructFormFieldOptions(['foo', 'bar']))
 				.toEqual(['foo', 'bar']);
 
-			const retVal = confirmSignIn.constructFormFieldOptions([{
+			let retVal = confirmSignIn.constructFormFieldOptions([{
 				type: 'text',
 			}]);
 			expect(retVal).toHaveLength(1);
 			expect(retVal[0].type).toBe('text');
-			expect(retVal[0].required).toBe(true);
+			expect(retVal[0].handleInputChange).not.toBeDefined();
+
+			retVal = confirmSignIn.constructFormFieldOptions([{
+				type: 'code',
+			}]);
+			expect(retVal).toHaveLength(1);
+			expect(retVal[0].type).toBe('code');
 			expect(retVal[0].handleInputChange).toBeDefined();
 			expect(typeof retVal[0].handleInputChange).toBe('function');
 		});
