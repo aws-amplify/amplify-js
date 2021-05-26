@@ -76,7 +76,7 @@ describe('AWSCloudWatchProvider', () => {
 				});
 			};
 
-			await expect(action()).rejects.toThrowError();
+			expect(action()).rejects.toThrowError();
 			spyon.mockRestore();
 		});
 	});

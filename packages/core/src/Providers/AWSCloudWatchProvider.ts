@@ -125,6 +125,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			return output;
 		} catch (error) {
 			logger.error(`error creating log group - ${error}`);
+			throw error;
 		}
 	}
 
@@ -147,6 +148,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			return output;
 		} catch (error) {
 			logger.error(`error getting log group - ${error}`);
+			throw error;
 		}
 	}
 
@@ -171,6 +173,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			return output;
 		} catch (error) {
 			logger.error(`error creating log stream - ${error}`);
+			throw error;
 		}
 	}
 
@@ -192,6 +195,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			return output;
 		} catch (error) {
 			logger.error(`error getting log stream - ${error}`);
+			throw error;
 		}
 	}
 
@@ -213,6 +217,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			return output;
 		} catch (error) {
 			logger.error(`error getting log events - ${error}`);
+			throw error;
 		}
 	}
 
@@ -260,6 +265,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		} catch (err) {
 			const errString = `failure during log group search: ${err}`;
 			logger.error(errString);
+			throw err;
 		}
 	}
 
@@ -303,6 +309,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		} catch (err) {
 			const errString = `failure during log stream search: ${err}`;
 			logger.error(errString);
+			throw err;
 		}
 	}
 
@@ -384,6 +391,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			return this._nextSequenceToken;
 		} catch (err) {
 			logger.error(`failure while getting next sequence token: ${err}`);
+			throw err;
 		}
 	}
 
@@ -429,6 +437,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 				});
 			} else {
 				this._dataTracker.eventUploadInProgress = false;
+				throw err;
 			}
 		}
 	}
@@ -493,7 +502,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			);
 			this._dataTracker.eventUploadInProgress = false;
 
-			throw Error;
+			throw err;
 		}
 	}
 
