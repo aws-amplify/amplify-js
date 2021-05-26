@@ -146,7 +146,8 @@ describe('multipart copy tests', () => {
 						Contents: [
 							{
 								Size: testContentLength,
-								Key: 'srcKey'
+								Key: 'srcKey',
+								ETag: 'etag',
 							},
 						],
 					};
@@ -189,6 +190,7 @@ describe('multipart copy tests', () => {
 		expect(spyon.mock.calls[2][0].input).toStrictEqual({
 			Bucket: 'testBucket',
 			CopySource: 'srcBucket/srcKey',
+			CopySourceIfMatch: 'etag',
 			Key: 'destKey',
 			PartNumber: 1,
 			UploadId: '123',
@@ -198,6 +200,7 @@ describe('multipart copy tests', () => {
 		expect(spyon.mock.calls[3][0].input).toStrictEqual({
 			Bucket: 'testBucket',
 			CopySource: 'srcBucket/srcKey',
+			CopySourceIfMatch: 'etag',
 			Key: 'destKey',
 			PartNumber: 2,
 			UploadId: '123',
@@ -209,6 +212,7 @@ describe('multipart copy tests', () => {
 		expect(spyon.mock.calls[4][0].input).toStrictEqual({
 			Bucket: 'testBucket',
 			CopySource: 'srcBucket/srcKey',
+			CopySourceIfMatch: 'etag',
 			Key: 'destKey',
 			PartNumber: 3,
 			UploadId: '123',
