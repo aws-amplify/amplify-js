@@ -34,6 +34,21 @@ describe('amplify-confirm-sign-in spec:', () => {
 			expect(typeof confirmSignIn.formFields[0].handleInputChange).toBe('function');
 		});
 
+		it('setup should have been called on componentWillLoad', () => {
+			jest.spyOn(confirmSignIn, 'setup');
+			confirmSignIn.componentWillLoad();
+			expect(confirmSignIn.setup).toHaveBeenCalledWith();
+		});
+
+		it('constructFormFieldOptions should have been called during setup', () => {
+			jest.spyOn(confirmSignIn, 'constructFormFieldOptions');
+			expect(confirmSignIn.constructedFormFieldOptions).toBeUndefined();
+			confirmSignIn.setup();
+			expect(confirmSignIn.constructFormFieldOptions)
+				.toHaveBeenCalledWith(confirmSignIn.formFields);
+			expect(confirmSignIn.constructedFormFieldOptions).toBeDefined();
+		});
+
 		it('constructFormFieldOptions should work as expected', () => {
 			expect(confirmSignIn.constructFormFieldOptions()).toBeUndefined();
 			expect(confirmSignIn.constructFormFieldOptions([]))

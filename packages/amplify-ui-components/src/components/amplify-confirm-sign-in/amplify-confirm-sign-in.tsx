@@ -63,6 +63,8 @@ export class AmplifyConfirmSignIn {
 	@State() loading: boolean = false;
 	/* The code value in the confirm-sign-in form */
 	@State() code: string;
+	/* The constructed form field options */
+	private constructedFormFieldOptions: FormFieldTypes | string[];
 
 	componentWillLoad() {
 		this.setup();
@@ -84,6 +86,7 @@ export class AmplifyConfirmSignIn {
 				this.headerText = Translations.CONFIRM_TOTP_CODE;
 			}
 		}
+		this.constructedFormFieldOptions = this.constructFormFieldOptions(this.formFields);
 	}
 
 	private handleCodeChange(event) {
@@ -113,7 +116,7 @@ export class AmplifyConfirmSignIn {
 		}
 	}
 
-	private constructFormFieldOptions(formFields: FormFieldTypes | string[]) {
+	private constructFormFieldOptions(formFields: FormFieldTypes | string[]): FormFieldTypes | string[] {
 		const content = [];
 
 		if (formFields === undefined) return undefined;
@@ -154,7 +157,7 @@ export class AmplifyConfirmSignIn {
 						</span>
 					}
 				>
-					<amplify-auth-fields formFields={this.constructFormFieldOptions(this.formFields)} />
+					<amplify-auth-fields formFields={this.constructedFormFieldOptions} />
 				</amplify-form-section>
 			</Host>
 		);
