@@ -1,7 +1,5 @@
-import {
-	InputLogEvent,
-	PutLogEventsCommandOutput,
-} from '@aws-sdk/client-cloudwatch-logs';
+import { InputLogEvent, LogGroup } from '@aws-sdk/client-cloudwatch-logs';
+import { Credentials } from '@aws-sdk/types';
 
 export interface AmplifyConfig {
 	Analytics?: object;
@@ -43,11 +41,19 @@ export interface LoggingProvider {
 	configure(config?: object): object;
 
 	// take logs and push to provider
-	pushLogs(logs: InputLogEvent[]): Promise<PutLogEventsCommandOutput>;
+	pushLogs(logs: InputLogEvent[]): void;
 }
 
 export interface AWSCloudWatchProviderOptions {
 	logGroupName?: string;
 	logStreamName?: string;
 	region?: string;
+	credentials?: Credentials;
+	endpoint?: string;
+}
+
+export interface CloudWatchDataTracker {
+	eventUploadInProgress: boolean;
+	logEvents: InputLogEvent[];
+	verifiedLogGroup?: LogGroup;
 }

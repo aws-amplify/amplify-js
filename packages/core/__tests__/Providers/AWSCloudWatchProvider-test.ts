@@ -22,6 +22,15 @@ const testConfig: AWSCloudWatchProviderOptions = {
 };
 
 describe('AWSCloudWatchProvider', () => {
+	it('should initiate a timer when the provider is created', () => {
+		const timer_spy = jest.spyOn(
+			AWSCloudWatchProvider.prototype,
+			'_initiateLogPushInterval'
+		);
+		const provider = new AWSCloudWatchProvider();
+		expect(timer_spy).toBeCalled();
+	});
+
 	describe('getCategoryName()', () => {
 		it('should return the AWS_CLOUDWATCH_CATEGORY', () => {
 			const provider = new AWSCloudWatchProvider();
@@ -53,27 +62,6 @@ describe('AWSCloudWatchProvider', () => {
 		});
 	});
 
-	describe('credentials test', () => {
-		it('without credentials', async () => {
-			const provider = new AWSCloudWatchProvider();
-			provider.configure(testConfig);
-			const spyon = jest
-				.spyOn(Credentials, 'get')
-				.mockImplementationOnce(() => {
-					return Promise.reject('err');
-				});
-
-			const action = async () => {
-				await provider.createLogGroup({
-					logGroupName: testConfig.logGroupName,
-				});
-			};
-
-			expect(action()).rejects.toThrowError();
-			spyon.mockRestore();
-		});
-	});
-
 	describe('CloudWatch api tests', () => {
 		beforeEach(() => {
 			jest.spyOn(Credentials, 'get').mockImplementation(() => {
@@ -97,22 +85,6 @@ describe('AWSCloudWatchProvider', () => {
 
 				clientSpy.mockRestore();
 			});
-
-			it('should throw an error when the client detects an error', async () => {
-				const provider = new AWSCloudWatchProvider(testConfig);
-				const clientSpy = jest
-					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						throw Error;
-					});
-
-				const action = async () => {
-					await provider.createLogGroup(createLogGroupParams);
-				};
-
-				expect(action()).rejects.toThrowError();
-				clientSpy.mockRestore();
-			});
 		});
 
 		describe('createLogStream test', () => {
@@ -134,22 +106,6 @@ describe('AWSCloudWatchProvider', () => {
 
 				clientSpy.mockRestore();
 			});
-
-			it('should throw an error when the client detects an error', async () => {
-				const provider = new AWSCloudWatchProvider(testConfig);
-				const clientSpy = jest
-					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						throw Error;
-					});
-
-				const action = async () => {
-					await provider.createLogStream(params);
-				};
-
-				expect(action()).rejects.toThrowError();
-				clientSpy.mockRestore();
-			});
 		});
 
 		describe('getLogGroups test', () => {
@@ -168,22 +124,6 @@ describe('AWSCloudWatchProvider', () => {
 				await provider.getLogGroups(params);
 				expect(clientSpy.mock.calls[0][0].input).toEqual(params);
 
-				clientSpy.mockRestore();
-			});
-
-			it('should throw an error when the client detects an error', async () => {
-				const provider = new AWSCloudWatchProvider(testConfig);
-				const clientSpy = jest
-					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						throw Error;
-					});
-
-				const action = async () => {
-					await provider.getLogGroups(params);
-				};
-
-				expect(action()).rejects.toThrowError();
 				clientSpy.mockRestore();
 			});
 		});
@@ -207,28 +147,41 @@ describe('AWSCloudWatchProvider', () => {
 
 				clientSpy.mockRestore();
 			});
-
-			it('should throw an error when the client detects an error', async () => {
-				const provider = new AWSCloudWatchProvider(testConfig);
-				const clientSpy = jest
-					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
-						throw Error;
-					});
-
-				const action = async () => {
-					await provider.getLogStreams(params);
-				};
-
-				expect(action()).rejects.toThrowError();
-				clientSpy.mockRestore();
-			});
 		});
 
 		describe('pushLogs test', () => {
-			const params = [{ message: 'hello', timestamp: 1111 }];
+			it('should add the provided logs to the log queue', () => {
+				const provider = new AWSCloudWatchProvider(testConfig);
+				provider.pushLogs([{ message: 'hello', timestamp: 1111 }]);
 
+				let logQueue = provider.getLogQueue();
+
+				expect(logQueue).toHaveLength(1);
+
+				provider.pushLogs([
+					{
+						message: 'goodbye',
+						timestamp: 1112,
+					},
+					{
+						message: 'ohayou',
+						timestamp: 1113,
+					},
+					{
+						message: 'konbanwa',
+						timestamp: 1114,
+					},
+				]);
+
+				logQueue = provider.getLogQueue();
+
+				expect(logQueue).toHaveLength(4);
+			});
+		});
+
+		describe('_safeUploadLogEvents test', () => {
 			it('should send a valid request to the client without error', async () => {
+				const params = [{ message: 'hello', timestamp: 1111 }];
 				const provider = new AWSCloudWatchProvider(testConfig);
 				const clientSpy = jest
 					.spyOn(CloudWatchLogsClient.prototype, 'send')
@@ -236,7 +189,8 @@ describe('AWSCloudWatchProvider', () => {
 						return 'data';
 					});
 
-				await provider.pushLogs(params);
+				provider['_currentLogBatch'] = params;
+				await provider['_safeUploadLogEvents']();
 
 				// DescribeLogGroups command
 				expect(clientSpy.mock.calls[0][0].input).toEqual({
@@ -265,26 +219,10 @@ describe('AWSCloudWatchProvider', () => {
 					logGroupName: testConfig.logGroupName,
 					logStreamName: testConfig.logStreamName,
 					logEvents: params,
+					sequenceToken: '',
 				});
 
 				clientSpy.mockRestore();
-			});
-
-			it('should throw an error when the client detects an error', async () => {
-				const provider = new AWSCloudWatchProvider(testConfig);
-				jest
-					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementation(async params => {
-						throw Error;
-					});
-
-				const action = async () => {
-					await provider.pushLogs(params);
-				};
-
-				expect(action()).rejects.toThrowError();
-
-				return;
 			});
 		});
 	});

@@ -84,7 +84,7 @@ export class ConsoleLogger implements Logger {
 	 * @param {LOG_TYPE|string} type - log type, default INFO
 	 * @param {string|object} msg - Logging message or object
 	 */
-	async _log(type: LOG_TYPE | string, ...msg) {
+	_log(type: LOG_TYPE | string, ...msg) {
 		let logger_level_name = this.level;
 		if (ConsoleLogger.LOG_LEVEL) {
 			logger_level_name = ConsoleLogger.LOG_LEVEL;
@@ -130,7 +130,7 @@ export class ConsoleLogger implements Logger {
 
 		for (const plugin of this._pluggables) {
 			const logEvent: InputLogEvent = { message, timestamp: Date.now() };
-			await plugin.pushLogs([logEvent]);
+			plugin.pushLogs([logEvent]);
 		}
 	}
 
