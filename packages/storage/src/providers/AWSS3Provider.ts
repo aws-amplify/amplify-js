@@ -208,6 +208,15 @@ export class AWSS3Provider implements StorageProvider {
 				opt,
 				emitter
 			);
+			emitter.on(SEND_PROGRESS_EVENT, progress => {
+				if (progressCallback) {
+					if (typeof progressCallback === 'function') {
+						progressCallback(progress);
+					} else {
+						`progressCallback should be a function, not a ${typeof progressCallback}`;
+					}
+				}
+			});
 			// @ts-ignore
 			return await uploader.upload();
 		}
@@ -218,15 +227,6 @@ export class AWSS3Provider implements StorageProvider {
 			emitter,
 			s3client: s3,
 		});
-		emitter.on(SEND_PROGRESS_EVENT, progress => {
-			if (progressCallback) {
-				if (typeof progressCallback === 'function') {
-					progressCallback(progress);
-				} else {
-					`progressCallback should be a function, not a ${typeof progressCallback}`;
-				}
-			}
-		})
 		emitter.on(COPY_PROGRESS, progress => {
 			if (progressCallback) {
 				if (typeof progressCallback === 'function') {
