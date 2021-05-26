@@ -202,9 +202,10 @@ export class AWSS3Provider implements StorageProvider {
 		if (acl) params.ACL = acl;
 
 		const emitter = new events.EventEmitter();
-		if (typeof Blob !== 'undefined' && src instanceof Blob) {
+		if (this._isBlob(src)) {
+			const uploadParam = Object.assign({}, params, { Body: src });
 			const uploader = new AWSS3ProviderManagedUpload(
-				{ ...params, Body: src },
+				uploadParam,
 				opt,
 				emitter
 			);
@@ -684,6 +685,10 @@ export class AWSS3Provider implements StorageProvider {
 			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
 		});
 		return s3client;
+	}
+
+	private _isBlob(x: any): x is Blob {
+		return typeof Blob !== 'undefined' && x instanceof Blob;
 	}
 }
 
