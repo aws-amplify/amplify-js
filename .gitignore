@@ -4,12 +4,12 @@ Config
 lerna-debug.log
 node_modules
 packages/*/node_modules/**
-packages/**/lib/
-packages/**/lib-esm/
-packages/**/dist/
-packages/**/es/
-packages/**/esm/
-packages/**/cjs/
+# packages/**/lib/
+# packages/**/lib-esm/
+# packages/**/dist/
+# packages/**/es/
+# packages/**/esm/
+# packages/**/cjs/
 .DS_Store
 .vscode
 .idea
