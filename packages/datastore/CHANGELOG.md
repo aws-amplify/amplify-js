@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.0.1...@aws-amplify/datastore@3.0.3) (2021-05-26)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:**  correct reachability unsubscribe behavior ([#8344](https://github.com/aws-amplify/amplify-js/issues/8344)) ([edf2b71](https://github.com/aws-amplify/amplify-js/commit/edf2b71a4ca3058883d27067fb6c87a9f3b339cb))
+* **@aws-amplify/datastore:** coerce undefined field values to null ([#8301](https://github.com/aws-amplify/amplify-js/issues/8301)) ([396920b](https://github.com/aws-amplify/amplify-js/commit/396920bf53f139835473c0c08f4e5ab6f511867d))
+* **@aws-amplify/datastore:** fix default error/conflict handler ([#8335](https://github.com/aws-amplify/amplify-js/issues/8335)) ([8d62d9d](https://github.com/aws-amplify/amplify-js/commit/8d62d9d9dd1d5934f40c0b800ab2440d805d4239))
+* **@aws-amplify/datastore:** fixed return type for DS.delete() by ID ([#8311](https://github.com/aws-amplify/amplify-js/issues/8311)) ([e1624c1](https://github.com/aws-amplify/amplify-js/commit/e1624c17fae2edc6aa35904993171336fe9f597c))
+* **@aws-amplify/datastore:** handle nullish values when using string predicate operators ([#8260](https://github.com/aws-amplify/amplify-js/issues/8260)) ([eb2942d](https://github.com/aws-amplify/amplify-js/commit/eb2942d436d48182f3e51cc163d2112b17656fa3))
+* **@aws-amplify/datastore:** updates with composite keys ([#8253](https://github.com/aws-amplify/amplify-js/issues/8253)) ([3abfb8f](https://github.com/aws-amplify/amplify-js/commit/3abfb8fc68d916a5f22447652fe81bf81c6977dd))
+
+
+
+
+
 ## [3.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.0.0...@aws-amplify/datastore@3.0.1) (2021-05-14)
 
 **Note:** Version bump only for package @aws-amplify/datastore
