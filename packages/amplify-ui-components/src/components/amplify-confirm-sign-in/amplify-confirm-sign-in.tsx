@@ -34,6 +34,14 @@ export class AmplifyConfirmSignIn {
 	/** Auth state change handler for this component */
 	@Prop()
 	handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
+	/** Default form field */
+	private defaultFormFields: FormFieldTypes = [
+		{
+			type: 'code',
+			required: true,
+			handleInputChange: event => this.handleCodeChange(event),
+		},
+	];
 	/**
 	 * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
 	 * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing
@@ -61,14 +69,6 @@ export class AmplifyConfirmSignIn {
 	@State() code: string;
 	/* The constructed form field options */
 	private constructedFormFieldOptions: FormFieldTypes | string[];
-	/** Default form field */
-	private defaultFormFields: FormFieldTypes = [
-		{
-			type: 'code',
-			required: true,
-			handleInputChange: event => this.handleCodeChange(event),
-		},
-	];
 
 	componentWillLoad() {
 		this.setup();
