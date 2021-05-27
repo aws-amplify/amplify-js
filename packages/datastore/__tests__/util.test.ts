@@ -279,6 +279,95 @@ describe('datastore util', () => {
 		expected = [new Set(['a', 'b', 'c', 'd', 'x', 'y', 'z'])];
 
 		expect(processCompositeKeys(attributes)).toEqual(expected);
+
+		attributes = [
+			{
+				type: 'key',
+				properties: {
+					name: '1',
+					fields: ['hk', 'a', 'b', 'c'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '2',
+					fields: ['hk', 'a', 'b', 'd'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '3',
+					fields: ['hk', 'x', 'y', 'z'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '4',
+					fields: ['hk', '1', '2', '3'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '5',
+					fields: ['hk', 'a', 'x'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '6',
+					fields: ['hk', 'l', 'm', 'n'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '7',
+					fields: ['hk', '8', '9', '10'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '8',
+					fields: ['hk', 'a', 'y'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '9',
+					fields: ['hk', 'h', 'j', 'k'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '10',
+					fields: ['hk', '9', '3'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '11',
+					fields: ['hk', 'h', 'r', 'q'],
+				},
+			},
+		];
+
+		expected = [
+			new Set(['a', 'b', 'c', 'd', 'x', 'y', 'z']),
+			new Set(['1', '2', '3', '9', '8', '10']),
+			new Set(['l', 'm', 'n']),
+			new Set(['h', 'j', 'k', 'r', 'q']),
+		];
+
+		expect(processCompositeKeys(attributes)).toEqual(expected);
 	});
 
 	test('isAWSDate', () => {

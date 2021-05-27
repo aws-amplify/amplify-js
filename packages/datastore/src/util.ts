@@ -182,42 +182,38 @@ export const processCompositeKeys = (
 		e.g., ['a', 'b', 'c'] and ['a', 'b', 'd'] => ['a', 'b', 'c', 'd']
 	*/
 	const combineIntersecting = (fields): Set<string>[] =>
-		fields.reduce((acc, sortKeyFields) => {
+		fields.reduce((combined, sortKeyFields) => {
 			const sortKeyFieldsSet = new Set(sortKeyFields);
 
-			if (acc.length === 0) {
-				acc.push(sortKeyFieldsSet);
-				return acc;
+			if (combined.length === 0) {
+				combined.push(sortKeyFieldsSet);
+				return combined;
 			}
 
-			for (let idx = 0; idx < acc.length; idx++) {
-				const existingFields = acc[idx];
+			// does the current set share values with another set we've already added to `combined`?
+			const intersectingSetIdx = combined.findIndex(existingSet => {
+				return [...existingSet].some(f => sortKeyFieldsSet.has(f));
+			});
 
-				const commonFields = new Set(
-					[...existingFields].filter(f => sortKeyFieldsSet.has(f))
-				);
-
-				if (commonFields.size > 0) {
-					const union = new Set([...existingFields, ...sortKeyFieldsSet]);
-					acc[idx] = union;
-					break;
-				}
-
-				acc.push(sortKeyFieldsSet);
+			if (intersectingSetIdx > -1) {
+				const union = new Set([
+					...combined[intersectingSetIdx],
+					...sortKeyFieldsSet,
+				]);
+				// combine the current set with the intersecting set we found above
+				combined[intersectingSetIdx] = union;
+			} else {
+				// none of the sets in `combined` have intersecting values with the current set
+				combined.push(sortKeyFieldsSet);
 			}
 
-			return acc;
+			return combined;
 		}, []);
 
 	let initial = combineIntersecting(compositeKeyFields);
-	let combined = combineIntersecting(initial);
-
 	// a single pass pay not be enough to correctly combine all the fields
-	// keep combining until subsequent calls to the function have no effect
-	while (initial.length !== combined.length) {
-		initial = combineIntersecting(combined);
-		combined = combineIntersecting(initial);
-	}
+	// call the function once more to get a final merged list of sets
+	let combined = combineIntersecting(initial);
 
 	return combined;
 };
