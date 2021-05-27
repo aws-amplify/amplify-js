@@ -1,7 +1,10 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n } from '@aws-amplify/core';
 import { Component, Prop, State, h, Host, Watch } from '@stencil/core';
-import { FormFieldType, FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
+import {
+	FormFieldType,
+	FormFieldTypes,
+} from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
 	AuthState,
 	MfaOption,
@@ -47,13 +50,6 @@ export class AmplifyConfirmSignIn {
 	 * ]
 	 * ```
 	 */
-	private defaultFormFields: FormFieldTypes = [
-		{
-			type: 'code',
-			required: true,
-			handleInputChange: event => this.handleCodeChange(event),
-		},
-	];
 	@Prop() formFields: FormFieldTypes | string[] = this.defaultFormFields;
 	/** Cognito user signing in */
 	@Prop() user: CognitoUserInterface;
@@ -65,6 +61,14 @@ export class AmplifyConfirmSignIn {
 	@State() code: string;
 	/* The constructed form field options */
 	private constructedFormFieldOptions: FormFieldTypes | string[];
+	/** Default form field */
+	private defaultFormFields: FormFieldTypes = [
+		{
+			type: 'code',
+			required: true,
+			handleInputChange: event => this.handleCodeChange(event),
+		},
+	];
 
 	componentWillLoad() {
 		this.setup();
@@ -86,7 +90,9 @@ export class AmplifyConfirmSignIn {
 				this.headerText = Translations.CONFIRM_TOTP_CODE;
 			}
 		}
-		this.constructedFormFieldOptions = this.constructFormFieldOptions(this.formFields);
+		this.constructedFormFieldOptions = this.constructFormFieldOptions(
+			this.formFields
+		);
 	}
 
 	private handleCodeChange(event) {
@@ -116,7 +122,9 @@ export class AmplifyConfirmSignIn {
 		}
 	}
 
-	private constructFormFieldOptions(formFields: FormFieldTypes | string[]): FormFieldTypes | string[] {
+	private constructFormFieldOptions(
+		formFields: FormFieldTypes | string[]
+	): FormFieldTypes | string[] {
 		const content = [];
 
 		if (formFields === undefined) return undefined;
@@ -129,7 +137,7 @@ export class AmplifyConfirmSignIn {
 			} else {
 				// This is a code input field. Attach input handler.
 				content.push({
-					...formField as FormFieldType, // `inputProps` will be passed over here.
+					...(formField as FormFieldType), // `inputProps` will be passed over here.
 					handleInputChange: event => this.handleCodeChange(event),
 				});
 			}
