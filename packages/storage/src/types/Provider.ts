@@ -17,7 +17,7 @@ export interface StorageProvider {
 	cancel?(request: Promise<any>): void;
 
 	// copy object from src to dest
-	copy?(src: string, dest: string, options?): Promise<any>;
+	copy?(src: string | Blob, dest: string, config?): Promise<any>;
 
 	// configure your provider
 	configure(config: object): object;

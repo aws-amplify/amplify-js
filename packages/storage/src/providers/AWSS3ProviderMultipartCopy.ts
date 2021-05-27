@@ -89,7 +89,7 @@ export class AWSS3ProviderMultipartCopier {
 	public async copy(): Promise<string | CopyObjectCommandOutput> {
 		let uploadId: string = undefined;
 		try {
-			const { Size, ETag } = await this._getObjectSize();
+			const { Size, ETag } = await this._getObjectMetadata();
 			this.totalBytesToCopy = Size;
 			this.srcETag = ETag;
 			// Fallback to basic CopyObject if the file is smaller than 5MB.
@@ -235,7 +235,7 @@ export class AWSS3ProviderMultipartCopier {
 		return response.UploadId;
 	}
 
-	private async _getObjectSize(): Promise<_Object> {
+	private async _getObjectMetadata(): Promise<_Object> {
 		const listObjectCommand = new ListObjectsV2Command({
 			Bucket: this.srcBucket,
 			MaxKeys: 1,
