@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.33...@aws-amplify/api-rest@2.0.1) (2021-05-26)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api-rest:** Improve Clock Drift/Skew Logic ([#8319](https://github.com/aws-amplify/amplify-js/issues/8319)) ([8448b4f](https://github.com/aws-amplify/amplify-js/commit/8448b4fe1f995f0d6056bcb46dd0fb2023fb197d))
+
+
+
+
+
+## [1.2.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.32...@aws-amplify/api-rest@1.2.33) (2021-05-14)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+
+
+
+
+## [1.2.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.31...@aws-amplify/api-rest@1.2.32) (2021-05-11)
+
+**Note:** Version bump only for package @aws-amplify/api-rest
+
+
+
+
+
 ## [1.2.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-rest@1.2.30...@aws-amplify/api-rest@1.2.31) (2021-05-06)
 
 **Note:** Version bump only for package @aws-amplify/api-rest
