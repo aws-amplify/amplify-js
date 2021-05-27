@@ -321,6 +321,10 @@ class StorageClass implements StorageFacade {
 		const { fields } = this.schema.namespaces[namespace].models[
 			modelConstructor.name
 		];
+		const { primaryKey, compositeKeys = [] } = this.schema.namespaces[
+			namespace
+		].keys[modelConstructor.name];
+
 		// set original values for these fields
 		updatedFields.forEach((field: string) => {
 			const targetName: any = isTargetNameAssociation(
@@ -332,9 +336,27 @@ class StorageClass implements StorageFacade {
 
 			// check field values by value. Ignore unchanged fields
 			if (!valuesEqual(source[key], originalElement[key])) {
-				updatedElement[key] = originalElement[key];
+				// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
+				updatedElement[key] =
+					originalElement[key] === undefined ? null : originalElement[key];
+
+				for (const fieldSet of compositeKeys) {
+					// include all of the fields that comprise the composite key
+					if (fieldSet.has(key)) {
+						for (const compositeField of fieldSet) {
+							updatedElement[compositeField] = originalElement[compositeField];
+						}
+					}
+				}
 			}
 		});
+
+		// include field(s) from custom PK if one is specified for the model
+		if (primaryKey && primaryKey.length) {
+			for (const pkField of primaryKey) {
+				updatedElement[pkField] = originalElement[pkField];
+			}
+		}
 
 		if (Object.keys(updatedElement).length === 0) {
 			return null;

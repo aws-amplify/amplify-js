@@ -563,6 +563,34 @@ describe('StorageProvider test', () => {
 			});
 		});
 
+		test('put object with content encoding specified', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, rej) => {
+					res({
+						identityId: 'id',
+					});
+				});
+			});
+			const storage = new StorageProvider();
+			storage.configure(options);
+			const spyon = jest.spyOn(S3Client.prototype, 'send');
+
+			expect.assertions(2);
+			expect(
+				await storage.put('key', 'object', {
+					level: 'private',
+					contentEncoding: 'gzip'
+				})
+			).toEqual({ key: 'key' });
+			expect(spyon.mock.calls[0][0].input).toEqual({
+				Body: 'object',
+				Bucket: 'bucket',
+				ContentType: 'binary/octet-stream',
+				ContentEncoding: 'gzip',
+				Key: 'private/id/key',
+			})
+		})
+
 		test('credentials not ok', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return new Promise((res, rej) => {

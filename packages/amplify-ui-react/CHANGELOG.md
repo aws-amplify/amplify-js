@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@1.2.0...@aws-amplify/ui-react@1.2.1) (2021-05-26)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+# [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@1.1.0...@aws-amplify/ui-react@1.2.0) (2021-05-14)
+
+
+### Features
+
+* **@aws-amplify/ui-react:** wrap withAuthenticator with `AmplifyAuthContainer` ([#8243](https://github.com/aws-amplify/amplify-js/issues/8243)) ([6528037](https://github.com/aws-amplify/amplify-js/commit/652803799d2697039e15ee3e44aace204ed4d417))
+
+
+
+
+
+# [1.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@1.0.7...@aws-amplify/ui-react@1.1.0) (2021-05-06)
+
+
+### Features
+
+* **@aws-amplify/ui-react:** pass through props for the withAuthenticator HOC ([1d8ba06](https://github.com/aws-amplify/amplify-js/commit/1d8ba06468b70908a68316962d4205a882bdf077))
+
+
+
+
+
 ## [1.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@1.0.6...@aws-amplify/ui-react@1.0.7) (2021-04-15)
 
 **Note:** Version bump only for package @aws-amplify/ui-react

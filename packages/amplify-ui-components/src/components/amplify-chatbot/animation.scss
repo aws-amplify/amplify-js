@@ -4,45 +4,45 @@
 
 // set dot color for bot
 .bot .dot {
-  background-color: var(--bot-dot-color);
+	background-color: var(--bot-dot-color);
 }
 
 // set dot color for user
 .user .dot {
-  background-color: var(--user-dot-color);
+	background-color: var(--user-dot-color);
 }
 
 .dot-flashing {
-  width: 2.625rem;
-  .dot {
-    display: inline-block;
-    width: 0.625rem;
-    height: 0.625rem;
-    border-radius: 10rem;
-    opacity: 0.65;
-  }
-  .left {
-    animation: dot-flashing 1s infinite alternate;
-    animation-delay: 0s;
-  }
-  .middle {
-    margin-left: 0.375rem;
-    margin-right: 0.375rem;
-    animation: dot-flashing 1s infinite linear alternate;
-    animation-delay: 0.5s;
-  }
-  .right {
-    animation: dot-flashing 1s infinite alternate;
-    animation-delay: 1s;
-  }
+	width: 2.625rem;
+	.dot {
+		display: inline-block;
+		width: 0.625rem;
+		height: 0.625rem;
+		border-radius: 10rem;
+		opacity: 0.65;
+	}
+	.left {
+		animation: dot-flashing 1s infinite alternate;
+		animation-delay: 0s;
+	}
+	.middle {
+		margin-left: 0.375rem;
+		margin-right: 0.375rem;
+		animation: dot-flashing 1s infinite linear alternate;
+		animation-delay: 0.5s;
+	}
+	.right {
+		animation: dot-flashing 1s infinite alternate;
+		animation-delay: 1s;
+	}
 }
 
 @keyframes dot-flashing {
-  0% {
-    opacity: 0.65;
-  }
-  50%,
-  100% {
-    opacity: 0.1;
-  }
+	0% {
+		opacity: 0.65;
+	}
+	50%,
+	100% {
+		opacity: 0.1;
+	}
 }

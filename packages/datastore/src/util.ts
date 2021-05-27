@@ -1,5 +1,4 @@
 import { Buffer } from 'buffer';
-import CryptoJS from 'crypto-js/core';
 import { monotonicFactory, ULID } from 'ulid';
 import { v4 as uuid } from 'uuid';
 import { ModelInstanceCreator } from './datastore/datastore';
@@ -15,10 +14,16 @@ import {
 	PredicatesGroup,
 	RelationshipType,
 	RelationType,
+	ModelKeys,
+	ModelAttributes,
 	SchemaNamespace,
 	SortPredicatesGroup,
 	SortDirection,
+	isModelAttributeKey,
+	isModelAttributePrimaryKey,
+	isModelAttributeCompositeKey,
 } from './types';
+import { WordArray } from 'amazon-cognito-identity-js';
 
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
@@ -76,7 +81,7 @@ export const validatePredicate = <T extends PersistentModel>(
 	return isNegation ? !result : result;
 };
 
-const validatePredicateField = <T>(
+export const validatePredicateField = <T>(
 	value: T,
 	operator: keyof AllOperators,
 	operand: T | [T, T]
@@ -98,13 +103,18 @@ const validatePredicateField = <T>(
 			const [min, max] = <[T, T]>operand;
 			return value >= min && value <= max;
 		case 'beginsWith':
-			return (<string>(<unknown>value)).startsWith(<string>(<unknown>operand));
+			return (
+				!isNullOrUndefined(value) &&
+				(<string>(<unknown>value)).startsWith(<string>(<unknown>operand))
+			);
 		case 'contains':
 			return (
+				!isNullOrUndefined(value) &&
 				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) > -1
 			);
 		case 'notContains':
 			return (
+				isNullOrUndefined(value) ||
 				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) === -1
 			);
 		default:
@@ -121,13 +131,102 @@ export const isModelConstructor = <T extends PersistentModel>(
 	);
 };
 
-export const establishRelation = (
+/* 
+  When we have GSI(s) with composite sort keys defined on a model
+	There are some very particular rules regarding which fields must be included in the update mutation input
+	The field selection becomes more complex as the number of GSIs with composite sort keys grows
+
+	To summarize: any time we update a field that is part of the composite sort key of a GSI, we must include:
+	 1. all of the other fields in that composite sort key
+	 2. all of the fields from any other composite sort key that intersect with the fields from 1.
+
+	 E.g.,
+	 Model @model 
+		@key(name: 'key1' fields: ['hk', 'a', 'b', 'c'])
+		@key(name: 'key2' fields: ['hk', 'a', 'b', 'd'])
+		@key(name: 'key3' fields: ['hk', 'x', 'y', 'z'])
+
+	Model.a is updated => include ['a', 'b', 'c', 'd']
+	Model.c is updated => include ['a', 'b', 'c', 'd']
+	Model.d is updated => include ['a', 'b', 'c', 'd']
+	Model.x is updated => include ['x', 'y', 'z']
+
+	This function accepts a model's attributes and returns grouped sets of composite key fields
+	Using our example Model above, the function will return:
+	[
+		Set('a', 'b', 'c', 'd'),
+		Set('x', 'y', 'z'),
+	]
+
+	This gives us the opportunity to correctly include the required fields for composite keys
+	When crafting the mutation input in Storage.getUpdateMutationInput
+
+	See 'processCompositeKeys' test in util.test.ts for more examples
+*/
+export const processCompositeKeys = (
+	attributes: ModelAttributes
+): Set<string>[] => {
+	const extractCompositeSortKey = ({
+		properties: {
+			// ignore the HK (fields[0]) we only need to include the composite sort key fields[1...n]
+			fields: [, ...sortKeyFields],
+		},
+	}) => sortKeyFields;
+
+	const compositeKeyFields = attributes
+		.filter(isModelAttributeCompositeKey)
+		.map(extractCompositeSortKey);
+
+	/* 
+		if 2 sets of fields have any intersecting fields => combine them into 1 union set
+		e.g., ['a', 'b', 'c'] and ['a', 'b', 'd'] => ['a', 'b', 'c', 'd']
+	*/
+	const combineIntersecting = (fields): Set<string>[] =>
+		fields.reduce((combined, sortKeyFields) => {
+			const sortKeyFieldsSet = new Set(sortKeyFields);
+
+			if (combined.length === 0) {
+				combined.push(sortKeyFieldsSet);
+				return combined;
+			}
+
+			// does the current set share values with another set we've already added to `combined`?
+			const intersectingSetIdx = combined.findIndex(existingSet => {
+				return [...existingSet].some(f => sortKeyFieldsSet.has(f));
+			});
+
+			if (intersectingSetIdx > -1) {
+				const union = new Set([
+					...combined[intersectingSetIdx],
+					...sortKeyFieldsSet,
+				]);
+				// combine the current set with the intersecting set we found above
+				combined[intersectingSetIdx] = union;
+			} else {
+				// none of the sets in `combined` have intersecting values with the current set
+				combined.push(sortKeyFieldsSet);
+			}
+
+			return combined;
+		}, []);
+
+	const initial = combineIntersecting(compositeKeyFields);
+	// a single pass pay not be enough to correctly combine all the fields
+	// call the function once more to get a final merged list of sets
+	const combined = combineIntersecting(initial);
+
+	return combined;
+};
+
+export const establishRelationAndKeys = (
 	namespace: SchemaNamespace
-): RelationshipType => {
+): [RelationshipType, ModelKeys] => {
 	const relationship: RelationshipType = {};
+	const keys: ModelKeys = {};
 
 	Object.keys(namespace.models).forEach((mKey: string) => {
 		relationship[mKey] = { indexes: [], relationTypes: [] };
+		keys[mKey] = {};
 
 		const model = namespace.models[mKey];
 		Object.keys(model.fields).forEach((attr: string) => {
@@ -153,26 +252,31 @@ export const establishRelation = (
 			}
 		});
 
-		// create indexes from key fields
 		if (model.attributes) {
-			model.attributes.forEach(attribute => {
-				if (attribute.type === 'key') {
-					const { fields } = attribute.properties;
-					if (fields) {
-						fields.forEach(field => {
-							// only add index if it hasn't already been added
-							const exists = relationship[mKey].indexes.includes(field);
-							if (!exists) {
-								relationship[mKey].indexes.push(field);
-							}
-						});
+			keys[mKey].compositeKeys = processCompositeKeys(model.attributes);
+
+			for (const attribute of model.attributes) {
+				if (!isModelAttributeKey(attribute)) {
+					continue;
+				}
+
+				if (isModelAttributePrimaryKey(attribute)) {
+					keys[mKey].primaryKey = attribute.properties.fields;
+				}
+
+				const { fields } = attribute.properties;
+				for (const field of fields) {
+					// only add index if it hasn't already been added
+					const exists = relationship[mKey].indexes.includes(field);
+					if (!exists) {
+						relationship[mKey].indexes.push(field);
 					}
 				}
-			});
+			}
 		}
 	});
 
-	return relationship;
+	return [relationship, keys];
 };
 
 const topologicallySortedModels = new WeakMap<SchemaNamespace, string[]>();
@@ -374,7 +478,7 @@ export const isPrivateMode = () => {
 };
 
 const randomBytes = function(nBytes: number): Buffer {
-	return Buffer.from(CryptoJS.lib.WordArray.random(nBytes).toString(), 'hex');
+	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
 };
 const prng = () => randomBytes(1).readUInt8(0) / 0xff;
 export function monotonicUlidFactory(seed?: number): ULID {
