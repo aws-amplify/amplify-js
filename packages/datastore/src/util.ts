@@ -210,10 +210,10 @@ export const processCompositeKeys = (
 			return combined;
 		}, []);
 
-	let initial = combineIntersecting(compositeKeyFields);
+	const initial = combineIntersecting(compositeKeyFields);
 	// a single pass pay not be enough to correctly combine all the fields
 	// call the function once more to get a final merged list of sets
-	let combined = combineIntersecting(initial);
+	const combined = combineIntersecting(initial);
 
 	return combined;
 };
