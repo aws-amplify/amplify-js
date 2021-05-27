@@ -31,7 +31,7 @@ interface S3ClientServerSideEncryptionParams {
 	SSEKMSKeyId?: CopyObjectRequest['SSEKMSKeyId'];
 }
 
-interface AmplifyStorageCopyConfig {
+interface StorageCopyConfig {
 	level?: StorageLevel;
 	track?: boolean;
 	multipart?: boolean;
@@ -39,8 +39,7 @@ interface AmplifyStorageCopyConfig {
 	progressCallback?: (progress: CopyProgress) => any;
 }
 
-export type CopyObjectConfig = S3ClientCopyCommandInput &
-	AmplifyStorageCopyConfig;
+export type CopyObjectConfig = S3ClientCopyCommandInput & StorageCopyConfig;
 
 export type CopyResult = {
 	key: string;

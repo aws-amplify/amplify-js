@@ -65,8 +65,6 @@ export class AWSS3ProviderManagedUpload {
 	private emitter = null;
 
 	constructor(params: PutObjectRequest, opts, emitter: events.EventEmitter) {
-		console.log({ params });
-		console.log({ opts });
 		this.params = params;
 		this.opts = opts;
 		this.emitter = emitter;
