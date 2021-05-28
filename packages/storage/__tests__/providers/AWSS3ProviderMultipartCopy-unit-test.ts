@@ -90,23 +90,21 @@ describe('basic copy test', () => {
 	});
 
 	test('matches too many objects', async () => {
-		const spyon = jest
-			.spyOn(S3Client.prototype, 'send')
-			.mockImplementation(async command => {
-				if (command instanceof CopyObjectCommand) {
-					return command.input.Key;
-				} else if (command instanceof ListObjectsV2Command) {
-					return {
-						Contents: [
-							{
-								Size: 100,
-								Key: 'srcKey',
-							},
-						],
-						IsTruncated: true,
-					};
-				}
-			});
+		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
+			if (command instanceof CopyObjectCommand) {
+				return command.input.Key;
+			} else if (command instanceof ListObjectsV2Command) {
+				return {
+					Contents: [
+						{
+							Size: 100,
+							Key: 'srcKey',
+						},
+					],
+					IsTruncated: true,
+				};
+			}
+		});
 		const copier = new AWSS3ProviderMultipartCopier({
 			params: testInput,
 			emitter: new events.EventEmitter(),
@@ -118,22 +116,20 @@ describe('basic copy test', () => {
 	});
 
 	test('list object return key does not match provided key', async () => {
-		const spyon = jest
-			.spyOn(S3Client.prototype, 'send')
-			.mockImplementation(async command => {
-				if (command instanceof CopyObjectCommand) {
-					return command.input.Key;
-				} else if (command instanceof ListObjectsV2Command) {
-					return {
-						Contents: [
-							{
-								Size: 100,
-								Key: 'srcKeyHello',
-							},
-						],
-					};
-				}
-			});
+		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
+			if (command instanceof CopyObjectCommand) {
+				return command.input.Key;
+			} else if (command instanceof ListObjectsV2Command) {
+				return {
+					Contents: [
+						{
+							Size: 100,
+							Key: 'srcKeyHello',
+						},
+					],
+				};
+			}
+		});
 		const copier = new AWSS3ProviderMultipartCopier({
 			params: testInput,
 			emitter: new events.EventEmitter(),
@@ -257,42 +253,40 @@ describe('multipart copy tests', () => {
 	});
 
 	test('Multipart upload fails in-flight', async () => {
-		const spyon = jest
-			.spyOn(S3Client.prototype, 'send')
-			.mockImplementation(async command => {
-				if (command instanceof ListObjectsV2Command) {
-					return {
-						Contents: [
-							{
-								Size: testContentLength,
-								Key: 'srcKey',
-							},
-						],
-					};
-				} else if (command instanceof CreateMultipartUploadCommand) {
-					return {
-						UploadId: '123',
-					};
-				} else if (command instanceof UploadPartCopyCommand) {
-					// Simulate failing after the first request
-					if (command.input.PartNumber > 1) {
-						throw new Error('err');
-					}
-					return {
-						CopyPartResult: {
-							ETag: `ETag_${command.input.PartNumber}`,
+		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
+			if (command instanceof ListObjectsV2Command) {
+				return {
+					Contents: [
+						{
+							Size: testContentLength,
+							Key: 'srcKey',
 						},
-					};
-				} else if (command instanceof CompleteMultipartUploadCommand) {
-					return {
-						Key: 'destKey',
-					};
-				} else if (command instanceof AbortMultipartUploadCommand) {
-					return {
-						Parts: [],
-					};
+					],
+				};
+			} else if (command instanceof CreateMultipartUploadCommand) {
+				return {
+					UploadId: '123',
+				};
+			} else if (command instanceof UploadPartCopyCommand) {
+				// Simulate failing after the first request
+				if (command.input.PartNumber > 1) {
+					throw new Error('err');
 				}
-			});
+				return {
+					CopyPartResult: {
+						ETag: `ETag_${command.input.PartNumber}`,
+					},
+				};
+			} else if (command instanceof CompleteMultipartUploadCommand) {
+				return {
+					Key: 'destKey',
+				};
+			} else if (command instanceof AbortMultipartUploadCommand) {
+				return {
+					Parts: [],
+				};
+			}
+		});
 		const copier = new AWSS3ProviderMultipartCopier({
 			params: testInput,
 			emitter: new events.EventEmitter(),
@@ -341,32 +335,30 @@ describe('multipart copy tests', () => {
 	});
 
 	test('Cannot finalize multipart copy request', async () => {
-		const spyon = jest
-			.spyOn(S3Client.prototype, 'send')
-			.mockImplementation(async command => {
-				if (command instanceof ListObjectsV2Command) {
-					return {
-						Contents: [
-							{
-								Size: testContentLength,
-								Key: 'srcKey',
-							},
-						],
-					};
-				} else if (command instanceof CreateMultipartUploadCommand) {
-					return {
-						UploadId: '123',
-					};
-				} else if (command instanceof UploadPartCopyCommand) {
-					return {
-						CopyPartResult: {
-							ETag: `ETag_${command.input.PartNumber}`,
+		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
+			if (command instanceof ListObjectsV2Command) {
+				return {
+					Contents: [
+						{
+							Size: testContentLength,
+							Key: 'srcKey',
 						},
-					};
-				} else if (command instanceof CompleteMultipartUploadCommand) {
-					throw new Error('err');
-				}
-			});
+					],
+				};
+			} else if (command instanceof CreateMultipartUploadCommand) {
+				return {
+					UploadId: '123',
+				};
+			} else if (command instanceof UploadPartCopyCommand) {
+				return {
+					CopyPartResult: {
+						ETag: `ETag_${command.input.PartNumber}`,
+					},
+				};
+			} else if (command instanceof CompleteMultipartUploadCommand) {
+				throw new Error('err');
+			}
+		});
 
 		const copier = new AWSS3ProviderMultipartCopier({
 			params: testInput,
