@@ -203,7 +203,7 @@ export class AWSS3Provider implements StorageProvider {
 		if (acl) params.ACL = acl;
 
 		const emitter = new events.EventEmitter();
-		// if source is a Blob, it should behave similarly to Put
+		// if source is a Blob, it should behave similarly to Put, let ManagedUpload handle it
 		if (this._isBlob(src)) {
 			const uploadParam: PutObjectCommandInput = Object.assign({}, params, {
 				Body: src,
