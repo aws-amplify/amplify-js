@@ -1,7 +1,15 @@
 import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
-import { Draft, immerable, produce, setAutoFreeze } from 'immer';
+import {
+	Draft,
+	immerable,
+	produce,
+	setAutoFreeze,
+	enablePatches,
+	Patch,
+} from 'immer';
 import { v4 as uuid4 } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
+import { defaultAuthStrategy, multiAuthStrategy } from '../authModeStrategies';
 import {
 	isPredicatesAll,
 	ModelPredicateCreator,
@@ -11,6 +19,7 @@ import {
 import { ExclusiveStorage as Storage } from '../storage/storage';
 import { ControlMessage, SyncEngine } from '../sync';
 import {
+	AuthModeStrategy,
 	ConflictHandler,
 	DataStoreConfig,
 	GraphQLScalarType,
@@ -39,10 +48,11 @@ import {
 	TypeConstructorMap,
 	ErrorHandler,
 	SyncExpression,
+	AuthModeStrategyType,
 } from '../types';
 import {
 	DATASTORE,
-	establishRelation,
+	establishRelationAndKeys,
 	exhaustiveCheck,
 	isModelConstructor,
 	monotonicUlidFactory,
@@ -54,6 +64,7 @@ import {
 } from '../util';
 
 setAutoFreeze(true);
+enablePatches();
 
 const logger = new Logger('DataStore');
 
@@ -78,6 +89,13 @@ const modelNamespaceMap = new WeakMap<
 	PersistentModelConstructor<any>,
 	string
 >();
+// stores data for crafting the correct update mutation input for a model
+// Patch[] - array of changed fields and metadata
+// PersistentModel - the source model, used for diffing object-type fields
+const modelPatchesMap = new WeakMap<
+	PersistentModel,
+	[Patch[], PersistentModel]
+>();
 
 const getModelDefinition = (
 	modelConstructor: PersistentModelConstructor<any>
@@ -96,12 +114,10 @@ const isValidModelConstructor = <T extends PersistentModel>(
 const namespaceResolver: NamespaceResolver = modelConstructor =>
 	modelNamespaceMap.get(modelConstructor);
 
-let dataStoreClasses: TypeConstructorMap;
-
+// exporting syncClasses for testing outbox.test.ts
+export let syncClasses: TypeConstructorMap;
 let userClasses: TypeConstructorMap;
-
-let syncClasses: TypeConstructorMap;
-
+let dataStoreClasses: TypeConstructorMap;
 let storageClasses: TypeConstructorMap;
 
 const initSchema = (userSchema: Schema) => {
@@ -141,9 +157,12 @@ const initSchema = (userSchema: Schema) => {
 	};
 
 	Object.keys(schema.namespaces).forEach(namespace => {
-		schema.namespaces[namespace].relationships = establishRelation(
+		const [relations, keys] = establishRelationAndKeys(
 			schema.namespaces[namespace]
 		);
+
+		schema.namespaces[namespace].relationships = relations;
+		schema.namespaces[namespace].keys = keys;
 
 		const modelAssociations = new Map<string, string[]>();
 
@@ -382,14 +401,26 @@ const createModelClass = <T extends PersistentModel>(
 				logger.error(msg, { source });
 				throw new Error(msg);
 			}
-			return produce(source, draft => {
-				fn(<MutableModel<T>>draft);
-				draft.id = source.id;
-				const modelValidator = validateModelFields(modelDefinition);
-				Object.entries(draft).forEach(([k, v]) => {
-					modelValidator(k, v);
-				});
-			});
+
+			let patches;
+			const model = produce(
+				source,
+				draft => {
+					fn(<MutableModel<T>>draft);
+					draft.id = source.id;
+					const modelValidator = validateModelFields(modelDefinition);
+					Object.entries(draft).forEach(([k, v]) => {
+						modelValidator(k, v);
+					});
+				},
+				p => (patches = p)
+			);
+
+			if (patches.length) {
+				modelPatchesMap.set(model, [patches, source]);
+			}
+
+			return model;
 		}
 
 		// "private" method (that's hidden via `Setting`) for `withSSRContext` to use
@@ -506,7 +537,10 @@ async function checkSchemaVersion(
 			{ page: 0, limit: 1 }
 		);
 
-		if (schemaVersionSetting !== undefined) {
+		if (
+			schemaVersionSetting !== undefined &&
+			schemaVersionSetting.value !== undefined
+		) {
 			const storedValue = JSON.parse(schemaVersionSetting.value);
 
 			if (storedValue !== version) {
@@ -565,6 +599,7 @@ function getNamespace(): SchemaNamespace {
 
 class DataStore {
 	private amplifyConfig: Record<string, any> = {};
+	private authModeStrategy: AuthModeStrategy;
 	private conflictHandler: ConflictHandler;
 	private errorHandler: (error: SyncError) => void;
 	private fullSyncInterval: number;
@@ -631,7 +666,8 @@ class DataStore {
 				this.conflictHandler,
 				this.errorHandler,
 				this.syncPredicates,
-				this.amplifyConfig
+				this.amplifyConfig,
+				this.authModeStrategy
 			);
 
 			// tslint:disable-next-line:max-line-length
@@ -738,7 +774,10 @@ class DataStore {
 			predicate: ModelPredicateCreator.getPredicates(predicate, false),
 			pagination: {
 				...pagination,
-				sort: ModelSortPredicateCreator.getPredicates(pagination.sort, false),
+				sort: ModelSortPredicateCreator.getPredicates(
+					pagination && pagination.sort,
+					false
+				),
 			},
 		});
 
@@ -756,6 +795,10 @@ class DataStore {
 		condition?: ProducerModelPredicate<T>
 	): Promise<T> => {
 		await this.start();
+
+		// Immer patches for constructing a correct update mutation input
+		// Allows us to only include changed fields for updates
+		const patchesTuple = modelPatchesMap.get(model);
 
 		const modelConstructor: PersistentModelConstructor<T> = model
 			? <PersistentModelConstructor<T>>model.constructor
@@ -776,7 +819,7 @@ class DataStore {
 		);
 
 		const [savedModel] = await this.storage.runExclusive(async s => {
-			await s.save(model, producedCondition);
+			await s.save(model, producedCondition, undefined, patchesTuple);
 
 			return s.query(
 				modelConstructor,
@@ -793,7 +836,7 @@ class DataStore {
 		const conflictHandlerIsDefault: () => boolean = () =>
 			this.conflictHandler === defaultConflictHandler;
 
-		if (configDataStore) {
+		if (configDataStore && configDataStore.conflictHandler) {
 			return configDataStore.conflictHandler;
 		}
 		if (conflictHandlerIsDefault() && config.conflictHandler) {
@@ -809,7 +852,7 @@ class DataStore {
 		const errorHandlerIsDefault: () => boolean = () =>
 			this.errorHandler === defaultErrorHandler;
 
-		if (configDataStore) {
+		if (configDataStore && configDataStore.errorHandler) {
 			return configDataStore.errorHandler;
 		}
 		if (errorHandlerIsDefault() && config.errorHandler) {
@@ -827,7 +870,7 @@ class DataStore {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			id: string
-		): Promise<T>;
+		): Promise<T[]>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			condition: ProducerModelPredicate<T> | typeof PredicateAll
@@ -1016,6 +1059,7 @@ class DataStore {
 	configure = (config: DataStoreConfig = {}) => {
 		const {
 			DataStore: configDataStore,
+			authModeStrategyType: configAuthModeStrategyType,
 			conflictHandler: configConflictHandler,
 			errorHandler: configErrorHandler,
 			maxRecordsToSync: configMaxRecordsToSync,
@@ -1029,6 +1073,23 @@ class DataStore {
 
 		this.conflictHandler = this.setConflictHandler(config);
 		this.errorHandler = this.setErrorHandler(config);
+
+		const authModeStrategyType =
+			(configDataStore && configDataStore.authModeStrategyType) ||
+			configAuthModeStrategyType ||
+			AuthModeStrategyType.DEFAULT;
+
+		switch (authModeStrategyType) {
+			case AuthModeStrategyType.MULTI_AUTH:
+				this.authModeStrategy = multiAuthStrategy;
+				break;
+			case AuthModeStrategyType.DEFAULT:
+				this.authModeStrategy = defaultAuthStrategy;
+				break;
+			default:
+				this.authModeStrategy = defaultAuthStrategy;
+				break;
+		}
 
 		this.syncExpressions =
 			(configDataStore && configDataStore.syncExpressions) ||
@@ -1095,9 +1156,13 @@ class DataStore {
 	private processPagination<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		paginationProducer: ProducerPaginationInput<T>
-	): PaginationInput<T> {
+	): PaginationInput<T> | undefined {
 		let sortPredicate: SortPredicate<T>;
 		const { limit, page, sort } = paginationProducer || {};
+
+		if (limit === undefined && page === undefined && sort === undefined) {
+			return undefined;
+		}
 
 		if (page !== undefined && limit === undefined) {
 			throw new Error('Limit is required when requesting a page');

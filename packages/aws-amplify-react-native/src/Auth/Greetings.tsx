@@ -18,6 +18,7 @@ import { AmplifyButton } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import TEST_ID from '../AmplifyTestIDs';
+import { setTestId } from '../Utils'
 
 interface IGreetingsProps extends IAuthPieceProps {
 	signedInMessage?: string;
@@ -72,7 +73,7 @@ export default class Greetings extends AuthPiece<
 			<View style={theme.navBar}>
 				<Text
 					style={theme.greetingMessage}
-					testID={TEST_ID.AUTH.GREETING_SIGNED_IN_TEXT}
+					{...setTestId(TEST_ID.AUTH.GREETING_SIGNED_IN_TEXT)}
 				>
 					{this.getMessage()}
 				</Text>
@@ -81,7 +82,7 @@ export default class Greetings extends AuthPiece<
 					text={I18n.get('Sign Out')}
 					onPress={this.signOut}
 					style={theme.navButton}
-					testID={TEST_ID.AUTH.SIGN_OUT_BUTTON}
+					{...setTestId(TEST_ID.AUTH.SIGN_OUT_BUTTON)}
 				/>
 			</View>
 		);

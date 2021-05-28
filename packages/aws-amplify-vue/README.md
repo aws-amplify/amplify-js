@@ -81,7 +81,7 @@ To call the Amplify library, simply use `this.$Amplify.` followed by whichever m
 
 ### Authenticator
 
-The Authenticator component provides basic basic login/logout functionality for your application, as well confirmation steps for new user registration and user login. It uses the following components as children:
+The Authenticator component provides basic login/logout functionality for your application, as well confirmation steps for new user registration and user login. It uses the following components as children:
 
 - SignIn
 - ConfirmSignIn

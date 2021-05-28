@@ -205,13 +205,13 @@ describe('Hosted UI tests', () => {
 			});
 		jest
 			.spyOn(CognitoUser.prototype, 'getSession')
-			.mockImplementation(callback => {
+			.mockImplementation((callback: any) => {
 				return callback(null, session);
 			});
 
 		jest
 			.spyOn(CognitoUser.prototype, 'getUserData')
-			.mockImplementationOnce(callback => {
+			.mockImplementationOnce((callback: any) => {
 				const data = {
 					PreferredMfaSetting: 'SMS',
 					UserAttributes: [{ Name: 'address', Value: 'xxxx' }],
@@ -233,7 +233,7 @@ describe('Hosted UI tests', () => {
 
 		expect.assertions(2);
 
-		auth.oAuthFlowInProgress = true;
+		(auth as any).oAuthFlowInProgress = true;
 
 		auth.currentUserPoolUser().then(resUser => {
 			expect(resUser).toEqual(user);
@@ -287,7 +287,7 @@ describe('Hosted UI tests', () => {
 				onSuccess('success');
 			});
 
-		auth._oAuthHandler = {
+		(auth as any)._oAuthHandler = {
 			signOut: () => {
 				// testing timeout
 				return new Promise(() => {});
@@ -343,7 +343,7 @@ describe('Hosted UI tests', () => {
 				onSuccess('success');
 			});
 
-		auth._oAuthHandler = {
+		(auth as any)._oAuthHandler = {
 			signOut: () => {
 				// testing timeout
 				return new Promise(() => {});
@@ -391,7 +391,7 @@ describe('Hosted UI tests', () => {
 				return user;
 			});
 
-		auth._oAuthHandler = {
+		(auth as any)._oAuthHandler = {
 			signOut: () => {
 				// testing timeout
 				return new Promise(() => {});
@@ -437,7 +437,7 @@ describe('Hosted UI tests', () => {
 				return user;
 			});
 
-		auth._oAuthHandler = {
+		(auth as any)._oAuthHandler = {
 			signOut: () => {
 				// testing timeout
 				return new Promise(() => {});
