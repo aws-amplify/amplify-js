@@ -372,7 +372,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		 *   ...the log stream does exist but has no logs written to it yet
 		 */
 		try {
-			await this._validateLogGroupExists(this._config.logGroupName);
+			await this._validateLogGroupExistsAndCreate(this._config.logGroupName);
 
 			const logStream = await this._validateLogStreamExists(
 				this._config.logGroupName,
