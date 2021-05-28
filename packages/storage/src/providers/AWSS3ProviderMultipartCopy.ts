@@ -57,7 +57,6 @@ export class AWSS3ProviderMultipartCopier {
 	private bytesCopied = 0;
 	private completedParts: CompletedPart[] = [];
 	private params: CopyObjectCommandInput;
-	private srcETag: CopyObjectCommandInput['CopySourceIfMatch'];
 	private totalBytesToCopy = 0;
 	private totalParts = 0;
 
@@ -92,9 +91,8 @@ export class AWSS3ProviderMultipartCopier {
 	> {
 		let uploadId: string = undefined;
 		try {
-			const { Size, ETag } = await this._getObjectMetadata();
+			const { Size } = await this._getObjectMetadata();
 			this.totalBytesToCopy = Size;
-			this.srcETag = ETag;
 			// Fallback to basic CopyObject if the file is smaller than 5MB.
 			if (this.totalBytesToCopy <= AWSS3ProviderMultipartCopier.minPartSize) {
 				const copyObjectCommand = new CopyObjectCommand(this.params);
@@ -171,7 +169,6 @@ export class AWSS3ProviderMultipartCopier {
 							CopySourceRange: `bytes=${part.startByte}-${part.endByte}`,
 							PartNumber: part.partNumber,
 							UploadId: uploadId,
-							...(this.srcETag && { CopySourceIfMatch: this.srcETag }),
 						})
 					);
 					partNumber++;
