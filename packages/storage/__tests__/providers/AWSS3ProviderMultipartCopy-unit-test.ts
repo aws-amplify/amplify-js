@@ -214,9 +214,9 @@ describe('multipart copy tests', () => {
 			Key: 'destKey',
 			PartNumber: 2,
 			UploadId: '123',
-			CopySourceRange: `bytes=${AWSS3ProviderMultipartCopier.partSize}-${
-				AWSS3ProviderMultipartCopier.partSize * 2 - 1
-			}`,
+			CopySourceRange: `bytes=${
+				AWSS3ProviderMultipartCopier.partSize
+			}-${AWSS3ProviderMultipartCopier.partSize * 2 - 1}`,
 		});
 		// Third UploadPartCopy call
 		expect(spyon.mock.calls[4][0].input).toStrictEqual({
@@ -226,9 +226,8 @@ describe('multipart copy tests', () => {
 			Key: 'destKey',
 			PartNumber: 3,
 			UploadId: '123',
-			CopySourceRange: `bytes=${AWSS3ProviderMultipartCopier.partSize * 2}-${
-				AWSS3ProviderMultipartCopier.partSize * 3 - 1
-			}`,
+			CopySourceRange: `bytes=${AWSS3ProviderMultipartCopier.partSize *
+				2}-${AWSS3ProviderMultipartCopier.partSize * 3 - 1}`,
 		});
 		// Finally, CompleteMultipartUpload call
 		expect(spyon.mock.calls[5][0].input).toStrictEqual({
@@ -252,7 +251,9 @@ describe('multipart copy tests', () => {
 				],
 			},
 		});
-		expect(result).toEqual('destKey');
+		expect(result).toStrictEqual({
+			Key: 'destKey',
+		});
 	});
 
 	test('Multipart upload fails in-flight', async () => {
@@ -317,11 +318,7 @@ describe('multipart copy tests', () => {
 					UploadId: '123',
 				};
 			} else if (command instanceof UploadPartCopyCommand) {
-				return {
-					CopyPartResult: {
-						ETag: `ETag_${command.input.PartNumber}`,
-					},
-				};
+				return Promise.reject('err');
 			} else if (command instanceof ListPartsCommand) {
 				return {
 					Parts: [

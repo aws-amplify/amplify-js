@@ -15,6 +15,7 @@ import {
 	ListObjectsV2Command,
 	CopyObjectCommandOutput,
 	_Object,
+	CompleteMultipartUploadCommandOutput,
 } from '@aws-sdk/client-s3';
 import * as events from 'events';
 
@@ -77,7 +78,7 @@ export class AWSS3ProviderMultipartCopier {
 		this.destBucket = Bucket;
 	}
 
-	/** 
+	/**
 	 * Copies a file from srcKey to destKey.  It will first make a ListObjectV2Command to make sure the file exist and get
 	 * the object size.  This function always prioritize using multipart copy, it will only do a basic CopyObjectCommand
 	 * if the file size if less than 5MB.
@@ -86,7 +87,9 @@ export class AWSS3ProviderMultipartCopier {
 	 * @throws Will throw an error if any of the requests fails, or if it's cancelled.
 	 * @return Key of the copied object.
 	 */
-	public async copy(): Promise<string | CopyObjectCommandOutput> {
+	public async copy(): Promise<
+		CompleteMultipartUploadCommandOutput | CopyObjectCommandOutput
+	> {
 		let uploadId: string = undefined;
 		try {
 			const { Size, ETag } = await this._getObjectMetadata();
@@ -142,7 +145,7 @@ export class AWSS3ProviderMultipartCopier {
 		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
 		try {
 			const result = await this.s3client.send(completeUploadCommand);
-			return result.Key;
+			return result;
 		} catch (err) {
 			logger.error(
 				'error happend while finishing the copy. Aborting the multipart copy',
@@ -225,10 +228,9 @@ export class AWSS3ProviderMultipartCopier {
 
 	private async _initMultipartUpload(): Promise<string> {
 		const { CopySource, ...multipartUploadInput } = this.params;
-		const createMultipartUploadCommand = new CreateMultipartUploadCommand(
-			multipartUploadInput
+		const response = await this.s3client.send(
+			new CreateMultipartUploadCommand(multipartUploadInput)
 		);
-		const response = await this.s3client.send(createMultipartUploadCommand);
 		logger.debug(
 			`Created multipart upload request with id ${response.UploadId}`
 		);
