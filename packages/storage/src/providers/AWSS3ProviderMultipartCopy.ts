@@ -31,8 +31,8 @@ enum AWSS3ProviderMultipartCopierErrors {
 
 export interface CopyPart {
 	partNumber: number;
-	copySourceRange: string;
-	bytes: number;
+	startByte: number;
+	endByte: number;
 }
 
 export const COPY_PROGRESS = 'copyProgress';
@@ -167,15 +167,15 @@ export class AWSS3ProviderMultipartCopier {
 						new UploadPartCopyCommand({
 							Bucket: this.destBucket,
 							Key: this.destKey,
-							CopySource: `${this.srcBucket}/${this.srcKey}`,
-							CopySourceRange: part.copySourceRange,
+							CopySource: this.params.CopySource,
+							CopySourceRange: `bytes=${part.startByte}-${part.endByte}`,
 							PartNumber: part.partNumber,
 							UploadId: uploadId,
 							...(this.srcETag && { CopySourceIfMatch: this.srcETag }),
 						})
 					);
 					partNumber++;
-					this.bytesCopied += part.bytes;
+					this.bytesCopied += (part.endByte - part.startByte + 1);
 					this.emitter.emit(COPY_PROGRESS, {
 						loaded: this.bytesCopied,
 						total: this.totalBytesToCopy,
@@ -199,8 +199,8 @@ export class AWSS3ProviderMultipartCopier {
 				) - 1;
 			parts.push({
 				partNumber: startPartNum + i,
-				copySourceRange: `bytes=${startByte}-${endByte}`,
-				bytes: endByte - startByte + 1,
+				startByte: startByte,
+				endByte: endByte,
 			});
 		}
 		return parts;
