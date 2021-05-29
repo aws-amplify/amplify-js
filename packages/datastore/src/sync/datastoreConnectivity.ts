@@ -15,6 +15,7 @@ export default class DataStoreConnectivity {
 	private connectionStatus: ConnectionStatus;
 	private observer: ZenObservable.SubscriptionObserver<ConnectionStatus>;
 	private subscription: ZenObservable.Subscription;
+	private timeout: ReturnType<typeof setTimeout>;
 	constructor() {
 		this.connectionStatus = {
 			online: false,
@@ -38,6 +39,7 @@ export default class DataStoreConnectivity {
 			});
 
 			return () => {
+				clearTimeout(this.timeout);
 				this.unsubscribe();
 			};
 		});
@@ -45,6 +47,7 @@ export default class DataStoreConnectivity {
 
 	unsubscribe() {
 		if (this.subscription) {
+			clearTimeout(this.timeout);
 			this.subscription.unsubscribe();
 		}
 	}
@@ -53,7 +56,7 @@ export default class DataStoreConnectivity {
 		if (this.observer && typeof this.observer.next === 'function') {
 			this.observer.next({ online: false }); // Notify network issue from the socket
 
-			setTimeout(() => {
+			this.timeout = setTimeout(() => {
 				const observerResult = { ...this.connectionStatus }; // copyOf status
 				this.observer.next(observerResult);
 			}, RECONNECTING_IN); // giving time for socket cleanup and network status stabilization

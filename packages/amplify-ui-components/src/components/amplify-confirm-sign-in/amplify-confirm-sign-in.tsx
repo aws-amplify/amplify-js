@@ -1,7 +1,10 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n } from '@aws-amplify/core';
 import { Component, Prop, State, h, Host, Watch } from '@stencil/core';
-import { FormFieldTypes } from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
+import {
+	FormFieldType,
+	FormFieldTypes,
+} from '../../components/amplify-auth-fields/amplify-auth-fields-interface';
 import {
 	AuthState,
 	MfaOption,
@@ -31,6 +34,14 @@ export class AmplifyConfirmSignIn {
 	/** Auth state change handler for this component */
 	@Prop()
 	handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
+	/** Default form field */
+	private defaultFormFields: FormFieldTypes = [
+		{
+			type: 'code',
+			required: true,
+			handleInputChange: event => this.handleCodeChange(event),
+		},
+	];
 	/**
 	 * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc.
 	 * by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing
@@ -47,13 +58,7 @@ export class AmplifyConfirmSignIn {
 	 * ]
 	 * ```
 	 */
-	@Prop() formFields: FormFieldTypes | string[] = [
-		{
-			type: 'code',
-			required: true,
-			handleInputChange: event => this.handleCodeChange(event),
-		},
-	];
+	@Prop() formFields: FormFieldTypes | string[] = this.defaultFormFields;
 	/** Cognito user signing in */
 	@Prop() user: CognitoUserInterface;
 	/** The MFA option to confirm with */
@@ -62,6 +67,8 @@ export class AmplifyConfirmSignIn {
 	@State() loading: boolean = false;
 	/* The code value in the confirm-sign-in form */
 	@State() code: string;
+	/* The constructed form field options */
+	private constructedFormFieldOptions: FormFieldTypes | string[];
 
 	componentWillLoad() {
 		this.setup();
@@ -83,6 +90,9 @@ export class AmplifyConfirmSignIn {
 				this.headerText = Translations.CONFIRM_TOTP_CODE;
 			}
 		}
+		this.constructedFormFieldOptions = this.constructFormFieldOptions(
+			this.formFields
+		);
 	}
 
 	private handleCodeChange(event) {
@@ -112,6 +122,30 @@ export class AmplifyConfirmSignIn {
 		}
 	}
 
+	private constructFormFieldOptions(
+		formFields: FormFieldTypes | string[]
+	): FormFieldTypes | string[] {
+		const content = [];
+
+		if (formFields === undefined) return undefined;
+		if (formFields.length <= 0) return this.defaultFormFields;
+
+		formFields.forEach((formField: FormFieldType | string) => {
+			if (typeof formField === 'string' || formField.type !== 'code') {
+				// This is either a `string`, and/or a custom field that isn't `code`. Pass this directly.
+				content.push(formField);
+			} else {
+				// This is a code input field. Attach input handler.
+				content.push({
+					...(formField as FormFieldType), // `inputProps` will be passed over here.
+					handleInputChange: event => this.handleCodeChange(event),
+				});
+			}
+		});
+
+		return content;
+	}
+
 	render() {
 		return (
 			<Host>
@@ -131,7 +165,7 @@ export class AmplifyConfirmSignIn {
 						</span>
 					}
 				>
-					<amplify-auth-fields formFields={this.formFields} />
+					<amplify-auth-fields formFields={this.constructedFormFieldOptions} />
 				</amplify-form-section>
 			</Host>
 		);

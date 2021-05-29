@@ -52,7 +52,7 @@ import {
 } from '../types';
 import {
 	DATASTORE,
-	establishRelation,
+	establishRelationAndKeys,
 	exhaustiveCheck,
 	isModelConstructor,
 	monotonicUlidFactory,
@@ -157,9 +157,12 @@ const initSchema = (userSchema: Schema) => {
 	};
 
 	Object.keys(schema.namespaces).forEach(namespace => {
-		schema.namespaces[namespace].relationships = establishRelation(
+		const [relations, keys] = establishRelationAndKeys(
 			schema.namespaces[namespace]
 		);
+
+		schema.namespaces[namespace].relationships = relations;
+		schema.namespaces[namespace].keys = keys;
 
 		const modelAssociations = new Map<string, string[]>();
 
