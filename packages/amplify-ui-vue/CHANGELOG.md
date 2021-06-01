@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@1.0.9...@aws-amplify/ui-vue@1.0.10) (2021-05-26)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-vue:** exclude external types ([#8298](https://github.com/aws-amplify/amplify-js/issues/8298)) ([2627619](https://github.com/aws-amplify/amplify-js/commit/2627619f0b782faca4eba9df4d817ccdf12b0b2e))
+
+
+
+
+
 ## [1.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@1.0.8...@aws-amplify/ui-vue@1.0.9) (2021-05-14)
 
 **Note:** Version bump only for package @aws-amplify/ui-vue

@@ -416,6 +416,7 @@ class MutationProcessor {
 		condition: string
 	): [string, Record<string, any>, GraphQLCondition, string, SchemaModel] {
 		const modelDefinition = this.schema.namespaces[namespaceName].models[model];
+		const { primaryKey } = this.schema.namespaces[namespaceName].keys[model];
 
 		const queriesTuples = this.typeQuery.get(modelDefinition);
 
@@ -425,9 +426,19 @@ class MutationProcessor {
 
 		const { _version, ...parsedData } = <ModelInstanceMetadata>JSON.parse(data);
 
+		// include all the fields that comprise a custom PK if one is specified
+		const deleteInput = {};
+		if (primaryKey && primaryKey.length) {
+			for (const pkField of primaryKey) {
+				deleteInput[pkField] = parsedData[pkField];
+			}
+		} else {
+			deleteInput['id'] = parsedData.id;
+		}
+
 		const filteredData =
 			operation === TransformerMutationType.DELETE
-				? <ModelInstanceMetadata>{ id: parsedData.id } // For DELETE mutations, only ID is sent
+				? <ModelInstanceMetadata>deleteInput // For DELETE mutations, only PK is sent
 				: Object.values(modelDefinition.fields)
 						.filter(({ name, type, association }) => {
 							// connections
