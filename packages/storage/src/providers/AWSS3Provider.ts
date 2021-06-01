@@ -157,6 +157,13 @@ export class AWSS3Provider implements StorageProvider {
 			track,
 			progressCallback,
 		} = opt;
+		// if source is a Blob, it should call .put and upload the blob to dest
+		if (this._isBlob(src)) {
+			await this.put(dest, src, config);
+			return {
+				key: dest,
+			};
+		}
 		const prefix = this._prefix(opt);
 		// In copyObjectCommand, the full source object key is required
 		const finalSrcKey = `${bucket}/${prefix}${src}`;
@@ -202,13 +209,6 @@ export class AWSS3Provider implements StorageProvider {
 		if (acl) params.ACL = acl;
 
 		const emitter = new events.EventEmitter();
-		// if source is a Blob, it should call .put and upload the blob to dest
-		if (this._isBlob(src)) {
-			await this.put(dest, src, config);
-			return {
-				key: dest,
-			};
-		}
 		const s3 = this._createNewS3Client(opt, emitter);
 		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 
