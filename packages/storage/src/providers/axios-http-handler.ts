@@ -156,7 +156,7 @@ export class AxiosHttpHandler implements HttpHandler {
 				})
 				.catch(error => {
 					// Error
-					logger.error(error);
+					logger.error(error.message);
 					throw error;
 				}),
 			requestTimeout(requestTimeoutInMs),
