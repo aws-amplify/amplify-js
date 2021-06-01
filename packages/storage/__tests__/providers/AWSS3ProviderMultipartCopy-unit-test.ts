@@ -74,8 +74,8 @@ describe('basic copy test', () => {
 					return command.input.Key;
 				} else if (command instanceof ListObjectsV2Command) {
 					return {
-						Contents: [],
-					};
+						KeyCount: 0,
+					}
 				}
 			});
 		const copier = new AWSS3ProviderMultipartCopier({
@@ -84,7 +84,7 @@ describe('basic copy test', () => {
 			s3client: new S3Client(testS3ClientConfig),
 		});
 		await expect(copier.copy()).rejects.toThrow(
-			'Object does not exist, key: srcKey'
+			'Object does not exist with key: "srcKey"'
 		);
 		expect(spyon).toBeCalledTimes(1);
 	});
@@ -111,7 +111,7 @@ describe('basic copy test', () => {
 			s3client: new S3Client(testS3ClientConfig),
 		});
 		await expect(copier.copy()).rejects.toThrow(
-			'More than one object matches with this prefix, prefix: srcKey'
+			'More than one object matches with this prefix "srcKey". Please use the exact key.'
 		);
 	});
 
@@ -136,7 +136,7 @@ describe('basic copy test', () => {
 			s3client: new S3Client(testS3ClientConfig),
 		});
 		await expect(copier.copy()).rejects.toThrow(
-			'The specified source key and object key in S3 does not match, provided: srcKey, from s3: srcKeyHello'
+			'The provided source key and the found object\'s key does not match. Found: "srcKeyHello", provided: "srcKey". Please use the exact key.'
 		);
 	});
 });

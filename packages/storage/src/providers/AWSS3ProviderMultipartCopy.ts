@@ -26,7 +26,7 @@ enum AWSS3ProviderMultipartCopierErrors {
 	CLEANUP_FAILED = 'Multipart copy clean up failed',
 	NO_OBJECT_FOUND = 'Object does not exist',
 	TOO_MANY_MATCH = 'More than one object matches with this prefix',
-	OBJECT_KEY_MISMATCH = 'The specified source key and object key in S3 does not match',
+	OBJECT_KEY_MISMATCH = "The provided source key and the found object's key does not match",
 }
 
 export interface CopyPart {
@@ -172,7 +172,7 @@ export class AWSS3ProviderMultipartCopier {
 						})
 					);
 					partNumber++;
-					this.bytesCopied += (part.endByte - part.startByte + 1);
+					this.bytesCopied += part.endByte - part.startByte + 1;
 					this.emitter.emit(COPY_PROGRESS, {
 						loaded: this.bytesCopied,
 						total: this.totalBytesToCopy,
@@ -240,22 +240,22 @@ export class AWSS3ProviderMultipartCopier {
 			MaxKeys: 1,
 			Prefix: this.srcKey,
 		});
-		const { Contents, IsTruncated } = await this.s3client.send(
+		const { Contents, IsTruncated, KeyCount } = await this.s3client.send(
 			listObjectCommand
 		);
-		if (Contents.length === 0) {
+		if (KeyCount === 0) {
 			throw new Error(
-				`${AWSS3ProviderMultipartCopierErrors.NO_OBJECT_FOUND}, key: ${this.srcKey}`
+				`${AWSS3ProviderMultipartCopierErrors.NO_OBJECT_FOUND} with key: "${this.srcKey}"`
 			);
 		} else if (IsTruncated) {
 			throw new Error(
-				`${AWSS3ProviderMultipartCopierErrors.TOO_MANY_MATCH}, prefix: ${this.srcKey}`
+				`${AWSS3ProviderMultipartCopierErrors.TOO_MANY_MATCH} "${this.srcKey}". Please use the exact key.`
 			);
 		}
 		const sourceObject = Contents[0];
 		if (sourceObject.Key !== this.srcKey) {
 			throw new Error(
-				`${AWSS3ProviderMultipartCopierErrors.OBJECT_KEY_MISMATCH}, provided: ${this.srcKey}, from s3: ${sourceObject.Key}`
+				`${AWSS3ProviderMultipartCopierErrors.OBJECT_KEY_MISMATCH}. Found: "${sourceObject.Key}", provided: "${this.srcKey}". Please use the exact key.`
 			);
 		}
 		return sourceObject;
