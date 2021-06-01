@@ -217,6 +217,31 @@ describe('Predictions convert provider test', () => {
 				predictionsProvider.convert(validSpeechToTextInput)
 			).rejects.toMatch('region not configured for transcription');
 		});
+		test('Error languageCode not configured ', () => {
+			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
+				() => {
+					return 'Hello how are you';
+				}
+			);
+
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const speechGenOptions = {
+				transcription: {
+					region: 'us-west-2',
+					proxy: false,
+				},
+			};
+			predictionsProvider.configure(speechGenOptions);
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			return expect(
+				predictionsProvider.convert(validSpeechToTextInput)
+			).rejects.toMatch(
+				'languageCode not configured or provided for transcription'
+			);
+		});
 		test('Happy case ', () => {
 			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
 				() => {
@@ -246,6 +271,38 @@ describe('Predictions convert provider test', () => {
 					fullText: 'Hello, how are you?',
 				},
 			} as SpeechToTextOutput);
+		});
+		test('Downsized Happy case ', async () => {
+			AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe = jest.fn(
+				() => {
+					return 'Bonjour, comment vas tu?';
+				}
+			);
+			const downsampleBufferSpyon = jest.spyOn(
+				AmazonAIConvertPredictionsProvider.prototype as any,
+				'downsampleBuffer'
+			);
+
+			const predictionsProvider = new AmazonAIConvertPredictionsProvider();
+			const speechGenOptions = {
+				transcription: {
+					region: 'us-west-2',
+					proxy: false,
+					defaults: {
+						language: 'fr-FR',
+					},
+				},
+			};
+			predictionsProvider.configure(speechGenOptions);
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			await predictionsProvider.convert(validSpeechToTextInput);
+			expect(downsampleBufferSpyon).toBeCalledWith(
+				expect.objectContaining({ outputSampleRate: 8000 })
+			);
+			downsampleBufferSpyon.mockClear();
 		});
 	});
 });

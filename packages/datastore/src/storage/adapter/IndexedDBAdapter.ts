@@ -206,7 +206,7 @@ class IndexedDBAdapter implements Adapter {
 	async save<T extends PersistentModel>(
 		model: T,
 		condition?: ModelPredicate<T>
-	): Promise<[T, OpType.INSERT | OpType.UPDATE, T?][]> {
+	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		await this.checkPrivate();
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
@@ -250,7 +250,7 @@ class IndexedDBAdapter implements Adapter {
 			}
 		}
 
-		const result: [T, OpType.INSERT | OpType.UPDATE, T?][] = [];
+		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
 
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
@@ -266,11 +266,7 @@ class IndexedDBAdapter implements Adapter {
 				const key = await store.index('byId').getKey(item.id);
 				await store.put(item, key);
 
-				if (opType === OpType.UPDATE) {
-					result.push([instance, opType, fromDB]);
-				} else {
-					result.push([instance, opType]);
-				}
+				result.push([instance, opType]);
 			}
 		}
 
@@ -689,7 +685,7 @@ class IndexedDBAdapter implements Adapter {
 		deleteQueue: { storeName: string; items: T[] }[]
 	): Promise<void> {
 		for await (const rel of relations) {
-			const { relationType, fieldName, modelName } = rel;
+			const { relationType, fieldName, modelName, targetName } = rel;
 			const storeName = this.getStorename(nameSpace, modelName);
 
 			const index: string =
@@ -709,11 +705,16 @@ class IndexedDBAdapter implements Adapter {
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
+						const hasOneIndex = index || 'byId';
+
+						const hasOneCustomField = targetName in model;
+						const value = hasOneCustomField ? model[targetName] : model.id;
+
 						const recordToDelete = <T>await this.db
 							.transaction(storeName, 'readwrite')
 							.objectStore(storeName)
-							.index(index)
-							.get(model.id);
+							.index(hasOneIndex)
+							.get(value);
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
