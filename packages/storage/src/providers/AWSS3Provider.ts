@@ -142,7 +142,7 @@ export class AWSS3Provider implements StorageProvider {
 	): Promise<CopyResult> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
-			return Promise.reject(StorageErrorStrings.NO_CREDENTIALS);
+			return Promise.reject(new Error(StorageErrorStrings.NO_CREDENTIALS));
 		}
 		const opt: CopyObjectConfig = Object.assign({}, this._config, config);
 		const {
@@ -678,7 +678,7 @@ export class AWSS3Provider implements StorageProvider {
 		return s3client;
 	}
 
-	private _isBlob(x: any): x is Blob {
+	private _isBlob(x: unknown): x is Blob {
 		return typeof Blob !== 'undefined' && x instanceof Blob;
 	}
 }

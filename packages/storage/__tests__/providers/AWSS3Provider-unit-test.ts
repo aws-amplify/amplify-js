@@ -1068,11 +1068,7 @@ describe('StorageProvider test', () => {
 		test('credentials not ok', async () => {
 			const storage = new StorageProvider();
 			storage.configure(options_no_cred);
-			try {
-				await storage.copy('src', 'dest');
-			} catch (e) {
-				expect(e).toEqual('No credentials');
-			}
+			await expect(storage.copy('src', 'dest')).rejects.toThrowError('No credentials');
 		});
 	});
 });
