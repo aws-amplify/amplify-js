@@ -35,7 +35,7 @@ export interface CopyPart {
 	endByte: number;
 }
 
-export const COPY_PROGRESS = 'copyProgress';
+export const COPY_PROGRESS = 'sendCopyProgress';
 
 export interface AWSS3ProviderMultipartCopierParams {
 	params: CopyObjectCommandInput;
@@ -196,8 +196,8 @@ export class AWSS3ProviderMultipartCopier {
 				) - 1;
 			parts.push({
 				partNumber: startPartNum + i,
-				startByte: startByte,
-				endByte: endByte,
+				startByte,
+				endByte,
 			});
 		}
 		return parts;
