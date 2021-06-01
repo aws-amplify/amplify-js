@@ -23,7 +23,6 @@ import {
 	DeleteObjectCommand,
 	ListObjectsCommand,
 	CopyObjectCommandInput,
-	PutObjectCommandInput,
 } from '@aws-sdk/client-s3';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
@@ -159,7 +158,7 @@ export class AWSS3Provider implements StorageProvider {
 			progressCallback,
 		} = opt;
 		const prefix = this._prefix(opt);
-		// In copyObjectCommand, the full object key is required
+		// In copyObjectCommand, the full source object key is required
 		const finalSrcKey = `${bucket}/${prefix}${src}`;
 		const finalDestKey = `${prefix}${dest}`;
 		logger.debug(`copying ${finalSrcKey} to ${finalDestKey}`);
@@ -203,48 +202,12 @@ export class AWSS3Provider implements StorageProvider {
 		if (acl) params.ACL = acl;
 
 		const emitter = new events.EventEmitter();
-		// if source is a Blob, it should behave similarly to Put, let ManagedUpload handle it
+		// if source is a Blob, it should call .put and upload the blob to dest
 		if (this._isBlob(src)) {
-			const uploadParam: PutObjectCommandInput = Object.assign({}, params, {
-				Body: src,
-			});
-			const uploader = new AWSS3ProviderManagedUpload(
-				uploadParam,
-				opt,
-				emitter
-			);
-			try {
-				emitter.on(SEND_PROGRESS_EVENT, progress => {
-					if (progressCallback) {
-						if (typeof progressCallback === 'function') {
-							progressCallback(progress);
-						} else {
-							`progressCallback should be a function, not a ${typeof progressCallback}`;
-						}
-					}
-				});
-				await uploader.upload();
-				dispatchStorageEvent(
-					track,
-					'upload',
-					{ method: 'put', result: 'success' },
-					null,
-					`Upload success for ${dest}`
-				);
-				return {
-					key: dest,
-				};
-			} catch (err) {
-				logger.error('Error copying file', err);
-				dispatchStorageEvent(
-					track,
-					'upload',
-					{ method: 'put', result: 'failed' },
-					null,
-					`Error uploading ${dest}`
-				);
-				throw err;
-			}
+			await this.put(dest, src, config);
+			return {
+				key: dest,
+			};
 		}
 		const s3 = this._createNewS3Client(opt, emitter);
 		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
@@ -254,15 +217,17 @@ export class AWSS3Provider implements StorageProvider {
 			emitter,
 			s3client: s3,
 		});
-		emitter.on(COPY_PROGRESS, progress => {
-			if (progressCallback) {
-				if (typeof progressCallback === 'function') {
+		if (progressCallback) {
+			if (typeof progressCallback === 'function') {
+				emitter.on(COPY_PROGRESS, progress => {
 					progressCallback(progress);
-				} else {
-					`progressCallback should be a function, not a ${typeof progressCallback}`;
-				}
+				});
+			} else {
+				logger.warn(
+					`progressCallback should be a function, not a ${typeof progressCallback}`
+				);
 			}
-		});
+		}
 		try {
 			await copier.copy();
 			dispatchStorageEvent(

@@ -11,11 +11,12 @@
  * and limitations under the License.
  */
 import StorageProvider from '../../src/providers/AWSS3Provider';
-import { Hub, Credentials } from '@aws-amplify/core';
+import { Logger, Hub, Credentials } from '@aws-amplify/core';
 import * as formatURL from '@aws-sdk/util-format-url';
 import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { AWSS3ProviderMultipartCopier } from '../../src/providers/AWSS3ProviderMultipartCopy';
+import * as events from 'events';
 jest.mock('../../src/providers/AWSS3ProviderMultipartCopy');
 /**
  * NOTE - These test cases use Hub.dispatch but they should
@@ -913,6 +914,68 @@ describe('StorageProvider test', () => {
 			expect(spyon).toBeCalledTimes(1);
 		});
 
+		test('copy blob should call put', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+			const storage = new StorageProvider();
+			const spyon = jest.spyOn(storage, 'put');
+			const blob = new Blob(['abcdefghijklmo']);
+			storage.configure(options);
+			await storage.copy(blob, 'dest', { contentType: 'text/plain' });
+			expect(spyon).toBeCalledWith('dest', blob, { contentType: 'text/plain' });
+		});
+
+		test('progress callback should be called', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+			const mockCallback = jest.fn();
+			const mockEventEmitter = {
+				emit: jest.fn(),
+				on: jest.fn(),
+			};
+			jest
+				.spyOn(events, 'EventEmitter')
+				.mockImplementationOnce(() => mockEventEmitter);
+			const storage = new StorageProvider();
+			storage.configure(options);
+			await storage.copy('src', 'dest', {
+				progressCallback: mockCallback,
+			});
+			expect(mockEventEmitter.on).toBeCalledWith(
+				'sendCopyProgress',
+				expect.any(Function)
+			);
+			const emitterOnFn = mockEventEmitter.on.mock.calls[0][1];
+			// Manually invoke for testing
+			emitterOnFn('arg');
+			expect(mockCallback).toBeCalledWith('arg');
+		});
+
+		test('non-function progress callback should give a warning', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+			const loggerSpy = jest.spyOn(Logger.prototype, '_log');
+			const mockEventEmitter = {
+				emit: jest.fn(),
+				on: jest.fn(),
+			};
+			jest
+				.spyOn(events, 'EventEmitter')
+				.mockImplementationOnce(() => mockEventEmitter);
+			const storage = new StorageProvider();
+			storage.configure(options);
+			await storage.copy('src', 'dest', {
+				progressCallback: 'hello' as any,
+			});
+			expect(loggerSpy).toHaveBeenCalledWith(
+				'WARN',
+				'progressCallback should be a function, not a string'
+			);
+		});
+
 		test('copy object with track', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
@@ -966,7 +1029,9 @@ describe('StorageProvider test', () => {
 				level: 'protected',
 			});
 
-			expect(AWSS3ProviderMultipartCopier.mock.calls[0][0].params).toStrictEqual({
+			expect(
+				AWSS3ProviderMultipartCopier.mock.calls[0][0].params
+			).toStrictEqual({
 				ACL: 'private',
 				Bucket: 'bucket',
 				CopySource: 'bucket/protected/identityId/src',

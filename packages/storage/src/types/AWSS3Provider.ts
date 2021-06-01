@@ -12,7 +12,7 @@ type S3ClientCopyCommandInput =
 
 /** A subset of S3 CopyCommand params allowed for AWSS3Provider. */
 interface S3ClientCopyCommandParams {
-	bucket: CopyObjectRequest['Bucket'];
+	bucket?: CopyObjectRequest['Bucket'];
 	cacheControl?: CopyObjectRequest['CacheControl'];
 	contentDisposition?: CopyObjectRequest['ContentDisposition'];
 	contentEncoding?: CopyObjectRequest['ContentEncoding'];
