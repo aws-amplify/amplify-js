@@ -34,7 +34,7 @@ import {
 	CopyResult,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
-import { AxiosHttpHandler, SEND_PROGRESS_EVENT } from './axios-http-handler';
+import { AxiosHttpHandler } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import {
 	AWSS3ProviderMultipartCopier,

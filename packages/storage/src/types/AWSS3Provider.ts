@@ -2,7 +2,9 @@ import { StorageLevel } from './Storage';
 import { CopyObjectRequest } from '@aws-sdk/client-s3';
 
 export type CopyProgress = {
+	/** Total bytes copied */
 	loaded: number;
+	/** Total bytes to copy */
 	total: number;
 };
 
@@ -21,6 +23,7 @@ interface S3ClientCopyCommandParams {
 	expires?: CopyObjectRequest['Expires'];
 	tagging?: CopyObjectRequest['Tagging'];
 	acl?: CopyObjectRequest['ACL'];
+	metadata?: CopyObjectRequest['Metadata'];
 }
 
 interface S3ClientServerSideEncryptionParams {
@@ -33,9 +36,13 @@ interface S3ClientServerSideEncryptionParams {
 
 interface StorageCopyConfig {
 	level?: StorageLevel;
+	/** if set to true, automatically sends Storage Events to Amazon Pinpoint */
 	track?: boolean;
-	multipart?: boolean;
 	provider?: string;
+	/**
+	 * callback function that gets called on each successful part copied to track
+	 * the copy progress 
+	 **/
 	progressCallback?: (progress: CopyProgress) => any;
 }
 
