@@ -34,6 +34,8 @@ const testParams: any = {
 	Key: 'testKey',
 	Body: 'testDataBody',
 	ContentType: 'testContentType',
+	SSECustomerAlgorithm: 'AES256',
+	SSECustomerKey: '1234567890',
 };
 
 const credentials = {
@@ -179,6 +181,8 @@ describe('multi part upload tests', () => {
 			Key: testParams.Key,
 			PartNumber: 1,
 			UploadId: testUploadId,
+			SSECustomerAlgorithm: testParams.SSECustomerAlgorithm,
+			SSECustomerKey: testParams.SSECustomerKey,
 		});
 		expect(s3ServiceCallSpy.mock.calls[2][0].input).toStrictEqual({
 			Body: testParams.Body.slice(testMinPartSize, testParams.Body.length),
@@ -186,6 +190,8 @@ describe('multi part upload tests', () => {
 			Key: testParams.Key,
 			PartNumber: 2,
 			UploadId: testUploadId,
+			SSECustomerAlgorithm: testParams.SSECustomerAlgorithm,
+			SSECustomerKey: testParams.SSECustomerKey,
 		});
 
 		// Lastly complete multi part upload call
@@ -300,6 +306,8 @@ describe('multi part upload tests', () => {
 			Key: testParams.Key,
 			PartNumber: 1,
 			UploadId: testUploadId,
+			SSECustomerAlgorithm: testParams.SSECustomerAlgorithm,
+			SSECustomerKey: testParams.SSECustomerKey,
 		});
 
 		// Second call fails
@@ -309,6 +317,8 @@ describe('multi part upload tests', () => {
 			Key: testParams.Key,
 			PartNumber: 2,
 			UploadId: testUploadId,
+			SSECustomerAlgorithm: testParams.SSECustomerAlgorithm,
+			SSECustomerKey: testParams.SSECustomerKey,
 		});
 
 		// so we abort the multipart upload
