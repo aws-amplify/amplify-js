@@ -85,9 +85,9 @@ const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
 
-// as per Cognito's Documentation 
-// https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
-const maxDevices = 60;
+// as per Cognito's Documentation
+// https://tinyurl.com/c2a9f4hz
+const MAX_DEVICES = 60;
 
 /**
  * Provide authentication steps
@@ -2231,7 +2231,7 @@ export class AuthClass {
 					rej(err);
 				},
 			};
-			currUser.listDevices(maxDevices, null, cb);
+			currUser.listDevices(MAX_DEVICES, null, cb);
 		});
 	}
 }
