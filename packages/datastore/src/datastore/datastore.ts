@@ -52,7 +52,7 @@ import {
 } from '../types';
 import {
 	DATASTORE,
-	establishRelation,
+	establishRelationAndKeys,
 	exhaustiveCheck,
 	isModelConstructor,
 	monotonicUlidFactory,
@@ -157,9 +157,12 @@ const initSchema = (userSchema: Schema) => {
 	};
 
 	Object.keys(schema.namespaces).forEach(namespace => {
-		schema.namespaces[namespace].relationships = establishRelation(
+		const [relations, keys] = establishRelationAndKeys(
 			schema.namespaces[namespace]
 		);
+
+		schema.namespaces[namespace].relationships = relations;
+		schema.namespaces[namespace].keys = keys;
 
 		const modelAssociations = new Map<string, string[]>();
 
@@ -833,7 +836,7 @@ class DataStore {
 		const conflictHandlerIsDefault: () => boolean = () =>
 			this.conflictHandler === defaultConflictHandler;
 
-		if (configDataStore) {
+		if (configDataStore && configDataStore.conflictHandler) {
 			return configDataStore.conflictHandler;
 		}
 		if (conflictHandlerIsDefault() && config.conflictHandler) {
@@ -849,7 +852,7 @@ class DataStore {
 		const errorHandlerIsDefault: () => boolean = () =>
 			this.errorHandler === defaultErrorHandler;
 
-		if (configDataStore) {
+		if (configDataStore && configDataStore.errorHandler) {
 			return configDataStore.errorHandler;
 		}
 		if (errorHandlerIsDefault() && config.errorHandler) {
@@ -867,7 +870,7 @@ class DataStore {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			id: string
-		): Promise<T>;
+		): Promise<T[]>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			condition: ProducerModelPredicate<T> | typeof PredicateAll

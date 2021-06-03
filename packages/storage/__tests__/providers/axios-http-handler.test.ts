@@ -1,10 +1,15 @@
 import axios from 'axios';
 
-import { AxiosHttpHandler } from '../../src/providers/axios-http-handler';
+import {
+	AxiosHttpHandler,
+	reactNativeRequestTransformer,
+} from '../../src/providers/axios-http-handler';
+import { HttpRequest } from '@aws-sdk/protocol-http';
+import { Platform } from '@aws-amplify/core';
 
 jest.mock('axios');
 
-let request = null;
+let request: HttpRequest = null;
 
 const options = {};
 
@@ -55,5 +60,40 @@ describe('AxiosHttpHandler', () => {
 				url: 'http://localhost:3000/',
 			});
 		});
+
+		it('should use custom request transformer on React Native', async () => {
+			Platform.isReactNative = true;
+			const handler = new AxiosHttpHandler();
+			const blob = new Blob(['123456789012']);
+			request.body = blob;
+			await handler.handle(request, options);
+			expect(axios.request).toHaveBeenLastCalledWith({
+				data: blob,
+				headers: {},
+				method: 'get',
+				responseType: 'blob',
+				url: 'http://localhost:3000/',
+				transformRequest: reactNativeRequestTransformer,
+			});
+		});
+	});
+
+	describe('React Native Request Transformer', () => {
+		it('should return blob as is for Blob', () => {
+			const blob = new Blob(['123456789012']);
+			const headers = { 'content-type': 'text/plain' };
+			const result = reactNativeRequestTransformer[0](blob, headers);
+			expect(headers).toStrictEqual({
+				'Content-Type': 'text/plain',
+			});
+			expect(result).toBe(blob);
+		});
+
+		it('should run defaultTransformers logic on everything else', () => {
+			const mockTransformer = jest.fn()
+			axios.defaults.transformRequest = [mockTransformer];
+			reactNativeRequestTransformer[0]('data', {});
+			expect(mockTransformer).toHaveBeenCalledTimes(1);
+		})
 	});
 });

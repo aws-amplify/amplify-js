@@ -56,6 +56,27 @@ export declare class PostComposite {
 	public readonly sort: number;
 }
 
+export declare class PostCustomPK {
+	public readonly id: string;
+	public readonly postId: number;
+	public readonly title: string;
+	public readonly description?: string;
+}
+
+export declare class PostCustomPKSort {
+	public readonly id: string;
+	public readonly postId: number;
+	public readonly title: string;
+	public readonly description?: string;
+}
+export declare class PostCustomPKComposite {
+	public readonly id: string;
+	public readonly postId: number;
+	public readonly title: string;
+	public readonly description?: string;
+	public readonly sort: number;
+}
+
 export function testSchema(): Schema {
 	return {
 		enums: {},
@@ -355,15 +376,156 @@ export function testSchema(): Schema {
 					{
 						type: 'key',
 						properties: {
-							name: 'titleSort',
+							name: 'titleCreatedSort',
 							fields: ['title', 'created', 'sort'],
 						},
+					},
+				],
+			},
+			PostCustomPK: {
+				name: 'PostCustomPK',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					postId: {
+						name: 'postId',
+						isArray: false,
+						type: 'Int',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					description: {
+						name: 'description',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'PostCustomPKS',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
 					},
 					{
 						type: 'key',
 						properties: {
-							name: 'descSort',
-							fields: ['description', 'created', 'sort'],
+							fields: ['postId'],
+						},
+					},
+				],
+			},
+			PostCustomPKSort: {
+				name: 'PostCustomPKSort',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					postId: {
+						name: 'postId',
+						isArray: false,
+						type: 'Int',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					description: {
+						name: 'description',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'PostCustomPKSorts',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id', 'postId'],
+						},
+					},
+				],
+			},
+			PostCustomPKComposite: {
+				name: 'PostCustomPKComposite',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					postId: {
+						name: 'postId',
+						isArray: false,
+						type: 'Int',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					description: {
+						name: 'description',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					sort: {
+						name: 'sort',
+						isArray: false,
+						type: 'Int',
+						isRequired: true,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'PostCustomPKComposites',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id', 'postId', 'sort'],
 						},
 					},
 				],
