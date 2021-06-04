@@ -19,6 +19,7 @@
 - [amplify-form-section](../amplify-form-section)
 - [amplify-radio-button](../amplify-radio-button)
 - [amplify-totp-setup](../amplify-totp-setup)
+- [amplify-toast](../amplify-toast)
 
 ### Graph
 ```mermaid
@@ -26,6 +27,7 @@ graph TD;
   amplify-select-mfa-type --> amplify-form-section
   amplify-select-mfa-type --> amplify-radio-button
   amplify-select-mfa-type --> amplify-totp-setup
+  amplify-select-mfa-type --> amplify-toast
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-loading-spinner
@@ -37,6 +39,7 @@ graph TD;
   amplify-form-field --> amplify-label
   amplify-form-field --> amplify-input
   amplify-form-field --> amplify-hint
+  amplify-toast --> amplify-icon
   style amplify-select-mfa-type fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
