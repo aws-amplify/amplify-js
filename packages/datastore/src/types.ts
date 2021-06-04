@@ -275,7 +275,7 @@ export function isEnumFieldType(obj: any): obj is EnumFieldType {
 	return false;
 }
 
-type ModelField = {
+export type ModelField = {
 	name: string;
 	type:
 		| keyof Omit<
@@ -287,6 +287,7 @@ type ModelField = {
 		| EnumFieldType;
 	isArray: boolean;
 	isRequired?: boolean;
+	isReadOnly?: boolean;
 	isArrayNullable?: boolean;
 	association?: ModelAssociation;
 	attributes?: ModelAttributes[];
