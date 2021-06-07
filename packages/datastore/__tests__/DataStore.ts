@@ -438,7 +438,7 @@ describe('DataStore tests', () => {
 			const result = await DataStore.save(model);
 
 			const [settingsSave, modelSave, modelUpdate] = <any>save.mock.calls;
-			const [_model, _condition, _mutator, patches] = modelUpdate;
+			const [_model, _condition, _mutator, [patches]] = modelUpdate;
 
 			const expectedPatches = [
 				{ op: 'replace', path: ['field1'], value: 'edited' },
@@ -505,8 +505,8 @@ describe('DataStore tests', () => {
 				save.mock.calls
 			);
 
-			const [_model, _condition, _mutator, patches] = modelUpdate;
-			const [_model2, _condition2, _mutator2, patches2] = modelUpdate2;
+			const [_model, _condition, _mutator, [patches]] = modelUpdate;
+			const [_model2, _condition2, _mutator2, [patches2]] = modelUpdate2;
 
 			const expectedPatches = [
 				{
@@ -849,6 +849,119 @@ describe('DataStore tests', () => {
 					<any>{}
 				)
 			).rejects.toThrow('Invalid criteria');
+		});
+
+		test('Delete many returns many', async () => {
+			const models: Model[] = [];
+			const save = jest.fn(model => {
+				model instanceof Model && models.push(model);
+			});
+			const query = jest.fn(() => models);
+			const _delete = jest.fn(() => [models, models]);
+
+			jest.resetModules();
+			jest.doMock('../src/storage/storage', () => {
+				const mock = jest.fn().mockImplementation(() => {
+					const _mock = {
+						init: jest.fn(),
+						save,
+						query,
+						delete: _delete,
+						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+					};
+
+					return _mock;
+				});
+
+				(<any>mock).getNamespace = () => ({ models: {} });
+
+				return { ExclusiveStorage: mock };
+			});
+
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			for (let i = 0; i < 10; i++) {
+				await DataStore.save(
+					new Model({
+						field1: 'someField',
+						dateCreated: new Date().toISOString(),
+						metadata: new Metadata({
+							author: 'Some author ' + i,
+							rewards: [],
+							penNames: [],
+							nominations: [],
+							misc: [null, 'ok'],
+						}),
+					})
+				);
+			}
+
+			const deleted = await DataStore.delete(Model, m =>
+				m.field1('eq', 'someField')
+			);
+
+			expect(deleted.length).toEqual(10);
+			deleted.forEach(deletedItem => {
+				expect(deletedItem.field1).toEqual('someField');
+			});
+		});
+
+		test('Delete one returns one', async () => {
+			let model: Model;
+			const save = jest.fn(saved => (model = saved));
+			const query = jest.fn(() => [model]);
+			const _delete = jest.fn(() => [[model], [model]]);
+
+			jest.resetModules();
+			jest.doMock('../src/storage/storage', () => {
+				const mock = jest.fn().mockImplementation(() => {
+					const _mock = {
+						init: jest.fn(),
+						save,
+						query,
+						delete: _delete,
+						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+					};
+					return _mock;
+				});
+
+				(<any>mock).getNamespace = () => ({ models: {} });
+
+				return { ExclusiveStorage: mock };
+			});
+
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as {
+				Model: PersistentModelConstructor<Model>;
+			};
+
+			const saved = await DataStore.save(
+				new Model({
+					field1: 'someField',
+					dateCreated: new Date().toISOString(),
+					metadata: new Metadata({
+						author: 'Some author',
+						rewards: [],
+						penNames: [],
+						nominations: [],
+						misc: [null, 'ok'],
+					}),
+				})
+			);
+
+			const deleted: Model[] = await DataStore.delete(Model, saved.id);
+
+			expect(deleted.length).toEqual(1);
+			expect(deleted[0]).toEqual(model);
 		});
 
 		test('Query params', async () => {

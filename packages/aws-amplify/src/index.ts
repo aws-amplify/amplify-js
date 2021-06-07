@@ -34,6 +34,7 @@ export { Auth } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
 export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
 export {
+	AuthModeStrategyType,
 	DataStore,
 	Predicates,
 	SortDirection,
@@ -53,6 +54,7 @@ export {
 	Signer,
 	I18n,
 	ServiceWorker,
+	AWSCloudWatchProvider,
 } from '@aws-amplify/core';
 export { withSSRContext } from './withSSRContext';
 

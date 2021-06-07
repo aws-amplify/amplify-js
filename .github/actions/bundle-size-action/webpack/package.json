@@ -43,11 +43,11 @@
       },
       {
         "path": "dist/withSSRContext.js.min.js",
-        "maxSize": "145kB"
+        "maxSize": "155kB"
       },
       {
         "path": "dist/withSSRContext+Storage.js.min.js",
-        "maxSize": "180kB"
+        "maxSize": "190kB"
       }
     ]
   },

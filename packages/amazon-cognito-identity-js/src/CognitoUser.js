@@ -1182,7 +1182,10 @@ export default class CognitoUser {
 	}
 
 	/**
-	 * This is used by an authenticated user to get the MFAOptions
+	 * This was previously used by an authenticated user to get MFAOptions,
+	 * but no longer returns a meaningful response. Refer to the documentation for
+	 * how to setup and use MFA: https://docs.amplify.aws/lib/auth/mfa/q/platform/js
+	 * @deprecated
 	 * @param {nodeCallback<MFAOptions>} callback Called on success or error.
 	 * @returns {void}
 	 */
@@ -2011,7 +2014,7 @@ export default class CognitoUser {
 
 	/**
 	 * This returns the user context data for advanced security feature.
-	 * @returns {void}
+	 * @returns {string} the user context data from CognitoUserPool
 	 */
 	getUserContextData() {
 		const pool = this.pool;
