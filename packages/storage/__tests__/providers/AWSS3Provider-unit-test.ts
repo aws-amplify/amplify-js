@@ -914,18 +914,6 @@ describe('StorageProvider test', () => {
 			expect(spyon).toBeCalledTimes(1);
 		});
 
-		test('copy blob should call put', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementation(() => {
-				return Promise.resolve(credentials);
-			});
-			const storage = new StorageProvider();
-			const spyon = jest.spyOn(storage, 'put');
-			const blob = new Blob(['abcdefghijklmo']);
-			storage.configure(options);
-			await storage.copy(blob, 'dest', { contentType: 'text/plain' });
-			expect(spyon).toBeCalledWith('dest', blob, { contentType: 'text/plain' });
-		});
-
 		test('progress callback should be called', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);

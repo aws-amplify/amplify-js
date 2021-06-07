@@ -136,7 +136,7 @@ export class AWSS3Provider implements StorageProvider {
 	 * @return The copied object's key.
 	 */
 	public async copy(
-		src: string | Blob,
+		src: string,
 		dest: string,
 		config?: CopyObjectConfig
 	): Promise<CopyResult> {
@@ -157,13 +157,6 @@ export class AWSS3Provider implements StorageProvider {
 			track,
 			progressCallback,
 		} = opt;
-		// if source is a Blob, it should call .put and upload the blob to dest
-		if (this._isBlob(src)) {
-			await this.put(dest, src, config);
-			return {
-				key: dest,
-			};
-		}
 		const prefix = this._prefix(opt);
 		// In copyObjectCommand, the full source object key is required
 		const finalSrcKey = `${bucket}/${prefix}${src}`;
