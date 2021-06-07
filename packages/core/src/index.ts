@@ -23,6 +23,7 @@ export { I18n } from './I18n';
 export * from './JS';
 export { Signer } from './Signer';
 export * from './Parser';
+export * from './Providers';
 export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export * from './RNComponents';
 export { Credentials, CredentialsClass } from './Credentials';

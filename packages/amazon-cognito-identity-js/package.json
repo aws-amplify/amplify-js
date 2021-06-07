@@ -94,8 +94,5 @@
     "react-native": "^0.59.0",
     "rimraf": "^2.5.4",
     "webpack": "^3.5.5"
-  },
-  "peerDependencies": {
-    "@react-native-async-storage/async-storage": "^1.13.0"
   }
 }
