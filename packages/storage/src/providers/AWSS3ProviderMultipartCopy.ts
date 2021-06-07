@@ -21,12 +21,16 @@ import * as events from 'events';
 
 const logger = new Logger('AWSS3ProviderMultipartCopier');
 const DEFAULT_QUEUE_SIZE = 20;
+const MAX_NUM_PARTS = 10000;
 
 enum AWSS3ProviderMultipartCopierErrors {
 	CLEANUP_FAILED = 'Multipart copy clean up failed',
 	NO_OBJECT_FOUND = 'Object does not exist',
 	TOO_MANY_MATCH = 'More than one object matches with this prefix',
 	OBJECT_KEY_MISMATCH = "The provided source key and the found object's key does not match",
+	INVALID_QUEUESIZE = 'Queue size must be a positive number',
+	NO_COPYSOURCE = 'You must specify a copy source',
+	MAX_NUM_PARTS_EXCEEDED = 'Only a maximum of 10000 parts are allowed',
 }
 
 export interface CopyPart {
@@ -60,21 +64,26 @@ export class AWSS3ProviderMultipartCopier {
 	private totalBytesToCopy = 0;
 	private totalParts = 0;
 
-	constructor({
-		params,
-		emitter,
-		s3client,
-		queueSize = DEFAULT_QUEUE_SIZE,
-	}: AWSS3ProviderMultipartCopierParams) {
+	constructor({ params, emitter, s3client, queueSize = DEFAULT_QUEUE_SIZE }: AWSS3ProviderMultipartCopierParams) {
 		this.params = params;
 		this.emitter = emitter;
 		this.s3client = s3client;
 		this.queueSize = queueSize;
 		const { CopySource, Key, Bucket } = this.params;
+		this._validateInput();
 		this.srcKey = CopySource.substr(CopySource.indexOf('/') + 1);
 		this.srcBucket = CopySource.substr(0, CopySource.indexOf('/'));
 		this.destKey = Key;
 		this.destBucket = Bucket;
+	}
+
+	private _validateInput() {
+		if (this.queueSize < 0) {
+			throw new Error(AWSS3ProviderMultipartCopierErrors.INVALID_QUEUESIZE);
+		}
+		if (!Object.prototype.hasOwnProperty.call(this.params, 'CopySource')) {
+			throw new Error(AWSS3ProviderMultipartCopierErrors.NO_COPYSOURCE);
+		}
 	}
 
 	/**
@@ -86,9 +95,7 @@ export class AWSS3ProviderMultipartCopier {
 	 * @throws Will throw an error if any of the requests fails, or if it's cancelled.
 	 * @return Key of the copied object.
 	 */
-	public async copy(): Promise<
-		CompleteMultipartUploadCommandOutput | CopyObjectCommandOutput
-	> {
+	public async copy(): Promise<CompleteMultipartUploadCommandOutput | CopyObjectCommandOutput> {
 		let uploadId: string = undefined;
 		try {
 			const { Size } = await this._getObjectMetadata();
@@ -103,9 +110,10 @@ export class AWSS3ProviderMultipartCopier {
 				});
 				return result;
 			} else {
-				this.totalParts = Math.ceil(
-					this.totalBytesToCopy / AWSS3ProviderMultipartCopier.partSize
-				);
+				this.totalParts = Math.ceil(this.totalBytesToCopy / AWSS3ProviderMultipartCopier.partSize);
+				if (this.totalParts > MAX_NUM_PARTS) {
+					throw new Error(AWSS3ProviderMultipartCopierErrors.MAX_NUM_PARTS_EXCEEDED);
+				}
 				uploadId = await this._initMultipartUpload();
 				const copyPartRequests = this._copyPartRequestsGenerator(uploadId);
 				for await (const results of copyPartRequests) {
@@ -145,17 +153,12 @@ export class AWSS3ProviderMultipartCopier {
 			const result = await this.s3client.send(completeUploadCommand);
 			return result;
 		} catch (err) {
-			logger.error(
-				'error happend while finishing the copy. Aborting the multipart copy',
-				err
-			);
+			logger.error('error happend while finishing the copy. Aborting the multipart copy', err);
 			throw err;
 		}
 	}
 
-	private async *_copyPartRequestsGenerator(
-		uploadId: string
-	): AsyncGenerator<UploadPartCopyCommandOutput[]> {
+	private async *_copyPartRequestsGenerator(uploadId: string): AsyncGenerator<UploadPartCopyCommandOutput[]> {
 		let partNumber = 1;
 		while (this.bytesCopied < this.totalBytesToCopy) {
 			const parts = this._makeParts(partNumber);
@@ -187,13 +190,8 @@ export class AWSS3ProviderMultipartCopier {
 		const parts: CopyPart[] = [];
 		const partsRemaining = this.totalParts - startPartNum + 1;
 		for (let i = 0; i < Math.min(this.queueSize, partsRemaining); i++) {
-			const startByte =
-				(startPartNum + i - 1) * AWSS3ProviderMultipartCopier.partSize;
-			const endByte =
-				Math.min(
-					startByte + AWSS3ProviderMultipartCopier.partSize,
-					this.totalBytesToCopy
-				) - 1;
+			const startByte = (startPartNum + i - 1) * AWSS3ProviderMultipartCopier.partSize;
+			const endByte = Math.min(startByte + AWSS3ProviderMultipartCopier.partSize, this.totalBytesToCopy) - 1;
 			parts.push({
 				partNumber: startPartNum + i,
 				startByte,
@@ -225,12 +223,8 @@ export class AWSS3ProviderMultipartCopier {
 
 	private async _initMultipartUpload(): Promise<string> {
 		const { CopySource, ...multipartUploadInput } = this.params;
-		const response = await this.s3client.send(
-			new CreateMultipartUploadCommand(multipartUploadInput)
-		);
-		logger.debug(
-			`Created multipart upload request with id ${response.UploadId}`
-		);
+		const response = await this.s3client.send(new CreateMultipartUploadCommand(multipartUploadInput));
+		logger.debug(`Created multipart upload request with id ${response.UploadId}`);
 		return response.UploadId;
 	}
 
@@ -240,13 +234,9 @@ export class AWSS3ProviderMultipartCopier {
 			MaxKeys: 1,
 			Prefix: this.srcKey,
 		});
-		const { Contents, IsTruncated, KeyCount } = await this.s3client.send(
-			listObjectCommand
-		);
+		const { Contents, IsTruncated, KeyCount } = await this.s3client.send(listObjectCommand);
 		if (KeyCount === 0) {
-			throw new Error(
-				`${AWSS3ProviderMultipartCopierErrors.NO_OBJECT_FOUND} with key: "${this.srcKey}"`
-			);
+			throw new Error(`${AWSS3ProviderMultipartCopierErrors.NO_OBJECT_FOUND} with key: "${this.srcKey}"`);
 		} else if (IsTruncated) {
 			throw new Error(
 				`${AWSS3ProviderMultipartCopierErrors.TOO_MANY_MATCH} "${this.srcKey}". Please use the exact key.`
