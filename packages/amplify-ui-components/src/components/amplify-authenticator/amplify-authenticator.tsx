@@ -9,7 +9,6 @@ import {
 import {
 	AUTH_CHANNEL,
 	NO_AUTH_MODULE_FOUND,
-	REDIRECTED_FROM_HOSTED_UI,
 	AUTHENTICATOR_AUTHSTATE,
 	UI_AUTH_CHANNEL,
 	TOAST_AUTH_ERROR_EVENT,
@@ -93,9 +92,7 @@ export class AmplifyAuthenticator {
 		Hub.listen(AUTH_CHANNEL, this.handleExternalAuthEvent);
 
 		appendToCognitoUserAgent('amplify-authenticator');
-		const byHostedUI = localStorage.getItem(REDIRECTED_FROM_HOSTED_UI);
-		localStorage.removeItem(REDIRECTED_FROM_HOSTED_UI);
-		if (byHostedUI !== 'true') await this.checkUser();
+		await this.checkUser();
 	}
 
 	private async checkUser(): Promise<void> {
