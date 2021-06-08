@@ -11,9 +11,6 @@
  * and limitations under the License.
  */
 
-import { InputLogEvent } from '@aws-sdk/client-cloudwatch-logs';
-import { LoggingProvider } from '../types';
-import { AWS_CLOUDWATCH_CATEGORY } from '../Util/Constants';
 import { Logger } from './logger-interface';
 
 const LOG_LEVELS = {
@@ -24,32 +21,21 @@ const LOG_LEVELS = {
 	ERROR: 5,
 };
 
-export enum LOG_TYPE {
-	DEBUG = 'DEBUG',
-	ERROR = 'ERROR',
-	INFO = 'INFO',
-	WARN = 'WARN',
-	VERBOSE = 'VERBOSE',
-}
-
 /**
  * Write logs
  * @class Logger
  */
 export class ConsoleLogger implements Logger {
 	name: string;
-	level: LOG_TYPE | string;
-	private _pluggables: LoggingProvider[];
-	private _config: object;
+	level: string;
 
 	/**
 	 * @constructor
 	 * @param {string} name - Name of the logger
 	 */
-	constructor(name: string, level: LOG_TYPE | string = LOG_TYPE.WARN) {
+	constructor(name, level = 'WARN') {
 		this.name = name;
 		this.level = level;
-		this._pluggables = [];
 	}
 
 	static LOG_LEVEL = null;
@@ -69,22 +55,14 @@ export class ConsoleLogger implements Logger {
 		);
 	}
 
-	configure(config?: object) {
-		if (!config) return this._config;
-
-		this._config = config;
-
-		return this._config;
-	}
-
 	/**
 	 * Write log
 	 * @method
 	 * @memeberof Logger
-	 * @param {LOG_TYPE|string} type - log type, default INFO
+	 * @param {string} type - log type, default INFO
 	 * @param {string|object} msg - Logging message or object
 	 */
-	_log(type: LOG_TYPE | string, ...msg) {
+	_log(type: string, ...msg) {
 		let logger_level_name = this.level;
 		if (ConsoleLogger.LOG_LEVEL) {
 			logger_level_name = ConsoleLogger.LOG_LEVEL;
@@ -100,37 +78,27 @@ export class ConsoleLogger implements Logger {
 		}
 
 		let log = console.log.bind(console);
-		if (type === LOG_TYPE.ERROR && console.error) {
+		if (type === 'ERROR' && console.error) {
 			log = console.error.bind(console);
 		}
-		if (type === LOG_TYPE.WARN && console.warn) {
+		if (type === 'WARN' && console.warn) {
 			log = console.warn.bind(console);
 		}
 
 		const prefix = `[${type}] ${this._ts()} ${this.name}`;
-		let message = '';
 
 		if (msg.length === 1 && typeof msg[0] === 'string') {
-			message = `${prefix} - ${msg[0]}`;
-			log(message);
+			log(`${prefix} - ${msg[0]}`);
 		} else if (msg.length === 1) {
-			message = `${prefix} ${msg[0]}`;
 			log(prefix, msg[0]);
 		} else if (typeof msg[0] === 'string') {
 			let obj = msg.slice(1);
 			if (obj.length === 1) {
 				obj = obj[0];
 			}
-			message = `${prefix} - ${msg[0]} ${obj}`;
 			log(`${prefix} - ${msg[0]}`, obj);
 		} else {
-			message = `${prefix} ${msg}`;
 			log(prefix, msg);
-		}
-
-		for (const plugin of this._pluggables) {
-			const logEvent: InputLogEvent = { message, timestamp: Date.now() };
-			plugin.pushLogs([logEvent]);
 		}
 	}
 
@@ -141,7 +109,7 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	log(...msg) {
-		this._log(LOG_TYPE.INFO, ...msg);
+		this._log('INFO', ...msg);
 	}
 
 	/**
@@ -151,7 +119,7 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	info(...msg) {
-		this._log(LOG_TYPE.INFO, ...msg);
+		this._log('INFO', ...msg);
 	}
 
 	/**
@@ -161,7 +129,7 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	warn(...msg) {
-		this._log(LOG_TYPE.WARN, ...msg);
+		this._log('WARN', ...msg);
 	}
 
 	/**
@@ -171,7 +139,7 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	error(...msg) {
-		this._log(LOG_TYPE.ERROR, ...msg);
+		this._log('ERROR', ...msg);
 	}
 
 	/**
@@ -181,7 +149,7 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	debug(...msg) {
-		this._log(LOG_TYPE.DEBUG, ...msg);
+		this._log('DEBUG', ...msg);
 	}
 
 	/**
@@ -191,17 +159,6 @@ export class ConsoleLogger implements Logger {
 	 * @param {string|object} msg - Logging message or object
 	 */
 	verbose(...msg) {
-		this._log(LOG_TYPE.VERBOSE, ...msg);
-	}
-
-	addPluggable(pluggable: LoggingProvider) {
-		if (pluggable && pluggable.getCategoryName() === AWS_CLOUDWATCH_CATEGORY) {
-			this._pluggables.push(pluggable);
-			pluggable.configure(this._config);
-		}
-	}
-
-	listPluggables() {
-		return this._pluggables;
+		this._log('VERBOSE', ...msg);
 	}
 }
