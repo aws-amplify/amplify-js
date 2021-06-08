@@ -26,8 +26,6 @@ const MAX_NUM_PARTS = 10000;
 enum AWSS3ProviderMultipartCopierErrors {
 	CLEANUP_FAILED = 'Multipart copy clean up failed',
 	NO_OBJECT_FOUND = 'Object does not exist',
-	TOO_MANY_MATCH = 'More than one object matches with this prefix',
-	OBJECT_KEY_MISMATCH = "The provided source key and the found object's key does not match",
 	INVALID_QUEUESIZE = 'Queue size must be a positive number',
 	NO_COPYSOURCE = 'You must specify a copy source',
 	MAX_NUM_PARTS_EXCEEDED = 'Only a maximum of 10000 parts are allowed',
@@ -78,7 +76,7 @@ export class AWSS3ProviderMultipartCopier {
 	}
 
 	private _validateInput() {
-		if (this.queueSize < 0) {
+		if (this.queueSize <= 0) {
 			throw new Error(AWSS3ProviderMultipartCopierErrors.INVALID_QUEUESIZE);
 		}
 		if (!Object.prototype.hasOwnProperty.call(this.params, 'CopySource')) {
@@ -112,6 +110,7 @@ export class AWSS3ProviderMultipartCopier {
 			} else {
 				this.totalParts = Math.ceil(this.totalBytesToCopy / AWSS3ProviderMultipartCopier.partSize);
 				if (this.totalParts > MAX_NUM_PARTS) {
+					// Maximum of 10000 parts' allowed as per S3's spec
 					throw new Error(AWSS3ProviderMultipartCopierErrors.MAX_NUM_PARTS_EXCEEDED);
 				}
 				uploadId = await this._initMultipartUpload();
@@ -231,22 +230,12 @@ export class AWSS3ProviderMultipartCopier {
 	private async _getObjectMetadata(): Promise<_Object> {
 		const listObjectCommand = new ListObjectsV2Command({
 			Bucket: this.srcBucket,
-			MaxKeys: 1,
 			Prefix: this.srcKey,
 		});
-		const { Contents, IsTruncated, KeyCount } = await this.s3client.send(listObjectCommand);
-		if (KeyCount === 0) {
+		const { Contents = []} = await this.s3client.send(listObjectCommand);
+		const sourceObject = Contents.find(obj => obj.Key === this.srcKey);
+		if (!sourceObject) {
 			throw new Error(`${AWSS3ProviderMultipartCopierErrors.NO_OBJECT_FOUND} with key: "${this.srcKey}"`);
-		} else if (IsTruncated) {
-			throw new Error(
-				`${AWSS3ProviderMultipartCopierErrors.TOO_MANY_MATCH} "${this.srcKey}". Please use the exact key.`
-			);
-		}
-		const sourceObject = Contents[0];
-		if (sourceObject.Key !== this.srcKey) {
-			throw new Error(
-				`${AWSS3ProviderMultipartCopierErrors.OBJECT_KEY_MISMATCH}. Found: "${sourceObject.Key}", provided: "${this.srcKey}". Please use the exact key.`
-			);
 		}
 		return sourceObject;
 	}

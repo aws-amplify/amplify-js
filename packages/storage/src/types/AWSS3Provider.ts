@@ -46,6 +46,11 @@ interface StorageCopyConfig {
 	progressCallback?: (progress: CopyProgress) => any;
 }
 
+export interface S3CopyTarget {
+	key: string;
+	level?: StorageLevel;
+}
+
 export type CopyObjectConfig = S3ClientCopyCommandInput & StorageCopyConfig;
 
 export type CopyResult = {

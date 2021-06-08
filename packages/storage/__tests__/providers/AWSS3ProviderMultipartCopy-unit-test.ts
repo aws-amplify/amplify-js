@@ -36,6 +36,26 @@ describe('constructor test', () => {
 			s3client: new S3Client(testS3ClientConfig),
 		});
 	});
+
+	test('error - queue size <= 0', () => {
+		expect(() => new AWSS3ProviderMultipartCopier({
+			params: testInput,
+			emitter: new events.EventEmitter(),
+			s3client: new S3Client(testS3ClientConfig),
+			queueSize: -1,
+		})).toThrowError('Queue size must be a positive number');
+	})
+
+	test('error - no copy source', () => {
+		expect(() => new AWSS3ProviderMultipartCopier({
+			params: {
+				Bucket: 'testBucket',
+				Key: 'destKey',
+			} as CopyObjectRequest,
+			emitter: new events.EventEmitter(),
+			s3client: new S3Client(testS3ClientConfig),
+		})).toThrowError('You must specify a copy source');
+	})
 });
 
 describe('basic copy test', () => {
@@ -88,57 +108,6 @@ describe('basic copy test', () => {
 		);
 		expect(spyon).toBeCalledTimes(1);
 	});
-
-	test('matches too many objects', async () => {
-		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
-			if (command instanceof CopyObjectCommand) {
-				return command.input.Key;
-			} else if (command instanceof ListObjectsV2Command) {
-				return {
-					Contents: [
-						{
-							Size: 100,
-							Key: 'srcKey',
-						},
-					],
-					IsTruncated: true,
-				};
-			}
-		});
-		const copier = new AWSS3ProviderMultipartCopier({
-			params: testInput,
-			emitter: new events.EventEmitter(),
-			s3client: new S3Client(testS3ClientConfig),
-		});
-		await expect(copier.copy()).rejects.toThrow(
-			'More than one object matches with this prefix "srcKey". Please use the exact key.'
-		);
-	});
-
-	test('list object return key does not match provided key', async () => {
-		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
-			if (command instanceof CopyObjectCommand) {
-				return command.input.Key;
-			} else if (command instanceof ListObjectsV2Command) {
-				return {
-					Contents: [
-						{
-							Size: 100,
-							Key: 'srcKeyHello',
-						},
-					],
-				};
-			}
-		});
-		const copier = new AWSS3ProviderMultipartCopier({
-			params: testInput,
-			emitter: new events.EventEmitter(),
-			s3client: new S3Client(testS3ClientConfig),
-		});
-		await expect(copier.copy()).rejects.toThrow(
-			'The provided source key and the found object\'s key does not match. Found: "srcKeyHello", provided: "srcKey". Please use the exact key.'
-		);
-	});
 });
 
 describe('multipart copy tests', () => {
@@ -185,7 +154,6 @@ describe('multipart copy tests', () => {
 		expect(spyon.mock.calls[0][0].input).toStrictEqual({
 			Bucket: 'srcBucket',
 			Prefix: 'srcKey',
-			MaxKeys: 1,
 		});
 		// Initialize a multipartUpload
 		expect(spyon.mock.calls[1][0].input).toStrictEqual({

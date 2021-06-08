@@ -21,3 +21,5 @@ export interface StorageOptions {
 }
 
 export type StorageLevel = 'public' | 'protected' | 'private';
+
+export type StorageCopyTarget = { key: string; [key: string]: any };
