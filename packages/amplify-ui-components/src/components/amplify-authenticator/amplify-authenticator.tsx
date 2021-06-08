@@ -44,8 +44,10 @@ const logger = new Logger('Authenticator');
 })
 export class AmplifyAuthenticator {
 	/** Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp */
-	@Prop() initialAuthState: AuthState.SignIn | AuthState.SignUp =
-		AuthState.SignIn;
+	@Prop() initialAuthState:
+		| AuthState.SignIn
+		| AuthState.SignUp
+		| AuthState.ForgotPassword = AuthState.SignIn;
 	/** Federated credentials & configuration. */
 	@Prop() federated: FederatedConfig;
 	/** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
