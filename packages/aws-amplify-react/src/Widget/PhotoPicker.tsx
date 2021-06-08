@@ -34,7 +34,7 @@ export interface IPhotoPickerProps {
 	headerText?: string;
 	onLoad?: (dataUrl: any) => void;
 	onPick?: (data: any) => void;
-	preview?: 'hidden';
+	preview?: boolean | 'hidden';
 	previewSrc?: string;
 	title?: string;
 	theme?: any;
@@ -67,7 +67,7 @@ export class PhotoPicker extends React.Component<
 			onPick(data);
 		}
 
-		if (preview) {
+		if (preview && preview !== 'hidden') {
 			const reader = new FileReader();
 			reader.onload = function(e) {
 				const url = e.target.result;
@@ -93,7 +93,7 @@ export class PhotoPicker extends React.Component<
 		const theme = this.props.theme || AmplifyTheme;
 		const previewStyle = Object.assign({}, PickerPreview, theme.pickerPreview);
 
-		const previewHidden = !(preview && preview !== 'hidden');
+		const previewHidden = !preview || preview === 'hidden';
 
 		return (
 			<FormSection theme={theme}>
