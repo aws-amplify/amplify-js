@@ -36,7 +36,7 @@ export class AmplifySelectMFAType {
 	@State() isSMS: boolean = false;
 	@State() loading: boolean = false;
 
-	@State() showToast: boolean = false;
+	@State() isToastVisible: boolean = false;
 
 	private handleRadioButtonChange(event) {
 		this.TOTPSetup = false;
@@ -46,7 +46,7 @@ export class AmplifySelectMFAType {
 		this.isNoMFA = false;
 		this.isTOTP = false;
 		this.isSMS = false;
-		this.showToast = false;
+		this.isToastVisible = false;
 
 		const { value, type, checked } = event.target;
 		const checkType = ['radio', 'checkbox'].includes(type);
@@ -115,7 +115,7 @@ export class AmplifySelectMFAType {
 			}
 		} finally {
 			this.loading = false;
-			this.showToast = true;
+			this.isToastVisible = true;
 		}
 	}
 
@@ -170,20 +170,29 @@ export class AmplifySelectMFAType {
 			</amplify-form-section>
 		);
 	}
+
+	private renderToast() {
+		if (this.isToastVisible && this.selectMessage) {
+			return (
+				<amplify-toast
+					message={this.selectMessage}
+					handleClose={() => {
+						this.selectMessage = null;
+						this.isToastVisible = false;
+					}}
+				/>
+			);
+		}
+
+		return null;
+	}
+
 	render() {
 		return (
 			<div>
 				{this.contentBuilder()}
 				{this.TOTPSetup ? <amplify-totp-setup user={this.authData} /> : null}
-				{this.showToast && this.selectMessage ? (
-					<amplify-toast
-						message={this.selectMessage}
-						handleClose={() => {
-							this.selectMessage = '';
-							this.showToast = false;
-						}}
-					/>
-				) : null}
+				{this.renderToast()}
 			</div>
 		);
 	}

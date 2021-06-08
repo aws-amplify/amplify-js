@@ -18,36 +18,36 @@ describe('amplify-select-mfa-type spec:', () => {
 			expect(selectMFAType.MFATypes).toBeUndefined();
 		});
 
-		it('should set the showToast property to true when the Verify function is run', async () => {
+		it('should set the isToastVisible property to true when the Verify function is run', async () => {
 			selectMFAType.MFATypes = {
 				SMS: true,
 				Optional: true,
 				TOTP: true,
 			};
 
-			expect(selectMFAType.showToast).toBe(false);
+			expect(selectMFAType.isToastVisible).toBe(false);
 
 			await selectMFAType.verify({
 				preventDefault: jest.fn(),
 			});
 
-			expect(selectMFAType.showToast).toBe(true);
+			expect(selectMFAType.isToastVisible).toBe(true);
 		});
 
-		it('should reset showToast to false when a new radio button is selected', async () => {
+		it('should reset isToastVisible to false when a new radio button is selected', async () => {
 			selectMFAType.MFATypes = {
 				SMS: true,
 				Optional: true,
 				TOTP: true,
 			};
 
-			expect(selectMFAType.showToast).toBe(false);
+			expect(selectMFAType.isToastVisible).toBe(false);
 
 			await selectMFAType.verify({
 				preventDefault: jest.fn(),
 			});
 
-			expect(selectMFAType.showToast).toBe(true);
+			expect(selectMFAType.isToastVisible).toBe(true);
 
 			selectMFAType.handleRadioButtonChange({
 				target: {
@@ -57,7 +57,7 @@ describe('amplify-select-mfa-type spec:', () => {
 				},
 			});
 
-			expect(selectMFAType.showToast).toBe(false);
+			expect(selectMFAType.isToastVisible).toBe(false);
 		});
 	});
 	describe('Render logic ->', () => {
