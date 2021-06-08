@@ -296,11 +296,16 @@ declare module 'amazon-cognito-identity-js' {
 		codeDeliveryDetails: CodeDeliveryDetails;
 	}
 
+	export interface ICognitoAnalyticsMetadata {
+		analyticsEndpointId: string;
+	}
+
 	export interface ICognitoUserPoolData {
 		UserPoolId: string;
 		ClientId: string;
 		endpoint?: string;
 		Storage?: ICognitoStorage;
+		AnalyticsMetadata?: ICognitoAnalyticsMetadata;
 		AdvancedSecurityDataCollectionFlag?: boolean;
 	}
 
