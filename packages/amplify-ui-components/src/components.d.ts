@@ -59,7 +59,9 @@ export namespace Components {
         /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
-        "initialAuthState": AuthState.SignIn | AuthState.SignUp;
+        "initialAuthState": | AuthState.SignIn
+		| AuthState.SignUp
+		| AuthState.ForgotPassword;
         /**
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */
@@ -1573,7 +1575,9 @@ declare namespace LocalJSX {
         /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
-        "initialAuthState"?: AuthState.SignIn | AuthState.SignUp;
+        "initialAuthState"?: | AuthState.SignIn
+		| AuthState.SignUp
+		| AuthState.ForgotPassword;
         /**
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */
