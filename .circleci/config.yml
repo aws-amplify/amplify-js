@@ -83,6 +83,13 @@ commands:
           key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
       - publish_to_verdaccio
 
+  prepare_no_ui_test_env:
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
+
   integ_test_js:
     parameters:
       test_name:
@@ -847,7 +854,7 @@ jobs:
     working_directory: ~/amplify-js-samples-staging/
     executor: js-test-executor
     steps:
-      - prepare_test_env
+      - prepare_no_ui_test_env
       - integ_test_cypress_no_ui:
           test_name: 'Token revocation'
           category: 'auth'
