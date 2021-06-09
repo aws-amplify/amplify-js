@@ -229,7 +229,7 @@ commands:
           command: |
             brew tap wix/brew >/dev/null
             brew tap homebrew/cask >/dev/null
-            brew cask install android-sdk >/dev/null
+            brew install android-sdk >/dev/null
             yarn global add detox-cli
             touch .watchmanconfig
             node -v
