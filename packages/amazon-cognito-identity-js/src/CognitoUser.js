@@ -1996,7 +1996,7 @@ export default class CognitoUser {
 			return revokeTokenCallback(error);
 		}
 
-		if (!this.signInUserSession || !this.signInUserSession.getAccessToken()) {
+		if (!this.signInUserSession.getAccessToken()) {
 			const error = new Error('No Access token available');
 
 			return revokeTokenCallback(error);
@@ -2007,21 +2007,10 @@ export default class CognitoUser {
 
 		if (this.isSessionRevocable(accessToken)) {
 			if (refreshToken) {
-				tokensToBeRevoked.push(refreshToken);
+				return this.revokeToken({ token: refreshToken, callback: revokeTokenCallback });
 			}
-
-			const tokenRevocationPromises = tokensToBeRevoked.map(token => new Promise((res, rej) => {
-				this.revokeToken({ token, successCallback: res, rejectCallback: rej })
-			}));
-
-			Promise.all(tokenRevocationPromises).then(() => {
-				revokeTokenCallback();
-			}).catch(err => {
-				revokeTokenCallback(err);
-			});
-		} else {
-			revokeTokenCallback();
 		}
+		revokeTokenCallback();
 	}
 
 	isSessionRevocable(token) {
@@ -2042,7 +2031,7 @@ export default class CognitoUser {
 		this.clearCachedUser();
 	}
 
-	revokeToken({ token, successCallback, rejectCallback }) {
+	revokeToken({ token, callback }) {
 		this.client.requestWithRetry(
 			'RevokeToken',
 			{
@@ -2052,10 +2041,10 @@ export default class CognitoUser {
 			err => {
 
 				if (err) {
-					return rejectCallback(err);
+					return callback(err);
 				}
 
-				successCallback();
+				callback();
 			}
 		)
 	}
