@@ -1391,9 +1391,8 @@ export default class CognitoUser {
 			return callback(null, this.signInUserSession);
 		}
 
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
-			this.username
-		}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
+			}`;
 		const idTokenKey = `${keyPrefix}.idToken`;
 		const accessTokenKey = `${keyPrefix}.accessToken`;
 		const refreshTokenKey = `${keyPrefix}.refreshToken`;
@@ -1556,9 +1555,8 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	cacheDeviceKeyAndPassword() {
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
-			this.username
-		}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1573,9 +1571,8 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	getCachedDeviceKeyAndPassword() {
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
-			this.username
-		}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1592,9 +1589,8 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	clearCachedDeviceKeyAndPassword() {
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
-			this.username
-		}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -2000,21 +1996,18 @@ export default class CognitoUser {
 			return revokeTokenCallback(error);
 		}
 
-		if (!this.signInUserSession || !this.signInUserSession.getIdToken()) {
-			const error = new Error('No ID token available');
+		if (!this.signInUserSession || !this.signInUserSession.getAccessToken()) {
+			const error = new Error('No Access token available');
 
 			return revokeTokenCallback(error);
 		}
 
 		const refreshToken = this.signInUserSession.getRefreshToken().getToken();
-		const idToken = this.signInUserSession.getIdToken();
+		const accessToken = this.signInUserSession.getAccessToken();
 
-		if (this.isSessionRevocable(idToken)) {
-			if (refreshToken) { // Assuming Cognito service will revoke access/id token automatically
+		if (this.isSessionRevocable(accessToken)) {
+			if (refreshToken) {
 				tokensToBeRevoked.push(refreshToken);
-			} else {
-				tokensToBeRevoked.push(this.signInUserSession.getAccessToken().getJwtToken());
-				tokensToBeRevoked.push(idToken.getJwtToken());
 			}
 
 			const tokenRevocationPromises = tokensToBeRevoked.map(token => new Promise((res, rej) => {
@@ -2031,13 +2024,13 @@ export default class CognitoUser {
 		}
 	}
 
-	isSessionRevocable(idToken) {
-		if (idToken && typeof idToken.decodePayload === 'function') {
+	isSessionRevocable(token) {
+		if (token && typeof token.decodePayload === 'function') {
 			try {
-				const { jti } = idToken.decodePayload();
-				return !!jti;
+				const { origin_jti } = token.decodePayload();
+				return !!origin_jti;
 			} catch (err) {
-				// Nothing to do, idToken doesnt have jti claim
+				// Nothing to do, token doesnt have origin_jti claim
 			}
 		}
 
