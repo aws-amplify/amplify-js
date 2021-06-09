@@ -141,6 +141,34 @@ commands:
             cd ~/amplify-js-samples-staging
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test node << parameters.category >> << parameters.sample_name >> dev' -n 3
 
+  integ_test_cypress_no_ui:
+    parameters:
+      test_name:
+        type: string
+      category:
+        type: string
+      spec:
+        type: string
+    steps:
+      - run:
+          name: 'Cd into build for and run link'
+          command: |
+            cd ~/amplify-js/
+            yarn link-all
+      - run:
+          name: 'Link packages into samples staging root'
+          command: |
+            yarn link amazon-cognito-identity-js @aws-amplify/core @aws-amplify/cache @aws-amplify/auth
+      - run:
+          name: 'Run cypress test << parameters.spec >>'
+          command: |
+            cd ~/amplify-js-samples-staging
+            yarn cypress run --headless --spec ./cypress/integration/auth/<< parameters.spec >>.spec.js
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/videos
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/screenshots
+
   install_verdaccio:
     steps:
       - run:
@@ -815,7 +843,15 @@ jobs:
           sample_name: duplicate-packages
           spec: duplicate-packages
           browser: << parameters.browser >>
-
+  integ_auth_test_cypress_no_ui:
+    working_directory: ~/amplify-js-samples-staging/
+    executor: js-test-executor
+    steps:
+      - prepare_test_env
+      - integ_test_cypress_no_ui:
+          test_name: 'Token revocation'
+          category: 'auth'
+          spec: 'token-revocation'
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -861,6 +897,7 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/main
       - 1.0-stable
+      - feat/token-revocation
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -902,6 +939,12 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_auth_test_cypress_no_ui:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_angular_auth:
           requires:
             - integ_setup
@@ -965,25 +1008,7 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      - integ_react_datastore_multi_auth_one_rule:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_multi_auth_two_rules:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
-      - integ_react_datastore_multi_auth_three_plus_rules:
+      - integ_react_datastore_multi_auth:
           requires:
             - integ_setup
             - build
@@ -1097,15 +1122,15 @@ workflows:
           matrix:
             parameters:
               <<: *datastore_auth_scenarios
-      - integ_duplicate_packages:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
+      # - integ_duplicate_packages:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      #     matrix:
+      #       parameters:
+      #         <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1113,9 +1138,7 @@ workflows:
             - unit_test
             - integ_react_predictions
             - integ_react_datastore
-            - integ_react_datastore_multi_auth_one_rule
-            - integ_react_datastore_multi_auth_two_rules
-            - integ_react_datastore_multi_auth_three_plus_rules
+            - integ_react_datastore_multi_auth
             - integ_react_datastore_subs_disabled
             - integ_react_datastore_consecutive_saves
             - integ_react_storage
@@ -1143,4 +1166,4 @@ workflows:
               only:
                 - release
           requires:
-            - deploy
+      - deploy
