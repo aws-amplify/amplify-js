@@ -904,7 +904,6 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/main
       - 1.0-stable
-      - feat/token-revocation # TODO: Remove this after merges into main
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
