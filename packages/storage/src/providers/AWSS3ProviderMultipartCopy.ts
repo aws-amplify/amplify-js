@@ -96,6 +96,8 @@ export class AWSS3ProviderMultipartCopier {
 			if (this.totalBytesToCopy <= AWSS3ProviderMultipartCopier.minPartSize) {
 				const copyObjectCommand = new CopyObjectCommand(this.params);
 				const result = await this.s3client.send(copyObjectCommand);
+				// Since the S3 Javascript SDK doesn't expose the progress event, we can only send an event once the copy is
+				// complete
 				this.emitter.emit(COPY_PROGRESS, {
 					loaded: this.totalBytesToCopy,
 					total: this.totalBytesToCopy,
