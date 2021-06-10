@@ -114,7 +114,7 @@ export class AWSS3Provider implements StorageProvider {
 	}
 
 	/**
-	 * Copy and object from a one object to a new object within the same bucket.
+	 * Copy an object from a source object to a new object within the same bucket.
 	 *
 	 * @async
 	 * @param {string} src - Key of the source object.
