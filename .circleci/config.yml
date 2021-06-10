@@ -158,7 +158,7 @@ commands:
         type: string
     steps:
       - run:
-          name: 'Cd into build for and run link'
+          name: 'Change directory into build and run link'
           command: |
             cd ~/amplify-js/
             yarn link-all
