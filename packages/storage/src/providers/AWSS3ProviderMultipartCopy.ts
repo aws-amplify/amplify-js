@@ -4,7 +4,6 @@ import {
 	CopyObjectCommandInput,
 	CopyObjectCommand,
 	CreateMultipartUploadCommand,
-	UploadPartCopyCommandOutput,
 	CompleteMultipartUploadCommandInput,
 	CompletedPart,
 	CompleteMultipartUploadCommand,
@@ -109,18 +108,8 @@ export class AWSS3ProviderMultipartCopier {
 					throw new Error(AWSS3ProviderMultipartCopierErrors.MAX_NUM_PARTS_EXCEEDED);
 				}
 				uploadId = await this._initMultipartUpload();
-				const copyPartRequests = this._copyPartRequestsGenerator(uploadId);
-				for await (const results of copyPartRequests) {
-					results.forEach((result: UploadPartCopyCommandOutput) => {
-						this.completedParts.push({
-							PartNumber: this.completedParts.length + 1,
-							ETag: result.CopyPartResult.ETag,
-						});
-					});
-					this.emitter.emit(COPY_PROGRESS, {
-						loaded: this.bytesCopied,
-						total: this.totalBytesToCopy,
-					});
+				for (let partNumber = 1; partNumber < this.totalParts; partNumber += this.queueSize) {
+					await Promise.all(this._makeParts(partNumber).map(part => this._uploadPart(part, uploadId)));
 				}
 				return await this._completeMultipartCopy(uploadId);
 			}
@@ -152,32 +141,27 @@ export class AWSS3ProviderMultipartCopier {
 		}
 	}
 
-	private async *_copyPartRequestsGenerator(uploadId: string): AsyncGenerator<UploadPartCopyCommandOutput[]> {
-		let partNumber = 1;
-		while (this.bytesCopied < this.totalBytesToCopy) {
-			const parts = this._makeParts(partNumber);
-			yield Promise.all(
-				parts.map(async part => {
-					const output = await this.s3client.send(
-						new UploadPartCopyCommand({
-							Bucket: this.destBucket,
-							Key: this.destKey,
-							CopySource: this.params.CopySource,
-							CopySourceRange: `bytes=${part.startByte}-${part.endByte}`,
-							PartNumber: part.partNumber,
-							UploadId: uploadId,
-						})
-					);
-					partNumber++;
-					this.bytesCopied += part.endByte - part.startByte + 1;
-					this.emitter.emit(COPY_PROGRESS, {
-						loaded: this.bytesCopied,
-						total: this.totalBytesToCopy,
-					});
-					return output;
-				})
-			);
-		}
+	private async _uploadPart(part: CopyPart, uploadId: string) {
+		const uploadPartCopyOutput = await this.s3client.send(
+			new UploadPartCopyCommand({
+				Bucket: this.destBucket,
+				Key: this.destKey,
+				CopySource: this.params.CopySource,
+				CopySourceRange: `bytes=${part.startByte}-${part.endByte}`,
+				PartNumber: part.partNumber,
+				UploadId: uploadId,
+			})
+		);
+		this.bytesCopied += part.endByte - part.startByte + 1;
+		this.emitter.emit(COPY_PROGRESS, {
+			loaded: this.bytesCopied,
+			total: this.totalBytesToCopy,
+		});
+		this.completedParts.push({
+			PartNumber: this.completedParts.length + 1,
+			ETag: uploadPartCopyOutput.CopyPartResult.ETag,
+		});
+		return uploadPartCopyOutput;
 	}
 
 	private _makeParts(startPartNum: number): CopyPart[] {
@@ -227,7 +211,7 @@ export class AWSS3ProviderMultipartCopier {
 			Bucket: this.srcBucket,
 			Prefix: this.srcKey,
 		});
-		const { Contents = []} = await this.s3client.send(listObjectCommand);
+		const { Contents = [] } = await this.s3client.send(listObjectCommand);
 		const sourceObject = Contents.find(obj => obj.Key === this.srcKey);
 		if (!sourceObject) {
 			throw new Error(`${AWSS3ProviderMultipartCopierErrors.NO_OBJECT_FOUND} with key: "${this.srcKey}"`);
