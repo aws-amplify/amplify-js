@@ -904,7 +904,7 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/main
       - 1.0-stable
-      - feat/token-revocation
+      - feat/token-revocation # TODO: Remove this after merges into main
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -1015,7 +1015,25 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      - integ_react_datastore_multi_auth:
+      - integ_react_datastore_multi_auth_one_rule:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_two_rules:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_three_plus_rules:
           requires:
             - integ_setup
             - build
@@ -1129,15 +1147,15 @@ workflows:
           matrix:
             parameters:
               <<: *datastore_auth_scenarios
-      # - integ_duplicate_packages:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
+      - integ_duplicate_packages:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1145,7 +1163,9 @@ workflows:
             - unit_test
             - integ_react_predictions
             - integ_react_datastore
-            - integ_react_datastore_multi_auth
+            - integ_react_datastore_multi_auth_one_rule
+            - integ_react_datastore_multi_auth_two_rules
+            - integ_react_datastore_multi_auth_three_plus_rules
             - integ_react_datastore_subs_disabled
             - integ_react_datastore_consecutive_saves
             - integ_react_storage
@@ -1173,4 +1193,4 @@ workflows:
               only:
                 - release
           requires:
-      - deploy
+            - deploy
