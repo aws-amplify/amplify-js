@@ -862,7 +862,12 @@ describe('StorageProvider test', () => {
 			const spyon = jest.spyOn(AWSS3ProviderMultipartCopier.prototype, 'copy');
 
 			expect(await storage.copy({ key: 'src' }, { key: 'dest' })).toEqual({ key: 'dest' });
-
+			expect(AWSS3ProviderMultipartCopier.mock.calls[0][0].params).toStrictEqual({
+				Bucket: 'bucket',
+				// Should default to public if no level is specified
+				CopySource: 'bucket/public/src',
+				Key: 'public/dest',
+			});
 			expect(spyon).toBeCalledTimes(1);
 		});
 
@@ -878,9 +883,13 @@ describe('StorageProvider test', () => {
 			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
 			const storage = new StorageProvider();
 			storage.configure(options);
-			await storage.copy({ key: 'src' }, { key: 'dest' }, {
-				progressCallback: mockCallback,
-			});
+			await storage.copy(
+				{ key: 'src' },
+				{ key: 'dest' },
+				{
+					progressCallback: mockCallback,
+				}
+			);
 			expect(mockEventEmitter.on).toBeCalledWith('sendCopyProgress', expect.any(Function));
 			const emitterOnFn = mockEventEmitter.on.mock.calls[0][1];
 			// Manually invoke for testing
@@ -900,9 +909,13 @@ describe('StorageProvider test', () => {
 			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
 			const storage = new StorageProvider();
 			storage.configure(options);
-			await storage.copy({ key: 'src' }, { key: 'dest' }, {
-				progressCallback: 'hello' as any,
-			});
+			await storage.copy(
+				{ key: 'src' },
+				{ key: 'dest' },
+				{
+					progressCallback: 'hello' as any,
+				}
+			);
 			expect(loggerSpy).toHaveBeenCalledWith('WARN', 'progressCallback should be a function, not a string');
 		});
 
@@ -933,6 +946,21 @@ describe('StorageProvider test', () => {
 				'Storage',
 				Symbol.for('amplify_default')
 			);
+		});
+
+		test('copy object with level and identityId specified', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+			const storage = new StorageProvider();
+			storage.configure(options);
+			await storage.copy({ key: 'src', level: 'protected', identityId: 'identityId2' }, { key: 'dest', level: 'private' });
+
+			expect(AWSS3ProviderMultipartCopier.mock.calls[0][0].params).toStrictEqual({
+				Bucket: 'bucket',
+				CopySource: 'bucket/protected/identityId2/src',
+				Key: 'private/identityId/dest',
+			});
 		});
 
 		test('copy with custom s3 configs', async () => {

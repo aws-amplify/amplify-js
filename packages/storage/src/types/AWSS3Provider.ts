@@ -49,7 +49,12 @@ interface StorageCopyConfig {
 export interface S3CopyTarget {
 	key: string;
 	level?: StorageLevel;
+	identityId?: string;
 }
+
+export type S3CopySource = S3CopyTarget;
+
+export type S3CopyDestination = Omit<S3CopyTarget, 'identityId'>;
 
 export type CopyObjectConfig = S3ClientCopyCommandInput & StorageCopyConfig;
 

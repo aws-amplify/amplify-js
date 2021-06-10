@@ -21,7 +21,14 @@ import {
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
-import { StorageOptions, StorageProvider, CopyObjectConfig, CopyResult, S3CopyTarget } from '../types';
+import {
+	StorageOptions,
+	StorageProvider,
+	CopyObjectConfig,
+	CopyResult,
+	S3CopySource,
+	S3CopyDestination,
+} from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
@@ -34,6 +41,7 @@ const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' && typeof Symbol.for === '
 	? Symbol.for('amplify_default')
 	: '@@amplify_default') as Symbol;
 const SET_CONTENT_LENGTH_HEADER = 'contentLengthMiddleware';
+const DEFAULT_STORAGE_LEVEL = 'public';
 
 const dispatchStorageEvent = (track: boolean, event: string, attrs: any, metrics: any, message: string) => {
 	if (track) {
@@ -114,7 +122,7 @@ export class AWSS3Provider implements StorageProvider {
 	 * @param {CopyObjectConfig} [config] - Optional configuration for s3 commands.
 	 * @return The copied object's key.
 	 */
-	public async copy(src: S3CopyTarget, dest: S3CopyTarget, config?: CopyObjectConfig): Promise<CopyResult> {
+	public async copy(src: S3CopySource, dest: S3CopyDestination, config?: CopyObjectConfig): Promise<CopyResult> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
 			return Promise.reject(new Error(StorageErrorStrings.NO_CREDENTIALS));
@@ -132,8 +140,10 @@ export class AWSS3Provider implements StorageProvider {
 			track,
 			progressCallback,
 		} = opt;
-		const srcPrefix = this._prefix({ ...opt, level: src.level || 'public' });
-		const destPrefix = this._prefix({ ...opt, level: dest.level || 'public' });
+		const { level: srcLevel = DEFAULT_STORAGE_LEVEL, identityId: srcIdentityId } = src;
+		const { level: destLevel = DEFAULT_STORAGE_LEVEL } = dest;
+		const srcPrefix = this._prefix({ ...opt, level: srcLevel, ...(srcIdentityId && { identityId: srcIdentityId }) });
+		const destPrefix = this._prefix({ ...opt, level: destLevel });
 		const finalSrcKey = `${bucket}/${srcPrefix}${src.key}`;
 		const finalDestKey = `${destPrefix}${dest.key}`;
 		logger.debug(`copying ${finalSrcKey} to ${finalDestKey}`);

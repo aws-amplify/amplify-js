@@ -86,7 +86,7 @@ describe('basic copy test', () => {
 		expect(spyon).toBeCalledTimes(2);
 	});
 
-	test('no content found', async () => {
+	test('Should throw error if no content is found', async () => {
 		const spyon = jest
 			.spyOn(S3Client.prototype, 'send')
 			.mockImplementation(async command => {
@@ -108,6 +108,31 @@ describe('basic copy test', () => {
 		);
 		expect(spyon).toBeCalledTimes(1);
 	});
+
+	test('Should throw error if maximum number of parts is exceeded', async () => {
+		const spyon = jest
+			.spyOn(S3Client.prototype, 'send')
+			.mockImplementation(async command => {
+				if (command instanceof CopyObjectCommand) {
+					return command.input.Key;
+				} else if (command instanceof ListObjectsV2Command) {
+					return {
+						KeyCount: 0,
+						Contents: [{
+							Key: 'srcKey',
+							Size: 999999999999,
+						}]
+					}
+				}
+			});
+		const copier = new AWSS3ProviderMultipartCopier({
+			params: testInput,
+			emitter: new events.EventEmitter(),
+			s3client: new S3Client(testS3ClientConfig),
+		});
+		await expect(copier.copy()).rejects.toThrowError('Only a maximum of 10000 parts are allowed');
+		expect(spyon).toBeCalledTimes(1);
+	})
 });
 
 describe('multipart copy tests', () => {
@@ -217,7 +242,7 @@ describe('multipart copy tests', () => {
 		});
 	});
 
-	test('Multipart upload fails in-flight', async () => {
+	test('Should throw error if upload failed in-flight', async () => {
 		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
 			if (command instanceof ListObjectsV2Command) {
 				return {
@@ -261,7 +286,7 @@ describe('multipart copy tests', () => {
 		await expect(copier.copy()).rejects.toThrow('err');
 	});
 
-	test('Cleanup failed', async () => {
+	test('Should throw error if cleanup failed', async () => {
 		S3Client.prototype.send = jest.fn(async command => {
 			if (command instanceof ListObjectsV2Command) {
 				return {
@@ -299,7 +324,7 @@ describe('multipart copy tests', () => {
 		);
 	});
 
-	test('Cannot finalize multipart copy request', async () => {
+	test('Should throw error if multipartUpload cannot be finalized', async () => {
 		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
 			if (command instanceof ListObjectsV2Command) {
 				return {

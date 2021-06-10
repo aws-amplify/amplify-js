@@ -17,27 +17,22 @@ import {
 	_Object,
 	CompleteMultipartUploadCommandOutput,
 } from '@aws-sdk/client-s3';
+import { AWSS3ProviderMultipartCopierErrors } from '../common/StorageErrorStrings';
 import * as events from 'events';
 
 const logger = new Logger('AWSS3ProviderMultipartCopier');
 const DEFAULT_QUEUE_SIZE = 20;
 const MAX_NUM_PARTS = 10000;
 
-enum AWSS3ProviderMultipartCopierErrors {
-	CLEANUP_FAILED = 'Multipart copy clean up failed',
-	NO_OBJECT_FOUND = 'Object does not exist',
-	INVALID_QUEUESIZE = 'Queue size must be a positive number',
-	NO_COPYSOURCE = 'You must specify a copy source',
-	MAX_NUM_PARTS_EXCEEDED = 'Only a maximum of 10000 parts are allowed',
-}
+type ListObjectContent = _Object;
+
+export const COPY_PROGRESS = 'sendCopyProgress';
 
 export interface CopyPart {
 	partNumber: number;
 	startByte: number;
 	endByte: number;
 }
-
-export const COPY_PROGRESS = 'sendCopyProgress';
 
 export interface AWSS3ProviderMultipartCopierParams {
 	params: CopyObjectCommandInput;
@@ -98,7 +93,7 @@ export class AWSS3ProviderMultipartCopier {
 		try {
 			const { Size } = await this._getObjectMetadata();
 			this.totalBytesToCopy = Size;
-			// Fallback to basic CopyObject if the file is smaller than 5MB.
+			// Fallback to basic CopyObject if the file is smaller than the minimum required 5MB.
 			if (this.totalBytesToCopy <= AWSS3ProviderMultipartCopier.minPartSize) {
 				const copyObjectCommand = new CopyObjectCommand(this.params);
 				const result = await this.s3client.send(copyObjectCommand);
@@ -227,7 +222,7 @@ export class AWSS3ProviderMultipartCopier {
 		return response.UploadId;
 	}
 
-	private async _getObjectMetadata(): Promise<_Object> {
+	private async _getObjectMetadata(): Promise<ListObjectContent> {
 		const listObjectCommand = new ListObjectsV2Command({
 			Bucket: this.srcBucket,
 			Prefix: this.srcKey,
