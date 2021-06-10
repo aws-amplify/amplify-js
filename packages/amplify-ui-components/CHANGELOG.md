@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.3.2...@aws-amplify/ui-components@1.4.0) (2021-06-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** handle custom formFields in amplify-confirm-sign-in fields ([#8255](https://github.com/aws-amplify/amplify-js/issues/8255)) ([07e91fb](https://github.com/aws-amplify/amplify-js/commit/07e91fb3900ccc27e2cc750db000447df11a98cd))
+* **@aws-amplify/ui-components:** Place `formField` comment right above the variable ([#8348](https://github.com/aws-amplify/amplify-js/issues/8348)) ([56deb45](https://github.com/aws-amplify/amplify-js/commit/56deb453a2b31ac8c7f53741507dca7df8ef7fa8))
+* **@aws-amplify/ui-components:** remove hostedui check ([#8357](https://github.com/aws-amplify/amplify-js/issues/8357)) ([94f25ec](https://github.com/aws-amplify/amplify-js/commit/94f25ec91af020dd72e17e9a9e52a1822923e93a))
+
+
+### Features
+
+* adding toast notification when selecting an MFA type ([#8394](https://github.com/aws-amplify/amplify-js/issues/8394)) ([4d39773](https://github.com/aws-amplify/amplify-js/commit/4d39773b0c174538d0d7c1b770bc276700bcf953))
+
+
+
+
+
 ## [1.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.3.1...@aws-amplify/ui-components@1.3.2) (2021-05-26)
 
 **Note:** Version bump only for package @aws-amplify/ui-components
