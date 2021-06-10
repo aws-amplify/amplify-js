@@ -142,6 +142,9 @@ export class AWSS3Provider implements StorageProvider {
 		} = opt;
 		const { level: srcLevel = DEFAULT_STORAGE_LEVEL, identityId: srcIdentityId } = src;
 		const { level: destLevel = DEFAULT_STORAGE_LEVEL } = dest;
+		if (srcLevel !== 'protected' && srcIdentityId) {
+			logger.warn(`IdentityId only works if level is protected, but level is set to ${srcLevel}`);
+		}
 		const srcPrefix = this._prefix({ ...opt, level: srcLevel, ...(srcIdentityId && { identityId: srcIdentityId }) });
 		const destPrefix = this._prefix({ ...opt, level: destLevel });
 		const finalSrcKey = `${bucket}/${srcPrefix}${src.key}`;
