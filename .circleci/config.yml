@@ -229,7 +229,7 @@ commands:
           command: |
             brew tap wix/brew >/dev/null
             brew tap homebrew/cask >/dev/null
-            brew cask install android-sdk >/dev/null
+            brew install android-sdk >/dev/null
             yarn global add detox-cli
             touch .watchmanconfig
             node -v
@@ -569,7 +569,7 @@ jobs:
           spec: many-to-many
           browser: << parameters.browser >>
 
-  integ_react_datastore_multi_auth:
+  integ_react_datastore_multi_auth_one_rule:
     parameters:
       browser:
         type: string
@@ -579,11 +579,45 @@ jobs:
     steps:
       - prepare_test_env
       - integ_test_js:
-          test_name: 'React DataStore Multi-Auth'
+          test_name: 'React DataStore Multi-Auth - One Rule'
           framework: react
           category: datastore
           sample_name: multi-auth
-          spec: multi-auth
+          spec: multi-auth-one-rule
+          browser: << parameters.browser >>
+
+  integ_react_datastore_multi_auth_two_rules:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/multi-auth
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - Two Rules'
+          framework: react
+          category: datastore
+          sample_name: multi-auth
+          spec: multi-auth-two-rules
+          browser: << parameters.browser >>
+
+  integ_react_datastore_multi_auth_three_plus_rules:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/multi-auth
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - Three Plus Rules'
+          framework: react
+          category: datastore
+          sample_name: multi-auth
+          spec: multi-auth-three-plus-rules
           browser: << parameters.browser >>
 
   integ_react_datastore_subs_disabled:
@@ -931,7 +965,25 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      - integ_react_datastore_multi_auth:
+      - integ_react_datastore_multi_auth_one_rule:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_two_rules:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_three_plus_rules:
           requires:
             - integ_setup
             - build
@@ -1061,7 +1113,9 @@ workflows:
             - unit_test
             - integ_react_predictions
             - integ_react_datastore
-            - integ_react_datastore_multi_auth
+            - integ_react_datastore_multi_auth_one_rule
+            - integ_react_datastore_multi_auth_two_rules
+            - integ_react_datastore_multi_auth_three_plus_rules
             - integ_react_datastore_subs_disabled
             - integ_react_datastore_consecutive_saves
             - integ_react_storage
