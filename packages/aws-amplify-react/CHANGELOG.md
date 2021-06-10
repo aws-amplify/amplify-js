@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@5.0.1...aws-amplify-react@5.0.2) (2021-06-10)
+
+
+### Bug Fixes
+
+* **aws-amplify-react:** "preview" prop of <PhotoPicker> accept boolean value on TypeScript([#7908](https://github.com/aws-amplify/amplify-js/issues/7908)) ([#8017](https://github.com/aws-amplify/amplify-js/issues/8017)) ([90b6d7c](https://github.com/aws-amplify/amplify-js/commit/90b6d7cdc0938985d41ec6dbe751f23388afbfef))
+
+
+
+
+
 ## [5.0.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.34...aws-amplify-react@5.0.1) (2021-05-26)
 
 **Note:** Version bump only for package aws-amplify-react

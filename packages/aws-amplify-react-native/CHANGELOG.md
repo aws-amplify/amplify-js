@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@5.0.1...aws-amplify-react-native@5.0.2) (2021-06-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/aws-amplify-react-native:** disable sign in button while awaiting sign in request ([#7763](https://github.com/aws-amplify/amplify-js/issues/7763)) ([b1562a2](https://github.com/aws-amplify/amplify-js/commit/b1562a2264b827c3a598f315eafab7582463e9db))
+
+
+
+
+
 ## [5.0.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@5.0.0...aws-amplify-react-native@5.0.1) (2021-05-26)
 
 **Note:** Version bump only for package aws-amplify-react-native
