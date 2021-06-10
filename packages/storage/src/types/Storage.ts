@@ -16,10 +16,8 @@
 export interface StorageOptions {
 	bucket?: string;
 	region?: string;
-	level?: StorageLevel;
+	level?: string;
 	credentials?: object;
 }
-
-export type StorageLevel = 'public' | 'protected' | 'private';
 
 export type StorageCopyTarget = { key: string; [key: string]: any };

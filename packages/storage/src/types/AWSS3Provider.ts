@@ -1,5 +1,6 @@
-import { StorageLevel } from './Storage';
 import { CopyObjectRequest } from '@aws-sdk/client-s3';
+
+type StorageLevel = 'public' | 'protected' | 'private';
 
 export type CopyProgress = {
 	/** Total bytes copied */
