@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.3](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.2...amazon-cognito-identity-js@5.0.3) (2021-06-10)
+
+
+### Bug Fixes
+
+* remove RN-specific peerDeps to correctly hoist core in npm@7 ([#8368](https://github.com/aws-amplify/amplify-js/issues/8368)) ([9cc5218](https://github.com/aws-amplify/amplify-js/commit/9cc52186e687d6782b41581959380bd7f534e5d2))
+
+
+
+
+
 ## [5.0.2](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.1...amazon-cognito-identity-js@5.0.2) (2021-05-26)
 
 **Note:** Version bump only for package amazon-cognito-identity-js

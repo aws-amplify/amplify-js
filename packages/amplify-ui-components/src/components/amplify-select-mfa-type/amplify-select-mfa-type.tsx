@@ -36,6 +36,8 @@ export class AmplifySelectMFAType {
 	@State() isSMS: boolean = false;
 	@State() loading: boolean = false;
 
+	@State() isToastVisible: boolean = false;
+
 	private handleRadioButtonChange(event) {
 		this.TOTPSetup = false;
 		this.selectMessage = null;
@@ -44,6 +46,7 @@ export class AmplifySelectMFAType {
 		this.isNoMFA = false;
 		this.isTOTP = false;
 		this.isSMS = false;
+		this.isToastVisible = false;
 
 		const { value, type, checked } = event.target;
 		const checkType = ['radio', 'checkbox'].includes(type);
@@ -95,7 +98,6 @@ export class AmplifySelectMFAType {
 			this.selectMessage = `${I18n.get(Translations.SUCCESS_MFA_TYPE)} ${
 				this.MFAMethod
 			}`;
-			// 	TODO Add Toast = showToast: true,
 		} catch (error) {
 			const { message } = error;
 
@@ -105,16 +107,15 @@ export class AmplifySelectMFAType {
 			) {
 				this.TOTPSetup = true;
 				this.selectMessage = I18n.get(Translations.SETUP_TOTP_REQUIRED);
-				// 	TODO Add Toast = showToast: true,
 			} else {
 				logger.debug('Set Preferred MFA failed', error);
 				this.selectMessage = I18n.get(
 					Translations.UNABLE_TO_SETUP_MFA_AT_THIS_TIME
 				);
-				// 	TODO Add Toast = showToast: true,
 			}
 		} finally {
 			this.loading = false;
+			this.isToastVisible = true;
 		}
 	}
 
@@ -131,7 +132,6 @@ export class AmplifySelectMFAType {
 		const { SMS, TOTP, Optional } = this.MFATypes;
 
 		return (
-			// TODO: Add Toast messages
 			<amplify-form-section
 				submitButtonText={I18n.get(
 					Translations.SELECT_MFA_TYPE_SUBMIT_BUTTON_TEXT
@@ -170,11 +170,29 @@ export class AmplifySelectMFAType {
 			</amplify-form-section>
 		);
 	}
+
+	private renderToast() {
+		if (this.isToastVisible && this.selectMessage) {
+			return (
+				<amplify-toast
+					message={this.selectMessage}
+					handleClose={() => {
+						this.selectMessage = null;
+						this.isToastVisible = false;
+					}}
+				/>
+			);
+		}
+
+		return null;
+	}
+
 	render() {
 		return (
 			<div>
 				{this.contentBuilder()}
 				{this.TOTPSetup ? <amplify-totp-setup user={this.authData} /> : null}
+				{this.renderToast()}
 			</div>
 		);
 	}

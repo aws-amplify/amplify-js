@@ -83,6 +83,13 @@ commands:
           key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
       - publish_to_verdaccio
 
+  prepare_no_ui_test_env:
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
+
   integ_test_js:
     parameters:
       test_name:
@@ -140,6 +147,34 @@ commands:
           command: |
             cd ~/amplify-js-samples-staging
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test node << parameters.category >> << parameters.sample_name >> dev' -n 3
+
+  integ_test_cypress_no_ui:
+    parameters:
+      test_name:
+        type: string
+      category:
+        type: string
+      spec:
+        type: string
+    steps:
+      - run:
+          name: 'Change directory into build and run link'
+          command: |
+            cd ~/amplify-js/
+            yarn link-all
+      - run:
+          name: 'Link packages into samples staging root'
+          command: |
+            yarn link amazon-cognito-identity-js @aws-amplify/core @aws-amplify/cache @aws-amplify/auth
+      - run:
+          name: 'Run cypress test << parameters.spec >>'
+          command: |
+            cd ~/amplify-js-samples-staging
+            yarn cypress run --headless --spec ./cypress/integration/auth/<< parameters.spec >>.spec.js --config baseUrl=https://aws.amazon.com/
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/videos
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/screenshots
 
   install_verdaccio:
     steps:
@@ -229,7 +264,7 @@ commands:
           command: |
             brew tap wix/brew >/dev/null
             brew tap homebrew/cask >/dev/null
-            brew cask install android-sdk >/dev/null
+            brew install android-sdk >/dev/null
             yarn global add detox-cli
             touch .watchmanconfig
             node -v
@@ -569,7 +604,7 @@ jobs:
           spec: many-to-many
           browser: << parameters.browser >>
 
-  integ_react_datastore_multi_auth:
+  integ_react_datastore_multi_auth_one_rule:
     parameters:
       browser:
         type: string
@@ -579,11 +614,45 @@ jobs:
     steps:
       - prepare_test_env
       - integ_test_js:
-          test_name: 'React DataStore Multi-Auth'
+          test_name: 'React DataStore Multi-Auth - One Rule'
           framework: react
           category: datastore
           sample_name: multi-auth
-          spec: multi-auth
+          spec: multi-auth-one-rule
+          browser: << parameters.browser >>
+
+  integ_react_datastore_multi_auth_two_rules:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/multi-auth
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - Two Rules'
+          framework: react
+          category: datastore
+          sample_name: multi-auth
+          spec: multi-auth-two-rules
+          browser: << parameters.browser >>
+
+  integ_react_datastore_multi_auth_three_plus_rules:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/multi-auth
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - Three Plus Rules'
+          framework: react
+          category: datastore
+          sample_name: multi-auth
+          spec: multi-auth-three-plus-rules
           browser: << parameters.browser >>
 
   integ_react_datastore_subs_disabled:
@@ -781,7 +850,15 @@ jobs:
           sample_name: duplicate-packages
           spec: duplicate-packages
           browser: << parameters.browser >>
-
+  integ_auth_test_cypress_no_ui:
+    working_directory: ~/amplify-js-samples-staging/
+    executor: js-test-executor
+    steps:
+      - prepare_no_ui_test_env
+      - integ_test_cypress_no_ui:
+          test_name: 'Token revocation'
+          category: 'auth'
+          spec: 'token-revocation'
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -868,6 +945,12 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_auth_test_cypress_no_ui:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_angular_auth:
           requires:
             - integ_setup
@@ -931,7 +1014,25 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      - integ_react_datastore_multi_auth:
+      - integ_react_datastore_multi_auth_one_rule:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_two_rules:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_three_plus_rules:
           requires:
             - integ_setup
             - build
@@ -1061,7 +1162,9 @@ workflows:
             - unit_test
             - integ_react_predictions
             - integ_react_datastore
-            - integ_react_datastore_multi_auth
+            - integ_react_datastore_multi_auth_one_rule
+            - integ_react_datastore_multi_auth_two_rules
+            - integ_react_datastore_multi_auth_three_plus_rules
             - integ_react_datastore_subs_disabled
             - integ_react_datastore_consecutive_saves
             - integ_react_storage
@@ -1083,6 +1186,7 @@ workflows:
             - integ_rn_android_storage
             - integ_datastore_auth
             - integ_duplicate_packages
+            - integ_auth_test_cypress_no_ui
       - post_release:
           filters:
             branches:
