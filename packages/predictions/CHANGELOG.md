@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.33...@aws-amplify/predictions@4.0.1) (2021-05-26)
+
+
+### Bug Fixes
+
+* **@aws-amplify/predictions:** update detectFacesCommand parameters to include all facial attributes (including Emotions types) in the result ([#8095](https://github.com/aws-amplify/amplify-js/issues/8095)) ([520469b](https://github.com/aws-amplify/amplify-js/commit/520469b65c0ed2800931d8e286cbe21fc6518c91))
+
+
+
+
+
 ## [3.2.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.32...@aws-amplify/predictions@3.2.33) (2021-05-14)
 
 

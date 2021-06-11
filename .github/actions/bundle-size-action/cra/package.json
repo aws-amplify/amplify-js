@@ -30,7 +30,7 @@
 			},
 			{
 				"path": "build/static/js/2.*.chunk.js",
-				"maxSize": "90kB"
+				"maxSize": "220kB"
 			}
 		]
 	},
