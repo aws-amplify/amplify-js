@@ -15,6 +15,7 @@ const componentFieldMapping = {
 			value={ff.value}
 			inputProps={ff.inputProps}
 			disabled={ff.disabled}
+			hint={ff.hint}
 		/>
 	),
 	password: (ff: FormFieldType) => (
@@ -38,6 +39,7 @@ const componentFieldMapping = {
 			value={ff.value}
 			inputProps={ff.inputProps}
 			disabled={ff.disabled}
+			hint={ff.hint}
 		/>
 	),
 	code: (ff: FormFieldType) => (
@@ -63,6 +65,7 @@ const componentFieldMapping = {
 			inputProps={ff.inputProps}
 			disabled={ff.disabled}
 			dialCode={ff.dialCode}
+			hint={ff.hint}
 		/>
 	),
 	default: (ff: FormFieldType) => (
@@ -75,6 +78,7 @@ const componentFieldMapping = {
 			value={ff.value}
 			inputProps={ff.inputProps}
 			disabled={ff.disabled}
+			hint={ff.hint}
 		/>
 	),
 };
