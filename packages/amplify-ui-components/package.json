@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/ui-components",
-	"version": "1.3.2",
+	"version": "1.4.0",
 	"description": "Core Amplify UI Component Library",
 	"module": "dist/index.mjs",
 	"main": "dist/index.js",
