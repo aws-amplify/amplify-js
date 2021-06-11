@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.0.3...@aws-amplify/pushnotification@4.1.0) (2021-06-10)
+
+
+### Features
+
+* initial setup for the cloudwatch logger and provider ([57a7d4c](https://github.com/aws-amplify/amplify-js/commit/57a7d4c9add70170c69e7fad89f59c4d0efe779d))
+
+
+
+
+
 ## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.0.1...@aws-amplify/pushnotification@4.0.3) (2021-05-26)
 
 **Note:** Version bump only for package @aws-amplify/pushnotification

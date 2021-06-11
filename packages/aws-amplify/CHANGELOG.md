@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.0.3...aws-amplify@4.1.0) (2021-06-10)
+
+
+### Features
+
+* moved CloudLogger logic to ConsoleLogger ([93db90d](https://github.com/aws-amplify/amplify-js/commit/93db90d041c7ca697e5993003a4fb105a3821cbe))
+
+
+
+
+
 ## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.0.1...aws-amplify@4.0.3) (2021-05-26)
 
 **Note:** Version bump only for package aws-amplify

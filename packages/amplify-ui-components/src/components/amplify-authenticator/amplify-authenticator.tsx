@@ -9,7 +9,6 @@ import {
 import {
 	AUTH_CHANNEL,
 	NO_AUTH_MODULE_FOUND,
-	REDIRECTED_FROM_HOSTED_UI,
 	AUTHENTICATOR_AUTHSTATE,
 	UI_AUTH_CHANNEL,
 	TOAST_AUTH_ERROR_EVENT,
@@ -45,8 +44,10 @@ const logger = new Logger('Authenticator');
 })
 export class AmplifyAuthenticator {
 	/** Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp */
-	@Prop() initialAuthState: AuthState.SignIn | AuthState.SignUp =
-		AuthState.SignIn;
+	@Prop() initialAuthState:
+		| AuthState.SignIn
+		| AuthState.SignUp
+		| AuthState.ForgotPassword = AuthState.SignIn;
 	/** Federated credentials & configuration. */
 	@Prop() federated: FederatedConfig;
 	/** Username Alias is used to setup authentication with `username`, `email` or `phone_number`  */
@@ -93,9 +94,7 @@ export class AmplifyAuthenticator {
 		Hub.listen(AUTH_CHANNEL, this.handleExternalAuthEvent);
 
 		appendToCognitoUserAgent('amplify-authenticator');
-		const byHostedUI = localStorage.getItem(REDIRECTED_FROM_HOSTED_UI);
-		localStorage.removeItem(REDIRECTED_FROM_HOSTED_UI);
-		if (byHostedUI !== 'true') await this.checkUser();
+		await this.checkUser();
 	}
 
 	private async checkUser(): Promise<void> {
