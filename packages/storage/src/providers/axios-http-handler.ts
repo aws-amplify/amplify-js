@@ -71,7 +71,7 @@ export class AxiosHttpHandler implements HttpHandler {
 
 	handle(
 		request: HttpRequest,
-		options: HttpHandlerOptions
+		options: HttpHandlerOptions & { cancelTokenSource?: CancelTokenSource }
 	): Promise<{ response: HttpResponse }> {
 		const requestTimeoutInMs = this.httpOptions.requestTimeout;
 		const emitter = this.emitter;
@@ -129,6 +129,10 @@ export class AxiosHttpHandler implements HttpHandler {
 		// If a cancel token source is passed down from the provider, allows cancellation of in-flight requests
 		if (this.cancelTokenSource) {
 			axiosRequest.cancelToken = this.cancelTokenSource.token;
+		}
+
+		if (options.cancelTokenSource) {
+			axiosRequest.cancelToken = options.cancelTokenSource.token;
 		}
 
 		// From gamma release, aws-sdk now expects all response type to be of blob or streams

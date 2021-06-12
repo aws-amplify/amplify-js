@@ -10,13 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import {
-	ConsoleLogger as Logger,
-	Hub,
-	Credentials,
-	Parser,
-	getAmplifyUserAgent,
-} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Hub, Credentials, Parser, getAmplifyUserAgent } from '@aws-amplify/core';
 import {
 	S3Client,
 	GetObjectCommand,
@@ -29,22 +23,17 @@ import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { StorageOptions, StorageProvider } from '../types';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
+import { AWSS3UploadManager } from './AWSS3UploadManager';
+import { AWSS3UploadTask } from './AWSS3UploadTask';
 import * as events from 'events';
 
 const logger = new Logger('AWSS3Provider');
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
+const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
 	? Symbol.for('amplify_default')
 	: '@@amplify_default') as Symbol;
 
-const dispatchStorageEvent = (
-	track: boolean,
-	event: string,
-	attrs: any,
-	metrics: any,
-	message: string
-) => {
+const dispatchStorageEvent = (track: boolean, event: string, attrs: any, metrics: any, message: string) => {
 	if (track) {
 		const data = { attrs };
 		if (metrics) {
@@ -74,6 +63,8 @@ export class AWSS3Provider implements StorageProvider {
 	 * @private
 	 */
 	private _config;
+	private _uploadTaskManager: AWSS3UploadManager;
+	private _emitter: events.EventEmitter;
 
 	/**
 	 * Initialize Storage with AWS configurations
@@ -111,7 +102,89 @@ export class AWSS3Provider implements StorageProvider {
 		if (!this._config.bucket) {
 			logger.debug('Do not have bucket yet');
 		}
+		this._emitter = new events.EventEmitter();
+		this._uploadTaskManager = new AWSS3UploadManager(this._emitter);
 		return this._config;
+	}
+
+	public async upload(key: string, object, config?): Promise<AWSS3UploadTask> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			return Promise.reject('No credentials');
+		}
+
+		const opt = Object.assign({}, this._config, config);
+		const { bucket, track, progressCallback, completeCallback } = opt;
+		const { contentType, contentDisposition, contentEncoding, cacheControl, expires, metadata, tagging, acl } = opt;
+		const { serverSideEncryption, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, SSEKMSKeyId } = opt;
+		const type = contentType ? contentType : 'binary/octet-stream';
+
+		const prefix = this._prefix(opt);
+		const s3 = this._createNewS3Client(opt);
+		s3.middlewareStack.remove('contentLengthMiddleware');
+		const final_key = prefix + key;
+		logger.debug('put ' + key + ' to ' + final_key);
+
+		const params: any = {
+			Bucket: bucket,
+			Key: final_key,
+			Body: object,
+			ContentType: type,
+		};
+		if (cacheControl) {
+			params.CacheControl = cacheControl;
+		}
+		if (contentDisposition) {
+			params.ContentDisposition = contentDisposition;
+		}
+		if (contentEncoding) {
+			params.ContentEncoding = contentEncoding;
+		}
+		if (expires) {
+			params.Expires = expires;
+		}
+		if (metadata) {
+			params.Metadata = metadata;
+		}
+		if (tagging) {
+			params.Tagging = tagging;
+		}
+		if (serverSideEncryption) {
+			params.ServerSideEncryption = serverSideEncryption;
+		}
+		if (SSECustomerAlgorithm) {
+			params.SSECustomerAlgorithm = SSECustomerAlgorithm;
+		}
+		if (SSECustomerKey) {
+			params.SSECustomerKey = SSECustomerKey;
+		}
+		if (SSECustomerKeyMD5) {
+			params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
+		}
+		if (SSEKMSKeyId) {
+			params.SSEKMSKeyId = SSEKMSKeyId;
+		}
+		const task = await this._uploadTaskManager.addTask({
+			bucket,
+			key: final_key,
+			s3Client: s3,
+			body: object,
+		});
+		this._emitter.on('uploadPartProgress', event => {
+			if (progressCallback) {
+				if (typeof progressCallback === 'function') {
+					progressCallback(event);
+				}
+			}
+		});
+		this._emitter.on('uploadComplete', event => {
+			if (completeCallback) {
+				if (typeof completeCallback === 'function') {
+					completeCallback(event);
+				}
+			}
+		})
+		return task;
 	}
 
 	/**
@@ -154,8 +227,7 @@ export class AWSS3Provider implements StorageProvider {
 
 		// See: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
 		if (cacheControl) params.ResponseCacheControl = cacheControl;
-		if (contentDisposition)
-			params.ResponseContentDisposition = contentDisposition;
+		if (contentDisposition) params.ResponseContentDisposition = contentDisposition;
 		if (contentEncoding) params.ResponseContentEncoding = contentEncoding;
 		if (contentLanguage) params.ResponseContentLanguage = contentLanguage;
 		if (contentType) params.ResponseContentType = contentType;
@@ -203,14 +275,8 @@ export class AWSS3Provider implements StorageProvider {
 		try {
 			const signer = new S3RequestPresigner({ ...s3.config });
 			const request = await createRequest(s3, new GetObjectCommand(params));
-			const url = formatUrl((await signer.presign(request, { expiresIn: params.Expires })));
-			dispatchStorageEvent(
-				track,
-				'getSignedUrl',
-				{ method: 'get', result: 'success' },
-				null,
-				`Signed URL: ${url}`
-			);
+			const url = formatUrl(await signer.presign(request, { expiresIn: params.Expires }));
+			dispatchStorageEvent(track, 'getSignedUrl', { method: 'get', result: 'success' }, null, `Signed URL: ${url}`);
 			return url;
 		} catch (error) {
 			logger.warn('get signed url error', error);
@@ -241,23 +307,8 @@ export class AWSS3Provider implements StorageProvider {
 
 		const opt = Object.assign({}, this._config, config);
 		const { bucket, track, progressCallback } = opt;
-		const {
-			contentType,
-			contentDisposition,
-			contentEncoding,
-			cacheControl,
-			expires,
-			metadata,
-			tagging,
-			acl,
-		} = opt;
-		const {
-			serverSideEncryption,
-			SSECustomerAlgorithm,
-			SSECustomerKey,
-			SSECustomerKeyMD5,
-			SSEKMSKeyId,
-		} = opt;
+		const { contentType, contentDisposition, contentEncoding, cacheControl, expires, metadata, tagging, acl } = opt;
+		const { serverSideEncryption, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, SSEKMSKeyId } = opt;
 		const type = contentType ? contentType : 'binary/octet-stream';
 
 		const prefix = this._prefix(opt);
@@ -317,10 +368,7 @@ export class AWSS3Provider implements StorageProvider {
 					if (typeof progressCallback === 'function') {
 						progressCallback(progress);
 					} else {
-						logger.warn(
-							'progressCallback should be a function, not a ' +
-								typeof progressCallback
-						);
+						logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
 					}
 				}
 			});
@@ -328,25 +376,13 @@ export class AWSS3Provider implements StorageProvider {
 			const response = await uploader.upload();
 
 			logger.debug('upload result', response);
-			dispatchStorageEvent(
-				track,
-				'upload',
-				{ method: 'put', result: 'success' },
-				null,
-				`Upload success for ${key}`
-			);
+			dispatchStorageEvent(track, 'upload', { method: 'put', result: 'success' }, null, `Upload success for ${key}`);
 			return {
 				key,
 			};
 		} catch (error) {
 			logger.warn('error uploading', error);
-			dispatchStorageEvent(
-				track,
-				'upload',
-				{ method: 'put', result: 'failed' },
-				null,
-				`Error uploading ${key}`
-			);
+			dispatchStorageEvent(track, 'upload', { method: 'put', result: 'failed' }, null, `Error uploading ${key}`);
 			throw error;
 		}
 	}
@@ -490,18 +526,10 @@ export class AWSS3Provider implements StorageProvider {
 
 		const customPrefix = config.customPrefix || {};
 		const identityId = config.identityId || credentials.identityId;
-		const privatePath =
-			(customPrefix.private !== undefined ? customPrefix.private : 'private/') +
-			identityId +
-			'/';
+		const privatePath = (customPrefix.private !== undefined ? customPrefix.private : 'private/') + identityId + '/';
 		const protectedPath =
-			(customPrefix.protected !== undefined
-				? customPrefix.protected
-				: 'protected/') +
-			identityId +
-			'/';
-		const publicPath =
-			customPrefix.public !== undefined ? customPrefix.public : 'public/';
+			(customPrefix.protected !== undefined ? customPrefix.protected : 'protected/') + identityId + '/';
+		const publicPath = customPrefix.public !== undefined ? customPrefix.public : 'public/';
 
 		switch (level) {
 			case 'private':
@@ -517,12 +545,7 @@ export class AWSS3Provider implements StorageProvider {
 	 * @private creates an S3 client with new V3 aws sdk
 	 */
 	private _createNewS3Client(config, emitter?) {
-		const {
-			region,
-			credentials,
-			cancelTokenSource,
-			dangerouslyConnectToHttpEndpointForTesting,
-		} = config;
+		const { region, credentials, cancelTokenSource, dangerouslyConnectToHttpEndpointForTesting } = config;
 		let localTestingConfig = {};
 
 		if (dangerouslyConnectToHttpEndpointForTesting) {

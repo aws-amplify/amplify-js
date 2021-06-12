@@ -19,6 +19,8 @@ export interface StorageProvider {
 	// configure your provider
 	configure(config: object): object;
 
+	upload?(key: string, object: any, options?): Promise<any>;
+
 	// get object/pre-signed url from storage
 	get(key: string, options?): Promise<string | Object>;
 
@@ -36,4 +38,11 @@ export interface StorageProvider {
 
 	// return the name of you provider
 	getProviderName(): string;
+}
+
+export interface UploadTask {
+	start(): any;
+	resume(): any;
+	pause(): any;
+	abort(): any;
 }

@@ -15,6 +15,8 @@ import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
 import { AWSS3Provider } from './providers';
 import { StorageProvider } from './types';
 import axios, { CancelTokenSource } from 'axios';
+import { AWSS3ProviderManagedUpload } from './providers/AWSS3ProviderManagedUpload';
+import * as events from 'events';
 
 const logger = new Logger('StorageClass');
 
@@ -178,6 +180,18 @@ export class Storage {
 		cancelTokenSource: CancelTokenSource
 	) {
 		this._cancelTokenSourceMap.set(request, cancelTokenSource);
+	}
+
+	public async upload(key: string, object: any, config?): Promise<any> {
+		const { provider = DEFAULT_PROVIDER } = config || {};
+		const prov = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (prov === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			return Promise.reject('No plugin found in Storage for the provider');
+		}
+		return prov.upload(key, object, config);
 	}
 
 	/**
