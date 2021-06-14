@@ -5,7 +5,6 @@ import {
 	UploadPartCommand,
 	UploadPartCommandOutput,
 	CompleteMultipartUploadCommand,
-	CompleteMultipartUploadCommandInput,
 	Part,
 } from '@aws-sdk/client-s3';
 import * as events from 'events';

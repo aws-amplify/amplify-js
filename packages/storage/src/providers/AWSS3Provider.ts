@@ -11,12 +11,7 @@
  * and limitations under the License.
  */
 import { ConsoleLogger as Logger, Hub, Credentials, Parser, getAmplifyUserAgent } from '@aws-amplify/core';
-import {
-	S3Client,
-	GetObjectCommand,
-	DeleteObjectCommand,
-	ListObjectsCommand,
-} from '@aws-sdk/client-s3';
+import { S3Client, GetObjectCommand, DeleteObjectCommand, ListObjectsCommand } from '@aws-sdk/client-s3';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
@@ -102,8 +97,7 @@ export class AWSS3Provider implements StorageProvider {
 		if (!this._config.bucket) {
 			logger.debug('Do not have bucket yet');
 		}
-		this._emitter = new events.EventEmitter();
-		this._uploadTaskManager = new AWSS3UploadManager(this._emitter);
+		this._uploadTaskManager = new AWSS3UploadManager();
 		return this._config;
 	}
 
@@ -164,26 +158,28 @@ export class AWSS3Provider implements StorageProvider {
 		if (SSEKMSKeyId) {
 			params.SSEKMSKeyId = SSEKMSKeyId;
 		}
+		const emitter = new events.EventEmitter();
 		const task = await this._uploadTaskManager.addTask({
 			bucket,
 			key: final_key,
 			s3Client: s3,
 			body: object,
+			emitter,
 		});
-		this._emitter.on('uploadPartProgress', event => {
+		emitter.on('uploadPartProgress', event => {
 			if (progressCallback) {
 				if (typeof progressCallback === 'function') {
 					progressCallback(event);
 				}
 			}
 		});
-		this._emitter.on('uploadComplete', event => {
+		emitter.on('uploadComplete', event => {
 			if (completeCallback) {
 				if (typeof completeCallback === 'function') {
 					completeCallback(event);
 				}
 			}
-		})
+		});
 		return task;
 	}
 

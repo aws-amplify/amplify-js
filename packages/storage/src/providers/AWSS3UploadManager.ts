@@ -9,30 +9,41 @@ interface AddTaskInput {
 	bucket: string;
 	key: string;
 	body: Blob;
+	emitter?: events.EventEmitter;
 }
 
 const uploadComplete = 'uploadComplete';
 
 export class AWSS3UploadManager {
-	private readonly _emitter: events.EventEmitter = new events.EventEmitter();
-	private readonly _session: Storage = window.sessionStorage;
+	private readonly _storage: Storage;
 	private readonly _uploadTasks: Record<UploadId, AWSS3UploadTask> = {};
 
-	constructor(emitter?: events.EventEmitter) {
-		this._emitter = emitter;
-		this._emitter.on(uploadComplete, event => {
-			this._session.removeItem(event.key);
-		});
+	constructor() {
+		this._storage = window.sessionStorage;
 	}
 
-	private async getCachedUploadParts(s3client: S3Client, bucket: string, key: string): Promise<ListPartsCommandOutput> {
-		const cachedUploadId = this._session.getItem(`${bucket}/${key}`);
-		if (cachedUploadId) {
+	private async getCachedUploadParts({
+		s3client,
+		bucket,
+		key,
+		lastModified = 0,
+	}: {
+		s3client: S3Client;
+		bucket: string;
+		key: string;
+		lastModified?: number;
+	}): Promise<ListPartsCommandOutput> {
+		const cachedUploadFileData = JSON.parse(this._storage.getItem(`${bucket}/${key}`));
+		const hasModified =
+			Object.prototype.hasOwnProperty.call(cachedUploadFileData, 'lastModified') &&
+			lastModified > cachedUploadFileData.lastModified;
+		// Only return the cached parts on S3 if the file hasn't been modified, else we should re-intialize the upload
+		if (!hasModified && cachedUploadFileData) {
 			const listPartsOutput = await s3client.send(
 				new ListPartsCommand({
 					Bucket: bucket,
 					Key: key,
-					UploadId: cachedUploadId,
+					UploadId: cachedUploadFileData.uploadId,
 				})
 			);
 			return listPartsOutput;
@@ -40,23 +51,23 @@ export class AWSS3UploadManager {
 	}
 
 	public listUploads({ s3Client }) {
-		const cached = Object.entries(this._session);
+		const cached = Object.entries(this._storage);
 		for (const [fileName, uploadId] of cached) {
 			console.log(fileName);
 			const bucket = fileName.split('/')[0];
 			const key = fileName.split('/').slice(1).join('/');
-			this.getCachedUploadParts(s3Client, bucket, key).then(output => {
+			this.getCachedUploadParts({ s3client: s3Client, bucket, key }).then(output => {
 				console.log(output);
 			});
 		}
 	}
 
-	public async addTask({ s3Client, bucket, key, body }: AddTaskInput) {
+	public async addTask({ s3Client, bucket, key, body, emitter }: AddTaskInput) {
 		const sessionKey = `${bucket}/${key}`;
 		let storedInS3 = {};
 		try {
 			console.log('Finding cached upload parts');
-			storedInS3 = (await this.getCachedUploadParts(s3Client, bucket, key)) || {};
+			storedInS3 = (await this.getCachedUploadParts({ s3client: s3Client, bucket, key })) || {};
 		} catch (err) {
 			console.error('Error finding cached upload parts, re-intializing the multipart upload');
 		}
@@ -71,7 +82,7 @@ export class AWSS3UploadManager {
 				key,
 				body,
 				completedParts: uploadedPartsOnS3,
-				emitter: this._emitter,
+				emitter,
 			});
 			return this._uploadTasks[cachedUploadId];
 		} else {
@@ -88,10 +99,17 @@ export class AWSS3UploadManager {
 				bucket,
 				key,
 				body,
-				emitter: this._emitter,
+				emitter,
+			});
+			emitter.on(uploadComplete, event => {
+				this._storage.removeItem(event.key);
 			});
 			this._uploadTasks[createMultipartUpload.UploadId] = newTask;
-			this._session.setItem(sessionKey, createMultipartUpload.UploadId);
+			const fileData = {
+				uploadId: createMultipartUpload.UploadId,
+				...(body instanceof File && { lastModified: body.lastModified }),
+			};
+			this._storage.setItem(sessionKey, JSON.stringify(fileData));
 			return newTask;
 		}
 	}
