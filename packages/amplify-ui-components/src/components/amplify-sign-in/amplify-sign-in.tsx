@@ -144,7 +144,8 @@ export class AmplifySignIn {
 		await handleSignIn(
 			username,
 			this.signInAttributes.password,
-			this.handleAuthStateChange
+			this.handleAuthStateChange,
+			this.usernameAlias
 		);
 		this.loading = false;
 	}
