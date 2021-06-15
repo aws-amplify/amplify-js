@@ -15,8 +15,6 @@ import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
 import { AWSS3Provider } from './providers';
 import { StorageProvider } from './types';
 import axios, { CancelTokenSource } from 'axios';
-import { AWSS3ProviderManagedUpload } from './providers/AWSS3ProviderManagedUpload';
-import * as events from 'events';
 
 const logger = new Logger('StorageClass');
 

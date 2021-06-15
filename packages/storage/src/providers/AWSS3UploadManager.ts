@@ -64,16 +64,16 @@ export class AWSS3UploadManager {
 
 	public async addTask({ s3Client, bucket, key, body, emitter }: AddTaskInput) {
 		const sessionKey = `${bucket}/${key}`;
-		let storedInS3 = {};
+		let cachedData = {};
 		try {
 			console.log('Finding cached upload parts');
-			storedInS3 = (await this.getCachedUploadParts({ s3client: s3Client, bucket, key })) || {};
+			cachedData = (await this.getCachedUploadParts({ s3client: s3Client, bucket, key })) || {};
 		} catch (err) {
 			console.error('Error finding cached upload parts, re-intializing the multipart upload');
 		}
-		if (Object.prototype.hasOwnProperty.call(storedInS3, 'UploadId')) {
-			const cachedUploadId = (storedInS3 as ListPartsCommandOutput).UploadId;
-			const uploadedPartsOnS3 = (storedInS3 as ListPartsCommandOutput).Parts;
+		if (Object.prototype.hasOwnProperty.call(cachedData, 'UploadId')) {
+			const cachedUploadId = (cachedData as ListPartsCommandOutput).UploadId;
+			const uploadedPartsOnS3 = (cachedData as ListPartsCommandOutput).Parts;
 			console.log('Found cached upload parts', uploadedPartsOnS3);
 			this._uploadTasks[cachedUploadId] = new AWSS3UploadTask({
 				s3Client,
