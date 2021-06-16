@@ -133,7 +133,6 @@ export class AWSS3Provider implements StorageProvider {
 			bucket,
 			cacheControl,
 			contentDisposition,
-			contentEncoding,
 			contentLanguage,
 			contentType,
 			expires,
@@ -164,7 +163,6 @@ export class AWSS3Provider implements StorageProvider {
 
 		if (cacheControl) params.CacheControl = cacheControl;
 		if (contentDisposition) params.ContentDisposition = contentDisposition;
-		if (contentEncoding) params.ContentEncoding = contentEncoding;
 		if (contentLanguage) params.ContentLanguage = contentLanguage;
 		if (contentType) params.ContentType = contentType;
 		if (expires) params.Expires = expires;

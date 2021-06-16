@@ -16,7 +16,6 @@ interface S3ClientCopyCommandParams {
 	bucket?: CopyObjectRequest['Bucket'];
 	cacheControl?: CopyObjectRequest['CacheControl'];
 	contentDisposition?: CopyObjectRequest['ContentDisposition'];
-	contentEncoding?: CopyObjectRequest['ContentEncoding'];
 	contentLanguage?: CopyObjectRequest['ContentLanguage'];
 	contentType?: CopyObjectRequest['ContentType'];
 	expires?: CopyObjectRequest['Expires'];
