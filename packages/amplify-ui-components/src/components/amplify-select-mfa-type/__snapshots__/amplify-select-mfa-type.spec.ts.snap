@@ -14,13 +14,13 @@ exports[`amplify-select-mfa-type spec: Render logic -> should render \`TOTP, SMS
 </amplify-select-mfa-type>
 `;
 
-exports[`amplify-select-mfa-type spec: Render logic -> should render a \`less than 2 mfa types available\` message by default 1`] = `
+exports[`amplify-select-mfa-type spec: Render logic -> should render a \`less than 2 MFA types available\` message by default 1`] = `
 <amplify-select-mfa-type>
   <mock:shadow-root>
     <div>
       <div>
         <a>
-          Less than two mfa types available
+          Less than two MFA types available
         </a>
       </div>
     </div>

@@ -3,6 +3,166 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.34...aws-amplify-react@5.0.1) (2021-05-26)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.34](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.33...aws-amplify-react@4.2.34) (2021-05-14)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.33](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.32...aws-amplify-react@4.2.33) (2021-05-11)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.32](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.31...aws-amplify-react@4.2.32) (2021-05-06)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.31](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.30...aws-amplify-react@4.2.31) (2021-04-15)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.30](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.29...aws-amplify-react@4.2.30) (2021-03-25)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.29](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.28...aws-amplify-react@4.2.29) (2021-03-18)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.28](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.27...aws-amplify-react@4.2.28) (2021-03-12)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.27](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.26...aws-amplify-react@4.2.27) (2021-03-08)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.26](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.25...aws-amplify-react@4.2.26) (2021-03-03)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.25](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.24...aws-amplify-react@4.2.25) (2021-02-25)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.24](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.23...aws-amplify-react@4.2.24) (2021-02-18)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.23](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.22...aws-amplify-react@4.2.23) (2021-02-15)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.22](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.21...aws-amplify-react@4.2.22) (2021-02-09)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.21](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.20...aws-amplify-react@4.2.21) (2021-02-03)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.20](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.19...aws-amplify-react@4.2.20) (2021-02-01)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.19](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.18...aws-amplify-react@4.2.19) (2021-01-29)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.18](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.17...aws-amplify-react@4.2.18) (2021-01-07)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.17](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.16...aws-amplify-react@4.2.17) (2020-12-17)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [4.2.16](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.15...aws-amplify-react@4.2.16) (2020-12-10)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
 ## [4.2.15](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@4.2.14...aws-amplify-react@4.2.15) (2020-11-30)
 
 **Note:** Version bump only for package aws-amplify-react
