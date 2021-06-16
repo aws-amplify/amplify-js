@@ -3657,4 +3657,44 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 	});
+
+	describe('Device tracking: remembering device', () => {
+		test('happy path', async () => {
+			const spyon = jest
+				.spyOn(CognitoUser.prototype, 'authenticateUser')
+				.mockImplementationOnce((authenticationDetails, callback) => {
+					callback.onSuccess(session);
+				});
+
+			const auth = new Auth(authOptions);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			console.log(user);
+
+			const spyon2 = jest
+				.spyOn(auth, 'currentUserPoolUser')
+				.mockImplementationOnce(() => {
+					return Promise.resolve(user);
+				});
+
+			// const spyon3 = jest
+			// 	.spyOn(user, 'getCachedDeviceKeyAndPassword')
+			// 	.mockImplementationOnce(() => {
+			// 		user.deviceKey = 'test';
+			// 		user.randomPassword = 'test';
+			// 		user.deviceGroupKey = 'test';
+			// 	});
+
+			await auth.rememberDevice().then(res => {
+				expect(res).toEqual('SUCCESS');
+			});
+
+			spyon.mockClear();
+			spyon2.mockClear();
+			// spyon3.mockClear();
+		});
+	});
 });

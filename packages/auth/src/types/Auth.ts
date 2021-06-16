@@ -199,6 +199,8 @@ export enum AuthErrorTypes {
 	EmptyChallengeResponse = 'emptyChallengeResponse',
 	NoUserSession = 'noUserSession',
 	Default = 'default',
+	DeviceConfig = 'deviceConfig',
+	NetworkError = 'networkError',
 }
 
 export type AuthErrorMessages = { [key in AuthErrorTypes]: AuthErrorMessage };
@@ -219,4 +221,40 @@ export type ClientMetaData =
 
 export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
 	return !!(obj as UsernamePasswordOpts).username;
+}
+
+export interface IAuthDevice {
+	deviceCreatedDate: string;
+	deviceKey: string;
+	deviceLastAuthenticatedDate: string;
+	deviceLastModifiedDate: string;
+}
+
+export type DeviceAttribute = {
+	Name: string;
+	Value: string;
+};
+
+export type AuthDeviceProps = {
+	DeviceCreateDate: number;
+	DeviceKey: string;
+	DeviceAttributes: DeviceAttribute[];
+	DeviceLastAuthenticatedDate: number;
+	DeviceLastModifiedDate: number;
+};
+
+export class AuthDevice {
+	deviceCreatedDate: number;
+	deviceKey: string;
+	deviceLastAuthenticatedDate: number;
+	deviceAttributes: DeviceAttribute[];
+	deviceLastModifiedDate: number;
+
+	constructor(props: AuthDeviceProps) {
+		this.deviceCreatedDate = props.DeviceCreateDate;
+		this.deviceKey = props.DeviceKey;
+		this.deviceLastAuthenticatedDate = props.DeviceLastAuthenticatedDate;
+		this.deviceLastModifiedDate = props.DeviceLastModifiedDate;
+		this.deviceAttributes = props.DeviceAttributes;
+	}
 }

@@ -31,6 +31,7 @@ import {
 	FederatedSignInOptions,
 	AwsCognitoOAuthOpts,
 	ClientMetaData,
+	AuthDevice,
 } from './types';
 
 import {
@@ -85,7 +86,10 @@ const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
 
-const maxDevices = 60;
+// Cognito Documentation for max device
+// tslint:disable-next-line:max-line-length
+// https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
+const MAX_DEVICES = 60;
 
 /**
  * Provide authentication steps
@@ -2200,36 +2204,94 @@ export class AuthClass {
 		return Promise.reject(new NoUserPoolError(type));
 	}
 
-	public async rememberDevice(): Promise<any> {
-		const currUser = await this.currentUserPoolUser();
-		currUser.getCachedDeviceKeyAndPassword();
+	public async rememberDevice(): Promise<string | AuthError> {
+		let currUser;
 
+		try {
+			currUser = await this.currentUserPoolUser();
+		} catch (error) {
+			logger.debug('The user is not authenticated by the error', error);
+			return Promise.reject('The user is not authenticated');
+		}
+
+		currUser.getCachedDeviceKeyAndPassword();
 		return new Promise((res, rej) => {
-			currUser.setDeviceStatusRemembered({ onSuccess: res, onFailure: rej });
+			currUser.setDeviceStatusRemembered({
+				onSuccess: data => {
+					res(data);
+				},
+				onFailure: err => {
+					if (err.code === 'InvalidParameterException') {
+						rej(new AuthError(AuthErrorTypes.DeviceConfig));
+					} else if (err.code === 'NetworkError') {
+						rej(new AuthError(AuthErrorTypes.NetworkError));
+					} else {
+						rej(err);
+					}
+				},
+			});
 		});
 	}
 
-	public async forgetDevice(): Promise<any> {
-		const currUser = await this.currentUserPoolUser();
+	public async forgetDevice(): Promise<void> {
+		let currUser;
+
+		try {
+			currUser = await this.currentUserPoolUser();
+		} catch (error) {
+			logger.debug('The user is not authenticated by the error', error);
+			return Promise.reject('The user is not authenticated');
+		}
+
 		currUser.getCachedDeviceKeyAndPassword();
 		return new Promise((res, rej) => {
-			currUser.forgetDevice({ onSuccess: res, onFailure: rej });
+			currUser.forgetDevice({
+				onSuccess: data => {
+					res(data);
+				},
+				onFailure: err => {
+					if (err.code === 'InvalidParameterException') {
+						rej(new AuthError(AuthErrorTypes.DeviceConfig));
+					} else if (err.code === 'NetworkError') {
+						rej(new AuthError(AuthErrorTypes.NetworkError));
+					} else {
+						rej(err);
+					}
+				},
+			});
 		});
 	}
 
-	public async fetchDevices(): Promise<any> {
-		const currUser = await this.currentUserPoolUser();
+	public async fetchDevices(): Promise<AuthDevice[]> {
+		let currUser;
+
+		try {
+			currUser = await this.currentUserPoolUser();
+		} catch (error) {
+			logger.debug('The user is not authenticated by the error', error);
+			throw new Error('The user is not authenticated');
+		}
+
 		currUser.getCachedDeviceKeyAndPassword();
 		return new Promise((res, rej) => {
 			const cb = {
 				onSuccess(data) {
-					res(data);
+					const deviceList: AuthDevice[] = data.Devices.map(device => {
+						return new AuthDevice(device);
+					});
+					res(deviceList);
 				},
-				onFailure(err) {
-					rej(err);
+				onFailure: err => {
+					if (err.code === 'InvalidParameterException') {
+						rej(new AuthError(AuthErrorTypes.DeviceConfig));
+					} else if (err.code === 'NetworkError') {
+						rej(new AuthError(AuthErrorTypes.NetworkError));
+					} else {
+						rej(err);
+					}
 				},
 			};
-			currUser.listDevices(maxDevices, null, cb);
+			currUser.listDevices(MAX_DEVICES, null, cb);
 		});
 	}
 }
