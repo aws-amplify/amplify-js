@@ -50,24 +50,14 @@ export class AWSS3UploadManager {
 		}
 	}
 
-	public listUploads({ s3Client }) {
-		const cached = Object.entries(this._storage);
-		for (const [fileName, uploadId] of cached) {
-			console.log(fileName);
-			const bucket = fileName.split('/')[0];
-			const key = fileName.split('/').slice(1).join('/');
-			this.getCachedUploadParts({ s3client: s3Client, bucket, key }).then(output => {
-				console.log(output);
-			});
-		}
-	}
-
 	public async addTask({ s3Client, bucket, key, body, emitter }: AddTaskInput) {
 		const sessionKey = `${bucket}/${key}`;
 		let cachedData = {};
 		try {
+			// Find lastModified of the file if possible
+			const lastModified = body instanceof File ? body.lastModified : 0;
 			console.log('Finding cached upload parts');
-			cachedData = (await this.getCachedUploadParts({ s3client: s3Client, bucket, key })) || {};
+			cachedData = (await this.getCachedUploadParts({ s3client: s3Client, bucket, key, lastModified })) || {};
 		} catch (err) {
 			console.error('Error finding cached upload parts, re-intializing the multipart upload');
 		}
