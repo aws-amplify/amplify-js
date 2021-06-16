@@ -223,7 +223,7 @@ export class AWSS3Provider implements StorageProvider {
 				track,
 				'copy',
 				{
-					method: 'get',
+					method: 'copy',
 					result: 'failed',
 				},
 				null,
