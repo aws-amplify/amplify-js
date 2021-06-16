@@ -153,7 +153,7 @@ export class AWSS3Provider implements StorageProvider {
 			throw new Error(StorageErrorStrings.NO_DEST_KEY);
 		}
 		if (srcLevel !== 'protected' && srcIdentityId) {
-			logger.warn(`IdentityId only works if level is protected, but level is set to ${srcLevel}`);
+			logger.warn(`You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`);
 		}
 		const srcPrefix = this._prefix({ ...opt, level: srcLevel, ...(srcIdentityId && { identityId: srcIdentityId }) });
 		const destPrefix = this._prefix({ ...opt, level: destLevel });
