@@ -139,6 +139,11 @@ export class AWSS3Provider implements StorageProvider {
 			expires,
 			track,
 			progressCallback,
+			serverSideEncryption,
+			SSECustomerAlgorithm,
+			SSECustomerKey,
+			SSECustomerKeyMD5,
+			SSEKMSKeyId,
 		} = opt;
 		const { level: srcLevel = DEFAULT_STORAGE_LEVEL, identityId: srcIdentityId } = src;
 		const { level: destLevel = DEFAULT_STORAGE_LEVEL } = dest;
@@ -163,23 +168,20 @@ export class AWSS3Provider implements StorageProvider {
 		if (contentLanguage) params.ContentLanguage = contentLanguage;
 		if (contentType) params.ContentType = contentType;
 		if (expires) params.Expires = expires;
-		if ('serverSideEncryption' in opt) {
-			const { serverSideEncryption, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, SSEKMSKeyId } = opt;
-			if (serverSideEncryption) {
-				params.ServerSideEncryption = serverSideEncryption;
-			}
-			if (SSECustomerAlgorithm) {
-				params.SSECustomerAlgorithm = SSECustomerAlgorithm;
-			}
-			if (SSECustomerKey) {
-				params.SSECustomerKey = SSECustomerKey;
-			}
-			if (SSECustomerKeyMD5) {
-				params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
-			}
-			if (SSEKMSKeyId) {
-				params.SSEKMSKeyId = SSEKMSKeyId;
-			}
+		if (serverSideEncryption) {
+			params.ServerSideEncryption = serverSideEncryption;
+		}
+		if (SSECustomerAlgorithm) {
+			params.SSECustomerAlgorithm = SSECustomerAlgorithm;
+		}
+		if (SSECustomerKey) {
+			params.SSECustomerKey = SSECustomerKey;
+		}
+		if (SSECustomerKeyMD5) {
+			params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
+		}
+		if (SSEKMSKeyId) {
+			params.SSEKMSKeyId = SSEKMSKeyId;
 		}
 		if (acl) params.ACL = acl;
 

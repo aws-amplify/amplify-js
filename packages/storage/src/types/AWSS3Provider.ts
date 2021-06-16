@@ -9,9 +9,7 @@ export type CopyProgress = {
 	total: number;
 };
 
-type S3ClientCopyCommandInput =
-	| (S3ClientCopyCommandParams & S3ClientServerSideEncryptionParams)
-	| S3ClientCopyCommandParams;
+type S3ClientCopyCommandInput = S3ClientCopyCommandParams;
 
 /** A subset of S3 CopyCommand params allowed for AWSS3Provider. */
 interface S3ClientCopyCommandParams {
@@ -25,10 +23,7 @@ interface S3ClientCopyCommandParams {
 	tagging?: CopyObjectRequest['Tagging'];
 	acl?: CopyObjectRequest['ACL'];
 	metadata?: CopyObjectRequest['Metadata'];
-}
-
-interface S3ClientServerSideEncryptionParams {
-	serverSideEncryption: CopyObjectRequest['ServerSideEncryption'];
+	serverSideEncryption?: CopyObjectRequest['ServerSideEncryption'];
 	SSECustomerAlgorithm?: CopyObjectRequest['SSECustomerAlgorithm'];
 	SSECustomerKey?: CopyObjectRequest['SSECustomerKey'];
 	SSECustomerKeyMD5?: CopyObjectRequest['SSECustomerKeyMD5'];
