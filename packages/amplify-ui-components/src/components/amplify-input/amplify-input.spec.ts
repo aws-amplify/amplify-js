@@ -60,5 +60,9 @@ describe('amplify-input spec:', () => {
 		it('should have `type` set to `text` by default', () => {
 			expect(input.type).toEqual('text');
 		});
+
+		it('should have `required` set to `false` by default', () => {
+			expect(input.required).toBe(false);
+		});
 	});
 });
