@@ -129,7 +129,8 @@ export class AWSS3ProviderMultipartCopier {
 			Key: this.params.Key,
 			UploadId: uploadId,
 			MultipartUpload: {
-				Parts: this.completedParts,
+				// Part Number might not be in the exact correct order so we should sort it beforehand
+				Parts: this.completedParts.sort((a, b) => a.PartNumber - b.PartNumber),
 			},
 		};
 		logger.debug('Completing the multipart upload', this.completedParts);
@@ -160,7 +161,7 @@ export class AWSS3ProviderMultipartCopier {
 			total: this.totalBytesToCopy,
 		});
 		this.completedParts.push({
-			PartNumber: this.completedParts.length + 1,
+			PartNumber: part.partNumber,
 			ETag: uploadPartCopyOutput.CopyPartResult.ETag,
 		});
 		return uploadPartCopyOutput;
