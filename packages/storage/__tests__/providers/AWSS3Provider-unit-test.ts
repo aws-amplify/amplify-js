@@ -17,6 +17,7 @@ import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import { AWSS3ProviderMultipartCopier } from '../../src/providers/AWSS3ProviderMultipartCopy';
 import * as events from 'events';
+import { S3CopySource, S3CopyDestination } from '../../src/types';
 jest.mock('../../src/providers/AWSS3ProviderMultipartCopy');
 /**
  * NOTE - These test cases use Hub.dispatch but they should
@@ -871,6 +872,48 @@ describe('StorageProvider test', () => {
 			expect(spyon).toBeCalledTimes(1);
 		});
 
+		test('copy with invalid source key should throw error', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+			const storage = new StorageProvider();
+			storage.configure(options);
+
+			// No src key
+			await expect(
+				storage.copy({ level: 'public' } as S3CopySource, { key: 'dest', level: 'public' })
+			).rejects.toThrowError('src should be an object with the property "key" with value of type string');
+
+			// wrong key type
+			await expect(
+				storage.copy(({ level: 'public', key: 123 } as unknown) as S3CopySource, {
+					key: 'dest',
+					level: 'public',
+				})
+			).rejects.toThrowError('src should be an object with the property "key" with value of type string');
+		});
+
+		test('copy with invalid destination key should throw error', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+			const storage = new StorageProvider();
+			storage.configure(options);
+
+			// No dest key
+			await expect(
+				storage.copy({ key: 'src', level: 'public' }, { level: 'public' } as S3CopyDestination)
+			).rejects.toThrowError('dest should be an object with the property "key" with value of type string');
+
+			// wrong key type
+			await expect(
+				storage.copy({ key: 'src', level: 'public' }, ({
+					key: 123,
+					level: 'public',
+				} as unknown) as S3CopyDestination)
+			).rejects.toThrowError('dest should be an object with the property "key" with value of type string');
+		});
+
 		test('progress callback should be called', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
@@ -954,7 +997,10 @@ describe('StorageProvider test', () => {
 			});
 			const storage = new StorageProvider();
 			storage.configure(options);
-			await storage.copy({ key: 'src', level: 'protected', identityId: 'identityId2' }, { key: 'dest', level: 'private' });
+			await storage.copy(
+				{ key: 'src', level: 'protected', identityId: 'identityId2' },
+				{ key: 'dest', level: 'private' }
+			);
 
 			expect(AWSS3ProviderMultipartCopier.mock.calls[0][0].params).toStrictEqual({
 				Bucket: 'bucket',

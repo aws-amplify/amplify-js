@@ -144,15 +144,21 @@ export class AWSS3Provider implements StorageProvider {
 			SSECustomerKeyMD5,
 			SSEKMSKeyId,
 		} = opt;
-		const { level: srcLevel = DEFAULT_STORAGE_LEVEL, identityId: srcIdentityId } = src;
-		const { level: destLevel = DEFAULT_STORAGE_LEVEL } = dest;
+		const { level: srcLevel = DEFAULT_STORAGE_LEVEL, identityId: srcIdentityId, key: srcKey } = src;
+		const { level: destLevel = DEFAULT_STORAGE_LEVEL, key: destKey } = dest;
+		if (!srcKey || typeof srcKey !== 'string') {
+			throw new Error(StorageErrorStrings.NO_SRC_KEY);
+		}
+		if (!destKey || typeof destKey !== 'string') {
+			throw new Error(StorageErrorStrings.NO_DEST_KEY);
+		}
 		if (srcLevel !== 'protected' && srcIdentityId) {
 			logger.warn(`IdentityId only works if level is protected, but level is set to ${srcLevel}`);
 		}
 		const srcPrefix = this._prefix({ ...opt, level: srcLevel, ...(srcIdentityId && { identityId: srcIdentityId }) });
 		const destPrefix = this._prefix({ ...opt, level: destLevel });
-		const finalSrcKey = `${bucket}/${srcPrefix}${src.key}`;
-		const finalDestKey = `${destPrefix}${dest.key}`;
+		const finalSrcKey = `${bucket}/${srcPrefix}${srcKey}`;
+		const finalDestKey = `${destPrefix}${destKey}`;
 		logger.debug(`copying ${finalSrcKey} to ${finalDestKey}`);
 
 		const params: CopyObjectCommandInput = {
@@ -211,10 +217,10 @@ export class AWSS3Provider implements StorageProvider {
 					result: 'success',
 				},
 				null,
-				`Copy success from ${src.key} to ${dest.key}`
+				`Copy success from ${srcKey} to ${destKey}`
 			);
 			return {
-				key: dest.key,
+				key: destKey,
 			};
 		} catch (error) {
 			dispatchStorageEvent(
@@ -225,7 +231,7 @@ export class AWSS3Provider implements StorageProvider {
 					result: 'failed',
 				},
 				null,
-				`Copy failed from ${src.key} to ${dest.key}`
+				`Copy failed from ${srcKey} to ${destKey}`
 			);
 			throw error;
 		}
