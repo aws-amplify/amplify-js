@@ -1056,7 +1056,6 @@ export class AuthClass {
 	public deleteUserAttributes(
 		user: CognitoUser | any,
 		attributeNames: string[],
-		clientMetadata: ClientMetaData = this._config.clientMetadata
 	) {
 		const that = this;
 		return new Promise((resolve, reject) => {
@@ -1069,8 +1068,7 @@ export class AuthClass {
 						} else {
 							return resolve(result);
 						}
-					},
-					clientMetadata
+					}
 				);
 			});
 		});
