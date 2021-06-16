@@ -13,7 +13,11 @@
 
 import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
 import { AWSS3Provider } from './providers';
-import { StorageProvider, StorageCopyTarget } from './types';
+import {
+	StorageProvider,
+	StorageCopySource,
+	StorageCopyDestination,
+} from './types';
 import axios, { CancelTokenSource } from 'axios';
 
 const logger = new Logger('StorageClass');
@@ -203,7 +207,7 @@ export class Storage {
 	 * @param {any} [config] - config.
 	 * @return {Promise<any>} - A promise resolves to the copied object's key.
 	 */
-	public copy(src: StorageCopyTarget, dest: StorageCopyTarget, config?): Promise<any> {
+	public copy(src: StorageCopySource, dest: StorageCopyDestination, config?): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
