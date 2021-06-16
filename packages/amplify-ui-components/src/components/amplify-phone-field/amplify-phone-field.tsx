@@ -32,11 +32,7 @@ export class AmplifyPhoneField {
 	render() {
 		return (
 			<div>
-				<amplify-form-field
-					label={I18n.get(this.label)}
-					hint={this.hint}
-					required={this.required}
-				>
+				<amplify-form-field label={I18n.get(this.label)} hint={this.hint}>
 					<div class="phone-field" slot="input">
 						<amplify-country-dial-code
 							dialCode={this.dialCode}
@@ -51,6 +47,7 @@ export class AmplifyPhoneField {
 							value={this.value}
 							inputProps={this.inputProps}
 							disabled={this.disabled}
+							required={this.required}
 						/>
 					</div>
 				</amplify-form-field>
