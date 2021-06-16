@@ -110,8 +110,8 @@ export class AWSS3ProviderMultipartCopier {
 					throw new Error(AWSS3ProviderMultipartCopierErrors.MAX_NUM_PARTS_EXCEEDED);
 				}
 				uploadId = await this._initMultipartUpload();
-				for (let partNumber = 1; partNumber < this.totalParts; partNumber += this.queueSize) {
-					await Promise.all(this._makeParts(partNumber).map(part => this._uploadPart(part, uploadId)));
+				for (let i = 0; i < this.totalParts; i += this.queueSize) {
+					await Promise.all(this._makeParts(i).map(part => this._uploadPart(part, uploadId)));
 				}
 				return await this._completeMultipartCopy(uploadId);
 			}
@@ -167,14 +167,14 @@ export class AWSS3ProviderMultipartCopier {
 		return uploadPartCopyOutput;
 	}
 
-	private _makeParts(startPartNum: number): CopyPart[] {
+	private _makeParts(startPartIndex: number): CopyPart[] {
 		const parts: CopyPart[] = [];
-		const partsRemaining = this.totalParts - startPartNum + 1;
+		const partsRemaining = this.totalParts - startPartIndex;
 		for (let i = 0; i < Math.min(this.queueSize, partsRemaining); i++) {
-			const startByte = (startPartNum + i - 1) * AWSS3ProviderMultipartCopier.partSize;
+			const startByte = (startPartIndex + i) * AWSS3ProviderMultipartCopier.partSize;
 			const endByte = Math.min(startByte + AWSS3ProviderMultipartCopier.partSize, this.totalBytesToCopy) - 1;
 			parts.push({
-				partNumber: startPartNum + i,
+				partNumber: startPartIndex + i + 1,
 				startByte,
 				endByte,
 			});
