@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Based on:
+# https://github.com/react-native-community/react-native-circleci-orb
+
 case $1 in
   export-env)
     echo 'export PATH="$PATH:/usr/local/opt/node@10/bin:~/.yarn/bin:~/project/node_modules/.bin:~/project/example/node_modules/.bin"' >> $BASH_ENV
