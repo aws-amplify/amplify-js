@@ -15,6 +15,7 @@ import {
 import {
 	CognitoIdentityClient,
 	GetIdCommand,
+	GetCredentialsForIdentityCommand,
 } from '@aws-sdk/client-cognito-identity';
 import { CredentialProvider } from '@aws-sdk/types';
 
@@ -85,6 +86,7 @@ export class CredentialsClass {
 		return this._pickupCredentials();
 	}
 
+	// currently we only store a guest identity in local storage
 	private _getCognitoIdentityIdStorageKey(identityPoolId: string) {
 		return `${COGNITO_IDENTITY_KEY_PREFIX}${identityPoolId}`;
 	}
@@ -254,16 +256,7 @@ export class CredentialsClass {
 			);
 		}
 
-		let identityId = undefined;
-		try {
-			await this._storageSync;
-			identityId = this._storage.getItem(
-				this._getCognitoIdentityIdStorageKey(identityPoolId)
-			);
-			this._identityId = identityId;
-		} catch (e) {
-			logger.debug('Failed to get the cached identityId', e);
-		}
+		let identityId = this._identityId = await this._getGuestIdentity();
 
 		const cognitoClient = new CognitoIdentityClient({
 			region,
@@ -320,9 +313,7 @@ export class CredentialsClass {
 					e.message === `Identity '${identityId}' not found.`
 				) {
 					logger.debug('Failed to load guest credentials');
-					this._storage.removeItem(
-						this._getCognitoIdentityIdStorageKey(identityPoolId)
-					);
+					await this._removeGuestIdentity();
 
 					const credentialsProvider: CredentialProvider = async () => {
 						const { IdentityId } = await cognitoClient.send(
@@ -432,31 +423,64 @@ export class CredentialsClass {
 		});
 
 		/* 
+			TODO: remove and update comments
 			Retreiving identityId with GetIdCommand to mimic the behavior in the following code in aws-sdk-v3:
 			https://git.io/JeDxU
 
 			Note: Retreive identityId from CredentialsProvider once aws-sdk-js v3 supports this.
 		*/
 		const credentialsProvider: CredentialProvider = async () => {
-			const { IdentityId } = await cognitoClient.send(
-				new GetIdCommand({
-					IdentityPoolId: identityPoolId,
-					Logins: logins,
+			// try to fetch the local stored guest identity, if found, we will associate it with the logins
+			let guestIdentity = await this._getGuestIdentity();
+
+			// if no guestIdentity found, call getId with the logins
+			// for first time user, this will return a brand new identity
+			// for return user, this will retrieve the previous identity assocaited with the logins
+			let generatedOrRetrievedIdentity;
+			if (!guestIdentity) {
+				const { IdentityId } = await cognitoClient.send(
+					new GetIdCommand({
+						IdentityPoolId: identityPoolId,
+						Logins: logins,
+					})
+				);
+				generatedOrRetrievedIdentity = IdentityId;
+			}
+
+			const {
+				Credentials: {
+					AccessKeyId,
+					Expiration,
+					SecretKey,
+					SessionToken,
+				},
+				// single source of truth for the primary identity associated with the logins
+				// only if the guestIdentity is used for a first time user, 
+				// the guestIdentity will become the primaryIdentity
+				IdentityId: primaryIdentity,
+			} = await cognitoClient.send(
+				new GetCredentialsForIdentityCommand({
+				  IdentityId: guestIdentity || generatedOrRetrievedIdentity,
+				  Logins: logins,
 				})
 			);
-			this._identityId = IdentityId;
 
-			const cognitoIdentityParams: FromCognitoIdentityParameters = {
-				client: cognitoClient,
-				logins,
-				identityId: IdentityId,
-			};
+			this._identityId = primaryIdentity;
+			if (guestIdentity) {
+				// if guestIdentity is found and used by GetCredentialsForIdentity
+				// it will becomes an auth identity and disqualified as an unauth identity
+				logger.debug(`The guest identity ${guestIdentity} has been successfully bound to the logins`);
+				// remove it from local strorage to avoid being pickup as a guest Id
+				await this._removeGuestIdentity();
+			}
 
-			const credentialsFromCognitoIdentity = fromCognitoIdentity(
-				cognitoIdentityParams
-			);
-
-			return credentialsFromCognitoIdentity();
+			return {
+				accessKeyId: AccessKeyId,
+				secretAccessKey: SecretKey,
+				sessionToken: SessionToken,
+				expiration: Expiration,
+				identityId: primaryIdentity,
+			  };
 		};
 
 		const credentials = credentialsProvider().catch(async err => {
@@ -508,15 +532,7 @@ export class CredentialsClass {
 						}
 					}
 					if (source === 'guest') {
-						try {
-							await this._storageSync;
-							this._storage.setItem(
-								this._getCognitoIdentityIdStorageKey(identityPoolId),
-								credentials.identityId
-							); // TODO: IdentityId is currently not returned by fromCognitoIdentityPool()
-						} catch (e) {
-							logger.debug('Failed to cache identityId', e);
-						}
+						await this._setGuestIdentity(credentials.identityId);
 					}
 					res(that._credentials);
 					return;
@@ -551,6 +567,38 @@ export class CredentialsClass {
 		this._credentials_source = null;
 		logger.debug('removing aws-amplify-federatedInfo from storage');
 		this._storage.removeItem('aws-amplify-federatedInfo');
+	}
+
+
+	/* operations on local stored guest identity */
+	private async _getGuestIdentity() {
+		const { identityPoolId } = this._config;
+		try {
+			await this._storageSync;
+			return this._storage.getItem(
+				this._getCognitoIdentityIdStorageKey(identityPoolId)
+			);
+		} catch (e) {
+			logger.debug('Failed to get the cached identityId', e);
+		}
+	}
+
+	private async _setGuestIdentity(identityId) {
+		const { identityPoolId } = this._config;
+		try {
+			await this._storageSync;
+			this._storage.setItem(
+				this._getCognitoIdentityIdStorageKey(identityPoolId),
+				identityId,
+			);
+		} catch (e) {
+			logger.debug('Failed to cache identityId', e);
+		}
+	}
+
+
+	private async _removeGuestIdentity() {
+		const { identityPoolId } = this._config;
 		logger.debug(
 			`removing ${this._getCognitoIdentityIdStorageKey(
 				identityPoolId
