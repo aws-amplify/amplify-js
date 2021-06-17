@@ -881,7 +881,7 @@ describe('StorageProvider test', () => {
 			// No src key
 			await expect(
 				storage.copy({ level: 'public' } as S3CopySource, { key: 'dest', level: 'public' })
-			).rejects.toThrowError('src should be an object with the property "key" with value of type string');
+			).rejects.toThrowError('source param should be an object with the property "key" with value of type string');
 
 			// wrong key type
 			await expect(
@@ -889,7 +889,7 @@ describe('StorageProvider test', () => {
 					key: 'dest',
 					level: 'public',
 				})
-			).rejects.toThrowError('src should be an object with the property "key" with value of type string');
+			).rejects.toThrowError('source param should be an object with the property "key" with value of type string');
 		});
 
 		test('copy with invalid destination key should throw error', async () => {
@@ -902,7 +902,7 @@ describe('StorageProvider test', () => {
 			// No dest key
 			await expect(
 				storage.copy({ key: 'src', level: 'public' }, { level: 'public' } as S3CopyDestination)
-			).rejects.toThrowError('dest should be an object with the property "key" with value of type string');
+			).rejects.toThrowError('destination param should be an object with the property "key" with value of type string');
 
 			// wrong key type
 			await expect(
@@ -910,7 +910,7 @@ describe('StorageProvider test', () => {
 					key: 123,
 					level: 'public',
 				} as unknown) as S3CopyDestination)
-			).rejects.toThrowError('dest should be an object with the property "key" with value of type string');
+			).rejects.toThrowError('destination param should be an object with the property "key" with value of type string');
 		});
 
 		test('copy object with track', async () => {

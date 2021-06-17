@@ -1,7 +1,7 @@
 export enum StorageErrorStrings {
 	NO_CREDENTIALS = 'No credentials',
-	NO_SRC_KEY = 'src should be an object with the property "key" with value of type string',
-	NO_DEST_KEY = 'dest should be an object with the property "key" with value of type string',
+	NO_SRC_KEY = 'source param should be an object with the property "key" with value of type string',
+	NO_DEST_KEY = 'destination param should be an object with the property "key" with value of type string',
 }
 
 export enum AWSS3ProviderMultipartCopierErrors {
