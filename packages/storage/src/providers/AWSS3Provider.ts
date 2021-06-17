@@ -17,6 +17,7 @@ import {
 	DeleteObjectCommand,
 	ListObjectsCommand,
 	CopyObjectCommandInput,
+	CopyObjectCommand,
 } from '@aws-sdk/client-s3';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
@@ -32,7 +33,6 @@ import {
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { AxiosHttpHandler } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
-import { AWSS3ProviderMultipartCopier, COPY_PROGRESS } from './AWSS3ProviderMultipartCopy';
 import * as events from 'events';
 
 const logger = new Logger('AWSS3Provider');
@@ -132,12 +132,8 @@ export class AWSS3Provider implements StorageProvider {
 			acl,
 			bucket,
 			cacheControl,
-			contentDisposition,
-			contentLanguage,
-			contentType,
 			expires,
 			track,
-			progressCallback,
 			serverSideEncryption,
 			SSECustomerAlgorithm,
 			SSECustomerKey,
@@ -153,7 +149,9 @@ export class AWSS3Provider implements StorageProvider {
 			throw new Error(StorageErrorStrings.NO_DEST_KEY);
 		}
 		if (srcLevel !== 'protected' && srcIdentityId) {
-			logger.warn(`You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`);
+			logger.warn(
+				`You may copy files from another user if the source level is "protected", currently it's ${srcLevel}`
+			);
 		}
 		const srcPrefix = this._prefix({ ...opt, level: srcLevel, ...(srcIdentityId && { identityId: srcIdentityId }) });
 		const destPrefix = this._prefix({ ...opt, level: destLevel });
@@ -165,12 +163,11 @@ export class AWSS3Provider implements StorageProvider {
 			Bucket: bucket,
 			CopySource: finalSrcKey,
 			Key: finalDestKey,
+			// Copies over metadata like contentType as well
+			MetadataDirective: 'COPY',
 		};
 
 		if (cacheControl) params.CacheControl = cacheControl;
-		if (contentDisposition) params.ContentDisposition = contentDisposition;
-		if (contentLanguage) params.ContentLanguage = contentLanguage;
-		if (contentType) params.ContentType = contentType;
 		if (expires) params.Expires = expires;
 		if (serverSideEncryption) {
 			params.ServerSideEncryption = serverSideEncryption;
@@ -189,26 +186,10 @@ export class AWSS3Provider implements StorageProvider {
 		}
 		if (acl) params.ACL = acl;
 
-		const emitter = new events.EventEmitter();
-		const s3 = this._createNewS3Client(opt, emitter);
+		const s3 = this._createNewS3Client(opt);
 		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
-
-		const copier = new AWSS3ProviderMultipartCopier({
-			params,
-			emitter,
-			s3client: s3,
-		});
-		if (progressCallback) {
-			if (typeof progressCallback === 'function') {
-				emitter.on(COPY_PROGRESS, progress => {
-					progressCallback(progress);
-				});
-			} else {
-				logger.warn(`progressCallback should be a function, not a ${typeof progressCallback}`);
-			}
-		}
 		try {
-			await copier.copy();
+			await s3.send(new CopyObjectCommand(params));
 			dispatchStorageEvent(
 				track,
 				'copy',
