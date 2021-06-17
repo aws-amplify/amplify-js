@@ -86,14 +86,9 @@ const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
 
-<<<<<<< HEAD
 // Cognito Documentation for max device
 // tslint:disable-next-line:max-line-length
 // https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
-=======
-// as per Cognito's Documentation
-// https://tinyurl.com/c2a9f4hz
->>>>>>> 918b05f1f0e86ca2ad983a06687a23d32ff5bab0
 const MAX_DEVICES = 60;
 
 /**
@@ -2281,7 +2276,7 @@ export class AuthClass {
 		return new Promise((res, rej) => {
 			const cb = {
 				onSuccess(data) {
-					const deviceList: AuthDevice[] = data.Devices.map(device => {
+					const deviceList: AuthDevice[] = data.Devices.forEach(device => {
 						return new AuthDevice(device);
 					});
 					res(deviceList);
