@@ -254,6 +254,7 @@ import {
 } from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
 import { AuthErrorTypes } from '../src/types/Auth';
+import { mockDeviceArray } from './mockData';
 
 const authOptions: AuthOptions = {
 	userPoolId: 'awsUserPoolsId',
@@ -3742,7 +3743,7 @@ describe('auth unit test', () => {
 			spyOnCognito.mockClear();
 		});
 
-		test('list devices device happy path', async () => {
+		test('list devices with no devices from Cognito happy path', async () => {
 			const auth = new Auth(authOptions);
 
 			const spyon = jest
@@ -3769,6 +3770,47 @@ describe('auth unit test', () => {
 						}
 					) => {
 						obj.onSuccess({ Devices: [] });
+					}
+				);
+
+			await auth.fetchDevices().then(res => {
+				expect(spyOnCognito).toBeCalled();
+			});
+
+			spyon.mockClear();
+			spyon2.mockClear();
+			spyOnCognito.mockClear();
+		});
+
+		test('list devices with mock devices from Cognito happy path', async () => {
+			const auth = new Auth(authOptions);
+
+			const spyon = jest
+				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
+				.mockImplementationOnce(() => {
+					return new CognitoAccessToken({ AccessToken: 'accessToken' });
+				});
+
+			const spyon2 = jest
+				.spyOn(CognitoAccessToken.prototype, 'decodePayload')
+				.mockImplementation(() => {
+					return { scope: '' };
+				});
+
+			const spyOnCognito = jest
+				.spyOn(CognitoUser.prototype, 'listDevices')
+				.mockImplementationOnce(
+					(
+						MAX_DEVICES,
+						none: string,
+						obj: {
+							onSuccess: (success: Object) => void;
+							onFailure: (err: any) => void;
+						}
+					) => {
+						obj.onSuccess({
+							Devices: mockDeviceArray,
+						});
 					}
 				);
 

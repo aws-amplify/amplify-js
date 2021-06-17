@@ -2276,7 +2276,7 @@ export class AuthClass {
 		return new Promise((res, rej) => {
 			const cb = {
 				onSuccess(data) {
-					const deviceList: AuthDevice[] = data.Devices.forEach(device => {
+					const deviceList: AuthDevice[] = data.Devices.map(device => {
 						return new AuthDevice(device);
 					});
 					res(deviceList);
