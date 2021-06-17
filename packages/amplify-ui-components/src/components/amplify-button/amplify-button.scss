@@ -5,6 +5,7 @@
  * @prop --color: Text color within the button
  * @prop --border-width: Border width of the button
  * @prop --border-color: Border color of the button
+ * @prop --border-radius: Border radius of the button
  * @prop --border-style: Border style of the button
  * @prop --link-color: Text color within an anchor variant button
  * @prop --link-hover: Text color within an anchor variant button when hovering
@@ -23,6 +24,7 @@ amplify-button {
 	--border-width: 0;
 	--border-color: initial;
 	--border-style: initial;
+	--border-radius: initial;
 	--link-color: var(--amplify-primary-color);
 	--link-hover: var(--amplify-primary-tint);
 	--link-active: var(--amplify-primary-shade);
@@ -63,6 +65,7 @@ amplify-button {
 	border-width: var(--border-width);
 	border-color: var(--border-color);
 	border-style: var(--border-style);
+	border-radius: var(--border-radius);
 
 	&:active {
 		opacity: 1;
