@@ -114,13 +114,14 @@ export class AWSS3Provider implements StorageProvider {
 	}
 
 	/**
-	 * Copy an object from a source object to a new object within the same bucket.
+	 * Copy an object from a source object to a new object within the same bucket. Can optionally copy files across
+	 * different level or identityId (if source object's level is 'protected').
 	 *
 	 * @async
-	 * @param {string} src - Key of the source object.
-	 * @param {string} dest - Key of the destination object.
+	 * @param {S3CopySource} src - Key and optionally access level and identityId of the source object.
+	 * @param {S3CopyDestination} dest - Key and optionally access level of the destination object.
 	 * @param {CopyObjectConfig} [config] - Optional configuration for s3 commands.
-	 * @return The copied object's key.
+	 * @return {Promise<CopyResult>} The key of the copied object.
 	 */
 	public async copy(src: S3CopySource, dest: S3CopyDestination, config?: CopyObjectConfig): Promise<CopyResult> {
 		const credentialsOK = await this._ensureCredentials();
