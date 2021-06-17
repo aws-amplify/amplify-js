@@ -721,6 +721,22 @@ jobs:
           sample_name: multi-part-upload-with-progress
           spec: multi-part-upload-with-progress
           browser: << parameters.browser >>
+  integ_react_storage_copy:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/multi-part-copy-with-progress
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Storage Copy'
+          framework: react
+          category: storage
+          sample_name: multi-part-copy-with-progress
+          spec: multi-part-copy-with-progress
+          browser: << parameters.browser >>
   integ_react_storage_ui:
     executor: js-test-executor
     <<: *test_env_vars
@@ -1077,6 +1093,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_storage_copy:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_storage_ui:
           requires:
             - integ_setup
@@ -1169,6 +1194,7 @@ workflows:
             - integ_react_datastore_consecutive_saves
             - integ_react_storage
             - integ_react_storage_multipart_progress
+            - integ_react_storage_copy
             - integ_react_storage_ui
             - integ_react_interactions
             - integ_angular_interactions

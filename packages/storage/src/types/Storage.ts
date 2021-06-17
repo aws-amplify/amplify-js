@@ -19,3 +19,13 @@ export interface StorageOptions {
 	level?: string;
 	credentials?: object;
 }
+
+export type StorageCopyTarget = {
+	key: string;
+	level?: string;
+	identityId?: string;
+};
+
+export type StorageCopySource = StorageCopyTarget;
+
+export type StorageCopyDestination = Omit<StorageCopyTarget, 'identityId'>;
