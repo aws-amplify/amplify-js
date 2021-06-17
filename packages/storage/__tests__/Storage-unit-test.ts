@@ -592,12 +592,12 @@ describe('Storage', () => {
 		test('copy object successfully', async () => {
 			const copySpyon = jest
 				.spyOn(AWSStorageProvider.prototype, 'copy')
-				.mockImplementation(() => Promise.resolve('key'));
+				.mockImplementation(() => Promise.resolve({ key: 'key' }));
 			const storage = new StorageClass();
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			await storage.copy('src', 'dest', {
+			await storage.copy({ key: 'src' }, { key: 'dest' }, {
 				Storage: {
 					AWSS3: {
 						bucket: 'bucket',
@@ -611,7 +611,7 @@ describe('Storage', () => {
 		test('copy object without provider', async () => {
 			const storage = new StorageClass();
 			try {
-				await storage.copy('src', 'dest');
+				await storage.copy({ key: 'src' }, { key: 'dest' });
 			} catch (err) {
 				expect(err).toEqual('No plugin found in Storage for the provider');
 			}
@@ -699,7 +699,7 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			const request = storage.copy('src', 'dest', {});
+			const request = storage.copy({ key: 'src' }, { key: 'dest' }, {});
 			storage.cancel(request, 'request cancelled');
 			expect(cancelTokenSpy).toHaveBeenCalledTimes(1);
 			expect(cancelMock).toHaveBeenCalledWith('request cancelled');
