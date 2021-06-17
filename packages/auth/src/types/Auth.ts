@@ -224,10 +224,8 @@ export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
 }
 
 export interface IAuthDevice {
-	deviceCreatedDate: string;
-	deviceKey: string;
-	deviceLastAuthenticatedDate: string;
-	deviceLastModifiedDate: string;
+	id: string;
+	name: string;
 }
 
 export type DeviceAttribute = {
@@ -244,17 +242,11 @@ export type AuthDeviceProps = {
 };
 
 export class AuthDevice {
-	deviceCreatedDate: number;
-	deviceKey: string;
-	deviceLastAuthenticatedDate: number;
-	deviceAttributes: DeviceAttribute[];
-	deviceLastModifiedDate: number;
+	id: string;
+	name: string;
 
 	constructor(props: AuthDeviceProps) {
-		this.deviceCreatedDate = props.DeviceCreateDate;
-		this.deviceKey = props.DeviceKey;
-		this.deviceLastAuthenticatedDate = props.DeviceLastAuthenticatedDate;
-		this.deviceLastModifiedDate = props.DeviceLastModifiedDate;
-		this.deviceAttributes = props.DeviceAttributes;
+		this.id = props.DeviceKey;
+		this.name = props.DeviceAttributes[1].Value;
 	}
 }

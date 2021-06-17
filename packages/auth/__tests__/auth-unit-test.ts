@@ -253,8 +253,8 @@ import {
 	Hub,
 } from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
-import { AuthErrorTypes } from '../src/types/Auth';
-import { mockDeviceArray } from './mockData';
+import { AuthDevice, AuthErrorTypes } from '../src/types/Auth';
+import { mockDeviceArray, transformedMockData } from './mockData';
 
 const authOptions: AuthOptions = {
 	userPoolId: 'awsUserPoolsId',
@@ -3815,6 +3815,7 @@ describe('auth unit test', () => {
 				);
 
 			await auth.fetchDevices().then(res => {
+				expect(res).toMatchObject(transformedMockData);
 				expect(spyOnCognito).toBeCalled();
 			});
 
