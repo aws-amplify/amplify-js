@@ -118,7 +118,7 @@ export class AWSS3Provider implements StorageProvider {
 		return this._config;
 	}
 
-	public async upload(key: string, object, config?): Promise<AWSS3UploadTask> {
+	public async upload(key: string, file, config?): Promise<AWSS3UploadTask> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
 			return Promise.reject('No credentials');
@@ -133,13 +133,13 @@ export class AWSS3Provider implements StorageProvider {
 		const prefix = this._prefix(opt);
 		const s3 = this._createNewS3Client(opt);
 		s3.middlewareStack.remove('contentLengthMiddleware');
-		const final_key = prefix + key;
-		logger.debug('put ' + key + ' to ' + final_key);
+		const finalKey = prefix + key;
+		logger.debug('put ' + key + ' to ' + finalKey);
 
 		const params: any = {
 			Bucket: bucket,
-			Key: final_key,
-			Body: object,
+			Key: finalKey,
+			Body: file,
 			ContentType: type,
 		};
 		if (cacheControl) {
@@ -178,9 +178,9 @@ export class AWSS3Provider implements StorageProvider {
 		const emitter = new events.EventEmitter();
 		const task = await this._uploadTaskManager.addTask({
 			bucket,
-			key: final_key,
+			key: finalKey,
 			s3Client: s3,
-			body: object,
+			body: file,
 			emitter,
 		});
 		emitter.on('uploadPartProgress', event => {
