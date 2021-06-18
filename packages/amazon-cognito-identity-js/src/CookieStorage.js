@@ -33,9 +33,14 @@ export default class CookieStorage {
 			this.secure = true;
 		}
 		if (Object.prototype.hasOwnProperty.call(data, 'sameSite')) {
-			if (data.sameSite !== 'strict' && data.sameSite !== 'lax') {
+			if (!['strict', 'lax', 'none'].includes(data.sameSite)) {
 				throw new Error(
-					'The sameSite value of cookieStorage must be "lax" or "strict".'
+					'The sameSite value of cookieStorage must be "lax", "strict" or "none".'
+				);
+			}
+			if (data.sameSite === 'none' && !this.secure) {
+				throw new Error(
+					'sameSite = None requires the Secure attribute in latest browser versions.'
 				);
 			}
 			this.sameSite = data.sameSite;
@@ -97,14 +102,15 @@ export default class CookieStorage {
 	}
 
 	/**
-	 * This is used to clear the storage
-	 * @returns {string} nothing
+	 * This is used to clear the storage of optional
+	 * items that were previously set
+	 * @returns {} an empty object
 	 */
 	clear() {
 		const cookies = Cookies.get();
-		let index;
-		for (index = 0; index < cookies.length; ++index) {
-			Cookies.remove(cookies[index]);
+		let numKeys = Object.keys(cookies).length;
+		for (let index = 0; index < numKeys; ++index) {
+			this.removeItem(Object.keys(cookies)[index]);
 		}
 		return {};
 	}

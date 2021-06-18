@@ -1,14 +1,20 @@
+/**
+ * @prop --color: Color of the text
+ * @prop --font-family: Font family of the text
+ * @prop --font-size: Font size of the text
+ * @prop --font-weight: Font weight of the text
+ */
 :host {
-  --color: var(--amplify-grey);
-  --font-family: var(--amplify-font-family);
-  --font-size: var(--amplify-text-xs);
-  --font-weight: var(--amplify-font-weight);
+	--color: var(--amplify-grey);
+	--font-family: var(--amplify-font-family);
+	--font-size: var(--amplify-text-xs);
+	--font-weight: var(--amplify-font-weight);
 }
 
 .hint {
-  color: var(--color);
-  font-family: var(--font-family);
-  font-weight: var(--font-weight);
-  font-size: var(--font-size);
-  margin-bottom: 2.625rem;
+	color: var(--color);
+	font-family: var(--font-family);
+	font-weight: var(--font-weight);
+	font-size: var(--font-size);
+	margin-bottom: 2.625rem;
 }

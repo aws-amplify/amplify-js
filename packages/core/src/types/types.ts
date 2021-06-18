@@ -4,6 +4,7 @@ export interface AmplifyConfig {
 	API?: object;
 	Storage?: object;
 	Cache?: object;
+	ssr?: boolean;
 }
 
 export interface ICredentials {
@@ -12,6 +13,8 @@ export interface ICredentials {
 	secretAccessKey: string;
 	identityId: string;
 	authenticated: boolean;
+	// Long term creds do not provide an expiration date
+	expiration?: Date;
 }
 
 /**

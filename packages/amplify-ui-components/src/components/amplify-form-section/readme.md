@@ -15,6 +15,29 @@
 | `testDataPrefix`         | `test-data-prefix`         | String prefix for the data-test attributes in this component primarily used for testing purposes | `string`                            | `'form-section'` |
 
 
+## Slots
+
+| Slot                            | Description                                                                |
+| ------------------------------- | -------------------------------------------------------------------------- |
+| `"amplify-form-section-footer"` | Content for the footer section.                                            |
+| `"amplify-form-section-header"` | Content for the header section                                             |
+| `"subtitle"`                    | Content for the subtitle. This is inside of `amplify-form-section-header`. |
+
+
+## CSS Custom Properties
+
+| Name               | Description                        |
+| ------------------ | ---------------------------------- |
+| `--font-family`    | Text font family within the footer |
+| `--font-weight`    | Text weight within the footer      |
+| `--footer-color`   | Text color within the footer       |
+| `--footer-size`    | Text size within the footer        |
+| `--header-color`   | Text color within the form header  |
+| `--header-size`    | Text size within the form header   |
+| `--subtitle-color` | Text color within the subtitle     |
+| `--subtitle-size`  | Text size within the subtitle      |
+
+
 ## Dependencies
 
 ### Used by
@@ -42,6 +65,7 @@ graph TD;
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-loading-spinner
+  amplify-button --> amplify-icon
   amplify-loading-spinner --> amplify-icon
   amplify-confirm-sign-in --> amplify-form-section
   amplify-confirm-sign-up --> amplify-form-section

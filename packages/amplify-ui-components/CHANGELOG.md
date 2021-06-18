@@ -3,6 +3,375 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.4.0...@aws-amplify/ui-components@1.5.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* fix bug where required fields were not being enforced ([#8455](https://github.com/aws-amplify/amplify-js/issues/8455)) ([e8f9e5a](https://github.com/aws-amplify/amplify-js/commit/e8f9e5a9d754853b29e7bf9789973b055a517bbc))
+
+
+### Features
+
+* adding border radius to amplify-button ([#8465](https://github.com/aws-amplify/amplify-js/issues/8465)) ([9549090](https://github.com/aws-amplify/amplify-js/commit/9549090ff534edc8e9df448a60848ed9d20083a6))
+* adding hint text props to our auth form field mappings ([a22ac3a](https://github.com/aws-amplify/amplify-js/commit/a22ac3aa108dd35f4230f1741afb33aa83edd5fb))
+* make sign in button full width if not sign up button present ([#8447](https://github.com/aws-amplify/amplify-js/issues/8447)) ([d333997](https://github.com/aws-amplify/amplify-js/commit/d3339978e2f4d4eef41ae0bb80daef5ee7ce0791))
+
+
+
+
+
+# [1.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.3.2...@aws-amplify/ui-components@1.4.0) (2021-06-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** handle custom formFields in amplify-confirm-sign-in fields ([#8255](https://github.com/aws-amplify/amplify-js/issues/8255)) ([07e91fb](https://github.com/aws-amplify/amplify-js/commit/07e91fb3900ccc27e2cc750db000447df11a98cd))
+* **@aws-amplify/ui-components:** Place `formField` comment right above the variable ([#8348](https://github.com/aws-amplify/amplify-js/issues/8348)) ([56deb45](https://github.com/aws-amplify/amplify-js/commit/56deb453a2b31ac8c7f53741507dca7df8ef7fa8))
+* **@aws-amplify/ui-components:** remove hostedui check ([#8357](https://github.com/aws-amplify/amplify-js/issues/8357)) ([94f25ec](https://github.com/aws-amplify/amplify-js/commit/94f25ec91af020dd72e17e9a9e52a1822923e93a))
+
+
+### Features
+
+* adding toast notification when selecting an MFA type ([#8394](https://github.com/aws-amplify/amplify-js/issues/8394)) ([4d39773](https://github.com/aws-amplify/amplify-js/commit/4d39773b0c174538d0d7c1b770bc276700bcf953))
+
+
+
+
+
+## [1.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.3.1...@aws-amplify/ui-components@1.3.2) (2021-05-26)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.3.0...@aws-amplify/ui-components@1.3.1) (2021-05-14)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** Prioritize using `user.username` whenever provided ([#8050](https://github.com/aws-amplify/amplify-js/issues/8050)) ([c48ad83](https://github.com/aws-amplify/amplify-js/commit/c48ad83beaac019281b735fc54d7a98b0a1a4d2e))
+
+
+
+
+
+# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.2.0...@aws-amplify/ui-components@1.3.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** Add empty function as the default input handler for sigin form ([#8192](https://github.com/aws-amplify/amplify-js/issues/8192)) ([0d94c97](https://github.com/aws-amplify/amplify-js/commit/0d94c972a1b3d63dd224adffe2f4c7f5ffa73d1a))
+* **@aws-amplify/ui-components:** Get autofill data on `componentDidLoad` ([#8194](https://github.com/aws-amplify/amplify-js/issues/8194)) ([14db4a0](https://github.com/aws-amplify/amplify-js/commit/14db4a0dd99694823b4fe8c94c4df92a4329178c))
+* **@aws-amplify/ui-components:** use correct unmount lifecycle for authenticator ([#8227](https://github.com/aws-amplify/amplify-js/issues/8227)) ([9314112](https://github.com/aws-amplify/amplify-js/commit/9314112a4522b31cb24e523cfa5d3de4b06c8c8b))
+
+
+### Features
+
+* **@aws-amplify/ui-components:** partial shadow DOM removal + pw manager workaround ([#8181](https://github.com/aws-amplify/amplify-js/issues/8181)) ([721596f](https://github.com/aws-amplify/amplify-js/commit/721596fc7e22fa86512ba9fa7ea5d83652ada4eb))
+
+
+
+
+
+# [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.1.1...@aws-amplify/ui-components@1.2.0) (2021-04-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** fix required attributes translations in require new password component ([#7998](https://github.com/aws-amplify/amplify-js/issues/7998)) ([1f25f23](https://github.com/aws-amplify/amplify-js/commit/1f25f238ef5efe66e714e59042d58fd2a5334534))
+
+
+### Features
+
+* **@aws-amplify/ui-components:** AmplifyAuthFields accept type for default fields ([#6690](https://github.com/aws-amplify/amplify-js/issues/6690)) ([c4ccc17](https://github.com/aws-amplify/amplify-js/commit/c4ccc17db78521d8650fe91fc77587d9ddfbe162))
+
+
+
+
+
+## [1.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.1.0...@aws-amplify/ui-components@1.1.1) (2021-03-25)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** update required attributes given name placeholder ([#7961](https://github.com/aws-amplify/amplify-js/issues/7961)) ([dd98afb](https://github.com/aws-amplify/amplify-js/commit/dd98afb272e0ffe39c1b9e6a9ca08e6b15ae53fb))
+
+
+
+
+
+# [1.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.0.4...@aws-amplify/ui-components@1.1.0) (2021-03-12)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** add hideToast prop to authenticator ([#7129](https://github.com/aws-amplify/amplify-js/issues/7129)) ([bf2f048](https://github.com/aws-amplify/amplify-js/commit/bf2f04888ea7e1e5364e1f669bb2847040fde684))
+
+
+
+
+
+## [1.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.0.3...@aws-amplify/ui-components@1.0.4) (2021-03-08)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.0.2...@aws-amplify/ui-components@1.0.3) (2021-02-25)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.0.1...@aws-amplify/ui-components@1.0.2) (2021-02-18)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.10.4...@aws-amplify/ui-components@1.0.1) (2021-02-15)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.10.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.10.3...@aws-amplify/ui-components@0.10.4) (2021-02-09)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.10.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.10.2...@aws-amplify/ui-components@0.10.3) (2021-02-03)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** handle non-username alias ([#7663](https://github.com/aws-amplify/amplify-js/issues/7663)) ([651c3b2](https://github.com/aws-amplify/amplify-js/commit/651c3b29f39dd5beb563b5084ff74f7cbcc94368))
+
+
+
+
+
+## [0.10.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.10.1...@aws-amplify/ui-components@0.10.2) (2021-02-01)
+
+
+### Reverts
+
+* Revert "Test out explicit `bundles`" ([0a3cf4b](https://github.com/aws-amplify/amplify-js/commit/0a3cf4b5fcb25bee97a8fc744c87e61171b8fadb))
+
+
+
+
+
+## [0.10.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.10.0...@aws-amplify/ui-components@0.10.1) (2021-01-29)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** exit early for invalid inputs ([#7543](https://github.com/aws-amplify/amplify-js/issues/7543)) ([760374e](https://github.com/aws-amplify/amplify-js/commit/760374ee94e740d8772db9913eebb5019d0d7c97))
+* **@aws-amplify/ui-components:** handle federated user in checkContact ([#7562](https://github.com/aws-amplify/amplify-js/issues/7562)) ([537c9c5](https://github.com/aws-amplify/amplify-js/commit/537c9c5e27372e02e220069456f6cabbc95e7fc8))
+* **@aws-amplify/ui-components:** handle slotted elements properly ([#7522](https://github.com/aws-amplify/amplify-js/issues/7522)) ([286c9e8](https://github.com/aws-amplify/amplify-js/commit/286c9e8fbec3ccdc5bf24edf3cbfb2bae370d751))
+* **@aws-amplify/ui-components:** revise word mfa=> MFA ([#7359](https://github.com/aws-amplify/amplify-js/issues/7359)) ([843183b](https://github.com/aws-amplify/amplify-js/commit/843183b094281b42ec829b010dd41d214899c23d))
+
+
+
+
+
+# [0.10.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.8...@aws-amplify/ui-components@0.10.0) (2021-01-07)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** display spinner during submission of sign-up and confirm-sign-up form ([#7436](https://github.com/aws-amplify/amplify-js/issues/7436)) ([2a53bef](https://github.com/aws-amplify/amplify-js/commit/2a53beff4ffbeeb9857dd8c144fcf950ba09f7e8))
+* **@aws-amplify/ui-components:** fix typo ([#7485](https://github.com/aws-amplify/amplify-js/issues/7485)) ([9baa022](https://github.com/aws-amplify/amplify-js/commit/9baa02212d4e99f723e431f54e857dd0523dfe84))
+* watch for user prop update ([#7442](https://github.com/aws-amplify/amplify-js/issues/7442)) ([06bfecb](https://github.com/aws-amplify/amplify-js/commit/06bfecbd32751dee61d5abb6d5be9430ecaeca5a))
+
+
+### Features
+
+* **@aws-amplify/ui-components:** Trim inputs before submit ([#7408](https://github.com/aws-amplify/amplify-js/issues/7408)) ([b5de2c9](https://github.com/aws-amplify/amplify-js/commit/b5de2c99a6aafbafe961849c8066631c2a03151a))
+
+
+
+
+
+## [0.9.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.7...@aws-amplify/ui-components@0.9.8) (2020-12-17)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** display friendly error for empty password ([#7401](https://github.com/aws-amplify/amplify-js/issues/7401)) ([72997e8](https://github.com/aws-amplify/amplify-js/commit/72997e863f0e508904a2ea9ee485e75359e3fed7))
+* **@aws-amplify/ui-components:** fixes typo Ancilliary => Ancillary ([#7355](https://github.com/aws-amplify/amplify-js/issues/7355)) ([547d88b](https://github.com/aws-amplify/amplify-js/commit/547d88b61c240c2418fc815c902670f52b386c1d))
+* **@aws-amplify/ui-componets:** Use constant for empty password error ([#7403](https://github.com/aws-amplify/amplify-js/issues/7403)) ([1ee7ebc](https://github.com/aws-amplify/amplify-js/commit/1ee7ebcce75fd2076fa69c970e5a0c538a16e737))
+
+
+
+
+
+## [0.9.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.6...@aws-amplify/ui-components@0.9.7) (2020-12-10)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** flatten `injectGlobalPaths` array ([ccd7c2e](https://github.com/aws-amplify/amplify-js/commit/ccd7c2e5c8320fac0e01d59a509c7c9a08f65b9f))
+
+
+
+
+
+## [0.9.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.5...@aws-amplify/ui-components@0.9.6) (2020-11-30)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.9.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.4...@aws-amplify/ui-components@0.9.5) (2020-11-23)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.9.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.3...@aws-amplify/ui-components@0.9.4) (2020-11-20)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.9.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.2...@aws-amplify/ui-components@0.9.3) (2020-11-13)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.9.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.1...@aws-amplify/ui-components@0.9.2) (2020-11-03)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.9.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.9.0...@aws-amplify/ui-components@0.9.1) (2020-10-31)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** center amplify-authenticator ([#7041](https://github.com/aws-amplify/amplify-js/issues/7041)) ([f9f7c2d](https://github.com/aws-amplify/amplify-js/commit/f9f7c2d0fd363c1a26dbb580f36e73bb6bb166fe))
+
+
+
+
+
+# [0.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.7...@aws-amplify/ui-components@0.9.0) (2020-10-29)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** auto-document slots and css variables ([#6914](https://github.com/aws-amplify/amplify-js/issues/6914)) ([5b00c91](https://github.com/aws-amplify/amplify-js/commit/5b00c9143f8250d9d64d7e1cb14a4f1c2a93d166))
+
+
+
+
+
+## [0.8.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.6...@aws-amplify/ui-components@0.8.7) (2020-10-15)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.8.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.5...@aws-amplify/ui-components@0.8.6) (2020-10-01)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.8.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.4...@aws-amplify/ui-components@0.8.5) (2020-09-25)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.8.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.3...@aws-amplify/ui-components@0.8.4) (2020-09-16)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.8.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.2...@aws-amplify/ui-components@0.8.3) (2020-09-15)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.8.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.1...@aws-amplify/ui-components@0.8.2) (2020-09-10)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [0.8.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.8.0...@aws-amplify/ui-components@0.8.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+# [0.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.7.0...@aws-amplify/ui-components@0.8.0) (2020-09-03)
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+# [0.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.6.2...@aws-amplify/ui-components@0.7.0) (2020-09-01)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** Add Chatbot UI to main ([#6684](https://github.com/aws-amplify/amplify-js/issues/6684)) ([4e25f92](https://github.com/aws-amplify/amplify-js/commit/4e25f923723441c6fb705584fcc3349214806558)), closes [#5024](https://github.com/aws-amplify/amplify-js/issues/5024) [#6648](https://github.com/aws-amplify/amplify-js/issues/6648) [#6652](https://github.com/aws-amplify/amplify-js/issues/6652) [#6678](https://github.com/aws-amplify/amplify-js/issues/6678)
+
+
+
+
+
 ## [0.6.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@0.6.1...@aws-amplify/ui-components@0.6.2) (2020-08-19)
 
 **Note:** Version bump only for package @aws-amplify/ui-components

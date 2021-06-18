@@ -16,16 +16,17 @@ import { OperationDefinitionNode } from 'graphql/language';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
 import Observable from 'zen-observable-ts';
-import Amplify, {
+import {
+	Amplify,
 	ConsoleLogger as Logger,
-	Credentials,
 	Constants,
+	Credentials,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
 } from '@aws-amplify/core';
 import PubSub from '@aws-amplify/pubsub';
 import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
-import { GraphQLOptions, GraphQLResult } from './types';
+import { GraphQLAuthError, GraphQLOptions, GraphQLResult } from './types';
 import { RestClient } from '@aws-amplify/api-rest';
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -46,13 +47,16 @@ export class GraphQLAPIClass {
 	private _options;
 	private _api = null;
 
+	Auth = Auth;
+	Cache = Cache;
+	Credentials = Credentials;
+
 	/**
 	 * Initialize GraphQL API with AWS configuration
 	 * @param {Object} options - Configuration object for API
 	 */
 	constructor(options) {
 		this._options = options;
-		Amplify.register(this);
 		logger.debug('API Options', this._options);
 	}
 
@@ -100,6 +104,9 @@ export class GraphQLAPIClass {
 		logger.debug('create Rest instance');
 		if (this._options) {
 			this._api = new RestClient(this._options);
+			// Share instance Credentials with client for SSR
+			this._api.Credentials = this.Credentials;
+
 			return true;
 		} else {
 			return Promise.reject('API not configured');
@@ -118,7 +125,7 @@ export class GraphQLAPIClass {
 		switch (authenticationType) {
 			case 'API_KEY':
 				if (!apiKey) {
-					throw new Error('No api-key configured');
+					throw new Error(GraphQLAuthError.NO_API_KEY);
 				}
 				headers = {
 					Authorization: null,
@@ -128,24 +135,41 @@ export class GraphQLAPIClass {
 			case 'AWS_IAM':
 				const credentialsOK = await this._ensureCredentials();
 				if (!credentialsOK) {
-					throw new Error('No credentials');
+					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				}
 				break;
 			case 'OPENID_CONNECT':
-				const federatedInfo = await Cache.getItem('federatedInfo');
-
-				if (!federatedInfo || !federatedInfo.token) {
-					throw new Error('No federated jwt');
+				try {
+					let token;
+					// backwards compatibility
+					const federatedInfo = await Cache.getItem('federatedInfo');
+					if (federatedInfo) {
+						token = federatedInfo.token;
+					} else {
+						const currentUser = await Auth.currentAuthenticatedUser();
+						if (currentUser) {
+							token = currentUser.token;
+						}
+					}
+					if (!token) {
+						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
+					}
+					headers = {
+						Authorization: token,
+					};
+				} catch (e) {
+					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
 				}
-				headers = {
-					Authorization: federatedInfo.token,
-				};
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
-				const session = await Auth.currentSession();
-				headers = {
-					Authorization: session.getAccessToken().getJwtToken(),
-				};
+				try {
+					const session = await this.Auth.currentSession();
+					headers = {
+						Authorization: session.getAccessToken().getJwtToken(),
+					};
+				} catch (e) {
+					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
+				}
 				break;
 			default:
 				headers = {
@@ -288,7 +312,7 @@ export class GraphQLAPIClass {
 			}
 			response = {
 				data: {},
-				errors: [new GraphQLError(err.message)],
+				errors: [new GraphQLError(err.message, null, null, null, null, err)],
 			};
 		}
 
@@ -355,10 +379,10 @@ export class GraphQLAPIClass {
 	 * @private
 	 */
 	_ensureCredentials() {
-		return Credentials.get()
+		return this.Credentials.get()
 			.then(credentials => {
 				if (!credentials) return false;
-				const cred = Credentials.shear(credentials);
+				const cred = this.Credentials.shear(credentials);
 				logger.debug('set credentials for api', cred);
 
 				return true;
@@ -371,3 +395,4 @@ export class GraphQLAPIClass {
 }
 
 export const GraphQLAPI = new GraphQLAPIClass(null);
+Amplify.register(GraphQLAPI);

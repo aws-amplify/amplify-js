@@ -8,9 +8,10 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AuthState, AuthStateHandler, CognitoUserInterface, FederatedConfig, MFATypesInterface, UsernameAliasStrings } from "./common/types/auth-types";
 import { FormFieldTypes } from "./components/amplify-auth-fields/amplify-auth-fields-interface";
 import { ButtonTypes, ButtonVariant, InputEvent, TextFieldTypes } from "./common/types/ui-types";
+import { IconNameType } from "./components/amplify-icon/icons";
+import { ChatResult } from "./common/types/interactions-types";
 import { FunctionalComponent } from "@stencil/core";
 import { CountryCodeDialOptions } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
-import { IconNameType } from "./components/amplify-icon/icons";
 import { AccessLevel, StorageObject } from "./common/types/storage-types";
 import { SelectOptionsNumber, SelectOptionsString } from "./components/amplify-select/amplify-select-interface";
 export namespace Components {
@@ -23,6 +24,8 @@ export namespace Components {
           * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange": AuthStateHandler;
+    }
+    interface AmplifyAuthContainer {
     }
     interface AmplifyAuthFields {
         /**
@@ -50,9 +53,15 @@ export namespace Components {
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
+          * Hide amplify-toast for auth errors
+         */
+        "hideToast": boolean;
+        /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
-        "initialAuthState": AuthState.SignIn | AuthState.SignUp;
+        "initialAuthState": | AuthState.SignIn
+		| AuthState.SignUp
+		| AuthState.ForgotPassword;
         /**
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */
@@ -68,13 +77,55 @@ export namespace Components {
          */
         "handleButtonClick": (evt: Event) => void;
         /**
+          * Name of icon to be placed inside the button
+         */
+        "icon"?: IconNameType;
+        /**
           * Type of the button: 'button', 'submit' or 'reset'
          */
         "type": ButtonTypes;
         /**
-          * Variant of a button: 'button' | 'anchor'
+          * Variant of a button: 'button' | 'anchor | 'icon'
          */
         "variant": ButtonVariant;
+    }
+    interface AmplifyChatbot {
+        /**
+          * Name of the bot
+         */
+        "botName": string;
+        /**
+          * Text placed in the top header
+         */
+        "botTitle": string;
+        /**
+          * Clear messages when conversation finishes
+         */
+        "clearOnComplete": boolean;
+        /**
+          * Continue listening to users after they send the message
+         */
+        "conversationModeOn": boolean;
+        /**
+          * Noise threshold between -1 and 1. Anything below is considered a silence.
+         */
+        "silenceThreshold": number;
+        /**
+          * Amount of silence (in ms) to wait for
+         */
+        "silenceTime": number;
+        /**
+          * Whether text chat is enabled
+         */
+        "textEnabled": boolean;
+        /**
+          * Whether voice chat is enabled
+         */
+        "voiceEnabled": boolean;
+        /**
+          * Greeting message displayed to users
+         */
+        "welcomeMessage": string;
     }
     interface AmplifyCheckbox {
         /**
@@ -230,6 +281,10 @@ export namespace Components {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Used for the hint text that displays underneath the input field
+         */
+        "hint"?: string | FunctionalComponent | null;
+        /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
         "inputProps"?: object;
@@ -328,7 +383,7 @@ export namespace Components {
          */
         "disabled"?: boolean;
         /**
-          * The ID of the field.  Should match with its corresponding input's ID.
+          * The ID of the field. Should match with its corresponding input's ID.
          */
         "fieldId": string;
         /**
@@ -336,7 +391,7 @@ export namespace Components {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
-          * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
+          * The text of a hint to the user as to how to fill out the input. Goes just below the input.
          */
         "hint": string | FunctionalComponent | null;
         /**
@@ -344,7 +399,7 @@ export namespace Components {
          */
         "inputProps"?: object;
         /**
-          * The text of the label.  Goes above the input. Ex: 'First name'
+          * The text of the label. Goes above the input. Ex: 'First name'
          */
         "label": string | null;
         /**
@@ -469,6 +524,10 @@ export namespace Components {
           * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
          */
         "placeholder"?: string;
+        /**
+          * Whether the input is a required field
+         */
+        "required"?: boolean;
         /**
           * The input type.  Can be any HTML input type.
          */
@@ -896,7 +955,8 @@ export namespace Components {
         /**
           * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
          */
-        "options": SelectOptionsString | SelectOptionsNumber;
+        "options": | SelectOptionsString
+		| SelectOptionsNumber;
         /**
           * Default selected option
          */
@@ -988,7 +1048,7 @@ export namespace Components {
          */
         "headerText": string;
         /**
-          * Used for the submit button text in sign up component
+          * Text used for the sign in hyperlink
          */
         "signInText": string;
         /**
@@ -1058,6 +1118,10 @@ export namespace Components {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Used for the hint text that displays underneath the input field
+         */
+        "hint"?: string | FunctionalComponent | null;
+        /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
         "inputProps"?: object;
@@ -1096,6 +1160,12 @@ declare global {
         prototype: HTMLAmplifyAmazonButtonElement;
         new (): HTMLAmplifyAmazonButtonElement;
     };
+    interface HTMLAmplifyAuthContainerElement extends Components.AmplifyAuthContainer, HTMLStencilElement {
+    }
+    var HTMLAmplifyAuthContainerElement: {
+        prototype: HTMLAmplifyAuthContainerElement;
+        new (): HTMLAmplifyAuthContainerElement;
+    };
     interface HTMLAmplifyAuthFieldsElement extends Components.AmplifyAuthFields, HTMLStencilElement {
     }
     var HTMLAmplifyAuthFieldsElement: {
@@ -1119,6 +1189,12 @@ declare global {
     var HTMLAmplifyButtonElement: {
         prototype: HTMLAmplifyButtonElement;
         new (): HTMLAmplifyButtonElement;
+    };
+    interface HTMLAmplifyChatbotElement extends Components.AmplifyChatbot, HTMLStencilElement {
+    }
+    var HTMLAmplifyChatbotElement: {
+        prototype: HTMLAmplifyChatbotElement;
+        new (): HTMLAmplifyChatbotElement;
     };
     interface HTMLAmplifyCheckboxElement extends Components.AmplifyCheckbox, HTMLStencilElement {
     }
@@ -1410,10 +1486,12 @@ declare global {
     };
     interface HTMLElementTagNameMap {
         "amplify-amazon-button": HTMLAmplifyAmazonButtonElement;
+        "amplify-auth-container": HTMLAmplifyAuthContainerElement;
         "amplify-auth-fields": HTMLAmplifyAuthFieldsElement;
         "amplify-auth0-button": HTMLAmplifyAuth0ButtonElement;
         "amplify-authenticator": HTMLAmplifyAuthenticatorElement;
         "amplify-button": HTMLAmplifyButtonElement;
+        "amplify-chatbot": HTMLAmplifyChatbotElement;
         "amplify-checkbox": HTMLAmplifyCheckboxElement;
         "amplify-code-field": HTMLAmplifyCodeFieldElement;
         "amplify-confirm-sign-in": HTMLAmplifyConfirmSignInElement;
@@ -1475,6 +1553,8 @@ declare namespace LocalJSX {
          */
         "handleAuthStateChange"?: AuthStateHandler;
     }
+    interface AmplifyAuthContainer {
+    }
     interface AmplifyAuthFields {
         /**
           * Form fields allows you to utilize our pre-built components such as username field, code field, password field, email field, etc. by passing an array of strings that you would like the order of the form to be in. If you need more customization, such as changing text for a label or adjust a placeholder, you can follow the structure below in order to do just that. ``` [   {     type: string,     label: string,     placeholder: string,     hint: string | Functional Component | null,     required: boolean   } ] ```
@@ -1501,9 +1581,15 @@ declare namespace LocalJSX {
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
+          * Hide amplify-toast for auth errors
+         */
+        "hideToast"?: boolean;
+        /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
-        "initialAuthState"?: AuthState.SignIn | AuthState.SignUp;
+        "initialAuthState"?: | AuthState.SignIn
+		| AuthState.SignUp
+		| AuthState.ForgotPassword;
         /**
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */
@@ -1519,13 +1605,59 @@ declare namespace LocalJSX {
          */
         "handleButtonClick"?: (evt: Event) => void;
         /**
+          * Name of icon to be placed inside the button
+         */
+        "icon"?: IconNameType;
+        /**
           * Type of the button: 'button', 'submit' or 'reset'
          */
         "type"?: ButtonTypes;
         /**
-          * Variant of a button: 'button' | 'anchor'
+          * Variant of a button: 'button' | 'anchor | 'icon'
          */
         "variant"?: ButtonVariant;
+    }
+    interface AmplifyChatbot {
+        /**
+          * Name of the bot
+         */
+        "botName"?: string;
+        /**
+          * Text placed in the top header
+         */
+        "botTitle"?: string;
+        /**
+          * Clear messages when conversation finishes
+         */
+        "clearOnComplete"?: boolean;
+        /**
+          * Continue listening to users after they send the message
+         */
+        "conversationModeOn"?: boolean;
+        /**
+          * Event emitted when conversation is completed
+         */
+        "onChatCompleted"?: (event: CustomEvent<ChatResult>) => void;
+        /**
+          * Noise threshold between -1 and 1. Anything below is considered a silence.
+         */
+        "silenceThreshold"?: number;
+        /**
+          * Amount of silence (in ms) to wait for
+         */
+        "silenceTime"?: number;
+        /**
+          * Whether text chat is enabled
+         */
+        "textEnabled"?: boolean;
+        /**
+          * Whether voice chat is enabled
+         */
+        "voiceEnabled"?: boolean;
+        /**
+          * Greeting message displayed to users
+         */
+        "welcomeMessage"?: string;
     }
     interface AmplifyCheckbox {
         /**
@@ -1681,6 +1813,10 @@ declare namespace LocalJSX {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Used for the hint text that displays underneath the input field
+         */
+        "hint"?: string | FunctionalComponent | null;
+        /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
         "inputProps"?: object;
@@ -1779,7 +1915,7 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
-          * The ID of the field.  Should match with its corresponding input's ID.
+          * The ID of the field. Should match with its corresponding input's ID.
          */
         "fieldId"?: string;
         /**
@@ -1787,7 +1923,7 @@ declare namespace LocalJSX {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
-          * The text of a hint to the user as to how to fill out the input.  Goes just below the input.
+          * The text of a hint to the user as to how to fill out the input. Goes just below the input.
          */
         "hint"?: string | FunctionalComponent | null;
         /**
@@ -1795,7 +1931,7 @@ declare namespace LocalJSX {
          */
         "inputProps"?: object;
         /**
-          * The text of the label.  Goes above the input. Ex: 'First name'
+          * The text of the label. Goes above the input. Ex: 'First name'
          */
         "label"?: string | null;
         /**
@@ -1917,13 +2053,13 @@ declare namespace LocalJSX {
          */
         "name"?: string;
         /**
-          * Event formSubmit is emitted on keydown 'Enter' on an input and can be listened to by a parent form
-         */
-        "onFormSubmit"?: (event: CustomEvent<any>) => void;
-        /**
           * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
          */
         "placeholder"?: string;
+        /**
+          * Whether the input is a required field
+         */
+        "required"?: boolean;
         /**
           * The input type.  Can be any HTML input type.
          */
@@ -2351,7 +2487,8 @@ declare namespace LocalJSX {
         /**
           * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
          */
-        "options"?: SelectOptionsString | SelectOptionsNumber;
+        "options"?: | SelectOptionsString
+		| SelectOptionsNumber;
         /**
           * Default selected option
          */
@@ -2443,7 +2580,7 @@ declare namespace LocalJSX {
          */
         "headerText"?: string;
         /**
-          * Used for the submit button text in sign up component
+          * Text used for the sign in hyperlink
          */
         "signInText"?: string;
         /**
@@ -2513,6 +2650,10 @@ declare namespace LocalJSX {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Used for the hint text that displays underneath the input field
+         */
+        "hint"?: string | FunctionalComponent | null;
+        /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
         "inputProps"?: object;
@@ -2545,10 +2686,12 @@ declare namespace LocalJSX {
     }
     interface IntrinsicElements {
         "amplify-amazon-button": AmplifyAmazonButton;
+        "amplify-auth-container": AmplifyAuthContainer;
         "amplify-auth-fields": AmplifyAuthFields;
         "amplify-auth0-button": AmplifyAuth0Button;
         "amplify-authenticator": AmplifyAuthenticator;
         "amplify-button": AmplifyButton;
+        "amplify-chatbot": AmplifyChatbot;
         "amplify-checkbox": AmplifyCheckbox;
         "amplify-code-field": AmplifyCodeField;
         "amplify-confirm-sign-in": AmplifyConfirmSignIn;
@@ -2604,10 +2747,12 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "amplify-amazon-button": LocalJSX.AmplifyAmazonButton & JSXBase.HTMLAttributes<HTMLAmplifyAmazonButtonElement>;
+            "amplify-auth-container": LocalJSX.AmplifyAuthContainer & JSXBase.HTMLAttributes<HTMLAmplifyAuthContainerElement>;
             "amplify-auth-fields": LocalJSX.AmplifyAuthFields & JSXBase.HTMLAttributes<HTMLAmplifyAuthFieldsElement>;
             "amplify-auth0-button": LocalJSX.AmplifyAuth0Button & JSXBase.HTMLAttributes<HTMLAmplifyAuth0ButtonElement>;
             "amplify-authenticator": LocalJSX.AmplifyAuthenticator & JSXBase.HTMLAttributes<HTMLAmplifyAuthenticatorElement>;
             "amplify-button": LocalJSX.AmplifyButton & JSXBase.HTMLAttributes<HTMLAmplifyButtonElement>;
+            "amplify-chatbot": LocalJSX.AmplifyChatbot & JSXBase.HTMLAttributes<HTMLAmplifyChatbotElement>;
             "amplify-checkbox": LocalJSX.AmplifyCheckbox & JSXBase.HTMLAttributes<HTMLAmplifyCheckboxElement>;
             "amplify-code-field": LocalJSX.AmplifyCodeField & JSXBase.HTMLAttributes<HTMLAmplifyCodeFieldElement>;
             "amplify-confirm-sign-in": LocalJSX.AmplifyConfirmSignIn & JSXBase.HTMLAttributes<HTMLAmplifyConfirmSignInElement>;

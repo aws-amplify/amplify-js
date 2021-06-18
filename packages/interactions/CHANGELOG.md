@@ -3,6 +3,322 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.2...@aws-amplify/interactions@4.0.3) (2021-06-18)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [4.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@4.0.1...@aws-amplify/interactions@4.0.2) (2021-06-10)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.33...@aws-amplify/interactions@4.0.1) (2021-05-26)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.32...@aws-amplify/interactions@3.3.33) (2021-05-14)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.31...@aws-amplify/interactions@3.3.32) (2021-05-11)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.30...@aws-amplify/interactions@3.3.31) (2021-05-06)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.29...@aws-amplify/interactions@3.3.30) (2021-04-15)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.28...@aws-amplify/interactions@3.3.29) (2021-03-25)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.27...@aws-amplify/interactions@3.3.28) (2021-03-18)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.26...@aws-amplify/interactions@3.3.27) (2021-03-12)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.26](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.25...@aws-amplify/interactions@3.3.26) (2021-03-08)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.24...@aws-amplify/interactions@3.3.25) (2021-03-03)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.23...@aws-amplify/interactions@3.3.24) (2021-02-25)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.22...@aws-amplify/interactions@3.3.23) (2021-02-18)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.21...@aws-amplify/interactions@3.3.22) (2021-02-15)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.20...@aws-amplify/interactions@3.3.21) (2021-02-09)
+
+
+### Reverts
+
+* Revert "chore: bump aws-sdk to 3.4.1 (#7674)" (#7716) ([f142314](https://github.com/aws-amplify/amplify-js/commit/f1423144cf73304f3dc048233b35c831c9a1742d)), closes [#7674](https://github.com/aws-amplify/amplify-js/issues/7674) [#7716](https://github.com/aws-amplify/amplify-js/issues/7716)
+
+
+
+
+
+## [3.3.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.19...@aws-amplify/interactions@3.3.20) (2021-02-03)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.18...@aws-amplify/interactions@3.3.19) (2021-02-01)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.17...@aws-amplify/interactions@3.3.18) (2021-01-29)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.16...@aws-amplify/interactions@3.3.17) (2021-01-07)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.15...@aws-amplify/interactions@3.3.16) (2020-12-17)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.14...@aws-amplify/interactions@3.3.15) (2020-12-10)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.13...@aws-amplify/interactions@3.3.14) (2020-11-30)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.12...@aws-amplify/interactions@3.3.13) (2020-11-23)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.11...@aws-amplify/interactions@3.3.12) (2020-11-20)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.10...@aws-amplify/interactions@3.3.11) (2020-11-13)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.9...@aws-amplify/interactions@3.3.10) (2020-11-03)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.8...@aws-amplify/interactions@3.3.9) (2020-10-31)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.7...@aws-amplify/interactions@3.3.8) (2020-10-29)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.6...@aws-amplify/interactions@3.3.7) (2020-10-15)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.5...@aws-amplify/interactions@3.3.6) (2020-10-01)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.4...@aws-amplify/interactions@3.3.5) (2020-09-25)
+
+
+### Bug Fixes
+
+* Add files with Amplify.register to sideEffects array ([#6867](https://github.com/aws-amplify/amplify-js/issues/6867)) ([58ddbf8](https://github.com/aws-amplify/amplify-js/commit/58ddbf8811e44695d97b6ab8be8f7cd2a2242921))
+
+
+
+
+
+## [3.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.3...@aws-amplify/interactions@3.3.4) (2020-09-16)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.2...@aws-amplify/interactions@3.3.3) (2020-09-15)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.1...@aws-amplify/interactions@3.3.2) (2020-09-10)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+## [3.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.3.0...@aws-amplify/interactions@3.3.1) (2020-09-03)
+
+**Note:** Version bump only for package @aws-amplify/interactions
+
+
+
+
+
+# [3.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.2.0...@aws-amplify/interactions@3.3.0) (2020-09-03)
+
+
+### Features
+
+* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
+
+
+
+
+
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.1.23...@aws-amplify/interactions@3.2.0) (2020-09-01)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** Add Chatbot UI to main ([#6684](https://github.com/aws-amplify/amplify-js/issues/6684)) ([4e25f92](https://github.com/aws-amplify/amplify-js/commit/4e25f923723441c6fb705584fcc3349214806558)), closes [#5024](https://github.com/aws-amplify/amplify-js/issues/5024) [#6648](https://github.com/aws-amplify/amplify-js/issues/6648) [#6652](https://github.com/aws-amplify/amplify-js/issues/6652) [#6678](https://github.com/aws-amplify/amplify-js/issues/6678)
+
+
+
+
+
 ## [3.1.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/interactions@3.1.22...@aws-amplify/interactions@3.1.23) (2020-08-19)
 
 **Note:** Version bump only for package @aws-amplify/interactions

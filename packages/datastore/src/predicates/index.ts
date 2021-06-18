@@ -10,6 +10,8 @@ import {
 } from '../types';
 import { exhaustiveCheck } from '../util';
 
+export { ModelSortPredicateCreator } from './sort';
+
 const predicatesAllSet = new WeakSet<ProducerModelPredicate<any>>();
 
 export function isPredicatesAll(
@@ -109,10 +111,8 @@ export class ModelPredicateCreator {
 						ModelPredicateCreator.predicateGroupsMap
 							.get(receiver)
 							.predicates.push({ field, operator, operand });
-
 						return receiver;
 					};
-
 					return result;
 				},
 			})
@@ -144,6 +144,7 @@ export class ModelPredicateCreator {
 		return ModelPredicateCreator.predicateGroupsMap.get(predicate);
 	}
 
+	// transforms cb-style predicate into Proxy
 	static createFromExisting<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
 		existing: ProducerModelPredicate<T>

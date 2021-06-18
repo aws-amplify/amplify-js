@@ -15,9 +15,9 @@
 import { browserOrNode } from '@aws-amplify/core';
 
 if (browserOrNode().isBrowser) {
-  let customStyles = document.createElement('style');
-  customStyles.appendChild(
-    document.createTextNode(`
+	let customStyles = document.createElement('style');
+	customStyles.appendChild(
+		document.createTextNode(`
     :root {
       /* Typography */
       --amplify-font-family: 'Amazon Ember', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
@@ -54,13 +54,13 @@ if (browserOrNode().isBrowser) {
       --amplify-light-grey: #c4c4c4;
       --amplify-white: #ffffff;
       --amplify-smoke-white: #f5f5f5;
-
       --amplify-red: #dd3f5b;
+      --amplify-blue: #099ac8;
     }
-  `),
-  );
+  `)
+	);
 
-  let parentElement = document.getElementsByTagName('head')[0];
-  const firstChild = parentElement.firstChild;
-  parentElement.insertBefore(customStyles, firstChild);
+	let parentElement = document.getElementsByTagName('head')[0];
+	const firstChild = parentElement.firstChild;
+	parentElement.insertBefore(customStyles, firstChild);
 }

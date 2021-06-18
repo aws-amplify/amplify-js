@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-
+import { Keyboard } from 'react-native';
 import { Auth, Logger, JS, I18n } from 'aws-amplify';
 
 import AmplifyTheme, { AmplifyThemeType } from '../AmplifyTheme';
@@ -20,6 +20,7 @@ import AmplifyMessageMap from '../AmplifyMessageMap';
 import { FormField, PhoneField } from '../AmplifyUI';
 import TEST_ID from '../AmplifyTestIDs';
 import { OnStateChangeType, UsernameAttributesType } from '../../types';
+import { setTestId } from '../Utils'
 
 const logger = new Logger('AuthPiece');
 
@@ -89,7 +90,7 @@ export default class AuthPiece<
 					label={I18n.get('Email')}
 					placeholder={I18n.get('Enter your email')}
 					required={true}
-					testID={TEST_ID.AUTH.EMAIL_INPUT}
+					{...setTestId(TEST_ID.AUTH.EMAIL_INPUT)}
 					value={value}
 				/>
 			);
@@ -103,7 +104,7 @@ export default class AuthPiece<
 					placeholder={I18n.get('Enter your phone number')}
 					keyboardType="phone-pad"
 					required={true}
-					testID={TEST_ID.AUTH.PHONE_INPUT}
+					{...setTestId(TEST_ID.AUTH.PHONE_INPUT)}
 					value={value}
 				/>
 			);
@@ -115,7 +116,7 @@ export default class AuthPiece<
 					label={I18n.get(this.getUsernameLabel())}
 					placeholder={I18n.get('Enter your username')}
 					required={true}
-					testID={TEST_ID.AUTH.USERNAME_INPUT}
+					{...setTestId(TEST_ID.AUTH.USERNAME_INPUT)}
 					value={value}
 				/>
 			);
@@ -161,6 +162,7 @@ export default class AuthPiece<
 			this.props.errorMessage || this.props.messageMap || AmplifyMessageMap;
 		msg = typeof map === 'string' ? map : map(msg);
 		this.setState({ error: msg });
+		Keyboard.dismiss();
 	}
 
 	render() {
