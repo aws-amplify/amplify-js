@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/ui-components",
-	"version": "1.3.2",
+	"version": "1.5.0",
 	"description": "Core Amplify UI Component Library",
 	"module": "dist/index.mjs",
 	"main": "dist/index.js",
@@ -35,7 +35,7 @@
 		"clean": "rimraf dist .stencil"
 	},
 	"peerDependencies": {
-		"aws-amplify": "3.x.x"
+		"aws-amplify": "3.x.x || 4.x.x"
 	},
 	"dependencies": {
 		"qrcode": "^1.4.4",

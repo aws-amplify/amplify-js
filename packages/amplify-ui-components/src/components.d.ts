@@ -281,6 +281,10 @@ export namespace Components {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Used for the hint text that displays underneath the input field
+         */
+        "hint"?: string | FunctionalComponent | null;
+        /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
         "inputProps"?: object;
@@ -520,6 +524,10 @@ export namespace Components {
           * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
          */
         "placeholder"?: string;
+        /**
+          * Whether the input is a required field
+         */
+        "required"?: boolean;
         /**
           * The input type.  Can be any HTML input type.
          */
@@ -1109,6 +1117,10 @@ export namespace Components {
           * The callback, called when the input is modified by the user.
          */
         "handleInputChange"?: (inputEvent: Event) => void;
+        /**
+          * Used for the hint text that displays underneath the input field
+         */
+        "hint"?: string | FunctionalComponent | null;
         /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
@@ -1801,6 +1813,10 @@ declare namespace LocalJSX {
          */
         "handleInputChange"?: (inputEvent: Event) => void;
         /**
+          * Used for the hint text that displays underneath the input field
+         */
+        "hint"?: string | FunctionalComponent | null;
+        /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
         "inputProps"?: object;
@@ -2040,6 +2056,10 @@ declare namespace LocalJSX {
           * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
          */
         "placeholder"?: string;
+        /**
+          * Whether the input is a required field
+         */
+        "required"?: boolean;
         /**
           * The input type.  Can be any HTML input type.
          */
@@ -2629,6 +2649,10 @@ declare namespace LocalJSX {
           * The callback, called when the input is modified by the user.
          */
         "handleInputChange"?: (inputEvent: Event) => void;
+        /**
+          * Used for the hint text that displays underneath the input field
+         */
+        "hint"?: string | FunctionalComponent | null;
         /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
