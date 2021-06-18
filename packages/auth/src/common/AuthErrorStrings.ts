@@ -1,5 +1,7 @@
 export enum AuthErrorStrings {
 	DEFAULT_MSG = 'Authentication Error',
+	EMPTY_EMAIL = 'Email cannot be empty',
+	EMPTY_PHONE = 'Phone number cannot be empty',
 	EMPTY_USERNAME = 'Username cannot be empty',
 	INVALID_USERNAME = 'The username should either be a string or one of the sign in types',
 	EMPTY_PASSWORD = 'Password cannot be empty',

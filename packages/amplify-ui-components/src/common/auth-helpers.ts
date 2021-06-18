@@ -5,6 +5,8 @@ import {
 	ChallengeName,
 	CognitoUserInterface,
 	AuthStateHandler,
+	UsernameAlias,
+	UsernameAliasStrings,
 } from './types/auth-types';
 import { dispatchToastHubEvent } from './helpers';
 import { NO_AUTH_MODULE_FOUND } from '../common/constants';
@@ -43,7 +45,8 @@ export async function checkContact(
 export const handleSignIn = async (
 	username: string,
 	password: string,
-	handleAuthStateChange: AuthStateHandler
+	handleAuthStateChange: AuthStateHandler,
+	usernameAlias?: UsernameAliasStrings
 ) => {
 	if (!Auth || typeof Auth.signIn !== 'function') {
 		throw new Error(NO_AUTH_MODULE_FOUND);
@@ -83,6 +86,14 @@ export const handleSignIn = async (
 		} else if (error.code === 'InvalidParameterException' && password === '') {
 			logger.debug('Password cannot be empty');
 			error.message = Translations.EMPTY_PASSWORD;
+		} else if (error.message === Translations.EMPTY_USERNAME) {
+			if (usernameAlias === UsernameAlias.email) {
+				error.message = Translations.EMPTY_EMAIL;
+			}
+
+			if (usernameAlias === UsernameAlias.phone_number) {
+				error.message = Translations.EMPTY_PHONE;
+			}
 		}
 		dispatchToastHubEvent(error);
 	}
