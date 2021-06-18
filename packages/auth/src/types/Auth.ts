@@ -227,26 +227,3 @@ export interface IAuthDevice {
 	id: string;
 	name: string;
 }
-
-export type DeviceAttribute = {
-	Name: string;
-	Value: string;
-};
-
-export type AuthDeviceProps = {
-	DeviceCreateDate: number;
-	DeviceKey: string;
-	DeviceAttributes: DeviceAttribute[];
-	DeviceLastAuthenticatedDate: number;
-	DeviceLastModifiedDate: number;
-};
-
-export class AuthDevice {
-	id: string;
-	name: string;
-
-	constructor(props: AuthDeviceProps) {
-		this.id = props.DeviceKey;
-		this.name = props.DeviceAttributes[1].Value;
-	}
-}

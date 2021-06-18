@@ -31,7 +31,6 @@ import {
 	FederatedSignInOptions,
 	AwsCognitoOAuthOpts,
 	ClientMetaData,
-	AuthDevice,
 } from './types';
 
 import {
@@ -69,7 +68,7 @@ import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
 import { default as urlListener } from './urlListener';
 import { AuthError, NoUserPoolError } from './Errors';
-import { AuthErrorTypes, CognitoHostedUIIdentityProvider } from './types/Auth';
+import { AuthErrorTypes, CognitoHostedUIIdentityProvider, IAuthDevice } from './types/Auth';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -2276,8 +2275,12 @@ export class AuthClass {
 		return new Promise((res, rej) => {
 			const cb = {
 				onSuccess(data) {
-					const deviceList: AuthDevice[] = data.Devices.map(device => {
-						return new AuthDevice(device);
+					const deviceList: IAuthDevice[] = data.Devices.map(device => {
+						const deviceInfo: IAuthDevice = {
+							id: device.DeviceKey,
+							name: device.DeviceAttributes.find(({Name}) => Name === 'device_name').Value, 
+						  };
+						return deviceInfo
 					});
 					res(deviceList);
 				},

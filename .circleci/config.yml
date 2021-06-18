@@ -706,6 +706,19 @@ jobs:
           test_name: 'amazon-cognito-identity-js'
           category: auth
           sample_name: amazon-cognito-identity-js
+  integ_react_device_tracking:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/device-tracking
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'cognito-device-tracking'
+          framework: react
+          category: auth
+          sample_name: device-tracking
+          spec: device_tracking
+          browser: << parameters.browser >>
   integ_rn_ios_storage:
     executor: macos-executor
     <<: *test_env_vars
@@ -1006,6 +1019,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_react_device_tracking:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_rn_ios_storage:
           requires:
             - integ_setup
@@ -1073,6 +1092,7 @@ workflows:
             - integ_react_amazon_cognito_identity_js_cookie_storage
             - integ_react_amazon_cognito_identity_js
             - integ_node_amazon_cognito_identity_js
+            - integ_react_device_tracking
             - integ_react_auth
             - integ_angular_auth
             - integ_vue_auth
