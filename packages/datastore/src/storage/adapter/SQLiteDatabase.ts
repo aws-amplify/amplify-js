@@ -80,9 +80,14 @@ class SQLiteDatabase {
 
 		await this.db.readTransaction(function(tx) {
 			for (const [statement, params] of queryStatements) {
-				tx.executeSql(statement, params, console.error, function(_tx, res) {
-					results.push(res.rows.raw()[0]);
-				});
+				tx.executeSql(
+					statement,
+					params,
+					function(_tx, res) {
+						results.push(res.rows.raw()[0]);
+					},
+					console.error
+				);
 			}
 		});
 
