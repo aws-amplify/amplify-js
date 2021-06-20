@@ -197,7 +197,37 @@ export namespace GraphQLScalarType {
 			case 'AWSTimestamp':
 				return 'number';
 			default:
-				exhaustiveCheck(scalar);
+				exhaustiveCheck(scalar as never);
+		}
+	}
+
+	export function getSQLiteType(
+		scalar: keyof Omit<
+			typeof GraphQLScalarType,
+			'getJSType' | 'getValidationFunction'
+		>
+	): 'TEXT' | 'INT' | 'REAL' | 'BOOLEAN' {
+		switch (scalar) {
+			case 'Boolean':
+				return 'BOOLEAN';
+			case 'ID':
+			case 'String':
+			case 'AWSDate':
+			case 'AWSTime':
+			case 'AWSDateTime':
+			case 'AWSEmail':
+			case 'AWSJSON':
+			case 'AWSURL':
+			case 'AWSPhone':
+			case 'AWSIPAddress':
+				return 'TEXT';
+			case 'Int':
+			case 'AWSTimestamp':
+				return 'INT';
+			case 'Float':
+				return 'REAL';
+			default:
+				exhaustiveCheck(scalar as never);
 		}
 	}
 

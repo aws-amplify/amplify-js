@@ -20,14 +20,6 @@
 | `track`         | `track`        | Whether or not to use track on get/put of the image                                                                  | `boolean`                                                            | `undefined`             |
 
 
-## CSS Custom Properties
-
-| Name       | Description  |
-| ---------- | ------------ |
-| `--height` | Image height |
-| `--width`  | Image width  |
-
-
 ## Dependencies
 
 ### Used by
