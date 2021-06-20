@@ -256,7 +256,7 @@ export class CredentialsClass {
 			);
 		}
 
-		const identityId = this._identityId = await this._getGuestIdentity();
+		const identityId = this._identityId = await this._getGuestIdentityId();
 
 		const cognitoClient = new CognitoIdentityClient({
 			region,
@@ -313,7 +313,7 @@ export class CredentialsClass {
 					e.message === `Identity '${identityId}' not found.`
 				) {
 					logger.debug('Failed to load guest credentials');
-					await this._removeGuestIdentity();
+					await this._removeGuestIdentityId();
 
 					const credentialsProvider: CredentialProvider = async () => {
 						const { IdentityId } = await cognitoClient.send(
@@ -430,20 +430,20 @@ export class CredentialsClass {
 		*/
 		const credentialsProvider: CredentialProvider = async () => {
 			// try to fetch the local stored guest identity, if found, we will associate it with the logins
-			const guestIdentity = await this._getGuestIdentity();
+			const guestIdentityId = await this._getGuestIdentityId();
 
-			// if no guestIdentity found, call getId with the logins
-			// for first-time users, this will return a brand new identity
-			// for returning users, this will retrieve the previous identity assocaited with the logins
-			let generatedOrRetrievedIdentity;
-			if (!guestIdentity) {
+			// if no guestIdentityId found, call getId with the logins
+			// for a first-time user, this will return a brand new identity
+			// for a returning user, this will retrieve the previous identity assocaited with the logins
+			let generatedOrRetrievedIdentityId;
+			if (!guestIdentityId) {
 				const { IdentityId } = await cognitoClient.send(
 					new GetIdCommand({
 						IdentityPoolId: identityPoolId,
 						Logins: logins,
 					})
 				);
-				generatedOrRetrievedIdentity = IdentityId;
+				generatedOrRetrievedIdentityId = IdentityId;
 			}
 
 			const {
@@ -454,26 +454,25 @@ export class CredentialsClass {
 					SessionToken,
 				},
 				// single source of truth for the primary identity associated with the logins
-				// only if the guest identity is used for a first-time user, 
-				// the guest identity will become its primary identity
-				IdentityId: primaryIdentity,
+				// only if a guest identity is used for a first-time user, that guest identity will become its primary identity
+				IdentityId: primaryIdentityId,
 			} = await cognitoClient.send(
 				new GetCredentialsForIdentityCommand({
-				  IdentityId: guestIdentity || generatedOrRetrievedIdentity,
+				  IdentityId: guestIdentityId || generatedOrRetrievedIdentityId,
 				  Logins: logins,
 				})
 			);
 
-			this._identityId = primaryIdentity;
-			if (guestIdentity) {
+			this._identityId = primaryIdentityId;
+			if (guestIdentityId) {
 				// if guestIdentity is found and used by GetCredentialsForIdentity
 				// it will be linked to the logins provided, and disqualified as an unauth identity
-				logger.debug(`The guest identity ${guestIdentity} has been successfully linked to the logins`);
-				if (guestIdentity === primaryIdentity) {
-					logger.debug(`The guest identity ${guestIdentity} has been become the primary identity`);
+				logger.debug(`The guest identity ${guestIdentityId} has been successfully linked to the logins`);
+				if (guestIdentityId === primaryIdentityId) {
+					logger.debug(`The guest identity ${guestIdentityId} has become the primary identity`);
 				}
-				// remove it from local strorage to avoid being pickup as a guest Identity by _setCredentialsForGuest
-				await this._removeGuestIdentity();
+				// remove it from local storage to avoid being used as a guest Identity by _setCredentialsForGuest
+				await this._removeGuestIdentityId();
 			}
 
 			// https://github.com/aws/aws-sdk-js-v3/blob/main/packages/credential-provider-cognito-identity/src/fromCognitoIdentity.ts#L40
@@ -482,7 +481,7 @@ export class CredentialsClass {
 				secretAccessKey: SecretKey,
 				sessionToken: SessionToken,
 				expiration: Expiration,
-				identityId: primaryIdentity,
+				identityId: primaryIdentityId,
 			  };
 		};
 
@@ -500,7 +499,6 @@ export class CredentialsClass {
 		info
 	): Promise<ICredentials> {
 		const that = this;
-		const { identityPoolId } = this._config;
 		return new Promise((res, rej) => {
 			credentials
 				.then(async credentials => {
@@ -535,7 +533,7 @@ export class CredentialsClass {
 						}
 					}
 					if (source === 'guest') {
-						await this._setGuestIdentity(credentials.identityId);
+						await this._setGuestIdentityId(credentials.identityId);
 					}
 					res(that._credentials);
 					return;
@@ -565,7 +563,6 @@ export class CredentialsClass {
 	}
 
 	public async clear() {
-		const { identityPoolId } = this._config;
 		this._credentials = null;
 		this._credentials_source = null;
 		logger.debug('removing aws-amplify-federatedInfo from storage');
@@ -573,7 +570,7 @@ export class CredentialsClass {
 	}
 
 	/* operations on local stored guest identity */
-	private async _getGuestIdentity() {
+	private async _getGuestIdentityId(): Promise<string> {
 		const { identityPoolId } = this._config;
 		try {
 			await this._storageSync;
@@ -581,11 +578,11 @@ export class CredentialsClass {
 				this._getCognitoIdentityIdStorageKey(identityPoolId)
 			);
 		} catch (e) {
-			logger.debug('Failed to get the cached identityId', e);
+			logger.debug('Failed to get the cached guest identityId', e);
 		}
 	}
 
-	private async _setGuestIdentity(identityId) {
+	private async _setGuestIdentityId(identityId: string) {
 		const { identityPoolId } = this._config;
 		try {
 			await this._storageSync;
@@ -594,11 +591,11 @@ export class CredentialsClass {
 				identityId,
 			);
 		} catch (e) {
-			logger.debug('Failed to cache identityId', e);
+			logger.debug('Failed to cache guest identityId', e);
 		}
 	}
 
-	private async _removeGuestIdentity() {
+	private async _removeGuestIdentityId() {
 		const { identityPoolId } = this._config;
 		logger.debug(
 			`removing ${this._getCognitoIdentityIdStorageKey(
