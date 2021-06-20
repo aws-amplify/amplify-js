@@ -588,7 +588,6 @@ export class SQLiteAdapter implements Adapter {
 		const result: [T, OpType][] = [];
 
 		const itemsToSave: T[] = [];
-
 		// To determine whether an item should result in an insert or update operation
 		// We first need to query the local DB on the item id
 		const queryStatements = new Set<SQLStatement>();
@@ -613,12 +612,12 @@ export class SQLiteAdapter implements Adapter {
 			);
 
 			if (_deleted) {
-				// create the delete statement right away
+				// create the delete statements right away
 				const deleteStatement = modelDeleteStatement(instance, tableName);
 				deleteStatements.add(deleteStatement);
 				result.push([<T>(<unknown>item), OpType.DELETE]);
 			} else {
-				// query first
+				// query statements for the saves at first
 				const queryStatement = queryByIdStatement(id, tableName);
 				queryStatements.add(queryStatement);
 				// combination of insert and update items

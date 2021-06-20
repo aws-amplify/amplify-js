@@ -1,12 +1,6 @@
 import SQLite from 'react-native-sqlite-storage';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import {
-	ModelInstanceMetadata,
-	OpType,
-	PaginationInput,
-	PersistentModel,
-	QueryOne,
-} from '../../types';
+import { PersistentModel } from '../../types';
 import { SQLStatement } from './SQLiteUtils';
 
 const logger = new Logger('SQLiteDatabase');
@@ -20,6 +14,19 @@ const DB_DISPLAYNAME = 'AWS Amplify DataStore SQLite Database';
 // TODO: make these configurable
 const DB_SIZE = 200000;
 const DB_VERSION = '1.0';
+
+/*
+
+Note: 
+I purposely avoided using arrow functions () => {} in this class,
+Because I've run into issues when using them in SQLite method callbacks
+
+Also, even though the SQLite library is promisified, certain operations
+only work correctly with callbacks. Specifically, any time you need to
+get the return value of an executeSql command inside of a transaction
+(see the batchQuery method below)
+
+*/
 
 class SQLiteDatabase {
 	private db: SQLite.SQLiteDatabase;
@@ -47,12 +54,12 @@ class SQLiteDatabase {
 	public async get(statement: string, params: any[]): Promise<PersistentModel> {
 		const [resultSet] = await this.db.executeSql(statement, params);
 		const result =
+			resultSet &&
 			resultSet.rows &&
 			resultSet.rows.length &&
 			resultSet.rows.raw &&
 			resultSet.rows.raw();
 
-		console.log('get', statement, params, result);
 		return result || undefined;
 	}
 
@@ -62,12 +69,12 @@ class SQLiteDatabase {
 	): Promise<PersistentModel[]> {
 		const [resultSet] = await this.db.executeSql(statement, params);
 		const result =
+			resultSet &&
 			resultSet.rows &&
 			resultSet.rows.length &&
 			resultSet.rows.raw &&
 			resultSet.rows.raw();
 
-		console.log('getAll', statement, params, result);
 		return result || [];
 	}
 
@@ -86,7 +93,7 @@ class SQLiteDatabase {
 					function(_tx, res) {
 						results.push(res.rows.raw()[0]);
 					},
-					console.error
+					logger.warn
 				);
 			}
 		});
@@ -115,26 +122,6 @@ class SQLiteDatabase {
 		});
 	}
 
-	private async executeStatementsAndReturn(
-		statements: string[]
-	): Promise<{ insertId?: string; rows: { item; raw } }> {
-		return new Promise(async (resolve, reject) => {
-			this.db
-				.transaction(function(tx) {
-					// we need to resolve the last transaction
-					// if we want to retrieve data from it
-					const lastStatement = statements.pop();
-
-					for (const statement of statements) {
-						tx.executeSql(statement);
-					}
-
-					tx.executeSql(lastStatement).then(([, result]) => resolve(result));
-				})
-				.catch(reject);
-		});
-	}
-
 	private async closeDB() {
 		if (this.db) {
 			logger.debug('Closing Database');
@@ -143,15 +130,5 @@ class SQLiteDatabase {
 		}
 	}
 }
-
-// public async upsert(
-// 	statements: string[]
-// ): Promise<[boolean, PersistentModel]> {
-// 	const { insertId, rows } = await this.executeStatementsAndReturn(
-// 		statements
-// 	);
-
-// 	return [Boolean(insertId), rows.raw()];
-// }
 
 export default SQLiteDatabase;
