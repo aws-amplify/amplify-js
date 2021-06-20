@@ -5,6 +5,7 @@ import {
 	queryByIdStatement,
 	modelUpdateStatement,
 	modelInsertStatement,
+	queryAllStatement,
 	queryOneStatement,
 } from './SQLiteUtils';
 
@@ -38,6 +39,7 @@ import {
 	validatePredicate,
 	sortCompareFunction,
 } from '../../util';
+import { table } from 'console';
 
 const logger = new Logger('DataStore');
 
@@ -84,9 +86,7 @@ export class SQLiteAdapter implements Adapter {
 				await this.db.init();
 
 				const statements = generateSchemaStatements(this.schema);
-				console.log('statements', statements);
 				await this.db.createSchema(statements);
-				console.log('done creating schema');
 				this.resolve();
 			}
 		} catch (error) {
@@ -105,15 +105,13 @@ export class SQLiteAdapter implements Adapter {
 		model: T,
 		condition?: ModelPredicate<T>
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
-		console.log('top of save', model);
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
 		const { name: modelName } = modelConstructor;
 
-		const queryStatement = queryByIdStatement(model.id, modelName);
+		const [queryStatement, params] = queryByIdStatement(model.id, modelName);
 
-		console.log('save', queryStatement);
-		const fromDB = await this.db.get(queryStatement);
+		const fromDB = await this.db.get(queryStatement, params);
 
 		if (condition && fromDB) {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
@@ -133,11 +131,11 @@ export class SQLiteAdapter implements Adapter {
 
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
 
-		const saveStatement = fromDB
+		const [saveStatement, saveParams] = fromDB
 			? modelUpdateStatement(model, modelName)
 			: modelInsertStatement(model, modelName);
 
-		await this.db.save(saveStatement);
+		await this.db.save(saveStatement, saveParams);
 
 		result.push([model, opType]);
 
@@ -223,7 +221,6 @@ export class SQLiteAdapter implements Adapter {
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
-		console.log('top of save');
 		const { name: modelName } = modelConstructor;
 		// const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
@@ -265,15 +262,16 @@ export class SQLiteAdapter implements Adapter {
 		tableName: string,
 		id: string
 	): Promise<T> {
-		const queryStatement = queryByIdStatement(id, tableName);
-		const record = await this.db.get(queryStatement);
+		const [queryStatement, params] = queryByIdStatement(id, tableName);
+		const record = await this.db.get(queryStatement, params);
 		return record;
 	}
 
 	private async getAll<T extends PersistentModel>(
 		tableName: string
 	): Promise<T[]> {
-		return await this.db.getAll(tableName);
+		const [queryStatement, params] = queryAllStatement(tableName);
+		return await this.db.getAll(queryStatement, params);
 	}
 
 	private idFromPredicate<T extends PersistentModel>(
@@ -334,9 +332,9 @@ export class SQLiteAdapter implements Adapter {
 		firstOrLast: QueryOne = QueryOne.FIRST
 	): Promise<T | undefined> {
 		const { name: tableName } = modelConstructor;
-		const queryStatement = queryOneStatement(firstOrLast, tableName);
+		const [queryStatement, params] = queryOneStatement(firstOrLast, tableName);
 
-		const result = await this.db.get(queryStatement);
+		const result = await this.db.get(queryStatement, params);
 		return result && this.modelInstanceCreator(modelConstructor, result);
 	}
 

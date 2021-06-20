@@ -45,23 +45,30 @@ class SQLiteDatabase {
 
 	public async clear() {
 		await this.closeDB();
-		console.log('Deleting database');
+		logger.debug('Deleting database');
 		await SQLite.deleteDatabase(DB_NAME);
-		logger.debug('Database DELETED');
+		logger.debug('Database deleted');
 	}
 
-	public async get(statement: string): Promise<PersistentModel> {
-		const [resultSet] = await this.db.executeSql(statement);
-		return resultSet.rows.raw()[0];
+	public async get(statement: string, params: any[]): Promise<PersistentModel> {
+		const resultSet = await this.db.executeSql(statement, params);
+		const result = resultSet && resultSet.rows && resultSet.rows.raw();
+		console.log('get resultset', resultSet, result);
+		return result || null;
 	}
 
-	public async getAll(statement: string): Promise<PersistentModel[]> {
-		const [resultSet] = await this.db.executeSql(statement);
-		return resultSet.rows.raw();
+	public async getAll(
+		statement: string,
+		params: any[]
+	): Promise<PersistentModel[]> {
+		const resultSet = await this.db.executeSql(statement, params);
+		const result = resultSet && resultSet.rows && resultSet.rows.raw();
+		console.log('getAll resultSet', resultSet, result);
+		return result || [];
 	}
 
-	public async save(statement: string): Promise<void> {
-		await this.db.executeSql(statement);
+	public async save(statement: string, params: any[]): Promise<void> {
+		await this.db.executeSql(statement, params);
 	}
 
 	public async batchSave() {}
