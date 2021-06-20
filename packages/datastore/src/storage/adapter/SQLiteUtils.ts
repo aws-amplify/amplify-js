@@ -1,12 +1,13 @@
-import { table } from 'console';
 import {
 	InternalSchema,
 	SchemaModel,
 	PersistentModel,
+	isEnumFieldType,
 	isGraphQLScalarType,
 	GraphQLScalarType,
 	QueryOne,
 } from '../../types';
+import { USER } from '../../util';
 
 export type SQLStatement = [string, any[]];
 
@@ -35,24 +36,37 @@ const updateSet = model => {
 export function generateSchemaStatements(schema: InternalSchema): string[] {
 	return Object.keys(schema.namespaces).flatMap(namespaceName => {
 		const namespace = schema.namespaces[namespaceName];
+		const isUserModel = namespaceName === USER;
 
-		return Object.values(namespace.models).map(modelCreateTableStatement);
+		return Object.values(namespace.models).map(model =>
+			modelCreateTableStatement(model, isUserModel)
+		);
 	});
 }
 
-export function modelCreateTableStatement(model: SchemaModel): string {
-	const fields = Object.values(model.fields).reduce((acc, field) => {
-		if (!isGraphQLScalarType(field.type)) {
-			return acc;
+export function modelCreateTableStatement(
+	model: SchemaModel,
+	userModel: boolean = false
+): string {
+	let fields = Object.values(model.fields).reduce((acc, field) => {
+		if (isGraphQLScalarType(field.type)) {
+			if (field.name === 'id') {
+				return acc + 'id PRIMARY KEY NOT NULL';
+			}
+
+			let columnParam = `${field.name} ${GraphQLScalarType.getSQLiteType(
+				field.type
+			)}`;
+
+			if (field.isRequired) {
+				columnParam += ' NOT NULL';
+			}
+
+			return acc + `, ${columnParam}`;
 		}
 
-		if (field.name === 'id') {
-			return acc + 'id PRIMARY KEY NOT NULL';
-		}
-
-		let columnParam = `${field.name} ${GraphQLScalarType.getSQLiteType(
-			field.type
-		)}`;
+		// default to TEXT
+		let columnParam = `${field.name} TEXT`;
 
 		if (field.isRequired) {
 			columnParam += ' NOT NULL';
@@ -61,15 +75,12 @@ export function modelCreateTableStatement(model: SchemaModel): string {
 		return acc + `, ${columnParam}`;
 	}, '');
 
+	if (userModel) {
+		fields += ', _version INT, _lastChangedAt INT, _deleted BOOLEAN';
+	}
+
 	const createTableStatement = `CREATE TABLE IF NOT EXISTS ${model.name} (${fields});`;
 	return createTableStatement;
-}
-
-export function queryByIdStatement(
-	id: string,
-	tableName: string
-): SQLStatement {
-	return [`SELECT * FROM ${tableName} WHERE id = ?`, [id]];
 }
 
 export function modelInsertStatement(
@@ -93,6 +104,13 @@ export function modelUpdateStatement(
 	const updateStatement = `UPDATE ${tableName} SET ${paramaterized} WHERE id=?`;
 
 	return [updateStatement, [...values, model.id]];
+}
+
+export function queryByIdStatement(
+	id: string,
+	tableName: string
+): SQLStatement {
+	return [`SELECT * FROM ${tableName} WHERE id = ?`, [id]];
 }
 
 /* 
@@ -120,8 +138,9 @@ export function queryOneStatement(firstOrLast, tableName: string) {
 export function modelDeleteStatement(
 	model: PersistentModel,
 	tableName: string
-) {
-	const deleteStatement = `DELETE FROM ${tableName}`;
+): SQLStatement {
+	const deleteStatement = `DELETE FROM ${tableName} WHERE id=?`;
+	return [deleteStatement, [model.id]];
 }
 
 // Probably won't be using this leaving for now just in case

@@ -7,6 +7,8 @@ import {
 	modelInsertStatement,
 	queryAllStatement,
 	queryOneStatement,
+	modelDeleteStatement,
+	SQLStatement,
 } from './SQLiteUtils';
 
 import { Adapter } from './index';
@@ -582,14 +584,20 @@ export class SQLiteAdapter implements Adapter {
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
 		const { name: tableName } = modelConstructor;
-		const namespaceName = this.namespaceResolver(modelConstructor);
-		// const storeName = this.getStorename(namespaceName, modelName);
 
-		const batch: ModelInstanceMetadata[] = [];
+		const result: [T, OpType][] = [];
+
+		const itemsToSave: T[] = [];
+
+		// To determine whether an item should result in an insert or update operation
+		// We first need to query the local DB on the item id
+		const queryStatements = new Set<SQLStatement>();
+		// Deletes don't need to be queried first, because if the item doesn't exist,
+		// the delete operation will be a no-op
+		const deleteStatements = new Set<SQLStatement>();
+		const saveStatements = new Set<SQLStatement>();
 
 		for (const item of items) {
-			const { id } = item;
-
 			const connectedModels = traverseModel(
 				modelConstructor.name,
 				this.modelInstanceCreator(modelConstructor, item),
@@ -598,14 +606,51 @@ export class SQLiteAdapter implements Adapter {
 				this.getModelConstructorByModelName
 			);
 
+			const { id, _deleted } = item;
+
 			const { instance } = connectedModels.find(
 				({ instance }) => instance.id === id
 			);
 
-			batch.push(instance);
+			if (_deleted) {
+				// create the delete statement right away
+				const deleteStatement = modelDeleteStatement(instance, tableName);
+				deleteStatements.add(deleteStatement);
+				result.push([<T>(<unknown>item), OpType.DELETE]);
+			} else {
+				// query first
+				const queryStatement = queryByIdStatement(id, tableName);
+				queryStatements.add(queryStatement);
+				// combination of insert and update items
+				itemsToSave.push(instance);
+			}
 		}
 
-		return await this.db.batchSave(tableName, batch);
+		// returns the query results for each of the save items
+		const queryResponses = await this.db.batchQuery(queryStatements);
+
+		queryResponses.forEach((response, idx) => {
+			if (response === undefined) {
+				const insertStatement = modelInsertStatement(
+					itemsToSave[idx],
+					tableName
+				);
+				saveStatements.add(insertStatement);
+				result.push([<T>(<unknown>itemsToSave[idx]), OpType.INSERT]);
+			} else {
+				const updateStatement = modelUpdateStatement(
+					itemsToSave[idx],
+					tableName
+				);
+				saveStatements.add(updateStatement);
+				result.push([<T>(<unknown>itemsToSave[idx]), OpType.UPDATE]);
+			}
+		});
+
+		// perform all of the insert/update/delete operations in a single transaction
+		await this.db.batchSave(saveStatements, deleteStatements);
+
+		return result;
 	}
 }
 

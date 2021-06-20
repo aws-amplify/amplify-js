@@ -775,6 +775,8 @@ export class SyncEngine {
 
 		const modelsMetadata = await this.storage.query(ModelMetadata);
 
+		console.log('getModelsMetadata', modelsMetadata);
+
 		return modelsMetadata;
 	}
 
@@ -906,6 +908,12 @@ export class SyncEngine {
 							name: 'fullSyncInterval',
 							type: 'Int',
 							isRequired: true,
+							isArray: false,
+						},
+						lastSyncPredicate: {
+							name: 'lastSyncPredicate',
+							type: 'String',
+							isRequired: false,
 							isArray: false,
 						},
 					},
