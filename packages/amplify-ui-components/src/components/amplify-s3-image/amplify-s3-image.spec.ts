@@ -18,6 +18,10 @@ describe('amplify-s3-image spec:', () => {
 			expect(amplifyS3Image.path).toBeUndefined();
 		});
 
+		it('`alt` should be undefined by default', () => {
+			expect(amplifyS3Image.alt).toBeUndefined();
+		});
+
 		it('`body` should be undefined by default', () => {
 			expect(amplifyS3Image.body).toBeUndefined();
 		});
@@ -44,6 +48,10 @@ describe('amplify-s3-image spec:', () => {
 
 		it('`handleOnError` should be undefined by default', () => {
 			expect(amplifyS3Image.handleOnError).toBeUndefined();
+		});
+
+		it('`imgProps` should be undefined by default', () => {
+			expect(amplifyS3Image.imgProps).toBeUndefined();
 		});
 	});
 
