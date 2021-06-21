@@ -12,6 +12,7 @@ import {
 } from '../../types';
 import { USER } from '../../util';
 
+// TODO: rename to ParamaterizedStatement
 export type SQLStatement = [string, any[]];
 
 const keysFromModel = model => Object.keys(model).join(', ');
@@ -140,28 +141,30 @@ const logicalOperatorMap = {
 	between: 'BETWEEN',
 };
 
-const whereConditionFromPredicateObject = ({ field, operator, operand }) => {
+const whereConditionFromPredicateObject = ({
+	field,
+	operator,
+	operand,
+}): SQLStatement => {
 	const comparisonOperator = comparisonOperatorMap[operator];
 
-	// TODO: make this more resilient
-	const rightExpr = typeof operand === 'string' ? `'${operand}'` : operand;
-
 	if (comparisonOperator) {
-		return `${field} ${comparisonOperator} ${rightExpr}`;
+		return [`${field} ${comparisonOperator} ?`, [operand]];
 	}
 
 	const logicalOperator = logicalOperatorMap[operator];
 
 	if (logicalOperator) {
+		const params = [operand];
 		switch (operator) {
 			case 'beginsWith':
-				return `${field} ${logicalOperator} '${operand}%'`;
+				return [`${field} ${logicalOperator} '?%'`, params];
 
 			case 'contains':
-				return `${field} ${logicalOperator} '%${operand}%'`;
+				return [`${field} ${logicalOperator} '%$?%'`, params];
 
 			case 'notContains':
-				return `${field} ${logicalOperator} '%${operand}%'`;
+				return [`${field} ${logicalOperator} '%$?%'`, params];
 
 			default:
 				// Throw, because we don't want to execute a command with an incorrect WHERE clause
@@ -170,17 +173,23 @@ const whereConditionFromPredicateObject = ({ field, operator, operand }) => {
 	}
 };
 
-// TODO: paramaterize where clause; return SQLStatement
-export function whereClauseFromPredicate(predicate: PredicatesGroup<any>) {
+export function whereClauseFromPredicate(
+	predicate: PredicatesGroup<any>
+): SQLStatement {
 	const { type, predicates } = predicate;
 
-	return predicates.reduce((acc, predicateObject, idx) => {
+	const params = [];
+
+	const clause = predicates.reduce((acc, predicateObject, idx) => {
 		// TODO: handle nested Predicate Group
 		if (!isPredicateObj(predicateObject)) {
 			return acc;
 		}
 
-		const condition = whereConditionFromPredicateObject(predicateObject);
+		const [condition, conditionParams] = whereConditionFromPredicateObject(
+			predicateObject
+		);
+		Array.prototype.push.apply(params, conditionParams);
 
 		if (idx > 0) {
 			// append type, e.g., AND for predicates [1..n]
@@ -189,6 +198,8 @@ export function whereClauseFromPredicate(predicate: PredicatesGroup<any>) {
 
 		return acc + ` ${condition}`;
 	}, 'WHERE');
+
+	return [clause, params];
 }
 
 /* 
@@ -204,10 +215,12 @@ export function queryAllStatement(
 	page: number = 0
 ) {
 	let statement = `SELECT * FROM ${tableName}`;
+	const params = [];
 
 	if (predicate) {
-		const whereClause = whereClauseFromPredicate(predicate);
+		const [whereClause, whereParams] = whereClauseFromPredicate(predicate);
 		statement += ` ${whereClause}`;
+		Array.prototype.push.apply(params, whereParams);
 	}
 
 	if (sort) {
@@ -216,7 +229,7 @@ export function queryAllStatement(
 	if (limit) {
 	}
 
-	return [statement, []];
+	return [statement, params];
 }
 
 export function queryOneStatement(firstOrLast, tableName: string) {
@@ -240,7 +253,6 @@ export function modelDeleteStatement(
 }
 
 // Probably won't be using this leaving for now just in case
-
 // export function modelUpsertStatement(
 // 	model: PersistentModel,
 // 	tableName: string

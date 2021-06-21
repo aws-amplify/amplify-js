@@ -154,7 +154,10 @@ describe('SQLiteUtils tests', () => {
 			],
 		};
 
-		const expected = `WHERE firstName = 'Bob' and lastName LIKE 'sm%' and sortOrder > 5`;
+		const expected = [
+			`WHERE firstName = ? and lastName LIKE '?%' and sortOrder > ?`,
+			['Bob', 'sm', 5],
+		];
 
 		expect(whereClauseFromPredicate(predicate as any)).toEqual(expected);
 	});
