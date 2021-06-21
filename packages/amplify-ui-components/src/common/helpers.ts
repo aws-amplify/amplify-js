@@ -109,7 +109,15 @@ export const onAuthUIStateChange = (authStateHandler: AuthStateHandler) => {
 		}
 	};
 	Hub.listen(UI_AUTH_CHANNEL, authUIStateHandler);
-	return () => Hub.remove(UI_AUTH_CHANNEL, authUIStateHandler);
+	
+	const unsubscribe = () => {
+		// Replace user's `authStateHandler` with a noop so that we don't trigger side-effects during the async `authUIStateHandler` when unsubscribed
+		authStateHandler = () => {};
+		
+		Hub.remove(UI_AUTH_CHANNEL, authUIStateHandler);
+	}
+	
+	return unsubscribe;
 };
 
 export const isHintValid = field => {
