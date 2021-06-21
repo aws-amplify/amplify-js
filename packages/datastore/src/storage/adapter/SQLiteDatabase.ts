@@ -19,11 +19,11 @@ const DB_VERSION = '1.0';
 
 Note: 
 I purposely avoided using arrow functions () => {} in this class,
-Because I've run into issues when using them in SQLite method callbacks
+Because I ran into issues with them in some of the SQLite method callbacks
 
 Also, even though the SQLite library is promisified, certain operations
 only work correctly with callbacks. Specifically, any time you need to
-get the return value of an executeSql command inside of a transaction
+get the result of an `executeSql` command inside of a transaction
 (see the batchQuery method below)
 
 */
@@ -51,7 +51,10 @@ class SQLiteDatabase {
 		logger.debug('Database deleted');
 	}
 
-	public async get(statement: string, params: any[]): Promise<PersistentModel> {
+	public async get<T extends PersistentModel>(
+		statement: string,
+		params: any[]
+	): Promise<T> {
 		const [resultSet] = await this.db.executeSql(statement, params);
 		const result =
 			resultSet &&
@@ -63,10 +66,10 @@ class SQLiteDatabase {
 		return result || undefined;
 	}
 
-	public async getAll(
+	public async getAll<T extends PersistentModel>(
 		statement: string,
 		params: any[]
-	): Promise<PersistentModel[]> {
+	): Promise<T[]> {
 		const [resultSet] = await this.db.executeSql(statement, params);
 		const result =
 			resultSet &&
@@ -100,6 +103,7 @@ class SQLiteDatabase {
 
 		return results;
 	}
+
 	public async batchSave(
 		saveStatements: Set<SQLStatement>,
 		deleteStatements: Set<SQLStatement>
@@ -112,6 +116,27 @@ class SQLiteDatabase {
 				tx.executeSql(statement, params);
 			}
 		});
+	}
+
+	public async selectAndDelete(query: SQLStatement, _delete: SQLStatement) {
+		let results = [];
+
+		const [queryStatement, queryParams] = query;
+		const [deleteStatement, deleteParams] = _delete;
+
+		await this.db.transaction(function(tx) {
+			tx.executeSql(
+				queryStatement,
+				queryParams,
+				function(_tx, res) {
+					results = res.rows.raw();
+				},
+				logger.warn
+			);
+			tx.executeSql(deleteStatement, deleteParams, () => {}, logger.warn);
+		});
+
+		return results;
 	}
 
 	private async executeStatements(statements: string[]): Promise<void> {

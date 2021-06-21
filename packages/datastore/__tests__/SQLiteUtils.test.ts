@@ -8,6 +8,8 @@ import {
 	whereClauseFromPredicate,
 	limitClauseFromPagination,
 	orderByClauseFromSort,
+	deleteByIdStatement,
+	deleteByPredicateStatement,
 } from '../src/storage/adapter/SQLiteUtils';
 import {
 	InternalSchema,
@@ -272,6 +274,48 @@ describe('SQLiteUtils tests', () => {
 			expect(orderByClauseFromSort(sortPredicateGroup as any)).toEqual(
 				expected
 			);
+		});
+	});
+
+	describe('deleteByIdStatement', () => {
+		it('should generate valid DELETE statement', () => {
+			const model = new Model({
+				field1: 'test',
+				dateCreated: new Date().toISOString(),
+			});
+
+			const expected = ['DELETE FROM Model WHERE id=?', [model.id]];
+
+			expect(deleteByIdStatement(model.id, 'Model')).toEqual(expected);
+		});
+	});
+
+	describe('deleteByPredicateStatement', () => {
+		it('should generate valid DELETE statement', () => {
+			const model = new Model({
+				field1: 'test',
+				dateCreated: new Date().toISOString(),
+			});
+
+			const predicateGroup = {
+				type: 'and',
+				predicates: [
+					{
+						field: 'createdAt',
+						operator: 'gt',
+						operand: '2021-06-20',
+					},
+				],
+			};
+
+			const expected = [
+				'DELETE FROM Model WHERE createdAt > ?',
+				['2021-06-20'],
+			];
+
+			expect(
+				deleteByPredicateStatement('Model', predicateGroup as any)
+			).toEqual(expected);
 		});
 	});
 });

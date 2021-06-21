@@ -2,14 +2,12 @@ import {
 	InternalSchema,
 	SchemaModel,
 	PersistentModel,
-	isEnumFieldType,
 	isGraphQLScalarType,
 	GraphQLScalarType,
 	QueryOne,
 	PredicatesGroup,
 	isPredicateObj,
 	SortPredicatesGroup,
-	SortDirection,
 } from '../../types';
 import { USER } from '../../util';
 
@@ -119,6 +117,8 @@ export function queryByIdStatement(
 }
 
 /*
+	Predicates supported by DataStore:
+
 	Strings: eq | ne | le | lt | ge | gt | contains | notContains | beginsWith | between
 	Numbers: eq | ne | le | lt | ge | gt | between
 	Lists: contains | notContains
@@ -135,10 +135,10 @@ const comparisonOperatorMap = {
 
 const logicalOperatorMap = {
 	beginsWith: 'LIKE',
-	// TODO: enable for lists (works with strings now)
+	// TODO: enable contains for lists (only works with strings now)
 	contains: 'LIKE',
 	notContains: 'NOT LIKE',
-	// TODO:
+	// TODO: enable between
 	between: 'BETWEEN',
 };
 
@@ -173,8 +173,8 @@ const whereConditionFromPredicateObject = ({
 	}
 };
 
-export function whereClauseFromPredicate(
-	predicate: PredicatesGroup<any>
+export function whereClauseFromPredicate<T extends PersistentModel>(
+	predicate: PredicatesGroup<T>
 ): SQLStatement {
 	const { type, predicates } = predicate;
 
@@ -207,8 +207,8 @@ const sortDirectionMap = {
 	DESCENDING: 'DESC',
 };
 
-export function orderByClauseFromSort(
-	sortPredicate: SortPredicatesGroup<PersistentModel>
+export function orderByClauseFromSort<T extends PersistentModel>(
+	sortPredicate: SortPredicatesGroup<T>
 ): string {
 	return sortPredicate.reduce((acc, { field, sortDirection }, idx) => {
 		const orderByDirection = sortDirectionMap[sortDirection];
@@ -232,10 +232,10 @@ export function limitClauseFromPagination(
 	return clause;
 }
 
-export function queryAllStatement(
+export function queryAllStatement<T extends PersistentModel>(
 	tableName: string,
-	predicate?: PredicatesGroup<PersistentModel>,
-	sort?: SortPredicatesGroup<PersistentModel>,
+	predicate?: PredicatesGroup<T>,
+	sort?: SortPredicatesGroup<T>,
 	limit?: number,
 	page?: number
 ): SQLStatement {
@@ -261,7 +261,10 @@ export function queryAllStatement(
 	return [statement, params];
 }
 
-export function queryOneStatement(firstOrLast, tableName: string) {
+export function queryOneStatement(
+	firstOrLast,
+	tableName: string
+): SQLStatement {
 	if (firstOrLast === QueryOne.FIRST) {
 		return [`SELECT * FROM ${tableName} LIMIT 1`, []];
 	} else {
@@ -273,15 +276,30 @@ export function queryOneStatement(firstOrLast, tableName: string) {
 	}
 }
 
-export function modelDeleteStatement(
-	model: PersistentModel,
+export function deleteByIdStatement(
+	id: string,
 	tableName: string
 ): SQLStatement {
 	const deleteStatement = `DELETE FROM ${tableName} WHERE id=?`;
-	return [deleteStatement, [model.id]];
+	return [deleteStatement, [id]];
 }
 
-// Probably won't be using this leaving for now just in case
+export function deleteByPredicateStatement<T extends PersistentModel>(
+	tableName: string,
+	predicate?: PredicatesGroup<T>
+): SQLStatement {
+	let statement = `DELETE FROM ${tableName}`;
+	const params = [];
+
+	if (predicate) {
+		const [whereClause, whereParams] = whereClauseFromPredicate(predicate);
+		statement += ` ${whereClause}`;
+		Array.prototype.push.apply(params, whereParams);
+	}
+	return [statement, params];
+}
+
+// Probably won't be using this; leaving for now just in case
 // export function modelUpsertStatement(
 // 	model: PersistentModel,
 // 	tableName: string
