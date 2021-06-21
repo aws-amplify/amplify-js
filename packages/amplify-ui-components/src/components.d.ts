@@ -797,6 +797,10 @@ export namespace Components {
     }
     interface AmplifyS3Image {
         /**
+          * String representing the alternate image text
+         */
+        "alt": string;
+        /**
           * Image body content to be uploaded
          */
         "body": object;
@@ -820,6 +824,10 @@ export namespace Components {
           * The key of the image object in S3
          */
         "imgKey": string;
+        /**
+          * Attributes to be placed on the img element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes
+         */
+        "imgProps"?: Record<PropertyKey, any>;
         /**
           * The access level of the image
          */
@@ -2335,6 +2343,10 @@ declare namespace LocalJSX {
     }
     interface AmplifyS3Image {
         /**
+          * String representing the alternate image text
+         */
+        "alt"?: string;
+        /**
           * Image body content to be uploaded
          */
         "body"?: object;
@@ -2358,6 +2370,10 @@ declare namespace LocalJSX {
           * The key of the image object in S3
          */
         "imgKey"?: string;
+        /**
+          * Attributes to be placed on the img element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes
+         */
+        "imgProps"?: Record<PropertyKey, any>;
         /**
           * The access level of the image
          */
