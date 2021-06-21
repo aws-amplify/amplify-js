@@ -68,7 +68,11 @@ import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
 import { default as urlListener } from './urlListener';
 import { AuthError, NoUserPoolError } from './Errors';
-import { AuthErrorTypes, CognitoHostedUIIdentityProvider, IAuthDevice } from './types/Auth';
+import {
+	AuthErrorTypes,
+	CognitoHostedUIIdentityProvider,
+	IAuthDevice,
+} from './types/Auth';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -2261,7 +2265,7 @@ export class AuthClass {
 		});
 	}
 
-	public async fetchDevices(): Promise<AuthDevice[]> {
+	public async fetchDevices(): Promise<IAuthDevice[]> {
 		let currUser;
 
 		try {
@@ -2278,9 +2282,11 @@ export class AuthClass {
 					const deviceList: IAuthDevice[] = data.Devices.map(device => {
 						const deviceInfo: IAuthDevice = {
 							id: device.DeviceKey,
-							name: device.DeviceAttributes.find(({Name}) => Name === 'device_name').Value, 
-						  };
-						return deviceInfo
+							name: device.DeviceAttributes.find(
+								({ Name }) => Name === 'device_name'
+							).Value,
+						};
+						return deviceInfo;
 					});
 					res(deviceList);
 				},
