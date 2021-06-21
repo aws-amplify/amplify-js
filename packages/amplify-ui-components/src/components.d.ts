@@ -825,7 +825,7 @@ export namespace Components {
         /**
           * Attributes to be placed on the img element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes
          */
-        "imgProps"?: object;
+        "imgProps"?: Record<PropertyKey, any>;
         /**
           * The access level of the image
          */
@@ -2365,7 +2365,7 @@ declare namespace LocalJSX {
         /**
           * Attributes to be placed on the img element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes
          */
-        "imgProps"?: object;
+        "imgProps"?: Record<PropertyKey, any>;
         /**
           * The access level of the image
          */

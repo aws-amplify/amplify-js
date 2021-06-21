@@ -35,7 +35,7 @@ export class AmplifyS3Image {
 	/** Function executed when error occurs for the image */
 	@Prop() handleOnError: (event: Event) => void;
 	/** Attributes to be placed on the img element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes */
-	@Prop() imgProps?: object;
+	@Prop() imgProps?: Record<PropertyKey, any>;
 	/** Source for the image */
 	@State() src: string | object;
 
