@@ -128,7 +128,7 @@ export class AmplifySignUp {
 
 			return data;
 		} catch (err) {
-			throw new Error(Translations.SIGN_UP_FAILED);
+			throw err;
 		}
 	}
 
