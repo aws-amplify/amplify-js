@@ -18,6 +18,7 @@
 
 - [amplify-form-section](../amplify-form-section)
 - [amplify-radio-button](../amplify-radio-button)
+- [amplify-toast](../amplify-toast)
 - [amplify-totp-setup](../amplify-totp-setup)
 
 ### Graph
@@ -25,6 +26,7 @@
 graph TD;
   amplify-select-mfa-type --> amplify-form-section
   amplify-select-mfa-type --> amplify-radio-button
+  amplify-select-mfa-type --> amplify-toast
   amplify-select-mfa-type --> amplify-totp-setup
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
@@ -32,6 +34,7 @@ graph TD;
   amplify-button --> amplify-icon
   amplify-loading-spinner --> amplify-icon
   amplify-radio-button --> amplify-label
+  amplify-toast --> amplify-icon
   amplify-totp-setup --> amplify-form-section
   amplify-totp-setup --> amplify-form-field
   amplify-form-field --> amplify-label

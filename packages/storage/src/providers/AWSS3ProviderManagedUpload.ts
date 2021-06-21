@@ -19,6 +19,7 @@ import {
 import {
 	S3Client,
 	PutObjectCommand,
+	PutObjectRequest,
 	CreateMultipartUploadCommand,
 	UploadPartCommand,
 	CompleteMultipartUploadCommand,
@@ -60,7 +61,7 @@ export class AWSS3ProviderManagedUpload {
 	private totalBytesToUpload = 0;
 	private emitter: events.EventEmitter = null;
 
-	constructor(params, opts, emitter: events.EventEmitter) {
+	constructor(params: PutObjectRequest, opts, emitter: events.EventEmitter) {
 		this.params = params;
 		this.opts = opts;
 		this.emitter = emitter;
@@ -175,13 +176,17 @@ export class AWSS3ProviderManagedUpload {
 				parts.map(async part => {
 					this.setupEventListener(part);
 					const s3 = await this._createNewS3Client(this.opts, part.emitter);
+					const { Key, Bucket, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5 } = this.params;
 					return s3.send(
 						new UploadPartCommand({
 							PartNumber: part.partNumber,
 							Body: part.bodyPart,
 							UploadId: uploadId,
-							Key: this.params.Key,
-							Bucket: this.params.Bucket,
+							Key,
+							Bucket,
+							...(this.params.SSECustomerAlgorithm && { SSECustomerAlgorithm }),
+							...(this.params.SSECustomerKey && { SSECustomerKey }),
+							...(this.params.SSECustomerKeyMD5 && { SSECustomerKeyMD5 })
 						})
 					);
 				})
