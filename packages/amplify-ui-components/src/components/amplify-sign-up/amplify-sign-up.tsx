@@ -123,13 +123,12 @@ export class AmplifySignUp {
 	}
 
 	private async authSignUp(params: SignUpParams): Promise<ISignUpResult> {
-		try {
-			const data = await Auth.signUp(params);
-
-			return data;
-		} catch (err) {
-			throw err;
+		const data = await Auth.signUp(params);
+		if (!data) {
+			throw new Error(Translations.SIGN_UP_FAILED);
 		}
+
+		return data;
 	}
 
 	private assignPhoneNumberToSignUpAttributes(): void {
