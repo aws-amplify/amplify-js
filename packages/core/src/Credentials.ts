@@ -434,7 +434,7 @@ export class CredentialsClass {
 
 			// if no guestIdentityId found, call getId with the logins
 			// for a first-time user, this will return a brand new identity
-			// for a returning user, this will retrieve the previous identity assocaited with the logins
+			// for a returning user, this will retrieve the previous identity associated with the logins
 			let generatedOrRetrievedIdentityId;
 			if (!guestIdentityId) {
 				const { IdentityId } = await cognitoClient.send(
