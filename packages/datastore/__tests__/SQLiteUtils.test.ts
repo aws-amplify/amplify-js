@@ -5,6 +5,7 @@ import {
 	queryOneStatement,
 	modelInsertStatement,
 	modelUpdateStatement,
+	whereClauseFromPredicate,
 } from '../src/storage/adapter/SQLiteUtils';
 import {
 	InternalSchema,
@@ -18,9 +19,9 @@ let initSchema: typeof initSchemaType;
 
 const INTERNAL_TEST_SCHEMA_STATEMENTS = [
 	'CREATE TABLE IF NOT EXISTS Setting (id PRIMARY KEY NOT NULL, key TEXT NOT NULL, value TEXT NOT NULL);',
-	'CREATE TABLE IF NOT EXISTS Model (id PRIMARY KEY NOT NULL, field1 TEXT NOT NULL, optionalField1 TEXT, dateCreated TEXT NOT NULL, emails TEXT NOT NULL, ips TEXT);',
-	'CREATE TABLE IF NOT EXISTS LocalModel (id PRIMARY KEY NOT NULL, field1 TEXT NOT NULL);',
-	'CREATE TABLE IF NOT EXISTS MutationEvent (id PRIMARY KEY NOT NULL, model TEXT NOT NULL, data TEXT NOT NULL, modelId TEXT NOT NULL, condition TEXT NOT NULL);',
+	'CREATE TABLE IF NOT EXISTS Model (id PRIMARY KEY NOT NULL, field1 TEXT NOT NULL, optionalField1 TEXT, dateCreated TEXT NOT NULL, emails TEXT NOT NULL, ips TEXT, metadata TEXT, _version INT, _lastChangedAt INT, _deleted BOOLEAN);',
+	'CREATE TABLE IF NOT EXISTS LocalModel (id PRIMARY KEY NOT NULL, field1 TEXT NOT NULL, _version INT, _lastChangedAt INT, _deleted BOOLEAN);',
+	'CREATE TABLE IF NOT EXISTS MutationEvent (id PRIMARY KEY NOT NULL, model TEXT NOT NULL, data TEXT NOT NULL, modelId TEXT NOT NULL, operation TEXT NOT NULL, condition TEXT NOT NULL);',
 	'CREATE TABLE IF NOT EXISTS ModelMetadata (id PRIMARY KEY NOT NULL, namespace TEXT NOT NULL, model TEXT NOT NULL, lastSync INT, lastFullSync INT, fullSyncInterval INT NOT NULL);',
 ];
 
@@ -129,5 +130,32 @@ describe('SQLiteUtils tests', () => {
 
 			expect(modelUpdateStatement(model, 'Model')).toEqual(expected);
 		});
+	});
+
+	describe('whereClauseFromPredicate', () => {
+		const predicate = {
+			type: 'and',
+			predicates: [
+				{
+					field: 'firstName',
+					operator: 'eq',
+					operand: 'Bob',
+				},
+				{
+					field: 'lastName',
+					operator: 'beginsWith',
+					operand: 'sm',
+				},
+				{
+					field: 'sortOrder',
+					operator: 'gt',
+					operand: 5,
+				},
+			],
+		};
+
+		const expected = `WHERE firstName = 'Bob' and lastName LIKE 'sm%' and sortOrder > 5`;
+
+		expect(whereClauseFromPredicate(predicate as any)).toEqual(expected);
 	});
 });

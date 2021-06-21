@@ -6,6 +6,9 @@ import {
 	isGraphQLScalarType,
 	GraphQLScalarType,
 	QueryOne,
+	PredicatesGroup,
+	isPredicateObj,
+	SortPredicatesGroup,
 } from '../../types';
 import { USER } from '../../util';
 
@@ -113,21 +116,114 @@ export function queryByIdStatement(
 	return [`SELECT * FROM ${tableName} WHERE id = ?`, [id]];
 }
 
+/*
+	Strings: eq | ne | le | lt | ge | gt | contains | notContains | beginsWith | between
+	Numbers: eq | ne | le | lt | ge | gt | between
+	Lists: contains | notContains
+*/
+
+const comparisonOperatorMap = {
+	eq: '=',
+	ne: '!=',
+	le: '<=',
+	lt: '<',
+	ge: '>=',
+	gt: '>',
+};
+
+const logicalOperatorMap = {
+	beginsWith: 'LIKE',
+	// TODO: enable for lists (works with strings now)
+	contains: 'LIKE',
+	notContains: 'NOT LIKE',
+	// TODO:
+	between: 'BETWEEN',
+};
+
+const whereConditionFromPredicateObject = ({ field, operator, operand }) => {
+	const comparisonOperator = comparisonOperatorMap[operator];
+
+	// TODO: make this more resilient
+	const rightExpr = typeof operand === 'string' ? `'${operand}'` : operand;
+
+	if (comparisonOperator) {
+		return `${field} ${comparisonOperator} ${rightExpr}`;
+	}
+
+	const logicalOperator = logicalOperatorMap[operator];
+
+	if (logicalOperator) {
+		switch (operator) {
+			case 'beginsWith':
+				return `${field} ${logicalOperator} '${operand}%'`;
+
+			case 'contains':
+				return `${field} ${logicalOperator} '%${operand}%'`;
+
+			case 'notContains':
+				return `${field} ${logicalOperator} '%${operand}%'`;
+
+			default:
+				// Throw, because we don't want to execute a command with an incorrect WHERE clause
+				throw new Error('Cannot map predicate to a valid WHERE clause');
+		}
+	}
+};
+
+// TODO: paramaterize where clause; return SQLStatement
+export function whereClauseFromPredicate(predicate: PredicatesGroup<any>) {
+	const { type, predicates } = predicate;
+
+	return predicates.reduce((acc, predicateObject, idx) => {
+		// TODO: handle nested Predicate Group
+		if (!isPredicateObj(predicateObject)) {
+			return acc;
+		}
+
+		const condition = whereConditionFromPredicateObject(predicateObject);
+
+		if (idx > 0) {
+			// append type, e.g., AND for predicates [1..n]
+			return acc + ` ${type} ${condition}`;
+		}
+
+		return acc + ` ${condition}`;
+	}, 'WHERE');
+}
+
 /* 
 TODO:
-predicates -> WHERE clause
-sort -> ORDER BY
-pagination -> LIMIT
+	sort -> ORDER BY
+	pagination -> LIMIT
 */
-export function queryAllStatement(tableName: string) {
-	return [`SELECT * FROM ${tableName}`, []];
+export function queryAllStatement(
+	tableName: string,
+	predicate?: PredicatesGroup<PersistentModel>,
+	sort?: SortPredicatesGroup<PersistentModel>,
+	limit?: number,
+	page: number = 0
+) {
+	let statement = `SELECT * FROM ${tableName}`;
+
+	if (predicate) {
+		const whereClause = whereClauseFromPredicate(predicate);
+		statement += ` ${whereClause}`;
+	}
+
+	if (sort) {
+	}
+
+	if (limit) {
+	}
+
+	return [statement, []];
 }
 
 export function queryOneStatement(firstOrLast, tableName: string) {
 	if (firstOrLast === QueryOne.FIRST) {
 		return [`SELECT * FROM ${tableName} LIMIT 1`, []];
 	} else {
-		// Not very efficient, but I don't think this query gets used on large tables
+		// Not very efficient, but I don't think this query gets used often
 		return [
 			`SELECT * FROM ${tableName} LIMIT 1 OFFSET ((SELECT COUNT(*) FROM ${tableName}) - 1)`,
 			[],

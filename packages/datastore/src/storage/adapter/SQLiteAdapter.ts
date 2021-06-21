@@ -41,7 +41,6 @@ import {
 	validatePredicate,
 	sortCompareFunction,
 } from '../../util';
-import { table } from 'console';
 
 const logger = new Logger('DataStore');
 
@@ -223,38 +222,28 @@ export class SQLiteAdapter implements Adapter {
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
-		const { name: modelName } = modelConstructor;
+		const { name: tableName } = modelConstructor;
 		// const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
 		const predicates =
 			predicate && ModelPredicateCreator.getPredicates(predicate);
 		const queryById = predicates && this.idFromPredicate(predicates);
-		// const hasSort = pagination && pagination.sort;
-		// const hasPagination = pagination && pagination.limit;
+		const sort = pagination && pagination.sort;
+		const limit = pagination && pagination.limit;
 
 		const records: T[] = <T[]>await (async () => {
 			if (queryById) {
-				const record = await this.getById(modelName, queryById);
+				const record = await this.getById(tableName, queryById);
 				return record ? [record] : [];
 			}
 
-			// TODO:
-			// if (predicates) {
-			// 	const filtered = await this.filterOnPredicate(storeName, predicates);
-			// 	return this.inMemoryPagination(filtered, pagination);
-			// }
+			console.log('query predicates', predicate, predicates);
+			console.log('query sort', sort);
+			console.log('query limit', limit);
 
-			// if (hasSort) {
-			// 	const all = await this.getAll(storeName);
-			// 	return this.inMemoryPagination(all, pagination);
-			// }
-
-			// if (hasPagination) {
-			// 	return this.enginePagination(storeName, pagination);
-			// }
-
-			return await this.getAll(modelName);
+			const [queryStatement, params] = queryAllStatement(tableName, predicates);
+			return await this.db.getAll(queryStatement, params, sort, limit);
 		})();
 
 		return await this.load(namespaceName, modelConstructor.name, records);
@@ -289,46 +278,6 @@ export class SQLiteAdapter implements Adapter {
 		return idPredicate && idPredicate.operand;
 	}
 
-	// private async filterOnPredicate<T extends PersistentModel>(
-	// 	storeName: string,
-	// 	predicates: PredicatesGroup<T>
-	// ) {
-	// 	const { predicates: predicateObjs, type } = predicates;
-
-	// 	const all = <T[]>await this.getAll(storeName);
-
-	// 	const filtered = predicateObjs
-	// 		? all.filter(m => validatePredicate(m, type, predicateObjs))
-	// 		: all;
-
-	// 	return filtered;
-	// }
-
-	// private inMemoryPagination<T extends PersistentModel>(
-	// 	records: T[],
-	// 	pagination?: PaginationInput<T>
-	// ): T[] {
-	// 	if (pagination && records.length > 1) {
-	// 		if (pagination.sort) {
-	// 			const sortPredicates = ModelSortPredicateCreator.getPredicates(
-	// 				pagination.sort
-	// 			);
-
-	// 			if (sortPredicates.length) {
-	// 				const compareFn = sortCompareFunction(sortPredicates);
-	// 				records.sort(compareFn);
-	// 			}
-	// 		}
-	// 		const { page = 0, limit = 0 } = pagination;
-	// 		const start = Math.max(0, page * limit) || 0;
-
-	// 		const end = limit > 0 ? start + limit : records.length;
-
-	// 		return records.slice(start, end);
-	// 	}
-	// 	return records;
-	// }
-
 	async queryOne<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		firstOrLast: QueryOne = QueryOne.FIRST
@@ -345,8 +294,9 @@ export class SQLiteAdapter implements Adapter {
 		condition?: ModelPredicate<T>
 	): Promise<[T[], T[]]> {
 		const deleteQueue: { storeName: string; items: T[] }[] = [];
-		return await undefined;
-		/*
+		return undefined;
+	}
+	/*
 		if (isModelConstructor(modelOrModelConstructor)) {
 			const modelConstructor = modelOrModelConstructor;
 			const nameSpace = this.namespaceResolver(modelConstructor);
@@ -457,9 +407,8 @@ export class SQLiteAdapter implements Adapter {
 
 			return [[model], deletedModels];
 		}
-		*/
 	}
-	/*
+
 	private async deleteItem<T extends PersistentModel>(
 		deleteQueue?: { storeName: string; items: T[] | IDBValidKey[] }[]
 	) {
@@ -576,9 +525,7 @@ export class SQLiteAdapter implements Adapter {
 			),
 		});
 	}
-
-	*/
-
+*/
 	async batchSave<T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<any>,
 		items: ModelInstanceMetadata[]
