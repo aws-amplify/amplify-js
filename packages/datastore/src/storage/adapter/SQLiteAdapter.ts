@@ -229,7 +229,10 @@ export class SQLiteAdapter implements Adapter {
 		const predicates =
 			predicate && ModelPredicateCreator.getPredicates(predicate);
 		const queryById = predicates && this.idFromPredicate(predicates);
-		const sort = pagination && pagination.sort;
+		const sortPredicates =
+			pagination &&
+			pagination.sort &&
+			ModelSortPredicateCreator.getPredicates(pagination.sort);
 		const limit = pagination && pagination.limit;
 
 		const records: T[] = <T[]>await (async () => {
@@ -239,11 +242,18 @@ export class SQLiteAdapter implements Adapter {
 			}
 
 			console.log('query predicates', predicate, predicates);
-			console.log('query sort', sort);
+			console.log('query sort', sortPredicates);
 			console.log('query limit', limit);
 
 			const [queryStatement, params] = queryAllStatement(tableName, predicates);
-			return await this.db.getAll(queryStatement, params, sort, limit);
+			console.log('query statement', queryStatement);
+
+			return await this.db.getAll(
+				queryStatement,
+				params,
+				sortPredicates,
+				limit
+			);
 		})();
 
 		return await this.load(namespaceName, modelConstructor.name, records);

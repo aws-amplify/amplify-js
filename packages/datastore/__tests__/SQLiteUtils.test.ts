@@ -7,6 +7,7 @@ import {
 	modelUpdateStatement,
 	whereClauseFromPredicate,
 	limitClauseFromPagination,
+	orderByClauseFromSort,
 } from '../src/storage/adapter/SQLiteUtils';
 import {
 	InternalSchema,
@@ -67,6 +68,60 @@ describe('SQLiteUtils tests', () => {
 			const expected = [`SELECT * FROM Model`, []];
 
 			expect(queryAllStatement('Model')).toEqual(expected);
+		});
+
+		it('should generate valid SELECT all statement - with predicates, sort, & pagination', () => {
+			const tableName = 'Model';
+
+			const predicateGroup = {
+				type: 'and',
+				predicates: [
+					{
+						field: 'firstName',
+						operator: 'eq',
+						operand: 'Bob',
+					},
+					{
+						field: 'lastName',
+						operator: 'beginsWith',
+						operand: 'Sm',
+					},
+					{
+						field: 'sortOrder',
+						operator: 'gt',
+						operand: 5,
+					},
+				],
+			};
+
+			const sortPredicateGroup = [
+				{
+					field: 'sortOrder',
+					sortDirection: 'ASCENDING',
+				},
+				{
+					field: 'lastName',
+					sortDirection: 'DESCENDING',
+				},
+			];
+
+			const limit = 10;
+			const page = 3;
+
+			const expected = [
+				`SELECT * FROM Model WHERE firstName = ? and lastName LIKE ? and sortOrder > ? ORDER BY sortOrder ASC, lastName DESC LIMIT 10 OFFSET 3`,
+				['Bob', 'Sm%', 5],
+			];
+
+			expect(
+				queryAllStatement(
+					tableName,
+					predicateGroup as any,
+					sortPredicateGroup as any,
+					limit,
+					page
+				)
+			).toEqual(expected);
 		});
 	});
 
@@ -135,7 +190,7 @@ describe('SQLiteUtils tests', () => {
 
 	describe('whereClauseFromPredicate', () => {
 		it('should generate valid WHERE clause from predicate', () => {
-			const predicate = {
+			const predicateGroup = {
 				type: 'and',
 				predicates: [
 					{
@@ -146,7 +201,7 @@ describe('SQLiteUtils tests', () => {
 					{
 						field: 'lastName',
 						operator: 'beginsWith',
-						operand: 'sm',
+						operand: 'Sm',
 					},
 					{
 						field: 'sortOrder',
@@ -157,11 +212,11 @@ describe('SQLiteUtils tests', () => {
 			};
 
 			const expected = [
-				`WHERE firstName = ? and lastName LIKE '?%' and sortOrder > ?`,
-				['Bob', 'sm', 5],
+				`WHERE firstName = ? and lastName LIKE ? and sortOrder > ?`,
+				['Bob', 'Sm%', 5],
 			];
 
-			expect(whereClauseFromPredicate(predicate as any)).toEqual(expected);
+			expect(whereClauseFromPredicate(predicateGroup as any)).toEqual(expected);
 		});
 	});
 
@@ -181,6 +236,42 @@ describe('SQLiteUtils tests', () => {
 			const expected = 'LIMIT 10 OFFSET 3';
 
 			expect(limitClauseFromPagination(limit, page)).toEqual(expected);
+		});
+	});
+
+	describe('orderByClauseFromSort', () => {
+		it('should generate valid ORDER BY clause from pagination sort', () => {
+			const sortPredicateGroup = [
+				{
+					field: 'sortOrder',
+					sortDirection: 'ASCENDING',
+				},
+			];
+
+			const expected = 'ORDER BY sortOrder ASC';
+
+			expect(orderByClauseFromSort(sortPredicateGroup as any)).toEqual(
+				expected
+			);
+		});
+
+		it('should generate valid ORDER BY clause from pagination sort - multi field', () => {
+			const sortPredicateGroup = [
+				{
+					field: 'sortOrder',
+					sortDirection: 'ASCENDING',
+				},
+				{
+					field: 'lastName',
+					sortDirection: 'DESCENDING',
+				},
+			];
+
+			const expected = 'ORDER BY sortOrder ASC, lastName DESC';
+
+			expect(orderByClauseFromSort(sortPredicateGroup as any)).toEqual(
+				expected
+			);
 		});
 	});
 });

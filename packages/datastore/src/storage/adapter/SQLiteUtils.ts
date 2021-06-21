@@ -9,6 +9,7 @@ import {
 	PredicatesGroup,
 	isPredicateObj,
 	SortPredicatesGroup,
+	SortDirection,
 } from '../../types';
 import { USER } from '../../util';
 
@@ -155,21 +156,20 @@ const whereConditionFromPredicateObject = ({
 	const logicalOperator = logicalOperatorMap[operator];
 
 	if (logicalOperator) {
-		const params = [operand];
+		let rightExp;
 		switch (operator) {
 			case 'beginsWith':
-				return [`${field} ${logicalOperator} '?%'`, params];
-
+				rightExp = `${operand}%`;
+				break;
 			case 'contains':
-				return [`${field} ${logicalOperator} '%$?%'`, params];
-
 			case 'notContains':
-				return [`${field} ${logicalOperator} '%$?%'`, params];
-
+				rightExp = `%${operand}%`;
+				break;
 			default:
 				// Incorrect WHERE clause can result in data loss
 				throw new Error('Cannot map predicate to a valid WHERE clause');
 		}
+		return [`${field} ${logicalOperator} ?`, [rightExp]];
 	}
 };
 
@@ -202,6 +202,24 @@ export function whereClauseFromPredicate(
 	return [clause, params];
 }
 
+const sortDirectionMap = {
+	ASCENDING: 'ASC',
+	DESCENDING: 'DESC',
+};
+
+export function orderByClauseFromSort(
+	sortPredicate: SortPredicatesGroup<PersistentModel>
+): string {
+	return sortPredicate.reduce((acc, { field, sortDirection }, idx) => {
+		const orderByDirection = sortDirectionMap[sortDirection];
+
+		if (idx > 0) {
+			return acc + `, ${field} ${orderByDirection}`;
+		}
+		return acc + ` ${field} ${orderByDirection}`;
+	}, 'ORDER BY');
+}
+
 export function limitClauseFromPagination(
 	limit: number,
 	page: number = 0
@@ -214,17 +232,13 @@ export function limitClauseFromPagination(
 	return clause;
 }
 
-/* 
-TODO:
-	sort -> ORDER BY
-*/
 export function queryAllStatement(
 	tableName: string,
 	predicate?: PredicatesGroup<PersistentModel>,
 	sort?: SortPredicatesGroup<PersistentModel>,
 	limit?: number,
 	page?: number
-) {
+): SQLStatement {
 	let statement = `SELECT * FROM ${tableName}`;
 	const params = [];
 
@@ -235,6 +249,8 @@ export function queryAllStatement(
 	}
 
 	if (sort) {
+		const orderByClause = orderByClauseFromSort(sort);
+		statement += ` ${orderByClause}`;
 	}
 
 	if (limit) {
