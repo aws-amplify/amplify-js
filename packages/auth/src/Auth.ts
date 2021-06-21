@@ -2198,16 +2198,16 @@ export class AuthClass {
 		return AuthErrorTypes.NoConfig;
 	}
 
-	private rejectAuthError(type: AuthErrorTypes): Promise<never> {
+	private rejectAuthError(type: AuthErrorTypes): Promise<void> {
 		return Promise.reject(new AuthError(type));
 	}
 
-	private rejectNoUserPool(): Promise<never> {
+	private rejectNoUserPool(): Promise<void> {
 		const type = this.noUserPoolErrorHandler(this._config);
 		return Promise.reject(new NoUserPoolError(type));
 	}
 
-	public async rememberDevice(): Promise<string | AuthError> {
+	public async rememberDevice(): Promise<string | AuthError | void> {
 		let currUser;
 
 		try {
