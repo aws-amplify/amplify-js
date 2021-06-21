@@ -176,17 +176,13 @@ export class AWSS3ProviderManagedUpload {
 				parts.map(async part => {
 					this.setupEventListener(part);
 					const s3 = await this._createNewS3Client(this.opts, part.emitter);
-					const { Key, Bucket, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5 } = this.params;
 					return s3.send(
 						new UploadPartCommand({
 							PartNumber: part.partNumber,
 							Body: part.bodyPart,
 							UploadId: uploadId,
-							Key,
-							Bucket,
-							...(this.params.SSECustomerAlgorithm && { SSECustomerAlgorithm }),
-							...(this.params.SSECustomerKey && { SSECustomerKey }),
-							...(this.params.SSECustomerKeyMD5 && { SSECustomerKeyMD5 })
+							Key: this.params.Key,
+							Bucket: this.params.Bucket,
 						})
 					);
 				})

@@ -244,9 +244,6 @@ export class AWSS3Provider implements StorageProvider {
 			contentType,
 			expires,
 			track,
-			SSECustomerAlgorithm,
-			SSECustomerKey,
-			SSECustomerKeyMD5,
 		} = opt;
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
@@ -264,15 +261,6 @@ export class AWSS3Provider implements StorageProvider {
 		if (contentEncoding) params.ResponseContentEncoding = contentEncoding;
 		if (contentLanguage) params.ResponseContentLanguage = contentLanguage;
 		if (contentType) params.ResponseContentType = contentType;
-		if (SSECustomerAlgorithm) {
-			params.SSECustomerAlgorithm = SSECustomerAlgorithm;
-		}
-		if (SSECustomerKey) {
-			params.SSECustomerKey = SSECustomerKey;
-		}
-		if (SSECustomerKeyMD5) {
-			params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
-		}
 
 		if (download === true) {
 			const getObjectCommand = new GetObjectCommand(params);
@@ -374,18 +362,18 @@ export class AWSS3Provider implements StorageProvider {
 		}
 		if (serverSideEncryption) {
 			params.ServerSideEncryption = serverSideEncryption;
-		}
-		if (SSECustomerAlgorithm) {
-			params.SSECustomerAlgorithm = SSECustomerAlgorithm;
-		}
-		if (SSECustomerKey) {
-			params.SSECustomerKey = SSECustomerKey;
-		}
-		if (SSECustomerKeyMD5) {
-			params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
-		}
-		if (SSEKMSKeyId) {
-			params.SSEKMSKeyId = SSEKMSKeyId;
+			if (SSECustomerAlgorithm) {
+				params.SSECustomerAlgorithm = SSECustomerAlgorithm;
+			}
+			if (SSECustomerKey) {
+				params.SSECustomerKey = SSECustomerKey;
+			}
+			if (SSECustomerKeyMD5) {
+				params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
+			}
+			if (SSEKMSKeyId) {
+				params.SSEKMSKeyId = SSEKMSKeyId;
+			}
 		}
 
 		const emitter = new events.EventEmitter();
