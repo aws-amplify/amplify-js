@@ -242,13 +242,13 @@ export function queryAllStatement<T extends PersistentModel>(
 	let statement = `SELECT * FROM ${tableName}`;
 	const params = [];
 
-	if (predicate) {
+	if (predicate && predicate.predicates.length) {
 		const [whereClause, whereParams] = whereClauseFromPredicate(predicate);
 		statement += ` ${whereClause}`;
 		Array.prototype.push.apply(params, whereParams);
 	}
 
-	if (sort) {
+	if (sort && sort.length) {
 		const orderByClause = orderByClauseFromSort(sort);
 		statement += ` ${orderByClause}`;
 	}
@@ -291,7 +291,7 @@ export function deleteByPredicateStatement<T extends PersistentModel>(
 	let statement = `DELETE FROM ${tableName}`;
 	const params = [];
 
-	if (predicate) {
+	if (predicate && predicate.predicates.length) {
 		const [whereClause, whereParams] = whereClauseFromPredicate(predicate);
 		statement += ` ${whereClause}`;
 		Array.prototype.push.apply(params, whereParams);

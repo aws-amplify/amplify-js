@@ -296,7 +296,11 @@ export class SQLiteAdapter implements Adapter {
 		const [queryStatement, params] = queryOneStatement(firstOrLast, tableName);
 
 		const result = await this.db.get<T>(queryStatement, params);
-		return result && this.modelInstanceCreator(modelConstructor, result);
+
+		const modelInstance =
+			result && this.modelInstanceCreator(modelConstructor, result);
+
+		return modelInstance;
 	}
 
 	// Currently does not cascade
@@ -306,10 +310,9 @@ export class SQLiteAdapter implements Adapter {
 		modelOrModelConstructor: T | PersistentModelConstructor<T>,
 		condition?: ModelPredicate<T>
 	): Promise<[T[], T[]]> {
-		const deleteQueue: { tableName: string; items: T[] }[] = [];
-
 		if (isModelConstructor(modelOrModelConstructor)) {
 			const modelConstructor = modelOrModelConstructor;
+			const namespaceName = this.namespaceResolver(modelConstructor);
 			const { name: tableName } = modelConstructor;
 
 			const predicates =
@@ -323,7 +326,13 @@ export class SQLiteAdapter implements Adapter {
 				deleteStatement
 			);
 
-			return [models, models];
+			const modelInstances = await this.load(
+				namespaceName,
+				modelConstructor.name,
+				models
+			);
+
+			return [modelInstances, modelInstances];
 		} else {
 			const model = modelOrModelConstructor as T;
 			const modelConstructor = Object.getPrototypeOf(model)

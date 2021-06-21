@@ -63,7 +63,7 @@ class SQLiteDatabase {
 			resultSet.rows.raw &&
 			resultSet.rows.raw();
 
-		return result || undefined;
+		return result[0] || undefined;
 	}
 
 	public async getAll<T extends PersistentModel>(
