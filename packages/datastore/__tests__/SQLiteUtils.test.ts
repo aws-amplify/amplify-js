@@ -6,6 +6,7 @@ import {
 	modelInsertStatement,
 	modelUpdateStatement,
 	whereClauseFromPredicate,
+	limitClauseFromPagination,
 } from '../src/storage/adapter/SQLiteUtils';
 import {
 	InternalSchema,
@@ -133,32 +134,53 @@ describe('SQLiteUtils tests', () => {
 	});
 
 	describe('whereClauseFromPredicate', () => {
-		const predicate = {
-			type: 'and',
-			predicates: [
-				{
-					field: 'firstName',
-					operator: 'eq',
-					operand: 'Bob',
-				},
-				{
-					field: 'lastName',
-					operator: 'beginsWith',
-					operand: 'sm',
-				},
-				{
-					field: 'sortOrder',
-					operator: 'gt',
-					operand: 5,
-				},
-			],
-		};
+		it('should generate valid WHERE clause from predicate', () => {
+			const predicate = {
+				type: 'and',
+				predicates: [
+					{
+						field: 'firstName',
+						operator: 'eq',
+						operand: 'Bob',
+					},
+					{
+						field: 'lastName',
+						operator: 'beginsWith',
+						operand: 'sm',
+					},
+					{
+						field: 'sortOrder',
+						operator: 'gt',
+						operand: 5,
+					},
+				],
+			};
 
-		const expected = [
-			`WHERE firstName = ? and lastName LIKE '?%' and sortOrder > ?`,
-			['Bob', 'sm', 5],
-		];
+			const expected = [
+				`WHERE firstName = ? and lastName LIKE '?%' and sortOrder > ?`,
+				['Bob', 'sm', 5],
+			];
 
-		expect(whereClauseFromPredicate(predicate as any)).toEqual(expected);
+			expect(whereClauseFromPredicate(predicate as any)).toEqual(expected);
+		});
+	});
+
+	describe('limitClauseFromPagination', () => {
+		it('should generate valid LIMIT clause from pagination limit', () => {
+			const limit = 10;
+
+			const expected = 'LIMIT 10';
+
+			expect(limitClauseFromPagination(limit)).toEqual(expected);
+		});
+
+		it('should generate valid LIMIT clause from pagination limit and page', () => {
+			const limit = 10;
+			const page = 3;
+
+			const expected = 'LIMIT 10 OFFSET 3';
+
+			expect(limitClauseFromPagination(limit, page)).toEqual(expected);
+		});
 	});
 });

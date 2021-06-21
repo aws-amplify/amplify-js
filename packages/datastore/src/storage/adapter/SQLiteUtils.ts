@@ -167,7 +167,7 @@ const whereConditionFromPredicateObject = ({
 				return [`${field} ${logicalOperator} '%$?%'`, params];
 
 			default:
-				// Throw, because we don't want to execute a command with an incorrect WHERE clause
+				// Incorrect WHERE clause can result in data loss
 				throw new Error('Cannot map predicate to a valid WHERE clause');
 		}
 	}
@@ -202,17 +202,28 @@ export function whereClauseFromPredicate(
 	return [clause, params];
 }
 
+export function limitClauseFromPagination(
+	limit: number,
+	page: number = 0
+): string {
+	let clause = `LIMIT ${limit}`;
+	if (page) {
+		clause += ` OFFSET ${page}`;
+	}
+
+	return clause;
+}
+
 /* 
 TODO:
 	sort -> ORDER BY
-	pagination -> LIMIT
 */
 export function queryAllStatement(
 	tableName: string,
 	predicate?: PredicatesGroup<PersistentModel>,
 	sort?: SortPredicatesGroup<PersistentModel>,
 	limit?: number,
-	page: number = 0
+	page?: number
 ) {
 	let statement = `SELECT * FROM ${tableName}`;
 	const params = [];
@@ -227,6 +238,8 @@ export function queryAllStatement(
 	}
 
 	if (limit) {
+		const limitClause = limitClauseFromPagination(limit, page);
+		statement += ` ${limitClause}`;
 	}
 
 	return [statement, params];
