@@ -5,17 +5,19 @@
 
 ## Properties
 
-| Property        | Attribute      | Description                                          | Type                                                                 | Default                 |
-| --------------- | -------------- | ---------------------------------------------------- | -------------------------------------------------------------------- | ----------------------- |
-| `body`          | --             | Image body content to be uploaded                    | `object`                                                             | `undefined`             |
-| `contentType`   | `content-type` | The content type header used when uploading to S3    | `string`                                                             | `'binary/octet-stream'` |
-| `handleOnError` | --             | Function executed when error occurs for the image    | `(event: Event) => void`                                             | `undefined`             |
-| `handleOnLoad`  | --             | Function executed when image loads                   | `(event: Event) => void`                                             | `undefined`             |
-| `identityId`    | `identity-id`  | Cognito identity id of the another user's image      | `string`                                                             | `undefined`             |
-| `imgKey`        | `img-key`      | The key of the image object in S3                    | `string`                                                             | `undefined`             |
-| `level`         | `level`        | The access level of the image                        | `AccessLevel.Private \| AccessLevel.Protected \| AccessLevel.Public` | `AccessLevel.Public`    |
-| `path`          | `path`         | String representing directory location to image file | `string`                                                             | `undefined`             |
-| `track`         | `track`        | Whether or not to use track on get/put of the image  | `boolean`                                                            | `undefined`             |
+| Property        | Attribute      | Description                                                                                                          | Type                                                                 | Default                 |
+| --------------- | -------------- | -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ----------------------- |
+| `alt`           | `alt`          | String representing the alternate image text                                                                         | `string`                                                             | `undefined`             |
+| `body`          | --             | Image body content to be uploaded                                                                                    | `object`                                                             | `undefined`             |
+| `contentType`   | `content-type` | The content type header used when uploading to S3                                                                    | `string`                                                             | `'binary/octet-stream'` |
+| `handleOnError` | --             | Function executed when error occurs for the image                                                                    | `(event: Event) => void`                                             | `undefined`             |
+| `handleOnLoad`  | --             | Function executed when image loads                                                                                   | `(event: Event) => void`                                             | `undefined`             |
+| `identityId`    | `identity-id`  | Cognito identity id of the another user's image                                                                      | `string`                                                             | `undefined`             |
+| `imgKey`        | `img-key`      | The key of the image object in S3                                                                                    | `string`                                                             | `undefined`             |
+| `imgProps`      | --             | Attributes to be placed on the img element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes | `{ [x: string]: any; [x: number]: any; }`                            | `undefined`             |
+| `level`         | `level`        | The access level of the image                                                                                        | `AccessLevel.Private \| AccessLevel.Protected \| AccessLevel.Public` | `AccessLevel.Public`    |
+| `path`          | `path`         | String representing directory location to image file                                                                 | `string`                                                             | `undefined`             |
+| `track`         | `track`        | Whether or not to use track on get/put of the image                                                                  | `boolean`                                                            | `undefined`             |
 
 
 ## CSS Custom Properties
