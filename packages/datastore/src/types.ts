@@ -12,6 +12,7 @@ import {
 	isAWSIPAddress,
 } from './util';
 import { PredicateAll } from './predicates';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 
 //#region Schema types
 export type Schema = UserSchema & {
@@ -21,6 +22,7 @@ export type UserSchema = {
 	models: SchemaModels;
 	nonModels?: SchemaNonModels;
 	relationships?: RelationshipType;
+	keys?: ModelKeys;
 	enums: SchemaEnums;
 	modelTopologicalOrdering?: Map<string, string[]>;
 };
@@ -58,6 +60,7 @@ export type ModelAssociation = AssociatedWith | TargetNameAssociation;
 type AssociatedWith = {
 	connectionType: 'HAS_MANY' | 'HAS_ONE';
 	associatedWith: string;
+	targetName?: string;
 };
 export function isAssociatedWith(obj: any): obj is AssociatedWith {
 	return obj && obj.associatedWith;
@@ -73,8 +76,82 @@ export function isTargetNameAssociation(
 	return obj && obj.targetName;
 }
 
-type ModelAttributes = ModelAttribute[];
+export type ModelAttributes = ModelAttribute[];
 type ModelAttribute = { type: string; properties?: Record<string, any> };
+
+type ModelAttributeKey = {
+	type: 'key';
+	properties: {
+		name?: string;
+		fields: string[];
+	};
+};
+
+type ModelAttributePrimaryKey = {
+	type: 'key';
+	properties: {
+		fields: string[];
+	};
+};
+
+type ModelAttributeCompositeKey = {
+	type: 'key';
+	properties: {
+		name: string;
+		fields: [string, string, string, string?, string?];
+	};
+};
+
+export function isModelAttributeKey(
+	attr: ModelAttribute
+): attr is ModelAttributeKey {
+	return (
+		attr.type === 'key' &&
+		attr.properties &&
+		attr.properties.fields &&
+		attr.properties.fields.length > 0
+	);
+}
+
+export function isModelAttributePrimaryKey(
+	attr: ModelAttribute
+): attr is ModelAttributePrimaryKey {
+	return isModelAttributeKey(attr) && attr.properties.name === undefined;
+}
+
+export function isModelAttributeCompositeKey(
+	attr: ModelAttribute
+): attr is ModelAttributeCompositeKey {
+	return (
+		isModelAttributeKey(attr) &&
+		attr.properties.name !== undefined &&
+		attr.properties.fields.length > 2
+	);
+}
+
+export type ModelAttributeAuthProperty = {
+	allow: ModelAttributeAuthAllow;
+	identityClaim?: string;
+	groupClaim?: string;
+	groups?: string[];
+	operations?: string[];
+	ownerField?: string;
+	provider?: ModelAttributeAuthProvider;
+};
+
+export enum ModelAttributeAuthAllow {
+	OWNER = 'owner',
+	GROUPS = 'groups',
+	PRIVATE = 'private',
+	PUBLIC = 'public',
+}
+
+export enum ModelAttributeAuthProvider {
+	USER_POOLS = 'userPools',
+	OIDC = 'oidc',
+	IAM = 'iam',
+	API_KEY = 'apiKey',
+}
 
 export type ModelFields = Record<string, ModelField>;
 export enum GraphQLScalarType {
@@ -492,9 +569,22 @@ export type RelationshipType = {
 
 //#endregion
 
+//#region Key type
+export type KeyType = {
+	primaryKey?: string[];
+	compositeKeys?: Set<string>[];
+};
+
+export type ModelKeys = {
+	[modelName: string]: KeyType;
+};
+
+//#endregion
+
 //#region DataStore config types
 export type DataStoreConfig = {
 	DataStore?: {
+		authModeStrategyType?: AuthModeStrategyType;
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 		errorHandler?: (error: SyncError) => void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
@@ -502,6 +592,7 @@ export type DataStoreConfig = {
 		fullSyncInterval?: number;
 		syncExpressions?: SyncExpression[];
 	};
+	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
@@ -509,6 +600,41 @@ export type DataStoreConfig = {
 	fullSyncInterval?: number;
 	syncExpressions?: SyncExpression[];
 };
+
+export enum AuthModeStrategyType {
+	DEFAULT = 'DEFAULT',
+	MULTI_AUTH = 'MULTI_AUTH',
+}
+
+export type AuthModeStrategyReturn =
+	| GRAPHQL_AUTH_MODE
+	| GRAPHQL_AUTH_MODE[]
+	| undefined
+	| null;
+
+export type AuthModeStrategyParams = {
+	schema: InternalSchema;
+	modelName: string;
+	operation: ModelOperation;
+};
+
+export type AuthModeStrategy = (
+	authModeStrategyParams: AuthModeStrategyParams
+) => AuthModeStrategyReturn | Promise<AuthModeStrategyReturn>;
+
+export enum ModelOperation {
+	CREATE = 'CREATE',
+	READ = 'READ',
+	UPDATE = 'UPDATE',
+	DELETE = 'DELETE',
+}
+
+export type ModelAuthModes = Record<
+	string,
+	{
+		[Property in ModelOperation]: GRAPHQL_AUTH_MODE[];
+	}
+>;
 
 export type SyncExpression = Promise<{
 	modelConstructor: any;

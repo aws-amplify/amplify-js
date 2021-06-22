@@ -3,7 +3,7 @@ import { API } from '@aws-amplify/api';
 
 export interface IConnectProps {
 	mutation?: any;
-	onSubscriptionMsg?: (prevData: any) => any;
+	onSubscriptionMsg?: (prevData: any, data: any) => any;
 	query?: any;
 	subscription?: any;
 }
@@ -119,7 +119,6 @@ export class Connect extends React.Component<IConnectProps, IConnectState> {
 				this.subSubscription = observable.subscribe({
 					next: ({ value: { data } }) => {
 						const { data: prevData } = this.state;
-						// @ts-ignore
 						const newData = onSubscriptionMsg(prevData, data);
 						if (this.mounted) {
 							this.setState({ data: newData });

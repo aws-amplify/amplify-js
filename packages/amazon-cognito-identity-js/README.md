@@ -724,16 +724,28 @@ cognitoUser.forgetDevice({
 
 ```
 
-**Use case 24.** Retrieve the MFA Options for the user in case MFA is optional.
+**Use case 24.** Retrieve the MFA settings for the user.
 
 ```javascript
-cognitoUser.getMFAOptions(function(err, mfaOptions) {
+cognitoUser.getUserData((err, data) => {
 	if (err) {
 		alert(err.message || JSON.stringify(err));
 		return;
 	}
-	console.log('MFA options for user ' + mfaOptions);
+	const { PreferredMfaSetting, UserMFASettingList } = data;
+	console.log(
+		JSON.stringify({ PreferredMfaSetting, UserMFASettingList }, null, 2)
+	);
 });
+```
+
+E.g.
+
+```json
+{
+	"PreferredMfaSetting": "SMS_MFA",
+	"UserMFASettingList": ["SMS_MFA"]
+}
 ```
 
 **Use case 25.** Authenticating a user with a passwordless custom flow.

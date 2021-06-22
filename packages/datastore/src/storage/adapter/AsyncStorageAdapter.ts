@@ -137,23 +137,15 @@ export class AsyncStorageAdapter implements Adapter {
 
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
-
 			const { id } = item;
 
-			const opType: OpType = (await this.db.get(id, storeName))
-				? OpType.UPDATE
-				: OpType.INSERT;
+			const fromDB = <T>await this.db.get(id, storeName);
+			const opType: OpType = fromDB ? OpType.UPDATE : OpType.INSERT;
 
-			if (id === model.id) {
+			if (id === model.id || opType === OpType.INSERT) {
 				await this.db.save(item, storeName);
 
 				result.push([instance, opType]);
-			} else {
-				if (opType === OpType.INSERT) {
-					await this.db.save(item, storeName);
-
-					result.push([instance, opType]);
-				}
 			}
 		}
 
@@ -494,7 +486,7 @@ export class AsyncStorageAdapter implements Adapter {
 		deleteQueue: { storeName: string; items: T[] }[]
 	): Promise<void> {
 		for await (const rel of relations) {
-			const { relationType, modelName } = rel;
+			const { relationType, modelName, targetName } = rel;
 			const storeName = this.getStorename(nameSpace, modelName);
 
 			const index: string =
@@ -514,9 +506,14 @@ export class AsyncStorageAdapter implements Adapter {
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
+						const hasOneIndex = index || 'byId';
+
+						const hasOneCustomField = targetName in model;
+						const value = hasOneCustomField ? model[targetName] : model.id;
+
 						const allRecords = await this.db.getAll(storeName);
 						const recordToDelete = allRecords.filter(
-							childItem => childItem[index] === model.id
+							childItem => childItem[hasOneIndex] === value
 						);
 
 						await this.deleteTraverse(

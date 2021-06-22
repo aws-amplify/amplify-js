@@ -255,28 +255,18 @@ class IndexedDBAdapter implements Adapter {
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
 			const store = tx.objectStore(storeName);
-
 			const { id } = item;
 
+			const fromDB = <T>await this._get(store, id);
 			const opType: OpType =
-				(await this._get(store, id)) === undefined
-					? OpType.INSERT
-					: OpType.UPDATE;
+				fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
 
-			// It is me
-			if (id === model.id) {
+			// Even if the parent is an INSERT, the child might not be, so we need to get its key
+			if (id === model.id || opType === OpType.INSERT) {
 				const key = await store.index('byId').getKey(item.id);
 				await store.put(item, key);
 
 				result.push([instance, opType]);
-			} else {
-				if (opType === OpType.INSERT) {
-					// Even if the parent is an INSERT, the child might not be, so we need to get its key
-					const key = await store.index('byId').getKey(item.id);
-					await store.put(item, key);
-
-					result.push([instance, opType]);
-				}
 			}
 		}
 
@@ -695,7 +685,7 @@ class IndexedDBAdapter implements Adapter {
 		deleteQueue: { storeName: string; items: T[] }[]
 	): Promise<void> {
 		for await (const rel of relations) {
-			const { relationType, fieldName, modelName } = rel;
+			const { relationType, fieldName, modelName, targetName } = rel;
 			const storeName = this.getStorename(nameSpace, modelName);
 
 			const index: string =
@@ -715,11 +705,16 @@ class IndexedDBAdapter implements Adapter {
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
+						const hasOneIndex = index || 'byId';
+
+						const hasOneCustomField = targetName in model;
+						const value = hasOneCustomField ? model[targetName] : model.id;
+
 						const recordToDelete = <T>await this.db
 							.transaction(storeName, 'readwrite')
 							.objectStore(storeName)
-							.index(index)
-							.get(model.id);
+							.index(hasOneIndex)
+							.get(value);
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]

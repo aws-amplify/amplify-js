@@ -287,6 +287,7 @@ export default class CognitoUser {
 				const challengeParameters = data.ChallengeParameters;
 
 				this.username = challengeParameters.USER_ID_FOR_SRP;
+				this.userDataKey = `${this.keyPrefix}.${this.username}.userData`;
 				serverBValue = new BigInteger(challengeParameters.SRP_B, 16);
 				salt = new BigInteger(challengeParameters.SALT, 16);
 				this.getCachedDeviceKeyAndPassword();
@@ -1181,7 +1182,10 @@ export default class CognitoUser {
 	}
 
 	/**
-	 * This is used by an authenticated user to get the MFAOptions
+	 * This was previously used by an authenticated user to get MFAOptions,
+	 * but no longer returns a meaningful response. Refer to the documentation for
+	 * how to setup and use MFA: https://docs.amplify.aws/lib/auth/mfa/q/platform/js
+	 * @deprecated
 	 * @param {nodeCallback<MFAOptions>} callback Called on success or error.
 	 * @returns {void}
 	 */
@@ -1233,11 +1237,10 @@ export default class CognitoUser {
 	}
 
 	/**
-	 * @typedef {Object} GetUserDataOptions 
+	 * @typedef {Object} GetUserDataOptions
 	 * @property {boolean} bypassCache - force getting data from Cognito service
 	 * @property {Record<string, string>} clientMetadata - clientMetadata for getSession
-	*/
-
+	 */
 
 	/**
 	 * This is used by an authenticated users to get the userData
@@ -1364,9 +1367,9 @@ export default class CognitoUser {
 	}
 
 	/**
-	 * @typedef {Object} GetSessionOptions 
+	 * @typedef {Object} GetSessionOptions
 	 * @property {Record<string, string>} clientMetadata - clientMetadata for getSession
-	*/
+	 */
 
 	/**
 	 * This is used to get a session, either from the session object
@@ -1959,9 +1962,91 @@ export default class CognitoUser {
 	 * This is used for the user to signOut of the application and clear the cached tokens.
 	 * @returns {void}
 	 */
-	signOut() {
+	signOut(revokeTokenCallback) {
+		// If tokens won't be revoked, we just clean the client data.
+		if (!revokeTokenCallback || typeof revokeTokenCallback !== "function") {
+			this.cleanClientData();
+
+			return;
+		}
+
+		this.getSession((error, _session) => {
+			if (error) {
+				return revokeTokenCallback(error);
+			}
+
+			this.revokeTokens((err) => {
+				this.cleanClientData();
+
+				revokeTokenCallback(err);
+			});
+		});
+	}
+
+	revokeTokens(revokeTokenCallback = () => { }) {
+		if (typeof revokeTokenCallback !== 'function') {
+			throw new Error('Invalid revokeTokenCallback. It should be a function.')
+		}
+
+		const tokensToBeRevoked = [];
+
+		if (!this.signInUserSession) {
+			const error = new Error('User is not authenticated');
+
+			return revokeTokenCallback(error);
+		}
+
+		if (!this.signInUserSession.getAccessToken()) {
+			const error = new Error('No Access token available');
+
+			return revokeTokenCallback(error);
+		}
+
+		const refreshToken = this.signInUserSession.getRefreshToken().getToken();
+		const accessToken = this.signInUserSession.getAccessToken();
+
+		if (this.isSessionRevocable(accessToken)) {
+			if (refreshToken) {
+				return this.revokeToken({ token: refreshToken, callback: revokeTokenCallback });
+			}
+		}
+		revokeTokenCallback();
+	}
+
+	isSessionRevocable(token) {
+		if (token && typeof token.decodePayload === 'function') {
+			try {
+				const { origin_jti } = token.decodePayload();
+				return !!origin_jti;
+			} catch (err) {
+				// Nothing to do, token doesnt have origin_jti claim
+			}
+		}
+
+		return false;
+	}
+
+	cleanClientData() {
 		this.signInUserSession = null;
 		this.clearCachedUser();
+	}
+
+	revokeToken({ token, callback }) {
+		this.client.requestWithRetry(
+			'RevokeToken',
+			{
+				Token: token,
+				ClientId: this.pool.getClientId()
+			},
+			err => {
+
+				if (err) {
+					return callback(err);
+				}
+
+				callback();
+			}
+		)
 	}
 
 	/**
@@ -2007,7 +2092,7 @@ export default class CognitoUser {
 
 	/**
 	 * This returns the user context data for advanced security feature.
-	 * @returns {void}
+	 * @returns {string} the user context data from CognitoUserPool
 	 */
 	getUserContextData() {
 		const pool = this.pool;
