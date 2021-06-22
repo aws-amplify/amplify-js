@@ -1,6 +1,9 @@
 import { I18n } from '@aws-amplify/core';
 import { Component, Prop, State, Watch, h, Host } from '@stencil/core';
-import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
+import {
+	FormFieldTypes,
+	PhoneNumberInterface,
+} from '../amplify-auth-fields/amplify-auth-fields-interface';
 import {
 	AuthState,
 	ChallengeName,
@@ -8,7 +11,10 @@ import {
 	AuthFormField,
 	AuthStateHandler,
 } from '../../common/types/auth-types';
-import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
+import {
+	COUNTRY_DIAL_CODE_DEFAULT,
+	NO_AUTH_MODULE_FOUND,
+} from '../../common/constants';
 import { Translations } from '../../common/Translations';
 
 import { Auth } from '@aws-amplify/auth';
@@ -17,6 +23,8 @@ import {
 	dispatchToastHubEvent,
 	dispatchAuthStateChangeEvent,
 	getRequiredAttributesMap,
+	handlePhoneNumberChange,
+	composePhoneNumberInput,
 } from '../../common/helpers';
 import { checkContact } from '../../common/auth-helpers';
 
@@ -64,6 +72,10 @@ export class AmplifyRequireNewPassword {
 	private requiredAttributes: Record<PropertyKey, string> = {};
 	private newFormFields: FormFieldTypes = this.formFields;
 	private currentUser: CognitoUserInterface;
+	private phoneNumber: PhoneNumberInterface = {
+		countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
+		phoneNumberValue: null,
+	};
 
 	private handleRequiredAttributeInputChange(attribute, event) {
 		this.requiredAttributes[attribute] = event.target.value;
@@ -71,11 +83,14 @@ export class AmplifyRequireNewPassword {
 
 	async setCurrentUser(): Promise<void> {
 		if (!this.user) {
+			console.log('checking for user..');
 			// Check for authenticated user
 			try {
 				const user = await Auth.currentAuthenticatedUser();
+				console.log('got user! - ', user);
 				if (user) this.currentUser = user;
 			} catch (error) {
+				console.log('no user! - ', error);
 				dispatchToastHubEvent(error);
 			}
 		} else {
@@ -114,6 +129,13 @@ export class AmplifyRequireNewPassword {
 		this.password = event.target.value;
 	}
 
+	private formatPhoneNumber(event: Event): void {
+		handlePhoneNumberChange(event, this.phoneNumber);
+		this.requiredAttributes['phone_number'] = composePhoneNumberInput(
+			this.phoneNumber
+		);
+	}
+
 	private async completeNewPassword(event: Event) {
 		if (event) {
 			event.preventDefault();
@@ -125,6 +147,16 @@ export class AmplifyRequireNewPassword {
 
 		this.loading = true;
 		try {
+			if (this.requiredAttributes['phone_number']) {
+				console.log('got a phone number!!!!');
+				console.log(this.requiredAttributes);
+
+				this.formatPhoneNumber(event);
+
+				console.log('new phone number!!');
+				console.log(this.requiredAttributes['phone_number']);
+			}
+
 			const user = await Auth.completeNewPassword(
 				this.currentUser,
 				this.password,
