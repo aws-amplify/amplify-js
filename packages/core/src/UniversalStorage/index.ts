@@ -1,4 +1,4 @@
-import Cookies from 'universal-cookie';
+import Cookies, { CookieSetOptions } from 'universal-cookie';
 import { browserOrNode } from '../JS';
 
 type Store = Record<string, string>;
@@ -8,14 +8,29 @@ const { isBrowser } = browserOrNode();
 // Avoid using @types/next because @aws-amplify/ui-angular's version of TypeScript is too old to support it
 type Context = { req?: any };
 
+type Options = {
+  sameSite?: CookieSetOptions['sameSite'];
+};
+
+const defaultOptions: Options = {
+  sameSite: true,
+};
+
 export class UniversalStorage implements Storage {
 	cookies = new Cookies();
 	store: Store = isBrowser ? window.localStorage : Object.create(null);
 
-	constructor(context: Context = {}) {
+	private options: Options;
+
+  constructor(context: Context = {}, options: Options = {}) {
 		this.cookies = context.req
 			? new Cookies(context.req.headers.cookie)
 			: new Cookies();
+
+			this.options = {
+				...defaultOptions,
+				...options,
+			};
 
 		Object.assign(this.store, this.cookies.getAll());
 	}
@@ -102,7 +117,7 @@ export class UniversalStorage implements Storage {
 		this.cookies.set(key, value, {
 			path: '/',
 			// `httpOnly` cannot be set via JavaScript: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#JavaScript_access_using_Document.cookie
-			sameSite: true,
+			sameSite: this.options.sameSite,
 			// Allow unsecure requests to http://localhost:3000/ when in development.
 			secure: window.location.hostname === 'localhost' ? false : true,
 		});
