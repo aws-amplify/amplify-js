@@ -255,7 +255,7 @@ export class AmplifyForgotPassword {
 		this.loading = true;
 		try {
 			const { userInput, code, password } = this.forgotPasswordAttrs;
-			const data = await Auth.forgotPasswordSubmit(userInput, code, password);
+			const data = await Auth.forgotPasswordSubmit(userInput.trim(), code, password);
 			logger.debug(data);
 			this.handleAuthStateChange(AuthState.SignIn);
 			this.delivery = null;
