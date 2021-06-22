@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Based on:
+# https://github.com/react-native-community/react-native-circleci-orb
+
 case $1 in
   export-env)
     echo 'export PATH="$PATH:/usr/local/opt/node@10/bin:~/.yarn/bin:~/project/node_modules/.bin:~/project/example/node_modules/.bin"' >> $BASH_ENV
@@ -23,7 +26,7 @@ case $1 in
   sdkmanager)
 	yes | sdkmanager "platform-tools" "tools" >/dev/null
 	yes | sdkmanager "platforms;android-28" "system-images;android-28;default;x86_64" >/dev/null
-	yes | sdkmanager "emulator" --channel=3 >/dev/null
+	yes | sdkmanager "emulator" >/dev/null
 	yes | sdkmanager "build-tools;28.0.3" >/dev/null
 	yes | sdkmanager --licenses >/dev/null
 	yes | sdkmanager --list

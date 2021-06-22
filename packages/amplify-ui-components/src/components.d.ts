@@ -14,6 +14,8 @@ import { FunctionalComponent } from "@stencil/core";
 import { CountryCodeDialOptions } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { AccessLevel, StorageObject } from "./common/types/storage-types";
 import { SelectOptionsNumber, SelectOptionsString } from "./components/amplify-select/amplify-select-interface";
+import { SignUpParams } from "@aws-amplify/auth";
+import { ISignUpResult } from "amazon-cognito-identity-js";
 export namespace Components {
     interface AmplifyAmazonButton {
         /**
@@ -525,6 +527,10 @@ export namespace Components {
          */
         "placeholder"?: string;
         /**
+          * Whether the input is a required field
+         */
+        "required"?: boolean;
+        /**
           * The input type.  Can be any HTML input type.
          */
         "type"?: TextFieldTypes;
@@ -791,6 +797,10 @@ export namespace Components {
     }
     interface AmplifyS3Image {
         /**
+          * String representing the alternate image text
+         */
+        "alt": string;
+        /**
           * Image body content to be uploaded
          */
         "body": object;
@@ -814,6 +824,10 @@ export namespace Components {
           * The key of the image object in S3
          */
         "imgKey": string;
+        /**
+          * Attributes to be placed on the img element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes
+         */
+        "imgProps"?: Record<PropertyKey, any>;
         /**
           * The access level of the image
          */
@@ -1031,6 +1045,12 @@ export namespace Components {
           * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange": AuthStateHandler;
+        /**
+          * Override for handling the Auth.SignUp API call
+         */
+        "handleSignUp": (
+		params: SignUpParams
+	) => Promise<ISignUpResult>;
         /**
           * Fires when sign up form is submitted
          */
@@ -2053,6 +2073,10 @@ declare namespace LocalJSX {
          */
         "placeholder"?: string;
         /**
+          * Whether the input is a required field
+         */
+        "required"?: boolean;
+        /**
           * The input type.  Can be any HTML input type.
          */
         "type"?: TextFieldTypes;
@@ -2319,6 +2343,10 @@ declare namespace LocalJSX {
     }
     interface AmplifyS3Image {
         /**
+          * String representing the alternate image text
+         */
+        "alt"?: string;
+        /**
           * Image body content to be uploaded
          */
         "body"?: object;
@@ -2342,6 +2370,10 @@ declare namespace LocalJSX {
           * The key of the image object in S3
          */
         "imgKey"?: string;
+        /**
+          * Attributes to be placed on the img element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes
+         */
+        "imgProps"?: Record<PropertyKey, any>;
         /**
           * The access level of the image
          */
@@ -2559,6 +2591,12 @@ declare namespace LocalJSX {
           * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange"?: AuthStateHandler;
+        /**
+          * Override for handling the Auth.SignUp API call
+         */
+        "handleSignUp"?: (
+		params: SignUpParams
+	) => Promise<ISignUpResult>;
         /**
           * Fires when sign up form is submitted
          */
