@@ -14,6 +14,7 @@ import {
 import {
 	COUNTRY_DIAL_CODE_DEFAULT,
 	NO_AUTH_MODULE_FOUND,
+	PHONE_SUFFIX,
 } from '../../common/constants';
 import { Translations } from '../../common/Translations';
 
@@ -74,11 +75,15 @@ export class AmplifyRequireNewPassword {
 	private currentUser: CognitoUserInterface;
 	private phoneNumber: PhoneNumberInterface = {
 		countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
-		phoneNumberValue: null,
+		phoneNumberValue: ' ',
 	};
 
 	private handleRequiredAttributeInputChange(attribute, event) {
-		this.requiredAttributes[attribute] = event.target.value;
+		if (attribute === 'phone_number') {
+			this.formatPhoneNumber(event);
+		} else {
+			this.requiredAttributes[attribute] = event.target.value;
+		}
 	}
 
 	async setCurrentUser(): Promise<void> {
@@ -126,11 +131,25 @@ export class AmplifyRequireNewPassword {
 		this.password = event.target.value;
 	}
 
-	private formatPhoneNumber(event: Event): void {
+	private formatPhoneNumber(event): void {
 		handlePhoneNumberChange(event, this.phoneNumber);
-		this.requiredAttributes['phone_number'] = composePhoneNumberInput(
-			this.phoneNumber
-		);
+
+		/**
+		 * composePhoneNumberInput will throw an error if the phoneNumberValue it receives
+		 * is empty. Adding a check here to try and make sure that doesn't happen...but will
+		 * wrap it in a try/catch block just in case as well
+		 */
+		try {
+			if (
+				event.target.name === PHONE_SUFFIX &&
+				this.phoneNumber.phoneNumberValue
+			) {
+				const composedInput = composePhoneNumberInput(this.phoneNumber);
+				this.requiredAttributes['phone_number'] = composedInput;
+			}
+		} catch (err) {
+			logger.error(`error in phone number field - ${err}`);
+		}
 	}
 
 	private async completeNewPassword(event: Event) {
@@ -144,10 +163,6 @@ export class AmplifyRequireNewPassword {
 
 		this.loading = true;
 		try {
-			if (this.requiredAttributes['phone_number']) {
-				this.formatPhoneNumber(event);
-			}
-
 			const user = await Auth.completeNewPassword(
 				this.currentUser,
 				this.password,
