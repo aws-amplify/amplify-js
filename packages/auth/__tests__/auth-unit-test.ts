@@ -253,7 +253,7 @@ import {
 	Hub,
 } from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
-import { AuthDevice, AuthErrorTypes } from '../src/types/Auth';
+import { AuthErrorTypes } from '../src/types/Auth';
 import { mockDeviceArray, transformedMockData } from './mockData';
 
 const authOptions: AuthOptions = {
