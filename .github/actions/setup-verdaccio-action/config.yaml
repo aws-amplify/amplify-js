@@ -1,0 +1,26 @@
+auth:
+  auth-memory:
+    users:
+      foo:
+        name: test
+        password: test
+store:
+  memory:
+    limit: 1000
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+packages:
+  '@*/*':
+    access: $all
+    publish: $all
+    proxy: npmjs
+  '**':
+    access: $all
+    publish: $all
+    proxy: npmjs
+middlewares:
+  audit:
+    enabled: true
+logs:
+  - { type: stdout, format: pretty, level: trace }

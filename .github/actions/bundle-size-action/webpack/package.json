@@ -1,0 +1,64 @@
+{
+  "private": true,
+  "exports": "./dist/app.modern.js",
+  "main": "./dist/app.js",
+  "module": "./dist/app.module.js",
+  "source": "./app.js",
+  "unpkg": "./dist/app.umd.js",
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "webpack",
+    "precalculate": "$_ run build",
+    "calculate": "bundlewatch"
+  },
+  "bundlewatch": {
+    "files": [
+      {
+        "path": "dist/*.min.js",
+        "maxSize": "175kB"
+      },
+      {
+        "path": "dist/amazon-cognito-identity-js.js.min.js",
+        "maxSize": "25kB"
+      },
+      {
+        "path": "dist/Amplify-Auth-Storage.js.min.js",
+        "maxSize": "2kB"
+      },
+      {
+        "path": "dist/Amplify.js.min.js",
+        "maxSize": "2kB"
+      },
+      {
+        "path": "dist/Amplify+Auth.js.min.js",
+        "maxSize": "75kB"
+      },
+      {
+        "path": "dist/Amplify+Auth+Storage.js.min.js",
+        "maxSize": "115kB"
+      },
+      {
+        "path": "dist/Amplify+Storage.js.min.js",
+        "maxSize": "80kB"
+      },
+      {
+        "path": "dist/withSSRContext.js.min.js",
+        "maxSize": "155kB"
+      },
+      {
+        "path": "dist/withSSRContext+Storage.js.min.js",
+        "maxSize": "190kB"
+      }
+    ]
+  },
+  "dependencies": {
+    "aws-amplify": "unstable"
+  },
+  "devDependencies": {
+    "bundlewatch": "^0.3.1",
+    "glob": "^7.1.6",
+    "rimraf": "^3.0.2",
+    "webpack": "latest",
+    "webpack-cli": "^4.3.1"
+  }
+}

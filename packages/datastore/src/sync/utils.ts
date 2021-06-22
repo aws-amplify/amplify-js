@@ -1,3 +1,6 @@
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { GraphQLAuthError } from '@aws-amplify/api';
+import { Logger } from '@aws-amplify/core';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
@@ -20,9 +23,14 @@ import {
 	SchemaModel,
 	SchemaNamespace,
 	SchemaNonModel,
+	ModelOperation,
+	InternalSchema,
+	AuthModeStrategy,
 } from '../types';
 import { exhaustiveCheck } from '../util';
 import { MutationEvent } from './';
+
+const logger = new Logger('DataStore');
 
 enum GraphQLOperationType {
 	LIST = 'query',
@@ -52,15 +60,20 @@ export function getMetadataFields(): ReadonlyArray<string> {
 	return metadataFields;
 }
 
-function generateSelectionSet(
+export function generateSelectionSet(
 	namespace: SchemaNamespace,
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string {
 	const scalarFields = getScalarFields(modelDefinition);
 	const nonModelFields = getNonModelFields(namespace, modelDefinition);
+	const implicitOwnerField = getImplicitOwnerField(
+		modelDefinition,
+		scalarFields
+	);
 
 	let scalarAndMetadataFields = Object.values(scalarFields)
 		.map(({ name }) => name)
+		.concat(implicitOwnerField)
 		.concat(nonModelFields);
 
 	if (isSchemaModel(modelDefinition)) {
@@ -72,6 +85,35 @@ function generateSelectionSet(
 	const result = scalarAndMetadataFields.join('\n');
 
 	return result;
+}
+
+function getImplicitOwnerField(
+	modelDefinition: SchemaModel | SchemaNonModel,
+	scalarFields: ModelFields
+) {
+	const ownerFields = getOwnerFields(modelDefinition);
+
+	if (!scalarFields.owner && ownerFields.includes('owner')) {
+		return ['owner'];
+	}
+	return [];
+}
+
+function getOwnerFields(
+	modelDefinition: SchemaModel | SchemaNonModel
+): string[] {
+	const ownerFields: string[] = [];
+	if (isSchemaModel(modelDefinition) && modelDefinition.attributes) {
+		modelDefinition.attributes.forEach(attr => {
+			if (attr.properties && attr.properties.rules) {
+				const rule = attr.properties.rules.find(rule => rule.allow === 'owner');
+				if (rule && rule.ownerField) {
+					ownerFields.push(rule.ownerField);
+				}
+			}
+		});
+	}
+	return ownerFields;
 }
 
 function getScalarFields(
@@ -424,4 +466,106 @@ export function predicateToGraphQLFilter(
 	});
 
 	return result;
+}
+
+export function getUserGroupsFromToken(
+	token: { [field: string]: any },
+	rule: AuthorizationRule
+): string[] {
+	// validate token against groupClaim
+	let userGroups: string[] | string = token[rule.groupClaim] || [];
+
+	if (typeof userGroups === 'string') {
+		let parsedGroups;
+		try {
+			parsedGroups = JSON.parse(userGroups);
+		} catch (e) {
+			parsedGroups = userGroups;
+		}
+		userGroups = [].concat(parsedGroups);
+	}
+
+	return userGroups;
+}
+
+export async function getModelAuthModes({
+	authModeStrategy,
+	defaultAuthMode,
+	modelName,
+	schema,
+}: {
+	authModeStrategy: AuthModeStrategy;
+	defaultAuthMode: GRAPHQL_AUTH_MODE;
+	modelName: string;
+	schema: InternalSchema;
+}): Promise<
+	{
+		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+	}
+> {
+	const operations = Object.values(ModelOperation);
+
+	const modelAuthModes: {
+		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+	} = {
+		CREATE: [],
+		READ: [],
+		UPDATE: [],
+		DELETE: [],
+	};
+
+	try {
+		await Promise.all(
+			operations.map(async operation => {
+				const authModes = await authModeStrategy({
+					schema,
+					modelName,
+					operation,
+				});
+
+				if (typeof authModes === 'string') {
+					modelAuthModes[operation] = [authModes];
+				} else if (Array.isArray(authModes) && authModes.length) {
+					modelAuthModes[operation] = authModes;
+				} else {
+					// Use default auth mode if nothing is returned from authModeStrategy
+					modelAuthModes[operation] = [defaultAuthMode];
+				}
+			})
+		);
+	} catch (error) {
+		logger.debug(`Error getting auth modes for model: ${modelName}`, error);
+	}
+	return modelAuthModes;
+}
+
+export function getForbiddenError(error) {
+	const forbiddenErrorMessages = [
+		'Request failed with status code 401',
+		'Request failed with status code 403',
+	];
+	let forbiddenError;
+	if (error && error.errors) {
+		forbiddenError = (error.errors as [any]).find(err =>
+			forbiddenErrorMessages.includes(err.message)
+		);
+	} else if (error && error.message) {
+		forbiddenError = error;
+	}
+
+	if (forbiddenError) {
+		return forbiddenError.message;
+	}
+	return null;
+}
+
+export function getClientSideAuthError(error) {
+	const clientSideAuthErrors = Object.values(GraphQLAuthError);
+	const clientSideError =
+		error &&
+		error.message &&
+		clientSideAuthErrors.find(clientError =>
+			error.message.includes(clientError)
+		);
+	return clientSideError || null;
 }
