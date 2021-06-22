@@ -717,7 +717,7 @@ jobs:
           framework: react
           category: auth
           sample_name: device-tracking
-          spec: device_tracking
+          spec: device-tracking
           browser: << parameters.browser >>
   integ_rn_ios_storage:
     executor: macos-executor
@@ -1026,6 +1026,9 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_rn_ios_storage:
           requires:
             - integ_setup
