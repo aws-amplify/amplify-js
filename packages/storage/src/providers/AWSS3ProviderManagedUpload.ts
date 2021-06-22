@@ -54,12 +54,12 @@ export class AWSS3ProviderManagedUpload {
 	private params = null;
 	private opts = null;
 	private completedParts: CompletedPart[] = [];
-	private cancel: boolean = false;
+	private cancel = false;
 
 	// Progress reporting
 	private bytesUploaded = 0;
 	private totalBytesToUpload = 0;
-	private emitter = null;
+	private emitter: events.EventEmitter = null;
 
 	constructor(params: PutObjectRequest, opts, emitter: events.EventEmitter) {
 		this.params = params;
@@ -232,7 +232,7 @@ export class AWSS3ProviderManagedUpload {
 			try {
 				await this.cleanup(uploadId);
 			} catch (error) {
-				errorMessage += error.errorMessage;
+				errorMessage += ` ${error.message}`;
 			}
 			throw new Error(errorMessage);
 		}
