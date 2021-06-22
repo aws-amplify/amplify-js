@@ -707,6 +707,9 @@ jobs:
           category: auth
           sample_name: amazon-cognito-identity-js
   integ_react_device_tracking:
+    parameters:
+      browser:
+        type: string
     executor: js-test-executor
     <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react/auth/device-tracking
