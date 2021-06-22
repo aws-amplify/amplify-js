@@ -18,6 +18,7 @@ import {
 	ListObjectsCommand,
 	CopyObjectCommandInput,
 	CopyObjectCommand,
+	PutObjectCommandInput,
 } from '@aws-sdk/client-s3';
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
@@ -335,7 +336,7 @@ export class AWSS3Provider implements StorageProvider {
 		const final_key = prefix + key;
 		logger.debug('put ' + key + ' to ' + final_key);
 
-		const params: any = {
+		const params: PutObjectCommandInput = {
 			Bucket: bucket,
 			Key: final_key,
 			Body: object,
@@ -383,15 +384,15 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		try {
-			emitter.on('sendProgress', progress => {
-				if (progressCallback) {
-					if (typeof progressCallback === 'function') {
+			if (progressCallback) {
+				if (typeof progressCallback === 'function') {
+					emitter.on('sendProgress', progress => {
 						progressCallback(progress);
-					} else {
-						logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
-					}
+					});
+				} else {
+					logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
 				}
-			});
+			}
 
 			const response = await uploader.upload();
 
