@@ -432,11 +432,10 @@ export class CredentialsClass {
 			// try to fetch the local stored guest identity, if found, we will associate it with the logins
 			const guestIdentityId = await this._getGuestIdentityId();
 
-			// if no guestIdentityId found, call getId with the logins
-			// for a first-time user, this will return a brand new identity
-			// for a returning user, this will retrieve the previous identity associated with the logins
 			let generatedOrRetrievedIdentityId;
 			if (!guestIdentityId) {
+				// for a first-time user, this will return a brand new identity
+				// for a returning user, this will retrieve the previous identity assocaited with the logins
 				const { IdentityId } = await cognitoClient.send(
 					new GetIdCommand({
 						IdentityPoolId: identityPoolId,
