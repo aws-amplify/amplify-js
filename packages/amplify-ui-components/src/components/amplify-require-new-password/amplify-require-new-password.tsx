@@ -83,14 +83,11 @@ export class AmplifyRequireNewPassword {
 
 	async setCurrentUser(): Promise<void> {
 		if (!this.user) {
-			console.log('checking for user..');
 			// Check for authenticated user
 			try {
 				const user = await Auth.currentAuthenticatedUser();
-				console.log('got user! - ', user);
 				if (user) this.currentUser = user;
 			} catch (error) {
-				console.log('no user! - ', error);
 				dispatchToastHubEvent(error);
 			}
 		} else {
@@ -148,13 +145,7 @@ export class AmplifyRequireNewPassword {
 		this.loading = true;
 		try {
 			if (this.requiredAttributes['phone_number']) {
-				console.log('got a phone number!!!!');
-				console.log(this.requiredAttributes);
-
 				this.formatPhoneNumber(event);
-
-				console.log('new phone number!!');
-				console.log(this.requiredAttributes['phone_number']);
 			}
 
 			const user = await Auth.completeNewPassword(
