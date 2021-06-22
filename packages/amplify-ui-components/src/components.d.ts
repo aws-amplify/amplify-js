@@ -14,6 +14,8 @@ import { FunctionalComponent } from "@stencil/core";
 import { CountryCodeDialOptions } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { AccessLevel, StorageObject } from "./common/types/storage-types";
 import { SelectOptionsNumber, SelectOptionsString } from "./components/amplify-select/amplify-select-interface";
+import { SignUpParams } from "@aws-amplify/auth";
+import { ISignUpResult } from "amazon-cognito-identity-js";
 export namespace Components {
     interface AmplifyAmazonButton {
         /**
@@ -1043,6 +1045,12 @@ export namespace Components {
           * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange": AuthStateHandler;
+        /**
+          * Override for handling the Auth.SignUp API call
+         */
+        "handleSignUp": (
+		params: SignUpParams
+	) => Promise<ISignUpResult>;
         /**
           * Fires when sign up form is submitted
          */
@@ -2583,6 +2591,12 @@ declare namespace LocalJSX {
           * Auth state change handler for this component e.g. SignIn -> 'Create Account' link -> SignUp
          */
         "handleAuthStateChange"?: AuthStateHandler;
+        /**
+          * Override for handling the Auth.SignUp API call
+         */
+        "handleSignUp"?: (
+		params: SignUpParams
+	) => Promise<ISignUpResult>;
         /**
           * Fires when sign up form is submitted
          */
