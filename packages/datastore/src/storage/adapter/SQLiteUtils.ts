@@ -8,8 +8,10 @@ import {
 	PredicatesGroup,
 	isPredicateObj,
 	SortPredicatesGroup,
+	PredicateObject,
+	isPredicateGroup,
 } from '../../types';
-import { USER } from '../../util';
+import { USER, exhaustiveCheck } from '../../util';
 
 // TODO: rename to ParamaterizedStatement
 export type SQLStatement = [string, any[]];
@@ -138,7 +140,6 @@ const logicalOperatorMap = {
 	// TODO: enable contains for lists (only works with strings now)
 	contains: 'LIKE',
 	notContains: 'NOT LIKE',
-	// TODO: enable between
 	between: 'BETWEEN',
 };
 
@@ -146,6 +147,12 @@ const whereConditionFromPredicateObject = ({
 	field,
 	operator,
 	operand,
+}: {
+	field: string;
+	operator:
+		| keyof typeof logicalOperatorMap
+		| keyof typeof comparisonOperatorMap;
+	operand: any;
 }): SQLStatement => {
 	const comparisonOperator = comparisonOperatorMap[operator];
 
@@ -153,53 +160,84 @@ const whereConditionFromPredicateObject = ({
 		return [`${field} ${comparisonOperator} ?`, [operand]];
 	}
 
-	const logicalOperator = logicalOperatorMap[operator];
+	const logicalOperatorKey = <keyof typeof logicalOperatorMap>operator;
+	const logicalOperator = logicalOperatorMap[logicalOperatorKey];
 
 	if (logicalOperator) {
-		let rightExp;
-		switch (operator) {
+		let rightExp = [];
+		switch (logicalOperatorKey) {
+			case 'between':
+				rightExp = operand; // operand is a 2-tuple
+				break;
 			case 'beginsWith':
-				rightExp = `${operand}%`;
+				rightExp = [`${operand}%`];
 				break;
 			case 'contains':
 			case 'notContains':
-				rightExp = `%${operand}%`;
+				rightExp = [`%${operand}%`];
 				break;
 			default:
+				exhaustiveCheck(logicalOperatorKey);
 				// Incorrect WHERE clause can result in data loss
 				throw new Error('Cannot map predicate to a valid WHERE clause');
 		}
-		return [`${field} ${logicalOperator} ?`, [rightExp]];
+		return [
+			`${field} ${logicalOperator} ${rightExp.map(_ => '?').join(' AND ')}`,
+			rightExp,
+		];
 	}
 };
 
 export function whereClauseFromPredicate<T extends PersistentModel>(
 	predicate: PredicatesGroup<T>
 ): SQLStatement {
-	const { type, predicates } = predicate;
-
+	const result = [];
 	const params = [];
 
-	const clause = predicates.reduce((acc, predicateObject, idx) => {
-		// TODO: handle nested Predicate Group
-		if (!isPredicateObj(predicateObject)) {
-			return acc;
+	recurse(predicate, result, params);
+	const whereClause = `WHERE ${result.join(' ')}`;
+
+	return [whereClause, params];
+
+	function recurse(
+		predicate: PredicatesGroup<T> | PredicateObject<T>,
+		result = [],
+		params = []
+	): void {
+		if (isPredicateGroup(predicate)) {
+			const { type: groupType, predicates: groupPredicates } = predicate;
+			let filterType: string = '';
+			let isNegation = false;
+			switch (groupType) {
+				case 'not':
+					isNegation = true;
+					break;
+				case 'and':
+					filterType = 'AND';
+					break;
+				case 'or':
+					filterType = 'OR';
+					break;
+				default:
+					exhaustiveCheck(groupType);
+			}
+
+			const groupResult = [];
+			for (const p of groupPredicates) {
+				recurse(p, groupResult, params);
+			}
+			result.push(
+				`${isNegation ? 'NOT' : ''}(${groupResult.join(` ${filterType} `)})`
+			);
+		} else if (isPredicateObj(predicate)) {
+			const [condition, conditionParams] = whereConditionFromPredicateObject(
+				predicate
+			);
+
+			result.push(condition);
+			params.push(...conditionParams);
 		}
-
-		const [condition, conditionParams] = whereConditionFromPredicateObject(
-			predicateObject
-		);
-		Array.prototype.push.apply(params, conditionParams);
-
-		if (idx > 0) {
-			// append type, e.g., AND for predicates [1..n]
-			return acc + ` ${type} ${condition}`;
-		}
-
-		return acc + ` ${condition}`;
-	}, 'WHERE');
-
-	return [clause, params];
+	}
 }
 
 const sortDirectionMap = {
