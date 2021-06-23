@@ -1,5 +1,5 @@
 import { I18n } from '@aws-amplify/core';
-import { Component, Prop, h } from '@stencil/core';
+import { Component, Prop, FunctionalComponent, h } from '@stencil/core';
 import { USERNAME_SUFFIX } from '../../common/constants';
 import { Translations } from '../../common/Translations';
 
@@ -23,6 +23,8 @@ export class AmplifyUsernameField {
 	@Prop() inputProps?: object;
 	/** Will disable the input if set to true */
 	@Prop() disabled?: boolean;
+	/** Used for the hint text that displays underneath the input field */
+	@Prop() hint?: string | FunctionalComponent | null;
 
 	render() {
 		return (
@@ -36,6 +38,7 @@ export class AmplifyUsernameField {
 				value={this.value}
 				inputProps={this.inputProps}
 				disabled={this.disabled}
+				hint={this.hint}
 			/>
 		);
 	}

@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.1.0...@aws-amplify/core@4.1.1) (2021-06-18)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.0.3...@aws-amplify/core@4.1.0) (2021-06-10)
+
+
+### Bug Fixes
+
+* remove RN-specific peerDeps to correctly hoist core in npm@7 ([#8368](https://github.com/aws-amplify/amplify-js/issues/8368)) ([9cc5218](https://github.com/aws-amplify/amplify-js/commit/9cc52186e687d6782b41581959380bd7f534e5d2))
+
+
+### Features
+
+* added log queue and size safety to cloudwatch provider ([ae2f198](https://github.com/aws-amplify/amplify-js/commit/ae2f198b1e96c232f52f4ce9d613c4f3d94a0718))
+* adding more methods to the cloudwatchlogger ([263c637](https://github.com/aws-amplify/amplify-js/commit/263c6376fffd48e9c080aab8141d55cd6e31d135))
+* initial setup for the cloudwatch logger and provider ([57a7d4c](https://github.com/aws-amplify/amplify-js/commit/57a7d4c9add70170c69e7fad89f59c4d0efe779d))
+* moved CloudLogger logic to ConsoleLogger ([93db90d](https://github.com/aws-amplify/amplify-js/commit/93db90d041c7ca697e5993003a4fb105a3821cbe))
+
+
+
+
+
+## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.0.1...@aws-amplify/core@4.0.3) (2021-05-26)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api-rest:** Improve Clock Drift/Skew Logic ([#8319](https://github.com/aws-amplify/amplify-js/issues/8319)) ([8448b4f](https://github.com/aws-amplify/amplify-js/commit/8448b4fe1f995f0d6056bcb46dd0fb2023fb197d))
+* added expiration to ICredentials type ([6553676](https://github.com/aws-amplify/amplify-js/commit/6553676ae2f5add5705dedd1b66a7e19c064cee1))
+* remove Cognito Identity Id from storage on SignIn/SignOut ([#8278](https://github.com/aws-amplify/amplify-js/issues/8278)) ([ef358a7](https://github.com/aws-amplify/amplify-js/commit/ef358a761cf74d16b61172cd1a75b4bc6cfd2bdf))
+
+
+
+
+
 ## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.0.0...@aws-amplify/core@4.0.1) (2021-05-14)
 
 **Note:** Version bump only for package @aws-amplify/core

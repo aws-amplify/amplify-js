@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.1.1...@aws-amplify/storage@4.2.0) (2021-06-18)
+
+
+### Features
+
+* **storage:** Adding copy API to Storage ([#8431](https://github.com/aws-amplify/amplify-js/issues/8431)) ([9981403](https://github.com/aws-amplify/amplify-js/commit/99814030d45044701bdce02bf34994304379c84c))
+
+
+
+
+
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.1.0...@aws-amplify/storage@4.1.1) (2021-06-10)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.4.3...@aws-amplify/storage@4.1.0) (2021-05-26)
+
+
+### Features
+
+* **Storage:** content encoding optional on put ([#7751](https://github.com/aws-amplify/amplify-js/issues/7751)) ([09c0daa](https://github.com/aws-amplify/amplify-js/commit/09c0daac5bdb08d238c31adb15e936449c4a322d))
+
+
+
+
+
 ## [3.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.4.2...@aws-amplify/storage@3.4.3) (2021-05-14)
 
 **Note:** Version bump only for package @aws-amplify/storage

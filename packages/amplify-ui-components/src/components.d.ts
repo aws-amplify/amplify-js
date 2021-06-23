@@ -14,6 +14,8 @@ import { FunctionalComponent } from "@stencil/core";
 import { CountryCodeDialOptions } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { AccessLevel, StorageObject } from "./common/types/storage-types";
 import { SelectOptionsNumber, SelectOptionsString } from "./components/amplify-select/amplify-select-interface";
+import { SignUpParams } from "@aws-amplify/auth";
+import { ISignUpResult } from "amazon-cognito-identity-js";
 export namespace Components {
     interface AmplifyAmazonButton {
         /**
@@ -59,7 +61,9 @@ export namespace Components {
         /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
-        "initialAuthState": AuthState.SignIn | AuthState.SignUp;
+        "initialAuthState": | AuthState.SignIn
+		| AuthState.SignUp
+		| AuthState.ForgotPassword;
         /**
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */
@@ -278,6 +282,10 @@ export namespace Components {
           * The callback, called when the input is modified by the user.
          */
         "handleInputChange"?: (inputEvent: Event) => void;
+        /**
+          * Used for the hint text that displays underneath the input field
+         */
+        "hint"?: string | FunctionalComponent | null;
         /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
@@ -518,6 +526,10 @@ export namespace Components {
           * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
          */
         "placeholder"?: string;
+        /**
+          * Whether the input is a required field
+         */
+        "required"?: boolean;
         /**
           * The input type.  Can be any HTML input type.
          */
@@ -785,6 +797,10 @@ export namespace Components {
     }
     interface AmplifyS3Image {
         /**
+          * String representing the alternate image text
+         */
+        "alt": string;
+        /**
           * Image body content to be uploaded
          */
         "body": object;
@@ -808,6 +824,10 @@ export namespace Components {
           * The key of the image object in S3
          */
         "imgKey": string;
+        /**
+          * Attributes to be placed on the img element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes
+         */
+        "imgProps"?: Record<PropertyKey, any>;
         /**
           * The access level of the image
          */
@@ -1026,6 +1046,12 @@ export namespace Components {
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
+          * Override for handling the Auth.SignUp API call
+         */
+        "handleSignUp": (
+		params: SignUpParams
+	) => Promise<ISignUpResult>;
+        /**
           * Fires when sign up form is submitted
          */
         "handleSubmit": (event: Event) => void;
@@ -1107,6 +1133,10 @@ export namespace Components {
           * The callback, called when the input is modified by the user.
          */
         "handleInputChange"?: (inputEvent: Event) => void;
+        /**
+          * Used for the hint text that displays underneath the input field
+         */
+        "hint"?: string | FunctionalComponent | null;
         /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
@@ -1573,7 +1603,9 @@ declare namespace LocalJSX {
         /**
           * Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp
          */
-        "initialAuthState"?: AuthState.SignIn | AuthState.SignUp;
+        "initialAuthState"?: | AuthState.SignIn
+		| AuthState.SignUp
+		| AuthState.ForgotPassword;
         /**
           * Username Alias is used to setup authentication with `username`, `email` or `phone_number`
          */
@@ -1796,6 +1828,10 @@ declare namespace LocalJSX {
           * The callback, called when the input is modified by the user.
          */
         "handleInputChange"?: (inputEvent: Event) => void;
+        /**
+          * Used for the hint text that displays underneath the input field
+         */
+        "hint"?: string | FunctionalComponent | null;
         /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */
@@ -2036,6 +2072,10 @@ declare namespace LocalJSX {
           * (Optional) The placeholder for the input element.  Using hints is recommended, but placeholders can also be useful to convey information to users.
          */
         "placeholder"?: string;
+        /**
+          * Whether the input is a required field
+         */
+        "required"?: boolean;
         /**
           * The input type.  Can be any HTML input type.
          */
@@ -2303,6 +2343,10 @@ declare namespace LocalJSX {
     }
     interface AmplifyS3Image {
         /**
+          * String representing the alternate image text
+         */
+        "alt"?: string;
+        /**
           * Image body content to be uploaded
          */
         "body"?: object;
@@ -2326,6 +2370,10 @@ declare namespace LocalJSX {
           * The key of the image object in S3
          */
         "imgKey"?: string;
+        /**
+          * Attributes to be placed on the img element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes
+         */
+        "imgProps"?: Record<PropertyKey, any>;
         /**
           * The access level of the image
          */
@@ -2544,6 +2592,12 @@ declare namespace LocalJSX {
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
+          * Override for handling the Auth.SignUp API call
+         */
+        "handleSignUp"?: (
+		params: SignUpParams
+	) => Promise<ISignUpResult>;
+        /**
           * Fires when sign up form is submitted
          */
         "handleSubmit"?: (event: Event) => void;
@@ -2625,6 +2679,10 @@ declare namespace LocalJSX {
           * The callback, called when the input is modified by the user.
          */
         "handleInputChange"?: (inputEvent: Event) => void;
+        /**
+          * Used for the hint text that displays underneath the input field
+         */
+        "hint"?: string | FunctionalComponent | null;
         /**
           * Attributes places on the input element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes
          */

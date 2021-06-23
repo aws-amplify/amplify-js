@@ -18,6 +18,8 @@ export class AmplifyS3Image {
 	@Prop() imgKey: string;
 	/** String representing directory location to image file */
 	@Prop() path: string;
+	/** String representing the alternate image text */
+	@Prop() alt: string;
 	/** Image body content to be uploaded */
 	@Prop() body: object;
 	/** The content type header used when uploading to S3 */
@@ -32,6 +34,8 @@ export class AmplifyS3Image {
 	@Prop() handleOnLoad: (event: Event) => void;
 	/** Function executed when error occurs for the image */
 	@Prop() handleOnError: (event: Event) => void;
+	/** Attributes to be placed on the img element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes */
+	@Prop() imgProps?: Record<PropertyKey, any>;
 	/** Source for the image */
 	@State() src: string | object;
 
@@ -71,8 +75,10 @@ export class AmplifyS3Image {
 				{this.src && (
 					<img
 						src={this.src as string}
+						alt={this.alt}
 						onLoad={this.handleOnLoad}
 						onError={this.handleOnError}
+						{...this.imgProps}
 					/>
 				)}
 			</Host>

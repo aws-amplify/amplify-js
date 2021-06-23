@@ -25,6 +25,8 @@ export class AmplifyInput {
 	@Prop() inputProps?: object;
 	/** Will disable the input if set to true */
 	@Prop() disabled?: boolean;
+	/** Whether the input is a required field */
+	@Prop() required?: boolean = false;
 	/** Whether the input has been autocompleted */
 	@State() autoCompleted = false;
 	private removeHubListener: () => void;
@@ -132,6 +134,7 @@ export class AmplifyInput {
 					class="input"
 					value={this.value}
 					disabled={this.disabled}
+					required={this.required}
 					{...this.inputProps}
 				/>
 			</Host>
