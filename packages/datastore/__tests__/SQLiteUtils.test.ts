@@ -23,10 +23,10 @@ let initSchema: typeof initSchemaType;
 
 const INTERNAL_TEST_SCHEMA_STATEMENTS = [
 	'CREATE TABLE IF NOT EXISTS Setting (id PRIMARY KEY NOT NULL, key TEXT NOT NULL, value TEXT NOT NULL);',
-	'CREATE TABLE IF NOT EXISTS Model (id PRIMARY KEY NOT NULL, field1 TEXT NOT NULL, optionalField1 TEXT, dateCreated TEXT NOT NULL, emails TEXT NOT NULL, ips TEXT, metadata TEXT, _version INT, _lastChangedAt INT, _deleted BOOLEAN);',
-	'CREATE TABLE IF NOT EXISTS LocalModel (id PRIMARY KEY NOT NULL, field1 TEXT NOT NULL, _version INT, _lastChangedAt INT, _deleted BOOLEAN);',
+	'CREATE TABLE IF NOT EXISTS Model (id PRIMARY KEY NOT NULL, field1 TEXT NOT NULL, optionalField1 TEXT, dateCreated TEXT NOT NULL, emails TEXT NOT NULL, ips TEXT, metadata TEXT, _version INTEGER, _lastChangedAt INTEGER, _deleted NUMERIC);',
+	'CREATE TABLE IF NOT EXISTS LocalModel (id PRIMARY KEY NOT NULL, field1 TEXT NOT NULL, _version INTEGER, _lastChangedAt INTEGER, _deleted NUMERIC);',
 	'CREATE TABLE IF NOT EXISTS MutationEvent (id PRIMARY KEY NOT NULL, model TEXT NOT NULL, data TEXT NOT NULL, modelId TEXT NOT NULL, operation TEXT NOT NULL, condition TEXT NOT NULL);',
-	'CREATE TABLE IF NOT EXISTS ModelMetadata (id PRIMARY KEY NOT NULL, namespace TEXT NOT NULL, model TEXT NOT NULL, lastSync INT, lastFullSync INT, fullSyncInterval INT NOT NULL);',
+	'CREATE TABLE IF NOT EXISTS ModelMetadata (id PRIMARY KEY NOT NULL, namespace TEXT NOT NULL, model TEXT NOT NULL, lastSync INTEGER, lastFullSync INTEGER, fullSyncInterval INTEGER NOT NULL);',
 ];
 
 describe('SQLiteUtils tests', () => {
@@ -111,8 +111,8 @@ describe('SQLiteUtils tests', () => {
 			const page = 3;
 
 			const expected = [
-				`SELECT * FROM Model WHERE firstName = ? and lastName LIKE ? and sortOrder > ? ORDER BY sortOrder ASC, lastName DESC LIMIT 10 OFFSET 3`,
-				['Bob', 'Sm%', 5],
+				`SELECT * FROM Model WHERE (firstName = ? AND lastName LIKE ? AND sortOrder > ?) ORDER BY sortOrder ASC, lastName DESC LIMIT ? OFFSET ?`,
+				['Bob', 'Sm%', 5, 10, 30],
 			];
 
 			expect(
@@ -129,16 +129,13 @@ describe('SQLiteUtils tests', () => {
 
 	describe('queryOneStatement', () => {
 		it('should generate valid SELECT statement for query first', () => {
-			const expected = [`SELECT * FROM Model LIMIT 1`, []];
+			const expected = [`SELECT * FROM Model ORDER BY rowid LIMIT 1`, []];
 
 			expect(queryOneStatement(QueryOne.FIRST, 'Model')).toEqual(expected);
 		});
 
 		it('should generate valid SELECT statement for query last', () => {
-			const expected = [
-				`SELECT * FROM Model LIMIT 1 OFFSET ((SELECT COUNT(*) FROM Model) - 1)`,
-				[],
-			];
+			const expected = [`SELECT * FROM Model ORDER BY rowid DESC LIMIT 1`, []];
 
 			expect(queryOneStatement(QueryOne.LAST, 'Model')).toEqual(expected);
 		});
@@ -214,7 +211,7 @@ describe('SQLiteUtils tests', () => {
 			};
 
 			const expected = [
-				`WHERE firstName = ? and lastName LIKE ? and sortOrder > ?`,
+				`WHERE (firstName = ? AND lastName LIKE ? AND sortOrder > ?)`,
 				['Bob', 'Sm%', 5],
 			];
 
@@ -226,7 +223,7 @@ describe('SQLiteUtils tests', () => {
 		it('should generate valid LIMIT clause from pagination limit', () => {
 			const limit = 10;
 
-			const expected = 'LIMIT 10';
+			const expected = ['LIMIT ?', [10]];
 
 			expect(limitClauseFromPagination(limit)).toEqual(expected);
 		});
@@ -235,7 +232,7 @@ describe('SQLiteUtils tests', () => {
 			const limit = 10;
 			const page = 3;
 
-			const expected = 'LIMIT 10 OFFSET 3';
+			const expected = ['LIMIT ? OFFSET ?', [10, 30]];
 
 			expect(limitClauseFromPagination(limit, page)).toEqual(expected);
 		});
@@ -309,7 +306,7 @@ describe('SQLiteUtils tests', () => {
 			};
 
 			const expected = [
-				'DELETE FROM Model WHERE createdAt > ?',
+				'DELETE FROM Model WHERE (createdAt > ?)',
 				['2021-06-20'],
 			];
 

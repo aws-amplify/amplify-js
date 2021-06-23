@@ -206,10 +206,10 @@ export namespace GraphQLScalarType {
 			typeof GraphQLScalarType,
 			'getJSType' | 'getValidationFunction'
 		>
-	): 'TEXT' | 'INT' | 'REAL' | 'BOOLEAN' {
+	): 'TEXT' | 'INTEGER' | 'REAL' | 'NUMERIC' | 'BLOB' {
 		switch (scalar) {
 			case 'Boolean':
-				return 'BOOLEAN';
+				return 'NUMERIC';
 			case 'ID':
 			case 'String':
 			case 'AWSDate':
@@ -223,7 +223,7 @@ export namespace GraphQLScalarType {
 				return 'TEXT';
 			case 'Int':
 			case 'AWSTimestamp':
-				return 'INT';
+				return 'INTEGER';
 			case 'Float':
 				return 'REAL';
 			default:

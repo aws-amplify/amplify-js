@@ -81,7 +81,7 @@ export function modelCreateTableStatement(
 	}, '');
 
 	if (userModel) {
-		fields += ', _version INT, _lastChangedAt INT, _deleted BOOLEAN';
+		fields += ', _version INTEGER, _lastChangedAt INTEGER, _deleted NUMERIC';
 	}
 
 	const createTableStatement = `CREATE TABLE IF NOT EXISTS ${model.name} (${fields});`;
@@ -261,13 +261,16 @@ export function orderByClauseFromSort<T extends PersistentModel>(
 export function limitClauseFromPagination(
 	limit: number,
 	page: number = 0
-): string {
-	let clause = `LIMIT ${limit}`;
+): SQLStatement {
+	const params = [limit];
+	let clause = 'LIMIT ?';
 	if (page) {
-		clause += ` OFFSET ${page}`;
+		const offset = limit * page;
+		params.push(offset);
+		clause += ' OFFSET ?';
 	}
 
-	return clause;
+	return [clause, params];
 }
 
 export function queryAllStatement<T extends PersistentModel>(
@@ -283,7 +286,7 @@ export function queryAllStatement<T extends PersistentModel>(
 	if (predicate && predicate.predicates.length) {
 		const [whereClause, whereParams] = whereClauseFromPredicate(predicate);
 		statement += ` ${whereClause}`;
-		Array.prototype.push.apply(params, whereParams);
+		params.push(...whereParams);
 	}
 
 	if (sort && sort.length) {
@@ -292,8 +295,9 @@ export function queryAllStatement<T extends PersistentModel>(
 	}
 
 	if (limit) {
-		const limitClause = limitClauseFromPagination(limit, page);
+		const [limitClause, limitParams] = limitClauseFromPagination(limit, page);
 		statement += ` ${limitClause}`;
+		params.push(...limitParams);
 	}
 
 	return [statement, params];
@@ -304,13 +308,12 @@ export function queryOneStatement(
 	tableName: string
 ): SQLStatement {
 	if (firstOrLast === QueryOne.FIRST) {
-		return [`SELECT * FROM ${tableName} LIMIT 1`, []];
+		// ORDER BY rowid will no longer work as expected if a customer has
+		// a field by that name in their schema. We may want to enforce it
+		// as a reserved keyword in Codegen
+		return [`SELECT * FROM ${tableName} ORDER BY rowid LIMIT 1`, []];
 	} else {
-		// Not very efficient, but I don't think this query gets used often
-		return [
-			`SELECT * FROM ${tableName} LIMIT 1 OFFSET ((SELECT COUNT(*) FROM ${tableName}) - 1)`,
-			[],
-		];
+		return [`SELECT * FROM ${tableName} ORDER BY rowid DESC LIMIT 1`, []];
 	}
 }
 
@@ -332,33 +335,7 @@ export function deleteByPredicateStatement<T extends PersistentModel>(
 	if (predicate && predicate.predicates.length) {
 		const [whereClause, whereParams] = whereClauseFromPredicate(predicate);
 		statement += ` ${whereClause}`;
-		Array.prototype.push.apply(params, whereParams);
+		params.push(...whereParams);
 	}
 	return [statement, params];
 }
-
-// Probably won't be using this; leaving for now just in case
-// export function modelUpsertStatement(
-// 	model: PersistentModel,
-// 	tableName: string
-// ): [string, string] {
-// 	const keys = keysFromModel(model);
-// 	const values = valuesFromModel(model);
-
-// 	const upsertKeyVals = Object.keys(model)
-// 		.map(key => {
-// 			return `${key} = excluded.${key}`;
-// 		})
-// 		.join(', ');
-
-// 	const upsertStatement = `INSERT INTO ${tableName} (${keys}) VALUES (${values})
-// 	ON CONFLICT("id")
-// 	DO
-// 	UPDATE SET
-// 	${upsertKeyVals}
-// 	`;
-
-// 	const queryStatement = queryByIdStatement(model.id, tableName);
-
-// 	return [upsertStatement, queryStatement];
-// }
