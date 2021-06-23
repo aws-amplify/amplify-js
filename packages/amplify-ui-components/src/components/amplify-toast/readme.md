@@ -35,6 +35,7 @@
 
  - [amplify-authenticator](../amplify-authenticator)
  - [amplify-chatbot](../amplify-chatbot)
+ - [amplify-select-mfa-type](../amplify-select-mfa-type)
 
 ### Depends on
 
@@ -46,6 +47,7 @@ graph TD;
   amplify-toast --> amplify-icon
   amplify-authenticator --> amplify-toast
   amplify-chatbot --> amplify-toast
+  amplify-select-mfa-type --> amplify-toast
   style amplify-toast fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -36,7 +36,6 @@ describe('Parser', () => {
 				aws_user_pools_id: 'b',
 				aws_user_pools_web_client_id: '',
 			},
-			Logging: {},
 		});
 	});
 });
