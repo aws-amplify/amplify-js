@@ -246,16 +246,16 @@ const sortDirectionMap = {
 };
 
 export function orderByClauseFromSort<T extends PersistentModel>(
-	sortPredicate: SortPredicatesGroup<T>
+	sortPredicate: SortPredicatesGroup<T> = []
 ): string {
-	return sortPredicate.reduce((acc, { field, sortDirection }, idx) => {
-		const orderByDirection = sortDirectionMap[sortDirection];
+	const orderByParts = sortPredicate.map(
+		({ field, sortDirection }) => `${field} ${sortDirectionMap[sortDirection]}`
+	);
 
-		if (idx > 0) {
-			return acc + `, ${field} ${orderByDirection}`;
-		}
-		return acc + ` ${field} ${orderByDirection}`;
-	}, 'ORDER BY');
+	// We always sort by _rowid_ last
+	orderByParts.push(`_rowid_ ${sortDirectionMap.ASCENDING}`);
+
+	return `ORDER BY ${orderByParts.join(', ')}`;
 }
 
 export function limitClauseFromPagination(
@@ -289,10 +289,8 @@ export function queryAllStatement<T extends PersistentModel>(
 		params.push(...whereParams);
 	}
 
-	if (sort && sort.length) {
-		const orderByClause = orderByClauseFromSort(sort);
-		statement += ` ${orderByClause}`;
-	}
+	const orderByClause = orderByClauseFromSort(sort);
+	statement += ` ${orderByClause}`;
 
 	if (limit) {
 		const [limitClause, limitParams] = limitClauseFromPagination(limit, page);
@@ -311,9 +309,9 @@ export function queryOneStatement(
 		// ORDER BY rowid will no longer work as expected if a customer has
 		// a field by that name in their schema. We may want to enforce it
 		// as a reserved keyword in Codegen
-		return [`SELECT * FROM ${tableName} ORDER BY rowid LIMIT 1`, []];
+		return [`SELECT * FROM ${tableName} ORDER BY _rowid_ LIMIT 1`, []];
 	} else {
-		return [`SELECT * FROM ${tableName} ORDER BY rowid DESC LIMIT 1`, []];
+		return [`SELECT * FROM ${tableName} ORDER BY _rowid_ DESC LIMIT 1`, []];
 	}
 }
 
