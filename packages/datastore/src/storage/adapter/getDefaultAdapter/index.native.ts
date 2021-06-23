@@ -1,10 +1,10 @@
 import { Adapter } from '..';
-import AsyncStorageAdapter from '../AsyncStorageAdapter';
-// import SQLiteAdapter from '../SQLiteAdapter';
+// import AsyncStorageAdapter from '../AsyncStorageAdapter';
+import SQLiteAdapter from '../SQLiteAdapter';
 
 const getDefaultAdapter: () => Adapter = () => {
-	// return SQLiteAdapter;
-	return AsyncStorageAdapter;
+	// return AsyncStorageAdapter;
+	return SQLiteAdapter;
 };
 
 export default getDefaultAdapter;
