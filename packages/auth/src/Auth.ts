@@ -2312,3 +2312,4 @@ export class AuthClass {
 export const Auth = new AuthClass(null);
 
 Amplify.register(Auth);
+
