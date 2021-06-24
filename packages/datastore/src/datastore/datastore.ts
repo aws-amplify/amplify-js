@@ -349,17 +349,17 @@ const initializeInstance = <T>(
 	const modelValidator = validateModelFields(modelDefinition);
 	Object.entries(init).forEach(([k, v]) => {
 		const { isArray, type } = modelDefinition.fields[k] || {};
-
 		let parsedValue = v;
 
+		// attempt to parse stringified JSON
 		if (
 			typeof v === 'string' &&
 			(isArray || type === 'AWSJSON' || isNonModelFieldType(type))
 		) {
 			try {
 				parsedValue = JSON.parse(v);
-			} catch (error) {
-				parsedValue = v;
+			} catch {
+				// if JSON is invalid, don't throw and let modelValidator handle it
 			}
 		}
 
