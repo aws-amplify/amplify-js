@@ -39,33 +39,22 @@ const updateSet = model => {
 };
 
 function prepareValueForDML(value: unknown): any {
-	if (value === null || value === undefined) {
+	const scalarTypes = ['string', 'number', 'boolean'];
+
+	const isScalarType =
+		value === null || value === undefined || scalarTypes.includes(typeof value);
+
+	if (isScalarType) {
 		return value;
 	}
 
-	if (typeof value === 'string') {
-		return value;
-	}
+	const isObjectOrNonModel =
+		typeof value === 'object' &&
+		(Object.getPrototypeOf(value).constructor === Object ||
+			isNonModelConstructor(Object.getPrototypeOf(value).constructor));
 
-	if (typeof value === 'number') {
-		return value;
-	}
-
-	if (typeof value === 'boolean') {
-		return value;
-	}
-
-	if (Array.isArray(value)) {
+	if (Array.isArray(value) || isObjectOrNonModel) {
 		return JSON.stringify(value);
-	}
-
-	if (typeof value === 'object') {
-		if (Object.getPrototypeOf(value).constructor === Object) {
-			return JSON.stringify(value);
-		}
-		if (isNonModelConstructor(Object.getPrototypeOf(value).constructor)) {
-			return JSON.stringify(value);
-		}
 	}
 
 	return `${value}`;

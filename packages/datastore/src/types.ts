@@ -175,7 +175,7 @@ export namespace GraphQLScalarType {
 	export function getJSType(
 		scalar: keyof Omit<
 			typeof GraphQLScalarType,
-			'getJSType' | 'getValidationFunction'
+			'getJSType' | 'getValidationFunction' | 'getSQLiteType'
 		>
 	): 'string' | 'number' | 'boolean' {
 		switch (scalar) {
@@ -204,7 +204,7 @@ export namespace GraphQLScalarType {
 	export function getSQLiteType(
 		scalar: keyof Omit<
 			typeof GraphQLScalarType,
-			'getJSType' | 'getValidationFunction'
+			'getJSType' | 'getValidationFunction' | 'getSQLiteType'
 		>
 	): 'TEXT' | 'INTEGER' | 'REAL' | 'NUMERIC' | 'BLOB' {
 		switch (scalar) {
@@ -234,7 +234,7 @@ export namespace GraphQLScalarType {
 	export function getValidationFunction(
 		scalar: keyof Omit<
 			typeof GraphQLScalarType,
-			'getJSType' | 'getValidationFunction'
+			'getJSType' | 'getValidationFunction' | 'getSQLiteType'
 		>
 	): ((val: string | number) => boolean) | undefined {
 		switch (scalar) {
@@ -276,7 +276,7 @@ export function isGraphQLScalarType(
 	obj: any
 ): obj is keyof Omit<
 	typeof GraphQLScalarType,
-	'getJSType' | 'getValidationFunction'
+	'getJSType' | 'getValidationFunction' | 'getSQLiteType'
 > {
 	return obj && GraphQLScalarType[obj] !== undefined;
 }

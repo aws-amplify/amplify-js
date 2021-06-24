@@ -49,6 +49,7 @@ import {
 	ErrorHandler,
 	SyncExpression,
 	AuthModeStrategyType,
+	isNonModelFieldType,
 } from '../types';
 import {
 	DATASTORE,
@@ -347,8 +348,23 @@ const initializeInstance = <T>(
 ) => {
 	const modelValidator = validateModelFields(modelDefinition);
 	Object.entries(init).forEach(([k, v]) => {
-		modelValidator(k, v);
-		(<any>draft)[k] = v;
+		const { isArray, type } = modelDefinition.fields[k] || {};
+
+		let parsedValue = v;
+
+		if (
+			typeof v === 'string' &&
+			(isArray || type === 'AWSJSON' || isNonModelFieldType(type))
+		) {
+			try {
+				parsedValue = JSON.parse(v);
+			} catch (error) {
+				parsedValue = v;
+			}
+		}
+
+		modelValidator(k, parsedValue);
+		(<any>draft)[k] = parsedValue;
 	});
 };
 
