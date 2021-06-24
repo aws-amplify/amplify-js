@@ -67,7 +67,7 @@ describe('SQLiteUtils tests', () => {
 
 	describe('queryAllStatement', () => {
 		it('should generate valid SELECT all statement', () => {
-			const expected = [`SELECT * FROM Model`, []];
+			const expected = [`SELECT * FROM Model ORDER BY _rowid_ ASC`, []];
 
 			expect(queryAllStatement('Model')).toEqual(expected);
 		});
@@ -111,7 +111,7 @@ describe('SQLiteUtils tests', () => {
 			const page = 3;
 
 			const expected = [
-				`SELECT * FROM Model WHERE (firstName = ? AND lastName LIKE ? AND sortOrder > ?) ORDER BY sortOrder ASC, lastName DESC LIMIT ? OFFSET ?`,
+				`SELECT * FROM Model WHERE (firstName = ? AND lastName LIKE ? AND sortOrder > ?) ORDER BY sortOrder ASC, lastName DESC, _rowid_ ASC LIMIT ? OFFSET ?`,
 				['Bob', 'Sm%', 5, 10, 30],
 			];
 
@@ -129,13 +129,16 @@ describe('SQLiteUtils tests', () => {
 
 	describe('queryOneStatement', () => {
 		it('should generate valid SELECT statement for query first', () => {
-			const expected = [`SELECT * FROM Model ORDER BY rowid LIMIT 1`, []];
+			const expected = [`SELECT * FROM Model ORDER BY _rowid_ LIMIT 1`, []];
 
 			expect(queryOneStatement(QueryOne.FIRST, 'Model')).toEqual(expected);
 		});
 
 		it('should generate valid SELECT statement for query last', () => {
-			const expected = [`SELECT * FROM Model ORDER BY rowid DESC LIMIT 1`, []];
+			const expected = [
+				`SELECT * FROM Model ORDER BY _rowid_ DESC LIMIT 1`,
+				[],
+			];
 
 			expect(queryOneStatement(QueryOne.LAST, 'Model')).toEqual(expected);
 		});
@@ -247,7 +250,7 @@ describe('SQLiteUtils tests', () => {
 				},
 			];
 
-			const expected = 'ORDER BY sortOrder ASC';
+			const expected = 'ORDER BY sortOrder ASC, _rowid_ ASC';
 
 			expect(orderByClauseFromSort(sortPredicateGroup as any)).toEqual(
 				expected
@@ -266,7 +269,7 @@ describe('SQLiteUtils tests', () => {
 				},
 			];
 
-			const expected = 'ORDER BY sortOrder ASC, lastName DESC';
+			const expected = 'ORDER BY sortOrder ASC, lastName DESC, _rowid_ ASC';
 
 			expect(orderByClauseFromSort(sortPredicateGroup as any)).toEqual(
 				expected
