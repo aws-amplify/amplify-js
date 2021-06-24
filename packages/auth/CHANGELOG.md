@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.0.3...@aws-amplify/auth@4.1.0) (2021-06-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Device tracking name field fix ([#8502](https://github.com/aws-amplify/amplify-js/issues/8502)) ([02e2bfb](https://github.com/aws-amplify/amplify-js/commit/02e2bfba9ce240ee2cd1c5ae21b27693966a1f9b))
+* **@aws-amplify/core:** Dummy commit to force version bump ([#8503](https://github.com/aws-amplify/amplify-js/issues/8503)) ([0670ec1](https://github.com/aws-amplify/amplify-js/commit/0670ec17a250089f42b669d53e072719d99a507b))
+
+
+### Features
+
+* **@aws-amplify/auth:** adding capabilities for device tracking in JS ([3a9646a](https://github.com/aws-amplify/amplify-js/commit/3a9646a7ace4eb5b134ce96aadab620f8b93a8fb))
+* add handleSignUp prop to override auth signup method ([#8474](https://github.com/aws-amplify/amplify-js/issues/8474)) ([a5f2466](https://github.com/aws-amplify/amplify-js/commit/a5f2466454f0cc1e0223fb03e78142209cf1f033))
+
+
+
+
+
 ## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.0.2...@aws-amplify/auth@4.0.3) (2021-06-18)
 
 **Note:** Version bump only for package @aws-amplify/auth
