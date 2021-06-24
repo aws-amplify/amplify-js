@@ -11,7 +11,7 @@ import {
 	PredicateObject,
 	isPredicateGroup,
 } from '../../types';
-import { USER, exhaustiveCheck } from '../../util';
+import { USER, exhaustiveCheck, isNonModelConstructor } from '../../util';
 
 // TODO: rename to ParamaterizedStatement
 export type SQLStatement = [string, any[]];
@@ -19,7 +19,7 @@ export type SQLStatement = [string, any[]];
 const keysFromModel = model => Object.keys(model).join(', ');
 
 const valuesFromModel = (model): [string, any[]] => {
-	const values = Object.values(model);
+	const values = Object.values(model).map(prepareValueForDML);
 	const paramaterized = values.map(() => '?').join(', ');
 
 	return [paramaterized, values];
@@ -30,13 +30,46 @@ const updateSet = model => {
 	const paramaterized = Object.entries(model)
 		.filter(([k]) => k !== 'id')
 		.map(([k, v]) => {
-			values.push(v);
+			values.push(prepareValueForDML(v));
 			return `${k}=?`;
 		})
 		.join(', ');
 
 	return [paramaterized, values];
 };
+
+function prepareValueForDML(value: unknown): any {
+	if (value === null || value === undefined) {
+		return value;
+	}
+
+	if (typeof value === 'string') {
+		return value;
+	}
+
+	if (typeof value === 'number') {
+		return value;
+	}
+
+	if (typeof value === 'boolean') {
+		return value;
+	}
+
+	if (Array.isArray(value)) {
+		return JSON.stringify(value);
+	}
+
+	if (typeof value === 'object') {
+		if (Object.getPrototypeOf(value).constructor === Object) {
+			return JSON.stringify(value);
+		}
+		if (isNonModelConstructor(Object.getPrototypeOf(value).constructor)) {
+			return JSON.stringify(value);
+		}
+	}
+
+	return `${value}`;
+}
 
 export function generateSchemaStatements(schema: InternalSchema): string[] {
 	return Object.keys(schema.namespaces).flatMap(namespaceName => {

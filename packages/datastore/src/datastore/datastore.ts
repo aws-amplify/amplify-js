@@ -61,6 +61,7 @@ import {
 	SYNC,
 	USER,
 	isNullOrUndefined,
+	registerNonModelClass,
 } from '../util';
 
 setAutoFreeze(true);
@@ -465,6 +466,8 @@ const createNonModelClass = <T>(typeDefinition: SchemaNonModel) => {
 	clazz[immerable] = true;
 
 	Object.defineProperty(clazz, 'name', { value: typeDefinition.name });
+
+	registerNonModelClass(clazz);
 
 	return clazz;
 };
