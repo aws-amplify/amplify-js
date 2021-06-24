@@ -25,7 +25,7 @@ import {
 } from '../AmplifyUI';
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import TEST_ID from '../AmplifyTestIDs';
-import { setTestId } from '../Utils'
+import { setTestId } from '../Utils';
 
 const logger = new Logger('ConfirmSignUp');
 
@@ -74,7 +74,7 @@ export default class ConfirmSignUp extends AuthPiece<
 		const username = props.authData;
 
 		if (username && !state.username) {
-			return { [props.usernameAttributes]: username };
+			return { username };
 		}
 
 		return null;
