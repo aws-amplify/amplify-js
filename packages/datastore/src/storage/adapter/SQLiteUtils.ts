@@ -13,8 +13,7 @@ import {
 } from '../../types';
 import { USER, exhaustiveCheck, isNonModelConstructor } from '../../util';
 
-// TODO: rename to ParamaterizedStatement
-export type SQLStatement = [string, any[]];
+export type ParameterizedStatement = [string, any[]];
 
 const keysFromModel = model => Object.keys(model).join(', ');
 
@@ -113,7 +112,7 @@ export function modelCreateTableStatement(
 export function modelInsertStatement(
 	model: PersistentModel,
 	tableName: string
-): SQLStatement {
+): ParameterizedStatement {
 	const keys = keysFromModel(model);
 	const [paramaterized, values] = valuesFromModel(model);
 
@@ -125,7 +124,7 @@ export function modelInsertStatement(
 export function modelUpdateStatement(
 	model: PersistentModel,
 	tableName: string
-): SQLStatement {
+): ParameterizedStatement {
 	const [paramaterized, values] = updateSet(model);
 
 	const updateStatement = `UPDATE ${tableName} SET ${paramaterized} WHERE id=?`;
@@ -136,7 +135,7 @@ export function modelUpdateStatement(
 export function queryByIdStatement(
 	id: string,
 	tableName: string
-): SQLStatement {
+): ParameterizedStatement {
 	return [`SELECT * FROM ${tableName} WHERE id = ?`, [id]];
 }
 
@@ -159,7 +158,6 @@ const comparisonOperatorMap = {
 
 const logicalOperatorMap = {
 	beginsWith: 'LIKE',
-	// TODO: enable contains for lists (only works with strings now)
 	contains: 'LIKE',
 	notContains: 'NOT LIKE',
 	between: 'BETWEEN',
@@ -175,7 +173,7 @@ const whereConditionFromPredicateObject = ({
 		| keyof typeof logicalOperatorMap
 		| keyof typeof comparisonOperatorMap;
 	operand: any;
-}): SQLStatement => {
+}): ParameterizedStatement => {
 	const comparisonOperator = comparisonOperatorMap[operator];
 
 	if (comparisonOperator) {
@@ -212,7 +210,7 @@ const whereConditionFromPredicateObject = ({
 
 export function whereClauseFromPredicate<T extends PersistentModel>(
 	predicate: PredicatesGroup<T>
-): SQLStatement {
+): ParameterizedStatement {
 	const result = [];
 	const params = [];
 
@@ -283,7 +281,7 @@ export function orderByClauseFromSort<T extends PersistentModel>(
 export function limitClauseFromPagination(
 	limit: number,
 	page: number = 0
-): SQLStatement {
+): ParameterizedStatement {
 	const params = [limit];
 	let clause = 'LIMIT ?';
 	if (page) {
@@ -301,7 +299,7 @@ export function queryAllStatement<T extends PersistentModel>(
 	sort?: SortPredicatesGroup<T>,
 	limit?: number,
 	page?: number
-): SQLStatement {
+): ParameterizedStatement {
 	let statement = `SELECT * FROM ${tableName}`;
 	const params = [];
 
@@ -326,7 +324,7 @@ export function queryAllStatement<T extends PersistentModel>(
 export function queryOneStatement(
 	firstOrLast,
 	tableName: string
-): SQLStatement {
+): ParameterizedStatement {
 	if (firstOrLast === QueryOne.FIRST) {
 		// ORDER BY rowid will no longer work as expected if a customer has
 		// a field by that name in their schema. We may want to enforce it
@@ -340,7 +338,7 @@ export function queryOneStatement(
 export function deleteByIdStatement(
 	id: string,
 	tableName: string
-): SQLStatement {
+): ParameterizedStatement {
 	const deleteStatement = `DELETE FROM ${tableName} WHERE id=?`;
 	return [deleteStatement, [id]];
 }
@@ -348,7 +346,7 @@ export function deleteByIdStatement(
 export function deleteByPredicateStatement<T extends PersistentModel>(
 	tableName: string,
 	predicate?: PredicatesGroup<T>
-): SQLStatement {
+): ParameterizedStatement {
 	let statement = `DELETE FROM ${tableName}`;
 	const params = [];
 

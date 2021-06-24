@@ -9,7 +9,7 @@ import {
 	queryOneStatement,
 	deleteByIdStatement,
 	deleteByPredicateStatement,
-	SQLStatement,
+	ParameterizedStatement,
 } from './SQLiteUtils';
 
 import { Adapter } from './index';
@@ -387,11 +387,11 @@ export class SQLiteAdapter implements Adapter {
 		const itemsToSave: T[] = [];
 		// To determine whether an item should result in an insert or update operation
 		// We first need to query the local DB on the item id
-		const queryStatements = new Set<SQLStatement>();
+		const queryStatements = new Set<ParameterizedStatement>();
 		// Deletes don't need to be queried first, because if the item doesn't exist,
 		// the delete operation will be a no-op
-		const deleteStatements = new Set<SQLStatement>();
-		const saveStatements = new Set<SQLStatement>();
+		const deleteStatements = new Set<ParameterizedStatement>();
+		const saveStatements = new Set<ParameterizedStatement>();
 
 		for (const item of items) {
 			const connectedModels = traverseModel(

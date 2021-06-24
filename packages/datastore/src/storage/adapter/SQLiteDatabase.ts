@@ -1,12 +1,15 @@
 import SQLite from 'react-native-sqlite-storage';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { PersistentModel } from '../../types';
-import { SQLStatement } from './SQLiteUtils';
+import { ParameterizedStatement } from './SQLiteUtils';
 
 const logger = new Logger('SQLiteDatabase');
 
 SQLite.enablePromise(true);
-SQLite.DEBUG(true);
+
+if (Logger.LOG_LEVEL === 'DEBUG') {
+	SQLite.DEBUG(true);
+}
 
 const DB_NAME = 'AmplifyDatastore';
 const DB_DISPLAYNAME = 'AWS Amplify DataStore SQLite Database';
@@ -85,7 +88,7 @@ class SQLiteDatabase {
 		await this.db.executeSql(statement, params);
 	}
 
-	public async batchQuery(queryStatements: Set<SQLStatement>) {
+	public async batchQuery(queryStatements: Set<ParameterizedStatement>) {
 		const results = [];
 
 		await this.db.readTransaction(function(tx) {
@@ -105,8 +108,8 @@ class SQLiteDatabase {
 	}
 
 	public async batchSave(
-		saveStatements: Set<SQLStatement>,
-		deleteStatements: Set<SQLStatement>
+		saveStatements: Set<ParameterizedStatement>,
+		deleteStatements: Set<ParameterizedStatement>
 	) {
 		await this.db.transaction(function(tx) {
 			for (const [statement, params] of saveStatements) {
@@ -118,7 +121,10 @@ class SQLiteDatabase {
 		});
 	}
 
-	public async selectAndDelete(query: SQLStatement, _delete: SQLStatement) {
+	public async selectAndDelete(
+		query: ParameterizedStatement,
+		_delete: ParameterizedStatement
+	) {
 		let results = [];
 
 		const [queryStatement, queryParams] = query;
