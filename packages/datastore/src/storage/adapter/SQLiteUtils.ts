@@ -10,8 +10,15 @@ import {
 	SortPredicatesGroup,
 	PredicateObject,
 	isPredicateGroup,
+	isModelFieldType,
+	isTargetNameAssociation,
 } from '../../types';
-import { USER, exhaustiveCheck, isNonModelConstructor } from '../../util';
+import {
+	USER,
+	exhaustiveCheck,
+	isNonModelConstructor,
+	isModelConstructor,
+} from '../../util';
 
 export type ParameterizedStatement = [string, any[]];
 
@@ -47,12 +54,13 @@ function prepareValueForDML(value: unknown): any {
 		return value;
 	}
 
-	const isObjectOrNonModel =
+	const isObjectType =
 		typeof value === 'object' &&
 		(Object.getPrototypeOf(value).constructor === Object ||
-			isNonModelConstructor(Object.getPrototypeOf(value).constructor));
+			isNonModelConstructor(Object.getPrototypeOf(value).constructor) ||
+			isModelConstructor(Object.getPrototypeOf(value).constructor));
 
-	if (Array.isArray(value) || isObjectOrNonModel) {
+	if (Array.isArray(value) || isObjectType) {
 		return JSON.stringify(value);
 	}
 
@@ -89,6 +97,14 @@ export function modelCreateTableStatement(
 			}
 
 			return acc + `, ${columnParam}`;
+		}
+
+		if (isModelFieldType(field.type)) {
+			// add targetName as well as field name for BELONGS_TO relations
+			if (isTargetNameAssociation(field.association)) {
+				const columnParam = `${field.association.targetName} TEXT, ${field.name} TEXT`;
+				return acc + `, ${columnParam}`;
+			}
 		}
 
 		// default to TEXT

@@ -104,6 +104,18 @@ export class SQLiteAdapter implements Adapter {
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
 		const { name: tableName } = modelConstructor;
+		const connectedModels = traverseModel(
+			modelConstructor.name,
+			model,
+			this.schema.namespaces[this.namespaceResolver(modelConstructor)],
+			this.modelInstanceCreator,
+			this.getModelConstructorByModelName
+		);
+		const connectionStoreNames = Object.values(connectedModels).map(
+			({ modelName, item, instance }) => {
+				return { modelName, item, instance };
+			}
+		);
 
 		const [queryStatement, params] = queryByIdStatement(model.id, tableName);
 
@@ -123,17 +135,29 @@ export class SQLiteAdapter implements Adapter {
 			}
 		}
 
-		const opType: OpType = fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
-
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
+		const saveStatements = new Set<ParameterizedStatement>();
 
-		const [saveStatement, saveParams] = fromDB
-			? modelUpdateStatement(model, tableName)
-			: modelInsertStatement(model, tableName);
+		for await (const resItem of connectionStoreNames) {
+			const { modelName, item, instance } = resItem;
+			const { id } = item;
 
-		await this.db.save(saveStatement, saveParams);
+			const [queryStatement, params] = queryByIdStatement(id, modelName);
+			const fromDB = await this.db.get(queryStatement, params);
 
-		result.push([model, opType]);
+			const opType: OpType =
+				fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
+
+			const saveStatement = fromDB
+				? modelUpdateStatement(instance, modelName)
+				: modelInsertStatement(instance, modelName);
+
+			saveStatements.add(saveStatement);
+
+			result.push([instance, opType]);
+		}
+
+		await this.db.batchSave(saveStatements);
 
 		return result;
 	}
@@ -365,6 +389,13 @@ export class SQLiteAdapter implements Adapter {
 
 					throw new Error(msg);
 				}
+
+				const [deleteStatement, deleteParams] = deleteByIdStatement(
+					model.id,
+					tableName
+				);
+				await this.db.save(deleteStatement, deleteParams);
+				return [[model], [model]];
 			} else {
 				const [deleteStatement, params] = deleteByIdStatement(
 					model.id,

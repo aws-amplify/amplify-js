@@ -50,6 +50,7 @@ import {
 	SyncExpression,
 	AuthModeStrategyType,
 	isNonModelFieldType,
+	isModelFieldType,
 } from '../types';
 import {
 	DATASTORE,
@@ -354,7 +355,10 @@ const initializeInstance = <T>(
 		// attempt to parse stringified JSON
 		if (
 			typeof v === 'string' &&
-			(isArray || type === 'AWSJSON' || isNonModelFieldType(type))
+			(isArray ||
+				type === 'AWSJSON' ||
+				isNonModelFieldType(type) ||
+				isModelFieldType(type))
 		) {
 			try {
 				parsedValue = JSON.parse(v);

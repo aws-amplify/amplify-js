@@ -109,14 +109,16 @@ class SQLiteDatabase {
 
 	public async batchSave(
 		saveStatements: Set<ParameterizedStatement>,
-		deleteStatements: Set<ParameterizedStatement>
+		deleteStatements?: Set<ParameterizedStatement>
 	) {
 		await this.db.transaction(function(tx) {
 			for (const [statement, params] of saveStatements) {
 				tx.executeSql(statement, params);
 			}
-			for (const [statement, params] of deleteStatements) {
-				tx.executeSql(statement, params);
+			if (deleteStatements) {
+				for (const [statement, params] of deleteStatements) {
+					tx.executeSql(statement, params);
+				}
 			}
 		});
 	}
