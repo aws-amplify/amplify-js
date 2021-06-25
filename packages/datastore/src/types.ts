@@ -177,7 +177,7 @@ export namespace GraphQLScalarType {
 	export function getJSType(
 		scalar: keyof Omit<
 			typeof GraphQLScalarType,
-			'getJSType' | 'getValidationFunction'
+			'getJSType' | 'getValidationFunction' | 'getSQLiteType'
 		>
 	): 'string' | 'number' | 'boolean' {
 		switch (scalar) {
@@ -199,14 +199,44 @@ export namespace GraphQLScalarType {
 			case 'AWSTimestamp':
 				return 'number';
 			default:
-				exhaustiveCheck(scalar);
+				exhaustiveCheck(scalar as never);
+		}
+	}
+
+	export function getSQLiteType(
+		scalar: keyof Omit<
+			typeof GraphQLScalarType,
+			'getJSType' | 'getValidationFunction' | 'getSQLiteType'
+		>
+	): 'TEXT' | 'INTEGER' | 'REAL' | 'NUMERIC' | 'BLOB' {
+		switch (scalar) {
+			case 'Boolean':
+				return 'NUMERIC';
+			case 'ID':
+			case 'String':
+			case 'AWSDate':
+			case 'AWSTime':
+			case 'AWSDateTime':
+			case 'AWSEmail':
+			case 'AWSJSON':
+			case 'AWSURL':
+			case 'AWSPhone':
+			case 'AWSIPAddress':
+				return 'TEXT';
+			case 'Int':
+			case 'AWSTimestamp':
+				return 'INTEGER';
+			case 'Float':
+				return 'REAL';
+			default:
+				exhaustiveCheck(scalar as never);
 		}
 	}
 
 	export function getValidationFunction(
 		scalar: keyof Omit<
 			typeof GraphQLScalarType,
-			'getJSType' | 'getValidationFunction'
+			'getJSType' | 'getValidationFunction' | 'getSQLiteType'
 		>
 	): ((val: string | number) => boolean) | undefined {
 		switch (scalar) {
@@ -248,7 +278,7 @@ export function isGraphQLScalarType(
 	obj: any
 ): obj is keyof Omit<
 	typeof GraphQLScalarType,
-	'getJSType' | 'getValidationFunction'
+	'getJSType' | 'getValidationFunction' | 'getSQLiteType'
 > {
 	return obj && GraphQLScalarType[obj] !== undefined;
 }

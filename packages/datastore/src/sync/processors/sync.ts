@@ -303,6 +303,8 @@ class SyncProcessor {
 		const parentPromises = new Map<string, Promise<void>>();
 
 		const observable = new Observable<SyncModelPage>(observer => {
+			console.log('sync observable', this.schema.namespaces);
+
 			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce(
 				(map, namespace) => {
 					for (const modelName of Array.from(
@@ -315,6 +317,8 @@ class SyncProcessor {
 				},
 				new Map<SchemaModel, [string, number]>()
 			);
+
+			console.log('sync sortedTypeLastSyncs', sortedTypesLastSyncs);
 
 			const allModelsReady = Array.from(sortedTypesLastSyncs.entries())
 				.filter(([{ syncable }]) => syncable)

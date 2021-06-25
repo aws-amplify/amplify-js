@@ -49,6 +49,8 @@ import {
 	ErrorHandler,
 	SyncExpression,
 	AuthModeStrategyType,
+	isNonModelFieldType,
+	isModelFieldType,
 } from '../types';
 import {
 	DATASTORE,
@@ -61,6 +63,7 @@ import {
 	SYNC,
 	USER,
 	isNullOrUndefined,
+	registerNonModelClass,
 } from '../util';
 
 setAutoFreeze(true);
@@ -346,8 +349,26 @@ const initializeInstance = <T>(
 ) => {
 	const modelValidator = validateModelFields(modelDefinition);
 	Object.entries(init).forEach(([k, v]) => {
-		modelValidator(k, v);
-		(<any>draft)[k] = v;
+		const { isArray, type } = modelDefinition.fields[k] || {};
+		let parsedValue = v;
+
+		// attempt to parse stringified JSON
+		if (
+			typeof v === 'string' &&
+			(isArray ||
+				type === 'AWSJSON' ||
+				isNonModelFieldType(type) ||
+				isModelFieldType(type))
+		) {
+			try {
+				parsedValue = JSON.parse(v);
+			} catch {
+				// if JSON is invalid, don't throw and let modelValidator handle it
+			}
+		}
+
+		modelValidator(k, parsedValue);
+		(<any>draft)[k] = parsedValue;
 	});
 };
 
@@ -501,6 +522,8 @@ const createNonModelClass = <T>(typeDefinition: SchemaNonModel) => {
 	clazz[immerable] = true;
 
 	Object.defineProperty(clazz, 'name', { value: typeDefinition.name });
+
+	registerNonModelClass(clazz);
 
 	return clazz;
 };
