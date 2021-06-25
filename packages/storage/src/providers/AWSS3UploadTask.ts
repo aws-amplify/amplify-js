@@ -265,7 +265,7 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	public abort(): void {
-		this.pause(true, 'Aborted');
+		this.pause('Aborted');
 		this.queuedParts = [];
 		this.completedParts = [];
 		this.bytesUploaded = 0;
@@ -275,20 +275,14 @@ export class AWSS3UploadTask implements UploadTask {
 	/**
 	 * pause this particular upload task
 	 **/
-	public pause(abort = false, message?: string): void {
+	public pause(message?: string): void {
 		this.state = State.PAUSED;
-		if (abort) {
-			// use axios cancel token to abort the part request immediately
-			// Add the inProgress parts back to pending
-			const removedInProgressReq = this.inProgressRequest.splice(0, this.inProgressRequest.length);
-			removedInProgressReq.forEach(req => {
-				req.cancel(message);
-			});
-			this.queuedParts.unshift(...removedInProgressReq.map(req => req.uploadPartInput));
-		} else {
-			Promise.all(this.inProgressRequest.map(req => req.s3Request)).then(() => {
-				this.inProgressRequest = [];
-			});
-		}
+		// use axios cancel token to abort the part request immediately
+		// Add the inProgress parts back to pending
+		const removedInProgressReq = this.inProgressRequest.splice(0, this.inProgressRequest.length);
+		removedInProgressReq.forEach(req => {
+			req.cancel(message);
+		});
+		this.queuedParts.unshift(...removedInProgressReq.map(req => req.uploadPartInput));
 	}
 }
