@@ -300,24 +300,55 @@ export type NonModelTypeConstructor<T> = {
 };
 
 // Class for model
-export type PersistentModelConstructor<T extends PersistentModel> = {
-	new (init: ModelInit<T>): T;
-	copyOf(src: T, mutator: (draft: MutableModel<T>) => void): T;
+export type PersistentModelConstructor<
+	T extends PersistentModel,
+	K extends PersistentModelMetaData = {
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	}
+> = {
+	new (init: ModelInit<T, K | null>): T;
+	copyOf(src: T, mutator: (draft: MutableModel<T, K>) => void): T;
 };
 export type TypeConstructorMap = Record<
 	string,
-	PersistentModelConstructor<any> | NonModelTypeConstructor<any>
+	| PersistentModelConstructor<any, PersistentModelMetaData>
+	| NonModelTypeConstructor<any>
 >;
 
 // Instance of model
-export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
-export type ModelInit<T> = Omit<T, 'id'>;
+export type PersistentModelMetaData = {
+	readOnlyFields: string;
+};
+
+// export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
+export type PersistentModel<
+	K extends PersistentModelMetaData = {
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	}
+> = Readonly<({ id: string } | K['readOnlyFields']) & Record<string, any>>;
+
+// ModelInit<SimpleModel, SimpleModelMetaData>
+export type ModelInit<
+	T,
+	K extends PersistentModelMetaData = {
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	}
+> = Omit<T, 'id' | K['readOnlyFields']>;
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
 		? T[P]
 		: DeepWritable<T[P]>;
 };
-export type MutableModel<T> = Omit<DeepWritable<T>, 'id'>;
+
+export type MutableModel<
+	T extends Record<string, any>,
+	K extends PersistentModelMetaData = {
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	}
+	// This provides Intellisense with ALL of the properties, regardless of read-only
+	// but will throw a linting error if trying to overwrite a read-only property
+> = Readonly<Pick<T, 'id' | K['readOnlyFields']>> &
+	DeepWritable<Omit<T, 'id' | K['readOnlyFields']>>;
 
 export type ModelInstanceMetadata = {
 	id: string;
@@ -338,7 +369,7 @@ export enum OpType {
 export type SubscriptionMessage<T extends PersistentModel> = {
 	opType: OpType;
 	element: T;
-	model: PersistentModelConstructor<T>;
+	model: PersistentModelConstructor<T, PersistentModelMetaData>;
 	condition: PredicatesGroup<T> | null;
 };
 //#endregion
