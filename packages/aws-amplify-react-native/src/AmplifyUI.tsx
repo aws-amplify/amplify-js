@@ -15,7 +15,6 @@ import React, { Component, FC } from 'react';
 import {
 	Image,
 	Keyboard,
-	Picker,
 	Platform,
 	Text,
 	TextInput,
@@ -27,6 +26,7 @@ import {
 	TextInputProperties,
 	TouchableOpacityProps,
 } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { I18n } from 'aws-amplify';
 import AmplifyTheme, {
 	AmplifyThemeType,
@@ -36,7 +36,7 @@ import AmplifyTheme, {
 import countryDialCodes from './CountryDialCodes';
 import TEST_ID from './AmplifyTestIDs';
 import icons from './icons';
-import { setTestId } from './Utils'
+import { setTestId } from './Utils';
 
 interface IContainerProps {
 	theme?: AmplifyThemeType;
@@ -85,6 +85,9 @@ interface IPhoneState {
 	phone: string;
 }
 
+// ensure that longer Picker values render without truncation on Android
+const minWidth = { minWidth: Platform.OS === 'android' ? 16 : 0 };
+
 export class PhoneField extends Component<IPhoneProps, IPhoneState> {
 	constructor(props: IPhoneProps) {
 		super(props);
@@ -116,7 +119,7 @@ export class PhoneField extends Component<IPhoneProps, IPhoneState> {
 				</Text>
 				<View style={theme.phoneContainer}>
 					<Picker
-						style={theme.picker}
+						style={[theme.picker, minWidth]}
 						selectedValue={this.state.dialCode}
 						itemStyle={theme.pickerItem}
 						onValueChange={dialCode => {
@@ -204,7 +207,10 @@ export const ErrorRow: FC<IErrorRowProps> = props => {
 	return (
 		<View style={theme.errorRow}>
 			<Image source={icons.warning} style={theme.errorRowIcon} />
-			<Text style={theme.errorRowText} {...setTestId(TEST_ID.AUTH.ERROR_ROW_TEXT)}>
+			<Text
+				style={theme.errorRowText}
+				{...setTestId(TEST_ID.AUTH.ERROR_ROW_TEXT)}
+			>
 				{props.children}
 			</Text>
 		</View>

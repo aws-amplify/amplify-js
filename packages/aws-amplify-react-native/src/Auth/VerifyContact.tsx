@@ -12,7 +12,8 @@
  */
 
 import React from 'react';
-import { View, Picker } from 'react-native';
+import { View } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { Auth, I18n, Logger } from 'aws-amplify';
 import {
 	AmplifyButton,
@@ -26,7 +27,7 @@ import {
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
-import { setTestId } from '../Utils'
+import { setTestId } from '../Utils';
 
 const logger = new Logger('VerifyContact');
 
