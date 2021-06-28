@@ -29,6 +29,9 @@ import {
 	CopyResult,
 	S3CopySource,
 	S3CopyDestination,
+	S3PutResult,
+	PutObjectConfig,
+	PutResult,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { AxiosHttpHandler } from './axios-http-handler';
@@ -118,7 +121,7 @@ export class AWSS3Provider implements StorageProvider {
 		return this._config;
 	}
 
-	public async upload(key: string, file, config?): Promise<AWSS3UploadTask> {
+	private async upload(key: string, file, config?): Promise<AWSS3UploadTask> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
 			return Promise.reject('No credentials');
@@ -418,17 +421,22 @@ export class AWSS3Provider implements StorageProvider {
 	 *  progressCallback: function }
 	 * @return - promise resolves to object on success
 	 */
-	public async put(key: string, object, config?): Promise<Object> {
+	public async put<T extends PutObjectConfig>(key: string, object, config?: T): Promise<S3PutResult<T>>
+	public async put(key, object, config?): Promise<PutResult | AWSS3UploadTask> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
 			return Promise.reject(StorageErrorStrings.NO_CREDENTIALS);
 		}
 
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, track, progressCallback } = opt;
+		const { bucket, track, progressCallback, resumeable } = opt;
 		const { contentType, contentDisposition, contentEncoding, cacheControl, expires, metadata, tagging, acl } = opt;
 		const { serverSideEncryption, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, SSEKMSKeyId } = opt;
 		const type = contentType ? contentType : 'binary/octet-stream';
+
+		if (resumeable) {
+			return this.upload(key, object, config);
+		}
 
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;

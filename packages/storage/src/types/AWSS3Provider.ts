@@ -1,4 +1,5 @@
 import { CopyObjectRequest } from '@aws-sdk/client-s3';
+import { AWSS3UploadTask } from '../providers/AWSS3UploadTask';
 
 type StorageLevel = 'public' | 'protected' | 'private';
 
@@ -36,7 +37,7 @@ interface StorageCopyConfig {
 	provider?: string;
 	/**
 	 * callback function that gets called on each successful part copied to track
-	 * the copy progress 
+	 * the copy progress
 	 **/
 	progressCallback?: (progress: CopyProgress) => any;
 }
@@ -56,3 +57,27 @@ export type CopyObjectConfig = S3ClientCopyCommandInput & StorageCopyConfig;
 export type CopyResult = {
 	key: string;
 };
+
+export type PutResult = {
+	key: string;
+};
+
+export type S3PutResult<T> = T extends { resumeable: true } ? AWSS3UploadTask : PutResult;
+
+interface StoragePutConfig {
+	level?: StorageLevel;
+	track?: boolean;
+	provider?: string;
+	progressCallback?: (progress: any) => any;
+	completeCallback?: (progress: any) => any;
+	resumeable?: boolean;
+}
+
+export interface PutObjectConfig {
+	level?: StorageLevel;
+	track?: boolean;
+	provider?: string;
+	progressCallback?: (progress: any) => any;
+	completeCallback?: (progress: any) => any;
+	resumeable?: boolean;
+}

@@ -184,18 +184,6 @@ export class Storage {
 		this._cancelTokenSourceMap.set(request, cancelTokenSource);
 	}
 
-	public async upload(key: string, object: any, config?): Promise<any> {
-		const { provider = DEFAULT_PROVIDER } = config || {};
-		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
-		);
-		if (prov === undefined) {
-			logger.debug('No plugin found with providerName', provider);
-			return Promise.reject('No plugin found in Storage for the provider');
-		}
-		return prov.upload(key, object, config);
-	}
-
 	/**
 	 * Cancels an inflight request
 	 *
