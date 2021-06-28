@@ -49,6 +49,7 @@ import {
 	ErrorHandler,
 	SyncExpression,
 	AuthModeStrategyType,
+	ModelFields,
 } from '../types';
 import {
 	DATASTORE,
@@ -813,6 +814,9 @@ class DataStore {
 
 		const modelDefinition = getModelDefinition(modelConstructor);
 
+		// ensuring "read-only" data isn't being overwritten
+		this.checkReadOnlyProperty(modelDefinition.fields, model, patchesTuple);
+
 		const producedCondition = ModelPredicateCreator.createFromExisting(
 			modelDefinition,
 			condition
@@ -829,6 +833,46 @@ class DataStore {
 
 		return savedModel;
 	};
+
+	private checkReadOnlyProperty(
+		fields: ModelFields,
+		model: Record<string, any>,
+		patchesTuple: [
+			Patch[],
+			Readonly<
+				{
+					id: string;
+				} & Record<string, any>
+			>
+		]
+	) {
+		if (!patchesTuple) {
+			// saving a new model instance
+			const modelKeys = Object.keys(model);
+			modelKeys.forEach(key => {
+				if (fields[key] && fields[key].isReadOnly) {
+					throw new Error(`${key} is read-only.`);
+				}
+			});
+		} else {
+			// * Updating an existing instance via 'patchesTuple'
+			// patchesTuple[0] is an object that contains the info we need
+			// like the 'path' (mapped to the model's key) and the 'value' of the patch
+			const patchArray = patchesTuple[0].map(p => [p.path[0], p.value]);
+			patchArray.forEach(patch => {
+				const [key, val] = [...patch];
+
+				// the value of a read-only field should be undefined - if so, no need to do the following check
+				if (!val || !fields[key]) return;
+
+				// if the value is NOT undefined, we have to check the 'isReadOnly' property
+				// and throw an error to avoid persisting a mutation
+				if (fields[key].isReadOnly) {
+					throw new Error(`${key} is read-only.`);
+				}
+			});
+		}
+	}
 
 	setConflictHandler = (config: DataStoreConfig): ConflictHandler => {
 		const { DataStore: configDataStore } = config;
