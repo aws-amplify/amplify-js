@@ -1,6 +1,7 @@
 import { AWSS3UploadTask } from './AWSS3UploadTask';
 import * as events from 'events';
 import { S3Client, ListPartsCommand, ListPartsCommandOutput, CreateMultipartUploadCommand } from '@aws-sdk/client-s3';
+import { StorageHelper } from "@aws-amplify/core";
 
 type UploadId = string;
 
@@ -19,7 +20,7 @@ export class AWSS3UploadManager {
 	private readonly _uploadTasks: Record<UploadId, AWSS3UploadTask> = {};
 
 	constructor() {
-		this._storage = window.sessionStorage;
+		this._storage = new StorageHelper().getStorage();
 	}
 
 	private async getCachedUploadParts({
