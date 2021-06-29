@@ -172,6 +172,7 @@ async function buildES5(typeScriptCompiler, watchMode) {
 		declaration: true,
 		noEmitOnError: true,
 		incremental: true,
+		resolveJsonModule: true,
 		tsBuildInfoFile: es5TsBuildInfoFilePath,
 		typeRoots,
 		// temporary fix
@@ -230,6 +231,7 @@ function buildES6(typeScriptCompiler, watchMode) {
 		noEmitOnError: true,
 		incremental: true,
 		tsBuildInfoFile: es6TsBuildInfoFilePath,
+		resolveJsonModule: true,
 		typeRoots,
 		// temporary fix
 		types: ['node'],
@@ -262,6 +264,8 @@ function buildES6(typeScriptCompiler, watchMode) {
 }
 
 function build(type, watchMode) {
+	console.log('type', type);
+
 	if (type === 'rollup') buildRollUp();
 
 	var typeScriptCompiler = watchMode

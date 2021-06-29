@@ -43,6 +43,7 @@ export {
 export { PubSub } from '@aws-amplify/pubsub';
 export { default as Cache } from '@aws-amplify/cache';
 export { Interactions } from '@aws-amplify/interactions';
+export { Notifications as InAppMessaging } from '@aws-amplify/notifications';
 export * from '@aws-amplify/ui';
 export { XR } from '@aws-amplify/xr';
 export { Predictions } from '@aws-amplify/predictions';

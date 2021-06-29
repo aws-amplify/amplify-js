@@ -71,6 +71,8 @@ export class AnalyticsClass {
 		this._trackers = {};
 		_instance = this;
 
+		console.log('ugh');
+
 		this.record = this.record.bind(this);
 		Hub.listen('auth', listener);
 		Hub.listen('storage', listener);
@@ -247,6 +249,16 @@ export class AnalyticsClass {
 		} else {
 			params = { event, provider };
 		}
+
+		if (this._config['emit_analytic_events']) {
+			console.log('🧡 Recording Analytics event');
+			dispatchAnalyticsEvent(
+				'record',
+				params.event,
+				'Recording Analytics event'
+			);
+		}
+
 		return this._sendEvent(params);
 	}
 

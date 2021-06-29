@@ -169,6 +169,12 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 		Object.assign(params, { timestamp, config: this._config });
 
+		// scoped to pinpoint only :/
+		// if (this._config['shouldEmitAnalyticEvents']) {
+		// 	logger.debug('emit analytic record event', params);
+		// 	dispatchAnalyticsEvent(params, null);
+		// }
+
 		if (params.event.immediate) {
 			return this._send(params, handlers);
 		} else {
