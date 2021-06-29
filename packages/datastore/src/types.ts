@@ -275,7 +275,7 @@ export function isEnumFieldType(obj: any): obj is EnumFieldType {
 	return false;
 }
 
-export type ModelField = {
+type ModelField = {
 	name: string;
 	type:
 		| keyof Omit<
@@ -306,13 +306,13 @@ export type PersistentModelConstructor<
 		readOnlyFields: 'createdAt' | 'updatedAt';
 	}
 > = {
-	new (init: ModelInit<T, K | null>): T;
+	new (init: ModelInit<T, K>): T;
 	copyOf(src: T, mutator: (draft: MutableModel<T, K>) => void): T;
 };
+
 export type TypeConstructorMap = Record<
 	string,
-	| PersistentModelConstructor<any, PersistentModelMetaData>
-	| NonModelTypeConstructor<any>
+	PersistentModelConstructor<any> | NonModelTypeConstructor<any>
 >;
 
 // Instance of model
@@ -320,14 +320,7 @@ export type PersistentModelMetaData = {
 	readOnlyFields: string;
 };
 
-// export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
-export type PersistentModel<
-	K extends PersistentModelMetaData = {
-		readOnlyFields: 'createdAt' | 'updatedAt';
-	}
-> = Readonly<({ id: string } | K['readOnlyFields']) & Record<string, any>>;
-
-// ModelInit<SimpleModel, SimpleModelMetaData>
+export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
 export type ModelInit<
 	T,
 	K extends PersistentModelMetaData = {
@@ -347,8 +340,8 @@ export type MutableModel<
 	}
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
-> = Readonly<Pick<T, 'id' | K['readOnlyFields']>> &
-	DeepWritable<Omit<T, 'id' | K['readOnlyFields']>>;
+> = DeepWritable<Omit<T, 'id' | K['readOnlyFields']>> &
+	Readonly<Pick<T, 'id' | K['readOnlyFields']>>;
 
 export type ModelInstanceMetadata = {
 	id: string;
@@ -369,7 +362,7 @@ export enum OpType {
 export type SubscriptionMessage<T extends PersistentModel> = {
 	opType: OpType;
 	element: T;
-	model: PersistentModelConstructor<T, PersistentModelMetaData>;
+	model: PersistentModelConstructor<T>;
 	condition: PredicatesGroup<T> | null;
 };
 //#endregion
