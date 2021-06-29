@@ -126,7 +126,9 @@ export class AWSS3Provider implements StorageProvider {
 		if (!credentialsOK) {
 			return Promise.reject('No credentials');
 		}
-
+		if (!(file instanceof Blob)) {
+			return Promise.reject('Object must be an instance of Blob');
+		}
 		const opt = Object.assign({}, this._config, config);
 		const { bucket, track, progressCallback, completeCallback } = opt;
 		const { contentType, contentDisposition, contentEncoding, cacheControl, expires, metadata, tagging, acl } = opt;
@@ -421,8 +423,8 @@ export class AWSS3Provider implements StorageProvider {
 	 *  progressCallback: function }
 	 * @return - promise resolves to object on success
 	 */
-	public async put<T extends PutObjectConfig>(key: string, object, config?: T): Promise<S3PutResult<T>>
-	public async put(key, object, config?): Promise<PutResult | AWSS3UploadTask> {
+	public async put<T extends PutObjectConfig>(key: string, object, config?: T): Promise<S3PutResult<T>>;
+	public async put(key: string, object, config?): Promise<PutResult | AWSS3UploadTask> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
 			return Promise.reject(StorageErrorStrings.NO_CREDENTIALS);

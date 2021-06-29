@@ -16,7 +16,7 @@ import { Logger } from '@aws-amplify/core';
 const logger = new Logger('Storage');
 
 enum State {
-	PENDING,
+	INIT,
 	IN_PROGRESS,
 	PAUSED,
 	ABORTED,
@@ -36,7 +36,6 @@ export interface AWSS3UploadTaskParams {
 
 export interface InProgressRequest {
 	uploadPartInput: UploadPartCommandInput;
-	// s3Request: Promise<UploadPartCommandOutput>;
 	s3Request: Promise<any>;
 	cancel: Canceler;
 }
@@ -63,7 +62,7 @@ export class AWSS3UploadTask implements UploadTask {
 	private file: Blob;
 	private bytesUploaded: number;
 	private totalBytes: number;
-	private state: State = State.PENDING;
+	private state: State = State.INIT;
 
 	readonly bucket: string;
 	readonly key: string;
@@ -141,7 +140,6 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private _startNextPart() {
-		console.log('starting the next part ...');
 		if (this.queuedParts.length > 0 && this.state !== State.PAUSED) {
 			const cancelTokenSource = axios.CancelToken.source();
 			const nextPart = this.queuedParts.shift();
@@ -283,6 +281,7 @@ export class AWSS3UploadTask implements UploadTask {
 		removedInProgressReq.forEach(req => {
 			req.cancel(message);
 		});
+		// Put all removed in progress parts back into the queue
 		this.queuedParts.unshift(...removedInProgressReq.map(req => req.uploadPartInput));
 	}
 }
