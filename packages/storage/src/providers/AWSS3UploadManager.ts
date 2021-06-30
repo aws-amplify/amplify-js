@@ -21,6 +21,11 @@ interface FileMetadata {
 	timeStarted: number;
 }
 
+export enum TaskEvents {
+	UPLOAD_COMPLETE = 'uploadComplete',
+	ABORT = 'abort',
+}
+
 const uploadComplete = 'uploadComplete';
 const storageKey = '__uploadInProgress';
 
@@ -66,6 +71,7 @@ export class AWSS3UploadManager {
 	}
 
 	private _getFileKey(blob: Blob) {
+		// We should check if it's a File first because File is also instance of a Blob
 		if (this._isFile(blob)) {
 			return [blob.name, blob.lastModified, blob.size, blob.type].join('-');
 		} else if (this._isBlob(blob)) {
@@ -74,7 +80,7 @@ export class AWSS3UploadManager {
 	}
 
 	private _purgeExpiredKeys() {
-		const uploads = JSON.parse(this._storage.getItem(storageKey));
+		const uploads = JSON.parse(this._storage.getItem(storageKey)) || {};
 		for (const [k, v] of Object.entries(uploads)) {
 			const hasExpired =
 				Object.prototype.hasOwnProperty.call(v, 'timeStarted') && Date.now() - (v as any).timeStarted > oneHourInMs;
@@ -85,6 +91,12 @@ export class AWSS3UploadManager {
 				delete uploads[k];
 			}
 		}
+		this._storage.setItem(storageKey, JSON.stringify(uploads));
+	}
+
+	private _removeKey(key: string) {
+		const uploads = JSON.parse(this._storage.getItem(storageKey)) || {};
+		delete uploads[key];
 		this._storage.setItem(storageKey, JSON.stringify(uploads));
 	}
 
@@ -135,18 +147,25 @@ export class AWSS3UploadManager {
 			body,
 			emitter,
 		});
-		emitter.on(uploadComplete, event => {
-			this._storage.removeItem(event.key);
+		emitter.on(TaskEvents.UPLOAD_COMPLETE, () => {
+			this._removeKey(fileKey);
+		});
+		emitter.on(TaskEvents.ABORT, () => {
+			this._removeKey(fileKey);
 		});
 		this._uploadTasks[createMultipartUpload.UploadId] = newTask;
 		const fileMetadata: FileMetadata = {
 			uploadId: createMultipartUpload.UploadId,
 			timeStarted: Date.now(),
 		};
-		const uploads = JSON.parse(this._storage.getItem(storageKey)) || {};
-		uploads[fileKey] = fileMetadata;
-		this._storage.setItem(storageKey, JSON.stringify(uploads));
+		this._addKey(fileKey, fileMetadata);
 		return newTask;
+	}
+
+	private _addKey(key: string, fileMetadata: FileMetadata) {
+		const uploads = JSON.parse(this._storage.getItem(storageKey)) || {};
+		uploads[key] = fileMetadata;
+		this._storage.setItem(storageKey, JSON.stringify(uploads));
 	}
 
 	public getTask(uploadId: UploadId) {

@@ -7,6 +7,7 @@ import {
 	CompleteMultipartUploadCommand,
 	Part,
 } from '@aws-sdk/client-s3';
+import { TaskEvents } from './AWSS3UploadManager';
 import * as events from 'events';
 import axios, { Canceler } from 'axios';
 import { HttpHandlerOptions } from '@aws-sdk/types';
@@ -128,7 +129,7 @@ export class AWSS3UploadTask implements UploadTask {
 			)
 			.then(res => {
 				console.log('Completed upload', res);
-				this.emitter.emit('uploadComplete', { key: `${this.bucket}/${this.key}` });
+				this.emitter.emit(TaskEvents.UPLOAD_COMPLETE, { key: `${this.bucket}/${this.key}` });
 			})
 			.catch(err => {
 				console.error('error completing upload', err);
@@ -176,7 +177,7 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private _attachUploadCompleteEvent(fn) {
-		return this._attachEvent('uploadComplete')(fn);
+		return this._attachEvent(TaskEvents.UPLOAD_COMPLETE)(fn);
 	}
 
 	private _attachUploadProgressEvent(fn) {
@@ -268,6 +269,7 @@ export class AWSS3UploadTask implements UploadTask {
 		this.completedParts = [];
 		this.bytesUploaded = 0;
 		this.state = State.ABORTED;
+		this.emitter.emit(TaskEvents.ABORT);
 	}
 
 	/**
