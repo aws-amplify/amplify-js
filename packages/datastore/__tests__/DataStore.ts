@@ -561,9 +561,9 @@ describe('DataStore tests', () => {
 				field1: 'something',
 				dateCreated: new Date().toISOString(),
 				createdAt: '2021-06-03T20:56:23.201Z',
-			});
+			} as any);
 
-			expect(DataStore.save(model)).rejects.toThrowError(
+			await expect(DataStore.save(model)).rejects.toThrowError(
 				'createdAt is read-only.'
 			);
 
@@ -573,18 +573,18 @@ describe('DataStore tests', () => {
 			});
 
 			model = Model.copyOf(model, draft => {
-				draft.createdAt = '2021-06-03T20:56:23.201Z';
+				(draft as any).createdAt = '2021-06-03T20:56:23.201Z';
 			});
 
-			expect(DataStore.save(model)).rejects.toThrowError(
+			await expect(DataStore.save(model)).rejects.toThrowError(
 				'createdAt is read-only.'
 			);
 
 			model = Model.copyOf(model, draft => {
-				draft.updatedAt = '2021-06-03T20:56:23.201Z';
+				(draft as any).updatedAt = '2021-06-03T20:56:23.201Z';
 			});
 
-			expect(DataStore.save(model)).rejects.toThrowError(
+			await expect(DataStore.save(model)).rejects.toThrowError(
 				'updatedAt is read-only.'
 			);
 		});
