@@ -6,6 +6,7 @@ import {
 	UploadPartCommandOutput,
 	CompleteMultipartUploadCommand,
 	Part,
+	AbortMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
 import { TaskEvents } from './AWSS3UploadManager';
 import * as events from 'events';
@@ -253,6 +254,7 @@ export class AWSS3UploadTask implements UploadTask {
 			PartNumber: part.PartNumber,
 			ETag: part.ETag,
 		}));
+		// Just in case that the request has already been completed, we just complete the upload
 		if (this._isDone()) this._completeUpload();
 	}
 
@@ -270,6 +272,17 @@ export class AWSS3UploadTask implements UploadTask {
 		this.bytesUploaded = 0;
 		this.state = State.ABORTED;
 		this.emitter.emit(TaskEvents.ABORT);
+		this.s3client
+			.send(
+				new AbortMultipartUploadCommand({
+					Bucket: this.bucket,
+					Key: this.key,
+					UploadId: this.uploadId,
+				})
+			)
+			.then(res => {
+				console.log(res);
+			});
 	}
 
 	/**

@@ -1,6 +1,11 @@
 import { AWSS3UploadTask } from './AWSS3UploadTask';
 import * as events from 'events';
-import { S3Client, ListPartsCommand, ListPartsCommandOutput, CreateMultipartUploadCommand } from '@aws-sdk/client-s3';
+import {
+	S3Client,
+	ListPartsCommand,
+	ListPartsCommandOutput,
+	CreateMultipartUploadCommand,
+} from '@aws-sdk/client-s3';
 import { StorageHelper } from '@aws-amplify/core';
 
 const oneHourInMs = 1000 * 60 * 60;
@@ -19,6 +24,8 @@ interface FileMetadata {
 	uploadId: UploadId;
 	// in epoch
 	timeStarted: number;
+	bucket: string;
+	key: string;
 }
 
 export enum TaskEvents {
@@ -26,7 +33,6 @@ export enum TaskEvents {
 	ABORT = 'abort',
 }
 
-const uploadComplete = 'uploadComplete';
 const storageKey = '__uploadInProgress';
 
 export class AWSS3UploadManager {
@@ -52,12 +58,15 @@ export class AWSS3UploadManager {
 		if (!uploadsFromStorage) {
 			return null;
 		}
-		const uploads = JSON.parse(uploadsFromStorage);
-		const cachedUploadFileData: FileMetadata = uploads[this._getFileKey(body)];
+		const uploads = JSON.parse(uploadsFromStorage) || {};
+		const fileKey = this._getFileKey(body, bucket, key);
+		if (!Object.prototype.hasOwnProperty.call(uploads, fileKey)) {
+			return null;
+		}
+		const cachedUploadFileData: FileMetadata = uploads[this._getFileKey(body, bucket, key)];
 		const hasExpired =
 			Object.prototype.hasOwnProperty.call(cachedUploadFileData, 'timeStarted') &&
 			Date.now() - cachedUploadFileData.timeStarted > oneHourInMs;
-		// Only return the cached parts on S3 if the file hasn't been modified, else we should re-intialize the upload
 		if (cachedUploadFileData && !hasExpired) {
 			const listPartsOutput = await s3client.send(
 				new ListPartsCommand({
@@ -70,12 +79,18 @@ export class AWSS3UploadManager {
 		}
 	}
 
-	private _getFileKey(blob: Blob) {
+	/**
+	 * Generate a unique key for the file.
+	 *
+	 * @param {Blob} blob - Blob that should be uploaded.
+	 * @return {string} unique key of the file.
+	 */
+	private _getFileKey(blob: Blob, bucket: string, key: string): string {
 		// We should check if it's a File first because File is also instance of a Blob
 		if (this._isFile(blob)) {
-			return [blob.name, blob.lastModified, blob.size, blob.type].join('-');
+			return [blob.name, blob.lastModified, blob.size, blob.type, bucket, key].join('-');
 		} else if (this._isBlob(blob)) {
-			return [blob.size, blob.type].join('-');
+			return [blob.size, blob.type, bucket, key].join('-');
 		} else return '';
 	}
 
@@ -95,32 +110,44 @@ export class AWSS3UploadManager {
 	}
 
 	private _removeKey(key: string) {
+		console.log(`Removing ${key}`);
 		const uploads = JSON.parse(this._storage.getItem(storageKey)) || {};
 		delete uploads[key];
 		this._storage.setItem(storageKey, JSON.stringify(uploads));
 	}
 
+	private _isListPartsOutput(x: unknown): x is ListPartsCommandOutput {
+		return x && Object.prototype.hasOwnProperty.call(x, 'UploadId') && Object.prototype.hasOwnProperty.call(x, 'Parts');
+	}
+
 	public async addTask(input: AddTaskInput) {
 		const { s3Client, bucket, key, body, emitter } = input;
-		let cachedData = {};
+		let cachedUpload = {};
 		this._purgeExpiredKeys();
 		try {
 			console.log('Finding cached upload parts');
-			cachedData = (await this.getCachedUploadParts({ s3client: s3Client, bucket, key, body: body })) || {};
+			cachedUpload = (await this.getCachedUploadParts({ s3client: s3Client, bucket, key, body })) || {};
 		} catch (err) {
 			console.error('Error finding cached upload parts, re-intializing the multipart upload');
 		}
-		if (Object.prototype.hasOwnProperty.call(cachedData, 'UploadId')) {
-			const cachedUploadId = (cachedData as ListPartsCommandOutput).UploadId;
-			const uploadedPartsOnS3 = (cachedData as ListPartsCommandOutput).Parts;
+		const fileKey = this._getFileKey(body, bucket, key);
+		emitter.on(TaskEvents.UPLOAD_COMPLETE, () => {
+			this._removeKey(fileKey);
+		});
+		emitter.on(TaskEvents.ABORT, () => {
+			this._removeKey(fileKey);
+		});
+		if (this._isListPartsOutput(cachedUpload)) {
+			const cachedUploadId = cachedUpload.UploadId;
+			const uploadedPartsOnS3 = cachedUpload.Parts;
 			console.log('Found cached upload parts', uploadedPartsOnS3);
 			this._uploadTasks[cachedUploadId] = new AWSS3UploadTask({
 				s3Client,
-				uploadId: cachedUploadId,
+				uploadId: cachedUpload.UploadId,
 				bucket,
 				key,
 				body,
-				completedParts: uploadedPartsOnS3,
+				completedParts: cachedUpload.Parts,
 				emitter,
 			});
 			return this._uploadTasks[cachedUploadId];
@@ -132,7 +159,7 @@ export class AWSS3UploadManager {
 	private async _initMultiupload(input: AddTaskInput) {
 		console.log('cached upload not found, creating a new one');
 		const { s3Client, bucket, key, body, emitter } = input;
-		const fileKey = this._getFileKey(body as File);
+		const fileKey = this._getFileKey(body as File, bucket, key);
 		const createMultipartUpload = await s3Client.send(
 			new CreateMultipartUploadCommand({
 				Bucket: bucket,
@@ -147,16 +174,12 @@ export class AWSS3UploadManager {
 			body,
 			emitter,
 		});
-		emitter.on(TaskEvents.UPLOAD_COMPLETE, () => {
-			this._removeKey(fileKey);
-		});
-		emitter.on(TaskEvents.ABORT, () => {
-			this._removeKey(fileKey);
-		});
 		this._uploadTasks[createMultipartUpload.UploadId] = newTask;
 		const fileMetadata: FileMetadata = {
 			uploadId: createMultipartUpload.UploadId,
 			timeStarted: Date.now(),
+			bucket,
+			key,
 		};
 		this._addKey(fileKey, fileMetadata);
 		return newTask;
