@@ -22,7 +22,10 @@ import {
 
 export type ParameterizedStatement = [string, any[]];
 
-const keysFromModel = model => Object.keys(model).join(', ');
+const keysFromModel = model =>
+	Object.keys(model)
+		.map(k => `"${k}"`)
+		.join(', ');
 
 const valuesFromModel = (model): [string, any[]] => {
 	const values = Object.values(model).map(prepareValueForDML);
@@ -37,7 +40,7 @@ const updateSet = model => {
 		.filter(([k]) => k !== 'id')
 		.map(([k, v]) => {
 			values.push(prepareValueForDML(v));
-			return `${k}=?`;
+			return `"${k}"=?`;
 		})
 		.join(', ');
 
@@ -85,10 +88,10 @@ export function modelCreateTableStatement(
 	let fields = Object.values(model.fields).reduce((acc, field) => {
 		if (isGraphQLScalarType(field.type)) {
 			if (field.name === 'id') {
-				return acc + 'id PRIMARY KEY NOT NULL';
+				return acc + '"id" PRIMARY KEY NOT NULL';
 			}
 
-			let columnParam = `${field.name} ${GraphQLScalarType.getSQLiteType(
+			let columnParam = `"${field.name}" ${GraphQLScalarType.getSQLiteType(
 				field.type
 			)}`;
 
@@ -102,13 +105,13 @@ export function modelCreateTableStatement(
 		if (isModelFieldType(field.type)) {
 			// add targetName as well as field name for BELONGS_TO relations
 			if (isTargetNameAssociation(field.association)) {
-				const columnParam = `${field.association.targetName} TEXT, ${field.name} TEXT`;
+				const columnParam = `"${field.association.targetName}" TEXT, "${field.name}" TEXT`;
 				return acc + `, ${columnParam}`;
 			}
 		}
 
 		// default to TEXT
-		let columnParam = `${field.name} TEXT`;
+		let columnParam = `"${field.name}" TEXT`;
 
 		if (field.isRequired) {
 			columnParam += ' NOT NULL';
@@ -118,10 +121,11 @@ export function modelCreateTableStatement(
 	}, '');
 
 	if (userModel) {
-		fields += ', _version INTEGER, _lastChangedAt INTEGER, _deleted NUMERIC';
+		fields +=
+			', "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" NUMERIC';
 	}
 
-	const createTableStatement = `CREATE TABLE IF NOT EXISTS ${model.name} (${fields});`;
+	const createTableStatement = `CREATE TABLE IF NOT EXISTS "${model.name}" (${fields});`;
 	return createTableStatement;
 }
 
@@ -132,7 +136,7 @@ export function modelInsertStatement(
 	const keys = keysFromModel(model);
 	const [paramaterized, values] = valuesFromModel(model);
 
-	const insertStatement = `INSERT INTO ${tableName} (${keys}) VALUES (${paramaterized})`;
+	const insertStatement = `INSERT INTO "${tableName}" (${keys}) VALUES (${paramaterized})`;
 
 	return [insertStatement, values];
 }
@@ -143,7 +147,7 @@ export function modelUpdateStatement(
 ): ParameterizedStatement {
 	const [paramaterized, values] = updateSet(model);
 
-	const updateStatement = `UPDATE ${tableName} SET ${paramaterized} WHERE id=?`;
+	const updateStatement = `UPDATE "${tableName}" SET ${paramaterized} WHERE id=?`;
 
 	return [updateStatement, [...values, model.id]];
 }
@@ -152,7 +156,7 @@ export function queryByIdStatement(
 	id: string,
 	tableName: string
 ): ParameterizedStatement {
-	return [`SELECT * FROM ${tableName} WHERE id = ?`, [id]];
+	return [`SELECT * FROM "${tableName}" WHERE "id" = ?`, [id]];
 }
 
 /*
@@ -193,7 +197,7 @@ const whereConditionFromPredicateObject = ({
 	const comparisonOperator = comparisonOperatorMap[operator];
 
 	if (comparisonOperator) {
-		return [`${field} ${comparisonOperator} ?`, [operand]];
+		return [`"${field}" ${comparisonOperator} ?`, [operand]];
 	}
 
 	const logicalOperatorKey = <keyof typeof logicalOperatorMap>operator;
@@ -218,7 +222,7 @@ const whereConditionFromPredicateObject = ({
 				throw new Error('Cannot map predicate to a valid WHERE clause');
 		}
 		return [
-			`${field} ${logicalOperator} ${rightExp.map(_ => '?').join(' AND ')}`,
+			`"${field}" ${logicalOperator} ${rightExp.map(_ => '?').join(' AND ')}`,
 			rightExp,
 		];
 	}
@@ -285,7 +289,8 @@ export function orderByClauseFromSort<T extends PersistentModel>(
 	sortPredicate: SortPredicatesGroup<T> = []
 ): string {
 	const orderByParts = sortPredicate.map(
-		({ field, sortDirection }) => `${field} ${sortDirectionMap[sortDirection]}`
+		({ field, sortDirection }) =>
+			`"${field}" ${sortDirectionMap[sortDirection]}`
 	);
 
 	// We always sort by _rowid_ last
@@ -316,7 +321,7 @@ export function queryAllStatement<T extends PersistentModel>(
 	limit?: number,
 	page?: number
 ): ParameterizedStatement {
-	let statement = `SELECT * FROM ${tableName}`;
+	let statement = `SELECT * FROM "${tableName}"`;
 	const params = [];
 
 	if (predicate && predicate.predicates.length) {
@@ -355,7 +360,7 @@ export function deleteByIdStatement(
 	id: string,
 	tableName: string
 ): ParameterizedStatement {
-	const deleteStatement = `DELETE FROM ${tableName} WHERE id=?`;
+	const deleteStatement = `DELETE FROM "${tableName}" WHERE "id"=?`;
 	return [deleteStatement, [id]];
 }
 
@@ -363,7 +368,7 @@ export function deleteByPredicateStatement<T extends PersistentModel>(
 	tableName: string,
 	predicate?: PredicatesGroup<T>
 ): ParameterizedStatement {
-	let statement = `DELETE FROM ${tableName}`;
+	let statement = `DELETE FROM "${tableName}"`;
 	const params = [];
 
 	if (predicate && predicate.predicates.length) {

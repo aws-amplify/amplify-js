@@ -22,11 +22,11 @@ import { initSchema as initSchemaType } from '../src/datastore/datastore';
 let initSchema: typeof initSchemaType;
 
 const INTERNAL_TEST_SCHEMA_STATEMENTS = [
-	'CREATE TABLE IF NOT EXISTS Setting (id PRIMARY KEY NOT NULL, key TEXT NOT NULL, value TEXT NOT NULL);',
-	'CREATE TABLE IF NOT EXISTS Model (id PRIMARY KEY NOT NULL, field1 TEXT NOT NULL, optionalField1 TEXT, dateCreated TEXT NOT NULL, emails TEXT NOT NULL, ips TEXT, metadata TEXT, _version INTEGER, _lastChangedAt INTEGER, _deleted NUMERIC);',
-	'CREATE TABLE IF NOT EXISTS LocalModel (id PRIMARY KEY NOT NULL, field1 TEXT NOT NULL, _version INTEGER, _lastChangedAt INTEGER, _deleted NUMERIC);',
-	'CREATE TABLE IF NOT EXISTS MutationEvent (id PRIMARY KEY NOT NULL, model TEXT NOT NULL, data TEXT NOT NULL, modelId TEXT NOT NULL, operation TEXT NOT NULL, condition TEXT NOT NULL);',
-	'CREATE TABLE IF NOT EXISTS ModelMetadata (id PRIMARY KEY NOT NULL, namespace TEXT NOT NULL, model TEXT NOT NULL, lastSync INTEGER, lastFullSync INTEGER, fullSyncInterval INTEGER NOT NULL);',
+	'CREATE TABLE IF NOT EXISTS "Setting" ("id" PRIMARY KEY NOT NULL, "key" TEXT NOT NULL, "value" TEXT NOT NULL);',
+	'CREATE TABLE IF NOT EXISTS "Model" ("id" PRIMARY KEY NOT NULL, "field1" TEXT NOT NULL, "optionalField1" TEXT, "dateCreated" TEXT NOT NULL, "emails" TEXT NOT NULL, "ips" TEXT, "metadata" TEXT, "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" NUMERIC);',
+	'CREATE TABLE IF NOT EXISTS "LocalModel" ("id" PRIMARY KEY NOT NULL, "field1" TEXT NOT NULL, "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" NUMERIC);',
+	'CREATE TABLE IF NOT EXISTS "MutationEvent" ("id" PRIMARY KEY NOT NULL, "model" TEXT NOT NULL, "data" TEXT NOT NULL, "modelId" TEXT NOT NULL, "operation" TEXT NOT NULL, "condition" TEXT NOT NULL);',
+	'CREATE TABLE IF NOT EXISTS "ModelMetadata" ("id" PRIMARY KEY NOT NULL, "namespace" TEXT NOT NULL, "model" TEXT NOT NULL, "lastSync" INTEGER, "lastFullSync" INTEGER, "fullSyncInterval" INTEGER NOT NULL);',
 ];
 
 describe('SQLiteUtils tests', () => {
@@ -59,7 +59,7 @@ describe('SQLiteUtils tests', () => {
 				dateCreated: new Date().toISOString(),
 			});
 
-			const expected = [`SELECT * FROM Model WHERE id = ?`, [model.id]];
+			const expected = [`SELECT * FROM "Model" WHERE "id" = ?`, [model.id]];
 
 			expect(queryByIdStatement(model.id, 'Model')).toEqual(expected);
 		});
@@ -67,7 +67,7 @@ describe('SQLiteUtils tests', () => {
 
 	describe('queryAllStatement', () => {
 		it('should generate valid SELECT all statement', () => {
-			const expected = [`SELECT * FROM Model ORDER BY _rowid_ ASC`, []];
+			const expected = [`SELECT * FROM "Model" ORDER BY _rowid_ ASC`, []];
 
 			expect(queryAllStatement('Model')).toEqual(expected);
 		});
@@ -111,7 +111,7 @@ describe('SQLiteUtils tests', () => {
 			const page = 3;
 
 			const expected = [
-				`SELECT * FROM Model WHERE (firstName = ? AND lastName LIKE ? AND sortOrder > ?) ORDER BY sortOrder ASC, lastName DESC, _rowid_ ASC LIMIT ? OFFSET ?`,
+				`SELECT * FROM "Model" WHERE ("firstName" = ? AND "lastName" LIKE ? AND "sortOrder" > ?) ORDER BY "sortOrder" ASC, "lastName" DESC, _rowid_ ASC LIMIT ? OFFSET ?`,
 				['Bob', 'Sm%', 5, 10, 30],
 			];
 
@@ -152,7 +152,7 @@ describe('SQLiteUtils tests', () => {
 			});
 
 			const expected = [
-				'INSERT INTO Model (field1, dateCreated, id, _version, _lastChangedAt, _deleted) VALUES (?, ?, ?, ?, ?, ?)',
+				'INSERT INTO "Model" ("field1", "dateCreated", "id", "_version", "_lastChangedAt", "_deleted") VALUES (?, ?, ?, ?, ?, ?)',
 				[
 					model.field1,
 					model.dateCreated,
@@ -168,14 +168,14 @@ describe('SQLiteUtils tests', () => {
 	});
 
 	describe('modelUpdateStatement', () => {
-		it('should generate valid SELECT by id statement', () => {
+		it('should generate valid UPDATE by id statement', () => {
 			const model = new Model({
 				field1: 'test',
 				dateCreated: new Date().toISOString(),
 			});
 
 			const expected = [
-				`UPDATE Model SET field1=?, dateCreated=?, _version=?, _lastChangedAt=?, _deleted=? WHERE id=?`,
+				`UPDATE "Model" SET "field1"=?, "dateCreated"=?, "_version"=?, "_lastChangedAt"=?, "_deleted"=? WHERE id=?`,
 				[
 					model.field1,
 					model.dateCreated,
@@ -214,7 +214,7 @@ describe('SQLiteUtils tests', () => {
 			};
 
 			const expected = [
-				`WHERE (firstName = ? AND lastName LIKE ? AND sortOrder > ?)`,
+				`WHERE ("firstName" = ? AND "lastName" LIKE ? AND "sortOrder" > ?)`,
 				['Bob', 'Sm%', 5],
 			];
 
@@ -250,7 +250,7 @@ describe('SQLiteUtils tests', () => {
 				},
 			];
 
-			const expected = 'ORDER BY sortOrder ASC, _rowid_ ASC';
+			const expected = 'ORDER BY "sortOrder" ASC, _rowid_ ASC';
 
 			expect(orderByClauseFromSort(sortPredicateGroup as any)).toEqual(
 				expected
@@ -269,7 +269,7 @@ describe('SQLiteUtils tests', () => {
 				},
 			];
 
-			const expected = 'ORDER BY sortOrder ASC, lastName DESC, _rowid_ ASC';
+			const expected = 'ORDER BY "sortOrder" ASC, "lastName" DESC, _rowid_ ASC';
 
 			expect(orderByClauseFromSort(sortPredicateGroup as any)).toEqual(
 				expected
@@ -284,7 +284,7 @@ describe('SQLiteUtils tests', () => {
 				dateCreated: new Date().toISOString(),
 			});
 
-			const expected = ['DELETE FROM Model WHERE id=?', [model.id]];
+			const expected = ['DELETE FROM "Model" WHERE "id"=?', [model.id]];
 
 			expect(deleteByIdStatement(model.id, 'Model')).toEqual(expected);
 		});
@@ -309,7 +309,7 @@ describe('SQLiteUtils tests', () => {
 			};
 
 			const expected = [
-				'DELETE FROM Model WHERE (createdAt > ?)',
+				'DELETE FROM "Model" WHERE ("createdAt" > ?)',
 				['2021-06-20'],
 			];
 
