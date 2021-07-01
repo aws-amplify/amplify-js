@@ -1,11 +1,6 @@
 import { AWSS3UploadTask } from './AWSS3UploadTask';
 import * as events from 'events';
-import {
-	S3Client,
-	ListPartsCommand,
-	ListPartsCommandOutput,
-	CreateMultipartUploadCommand,
-} from '@aws-sdk/client-s3';
+import { S3Client, ListPartsCommand, ListPartsCommandOutput, CreateMultipartUploadCommand } from '@aws-sdk/client-s3';
 import { StorageHelper } from '@aws-amplify/core';
 
 const oneHourInMs = 1000 * 60 * 60;
@@ -31,6 +26,7 @@ interface FileMetadata {
 export enum TaskEvents {
 	UPLOAD_COMPLETE = 'uploadComplete',
 	ABORT = 'abort',
+	UPLOAD_PROGRESS = 'uploadPartProgress',
 }
 
 const storageKey = '__uploadInProgress';
