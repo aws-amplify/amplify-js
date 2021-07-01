@@ -107,7 +107,7 @@ export class AWSS3UploadTask implements UploadTask {
 			PartNumber: partNumber,
 		});
 		this.bytesUploaded += chunk.size;
-		this.emitter.emit('uploadPartProgress', {
+		this.emitter.emit(TaskEvents.UPLOAD_PROGRESS, {
 			loaded: this.bytesUploaded,
 			total: this.totalBytes,
 		});
@@ -172,26 +172,20 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private _isDone() {
-		console.log('pending', this.queued);
-		console.log('inprogress', this.inProgress);
 		return !this.queued.length && !this.inProgress.length;
 	}
 
-	private _attachEvent(name: string) {
-		return (fn: Function) => this.emitter.on(name, fn.bind(this));
+	private _attachUploadCompleteEvent(fn: Function) {
+		this.emitter.on(TaskEvents.UPLOAD_COMPLETE, fn.bind(this));
 	}
 
-	private _attachUploadCompleteEvent(fn) {
-		return this._attachEvent(TaskEvents.UPLOAD_COMPLETE)(fn);
-	}
-
-	private _attachUploadProgressEvent(fn) {
-		return this._attachEvent('uploadPartProgress')(fn);
+	private _attachUploadProgressEvent(fn: Function) {
+		this.emitter.on(TaskEvents.UPLOAD_PROGRESS, fn.bind(this));
 	}
 
 	public onComplete(fn: Function) {
 		if (Array.isArray(fn)) {
-			fn.forEach(this._attachUploadCompleteEvent, this);
+			fn.forEach(this._attachUploadCompleteEvent);
 		} else {
 			this._attachUploadCompleteEvent(fn);
 		}
@@ -199,7 +193,7 @@ export class AWSS3UploadTask implements UploadTask {
 
 	public onProgress(fn: Function) {
 		if (Array.isArray(fn)) {
-			fn.forEach(this._attachUploadProgressEvent, this);
+			fn.forEach(this._attachUploadProgressEvent);
 		} else {
 			this._attachUploadProgressEvent(fn);
 		}
@@ -213,19 +207,7 @@ export class AWSS3UploadTask implements UploadTask {
 		} else if (this.state === State.IN_PROGRESS) {
 			logger.warn('Upload task already in progress');
 		}
-		if (this.bytesUploaded > 0) {
-			this.resume();
-		} else {
-			this.state = State.IN_PROGRESS;
-			this.queued = this._createParts();
-			// If there are pre-existing completed parts, calculate the bytes uploaded
-			if (this.uploadedPartsFromStorage) {
-				this._initCachedUploadParts();
-			}
-			for (let i = 0; i < this.queueSize; i++) {
-				this._startNextPart();
-			}
-		}
+		this.resume();
 	}
 
 	private _createParts() {
@@ -247,10 +229,6 @@ export class AWSS3UploadTask implements UploadTask {
 
 	private _initCachedUploadParts() {
 		this.bytesUploaded += this.uploadedPartsFromStorage.reduce((acc, part) => acc + part.Size, 0);
-		this.emitter.emit('uploadPartProgress', {
-			loaded: this.bytesUploaded,
-			total: this.totalBytes,
-		});
 		// Find the set of part numbers that have already been uploaded
 		const uploadedPartNumSet = new Set(this.uploadedPartsFromStorage.map(part => part.PartNumber));
 		this.queued = this.queued.filter(part => !uploadedPartNumSet.has(part.PartNumber));
@@ -258,8 +236,10 @@ export class AWSS3UploadTask implements UploadTask {
 			PartNumber: part.PartNumber,
 			ETag: part.ETag,
 		}));
-		// Just in case that the request has already been completed, we just complete the upload
-		if (this._isDone()) this._completeUpload();
+		this.emitter.emit(TaskEvents.UPLOAD_PROGRESS, {
+			loaded: this.bytesUploaded,
+			total: this.totalBytes,
+		});
 	}
 
 	public resume(): void {
