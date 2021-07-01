@@ -57,10 +57,10 @@ export class AWSS3UploadTask implements UploadTask {
 	private readonly partSize: number;
 	private readonly queueSize = DEFAULT_QUEUE_SIZE;
 	private readonly s3client: S3Client;
-	private inProgressRequest: InProgressRequest[] = [];
+	private inProgress: InProgressRequest[] = [];
 	private completedParts: CompletedPart[] = [];
 	private uploadedPartsFromStorage: Part[] = [];
-	private queuedParts: UploadPartCommandInput[] = [];
+	private queued: UploadPartCommandInput[] = [];
 	private file: Blob;
 	private bytesUploaded: number;
 	private totalBytes: number;
@@ -108,8 +108,8 @@ export class AWSS3UploadTask implements UploadTask {
 			total: this.totalBytes,
 		});
 		// Remove the completed item from the inProgress array
-		this.inProgressRequest = this.inProgressRequest.filter(job => job.uploadPartInput.PartNumber !== partNumber);
-		if (this.queuedParts.length && this.state !== State.PAUSED) this._startNextPart();
+		this.inProgress = this.inProgress.filter(job => job.uploadPartInput.PartNumber !== partNumber);
+		if (this.queued.length && this.state !== State.PAUSED) this._startNextPart();
 		if (this._isDone()) {
 			this._completeUpload();
 		}
@@ -142,10 +142,10 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private _startNextPart() {
-		if (this.queuedParts.length > 0 && this.state !== State.PAUSED) {
+		if (this.queued.length > 0 && this.state !== State.PAUSED) {
 			const cancelTokenSource = axios.CancelToken.source();
-			const nextPart = this.queuedParts.shift();
-			this.inProgressRequest.push({
+			const nextPart = this.queued.shift();
+			this.inProgress.push({
 				uploadPartInput: nextPart,
 				s3Request: this.s3client
 					.send(new UploadPartCommand(nextPart), {
@@ -168,9 +168,9 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private _isDone() {
-		console.log('pending', this.queuedParts);
-		console.log('inprogress', this.inProgressRequest);
-		return !this.queuedParts.length && !this.inProgressRequest.length;
+		console.log('pending', this.queued);
+		console.log('inprogress', this.inProgress);
+		return !this.queued.length && !this.inProgress.length;
 	}
 
 	private _attachEvent(name: string) {
@@ -213,7 +213,7 @@ export class AWSS3UploadTask implements UploadTask {
 			this.resume();
 		} else {
 			this.state = State.IN_PROGRESS;
-			this.queuedParts = this._createParts();
+			this.queued = this._createParts();
 			// If there are pre-existing completed parts, calculate the bytes uploaded
 			if (this.uploadedPartsFromStorage) {
 				this._initCachedUploadParts();
@@ -249,7 +249,7 @@ export class AWSS3UploadTask implements UploadTask {
 		});
 		// Find the set of part numbers that have already been uploaded
 		const uploadedPartNumSet = new Set(this.uploadedPartsFromStorage.map(part => part.PartNumber));
-		this.queuedParts = this.queuedParts.filter(part => !uploadedPartNumSet.has(part.PartNumber));
+		this.queued = this.queued.filter(part => !uploadedPartNumSet.has(part.PartNumber));
 		this.completedParts = this.uploadedPartsFromStorage.map(part => ({
 			PartNumber: part.PartNumber,
 			ETag: part.ETag,
@@ -267,7 +267,7 @@ export class AWSS3UploadTask implements UploadTask {
 
 	public abort(): void {
 		this.pause('Aborted');
-		this.queuedParts = [];
+		this.queued = [];
 		this.completedParts = [];
 		this.bytesUploaded = 0;
 		this.state = State.ABORTED;
@@ -292,11 +292,11 @@ export class AWSS3UploadTask implements UploadTask {
 		this.state = State.PAUSED;
 		// use axios cancel token to abort the part request immediately
 		// Add the inProgress parts back to pending
-		const removedInProgressReq = this.inProgressRequest.splice(0, this.inProgressRequest.length);
+		const removedInProgressReq = this.inProgress.splice(0, this.inProgress.length);
 		removedInProgressReq.forEach(req => {
 			req.cancel(message);
 		});
 		// Put all removed in progress parts back into the queue
-		this.queuedParts.unshift(...removedInProgressReq.map(req => req.uploadPartInput));
+		this.queued.unshift(...removedInProgressReq.map(req => req.uploadPartInput));
 	}
 }
