@@ -94,11 +94,16 @@ export class AWSS3UploadManager {
 		} else return '';
 	}
 
-	private _purgeExpiredKeys() {
+	/**
+	 * Purge all keys from storage that were expired.
+	 *
+	 * @param [ttl] - [Specify how long since the task has started should it be considered expired]
+	 */
+	private _purgeExpiredKeys(ttl = oneHourInMs): void {
 		const uploads = JSON.parse(this._storage.getItem(storageKey)) || {};
 		for (const [k, v] of Object.entries(uploads)) {
 			const hasExpired =
-				Object.prototype.hasOwnProperty.call(v, 'timeStarted') && Date.now() - (v as any).timeStarted > oneHourInMs;
+				Object.prototype.hasOwnProperty.call(v, 'timeStarted') && Date.now() - (v as any).timeStarted > ttl;
 			console.log(`${k} : ${JSON.stringify(v)}`);
 			if (hasExpired) {
 				// TODO: Clean up parts on S3 while purging
