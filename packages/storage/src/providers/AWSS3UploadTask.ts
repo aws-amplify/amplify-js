@@ -81,7 +81,11 @@ export class AWSS3UploadTask implements UploadTask {
 		this.bytesUploaded = 0;
 		this.emitter = emitter;
 		this.uploadedPartsFromStorage = completedParts;
+		this.queued = this._createParts();
 		this._validateParams();
+		if (this.uploadedPartsFromStorage) {
+			this._initCachedUploadParts();
+		}
 	}
 
 	private _validateParams() {
