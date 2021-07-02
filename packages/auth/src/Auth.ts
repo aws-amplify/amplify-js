@@ -2281,11 +2281,14 @@ export class AuthClass {
 			const cb = {
 				onSuccess(data) {
 					const deviceList: IAuthDevice[] = data.Devices.map(device => {
+						const deviceName =
+							device.DeviceAttributes.find(
+								({ Name }) => Name === 'device_name'
+							) || {};
+
 						const deviceInfo: IAuthDevice = {
 							id: device.DeviceKey,
-							name: device.DeviceAttributes.find(
-								({ Name }) => Name === 'device_name'
-							).Value,
+							name: deviceName.Value,
 						};
 						return deviceInfo;
 					});
@@ -2309,3 +2312,4 @@ export class AuthClass {
 export const Auth = new AuthClass(null);
 
 Amplify.register(Auth);
+
