@@ -367,6 +367,10 @@ const initializeInstance = <T>(
 			}
 		}
 
+		if (typeof v === 'number' && type === 'Boolean') {
+			parsedValue = Boolean(v);
+		}
+
 		modelValidator(k, parsedValue);
 		(<any>draft)[k] = parsedValue;
 	});
