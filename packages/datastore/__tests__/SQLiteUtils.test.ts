@@ -10,11 +10,13 @@ import {
 	orderByClauseFromSort,
 	deleteByIdStatement,
 	deleteByPredicateStatement,
+	modelCreateTableStatement,
 } from '../src/storage/adapter/SQLiteUtils';
 import {
 	InternalSchema,
 	PersistentModelConstructor,
 	QueryOne,
+	SchemaModel,
 } from '../src/types';
 import { Model, testSchema, internalTestSchema } from './helpers';
 import { initSchema as initSchemaType } from '../src/datastore/datastore';
@@ -28,6 +30,9 @@ const INTERNAL_TEST_SCHEMA_STATEMENTS = [
 	'CREATE TABLE IF NOT EXISTS "MutationEvent" ("id" PRIMARY KEY NOT NULL, "model" TEXT NOT NULL, "data" TEXT NOT NULL, "modelId" TEXT NOT NULL, "operation" TEXT NOT NULL, "condition" TEXT NOT NULL);',
 	'CREATE TABLE IF NOT EXISTS "ModelMetadata" ("id" PRIMARY KEY NOT NULL, "namespace" TEXT NOT NULL, "model" TEXT NOT NULL, "lastSync" INTEGER, "lastFullSync" INTEGER, "fullSyncInterval" INTEGER NOT NULL);',
 ];
+
+const INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT =
+	'CREATE TABLE IF NOT EXISTS "PostEditor" ("id" PRIMARY KEY NOT NULL, "post" TEXT NOT NULL, "postID" TEXT NOT NULL, "editor" TEXT NOT NULL, "editorID" TEXT NOT NULL, "createdAt" TEXT, "updatedAt" TEXT, "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" NUMERIC);';
 
 describe('SQLiteUtils tests', () => {
 	let Model: PersistentModelConstructor<Model>;
@@ -48,6 +53,20 @@ describe('SQLiteUtils tests', () => {
 
 			expect(generateSchemaStatements(schema)).toEqual(
 				INTERNAL_TEST_SCHEMA_STATEMENTS
+			);
+		});
+	});
+
+	describe('modelCreateTableStatement', () => {
+		it('should generate valid CREATE TABLE statement from a M:N join table model with implicit FKs', () => {
+			expect(modelCreateTableStatement(postEditorImplicit, true)).toEqual(
+				INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT
+			);
+		});
+
+		it('should generate valid CREATE TABLE statement from a M:N join table model with explicit FKs', () => {
+			expect(modelCreateTableStatement(postEditorExplicit, true)).toEqual(
+				INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT
 			);
 		});
 	});
@@ -319,3 +338,150 @@ describe('SQLiteUtils tests', () => {
 		});
 	});
 });
+
+const postEditorImplicit: SchemaModel = {
+	name: 'PostEditor',
+	fields: {
+		id: {
+			name: 'id',
+			isArray: false,
+			type: 'ID',
+			isRequired: true,
+			attributes: [],
+		},
+		post: {
+			name: 'post',
+			isArray: false,
+			type: { model: 'Post' },
+			isRequired: true,
+			attributes: [],
+			association: {
+				connectionType: 'BELONGS_TO',
+				targetName: 'postID',
+			},
+		},
+		editor: {
+			name: 'editor',
+			isArray: false,
+			type: { model: 'User' },
+			isRequired: true,
+			attributes: [],
+			association: {
+				connectionType: 'BELONGS_TO',
+				targetName: 'editorID',
+			},
+		},
+		createdAt: {
+			name: 'createdAt',
+			isArray: false,
+			type: 'AWSDateTime',
+			isRequired: false,
+			attributes: [],
+		},
+		updatedAt: {
+			name: 'updatedAt',
+			isArray: false,
+			type: 'AWSDateTime',
+			isRequired: false,
+			attributes: [],
+		},
+	},
+	syncable: true,
+	pluralName: 'PostEditors',
+	attributes: [
+		{ type: 'model', properties: { queries: null } },
+		{
+			type: 'key',
+			properties: {
+				name: 'byPost',
+				fields: ['postID', 'editorID'],
+			},
+		},
+		{
+			type: 'key',
+			properties: {
+				name: 'byEditor',
+				fields: ['editorID', 'postID'],
+			},
+		},
+	],
+};
+
+const postEditorExplicit: SchemaModel = {
+	name: 'PostEditor',
+	fields: {
+		id: {
+			name: 'id',
+			isArray: false,
+			type: 'ID',
+			isRequired: true,
+			attributes: [],
+		},
+		post: {
+			name: 'post',
+			isArray: false,
+			type: { model: 'Post' },
+			isRequired: true,
+			attributes: [],
+			association: {
+				connectionType: 'BELONGS_TO',
+				targetName: 'postID',
+			},
+		},
+		postID: {
+			name: 'postID',
+			isArray: false,
+			type: 'ID',
+			isRequired: true,
+			attributes: [],
+		},
+		editor: {
+			name: 'editor',
+			isArray: false,
+			type: { model: 'User' },
+			isRequired: true,
+			attributes: [],
+			association: {
+				connectionType: 'BELONGS_TO',
+				targetName: 'editorID',
+			},
+		},
+		editorID: {
+			name: 'editorID',
+			isArray: false,
+			type: 'ID',
+			isRequired: true,
+			attributes: [],
+		},
+		createdAt: {
+			name: 'createdAt',
+			isArray: false,
+			type: 'AWSDateTime',
+			isRequired: false,
+			attributes: [],
+		},
+		updatedAt: {
+			name: 'updatedAt',
+			isArray: false,
+			type: 'AWSDateTime',
+			isRequired: false,
+			attributes: [],
+		},
+	},
+	syncable: true,
+	pluralName: 'PostEditors',
+	attributes: [
+		{ type: 'model', properties: { queries: null } },
+		{
+			type: 'key',
+			properties: { name: 'byPost', fields: ['postID', 'editorID'] },
+		},
+		{
+			type: 'key',
+			properties: {
+				name: 'byEditor',
+				fields: ['editorID', 'postID'],
+			},
+		},
+	],
+};
