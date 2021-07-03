@@ -9,6 +9,11 @@ const user = {
 	},
 };
 
+const storageClass = {
+	removeItem() {},
+	getItem() {},
+};
+
 const authClass = {
 	getModuleName() {
 		return 'Auth';
@@ -164,6 +169,23 @@ describe('Credentials test', () => {
 			const credentials = new Credentials(null);
 
 			expect(await credentials.get()).toBe('cred');
+		});
+	});
+
+	describe('clear test', () => {
+		test('credentials can be cleared from storage', async () => {
+			Amplify.register(authClass);
+			Amplify.register(cacheClass);
+			const identityPoolId = 'IDENTITY_POOL_ID';
+			const credentials = new Credentials({
+				storage: storageClass,
+				identityPoolId,
+			});
+			const removeItemSpy = jest.spyOn(storageClass, 'removeItem');
+
+			credentials.clear();
+			expect(removeItemSpy).toHaveBeenCalledTimes(1);
+			expect(removeItemSpy).toHaveBeenCalledWith('aws-amplify-federatedInfo');
 		});
 	});
 });

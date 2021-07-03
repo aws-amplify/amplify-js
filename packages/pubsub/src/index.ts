@@ -16,8 +16,10 @@ export * from './Providers';
 
 enum CONTROL_MSG {
 	CONNECTION_CLOSED = 'Connection closed',
-	TIMEOUT_DISCONNECT = 'Timeout disconnect',
+	CONNECTION_FAILED = 'Connection failed',
+	REALTIME_SUBSCRIPTION_INIT_ERROR = 'AppSync Realtime subscription init error',
 	SUBSCRIPTION_ACK = 'Subscription ack',
+	TIMEOUT_DISCONNECT = 'Timeout disconnect',
 }
 
 export { PubSub, CONTROL_MSG };

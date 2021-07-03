@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.0.3...@aws-amplify/api-graphql@2.0.4) (2021-06-24)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.0.2...@aws-amplify/api-graphql@2.0.3) (2021-06-18)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.0.1...@aws-amplify/api-graphql@2.0.2) (2021-06-10)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@1.3.2...@aws-amplify/api-graphql@2.0.1) (2021-05-26)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [1.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@1.3.1...@aws-amplify/api-graphql@1.3.2) (2021-05-14)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [1.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@1.3.0...@aws-amplify/api-graphql@1.3.1) (2021-05-11)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+# [1.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@1.2.30...@aws-amplify/api-graphql@1.3.0) (2021-05-06)
+
+
+### Features
+
+* **@aws-amplify/datastore:** DataStore - Multi-Auth ([#8008](https://github.com/aws-amplify/amplify-js/issues/8008)) ([dedd564](https://github.com/aws-amplify/amplify-js/commit/dedd5641dfcfce209433088fe9570874cd810997))
+
+
+
+
+
+## [1.2.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@1.2.29...@aws-amplify/api-graphql@1.2.30) (2021-04-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** Retry mutation after GraphQL request timeout due to bad network condition. ([#6542](https://github.com/aws-amplify/amplify-js/issues/6542)) ([9fe6b7f](https://github.com/aws-amplify/amplify-js/commit/9fe6b7fa58aadb061a742b32c6a9cc1fd76dae6d))
+
+
+
+
+
 ## [1.2.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@1.2.28...@aws-amplify/api-graphql@1.2.29) (2021-03-25)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql
