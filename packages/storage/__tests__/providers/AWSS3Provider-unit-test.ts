@@ -235,9 +235,11 @@ describe('StorageProvider test', () => {
 				return Promise.resolve(credentials);
 			});
 			const mockCallback = jest.fn();
+			const mockRemoveAllListeners = jest.fn();
 			const mockEventEmitter = {
 				emit: jest.fn(),
 				on: jest.fn(),
+				removeAllListeners: mockRemoveAllListeners,
 			};
 			jest
 				.spyOn(events, 'EventEmitter')
@@ -265,6 +267,7 @@ describe('StorageProvider test', () => {
 			// Manully invoke it for testing
 			emitterOnFn('arg');
 			expect(mockCallback).toBeCalledWith('arg');
+			expect(mockRemoveAllListeners).toHaveBeenCalled();
 		});
 
 		test('get object with incorrect progressCallback type', async () => {
@@ -275,6 +278,7 @@ describe('StorageProvider test', () => {
 			const mockEventEmitter = {
 				emit: jest.fn(),
 				on: jest.fn(),
+				removeAllListeners: jest.fn(),
 			};
 			jest
 				.spyOn(events, 'EventEmitter')
