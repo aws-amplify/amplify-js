@@ -284,6 +284,7 @@ export class AWSS3Provider implements StorageProvider {
 					}
 				}
 				const response = await s3.send(getObjectCommand);
+				emitter.removeAllListeners(SEND_DOWNLOAD_PROGRESS_EVENT);
 				dispatchStorageEvent(
 					track,
 					'download',
