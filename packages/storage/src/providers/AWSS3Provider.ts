@@ -24,6 +24,11 @@ import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import {
+	AxiosHttpHandler,
+	SEND_DOWNLOAD_PROGRESS_EVENT,
+	SEND_UPLOAD_PROGRESS_EVENT,
+} from './axios-http-handler';
+import {
 	StorageOptions,
 	StorageProvider,
 	CopyObjectConfig,
@@ -32,7 +37,6 @@ import {
 	S3CopyDestination,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
-import { AxiosHttpHandler } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import * as events from 'events';
 
@@ -244,10 +248,12 @@ export class AWSS3Provider implements StorageProvider {
 			contentType,
 			expires,
 			track,
+			progressCallback,
 		} = opt;
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
-		const s3 = this._createNewS3Client(opt);
+		const emitter = new events.EventEmitter();
+		const s3 = this._createNewS3Client(opt, emitter);
 		logger.debug('get ' + key + ' from ' + final_key);
 
 		const params: any = {
@@ -265,7 +271,20 @@ export class AWSS3Provider implements StorageProvider {
 		if (download === true) {
 			const getObjectCommand = new GetObjectCommand(params);
 			try {
+				if (progressCallback) {
+					if (typeof progressCallback === 'function') {
+						emitter.on(SEND_DOWNLOAD_PROGRESS_EVENT, progress => {
+							progressCallback(progress);
+						});
+					} else {
+						logger.warn(
+							'progressCallback should be a function, not a ' +
+								typeof progressCallback
+						);
+					}
+				}
 				const response = await s3.send(getObjectCommand);
+				emitter.removeAllListeners(SEND_DOWNLOAD_PROGRESS_EVENT);
 				dispatchStorageEvent(
 					track,
 					'download',
@@ -386,7 +405,7 @@ export class AWSS3Provider implements StorageProvider {
 		try {
 			if (progressCallback) {
 				if (typeof progressCallback === 'function') {
-					emitter.on('sendProgress', progress => {
+					emitter.on(SEND_UPLOAD_PROGRESS_EVENT, progress => {
 						progressCallback(progress);
 					});
 				} else {

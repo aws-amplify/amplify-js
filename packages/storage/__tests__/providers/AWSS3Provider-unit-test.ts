@@ -16,6 +16,7 @@ import * as formatURL from '@aws-sdk/util-format-url';
 import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import * as events from 'events';
+
 import { S3CopySource, S3CopyDestination } from '../../src/types';
 /**
  * NOTE - These test cases use Hub.dispatch but they should
@@ -227,6 +228,77 @@ describe('StorageProvider test', () => {
 				Bucket: 'bucket',
 				Key: 'public/key',
 			});
+		});
+
+		test('get object with download and progress tracker', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+			const mockCallback = jest.fn();
+			const mockRemoveAllListeners = jest.fn();
+			const mockEventEmitter = {
+				emit: jest.fn(),
+				on: jest.fn(),
+				removeAllListeners: mockRemoveAllListeners,
+			};
+			jest
+				.spyOn(events, 'EventEmitter')
+				.mockImplementationOnce(() => mockEventEmitter);
+			const downloadOptionsWithProgressCallback = Object.assign({}, options, {
+				download: true,
+				progressCallback: mockCallback,
+			});
+			const storage = new StorageProvider();
+			storage.configure(downloadOptionsWithProgressCallback);
+			const spyon = jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async params => {
+					return { Body: [1, 2] };
+				});
+			expect(await storage.get('key', { download: true })).toEqual({
+				Body: [1, 2],
+			});
+			expect(mockEventEmitter.on).toBeCalledWith(
+				'sendDownloadProgress',
+				expect.any(Function)
+			);
+			// Get the anonymous function called by the emitter
+			const emitterOnFn = mockEventEmitter.on.mock.calls[0][1];
+			// Manully invoke it for testing
+			emitterOnFn('arg');
+			expect(mockCallback).toBeCalledWith('arg');
+			expect(mockRemoveAllListeners).toHaveBeenCalled();
+		});
+
+		test('get object with incorrect progressCallback type', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+			const loggerSpy = jest.spyOn(Logger.prototype, '_log');
+			const mockEventEmitter = {
+				emit: jest.fn(),
+				on: jest.fn(),
+				removeAllListeners: jest.fn(),
+			};
+			jest
+				.spyOn(events, 'EventEmitter')
+				.mockImplementationOnce(() => mockEventEmitter);
+			const downloadOptionsWithProgressCallback = Object.assign({}, options);
+			const storage = new StorageProvider();
+			storage.configure(downloadOptionsWithProgressCallback);
+			jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async params => {
+					return { Body: [1, 2] };
+				});
+			await storage.get('key', {
+				download: true,
+				progressCallback: 'this is not a function',
+			});
+			expect(loggerSpy).toHaveBeenCalledWith(
+				'WARN',
+				'progressCallback should be a function, not a string'
+			);
 		});
 
 		test('get object with download with failure', async () => {
@@ -604,7 +676,7 @@ describe('StorageProvider test', () => {
 				progressCallback: mockCallback,
 			});
 			expect(mockEventEmitter.on).toBeCalledWith(
-				'sendProgress',
+				'sendUploadProgress',
 				expect.any(Function)
 			);
 			const emitterOnFn = mockEventEmitter.on.mock.calls[0][1];

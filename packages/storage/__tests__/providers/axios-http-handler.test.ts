@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios, { CancelTokenSource } from 'axios';
+import * as events from 'events';
 
 import {
 	AxiosHttpHandler,
@@ -123,11 +124,19 @@ describe('AxiosHttpHandler', () => {
 				responseType: 'blob',
 				url: 'http://localhost:3000/',
 				onUploadProgress: expect.any(Function),
+				onDownloadProgress: expect.any(Function),
 			});
 
 			// Invoke the request's onUploadProgress function manually
 			lastCall.onUploadProgress({ loaded: 10, total: 100 });
-			expect(mockEmit).toHaveBeenLastCalledWith('sendProgress', {
+			expect(mockEmit).toHaveBeenLastCalledWith('sendUploadProgress', {
+				loaded: 10,
+				total: 100,
+			});
+
+			// Invoke the request's onDownloadProgress function manually
+			lastCall.onDownloadProgress({ loaded: 10, total: 100 });
+			expect(mockEmit).toHaveBeenLastCalledWith('sendDownloadProgress', {
 				loaded: 10,
 				total: 100,
 			});
