@@ -2066,12 +2066,18 @@ export class AuthClass {
 					// This calls cacheTokens() in Cognito SDK
 					currentUser.setSignInUserSession(session);
 
-					if (window && typeof window.history !== 'undefined') {
-						window.history.replaceState(
-							{},
-							null,
-							(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
-						);
+					if (
+            					window && typeof window.history !== 'undefined' &&
+  						(this._config.oauth as AwsCognitoOAuthOpts).disableRedirectAfterSignIn !== true
+          				) {
+   						const replaceStateUrl = (this._config.oauth as AwsCognitoOAuthOpts).redirectAfterSignIn ?
+	  						(this._config.oauth as AwsCognitoOAuthOpts).redirectAfterSignIn :
+		  					(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn;
+			  			window.history.replaceState(
+				  			{},
+					  		null,
+							replaceStateUrl
+							);
 					}
 
 					dispatchAuthEvent(
