@@ -30,7 +30,7 @@ export {
 	AmazonPersonalizeProvider,
 } from '@aws-amplify/analytics';
 
-export { Auth } from '@aws-amplify/auth';
+export { Auth, CognitoHostedUIIdentityProvider } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
 export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
 export {
