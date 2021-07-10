@@ -1,13 +1,16 @@
 import { AbstractPredictionsProvider } from './AbstractPredictionsProvider';
 import {
 	IdentifyLabelsInput,
+	IdentifyCustomLabelsInput,
 	IdentifyEntitiesInput,
 	isIdentifyLabelsInput,
+	isIdentifyCustomLabelsInput,
 	isIdentifyEntitiesInput,
 	IdentifyTextInput,
 	isIdentifyTextInput,
 	IdentifyTextOutput,
 	IdentifyLabelsOutput,
+	IdentifyCustomLabelsOutput,
 	IdentifyEntitiesOutput,
 } from '../Predictions';
 import { Logger } from '@aws-amplify/core';
@@ -19,9 +22,16 @@ export abstract class AbstractIdentifyPredictionsProvider extends AbstractPredic
 	}
 
 	identify(
-		input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput
+		input:
+			| IdentifyTextInput
+			| IdentifyLabelsInput
+			| IdentifyCustomLabelsInput
+			| IdentifyEntitiesInput
 	): Promise<
-		IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput
+		| IdentifyTextOutput
+		| IdentifyLabelsOutput
+		| IdentifyCustomLabelsOutput
+		| IdentifyEntitiesOutput
 	> {
 		if (isIdentifyTextInput(input)) {
 			logger.debug('identifyText');
@@ -29,6 +39,9 @@ export abstract class AbstractIdentifyPredictionsProvider extends AbstractPredic
 		} else if (isIdentifyLabelsInput(input)) {
 			logger.debug('identifyLabels');
 			return this.identifyLabels(input);
+		} else if (isIdentifyCustomLabelsInput(input)) {
+			logger.debug('identifyCustomLabels');
+			return this.identifyCustomLabels(input);
 		} else if (isIdentifyEntitiesInput(input)) {
 			logger.debug('identifyEntities');
 			return this.identifyEntities(input);
@@ -45,6 +58,12 @@ export abstract class AbstractIdentifyPredictionsProvider extends AbstractPredic
 		input: IdentifyLabelsInput
 	): Promise<IdentifyLabelsOutput> {
 		throw new Error('identifyLabels is not implemented by this provider');
+	}
+
+	protected identifyCustomLabels(
+		input: IdentifyCustomLabelsInput
+	): Promise<IdentifyCustomLabelsOutput> {
+		throw new Error('identifyCustomLabels is not implemented by this provider');
 	}
 
 	protected identifyEntities(

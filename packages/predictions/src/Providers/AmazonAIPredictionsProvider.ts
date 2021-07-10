@@ -11,6 +11,8 @@ import {
 	IdentifyTextOutput,
 	IdentifyLabelsInput,
 	IdentifyLabelsOutput,
+	IdentifyCustomLabelsInput,
+	IdentifyCustomLabelsOutput,
 	IdentifyEntitiesInput,
 	IdentifyEntitiesOutput,
 	TranslateTextOutput,
@@ -58,9 +60,16 @@ export class AmazonAIPredictionsProvider extends AbstractPredictionsProvider {
 	}
 
 	identify(
-		input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput
+		input:
+			| IdentifyTextInput
+			| IdentifyLabelsInput
+			| IdentifyCustomLabelsInput
+			| IdentifyEntitiesInput
 	): Promise<
-		IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput
+		| IdentifyTextOutput
+		| IdentifyLabelsOutput
+		| IdentifyCustomLabelsOutput
+		| IdentifyEntitiesOutput
 	> {
 		return this.identifyProvider.identify(input);
 	}

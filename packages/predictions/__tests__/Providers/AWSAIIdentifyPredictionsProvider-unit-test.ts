@@ -7,6 +7,8 @@ import {
 	IdentifyTextOutput,
 	IdentifyLabelsInput,
 	IdentifyLabelsOutput,
+	IdentifyCustomLabelsInput,
+	IdentifyCustomLabelsOutput,
 } from '../../src/types';
 import { BlockList } from '../../src/types/AWSTypes';
 import { AmazonAIIdentifyPredictionsProvider } from '../../src/Providers';
@@ -14,6 +16,8 @@ import {
 	RekognitionClient,
 	DetectLabelsCommandOutput,
 	DetectLabelsCommand,
+	DetectCustomLabelsCommandOutput,
+	DetectCustomLabelsCommand,
 	DetectModerationLabelsCommandOutput,
 	DetectModerationLabelsCommand,
 	DetectFacesCommandOutput,
@@ -260,6 +264,13 @@ const options = {
 			type: 'LABELS',
 		},
 	},
+	identifyCustomLabels: {
+		proxy: false,
+		region: 'us-west-2',
+		defaults: {
+			type: 'LABELS',
+		},
+	},
 };
 
 describe('Predictions identify provider test', () => {
@@ -444,6 +455,48 @@ describe('Predictions identify provider test', () => {
 					});
 				return expect(
 					predictionsProvider.identify(detectModerationInput)
+				).rejects.toMatch('error');
+			});
+		});
+	});
+	describe('identifyCustomLabels tests', () => {
+		describe('identifyCustomlabels tests', () => {
+			const detectCustomLabelInput: IdentifyCustomLabelsInput = {
+				customlabels: {
+					source: { key: 'key' },
+					projectVersionArn: 'arn://',
+					type: 'LABELS',
+				},
+			};
+			test('happy case credentials exist', () => {
+				const expected: IdentifyCustomLabelsOutput = {
+					customlabels: [
+						{
+							name: 'test',
+							metadata: [{ confidence: 100 }],
+						},
+					],
+				};
+				return expect(
+					predictionsProvider.identify(detectCustomLabelInput)
+				).resolves.toMatchObject(expected);
+			});
+			test('error case credentials do not exist', () => {
+				jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+					return null;
+				});
+				return expect(
+					predictionsProvider.identify(detectCustomLabelInput)
+				).rejects.toMatch('No credentials');
+			});
+			test('error case credentials exist but service fails', () => {
+				jest
+					.spyOn(RekognitionClient.prototype, 'send')
+					.mockImplementationOnce(() => {
+						return Promise.reject('error');
+					});
+				return expect(
+					predictionsProvider.identify(detectCustomLabelInput)
 				).rejects.toMatch('error');
 			});
 		});
@@ -680,6 +733,169 @@ describe('Predictions identify provider test', () => {
 			return expect(
 				predictionsProvider.identify(detectLabelInput)
 			).rejects.toMatch('not configured correctly');
+		});
+	});
+
+	describe('identify input source transformation tests for custom labels', () => {
+		const detectcustomlabelsResponse: DetectCustomLabelsCommandOutput = {
+			CustomLabels: [
+				{
+					Confidence: 100,
+
+					Name: 'test',
+
+					Geometry: {},
+				},
+			],
+
+			$metadata: null,
+		};
+
+		test('happy case input source valid public s3object', () => {
+			const detectCustomLabelInput: IdentifyCustomLabelsInput = {
+				customlabels: {
+					source: { level: 'public', key: 'key' },
+					projectVersionArn: 'arn://',
+					type: 'LABELS',
+				},
+			};
+			jest
+				.spyOn(RekognitionClient.prototype, 'send')
+				.mockImplementationOnce(command => {
+					expect(
+						(command as DetectCustomLabelsCommand).input.Image.S3Object.Name
+					).toMatch('public/key');
+					return Promise.resolve(detectcustomlabelsResponse);
+				});
+			predictionsProvider.identify(detectCustomLabelInput);
+		});
+
+		test('happy case input source valid private s3object', async () => {
+			const detectCustomLabelInput: IdentifyCustomLabelsInput = {
+				customlabels: {
+					source: { key: 'key', level: 'private' },
+					projectVersionArn: 'arn://',
+					type: 'LABELS',
+				},
+			};
+			jest
+				.spyOn(RekognitionClient.prototype, 'send')
+				.mockImplementationOnce(command => {
+					expect(
+						(command as DetectCustomLabelsCommand).input.Image.S3Object.Name
+					).toMatch('private/identityId/key');
+					return {};
+				});
+			await predictionsProvider.identify(detectCustomLabelInput);
+		});
+
+		test('happy case input source valid protected s3object', () => {
+			const detectCustomLabelInput: IdentifyCustomLabelsInput = {
+				customlabels: {
+					source: {
+						key: 'key',
+						identityId: credentials.identityId,
+						level: 'protected',
+					},
+					projectVersionArn: 'arn://',
+					type: 'LABELS',
+				},
+			};
+			jest
+				.spyOn(RekognitionClient.prototype, 'send')
+				.mockImplementationOnce(command => {
+					expect(
+						(command as DetectCustomLabelsCommand).input.Image.S3Object.Name
+					).toMatch('protected/identityId/key');
+					return Promise.resolve(detectcustomlabelsResponse);
+				});
+			predictionsProvider.identify(detectCustomLabelInput);
+		});
+
+		test('happy case input source valid bytes', () => {
+			const detectCustomLabelInput: IdentifyCustomLabelsInput = {
+				customlabels: {
+					source: { bytes: 'bytes' },
+					projectVersionArn: 'arn://',
+					type: 'LABELS',
+				},
+			};
+			jest
+				.spyOn(RekognitionClient.prototype, 'send')
+				.mockImplementationOnce(command => {
+					expect(
+						(command as DetectCustomLabelsCommand).input.Image.Bytes
+					).toMatch('bytes');
+					return Promise.resolve(detectcustomlabelsResponse);
+				});
+			predictionsProvider.identify(detectCustomLabelInput);
+		});
+
+		test('happy case input source valid bytes', async () => {
+			const fileInput = new Blob([Buffer.from('file')]);
+			const detectCustomLabelInput: IdentifyCustomLabelsInput = {
+				customlabels: {
+					source: { bytes: fileInput },
+					projectVersionArn: 'arn://',
+					type: 'LABELS',
+				},
+			};
+			jest
+				.spyOn(RekognitionClient.prototype, 'send')
+				.mockImplementationOnce(command => {
+					expect(
+						(command as DetectCustomLabelsCommand).input.Image.Bytes
+					).toMatchObject(fileInput);
+					return {};
+				});
+			await predictionsProvider.identify(detectCustomLabelInput);
+		});
+
+		// Failing test in CircleCI TODO fix
+		test.skip('happy case input source valid file', async () => {
+			const fileInput = new File([Buffer.from('file')], 'file');
+			const detectCustomLabelInput: IdentifyCustomLabelsInput = {
+				customlabels: {
+					source: { file: fileInput },
+					projectVersionArn: 'arn://',
+					type: 'LABELS',
+				},
+			};
+			jest
+				.spyOn(RekognitionClient.prototype, 'send')
+				.mockImplementationOnce(command => {
+					expect(
+						(command as DetectCustomLabelsCommand).input.Image.Bytes
+					).toMatchObject(fileInput);
+					return {};
+				});
+			await predictionsProvider.identify(detectCustomLabelInput);
+		});
+
+		test('error case invalid input source', () => {
+			const detectCustomLabelInput: IdentifyCustomLabelsInput = {
+				customlabels: {
+					source: null,
+					projectVersionArn: 'arn://',
+					type: 'LABELS',
+				},
+			};
+			return expect(
+				predictionsProvider.identify(detectCustomLabelInput)
+			).rejects.toMatch('not configured correctly');
+		});
+		test('error case ARN invalid', async () => {
+			const fileInput = new Blob([Buffer.from('file')]);
+			const detectCustomLabelInput: IdentifyCustomLabelsInput = {
+				customlabels: {
+					source: { bytes: fileInput },
+					projectVersionArn: null,
+					type: 'LABELS',
+				},
+			};
+			return expect(
+				predictionsProvider.identify(detectCustomLabelInput)
+			).rejects.toMatch('projectVersionArn not configured correctly');
 		});
 	});
 });

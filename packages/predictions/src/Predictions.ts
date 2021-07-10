@@ -11,6 +11,8 @@ import {
 	IdentifyTextOutput,
 	IdentifyLabelsOutput,
 	IdentifyLabelsInput,
+	IdentifyCustomLabelsOutput,
+	IdentifyCustomLabelsInput,
 	IdentifyEntitiesInput,
 	IdentifyEntitiesOutput,
 	InterpretTextOutput,
@@ -169,14 +171,25 @@ export class PredictionsClass {
 		options?: ProviderOptions
 	): Promise<IdentifyLabelsOutput>;
 	public identify(
+		input: IdentifyCustomLabelsInput,
+		options?: ProviderOptions
+	): Promise<IdentifyCustomLabelsOutput>;
+	public identify(
 		input: IdentifyEntitiesInput,
 		options?: ProviderOptions
 	): Promise<IdentifyEntitiesOutput>;
 	public identify(
-		input: IdentifyTextInput | IdentifyLabelsInput | IdentifyEntitiesInput,
+		input:
+			| IdentifyTextInput
+			| IdentifyLabelsInput
+			| IdentifyCustomLabelsInput
+			| IdentifyEntitiesInput,
 		options: ProviderOptions
 	): Promise<
-		IdentifyTextOutput | IdentifyLabelsOutput | IdentifyEntitiesOutput
+		| IdentifyTextOutput
+		| IdentifyLabelsOutput
+		| IdentifyCustomLabelsOutput
+		| IdentifyEntitiesOutput
 	> {
 		const pluggableToExecute = this.getPluggableToExecute(
 			this._identifyPluggables,
