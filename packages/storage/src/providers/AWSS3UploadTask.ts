@@ -14,9 +14,10 @@ import axios, { Canceler } from 'axios';
 import { HttpHandlerOptions } from '@aws-sdk/types';
 import { UploadTask } from '../types/Provider';
 import { Logger } from '@aws-amplify/core';
+import { listSingleFile } from '../common/StorageUtils';
+import { md5, createMD5 } from 'hash-wasm';
 
 const logger = new Logger('Storage');
-
 enum State {
 	INIT,
 	IN_PROGRESS,
@@ -42,7 +43,9 @@ export interface InProgressRequest {
 	cancel: Canceler;
 }
 
-export type PartCompletionEvent = UploadPartCommandOutput & { part: UploadPartCommandInput };
+export type PartCompletionEvent = UploadPartCommandOutput & {
+	part: UploadPartCommandInput;
+};
 
 const MAX_PARTS = 10000;
 const MIN_PART_SIZE = 5 * 1024 * 1024;
@@ -70,7 +73,15 @@ export class AWSS3UploadTask implements UploadTask {
 	readonly key: string;
 	readonly uploadId: UploadPartCommandInput['UploadId'];
 
-	constructor({ s3Client, uploadId, bucket, key, body, completedParts, emitter }: AWSS3UploadTaskParams) {
+	constructor({
+		s3Client,
+		uploadId,
+		bucket,
+		key,
+		body,
+		completedParts,
+		emitter,
+	}: AWSS3UploadTaskParams) {
 		this.s3client = s3Client;
 		this.uploadId = uploadId;
 		this.bucket = bucket;
@@ -92,15 +103,20 @@ export class AWSS3UploadTask implements UploadTask {
 		if (this.uploadId === null || this.uploadId === undefined) {
 			throw new Error('UploadId must be specified for an upload task');
 		}
-		if (this.file.size < MIN_PART_SIZE) {
-			throw new Error(`Only files above ${MIN_PART_SIZE / (1024 * 1024)}MB allowed`);
-		}
 		if (this.file.size / this.partSize > MAX_PARTS) {
 			throw new Error('Too many parts');
 		}
 	}
 
-	private _onPartUploadCompletion({ eTag, partNumber, chunk }: { eTag: string; partNumber: number; chunk: unknown }) {
+	private _onPartUploadCompletion({
+		eTag,
+		partNumber,
+		chunk,
+	}: {
+		eTag: string;
+		partNumber: number;
+		chunk: unknown;
+	}) {
 		if (!this._isBlob(chunk)) return;
 		this.completedParts.push({
 			ETag: eTag,
@@ -112,10 +128,14 @@ export class AWSS3UploadTask implements UploadTask {
 			total: this.totalBytes,
 		});
 		// Remove the completed item from the inProgress array
-		this.inProgress = this.inProgress.filter(job => job.uploadPartInput.PartNumber !== partNumber);
-		if (this.queued.length && this.state !== State.PAUSED) this._startNextPart();
+		this.inProgress = this.inProgress.filter(
+			job => job.uploadPartInput.PartNumber !== partNumber
+		);
+		if (this.queued.length && this.state !== State.PAUSED)
+			this._startNextPart();
 		if (this._isDone()) {
 			this._completeUpload();
+			this._verifyFileIntegrity();
 		}
 	}
 
@@ -134,7 +154,9 @@ export class AWSS3UploadTask implements UploadTask {
 			)
 			.then(res => {
 				console.log('Completed upload', res);
-				this.emitter.emit(TaskEvents.UPLOAD_COMPLETE, { key: `${this.bucket}/${this.key}` });
+				this.emitter.emit(TaskEvents.UPLOAD_COMPLETE, {
+					key: `${this.bucket}/${this.key}`,
+				});
 			})
 			.catch(err => {
 				console.error('error completing upload', err);
@@ -145,30 +167,72 @@ export class AWSS3UploadTask implements UploadTask {
 		return typeof x !== 'undefined' && x instanceof Blob;
 	}
 
+	private _arrayBufferToBase64(buffer) {
+		var binary = '';
+		var bytes = new Uint8Array(buffer);
+		var len = bytes.byteLength;
+		for (var i = 0; i < len; i++) {
+			binary += String.fromCharCode(bytes[i]);
+		}
+		return window.btoa(binary);
+	}
+
+	private _hexToBase64(hex: string) {
+		let str = '';
+		for (let i = 0; i < hex.length; i += 2) {
+			str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+		}
+		return window.btoa(str);
+	}
+
 	private _startNextPart() {
 		if (this.queued.length > 0 && this.state !== State.PAUSED) {
 			const cancelTokenSource = axios.CancelToken.source();
 			const nextPart = this.queued.shift();
-			this.inProgress.push({
-				uploadPartInput: nextPart,
-				s3Request: this.s3client
-					.send(new UploadPartCommand(nextPart), {
-						cancelTokenSource,
-					} as HttpHandlerOptions)
-					.then(output => {
-						this._onPartUploadCompletion({
-							eTag: output.ETag,
-							partNumber: nextPart.PartNumber,
-							chunk: nextPart.Body,
-						});
-						return output;
-					})
-					.catch(err => {
-						console.error('Stahp', err);
-					}),
-				cancel: cancelTokenSource.cancel,
-			});
+			const fr = new FileReader();
+			fr.onload = async e => {
+				const hasher = await createMD5();
+				// @ts-ignore
+				const view = new Uint8Array(e.target.result);
+				hasher.update(view);
+				const base64MD5 = this._hexToBase64(await md5(view));
+				console.log('COMPUTED: ', base64MD5);
+				this.inProgress.push({
+					uploadPartInput: nextPart,
+					s3Request: this.s3client
+						.send(
+							new UploadPartCommand({ ...nextPart, ContentMD5: base64MD5 }),
+							{
+								cancelTokenSource,
+							} as HttpHandlerOptions
+						)
+						.then(output => {
+							this._onPartUploadCompletion({
+								eTag: output.ETag,
+								partNumber: nextPart.PartNumber,
+								chunk: nextPart.Body,
+							});
+							return output;
+						})
+						.catch(err => {
+							console.error('Stahp', err);
+						}),
+					cancel: cancelTokenSource.cancel,
+				});
+			};
+			fr.readAsArrayBuffer(nextPart.Body as Blob);
 		}
+	}
+
+	private async _verifyFileIntegrity() {
+		const obj = await listSingleFile({
+			s3Client: this.s3client,
+			key: this.key,
+			bucket: this.bucket,
+		});
+		console.log(obj);
+		console.log(this.file);
+		return obj && obj.Size === this.file.size;
 	}
 
 	private _isDone() {
@@ -221,6 +285,7 @@ export class AWSS3UploadTask implements UploadTask {
 				Bucket: this.bucket,
 				PartNumber: parts.length + 1,
 				UploadId: this.uploadId,
+				ContentMD5: null,
 			});
 			bodyStart += this.partSize;
 		}
@@ -228,10 +293,17 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private _initCachedUploadParts() {
-		this.bytesUploaded += this.uploadedPartsFromStorage.reduce((acc, part) => acc + part.Size, 0);
+		this.bytesUploaded += this.uploadedPartsFromStorage.reduce(
+			(acc, part) => acc + part.Size,
+			0
+		);
 		// Find the set of part numbers that have already been uploaded
-		const uploadedPartNumSet = new Set(this.uploadedPartsFromStorage.map(part => part.PartNumber));
-		this.queued = this.queued.filter(part => !uploadedPartNumSet.has(part.PartNumber));
+		const uploadedPartNumSet = new Set(
+			this.uploadedPartsFromStorage.map(part => part.PartNumber)
+		);
+		this.queued = this.queued.filter(
+			part => !uploadedPartNumSet.has(part.PartNumber)
+		);
 		this.completedParts = this.uploadedPartsFromStorage.map(part => ({
 			PartNumber: part.PartNumber,
 			ETag: part.ETag,
@@ -276,11 +348,16 @@ export class AWSS3UploadTask implements UploadTask {
 		this.state = State.PAUSED;
 		// use axios cancel token to abort the part request immediately
 		// Add the inProgress parts back to pending
-		const removedInProgressReq = this.inProgress.splice(0, this.inProgress.length);
+		const removedInProgressReq = this.inProgress.splice(
+			0,
+			this.inProgress.length
+		);
 		removedInProgressReq.forEach(req => {
 			req.cancel(message);
 		});
 		// Put all removed in progress parts back into the queue
-		this.queued.unshift(...removedInProgressReq.map(req => req.uploadPartInput));
+		this.queued.unshift(
+			...removedInProgressReq.map(req => req.uploadPartInput)
+		);
 	}
 }
