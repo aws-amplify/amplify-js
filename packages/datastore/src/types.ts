@@ -398,6 +398,9 @@ type StringOperators<T> = ScalarNumberOperators<T> & {
 	beginsWith: T;
 	contains: T;
 	notContains: T;
+	iBeginsWith: T;
+	iContains: T;
+	iNotContains: T;
 };
 type BooleanOperators<T> = EqualityOperators<T>;
 type ArrayOperators<T> = {

@@ -117,6 +117,16 @@ export const validatePredicateField = <T>(
 				isNullOrUndefined(value) ||
 				(<string>(<unknown>value)).indexOf(<string>(<unknown>operand)) === -1
 			);
+		case 'iBeginsWith':
+			return (<string>(<unknown>value)).toLowerCase().startsWith((<string>(<unknown>operand)).toLowerCase());
+		case 'iContains':
+			return (
+				(<string>(<unknown>value)).toLowerCase().indexOf((<string>(<unknown>operand)).toLowerCase()) > -1
+			);
+		case 'iNotContains':
+			return (
+				(<string>(<unknown>value)).toLowerCase().indexOf((<string>(<unknown>operand)).toLowerCase()) === -1
+			);
 		default:
 			exhaustiveCheck(operator, false);
 			return false;
