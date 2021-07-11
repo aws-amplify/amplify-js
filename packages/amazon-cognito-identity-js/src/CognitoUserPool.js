@@ -30,6 +30,7 @@ export default class CognitoUserPool {
 	 * @param {object} data.fetchOptions Optional options for fetch API.
 	 *        (only credentials option is supported)
 	 * @param {object} data.Storage Optional storage object.
+	 * @param {object} data.AnalyticsMetadata Optional AnalyticsMetadata object for Pinpoint endpoint management
 	 * @param {boolean} data.AdvancedSecurityDataCollectionFlag Optional:
 	 *        boolean flag indicating if the data collection is enabled
 	 *        to support cognito advanced security features. By default, this
@@ -64,6 +65,7 @@ export default class CognitoUserPool {
 			AdvancedSecurityDataCollectionFlag !== false;
 
 		this.storage = data.Storage || new StorageHelper().getStorage();
+		this.analyticsMetadata = data.AnalyticsMetadata || null;
 
 		if (wrapRefreshSessionCallback) {
 			this.wrapRefreshSessionCallback = wrapRefreshSessionCallback;
@@ -115,6 +117,7 @@ export default class CognitoUserPool {
 			UserAttributes: userAttributes,
 			ValidationData: validationData,
 			ClientMetadata: clientMetadata,
+			AnalyticsMetadata: this.analyticsMetadata,
 		};
 		if (this.getUserContextData(username)) {
 			jsonReq.UserContextData = this.getUserContextData(username);

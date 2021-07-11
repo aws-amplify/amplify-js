@@ -14,6 +14,7 @@
 import {
 	ICookieStorageData,
 	ICognitoStorage,
+	ICognitoAnalyticsMetadata,
 } from 'amazon-cognito-identity-js';
 
 /**
@@ -49,6 +50,7 @@ export interface AuthOptions {
 	authenticationFlowType?: string;
 	identityPoolRegion?: string;
 	clientMetadata?: any;
+	analyticsMetadata?: ICognitoAnalyticsMetadata;
 	endpoint?: string;
 }
 

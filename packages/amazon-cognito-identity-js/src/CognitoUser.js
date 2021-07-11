@@ -420,6 +420,7 @@ export default class CognitoUser {
 			ClientId: this.pool.getClientId(),
 			AuthParameters: authParameters,
 			ClientMetadata: clientMetaData,
+			AnalyticsMetadata: this.pool.analyticsMetadata,
 		};
 		if (this.getUserContextData(this.username)) {
 			jsonReq.UserContextData = this.getUserContextData(this.username);
@@ -618,6 +619,7 @@ export default class CognitoUser {
 			ChallengeResponses: finalUserAttributes,
 			Session: this.Session,
 			ClientMetadata: clientMetadata,
+			AnalyticsMetadata: this.pool.analyticsMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -672,6 +674,7 @@ export default class CognitoUser {
 				ClientId: this.pool.getClientId(),
 				ChallengeResponses: authParameters,
 				ClientMetadata: clientMetadata,
+				AnalyticsMetadata: this.pool.analyticsMetadata,
 			};
 			if (this.getUserContextData()) {
 				jsonReq.UserContextData = this.getUserContextData();
@@ -775,6 +778,7 @@ export default class CognitoUser {
 			Username: this.username,
 			ForceAliasCreation: forceAliasCreation,
 			ClientMetadata: clientMetadata,
+			AnalyticsMetadata: this.pool.analyticsMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -817,6 +821,7 @@ export default class CognitoUser {
 			ClientId: this.pool.getClientId(),
 			Session: this.Session,
 			ClientMetadata: clientMetadata,
+			AnalyticsMetadata: this.pool.analyticsMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -863,6 +868,7 @@ export default class CognitoUser {
 			ClientId: this.pool.getClientId(),
 			Session: this.Session,
 			ClientMetadata: clientMetadata,
+			AnalyticsMetadata: this.pool.analyticsMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -1469,6 +1475,7 @@ export default class CognitoUser {
 			AuthFlow: 'REFRESH_TOKEN_AUTH',
 			AuthParameters: authParameters,
 			ClientMetadata: clientMetadata,
+			AnalyticsMetadata: this.pool.analyticsMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -1654,6 +1661,7 @@ export default class CognitoUser {
 			ClientId: this.pool.getClientId(),
 			Username: this.username,
 			ClientMetadata: clientMetadata,
+			AnalyticsMetadata: this.pool.analyticsMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
@@ -1686,6 +1694,7 @@ export default class CognitoUser {
 			ConfirmationCode: confirmationCode,
 			Password: newPassword,
 			ClientMetadata: clientMetadata,
+			AnalyticsMetadata: this.pool.analyticsMetadata,
 		};
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
