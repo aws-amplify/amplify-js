@@ -22,16 +22,16 @@ export const getState = () => {
 };
 
 export const setPKCE = (private_key: string) => {
-	window.sessionStorage.setItem('ouath_pkce_key', private_key);
+	window.sessionStorage.setItem('oauth_pkce_key', private_key);
 };
 
 export const getPKCE = () => {
-	const ouath_pkce_key = window.sessionStorage.getItem('ouath_pkce_key');
-	window.sessionStorage.removeItem('ouath_pkce_key');
-	return ouath_pkce_key;
+	const oauth_pkce_key = window.sessionStorage.getItem('oauth_pkce_key');
+	window.sessionStorage.removeItem('oauth_pkce_key');
+	return oauth_pkce_key;
 };
 
 export const clearAll = () => {
-	window.sessionStorage.removeItem('ouath_pkce_key');
+	window.sessionStorage.removeItem('oauth_pkce_key');
 	window.sessionStorage.removeItem('oauth_state');
 };
