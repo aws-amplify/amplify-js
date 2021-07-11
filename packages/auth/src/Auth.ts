@@ -773,7 +773,7 @@ export class AuthClass {
 	 */
 	public async setPreferredMFA(
 		user: CognitoUser | any,
-		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA'
+		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' 
 	): Promise<string> {
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
@@ -785,13 +785,15 @@ export class AuthClass {
 		let totpMfaSettings = null;
 
 		switch (mfaMethod) {
-			case 'TOTP' || 'SOFTWARE_TOKEN_MFA':
+			case 'TOTP':
+			case 'SOFTWARE_TOKEN_MFA':
 				totpMfaSettings = {
 					PreferredMfa: true,
 					Enabled: true,
 				};
 				break;
-			case 'SMS' || 'SMS_MFA':
+			case 'SMS':
+			case 'SMS_MFA':	
 				smsMfaSettings = {
 					PreferredMfa: true,
 					Enabled: true,
