@@ -87,7 +87,7 @@ export class APIClass {
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	get(apiName, path, init): Promise<any> {
+	get(apiName, path, init?: any): Promise<any> {
 		return this._restApi.get(apiName, path, init);
 	}
 
