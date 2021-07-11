@@ -177,7 +177,7 @@ declare module 'amazon-cognito-identity-js' {
 				onFailure: (err: Error) => void;
 			}
 		): void;
-		public completeNewPasswordChallenge(
+		public completeNewPasswordChallenge?(
 			newPassword: string,
 			requiredAttributeData: any,
 			callbacks: {
@@ -319,7 +319,7 @@ declare module 'amazon-cognito-identity-js' {
 			username: string,
 			password: string,
 			userAttributes: CognitoUserAttribute[],
-			validationData: CognitoUserAttribute[],
+			validationData: CognitoUserAttribute[] | null,
 			callback: NodeCallback<Error, ISignUpResult>,
 			clientMetadata?: ClientMetadata
 		): void;
