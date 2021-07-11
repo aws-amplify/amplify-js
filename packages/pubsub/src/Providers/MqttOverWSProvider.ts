@@ -37,6 +37,7 @@ export function mqttTopicMatch(filter: string, topic: string) {
 export interface MqttProvidertOptions extends ProvidertOptions {
 	clientId?: string;
 	url?: string;
+	parseJSON?: boolean;
 }
 
 class ClientsQueue {
@@ -131,6 +132,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 	public async newClient({
 		url,
 		clientId,
+		parseJSON,
 	}: MqttProvidertOptions): Promise<any> {
 		logger.debug('Creating new MQTT client', clientId);
 
@@ -141,7 +143,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 			destinationName: topic,
 			payloadString: msg,
 		}) => {
-			this._onMessage(topic, msg);
+			this._onMessage(topic, msg, undefined === parseJSON || parseJSON);
 		};
 		client.onConnectionLost = ({ errorCode, ...args }) => {
 			this.onDisconnect({ clientId, errorCode, ...args });
@@ -179,7 +181,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 	async publish(topics: string[] | string, msg: any) {
 		const targetTopics = ([] as string[]).concat(topics);
-		const message = JSON.stringify(msg);
+		const message = typeof msg === 'string' ? msg : JSON.stringify(msg);
 
 		const url = await this.endpoint;
 
@@ -199,7 +201,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		Set<SubscriptionObserver<any>>
 	> = new Map();
 
-	private _onMessage(topic: string, msg: any) {
+	private _onMessage(topic: string, msg: any, parse = true) {
 		try {
 			const matchedTopicObservers = [];
 			this._topicObservers.forEach((observerForTopic, observerTopic) => {
@@ -207,7 +209,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 					matchedTopicObservers.push(observerForTopic);
 				}
 			});
-			const parsedMessage = JSON.parse(msg);
+			const parsedMessage = parse ? JSON.parse(msg) : msg;
 
 			if (typeof parsedMessage === 'object') {
 				parsedMessage[topicSymbol] = topic;
@@ -244,7 +246,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 			// @ts-ignore
 			let client: Paho.Client;
-			const { clientId = this.clientId } = options;
+			const { clientId = this.clientId, parseJSON } = options;
 
 			// this._clientIdObservers is used to close observers when client gets disconnected
 			let observersForClientId = this._clientIdObservers.get(clientId);
@@ -258,7 +260,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 				const { url = await this.endpoint } = options;
 
 				try {
-					client = await this.connect(clientId, { url });
+					client = await this.connect(clientId, { url, parseJSON });
 					targetTopics.forEach(topic => {
 						client.subscribe(topic);
 					});
