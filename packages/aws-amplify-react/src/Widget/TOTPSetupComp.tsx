@@ -81,7 +81,7 @@ export class TOTPSetupComp extends React.Component<
 		const { name, value, type, checked } = evt.target;
 		// @ts-ignore
 		const check_type = ['radio', 'checkbox'].includes(type);
-		this.inputs[name] = check_type ? checked : value;
+		this.inputs[name] = check_type ? `${checked}` : value;
 	}
 
 	setup() {

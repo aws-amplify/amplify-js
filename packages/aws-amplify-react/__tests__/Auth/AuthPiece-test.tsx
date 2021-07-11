@@ -183,7 +183,7 @@ describe('AuthPiece test', () => {
 
 			testPiece.handleInputChange(event);
 
-			expect(testPiece.inputs).toEqual({ checkedValue: 'value', name: true });
+			expect(testPiece.inputs).toEqual({ checkedValue: 'value', name: 'true' });
 		});
 
 		test('happy case without checke_type', () => {
