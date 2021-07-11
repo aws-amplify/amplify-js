@@ -2940,8 +2940,8 @@ describe('auth unit test', () => {
 
 			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
 			expect(replaceStateSpy).toHaveBeenCalledWith(
-				{},
-				null,
+				window.history.state,
+				'',
 				(options.oauth as AwsCognitoOAuthOpts).redirectSignIn
 			);
 
@@ -2953,7 +2953,7 @@ describe('auth unit test', () => {
 			    "Hub.dispatch('auth', { data: ..., event: 'parsingCallbackUrl' })",
 			  ],
 			  Array [
-			    "window.history.replaceState({}, null, 'http://localhost:3000/')",
+			    "window.history.replaceState(null, \\"\\", 'http://localhost:3000/')",
 			  ],
 			  Array [
 			    "Hub.dispatch('auth', { data: ..., event: 'signIn' })",
@@ -3005,8 +3005,8 @@ describe('auth unit test', () => {
 
 			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
 			expect(replaceStateSpy).toHaveBeenCalledWith(
-				{},
-				null,
+				window.history.state,
+				'',
 				(options.oauth as AwsCognitoOAuthOpts).redirectSignIn
 			);
 		});
@@ -3069,8 +3069,8 @@ describe('auth unit test', () => {
 
 			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url);
 			expect(replaceStateSpy).toHaveBeenCalledWith(
-				{},
-				null,
+				window.history.state,
+				'',
 				(options.oauth as AwsCognitoOAuthOpts).redirectSignIn
 			);
 		});
