@@ -184,5 +184,71 @@ describe('OAuth', () => {
 				idToken: mockIdToken,
 			});
 		});
+		test('Implicit Flow returns for "#" and "#/" urls', async () => {
+			const redirectSignIn = 'https://test.com';
+			const currentUrl = 'https://test.com';
+
+			const config = {
+				domain: '',
+				clientID: '',
+				scope: '',
+				redirectUri: '',
+				audience: '',
+				responseType: 'implicit',
+				returnTo: '',
+				redirectSignIn,
+			};
+			const oAuth = new OAuth({
+				scopes: [],
+				config,
+				cognitoClientId: '',
+			});
+			const mockAccessToken = 'mockAccessToken';
+			// const mockRefreshToken = 'mockRefreshToken';
+			const mockIdToken = 'mockIdToken';
+			// const token = 'XXXX.YYY.ZZZ';
+			const mockState = 'STATEABC';
+			const implicit_url_1 = `${
+				redirectSignIn
+			}#access_token=${mockAccessToken}&state=${mockState}&id_token=${mockIdToken}`;
+
+			fetchMockReturn({
+				access_token: mockAccessToken,
+				refresh_token: null,
+				state: mockState,
+				id_token: mockIdToken,
+			});
+
+			const handleResponse_1 = await oAuth.handleAuthResponse(
+				implicit_url_1
+			);
+			expect(handleResponse_1).toEqual({
+				accessToken: mockAccessToken,
+				refreshToken: null,
+				state: mockState,
+				idToken: mockIdToken,
+			});
+
+			const implicit_url_2 = `${
+				redirectSignIn
+			}#/access_token=${mockAccessToken}&state=${mockState}&id_token=${mockIdToken}`;
+
+			fetchMockReturn({
+				access_token: mockAccessToken,
+				refresh_token: null,
+				state: mockState,
+				id_token: mockIdToken,
+			});
+
+			const handleResponse_2 = await oAuth.handleAuthResponse(
+				implicit_url_2
+			);
+			expect(handleResponse_2).toEqual({
+				accessToken: mockAccessToken,
+				refreshToken: null,
+				state: mockState,
+				idToken: mockIdToken,
+			});
+		});
 	});
 });

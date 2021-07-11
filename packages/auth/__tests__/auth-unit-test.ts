@@ -3009,6 +3009,19 @@ describe('auth unit test', () => {
 				null,
 				(options.oauth as AwsCognitoOAuthOpts).redirectSignIn
 			);
+
+			const url_slash = `${
+				(options.oauth as AwsCognitoOAuthOpts).redirectSignIn
+			}#/access_token=${token}&state=${state}`;
+
+			await (auth as any)._handleAuthResponse(url_slash);
+
+			expect(handleAuthResponseSpy).toHaveBeenCalledWith(url_slash);
+			expect(replaceStateSpy).toHaveBeenCalledWith(
+				{},
+				null,
+				(options.oauth as AwsCognitoOAuthOpts).redirectSignIn
+			);
 		});
 
 		test('No User Pools', async () => {

@@ -2016,7 +2016,7 @@ export class AuthClass {
 				.find(([k]) => k === 'code' || k === 'error');
 
 			const hasTokenOrError = !!(parse(currentUrl).hash || '#')
-				.substr(1)
+				.replace(/^#[\/]?/g,'')
 				.split('&')
 				.map(entry => entry.split('='))
 				.find(([k]) => k === 'access_token' || k === 'error');
