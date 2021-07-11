@@ -49,6 +49,7 @@ const template = `
     <amplify-auth-forgot-password-core
       *ngIf="!shouldHide('ForgotPassword')"
       [authState]="authState"
+      [signUpConfig]="_signUpConfig"
       [usernameAttributes]="_usernameAttributes"
       [hide]="hide"
     ></amplify-auth-forgot-password-core>

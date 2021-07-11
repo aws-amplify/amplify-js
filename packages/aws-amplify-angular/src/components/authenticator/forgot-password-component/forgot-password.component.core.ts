@@ -63,6 +63,7 @@ const template = `
         placeholder="{{ this.amplifyService.i18n().get('Password') }}"
         data-test="${auth.forgotPassword.newPasswordInput}"
       />
+			<div class="amplify-form-extra-details">{{passwordPolicy}}</div>
       </div>
       <div class="amplify-form-actions">
         <div class="amplify-form-cell-right">
@@ -120,6 +121,7 @@ export class ForgotPasswordComponentCore implements OnInit {
 	_authState: AuthState;
 	_show: boolean;
 	_usernameAttributes: string = 'username';
+	_signUpConfig: any;
 	username: string;
 	code: string;
 	password: string;
@@ -129,6 +131,7 @@ export class ForgotPasswordComponentCore implements OnInit {
 	local_phone_number: string;
 	country_code: string = '1';
 	email: string;
+	passwordPolicy: string;
 
 	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		this.logger = this.amplifyService.logger('ForgotPasswordComponent');
@@ -145,6 +148,13 @@ export class ForgotPasswordComponentCore implements OnInit {
 			data.authState.user && data.authState.user.username
 				? data.authState.user.username
 				: '';
+		
+    if (data.signUpConfig) {
+      this._signUpConfig = data.signUpConfig;
+      if (this._signUpConfig.passwordPolicy) {
+        this.passwordPolicy = this._signUpConfig.passwordPolicy;
+      }
+    }
 	}
 
 	@Input() hide: string[] = [];
@@ -182,6 +192,16 @@ export class ForgotPasswordComponentCore implements OnInit {
 	set usernameAttributes(usernameAttributes: string) {
 		this._usernameAttributes = usernameAttributes;
 	}
+
+  @Input()
+  set signUpConfig(signUpConfig: any) {
+    if (signUpConfig) {
+      this._signUpConfig = signUpConfig;
+      if (this._signUpConfig.passwordPolicy) {
+        this.passwordPolicy = this._signUpConfig.passwordPolicy;
+      }
+    }
+  }
 
 	setCode(code: string) {
 		this.code = code;
