@@ -294,7 +294,7 @@ export class GraphQLAPIClass {
 		if (!endpoint) {
 			const error = new GraphQLError('No graphql endpoint provided.');
 
-			throw {
+			return {
 				data: {},
 				errors: [error],
 			};
@@ -314,12 +314,6 @@ export class GraphQLAPIClass {
 				data: {},
 				errors: [new GraphQLError(err.message, null, null, null, null, err)],
 			};
-		}
-
-		const { errors } = response;
-
-		if (errors && errors.length) {
-			throw response;
 		}
 
 		return response;
