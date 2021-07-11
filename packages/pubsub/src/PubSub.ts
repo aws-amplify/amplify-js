@@ -110,6 +110,14 @@ export class PubSubClass {
 		}
 	}
 
+	removePluggable(options: ProvidertOptions) {
+		const { provider: providerName } = options;
+
+		const indexOfPluggableToRemove = this._pluggables.indexOf(providerName);
+
+		return this._pluggables.splice(indexOfPluggableToRemove, 1)[0];
+	}
+
 	private getProviderByName(providerName) {
 		if (providerName === INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER) {
 			return this.awsAppSyncProvider;

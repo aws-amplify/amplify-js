@@ -196,6 +196,37 @@ describe('PubSub', () => {
 			expect(mqttTopicMatch('topic/A/+/#', publishTopic)).toBe(true);
 			expect(mqttTopicMatch('topic/A/B/C/#', publishTopic)).toBe(false);
 		});
+
+		test('should remove AWSIoTProvider', () => {
+			const config = {
+				PubSub: {
+					aws_pubsub_region: 'region',
+					aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+				},
+			};
+			const pubsub = new PubSub({});
+			pubsub.configure(config);
+			const awsIotProvider = new AWSIoTProvider();
+			pubsub.addPluggable(awsIotProvider);
+
+			const removedPluggable = pubsub.removePluggable({provider: 'AWSIoTProvider'});
+
+			expect(removedPluggable).toBe(awsIotProvider);
+		});
+
+		test('should exit gracefully when trying to remove provider when no providers have been added', () => {
+			const config = {
+				PubSub: {
+					aws_pubsub_region: 'region',
+					aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+				},
+			};
+			const pubsub = new PubSub({});
+			pubsub.configure(config);
+
+			const removedPluggable = pubsub.removePluggable({provider: 'AWSIoTProvider'});
+			expect(removedPluggable).toBe(undefined);
+		});
 	});
 
 	describe('MqttOverWSProvider', () => {
@@ -237,6 +268,20 @@ describe('PubSub', () => {
 			});
 
 			awsIotProvider.onDisconnect({ errorCode: 1, clientId: '123' });
+		});
+
+		test('should remove MqttOverWSProvider', () => {
+			const pubsub = new PubSub({});
+			const mqttOverWSProvider = new MqttOverWSProvider({
+				aws_pubsub_region: 'region',
+				aws_appsync_dangerously_connect_to_http_endpoint_for_testing: true,
+			});
+
+			pubsub.addPluggable(mqttOverWSProvider);
+
+			const removedPluggable = pubsub.removePluggable({provider: 'MqttOverWSProvider'});
+
+			expect(removedPluggable).toBe(mqttOverWSProvider);
 		});
 	});
 
