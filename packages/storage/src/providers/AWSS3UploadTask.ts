@@ -167,22 +167,12 @@ export class AWSS3UploadTask implements UploadTask {
 		return typeof x !== 'undefined' && x instanceof Blob;
 	}
 
-	private _arrayBufferToBase64(buffer) {
-		var binary = '';
-		var bytes = new Uint8Array(buffer);
-		var len = bytes.byteLength;
-		for (var i = 0; i < len; i++) {
-			binary += String.fromCharCode(bytes[i]);
-		}
-		return window.btoa(binary);
-	}
-
 	private _hexToBase64(hex: string) {
 		let str = '';
 		for (let i = 0; i < hex.length; i += 2) {
 			str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
 		}
-		return window.btoa(str);
+		return btoa(str);
 	}
 
 	private _startNextPart() {
@@ -191,12 +181,10 @@ export class AWSS3UploadTask implements UploadTask {
 			const nextPart = this.queued.shift();
 			const fr = new FileReader();
 			fr.onload = async e => {
-				const hasher = await createMD5();
 				// @ts-ignore
 				const view = new Uint8Array(e.target.result);
-				hasher.update(view);
 				const base64MD5 = this._hexToBase64(await md5(view));
-				console.log('COMPUTED: ', base64MD5);
+				console.log('COMPUTED:', base64MD5);
 				this.inProgress.push({
 					uploadPartInput: nextPart,
 					s3Request: this.s3client
