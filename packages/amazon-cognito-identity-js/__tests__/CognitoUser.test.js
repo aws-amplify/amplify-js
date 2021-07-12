@@ -1527,7 +1527,6 @@ describe('deleteAttributes()', () => {
 
 		cognitoUser.deleteAttributes([], callback);
 		expect(getUserDataSpy).toBeCalled();
-		console.log('test', cognitoUser);
 		expect(callback.mock.calls[0][1]).toEqual('SUCCESS');
 	});
 
