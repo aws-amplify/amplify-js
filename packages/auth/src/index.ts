@@ -12,7 +12,7 @@
  */
 
 import { Auth } from './Auth';
-import { CognitoHostedUIIdentityProvider } from './types/Auth';
+import { CognitoHostedUIIdentityProvider, SignUpParams } from './types/Auth';
 import {
 	CognitoUser,
 	CookieStorage,
@@ -29,6 +29,7 @@ export {
 	CognitoUser,
 	CookieStorage,
 	CognitoHostedUIIdentityProvider,
+	SignUpParams,
 	appendToCognitoUserAgent,
 	AuthErrorStrings,
 };

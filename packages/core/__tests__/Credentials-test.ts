@@ -184,11 +184,8 @@ describe('Credentials test', () => {
 			const removeItemSpy = jest.spyOn(storageClass, 'removeItem');
 
 			credentials.clear();
-			expect(removeItemSpy).toHaveBeenCalledTimes(2);
+			expect(removeItemSpy).toHaveBeenCalledTimes(1);
 			expect(removeItemSpy).toHaveBeenCalledWith('aws-amplify-federatedInfo');
-			expect(removeItemSpy).toHaveBeenCalledWith(
-				credentials._getCognitoIdentityIdStorageKey(identityPoolId)
-			);
 		});
 	});
 });

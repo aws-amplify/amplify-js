@@ -2,6 +2,7 @@ import { I18n } from '@aws-amplify/core';
 import { newSpecPage } from '@stencil/core/testing';
 import { AmplifyRequireNewPassword } from './amplify-require-new-password';
 import { Translations } from '../../common/Translations';
+import { COUNTRY_DIAL_CODE_DEFAULT } from '../../common/constants';
 
 describe('amplify-require-new-password spec:', () => {
 	describe('Component logic ->', () => {
@@ -28,6 +29,12 @@ describe('amplify-require-new-password spec:', () => {
 		it('should evaluate `submitButtonText` to `Change` by default', () => {
 			expect(requireNewPassword.submitButtonText).toEqual(
 				I18n.get(Translations.CHANGE_PASSWORD_ACTION)
+			);
+		});
+
+		it('should evaluate `phoneNumber` with a valid country code by default', () => {
+			expect(requireNewPassword.phoneNumber.countryDialCodeValue).toEqual(
+				COUNTRY_DIAL_CODE_DEFAULT
 			);
 		});
 	});
