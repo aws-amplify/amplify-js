@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Amplify UI Component Issue?
+    url: https://github.com/aws-amplify/amplify-ui/issues/new/choose
+    about: Open an issue in the Amplify-UI repository
   - name: Usage Question
     url: https://github.com/aws-amplify/amplify-js/discussions
     about: Ask a question about AWS Amplify usage
