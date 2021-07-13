@@ -61,14 +61,6 @@ export interface S3ClientPutOptions {
 	tagging?: PutObjectRequest['Tagging'];
 }
 
-export interface S3ClientServerSideEncryptionOptions {
-	serverSideEncryption?: PutObjectRequest['ServerSideEncryption'];
-	SSECustomerAlgorithm?: PutObjectRequest['SSECustomerAlgorithm'];
-	SSECustomerKey?: PutObjectRequest['SSECustomerKey'];
-	SSECustomerKeyMD5?: PutObjectRequest['SSECustomerKeyMD5'];
-	SSEKMSKeyId?: PutObjectRequest['SSEKMSKeyId'];
-}
-
 export type S3ProviderPutOptions = StoragePutOptions &
 	S3ClientPutOptions &
 	StorageOptions;
