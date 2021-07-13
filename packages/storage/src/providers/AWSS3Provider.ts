@@ -556,28 +556,21 @@ export class AWSS3Provider implements StorageProvider {
 		}
 	}
 
-	/**
-	 * @private
-	 */
-	_ensureCredentials() {
-		return Credentials.get()
-			.then(credentials => {
-				if (!credentials) return false;
-				const cred = Credentials.shear(credentials);
-				logger.debug('set credentials for storage', cred);
-				this._config.credentials = cred;
-
-				return true;
-			})
-			.catch((error: Error) => {
-				logger.warn('ensure credentials error', error);
-				return false;
-			});
+	private async _ensureCredentials() {
+		try {
+			const cred = await Credentials.get();
+			if (!cred) {
+				return null;
+			}
+			logger.debug('set credentials for storage', cred);
+			this._config.credentials = cred;
+			return cred;
+		} catch (error) {
+			logger.warn('ensure credentials error', error);
+			return false;
+		}
 	}
 
-	/**
-	 * @private
-	 */
 	private _prefix(config): string {
 		const { credentials, level } = config;
 
@@ -622,10 +615,6 @@ export class AWSS3Provider implements StorageProvider {
 			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
 		});
 		return s3client;
-	}
-
-	private _isBlob(x: unknown): x is Blob {
-		return typeof Blob !== 'undefined' && x instanceof Blob;
 	}
 }
 
