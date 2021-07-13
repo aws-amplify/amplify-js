@@ -5,12 +5,13 @@
 
 ## Properties
 
-| Property                | Attribute     | Description                                                 | Type                                                | Default                         |
-| ----------------------- | ------------- | ----------------------------------------------------------- | --------------------------------------------------- | ------------------------------- |
-| `handleAuthStateChange` | --            | Auth state change handler for this component                | `(nextAuthState: AuthState, data?: object) => void` | `dispatchAuthStateChangeEvent`  |
-| `headerText`            | `header-text` | Used for header text in totp setup component                | `string`                                            | `Translations.TOTP_HEADER_TEXT` |
-| `issuer`                | `issuer`      | Used for customizing the issuer string in the qr code image | `string`                                            | `Translations.TOTP_ISSUER`      |
-| `user`                  | --            | Used in order to configure TOTP for a user                  | `CognitoUserInterface`                              | `undefined`                     |
+| Property                | Attribute     | Description                                                                   | Type                                                    | Default                         |
+| ----------------------- | ------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------- |
+| `handleAuthStateChange` | --            | Auth state change handler for this component                                  | `(nextAuthState: AuthState, data?: object) => void`     | `dispatchAuthStateChangeEvent`  |
+| `handleComplete`        | --            | This is run after totp setup is complete. Useful if using this as standalone. | `(user: CognitoUserInterface) => void \| Promise<void>` | `this.onTOTPEvent`              |
+| `headerText`            | `header-text` | Used for header text in totp setup component                                  | `string`                                                | `Translations.TOTP_HEADER_TEXT` |
+| `issuer`                | `issuer`      | Used for customizing the issuer string in the qr code image                   | `string`                                                | `Translations.TOTP_ISSUER`      |
+| `user`                  | --            | Used in order to configure TOTP for a user                                    | `CognitoUserInterface`                                  | `undefined`                     |
 
 
 ## Dependencies
