@@ -13,7 +13,7 @@ export interface StorageGetOptions {
 	track?: boolean;
 	expires?: number;
 	provider?: string;
-	progressCallback?: (progress: any) => any;
+	progressCallback?: (progress: ProgressEvent) => any;
 }
 
 /** Get API options allowed to be passed to the underlying S3Client */
@@ -33,13 +33,13 @@ export type S3ProviderGetOuput<T> = T extends { download: true }
 	? GetObjectCommandOutput
 	: string;
 
-export type S3ProviderGetOptions = StorageGetOptions &
+export type S3ProviderGetConfig = StorageGetOptions &
 	S3ClientGetOptions &
 	StorageOptions;
 
 /** Put API options, specific to Amplify Storage */
-export interface StoragePutOptions {
-	progressCallback?: (progress: any) => any;
+export interface StoragePutConfig {
+	progressCallback?: (progress: ProgressEvent) => any;
 	track?: boolean;
 }
 
@@ -61,7 +61,7 @@ export interface S3ClientPutOptions {
 	tagging?: PutObjectRequest['Tagging'];
 }
 
-export type S3ProviderPutOptions = StoragePutOptions &
+export type S3ProviderPutConfig = StoragePutConfig &
 	S3ClientPutOptions &
 	StorageOptions;
 
@@ -69,16 +69,14 @@ export interface S3ProviderPutOutput {
 	key: string;
 }
 
-export interface StorageRemoveOptions {
+export interface StorageRemoveConfig {
 	bucket?: string;
-	track?: boolean;
 }
 
-export type S3ProviderRemoveOptions = StorageRemoveOptions & StorageOptions;
+export type S3ProviderRemoveConfig = StorageRemoveConfig & StorageOptions;
 
-export interface StorageListOptions {
+export interface StorageListConfig {
 	bucket?: string;
-	track?: boolean;
 	maxKeys?: number;
 }
 
@@ -89,7 +87,7 @@ export interface S3ProviderListOutput {
 	size: _Object['Size'];
 }
 
-export type S3ProviderListOptions = StorageListOptions & StorageOptions;
+export type S3ProviderListConfig = StorageListConfig & StorageOptions;
 
 type StorageLevel = 'public' | 'protected' | 'private';
 
@@ -121,10 +119,6 @@ interface S3ClientCopyCommandParams {
 }
 
 interface StorageCopyConfig {
-	level?: StorageLevel;
-	/** if set to true, automatically sends Storage Events to Amazon Pinpoint */
-	track?: boolean;
-	provider?: string;
 	/**
 	 * callback function that gets called on each successful part copied to track
 	 * the copy progress
@@ -142,7 +136,9 @@ export type S3CopySource = S3CopyTarget;
 
 export type S3CopyDestination = Omit<S3CopyTarget, 'identityId'>;
 
-export type CopyObjectConfig = S3ClientCopyCommandInput & StorageCopyConfig;
+export type S3ProviderCopyConfig = S3ClientCopyCommandInput &
+	StorageCopyConfig &
+	StorageOptions;
 
 export type CopyResult = {
 	key: string;

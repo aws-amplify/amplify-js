@@ -18,7 +18,15 @@ export interface StorageOptions {
 	region?: string;
 	level?: StorageLevel;
 	credentials?: object;
+	/**
+	 * Custom mapping of your prefixes, for example,
+	 * customPrefix: { public: 'myPublicPrefix' } will make public level operations access 'myPublicPrefix/' instead of
+	 * the default 'public/'.
+	 */
 	customPrefix?: CustomPrefix;
+	/**
+	 * if set to true, automatically sends Storage Events to Amazon Pinpoint
+	 **/
 	track?: boolean;
 }
 
