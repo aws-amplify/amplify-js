@@ -49,12 +49,6 @@ export class AmplifyTOTPSetup {
 	private removeHubListener: () => void; // unsubscribe function returned by onAuthUIStateChange
 
 	async componentWillLoad() {
-		/**
-		 * We didn't use `@Watch` here because it doesn't fire when we go from require-new-password to totp-setup.
-		 * That is because `Auth.completeNewPassword` only changes `user` in place and Watch doesn't detect changes
-		 * unless we make a clone.
-		 */
-		console.error('componentWillLoad');
 		await this.setup();
 	}
 
