@@ -342,6 +342,7 @@ export class AWSS3Provider implements StorageProvider {
 		try {
 			const signer = new S3RequestPresigner({ ...s3.config });
 			const request = await createRequest(s3, new GetObjectCommand(params));
+			// Default is 15 mins as defined in V2 AWS SDK
 			const url = formatUrl(await signer.presign(request, { expiresIn: expires || 900 }));
 			dispatchStorageEvent(track, 'getSignedUrl', { method: 'get', result: 'success' }, null, `Signed URL: ${url}`);
 			return url;
