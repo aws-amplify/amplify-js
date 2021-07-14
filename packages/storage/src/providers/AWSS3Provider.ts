@@ -24,7 +24,6 @@ import {
 	DeleteObjectCommand,
 	ListObjectsCommand,
 	GetObjectCommandOutput,
-	PutObjectRequest,
 	DeleteObjectCommandInput,
 	CopyObjectCommandInput,
 	CopyObjectCommand,
@@ -50,6 +49,7 @@ import {
 	S3CopyDestination,
 	StorageLevel,
 	CustomPrefix,
+	S3ProviderRemoveOutput,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { AxiosHttpHandler, SEND_DOWNLOAD_PROGRESS_EVENT, SEND_UPLOAD_PROGRESS_EVENT } from './axios-http-handler';
@@ -250,7 +250,7 @@ export class AWSS3Provider implements StorageProvider {
 	 * Get a presigned URL of the file or the object data when download:true
 	 *
 	 * @param {string} key - key of the object
-	 * @param {S3ProviderGetConfig} [config] - { level : private|protected|public, download: true|false }
+	 * @param {S3ProviderGetConfig} [config] - Optional configuration for the underlying S3 command
 	 * @return {Promise<string | GetObjectCommandOutput>} - A promise resolves to Amazon S3 presigned URL or the
 	 * GetObjectCommandOutput if download is set to true on success
 	 */
@@ -361,14 +361,13 @@ export class AWSS3Provider implements StorageProvider {
 	/**
 	 * Put a file in S3 bucket specified to configure method
 	 * @param {string} key - key of the object
-	 * @param {Object} object - File to be put in Amazon S3 bucket
-	 * @param {Object} [config] - { level : private|protected|public, contentType: MIME Types,
-	 *  progressCallback: function }
-	 * @return - promise resolves to object on success
+	 * @param {PutObjectCommandInput["Body"]} object - File to be put in Amazon S3 bucket
+	 * @param {S3ProviderPutConfig} [config] - Optional configuration for the underlying S3 command
+	 * @return {Promise<S3ProviderPutOutput>} - promise resolves to an object with the new object's key on success
 	 */
 	public async put(
 		key: string,
-		object: PutObjectRequest['Body'] | string,
+		object: PutObjectCommandInput['Body'],
 		config?: S3ProviderPutConfig
 	): Promise<S3ProviderPutOutput> {
 		const credentialsOK = await this._ensureCredentials();
@@ -388,7 +387,7 @@ export class AWSS3Provider implements StorageProvider {
 		const params: PutObjectCommandInput = {
 			Bucket: bucket,
 			Key: final_key,
-			Body: object as PutObjectRequest['Body'],
+			Body: object,
 			ContentType: type,
 		};
 		if (cacheControl) {
@@ -460,10 +459,10 @@ export class AWSS3Provider implements StorageProvider {
 	/**
 	 * Remove the object for specified key
 	 * @param {string} key - key of the object
-	 * @param {Object} [config] - { level : private|protected|public }
-	 * @return - Promise resolves upon successful removal of the object
+	 * @param {S3ProviderRemoveConfig} [config] - Optional configuration for the underlying S3 command
+	 * @return {Promise<S3ProviderRemoveOutput>} - Promise resolves upon successful removal of the object
 	 */
-	public async remove(key: string, config?: S3ProviderRemoveConfig) {
+	public async remove(key: string, config?: S3ProviderRemoveConfig): Promise<S3ProviderRemoveOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
@@ -508,10 +507,11 @@ export class AWSS3Provider implements StorageProvider {
 	/**
 	 * List bucket objects relative to the level and prefix specified
 	 * @param {string} path - the path that contains objects
-	 * @param {Object} [config] - { level : private|protected|public }
-	 * @return - Promise resolves to list of keys for all objects in path
+	 * @param {S3ProviderListConfig} [config] - Optional configuration for the underlying S3 command
+	 * @return {Promise<S3ProviderListOutput>} - Promise resolves to list of keys, eTags, lastModified and file size for
+	 * all objects in path
 	 */
-	public async list(path: string, config?: S3ProviderListConfig): Promise<S3ProviderListOutput[]> {
+	public async list(path: string, config?: S3ProviderListConfig): Promise<S3ProviderListOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
@@ -534,7 +534,7 @@ export class AWSS3Provider implements StorageProvider {
 
 		try {
 			const response = await s3.send(listObjectsCommand);
-			let list: S3ProviderListOutput[] = [];
+			let list: S3ProviderListOutput = [];
 			if (response && response.Contents) {
 				list = response.Contents.map(item => {
 					return {

@@ -4,6 +4,7 @@ import {
 	PutObjectRequest,
 	CopyObjectRequest,
 	_Object,
+	DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { StorageOptions } from './Storage';
 import { CancelTokenSource } from 'axios';
@@ -58,17 +59,21 @@ export interface S3ProviderRemoveConfig extends StorageOptions {
 	bucket?: string;
 }
 
+export type S3ProviderRemoveOutput = DeleteObjectCommandOutput;
+
 export interface S3ProviderListConfig extends StorageOptions {
 	bucket?: string;
 	maxKeys?: number;
 }
 
-export interface S3ProviderListOutput {
+export interface S3ProviderListOutputItem {
 	key: ListObjectsCommandOutputContent['Key'];
 	eTag: ListObjectsCommandOutputContent['ETag'];
 	lastModified: ListObjectsCommandOutputContent['LastModified'];
 	size: ListObjectsCommandOutputContent['Size'];
 }
+
+export type S3ProviderListOutput = S3ProviderListOutputItem[];
 
 type StorageLevel = 'public' | 'protected' | 'private';
 
