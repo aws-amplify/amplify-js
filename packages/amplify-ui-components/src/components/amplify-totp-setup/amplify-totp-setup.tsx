@@ -1,18 +1,20 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
-import { Component, Prop, State, h, Host, Watch } from '@stencil/core';
+import { Component, Prop, State, h, Host } from '@stencil/core';
 import QRCode from 'qrcode';
 
 import {
 	CognitoUserInterface,
 	AuthStateHandler,
 	MfaOption,
+	AuthState,
 } from '../../common/types/auth-types';
 import { Translations } from '../../common/Translations';
 import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import {
 	dispatchToastHubEvent,
 	dispatchAuthStateChangeEvent,
+	onAuthUIStateChange,
 } from '../../common/helpers';
 import { checkContact } from '../../common/auth-helpers';
 
@@ -49,12 +51,15 @@ export class AmplifyTOTPSetup {
 	private removeHubListener: () => void; // unsubscribe function returned by onAuthUIStateChange
 
 	async componentWillLoad() {
+		/**
+		 * We dont't use `@Watch` here because it doesn't fire when we go from require-new-password
+		 * to totp-setup. This is because stencil only does shallow comparison on @Watch and can't
+		 * detect changes from `Auth.requireNewPassword.
+		 */
+		this.removeHubListener = onAuthUIStateChange(authState => {
+			if (authState === AuthState.TOTPSetup) this.setup();
+		});
 		await this.setup();
-	}
-
-	@Watch('user')
-	handleUserChange() {
-		this.setup();
 	}
 
 	disconnectedCallback() {
