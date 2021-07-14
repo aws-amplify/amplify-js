@@ -7,6 +7,8 @@ import {
 } from '@aws-sdk/client-s3';
 import { CancelTokenSource } from 'axios';
 
+type ListObjectsCommandOutputContent = _Object;
+
 export interface S3ProviderGetConfig {
 	download?: boolean;
 	track?: boolean;
@@ -61,10 +63,10 @@ export interface S3ProviderListConfig {
 }
 
 export interface S3ProviderListOutput {
-	key: _Object['Key'];
-	eTag: _Object['ETag'];
-	lastModified: _Object['LastModified'];
-	size: _Object['Size'];
+	key: ListObjectsCommandOutputContent['Key'];
+	eTag: ListObjectsCommandOutputContent['ETag'];
+	lastModified: ListObjectsCommandOutputContent['LastModified'];
+	size: ListObjectsCommandOutputContent['Size'];
 }
 
 type StorageLevel = 'public' | 'protected' | 'private';
