@@ -187,10 +187,10 @@ export class APIClass {
 	 * @param {object} additionalHeaders headers to merge in after any `graphql_headers` set in the config
 	 * @returns {Promise<GraphQLResult> | Observable<object>}
 	 */
-	graphql(
+	graphql<Operation, Data extends object = object>(
 		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
-	): Promise<GraphQLResult> | Observable<object> {
+	): Operation extends 'query' | 'mutation' ? Promise<GraphQLResult<Data>> : Observable<Data> {
 		return this._graphqlApi.graphql(options, additionalHeaders);
 	}
 }
