@@ -5,11 +5,12 @@ import {
 	CopyObjectRequest,
 	_Object,
 } from '@aws-sdk/client-s3';
+import { StorageOptions } from './Storage';
 import { CancelTokenSource } from 'axios';
 
 type ListObjectsCommandOutputContent = _Object;
 
-export interface S3ProviderGetConfig {
+export interface S3ProviderGetConfig extends StorageOptions {
 	download?: boolean;
 	track?: boolean;
 	expires?: number;
@@ -29,7 +30,7 @@ export interface S3ProviderGetConfig {
 
 export type S3ProviderGetOuput<T> = T extends { download: true } ? GetObjectCommandOutput : string;
 
-export interface S3ProviderPutConfig {
+export interface S3ProviderPutConfig extends StorageOptions {
 	progressCallback?: (progress: any) => any;
 	track?: boolean;
 	cancelTokenSource?: CancelTokenSource;
@@ -53,11 +54,11 @@ export interface S3ProviderPutOutput {
 	key: string;
 }
 
-export interface S3ProviderRemoveConfig {
+export interface S3ProviderRemoveConfig extends StorageOptions {
 	bucket?: string;
 }
 
-export interface S3ProviderListConfig {
+export interface S3ProviderListConfig extends StorageOptions {
 	bucket?: string;
 	maxKeys?: number;
 }
@@ -81,7 +82,7 @@ export type S3CopySource = S3CopyTarget;
 
 export type S3CopyDestination = Omit<S3CopyTarget, 'identityId'>;
 
-export interface S3ProviderCopyConfig {
+export interface S3ProviderCopyConfig extends StorageOptions {
 	cancelTokenSource?: CancelTokenSource;
 	bucket?: CopyObjectRequest['Bucket'];
 	cacheControl?: CopyObjectRequest['CacheControl'];

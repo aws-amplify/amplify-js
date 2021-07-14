@@ -45,7 +45,7 @@ import {
 	S3ProviderListConfig,
 	S3ProviderPutOutput,
 	S3ProviderCopyConfig,
-	CopyResult,
+	S3ProviderCopyOutput,
 	S3CopySource,
 	S3CopyDestination,
 	StorageLevel,
@@ -140,9 +140,13 @@ export class AWSS3Provider implements StorageProvider {
 	 * @param {S3CopySource} src - Key and optionally access level and identityId of the source object.
 	 * @param {S3CopyDestination} dest - Key and optionally access level of the destination object.
 	 * @param {S3ProviderCopyConfig} [config] - Optional configuration for s3 commands.
-	 * @return {Promise<CopyResult>} The key of the copied object.
+	 * @return {Promise<S3ProviderCopyOutput>} The key of the copied object.
 	 */
-	public async copy(src: S3CopySource, dest: S3CopyDestination, config?: S3ProviderCopyConfig): Promise<CopyResult> {
+	public async copy(
+		src: S3CopySource,
+		dest: S3CopyDestination,
+		config?: S3ProviderCopyConfig
+	): Promise<S3ProviderCopyOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
