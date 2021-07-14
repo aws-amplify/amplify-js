@@ -33,6 +33,7 @@ import {
 import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
+import { AxiosHttpHandler, SEND_DOWNLOAD_PROGRESS_EVENT, SEND_UPLOAD_PROGRESS_EVENT } from './axios-http-handler';
 import {
 	StorageOptions,
 	StorageProvider,
@@ -52,7 +53,6 @@ import {
 	S3ProviderRemoveOutput,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
-import { AxiosHttpHandler, SEND_DOWNLOAD_PROGRESS_EVENT, SEND_UPLOAD_PROGRESS_EVENT } from './axios-http-handler';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import * as events from 'events';
 import { CancelTokenSource } from 'axios';
@@ -278,9 +278,6 @@ export class AWSS3Provider implements StorageProvider {
 			expires,
 			track,
 			progressCallback,
-			SSECustomerAlgorithm,
-			SSECustomerKey,
-			SSECustomerKeyMD5,
 		} = opt;
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
