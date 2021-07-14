@@ -433,20 +433,20 @@ export class AWSS3Provider implements StorageProvider {
 		if (tagging) {
 			params.Tagging = tagging;
 		}
+		if (SSECustomerAlgorithm) {
+			params.SSECustomerAlgorithm = SSECustomerAlgorithm;
+		}
 		if (serverSideEncryption) {
 			params.ServerSideEncryption = serverSideEncryption;
-			if (SSECustomerAlgorithm) {
-				params.SSECustomerAlgorithm = SSECustomerAlgorithm;
-			}
-			if (SSECustomerKey) {
-				params.SSECustomerKey = SSECustomerKey;
-			}
-			if (SSECustomerKeyMD5) {
-				params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
-			}
 			if (SSEKMSKeyId) {
 				params.SSEKMSKeyId = SSEKMSKeyId;
 			}
+		}
+		if (SSECustomerKey) {
+			params.SSECustomerKey = SSECustomerKey;
+		}
+		if (SSECustomerKeyMD5) {
+			params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
 		}
 
 		const emitter = new events.EventEmitter();
