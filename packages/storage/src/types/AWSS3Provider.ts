@@ -6,7 +6,7 @@ import {
 	_Object,
 	DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3';
-import { StorageOptions } from './Storage';
+import { StorageOptions, StorageLevel } from './Storage';
 import { CancelTokenSource } from 'axios';
 
 type ListObjectsCommandOutputContent = _Object;
@@ -74,8 +74,6 @@ export interface S3ProviderListOutputItem {
 }
 
 export type S3ProviderListOutput = S3ProviderListOutputItem[];
-
-type StorageLevel = 'public' | 'protected' | 'private';
 
 export interface S3CopyTarget {
 	key: string;
