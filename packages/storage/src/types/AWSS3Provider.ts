@@ -12,7 +12,7 @@ export interface S3ProviderGetConfig {
 	track?: boolean;
 	expires?: number;
 	provider?: string;
-	progressCallback?: (progress: ProgressEvent) => any;
+	progressCallback?: (progress: any) => any;
 	cancelTokenSource?: CancelTokenSource;
 	bucket?: GetObjectRequest['Bucket'];
 	cacheControl?: GetObjectRequest['ResponseCacheControl'];
@@ -28,7 +28,7 @@ export interface S3ProviderGetConfig {
 export type S3ProviderGetOuput<T> = T extends { download: true } ? GetObjectCommandOutput : string;
 
 export interface S3ProviderPutConfig {
-	progressCallback?: (progress: ProgressEvent) => any;
+	progressCallback?: (progress: any) => any;
 	track?: boolean;
 	cancelTokenSource?: CancelTokenSource;
 	serverSideEncryption?: PutObjectRequest['ServerSideEncryption'];
@@ -69,17 +69,6 @@ export interface S3ProviderListOutput {
 
 type StorageLevel = 'public' | 'protected' | 'private';
 
-export type CopyProgress = {
-	/**
-	 * Total bytes copied
-	 **/
-	loaded: number;
-	/**
-	 * Total bytes to copy
-	 **/
-	total: number;
-};
-
 export interface S3CopyTarget {
 	key: string;
 	level?: StorageLevel;
@@ -91,7 +80,6 @@ export type S3CopySource = S3CopyTarget;
 export type S3CopyDestination = Omit<S3CopyTarget, 'identityId'>;
 
 export interface S3ProviderCopyConfig {
-	progressCallback?: (progress: CopyProgress) => any;
 	cancelTokenSource?: CancelTokenSource;
 	bucket?: CopyObjectRequest['Bucket'];
 	cacheControl?: CopyObjectRequest['CacheControl'];
