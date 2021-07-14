@@ -1902,6 +1902,7 @@ export class AuthClass {
 		response?: FederatedResponse,
 		user?: FederatedUser
 	): Promise<ICredentials> {
+		this._storage.setItem('is-oauth-code', 'true');
 		if (!this._config.identityPoolId && !this._config.userPoolId) {
 			throw new Error(
 				`Federation requires either a User Pool or Identity Pool in config`
@@ -1993,6 +1994,16 @@ export class AuthClass {
 			return;
 		}
 
+		let federatedQuery = null;
+
+		try {
+			 federatedQuery = JSON.parse(
+				this._storage.getItem('is-oauth-code')
+			);
+		} catch (error) {
+			logger.debug('cannot load oauth code check from storage');
+		}
+
 		try {
 			this.oAuthFlowInProgress = true;
 			if (!this._config.userPoolId) {
@@ -2021,7 +2032,7 @@ export class AuthClass {
 				.map(entry => entry.split('='))
 				.find(([k]) => k === 'access_token' || k === 'error');
 
-			if (hasCodeOrError || hasTokenOrError) {
+			if (federatedQuery && (hasCodeOrError || hasTokenOrError)) {
 				this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
 				try {
 					const {
@@ -2121,6 +2132,9 @@ export class AuthClass {
 			}
 		} finally {
 			this.oAuthFlowInProgress = false;
+			if (federatedQuery) {
+				this._storage.removeItem('is-oauth-code');
+			}
 		}
 	}
 
