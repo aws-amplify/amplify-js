@@ -11,13 +11,13 @@
  * and limitations under the License.
  */
 import StorageProvider from '../../src/providers/AWSS3Provider';
-import { Logger, Hub, Credentials } from '@aws-amplify/core';
+import { Logger, Hub, Credentials, ICredentials } from '@aws-amplify/core';
 import * as formatURL from '@aws-sdk/util-format-url';
 import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import * as events from 'events';
 
-import { S3CopySource, S3CopyDestination } from '../../src/types';
+import { S3CopySource, S3CopyDestination, StorageOptions } from '../../src/types';
 /**
  * NOTE - These test cases use Hub.dispatch but they should
  * actually be using dispatchStorageEvent from Storage
@@ -46,7 +46,7 @@ S3RequestPresigner.prototype.presign = jest.fn(async (request, expires) => {
 	return (Promise as any).resolve();
 });
 
-const credentials = {
+const credentials: ICredentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
 	secretAccessKey: 'secretAccessKey',
@@ -54,11 +54,11 @@ const credentials = {
 	authenticated: true,
 };
 
-const options = {
+const options: StorageOptions = {
 	bucket: 'bucket',
 	region: 'region',
 	credentials,
-	level: 'level',
+	level: 'public',
 };
 
 const options_no_cred = {
