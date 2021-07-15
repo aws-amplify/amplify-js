@@ -52,9 +52,12 @@ export class AmplifyTOTPSetup {
 
 	async componentWillLoad() {
 		/**
-		 * We dont't use `@Watch` here because it doesn't fire when we go from require-new-password
-		 * to totp-setup. This is because stencil only does shallow comparison on @Watch and can't
-		 * detect changes from `Auth.requireNewPassword.
+		 * If this component is being used internally by the authenticator, we want to re-run setup only
+		 * when the current auth state is `AuthState.TOTPSetup`.
+		 *
+		 * Ideally, we would only run the setup once when the component is mounted. This is not possible
+		 * due to a bug with slots -- a slotted component will run its `componentWillLoad` lifecycle before
+		 * it is even rendered. So instead we watch for authstate changes and run setup conditionally.
 		 */
 		this.removeHubListener = onAuthUIStateChange(authState => {
 			if (authState === AuthState.TOTPSetup) this.setup();
