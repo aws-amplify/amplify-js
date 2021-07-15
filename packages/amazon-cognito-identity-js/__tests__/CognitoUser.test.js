@@ -1505,6 +1505,46 @@ describe('getUserAttributes()', () => {
 	});
 });
 
+describe('deleteAttributes()', () => {
+	const callback = jest.fn();
+	const cognitoUser = new CognitoUser({ ...userDefaults });
+	cognitoUser.setSignInUserSession(vCognitoUserSession);
+
+	afterAll(() => {
+		jest.restoreAllMocks();
+	});
+
+	afterEach(() => {
+		callback.mockClear();
+	});
+
+	test('happy path for deleteAttrbutes should call getUserData to update cache', () => {
+		netRequestMockSuccess(true);
+
+		const getUserDataSpy = jest
+			.spyOn(cognitoUser, 'getUserData')
+			.mockImplementationOnce(cb => cb());
+
+		cognitoUser.deleteAttributes([], callback);
+		expect(getUserDataSpy).toBeCalled();
+		expect(callback.mock.calls[0][1]).toEqual('SUCCESS');
+	});
+
+	test('client request throws an error', () => {
+		netRequestMockSuccess(false);
+		cognitoUser.deleteAttributes([], callback);
+		expect(callback.mock.calls[0][0]).toMatchObject(new Error('Network Error'));
+	});
+
+	test('having an invalid user session should callback with a new error', () => {
+		cognitoUser.setSignInUserSession(ivCognitoUserSession);
+		cognitoUser.deleteAttributes([], callback);
+		expect(callback.mock.calls[0][0]).toMatchObject(
+			new Error('User is not authenticated')
+		);
+	});
+});
+
 describe('getCognitoUserSession()', () => {
 	const cognitoUser = new CognitoUser({ ...userDefaults });
 	const idToken = new CognitoIdToken();
