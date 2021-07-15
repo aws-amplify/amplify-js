@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
-import { Component, Prop, State, h, Host } from '@stencil/core';
+import { Component, Prop, State, h, Host, Watch } from '@stencil/core';
 import QRCode from 'qrcode';
 
 import {
@@ -42,6 +42,8 @@ export class AmplifyTOTPSetup {
 	@Prop() handleComplete: (
 		user: CognitoUserInterface
 	) => void | Promise<void> = this.onTOTPEvent;
+	/** Set this to true if this component is running outside the default `amplify-authenticator` usage */
+	@Prop() standalone: boolean = false;
 
 	@State() code: string | null = null;
 	@State() setupMessage: string | null = null;
@@ -52,17 +54,27 @@ export class AmplifyTOTPSetup {
 
 	async componentWillLoad() {
 		/**
-		 * If this component is being used internally by the authenticator, we want to re-run setup only
-		 * when the current auth state is `AuthState.TOTPSetup`.
+		 * If this component is being used internally by the authenticator, we want to re-run
+		 * setup only when the current auth state is `AuthState.TOTPSetup`.
 		 *
 		 * Ideally, we would only run the setup once when the component is mounted. This is not possible
 		 * due to a bug with slots -- a slotted component will run its `componentWillLoad` lifecycle before
 		 * it is even rendered. So instead we watch for authstate changes and run setup conditionally.
 		 */
-		this.removeHubListener = onAuthUIStateChange(authState => {
-			if (authState === AuthState.TOTPSetup) this.setup();
-		});
+		if (!this.standalone) {
+			this.removeHubListener = onAuthUIStateChange(authState => {
+				if (authState === AuthState.TOTPSetup) this.setup();
+			});
+		}
 		await this.setup();
+	}
+
+	/**
+	 * If this component is being used externally, we can use `@Watch` as normal.
+	 */
+	@Watch('user')
+	handleUserChange() {
+		this.standalone && this.setup();
 	}
 
 	disconnectedCallback() {
@@ -99,7 +111,7 @@ export class AmplifyTOTPSetup {
 		// ensure setup is only run once after totp setup is available
 		if (this.code || this.loading) {
 			logger.debug(
-				'setup was called while another is in progress, skipping setup.'
+				'setup was attempted while another is in progress, skipping setup.'
 			);
 			return;
 		}
@@ -111,12 +123,11 @@ export class AmplifyTOTPSetup {
 			);
 			return;
 		}
-		this.setupMessage = null;
-		const encodedIssuer = encodeURI(I18n.get(this.issuer));
-
 		if (!Auth || typeof Auth.setupTOTP !== 'function') {
 			throw new Error(NO_AUTH_MODULE_FOUND);
 		}
+		this.setupMessage = null;
+		const encodedIssuer = encodeURI(I18n.get(this.issuer));
 
 		this.loading = true;
 		try {

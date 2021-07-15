@@ -1122,6 +1122,10 @@ export namespace Components {
          */
         "issuer": string;
         /**
+          * Set this to true if this component is running outside the default `amplify-authenticator` usage
+         */
+        "standalone": boolean;
+        /**
           * Used in order to configure TOTP for a user
          */
         "user": CognitoUserInterface;
@@ -2673,6 +2677,10 @@ declare namespace LocalJSX {
           * Used for customizing the issuer string in the qr code image
          */
         "issuer"?: string;
+        /**
+          * Set this to true if this component is running outside the default `amplify-authenticator` usage
+         */
+        "standalone"?: boolean;
         /**
           * Used in order to configure TOTP for a user
          */
