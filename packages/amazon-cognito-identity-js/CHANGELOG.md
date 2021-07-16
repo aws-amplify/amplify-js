@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.5](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.4...amazon-cognito-identity-js@5.0.5) (2021-07-16)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** refresh cached user after deleting attributes ([#8578](https://github.com/aws-amplify/amplify-js/issues/8578)) ([bf78611](https://github.com/aws-amplify/amplify-js/commit/bf78611b8e4dbc4c8b774516c765cb6d1add8ea7))
+
+
+
+
+
 ## [5.0.4](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.3...amazon-cognito-identity-js@5.0.4) (2021-07-08)
 
 
