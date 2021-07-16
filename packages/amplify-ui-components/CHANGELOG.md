@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.6.1...@aws-amplify/ui-components@1.6.2) (2021-07-16)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
 ## [1.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.6.0...@aws-amplify/ui-components@1.6.1) (2021-07-08)
 
 **Note:** Version bump only for package @aws-amplify/ui-components
