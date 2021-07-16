@@ -1,6 +1,12 @@
 import { AWSS3UploadTask } from './AWSS3UploadTask';
 import * as events from 'events';
-import { S3Client, ListPartsCommand, ListPartsCommandOutput, CreateMultipartUploadCommand } from '@aws-sdk/client-s3';
+import {
+	S3Client,
+	ListPartsCommand,
+	ListPartsCommandOutput,
+	CreateMultipartUploadCommand,
+	AbortMultipartUploadCommand,
+} from '@aws-sdk/client-s3';
 import { StorageHelper } from '@aws-amplify/core';
 
 const oneHourInMs = 1000 * 60 * 60;
@@ -24,8 +30,8 @@ interface FileMetadata {
 }
 
 export enum TaskEvents {
-	UPLOAD_COMPLETE = 'uploadComplete',
 	ABORT = 'abort',
+	UPLOAD_COMPLETE = 'uploadComplete',
 	UPLOAD_PROGRESS = 'uploadPartProgress',
 }
 
@@ -39,7 +45,7 @@ export class AWSS3UploadManager {
 		this._storage = new StorageHelper().getStorage();
 	}
 
-	private async getCachedUploadParts({
+	private async _getCachedUploadParts({
 		s3client,
 		bucket,
 		key,
@@ -56,13 +62,16 @@ export class AWSS3UploadManager {
 		}
 		const uploads = JSON.parse(uploadsFromStorage) || {};
 		const fileKey = this._getFileKey(body, bucket, key);
-		if (!Object.prototype.hasOwnProperty.call(uploads, fileKey)) {
+		if (!uploads.hasOwnProperty(fileKey)) {
 			return null;
 		}
-		const cachedUploadFileData: FileMetadata = uploads[this._getFileKey(body, bucket, key)];
+		const cachedUploadFileData: FileMetadata =
+			uploads[this._getFileKey(body, bucket, key)];
 		const hasExpired =
-			Object.prototype.hasOwnProperty.call(cachedUploadFileData, 'timeStarted') &&
-			Date.now() - cachedUploadFileData.timeStarted > oneHourInMs;
+			Object.prototype.hasOwnProperty.call(
+				cachedUploadFileData,
+				'timeStarted'
+			) && Date.now() - cachedUploadFileData.timeStarted > oneHourInMs;
 		if (cachedUploadFileData && !hasExpired) {
 			const listPartsOutput = await s3client.send(
 				new ListPartsCommand({
@@ -84,7 +93,14 @@ export class AWSS3UploadManager {
 	private _getFileKey(blob: Blob, bucket: string, key: string): string {
 		// We should check if it's a File first because File is also instance of a Blob
 		if (this._isFile(blob)) {
-			return [blob.name, blob.lastModified, blob.size, blob.type, bucket, key].join('-');
+			return [
+				blob.name,
+				blob.lastModified,
+				blob.size,
+				blob.type,
+				bucket,
+				key,
+			].join('-');
 		} else if (this._isBlob(blob)) {
 			return [blob.size, blob.type, bucket, key].join('-');
 		} else return '';
@@ -95,16 +111,33 @@ export class AWSS3UploadManager {
 	 *
 	 * @param [ttl] - [Specify how long since the task has started should it be considered expired]
 	 */
-	private _purgeExpiredKeys(ttl = oneHourInMs): void {
-		const uploads = JSON.parse(this._storage.getItem(storageKey)) || {};
-		for (const [k, v] of Object.entries(uploads)) {
+	private _purgeExpiredKeys(input: {
+		s3Client: S3Client;
+		ttl?: number;
+		emitter?: events.EventEmitter;
+	}) {
+		const { s3Client, ttl = oneHourInMs } = input;
+		const uploads: Record<string, FileMetadata> =
+			JSON.parse(this._storage.getItem(storageKey)) || {};
+		for (const [k, upload] of Object.entries(uploads)) {
 			const hasExpired =
-				Object.prototype.hasOwnProperty.call(v, 'timeStarted') && Date.now() - (v as any).timeStarted > ttl;
-			console.log(`${k} : ${JSON.stringify(v)}`);
+				Object.prototype.hasOwnProperty.call(upload, 'timeStarted') &&
+				Date.now() - (upload as any).timeStarted > ttl;
+			console.log(`${k} : ${JSON.stringify(upload)}`);
 			if (hasExpired) {
-				// TODO: Clean up parts on S3 while purging
-				console.log(`Purging ${k}`);
-				delete uploads[k];
+				s3Client
+					.send(
+						new AbortMultipartUploadCommand({
+							Bucket: upload.bucket,
+							Key: upload.key,
+							UploadId: upload.uploadId,
+						})
+					)
+					.then(res => {
+						console.log(res);
+						console.log(`Purging ${k}`);
+						delete uploads[k];
+					});
 			}
 		}
 		this._storage.setItem(storageKey, JSON.stringify(uploads));
@@ -118,18 +151,33 @@ export class AWSS3UploadManager {
 	}
 
 	private _isListPartsOutput(x: unknown): x is ListPartsCommandOutput {
-		return x && Object.prototype.hasOwnProperty.call(x, 'UploadId') && Object.prototype.hasOwnProperty.call(x, 'Parts');
+		return (
+			x &&
+			typeof x === 'object' &&
+			Object.prototype.hasOwnProperty.call(x, 'UploadId') &&
+			Object.prototype.hasOwnProperty.call(x, 'Parts')
+		);
 	}
 
 	public async addTask(input: AddTaskInput) {
 		const { s3Client, bucket, key, body, emitter } = input;
 		let cachedUpload = {};
-		this._purgeExpiredKeys();
+		this._purgeExpiredKeys({
+			s3Client,
+		});
 		try {
 			console.log('Finding cached upload parts');
-			cachedUpload = (await this.getCachedUploadParts({ s3client: s3Client, bucket, key, body })) || {};
+			cachedUpload =
+				(await this._getCachedUploadParts({
+					s3client: s3Client,
+					bucket,
+					key,
+					body,
+				})) || {};
 		} catch (err) {
-			console.error('Error finding cached upload parts, re-intializing the multipart upload');
+			console.error(
+				'Error finding cached upload parts, re-intializing the multipart upload'
+			);
 		}
 		const fileKey = this._getFileKey(body, bucket, key);
 		emitter.on(TaskEvents.UPLOAD_COMPLETE, () => {
