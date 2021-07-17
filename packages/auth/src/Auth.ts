@@ -872,7 +872,7 @@ export class AuthClass {
 	}
 
 	/**
-	 * diable SMS
+	 * disable SMS
 	 * @deprecated
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves is success
