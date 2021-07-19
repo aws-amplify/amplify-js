@@ -46,6 +46,22 @@ export default class Client {
 		});
 	}
 
+	requestWithRetry(operation, params, callback) {
+		const MAX_DELAY_IN_MILLIS = 5 * 1000;
+
+		jitteredExponentialRetry((p) => new Promise((res, rej) => {
+			this.request(operation, p, (error, result) => {
+				if (error) {
+					rej(error);
+				} else {
+					res(result);
+				}
+			});
+		}), [params], MAX_DELAY_IN_MILLIS)
+			.then(result => callback(null, result))
+			.catch(error => callback(error));
+	}
+
 	/**
 	 * Makes an unauthenticated request on AWS Cognito Identity Provider API
 	 * using fetch
@@ -136,3 +152,67 @@ export default class Client {
 			});
 	}
 }
+
+const logger = {
+	debug: () => {
+		// Intentionally blank. This package doesn't have logging
+	}
+};
+
+/**
+ * For now, all errors are retryable.
+ */
+class NonRetryableError extends Error {
+	constructor(message) {
+		super(message);
+		this.nonRetryable = true;
+	}
+}
+
+const isNonRetryableError = (obj) => {
+	const key = 'nonRetryable';
+	return obj && obj[key];
+};
+
+function retry(functionToRetry, args, delayFn, attempt = 1) {
+	if (typeof functionToRetry !== 'function') {
+		throw Error('functionToRetry must be a function');
+	}
+
+	logger.debug(`${functionToRetry.name} attempt #${attempt} with args: ${JSON.stringify(args)}`);
+
+	return functionToRetry(...args).catch((err) => {
+		logger.debug(`error on ${functionToRetry.name}`, err);
+		
+		if (isNonRetryableError(err)) {
+			logger.debug(`${functionToRetry.name} non retryable error`, err);
+			throw err;
+		}
+
+		const retryIn = delayFn(attempt, args, err);
+
+		logger.debug(`${functionToRetry.name} retrying in ${retryIn} ms`);
+
+		if (retryIn !== false) {
+			return new Promise(res => setTimeout(res, retryIn))
+					.then(() => retry(functionToRetry, args, delayFn, attempt + 1))
+		} else {
+			throw err;
+		}
+	})
+}
+
+function jitteredBackoff(maxDelayMs) {
+	const BASE_TIME_MS = 100;
+	const JITTER_FACTOR = 100;
+
+	return attempt => {
+		const delay = 2 ** attempt * BASE_TIME_MS + JITTER_FACTOR * Math.random();
+		return delay > maxDelayMs ? false : delay;
+	};
+}
+
+const MAX_DELAY_MS = 5 * 60 * 1000;
+function jitteredExponentialRetry(functionToRetry, args, maxDelayMs = MAX_DELAY_MS) {
+	return retry(functionToRetry, args, jitteredBackoff(maxDelayMs))
+};
