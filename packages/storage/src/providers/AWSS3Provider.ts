@@ -64,6 +64,7 @@ const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' && typeof Symbol.for === '
 	: '@@amplify_default') as Symbol;
 const SET_CONTENT_LENGTH_HEADER = 'contentLengthMiddleware';
 const DEFAULT_STORAGE_LEVEL = 'public';
+const DEFAULT_PRESIGN_EXPIRATION = 900;
 
 const dispatchStorageEvent = (track: boolean, event: string, attrs: any, metrics: any, message: string) => {
 	if (track) {
@@ -340,7 +341,7 @@ export class AWSS3Provider implements StorageProvider {
 			const signer = new S3RequestPresigner({ ...s3.config });
 			const request = await createRequest(s3, new GetObjectCommand(params));
 			// Default is 15 mins as defined in V2 AWS SDK
-			const url = formatUrl(await signer.presign(request, { expiresIn: expires || 900 }));
+			const url = formatUrl(await signer.presign(request, { expiresIn: expires || DEFAULT_PRESIGN_EXPIRATION }));
 			dispatchStorageEvent(track, 'getSignedUrl', { method: 'get', result: 'success' }, null, `Signed URL: ${url}`);
 			return url;
 		} catch (error) {
