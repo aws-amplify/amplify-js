@@ -23,8 +23,9 @@ interface AddTaskInput {
 
 interface FileMetadata {
 	uploadId: UploadId;
-	// in epoch
+	// Unix timestamp in ms
 	timeStarted: number;
+	lastTouched: number;
 	bucket: string;
 	key: string;
 }
@@ -66,13 +67,13 @@ export class AWSS3UploadManager {
 			return null;
 		}
 		const cachedUploadFileData: FileMetadata =
-			uploads[this._getFileKey(body, bucket, key)];
+			uploads[this._getFileKey(body, bucket, key)] || {};
 		const hasExpired =
-			Object.prototype.hasOwnProperty.call(
-				cachedUploadFileData,
-				'timeStarted'
-			) && Date.now() - cachedUploadFileData.timeStarted > oneHourInMs;
+			cachedUploadFileData.hasOwnProperty('lastTouched') &&
+			Date.now() - cachedUploadFileData.lastTouched > oneHourInMs;
 		if (cachedUploadFileData && !hasExpired) {
+			cachedUploadFileData.lastTouched = Date.now();
+			this._storage.setItem(storageKey, JSON.stringify(uploads));
 			const listPartsOutput = await s3client.send(
 				new ListPartsCommand({
 					Bucket: bucket,
@@ -176,7 +177,7 @@ export class AWSS3UploadManager {
 				})) || {};
 		} catch (err) {
 			console.error(
-				'Error finding cached upload parts, re-intializing the multipart upload'
+				'Error finding cached upload parts, will re-initialize the multipart upload'
 			);
 		}
 		const fileKey = this._getFileKey(body, bucket, key);
@@ -200,9 +201,8 @@ export class AWSS3UploadManager {
 				emitter,
 			});
 			return this._uploadTasks[cachedUploadId];
-		} else {
-			return this._initMultiupload(input);
 		}
+		return this._initMultiupload(input);
 	}
 
 	private async _initMultiupload(input: AddTaskInput) {
@@ -227,6 +227,7 @@ export class AWSS3UploadManager {
 		const fileMetadata: FileMetadata = {
 			uploadId: createMultipartUpload.UploadId,
 			timeStarted: Date.now(),
+			lastTouched: Date.now(),
 			bucket,
 			key,
 		};
