@@ -2716,7 +2716,7 @@ describe('auth unit test', () => {
 			spyon.mockClear();
 		});
 
-		test('happy case clientMetadata default', async () => {
+		test('happy case to call with expected attributes', async () => {
 			const spyon = jest.spyOn(CognitoUser.prototype, 'deleteAttributes');
 			const auth = new Auth(authOptionsWithClientMetadata);
 			const user = new CognitoUser({
@@ -2727,9 +2727,8 @@ describe('auth unit test', () => {
 			await auth.deleteUserAttributes(user, ['email', 'phone_number']);
 
 			expect(await CognitoUser.prototype.deleteAttributes).toBeCalledWith(
-				[],
+				['email', 'phone_number'],
 				jasmine.any(Function),
-				['email', 'phone_number']
 			);
 			spyon.mockClear();
 		});
