@@ -66,7 +66,7 @@ const SET_CONTENT_LENGTH_HEADER = 'contentLengthMiddleware';
 const DEFAULT_STORAGE_LEVEL = 'public';
 const DEFAULT_PRESIGN_EXPIRATION = 900;
 
-const dispatchStorageEvent = (track: boolean, event: string, attrs: any, metrics: any, message: string) => {
+const dispatchStorageEvent = (track: boolean, event: string, attrs: any, metrics: any, message: string): void => {
 	if (track) {
 		const data = { attrs };
 		if (metrics) {
@@ -590,7 +590,7 @@ export class AWSS3Provider implements StorageProvider {
 		level?: StorageLevel;
 		customPrefix?: CustomPrefix;
 		identityId?: string;
-	}) {
+	}): string {
 		const { credentials, level } = config;
 
 		const customPrefix = config.customPrefix || {};
@@ -621,7 +621,7 @@ export class AWSS3Provider implements StorageProvider {
 			dangerouslyConnectToHttpEndpointForTesting?: boolean;
 		},
 		emitter?: events.EventEmitter
-	) {
+	): S3Client {
 		const { region, credentials, cancelTokenSource, dangerouslyConnectToHttpEndpointForTesting } = config;
 		let localTestingConfig = {};
 
