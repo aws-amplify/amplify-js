@@ -17,7 +17,7 @@ import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import * as events from 'events';
 
-import { S3CopySource, S3CopyDestination, StorageOptions } from '../../src/types';
+import { S3CopySource, S3CopyDestination, StorageOptions, S3ProviderGetConfig } from '../../src/types';
 /**
  * NOTE - These test cases use Hub.dispatch but they should
  * actually be using dispatchStorageEvent from Storage
@@ -282,8 +282,7 @@ describe('StorageProvider test', () => {
 			});
 			await storage.get('key', {
 				download: true,
-				// @ts-ignore - Disable TS check here as this is intentional
-				progressCallback: 'this is not a function',
+				progressCallback: ('this is not a function' as unknown) as S3ProviderGetConfig['progressCallback'], // this is intentional
 			});
 			expect(loggerSpy).toHaveBeenCalledWith('WARN', 'progressCallback should be a function, not a string');
 		});
@@ -684,8 +683,7 @@ describe('StorageProvider test', () => {
 			const storage = new StorageProvider();
 			storage.configure(options);
 			await storage.put('key', 'object', {
-				// @ts-ignore Disable TS check here as this is intentional
-				progressCallback: 'hello',
+				progressCallback: ('hello' as unknown) as S3ProviderGetConfig['progressCallback'], // this is intentional
 			});
 			expect(loggerSpy).toHaveBeenCalledWith('WARN', 'progressCallback should be a function, not a string');
 		});
