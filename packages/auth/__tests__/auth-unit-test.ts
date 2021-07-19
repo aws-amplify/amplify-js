@@ -2724,12 +2724,12 @@ describe('auth unit test', () => {
 				Pool: userPool,
 			});
 
-			await auth.deleteUserAttributes(user, []);
+			await auth.deleteUserAttributes(user, ['email', 'phone_number']);
 
 			expect(await CognitoUser.prototype.deleteAttributes).toBeCalledWith(
 				[],
 				jasmine.any(Function),
-				{ foo: 'bar' }
+				['email', 'phone_number']
 			);
 			spyon.mockClear();
 		});
