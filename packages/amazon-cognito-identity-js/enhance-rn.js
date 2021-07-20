@@ -1,9 +1,6 @@
 import { NativeModules } from 'react-native';
 import * as src from './src';
 
-import UserAgent from './src/UserAgent';
-UserAgent.prototype.userAgent = 'aws-amplify/0.1.x react-native';
-
 import BigInteger from './src/BigInteger';
 
 export * from './src';

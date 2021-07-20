@@ -503,6 +503,7 @@ export default class CognitoUser {
 		}
 
 		if (challengeName === 'DEVICE_SRP_AUTH') {
+			this.Session = dataAuthenticate.Session;
 			this.getDeviceResponse(callback);
 			return undefined;
 		}
@@ -672,6 +673,7 @@ export default class CognitoUser {
 				ClientId: this.pool.getClientId(),
 				ChallengeResponses: authParameters,
 				ClientMetadata: clientMetadata,
+				Session: this.Session
 			};
 			if (this.getUserContextData()) {
 				jsonReq.UserContextData = this.getUserContextData();
