@@ -16,11 +16,7 @@
  */
 
 import { Buffer } from 'buffer';
-import CryptoJS from 'crypto-js/core';
-import 'crypto-js/lib-typedarrays'; // necessary for crypto js
-import SHA256 from 'crypto-js/sha256';
-import HmacSHA256 from 'crypto-js/hmac-sha256';
-import WordArray from './utils/WordArray';
+import { WordArray, SHA256, HmacSHA256 } from './utils/CryptoJSHelper';
 
 /**
  * Returns a Buffer with a sequence of random nBytes
@@ -30,7 +26,7 @@ import WordArray from './utils/WordArray';
  */
 
 function randomBytes(nBytes) {
-	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
+	return Buffer.from(WordArray.random(nBytes).toString(), 'hex');
 }
 
 import BigInteger from './BigInteger';
@@ -229,7 +225,7 @@ export default class AuthenticationHelper {
 	 */
 	hash(buf) {
 		const str =
-			buf instanceof Buffer ? CryptoJS.lib.WordArray.create(buf) : buf;
+			buf instanceof Buffer ? WordArray.create(buf) : buf;
 		const hashHex = SHA256(str).toString();
 
 		return new Array(64 - hashHex.length).join('0') + hashHex;
@@ -253,16 +249,16 @@ export default class AuthenticationHelper {
 	 * @private
 	 */
 	computehkdf(ikm, salt) {
-		const infoBitsWordArray = CryptoJS.lib.WordArray.create(
+		const infoBitsWordArray = WordArray.create(
 			Buffer.concat([
 				this.infoBits,
 				Buffer.from(String.fromCharCode(1), 'utf8'),
 			])
 		);
 		const ikmWordArray =
-			ikm instanceof Buffer ? CryptoJS.lib.WordArray.create(ikm) : ikm;
+			ikm instanceof Buffer ? WordArray.create(ikm) : ikm;
 		const saltWordArray =
-			salt instanceof Buffer ? CryptoJS.lib.WordArray.create(salt) : salt;
+			salt instanceof Buffer ? WordArray.create(salt) : salt;
 
 		const prk = HmacSHA256(ikmWordArray, saltWordArray);
 		const hmac = HmacSHA256(infoBitsWordArray, prk);

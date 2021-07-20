@@ -23,7 +23,7 @@ import {
 	isModelAttributePrimaryKey,
 	isModelAttributeCompositeKey,
 } from './types';
-import { WordArray } from 'amazon-cognito-identity-js';
+import { CryptoJSHelper } from 'amazon-cognito-identity-js';
 
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
@@ -478,7 +478,7 @@ export const isPrivateMode = () => {
 };
 
 const randomBytes = function(nBytes: number): Buffer {
-	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
+	return Buffer.from(CryptoJSHelper.lib.WordArray.random(nBytes).toString(), 'hex');
 };
 const prng = () => randomBytes(1).readUInt8(0) / 0xff;
 export function monotonicUlidFactory(seed?: number): ULID {

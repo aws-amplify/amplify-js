@@ -17,6 +17,7 @@ describe('import * keys', () => {
 		  "DateHelper",
 		  "appendToCognitoUserAgent",
 		  "WordArray",
+		  "CryptoJSHelper",
 		]
 	`);
 	});

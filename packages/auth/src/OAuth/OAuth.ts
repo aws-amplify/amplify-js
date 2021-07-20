@@ -22,9 +22,9 @@ import {
 } from '../types/Auth';
 
 import { ConsoleLogger as Logger, Hub, urlSafeEncode } from '@aws-amplify/core';
-
-import sha256 from 'crypto-js/sha256';
-import Base64 from 'crypto-js/enc-base64';
+import { CryptoJSHelper } from 'amazon-cognito-identity-js';
+const sha256 = CryptoJSHelper.SHA256;
+const Base64 = CryptoJSHelper.enc.Base64;
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
 typeof Symbol.for === 'function'

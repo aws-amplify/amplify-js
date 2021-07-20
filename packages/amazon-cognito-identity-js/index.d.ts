@@ -397,7 +397,21 @@ declare module 'amazon-cognito-identity-js' {
 
 	export class WordArray {
 		constructor(words?: string[], sigBytes?: number);
-		random(nBytes: number): WordArray;
+		static random(nBytes: number): WordArray;
 		toString(): string;
+	}
+	// TODO: remove previous WordArray
+	export const CryptoJSHelper: {
+		lib: {
+			WordArray: typeof WordArray;
+		},
+		HmacSHA256: Function;
+		SHA256: Function;
+		enc: {
+			Base64: {
+				stringify(wordArray: WordArray): string;
+				parse(base64Str: string): WordArray;
+			}
+		}
 	}
 }
