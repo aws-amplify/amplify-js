@@ -6,6 +6,9 @@ module.exports = {
 		'__tests__/constants.js',
 		'__tests__/__mocks__/*',
 	],
+	coveragePathIgnorePatterns: [
+		'src/utils/CryptoJSHelper.js',
+	],
 	collectCoverage: true,
 	collectCoverageFrom: ['src/*.js'],
 

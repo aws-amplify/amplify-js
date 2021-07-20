@@ -1,7 +1,7 @@
 import AuthenticationHelper from '../src/AuthenticationHelper';
 
 import BigInteger from '../src/BigInteger';
-import { SHA256 } from 'crypto-js';
+import { SHA256 }  from '../src/utils/CryptoJSHelper';
 import { promisifyCallback } from './util';
 import { bigIntError } from './constants';
 const instance = new AuthenticationHelper('TestPoolName');

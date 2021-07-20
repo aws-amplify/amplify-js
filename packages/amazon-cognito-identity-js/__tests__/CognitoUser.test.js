@@ -637,7 +637,10 @@ describe('getDeviceResponse()', () => {
 			jest
 				.spyOn(AuthenticationHelper.prototype, 'getPasswordAuthenticationKey')
 				.mockImplementation((...args) => {
-					args[4](null, 'hkdf value');
+					// hkdf return from "computehkdf" wont be a string, it should be an array
+					// if it is a primitive string, it will fail CryptoJS in strict mode!
+					// because CryptoJS will treat the input as array to assign properties (index) to it
+					args[4](null, ['hkdf value']);
 				});
 
 			const spyon2 = jest.spyOn(user, 'getUserContextData');
