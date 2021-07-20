@@ -84,7 +84,7 @@
 		"tslint": "^5.7.0",
 		"tslint-config-airbnb": "^5.8.0",
 		"typedoc": "^0.16.9",
-		"typescript": "~3.6.4",
+		"typescript": "~3.7.7",
 		"uglifyjs-webpack-plugin": "^0.4.6",
 		"uuid-validate": "^0.0.3",
 		"webpack": "^4.32.0",
