@@ -186,6 +186,7 @@ export class GraphQLAPIClass {
 				headers = {
 					Authorization: additionalHeaders.Authorization,
 				};
+				break;
 			default:
 				headers = {
 					Authorization: null,

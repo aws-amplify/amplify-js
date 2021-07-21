@@ -166,7 +166,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		_topics: string[] | string,
 		options?: ProvidertOptions
 	): Observable<any> {
-		const { appSyncGraphqlEndpoint, additionalHeaders } = options;
+		const { appSyncGraphqlEndpoint } = options;
 
 		return new Observable(observer => {
 			if (!appSyncGraphqlEndpoint) {
