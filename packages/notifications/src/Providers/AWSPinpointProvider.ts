@@ -97,7 +97,6 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 	private async _getEndpointId(cacheKey: string) {
 		// try to get from cache or generate
 		let endpointId = await Cache.getItem(cacheKey);
-		// const endpointId = await Cache.getItem(cacheKey);
 		logger.debug(
 			'endpointId from cache',
 			endpointId,
