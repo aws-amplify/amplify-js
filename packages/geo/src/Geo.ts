@@ -17,7 +17,7 @@ import {
 } from '@aws-amplify/core';
 import { AmazonLocationServicesProvider } from './Providers/AmazonLocationServicesProvider';
 
-import { GeoConfig, GeoProvider } from './types';
+import { GeoConfig, GeoProvider, MapStyle } from './types';
 
 const logger = new Logger('Geo');
 
@@ -34,11 +34,12 @@ export class GeoClass {
 		this._config = {};
 		this._pluggables = [];
 		logger.debug('Geo Options', this._config);
-
-		this.getAvailableMaps.bind(this);
-		this.getDefaultMap.bind(this);
 	}
 
+	/**
+	 * get the name of the module category
+	 * @returns {string} name of the module category
+	 */
 	public getModuleName() {
 		return GeoClass.MODULE;
 	}
@@ -104,7 +105,12 @@ export class GeoClass {
 		return this._config;
 	}
 
-	public getAvailableMaps(provider = DEFAULT_PROVIDER) {
+	/**
+	 * Get the map resources that are currently available through the provider
+	 * @param {string} provider
+	 * @returns - Array of available map resources
+	 */
+	public getAvailableMaps(provider = DEFAULT_PROVIDER): MapStyle[] | string {
 		const prov = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
@@ -117,7 +123,12 @@ export class GeoClass {
 		return prov.getAvailableMaps();
 	}
 
-	public getDefaultMap(provider = DEFAULT_PROVIDER) {
+	/**
+	 * Get the map resource set as default in amplify config
+	 * @param {string} provider
+	 * @returns - Map resource set as the default in amplify config
+	 */
+	public getDefaultMap(provider = DEFAULT_PROVIDER): MapStyle | string {
 		const prov = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);

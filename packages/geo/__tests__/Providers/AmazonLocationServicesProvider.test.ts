@@ -12,10 +12,7 @@
  */
 
 import { AmazonLocationServicesProvider } from '../../src/Providers/AmazonLocationServicesProvider';
-import {
-	credentials,
-	awsConfig,
-} from '../data';
+import { awsConfig } from '../data';
 
 describe('AmazonLocationServicesProvider', () => {
 	afterEach(() => {
@@ -64,7 +61,7 @@ describe('AmazonLocationServicesProvider', () => {
 			provider.configure();
 			const availableMaps = provider.getAvailableMaps();
 			expect(availableMaps).toEqual(
-				"No map resources found, run 'amplify add geo' to create them"
+				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
 			);
 		});
 
@@ -82,14 +79,27 @@ describe('AmazonLocationServicesProvider', () => {
 			expect(provider.getAvailableMaps()).toEqual(maps);
 		});
 
-		test('should tell you if there is no default map resource', () => {
+		test('should tell you if there is no map resources available when calling getDefaultMap', () => {
 			const provider = new AmazonLocationServicesProvider();
 			provider.configure();
 
 			const defaultMapsResource = provider.getDefaultMap();
 
 			expect(defaultMapsResource).toEqual(
-				"No default map resource found, run 'amplify add geo' to create one"
+				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+			);
+		});
+
+		test('should tell you if there is no default map resource', () => {
+			const provider = new AmazonLocationServicesProvider();
+			provider.configure({
+				maps: { testMap: { style: 'teststyle' } },
+			});
+
+			const defaultMapsResource = provider.getDefaultMap();
+
+			expect(defaultMapsResource).toEqual(
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after"
 			);
 		});
 

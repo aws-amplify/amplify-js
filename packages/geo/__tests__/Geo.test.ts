@@ -98,7 +98,7 @@ describe('Geo', () => {
 			const availableMaps = geo.getAvailableMaps();
 
 			expect(availableMaps).toEqual(
-				"No map resources found, run 'amplify add geo' to create them"
+				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
 			);
 		});
 
@@ -123,7 +123,29 @@ describe('Geo', () => {
 			const defaultMapsResource = geo.getDefaultMap();
 
 			expect(defaultMapsResource).toEqual(
-				"No default map resource found, run 'amplify add geo' to create one"
+				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+			);
+		});
+
+		test('should tell you if there is no map resources when running getDefaultMapResource', () => {
+			const geo = new GeoClass();
+			geo.configure({});
+
+			const defaultMapsResource = geo.getDefaultMap();
+
+			expect(defaultMapsResource).toEqual(
+				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+			);
+		});
+
+		test('should tell you if there is no map resources when running getDefaultMapResource', () => {
+			const geo = new GeoClass();
+			geo.configure({ geo: { maps: { testMap: { style: 'teststyle' } } } });
+
+			const defaultMapsResource = geo.getDefaultMap();
+
+			expect(defaultMapsResource).toEqual(
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after"
 			);
 		});
 
