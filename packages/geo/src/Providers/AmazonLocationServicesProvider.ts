@@ -68,7 +68,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 	public getAvailableMaps() {
 		if (!this._config.maps) {
-			return "No map resources found, run 'amplify add geo' to create them";
+			return "No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after";
 		}
 
 		const maps = [];
