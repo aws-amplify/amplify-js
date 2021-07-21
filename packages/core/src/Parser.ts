@@ -52,11 +52,10 @@ export const parseMobileHubConfig = (config): AmplifyConfig => {
 			region: config['aws_project_region'],
 		};
 	}
+
 	// Geo
 	if (config['geo']) {
 		amplifyConfig.Geo = Object.assign({}, config.geo);
-		// storageConfig acts like a catch-all, but doesn't need the 'geo' property, so we'll delete it
-		delete storageConfig.geo;
 	}
 
 	amplifyConfig.Analytics = Object.assign(
