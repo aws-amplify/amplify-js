@@ -57,4 +57,52 @@ describe('AmazonLocationServicesProvider', () => {
 			expect(config).toEqual(awsConfig.geo);
 		});
 	});
+
+	describe('get map resources', () => {
+		test('should tell you if there are no available map resources', () => {
+			const provider = new AmazonLocationServicesProvider();
+			provider.configure();
+			const availableMaps = provider.getAvailableMaps();
+			expect(availableMaps).toEqual(
+				"No map resources found, run 'amplify add geo' to create them"
+			);
+		});
+
+		test('should get all available map resources', () => {
+			const provider = new AmazonLocationServicesProvider();
+			provider.configure(awsConfig.geo);
+
+			const maps = [];
+			const availableMaps = awsConfig.geo.maps.items;
+			for (const mapName in availableMaps) {
+				const style = availableMaps[mapName].style;
+				maps.push({ mapName, style });
+			}
+
+			expect(provider.getAvailableMaps()).toEqual(maps);
+		});
+
+		test('should tell you if there is no default map resource', () => {
+			const provider = new AmazonLocationServicesProvider();
+			provider.configure();
+
+			const defaultMapsResource = provider.getDefaultMap();
+
+			expect(defaultMapsResource).toEqual(
+				"No default map resource found, run 'amplify add geo' to create one"
+			);
+		});
+
+		test('should get the default map resource', () => {
+			const provider = new AmazonLocationServicesProvider();
+			provider.configure(awsConfig.geo);
+
+			const mapName = awsConfig.geo.maps.default;
+			const style = awsConfig.geo.maps.items[mapName].style;
+			const testMap = { mapName, style };
+
+			const defaultMapsResource = provider.getDefaultMap();
+			expect(defaultMapsResource).toEqual(testMap);
+		});
+	});
 });

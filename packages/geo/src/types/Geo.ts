@@ -18,3 +18,9 @@ export type GeoConfig = {
 	};
 	place_indexes?: {};
 };
+
+export type MapStyle = {
+	mapName: string;
+	style: string;
+};
+

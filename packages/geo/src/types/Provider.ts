@@ -11,6 +11,9 @@
  * and limitations under the License.
  */
 
+import {
+	MapStyle,
+} from './Geo';
 
 export interface GeoProvider {
 	getCategory(): string;
@@ -18,4 +21,8 @@ export interface GeoProvider {
 	getProviderName(): string;
 
 	configure(config: object): object;
+
+	getAvailableMaps(): string | MapStyle[];
+
+	getDefaultMap(): string | MapStyle;
 }

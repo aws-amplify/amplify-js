@@ -36,6 +36,8 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		this._config = config ? config : {};
 		logger.debug('Geo Options', this._config);
 
+		this.getAvailableMaps.bind(this);
+		this.getDefaultMap.bind(this);
 	}
 
 	/**
@@ -62,5 +64,32 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		if (!config) return this._config;
 		this._config = Object.assign({}, this._config, config);
 		return this._config;
+	}
+
+	public getAvailableMaps() {
+		if (!this._config.maps) {
+			return "No map resources found, run 'amplify add geo' to create them";
+		}
+
+		const maps = [];
+		const availableMaps = this._config.maps.items;
+
+		for (const mapName in availableMaps) {
+			const style = availableMaps[mapName].style;
+			maps.push({ mapName, style });
+		}
+
+		return maps;
+	}
+
+	public getDefaultMap() {
+		if (!this._config.maps || !this._config.maps.default) {
+			return "No default map resource found, run 'amplify add geo' to create one";
+		}
+
+		const mapName = this._config.maps.default;
+		const style = this._config.maps.items[mapName].style;
+
+		return { mapName, style };
 	}
 }
