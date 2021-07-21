@@ -55,6 +55,16 @@ describe('Geo', () => {
 		});
 	});
 
+	describe('AmazonLocationServices is used as default provider', () => {
+		test('configure with aws-exports file', () => {
+			const geo = new GeoClass();
+			const config = geo.configure(awsConfig);
+			expect(geo.getPluggable('AmazonLocationServices')).toBeInstanceOf(
+				AmazonLocationServicesProvider
+			);
+		});
+	});
+
 	describe('configure', () => {
 		test('configure with aws-exports file', () => {
 			const geo = new GeoClass();
