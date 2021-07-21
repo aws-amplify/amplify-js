@@ -17,11 +17,13 @@ import {
 	SearchPlaceIndexForTextCommandInput,
 	LocationClient,
 	SearchPlaceIndexForTextCommand,
+	SearchPlaceIndexForPositionCommand,
 } from '@aws-sdk/client-location';
 
 import {
 	GeoConfig,
 	SearchByTextOptions,
+	SearchByCoordinatesOptions,
 	GeoProvider,
 	Place,
 	MapStyle,
@@ -49,6 +51,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		this.getAvailableMaps.bind(this);
 		this.getDefaultMap.bind(this);
 		this.searchByText.bind(this);
+		this.searchByCoordinates.bind(this);
 	}
 
 	/**
@@ -187,6 +190,40 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		const results: Place[] = (camelcaseKeys(PascalResults, {
 			deep: true,
 		}) as undefined) as Place[];
+
+		return results;
+	}
+
+	public async searchByCoordinates(
+		coordinates: Coordinates,
+		options?: SearchByCoordinatesOptions
+	) {
+		const credentialsOK = await this._getCredentials();
+		if (!credentialsOK) {
+			return Promise.reject('No credentials');
+		}
+		let searchInput = {
+			Position: coordinates,
+			IndexName: this._config.place_indexes.default,
+		};
+		if (options) {
+			const PascalOptions = convertPlaceCamelToPascal(options);
+			searchInput = {
+				...searchInput,
+				...PascalOptions,
+			};
+		}
+
+		const client = new LocationClient({
+			credentials: this._config.credentials,
+			region: this._config.region,
+		});
+		const command = new SearchPlaceIndexForPositionCommand(searchInput);
+
+		const response = await client.send(command);
+
+		const PascalResults = response.Results.map(result => result.Place);
+		const results = convertPlaceArrayPascalToCamel(PascalResults);
 
 		return results;
 	}

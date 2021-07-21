@@ -17,7 +17,14 @@ import {
 } from '@aws-amplify/core';
 import { AmazonLocationServicesProvider } from './Providers/AmazonLocationServicesProvider';
 
-import { GeoConfig, SearchByTextOptions, GeoProvider, MapStyle } from './types';
+import {
+	GeoConfig,
+	Coordinates,
+	SearchByTextOptions,
+	SearchByCoordinatesOptions,
+	GeoProvider,
+	MapStyle,
+} from './types';
 
 const logger = new Logger('Geo');
 
@@ -38,6 +45,7 @@ export class GeoClass {
 		this.getAvailableMaps.bind(this);
 		this.getDefaultMap.bind(this);
 		this.searchByText.bind(this);
+		this.searchByCoordinates.bind(this);
 	}
 
 	/**
@@ -156,6 +164,23 @@ export class GeoClass {
 		}
 
 		const responsePromise = await prov.searchByText(text, options);
+		return responsePromise;
+	}
+
+	public async searchByCoordinates(
+		coordinates: Coordinates,
+		options?: SearchByCoordinatesOptions
+	) {
+		const { provider = DEFAULT_PROVIDER } = options || {};
+		const prov = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (prov === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			return Promise.reject('No plugin found in Geo for the provider');
+		}
+
+		const responsePromise = prov.searchByCoordinates(coordinates, options);
 		return responsePromise;
 	}
 }

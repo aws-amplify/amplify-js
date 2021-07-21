@@ -11,7 +11,13 @@
  * and limitations under the License.
  */
 
-import { SearchByTextOptions, Place, MapStyle } from './Geo';
+import {
+	SearchByTextOptions,
+	SearchByCoordinatesOptions,
+	Coordinates,
+	Place,
+	MapStyle,
+} from './Geo';
 
 export interface GeoProvider {
 	// get the category name for the provider
@@ -29,6 +35,10 @@ export interface GeoProvider {
 	// get the map resource listed as default
 	getDefaultMap(): string | MapStyle;
 
-	// search for places by text input
 	searchByText(text: string, options?: SearchByTextOptions): Promise<Place[]>;
+
+	searchByCoordinates(
+		coordinates: Coordinates,
+		options?: SearchByCoordinatesOptions
+	): Promise<Place>;
 }

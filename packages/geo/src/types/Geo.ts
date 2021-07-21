@@ -68,6 +68,12 @@ export type SearchByTextOptions =
 	| SearchByTextOptionsWithBiasPosition
 	| SearchByTextOptionsWithSearchAreaConstraints;
 
+export type SearchByCoordinatesOptions = {
+	maxResults?: number;
+	placeIndex?: string;
+	provider?: string;
+};
+
 // Geometry object for Place points
 export type PlaceGeometry = {
 	point: Coordinates;
