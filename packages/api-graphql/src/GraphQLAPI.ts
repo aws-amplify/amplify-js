@@ -32,9 +32,14 @@ const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 const logger = new Logger('GraphQLAPI');
 
-export const graphqlOperation = (query, variables = {}) => ({
+export const graphqlOperation = (
+	query,
+	variables = {},
+	authToken?: string
+) => ({
 	query,
 	variables,
+	authToken,
 });
 
 /**
@@ -113,7 +118,10 @@ export class GraphQLAPIClass {
 		}
 	}
 
-	private async _headerBasedAuth(defaultAuthenticationType?) {
+	private async _headerBasedAuth(
+		defaultAuthenticationType?,
+		additionalHeaders: { [key: string]: string } = {}
+	) {
 		const {
 			aws_appsync_authenticationType,
 			aws_appsync_apiKey: apiKey,
@@ -171,6 +179,13 @@ export class GraphQLAPIClass {
 					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
 				}
 				break;
+			case 'AWS_LAMBDA':
+				if (!additionalHeaders.Authorization) {
+					throw new Error(GraphQLAuthError.NO_AUTH_TOKEN);
+				}
+				headers = {
+					Authorization: additionalHeaders.Authorization,
+				};
 			default:
 				headers = {
 					Authorization: null,
@@ -202,7 +217,7 @@ export class GraphQLAPIClass {
 	 * @returns {Promise<GraphQLResult> | Observable<object>}
 	 */
 	graphql(
-		{ query: paramQuery, variables = {}, authMode }: GraphQLOptions,
+		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	) {
 		const query =
@@ -217,6 +232,13 @@ export class GraphQLAPIClass {
 			operation: operationType,
 		} = operationDef as OperationDefinitionNode;
 
+		const headers = additionalHeaders || {};
+
+		// if an authorization header is set, have the explicit authToken take precedence
+		if (authToken) {
+			headers.Authorization = authToken;
+		}
+
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
@@ -224,7 +246,7 @@ export class GraphQLAPIClass {
 				const initParams = { cancellableToken };
 				const responsePromise = this._graphql(
 					{ query, variables, authMode },
-					additionalHeaders,
+					headers,
 					initParams
 				);
 				this._api.updateRequestToBeCancellable(
@@ -233,10 +255,7 @@ export class GraphQLAPIClass {
 				);
 				return responsePromise;
 			case 'subscription':
-				return this._graphqlSubscribe(
-					{ query, variables, authMode },
-					additionalHeaders
-				);
+				return this._graphqlSubscribe({ query, variables, authMode }, headers);
 		}
 
 		throw new Error(`invalid operation type: ${operationType}`);
@@ -260,10 +279,11 @@ export class GraphQLAPIClass {
 		} = this._options;
 
 		const headers = {
-			...(!customGraphqlEndpoint && (await this._headerBasedAuth(authMode))),
+			...(!customGraphqlEndpoint &&
+				(await this._headerBasedAuth(authMode, additionalHeaders))),
 			...(customGraphqlEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(authMode)
+					? await this._headerBasedAuth(authMode, additionalHeaders)
 					: { Authorization: null })),
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
@@ -344,7 +364,12 @@ export class GraphQLAPIClass {
 	}
 
 	private _graphqlSubscribe(
-		{ query, variables, authMode: defaultAuthenticationType }: GraphQLOptions,
+		{
+			query,
+			variables,
+			authMode: defaultAuthenticationType,
+			authToken,
+		}: GraphQLOptions,
 		additionalHeaders = {}
 	): Observable<any> {
 		const {
@@ -368,6 +393,7 @@ export class GraphQLAPIClass {
 				variables,
 				graphql_headers,
 				additionalHeaders,
+				authToken,
 			});
 		} else {
 			logger.debug('No pubsub module applied for subscription');
