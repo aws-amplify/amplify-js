@@ -47,9 +47,7 @@ export class GeoClass {
 	public addPluggable(pluggable: GeoProvider) {
 		if (pluggable && pluggable.getCategory() === 'Geo') {
 			this._pluggables.push(pluggable);
-			let config = {};
-
-			config = pluggable.configure(this._config[pluggable.getProviderName()]);
+			const config = pluggable.configure(this._config);
 
 			return config;
 		}
@@ -98,9 +96,7 @@ export class GeoClass {
 		});
 
 		if (this._pluggables.length === 0) {
-			const locationServicesProvider = new AmazonLocationServicesProvider();
-			locationServicesProvider.configure(this._config);
-			this.addPluggable(locationServicesProvider);
+			this.addPluggable(new AmazonLocationServicesProvider());
 		}
 		return this._config;
 	}
