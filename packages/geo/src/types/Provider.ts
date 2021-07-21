@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { MapStyle } from './Geo';
+import { SearchByTextOptions, Place, MapStyle } from './Geo';
 
 export interface GeoProvider {
 	// get the category name for the provider
@@ -28,4 +28,9 @@ export interface GeoProvider {
 
 	// get the map resource listed as default
 	getDefaultMap(): string | MapStyle;
+
+	searchByText(
+		text: string,
+		options?: SearchByTextOptions
+	): Promise<Place[] | void>;
 }
