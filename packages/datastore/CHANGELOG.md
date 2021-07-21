@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.2.0...@aws-amplify/datastore@3.2.1) (2021-07-16)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.1.2...@aws-amplify/datastore@3.2.0) (2021-07-08)
+
+
+### Features
+
+* **@aws-amplify/datastore:** expose timestamp fields and prevent writing to read-only fields ([#8509](https://github.com/aws-amplify/amplify-js/issues/8509)) ([10857d5](https://github.com/aws-amplify/amplify-js/commit/10857d5bbd6f7cb59a58641e0e8a3cb5dc0080e9))
+
+
+
+
+
 ## [3.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.1.1...@aws-amplify/datastore@3.1.2) (2021-06-24)
 
 **Note:** Version bump only for package @aws-amplify/datastore

@@ -264,8 +264,6 @@ function buildES6(typeScriptCompiler, watchMode) {
 }
 
 function build(type, watchMode) {
-	console.log('type', type);
-
 	if (type === 'rollup') buildRollUp();
 
 	var typeScriptCompiler = watchMode

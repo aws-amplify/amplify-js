@@ -12,94 +12,14 @@
  */
 
 import React, {
-	// ComponentType,
 	createContext,
 	useCallback,
 	useContext,
 	useEffect,
 	useState,
 } from 'react';
-// import { Linking, StyleSheet, View } from 'react-native';
 
 import { AppMessage, Notifications } from '@aws-amplify/notifications';
-
-// interface InAppMessageProps<T> {
-// 	components: Record<'Banner' | 'Carousel' | 'FullScreen', ComponentType<T>>;
-// 	messages: AppMessage[];
-// 	clearMessages: any;
-// 	validator?: (data?: any) => boolean;
-// 	callback?: any;
-// }
-
-// export function InAppMessage({
-// 	clearMessages,
-// 	components,
-// 	messages,
-// }: InAppMessageProps<{
-// 	inAppMessage: AppMessage['InAppMessage'];
-// 	onButtonPress: (event: any) => void;
-// 	onNotificationClose: () => void;
-// }>) {
-// 	const onButtonPress = async buttonConfig => {
-// 		try {
-// 			const action = buttonConfig.ButtonAction;
-// 			if (action === 'LINK' || action === 'DEEP_LINK') {
-// 				const url = buttonConfig.Link;
-// 				const supported = await Linking.canOpenURL(url);
-// 				if (supported) {
-// 					await Linking.openURL(url);
-// 				} else {
-// 					console.log("Can't open URL");
-// 				}
-// 			}
-// 		} catch (e) {
-// 			console.log(e);
-// 		} finally {
-// 			clearMessages();
-// 		}
-// 	};
-
-// 	const handleMessages = () => {
-// 		const { InAppMessage } = messages.length && messages[0];
-// 		if (!InAppMessage) {
-// 			return null;
-// 		}
-// 		const { Banner, Carousel, FullScreen } = components;
-
-// 		switch (InAppMessage.Layout) {
-// 			case 'TOP_BANNER':
-// 			case 'MIDDLE_BANNER':
-// 			case 'BOTTOM_BANNER':
-// 				return (
-// 					<Banner
-// 						inAppMessage={InAppMessage}
-// 						onButtonPress={onButtonPress}
-// 						onNotificationClose={clearMessages}
-// 					/>
-// 				);
-// 			case 'OVERLAYS':
-// 				return (
-// 					<FullScreen
-// 						inAppMessage={InAppMessage}
-// 						onButtonPress={onButtonPress}
-// 						onNotificationClose={clearMessages}
-// 					/>
-// 				);
-// 			case 'CAROUSEL':
-// 				return (
-// 					<Carousel
-// 						inAppMessage={InAppMessage}
-// 						onButtonPress={onButtonPress}
-// 						onNotificationClose={clearMessages}
-// 					/>
-// 				);
-// 			default:
-// 				return null;
-// 		}
-// 	};
-
-// 	return handleMessages();
-// }
 
 export const InAppMessagingContext = createContext(null);
 

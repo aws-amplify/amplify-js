@@ -71,8 +71,6 @@ export class AnalyticsClass {
 		this._trackers = {};
 		_instance = this;
 
-		console.log('ugh');
-
 		this.record = this.record.bind(this);
 		Hub.listen('auth', listener);
 		Hub.listen('storage', listener);

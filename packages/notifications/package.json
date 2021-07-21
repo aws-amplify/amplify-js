@@ -43,8 +43,7 @@
 	"homepage": "https://aws-amplify.github.io/",
 	"dependencies": {
 		"aws-amplify": "^4.0.2",
-		"aws-sdk": "^2.610.0",
-		"lodash.noop": "^3.0.1"
+		"aws-sdk": "^2.610.0"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.12.9",

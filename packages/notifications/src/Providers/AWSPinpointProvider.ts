@@ -94,9 +94,6 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		}
 	}
 
-	// copied from packages/analytics/Providers/AWSPinpointProvider.ts
-	// could also expose AWSPinpointProvider.getEndpointId (or read from its config?)
-	// leaning towards adding here though to prevent decoupling of Analytics module
 	private async _getEndpointId(cacheKey: string) {
 		// try to get from cache or generate
 		let endpointId = await Cache.getItem(cacheKey);
