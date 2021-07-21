@@ -400,13 +400,13 @@ declare module 'amazon-cognito-identity-js' {
 		static random(nBytes: number): WordArray;
 		toString(): string;
 	}
-	// TODO: remove previous WordArray
+
 	export const CryptoJSHelper: {
 		lib: {
 			WordArray: typeof WordArray;
 		},
-		HmacSHA256: Function;
-		SHA256: Function;
+		HmacSHA256(message: WordArray|string, key: WordArray|string): WordArray;
+		SHA256(message: WordArray|string): WordArray;
 		enc: {
 			Base64: {
 				stringify(wordArray: WordArray): string;

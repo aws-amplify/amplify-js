@@ -1,51 +1,40 @@
-import cryptoSecureRandomInt from './cryptoSecureRandomInt';
-
-/**
- * 
- * TODO: update, clean, license
- * 
- * This is a single source of truth of our current depedency on crypto-js
- * It should be considered as a module as a whole, which can be extended, refactored, or replaced
- * 
- * Its major functionalities
- * 1.A data structure called WordArray
- * 2.expose HmacSHA256, SHA256, Base64 functionalities, which interacts with WordArray
- * 
- * The exposed functions and the data structure are coupled!
- * 
- * WordArray is an ecapusulation of TypedArray, it is the fundamental data structure used by the functions,
- * TypedArray, is for high performance bitwise calculation on javascript. [link]
- * 
- * crypto-js was first created by
- * then forked in github by 
- * 
- * However, either of them meet our need, besides, maintain issue, relatively stable algorthim
- * 
- * Belows are the consideration
- * 
- * crypto-js | not actively maintained and was written in IIFE + prototype based style
- * cryto-es  | still relies on Math.random
- * 
- * Besides, we don't need all the functionalities from those crypto package, but just a subset of it.
- * Currently, we need its xxx, xxx, xxx
- * 
- * aws-crypto | does not have a Hmac implementation
- * also, aws-crypto sha256 cannot ...., because crytoJs is xxx[coupling issue]
- * 
- * Notice, the native browser crypto api has Hmac implementation, but it is async based
- * as pointed out here [stackoverflow link]
- * 
- * This means using native api would require a fully rewrite of our sync based Auth functions.
- * 
- * At this moment, the best sync Hmac algorithm, is still based on Jeff's original implementation
+/*!
+ * Copyright 2016 Amazon.com,
+ * Inc. or its affiliates. All Rights Reserved.
  *
- * The rewrite is based on ES6 class syntax, but strictly following the original prototype based implementaion
- * 
- * All the related classes are put in this single file for
- * 
+ * Licensed under the Amazon Software License (the "License").
+ * You may not use this file except in compliance with the
+ * License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/asl/
+ *
+ * or in the "license" file accompanying this file. This file is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, express or implied. See the License
+ * for the specific language governing permissions and
+ * limitations under the License.
  */
 
-//-------crypto-js/core-------------
+/**
+ *  This is a partial rewrite of the CryptoJS code used by amplify.
+ *  
+ *  It references:
+ *  Jeff Wott(original)crypto-js: https://code.google.com/archive/p/crypto-js/
+ *  Evan Vosberg       crypto-js: https://github.com/brix/crypto-js
+ *  LIN Chen           crypto-es: https://github.com/entronad/crypto-es
+ * 
+ *  Similar to the brix/crypto-js and entronad/crypto-es, 
+ *  most of the js doc comments and logics are kept the same as the original Jeff Watt's implementation.
+ *
+ *  However, it is refactored based on Amplify's needed
+ *  - only include the functions required by Amplify
+ *  - es6 class based
+ *  - support secure random int for both JS and React Native.
+ *  - all are put in a single file for the ease of future refactor/extend/replacement
+ */
+import cryptoSecureRandomInt from './cryptoSecureRandomInt';
+
+//-------sub portion of crypto-js/core-------------
 /**
  * Base class for inheritance.
  */
@@ -65,22 +54,7 @@ class Base {
     static create(...args) {
       return new this(...args);
     }
-  
-    /**
-     * Copies properties into this object.
-     *
-     * @param {Object} properties The properties to mix in.
-     *
-     * @example
-     *
-     *     MyType.mixIn({
-     *         field: 'value'
-     *     });
-     */
-    mixIn(properties) {
-      return Object.assign(this, properties);
-    }
-  
+
     /**
      * Creates a copy of this object.
      *
@@ -118,8 +92,9 @@ export class WordArray extends Base {
 	 */
 	constructor(words = [], sigBytes = words.length * 4) {
 		super();
-		// directly shim in 'crypto-js/lib-typedarrays'
 
+		// directly shim in 'crypto-js/lib-typedarrays'
+		// this is to replace the explicitly import we use originally
 		let typedArray = words;
 		// Convert buffers to uint8
 		if (typedArray instanceof ArrayBuffer) {
@@ -706,7 +681,7 @@ const algo = {};
 			// Convert string to WordArray, else assume WordArray already
 			let _key = key;
 			if (typeof _key === 'string') {
-			_key = Utf8.parse(_key);
+				_key = Utf8.parse(_key);
 			}
 
 			// Shortcuts
@@ -715,7 +690,7 @@ const algo = {};
 
 			// Allow arbitrary length keys
 			if (_key.sigBytes > hasherBlockSizeBytes) {
-			_key = hasher.finalize(key);
+				_key = hasher.finalize(key);
 			}
 
 			// Clamp excess bits
@@ -733,8 +708,8 @@ const algo = {};
 
 			// XOR keys with pad constants
 			for (let i = 0; i < hasherBlockSize; i += 1) {
-			oKeyWords[i] ^= 0x5c5c5c5c;
-			iKeyWords[i] ^= 0x36363636;
+				oKeyWords[i] ^= 0x5c5c5c5c;
+				iKeyWords[i] ^= 0x36363636;
 			}
 			oKey.sigBytes = hasherBlockSizeBytes;
 			iKey.sigBytes = hasherBlockSizeBytes;
@@ -823,9 +798,9 @@ const algo = {};
 		const isPrime = (n) => {
 			const sqrtN = Math.sqrt(n);
 			for (let factor = 2; factor <= sqrtN; factor += 1) {
-			if (!(n % factor)) {
-				return false;
-			}
+				if (!(n % factor)) {
+					return false;
+				}
 			}
 		
 			return true;
@@ -837,12 +812,12 @@ const algo = {};
 		let nPrime = 0;
 		while (nPrime < 64) {
 			if (isPrime(n)) {
-			if (nPrime < 8) {
-				H[nPrime] = getFractionalBits(n ** (1 / 2));
-			}
-			K[nPrime] = getFractionalBits(n ** (1 / 3));
-		
-			nPrime += 1;
+				if (nPrime < 8) {
+					H[nPrime] = getFractionalBits(n ** (1 / 2));
+				}
+				K[nPrime] = getFractionalBits(n ** (1 / 3));
+			
+				nPrime += 1;
 			}
 		
 			n += 1;
@@ -877,39 +852,39 @@ const algo = {};
 
 			// Computation
 			for (let i = 0; i < 64; i += 1) {
-			if (i < 16) {
-				W[i] = M[offset + i] | 0;
-			} else {
-				const gamma0x = W[i - 15];
-				const gamma0 = ((gamma0x << 25) | (gamma0x >>> 7))
-				^ ((gamma0x << 14) | (gamma0x >>> 18))
-				^ (gamma0x >>> 3);
+				if (i < 16) {
+					W[i] = M[offset + i] | 0;
+				} else {
+					const gamma0x = W[i - 15];
+					const gamma0 = ((gamma0x << 25) | (gamma0x >>> 7)) ^
+									((gamma0x << 14) | (gamma0x >>> 18)) ^
+									(gamma0x >>> 3);
 
-				const gamma1x = W[i - 2];
-				const gamma1 = ((gamma1x << 15) | (gamma1x >>> 17))
-				^ ((gamma1x << 13) | (gamma1x >>> 19))
-				^ (gamma1x >>> 10);
+					const gamma1x = W[i - 2];
+					const gamma1 = ((gamma1x << 15) | (gamma1x >>> 17)) ^
+								   ((gamma1x << 13) | (gamma1x >>> 19)) ^
+									(gamma1x >>> 10);
 
-				W[i] = gamma0 + W[i - 7] + gamma1 + W[i - 16];
-			}
+					W[i] = gamma0 + W[i - 7] + gamma1 + W[i - 16];
+				}
 
-			const ch = (e & f) ^ (~e & g);
-			const maj = (a & b) ^ (a & c) ^ (b & c);
+				const ch = (e & f) ^ (~e & g);
+				const maj = (a & b) ^ (a & c) ^ (b & c);
 
-			const sigma0 = ((a << 30) | (a >>> 2)) ^ ((a << 19) | (a >>> 13)) ^ ((a << 10) | (a >>> 22));
-			const sigma1 = ((e << 26) | (e >>> 6)) ^ ((e << 21) | (e >>> 11)) ^ ((e << 7) | (e >>> 25));
+				const sigma0 = ((a << 30) | (a >>> 2)) ^ ((a << 19) | (a >>> 13)) ^ ((a << 10) | (a >>> 22));
+				const sigma1 = ((e << 26) | (e >>> 6)) ^ ((e << 21) | (e >>> 11)) ^ ((e << 7) | (e >>> 25));
 
-			const t1 = h + sigma1 + ch + K[i] + W[i];
-			const t2 = sigma0 + maj;
+				const t1 = h + sigma1 + ch + K[i] + W[i];
+				const t2 = sigma0 + maj;
 
-			h = g;
-			g = f;
-			f = e;
-			e = (d + t1) | 0;
-			d = c;
-			c = b;
-			b = a;
-			a = (t1 + t2) | 0;
+				h = g;
+				g = f;
+				f = e;
+				e = (d + t1) | 0;
+				d = c;
+				c = b;
+				b = a;
+				a = (t1 + t2) | 0;
 			}
 
 			// Intermediate hash value
@@ -1091,8 +1066,9 @@ export const Base64 = {
   _map: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
 };
 
-// default export keep the same api interface as the original CryptoJS
-// but we only expose the component required by amplify, to keep a clean dependency relationship
+// default export keeps the same interface as the original CryptoJS
+// but it only exposes the components required by amplify, 
+// so as to keep a clean dependency relationship
 const CryptoJSHelper = {
 	lib: {
 		WordArray,
