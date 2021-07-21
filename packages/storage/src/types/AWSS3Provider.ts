@@ -15,7 +15,6 @@ export interface S3ProviderGetConfig extends StorageOptions {
 	download?: boolean;
 	track?: boolean;
 	expires?: number;
-	provider?: string;
 	progressCallback?: (progress: any) => any;
 	cancelTokenSource?: CancelTokenSource;
 	bucket?: GetObjectRequest['Bucket'];
@@ -29,7 +28,9 @@ export interface S3ProviderGetConfig extends StorageOptions {
 	SSECustomerKeyMD5?: GetObjectRequest['SSECustomerKeyMD5'];
 }
 
-export type S3ProviderGetOuput<T> = T extends { download: true } ? GetObjectCommandOutput : string;
+export type S3ProviderGetOuput<T> = T extends { download: true }
+	? GetObjectCommandOutput
+	: string;
 
 export interface S3ProviderPutConfig extends StorageOptions {
 	progressCallback?: (progress: any) => any;

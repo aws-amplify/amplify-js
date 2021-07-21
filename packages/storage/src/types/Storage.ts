@@ -15,6 +15,7 @@
  */
 
 import { ICredentials } from '@aws-amplify/core';
+import { S3ProviderGetConfig, S3ProviderGetOuput } from './AWSS3Provider';
 
 export interface StorageOptions {
 	credentials?: ICredentials;
@@ -49,3 +50,15 @@ export type StorageCopyTarget = {
 export type StorageCopySource = StorageCopyTarget;
 
 export type StorageCopyDestination = Omit<StorageCopyTarget, 'identityId'>;
+
+export type StorageGetConfig<X, T = S3ProviderGetConfig> = X extends {
+	provider: 'AWSS3';
+}
+	? S3ProviderGetConfig
+	: T;
+
+export type StorageGetOutput<X, T = S3ProviderGetOuput<X>> = X extends {
+	provider: 'AWSS3';
+}
+	? S3ProviderGetOuput<X>
+	: T;

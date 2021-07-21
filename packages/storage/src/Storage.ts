@@ -17,6 +17,9 @@ import {
 	StorageProvider,
 	StorageCopySource,
 	StorageCopyDestination,
+	StorageGetConfig,
+	StorageGetOutput,
+	S3ProviderGetConfig,
 } from './types';
 import axios, { CancelTokenSource } from 'axios';
 
@@ -207,7 +210,11 @@ export class Storage {
 	 * @param {any} [config] - config.
 	 * @return {Promise<any>} - A promise resolves to the copied object's key.
 	 */
-	public copy(src: StorageCopySource, dest: StorageCopyDestination, config?): Promise<any> {
+	public copy(
+		src: StorageCopySource,
+		dest: StorageCopyDestination,
+		config?
+	): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
@@ -232,7 +239,12 @@ export class Storage {
 	 * @param {Object} [config] - { level : private|protected|public, download: true|false }
 	 * @return - A promise resolves to either a presigned url or the object
 	 */
-	public get(key: string, config?): Promise<String | Object> {
+	// public get<T extends S3ProviderGetConfig | { provider: string; [k: string]: any }>(
+	public get<T extends S3ProviderGetConfig & { provider?: 'AWSS3' }>(
+		key: string,
+		config?: T
+	): Promise<StorageGetOutput<T>>;
+	public get(key: string, config?): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider

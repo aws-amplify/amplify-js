@@ -471,13 +471,8 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			await storage.get('key', {
-				Storage: {
-					AWSS3: {
-						bucket: 'bucket',
-						region: 'us-east-1',
-					},
-				},
+			storage.get('lol', {
+				progressCallback: progress => {},
 			});
 			expect(get_spyon).toBeCalled();
 			get_spyon.mockClear();
@@ -597,14 +592,18 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			await storage.copy({ key: 'src' }, { key: 'dest' }, {
-				Storage: {
-					AWSS3: {
-						bucket: 'bucket',
-						region: 'us-east-1',
+			await storage.copy(
+				{ key: 'src' },
+				{ key: 'dest' },
+				{
+					Storage: {
+						AWSS3: {
+							bucket: 'bucket',
+							region: 'us-east-1',
+						},
 					},
-				},
-			});
+				}
+			);
 			expect(copySpyon).toBeCalled();
 		});
 
