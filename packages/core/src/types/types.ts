@@ -8,6 +8,7 @@ export interface AmplifyConfig {
 	Logging?: object;
 	Storage?: object;
 	Cache?: object;
+	Geo?: object;
 	ssr?: boolean;
 }
 

@@ -11,6 +11,24 @@ describe('Parser', () => {
 				aws_mandatory_sign_in: 'enable',
 				aws_user_pools_web_client_id: '',
 				aws_cognito_region: '',
+				geo: {
+					maps: {
+						items: {
+							geoJsExampleMap1: {
+								style: 'VectorEsriStreets',
+							},
+							geoJsExampleMap2: {
+								style: 'VectorEsriTopographic',
+							},
+						},
+						default: 'geoJsExampleMap1',
+					},
+					place_indexes: {
+						items: ['geoJSSearchExample'],
+						default: 'geoJSSearchExample',
+					},
+					region: 'us-west-2',
+				},
 			})
 		).toStrictEqual({
 			Analytics: {
@@ -26,6 +44,24 @@ describe('Parser', () => {
 				region: '',
 				userPoolId: 'b',
 				userPoolWebClientId: '',
+			},
+			Geo: {
+				maps: {
+					items: {
+						geoJsExampleMap1: {
+							style: 'VectorEsriStreets',
+						},
+						geoJsExampleMap2: {
+							style: 'VectorEsriTopographic',
+						},
+					},
+					default: 'geoJsExampleMap1',
+				},
+				place_indexes: {
+					items: ['geoJSSearchExample'],
+					default: 'geoJSSearchExample',
+				},
+				region: 'us-west-2',
 			},
 			Storage: {
 				aws_cognito_identity_pool_id: 'a',
