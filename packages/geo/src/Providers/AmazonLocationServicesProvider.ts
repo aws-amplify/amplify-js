@@ -67,7 +67,6 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 	/**
 	 * Get the map resources that are currently available through the provider
-	 * @param {string} provider
 	 * @returns - Array of available map resources
 	 */
 	public getAvailableMaps(): MapStyle[] {
@@ -88,7 +87,6 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 	/**
 	 * Get the map resource set as default in amplify config
-	 * @param {string} provider
 	 * @returns - Map resource set as the default in amplify config
 	 */
 	public getDefaultMap(): MapStyle {
