@@ -34,10 +34,10 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 	static category: NotificationsCategory = 'Notifications';
 	static providerName = 'AWSPinpoint';
 
-	private _config;
+	private config;
 
 	constructor(config?) {
-		this._config = config ? config : {};
+		this.config = config ? config : {};
 	}
 
 	/**
@@ -57,15 +57,15 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 	configure = (config): object => {
 		logger.debug('configure Analytics', config);
 		const conf = config || {};
-		this._config = Object.assign({}, this._config, conf);
+		this.config = Object.assign({}, this.config, conf);
 
-		if (this._config.appId && !this._config.disabled) {
-			if (!this._config.endpointId) {
-				const cacheKey = this.getProviderName() + '_' + this._config.appId;
+		if (this.config.appId && !this.config.disabled) {
+			if (!this.config.endpointId) {
+				const cacheKey = this.getProviderName() + '_' + this.config.appId;
 				this._getEndpointId(cacheKey)
 					.then(endpointId => {
 						logger.debug('setting endpoint id from the cache', endpointId);
-						this._config.endpointId = endpointId;
+						this.config.endpointId = endpointId;
 						dispatchNotificationEvent('pinpointProvider_configured', null);
 					})
 					.catch(err => {
@@ -75,7 +75,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 				dispatchNotificationEvent('pinpointProvider_configured', null);
 			}
 		}
-		return this._config;
+		return this.config;
 	};
 
 	private async _getCredentials() {
@@ -111,7 +111,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 
 	async syncInAppMessages() {
 		try {
-			const { appId, region } = this._config;
+			const { appId, region } = this.config;
 
 			const cacheKey = `${this.getProviderName()}_${appId}`;
 			const endpointId = await this._getEndpointId(cacheKey);
@@ -139,6 +139,4 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 			console.warn(e);
 		}
 	}
-
-	translate() {}
 }

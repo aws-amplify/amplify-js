@@ -38,50 +38,50 @@ const noop = () => {};
 const logger = new Logger('NotificationsClass');
 
 class NotificationsClass {
-	private _config: Record<string, any> = {};
-	private _disabled: boolean = false;
-	private _eventValidatedHandler: EventValidatedHandler = noop;
-	private _listeningForAnalyticEvents: boolean = false;
-	private _pluggables: NotificationsProvider[] = [];
+	private config: Record<string, any> = {};
+	private disabled: boolean = false;
+	private eventValidatedHandler: EventValidatedHandler = noop;
+	private listeningForAnalyticEvents: boolean = false;
+	private pluggables: NotificationsProvider[] = [];
 
 	configure = ({
 		listenForAnalyticsEvents = true,
 		eventValidatedHandler,
 		...config
 	}: NotificationsConfig = {}) => {
-		this._config = {
+		this.config = {
 			...parseMobileHubConfig(config).Analytics,
-			...this._config,
+			...this.config,
 		};
 
 		logger.debug('configure Notifications', config);
 
-		this._eventValidatedHandler = this.setMessageValidatedHandler(
+		this.eventValidatedHandler = this.setMessageValidatedHandler(
 			eventValidatedHandler
 		);
 
-		this._pluggables.forEach(pluggable => {
+		this.pluggables.forEach(pluggable => {
 			// for backward compatibility
 			const providerConfig =
 				pluggable.getProviderName() === 'AWSPinpoint' &&
-				!this._config['AWSPinpoint']
-					? this._config
-					: this._config[pluggable.getProviderName()];
+				!this.config['AWSPinpoint']
+					? this.config
+					: this.config[pluggable.getProviderName()];
 
 			pluggable.configure({
-				disabled: this._config['disabled'],
-				autoSessionRecord: this._config['autoSessionRecord'], // copied over, does not do anything currently
+				disabled: this.config['disabled'],
+				autoSessionRecord: this.config['autoSessionRecord'], // copied over, does not do anything currently
 				...providerConfig,
 			});
 		});
 
-		if (this._pluggables.length === 0) {
+		if (this.pluggables.length === 0) {
 			this.addPluggable(new AWSPinpointProvider());
 		}
 
-		if (!this._listeningForAnalyticEvents) {
+		if (!this.listeningForAnalyticEvents) {
 			Hub.listen('analytics', this.analyticsListener);
-			this._listeningForAnalyticEvents = true;
+			this.listeningForAnalyticEvents = true;
 		}
 	};
 
@@ -91,7 +91,7 @@ class NotificationsClass {
 
 	getPluggable = (providerName: string): NotificationsProvider => {
 		const pluggable =
-			this._pluggables.find(
+			this.pluggables.find(
 				pluggable => pluggable.getProviderName() === providerName
 			) || null;
 
@@ -103,13 +103,13 @@ class NotificationsClass {
 	};
 
 	removePluggable = (providerName: string) => {
-		const index = this._pluggables.findIndex(
+		const index = this.pluggables.findIndex(
 			pluggable => pluggable.getProviderName() === providerName
 		);
 		if (index === -1) {
 			logger.debug(`No plugin found with name ${providerName}`);
 		} else {
-			this._pluggables.splice(index, 1);
+			this.pluggables.splice(index, 1);
 		}
 	};
 
@@ -118,7 +118,7 @@ class NotificationsClass {
 		{ validator }: ValidateEventOptions = {}
 	) => {
 		const messages: any[] = await Promise.all<any[]>(
-			this._pluggables.map(async pluggable => {
+			this.pluggables.map(async pluggable => {
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
 				const messages = await this._getStoredMessages(key);
 				return this.filterMessages(messages, event);
@@ -126,17 +126,17 @@ class NotificationsClass {
 		);
 		// Since there is only one notification provider, just send back the result of that promise for now
 		if (messages[0]) {
-			this._eventValidatedHandler(messages[0]);
+			this.eventValidatedHandler(messages[0]);
 		}
 	};
 
 	setMessageValidatedHandler = (
 		handler: EventValidatedHandler
 	): EventValidatedHandler => {
-		if (this._eventValidatedHandler === noop && handler) {
-			this._eventValidatedHandler = handler;
+		if (this.eventValidatedHandler === noop && handler) {
+			this.eventValidatedHandler = handler;
 		}
-		return this._eventValidatedHandler;
+		return this.eventValidatedHandler;
 	};
 
 	private analyticsListener: HubCallback = ({ payload }: HubCapsule) => {
@@ -166,21 +166,21 @@ class NotificationsClass {
 	 */
 	public addPluggable(pluggable: NotificationsProvider) {
 		if (pluggable && pluggable.getCategory() === 'Notifications') {
-			this._pluggables.push(pluggable);
+			this.pluggables.push(pluggable);
 			// for backward compatibility
 			const providerConfig =
 				pluggable.getProviderName() === 'AWSPinpoint' &&
-				!this._config['AWSPinpoint']
-					? this._config
-					: this._config[pluggable.getProviderName()];
-			const config = { disabled: this._config['disabled'], ...providerConfig };
+				!this.config['AWSPinpoint']
+					? this.config
+					: this.config[pluggable.getProviderName()];
+			const config = { disabled: this.config['disabled'], ...providerConfig };
 			pluggable.configure(config);
 			return config;
 		}
 	}
 
 	syncInAppMessages = async (providerName = 'AWSPinpoint'): Promise<any> => {
-		if (this._disabled) {
+		if (this.disabled) {
 			logger.debug('Notifications has been disabled');
 			return;
 		}

@@ -248,15 +248,7 @@ export class AnalyticsClass {
 			params = { event, provider };
 		}
 
-		if (this._config['emit_analytic_events']) {
-			console.log('🧡 Recording Analytics event');
-			dispatchAnalyticsEvent(
-				'record',
-				params.event,
-				'Recording Analytics event'
-			);
-		}
-
+		dispatchAnalyticsEvent('record', params.event, 'Recording Analytics event');
 		return this._sendEvent(params);
 	}
 
