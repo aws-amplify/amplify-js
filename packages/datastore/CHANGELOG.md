@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.2.1...@aws-amplify/datastore@3.2.2) (2021-07-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** remove null properties from connected model instances ([#8623](https://github.com/aws-amplify/amplify-js/issues/8623)) ([569214c](https://github.com/aws-amplify/amplify-js/commit/569214c762bb3aace1ff96fcbe468780dcaabe35))
+
+
+
+
+
 ## [3.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.2.0...@aws-amplify/datastore@3.2.1) (2021-07-16)
 
 **Note:** Version bump only for package @aws-amplify/datastore

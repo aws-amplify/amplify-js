@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.6](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.5...amazon-cognito-identity-js@5.0.6) (2021-07-22)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-is, @aws-amplify/auth:** upgrade crypto-js to 4.1.1 to fix bundle size issue ([#8626](https://github.com/aws-amplify/amplify-js/issues/8626)) ([b16f8e7](https://github.com/aws-amplify/amplify-js/commit/b16f8e7801790a59a8ad0c40b598f4962aada60e))
+* **amazon-cognito-identity-js:** Adding Session param for DEVICE_SRP_AUTH and user agent fix ([#8591](https://github.com/aws-amplify/amplify-js/issues/8591)) ([190bd50](https://github.com/aws-amplify/amplify-js/commit/190bd501236a59b16318802b51a0494f7374d299))
+
+
+
+
+
 ## [5.0.5](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.4...amazon-cognito-identity-js@5.0.5) (2021-07-16)
 
 
