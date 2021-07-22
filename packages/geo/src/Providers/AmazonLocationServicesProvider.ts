@@ -67,12 +67,11 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 	/**
 	 * Get the map resources that are currently available through the provider
-	 * @param {string} provider
 	 * @returns - Array of available map resources
 	 */
-	public getAvailableMaps(): MapStyle[] | string {
+	public getAvailableMaps(): MapStyle[] {
 		if (!this._config.maps) {
-			return "No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after";
+			throw "No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after";
 		}
 
 		const mapStyles: MapStyle[] = [];
@@ -88,15 +87,14 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 	/**
 	 * Get the map resource set as default in amplify config
-	 * @param {string} provider
 	 * @returns - Map resource set as the default in amplify config
 	 */
-	public getDefaultMap(): MapStyle | string {
+	public getDefaultMap(): MapStyle {
 		if (!this._config.maps) {
-			return "No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after";
+			throw "No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after";
 		}
 		if (!this._config.maps.default) {
-			return "No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after";
+			throw "No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after";
 		}
 
 		const mapName = this._config.maps.default;

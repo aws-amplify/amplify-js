@@ -83,10 +83,10 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationServices');
 
-			expect(geo.getAvailableMaps()).toMatch(
+			expect(() => geo.getAvailableMaps()).toThrow(
 				'No plugin found in Geo for the provider'
 			);
-			expect(geo.getDefaultMap()).toMatch(
+			expect(() => geo.getDefaultMap()).toThrow(
 				'No plugin found in Geo for the provider'
 			);
 		});
@@ -95,9 +95,7 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 			geo.configure({});
 
-			const availableMaps = geo.getAvailableMaps();
-
-			expect(availableMaps).toEqual(
+			expect(() => geo.getAvailableMaps()).toThrow(
 				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
 			);
 		});
@@ -120,9 +118,7 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 			geo.configure({});
 
-			const defaultMapsResource = geo.getDefaultMap();
-
-			expect(defaultMapsResource).toEqual(
+			expect(() => geo.getDefaultMap()).toThrow(
 				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
 			);
 		});
@@ -131,9 +127,7 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 			geo.configure({});
 
-			const defaultMapsResource = geo.getDefaultMap();
-
-			expect(defaultMapsResource).toEqual(
+			expect(() => geo.getDefaultMap()).toThrow(
 				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
 			);
 		});
@@ -142,9 +136,7 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 			geo.configure({ geo: { maps: { testMap: { style: 'teststyle' } } } });
 
-			const defaultMapsResource = geo.getDefaultMap();
-
-			expect(defaultMapsResource).toEqual(
+			expect(() => geo.getDefaultMap()).toThrow(
 				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after"
 			);
 		});

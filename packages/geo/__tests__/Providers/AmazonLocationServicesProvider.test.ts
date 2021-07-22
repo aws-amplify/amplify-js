@@ -59,8 +59,7 @@ describe('AmazonLocationServicesProvider', () => {
 		test('should tell you if there are no available map resources', () => {
 			const provider = new AmazonLocationServicesProvider();
 			provider.configure();
-			const availableMaps = provider.getAvailableMaps();
-			expect(availableMaps).toEqual(
+			expect(() => provider.getAvailableMaps()).toThrow(
 				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
 			);
 		});
@@ -83,9 +82,7 @@ describe('AmazonLocationServicesProvider', () => {
 			const provider = new AmazonLocationServicesProvider();
 			provider.configure();
 
-			const defaultMapsResource = provider.getDefaultMap();
-
-			expect(defaultMapsResource).toEqual(
+			expect(() => provider.getDefaultMap()).toThrow(
 				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
 			);
 		});
@@ -96,9 +93,7 @@ describe('AmazonLocationServicesProvider', () => {
 				maps: { testMap: { style: 'teststyle' } },
 			});
 
-			const defaultMapsResource = provider.getDefaultMap();
-
-			expect(defaultMapsResource).toEqual(
+			expect(() => provider.getDefaultMap()).toThrow(
 				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after"
 			);
 		});

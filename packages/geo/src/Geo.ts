@@ -117,7 +117,7 @@ export class GeoClass {
 
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			return 'No plugin found in Geo for the provider';
+			throw 'No plugin found in Geo for the provider';
 		}
 
 		return prov.getAvailableMaps();
@@ -135,7 +135,7 @@ export class GeoClass {
 
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			return 'No plugin found in Geo for the provider';
+			throw 'No plugin found in Geo for the provider';
 		}
 
 		return prov.getDefaultMap();
