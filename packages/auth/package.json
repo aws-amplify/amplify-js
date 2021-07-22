@@ -44,7 +44,7 @@
     "@aws-amplify/cache": "4.0.8",
     "@aws-amplify/core": "4.2.0",
     "amazon-cognito-identity-js": "5.0.5",
-    "crypto-js": "^4.0.0"
+    "crypto-js": "^4.1.1"
   },
   "devDependencies": {
     "@jest/test-sequencer": "^24.9.0"
