@@ -15,9 +15,9 @@ export interface S3ProviderGetConfig extends StorageOptions {
 	download?: boolean;
 	track?: boolean;
 	expires?: number;
+	provider?: 'AWSS3';
 	progressCallback?: (progress: any) => any;
 	cancelTokenSource?: CancelTokenSource;
-	bucket?: GetObjectRequest['Bucket'];
 	cacheControl?: GetObjectRequest['ResponseCacheControl'];
 	contentDisposition?: GetObjectRequest['ResponseContentDisposition'];
 	contentEncoding?: GetObjectRequest['ResponseContentEncoding'];

@@ -51,11 +51,9 @@ export type StorageCopySource = StorageCopyTarget;
 
 export type StorageCopyDestination = Omit<StorageCopyTarget, 'identityId'>;
 
-export type StorageGetConfig<X, T = S3ProviderGetConfig> = X extends {
-	provider: 'AWSS3';
-}
-	? S3ProviderGetConfig
-	: T;
+export type StorageGetConfig<T> = T extends { provider: string }
+	? T
+	: Omit<S3ProviderGetConfig, 'bucket' | 'cancelTokenSource'>;
 
 export type StorageGetOutput<X, T = S3ProviderGetOuput<X>> = X extends {
 	provider: 'AWSS3';
