@@ -14,15 +14,30 @@
 import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
 import { AWSS3Provider } from './providers';
 import {
-	StorageProvider,
-	StorageCopySource,
-	StorageCopyDestination,
-	StorageGetConfig,
-	StorageGetOutput,
 	S3ProviderGetConfig,
 	S3ProviderGetOuput,
+	S3ProviderPutConfig,
+	S3ProviderPutOutput,
+	S3ProviderRemoveConfig,
+	S3ProviderRemoveOutput,
+	StorageCopyDestination,
+	StorageCopySource,
+	StorageGetConfig,
+	StorageGetOutput,
+	StorageProvider,
+	StoragePutConfig,
+	StoragePutOutput,
+	StorageRemoveConfig,
+	StorageRemoveOutput,
+	StorageListConfig,
+	StorageListOutput,
+	StorageCopyConfig,
+	StorageCopyOutput,
+	S3ProviderListOutput,
+	S3ProviderCopyOutput,
 } from './types';
 import axios, { CancelTokenSource } from 'axios';
+import { PutObjectRequest } from '@aws-sdk/client-s3';
 
 const logger = new Logger('StorageClass');
 
@@ -202,6 +217,11 @@ export class Storage {
 	 * @param {any} [config] - config.
 	 * @return {Promise<any>} - A promise resolves to the copied object's key.
 	 */
+	public copy<T extends Record<string, any>, X = S3ProviderCopyOutput>(
+		src: StorageCopySource,
+		dest: StorageCopyDestination,
+		config?: StorageCopyConfig<T>
+	): Promise<StorageCopyOutput<T, X>>;
 	public copy(src: StorageCopySource, dest: StorageCopyDestination, config?): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
@@ -227,9 +247,8 @@ export class Storage {
 	 */
 	public get<T extends Record<string, any>, X = S3ProviderGetOuput<T>>(
 		key: string,
-		// If a provider is specified, allow the generic type, else use the default provider's config
 		config?: StorageGetConfig<T>
-	): Promise<X>;
+	): Promise<StorageGetOutput<T, X>>;
 	public get(key: string, config?): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
@@ -258,6 +277,11 @@ export class Storage {
 	 *  progressCallback: function }
 	 * @return - promise resolves to object on success
 	 */
+	public put<T extends Record<string, any>, X = S3ProviderPutOutput>(
+		key: string,
+		object: PutObjectRequest['Body'] | string,
+		config?: StoragePutConfig<T>
+	): Promise<StoragePutOutput<T, X>>;
 	public put(key: string, object, config?): Promise<Object> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
@@ -280,6 +304,10 @@ export class Storage {
 	 * @param {Object} [config] - { level : private|protected|public }
 	 * @return - Promise resolves upon successful removal of the object
 	 */
+	public async remove<T extends Record<string, any>, X = S3ProviderRemoveOutput>(
+		key: string,
+		config?: StorageRemoveConfig<T>
+	): Promise<StorageRemoveOutput<T, X>>;
 	public async remove(key: string, config?): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
@@ -296,7 +324,11 @@ export class Storage {
 	 * @param {Object} [config] - { level : private|protected|public, maxKeys: NUMBER }
 	 * @return - Promise resolves to list of keys for all objects in path
 	 */
-	public async list(path, config?): Promise<any> {
+	public async list<T extends Record<string, any>, X = S3ProviderListOutput>(
+		path: string,
+		config?: StorageListConfig<T>
+	): Promise<StorageListOutput<T, X>>;
+	public async list(path: string, config?): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
 		if (prov === undefined) {
