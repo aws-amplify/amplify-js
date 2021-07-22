@@ -1,1 +1,2 @@
-export default class Geo {}
+export { Geo } from './Geo';
+export * from './types';
