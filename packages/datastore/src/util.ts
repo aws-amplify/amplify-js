@@ -361,13 +361,12 @@ export const traverseModel = <T extends PersistentModel>(
 						}
 					}
 
-					(<any>draftInstance)[rItem.targetName] = draftInstance[
-						rItem.fieldName
-					]
-						? (<PersistentModel>draftInstance[rItem.fieldName]).id
-						: null;
-
-					delete draftInstance[rItem.fieldName];
+					if (draftInstance[rItem.fieldName]) {
+						(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
+							draftInstance[rItem.fieldName]
+						)).id;
+						delete draftInstance[rItem.fieldName];
+					}
 
 					break;
 				case 'HAS_MANY':
