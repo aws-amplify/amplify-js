@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.1.2...@aws-amplify/auth@4.1.3) (2021-07-22)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-is, @aws-amplify/auth:** upgrade crypto-js to 4.1.1 to fix bundle size issue ([#8626](https://github.com/aws-amplify/amplify-js/issues/8626)) ([b16f8e7](https://github.com/aws-amplify/amplify-js/commit/b16f8e7801790a59a8ad0c40b598f4962aada60e))
+
+
+
+
+
 ## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.1.1...@aws-amplify/auth@4.1.2) (2021-07-16)
 
 **Note:** Version bump only for package @aws-amplify/auth
