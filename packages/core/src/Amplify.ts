@@ -21,6 +21,7 @@ export class AmplifyClass {
 	Cache = null;
 	PubSub = null;
 	Interactions = null;
+	Notifications = null;
 	Pushnotification = null;
 	UI = null;
 	XR = null;
