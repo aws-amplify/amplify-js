@@ -91,7 +91,7 @@ export class AmplifyForgotPassword {
 					this.handleFormFieldInputWithCallback(event, field);
 				newFields.push(newField);
 			});
-			this.newFormFields = [];
+			this.newFormFields = newFields;
 		}
 	}
 
