@@ -10,6 +10,8 @@ import {
 	NodeCallback,
 } from 'amazon-cognito-identity-js';
 
+const MAX_DEVICES: number = 60;
+
 jest.mock('crypto-js/sha256', () => {
 	return {
 		default: jest.fn(() => ''),
@@ -228,6 +230,19 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback(null, 'data');
 	};
 
+	CognitoUser.prototype.getCachedDeviceKeyAndPassword = () => {
+		return 'success';
+	};
+	CognitoUser.prototype.setDeviceStatusRemembered = callback => {
+		callback.onSuccess('success');
+	};
+	CognitoUser.prototype.forgetDevice = callback => {
+		callback.onSuccess('success');
+	};
+	CognitoUser.prototype.listDevices = (limit, paginationToken, callback) => {
+		callback.onSuccess('success');
+	};
+
 	return CognitoUser;
 });
 
@@ -243,6 +258,7 @@ import {
 } from '@aws-amplify/core';
 import { AuthError, NoUserPoolError } from '../src/Errors';
 import { AuthErrorTypes } from '../src/types/Auth';
+import { mockDeviceArray, transformedMockData } from './mockData';
 
 const authOptions: AuthOptions = {
 	userPoolId: 'awsUserPoolsId',
@@ -3659,6 +3675,157 @@ describe('auth unit test', () => {
 			).rejects.toEqual(errorMessage);
 
 			spyon.mockClear();
+		});
+	});
+
+	describe('Device Tracking', () => {
+		test('remember device happy path', async () => {
+			const auth = new Auth(authOptions);
+			const spyon = jest
+				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
+				.mockImplementationOnce(() => {
+					return new CognitoAccessToken({ AccessToken: 'accessToken' });
+				});
+
+			const spyon2 = jest
+				.spyOn(CognitoAccessToken.prototype, 'decodePayload')
+				.mockImplementation(() => {
+					return { scope: '' };
+				});
+
+			const spyOnCognito = jest
+				.spyOn(CognitoUser.prototype, 'setDeviceStatusRemembered')
+				.mockImplementationOnce(
+					(obj: {
+						onSuccess: (success: string) => void;
+						onFailure: (err: any) => void;
+					}) => {
+						obj.onSuccess('SUCCESS');
+					}
+				);
+			await auth.rememberDevice().then(res => {
+				expect(spyOnCognito).toBeCalled();
+			});
+
+			spyon.mockClear();
+			spyon2.mockClear();
+			spyOnCognito.mockClear();
+		});
+
+		test('forget device happy path', async () => {
+			const auth = new Auth(authOptions);
+
+			const spyon = jest
+				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
+				.mockImplementationOnce(() => {
+					return new CognitoAccessToken({ AccessToken: 'accessToken' });
+				});
+
+			const spyon2 = jest
+				.spyOn(CognitoAccessToken.prototype, 'decodePayload')
+				.mockImplementation(() => {
+					return { scope: '' };
+				});
+
+			const spyOnCognito = jest
+				.spyOn(CognitoUser.prototype, 'forgetDevice')
+				.mockImplementationOnce(
+					(obj: {
+						onSuccess: (success: string) => void;
+						onFailure: (err: any) => void;
+					}) => {
+						obj.onSuccess('SUCCESS');
+					}
+				);
+
+			await auth.forgetDevice().then(res => {
+				expect(spyOnCognito).toBeCalled();
+			});
+
+			spyon.mockClear();
+			spyon2.mockClear();
+			spyOnCognito.mockClear();
+		});
+
+		test('list devices with no devices from Cognito happy path', async () => {
+			const auth = new Auth(authOptions);
+
+			const spyon = jest
+				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
+				.mockImplementationOnce(() => {
+					return new CognitoAccessToken({ AccessToken: 'accessToken' });
+				});
+
+			const spyon2 = jest
+				.spyOn(CognitoAccessToken.prototype, 'decodePayload')
+				.mockImplementation(() => {
+					return { scope: '' };
+				});
+
+			const spyOnCognito = jest
+				.spyOn(CognitoUser.prototype, 'listDevices')
+				.mockImplementationOnce(
+					(
+						MAX_DEVICES,
+						none: string,
+						obj: {
+							onSuccess: (success: Object) => void;
+							onFailure: (err: any) => void;
+						}
+					) => {
+						obj.onSuccess({ Devices: [] });
+					}
+				);
+
+			await auth.fetchDevices().then(res => {
+				expect(spyOnCognito).toBeCalled();
+			});
+
+			spyon.mockClear();
+			spyon2.mockClear();
+			spyOnCognito.mockClear();
+		});
+
+		test('list devices with mock devices from Cognito happy path', async () => {
+			const auth = new Auth(authOptions);
+
+			const spyon = jest
+				.spyOn(CognitoUserSession.prototype, 'getAccessToken')
+				.mockImplementationOnce(() => {
+					return new CognitoAccessToken({ AccessToken: 'accessToken' });
+				});
+
+			const spyon2 = jest
+				.spyOn(CognitoAccessToken.prototype, 'decodePayload')
+				.mockImplementation(() => {
+					return { scope: '' };
+				});
+
+			const spyOnCognito = jest
+				.spyOn(CognitoUser.prototype, 'listDevices')
+				.mockImplementationOnce(
+					(
+						MAX_DEVICES,
+						none: string,
+						obj: {
+							onSuccess: (success: Object) => void;
+							onFailure: (err: any) => void;
+						}
+					) => {
+						obj.onSuccess({
+							Devices: mockDeviceArray,
+						});
+					}
+				);
+
+			await auth.fetchDevices().then(res => {
+				expect(res).toMatchObject(transformedMockData);
+				expect(spyOnCognito).toBeCalled();
+			});
+
+			spyon.mockClear();
+			spyon2.mockClear();
+			spyOnCognito.mockClear();
 		});
 	});
 });

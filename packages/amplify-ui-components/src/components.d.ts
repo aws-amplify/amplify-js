@@ -14,6 +14,8 @@ import { FunctionalComponent } from "@stencil/core";
 import { CountryCodeDialOptions } from "./components/amplify-country-dial-code/amplify-country-dial-code-interface";
 import { AccessLevel, StorageObject } from "./common/types/storage-types";
 import { SelectOptionsNumber, SelectOptionsString } from "./components/amplify-select/amplify-select-interface";
+import { SignUpParams } from "@aws-amplify/auth";
+import { ISignUpResult } from "amazon-cognito-identity-js";
 export namespace Components {
     interface AmplifyAmazonButton {
         /**
@@ -795,6 +797,10 @@ export namespace Components {
     }
     interface AmplifyS3Image {
         /**
+          * String representing the alternate image text
+         */
+        "alt": string;
+        /**
           * Image body content to be uploaded
          */
         "body": object;
@@ -818,6 +824,10 @@ export namespace Components {
           * The key of the image object in S3
          */
         "imgKey": string;
+        /**
+          * Attributes to be placed on the img element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes
+         */
+        "imgProps"?: Record<PropertyKey, any>;
         /**
           * The access level of the image
          */
@@ -1036,6 +1046,12 @@ export namespace Components {
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
+          * Override for handling the Auth.SignUp API call
+         */
+        "handleSignUp": (
+		params: SignUpParams
+	) => Promise<ISignUpResult>;
+        /**
           * Fires when sign up form is submitted
          */
         "handleSubmit": (event: Event) => void;
@@ -1092,6 +1108,12 @@ export namespace Components {
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
+          * This is run after totp setup is complete. Useful if using this as standalone.
+         */
+        "handleComplete": (
+		user: CognitoUserInterface
+	) => void | Promise<void>;
+        /**
           * Used for header text in totp setup component
          */
         "headerText": string;
@@ -1099,6 +1121,10 @@ export namespace Components {
           * Used for customizing the issuer string in the qr code image
          */
         "issuer": string;
+        /**
+          * Set this to true if this component is running outside the default `amplify-authenticator` usage
+         */
+        "standalone": boolean;
         /**
           * Used in order to configure TOTP for a user
          */
@@ -2327,6 +2353,10 @@ declare namespace LocalJSX {
     }
     interface AmplifyS3Image {
         /**
+          * String representing the alternate image text
+         */
+        "alt"?: string;
+        /**
           * Image body content to be uploaded
          */
         "body"?: object;
@@ -2350,6 +2380,10 @@ declare namespace LocalJSX {
           * The key of the image object in S3
          */
         "imgKey"?: string;
+        /**
+          * Attributes to be placed on the img element: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attributes
+         */
+        "imgProps"?: Record<PropertyKey, any>;
         /**
           * The access level of the image
          */
@@ -2568,6 +2602,12 @@ declare namespace LocalJSX {
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
+          * Override for handling the Auth.SignUp API call
+         */
+        "handleSignUp"?: (
+		params: SignUpParams
+	) => Promise<ISignUpResult>;
+        /**
           * Fires when sign up form is submitted
          */
         "handleSubmit"?: (event: Event) => void;
@@ -2624,6 +2664,12 @@ declare namespace LocalJSX {
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
+          * This is run after totp setup is complete. Useful if using this as standalone.
+         */
+        "handleComplete"?: (
+		user: CognitoUserInterface
+	) => void | Promise<void>;
+        /**
           * Used for header text in totp setup component
          */
         "headerText"?: string;
@@ -2631,6 +2677,10 @@ declare namespace LocalJSX {
           * Used for customizing the issuer string in the qr code image
          */
         "issuer"?: string;
+        /**
+          * Set this to true if this component is running outside the default `amplify-authenticator` usage
+         */
+        "standalone"?: boolean;
         /**
           * Used in order to configure TOTP for a user
          */

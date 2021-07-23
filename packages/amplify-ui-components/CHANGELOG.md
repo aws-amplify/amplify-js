@@ -3,6 +3,51 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.6.2...@aws-amplify/ui-components@1.7.0) (2021-07-22)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** Let `amplify-totp-setup` work outside authenticator ([#8592](https://github.com/aws-amplify/amplify-js/issues/8592)) ([cb0e3d4](https://github.com/aws-amplify/amplify-js/commit/cb0e3d46791fc1da6e5b7810f3d6c37db9688355))
+
+
+
+
+
+## [1.6.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.6.1...@aws-amplify/ui-components@1.6.2) (2021-07-16)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.6.0...@aws-amplify/ui-components@1.6.1) (2021-07-08)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+# [1.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.5.0...@aws-amplify/ui-components@1.6.0) (2021-06-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** Handle loading in signUp & confirmSignup ([#7189](https://github.com/aws-amplify/amplify-js/issues/7189)) ([988a29b](https://github.com/aws-amplify/amplify-js/commit/988a29bb48a632ab46b6a63878c33a27a5554a30)), closes [#7032](https://github.com/aws-amplify/amplify-js/issues/7032)
+* **@aws-amplify/ui-components:** including handleInputChange in amplify-confirm-sign-in fields only when not specified ([#8492](https://github.com/aws-amplify/amplify-js/issues/8492)) ([06d0d13](https://github.com/aws-amplify/amplify-js/commit/06d0d13057e5885806dbf4715321dcc1700bfe5e)), closes [#8255](https://github.com/aws-amplify/amplify-js/issues/8255) [/github.com/aws-amplify/amplify-js/pull/8255#issuecomment-866642875](https://github.com//github.com/aws-amplify/amplify-js/pull/8255/issues/issuecomment-866642875)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** Trim inputs before submit [#7408](https://github.com/aws-amplify/amplify-js/issues/7408) ([#8468](https://github.com/aws-amplify/amplify-js/issues/8468)) ([05a5481](https://github.com/aws-amplify/amplify-js/commit/05a5481109167bca892c8ac0fc6155bda9d1edbb))
+* add handleSignUp prop to override auth signup method ([#8474](https://github.com/aws-amplify/amplify-js/issues/8474)) ([a5f2466](https://github.com/aws-amplify/amplify-js/commit/a5f2466454f0cc1e0223fb03e78142209cf1f033))
+
+
+
+
+
 # [1.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.4.0...@aws-amplify/ui-components@1.5.0) (2021-06-18)
 
 

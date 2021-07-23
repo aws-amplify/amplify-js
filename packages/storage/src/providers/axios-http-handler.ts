@@ -22,9 +22,11 @@ import axios, {
 } from 'axios';
 import { ConsoleLogger as Logger, Platform } from '@aws-amplify/core';
 import { FetchHttpHandlerOptions } from '@aws-sdk/fetch-http-handler';
+import * as events from 'events';
 
 const logger = new Logger('axios-http-handler');
-export const SEND_PROGRESS_EVENT = 'sendProgress';
+export const SEND_UPLOAD_PROGRESS_EVENT = 'sendUploadProgress';
+export const SEND_DOWNLOAD_PROGRESS_EVENT = 'sendDownloadProgress';
 
 function isBlob(body: any): body is Blob {
 	return typeof Blob !== 'undefined' && body instanceof Blob;
@@ -60,7 +62,7 @@ export const reactNativeRequestTransformer: AxiosTransformer[] = [
 export class AxiosHttpHandler implements HttpHandler {
 	constructor(
 		private readonly httpOptions: FetchHttpHandlerOptions = {},
-		private readonly emitter?: any,
+		private readonly emitter?: events.EventEmitter,
 		private readonly cancelTokenSource?: CancelTokenSource
 	) {}
 
@@ -122,7 +124,11 @@ export class AxiosHttpHandler implements HttpHandler {
 		}
 		if (emitter) {
 			axiosRequest.onUploadProgress = function(event) {
-				emitter.emit(SEND_PROGRESS_EVENT, event);
+				emitter.emit(SEND_UPLOAD_PROGRESS_EVENT, event);
+				logger.debug(event);
+			};
+			axiosRequest.onDownloadProgress = function(event) {
+				emitter.emit(SEND_DOWNLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
 		}
@@ -160,7 +166,7 @@ export class AxiosHttpHandler implements HttpHandler {
 				})
 				.catch(error => {
 					// Error
-					logger.error(error);
+					logger.error(error.message);
 					throw error;
 				}),
 			requestTimeout(requestTimeoutInMs),

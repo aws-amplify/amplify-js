@@ -174,19 +174,16 @@ const isNonRetryableError = (obj) => {
 	return obj && obj[key];
 };
 
-async function retry(functionToRetry, args, delayFn, attempt = 1) {
+function retry(functionToRetry, args, delayFn, attempt = 1) {
 	if (typeof functionToRetry !== 'function') {
 		throw Error('functionToRetry must be a function');
 	}
 
 	logger.debug(`${functionToRetry.name} attempt #${attempt} with args: ${JSON.stringify(args)}`);
 
-	try {
-		return await functionToRetry(...args);
-	}
-	catch (err) {
+	return functionToRetry(...args).catch((err) => {
 		logger.debug(`error on ${functionToRetry.name}`, err);
-
+		
 		if (isNonRetryableError(err)) {
 			logger.debug(`${functionToRetry.name} non retryable error`, err);
 			throw err;
@@ -197,13 +194,12 @@ async function retry(functionToRetry, args, delayFn, attempt = 1) {
 		logger.debug(`${functionToRetry.name} retrying in ${retryIn} ms`);
 
 		if (retryIn !== false) {
-			await new Promise(res => setTimeout(res, retryIn));
-			return await retry(functionToRetry, args, delayFn, attempt + 1);
-		}
-		else {
+			return new Promise(res => setTimeout(res, retryIn))
+					.then(() => retry(functionToRetry, args, delayFn, attempt + 1))
+		} else {
 			throw err;
 		}
-	}
+	})
 }
 
 function jitteredBackoff(maxDelayMs) {

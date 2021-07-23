@@ -54,6 +54,7 @@ export {
 	Signer,
 	I18n,
 	ServiceWorker,
+	AWSCloudWatchProvider,
 } from '@aws-amplify/core';
 export { withSSRContext } from './withSSRContext';
 

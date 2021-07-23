@@ -68,7 +68,11 @@ import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
 import { default as urlListener } from './urlListener';
 import { AuthError, NoUserPoolError } from './Errors';
-import { AuthErrorTypes, CognitoHostedUIIdentityProvider } from './types/Auth';
+import {
+	AuthErrorTypes,
+	CognitoHostedUIIdentityProvider,
+	IAuthDevice,
+} from './types/Auth';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -84,6 +88,11 @@ typeof Symbol.for === 'function'
 const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
+
+// Cognito Documentation for max device
+// tslint:disable-next-line:max-line-length
+// https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
+const MAX_DEVICES = 60;
 
 /**
  * Provide authentication steps
@@ -2138,7 +2147,8 @@ export class AuthClass {
 					attribute.Name === 'email_verified' ||
 					attribute.Name === 'phone_number_verified'
 				) {
-					obj[attribute.Name] = this.isTruthyString(attribute.Value) || attribute.Value === true;
+					obj[attribute.Name] =
+						this.isTruthyString(attribute.Value) || attribute.Value === true;
 				} else {
 					obj[attribute.Name] = attribute.Value;
 				}
@@ -2148,7 +2158,9 @@ export class AuthClass {
 	}
 
 	private isTruthyString(value: any): boolean {
-		return typeof value.toLowerCase === 'function' && value.toLowerCase() === 'true';
+		return (
+			typeof value.toLowerCase === 'function' && value.toLowerCase() === 'true'
+		);
 	}
 
 	private createCognitoUser(username: string): CognitoUser {
@@ -2195,8 +2207,109 @@ export class AuthClass {
 		const type = this.noUserPoolErrorHandler(this._config);
 		return Promise.reject(new NoUserPoolError(type));
 	}
+
+	public async rememberDevice(): Promise<string | AuthError> {
+		let currUser;
+
+		try {
+			currUser = await this.currentUserPoolUser();
+		} catch (error) {
+			logger.debug('The user is not authenticated by the error', error);
+			return Promise.reject('The user is not authenticated');
+		}
+
+		currUser.getCachedDeviceKeyAndPassword();
+		return new Promise((res, rej) => {
+			currUser.setDeviceStatusRemembered({
+				onSuccess: data => {
+					res(data);
+				},
+				onFailure: err => {
+					if (err.code === 'InvalidParameterException') {
+						rej(new AuthError(AuthErrorTypes.DeviceConfig));
+					} else if (err.code === 'NetworkError') {
+						rej(new AuthError(AuthErrorTypes.NetworkError));
+					} else {
+						rej(err);
+					}
+				},
+			});
+		});
+	}
+
+	public async forgetDevice(): Promise<void> {
+		let currUser;
+
+		try {
+			currUser = await this.currentUserPoolUser();
+		} catch (error) {
+			logger.debug('The user is not authenticated by the error', error);
+			return Promise.reject('The user is not authenticated');
+		}
+
+		currUser.getCachedDeviceKeyAndPassword();
+		return new Promise((res, rej) => {
+			currUser.forgetDevice({
+				onSuccess: data => {
+					res(data);
+				},
+				onFailure: err => {
+					if (err.code === 'InvalidParameterException') {
+						rej(new AuthError(AuthErrorTypes.DeviceConfig));
+					} else if (err.code === 'NetworkError') {
+						rej(new AuthError(AuthErrorTypes.NetworkError));
+					} else {
+						rej(err);
+					}
+				},
+			});
+		});
+	}
+
+	public async fetchDevices(): Promise<IAuthDevice[]> {
+		let currUser;
+
+		try {
+			currUser = await this.currentUserPoolUser();
+		} catch (error) {
+			logger.debug('The user is not authenticated by the error', error);
+			throw new Error('The user is not authenticated');
+		}
+
+		currUser.getCachedDeviceKeyAndPassword();
+		return new Promise((res, rej) => {
+			const cb = {
+				onSuccess(data) {
+					const deviceList: IAuthDevice[] = data.Devices.map(device => {
+						const deviceName =
+							device.DeviceAttributes.find(
+								({ Name }) => Name === 'device_name'
+							) || {};
+
+						const deviceInfo: IAuthDevice = {
+							id: device.DeviceKey,
+							name: deviceName.Value,
+						};
+						return deviceInfo;
+					});
+					res(deviceList);
+				},
+				onFailure: err => {
+					if (err.code === 'InvalidParameterException') {
+						rej(new AuthError(AuthErrorTypes.DeviceConfig));
+					} else if (err.code === 'NetworkError') {
+						rej(new AuthError(AuthErrorTypes.NetworkError));
+					} else {
+						rej(err);
+					}
+				},
+			};
+			currUser.listDevices(MAX_DEVICES, null, cb);
+		});
+	}
 }
 
 export const Auth = new AuthClass(null);
 
 Amplify.register(Auth);
+

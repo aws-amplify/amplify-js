@@ -1,19 +1,93 @@
-import { CopyObjectRequest } from '@aws-sdk/client-s3';
 import { AWSS3UploadTask } from '../providers/AWSS3UploadTask';
+import {
+	GetObjectRequest,
+	GetObjectCommandOutput,
+	PutObjectRequest,
+	CopyObjectRequest,
+	_Object,
+	DeleteObjectCommandOutput,
+} from '@aws-sdk/client-s3';
+import { StorageOptions, StorageLevel } from './Storage';
+import { CancelTokenSource } from 'axios';
 
-type StorageLevel = 'public' | 'protected' | 'private';
+type ListObjectsCommandOutputContent = _Object;
 
-export type CopyProgress = {
-	/** Total bytes copied */
-	loaded: number;
-	/** Total bytes to copy */
-	total: number;
-};
+export interface S3ProviderGetConfig extends StorageOptions {
+	download?: boolean;
+	track?: boolean;
+	expires?: number;
+	provider?: string;
+	progressCallback?: (progress: any) => any;
+	cancelTokenSource?: CancelTokenSource;
+	bucket?: GetObjectRequest['Bucket'];
+	cacheControl?: GetObjectRequest['ResponseCacheControl'];
+	contentDisposition?: GetObjectRequest['ResponseContentDisposition'];
+	contentEncoding?: GetObjectRequest['ResponseContentEncoding'];
+	contentLanguage?: GetObjectRequest['ResponseContentLanguage'];
+	contentType?: GetObjectRequest['ResponseContentType'];
+	SSECustomerAlgorithm?: GetObjectRequest['SSECustomerAlgorithm'];
+	SSECustomerKey?: GetObjectRequest['SSECustomerKey'];
+	SSECustomerKeyMD5?: GetObjectRequest['SSECustomerKeyMD5'];
+}
 
-type S3ClientCopyCommandInput = S3ClientCopyCommandParams;
+export type S3ProviderGetOuput<T> = T extends { download: true } ? GetObjectCommandOutput : string;
 
-/** A subset of S3 CopyCommand params allowed for AWSS3Provider. */
-interface S3ClientCopyCommandParams {
+export interface S3ProviderPutConfig extends StorageOptions {
+	progressCallback?: (progress: any) => any;
+	track?: boolean;
+	cancelTokenSource?: CancelTokenSource;
+	serverSideEncryption?: PutObjectRequest['ServerSideEncryption'];
+	SSECustomerAlgorithm?: PutObjectRequest['SSECustomerAlgorithm'];
+	SSECustomerKey?: PutObjectRequest['SSECustomerKey'];
+	SSECustomerKeyMD5?: PutObjectRequest['SSECustomerKeyMD5'];
+	SSEKMSKeyId?: PutObjectRequest['SSEKMSKeyId'];
+	acl?: PutObjectRequest['ACL'];
+	bucket?: PutObjectRequest['Bucket'];
+	cacheControl?: PutObjectRequest['CacheControl'];
+	contentDisposition?: PutObjectRequest['ContentDisposition'];
+	contentEncoding?: PutObjectRequest['ContentEncoding'];
+	contentType?: PutObjectRequest['ContentType'];
+	expires?: PutObjectRequest['Expires'];
+	metadata?: PutObjectRequest['Metadata'];
+	tagging?: PutObjectRequest['Tagging'];
+}
+
+export interface S3ProviderPutOutput {
+	key: string;
+}
+
+export interface S3ProviderRemoveConfig extends StorageOptions {
+	bucket?: string;
+}
+
+export type S3ProviderRemoveOutput = DeleteObjectCommandOutput;
+
+export interface S3ProviderListConfig extends StorageOptions {
+	bucket?: string;
+	maxKeys?: number;
+}
+
+export interface S3ProviderListOutputItem {
+	key: ListObjectsCommandOutputContent['Key'];
+	eTag: ListObjectsCommandOutputContent['ETag'];
+	lastModified: ListObjectsCommandOutputContent['LastModified'];
+	size: ListObjectsCommandOutputContent['Size'];
+}
+
+export type S3ProviderListOutput = S3ProviderListOutputItem[];
+
+export interface S3CopyTarget {
+	key: string;
+	level?: StorageLevel;
+	identityId?: string;
+}
+
+export type S3CopySource = S3CopyTarget;
+
+export type S3CopyDestination = Omit<S3CopyTarget, 'identityId'>;
+
+export interface S3ProviderCopyConfig extends StorageOptions {
+	cancelTokenSource?: CancelTokenSource;
 	bucket?: CopyObjectRequest['Bucket'];
 	cacheControl?: CopyObjectRequest['CacheControl'];
 	contentDisposition?: CopyObjectRequest['ContentDisposition'];
@@ -30,31 +104,7 @@ interface S3ClientCopyCommandParams {
 	SSEKMSKeyId?: CopyObjectRequest['SSEKMSKeyId'];
 }
 
-interface StorageCopyConfig {
-	level?: StorageLevel;
-	/** if set to true, automatically sends Storage Events to Amazon Pinpoint */
-	track?: boolean;
-	provider?: string;
-	/**
-	 * callback function that gets called on each successful part copied to track
-	 * the copy progress
-	 **/
-	progressCallback?: (progress: CopyProgress) => any;
-}
-
-export interface S3CopyTarget {
-	key: string;
-	level?: StorageLevel;
-	identityId?: string;
-}
-
-export type S3CopySource = S3CopyTarget;
-
-export type S3CopyDestination = Omit<S3CopyTarget, 'identityId'>;
-
-export type CopyObjectConfig = S3ClientCopyCommandInput & StorageCopyConfig;
-
-export type CopyResult = {
+export type S3ProviderCopyOutput = {
 	key: string;
 };
 

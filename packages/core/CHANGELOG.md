@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.0...@aws-amplify/core@4.2.1) (2021-07-22)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.1.3...@aws-amplify/core@4.2.0) (2021-07-16)
+
+
+### Features
+
+* core/cloudwatch-logging ([#8588](https://github.com/aws-amplify/amplify-js/issues/8588)) ([6f28c7e](https://github.com/aws-amplify/amplify-js/commit/6f28c7e94ae8d41b37490292ff3547505100c6b2))
+
+
+
+
+
+## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.1.2...@aws-amplify/core@4.1.3) (2021-07-08)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.1.1...@aws-amplify/core@4.1.2) (2021-06-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** switching unauthenticated users to authenticated users ([40cc22f](https://github.com/aws-amplify/amplify-js/commit/40cc22f8b332e4748c85504ca8e2ac2713fd87d1))
+
+
+
+
+
 ## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.1.0...@aws-amplify/core@4.1.1) (2021-06-18)
 
 **Note:** Version bump only for package @aws-amplify/core
