@@ -14,11 +14,8 @@
 import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
 import { AWSS3Provider } from './providers';
 import {
-	S3ProviderGetConfig,
 	S3ProviderGetOuput,
-	S3ProviderPutConfig,
 	S3ProviderPutOutput,
-	S3ProviderRemoveConfig,
 	S3ProviderRemoveOutput,
 	StorageCopyDestination,
 	StorageCopySource,
@@ -210,12 +207,12 @@ export class Storage {
 	}
 
 	/**
-	 * Copies a file from the src key to dest key.
+	 * Copies a file from src to dest.
 	 *
-	 * @param {string} src - key of the source object.
-	 * @param {string} dest - key of the destination object.
-	 * @param {any} [config] - config.
-	 * @return {Promise<any>} - A promise resolves to the copied object's key.
+	 * @param src - The source object.
+	 * @param dest - The destination object.
+	 * @param [config] - config for the Storage operation.
+	 * @return A promise resolves to the copied object's key.
 	 */
 	public copy<T extends Record<string, any>, X = S3ProviderCopyOutput>(
 		src: StorageCopySource,
@@ -242,6 +239,7 @@ export class Storage {
 	 * Get a presigned URL of the file or the object data when download:true
 	 *
 	 * @param {string} key - key of the object
+	 * @param 
 	 * @param {Object} [config] - { level : private|protected|public, download: true|false }
 	 * @return - A promise resolves to either a presigned url or the object
 	 */
