@@ -45,7 +45,7 @@ import {
 	S3ProviderListConfig,
 	S3ProviderPutOutput,
 	S3ProviderCopyConfig,
-	// S3ProviderCopyOutput,
+	S3ProviderCopyOutput,
 	S3CopySource,
 	S3CopyDestination,
 	StorageLevel,
@@ -147,7 +147,7 @@ export class AWSS3Provider implements StorageProvider {
 			return Promise.reject('Object must be an instance of Blob');
 		}
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, track, progressCallback, completeCallback } = opt;
+		const { bucket, track, progressCallback, completeCallback, level } = opt;
 		const { contentType, contentDisposition, contentEncoding, cacheControl, expires, metadata, tagging, acl } = opt;
 		const { serverSideEncryption, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5, SSEKMSKeyId } = opt;
 		const type = contentType ? contentType : 'binary/octet-stream';
@@ -202,8 +202,9 @@ export class AWSS3Provider implements StorageProvider {
 			bucket,
 			key: finalKey,
 			s3Client: s3,
-			body: file,
+			file,
 			emitter,
+			accessLevel: level,
 		});
 		emitter.on('uploadPartProgress', event => {
 			if (progressCallback) {

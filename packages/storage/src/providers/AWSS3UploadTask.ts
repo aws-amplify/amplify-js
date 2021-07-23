@@ -30,7 +30,7 @@ export interface AWSS3UploadTaskParams {
 	uploadId: string;
 	bucket: string;
 	key: string;
-	body: Blob;
+	file: Blob;
 	/**
 	 * File size of each chunk of the parts
 	 */
@@ -83,7 +83,7 @@ export class AWSS3UploadTask implements UploadTask {
 		uploadId,
 		bucket,
 		key,
-		body,
+		file,
 		completedParts,
 		emitter,
 	}: AWSS3UploadTaskParams) {
@@ -91,7 +91,7 @@ export class AWSS3UploadTask implements UploadTask {
 		this.uploadId = uploadId;
 		this.bucket = bucket;
 		this.key = key;
-		this.file = body;
+		this.file = file;
 		this.partSize = MIN_PART_SIZE;
 		this.totalBytes = this.file.size;
 		this.bytesUploaded = 0;
