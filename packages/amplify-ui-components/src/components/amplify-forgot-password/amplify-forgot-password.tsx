@@ -84,6 +84,7 @@ export class AmplifyForgotPassword {
 		if (this.formFields.length === 0) {
 			this.buildDefaultFormFields();
 		} else {
+			this.newFormFields = [];
 			this.formFields.forEach(field => {
 				const newField = { ...field };
 				newField['handleInputChange'] = event =>
@@ -255,7 +256,11 @@ export class AmplifyForgotPassword {
 		this.loading = true;
 		try {
 			const { userInput, code, password } = this.forgotPasswordAttrs;
-			const data = await Auth.forgotPasswordSubmit(userInput.trim(), code, password);
+			const data = await Auth.forgotPasswordSubmit(
+				userInput.trim(),
+				code,
+				password
+			);
 			logger.debug(data);
 			this.handleAuthStateChange(AuthState.SignIn);
 			this.delivery = null;
