@@ -29,7 +29,6 @@ import {
 	NotificationsConfig,
 	NotificationsProvider,
 	ValidateEventOptions,
-	InAppMessage,
 } from './types';
 
 const STORAGE_KEY_SUFFIX = '_notificationKey';
@@ -192,7 +191,7 @@ class NotificationsClass {
 		return messages;
 	};
 
-	private async storeMessages(key: string, messages: InAppMessage[]) {
+	private async storeMessages(key: string, messages: AppMessage[]) {
 		if (!messages) {
 			logger.debug('no messages :(');
 			return;
