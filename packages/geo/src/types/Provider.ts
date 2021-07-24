@@ -29,8 +29,6 @@ export interface GeoProvider {
 	// get the map resource listed as default
 	getDefaultMap(): string | MapStyle;
 
-	searchByText(
-		text: string,
-		options?: SearchByTextOptions
-	): Promise<Place[] | void>;
+	// search for places by text input
+	searchByText(text: string, options?: SearchByTextOptions): Promise<Place[]>;
 }
