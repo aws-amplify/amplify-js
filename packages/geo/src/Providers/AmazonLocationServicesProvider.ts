@@ -18,6 +18,7 @@ import {
 	LocationClient,
 	SearchPlaceIndexForTextCommand,
 	SearchPlaceIndexForPositionCommand,
+	SearchPlaceIndexForPositionCommandInput,
 } from '@aws-sdk/client-location';
 
 import {
@@ -27,6 +28,7 @@ import {
 	GeoProvider,
 	Place,
 	MapStyle,
+	Coordinates,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServicesProvider');
@@ -194,36 +196,58 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		return results;
 	}
 
+	/**
+	 * Reverse geocoding search via a coordinate point on the map
+	 * @param coordinates - Coordinates array for the search input
+	 * @param options - Options parameters for the search
+	 * @returns {Promise<Place>} - Promise that resolves to a place matching search coordinates
+	 */
 	public async searchByCoordinates(
 		coordinates: Coordinates,
 		options?: SearchByCoordinatesOptions
-	) {
-		const credentialsOK = await this._getCredentials();
+	): Promise<Place> {
+		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
 			return Promise.reject('No credentials');
 		}
-		let searchInput = {
+
+		const locationServicesInput: SearchPlaceIndexForPositionCommandInput = {
 			Position: coordinates,
 			IndexName: this._config.place_indexes.default,
 		};
+
 		if (options) {
-			const PascalOptions = convertPlaceCamelToPascal(options);
-			searchInput = {
-				...searchInput,
-				...PascalOptions,
-			};
+			if (options.placeIndexName) {
+				locationServicesInput.IndexName = options.placeIndexName;
+			}
+			locationServicesInput.MaxResults = options.maxResults;
 		}
 
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
 		});
-		const command = new SearchPlaceIndexForPositionCommand(searchInput);
+		const command = new SearchPlaceIndexForPositionCommand(
+			locationServicesInput
+		);
 
-		const response = await client.send(command);
+		let response;
+		try {
+			response = await client.send(command);
+		} catch (error) {
+			logger.debug(error);
+			throw new Error(error);
+		}
 
+		/**
+		 * The response from Location Services is a "Results" array with a single `Place` object
+		 * which are Place objects in PascalCase.
+		 * Here we want to flatten that to an array of results and change them to camelCase
+		 */
 		const PascalResults = response.Results.map(result => result.Place);
-		const results = convertPlaceArrayPascalToCamel(PascalResults);
+		const results: Place = (camelcaseKeys(PascalResults[0], {
+			deep: true,
+		}) as undefined) as Place;
 
 		return results;
 	}

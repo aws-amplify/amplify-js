@@ -268,7 +268,7 @@ describe('AmazonLocationServicesProvider', () => {
 			const results = await locationProvider.searchByCoordinates(
 				testCoordinates
 			);
-			expect(results).toEqual([testPlaceCamelCase]);
+			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
 			const input = spyon.mock.calls[0][0].input;
@@ -288,19 +288,19 @@ describe('AmazonLocationServicesProvider', () => {
 
 			const searchOptions: SearchByCoordinatesOptions = {
 				maxResults: 40,
-				placeIndex: 'geoJSSearchCustomExample',
+				placeIndexName: 'geoJSSearchCustomExample',
 			};
 			const results = await locationProvider.searchByCoordinates(
 				testCoordinates,
 				searchOptions
 			);
-			expect(results).toEqual([testPlaceCamelCase]);
+			expect(results).toEqual(testPlaceCamelCase);
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Position: testCoordinates,
-				IndexName: searchOptions.placeIndex,
+				IndexName: searchOptions.placeIndexName,
 				MaxResults: searchOptions.maxResults,
 			});
 		});

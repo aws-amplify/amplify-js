@@ -48,7 +48,7 @@ export interface SearchByTextOptionsBase {
 	countries?: string[];
 	maxResults?: number;
 	placeIndexName?: string;
-	provider?: string;
+	providerName?: string;
 }
 
 // SearchByText options with a bias position
@@ -70,8 +70,8 @@ export type SearchByTextOptions =
 
 export type SearchByCoordinatesOptions = {
 	maxResults?: number;
-	placeIndex?: string;
-	provider?: string;
+	placeIndexName?: string;
+	providerName?: string;
 };
 
 // Geometry object for Place points

@@ -154,12 +154,12 @@ export class GeoClass {
 	}
 
 	public async searchByText(text: string, options?: SearchByTextOptions) {
-		const { provider = DEFAULT_PROVIDER } = options || {};
+		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
+			pluggable => pluggable.getProviderName() === providerName
 		);
 		if (prov === undefined) {
-			logger.debug('No plugin found with providerName', provider);
+			logger.debug('No plugin found with providerName', providerName);
 			return Promise.reject('No plugin found in Geo for the provider');
 		}
 
@@ -171,12 +171,12 @@ export class GeoClass {
 		coordinates: Coordinates,
 		options?: SearchByCoordinatesOptions
 	) {
-		const { provider = DEFAULT_PROVIDER } = options || {};
+		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
+			pluggable => pluggable.getProviderName() === providerName
 		);
 		if (prov === undefined) {
-			logger.debug('No plugin found with providerName', provider);
+			logger.debug('No plugin found with providerName', providerName);
 			return Promise.reject('No plugin found in Geo for the provider');
 		}
 
