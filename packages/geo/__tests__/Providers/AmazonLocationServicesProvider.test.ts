@@ -23,7 +23,7 @@ import {
 	TestPlacePascalCase,
 	testPlaceCamelCase,
 } from '../data';
-import { SearchByTextOptions, Coordinates } from '../../src/types';
+import { SearchByTextOptions } from '../../src/types';
 
 LocationClient.prototype.send = jest.fn(async command => {
 	if (command instanceof SearchPlaceIndexForTextCommand) {
@@ -156,7 +156,7 @@ describe('AmazonLocationServicesProvider', () => {
 			});
 		});
 
-		test('should use options when given', async () => {
+		test('should use biasPosition when given', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
 			});
@@ -165,12 +165,12 @@ describe('AmazonLocationServicesProvider', () => {
 			locationProvider.configure(awsConfig.geo);
 
 			const searchOptions: SearchByTextOptions = {
-				biasPosition: [12345, 67890],
-				searchAreaConstraints: [123, 456, 789, 321],
-				countryFilter: ['USA'],
+				countries: ['USA'],
 				maxResults: 40,
-				placeIndex: 'geoJSSearchCustomExample',
+				placeIndexName: 'geoJSSearchCustomExample',
+				biasPosition: [12345, 67890],
 			};
+
 			const results = await locationProvider.searchByText(
 				testString,
 				searchOptions
@@ -179,12 +179,44 @@ describe('AmazonLocationServicesProvider', () => {
 
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
 			const input = spyon.mock.calls[0][0].input;
+
 			expect(input).toEqual({
 				Text: testString,
-				IndexName: searchOptions.placeIndex,
+				IndexName: searchOptions.placeIndexName,
 				BiasPosition: searchOptions.biasPosition,
-				SearchAreaConstraints: searchOptions.searchAreaConstraints,
-				CountryFilter: searchOptions.countryFilter,
+				FilterCountries: searchOptions.countries,
+				MaxResults: searchOptions.maxResults,
+			});
+		});
+
+		test('should use searchAreaConstraints when given', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServicesProvider();
+			locationProvider.configure(awsConfig.geo);
+
+			const searchOptions: SearchByTextOptions = {
+				countries: ['USA'],
+				maxResults: 40,
+				placeIndexName: 'geoJSSearchCustomExample',
+				searchAreaConstraints: [123, 456, 789, 321],
+			};
+
+			const resultsWithConstraints = await locationProvider.searchByText(
+				testString,
+				searchOptions
+			);
+			expect(resultsWithConstraints).toEqual([testPlaceCamelCase]);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Text: testString,
+				IndexName: searchOptions.placeIndexName,
+				FilterBBox: searchOptions.searchAreaConstraints,
+				FilterCountries: searchOptions.countries,
 				MaxResults: searchOptions.maxResults,
 			});
 		});

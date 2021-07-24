@@ -10,52 +10,79 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { GeoProvider } from './Provider';
-export type GeoConfig = {
+// configuration shape for the Geo class
+export interface GeoConfig {
 	region?: string;
 	maps?: {
 		items: {};
 		default: string;
 	};
 	place_indexes?: {};
-};
+}
 
-export type MapStyle = {
+// Data held about maps in aws-exports
+export interface MapStyle {
 	mapName: string;
 	style: string;
-};
+}
 
 export type Latitude = number;
 export type Longitude = number;
 
+/// P
 export type Coordinates = [Latitude, Longitude];
 
+// SW Latitude point for bounding box
 export type SWLatitude = Latitude;
+// SW Longitude point for bounding box
 export type SWLongitude = Longitude;
+// SW Latitude point for bounding box
 export type NELatitude = Latitude;
+// SW Longitude point for bounding box
 export type NELongitude = Longitude;
+// Full Bounding Box point array
 export type BoundingBox = [SWLatitude, SWLongitude, NELatitude, NELongitude];
 
-export type SearchByTextOptions = {
-	biasPosition?: Coordinates;
-	searchAreaConstraints?: BoundingBox;
-	countryFilter?: string[];
+// Base items for SearchByText options
+export interface SearchByTextOptionsBase {
+	countries?: string[];
 	maxResults?: number;
-	placeIndex?: string;
-	provider?: GeoProvider;
+	placeIndexName?: string;
+	provider?: string;
+}
+
+// SearchByText options with a bias position
+export interface SearchByTextOptionsWithBiasPosition
+	extends SearchByTextOptionsBase {
+	biasPosition?: Coordinates;
+}
+
+// SearchByText options with search area constraints (such as a bounding box)
+export interface SearchByTextOptionsWithSearchAreaConstraints
+	extends SearchByTextOptionsBase {
+	searchAreaConstraints?: BoundingBox;
+}
+
+// Union type for searchByText options
+export type SearchByTextOptions =
+	| SearchByTextOptionsWithBiasPosition
+	| SearchByTextOptionsWithSearchAreaConstraints;
+
+// Geometry object for Place points
+export type PlaceGeometry = {
+	point: Coordinates;
 };
 
-export type Place = {
-	addressNumber: string;
-	country: string;
-	geometry: {
-		point: Coordinates;
-	};
-	label: string;
-	municipality: string;
+// Place object with locality information
+export interface Place {
+	addressNumber?: string;
+	country?: string;
+	geometry: PlaceGeometry | undefined;
+	label?: string;
+	municipality?: string;
 	neighborhood?: string;
 	postalCode?: string;
-	region: string;
+	region?: string;
 	street?: string;
 	subRegion?: string;
-};
+}

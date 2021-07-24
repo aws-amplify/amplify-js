@@ -10,17 +10,15 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
+import camelcaseKeys from 'camelcase-keys';
 import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import {
+	Place as PlaceResult,
+	SearchPlaceIndexForTextCommandInput,
 	LocationClient,
 	SearchPlaceIndexForTextCommand,
 } from '@aws-sdk/client-location';
 
-import {
-	convertPlaceCamelToPascal,
-	convertPlaceArrayPascalToCamel,
-} from '../utils';
 import {
 	GeoConfig,
 	SearchByTextOptions,
@@ -83,7 +81,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 	/**
 	 * Get the map resources that are currently available through the provider
-	 * @returns - Array of available map resources
+	 * @returns {MapStyle[]}- Array of available map resources
 	 */
 	public getAvailableMaps(): MapStyle[] {
 		if (!this._config.maps) {
@@ -103,7 +101,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 	/**
 	 * Get the map resource set as default in amplify config
-	 * @returns - Map resource set as the default in amplify config
+	 * @returns {MapStyle} - Map resource set as the default in amplify config
 	 */
 	public getDefaultMap(): MapStyle {
 		if (!this._config.maps) {
@@ -119,36 +117,76 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		return { mapName, style };
 	}
 
+	/**
+	 * Search by text input with optional parameters
+	 * @param  {string} text - The text string that is to be searched for
+	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
+	 * @returns {Promise<Place[]>} - Promise resolves to a list of Places that match search parameters
+	 */
 	public async searchByText(
 		text: string,
 		options?: SearchByTextOptions
 	): Promise<Place[]> {
-		const credentialsOK = await this._getCredentials();
-		if (!credentialsOK) {
-			return Promise.reject('No credentials');
+		try {
+			const credentialsOK = await this._ensureCredentials();
+			if (!credentialsOK) {
+				return Promise.reject('No credentials');
+			}
+		} catch (error) {
+			throw '';
 		}
 
-		let searchInput = {
+		/**
+		 * Setup the searchInput
+		 */
+		const locationServicesInput: SearchPlaceIndexForTextCommandInput = {
 			Text: text,
 			IndexName: this._config.place_indexes.default,
 		};
+
+		/**
+		 * Map search options to Location Services input object
+		 */
 		if (options) {
-			const PascalOptions = convertPlaceCamelToPascal(options);
-			searchInput = {
-				...searchInput,
-				...PascalOptions,
-			};
+			locationServicesInput.FilterCountries = options.countries;
+			locationServicesInput.MaxResults = options.maxResults;
+
+			if (options.placeIndexName) {
+				locationServicesInput.IndexName = options.placeIndexName;
+			}
+
+			if (options['biasPosition']) {
+				locationServicesInput.BiasPosition = options['biasPosition'];
+			} else if (options['searchAreaConstraints']) {
+				locationServicesInput.FilterBBox = options['searchAreaConstraints'];
+			}
 		}
+
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
 		});
-		const command = new SearchPlaceIndexForTextCommand(searchInput);
+		const command = new SearchPlaceIndexForTextCommand(locationServicesInput);
 
-		const response = await client.send(command);
+		let response;
+		try {
+			response = await client.send(command);
+		} catch (error) {
+			logger.debug(error);
+			throw new Error(error);
+		}
 
-		const PascalResults = response.Results.map(result => result.Place);
-		const results = convertPlaceArrayPascalToCamel(PascalResults);
+		/**
+		 * The response from Location Services is a "Results" array of objects with a single `Place` item,
+		 * which are Place objects in PascalCase.
+		 * Here we want to flatten that to an array of results and change them to camelCase
+		 */
+		const PascalResults: PlaceResult[] = response.Results.map(
+			result => result.Place
+		);
+		const results: Place[] = (camelcaseKeys(PascalResults, {
+			deep: true,
+		}) as undefined) as Place[];
 
 		return results;
 	}
@@ -156,19 +194,17 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 	/**
 	 * @private
 	 */
-	private _getCredentials() {
-		return Credentials.get()
-			.then(credentials => {
-				if (!credentials) return false;
-				const cred = Credentials.shear(credentials);
-				logger.debug('get credentials for Location Services', cred);
-				this._config.credentials = cred;
-
-				return true;
-			})
-			.catch(error => {
-				logger.warn('get credentials error', error);
-				return false;
-			});
+	private async _ensureCredentials(): Promise<boolean> {
+		try {
+			const credentials = await Credentials.get();
+			if (!credentials) return false;
+			const cred = Credentials.shear(credentials);
+			logger.debug('set credentials for storage', cred);
+			this._config.credentials = cred;
+			return true;
+		} catch (error) {
+			logger.warn('ensure credentials error', error);
+			return false;
+		}
 	}
 }
