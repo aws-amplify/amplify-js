@@ -72,28 +72,28 @@ export type StorageCopySource = StorageCopyTarget;
 
 export type StorageCopyDestination = Omit<StorageCopyTarget, 'identityId'>;
 
+/**
+ * If a provider is not the default provider, allow the generic type, else use the default provider's config
+ */
 export type StorageOperationConfig<DefaultConfig, T> = T extends { provider: string }
 	? T extends { provider: 'AWSS3' }
 		? DefaultConfig
 		: T & { provider: string }
 	: DefaultConfig;
 
+/**
+ * If a provider is not the default provider, allow the generic type, else use the default provider's output
+ */
 export type StorageOperationOutput<DefaultOutput, T, U> = T extends { provider: string }
 	? T extends { provider: 'AWSS3' }
 		? DefaultOutput
 		: U
 	: DefaultOutput;
 
-/**
- * If a provider is not the default provider, allow the generic type, else use the default provider's config
- */
 export type StorageGetConfig<T> = StorageOperationConfig<S3ProviderGetConfig, T>;
 
 export type StorageGetOutput<T, U> = StorageOperationOutput<S3ProviderGetOuput<T>, T, U>;
 
-/**
- * If a provider is not the default provider, allow the generic type, else use the default provider's config
- */
 export type StoragePutConfig<T> = StorageOperationConfig<S3ProviderPutConfig, T>;
 
 export type StoragePutOutput<T, U> = StorageOperationOutput<S3ProviderPutOutput, T, U>;
