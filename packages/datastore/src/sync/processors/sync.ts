@@ -15,6 +15,7 @@ import {
 	getClientSideAuthError,
 	getForbiddenError,
 	predicateToGraphQLFilter,
+	getTokenForCustomAuth,
 } from '../utils';
 import {
 	jitteredExponentialRetry,
@@ -201,10 +202,16 @@ class SyncProcessor {
 		return await jitteredExponentialRetry(
 			async (query, variables) => {
 				try {
+					const authToken = await getTokenForCustomAuth(
+						authMode,
+						this.amplifyConfig
+					);
+
 					return await API.graphql({
 						query,
 						variables,
 						authMode,
+						authToken,
 					});
 				} catch (error) {
 					// Catch client-side (GraphQLAuthError) & 401/403 errors here so that we don't continue to retry
