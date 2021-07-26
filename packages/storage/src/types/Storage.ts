@@ -46,6 +46,16 @@ export interface StorageOptions {
 	dangerouslyConnectToHttpEndpointForTesting?: boolean;
 }
 
+export interface StorageMobileHubConfig {
+	Storage: {
+		AWSS3: {
+			bucket: string;
+			region: string;
+			dangerouslyConnectToHttpEndpointForTesting?: boolean;
+		};
+	};
+}
+
 export type StorageLevel = 'public' | 'protected' | 'private';
 
 export type CustomPrefix = {
@@ -68,10 +78,10 @@ export type StorageOperationConfig<DefaultConfig, T> = T extends { provider: str
 		: T & { provider: string }
 	: DefaultConfig;
 
-export type StorageOperationOutput<DefaultOutput, T, X> = T extends { provider: string }
+export type StorageOperationOutput<DefaultOutput, T, U> = T extends { provider: string }
 	? T extends { provider: 'AWSS3' }
 		? DefaultOutput
-		: X
+		: U
 	: DefaultOutput;
 
 /**
@@ -79,23 +89,23 @@ export type StorageOperationOutput<DefaultOutput, T, X> = T extends { provider: 
  */
 export type StorageGetConfig<T> = StorageOperationConfig<S3ProviderGetConfig, T>;
 
-export type StorageGetOutput<T, X> = StorageOperationOutput<S3ProviderGetOuput<T>, T, X>;
+export type StorageGetOutput<T, U> = StorageOperationOutput<S3ProviderGetOuput<T>, T, U>;
 
 /**
  * If a provider is not the default provider, allow the generic type, else use the default provider's config
  */
 export type StoragePutConfig<T> = StorageOperationConfig<S3ProviderPutConfig, T>;
 
-export type StoragePutOutput<T, X> = StorageOperationOutput<S3ProviderPutOutput, T, X>;
+export type StoragePutOutput<T, U> = StorageOperationOutput<S3ProviderPutOutput, T, U>;
 
 export type StorageRemoveConfig<T> = StorageOperationConfig<S3ProviderRemoveConfig, T>;
 
-export type StorageRemoveOutput<T, X> = StorageOperationOutput<S3ProviderRemoveOutput, T, X>;
+export type StorageRemoveOutput<T, U> = StorageOperationOutput<S3ProviderRemoveOutput, T, U>;
 
 export type StorageListConfig<T> = StorageOperationConfig<S3ProviderListConfig, T>;
 
-export type StorageListOutput<T, X> = StorageOperationOutput<S3ProviderListOutput, T, X>;
+export type StorageListOutput<T, U> = StorageOperationOutput<S3ProviderListOutput, T, U>;
 
 export type StorageCopyConfig<T> = StorageOperationConfig<S3ProviderCopyConfig, T>;
 
-export type StorageCopyOutput<T, X> = StorageOperationOutput<S3ProviderCopyOutput, T, X>;
+export type StorageCopyOutput<T, U> = StorageOperationOutput<S3ProviderCopyOutput, T, U>;
