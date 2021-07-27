@@ -13,6 +13,7 @@
 
 import { Amplify } from '@aws-amplify/core';
 import { Cache, AsyncStorageCache } from './AsyncStorageCache';
+export { getCachedUuid } from './Utils/CachedUuid';
 
 export { Cache, AsyncStorageCache };
 /**

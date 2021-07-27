@@ -12,10 +12,11 @@
  */
 
 import { ConsoleLogger as Logger, Credentials, Hub } from '@aws-amplify/core';
-import Cache from '@aws-amplify/cache';
+import { getCachedUuid as getEndpointId } from '@aws-amplify/cache';
+import { UpdateEndpointRequest } from '@aws-sdk/client-pinpoint';
 import { v1 as uuid } from 'uuid';
 
-import { getInAppMessages } from './client';
+import TempPinpointClient from './client';
 import { NotificationsCategory, NotificationsProvider } from '../types';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
@@ -23,21 +24,26 @@ typeof Symbol.for === 'function'
 	? Symbol.for('amplify_default')
 	: '@@amplify_default') as Symbol;
 
-const dispatchNotificationEvent = (event: string, data: any) => {
+const dispatchNotificationEvent = (
+	event: string,
+	data: any,
+	message?: string
+) => {
 	Hub.dispatch('notification', { event, data }, 'Notification', AMPLIFY_SYMBOL);
 };
 
 const logger = new Logger('AWSPinpointProvider');
 
-// params: { event: {name: , .... }, timeStamp, config, resendLimits }
 export default class AWSPinpointProvider implements NotificationsProvider {
 	static category: NotificationsCategory = 'Notifications';
 	static providerName = 'AWSPinpoint';
 
 	private config;
+	private endpointUpdated = false;
+	private pinpointClient;
 
-	constructor(config?) {
-		this.config = config ? config : {};
+	constructor(config = {}) {
+		this.config = config;
 	}
 
 	/**
@@ -54,89 +60,92 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		return AWSPinpointProvider.providerName;
 	}
 
-	configure = (config): object => {
-		logger.debug('configure Analytics', config);
-		const conf = config || {};
-		this.config = Object.assign({}, this.config, conf);
-
-		if (this.config.appId && !this.config.disabled) {
-			if (!this.config.endpointId) {
-				const cacheKey = this.getProviderName() + '_' + this.config.appId;
-				this._getEndpointId(cacheKey)
-					.then(endpointId => {
-						logger.debug('setting endpoint id from the cache', endpointId);
-						this.config.endpointId = endpointId;
-						dispatchNotificationEvent('pinpointProvider_configured', null);
-					})
-					.catch(err => {
-						logger.debug('Failed to generate endpointId', err);
-					});
-			} else {
-				dispatchNotificationEvent('pinpointProvider_configured', null);
-			}
-		}
+	configure = (config = {}): object => {
+		logger.debug('configure', config);
+		this.config = Object.assign({}, this.config, config);
+		dispatchNotificationEvent('pinpointProvider_configured', null);
 		return this.config;
 	};
 
-	private async _getCredentials() {
+	syncInAppMessages = async () => {
+		const { appId, disabled, endpointId } = this.config;
+
+		if (disabled) {
+			logger.debug('provider is disabled');
+			return;
+		}
+
+		if (!endpointId) {
+			const cacheKey = `${this.getProviderName()}_${appId}`;
+			this.config.endpointId = await getEndpointId(cacheKey);
+		}
+
+		try {
+			await this.initClient();
+			if (!this.endpointUpdated) {
+				await this.updateEndpoint();
+			}
+			const response = await this.pinpointClient
+				.getInAppMessages({
+					ApplicationId: appId,
+					EndpointId: endpointId || this.config.endpointId,
+				})
+				.promise();
+			const { InAppMessageCampaigns } = response.InAppMessagesResponse;
+			dispatchNotificationEvent('syncInAppMessages', InAppMessageCampaigns);
+			return InAppMessageCampaigns;
+		} catch (err) {
+			logger.error('Error syncing in-app messages', err);
+		}
+	};
+
+	private initClient = async () => {
+		if (this.pinpointClient) {
+			return;
+		}
+
+		const { appId, region } = this.config;
+		const credentials = await this.getCredentials();
+
+		if (!appId || !credentials || !region) {
+			throw new Error(
+				'One or more of credentials, appId or region is not configured'
+			);
+		}
+
+		this.pinpointClient = new TempPinpointClient({ region, ...credentials });
+	};
+
+	private getCredentials = async () => {
 		try {
 			const credentials = await Credentials.get();
 			if (!credentials) {
 				logger.debug('no credentials found');
 				return null;
 			}
-
-			logger.debug('set credentials for in app messages', credentials);
 			return Credentials.shear(credentials);
 		} catch (err) {
-			logger.debug('ensure credentials error', err);
+			logger.error('Error getting credentials', err);
 			return null;
 		}
-	}
+	};
 
-	private async _getEndpointId(cacheKey: string) {
-		// try to get from cache or generate
-		let endpointId = await Cache.getItem(cacheKey);
-		logger.debug(
-			'endpointId from cache',
-			endpointId,
-			'type',
-			typeof endpointId
-		);
-		if (!endpointId) {
-			endpointId = uuid();
-		}
-		return endpointId;
-	}
-
-	async syncInAppMessages() {
+	private updateEndpoint = async (): Promise<void> => {
+		const { appId, endpointId } = this.config;
+		const request: UpdateEndpointRequest = {
+			ApplicationId: appId,
+			EndpointId: endpointId,
+			EndpointRequest: {
+				RequestId: uuid(),
+				EffectiveDate: new Date().toISOString(),
+			},
+		};
 		try {
-			const { appId, region } = this.config;
-
-			const cacheKey = `${this.getProviderName()}_${appId}`;
-			const endpointId = await this._getEndpointId(cacheKey);
-			const credentials = await this._getCredentials();
-
-			if (!credentials || !appId || !region) {
-				logger.debug(
-					'cannot sync inAppMessages without credentials, applicationId and region'
-				);
-				return Promise.reject(
-					new Error('No credentials, applicationId or region')
-				);
-			}
-
-			const messages = await getInAppMessages({
-				appId,
-				credentials,
-				endpointId,
-				region,
-			});
-
-			return messages;
-		} catch (e) {
-			// TODO: Add error handling
-			console.warn(e);
+			logger.debug('updating endpoint', request);
+			await this.pinpointClient.updateEndpoint(request).promise();
+			this.endpointUpdated = true;
+		} catch (err) {
+			throw err;
 		}
-	}
+	};
 }

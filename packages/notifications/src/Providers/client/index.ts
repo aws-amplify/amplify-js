@@ -1,47 +1,22 @@
-import { InAppNotificationsResponse } from '../../types';
+require('aws-sdk/lib/node_loader');
 
-import PinpointMessagesClient from './pinpointClient';
+const AWS = require('aws-sdk/lib/core');
+const Service = AWS.Service;
+const apiLoader = AWS.apiLoader;
 
-// Gamma URL
-// const url = 'https://714kasriok.execute-api.us-east-1.amazonaws.com';
-// Prod
-const url = 'https://pinpoint.us-east-1.amazonaws.com/';
+const PINPOINT = 'pinpoint';
 
-export function getInAppMessages({ appId, credentials, endpointId, region }) {
-	return getInAppCampaigns({
-		appId,
-		credentials,
-		endpointId,
-		region,
-	});
-}
+apiLoader.services[PINPOINT] = {};
+AWS.Pinpoint = Service.defineService('pinpoint', ['2016-12-01']);
+Object.defineProperty(apiLoader.services[PINPOINT], '2016-12-01', {
+	get: function get() {
+		const model = require('./pinpoint-2016-12-01.min.json');
+		return model;
+	},
+	enumerable: true,
+	configurable: true,
+});
 
-export async function getInAppCampaigns({
-	appId,
-	credentials,
-	endpointId,
-	region,
-}) {
-	const options = {
-		endpoint: url,
-		region,
-		...credentials,
-	};
-	const pinpointInternal = new PinpointMessagesClient(options);
+const PinpointClient = AWS.Pinpoint;
 
-	return pinpointInternal
-		.getInAppMessages(getInAppMessagesRequest(appId, endpointId))
-		.promise()
-		.then(
-			(response: InAppNotificationsResponse) =>
-				response.InAppMessagesResponse.InAppMessageCampaigns
-		)
-		.catch(err => console.warn('Error: ' + err));
-}
-
-function getInAppMessagesRequest(appId: string, endpointId: string) {
-	return {
-		ApplicationId: appId,
-		EndpointId: endpointId,
-	};
-}
+export default PinpointClient;

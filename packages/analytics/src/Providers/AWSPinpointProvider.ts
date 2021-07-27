@@ -27,7 +27,7 @@ import {
 	PutEventsCommandInput,
 	UpdateEndpointCommand,
 } from '@aws-sdk/client-pinpoint';
-import Cache from '@aws-amplify/cache';
+import { getCachedUuid as getEndpointId } from '@aws-amplify/cache';
 
 import {
 	AnalyticsProvider,
@@ -126,7 +126,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		if (this._config.appId && !this._config.disabled) {
 			if (!this._config.endpointId) {
 				const cacheKey = this.getProviderName() + '_' + this._config.appId;
-				this._getEndpointId(cacheKey)
+				getEndpointId(cacheKey)
 					.then(endpointId => {
 						logger.debug('setting endpoint id from the cache', endpointId);
 						this._config.endpointId = endpointId;
@@ -601,22 +601,6 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		// 		});
 		// 	});
 		// }
-	}
-
-	private async _getEndpointId(cacheKey) {
-		// try to get from cache
-		let endpointId = await Cache.getItem(cacheKey);
-		logger.debug(
-			'endpointId from cache',
-			endpointId,
-			'type',
-			typeof endpointId
-		);
-		if (!endpointId) {
-			endpointId = uuid();
-			Cache.setItem(cacheKey, endpointId);
-		}
-		return endpointId;
 	}
 
 	/**

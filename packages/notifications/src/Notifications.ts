@@ -34,7 +34,7 @@ import {
 const STORAGE_KEY_SUFFIX = '_notificationKey';
 const noop = () => {};
 
-const logger = new Logger('NotificationsClass');
+const logger = new Logger('Notifications');
 
 class NotificationsClass {
 	private config: Record<string, any> = {};
