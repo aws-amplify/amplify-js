@@ -12,10 +12,7 @@
  */
 
 import { AmazonLocationServicesProvider } from '../../src/Providers/AmazonLocationServicesProvider';
-import {
-	credentials,
-	awsConfig,
-} from '../data';
+import { awsConfig } from '../data';
 
 describe('AmazonLocationServicesProvider', () => {
 	afterEach(() => {
@@ -55,6 +52,62 @@ describe('AmazonLocationServicesProvider', () => {
 
 			const config = geo.configure(awsConfig.geo);
 			expect(config).toEqual(awsConfig.geo);
+		});
+	});
+
+	describe('get map resources', () => {
+		test('should tell you if there are no available map resources', () => {
+			const provider = new AmazonLocationServicesProvider();
+			provider.configure();
+			expect(() => provider.getAvailableMaps()).toThrow(
+				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+			);
+		});
+
+		test('should get all available map resources', () => {
+			const provider = new AmazonLocationServicesProvider();
+			provider.configure(awsConfig.geo);
+
+			const maps = [];
+			const availableMaps = awsConfig.geo.maps.items;
+			for (const mapName in availableMaps) {
+				const style = availableMaps[mapName].style;
+				maps.push({ mapName, style });
+			}
+
+			expect(provider.getAvailableMaps()).toEqual(maps);
+		});
+
+		test('should tell you if there is no map resources available when calling getDefaultMap', () => {
+			const provider = new AmazonLocationServicesProvider();
+			provider.configure();
+
+			expect(() => provider.getDefaultMap()).toThrow(
+				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+			);
+		});
+
+		test('should tell you if there is no default map resource', () => {
+			const provider = new AmazonLocationServicesProvider();
+			provider.configure({
+				maps: { testMap: { style: 'teststyle' } },
+			});
+
+			expect(() => provider.getDefaultMap()).toThrow(
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after"
+			);
+		});
+
+		test('should get the default map resource', () => {
+			const provider = new AmazonLocationServicesProvider();
+			provider.configure(awsConfig.geo);
+
+			const mapName = awsConfig.geo.maps.default;
+			const style = awsConfig.geo.maps.items[mapName].style;
+			const testMap = { mapName, style };
+
+			const defaultMapsResource = provider.getDefaultMap();
+			expect(defaultMapsResource).toEqual(testMap);
 		});
 	});
 });
