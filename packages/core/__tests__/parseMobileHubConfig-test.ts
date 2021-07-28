@@ -12,22 +12,24 @@ describe('Parser', () => {
 				aws_user_pools_web_client_id: '',
 				aws_cognito_region: '',
 				geo: {
-					maps: {
-						items: {
-							geoJsExampleMap1: {
-								style: 'VectorEsriStreets',
+					amazon_location_services: {
+						maps: {
+							items: {
+								geoJsExampleMap1: {
+									style: 'VectorEsriStreets',
+								},
+								geoJsExampleMap2: {
+									style: 'VectorEsriTopographic',
+								},
 							},
-							geoJsExampleMap2: {
-								style: 'VectorEsriTopographic',
-							},
+							default: 'geoJsExampleMap1',
 						},
-						default: 'geoJsExampleMap1',
+						place_indexes: {
+							items: ['geoJSSearchExample'],
+							default: 'geoJSSearchExample',
+						},
+						region: 'us-west-2',
 					},
-					place_indexes: {
-						items: ['geoJSSearchExample'],
-						default: 'geoJSSearchExample',
-					},
-					region: 'us-west-2',
 				},
 			})
 		).toStrictEqual({
@@ -46,32 +48,7 @@ describe('Parser', () => {
 				userPoolWebClientId: '',
 			},
 			Geo: {
-				maps: {
-					items: {
-						geoJsExampleMap1: {
-							style: 'VectorEsriStreets',
-						},
-						geoJsExampleMap2: {
-							style: 'VectorEsriTopographic',
-						},
-					},
-					default: 'geoJsExampleMap1',
-				},
-				place_indexes: {
-					items: ['geoJSSearchExample'],
-					default: 'geoJSSearchExample',
-				},
-				region: 'us-west-2',
-			},
-			Storage: {
-				aws_cognito_identity_pool_id: 'a',
-				aws_cognito_region: '',
-				aws_mandatory_sign_in: 'enable',
-				aws_mobile_analytics_app_id: 'c',
-				aws_mobile_analytics_app_region: '',
-				aws_user_pools_id: 'b',
-				aws_user_pools_web_client_id: '',
-				geo: {
+				AmazonLocationServices: {
 					maps: {
 						items: {
 							geoJsExampleMap1: {
@@ -88,6 +65,35 @@ describe('Parser', () => {
 						default: 'geoJSSearchExample',
 					},
 					region: 'us-west-2',
+				},
+			},
+			Storage: {
+				aws_cognito_identity_pool_id: 'a',
+				aws_cognito_region: '',
+				aws_mandatory_sign_in: 'enable',
+				aws_mobile_analytics_app_id: 'c',
+				aws_mobile_analytics_app_region: '',
+				aws_user_pools_id: 'b',
+				aws_user_pools_web_client_id: '',
+				geo: {
+					amazon_location_services: {
+						maps: {
+							items: {
+								geoJsExampleMap1: {
+									style: 'VectorEsriStreets',
+								},
+								geoJsExampleMap2: {
+									style: 'VectorEsriTopographic',
+								},
+							},
+							default: 'geoJsExampleMap1',
+						},
+						place_indexes: {
+							items: ['geoJSSearchExample'],
+							default: 'geoJSSearchExample',
+						},
+						region: 'us-west-2',
+					},
 				},
 			},
 			Logging: {},

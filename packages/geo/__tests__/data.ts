@@ -22,22 +22,24 @@ export const credentials = {
 
 export const awsConfig = {
 	geo: {
-		maps: {
-			items: {
-				geoJsExampleMap1: {
-					style: 'VectorEsriStreets',
+		amazon_location_services: {
+			maps: {
+				items: {
+					geoJsExampleMap1: {
+						style: 'VectorEsriStreets',
+					},
+					geoJsExampleMap2: {
+						style: 'VectorEsriTopographic',
+					},
 				},
-				geoJsExampleMap2: {
-					style: 'VectorEsriTopographic',
-				},
+				default: 'geoJsExampleMap1',
 			},
-			default: 'geoJsExampleMap1',
+			place_indexes: {
+				items: ['geoJSSearchExample'],
+				default: 'geoJSSearchExample',
+			},
+			region: 'us-west-2',
 		},
-		place_indexes: {
-			items: ['geoJSSearchExample'],
-			default: 'geoJSSearchExample',
-		},
-		region: 'us-west-2',
 	},
 	credentials,
 };

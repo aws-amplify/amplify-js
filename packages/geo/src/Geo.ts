@@ -58,7 +58,9 @@ export class GeoClass {
 	public addPluggable(pluggable: GeoProvider) {
 		if (pluggable && pluggable.getCategory() === 'Geo') {
 			this._pluggables.push(pluggable);
-			const config = pluggable.configure(this._config);
+			const config = pluggable.configure(
+				this._config[pluggable.getProviderName()]
+			);
 
 			return config;
 		}
@@ -74,7 +76,7 @@ export class GeoClass {
 		);
 		if (pluggable === undefined) {
 			logger.debug('No plugin found with providerName', providerName);
-			return null;
+			throw new Error('No plugin found in Geo for the provider');
 		} else return pluggable;
 	}
 
@@ -100,10 +102,10 @@ export class GeoClass {
 		if (!config) return this._config;
 
 		const amplifyConfig = parseMobileHubConfig(config);
-		this._config = Object.assign({}, this._config, amplifyConfig.Geo);
+		this._config = Object.assign({}, this._config, amplifyConfig.Geo, config);
 
 		this._pluggables.forEach(pluggable => {
-			pluggable.configure(this._config);
+			pluggable.configure(this._config[pluggable.getProviderName()]);
 		});
 
 		if (this._pluggables.length === 0) {
@@ -117,15 +119,8 @@ export class GeoClass {
 	 * @param {string} provider
 	 * @returns - Array of available map resources
 	 */
-	public getAvailableMaps(provider = DEFAULT_PROVIDER): MapStyle[] | string {
-		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
-		);
-
-		if (prov === undefined) {
-			logger.debug('No plugin found with providerName', provider);
-			throw 'No plugin found in Geo for the provider';
-		}
+	public getAvailableMaps(provider = DEFAULT_PROVIDER): MapStyle[] {
+		const prov = this.getPluggable(provider);
 
 		return prov.getAvailableMaps();
 	}
@@ -135,48 +130,49 @@ export class GeoClass {
 	 * @param {string} provider
 	 * @returns - Map resource set as the default in amplify config
 	 */
-	public getDefaultMap(provider = DEFAULT_PROVIDER): MapStyle | string {
-		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
-		);
-
-		if (prov === undefined) {
-			logger.debug('No plugin found with providerName', provider);
-			throw 'No plugin found in Geo for the provider';
-		}
+	public getDefaultMap(provider = DEFAULT_PROVIDER): MapStyle {
+		const prov = this.getPluggable(provider);
 
 		return prov.getDefaultMap();
 	}
 
+	/**
+	 * Search by text input with optional parameters
+	 * @param  {string} text - The text string that is to be searched for
+	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
+	 * @returns {Promise<Place[]>} - Promise resolves to a list of Places that match search parameters
+	 */
 	public async searchByText(text: string, options?: SearchByTextOptions) {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
-		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === providerName
-		);
-		if (prov === undefined) {
-			logger.debug('No plugin found with providerName', providerName);
-			return Promise.reject('No plugin found in Geo for the provider');
-		}
+		const prov = this.getPluggable(providerName);
 
-		const responsePromise = await prov.searchByText(text, options);
-		return responsePromise;
+		try {
+			return await prov.searchByText(text, options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
 	}
 
+	/**
+	 * Reverse geocoding search via a coordinate point on the map
+	 * @param coordinates - Coordinates array for the search input
+	 * @param options - Options parameters for the search
+	 * @returns {Promise<Place>} - Promise that resolves to a place matching search coordinates
+	 */
 	public async searchByCoordinates(
 		coordinates: Coordinates,
 		options?: SearchByCoordinatesOptions
 	) {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
-		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === providerName
-		);
-		if (prov === undefined) {
-			logger.debug('No plugin found with providerName', providerName);
-			return Promise.reject('No plugin found in Geo for the provider');
-		}
+		const prov = this.getPluggable(providerName);
 
-		const responsePromise = prov.searchByCoordinates(coordinates, options);
-		return responsePromise;
+		try {
+			return await prov.searchByCoordinates(coordinates, options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
 	}
 }
 
