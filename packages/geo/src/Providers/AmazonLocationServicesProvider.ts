@@ -12,10 +12,7 @@
  */
 
 import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
-import {
-	GeoConfig,
-	GeoProvider,
-} from '../types';
+import { GeoConfig, GeoProvider, MapStyle } from '../types';
 
 const logger = new Logger('AmazonLocationServicesProvider');
 
@@ -36,10 +33,13 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		this._config = config ? config : {};
 		logger.debug('Geo Options', this._config);
 
+		this.getAvailableMaps.bind(this);
+		this.getDefaultMap.bind(this);
 	}
 
 	/**
 	 * get the category of the plugin
+	 * @returns {string} name of the category
 	 */
 	public getCategory(): string {
 		return AmazonLocationServicesProvider.CATEGORY;
@@ -47,6 +47,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 	/**
 	 * get provider name of the plugin
+	 * @returns {string} name of the provider
 	 */
 	public getProviderName(): string {
 		return AmazonLocationServicesProvider.PROVIDER_NAME;
@@ -62,5 +63,43 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		if (!config) return this._config;
 		this._config = Object.assign({}, this._config, config);
 		return this._config;
+	}
+
+	/**
+	 * Get the map resources that are currently available through the provider
+	 * @returns - Array of available map resources
+	 */
+	public getAvailableMaps(): MapStyle[] {
+		if (!this._config.maps) {
+			throw "No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after";
+		}
+
+		const mapStyles: MapStyle[] = [];
+		const availableMaps = this._config.maps.items;
+
+		for (const mapName in availableMaps) {
+			const style = availableMaps[mapName].style;
+			mapStyles.push({ mapName, style });
+		}
+
+		return mapStyles;
+	}
+
+	/**
+	 * Get the map resource set as default in amplify config
+	 * @returns - Map resource set as the default in amplify config
+	 */
+	public getDefaultMap(): MapStyle {
+		if (!this._config.maps) {
+			throw "No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after";
+		}
+		if (!this._config.maps.default) {
+			throw "No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after";
+		}
+
+		const mapName = this._config.maps.default;
+		const style = this._config.maps.items[mapName].style;
+
+		return { mapName, style };
 	}
 }
