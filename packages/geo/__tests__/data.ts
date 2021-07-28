@@ -10,6 +10,8 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import camelcaseKeys from 'camelcase-keys';
+
 export const credentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -38,4 +40,42 @@ export const awsConfig = {
 		region: 'us-west-2',
 	},
 	credentials,
+};
+
+export const TestPlacePascalCase = {
+	AddressNumber: '123',
+	Country: 'United States',
+	Geometry: {
+		Point: [2345, 6789],
+	},
+	Label: "don't try to label me",
+	Municipality: 'Muni',
+	Neighborhood: 'hay',
+	PostalCode: '00000',
+	Region: 'us-west-2',
+	Street: 'Heylo St',
+	SubRegion: 'Underground',
+};
+
+export const testPlaceCamelCase = camelcaseKeys(TestPlacePascalCase, {
+	deep: true,
+});
+
+export const awsExportsGeoMock = {
+	maps: {
+		items: {
+			geoJsExampleMap1: {
+				style: 'VectorEsriStreets',
+			},
+			geoJsExampleMap2: {
+				style: 'VectorEsriStreets',
+			},
+		},
+		default: 'geoJsExampleMap1',
+	},
+	place_indexes: {
+		items: ['geoJSSearchExample', 'geoJSSearchExample2'],
+		default: 'geoJSSearchExample',
+	},
+	region: 'us-west-2',
 };
