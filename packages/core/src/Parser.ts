@@ -68,6 +68,11 @@ export const parseMobileHubConfig = (config): AmplifyConfig => {
 		amplifyConfig.Geo = Object.assign({}, config.geo);
 	}
 
+	// Geo
+	if (config['geo']) {
+		amplifyConfig.Geo = Object.assign({}, config.geo);
+	}
+
 	amplifyConfig.Analytics = Object.assign(
 		{},
 		amplifyConfig.Analytics,
