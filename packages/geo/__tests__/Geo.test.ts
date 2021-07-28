@@ -10,10 +10,10 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
+import { Credentials } from '@aws-amplify/core';
 import { GeoClass } from '../src/Geo';
 import { AmazonLocationServicesProvider } from '../src/Providers/AmazonLocationServicesProvider';
-import { awsConfig } from './data';
+import { credentials, awsConfig } from './data';
 
 describe('Geo', () => {
 	afterEach(() => {
@@ -70,6 +70,87 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 			const config = geo.configure(awsConfig);
 			expect(config).toEqual(awsConfig.geo);
+		});
+	});
+
+	describe('get map resources', () => {
+		test('should fail if there is no provider', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+			geo.removePluggable('AmazonLocationServices');
+
+			expect(() => geo.getAvailableMaps()).toThrow(
+				'No plugin found in Geo for the provider'
+			);
+			expect(() => geo.getDefaultMap()).toThrow(
+				'No plugin found in Geo for the provider'
+			);
+		});
+
+		test('should tell you if there are no available map resources', () => {
+			const geo = new GeoClass();
+			geo.configure({});
+
+			expect(() => geo.getAvailableMaps()).toThrow(
+				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+			);
+		});
+
+		test('should get all available map resources', () => {
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const maps = [];
+			const availableMaps = awsConfig.geo.maps.items;
+			for (const mapName in availableMaps) {
+				const style = availableMaps[mapName].style;
+				maps.push({ mapName, style });
+			}
+
+			expect(geo.getAvailableMaps()).toEqual(maps);
+		});
+
+		test('should tell you if there is no default map resource', () => {
+			const geo = new GeoClass();
+			geo.configure({});
+
+			expect(() => geo.getDefaultMap()).toThrow(
+				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+			);
+		});
+
+		test('should tell you if there is no map resources when running getDefaultMapResource', () => {
+			const geo = new GeoClass();
+			geo.configure({});
+
+			expect(() => geo.getDefaultMap()).toThrow(
+				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+			);
+		});
+
+		test('should tell you if there is no map resources when running getDefaultMapResource', () => {
+			const geo = new GeoClass();
+			geo.configure({ geo: { maps: { testMap: { style: 'teststyle' } } } });
+
+			expect(() => geo.getDefaultMap()).toThrow(
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after"
+			);
+		});
+
+		test('should get the default map resource', () => {
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const mapName = awsConfig.geo.maps.default;
+			const style = awsConfig.geo.maps.items[mapName].style;
+			const testMap = { mapName, style };
+
+			const defaultMapsResource = geo.getDefaultMap();
+			expect(defaultMapsResource).toEqual(testMap);
 		});
 	});
 });

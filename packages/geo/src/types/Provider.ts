@@ -11,11 +11,21 @@
  * and limitations under the License.
  */
 
+import { MapStyle } from './Geo';
 
 export interface GeoProvider {
+	// get the category name for the provider
 	getCategory(): string;
 
+	// get provider name
 	getProviderName(): string;
 
+	// configure your provider
 	configure(config: object): object;
+
+	// get the available map resources
+	getAvailableMaps(): string | MapStyle[];
+
+	// get the map resource listed as default
+	getDefaultMap(): string | MapStyle;
 }
