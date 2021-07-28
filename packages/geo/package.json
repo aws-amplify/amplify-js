@@ -19,7 +19,7 @@
 		"./dist/aws-amplify-geo.js"
 	],
 	"scripts": {
-		"test": "yarn run lint && jest -w 1 --coverage --passWithNoTests",
+		"test": "yarn run lint && jest -w 1 --coverage",
 		"build-with-test": "yarn test && yarn run build",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
 		"build:esm": "node ./build es6",
