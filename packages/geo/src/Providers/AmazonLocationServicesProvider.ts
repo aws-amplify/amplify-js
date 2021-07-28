@@ -49,11 +49,6 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 	constructor(config?: GeoConfig) {
 		this._config = config ? config : {};
 		logger.debug('Geo Options', this._config);
-
-		this.getAvailableMaps.bind(this);
-		this.getDefaultMap.bind(this);
-		this.searchByText.bind(this);
-		this.searchByCoordinates.bind(this);
 	}
 
 	/**
