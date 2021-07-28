@@ -49,11 +49,6 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 	constructor(config?: GeoConfig) {
 		this._config = config ? config : {};
 		logger.debug('Geo Options', this._config);
-
-		this.getAvailableMaps.bind(this);
-		this.getDefaultMap.bind(this);
-		this.searchByText.bind(this);
-		this.searchByCoordinates.bind(this);
 	}
 
 	/**
@@ -90,7 +85,9 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 	 */
 	public getAvailableMaps(): MapStyle[] {
 		if (!this._config.maps) {
-			throw "No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after";
+			throw new Error(
+				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+			);
 		}
 
 		const mapStyles: MapStyle[] = [];
@@ -110,10 +107,14 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 	 */
 	public getDefaultMap(): MapStyle {
 		if (!this._config.maps) {
-			throw "No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after";
+			throw new Error(
+				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+			);
 		}
 		if (!this._config.maps.default) {
-			throw "No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after";
+			throw new Error(
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after"
+			);
 		}
 
 		const mapName = this._config.maps.default;
@@ -132,13 +133,9 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		text: string,
 		options?: SearchByTextOptions
 	): Promise<Place[]> {
-		try {
-			const credentialsOK = await this._ensureCredentials();
-			if (!credentialsOK) {
-				return Promise.reject('No credentials');
-			}
-		} catch (error) {
-			throw '';
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			throw new Error('No credentials');
 		}
 
 		/**
@@ -178,7 +175,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 			response = await client.send(command);
 		} catch (error) {
 			logger.debug(error);
-			throw new Error(error);
+			throw error;
 		}
 
 		/**
@@ -208,7 +205,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 	): Promise<Place> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
-			return Promise.reject('No credentials');
+			throw new Error('No credentials');
 		}
 
 		const locationServicesInput: SearchPlaceIndexForPositionCommandInput = {
@@ -236,7 +233,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 			response = await client.send(command);
 		} catch (error) {
 			logger.debug(error);
-			throw new Error(error);
+			throw error;
 		}
 
 		/**
@@ -247,7 +244,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		const PascalResults = response.Results.map(result => result.Place);
 		const results: Place = (camelcaseKeys(PascalResults[0], {
 			deep: true,
-		}) as undefined) as Place;
+		}) as any) as Place;
 
 		return results;
 	}
