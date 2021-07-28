@@ -10,9 +10,32 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import { Credentials } from '@aws-amplify/core';
+import {
+	LocationClient,
+	SearchPlaceIndexForTextCommand,
+} from '@aws-sdk/client-location';
 
 import { AmazonLocationServicesProvider } from '../../src/Providers/AmazonLocationServicesProvider';
-import { awsConfig } from '../data';
+import {
+	credentials,
+	awsConfig,
+	TestPlacePascalCase,
+	testPlaceCamelCase,
+} from '../data';
+import { SearchByTextOptions } from '../../src/types';
+
+LocationClient.prototype.send = jest.fn(async command => {
+	if (command instanceof SearchPlaceIndexForTextCommand) {
+		return {
+			Results: [
+				{
+					Place: TestPlacePascalCase,
+				},
+			],
+		};
+	}
+});
 
 describe('AmazonLocationServicesProvider', () => {
 	afterEach(() => {
@@ -108,6 +131,118 @@ describe('AmazonLocationServicesProvider', () => {
 
 			const defaultMapsResource = provider.getDefaultMap();
 			expect(defaultMapsResource).toEqual(testMap);
+		});
+	});
+
+	describe('searchByText', () => {
+		const testString = 'starbucks';
+
+		test('should search with just text input', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServicesProvider();
+			locationProvider.configure(awsConfig.geo);
+
+			const results = await locationProvider.searchByText(testString);
+			expect(results).toEqual([testPlaceCamelCase]);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Text: testString,
+				IndexName: awsConfig.geo.place_indexes.default,
+			});
+		});
+
+		test('should use biasPosition when given', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServicesProvider();
+			locationProvider.configure(awsConfig.geo);
+
+			const searchOptions: SearchByTextOptions = {
+				countries: ['USA'],
+				maxResults: 40,
+				placeIndexName: 'geoJSSearchCustomExample',
+				biasPosition: [12345, 67890],
+			};
+
+			const results = await locationProvider.searchByText(
+				testString,
+				searchOptions
+			);
+			expect(results).toEqual([testPlaceCamelCase]);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+
+			expect(input).toEqual({
+				Text: testString,
+				IndexName: searchOptions.placeIndexName,
+				BiasPosition: searchOptions.biasPosition,
+				FilterCountries: searchOptions.countries,
+				MaxResults: searchOptions.maxResults,
+			});
+		});
+
+		test('should use searchAreaConstraints when given', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServicesProvider();
+			locationProvider.configure(awsConfig.geo);
+
+			const searchOptions: SearchByTextOptions = {
+				countries: ['USA'],
+				maxResults: 40,
+				placeIndexName: 'geoJSSearchCustomExample',
+				searchAreaConstraints: [123, 456, 789, 321],
+			};
+
+			const resultsWithConstraints = await locationProvider.searchByText(
+				testString,
+				searchOptions
+			);
+			expect(resultsWithConstraints).toEqual([testPlaceCamelCase]);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Text: testString,
+				IndexName: searchOptions.placeIndexName,
+				FilterBBox: searchOptions.searchAreaConstraints,
+				FilterCountries: searchOptions.countries,
+				MaxResults: searchOptions.maxResults,
+			});
+		});
+
+		test('should fail if credentials are invalid', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
+
+			const locationProvider = new AmazonLocationServicesProvider();
+
+			await locationProvider.searchByText(testString).catch(e => {
+				expect(e).toMatch('No credentials');
+			});
+		});
+
+		test('should fail if _getCredentials fails ', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.reject();
+			});
+
+			const locationProvider = new AmazonLocationServicesProvider();
+
+			await locationProvider.searchByText(testString).catch(e => {
+				expect(e).toMatch('No credentials');
+			});
 		});
 	});
 });

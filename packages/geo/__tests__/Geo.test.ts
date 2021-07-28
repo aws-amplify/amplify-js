@@ -11,9 +11,37 @@
  * and limitations under the License.
  */
 import { Credentials } from '@aws-amplify/core';
+import {
+	LocationClient,
+	SearchPlaceIndexForPositionCommand,
+	SearchPlaceIndexForTextCommand,
+} from '@aws-sdk/client-location';
+
 import { GeoClass } from '../src/Geo';
 import { AmazonLocationServicesProvider } from '../src/Providers/AmazonLocationServicesProvider';
-import { credentials, awsConfig } from './data';
+import { SearchByTextOptions } from '../src/types';
+
+import {
+	credentials,
+	awsConfig,
+	TestPlacePascalCase,
+	testPlaceCamelCase,
+} from './data';
+
+LocationClient.prototype.send = jest.fn(async command => {
+	if (
+		command instanceof SearchPlaceIndexForTextCommand ||
+		command instanceof SearchPlaceIndexForPositionCommand
+	) {
+		return {
+			Results: [
+				{
+					Place: TestPlacePascalCase,
+				},
+			],
+		};
+	}
+});
 
 describe('Geo', () => {
 	afterEach(() => {
@@ -151,6 +179,104 @@ describe('Geo', () => {
 
 			const defaultMapsResource = geo.getDefaultMap();
 			expect(defaultMapsResource).toEqual(testMap);
+		});
+	});
+
+	describe('searchByText', () => {
+		test('should search with just text input', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const testString = 'starbucks';
+
+			const results = await geo.searchByText(testString);
+			expect(results).toEqual([testPlaceCamelCase]);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Text: testString,
+				IndexName: awsConfig.geo.place_indexes.default,
+			});
+		});
+
+		test('should search using given options with biasPosition', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const testString = 'starbucks';
+			const searchOptions: SearchByTextOptions = {
+				biasPosition: [12345, 67890],
+				countries: ['USA'],
+				maxResults: 40,
+				placeIndexName: 'geoJSSearchCustomExample',
+			};
+			const results = await geo.searchByText(testString, searchOptions);
+			expect(results).toEqual([testPlaceCamelCase]);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Text: testString,
+				IndexName: searchOptions.placeIndexName,
+				BiasPosition: searchOptions.biasPosition,
+				FilterCountries: searchOptions.countries,
+				MaxResults: searchOptions.maxResults,
+			});
+		});
+
+		test('should search using given options with searchAreaConstraints', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const testString = 'starbucks';
+			const searchOptions: SearchByTextOptions = {
+				searchAreaConstraints: [123, 456, 789, 321],
+				countries: ['USA'],
+				maxResults: 40,
+				placeIndexName: 'geoJSSearchCustomExample',
+			};
+			const results = await geo.searchByText(testString, searchOptions);
+			expect(results).toEqual([testPlaceCamelCase]);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Text: testString,
+				IndexName: searchOptions.placeIndexName,
+				FilterBBox: searchOptions.searchAreaConstraints,
+				FilterCountries: searchOptions.countries,
+				MaxResults: searchOptions.maxResults,
+			});
+		});
+
+		test('should fail if there is no provider', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+			geo.removePluggable('AmazonLocationServices');
+
+			const testString = 'starbucks';
+			await geo
+				.searchByText(testString)
+				.catch(e =>
+					expect(e).toMatch('No plugin found in Geo for the provider')
+				);
 		});
 	});
 });
