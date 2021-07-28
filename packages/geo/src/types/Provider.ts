@@ -30,10 +30,10 @@ export interface GeoProvider {
 	configure(config: object): object;
 
 	// get the available map resources
-	getAvailableMaps(): string | MapStyle[];
+	getAvailableMaps(): MapStyle[];
 
 	// get the map resource listed as default
-	getDefaultMap(): string | MapStyle;
+	getDefaultMap(): MapStyle;
 
 	searchByText(text: string, options?: SearchByTextOptions): Promise<Place[]>;
 

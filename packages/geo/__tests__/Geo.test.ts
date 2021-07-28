@@ -79,14 +79,16 @@ describe('Geo', () => {
 			geo.addPluggable(provider);
 			geo.removePluggable(provider.getProviderName());
 
-			expect(geo.getPluggable(provider.getProviderName())).toBeNull();
+			expect(() => geo.getPluggable(provider.getProviderName())).toThrow(
+				'No plugin found in Geo for the provider'
+			);
 		});
 	});
 
 	describe('AmazonLocationServices is used as default provider', () => {
-		test('configure with aws-exports file', () => {
+		test('creates the proper default provider', () => {
 			const geo = new GeoClass();
-			const config = geo.configure(awsConfig);
+			geo.configure(awsConfig);
 			expect(geo.getPluggable('AmazonLocationServices')).toBeInstanceOf(
 				AmazonLocationServicesProvider
 			);
@@ -97,7 +99,11 @@ describe('Geo', () => {
 		test('configure with aws-exports file', () => {
 			const geo = new GeoClass();
 			const config = geo.configure(awsConfig);
-			expect(config).toEqual(awsConfig.geo);
+			const expected = {
+				...awsConfig,
+				AmazonLocationServices: awsConfig.geo.amazon_location_services,
+			};
+			expect(config).toEqual(expected);
 		});
 	});
 
@@ -133,7 +139,7 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 
 			const maps = [];
-			const availableMaps = awsConfig.geo.maps.items;
+			const availableMaps = awsConfig.geo.amazon_location_services.maps.items;
 			for (const mapName in availableMaps) {
 				const style = availableMaps[mapName].style;
 				maps.push({ mapName, style });
@@ -142,7 +148,7 @@ describe('Geo', () => {
 			expect(geo.getAvailableMaps()).toEqual(maps);
 		});
 
-		test('should tell you if there is no default map resource', () => {
+		test('should tell you if there is no map resources when running getDefaultMap', () => {
 			const geo = new GeoClass();
 			geo.configure({});
 
@@ -151,18 +157,15 @@ describe('Geo', () => {
 			);
 		});
 
-		test('should tell you if there is no map resources when running getDefaultMapResource', () => {
+		test('should tell you if there is no default map resources (but there are maps) when running getDefaultMap', () => {
 			const geo = new GeoClass();
-			geo.configure({});
-
-			expect(() => geo.getDefaultMap()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
-			);
-		});
-
-		test('should tell you if there is no map resources when running getDefaultMapResource', () => {
-			const geo = new GeoClass();
-			geo.configure({ geo: { maps: { testMap: { style: 'teststyle' } } } });
+			geo.configure({
+				geo: {
+					amazon_location_services: {
+						maps: { items: { testMap: { style: 'teststyle' } } },
+					},
+				},
+			});
 
 			expect(() => geo.getDefaultMap()).toThrow(
 				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after"
@@ -173,8 +176,9 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
 
-			const mapName = awsConfig.geo.maps.default;
-			const style = awsConfig.geo.maps.items[mapName].style;
+			const mapName = awsConfig.geo.amazon_location_services.maps.default;
+			const style =
+				awsConfig.geo.amazon_location_services.maps.items[mapName].style;
 			const testMap = { mapName, style };
 
 			const defaultMapsResource = geo.getDefaultMap();
@@ -200,7 +204,7 @@ describe('Geo', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
-				IndexName: awsConfig.geo.place_indexes.default,
+				IndexName: awsConfig.geo.amazon_location_services.place_indexes.default,
 			});
 		});
 
@@ -272,11 +276,9 @@ describe('Geo', () => {
 			geo.removePluggable('AmazonLocationServices');
 
 			const testString = 'starbucks';
-			await geo
-				.searchByText(testString)
-				.catch(e =>
-					expect(e).toMatch('No plugin found in Geo for the provider')
-				);
+			await expect(geo.searchByText(testString)).rejects.toThrow(
+				'No plugin found in Geo for the provider'
+			);
 		});
 	});
 });

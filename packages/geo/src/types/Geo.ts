@@ -13,11 +13,13 @@
 // configuration shape for the Geo class
 export interface GeoConfig {
 	region?: string;
-	maps?: {
-		items: {};
-		default: string;
+	AmazonLocationServices?: {
+		maps?: {
+			items: {};
+			default: string;
+		};
+		place_indexes?: {};
 	};
-	place_indexes?: {};
 }
 
 // Data held about maps in aws-exports
