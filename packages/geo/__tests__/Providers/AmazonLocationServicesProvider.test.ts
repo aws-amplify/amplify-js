@@ -14,6 +14,7 @@ import { Credentials } from '@aws-amplify/core';
 import {
 	LocationClient,
 	SearchPlaceIndexForTextCommand,
+	SearchPlaceIndexForPositionCommand,
 } from '@aws-sdk/client-location';
 
 import { AmazonLocationServicesProvider } from '../../src/Providers/AmazonLocationServicesProvider';
@@ -23,10 +24,17 @@ import {
 	TestPlacePascalCase,
 	testPlaceCamelCase,
 } from '../data';
-import { SearchByTextOptions } from '../../src/types';
+import {
+	SearchByTextOptions,
+	SearchByCoordinatesOptions,
+	Coordinates,
+} from '../../src/types';
 
 LocationClient.prototype.send = jest.fn(async command => {
-	if (command instanceof SearchPlaceIndexForTextCommand) {
+	if (
+		command instanceof SearchPlaceIndexForTextCommand ||
+		command instanceof SearchPlaceIndexForPositionCommand
+	) {
 		return {
 			Results: [
 				{
@@ -241,6 +249,82 @@ describe('AmazonLocationServicesProvider', () => {
 			const locationProvider = new AmazonLocationServicesProvider();
 
 			await locationProvider.searchByText(testString).catch(e => {
+				expect(e).toMatch('No credentials');
+			});
+		});
+	});
+
+	describe('searchByCoordinates', () => {
+		const testCoordinates: Coordinates = [12345, 67890];
+
+		test('should search with just text input', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServicesProvider();
+			locationProvider.configure(awsConfig.geo);
+
+			const results = await locationProvider.searchByCoordinates(
+				testCoordinates
+			);
+			expect(results).toEqual(testPlaceCamelCase);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Position: testCoordinates,
+				IndexName: awsConfig.geo.place_indexes.default,
+			});
+		});
+
+		test('should use options when given', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServicesProvider();
+			locationProvider.configure(awsConfig.geo);
+
+			const searchOptions: SearchByCoordinatesOptions = {
+				maxResults: 40,
+				placeIndexName: 'geoJSSearchCustomExample',
+			};
+			const results = await locationProvider.searchByCoordinates(
+				testCoordinates,
+				searchOptions
+			);
+			expect(results).toEqual(testPlaceCamelCase);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Position: testCoordinates,
+				IndexName: searchOptions.placeIndexName,
+				MaxResults: searchOptions.maxResults,
+			});
+		});
+
+		test('should fail if credentials resolve to invalid', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve();
+			});
+
+			const locationProvider = new AmazonLocationServicesProvider();
+
+			await locationProvider.searchByCoordinates(testCoordinates).catch(e => {
+				expect(e).toMatch('No credentials');
+			});
+		});
+
+		test('should fail if _getCredentials fails ', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.reject();
+			});
+
+			const locationProvider = new AmazonLocationServicesProvider();
+
+			await locationProvider.searchByCoordinates(testCoordinates).catch(e => {
 				expect(e).toMatch('No credentials');
 			});
 		});
