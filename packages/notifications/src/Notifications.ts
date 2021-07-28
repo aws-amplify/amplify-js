@@ -191,6 +191,21 @@ class NotificationsClass {
 		return messages;
 	};
 
+	clearStoredInAppMessages = async (
+		providerName = 'AWSPinpoint'
+	): Promise<void> => {
+		logger.debug('Remove stored In-App Messages');
+
+		const pluggable = this.getPluggable(providerName);
+		const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
+
+		try {
+			await AsyncStorage.removeItem(key);
+		} catch (e) {
+			logger.error(`Removal of stored In-App Messages failed: ${e}`);
+		}
+	};
+
 	private async storeMessages(key: string, messages: AppMessage[]) {
 		if (!messages) {
 			logger.debug('no messages :(');
