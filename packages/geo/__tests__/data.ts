@@ -60,22 +60,3 @@ export const TestPlacePascalCase = {
 export const testPlaceCamelCase = camelcaseKeys(TestPlacePascalCase, {
 	deep: true,
 });
-
-export const awsExportsGeoMock = {
-	maps: {
-		items: {
-			geoJsExampleMap1: {
-				style: 'VectorEsriStreets',
-			},
-			geoJsExampleMap2: {
-				style: 'VectorEsriStreets',
-			},
-		},
-		default: 'geoJsExampleMap1',
-	},
-	place_indexes: {
-		items: ['geoJSSearchExample', 'geoJSSearchExample2'],
-		default: 'geoJSSearchExample',
-	},
-	region: 'us-west-2',
-};
