@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.1.3...@aws-amplify/auth@4.2.0) (2021-07-28)
+
+
+### Features
+
+* **@aws-amplify/auth:** delete user attributes ([#7342](https://github.com/aws-amplify/amplify-js/issues/7342)) ([1b1df67](https://github.com/aws-amplify/amplify-js/commit/1b1df679d874e824bc89f95054008b2f46ae76cf))
+
+
+
+
+
 ## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.1.2...@aws-amplify/auth@4.1.3) (2021-07-22)
 
 
