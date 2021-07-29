@@ -39,7 +39,7 @@
       },
       {
         "path": "dist/Amplify+Storage.js.min.js",
-        "maxSize": "75kB"
+        "maxSize": "80kB"
       },
       {
         "path": "dist/withSSRContext.js.min.js",

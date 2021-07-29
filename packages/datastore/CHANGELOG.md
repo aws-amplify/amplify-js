@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.2.2...@aws-amplify/datastore@3.3.0) (2021-07-28)
+
+
+### Features
+
+* **@aws-amplify/datastore:** support lambda authorizers ([52d43cc](https://github.com/aws-amplify/amplify-js/commit/52d43cc73b459148f1ae81ab81d3a5365a4457e3))
+
+
+
+
+
+## [3.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.2.1...@aws-amplify/datastore@3.2.2) (2021-07-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** remove null properties from connected model instances ([#8623](https://github.com/aws-amplify/amplify-js/issues/8623)) ([569214c](https://github.com/aws-amplify/amplify-js/commit/569214c762bb3aace1ff96fcbe468780dcaabe35))
+
+
+
+
+
+## [3.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.2.0...@aws-amplify/datastore@3.2.1) (2021-07-16)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+# [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.1.2...@aws-amplify/datastore@3.2.0) (2021-07-08)
+
+
+### Features
+
+* **@aws-amplify/datastore:** expose timestamp fields and prevent writing to read-only fields ([#8509](https://github.com/aws-amplify/amplify-js/issues/8509)) ([10857d5](https://github.com/aws-amplify/amplify-js/commit/10857d5bbd6f7cb59a58641e0e8a3cb5dc0080e9))
+
+
+
+
+
+## [3.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.1.1...@aws-amplify/datastore@3.1.2) (2021-06-24)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [3.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.1.0...@aws-amplify/datastore@3.1.1) (2021-06-18)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+# [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.0.3...@aws-amplify/datastore@3.1.0) (2021-06-10)
+
+
+### Features
+
+* **@aws-amplify/datastore:** include custom pk in update/delete mutations ([#8296](https://github.com/aws-amplify/amplify-js/issues/8296)) ([4a8475b](https://github.com/aws-amplify/amplify-js/commit/4a8475b5ba4da312c946c66a4fb1b5591dfe9adf))
+
+
+
+
+
 ## [3.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.0.1...@aws-amplify/datastore@3.0.3) (2021-05-26)
 
 

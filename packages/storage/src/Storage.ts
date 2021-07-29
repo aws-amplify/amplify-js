@@ -13,7 +13,11 @@
 
 import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
 import { AWSS3Provider } from './providers';
-import { StorageProvider } from './types';
+import {
+	StorageProvider,
+	StorageCopySource,
+	StorageCopyDestination,
+} from './types';
 import axios, { CancelTokenSource } from 'axios';
 
 const logger = new Logger('StorageClass');
@@ -193,6 +197,32 @@ export class Storage {
 		} else {
 			logger.debug('The request does not map to any cancel token');
 		}
+	}
+
+	/**
+	 * Copies a file from the src key to dest key.
+	 *
+	 * @param {string} src - key of the source object.
+	 * @param {string} dest - key of the destination object.
+	 * @param {any} [config] - config.
+	 * @return {Promise<any>} - A promise resolves to the copied object's key.
+	 */
+	public copy(src: StorageCopySource, dest: StorageCopyDestination, config?): Promise<any> {
+		const { provider = DEFAULT_PROVIDER } = config || {};
+		const prov = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (prov === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			return Promise.reject('No plugin found in Storage for the provider');
+		}
+		const cancelTokenSource = this.getCancellableTokenSource();
+		const responsePromise = prov.copy(src, dest, {
+			...config,
+			cancelTokenSource,
+		});
+		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);
+		return responsePromise;
 	}
 
 	/**

@@ -83,6 +83,13 @@ commands:
           key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
       - publish_to_verdaccio
 
+  prepare_no_ui_test_env:
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
+
   integ_test_js:
     parameters:
       test_name:
@@ -140,6 +147,34 @@ commands:
           command: |
             cd ~/amplify-js-samples-staging
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test node << parameters.category >> << parameters.sample_name >> dev' -n 3
+
+  integ_test_cypress_no_ui:
+    parameters:
+      test_name:
+        type: string
+      category:
+        type: string
+      spec:
+        type: string
+    steps:
+      - run:
+          name: 'Change directory into build and run link'
+          command: |
+            cd ~/amplify-js/
+            yarn link-all
+      - run:
+          name: 'Link packages into samples staging root'
+          command: |
+            yarn link amazon-cognito-identity-js @aws-amplify/core @aws-amplify/cache @aws-amplify/auth
+      - run:
+          name: 'Run cypress test << parameters.spec >>'
+          command: |
+            cd ~/amplify-js-samples-staging
+            yarn cypress run --headless --spec ./cypress/integration/auth/<< parameters.spec >>.spec.js --config baseUrl=https://aws.amazon.com/
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/videos
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/screenshots
 
   install_verdaccio:
     steps:
@@ -229,7 +264,7 @@ commands:
           command: |
             brew tap wix/brew >/dev/null
             brew tap homebrew/cask >/dev/null
-            brew cask install android-sdk >/dev/null
+            brew install android-sdk >/dev/null
             yarn global add detox-cli
             touch .watchmanconfig
             node -v
@@ -569,7 +604,7 @@ jobs:
           spec: many-to-many
           browser: << parameters.browser >>
 
-  integ_react_datastore_multi_auth:
+  integ_react_datastore_multi_auth_one_rule:
     parameters:
       browser:
         type: string
@@ -579,11 +614,45 @@ jobs:
     steps:
       - prepare_test_env
       - integ_test_js:
-          test_name: 'React DataStore Multi-Auth'
+          test_name: 'React DataStore Multi-Auth - One Rule'
           framework: react
           category: datastore
           sample_name: multi-auth
-          spec: multi-auth
+          spec: multi-auth-one-rule
+          browser: << parameters.browser >>
+
+  integ_react_datastore_multi_auth_two_rules:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/multi-auth
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - Two Rules'
+          framework: react
+          category: datastore
+          sample_name: multi-auth
+          spec: multi-auth-two-rules
+          browser: << parameters.browser >>
+
+  integ_react_datastore_multi_auth_three_plus_rules:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/multi-auth
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - Three Plus Rules'
+          framework: react
+          category: datastore
+          sample_name: multi-auth
+          spec: multi-auth-three-plus-rules
           browser: << parameters.browser >>
 
   integ_react_datastore_subs_disabled:
@@ -652,6 +721,22 @@ jobs:
           sample_name: multi-part-upload-with-progress
           spec: multi-part-upload-with-progress
           browser: << parameters.browser >>
+  integ_react_storage_copy:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/multi-part-copy-with-progress
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Storage Copy'
+          framework: react
+          category: storage
+          sample_name: multi-part-copy-with-progress
+          spec: multi-part-copy-with-progress
+          browser: << parameters.browser >>
   integ_react_storage_ui:
     executor: js-test-executor
     <<: *test_env_vars
@@ -706,6 +791,22 @@ jobs:
           test_name: 'amazon-cognito-identity-js'
           category: auth
           sample_name: amazon-cognito-identity-js
+  integ_react_device_tracking:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/device-tracking
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'cognito-device-tracking'
+          framework: react
+          category: auth
+          sample_name: device-tracking
+          spec: device-tracking
+          browser: << parameters.browser >>
   integ_rn_ios_storage:
     executor: macos-executor
     <<: *test_env_vars
@@ -781,7 +882,15 @@ jobs:
           sample_name: duplicate-packages
           spec: duplicate-packages
           browser: << parameters.browser >>
-
+  integ_auth_test_cypress_no_ui:
+    working_directory: ~/amplify-js-samples-staging/
+    executor: js-test-executor
+    steps:
+      - prepare_no_ui_test_env
+      - integ_test_cypress_no_ui:
+          test_name: 'Token revocation'
+          category: 'auth'
+          spec: 'token-revocation'
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -868,6 +977,12 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_auth_test_cypress_no_ui:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_angular_auth:
           requires:
             - integ_setup
@@ -931,7 +1046,25 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      - integ_react_datastore_multi_auth:
+      - integ_react_datastore_multi_auth_one_rule:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_two_rules:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_three_plus_rules:
           requires:
             - integ_setup
             - build
@@ -976,6 +1109,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_storage_copy:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_storage_ui:
           requires:
             - integ_setup
@@ -1006,6 +1148,15 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
+      - integ_react_device_tracking:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_rn_ios_storage:
           requires:
             - integ_setup
@@ -1030,12 +1181,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      - integ_rn_android_storage_multipart_progress:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
+      # - integ_rn_android_storage_multipart_progress:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
       - integ_datastore_auth:
           requires:
             - integ_setup
@@ -1061,11 +1212,14 @@ workflows:
             - unit_test
             - integ_react_predictions
             - integ_react_datastore
-            - integ_react_datastore_multi_auth
+            - integ_react_datastore_multi_auth_one_rule
+            - integ_react_datastore_multi_auth_two_rules
+            - integ_react_datastore_multi_auth_three_plus_rules
             - integ_react_datastore_subs_disabled
             - integ_react_datastore_consecutive_saves
             - integ_react_storage
             - integ_react_storage_multipart_progress
+            - integ_react_storage_copy
             - integ_react_storage_ui
             - integ_react_interactions
             - integ_angular_interactions
@@ -1078,11 +1232,12 @@ workflows:
             - integ_vue_auth
             - integ_rn_ios_storage
             - integ_rn_ios_storage_multipart_progress
-            - integ_rn_android_storage_multipart_progress
+            # - integ_rn_android_storage_multipart_progress
             - integ_rn_ios_push_notifications
             - integ_rn_android_storage
             - integ_datastore_auth
             - integ_duplicate_packages
+            - integ_auth_test_cypress_no_ui
       - post_release:
           filters:
             branches:

@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.2.1...@aws-amplify/pushnotification@4.2.2) (2021-07-28)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.2.0...@aws-amplify/pushnotification@4.2.1) (2021-07-22)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.1.3...@aws-amplify/pushnotification@4.2.0) (2021-07-16)
+
+
+### Features
+
+* core/cloudwatch-logging ([#8588](https://github.com/aws-amplify/amplify-js/issues/8588)) ([6f28c7e](https://github.com/aws-amplify/amplify-js/commit/6f28c7e94ae8d41b37490292ff3547505100c6b2))
+
+
+
+
+
+## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.1.2...@aws-amplify/pushnotification@4.1.3) (2021-07-08)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.1.1...@aws-amplify/pushnotification@4.1.2) (2021-06-24)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.1.0...@aws-amplify/pushnotification@4.1.1) (2021-06-18)
+
+**Note:** Version bump only for package @aws-amplify/pushnotification
+
+
+
+
+
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.0.3...@aws-amplify/pushnotification@4.1.0) (2021-06-10)
+
+
+### Features
+
+* initial setup for the cloudwatch logger and provider ([57a7d4c](https://github.com/aws-amplify/amplify-js/commit/57a7d4c9add70170c69e7fad89f59c4d0efe779d))
+
+
+
+
+
 ## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.0.1...@aws-amplify/pushnotification@4.0.3) (2021-05-26)
 
 **Note:** Version bump only for package @aws-amplify/pushnotification

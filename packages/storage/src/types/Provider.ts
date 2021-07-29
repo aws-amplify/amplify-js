@@ -1,3 +1,4 @@
+import { StorageCopySource, StorageCopyDestination } from './Storage';
 /*
  * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -15,6 +16,9 @@ export interface StorageProvider {
 
 	// cancel an in-flight request
 	cancel?(request: Promise<any>): void;
+
+	// copy object from src to dest
+	copy?(src: StorageCopySource, dest: StorageCopyDestination, config?): Promise<any>;
 
 	// configure your provider
 	configure(config: object): object;

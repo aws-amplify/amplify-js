@@ -1,4 +1,10 @@
-import { ModelInit, MutableModel, Schema, InternalSchema } from '../src/types';
+import {
+	ModelInit,
+	MutableModel,
+	Schema,
+	InternalSchema,
+	SchemaModel,
+} from '../src/types';
 
 export declare class Model {
 	public readonly id: string;
@@ -8,6 +14,8 @@ export declare class Model {
 	public readonly emails?: string[];
 	public readonly ips?: (string | null)[];
 	public readonly metadata?: Metadata;
+	public readonly createdAt?: string;
+	public readonly updatedAt?: string;
 
 	constructor(init: ModelInit<Model>);
 
@@ -135,6 +143,22 @@ export function testSchema(): Schema {
 						},
 						isRequired: false,
 						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
 					},
 				},
 			},
