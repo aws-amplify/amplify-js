@@ -1,4 +1,5 @@
 import { newSpecPage } from '@stencil/core/testing';
+import { MfaOption } from '../../common/types/auth-types';
 import { AmplifySelectMFAType } from './amplify-select-mfa-type';
 
 describe('amplify-select-mfa-type spec:', () => {
@@ -15,6 +16,48 @@ describe('amplify-select-mfa-type spec:', () => {
 
 		it('should render `MFATypes` to undefined by default', () => {
 			expect(selectMFAType.MFATypes).toBeUndefined();
+		});
+
+		it('should set the isToastVisible property to true when the Verify function is run', async () => {
+			selectMFAType.MFATypes = {
+				SMS: true,
+				Optional: true,
+				TOTP: true,
+			};
+
+			expect(selectMFAType.isToastVisible).toBe(false);
+
+			await selectMFAType.verify({
+				preventDefault: jest.fn(),
+			});
+
+			expect(selectMFAType.isToastVisible).toBe(true);
+		});
+
+		it('should reset isToastVisible to false when a new radio button is selected', async () => {
+			selectMFAType.MFATypes = {
+				SMS: true,
+				Optional: true,
+				TOTP: true,
+			};
+
+			expect(selectMFAType.isToastVisible).toBe(false);
+
+			await selectMFAType.verify({
+				preventDefault: jest.fn(),
+			});
+
+			expect(selectMFAType.isToastVisible).toBe(true);
+
+			selectMFAType.handleRadioButtonChange({
+				target: {
+					value: MfaOption.SMS,
+					type: 'radio',
+					checked: true,
+				},
+			});
+
+			expect(selectMFAType.isToastVisible).toBe(false);
 		});
 	});
 	describe('Render logic ->', () => {

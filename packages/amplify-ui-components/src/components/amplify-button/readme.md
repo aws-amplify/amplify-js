@@ -29,6 +29,7 @@
 | `--background-color-active`  | Background color of the button when it's active          |
 | `--background-color-disable` | Background color of the button when it's disabled        |
 | `--border-color`             | Border color of the button                               |
+| `--border-radius`            | Border radius of the button                              |
 | `--border-style`             | Border style of the button                               |
 | `--border-width`             | Border width of the button                               |
 | `--color`                    | Text color within the button                             |

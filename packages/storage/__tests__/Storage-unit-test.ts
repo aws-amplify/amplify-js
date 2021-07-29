@@ -588,6 +588,36 @@ describe('Storage', () => {
 		});
 	});
 
+	describe('copy test', () => {
+		test('copy object successfully', async () => {
+			const copySpyon = jest
+				.spyOn(AWSStorageProvider.prototype, 'copy')
+				.mockImplementation(() => Promise.resolve({ key: 'key' }));
+			const storage = new StorageClass();
+			const provider = new AWSStorageProvider();
+			storage.addPluggable(provider);
+			storage.configure(options);
+			await storage.copy({ key: 'src' }, { key: 'dest' }, {
+				Storage: {
+					AWSS3: {
+						bucket: 'bucket',
+						region: 'us-east-1',
+					},
+				},
+			});
+			expect(copySpyon).toBeCalled();
+		});
+
+		test('copy object without provider', async () => {
+			const storage = new StorageClass();
+			try {
+				await storage.copy({ key: 'src' }, { key: 'dest' });
+			} catch (err) {
+				expect(err).toEqual('No plugin found in Storage for the provider');
+			}
+		});
+	});
+
 	describe('cancel test', () => {
 		let isCancelSpy = null;
 		let cancelTokenSpy = null;
@@ -653,6 +683,23 @@ describe('Storage', () => {
 				},
 				download: true,
 			});
+			storage.cancel(request, 'request cancelled');
+			expect(cancelTokenSpy).toHaveBeenCalledTimes(1);
+			expect(cancelMock).toHaveBeenCalledWith('request cancelled');
+			try {
+				await request;
+			} catch (err) {
+				expect(err).toEqual('request cancelled');
+				expect(storage.isCancelError(err)).toBeTruthy();
+			}
+		});
+
+		test('happy case - cancel copy', async () => {
+			const storage = new StorageClass();
+			const provider = new AWSStorageProvider();
+			storage.addPluggable(provider);
+			storage.configure(options);
+			const request = storage.copy({ key: 'src' }, { key: 'dest' }, {});
 			storage.cancel(request, 'request cancelled');
 			expect(cancelTokenSpy).toHaveBeenCalledTimes(1);
 			expect(cancelMock).toHaveBeenCalledWith('request cancelled');

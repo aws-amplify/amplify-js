@@ -70,6 +70,17 @@ describe('amplify-confirm-sign-in spec:', () => {
 			expect(retVal[0].type).toBe('code');
 			expect(retVal[0].handleInputChange).toBeDefined();
 			expect(typeof retVal[0].handleInputChange).toBe('function');
+
+			const formFields = [{
+				type: 'code',
+				handleInputChange: () => {},
+			}];
+			retVal = confirmSignIn.constructFormFieldOptions(formFields);
+			expect(retVal).toHaveLength(1);
+			expect(retVal[0].type).toBe('code');
+			expect(retVal[0].handleInputChange).toBeDefined();
+			expect(typeof retVal[0].handleInputChange).toBe('function');
+			expect(retVal[0].handleInputChange).toBe(formFields[0].handleInputChange);
 		});
 	});
 	describe('Render logic ->', () => {
