@@ -204,6 +204,9 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	CognitoUser.prototype.updateAttributes = (attributeList, callback) => {
 		callback(null, 'SUCCESS');
 	};
+	CognitoUser.prototype.deleteAttributes = (attributeList, callback) => {
+		callback(null, 'SUCCESS');
+	};
 
 	CognitoUser.prototype.setAuthenticationFlowType = type => {};
 
@@ -2684,6 +2687,52 @@ describe('auth unit test', () => {
 			);
 			spyon.mockClear();
 		});
+	});
+
+	describe('deleteUserAttributes test', () => {
+		test('happy case', async () => {
+			const auth = new Auth(authOptions);
+
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			const attributeNames = [
+				'email', 'phone_number'
+			];
+
+			const spyon = jest
+				.spyOn(Auth.prototype, 'userSession')
+				.mockImplementationOnce(() => {
+					return new Promise((res) => {
+						res(session);
+					});
+				});
+
+			expect.assertions(1);
+			expect(await auth.deleteUserAttributes(user, attributeNames)).toBe('SUCCESS');
+
+			spyon.mockClear();
+		});
+
+		test('happy case to call with expected attributes', async () => {
+			const spyon = jest.spyOn(CognitoUser.prototype, 'deleteAttributes');
+			const auth = new Auth(authOptionsWithClientMetadata);
+			const user = new CognitoUser({
+				Username: 'username',
+				Pool: userPool,
+			});
+
+			await auth.deleteUserAttributes(user, ['email', 'phone_number']);
+
+			expect(await CognitoUser.prototype.deleteAttributes).toBeCalledWith(
+				['email', 'phone_number'],
+				jasmine.any(Function),
+			);
+			spyon.mockClear();
+		});
+
 	});
 
 	describe('federatedSignIn test', () => {
