@@ -72,9 +72,11 @@ describe('withSSRContext', () => {
 	});
 
 	describe('I18n', () => {
+		const SSR = withSSRContext();
+
 		// I18n isn't scoped to SSR (yet)
 		it.skip('should be the same instance as Amplify.I18n', () => {
-			expect(withSSRContext().I18n).toBe(Amplify.I18n);
+			expect(SSR.I18n).toBe(Amplify.I18n);
 		});
 	});
 });
