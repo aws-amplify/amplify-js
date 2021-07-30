@@ -140,6 +140,7 @@ export type ModelAttributeAuthProperty = {
 };
 
 export enum ModelAttributeAuthAllow {
+	CUSTOM = 'custom',
 	OWNER = 'owner',
 	GROUPS = 'groups',
 	PRIVATE = 'private',
@@ -147,6 +148,7 @@ export enum ModelAttributeAuthAllow {
 }
 
 export enum ModelAttributeAuthProvider {
+	FUNCTION = 'function',
 	USER_POOLS = 'userPools',
 	OIDC = 'oidc',
 	IAM = 'iam',
@@ -616,6 +618,7 @@ export type DataStoreConfig = {
 		syncPageSize?: number;
 		fullSyncInterval?: number;
 		syncExpressions?: SyncExpression[];
+		authProviders?: AuthProviders;
 	};
 	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
@@ -624,6 +627,11 @@ export type DataStoreConfig = {
 	syncPageSize?: number;
 	fullSyncInterval?: number;
 	syncExpressions?: SyncExpression[];
+	authProviders?: AuthProviders;
+};
+
+export type AuthProviders = {
+	functionAuthProvider: Promise<string>;
 };
 
 export enum AuthModeStrategyType {

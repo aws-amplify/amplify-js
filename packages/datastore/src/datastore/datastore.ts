@@ -617,6 +617,7 @@ class DataStore {
 		ModelPredicate<any>
 	> = new WeakMap<SchemaModel, ModelPredicate<any>>();
 	private sessionId: string;
+	private getAuthToken: Promise<string>;
 
 	getModuleName() {
 		return 'DataStore';
@@ -1110,6 +1111,7 @@ class DataStore {
 			syncPageSize: configSyncPageSize,
 			fullSyncInterval: configFullSyncInterval,
 			syncExpressions: configSyncExpressions,
+			authProviders: configAuthProviders,
 			...configFromAmplify
 		} = config;
 
@@ -1134,6 +1136,10 @@ class DataStore {
 				this.authModeStrategy = defaultAuthStrategy;
 				break;
 		}
+
+		// store on config object, so that Sync, Subscription, and Mutation processors can have access
+		this.amplifyConfig.authProviders =
+			(configDataStore && configDataStore.authProviders) || configAuthProviders;
 
 		this.syncExpressions =
 			(configDataStore && configDataStore.syncExpressions) ||
