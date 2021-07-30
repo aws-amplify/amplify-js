@@ -75,8 +75,15 @@ describe('withSSRContext', () => {
 	});
 
 	describe('DataStore', () => {
+		const SSR = withSSRContext({ modules: [DataStore] });
+
+		it('should not include DataStore by default', () => {
+			expect(withSSRContext().DataStore).toBeNull();
+		});
+
 		it('should be a different instance than Amplify.DataStore', () => {
-			expect(withSSRContext().DataStore).not.toBe(Amplify.DataStore);
+			expect(SSR.DataStore).toBeInstanceOf(DataStore.constructor);
+			expect(SSR.DataStore).not.toBe(Amplify.DataStore);
 		});
 	});
 
