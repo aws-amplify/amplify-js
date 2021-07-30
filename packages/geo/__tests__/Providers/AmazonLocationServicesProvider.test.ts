@@ -161,7 +161,8 @@ describe('AmazonLocationServicesProvider', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
-				IndexName: awsConfig.geo.amazon_location_services.place_indexes.default,
+				IndexName:
+					awsConfig.geo.amazon_location_services.search_indices.default,
 			});
 		});
 
@@ -176,7 +177,7 @@ describe('AmazonLocationServicesProvider', () => {
 			const searchOptions: SearchByTextOptions = {
 				countries: ['USA'],
 				maxResults: 40,
-				placeIndexName: 'geoJSSearchCustomExample',
+				searchIndexName: 'geoJSSearchCustomExample',
 				biasPosition: [12345, 67890],
 			};
 
@@ -191,7 +192,7 @@ describe('AmazonLocationServicesProvider', () => {
 
 			expect(input).toEqual({
 				Text: testString,
-				IndexName: searchOptions.placeIndexName,
+				IndexName: searchOptions.searchIndexName,
 				BiasPosition: searchOptions.biasPosition,
 				FilterCountries: searchOptions.countries,
 				MaxResults: searchOptions.maxResults,
@@ -209,7 +210,7 @@ describe('AmazonLocationServicesProvider', () => {
 			const searchOptions: SearchByTextOptions = {
 				countries: ['USA'],
 				maxResults: 40,
-				placeIndexName: 'geoJSSearchCustomExample',
+				searchIndexName: 'geoJSSearchCustomExample',
 				searchAreaConstraints: [123, 456, 789, 321],
 			};
 
@@ -223,7 +224,7 @@ describe('AmazonLocationServicesProvider', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
-				IndexName: searchOptions.placeIndexName,
+				IndexName: searchOptions.searchIndexName,
 				FilterBBox: searchOptions.searchAreaConstraints,
 				FilterCountries: searchOptions.countries,
 				MaxResults: searchOptions.maxResults,
@@ -275,7 +276,8 @@ describe('AmazonLocationServicesProvider', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Position: testCoordinates,
-				IndexName: awsConfig.geo.amazon_location_services.place_indexes.default,
+				IndexName:
+					awsConfig.geo.amazon_location_services.search_indices.default,
 			});
 		});
 
@@ -289,7 +291,7 @@ describe('AmazonLocationServicesProvider', () => {
 
 			const searchOptions: SearchByCoordinatesOptions = {
 				maxResults: 40,
-				placeIndexName: 'geoJSSearchCustomExample',
+				searchIndexName: 'geoJSSearchCustomExample',
 			};
 			const results = await locationProvider.searchByCoordinates(
 				testCoordinates,
@@ -301,7 +303,7 @@ describe('AmazonLocationServicesProvider', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Position: testCoordinates,
-				IndexName: searchOptions.placeIndexName,
+				IndexName: searchOptions.searchIndexName,
 				MaxResults: searchOptions.maxResults,
 			});
 		});
