@@ -24,7 +24,7 @@ describe('Parser', () => {
 							},
 							default: 'geoJsExampleMap1',
 						},
-						place_indexes: {
+						search_indices: {
 							items: ['geoJSSearchExample'],
 							default: 'geoJSSearchExample',
 						},
@@ -60,7 +60,7 @@ describe('Parser', () => {
 						},
 						default: 'geoJsExampleMap1',
 					},
-					place_indexes: {
+					search_indices: {
 						items: ['geoJSSearchExample'],
 						default: 'geoJSSearchExample',
 					},
@@ -88,7 +88,7 @@ describe('Parser', () => {
 							},
 							default: 'geoJsExampleMap1',
 						},
-						place_indexes: {
+						search_indices: {
 							items: ['geoJSSearchExample'],
 							default: 'geoJSSearchExample',
 						},
