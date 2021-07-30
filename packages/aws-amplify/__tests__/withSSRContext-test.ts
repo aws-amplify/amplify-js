@@ -1,5 +1,5 @@
-import { Amplify, CredentialsClass, UniversalStorage } from '@aws-amplify/core';
-
+import { Amplify, UniversalStorage } from '@aws-amplify/core';
+import { API, Auth, DataStore } from 'aws-amplify';
 import { withSSRContext } from '../src/withSSRContext';
 
 describe('withSSRContext', () => {
@@ -29,22 +29,26 @@ describe('withSSRContext', () => {
 	});
 
 	describe('API', () => {
+		const SSR = withSSRContext({ modules: [API] });
+
+		it('should not include API by default', () => {
+			expect(withSSRContext().API).toBeNull();
+		});
+
 		it('should be a different instance than Amplify.Auth', () => {
-			expect(withSSRContext().API).not.toBe(Amplify.API);
+			expect(SSR.API).toBeInstanceOf(API.constructor);
+			expect(SSR.API).not.toBe(Amplify.API);
 		});
 
 		it('should use different Credentials than Amplify', () => {
-			const amplify = withSSRContext();
-			const config = amplify.configure();
-
 			// GraphQLAPI uses Credentials internally
 			expect(Amplify.API._graphqlApi.Credentials).not.toBe(
-				amplify.API._graphqlApi.Credentials
+				SSR.API._graphqlApi.Credentials
 			);
 
 			// RestAPI._api is a RestClient with Credentials
 			expect(Amplify.API._restApi._api.Credentials).not.toBe(
-				amplify.API._restApi._api.Credentials
+				SSR.API._restApi._api.Credentials
 			);
 		});
 	});
