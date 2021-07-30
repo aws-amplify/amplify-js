@@ -14,12 +14,16 @@
 	"bundlewatch": {
 		"files": [
 			{
+				"path": ".next/server/pages/api/Amplify+Auth.js",
+				"maxSize": "2kB"
+			},
+			{
 				"path": ".next/static/chunks/pages/Amplify-*.js",
 				"maxSize": "1kB"
 			},
 			{
 				"path": ".next/static/chunks/pages/Amplify+Auth-*.js",
-				"maxSize": "175kB"
+				"maxSize": "45kB"
 			},
 			{
 				"path": ".next/static/chunks/pages/Amplify+Storage-*.js",
