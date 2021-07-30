@@ -204,7 +204,8 @@ describe('Geo', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
-				IndexName: awsConfig.geo.amazon_location_services.place_indexes.default,
+				IndexName:
+					awsConfig.geo.amazon_location_services.search_indices.default,
 			});
 		});
 
@@ -221,7 +222,7 @@ describe('Geo', () => {
 				biasPosition: [12345, 67890],
 				countries: ['USA'],
 				maxResults: 40,
-				placeIndexName: 'geoJSSearchCustomExample',
+				searchIndexName: 'geoJSSearchCustomExample',
 			};
 			const results = await geo.searchByText(testString, searchOptions);
 			expect(results).toEqual([testPlaceCamelCase]);
@@ -230,7 +231,7 @@ describe('Geo', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
-				IndexName: searchOptions.placeIndexName,
+				IndexName: searchOptions.searchIndexName,
 				BiasPosition: searchOptions.biasPosition,
 				FilterCountries: searchOptions.countries,
 				MaxResults: searchOptions.maxResults,
@@ -250,7 +251,7 @@ describe('Geo', () => {
 				searchAreaConstraints: [123, 456, 789, 321],
 				countries: ['USA'],
 				maxResults: 40,
-				placeIndexName: 'geoJSSearchCustomExample',
+				searchIndexName: 'geoJSSearchCustomExample',
 			};
 			const results = await geo.searchByText(testString, searchOptions);
 			expect(results).toEqual([testPlaceCamelCase]);
@@ -259,7 +260,7 @@ describe('Geo', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
-				IndexName: searchOptions.placeIndexName,
+				IndexName: searchOptions.searchIndexName,
 				FilterBBox: searchOptions.searchAreaConstraints,
 				FilterCountries: searchOptions.countries,
 				MaxResults: searchOptions.maxResults,
