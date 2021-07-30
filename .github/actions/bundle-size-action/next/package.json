@@ -26,6 +26,10 @@
 				"maxSize": "45kB"
 			},
 			{
+				"path": ".next/static/chunks/pages/Amplify+Auth+withSSRContext*.js",
+				"maxSize": "45kB"
+			},
+			{
 				"path": ".next/static/chunks/pages/Amplify+Storage-*.js",
 				"maxSize": "40kB"
 			},
