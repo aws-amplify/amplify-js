@@ -143,7 +143,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		 */
 		const locationServicesInput: SearchPlaceIndexForTextCommandInput = {
 			Text: text,
-			IndexName: this._config.place_indexes.default,
+			IndexName: this._config.search_indices.default,
 		};
 
 		/**
@@ -153,8 +153,8 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 			locationServicesInput.FilterCountries = options.countries;
 			locationServicesInput.MaxResults = options.maxResults;
 
-			if (options.placeIndexName) {
-				locationServicesInput.IndexName = options.placeIndexName;
+			if (options.searchIndexName) {
+				locationServicesInput.IndexName = options.searchIndexName;
 			}
 
 			if (options['biasPosition']) {
@@ -210,12 +210,12 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 		const locationServicesInput: SearchPlaceIndexForPositionCommandInput = {
 			Position: coordinates,
-			IndexName: this._config.place_indexes.default,
+			IndexName: this._config.search_indices.default,
 		};
 
 		if (options) {
-			if (options.placeIndexName) {
-				locationServicesInput.IndexName = options.placeIndexName;
+			if (options.searchIndexName) {
+				locationServicesInput.IndexName = options.searchIndexName;
 			}
 			locationServicesInput.MaxResults = options.maxResults;
 		}

@@ -49,7 +49,7 @@ export type BoundingBox = [SWLatitude, SWLongitude, NELatitude, NELongitude];
 export interface SearchByTextOptionsBase {
 	countries?: string[];
 	maxResults?: number;
-	placeIndexName?: string;
+	searchIndexName?: string;
 	providerName?: string;
 }
 
@@ -72,7 +72,7 @@ export type SearchByTextOptions =
 
 export type SearchByCoordinatesOptions = {
 	maxResults?: number;
-	placeIndexName?: string;
+	searchIndexName?: string;
 	providerName?: string;
 };
 
