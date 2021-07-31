@@ -1,0 +1,26 @@
+version: 1
+frontend:
+  phases:
+    # IMPORTANT - Please verify your build commands
+    preBuild:
+      commands:
+        - yum install perl-Digest-SHA -y
+        - yum install vim-common -y
+        - npm install handlebars
+        - chmod +x gen_integrity.sh
+    build:
+      commands: 
+        - ./gen_integrity.sh > input.js
+        - node gen.js ./input.js
+  artifacts:
+    # IMPORTANT - Please verify your build output directory
+    baseDirectory: /dist/
+    files:
+      - '**/*'
+  cache:
+    paths: []
+  customHeaders:
+    - pattern: '**/*'
+      headers:
+      - key: 'Access-Control-Allow-Origin'
+        value: '*'
