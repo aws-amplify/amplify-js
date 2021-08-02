@@ -17,7 +17,10 @@ import { UpdateEndpointRequest } from '@aws-sdk/client-pinpoint';
 import isEmpty from 'lodash/isEmpty';
 import { v1 as uuid } from 'uuid';
 
-import TempPinpointClient from './client';
+import SessionTracker, {
+	SessionState,
+	SessionStateChangeHandler,
+} from '../SessionTracker';
 import {
 	ComparisonOperator,
 	InAppMessage,
@@ -26,6 +29,7 @@ import {
 	NotificationEvent,
 	NotificationsProvider,
 } from '../types';
+import TempPinpointClient from './client';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
 typeof Symbol.for === 'function'
@@ -48,7 +52,9 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 
 	private config;
 	private endpointUpdated = false;
+	private messageCountsMap: Record<string, number>;
 	private pinpointClient;
+	private sessionTracker: SessionTracker;
 
 	constructor(config = {}) {
 		this.config = config;
@@ -71,6 +77,10 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 	configure = (config = {}): object => {
 		logger.debug('configure', config);
 		this.config = Object.assign({}, this.config, config);
+
+		this.sessionTracker = new SessionTracker(this.sessionStateChangeHandler);
+		this.sessionTracker.start();
+		this.messageCountsMap = {};
 		dispatchNotificationEvent('pinpointProvider_configured', null);
 		return this.config;
 	};
@@ -110,15 +120,86 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 	filterMessages = (
 		messages: InAppMessage[],
 		event: NotificationEvent
-	): InAppMessage[] =>
-		messages.filter(
-			message =>
+	): InAppMessage[] => {
+		const { appId } = this.config;
+		return messages.filter(message => {
+			const { CampaignId } = message;
+			const key = `${this.getProviderName()}_${appId}:${CampaignId}`;
+			const meetsCriteria =
 				this.matchesEventType(message, event) &&
 				this.matchesAttributes(message, event) &&
 				this.matchesMetrics(message, event) &&
 				this.isBeforeEndDate(message) &&
-				!this.isQuietTime(message)
-		);
+				this.isBelowCap(message, key) &&
+				!this.isQuietTime(message);
+
+			if (meetsCriteria) {
+				this.messageCountsMap[key] = this.messageCountsMap[key]
+					? (this.messageCountsMap[key] += 1)
+					: 1;
+			}
+			return meetsCriteria;
+		});
+	};
+
+	private initClient = async () => {
+		if (this.pinpointClient) {
+			return;
+		}
+
+		const { appId, region } = this.config;
+		const credentials = await this.getCredentials();
+
+		if (!appId || !credentials || !region) {
+			throw new Error(
+				'One or more of credentials, appId or region is not configured'
+			);
+		}
+
+		this.pinpointClient = new TempPinpointClient({ region, ...credentials });
+	};
+
+	private getCredentials = async () => {
+		try {
+			const credentials = await Credentials.get();
+			if (!credentials) {
+				logger.debug('no credentials found');
+				return null;
+			}
+			return Credentials.shear(credentials);
+		} catch (err) {
+			logger.error('Error getting credentials:', err);
+			return null;
+		}
+	};
+
+	private updateEndpoint = async (): Promise<void> => {
+		const { appId, endpointId } = this.config;
+		const request: UpdateEndpointRequest = {
+			ApplicationId: appId,
+			EndpointId: endpointId,
+			EndpointRequest: {
+				RequestId: uuid(),
+				EffectiveDate: new Date().toISOString(),
+			},
+		};
+		try {
+			logger.debug('updating endpoint', request);
+			await this.pinpointClient.updateEndpoint(request).promise();
+			this.endpointUpdated = true;
+		} catch (err) {
+			throw err;
+		}
+	};
+
+	private sessionStateChangeHandler: SessionStateChangeHandler = (
+		state: SessionState
+	) => {
+		// for now, the only cap enforced on client is session cap so we can just reset the counters
+		if (state === 'started') {
+			this.messageCountsMap = {};
+		}
+	};
 
 	private matchesEventType = (
 		{ Schedule }: InAppMessage,
@@ -225,53 +306,10 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		return isQuietTime;
 	};
 
-	private initClient = async () => {
-		if (this.pinpointClient) {
-			return;
+	private isBelowCap = ({ SessionCap }: InAppMessage, key: string) => {
+		if (!SessionCap || !this.messageCountsMap[key]) {
+			return true;
 		}
-
-		const { appId, region } = this.config;
-		const credentials = await this.getCredentials();
-
-		if (!appId || !credentials || !region) {
-			throw new Error(
-				'One or more of credentials, appId or region is not configured'
-			);
-		}
-
-		this.pinpointClient = new TempPinpointClient({ region, ...credentials });
-	};
-
-	private getCredentials = async () => {
-		try {
-			const credentials = await Credentials.get();
-			if (!credentials) {
-				logger.debug('no credentials found');
-				return null;
-			}
-			return Credentials.shear(credentials);
-		} catch (err) {
-			logger.error('Error getting credentials:', err);
-			return null;
-		}
-	};
-
-	private updateEndpoint = async (): Promise<void> => {
-		const { appId, endpointId } = this.config;
-		const request: UpdateEndpointRequest = {
-			ApplicationId: appId,
-			EndpointId: endpointId,
-			EndpointRequest: {
-				RequestId: uuid(),
-				EffectiveDate: new Date().toISOString(),
-			},
-		};
-		try {
-			logger.debug('updating endpoint', request);
-			await this.pinpointClient.updateEndpoint(request).promise();
-			this.endpointUpdated = true;
-		} catch (err) {
-			throw err;
-		}
+		return this.messageCountsMap[key] < SessionCap;
 	};
 }
