@@ -32,18 +32,18 @@ export type Latitude = number;
 export type Longitude = number;
 
 /// P
-export type Coordinates = [Latitude, Longitude];
+export type Coordinates = [Longitude, Latitude];
 
-// SW Latitude point for bounding box
-export type SWLatitude = Latitude;
 // SW Longitude point for bounding box
 export type SWLongitude = Longitude;
 // SW Latitude point for bounding box
-export type NELatitude = Latitude;
+export type SWLatitude = Latitude;
 // SW Longitude point for bounding box
 export type NELongitude = Longitude;
+// SW Latitude point for bounding box
+export type NELatitude = Latitude;
 // Full Bounding Box point array
-export type BoundingBox = [SWLatitude, SWLongitude, NELatitude, NELongitude];
+export type BoundingBox = [SWLongitude, SWLatitude, NELongitude, NELatitude];
 
 // Base items for SearchByText options
 export interface SearchByTextOptionsBase {
