@@ -6,12 +6,17 @@ import {
 	_Object,
 	DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3';
-import { StorageOptions, StorageLevel } from './Storage';
 import { CancelTokenSource } from 'axios';
+import { StorageOptions, StorageLevel } from './Storage';
 
 type ListObjectsCommandOutputContent = _Object;
 
-export type S3ProviderGetConfig = StorageOptions & {
+export type CommonStorageOptions = Omit<
+	StorageOptions,
+	'credentials' | 'region'
+>;
+
+export type S3ProviderGetConfig = CommonStorageOptions & {
 	download?: boolean;
 	track?: boolean;
 	expires?: number;
@@ -28,9 +33,11 @@ export type S3ProviderGetConfig = StorageOptions & {
 	SSECustomerKeyMD5?: GetObjectRequest['SSECustomerKeyMD5'];
 };
 
-export type S3ProviderGetOuput<T> = T extends { download: true } ? GetObjectCommandOutput : string;
+export type S3ProviderGetOuput<T> = T extends { download: true }
+	? GetObjectCommandOutput
+	: string;
 
-export type S3ProviderPutConfig = StorageOptions & {
+export type S3ProviderPutConfig = CommonStorageOptions & {
 	progressCallback?: (progress: any) => any;
 	provider?: 'AWSS3';
 	track?: boolean;
@@ -55,11 +62,11 @@ export interface S3ProviderPutOutput {
 	key: string;
 }
 
-export type S3ProviderRemoveConfig = StorageOptions & { bucket?: string };
+export type S3ProviderRemoveConfig = CommonStorageOptions & { bucket?: string };
 
 export type S3ProviderRemoveOutput = DeleteObjectCommandOutput;
 
-export type S3ProviderListConfig = StorageOptions & {
+export type S3ProviderListConfig = CommonStorageOptions & {
 	bucket?: string;
 	maxKeys?: number;
 };
@@ -83,7 +90,7 @@ export type S3CopySource = S3CopyTarget;
 
 export type S3CopyDestination = Omit<S3CopyTarget, 'identityId'>;
 
-export type S3ProviderCopyConfig = StorageOptions & {
+export type S3ProviderCopyConfig = CommonStorageOptions & {
 	cancelTokenSource?: CancelTokenSource;
 	bucket?: CopyObjectRequest['Bucket'];
 	cacheControl?: CopyObjectRequest['CacheControl'];
