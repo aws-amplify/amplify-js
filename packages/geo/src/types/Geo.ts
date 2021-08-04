@@ -26,6 +26,7 @@ export interface GeoConfig {
 export interface MapStyle {
 	mapName: string;
 	style: string;
+	region: string;
 }
 
 export type Latitude = number;

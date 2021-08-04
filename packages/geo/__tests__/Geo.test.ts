@@ -140,9 +140,11 @@ describe('Geo', () => {
 
 			const maps = [];
 			const availableMaps = awsConfig.geo.amazon_location_services.maps.items;
+			const region = awsConfig.geo.amazon_location_services.region;
+
 			for (const mapName in availableMaps) {
 				const style = availableMaps[mapName].style;
-				maps.push({ mapName, style });
+				maps.push({ mapName, style, region });
 			}
 
 			expect(geo.getAvailableMaps()).toEqual(maps);
@@ -179,7 +181,9 @@ describe('Geo', () => {
 			const mapName = awsConfig.geo.amazon_location_services.maps.default;
 			const style =
 				awsConfig.geo.amazon_location_services.maps.items[mapName].style;
-			const testMap = { mapName, style };
+			const region = awsConfig.geo.amazon_location_services.region;
+
+			const testMap = { mapName, style, region };
 
 			const defaultMapsResource = geo.getDefaultMap();
 			expect(defaultMapsResource).toEqual(testMap);
