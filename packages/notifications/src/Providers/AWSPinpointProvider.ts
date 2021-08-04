@@ -14,10 +14,18 @@
 import { ConsoleLogger as Logger, Credentials, Hub } from '@aws-amplify/core';
 import { getCachedUuid as getEndpointId } from '@aws-amplify/cache';
 import { UpdateEndpointRequest } from '@aws-sdk/client-pinpoint';
+import isEmpty from 'lodash/isEmpty';
 import { v1 as uuid } from 'uuid';
 
 import TempPinpointClient from './client';
-import { NotificationsCategory, NotificationsProvider } from '../types';
+import {
+	ComparisonOperator,
+	InAppMessage,
+	MetricsComparator,
+	NotificationsCategory,
+	NotificationEvent,
+	NotificationsProvider,
+} from '../types';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
 typeof Symbol.for === 'function'
@@ -99,6 +107,84 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		}
 	};
 
+	filterMessages = (
+		messages: InAppMessage[],
+		event: NotificationEvent
+	): InAppMessage[] =>
+		messages.filter(
+			message =>
+				this.matchesEventType(message, event) &&
+				this.matchesAttributes(message, event) &&
+				this.matchesMetrics(message, event) &&
+				this.isBeforeEndDate(message)
+		);
+
+	private matchesEventType = (
+		{ Schedule }: InAppMessage,
+		{ name: eventType }: NotificationEvent
+	) => {
+		const { EventType } = Schedule.EventFilter.Dimensions;
+		return EventType && EventType.Values.includes(eventType);
+	};
+
+	private matchesAttributes = (
+		{ Schedule }: InAppMessage,
+		{ attributes }: NotificationEvent
+	) => {
+		const { Attributes } = Schedule.EventFilter.Dimensions;
+		if (isEmpty(Attributes)) {
+			// if message does not have attributes defined it does not matter what attributes are on the event
+			return true;
+		}
+		if (isEmpty(attributes)) {
+			// if message does have attributes but the event does not then it always fails the check
+			return false;
+		}
+		return Object.entries(Attributes).every(([key, { Values }]) =>
+			Values.includes(attributes[key])
+		);
+	};
+
+	private matchesMetrics = (
+		{ Schedule }: InAppMessage,
+		{ metrics }: NotificationEvent
+	) => {
+		const { Metrics } = Schedule.EventFilter.Dimensions;
+		if (isEmpty(Metrics)) {
+			// if message does not have metrics defined it does not matter what metrics are on the event
+			return true;
+		}
+		if (isEmpty(metrics)) {
+			// if message does have metrics but the event does not then it always fails the check
+			return false;
+		}
+		return Object.entries(Metrics).every(
+			([key, { ComparisonOperator, Value }]) => {
+				const compare = this.getComparator(ComparisonOperator);
+				return compare(Value, metrics[key]);
+			}
+		);
+	};
+
+	private getComparator = (operator: ComparisonOperator): MetricsComparator => {
+		switch (operator) {
+			case 'EQUAL':
+				return (metricsVal, eventVal) => metricsVal === eventVal;
+			case 'GREATER_THAN':
+				return (metricsVal, eventVal) => metricsVal < eventVal;
+			case 'GREATER_THAN_OR_EQUAL':
+				return (metricsVal, eventVal) => metricsVal <= eventVal;
+			case 'LESS_THAN':
+				return (metricsVal, eventVal) => metricsVal > eventVal;
+			case 'LESS_THAN_OR_EQUAL':
+				return (metricsVal, eventVal) => metricsVal >= eventVal;
+		}
+	};
+
+	private isBeforeEndDate = ({ Schedule }: InAppMessage) => {
+		return new Date() < new Date(Schedule.EndDate);
+	};
+
 	private initClient = async () => {
 		if (this.pinpointClient) {
 			return;
@@ -125,7 +211,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 			}
 			return Credentials.shear(credentials);
 		} catch (err) {
-			logger.error('Error getting credentials', err);
+			logger.error('Error getting credentials:', err);
 			return null;
 		}
 	};

@@ -20,32 +20,31 @@ import {
 	parseMobileHubConfig,
 } from '@aws-amplify/core';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import noop from 'lodash/noop';
 import { AWSPinpointProvider } from './Providers';
 import {
-	AppMessage,
-	EventValidatedHandler,
+	FilteredInAppMessagesHandler,
+	InAppMessage,
 	NotificationEvent,
 	NotificationsCategory,
 	NotificationsConfig,
 	NotificationsProvider,
-	ValidateEventOptions,
 } from './types';
 
 const STORAGE_KEY_SUFFIX = '_notificationKey';
-const noop = () => {};
 
 const logger = new Logger('Notifications');
 
 class NotificationsClass {
 	private config: Record<string, any> = {};
 	private disabled: boolean = false;
-	private eventValidatedHandler: EventValidatedHandler = noop;
+	private filteredInAppMessagesHandler: FilteredInAppMessagesHandler = noop;
 	private listeningForAnalyticEvents: boolean = false;
 	private pluggables: NotificationsProvider[] = [];
 
 	configure = ({
 		listenForAnalyticsEvents = true,
-		eventValidatedHandler,
+		filteredInAppMessagesHandler,
 		...config
 	}: NotificationsConfig = {}) => {
 		this.config = {
@@ -55,8 +54,8 @@ class NotificationsClass {
 
 		logger.debug('configure Notifications', config);
 
-		this.eventValidatedHandler = this.setMessageValidatedHandler(
-			eventValidatedHandler
+		this.filteredInAppMessagesHandler = this.setFilteredInAppMessagesHandler(
+			filteredInAppMessagesHandler
 		);
 
 		this.pluggables.forEach(pluggable => {
@@ -101,69 +100,11 @@ class NotificationsClass {
 		return pluggable;
 	};
 
-	removePluggable = (providerName: string) => {
-		const index = this.pluggables.findIndex(
-			pluggable => pluggable.getProviderName() === providerName
-		);
-		if (index === -1) {
-			logger.debug(`No plugin found with name ${providerName}`);
-		} else {
-			this.pluggables.splice(index, 1);
-		}
-	};
-
-	invokeMessage = async (
-		event: NotificationEvent,
-		{ validator }: ValidateEventOptions = {}
-	) => {
-		const messages: any[] = await Promise.all<any[]>(
-			this.pluggables.map(async pluggable => {
-				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
-				const messages = await this._getStoredMessages(key);
-				return this.filterMessages(messages, event);
-			})
-		);
-		// Since there is only one notification provider, just send back the result of that promise for now
-		if (messages[0]) {
-			this.eventValidatedHandler(messages[0]);
-		}
-	};
-
-	setMessageValidatedHandler = (
-		handler: EventValidatedHandler
-	): EventValidatedHandler => {
-		if (this.eventValidatedHandler === noop && handler) {
-			this.eventValidatedHandler = handler;
-		}
-		return this.eventValidatedHandler;
-	};
-
-	private analyticsListener: HubCallback = ({ payload }: HubCapsule) => {
-		const { event, data } = payload;
-		switch (event) {
-			case 'record': {
-				this.invokeMessage(data);
-				break;
-			}
-			default:
-				break;
-		}
-	};
-
-	private async _getStoredMessages(key: string) {
-		try {
-			const storedMessages = await AsyncStorage.getItem(key);
-			return JSON.parse(storedMessages);
-		} catch (err) {
-			logger.debug(`Unable to retrieve locally stored messages: ${err}`);
-		}
-	}
-
 	/**
 	 * add plugin into Analytics category
 	 * @param {Object} pluggable - an instance of the plugin
 	 */
-	public addPluggable(pluggable: NotificationsProvider) {
+	addPluggable = (pluggable: NotificationsProvider): any => {
 		if (pluggable && pluggable.getCategory() === 'Notifications') {
 			this.pluggables.push(pluggable);
 			// for backward compatibility
@@ -176,7 +117,41 @@ class NotificationsClass {
 			pluggable.configure(config);
 			return config;
 		}
-	}
+	};
+
+	removePluggable = (providerName: string): void => {
+		const index = this.pluggables.findIndex(
+			pluggable => pluggable.getProviderName() === providerName
+		);
+		if (index === -1) {
+			logger.debug(`No plugin found with name ${providerName}`);
+		} else {
+			this.pluggables.splice(index, 1);
+		}
+	};
+
+	invokeMessage = async (event: NotificationEvent): Promise<void> => {
+		const messages: any[] = await Promise.all<any[]>(
+			this.pluggables.map(async pluggable => {
+				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
+				const messages = await this.getStoredMessages(key);
+				return pluggable.filterMessages(messages, event);
+			})
+		);
+		// Since there is only one notification provider, just send back the result of that promise for now
+		if (messages[0]) {
+			this.filteredInAppMessagesHandler(messages[0]);
+		}
+	};
+
+	setFilteredInAppMessagesHandler = (
+		handler: FilteredInAppMessagesHandler
+	): FilteredInAppMessagesHandler => {
+		if (this.filteredInAppMessagesHandler === noop && handler) {
+			this.filteredInAppMessagesHandler = handler;
+		}
+		return this.filteredInAppMessagesHandler;
+	};
 
 	syncInAppMessages = async (providerName = 'AWSPinpoint'): Promise<any> => {
 		if (this.disabled) {
@@ -206,7 +181,31 @@ class NotificationsClass {
 		}
 	};
 
-	private async storeMessages(key: string, messages: AppMessage[]) {
+	private analyticsListener: HubCallback = ({ payload }: HubCapsule) => {
+		const { event, data } = payload;
+		switch (event) {
+			case 'record': {
+				this.invokeMessage(data);
+				break;
+			}
+			default:
+				break;
+		}
+	};
+
+	private getStoredMessages = async (key: string): Promise<any> => {
+		try {
+			const storedMessages = await AsyncStorage.getItem(key);
+			return JSON.parse(storedMessages);
+		} catch (err) {
+			logger.debug(`Unable to retrieve locally stored messages: ${err}`);
+		}
+	};
+
+	private storeMessages = async (
+		key: string,
+		messages: InAppMessage[]
+	): Promise<void> => {
 		if (!messages) {
 			logger.debug('no messages :(');
 			return;
@@ -218,38 +217,7 @@ class NotificationsClass {
 			// TODO: Add error handling
 			console.warn(e);
 		}
-	}
-
-	private filterMessages = (
-		messages: AppMessage[],
-		{ attributes, metrics, name }: NotificationEvent
-	): AppMessage[] =>
-		messages
-			.filter(({ Schedule }) => {
-				const isCorrectEventType =
-					Schedule &&
-					Schedule.EventFilter &&
-					Schedule.EventFilter.Dimensions &&
-					Schedule.EventFilter.Dimensions.EventType &&
-					Schedule.EventFilter.Dimensions.EventType.Values &&
-					Schedule.EventFilter.Dimensions.EventType.Values.includes(name);
-
-				if (!isCorrectEventType) {
-					return;
-				}
-
-				const now = new Date();
-				const endDate = Schedule.EndDate ? new Date(Schedule.EndDate) : null;
-				const isBeforeEndDate = endDate ? now < endDate : true;
-
-				return isBeforeEndDate;
-			})
-			.sort((a, b) => {
-				if (a.Priority === b.Priority) {
-					return 0;
-				}
-				return a.Priority > b.Priority ? 1 : -1;
-			});
+	};
 }
 
 const Notifications = new NotificationsClass();
