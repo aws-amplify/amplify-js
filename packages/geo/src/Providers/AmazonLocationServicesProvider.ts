@@ -92,10 +92,11 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 		const mapStyles: MapStyle[] = [];
 		const availableMaps = this._config.maps.items;
+		const region = this._config.region;
 
 		for (const mapName in availableMaps) {
 			const style = availableMaps[mapName].style;
-			mapStyles.push({ mapName, style });
+			mapStyles.push({ mapName, style, region });
 		}
 
 		return mapStyles;
@@ -119,8 +120,9 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 		const mapName = this._config.maps.default;
 		const style = this._config.maps.items[mapName].style;
+		const region = this._config.region;
 
-		return { mapName, style };
+		return { mapName, style, region };
 	}
 
 	/**
