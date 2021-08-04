@@ -116,7 +116,8 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 				this.matchesEventType(message, event) &&
 				this.matchesAttributes(message, event) &&
 				this.matchesMetrics(message, event) &&
-				this.isBeforeEndDate(message)
+				this.isBeforeEndDate(message) &&
+				!this.isQuietTime(message)
 		);
 
 	private matchesEventType = (
@@ -183,6 +184,45 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 
 	private isBeforeEndDate = ({ Schedule }: InAppMessage) => {
 		return new Date() < new Date(Schedule.EndDate);
+	};
+
+	private isQuietTime = (message: InAppMessage): boolean => {
+		const { Schedule } = message;
+		if (!Schedule.QuietTime) {
+			return false;
+		}
+
+		const pattern = /^[0-2]\d:[0-5]\d$/; // basic sanity check, not a fully featured HH:MM validation
+		const { Start, End } = Schedule.QuietTime;
+		if (
+			!Start ||
+			!End ||
+			Start === End ||
+			!pattern.test(Start) ||
+			!pattern.test(End)
+		) {
+			return false;
+		}
+
+		const now = new Date();
+		const start = new Date(now);
+		const end = new Date(now);
+		const [startHours, startMinutes] = Start.split(':');
+		const [endHours, endMinutes] = End.split(':');
+
+		start.setHours(startHours, startMinutes, 0, 0);
+		end.setHours(endHours, endMinutes, 0, 0);
+
+		// if quiet time includes midnight, bump the end time to the next day
+		if (start > end) {
+			end.setDate(end.getDate() + 1);
+		}
+
+		const isQuietTime = now >= start && now <= end;
+		if (isQuietTime) {
+			logger.debug('message filtered due to quiet time', message);
+		}
+		return isQuietTime;
 	};
 
 	private initClient = async () => {
