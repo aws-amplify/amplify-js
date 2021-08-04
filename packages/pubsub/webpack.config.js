@@ -4,9 +4,11 @@ module.exports = {
 	},
 	externals: [
 		'graphql',
-		'@aws-amplify/auth',
-		'@aws-amplify/cache',
-		'@aws-amplify/core',
+		{
+			'@aws-amplify/auth': 'aws_amplify_auth',
+			'@aws-amplify/cache': 'aws_amplify_cache',
+			'@aws-amplify/core': 'aws_amplify_core'
+		}
 	],
 	output: {
 		filename: '[name].js',
