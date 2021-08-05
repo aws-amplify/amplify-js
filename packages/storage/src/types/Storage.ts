@@ -13,9 +13,39 @@
 /**
  * Storage instance options
  */
+
+import { ICredentials } from '@aws-amplify/core';
+
 export interface StorageOptions {
-	bucket?: string;
+	credentials?: ICredentials;
 	region?: string;
-	level?: string;
-	credentials?: object;
+	level?: StorageLevel;
+	bucket?: string;
+	/**
+	 * Custom mapping of your prefixes.
+	 * For example, customPrefix: { public: 'myPublicPrefix' } will make public level operations access 'myPublicPrefix/'
+	 * instead of the default 'public/'.
+	 */
+	customPrefix?: CustomPrefix;
+	/**
+	 * if set to true, automatically sends Storage Events to Amazon Pinpoint
+	 **/
+	track?: boolean;
+	dangerouslyConnectToHttpEndpointForTesting?: boolean;
 }
+
+export type StorageLevel = 'public' | 'protected' | 'private';
+
+export type CustomPrefix = {
+	[key in StorageLevel]?: string;
+};
+
+export type StorageCopyTarget = {
+	key: string;
+	level?: string;
+	identityId?: string;
+};
+
+export type StorageCopySource = StorageCopyTarget;
+
+export type StorageCopyDestination = Omit<StorageCopyTarget, 'identityId'>;

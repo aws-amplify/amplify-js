@@ -1,5 +1,6 @@
 import { I18n } from '@aws-amplify/core';
-import { Auth } from '@aws-amplify/auth';
+import { Auth, SignUpParams } from '@aws-amplify/auth';
+import { ISignUpResult } from 'amazon-cognito-identity-js';
 import { Component, Prop, h, State, Watch, Host } from '@stencil/core';
 import {
 	FormFieldTypes,
@@ -14,6 +15,7 @@ import {
 import {
 	AuthState,
 	AuthStateHandler,
+	UsernameAlias,
 	UsernameAliasStrings,
 } from '../../common/types/auth-types';
 import { SignUpAttributes } from '../../common/types/auth-types';
@@ -41,6 +43,10 @@ import { handleSignIn } from '../../common/auth-helpers';
 export class AmplifySignUp {
 	/** Fires when sign up form is submitted */
 	@Prop() handleSubmit: (event: Event) => void = event => this.signUp(event);
+	/** Override for handling the Auth.SignUp API call */
+	@Prop() handleSignUp: (
+		params: SignUpParams
+	) => Promise<ISignUpResult> = params => this.authSignUp(params);
 	/** Engages when invalid actions occur, such as missing field, etc. */
 	@Prop() validationErrors: string;
 	/** Used for header text in sign up component */
@@ -116,16 +122,16 @@ export class AmplifySignUp {
 		fnToCall(event, callback.bind(this));
 	}
 
-	// TODO: Add validation
-	// TODO: Prefix
-	private async signUp(event: Event) {
-		if (event) {
-			event.preventDefault();
+	private async authSignUp(params: SignUpParams): Promise<ISignUpResult> {
+		const data = await Auth.signUp(params);
+		if (!data) {
+			throw new Error(Translations.SIGN_UP_FAILED);
 		}
-		if (!Auth || typeof Auth.signUp !== 'function') {
-			throw new Error(NO_AUTH_MODULE_FOUND);
-		}
-		this.loading = true;
+
+		return data;
+	}
+
+	private assignPhoneNumberToSignUpAttributes(): void {
 		if (this.phoneNumber.phoneNumberValue) {
 			try {
 				this.signUpAttributes.attributes.phone_number = composePhoneNumberInput(
@@ -135,6 +141,9 @@ export class AmplifySignUp {
 				dispatchToastHubEvent(error);
 			}
 		}
+	}
+
+	private assignUserNameAliasToSignUpAttributes(): void {
 		switch (this.usernameAlias) {
 			case 'email':
 			case 'phone_number':
@@ -146,23 +155,50 @@ export class AmplifySignUp {
 			default:
 				break;
 		}
-		try {
-			if (!this.signUpAttributes.username) {
+	}
+
+	private assignFormInputToSignUpAttributes(): void {
+		this.assignPhoneNumberToSignUpAttributes();
+		this.assignUserNameAliasToSignUpAttributes();
+	}
+
+	private validateSignUpAttributes(): void {
+		if (!this.signUpAttributes.username) {
+			if (this.usernameAlias === UsernameAlias.email) {
+				throw new Error(Translations.EMPTY_EMAIL);
+			} else if (this.usernameAlias === UsernameAlias.phone_number) {
+				throw new Error(Translations.EMPTY_PHONE);
+			} else {
 				throw new Error(Translations.EMPTY_USERNAME);
 			}
-			if (this.signUpAttributes.username.indexOf(' ') >= 0) {
-				throw new Error(Translations.USERNAME_REMOVE_WHITESPACE);
-			}
-			if (
-				this.signUpAttributes.password !== this.signUpAttributes.password.trim()
-			) {
-				throw new Error(Translations.PASSWORD_REMOVE_WHITESPACE);
-			}
+		}
+		if (this.signUpAttributes.username.indexOf(' ') >= 0) {
+			throw new Error(Translations.USERNAME_REMOVE_WHITESPACE);
+		}
+		if (
+			this.signUpAttributes.password !== this.signUpAttributes.password.trim()
+		) {
+			throw new Error(Translations.PASSWORD_REMOVE_WHITESPACE);
+		}
+	}
 
-			const data = await Auth.signUp(this.signUpAttributes);
-			if (!data) {
-				throw new Error(Translations.SIGN_UP_FAILED);
-			}
+	// TODO: Add validation
+	// TODO: Prefix
+	private async signUp(event: Event) {
+		if (event) {
+			event.preventDefault();
+		}
+		if (!Auth || typeof Auth.signUp !== 'function') {
+			throw new Error(NO_AUTH_MODULE_FOUND);
+		}
+
+		this.loading = true;
+		this.assignFormInputToSignUpAttributes();
+
+		try {
+			this.validateSignUpAttributes();
+
+			const data = await this.handleSignUp(this.signUpAttributes);
 			if (data.userConfirmed) {
 				await handleSignIn(
 					this.signUpAttributes.username,
@@ -386,6 +422,7 @@ export class AmplifySignUp {
 								<amplify-button
 									type="submit"
 									data-test="sign-up-create-account-button"
+                  disabled={this.loading}
 								>
 									{this.loading ? (
 										<amplify-loading-spinner />

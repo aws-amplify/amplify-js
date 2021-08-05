@@ -1,6 +1,9 @@
 import { I18n } from '@aws-amplify/core';
 import { Component, Prop, State, Watch, h, Host } from '@stencil/core';
-import { FormFieldTypes } from '../amplify-auth-fields/amplify-auth-fields-interface';
+import {
+	FormFieldTypes,
+	PhoneNumberInterface,
+} from '../amplify-auth-fields/amplify-auth-fields-interface';
 import {
 	AuthState,
 	ChallengeName,
@@ -8,7 +11,11 @@ import {
 	AuthFormField,
 	AuthStateHandler,
 } from '../../common/types/auth-types';
-import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
+import {
+	COUNTRY_DIAL_CODE_DEFAULT,
+	NO_AUTH_MODULE_FOUND,
+	PHONE_SUFFIX,
+} from '../../common/constants';
 import { Translations } from '../../common/Translations';
 
 import { Auth } from '@aws-amplify/auth';
@@ -17,6 +24,8 @@ import {
 	dispatchToastHubEvent,
 	dispatchAuthStateChangeEvent,
 	getRequiredAttributesMap,
+	handlePhoneNumberChange,
+	composePhoneNumberInput,
 } from '../../common/helpers';
 import { checkContact } from '../../common/auth-helpers';
 
@@ -64,9 +73,17 @@ export class AmplifyRequireNewPassword {
 	private requiredAttributes: Record<PropertyKey, string> = {};
 	private newFormFields: FormFieldTypes = this.formFields;
 	private currentUser: CognitoUserInterface;
+	private phoneNumber: PhoneNumberInterface = {
+		countryDialCodeValue: COUNTRY_DIAL_CODE_DEFAULT,
+		phoneNumberValue: ' ',
+	};
 
 	private handleRequiredAttributeInputChange(attribute, event) {
-		this.requiredAttributes[attribute] = event.target.value;
+		if (attribute === 'phone_number') {
+			this.formatPhoneNumber(event);
+		} else {
+			this.requiredAttributes[attribute] = event.target.value;
+		}
 	}
 
 	async setCurrentUser(): Promise<void> {
@@ -112,6 +129,27 @@ export class AmplifyRequireNewPassword {
 
 	private handlePasswordChange(event) {
 		this.password = event.target.value;
+	}
+
+	private formatPhoneNumber(event): void {
+		handlePhoneNumberChange(event, this.phoneNumber);
+
+		/**
+		 * composePhoneNumberInput will throw an error if the phoneNumberValue it receives
+		 * is empty. Adding a check here to try and make sure that doesn't happen...but will
+		 * wrap it in a try/catch block just in case as well
+		 */
+		try {
+			if (
+				event.target.name === PHONE_SUFFIX &&
+				this.phoneNumber.phoneNumberValue
+			) {
+				const composedInput = composePhoneNumberInput(this.phoneNumber);
+				this.requiredAttributes['phone_number'] = composedInput;
+			}
+		} catch (err) {
+			logger.error(`error in phone number field - ${err}`);
+		}
 	}
 
 	private async completeNewPassword(event: Event) {

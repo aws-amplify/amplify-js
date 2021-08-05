@@ -189,7 +189,7 @@ declare module 'amazon-cognito-identity-js' {
 			},
 			clientMetadata?: ClientMetadata
 		): void;
-		public signOut(): void;
+		public signOut(callback?: () => void): void;
 		public globalSignOut(callbacks: {
 			onSuccess: (msg: string) => void;
 			onFailure: (err: Error) => void;

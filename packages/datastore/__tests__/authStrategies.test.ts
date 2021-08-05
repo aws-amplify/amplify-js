@@ -10,6 +10,11 @@ import { NAMESPACES } from '../src/util';
 describe('Auth Strategies', () => {
 	describe('multiAuthStrategy', () => {
 		const rules = {
+			function: {
+				provider: ModelAttributeAuthProvider.FUNCTION,
+				allow: ModelAttributeAuthAllow.CUSTOM,
+				operations: ['create', 'update', 'delete', 'read'],
+			},
 			owner: {
 				provider: ModelAttributeAuthProvider.USER_POOLS,
 				ownerField: 'owner',
@@ -67,6 +72,21 @@ describe('Auth Strategies', () => {
 				operations: ['create', 'update', 'delete', 'read'],
 			},
 		};
+
+		test('function', async () => {
+			const authRules = [rules.function];
+			await testMultiAuthStrategy({
+				authRules,
+				hasAuthenticatedUser: true,
+				result: ['AWS_LAMBDA'],
+			});
+
+			await testMultiAuthStrategy({
+				authRules,
+				hasAuthenticatedUser: false,
+				result: ['AWS_LAMBDA'],
+			});
+		});
 
 		test('owner', async () => {
 			const authRules = [rules.owner];
@@ -350,6 +370,31 @@ describe('Auth Strategies', () => {
 				authRules,
 				hasAuthenticatedUser: false,
 				result: ['AWS_IAM', 'API_KEY'],
+			});
+		});
+
+		test('function/owner/public IAM/API key', async () => {
+			const authRules = [
+				rules.function,
+				rules.owner,
+				rules.publicIAM,
+				rules.publicAPIKeyExplicit,
+			];
+			await testMultiAuthStrategy({
+				authRules,
+				hasAuthenticatedUser: true,
+				result: [
+					'AWS_LAMBDA',
+					'AMAZON_COGNITO_USER_POOLS',
+					'AWS_IAM',
+					'API_KEY',
+				],
+			});
+
+			await testMultiAuthStrategy({
+				authRules,
+				hasAuthenticatedUser: false,
+				result: ['AWS_LAMBDA', 'AWS_IAM', 'API_KEY'],
 			});
 		});
 

@@ -569,3 +569,29 @@ export function getClientSideAuthError(error) {
 		);
 	return clientSideError || null;
 }
+
+export async function getTokenForCustomAuth(
+	authMode: GRAPHQL_AUTH_MODE,
+	amplifyConfig: Record<string, any> = {}
+): Promise<string | undefined> {
+	if (authMode === GRAPHQL_AUTH_MODE.AWS_LAMBDA) {
+		const {
+			authProviders: { functionAuthProvider } = { functionAuthProvider: null },
+		} = amplifyConfig;
+		if (functionAuthProvider && typeof functionAuthProvider === 'function') {
+			try {
+				const { token } = await functionAuthProvider();
+				return token;
+			} catch (error) {
+				throw new Error(
+					`Error retrieving token from \`functionAuthProvider\`: ${error}`
+				);
+			}
+		} else {
+			// TODO: add docs link once available
+			throw new Error(
+				`You must provide a \`functionAuthProvider\` function to \`DataStore.configure\` when using ${GRAPHQL_AUTH_MODE.AWS_LAMBDA}`
+			);
+		}
+	}
+}

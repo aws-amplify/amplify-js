@@ -84,12 +84,14 @@ export class AmplifyForgotPassword {
 		if (this.formFields.length === 0) {
 			this.buildDefaultFormFields();
 		} else {
+			const newFields = [];
 			this.formFields.forEach(field => {
 				const newField = { ...field };
 				newField['handleInputChange'] = event =>
 					this.handleFormFieldInputWithCallback(event, field);
-				this.newFormFields.push(newField);
+				newFields.push(newField);
 			});
+			this.newFormFields = newFields;
 		}
 	}
 
@@ -255,7 +257,11 @@ export class AmplifyForgotPassword {
 		this.loading = true;
 		try {
 			const { userInput, code, password } = this.forgotPasswordAttrs;
-			const data = await Auth.forgotPasswordSubmit(userInput, code, password);
+			const data = await Auth.forgotPasswordSubmit(
+				userInput.trim(),
+				code,
+				password
+			);
 			logger.debug(data);
 			this.handleAuthStateChange(AuthState.SignIn);
 			this.delivery = null;

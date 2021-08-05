@@ -34,6 +34,10 @@ describe('amplify-sign-up spec:', () => {
 		it('should render `usernameAlias` as `username` by default', () => {
 			expect(signUp.usernameAlias).toEqual('username');
 		});
+
+		it('should render `handleSignUp` as defined by default', () => {
+			expect(signUp.handleSignUp).toBeDefined();
+		});
 	});
 
 	describe('Render logic ->', () => {

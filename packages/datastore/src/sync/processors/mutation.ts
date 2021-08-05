@@ -31,6 +31,7 @@ import {
 	createMutationInstanceFromModelOperation,
 	getModelAuthModes,
 	TransformerMutationType,
+	getTokenForCustomAuth,
 } from '../utils';
 
 const MAX_ATTEMPTS = 10;
@@ -263,7 +264,13 @@ class MutationProcessor {
 					data,
 					condition
 				);
-				const tryWith = { query, variables, authMode };
+
+				const authToken = await getTokenForCustomAuth(
+					authMode,
+					this.amplifyConfig
+				);
+
+				const tryWith = { query, variables, authMode, authToken };
 				let attempt = 0;
 
 				const opType = this.opTypeFromTransformerOperation(operation);
@@ -331,12 +338,18 @@ class MutationProcessor {
 										'GET'
 									);
 
+									const authToken = await getTokenForCustomAuth(
+										authMode,
+										this.amplifyConfig
+									);
+
 									const serverData = <
 										GraphQLResult<Record<string, PersistentModel>>
 									>await API.graphql({
 										query,
 										variables: { id: variables.input.id },
 										authMode,
+										authToken,
 									});
 
 									return [serverData, opName, modelDefinition];

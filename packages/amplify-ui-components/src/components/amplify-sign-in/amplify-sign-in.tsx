@@ -144,7 +144,8 @@ export class AmplifySignIn {
 		await handleSignIn(
 			username,
 			this.signInAttributes.password,
-			this.handleAuthStateChange
+			this.handleAuthStateChange,
+			this.usernameAlias
 		);
 		this.loading = false;
 	}
@@ -298,8 +299,8 @@ export class AmplifySignIn {
 					<amplify-auth-fields formFields={this.newFormFields} />
 					<div slot="amplify-form-section-footer" class="sign-in-form-footer">
 						<slot name="footer">
-							<slot name="secondary-footer-content">
-								{!this.hideSignUp ? (
+							{!this.hideSignUp && (
+								<slot name="secondary-footer-content">
 									<span>
 										{I18n.get(Translations.NO_ACCOUNT_TEXT)}{' '}
 										<amplify-button
@@ -312,24 +313,24 @@ export class AmplifySignIn {
 											{I18n.get(Translations.CREATE_ACCOUNT_TEXT)}
 										</amplify-button>
 									</span>
-								) : (
-									<span></span>
-								)}
-							</slot>
+								</slot>
+							)}
 
-							<slot name="primary-footer-content">
-								<amplify-button
-									type="submit"
-									disabled={this.loading}
-									data-test="sign-in-sign-in-button"
-								>
-									{this.loading ? (
-										<amplify-loading-spinner />
-									) : (
-										<span>{I18n.get(this.submitButtonText)}</span>
-									)}
-								</amplify-button>
-							</slot>
+							<div class={this.hideSignUp ? 'full-width-footer-content' : ''}>
+								<slot name="primary-footer-content">
+									<amplify-button
+										type="submit"
+										disabled={this.loading}
+										data-test="sign-in-sign-in-button"
+									>
+										{this.loading ? (
+											<amplify-loading-spinner />
+										) : (
+											<span>{I18n.get(this.submitButtonText)}</span>
+										)}
+									</amplify-button>
+								</slot>
+							</div>
 						</slot>
 					</div>
 				</amplify-form-section>
