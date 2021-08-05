@@ -29,7 +29,9 @@ export interface S3ProviderGetConfig extends StorageOptions {
 	SSECustomerKeyMD5?: GetObjectRequest['SSECustomerKeyMD5'];
 }
 
-export type S3ProviderGetOuput<T> = T extends { download: true } ? GetObjectCommandOutput : string;
+export type S3ProviderGetOuput<T> = T extends { download: true }
+	? GetObjectCommandOutput
+	: string;
 
 export interface S3ProviderPutConfig extends StorageOptions {
 	progressCallback?: (progress: any) => any;
@@ -46,6 +48,7 @@ export interface S3ProviderPutConfig extends StorageOptions {
 	contentDisposition?: PutObjectRequest['ContentDisposition'];
 	contentEncoding?: PutObjectRequest['ContentEncoding'];
 	contentType?: PutObjectRequest['ContentType'];
+	contentMd5?: PutObjectRequest['ContentMD5'];
 	expires?: PutObjectRequest['Expires'];
 	metadata?: PutObjectRequest['Metadata'];
 	tagging?: PutObjectRequest['Tagging'];

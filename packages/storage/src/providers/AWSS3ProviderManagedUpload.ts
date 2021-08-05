@@ -27,8 +27,13 @@ import {
 	ListPartsCommand,
 	AbortMultipartUploadCommand,
 	CompletedPart,
+	UploadPartCommandInput,
 } from '@aws-sdk/client-s3';
-import { AxiosHttpHandler, SEND_UPLOAD_PROGRESS_EVENT, SEND_DOWNLOAD_PROGRESS_EVENT } from './axios-http-handler';
+import {
+	AxiosHttpHandler,
+	SEND_UPLOAD_PROGRESS_EVENT,
+	SEND_DOWNLOAD_PROGRESS_EVENT,
+} from './axios-http-handler';
 import * as events from 'events';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
@@ -176,15 +181,23 @@ export class AWSS3ProviderManagedUpload {
 				parts.map(async part => {
 					this.setupEventListener(part);
 					const s3 = await this._createNewS3Client(this.opts, part.emitter);
-					return s3.send(
-						new UploadPartCommand({
-							PartNumber: part.partNumber,
-							Body: part.bodyPart,
-							UploadId: uploadId,
-							Key: this.params.Key,
-							Bucket: this.params.Bucket,
-						})
-					);
+					const uploadPartCommandInput: UploadPartCommandInput = {
+						PartNumber: part.partNumber,
+						Body: part.bodyPart,
+						UploadId: uploadId,
+						Key: this.params.Key,
+						Bucket: this.params.Bucket,
+						ContentMD5: null,
+					};
+					if (
+						this.params.ContentMD5 &&
+						typeof this.params.ContentMD5 === 'function'
+					) {
+						uploadPartCommandInput.ContentMD5 = this.params.ContentMD5(
+							part.bodyPart
+						);
+					}
+					return s3.send(new UploadPartCommand(uploadPartCommandInput));
 				})
 			);
 			// The order of resolved promises is the same as input promise order.
@@ -316,7 +329,7 @@ export class AWSS3ProviderManagedUpload {
 			// Files, arrayBuffer etc
 			return body;
 		}
-		/* TODO: streams and files for nodejs 
+		/* TODO: streams and files for nodejs
 		if (
 			typeof body.path === 'string' &&
 			require('fs').lstatSync(body.path).size > 0
