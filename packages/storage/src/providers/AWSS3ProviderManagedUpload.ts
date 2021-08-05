@@ -184,9 +184,10 @@ export class AWSS3ProviderManagedUpload {
 							UploadId: uploadId,
 							Key,
 							Bucket,
-							...(this.params.SSECustomerAlgorithm && { SSECustomerAlgorithm }),
-							...(this.params.SSECustomerKey && { SSECustomerKey }),
-							...(this.params.SSECustomerKeyMD5 && { SSECustomerKeyMD5 })
+							...(SSECustomerAlgorithm && { SSECustomerAlgorithm }),
+							...(SSECustomerKey && { SSECustomerKey }),
+							...(SSECustomerKeyMD5 && { SSECustomerKeyMD5 })
+
 						})
 					);
 				})
