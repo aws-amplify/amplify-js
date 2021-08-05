@@ -461,13 +461,16 @@ describe('Storage', () => {
 
 	describe('get test', () => {
 		test('get object without download', async () => {
-			const get_spyon = jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
-				return Promise.resolve('https://this-url-doesnt-exist.gg');
-			});
+			const get_spyon = jest
+				.spyOn(AWSStorageProvider.prototype, 'get')
+				.mockImplementation(() => {
+					return Promise.resolve('https://this-url-doesnt-exist.gg');
+				});
 			const storage = new StorageClass();
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
+			storage.get('key', { download: false });
 			expect(get_spyon).toBeCalled();
 			get_spyon.mockClear();
 		});

@@ -25,7 +25,7 @@ import {
 	S3ProviderPutOutput,
 	S3ProviderRemoveOutput,
 	S3ProviderListOutput,
-    S3ProviderCopyOutput,
+	S3ProviderCopyOutput,
 } from './AWSS3Provider';
 
 export interface StorageOptions {
@@ -75,7 +75,9 @@ export type StorageCopyDestination = Omit<StorageCopyTarget, 'identityId'>;
 /**
  * If a provider is not the default provider, allow the generic type, else use the default provider's config
  */
-export type StorageOperationConfig<DefaultConfig, T> = T extends { provider: string }
+export type StorageOperationConfig<DefaultConfig, T> = T extends {
+	provider: string;
+}
 	? T extends { provider: 'AWSS3' }
 		? DefaultConfig
 		: T & { provider: string }
@@ -84,28 +86,65 @@ export type StorageOperationConfig<DefaultConfig, T> = T extends { provider: str
 /**
  * If a provider is not the default provider, allow the generic type, else use the default provider's output
  */
-export type StorageOperationOutput<DefaultOutput, T, U> = T extends { provider: string }
+export type StorageOperationOutput<DefaultOutput, T, U> = T extends {
+	provider: string;
+}
 	? T extends { provider: 'AWSS3' }
 		? DefaultOutput
 		: U
 	: DefaultOutput;
 
-export type StorageGetConfig<T> = StorageOperationConfig<S3ProviderGetConfig, T>;
+export type StorageGetConfig<T> = StorageOperationConfig<
+	S3ProviderGetConfig,
+	T
+>;
 
-export type StorageGetOutput<T, U> = StorageOperationOutput<S3ProviderGetOuput<T>, T, U>;
+export type StorageGetOutput<T, U> = StorageOperationOutput<
+	S3ProviderGetOuput<T>,
+	T,
+	U
+>;
 
-export type StoragePutConfig<T> = StorageOperationConfig<S3ProviderPutConfig, T>;
+export type StoragePutConfig<T> = StorageOperationConfig<
+	S3ProviderPutConfig,
+	T
+>;
 
-export type StoragePutOutput<T, U> = StorageOperationOutput<S3ProviderPutOutput, T, U>;
+export type StoragePutOutput<T, U> = StorageOperationOutput<
+	S3ProviderPutOutput,
+	T,
+	U
+>;
 
-export type StorageRemoveConfig<T> = StorageOperationConfig<S3ProviderRemoveConfig, T>;
+export type StorageRemoveConfig<T> = StorageOperationConfig<
+	S3ProviderRemoveConfig,
+	T
+>;
 
-export type StorageRemoveOutput<T, U> = StorageOperationOutput<S3ProviderRemoveOutput, T, U>;
+export type StorageRemoveOutput<T, U> = StorageOperationOutput<
+	S3ProviderRemoveOutput,
+	T,
+	U
+>;
 
-export type StorageListConfig<T> = StorageOperationConfig<S3ProviderListConfig, T>;
+export type StorageListConfig<T> = StorageOperationConfig<
+	S3ProviderListConfig,
+	T
+>;
 
-export type StorageListOutput<T, U> = StorageOperationOutput<S3ProviderListOutput, T, U>;
+export type StorageListOutput<T, U> = StorageOperationOutput<
+	S3ProviderListOutput,
+	T,
+	U
+>;
 
-export type StorageCopyConfig<T> = StorageOperationConfig<S3ProviderCopyConfig, T>;
+export type StorageCopyConfig<T> = StorageOperationConfig<
+	S3ProviderCopyConfig,
+	T
+>;
 
-export type StorageCopyOutput<T, U> = StorageOperationOutput<S3ProviderCopyOutput, T, U>;
+export type StorageCopyOutput<T, U> = StorageOperationOutput<
+	S3ProviderCopyOutput,
+	T,
+	U
+>;
