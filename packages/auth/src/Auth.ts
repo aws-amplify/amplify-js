@@ -2129,6 +2129,17 @@ export class AuthClass {
 					return credentials;
 				} catch (err) {
 					logger.debug('Error in cognito hosted auth response', err);
+
+					// Just like a successful handling of `?code`, replace the window history to "dispose" of the `code`.
+					// Otherwise, reloading the page will throw errors as the `code` has already been spent.
+					if (window && typeof window.history !== 'undefined') {
+						window.history.replaceState(
+							{},
+							null,
+							(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
+						);
+					}
+
 					dispatchAuthEvent(
 						'signIn_failure',
 						err,
