@@ -25,8 +25,8 @@ import {
 	testPlaceCamelCase,
 } from '../data';
 import {
-	SearchByTextOptions,
-	SearchByCoordinatesOptions,
+	AmazonLocationServiceSearchByTextOptions,
+	AmazonLocationServiceSearchByCoordinatesOptions,
 	Coordinates,
 } from '../../src/types';
 
@@ -178,7 +178,7 @@ describe('AmazonLocationServicesProvider', () => {
 			const locationProvider = new AmazonLocationServicesProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_services);
 
-			const searchOptions: SearchByTextOptions = {
+			const searchOptions: AmazonLocationServiceSearchByTextOptions = {
 				countries: ['USA'],
 				maxResults: 40,
 				searchIndexName: 'geoJSSearchCustomExample',
@@ -211,7 +211,7 @@ describe('AmazonLocationServicesProvider', () => {
 			const locationProvider = new AmazonLocationServicesProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_services);
 
-			const searchOptions: SearchByTextOptions = {
+			const searchOptions: AmazonLocationServiceSearchByTextOptions = {
 				countries: ['USA'],
 				maxResults: 40,
 				searchIndexName: 'geoJSSearchCustomExample',
@@ -293,7 +293,7 @@ describe('AmazonLocationServicesProvider', () => {
 			const locationProvider = new AmazonLocationServicesProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_services);
 
-			const searchOptions: SearchByCoordinatesOptions = {
+			const searchOptions: AmazonLocationServiceSearchByCoordinatesOptions = {
 				maxResults: 40,
 				searchIndexName: 'geoJSSearchCustomExample',
 			};
