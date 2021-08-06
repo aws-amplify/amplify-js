@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 import camelcaseKeys from 'camelcase-keys';
-import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Credentials, getAmplifyUserAgent } from '@aws-amplify/core';
 import {
 	Place as PlaceResult,
 	SearchPlaceIndexForTextCommandInput,
@@ -167,6 +167,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
+			customUserAgent: getAmplifyUserAgent(),
 		});
 		const command = new SearchPlaceIndexForTextCommand(locationServicesInput);
 
@@ -223,6 +224,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		const client = new LocationClient({
 			credentials: this._config.credentials,
 			region: this._config.region,
+			customUserAgent: getAmplifyUserAgent(),
 		});
 		const command = new SearchPlaceIndexForPositionCommand(
 			locationServicesInput
