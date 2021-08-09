@@ -468,7 +468,13 @@ export class AWSS3Provider implements StorageProvider {
 			params.SSEKMSKeyId = SSEKMSKeyId;
 		}
 		if (contentMd5) {
-			params.ContentMD5 = contentMd5;
+			if (typeof contentMd5 === 'function') {
+				params.ContentMD5 = contentMd5(object);
+			} else {
+				logger.warn(
+					`contentMd5 should be a function instead of ${typeof contentMd5}`
+				);
+			}
 		}
 
 		const emitter = new events.EventEmitter();
