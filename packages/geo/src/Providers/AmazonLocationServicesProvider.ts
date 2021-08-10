@@ -22,13 +22,13 @@ import {
 } from '@aws-sdk/client-location';
 
 import {
+	GeoConfig,
+	SearchByTextOptions,
+	SearchByCoordinatesOptions,
 	GeoProvider,
+	Place,
+	MapStyle,
 	Coordinates,
-	AmazonLocationServiceProviderConfig,
-	AmazonLocationServiceSearchByTextOptions,
-	AmazonLocationServiceSearchByCoordinatesOptions,
-	AmazonLocationServicePlace,
-	AmazonLocationServiceMapStyle,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServicesProvider');
@@ -46,7 +46,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 	 * Initialize Geo with AWS configurations
 	 * @param {Object} config - Configuration object for Geo
 	 */
-	constructor(config?: AmazonLocationServiceProviderConfig) {
+	constructor(config?: GeoConfig) {
 		this._config = config ? config : {};
 		logger.debug('Geo Options', this._config);
 	}
@@ -83,20 +83,19 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 	 * Get the map resources that are currently available through the provider
 	 * @returns {MapStyle[]}- Array of available map resources
 	 */
-	public getAvailableMaps(): AmazonLocationServiceMapStyle[] {
+	public getAvailableMaps(): MapStyle[] {
 		if (!this._config.maps) {
 			throw new Error(
 				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
 			);
 		}
 
-		const mapStyles: AmazonLocationServiceMapStyle[] = [];
+		const mapStyles: MapStyle[] = [];
 		const availableMaps = this._config.maps.items;
-		const region = this._config.region;
 
 		for (const mapName in availableMaps) {
 			const style = availableMaps[mapName].style;
-			mapStyles.push({ mapName, style, region });
+			mapStyles.push({ mapName, style });
 		}
 
 		return mapStyles;
@@ -106,7 +105,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 	 * Get the map resource set as default in amplify config
 	 * @returns {MapStyle} - Map resource set as the default in amplify config
 	 */
-	public getDefaultMap(): AmazonLocationServiceMapStyle {
+	public getDefaultMap(): MapStyle {
 		if (!this._config.maps) {
 			throw new Error(
 				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
@@ -120,9 +119,8 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 		const mapName = this._config.maps.default;
 		const style = this._config.maps.items[mapName].style;
-		const region = this._config.region;
 
-		return { mapName, style, region };
+		return { mapName, style };
 	}
 
 	/**
@@ -133,8 +131,8 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 	 */
 	public async searchByText(
 		text: string,
-		options?: AmazonLocationServiceSearchByTextOptions
-	): Promise<AmazonLocationServicePlace[]> {
+		options?: SearchByTextOptions
+	): Promise<Place[]> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
 			throw new Error('No credentials');
@@ -189,12 +187,9 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		const PascalResults: PlaceResult[] = response.Results.map(
 			result => result.Place
 		);
-		const results: AmazonLocationServicePlace[] = (camelcaseKeys(
-			PascalResults,
-			{
-				deep: true,
-			}
-		) as undefined) as AmazonLocationServicePlace[];
+		const results: Place[] = (camelcaseKeys(PascalResults, {
+			deep: true,
+		}) as undefined) as Place[];
 
 		return results;
 	}
@@ -207,8 +202,8 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 	 */
 	public async searchByCoordinates(
 		coordinates: Coordinates,
-		options?: AmazonLocationServiceSearchByCoordinatesOptions
-	): Promise<AmazonLocationServicePlace> {
+		options?: SearchByCoordinatesOptions
+	): Promise<Place> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
 			throw new Error('No credentials');
@@ -249,12 +244,9 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		 * Here we want to flatten that to an array of results and change them to camelCase
 		 */
 		const PascalResults = response.Results.map(result => result.Place);
-		const results: AmazonLocationServicePlace = (camelcaseKeys(
-			PascalResults[0],
-			{
-				deep: true,
-			}
-		) as any) as AmazonLocationServicePlace;
+		const results: Place = (camelcaseKeys(PascalResults[0], {
+			deep: true,
+		}) as any) as Place;
 
 		return results;
 	}

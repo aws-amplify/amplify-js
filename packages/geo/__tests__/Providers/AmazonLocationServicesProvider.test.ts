@@ -25,8 +25,8 @@ import {
 	testPlaceCamelCase,
 } from '../data';
 import {
-	AmazonLocationServiceSearchByTextOptions,
-	AmazonLocationServiceSearchByCoordinatesOptions,
+	SearchByTextOptions,
+	SearchByCoordinatesOptions,
 	Coordinates,
 } from '../../src/types';
 
@@ -101,11 +101,9 @@ describe('AmazonLocationServicesProvider', () => {
 
 			const maps = [];
 			const availableMaps = awsConfig.geo.amazon_location_services.maps.items;
-			const region = awsConfig.geo.amazon_location_services.region;
-
 			for (const mapName in availableMaps) {
 				const style = availableMaps[mapName].style;
-				maps.push({ mapName, style, region });
+				maps.push({ mapName, style });
 			}
 
 			expect(provider.getAvailableMaps()).toEqual(maps);
@@ -138,9 +136,7 @@ describe('AmazonLocationServicesProvider', () => {
 			const mapName = awsConfig.geo.amazon_location_services.maps.default;
 			const style =
 				awsConfig.geo.amazon_location_services.maps.items[mapName].style;
-			const region = awsConfig.geo.amazon_location_services.region;
-
-			const testMap = { mapName, style, region };
+			const testMap = { mapName, style };
 
 			const defaultMapsResource = provider.getDefaultMap();
 			expect(defaultMapsResource).toEqual(testMap);
@@ -178,7 +174,7 @@ describe('AmazonLocationServicesProvider', () => {
 			const locationProvider = new AmazonLocationServicesProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_services);
 
-			const searchOptions: AmazonLocationServiceSearchByTextOptions = {
+			const searchOptions: SearchByTextOptions = {
 				countries: ['USA'],
 				maxResults: 40,
 				searchIndexName: 'geoJSSearchCustomExample',
@@ -211,7 +207,7 @@ describe('AmazonLocationServicesProvider', () => {
 			const locationProvider = new AmazonLocationServicesProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_services);
 
-			const searchOptions: AmazonLocationServiceSearchByTextOptions = {
+			const searchOptions: SearchByTextOptions = {
 				countries: ['USA'],
 				maxResults: 40,
 				searchIndexName: 'geoJSSearchCustomExample',
@@ -293,7 +289,7 @@ describe('AmazonLocationServicesProvider', () => {
 			const locationProvider = new AmazonLocationServicesProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_services);
 
-			const searchOptions: AmazonLocationServiceSearchByCoordinatesOptions = {
+			const searchOptions: SearchByCoordinatesOptions = {
 				maxResults: 40,
 				searchIndexName: 'geoJSSearchCustomExample',
 			};

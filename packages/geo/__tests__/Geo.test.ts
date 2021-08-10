@@ -19,6 +19,7 @@ import {
 
 import { GeoClass } from '../src/Geo';
 import { AmazonLocationServicesProvider } from '../src/Providers/AmazonLocationServicesProvider';
+import { SearchByTextOptions } from '../src/types';
 
 import {
 	credentials,
@@ -139,11 +140,9 @@ describe('Geo', () => {
 
 			const maps = [];
 			const availableMaps = awsConfig.geo.amazon_location_services.maps.items;
-			const region = awsConfig.geo.amazon_location_services.region;
-
 			for (const mapName in availableMaps) {
 				const style = availableMaps[mapName].style;
-				maps.push({ mapName, style, region });
+				maps.push({ mapName, style });
 			}
 
 			expect(geo.getAvailableMaps()).toEqual(maps);
@@ -180,9 +179,7 @@ describe('Geo', () => {
 			const mapName = awsConfig.geo.amazon_location_services.maps.default;
 			const style =
 				awsConfig.geo.amazon_location_services.maps.items[mapName].style;
-			const region = awsConfig.geo.amazon_location_services.region;
-
-			const testMap = { mapName, style, region };
+			const testMap = { mapName, style };
 
 			const defaultMapsResource = geo.getDefaultMap();
 			expect(defaultMapsResource).toEqual(testMap);
@@ -209,6 +206,64 @@ describe('Geo', () => {
 				Text: testString,
 				IndexName:
 					awsConfig.geo.amazon_location_services.search_indices.default,
+			});
+		});
+
+		test('should search using given options with biasPosition', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const testString = 'starbucks';
+			const searchOptions: SearchByTextOptions = {
+				biasPosition: [12345, 67890],
+				countries: ['USA'],
+				maxResults: 40,
+				searchIndexName: 'geoJSSearchCustomExample',
+			};
+			const results = await geo.searchByText(testString, searchOptions);
+			expect(results).toEqual([testPlaceCamelCase]);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Text: testString,
+				IndexName: searchOptions.searchIndexName,
+				BiasPosition: searchOptions.biasPosition,
+				FilterCountries: searchOptions.countries,
+				MaxResults: searchOptions.maxResults,
+			});
+		});
+
+		test('should search using given options with searchAreaConstraints', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const testString = 'starbucks';
+			const searchOptions: SearchByTextOptions = {
+				searchAreaConstraints: [123, 456, 789, 321],
+				countries: ['USA'],
+				maxResults: 40,
+				searchIndexName: 'geoJSSearchCustomExample',
+			};
+			const results = await geo.searchByText(testString, searchOptions);
+			expect(results).toEqual([testPlaceCamelCase]);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Text: testString,
+				IndexName: searchOptions.searchIndexName,
+				FilterBBox: searchOptions.searchAreaConstraints,
+				FilterCountries: searchOptions.countries,
+				MaxResults: searchOptions.maxResults,
 			});
 		});
 
