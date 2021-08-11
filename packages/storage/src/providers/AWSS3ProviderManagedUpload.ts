@@ -20,7 +20,6 @@ import {
 	CreateMultipartUploadCommand,
 	ListPartsCommand,
 	PutObjectCommand,
-	PutObjectRequest,
 	UploadPartCommand,
 	UploadPartCommandInput,
 	PutObjectCommandInput,
@@ -57,7 +56,7 @@ export class AWSS3ProviderManagedUpload {
 
 	// Data for current upload
 	private body: Blob;
-	private params: PutObjectRequest;
+	private params: PutObjectCommandInput;
 	private opts: S3ProvierManagedUploadOptions;
 	private completedParts: CompletedPart[] = [];
 	private cancel = false;
@@ -67,7 +66,7 @@ export class AWSS3ProviderManagedUpload {
 	private totalBytesToUpload = 0;
 	private emitter: events.EventEmitter = null;
 
-	constructor(params: PutObjectRequest, opts: S3ProvierManagedUploadOptions, emitter: events.EventEmitter) {
+	constructor(params: PutObjectCommandInput, opts: S3ProvierManagedUploadOptions, emitter: events.EventEmitter) {
 		this.params = params;
 		this.opts = opts;
 		this.emitter = emitter;
