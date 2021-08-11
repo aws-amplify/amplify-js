@@ -1700,7 +1700,7 @@ export default class CognitoUser {
 			if (err) {
 				return callback.onFailure(err);
 			}
-			return callback.onSuccess();
+			return callback.onSuccess('SUCCESS');
 		});
 	}
 
