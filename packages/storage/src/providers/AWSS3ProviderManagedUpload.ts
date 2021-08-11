@@ -213,14 +213,18 @@ export class AWSS3ProviderManagedUpload {
 			const allResults = await Promise.all(
 				parts.map(async part => {
 					this.setupEventListener(part);
+					const { Key, Bucket, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5 } = this.params;
 					const s3 = createNewS3Client(this.opts, part.emitter);
 					s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 					const uploadPartCommandInput: UploadPartCommandInput = {
 						PartNumber: part.partNumber,
 						Body: part.bodyPart,
 						UploadId: uploadId,
-						Key: this.params.Key,
-						Bucket: this.params.Bucket,
+						Key,
+						Bucket,
+							...(SSECustomerAlgorithm && { SSECustomerAlgorithm }),
+							...(SSECustomerKey && { SSECustomerKey }),
+							...(SSECustomerKeyMD5 && { SSECustomerKeyMD5 })
 					};
 					if (contentMd5) {
 						const arrayBuffer = await readFileToArrayBuffer(part.bodyPart);
