@@ -14,7 +14,6 @@
 import {
 	ConsoleLogger as Logger,
 	Credentials,
-	getAmplifyUserAgent,
 	ICredentials,
 } from '@aws-amplify/core';
 import {
@@ -26,7 +25,6 @@ import {
 	ListPartsCommand,
 	PutObjectCommand,
 	PutObjectRequest,
-	S3Client,
 	UploadPartCommand,
 	UploadPartCommandInput,
 	PutObjectCommandInput,
@@ -36,14 +34,11 @@ import * as events from 'events';
 import { createNewS3Client } from '../common/StorageS3ClientUtils';
 import { readFileToArrayBuffer } from '../common/FileReaderUtils';
 import {
-	AxiosHttpHandler,
 	SEND_DOWNLOAD_PROGRESS_EVENT,
 	SEND_UPLOAD_PROGRESS_EVENT,
 } from './axios-http-handler';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
-
-const localTestingStorageEndpoint = 'http://localhost:20005';
 
 const SET_CONTENT_LENGTH_HEADER = 'contentLengthMiddleware';
 export declare interface Part {
@@ -384,39 +379,6 @@ export class AWSS3ProviderManagedUpload {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * @private
-	 * creates an S3 client with new V3 aws sdk
-	 */
-	protected async _createNewS3Client(config, emitter?: events.EventEmitter) {
-		const credentials = await this._getCredentials();
-		const {
-			region,
-			dangerouslyConnectToHttpEndpointForTesting,
-			cancelTokenSource,
-		} = config;
-		let localTestingConfig = {};
-
-		if (dangerouslyConnectToHttpEndpointForTesting) {
-			localTestingConfig = {
-				endpoint: localTestingStorageEndpoint,
-				tls: false,
-				bucketEndpoint: false,
-				forcePathStyle: true,
-			};
-		}
-
-		const client = new S3Client({
-			region,
-			credentials,
-			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
-			customUserAgent: getAmplifyUserAgent(),
-		});
-		client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
-		return client;
 	}
 
 	/**
