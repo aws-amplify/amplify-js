@@ -1,13 +1,13 @@
 import {
-	GetObjectRequest,
-	GetObjectCommandOutput,
-	PutObjectRequest,
 	CopyObjectRequest,
-	_Object,
 	DeleteObjectCommandOutput,
+	GetObjectCommandOutput,
+	GetObjectRequest,
+	PutObjectRequest,
+	_Object,
 } from '@aws-sdk/client-s3';
-import { StorageOptions, StorageLevel } from './Storage';
 import { CancelTokenSource } from 'axios';
+import { StorageLevel, StorageOptions } from './Storage';
 
 type ListObjectsCommandOutputContent = _Object;
 
@@ -48,7 +48,7 @@ export interface S3ProviderPutConfig extends StorageOptions {
 	contentDisposition?: PutObjectRequest['ContentDisposition'];
 	contentEncoding?: PutObjectRequest['ContentEncoding'];
 	contentType?: PutObjectRequest['ContentType'];
-	contentMd5?: PutObjectRequest['ContentMD5'];
+	contentMd5?: (data: FileReader['result']) => string;
 	expires?: PutObjectRequest['Expires'];
 	metadata?: PutObjectRequest['Metadata'];
 	tagging?: PutObjectRequest['Tagging'];

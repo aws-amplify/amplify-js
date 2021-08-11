@@ -12,54 +12,51 @@
  */
 import {
 	ConsoleLogger as Logger,
-	Hub,
 	Credentials,
-	Parser,
-	getAmplifyUserAgent,
+	Hub,
 	ICredentials,
+	Parser,
 } from '@aws-amplify/core';
 import {
-	S3Client,
-	GetObjectCommand,
-	DeleteObjectCommand,
-	ListObjectsCommand,
-	GetObjectCommandOutput,
-	DeleteObjectCommandInput,
-	CopyObjectCommandInput,
 	CopyObjectCommand,
-	PutObjectCommandInput,
+	CopyObjectCommandInput,
+	DeleteObjectCommand,
+	DeleteObjectCommandInput,
+	GetObjectCommand,
 	GetObjectCommandInput,
+	GetObjectCommandOutput,
+	ListObjectsCommand,
+	PutObjectCommandInput,
 } from '@aws-sdk/client-s3';
-import { formatUrl } from '@aws-sdk/util-format-url';
-import { createRequest } from '@aws-sdk/util-create-request';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
+import { createRequest } from '@aws-sdk/util-create-request';
+import { formatUrl } from '@aws-sdk/util-format-url';
+import * as events from 'events';
+import { StorageErrorStrings } from '../common/StorageErrorStrings';
+import { createNewS3Client } from '../common/StorageS3ClientUtils';
 import {
-	AxiosHttpHandler,
+	CustomPrefix,
+	S3CopyDestination,
+	S3CopySource,
+	S3ProviderCopyConfig,
+	S3ProviderCopyOutput,
+	S3ProviderGetConfig,
+	S3ProviderGetOuput,
+	S3ProviderListConfig,
+	S3ProviderListOutput,
+	S3ProviderPutConfig,
+	S3ProviderPutOutput,
+	S3ProviderRemoveConfig,
+	S3ProviderRemoveOutput,
+	StorageLevel,
+	StorageOptions,
+	StorageProvider,
+} from '../types';
+import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
+import {
 	SEND_DOWNLOAD_PROGRESS_EVENT,
 	SEND_UPLOAD_PROGRESS_EVENT,
 } from './axios-http-handler';
-import {
-	StorageOptions,
-	StorageProvider,
-	S3ProviderGetConfig,
-	S3ProviderGetOuput,
-	S3ProviderPutConfig,
-	S3ProviderRemoveConfig,
-	S3ProviderListOutput,
-	S3ProviderListConfig,
-	S3ProviderPutOutput,
-	S3ProviderCopyConfig,
-	S3ProviderCopyOutput,
-	S3CopySource,
-	S3CopyDestination,
-	StorageLevel,
-	CustomPrefix,
-	S3ProviderRemoveOutput,
-} from '../types';
-import { StorageErrorStrings } from '../common/StorageErrorStrings';
-import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
-import * as events from 'events';
-import { CancelTokenSource } from 'axios';
 
 const logger = new Logger('AWSS3Provider');
 
@@ -230,7 +227,7 @@ export class AWSS3Provider implements StorageProvider {
 		}
 		if (acl) params.ACL = acl;
 
-		const s3 = this._createNewS3Client(opt);
+		const s3 = createNewS3Client(opt);
 		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		try {
 			await s3.send(new CopyObjectCommand(params));
@@ -298,7 +295,7 @@ export class AWSS3Provider implements StorageProvider {
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
 		const emitter = new events.EventEmitter();
-		const s3 = this._createNewS3Client(opt, emitter);
+		const s3 = createNewS3Client(opt, emitter);
 		logger.debug('get ' + key + ' from ' + final_key);
 
 		const params: GetObjectCommandInput = {
@@ -468,9 +465,7 @@ export class AWSS3Provider implements StorageProvider {
 			params.SSEKMSKeyId = SSEKMSKeyId;
 		}
 		if (contentMd5) {
-			if (typeof contentMd5 === 'function') {
-				params.ContentMD5 = contentMd5(object);
-			} else {
+			if (typeof contentMd5 !== 'function') {
 				logger.warn(
 					`contentMd5 should be a function instead of ${typeof contentMd5}`
 				);
@@ -543,7 +538,7 @@ export class AWSS3Provider implements StorageProvider {
 
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
-		const s3 = this._createNewS3Client(opt);
+		const s3 = createNewS3Client(opt);
 		logger.debug('remove ' + key + ' from ' + final_key);
 
 		const params: DeleteObjectCommandInput = {
@@ -595,7 +590,7 @@ export class AWSS3Provider implements StorageProvider {
 
 		const prefix = this._prefix(opt);
 		const final_path = prefix + path;
-		const s3 = this._createNewS3Client(opt);
+		const s3 = createNewS3Client(opt);
 		logger.debug('list ' + path + ' from ' + final_path);
 
 		const params = {
@@ -693,45 +688,6 @@ export class AWSS3Provider implements StorageProvider {
 			default:
 				return publicPath;
 		}
-	}
-
-	/**
-	 * Creates an S3 client with new V3 aws sdk
-	 */
-	private _createNewS3Client(
-		config: {
-			credentials: ICredentials;
-			region?: string;
-			cancelTokenSource?: CancelTokenSource;
-			dangerouslyConnectToHttpEndpointForTesting?: boolean;
-		},
-		emitter?: events.EventEmitter
-	): S3Client {
-		const {
-			region,
-			credentials,
-			cancelTokenSource,
-			dangerouslyConnectToHttpEndpointForTesting,
-		} = config;
-		let localTestingConfig = {};
-
-		if (dangerouslyConnectToHttpEndpointForTesting) {
-			localTestingConfig = {
-				endpoint: localTestingStorageEndpoint,
-				tls: false,
-				bucketEndpoint: false,
-				forcePathStyle: true,
-			};
-		}
-
-		const s3client = new S3Client({
-			region,
-			credentials,
-			customUserAgent: getAmplifyUserAgent(),
-			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
-		});
-		return s3client;
 	}
 }
 
