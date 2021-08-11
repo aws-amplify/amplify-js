@@ -542,11 +542,9 @@ describe('StorageProvider test', () => {
 		test('put object failed', async () => {
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest
-				.spyOn(S3Client.prototype, 'send')
-				.mockImplementationOnce(async params => {
-					throw 'err';
-				});
+			const spyon = jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
+				throw 'err';
+			});
 
 			expect.assertions(1);
 			try {
@@ -636,18 +634,13 @@ describe('StorageProvider test', () => {
 				emit: jest.fn(),
 				on: jest.fn(),
 			};
-			jest
-				.spyOn(events, 'EventEmitter')
-				.mockImplementationOnce(() => mockEventEmitter);
+			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
 			const storage = new StorageProvider();
 			storage.configure(options);
 			await storage.put('key', 'object', {
 				progressCallback: mockCallback,
 			});
-			expect(mockEventEmitter.on).toBeCalledWith(
-				'sendUploadProgress',
-				expect.any(Function)
-			);
+			expect(mockEventEmitter.on).toBeCalledWith('sendUploadProgress', expect.any(Function));
 			const emitterOnFn = mockEventEmitter.on.mock.calls[0][1];
 			// Manually invoke for testing
 			emitterOnFn('arg');
@@ -660,18 +653,13 @@ describe('StorageProvider test', () => {
 				emit: jest.fn(),
 				on: jest.fn(),
 			};
-			jest
-				.spyOn(events, 'EventEmitter')
-				.mockImplementationOnce(() => mockEventEmitter);
+			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
 			const storage = new StorageProvider();
 			storage.configure(options);
 			await storage.put('key', 'object', {
 				progressCallback: ('hello' as unknown) as S3ProviderGetConfig['progressCallback'], // this is intentional
 			});
-			expect(loggerSpy).toHaveBeenCalledWith(
-				'WARN',
-				'progressCallback should be a function, not a string'
-			);
+			expect(loggerSpy).toHaveBeenCalledWith('WARN', 'progressCallback should be a function, not a string');
 		});
 
 		test('credentials not ok', async () => {
