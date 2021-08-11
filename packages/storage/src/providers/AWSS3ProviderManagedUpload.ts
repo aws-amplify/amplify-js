@@ -104,7 +104,6 @@ export class AWSS3ProviderManagedUpload {
 						await readFileToArrayBuffer(content)
 					);
 				} else {
-					const md5 = contentMd5(content);
 					putObjectCommandInput.ContentMD5 = contentMd5(content);
 				}
 			}
