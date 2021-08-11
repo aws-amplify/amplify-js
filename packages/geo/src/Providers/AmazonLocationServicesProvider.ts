@@ -11,7 +11,11 @@
  * and limitations under the License.
  */
 import camelcaseKeys from 'camelcase-keys';
-import { ConsoleLogger as Logger, Credentials, getAmplifyUserAgent } from '@aws-amplify/core';
+import {
+	ConsoleLogger as Logger,
+	Credentials,
+	getAmplifyUserAgent,
+} from '@aws-amplify/core';
 import {
 	Place as PlaceResult,
 	SearchPlaceIndexForTextCommandInput,
@@ -27,7 +31,7 @@ import {
 	SearchByCoordinatesOptions,
 	GeoProvider,
 	Place,
-	MapStyle,
+	AmazonLocationServiceMapStyle,
 	Coordinates,
 } from '../types';
 
@@ -81,21 +85,22 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 	/**
 	 * Get the map resources that are currently available through the provider
-	 * @returns {MapStyle[]}- Array of available map resources
+	 * @returns {AmazonLocationServiceMapStyle[]}- Array of available map resources
 	 */
-	public getAvailableMaps(): MapStyle[] {
+	public getAvailableMaps(): AmazonLocationServiceMapStyle[] {
 		if (!this._config.maps) {
 			throw new Error(
 				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
 			);
 		}
 
-		const mapStyles: MapStyle[] = [];
+		const mapStyles: AmazonLocationServiceMapStyle[] = [];
 		const availableMaps = this._config.maps.items;
+		const region = this._config.region;
 
 		for (const mapName in availableMaps) {
 			const style = availableMaps[mapName].style;
-			mapStyles.push({ mapName, style });
+			mapStyles.push({ mapName, style, region });
 		}
 
 		return mapStyles;
@@ -103,9 +108,9 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 	/**
 	 * Get the map resource set as default in amplify config
-	 * @returns {MapStyle} - Map resource set as the default in amplify config
+	 * @returns {AmazonLocationServiceMapStyle} - Map resource set as the default in amplify config
 	 */
-	public getDefaultMap(): MapStyle {
+	public getDefaultMap(): AmazonLocationServiceMapStyle {
 		if (!this._config.maps) {
 			throw new Error(
 				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
@@ -119,8 +124,9 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 		const mapName = this._config.maps.default;
 		const style = this._config.maps.items[mapName].style;
+		const region = this._config.region;
 
-		return { mapName, style };
+		return { mapName, style, region };
 	}
 
 	/**
