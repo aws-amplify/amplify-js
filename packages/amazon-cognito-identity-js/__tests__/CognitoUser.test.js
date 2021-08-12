@@ -1169,7 +1169,7 @@ describe('confirmPassword() and forgotPassword()', () => {
 	test('happy path should callback onSuccess', () => {
 		netRequestMockSuccess(true);
 		cognitoUser.confirmPassword(...confirmPasswordDefaults);
-		expect(callback.onSuccess.mock.calls.length).toEqual(1);
+		expect(callback.onSuccess).toHaveBeenCalledWith('SUCCESS')
 	});
 
 	test('client request throws an error', () => {
