@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.2.0...@aws-amplify/auth@4.2.1) (2021-08-12)
+
+
+### Bug Fixes
+
+* function parameters partiy with signIn ([#8713](https://github.com/aws-amplify/amplify-js/issues/8713)) ([b5d4243](https://github.com/aws-amplify/amplify-js/commit/b5d424372d382e638bd58844ec34c512026cae02))
+
+
+
+
+
 # [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.1.3...@aws-amplify/auth@4.2.0) (2021-07-28)
 
 

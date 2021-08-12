@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.1...@aws-amplify/ui-components@1.7.2) (2021-08-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** Remove local storage check ([#8730](https://github.com/aws-amplify/amplify-js/issues/8730)) ([fc7f8ab](https://github.com/aws-amplify/amplify-js/commit/fc7f8ab6c965b980b87d9a0d47583672813162bf))
+
+
+
+
+
 ## [1.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.0...@aws-amplify/ui-components@1.7.1) (2021-07-28)
 
 
