@@ -1,5 +1,6 @@
 core
 auth
 maplibre-gl
+maplibre-gl-geocoder
 maplibre-gl-js-amplify
 geo
