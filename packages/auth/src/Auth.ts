@@ -1540,8 +1540,8 @@ export class AuthClass {
 			user.getAttributeVerificationCode(
 				attr,
 				{
-					onSuccess() {
-						return resolve();
+					onSuccess(success) {
+						return resolve(success);
 					},
 					onFailure(err) {
 						return reject(err);
