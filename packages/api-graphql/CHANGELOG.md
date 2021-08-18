@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.1.0...@aws-amplify/api-graphql@2.1.1) (2021-08-12)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+# [2.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.0.7...@aws-amplify/api-graphql@2.1.0) (2021-07-28)
+
+
+### Features
+
+* **@aws-amplify/api:** support lambda authorizers ([aba3d2a](https://github.com/aws-amplify/amplify-js/commit/aba3d2aec7e7c9ad8701b345ab94d796b2bdb897))
+* **@aws-amplify/datastore:** support lambda authorizers ([52d43cc](https://github.com/aws-amplify/amplify-js/commit/52d43cc73b459148f1ae81ab81d3a5365a4457e3))
+
+
+
+
+
+## [2.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.0.6...@aws-amplify/api-graphql@2.0.7) (2021-07-22)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.0.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.0.5...@aws-amplify/api-graphql@2.0.6) (2021-07-16)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.0.4...@aws-amplify/api-graphql@2.0.5) (2021-07-08)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.0.3...@aws-amplify/api-graphql@2.0.4) (2021-06-24)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.0.2...@aws-amplify/api-graphql@2.0.3) (2021-06-18)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
 ## [2.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.0.1...@aws-amplify/api-graphql@2.0.2) (2021-06-10)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql

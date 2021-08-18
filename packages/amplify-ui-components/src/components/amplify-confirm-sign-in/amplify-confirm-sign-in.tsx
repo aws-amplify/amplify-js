@@ -137,8 +137,8 @@ export class AmplifyConfirmSignIn {
 			} else {
 				// This is a code input field. Attach input handler.
 				content.push({
-					...(formField as FormFieldType), // `inputProps` will be passed over here.
 					handleInputChange: event => this.handleCodeChange(event),
+					...(formField as FormFieldType), // `inputProps` will be passed over here.
 				});
 			}
 		});

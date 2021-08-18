@@ -3,6 +3,91 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.1...@aws-amplify/ui-components@1.7.2) (2021-08-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** Remove local storage check ([#8730](https://github.com/aws-amplify/amplify-js/issues/8730)) ([fc7f8ab](https://github.com/aws-amplify/amplify-js/commit/fc7f8ab6c965b980b87d9a0d47583672813162bf))
+
+
+
+
+
+## [1.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.0...@aws-amplify/ui-components@1.7.1) (2021-07-28)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** Empty `newFormfFields` array on rebuild ([#8633](https://github.com/aws-amplify/amplify-js/issues/8633)) ([908cd16](https://github.com/aws-amplify/amplify-js/commit/908cd166779fd40f09d8034c05c3bb2590ba3771))
+
+
+
+
+
+# [1.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.6.2...@aws-amplify/ui-components@1.7.0) (2021-07-22)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** Let `amplify-totp-setup` work outside authenticator ([#8592](https://github.com/aws-amplify/amplify-js/issues/8592)) ([cb0e3d4](https://github.com/aws-amplify/amplify-js/commit/cb0e3d46791fc1da6e5b7810f3d6c37db9688355))
+
+
+
+
+
+## [1.6.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.6.1...@aws-amplify/ui-components@1.6.2) (2021-07-16)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.6.0...@aws-amplify/ui-components@1.6.1) (2021-07-08)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+# [1.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.5.0...@aws-amplify/ui-components@1.6.0) (2021-06-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** Handle loading in signUp & confirmSignup ([#7189](https://github.com/aws-amplify/amplify-js/issues/7189)) ([988a29b](https://github.com/aws-amplify/amplify-js/commit/988a29bb48a632ab46b6a63878c33a27a5554a30)), closes [#7032](https://github.com/aws-amplify/amplify-js/issues/7032)
+* **@aws-amplify/ui-components:** including handleInputChange in amplify-confirm-sign-in fields only when not specified ([#8492](https://github.com/aws-amplify/amplify-js/issues/8492)) ([06d0d13](https://github.com/aws-amplify/amplify-js/commit/06d0d13057e5885806dbf4715321dcc1700bfe5e)), closes [#8255](https://github.com/aws-amplify/amplify-js/issues/8255) [/github.com/aws-amplify/amplify-js/pull/8255#issuecomment-866642875](https://github.com//github.com/aws-amplify/amplify-js/pull/8255/issues/issuecomment-866642875)
+
+
+### Features
+
+* **@aws-amplify/ui-components:** Trim inputs before submit [#7408](https://github.com/aws-amplify/amplify-js/issues/7408) ([#8468](https://github.com/aws-amplify/amplify-js/issues/8468)) ([05a5481](https://github.com/aws-amplify/amplify-js/commit/05a5481109167bca892c8ac0fc6155bda9d1edbb))
+* add handleSignUp prop to override auth signup method ([#8474](https://github.com/aws-amplify/amplify-js/issues/8474)) ([a5f2466](https://github.com/aws-amplify/amplify-js/commit/a5f2466454f0cc1e0223fb03e78142209cf1f033))
+
+
+
+
+
+# [1.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.4.0...@aws-amplify/ui-components@1.5.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* fix bug where required fields were not being enforced ([#8455](https://github.com/aws-amplify/amplify-js/issues/8455)) ([e8f9e5a](https://github.com/aws-amplify/amplify-js/commit/e8f9e5a9d754853b29e7bf9789973b055a517bbc))
+
+
+### Features
+
+* adding border radius to amplify-button ([#8465](https://github.com/aws-amplify/amplify-js/issues/8465)) ([9549090](https://github.com/aws-amplify/amplify-js/commit/9549090ff534edc8e9df448a60848ed9d20083a6))
+* adding hint text props to our auth form field mappings ([a22ac3a](https://github.com/aws-amplify/amplify-js/commit/a22ac3aa108dd35f4230f1741afb33aa83edd5fb))
+* make sign in button full width if not sign up button present ([#8447](https://github.com/aws-amplify/amplify-js/issues/8447)) ([d333997](https://github.com/aws-amplify/amplify-js/commit/d3339978e2f4d4eef41ae0bb80daef5ee7ce0791))
+
+
+
+
+
 # [1.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.3.2...@aws-amplify/ui-components@1.4.0) (2021-06-10)
 
 

@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/ui-components",
-	"version": "1.4.0",
+	"version": "1.7.2",
 	"description": "Core Amplify UI Component Library",
 	"module": "dist/index.mjs",
 	"main": "dist/index.js",
@@ -35,13 +35,14 @@
 		"clean": "rimraf dist .stencil"
 	},
 	"peerDependencies": {
-		"aws-amplify": "3.x.x"
+		"aws-amplify": "3.x.x || 4.x.x"
 	},
 	"dependencies": {
 		"qrcode": "^1.4.4",
 		"uuid": "^8.2.0"
 	},
 	"devDependencies": {
+		"@aws-amplify/auth": "4.2.1",
 		"@stencil/angular-output-target": "^0.0.2",
 		"@stencil/core": "1.15.0",
 		"@stencil/eslint-plugin": "0.2.1",

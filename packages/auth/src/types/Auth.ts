@@ -199,6 +199,8 @@ export enum AuthErrorTypes {
 	EmptyChallengeResponse = 'emptyChallengeResponse',
 	NoUserSession = 'noUserSession',
 	Default = 'default',
+	DeviceConfig = 'deviceConfig',
+	NetworkError = 'networkError',
 }
 
 export type AuthErrorMessages = { [key in AuthErrorTypes]: AuthErrorMessage };
@@ -219,4 +221,9 @@ export type ClientMetaData =
 
 export function isUsernamePasswordOpts(obj: any): obj is UsernamePasswordOpts {
 	return !!(obj as UsernamePasswordOpts).username;
+}
+
+export interface IAuthDevice {
+	id: string;
+	name: string;
 }

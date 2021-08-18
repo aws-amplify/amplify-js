@@ -19,6 +19,7 @@ import {
 import {
 	S3Client,
 	PutObjectCommand,
+	PutObjectRequest,
 	CreateMultipartUploadCommand,
 	UploadPartCommand,
 	CompleteMultipartUploadCommand,
@@ -27,7 +28,7 @@ import {
 	AbortMultipartUploadCommand,
 	CompletedPart,
 } from '@aws-sdk/client-s3';
-import { AxiosHttpHandler, SEND_PROGRESS_EVENT } from './axios-http-handler';
+import { AxiosHttpHandler, SEND_UPLOAD_PROGRESS_EVENT, SEND_DOWNLOAD_PROGRESS_EVENT } from './axios-http-handler';
 import * as events from 'events';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
@@ -53,14 +54,14 @@ export class AWSS3ProviderManagedUpload {
 	private params = null;
 	private opts = null;
 	private completedParts: CompletedPart[] = [];
-	private cancel: boolean = false;
+	private cancel = false;
 
 	// Progress reporting
 	private bytesUploaded = 0;
 	private totalBytesToUpload = 0;
-	private emitter = null;
+	private emitter: events.EventEmitter = null;
 
-	constructor(params, opts, emitter: events.EventEmitter) {
+	constructor(params: PutObjectRequest, opts, emitter: events.EventEmitter) {
 		this.params = params;
 		this.opts = opts;
 		this.emitter = emitter;
@@ -175,13 +176,18 @@ export class AWSS3ProviderManagedUpload {
 				parts.map(async part => {
 					this.setupEventListener(part);
 					const s3 = await this._createNewS3Client(this.opts, part.emitter);
+					const { Key, Bucket, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5 } = this.params;
 					return s3.send(
 						new UploadPartCommand({
 							PartNumber: part.partNumber,
 							Body: part.bodyPart,
 							UploadId: uploadId,
-							Key: this.params.Key,
-							Bucket: this.params.Bucket,
+							Key,
+							Bucket,
+							...(SSECustomerAlgorithm && { SSECustomerAlgorithm }),
+							...(SSECustomerKey && { SSECustomerKey }),
+							...(SSECustomerKeyMD5 && { SSECustomerKeyMD5 })
+
 						})
 					);
 				})
@@ -231,7 +237,7 @@ export class AWSS3ProviderManagedUpload {
 			try {
 				await this.cleanup(uploadId);
 			} catch (error) {
-				errorMessage += error.errorMessage;
+				errorMessage += ` ${error.message}`;
 			}
 			throw new Error(errorMessage);
 		}
@@ -266,11 +272,12 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	private removeEventListener(part: Part) {
-		part.emitter.removeAllListeners(SEND_PROGRESS_EVENT);
+		part.emitter.removeAllListeners(SEND_UPLOAD_PROGRESS_EVENT);
+		part.emitter.removeAllListeners(SEND_DOWNLOAD_PROGRESS_EVENT);
 	}
 
 	private setupEventListener(part: Part) {
-		part.emitter.on(SEND_PROGRESS_EVENT, progress => {
+		part.emitter.on(SEND_UPLOAD_PROGRESS_EVENT, progress => {
 			this.progressChanged(
 				part.partNumber,
 				progress.loaded - part._lastUploadedBytes
@@ -281,7 +288,7 @@ export class AWSS3ProviderManagedUpload {
 
 	private progressChanged(partNumber: number, incrementalUpdate: number) {
 		this.bytesUploaded += incrementalUpdate;
-		this.emitter.emit(SEND_PROGRESS_EVENT, {
+		this.emitter.emit(SEND_UPLOAD_PROGRESS_EVENT, {
 			loaded: this.bytesUploaded,
 			total: this.totalBytesToUpload,
 			part: partNumber,

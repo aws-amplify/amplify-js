@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.1.0...@aws-amplify/pubsub@4.1.1) (2021-08-12)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.0.7...@aws-amplify/pubsub@4.1.0) (2021-07-28)
+
+
+### Features
+
+* **@aws-amplify/datastore:** support lambda authorizers ([52d43cc](https://github.com/aws-amplify/amplify-js/commit/52d43cc73b459148f1ae81ab81d3a5365a4457e3))
+* **@aws-amplify/pubsub:** support lambda authorizers ([85879ac](https://github.com/aws-amplify/amplify-js/commit/85879ac94952cbfe033a63370c48e89f00b7265d))
+
+
+
+
+
+## [4.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.0.6...@aws-amplify/pubsub@4.0.7) (2021-07-22)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [4.0.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.0.5...@aws-amplify/pubsub@4.0.6) (2021-07-16)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [4.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.0.4...@aws-amplify/pubsub@4.0.5) (2021-07-08)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [4.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.0.3...@aws-amplify/pubsub@4.0.4) (2021-06-24)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
+## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.0.2...@aws-amplify/pubsub@4.0.3) (2021-06-18)
+
+**Note:** Version bump only for package @aws-amplify/pubsub
+
+
+
+
+
 ## [4.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.0.1...@aws-amplify/pubsub@4.0.2) (2021-06-10)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
