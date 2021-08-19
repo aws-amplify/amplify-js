@@ -1700,7 +1700,7 @@ export default class CognitoUser {
 			if (err) {
 				return callback.onFailure(err);
 			}
-			return callback.onSuccess();
+			return callback.onSuccess('SUCCESS');
 		});
 	}
 
@@ -1732,7 +1732,7 @@ export default class CognitoUser {
 				if (typeof callback.inputVerificationCode === 'function') {
 					return callback.inputVerificationCode(data);
 				}
-				return callback.onSuccess();
+				return callback.onSuccess('SUCCESS');
 			}
 		);
 		return undefined;
