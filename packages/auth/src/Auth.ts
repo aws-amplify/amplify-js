@@ -1540,8 +1540,8 @@ export class AuthClass {
 			user.getAttributeVerificationCode(
 				attr,
 				{
-					onSuccess() {
-						return resolve();
+					onSuccess(success) {
+						return resolve(success);
 					},
 					onFailure(err) {
 						return reject(err);
@@ -1819,7 +1819,7 @@ export class AuthClass {
 		code: string,
 		password: string,
 		clientMetadata: ClientMetaData = this._config.clientMetadata
-	): Promise<void> {
+	): Promise<string> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
@@ -1839,13 +1839,13 @@ export class AuthClass {
 				code,
 				password,
 				{
-					onSuccess: () => {
+					onSuccess: (success) => {
 						dispatchAuthEvent(
 							'forgotPasswordSubmit',
 							user,
 							`${username} forgotPasswordSubmit successful`
 						);
-						resolve();
+						resolve(success);
 						return;
 					},
 					onFailure: err => {
