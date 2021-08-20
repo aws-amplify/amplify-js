@@ -1,5 +1,11 @@
 import { MutationProcessor } from '../src/sync/processors/mutation';
-import { Model as ModelType, testSchema, internalTestSchema } from './helpers';
+import {
+	Model as ModelType,
+	PostCustomPK as PostCustomPKType,
+	PostCustomPKSort as PostCustomPKSortType,
+	testSchema,
+	internalTestSchema,
+} from './helpers';
 import {
 	PersistentModelConstructor,
 	InternalSchema,
@@ -10,16 +16,19 @@ import { MutationEvent } from '../src/sync/';
 
 let syncClasses: any;
 let modelInstanceCreator: any;
+let Model: PersistentModelConstructor<ModelType>;
+let PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+let PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 
 describe('MutationProcessor', () => {
+	let mutationProcessor: MutationProcessor;
+
+	beforeAll(async () => {
+		mutationProcessor = await instantiateMutationProcessor();
+	});
+
 	// Test for this PR: https://github.com/aws-amplify/amplify-js/pull/6542
 	describe('100% Packet Loss Axios Error', () => {
-		let mutationProcessor: MutationProcessor;
-
-		beforeAll(async () => {
-			mutationProcessor = await instantiateMutationProcessor();
-		});
-
 		it('Should result in Network Error and get handled without breaking the Mutation Processor', async () => {
 			const mutationProcessorSpy = jest.spyOn(mutationProcessor, 'resume');
 
@@ -37,6 +46,49 @@ describe('MutationProcessor', () => {
 			await expect(mutationProcessorSpy.mock.results[0].value).resolves.toEqual(
 				undefined
 			);
+		});
+	});
+	describe('createQueryVariables', () => {
+		it('Should correctly generate delete mutation input for models with a custom PK', async () => {
+			// custom PK @key(fields: ["postId"])
+			const deletePost = new PostCustomPK({
+				postId: 100,
+				title: 'Title',
+			});
+
+			const { data } = await createMutationEvent(deletePost, OpType.DELETE);
+
+			const [, { input }] = (mutationProcessor as any).createQueryVariables(
+				'user',
+				'PostCustomPK',
+				'Delete',
+				data,
+				'{}'
+			);
+
+			expect(input.postId).toEqual(100);
+			expect(input.id).toBeUndefined();
+		});
+
+		it('Should correctly generate delete mutation input for models with a custom PK - multi-field', async () => {
+			// multi-key PK @key(fields: ["id", "postId"])
+			const deletePost = new PostCustomPKSort({
+				postId: 100,
+				title: 'Title',
+			});
+
+			const { data } = await createMutationEvent(deletePost, OpType.DELETE);
+
+			const [, { input }] = (mutationProcessor as any).createQueryVariables(
+				'user',
+				'PostCustomPKSort',
+				'Delete',
+				data,
+				'{}'
+			);
+
+			expect(input.id).toEqual(deletePost.id);
+			expect(input.postId).toEqual(100);
 		});
 	});
 	afterAll(() => {
@@ -103,7 +155,7 @@ jest.mock('@aws-amplify/core', () => {
 // instantiate a working MutationProcessor
 // includes functional mocked outbox containing a single MutationEvent
 async function instantiateMutationProcessor() {
-	const schema: InternalSchema = internalTestSchema();
+	let schema: InternalSchema = internalTestSchema();
 
 	jest.doMock('../src/sync/', () => ({
 		SyncEngine: {
@@ -113,18 +165,21 @@ async function instantiateMutationProcessor() {
 
 	const { initSchema, DataStore } = require('../src/datastore/datastore');
 	const classes = initSchema(testSchema());
-	let Model: PersistentModelConstructor<ModelType>;
 
-	({ Model } = classes as {
+	({ Model, PostCustomPK, PostCustomPKSort } = classes as {
 		Model: PersistentModelConstructor<ModelType>;
+		PostCustomPK: PersistentModelConstructor<PostCustomPKType>;
+		PostCustomPKSort: PersistentModelConstructor<PostCustomPKSortType>;
 	});
 
 	const userClasses = {};
 	userClasses['Model'] = Model;
+	userClasses['PostCustomPK'] = PostCustomPK;
+	userClasses['PostCustomPKSort'] = PostCustomPKSort;
 
 	await DataStore.start();
 	({ syncClasses } = require('../src/datastore/datastore'));
-	({ modelInstanceCreator } = (DataStore as any).storage.storage);
+	({ modelInstanceCreator, schema } = (DataStore as any).storage.storage);
 
 	const newModel = new Model({
 		field1: 'Some value',
@@ -154,7 +209,16 @@ async function instantiateMutationProcessor() {
 		userClasses,
 		outbox as any,
 		modelInstanceCreator,
-		{} as any
+		{} as any,
+		{
+			aws_project_region: 'us-west-2',
+			aws_appsync_graphqlEndpoint:
+				'https://xxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-west-2.amazonaws.com/graphql',
+			aws_appsync_region: 'us-west-2',
+			aws_appsync_authenticationType: 'API_KEY',
+			aws_appsync_apiKey: 'da2-xxxxxxxxxxxxxxxxxxxxxx',
+		},
+		() => null
 	);
 
 	(mutationProcessor as any).observer = true;

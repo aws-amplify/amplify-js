@@ -26,15 +26,20 @@ import {
 import PubSub from '@aws-amplify/pubsub';
 import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
-import { GraphQLOptions, GraphQLResult } from './types';
+import { GraphQLAuthError, GraphQLOptions, GraphQLResult } from './types';
 import { RestClient } from '@aws-amplify/api-rest';
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
 const logger = new Logger('GraphQLAPI');
 
-export const graphqlOperation = (query, variables = {}) => ({
+export const graphqlOperation = (
+	query,
+	variables = {},
+	authToken?: string
+) => ({
 	query,
 	variables,
+	authToken,
 });
 
 /**
@@ -113,7 +118,10 @@ export class GraphQLAPIClass {
 		}
 	}
 
-	private async _headerBasedAuth(defaultAuthenticationType?) {
+	private async _headerBasedAuth(
+		defaultAuthenticationType?,
+		additionalHeaders: { [key: string]: string } = {}
+	) {
 		const {
 			aws_appsync_authenticationType,
 			aws_appsync_apiKey: apiKey,
@@ -125,7 +133,7 @@ export class GraphQLAPIClass {
 		switch (authenticationType) {
 			case 'API_KEY':
 				if (!apiKey) {
-					throw new Error('No api-key configured');
+					throw new Error(GraphQLAuthError.NO_API_KEY);
 				}
 				headers = {
 					Authorization: null,
@@ -135,32 +143,48 @@ export class GraphQLAPIClass {
 			case 'AWS_IAM':
 				const credentialsOK = await this._ensureCredentials();
 				if (!credentialsOK) {
-					throw new Error('No credentials');
+					throw new Error(GraphQLAuthError.NO_CREDENTIALS);
 				}
 				break;
 			case 'OPENID_CONNECT':
-				let token;
-				// backwards compatibility
-				const federatedInfo = await Cache.getItem('federatedInfo');
-				if (federatedInfo) {
-					token = federatedInfo.token;
-				} else {
-					const currentUser = await Auth.currentAuthenticatedUser();
-					if (currentUser) {
-						token = currentUser.token;
+				try {
+					let token;
+					// backwards compatibility
+					const federatedInfo = await Cache.getItem('federatedInfo');
+					if (federatedInfo) {
+						token = federatedInfo.token;
+					} else {
+						const currentUser = await Auth.currentAuthenticatedUser();
+						if (currentUser) {
+							token = currentUser.token;
+						}
 					}
+					if (!token) {
+						throw new Error(GraphQLAuthError.NO_FEDERATED_JWT);
+					}
+					headers = {
+						Authorization: token,
+					};
+				} catch (e) {
+					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
 				}
-				if (!token) {
-					throw new Error('No federated jwt');
-				}
-				headers = {
-					Authorization: token,
-				};
 				break;
 			case 'AMAZON_COGNITO_USER_POOLS':
-				const session = await this.Auth.currentSession();
+				try {
+					const session = await this.Auth.currentSession();
+					headers = {
+						Authorization: session.getAccessToken().getJwtToken(),
+					};
+				} catch (e) {
+					throw new Error(GraphQLAuthError.NO_CURRENT_USER);
+				}
+				break;
+			case 'AWS_LAMBDA':
+				if (!additionalHeaders.Authorization) {
+					throw new Error(GraphQLAuthError.NO_AUTH_TOKEN);
+				}
 				headers = {
-					Authorization: session.getAccessToken().getJwtToken(),
+					Authorization: additionalHeaders.Authorization,
 				};
 				break;
 			default:
@@ -194,7 +218,7 @@ export class GraphQLAPIClass {
 	 * @returns {Promise<GraphQLResult> | Observable<object>}
 	 */
 	graphql(
-		{ query: paramQuery, variables = {}, authMode }: GraphQLOptions,
+		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	) {
 		const query =
@@ -209,6 +233,13 @@ export class GraphQLAPIClass {
 			operation: operationType,
 		} = operationDef as OperationDefinitionNode;
 
+		const headers = additionalHeaders || {};
+
+		// if an authorization header is set, have the explicit authToken take precedence
+		if (authToken) {
+			headers.Authorization = authToken;
+		}
+
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
@@ -216,7 +247,7 @@ export class GraphQLAPIClass {
 				const initParams = { cancellableToken };
 				const responsePromise = this._graphql(
 					{ query, variables, authMode },
-					additionalHeaders,
+					headers,
 					initParams
 				);
 				this._api.updateRequestToBeCancellable(
@@ -225,10 +256,7 @@ export class GraphQLAPIClass {
 				);
 				return responsePromise;
 			case 'subscription':
-				return this._graphqlSubscribe(
-					{ query, variables, authMode },
-					additionalHeaders
-				);
+				return this._graphqlSubscribe({ query, variables, authMode }, headers);
 		}
 
 		throw new Error(`invalid operation type: ${operationType}`);
@@ -252,10 +280,11 @@ export class GraphQLAPIClass {
 		} = this._options;
 
 		const headers = {
-			...(!customGraphqlEndpoint && (await this._headerBasedAuth(authMode))),
+			...(!customGraphqlEndpoint &&
+				(await this._headerBasedAuth(authMode, additionalHeaders))),
 			...(customGraphqlEndpoint &&
 				(customEndpointRegion
-					? await this._headerBasedAuth(authMode)
+					? await this._headerBasedAuth(authMode, additionalHeaders)
 					: { Authorization: null })),
 			...(await graphql_headers({ query, variables })),
 			...additionalHeaders,
@@ -336,7 +365,12 @@ export class GraphQLAPIClass {
 	}
 
 	private _graphqlSubscribe(
-		{ query, variables, authMode: defaultAuthenticationType }: GraphQLOptions,
+		{
+			query,
+			variables,
+			authMode: defaultAuthenticationType,
+			authToken,
+		}: GraphQLOptions,
 		additionalHeaders = {}
 	): Observable<any> {
 		const {
@@ -360,6 +394,7 @@ export class GraphQLAPIClass {
 				variables,
 				graphql_headers,
 				additionalHeaders,
+				authToken,
 			});
 		} else {
 			logger.debug('No pubsub module applied for subscription');

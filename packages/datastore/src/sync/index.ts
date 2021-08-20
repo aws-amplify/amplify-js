@@ -20,6 +20,7 @@ import {
 	SchemaNamespace,
 	TypeConstructorMap,
 	ModelPredicate,
+	AuthModeStrategy,
 } from '../types';
 import { exhaustiveCheck, getNow, SYNC } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
@@ -52,9 +53,9 @@ export declare class MutationEvent {
 	public readonly id: string;
 	public readonly model: string;
 	public readonly operation: TransformerMutationType;
-	public readonly data: string;
 	public readonly modelId: string;
 	public readonly condition: string;
+	public data: string;
 }
 
 declare class ModelMetadata {
@@ -107,7 +108,8 @@ export class SyncEngine {
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
-		private readonly amplifyConfig: Record<string, any> = {}
+		private readonly amplifyConfig: Record<string, any> = {},
+		private readonly authModeStrategy: AuthModeStrategy
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -115,10 +117,9 @@ export class SyncEngine {
 
 		this.outbox = new MutationEventOutbox(
 			this.schema,
-			this.userModelClasses,
 			MutationEvent,
-			ownSymbol,
-			this.getModelDefinition.bind(this)
+			modelInstanceCreator,
+			ownSymbol
 		);
 
 		this.modelMerger = new ModelMerger(this.outbox, ownSymbol);
@@ -127,12 +128,15 @@ export class SyncEngine {
 			this.schema,
 			this.maxRecordsToSync,
 			this.syncPageSize,
-			this.syncPredicates
+			this.syncPredicates,
+			this.amplifyConfig,
+			this.authModeStrategy
 		);
 		this.subscriptionsProcessor = new SubscriptionProcessor(
 			this.schema,
 			this.syncPredicates,
-			this.amplifyConfig
+			this.amplifyConfig,
+			this.authModeStrategy
 		);
 		this.mutationsProcessor = new MutationProcessor(
 			this.schema,
@@ -141,6 +145,8 @@ export class SyncEngine {
 			this.outbox,
 			this.modelInstanceCreator,
 			MutationEvent,
+			this.amplifyConfig,
+			this.authModeStrategy,
 			conflictHandler,
 			errorHandler
 		);

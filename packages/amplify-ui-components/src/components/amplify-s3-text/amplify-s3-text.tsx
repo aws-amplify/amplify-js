@@ -7,66 +7,72 @@ import { Translations } from '../../common/Translations';
 const logger = new Logger('S3Text');
 
 @Component({
-  tag: 'amplify-s3-text',
-  styleUrl: 'amplify-s3-text.scss',
-  shadow: true,
+	tag: 'amplify-s3-text',
+	styleUrl: 'amplify-s3-text.scss',
+	shadow: true,
 })
 export class AmplifyS3Text {
-  /** The key of the text object in S3 */
-  @Prop() textKey: string;
-  /** String representing directory location to text file */
-  @Prop() path: string;
-  /** Text body content to be uploaded */
-  @Prop() body: object;
-  /** The content type header used when uploading to S3 */
-  @Prop() contentType: string = 'text/*';
-  /** The access level of the text file */
-  @Prop() level: AccessLevel = AccessLevel.Public;
-  /** Whether or not to use track the get/put of the text file */
-  @Prop() track: boolean;
-  /** Cognito identity id of the another user's text file */
-  @Prop() identityId: string;
-  /** Fallback content */
-  @Prop() fallbackText: string = Translations.TEXT_FALLBACK_CONTENT;
-  /** Source content of text */
-  @State() src: string;
+	/** The key of the text object in S3 */
+	@Prop() textKey: string;
+	/** String representing directory location to text file */
+	@Prop() path: string;
+	/** Text body content to be uploaded */
+	@Prop() body: object;
+	/** The content type header used when uploading to S3 */
+	@Prop() contentType: string = 'text/*';
+	/** The access level of the text file */
+	@Prop() level: AccessLevel = AccessLevel.Public;
+	/** Whether or not to use track the get/put of the text file */
+	@Prop() track: boolean;
+	/** Cognito identity id of the another user's text file */
+	@Prop() identityId: string;
+	/** Fallback content */
+	@Prop() fallbackText: string = Translations.TEXT_FALLBACK_CONTENT;
+	/** Source content of text */
+	@State() src: string;
 
-  @Watch('textKey')
-  @Watch('body')
-  async watchHandler() {
-    await this.load();
-  }
+	@Watch('textKey')
+	@Watch('body')
+	async watchHandler() {
+		await this.load();
+	}
 
-  async componentWillLoad() {
-    await this.load();
-  }
+	async componentWillLoad() {
+		await this.load();
+	}
 
-  private async load() {
-    const { path, textKey, body, contentType, level, track, identityId } = this;
-    if (!textKey && !path) {
-      logger.debug('empty textKey and path');
-      return;
-    }
+	private async load() {
+		const { path, textKey, body, contentType, level, track, identityId } = this;
+		if (!textKey && !path) {
+			logger.debug('empty textKey and path');
+			return;
+		}
 
-    const key = textKey || path;
-    logger.debug('loading ' + key + '...');
+		const key = textKey || path;
+		logger.debug('loading ' + key + '...');
 
-    if (body) {
-      await putStorageObject(textKey, body, level, track, contentType, logger);
-    }
-    try {
-      this.src = await getTextSource(key, level, track, identityId, logger);
-    } catch (err) {
-      logger.debug(err);
-      throw new Error(err);
-    }
-  }
+		if (body) {
+			await putStorageObject(textKey, body, level, track, contentType, logger);
+		}
+		try {
+			this.src = await getTextSource(key, level, track, identityId, logger);
+		} catch (err) {
+			logger.debug(err);
+			throw new Error(err);
+		}
+	}
 
-  render() {
-    return (
-      <div>
-        <div class="text-container">{this.src ? <pre>{this.src}</pre> : <pre>{I18n.get(this.fallbackText)}</pre>}</div>
-      </div>
-    );
-  }
+	render() {
+		return (
+			<div>
+				<div class="text-container">
+					{this.src ? (
+						<pre>{this.src}</pre>
+					) : (
+						<pre>{I18n.get(this.fallbackText)}</pre>
+					)}
+				</div>
+			</div>
+		);
+	}
 }

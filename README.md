@@ -5,7 +5,7 @@
 </a>
 <p>
   <a href="https://discord.gg/jWVbPfC" target="_blank">
-    <img src="https://img.shields.io/discord/308323056592486420?logo=discord"" alt="Discord Chat" />  
+    <img src="https://img.shields.io/discord/308323056592486420?logo=discord"" alt="Discord Chat" />
   </a>
   <a href="https://codecov.io/gh/aws-amplify/amplify-js">
     <img src="https://codecov.io/gh/aws-amplify/amplify-js/branch/main/graph/badge.svg" />
@@ -31,7 +31,20 @@ Our default implementation works with Amazon Web Services (AWS), but AWS Amplify
 
 ## Notice:
 
-### Amplify@3.x.x has breaking changes. Please see the breaking changes below:
+### Amplify 4.x.x has breaking changes for React Native. Please see the breaking changes below:
+
+- If you are using React Native or Expo, you will need add `@react-native-async-storage/async-storage` as a dependency to your application, in addition to the other React Native dependencies:
+
+```
+// React Native
+yarn add aws-amplify amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage
+npx pod-install
+
+// Expo
+yarn add aws-amplify @react-native-community/netinfo @react-native-async-storage/async-storage
+```
+
+### Amplify 3.x.x has breaking changes. Please see the breaking changes below:
 
 - `AWS.credentials` and `AWS.config` don’t exist anymore anywhere in Amplify JavaScript.
   - Both options will not be available to use in version 3. You will not be able to use and set your own credentials.
@@ -57,6 +70,7 @@ If you can't migrate to [aws-sdk-js-v3](https://github.com/aws/aws-sdk-js-v3) or
 - [**Authentication**](https://docs.amplify.aws/lib/auth/getting-started/q/platform/js): APIs and building blocks for developers who want to create user authentication experiences.
 - [**Analytics**](https://docs.amplify.aws/lib/analytics/getting-started/q/platform/js): Easily collect analytics data for your app. Analytics data includes user sessions and other custom events that you want to track in your app.
 - [**REST API**](https://docs.amplify.aws/lib/restapi/getting-started/q/platform/js): Provides a simple solution when making HTTP requests. It provides an automatic, lightweight signing process which complies with AWS Signature Version 4.
+- [**Geo (Developer preview)**](https://docs.amplify.aws/lib/geo/getting-started/q/platform/js): Amplify Geo provides APIs and map UI components for maps and location search for JavaScript-based web apps.
 - [**GraphQL API**](https://docs.amplify.aws/lib/graphqlapi/getting-started/q/platform/js): Interact with your GraphQL server or AWS AppSync API with an easy-to-use & configured GraphQL client.
 - [**DataStore**](https://docs.amplify.aws/lib/datastore/getting-started/q/platform/js): A programming model for leveraging shared and distributed data without writing additional code for offline and online scenarios, which makes working with distributed, cross-user data just as simple as working with local-only data.
 - [**Storage**](https://docs.amplify.aws/lib/storage/getting-started/q/platform/js): Provides a simple mechanism for managing user content for your app in public, protected or private storage buckets.

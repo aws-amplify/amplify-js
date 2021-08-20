@@ -99,7 +99,11 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback.onSuccess();
 	};
 
-	CognitoUser.prototype.signOut = () => {};
+	CognitoUser.prototype.signOut = callback => {
+		if (callback && typeof callback === 'function') {
+			callback();
+		}
+	};
 
 	CognitoUser.prototype.globalSignOut = callback => {
 		callback.onSuccess();

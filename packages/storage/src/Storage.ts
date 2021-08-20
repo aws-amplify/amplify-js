@@ -13,7 +13,12 @@
 
 import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
 import { AWSS3Provider } from './providers';
-import { StorageProvider } from './types';
+import {
+	StorageProvider,
+	StorageCopySource,
+	StorageCopyDestination,
+} from './types';
+import axios, { CancelTokenSource } from 'axios';
 
 const logger = new Logger('StorageClass');
 
@@ -29,6 +34,14 @@ export class Storage {
 	private _pluggables: StorageProvider[];
 
 	/**
+	 * Similar to the API module. This weak map allows users to cancel their in-flight request made using the Storage
+	 * module. For every get or put request, a unique cancel token will be generated and injected to it's underlying
+	 * AxiosHttpHandler. This map maintains a mapping of Request to CancelTokenSource. When .cancel is invoked, it will
+	 * attempt to retrieve it's corresponding cancelTokenSource and cancel the in-flight request.
+	 */
+	private _cancelTokenSourceMap: WeakMap<Promise<any>, CancelTokenSource>;
+
+	/**
 	 * @public
 	 */
 	public vault: Storage;
@@ -40,6 +53,7 @@ export class Storage {
 	constructor() {
 		this._config = {};
 		this._pluggables = [];
+		this._cancelTokenSourceMap = new WeakMap<Promise<any>, CancelTokenSource>();
 		logger.debug('Storage Options', this._config);
 
 		this.get = this.get.bind(this);
@@ -159,6 +173,58 @@ export class Storage {
 		return this._config;
 	}
 
+	private getCancellableTokenSource(): CancelTokenSource {
+		return axios.CancelToken.source();
+	}
+
+	private updateRequestToBeCancellable(
+		request: Promise<any>,
+		cancelTokenSource: CancelTokenSource
+	) {
+		this._cancelTokenSourceMap.set(request, cancelTokenSource);
+	}
+
+	/**
+	 * Cancels an inflight request
+	 *
+	 * @param {Promise<any>} request - The request to cancel
+	 * @param {string} [message] - A message to include in the cancelation exception
+	 */
+	public cancel(request: Promise<any>, message?: string) {
+		const cancelTokenSource = this._cancelTokenSourceMap.get(request);
+		if (cancelTokenSource) {
+			cancelTokenSource.cancel(message);
+		} else {
+			logger.debug('The request does not map to any cancel token');
+		}
+	}
+
+	/**
+	 * Copies a file from the src key to dest key.
+	 *
+	 * @param {string} src - key of the source object.
+	 * @param {string} dest - key of the destination object.
+	 * @param {any} [config] - config.
+	 * @return {Promise<any>} - A promise resolves to the copied object's key.
+	 */
+	public copy(src: StorageCopySource, dest: StorageCopyDestination, config?): Promise<any> {
+		const { provider = DEFAULT_PROVIDER } = config || {};
+		const prov = this._pluggables.find(
+			pluggable => pluggable.getProviderName() === provider
+		);
+		if (prov === undefined) {
+			logger.debug('No plugin found with providerName', provider);
+			return Promise.reject('No plugin found in Storage for the provider');
+		}
+		const cancelTokenSource = this.getCancellableTokenSource();
+		const responsePromise = prov.copy(src, dest, {
+			...config,
+			cancelTokenSource,
+		});
+		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);
+		return responsePromise;
+	}
+
 	/**
 	 * Get a presigned URL of the file or the object data when download:true
 	 *
@@ -166,16 +232,26 @@ export class Storage {
 	 * @param {Object} [config] - { level : private|protected|public, download: true|false }
 	 * @return - A promise resolves to either a presigned url or the object
 	 */
-	public async get(key: string, config?): Promise<String | Object> {
+	public get(key: string, config?): Promise<String | Object> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			Promise.reject('No plugin found in Storage for the provider');
+			return Promise.reject('No plugin found in Storage for the provider');
 		}
-		return prov.get(key, config);
+		const cancelTokenSource = this.getCancellableTokenSource();
+		const responsePromise = prov.get(key, {
+			...config,
+			cancelTokenSource,
+		});
+		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);
+		return responsePromise;
+	}
+
+	public isCancelError(error: any) {
+		return axios.isCancel(error);
 	}
 
 	/**
@@ -186,16 +262,22 @@ export class Storage {
 	 *  progressCallback: function }
 	 * @return - promise resolves to object on success
 	 */
-	public async put(key: string, object, config?): Promise<Object> {
+	public put(key: string, object, config?): Promise<Object> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(
 			pluggable => pluggable.getProviderName() === provider
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			Promise.reject('No plugin found in Storage for the provider');
+			return Promise.reject('No plugin found in Storage for the provider');
 		}
-		return prov.put(key, object, config);
+		const cancelTokenSource = this.getCancellableTokenSource();
+		const responsePromise = prov.put(key, object, {
+			...config,
+			cancelTokenSource,
+		});
+		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);
+		return responsePromise;
 	}
 
 	/**
@@ -211,7 +293,7 @@ export class Storage {
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			Promise.reject('No plugin found in Storage for the provider');
+			return Promise.reject('No plugin found in Storage for the provider');
 		}
 		return prov.remove(key, config);
 	}
@@ -229,7 +311,7 @@ export class Storage {
 		);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			Promise.reject('No plugin found in Storage for the provider');
+			return Promise.reject('No plugin found in Storage for the provider');
 		}
 		return prov.list(path, config);
 	}

@@ -1,7 +1,15 @@
 import { Amplify, ConsoleLogger as Logger, Hub, JS } from '@aws-amplify/core';
-import { Draft, immerable, produce, setAutoFreeze } from 'immer';
+import {
+	Draft,
+	immerable,
+	produce,
+	setAutoFreeze,
+	enablePatches,
+	Patch,
+} from 'immer';
 import { v4 as uuid4 } from 'uuid';
 import Observable, { ZenObservable } from 'zen-observable-ts';
+import { defaultAuthStrategy, multiAuthStrategy } from '../authModeStrategies';
 import {
 	isPredicatesAll,
 	ModelPredicateCreator,
@@ -11,6 +19,7 @@ import {
 import { ExclusiveStorage as Storage } from '../storage/storage';
 import { ControlMessage, SyncEngine } from '../sync';
 import {
+	AuthModeStrategy,
 	ConflictHandler,
 	DataStoreConfig,
 	GraphQLScalarType,
@@ -39,10 +48,12 @@ import {
 	TypeConstructorMap,
 	ErrorHandler,
 	SyncExpression,
+	AuthModeStrategyType,
+	ModelFields,
 } from '../types';
 import {
 	DATASTORE,
-	establishRelation,
+	establishRelationAndKeys,
 	exhaustiveCheck,
 	isModelConstructor,
 	monotonicUlidFactory,
@@ -54,6 +65,7 @@ import {
 } from '../util';
 
 setAutoFreeze(true);
+enablePatches();
 
 const logger = new Logger('DataStore');
 
@@ -77,6 +89,13 @@ let schema: InternalSchema;
 const modelNamespaceMap = new WeakMap<
 	PersistentModelConstructor<any>,
 	string
+>();
+// stores data for crafting the correct update mutation input for a model
+// Patch[] - array of changed fields and metadata
+// PersistentModel - the source model, used for diffing object-type fields
+const modelPatchesMap = new WeakMap<
+	PersistentModel,
+	[Patch[], PersistentModel]
 >();
 
 const getModelDefinition = (
@@ -139,9 +158,12 @@ const initSchema = (userSchema: Schema) => {
 	};
 
 	Object.keys(schema.namespaces).forEach(namespace => {
-		schema.namespaces[namespace].relationships = establishRelation(
+		const [relations, keys] = establishRelationAndKeys(
 			schema.namespaces[namespace]
 		);
+
+		schema.namespaces[namespace].relationships = relations;
+		schema.namespaces[namespace].keys = keys;
 
 		const modelAssociations = new Map<string, string[]>();
 
@@ -381,14 +403,25 @@ const createModelClass = <T extends PersistentModel>(
 				throw new Error(msg);
 			}
 
-			return produce(source, draft => {
-				fn(<MutableModel<T>>draft);
-				draft.id = source.id;
-				const modelValidator = validateModelFields(modelDefinition);
-				Object.entries(draft).forEach(([k, v]) => {
-					modelValidator(k, v);
-				});
-			});
+			let patches;
+			const model = produce(
+				source,
+				draft => {
+					fn(<MutableModel<T>>(draft as unknown));
+					draft.id = source.id;
+					const modelValidator = validateModelFields(modelDefinition);
+					Object.entries(draft).forEach(([k, v]) => {
+						modelValidator(k, v);
+					});
+				},
+				p => (patches = p)
+			);
+
+			if (patches.length) {
+				modelPatchesMap.set(model, [patches, source]);
+			}
+
+			return model;
 		}
 
 		// "private" method (that's hidden via `Setting`) for `withSSRContext` to use
@@ -567,6 +600,7 @@ function getNamespace(): SchemaNamespace {
 
 class DataStore {
 	private amplifyConfig: Record<string, any> = {};
+	private authModeStrategy: AuthModeStrategy;
 	private conflictHandler: ConflictHandler;
 	private errorHandler: (error: SyncError) => void;
 	private fullSyncInterval: number;
@@ -583,6 +617,7 @@ class DataStore {
 		ModelPredicate<any>
 	> = new WeakMap<SchemaModel, ModelPredicate<any>>();
 	private sessionId: string;
+	private getAuthToken: Promise<string>;
 
 	getModuleName() {
 		return 'DataStore';
@@ -633,7 +668,8 @@ class DataStore {
 				this.conflictHandler,
 				this.errorHandler,
 				this.syncPredicates,
-				this.amplifyConfig
+				this.amplifyConfig,
+				this.authModeStrategy
 			);
 
 			// tslint:disable-next-line:max-line-length
@@ -762,6 +798,10 @@ class DataStore {
 	): Promise<T> => {
 		await this.start();
 
+		// Immer patches for constructing a correct update mutation input
+		// Allows us to only include changed fields for updates
+		const patchesTuple = modelPatchesMap.get(model);
+
 		const modelConstructor: PersistentModelConstructor<T> = model
 			? <PersistentModelConstructor<T>>model.constructor
 			: undefined;
@@ -775,13 +815,16 @@ class DataStore {
 
 		const modelDefinition = getModelDefinition(modelConstructor);
 
+		// ensuring "read-only" data isn't being overwritten
+		this.checkReadOnlyProperty(modelDefinition.fields, model, patchesTuple);
+
 		const producedCondition = ModelPredicateCreator.createFromExisting(
 			modelDefinition,
 			condition
 		);
 
 		const [savedModel] = await this.storage.runExclusive(async s => {
-			await s.save(model, producedCondition);
+			await s.save(model, producedCondition, undefined, patchesTuple);
 
 			return s.query(
 				modelConstructor,
@@ -792,13 +835,53 @@ class DataStore {
 		return savedModel;
 	};
 
+	private checkReadOnlyProperty(
+		fields: ModelFields,
+		model: Record<string, any>,
+		patchesTuple: [
+			Patch[],
+			Readonly<
+				{
+					id: string;
+				} & Record<string, any>
+			>
+		]
+	) {
+		if (!patchesTuple) {
+			// saving a new model instance
+			const modelKeys = Object.keys(model);
+			modelKeys.forEach(key => {
+				if (fields[key] && fields[key].isReadOnly) {
+					throw new Error(`${key} is read-only.`);
+				}
+			});
+		} else {
+			// * Updating an existing instance via 'patchesTuple'
+			// patchesTuple[0] is an object that contains the info we need
+			// like the 'path' (mapped to the model's key) and the 'value' of the patch
+			const patchArray = patchesTuple[0].map(p => [p.path[0], p.value]);
+			patchArray.forEach(patch => {
+				const [key, val] = [...patch];
+
+				// the value of a read-only field should be undefined - if so, no need to do the following check
+				if (!val || !fields[key]) return;
+
+				// if the value is NOT undefined, we have to check the 'isReadOnly' property
+				// and throw an error to avoid persisting a mutation
+				if (fields[key].isReadOnly) {
+					throw new Error(`${key} is read-only.`);
+				}
+			});
+		}
+	}
+
 	setConflictHandler = (config: DataStoreConfig): ConflictHandler => {
 		const { DataStore: configDataStore } = config;
 
 		const conflictHandlerIsDefault: () => boolean = () =>
 			this.conflictHandler === defaultConflictHandler;
 
-		if (configDataStore) {
+		if (configDataStore && configDataStore.conflictHandler) {
 			return configDataStore.conflictHandler;
 		}
 		if (conflictHandlerIsDefault() && config.conflictHandler) {
@@ -814,7 +897,7 @@ class DataStore {
 		const errorHandlerIsDefault: () => boolean = () =>
 			this.errorHandler === defaultErrorHandler;
 
-		if (configDataStore) {
+		if (configDataStore && configDataStore.errorHandler) {
 			return configDataStore.errorHandler;
 		}
 		if (errorHandlerIsDefault() && config.errorHandler) {
@@ -832,7 +915,7 @@ class DataStore {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			id: string
-		): Promise<T>;
+		): Promise<T[]>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			condition: ProducerModelPredicate<T> | typeof PredicateAll
@@ -1021,12 +1104,14 @@ class DataStore {
 	configure = (config: DataStoreConfig = {}) => {
 		const {
 			DataStore: configDataStore,
+			authModeStrategyType: configAuthModeStrategyType,
 			conflictHandler: configConflictHandler,
 			errorHandler: configErrorHandler,
 			maxRecordsToSync: configMaxRecordsToSync,
 			syncPageSize: configSyncPageSize,
 			fullSyncInterval: configFullSyncInterval,
 			syncExpressions: configSyncExpressions,
+			authProviders: configAuthProviders,
 			...configFromAmplify
 		} = config;
 
@@ -1034,6 +1119,27 @@ class DataStore {
 
 		this.conflictHandler = this.setConflictHandler(config);
 		this.errorHandler = this.setErrorHandler(config);
+
+		const authModeStrategyType =
+			(configDataStore && configDataStore.authModeStrategyType) ||
+			configAuthModeStrategyType ||
+			AuthModeStrategyType.DEFAULT;
+
+		switch (authModeStrategyType) {
+			case AuthModeStrategyType.MULTI_AUTH:
+				this.authModeStrategy = multiAuthStrategy;
+				break;
+			case AuthModeStrategyType.DEFAULT:
+				this.authModeStrategy = defaultAuthStrategy;
+				break;
+			default:
+				this.authModeStrategy = defaultAuthStrategy;
+				break;
+		}
+
+		// store on config object, so that Sync, Subscription, and Mutation processors can have access
+		this.amplifyConfig.authProviders =
+			(configDataStore && configDataStore.authProviders) || configAuthProviders;
 
 		this.syncExpressions =
 			(configDataStore && configDataStore.syncExpressions) ||

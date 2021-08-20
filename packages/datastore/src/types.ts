@@ -12,6 +12,7 @@ import {
 	isAWSIPAddress,
 } from './util';
 import { PredicateAll } from './predicates';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 
 //#region Schema types
 export type Schema = UserSchema & {
@@ -21,6 +22,7 @@ export type UserSchema = {
 	models: SchemaModels;
 	nonModels?: SchemaNonModels;
 	relationships?: RelationshipType;
+	keys?: ModelKeys;
 	enums: SchemaEnums;
 	modelTopologicalOrdering?: Map<string, string[]>;
 };
@@ -58,6 +60,7 @@ export type ModelAssociation = AssociatedWith | TargetNameAssociation;
 type AssociatedWith = {
 	connectionType: 'HAS_MANY' | 'HAS_ONE';
 	associatedWith: string;
+	targetName?: string;
 };
 export function isAssociatedWith(obj: any): obj is AssociatedWith {
 	return obj && obj.associatedWith;
@@ -73,8 +76,84 @@ export function isTargetNameAssociation(
 	return obj && obj.targetName;
 }
 
-type ModelAttributes = ModelAttribute[];
+export type ModelAttributes = ModelAttribute[];
 type ModelAttribute = { type: string; properties?: Record<string, any> };
+
+type ModelAttributeKey = {
+	type: 'key';
+	properties: {
+		name?: string;
+		fields: string[];
+	};
+};
+
+type ModelAttributePrimaryKey = {
+	type: 'key';
+	properties: {
+		fields: string[];
+	};
+};
+
+type ModelAttributeCompositeKey = {
+	type: 'key';
+	properties: {
+		name: string;
+		fields: [string, string, string, string?, string?];
+	};
+};
+
+export function isModelAttributeKey(
+	attr: ModelAttribute
+): attr is ModelAttributeKey {
+	return (
+		attr.type === 'key' &&
+		attr.properties &&
+		attr.properties.fields &&
+		attr.properties.fields.length > 0
+	);
+}
+
+export function isModelAttributePrimaryKey(
+	attr: ModelAttribute
+): attr is ModelAttributePrimaryKey {
+	return isModelAttributeKey(attr) && attr.properties.name === undefined;
+}
+
+export function isModelAttributeCompositeKey(
+	attr: ModelAttribute
+): attr is ModelAttributeCompositeKey {
+	return (
+		isModelAttributeKey(attr) &&
+		attr.properties.name !== undefined &&
+		attr.properties.fields.length > 2
+	);
+}
+
+export type ModelAttributeAuthProperty = {
+	allow: ModelAttributeAuthAllow;
+	identityClaim?: string;
+	groupClaim?: string;
+	groups?: string[];
+	operations?: string[];
+	ownerField?: string;
+	provider?: ModelAttributeAuthProvider;
+};
+
+export enum ModelAttributeAuthAllow {
+	CUSTOM = 'custom',
+	OWNER = 'owner',
+	GROUPS = 'groups',
+	PRIVATE = 'private',
+	PUBLIC = 'public',
+}
+
+export enum ModelAttributeAuthProvider {
+	FUNCTION = 'function',
+	USER_POOLS = 'userPools',
+	OIDC = 'oidc',
+	IAM = 'iam',
+	API_KEY = 'apiKey',
+}
 
 export type ModelFields = Record<string, ModelField>;
 export enum GraphQLScalarType {
@@ -210,6 +289,7 @@ type ModelField = {
 		| EnumFieldType;
 	isArray: boolean;
 	isRequired?: boolean;
+	isReadOnly?: boolean;
 	isArrayNullable?: boolean;
 	association?: ModelAssociation;
 	attributes?: ModelAttributes[];
@@ -222,24 +302,48 @@ export type NonModelTypeConstructor<T> = {
 };
 
 // Class for model
-export type PersistentModelConstructor<T extends PersistentModel> = {
-	new (init: ModelInit<T>): T;
-	copyOf(src: T, mutator: (draft: MutableModel<T>) => void): T;
+export type PersistentModelConstructor<
+	T extends PersistentModel,
+	K extends PersistentModelMetaData = {
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	}
+> = {
+	new (init: ModelInit<T, K>): T;
+	copyOf(src: T, mutator: (draft: MutableModel<T, K>) => void): T;
 };
+
 export type TypeConstructorMap = Record<
 	string,
 	PersistentModelConstructor<any> | NonModelTypeConstructor<any>
 >;
 
 // Instance of model
+export type PersistentModelMetaData = {
+	readOnlyFields: string;
+};
+
 export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
-export type ModelInit<T> = Omit<T, 'id'>;
+export type ModelInit<
+	T,
+	K extends PersistentModelMetaData = {
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	}
+> = Omit<T, 'id' | K['readOnlyFields']>;
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
 		? T[P]
 		: DeepWritable<T[P]>;
 };
-export type MutableModel<T> = Omit<DeepWritable<T>, 'id'>;
+
+export type MutableModel<
+	T extends Record<string, any>,
+	K extends PersistentModelMetaData = {
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	}
+	// This provides Intellisense with ALL of the properties, regardless of read-only
+	// but will throw a linting error if trying to overwrite a read-only property
+> = DeepWritable<Omit<T, 'id' | K['readOnlyFields']>> &
+	Readonly<Pick<T, 'id' | K['readOnlyFields']>>;
 
 export type ModelInstanceMetadata = {
 	id: string;
@@ -492,23 +596,78 @@ export type RelationshipType = {
 
 //#endregion
 
+//#region Key type
+export type KeyType = {
+	primaryKey?: string[];
+	compositeKeys?: Set<string>[];
+};
+
+export type ModelKeys = {
+	[modelName: string]: KeyType;
+};
+
+//#endregion
+
 //#region DataStore config types
 export type DataStoreConfig = {
 	DataStore?: {
+		authModeStrategyType?: AuthModeStrategyType;
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 		errorHandler?: (error: SyncError) => void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
 		fullSyncInterval?: number;
 		syncExpressions?: SyncExpression[];
+		authProviders?: AuthProviders;
 	};
+	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
 	fullSyncInterval?: number;
 	syncExpressions?: SyncExpression[];
+	authProviders?: AuthProviders;
 };
+
+export type AuthProviders = {
+	functionAuthProvider: Promise<string>;
+};
+
+export enum AuthModeStrategyType {
+	DEFAULT = 'DEFAULT',
+	MULTI_AUTH = 'MULTI_AUTH',
+}
+
+export type AuthModeStrategyReturn =
+	| GRAPHQL_AUTH_MODE
+	| GRAPHQL_AUTH_MODE[]
+	| undefined
+	| null;
+
+export type AuthModeStrategyParams = {
+	schema: InternalSchema;
+	modelName: string;
+	operation: ModelOperation;
+};
+
+export type AuthModeStrategy = (
+	authModeStrategyParams: AuthModeStrategyParams
+) => AuthModeStrategyReturn | Promise<AuthModeStrategyReturn>;
+
+export enum ModelOperation {
+	CREATE = 'CREATE',
+	READ = 'READ',
+	UPDATE = 'UPDATE',
+	DELETE = 'DELETE',
+}
+
+export type ModelAuthModes = Record<
+	string,
+	{
+		[Property in ModelOperation]: GRAPHQL_AUTH_MODE[];
+	}
+>;
 
 export type SyncExpression = Promise<{
 	modelConstructor: any;

@@ -1,3 +1,6 @@
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { GraphQLAuthError } from '@aws-amplify/api';
+import { Logger } from '@aws-amplify/core';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
@@ -20,9 +23,14 @@ import {
 	SchemaModel,
 	SchemaNamespace,
 	SchemaNonModel,
+	ModelOperation,
+	InternalSchema,
+	AuthModeStrategy,
 } from '../types';
 import { exhaustiveCheck } from '../util';
 import { MutationEvent } from './';
+
+const logger = new Logger('DataStore');
 
 enum GraphQLOperationType {
 	LIST = 'query',
@@ -478,4 +486,112 @@ export function getUserGroupsFromToken(
 	}
 
 	return userGroups;
+}
+
+export async function getModelAuthModes({
+	authModeStrategy,
+	defaultAuthMode,
+	modelName,
+	schema,
+}: {
+	authModeStrategy: AuthModeStrategy;
+	defaultAuthMode: GRAPHQL_AUTH_MODE;
+	modelName: string;
+	schema: InternalSchema;
+}): Promise<
+	{
+		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+	}
+> {
+	const operations = Object.values(ModelOperation);
+
+	const modelAuthModes: {
+		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+	} = {
+		CREATE: [],
+		READ: [],
+		UPDATE: [],
+		DELETE: [],
+	};
+
+	try {
+		await Promise.all(
+			operations.map(async operation => {
+				const authModes = await authModeStrategy({
+					schema,
+					modelName,
+					operation,
+				});
+
+				if (typeof authModes === 'string') {
+					modelAuthModes[operation] = [authModes];
+				} else if (Array.isArray(authModes) && authModes.length) {
+					modelAuthModes[operation] = authModes;
+				} else {
+					// Use default auth mode if nothing is returned from authModeStrategy
+					modelAuthModes[operation] = [defaultAuthMode];
+				}
+			})
+		);
+	} catch (error) {
+		logger.debug(`Error getting auth modes for model: ${modelName}`, error);
+	}
+	return modelAuthModes;
+}
+
+export function getForbiddenError(error) {
+	const forbiddenErrorMessages = [
+		'Request failed with status code 401',
+		'Request failed with status code 403',
+	];
+	let forbiddenError;
+	if (error && error.errors) {
+		forbiddenError = (error.errors as [any]).find(err =>
+			forbiddenErrorMessages.includes(err.message)
+		);
+	} else if (error && error.message) {
+		forbiddenError = error;
+	}
+
+	if (forbiddenError) {
+		return forbiddenError.message;
+	}
+	return null;
+}
+
+export function getClientSideAuthError(error) {
+	const clientSideAuthErrors = Object.values(GraphQLAuthError);
+	const clientSideError =
+		error &&
+		error.message &&
+		clientSideAuthErrors.find(clientError =>
+			error.message.includes(clientError)
+		);
+	return clientSideError || null;
+}
+
+export async function getTokenForCustomAuth(
+	authMode: GRAPHQL_AUTH_MODE,
+	amplifyConfig: Record<string, any> = {}
+): Promise<string | undefined> {
+	if (authMode === GRAPHQL_AUTH_MODE.AWS_LAMBDA) {
+		const {
+			authProviders: { functionAuthProvider } = { functionAuthProvider: null },
+		} = amplifyConfig;
+		if (functionAuthProvider && typeof functionAuthProvider === 'function') {
+			try {
+				const { token } = await functionAuthProvider();
+				return token;
+			} catch (error) {
+				throw new Error(
+					`Error retrieving token from \`functionAuthProvider\`: ${error}`
+				);
+			}
+		} else {
+			// TODO: add docs link once available
+			throw new Error(
+				`You must provide a \`functionAuthProvider\` function to \`DataStore.configure\` when using ${GRAPHQL_AUTH_MODE.AWS_LAMBDA}`
+			);
+		}
+	}
 }

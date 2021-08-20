@@ -3,6 +3,152 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.3...@aws-amplify/core@4.2.4) (2021-08-19)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.2...@aws-amplify/core@4.2.3) (2021-08-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** Include refreshToken in UniversalStorage for SSR ([#7374](https://github.com/aws-amplify/amplify-js/issues/7374)) ([1e0887b](https://github.com/aws-amplify/amplify-js/commit/1e0887bdc45e178f04229c888051ecf10d2bfabc))
+
+
+
+
+
+## [4.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.1...@aws-amplify/core@4.2.2) (2021-07-28)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.0...@aws-amplify/core@4.2.1) (2021-07-22)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.1.3...@aws-amplify/core@4.2.0) (2021-07-16)
+
+
+### Features
+
+* core/cloudwatch-logging ([#8588](https://github.com/aws-amplify/amplify-js/issues/8588)) ([6f28c7e](https://github.com/aws-amplify/amplify-js/commit/6f28c7e94ae8d41b37490292ff3547505100c6b2))
+
+
+
+
+
+## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.1.2...@aws-amplify/core@4.1.3) (2021-07-08)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.1.1...@aws-amplify/core@4.1.2) (2021-06-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** switching unauthenticated users to authenticated users ([40cc22f](https://github.com/aws-amplify/amplify-js/commit/40cc22f8b332e4748c85504ca8e2ac2713fd87d1))
+
+
+
+
+
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.1.0...@aws-amplify/core@4.1.1) (2021-06-18)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.0.3...@aws-amplify/core@4.1.0) (2021-06-10)
+
+
+### Bug Fixes
+
+* remove RN-specific peerDeps to correctly hoist core in npm@7 ([#8368](https://github.com/aws-amplify/amplify-js/issues/8368)) ([9cc5218](https://github.com/aws-amplify/amplify-js/commit/9cc52186e687d6782b41581959380bd7f534e5d2))
+
+
+### Features
+
+* added log queue and size safety to cloudwatch provider ([ae2f198](https://github.com/aws-amplify/amplify-js/commit/ae2f198b1e96c232f52f4ce9d613c4f3d94a0718))
+* adding more methods to the cloudwatchlogger ([263c637](https://github.com/aws-amplify/amplify-js/commit/263c6376fffd48e9c080aab8141d55cd6e31d135))
+* initial setup for the cloudwatch logger and provider ([57a7d4c](https://github.com/aws-amplify/amplify-js/commit/57a7d4c9add70170c69e7fad89f59c4d0efe779d))
+* moved CloudLogger logic to ConsoleLogger ([93db90d](https://github.com/aws-amplify/amplify-js/commit/93db90d041c7ca697e5993003a4fb105a3821cbe))
+
+
+
+
+
+## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.0.1...@aws-amplify/core@4.0.3) (2021-05-26)
+
+
+### Bug Fixes
+
+* **@aws-amplify/api-rest:** Improve Clock Drift/Skew Logic ([#8319](https://github.com/aws-amplify/amplify-js/issues/8319)) ([8448b4f](https://github.com/aws-amplify/amplify-js/commit/8448b4fe1f995f0d6056bcb46dd0fb2023fb197d))
+* added expiration to ICredentials type ([6553676](https://github.com/aws-amplify/amplify-js/commit/6553676ae2f5add5705dedd1b66a7e19c064cee1))
+* remove Cognito Identity Id from storage on SignIn/SignOut ([#8278](https://github.com/aws-amplify/amplify-js/issues/8278)) ([ef358a7](https://github.com/aws-amplify/amplify-js/commit/ef358a761cf74d16b61172cd1a75b4bc6cfd2bdf))
+
+
+
+
+
+## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.0.0...@aws-amplify/core@4.0.1) (2021-05-14)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [4.0.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.23...@aws-amplify/core@4.0.0) (2021-05-11)
+
+
+* chore!: Upgrade to @react-native-async-storage/async-storage (#8250) ([1de4853](https://github.com/aws-amplify/amplify-js/commit/1de48531b68e3c53c3b7dbf4487da4578cb79888)), closes [#8250](https://github.com/aws-amplify/amplify-js/issues/8250)
+
+
+### BREAKING CHANGES
+
+* Upgrade from React Native AsyncStorage to @react-native-async-storage/async-storage
+
+Co-authored-by: Ashish Nanda <ashish.nanda.5591@gmail.com>
+Co-authored-by: Ivan Artemiev <29709626+iartemiev@users.noreply.github.com>
+
+
+
+
+
+## [3.8.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.22...@aws-amplify/core@3.8.23) (2021-05-06)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [3.8.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.21...@aws-amplify/core@3.8.22) (2021-04-15)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
 ## [3.8.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@3.8.20...@aws-amplify/core@3.8.21) (2021-03-25)
 
 **Note:** Version bump only for package @aws-amplify/core

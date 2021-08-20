@@ -145,5 +145,44 @@ describe('OAuth', () => {
 				expect(err.message).toBe(mockError);
 			}
 		});
+		test('Tokens are returned when the currentUrl has three slashes', async () => {
+			const redirectSignIn = 'myapp://';
+			const currentUrl = 'myapp:///';
+
+			const config = {
+				domain: '',
+				clientID: '',
+				scope: '',
+				redirectUri: '',
+				audience: '',
+				responseType: 'code',
+				returnTo: '',
+				redirectSignIn,
+			};
+			const oAuth = new OAuth({
+				scopes: [],
+				config,
+				cognitoClientId: '',
+			});
+			const mockAccessToken = 'mockAccessToken';
+			const mockRefreshToken = 'mockRefreshToken';
+			const mockIdToken = 'mockIdToken';
+
+			fetchMockReturn({
+				access_token: mockAccessToken,
+				refresh_token: mockRefreshToken,
+				id_token: mockIdToken,
+			});
+
+			const handleResponse = await oAuth.handleAuthResponse(
+				`${currentUrl}?code=12345`
+			);
+			expect(handleResponse).toEqual({
+				state: undefined,
+				accessToken: mockAccessToken,
+				refreshToken: mockRefreshToken,
+				idToken: mockIdToken,
+			});
+		});
 	});
 });

@@ -3,6 +3,127 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.2.3...aws-amplify@4.2.4) (2021-08-19)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [4.2.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.2.2...aws-amplify@4.2.3) (2021-08-12)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [4.2.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.2.1...aws-amplify@4.2.2) (2021-07-28)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.2.0...aws-amplify@4.2.1) (2021-07-22)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.1.3...aws-amplify@4.2.0) (2021-07-16)
+
+
+### Features
+
+* core/cloudwatch-logging ([#8588](https://github.com/aws-amplify/amplify-js/issues/8588)) ([6f28c7e](https://github.com/aws-amplify/amplify-js/commit/6f28c7e94ae8d41b37490292ff3547505100c6b2))
+
+
+
+
+
+## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.1.2...aws-amplify@4.1.3) (2021-07-08)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.1.1...aws-amplify@4.1.2) (2021-06-24)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.1.0...aws-amplify@4.1.1) (2021-06-18)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.0.3...aws-amplify@4.1.0) (2021-06-10)
+
+
+### Features
+
+* moved CloudLogger logic to ConsoleLogger ([93db90d](https://github.com/aws-amplify/amplify-js/commit/93db90d041c7ca697e5993003a4fb105a3821cbe))
+
+
+
+
+
+## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.0.1...aws-amplify@4.0.3) (2021-05-26)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.4.0...aws-amplify@4.0.1) (2021-05-14)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+## [3.4.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.4.0...aws-amplify@3.4.1) (2021-05-11)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
+# [3.4.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.27...aws-amplify@3.4.0) (2021-05-06)
+
+
+### Features
+
+* **@aws-amplify/datastore:** DataStore - Multi-Auth ([#8008](https://github.com/aws-amplify/amplify-js/issues/8008)) ([dedd564](https://github.com/aws-amplify/amplify-js/commit/dedd5641dfcfce209433088fe9570874cd810997))
+
+
+
+
+
+## [3.3.27](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.26...aws-amplify@3.3.27) (2021-04-15)
+
+**Note:** Version bump only for package aws-amplify
+
+
+
+
+
 ## [3.3.26](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@3.3.25...aws-amplify@3.3.26) (2021-03-25)
 
 **Note:** Version bump only for package aws-amplify

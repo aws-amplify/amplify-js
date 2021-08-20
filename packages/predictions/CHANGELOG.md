@@ -3,6 +3,124 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.0.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.9...@aws-amplify/predictions@4.0.10) (2021-08-19)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [4.0.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.8...@aws-amplify/predictions@4.0.9) (2021-08-12)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [4.0.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.7...@aws-amplify/predictions@4.0.8) (2021-07-28)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [4.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.6...@aws-amplify/predictions@4.0.7) (2021-07-22)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [4.0.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.5...@aws-amplify/predictions@4.0.6) (2021-07-16)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [4.0.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.4...@aws-amplify/predictions@4.0.5) (2021-07-08)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [4.0.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.3...@aws-amplify/predictions@4.0.4) (2021-06-24)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.2...@aws-amplify/predictions@4.0.3) (2021-06-18)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [4.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.1...@aws-amplify/predictions@4.0.2) (2021-06-10)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.33...@aws-amplify/predictions@4.0.1) (2021-05-26)
+
+
+### Bug Fixes
+
+* **@aws-amplify/predictions:** update detectFacesCommand parameters to include all facial attributes (including Emotions types) in the result ([#8095](https://github.com/aws-amplify/amplify-js/issues/8095)) ([520469b](https://github.com/aws-amplify/amplify-js/commit/520469b65c0ed2800931d8e286cbe21fc6518c91))
+
+
+
+
+
+## [3.2.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.32...@aws-amplify/predictions@3.2.33) (2021-05-14)
+
+
+### Bug Fixes
+
+* **@aws-amplify/predictions:** Downsizing sample for some language in speech to text ([#7835](https://github.com/aws-amplify/amplify-js/issues/7835)) ([bc5a21f](https://github.com/aws-amplify/amplify-js/commit/bc5a21fcff0a326d79ddf41651a8997165d89da3)), closes [#6921](https://github.com/aws-amplify/amplify-js/issues/6921)
+
+
+
+
+
+## [3.2.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.31...@aws-amplify/predictions@3.2.32) (2021-05-11)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.30...@aws-amplify/predictions@3.2.31) (2021-05-06)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
+## [3.2.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.29...@aws-amplify/predictions@3.2.30) (2021-04-15)
+
+**Note:** Version bump only for package @aws-amplify/predictions
+
+
+
+
+
 ## [3.2.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@3.2.28...@aws-amplify/predictions@3.2.29) (2021-03-25)
 
 **Note:** Version bump only for package @aws-amplify/predictions

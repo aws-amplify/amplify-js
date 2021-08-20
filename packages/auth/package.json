@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/auth",
-  "version": "3.4.29",
+  "version": "4.3.0",
   "description": "Auth category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -19,7 +19,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "yarn lint && jest -w 1 --coverage",
+    "test": "yarn lint --fix && jest -w 1 --coverage",
     "build-with-test": "npm test && npm run build",
     "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
     "build:esm": "node ./build es6",
@@ -41,10 +41,10 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/cache": "3.1.54",
-    "@aws-amplify/core": "3.8.21",
-    "amazon-cognito-identity-js": "4.6.0",
-    "crypto-js": "^3.3.0"
+    "@aws-amplify/cache": "4.0.12",
+    "@aws-amplify/core": "4.2.4",
+    "amazon-cognito-identity-js": "5.1.0",
+    "crypto-js": "^4.1.1"
   },
   "devDependencies": {
     "@jest/test-sequencer": "^24.9.0"
