@@ -1873,7 +1873,7 @@ export class AuthClass {
 
 		if (!source || source === 'aws' || source === 'userPool') {
 			const user = await this.currentUserPoolUser().catch(err =>
-				logger.debug(err)
+				logger.error(err)
 			);
 			if (!user) {
 				return null;
@@ -1899,7 +1899,7 @@ export class AuthClass {
 				};
 				return info;
 			} catch (err) {
-				logger.debug('currentUserInfo error', err);
+				logger.error('currentUserInfo error', err);
 				return {};
 			}
 		}
