@@ -29,7 +29,7 @@ AWS Amplify provides a declarative and easy-to-use interface across different ca
 
 Our default implementation works with Amazon Web Services (AWS), but AWS Amplify is designed to be open and pluggable for any custom backend or service.
 
-#### Visit our [Documnentation site](https://docs.amplify.aws/) to learn more about AWS Amplify. Please see our [Amplify JavaScript](https://docs.amplify.aws/lib/q/platform/js/) page within our Documentation site for information around the full list of feature we support.
+#### Visit our [Documentation site](https://docs.amplify.aws/) to learn more about AWS Amplify. Please see our [Amplify JavaScript](https://docs.amplify.aws/lib/q/platform/js/) page within our Documentation site for information around the full list of features we support.
 
 - [Demo Applications](https://github.com/aws-amplify/amplify-js-samples)
 - [Contributing](https://github.com/aws-amplify/amplify-js/blob/main/CONTRIBUTING.md)
