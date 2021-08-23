@@ -13,6 +13,7 @@ import {
 } from './util';
 import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { Adapter } from './storage/adapter';
 
 //#region Schema types
 export type Schema = UserSchema & {
@@ -649,6 +650,7 @@ export type DataStoreConfig = {
 		fullSyncInterval?: number;
 		syncExpressions?: SyncExpression[];
 		authProviders?: AuthProviders;
+		storageAdapter?: Adapter;
 	};
 	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
@@ -658,6 +660,7 @@ export type DataStoreConfig = {
 	fullSyncInterval?: number;
 	syncExpressions?: SyncExpression[];
 	authProviders?: AuthProviders;
+	storageAdapter?: Adapter;
 };
 
 export type AuthProviders = {

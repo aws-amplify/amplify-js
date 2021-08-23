@@ -16,6 +16,7 @@ import {
 	ModelSortPredicateCreator,
 	PredicateAll,
 } from '../predicates';
+import { Adapter } from '../storage/adapter';
 import { ExclusiveStorage as Storage } from '../storage/storage';
 import { ControlMessage, SyncEngine } from '../sync';
 import {
@@ -679,7 +680,7 @@ class DataStore {
 		ModelPredicate<any>
 	> = new WeakMap<SchemaModel, ModelPredicate<any>>();
 	private sessionId: string;
-	private getAuthToken: Promise<string>;
+	private storageAdapter: Adapter;
 
 	getModuleName() {
 		return 'DataStore';
@@ -703,7 +704,7 @@ class DataStore {
 			namespaceResolver,
 			getModelConstructorByModelName,
 			modelInstanceCreator,
-			undefined,
+			this.storageAdapter,
 			this.sessionId
 		);
 
@@ -1131,6 +1132,7 @@ class DataStore {
 			fullSyncInterval: configFullSyncInterval,
 			syncExpressions: configSyncExpressions,
 			authProviders: configAuthProviders,
+			storageAdapter: configStorageAdapter,
 			...configFromAmplify
 		} = config;
 
@@ -1180,6 +1182,12 @@ class DataStore {
 			this.fullSyncInterval ||
 			configFullSyncInterval ||
 			24 * 60; // 1 day
+
+		this.storageAdapter =
+			(configDataStore && configDataStore.storageAdapter) ||
+			this.storageAdapter ||
+			configStorageAdapter ||
+			undefined;
 
 		this.sessionId = this.retrieveSessionId();
 	};
