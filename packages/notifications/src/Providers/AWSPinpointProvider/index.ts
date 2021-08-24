@@ -49,7 +49,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 	static category: NotificationsCategory = 'Notifications';
 	static providerName = 'AWSPinpoint';
 
-	private config;
+	private config: Record<string, any> = {};
 	private endpointUpdated = false;
 	private initialized = false;
 	private sessionMessageCountMap: InAppMessageCountMap;
@@ -170,6 +170,8 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 			this.config.endpointId = await getEndpointId(cacheKey);
 		} catch (err) {
 			logger.error(`failed to initialize ${providerName}`, err);
+		} finally {
+			this.initialized = true;
 		}
 	};
 
@@ -290,7 +292,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 				totalCount: this.getTotalCount(messageId),
 			};
 		} catch (err) {
-			logger.error('failed to get message counts from storage', err);
+			logger.error('Failed to get message counts from storage', err);
 		}
 	};
 
@@ -307,7 +309,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		try {
 			storage.setItem(MESSAGE_DAILY_COUNT_KEY, JSON.stringify(dailyCount));
 		} catch (err) {
-			logger.error('failed to save daily message count to storage', err);
+			logger.error('Failed to save daily message count to storage', err);
 		}
 	};
 
@@ -316,7 +318,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		try {
 			storage.setItem(MESSAGE_TOTAL_COUNT_KEY, JSON.stringify(countMap));
 		} catch (err) {
-			logger.error('failed to save total count to storage', err);
+			logger.error('Failed to save total count to storage', err);
 		}
 	};
 
