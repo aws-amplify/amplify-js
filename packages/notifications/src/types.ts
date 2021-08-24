@@ -45,7 +45,9 @@ export interface NotificationsProvider {
 	filterMessages(
 		messages: InAppMessage[],
 		event: NotificationEvent
-	): InAppMessage[];
+	): Promise<InAppMessage[]>;
+
+	recordInAppMessageDisplayed(messageId: string): Promise<void>;
 }
 
 export type Layout =
@@ -106,6 +108,8 @@ export type InAppMessage = {
 		QuietTime: any;
 	};
 	SessionCap: number;
+	DailyCap: number;
+	TotalCap: number;
 	TreatmentId: string;
 };
 
