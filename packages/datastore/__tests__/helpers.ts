@@ -1,4 +1,10 @@
-import { ModelInit, MutableModel, Schema, InternalSchema } from '../src/types';
+import {
+	ModelInit,
+	MutableModel,
+	Schema,
+	InternalSchema,
+	SchemaModel,
+} from '../src/types';
 
 export declare class Model {
 	public readonly id: string;

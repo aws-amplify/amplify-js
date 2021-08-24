@@ -1,6 +1,6 @@
 import { Auth } from '@aws-amplify/auth';
 import { I18n, Logger } from '@aws-amplify/core';
-import { Component, Prop, State, h, Host } from '@stencil/core';
+import { Component, Prop, State, h, Host, Watch } from '@stencil/core';
 import QRCode from 'qrcode';
 
 import {
@@ -10,12 +10,7 @@ import {
 	AuthState,
 } from '../../common/types/auth-types';
 import { Translations } from '../../common/Translations';
-import { TOTPSetupEventType } from './amplify-totp-setup-interface';
-import {
-	NO_AUTH_MODULE_FOUND,
-	SETUP_TOTP,
-	SUCCESS,
-} from '../../common/constants';
+import { NO_AUTH_MODULE_FOUND } from '../../common/constants';
 import {
 	dispatchToastHubEvent,
 	dispatchAuthStateChangeEvent,
@@ -43,6 +38,12 @@ export class AmplifyTOTPSetup {
 	@Prop() headerText: string = Translations.TOTP_HEADER_TEXT;
 	/** Used for customizing the issuer string in the qr code image */
 	@Prop() issuer: string = Translations.TOTP_ISSUER;
+	/** This is run after totp setup is complete. Useful if using this as standalone. */
+	@Prop() handleComplete: (
+		user: CognitoUserInterface
+	) => void | Promise<void> = this.onTOTPEvent;
+	/** Set this to true if this component is running outside the default `amplify-authenticator` usage */
+	@Prop() standalone: boolean = false;
 
 	@State() code: string | null = null;
 	@State() setupMessage: string | null = null;
@@ -53,14 +54,27 @@ export class AmplifyTOTPSetup {
 
 	async componentWillLoad() {
 		/**
-		 * We didn't use `@Watch` here because it doesn't fire when we go from require-new-password to totp-setup.
-		 * That is because `Auth.completeNewPassword` only changes `user` in place and Watch doesn't detect changes
-		 * unless we make a clone.
+		 * If this component is being used internally by the authenticator, we want to re-run
+		 * setup only when the current auth state is `AuthState.TOTPSetup`.
+		 *
+		 * Ideally, we would only run the setup once when the component is mounted. This is not possible
+		 * due to a bug with slots -- a slotted component will run its `componentWillLoad` lifecycle before
+		 * it is even rendered. So instead we watch for authstate changes and run setup conditionally.
 		 */
-		this.removeHubListener = onAuthUIStateChange(authState => {
-			if (authState === AuthState.TOTPSetup) this.setup();
-		});
+		if (!this.standalone) {
+			this.removeHubListener = onAuthUIStateChange(authState => {
+				if (authState === AuthState.TOTPSetup) this.setup();
+			});
+		}
 		await this.setup();
+	}
+
+	/**
+	 * If this component is being used externally, we can use `@Watch` as normal.
+	 */
+	@Watch('user')
+	handleUserChange() {
+		this.standalone && this.setup();
 	}
 
 	disconnectedCallback() {
@@ -75,16 +89,9 @@ export class AmplifyTOTPSetup {
 		return `otpauth://totp/${issuer}:${user.username}?secret=${secretKey}&issuer=${issuer}`;
 	}
 
-	private async onTOTPEvent(
-		event: TOTPSetupEventType,
-		data: any,
-		user: CognitoUserInterface
-	) {
-		logger.debug('on totp event', event, data);
-
-		if (event === SETUP_TOTP && data === SUCCESS) {
-			await checkContact(user, this.handleAuthStateChange);
-		}
+	private async onTOTPEvent(user: CognitoUserInterface) {
+		logger.debug('on totp event');
+		await checkContact(user, this.handleAuthStateChange);
 	}
 
 	private handleTotpInputChange(event) {
@@ -102,14 +109,25 @@ export class AmplifyTOTPSetup {
 
 	private async setup() {
 		// ensure setup is only run once after totp setup is available
-		if (!this.user || this.user.challengeName !== 'MFA_SETUP' || this.loading)
+		if (this.code || this.loading) {
+			logger.debug(
+				'setup was attempted while another is in progress, skipping setup.'
+			);
 			return;
-		this.setupMessage = null;
-		const encodedIssuer = encodeURI(I18n.get(this.issuer));
+		}
 
+		if (!this.user || !this.user.associateSoftwareToken) {
+			logger.debug(
+				'setup was attempted with invalid `user`, skipping setup.',
+				this.user
+			);
+			return;
+		}
 		if (!Auth || typeof Auth.setupTOTP !== 'function') {
 			throw new Error(NO_AUTH_MODULE_FOUND);
 		}
+		this.setupMessage = null;
+		const encodedIssuer = encodeURI(I18n.get(this.issuer));
 
 		this.loading = true;
 		try {
@@ -152,8 +170,7 @@ export class AmplifyTOTPSetup {
 
 			this.setupMessage = I18n.get(Translations.TOTP_SUCCESS_MESSAGE);
 			logger.debug(I18n.get(Translations.TOTP_SUCCESS_MESSAGE));
-
-			await this.onTOTPEvent(SETUP_TOTP, SUCCESS, user);
+			await this.handleComplete(user);
 		} catch (error) {
 			this.setupMessage = I18n.get(Translations.TOTP_SETUP_FAILURE);
 			logger.error(error);

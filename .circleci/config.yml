@@ -828,19 +828,19 @@ jobs:
     steps:
       - integ_test_rn_ios
 
-  # integ_rn_android_storage:
-  #   executor: macos-executor
-  #   <<: *test_env_vars
-  #   working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
-  #   steps:
-  #     - integ_test_rn_android
+  integ_rn_android_storage:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+    steps:
+      - integ_test_rn_android
 
-  # integ_rn_android_storage_multipart_progress:
-  #   executor: macos-executor
-  #   <<: *test_env_vars
-  #   working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
-  #   steps:
-  #     - integ_test_rn_android
+  integ_rn_android_storage_multipart_progress:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
+    steps:
+      - integ_test_rn_android
 
   integ_datastore_auth:
     parameters:
@@ -1175,12 +1175,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      # - integ_rn_android_storage:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
+      - integ_rn_android_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       # - integ_rn_android_storage_multipart_progress:
       #     requires:
       #       - integ_setup
@@ -1234,7 +1234,7 @@ workflows:
             - integ_rn_ios_storage_multipart_progress
             # - integ_rn_android_storage_multipart_progress
             - integ_rn_ios_push_notifications
-            # - integ_rn_android_storage
+            - integ_rn_android_storage
             - integ_datastore_auth
             - integ_duplicate_packages
             - integ_auth_test_cypress_no_ui

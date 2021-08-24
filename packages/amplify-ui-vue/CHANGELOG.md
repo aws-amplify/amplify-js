@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@1.1.3...@aws-amplify/ui-vue@1.1.4) (2021-08-19)
+
+**Note:** Version bump only for package @aws-amplify/ui-vue
+
+
+
+
+
+## [1.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@1.1.2...@aws-amplify/ui-vue@1.1.3) (2021-08-12)
+
+**Note:** Version bump only for package @aws-amplify/ui-vue
+
+
+
+
+
+## [1.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@1.1.1...@aws-amplify/ui-vue@1.1.2) (2021-07-28)
+
+**Note:** Version bump only for package @aws-amplify/ui-vue
+
+
+
+
+
+## [1.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@1.1.0...@aws-amplify/ui-vue@1.1.1) (2021-07-22)
+
+**Note:** Version bump only for package @aws-amplify/ui-vue
+
+
+
+
+
+# [1.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@1.0.14...@aws-amplify/ui-vue@1.1.0) (2021-07-16)
+
+
+### Features
+
+* core/cloudwatch-logging ([#8588](https://github.com/aws-amplify/amplify-js/issues/8588)) ([6f28c7e](https://github.com/aws-amplify/amplify-js/commit/6f28c7e94ae8d41b37490292ff3547505100c6b2))
+
+
+
+
+
 ## [1.0.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@1.0.13...@aws-amplify/ui-vue@1.0.14) (2021-07-08)
 
 **Note:** Version bump only for package @aws-amplify/ui-vue

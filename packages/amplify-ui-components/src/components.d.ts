@@ -1108,6 +1108,12 @@ export namespace Components {
          */
         "handleAuthStateChange": AuthStateHandler;
         /**
+          * This is run after totp setup is complete. Useful if using this as standalone.
+         */
+        "handleComplete": (
+		user: CognitoUserInterface
+	) => void | Promise<void>;
+        /**
           * Used for header text in totp setup component
          */
         "headerText": string;
@@ -1115,6 +1121,10 @@ export namespace Components {
           * Used for customizing the issuer string in the qr code image
          */
         "issuer": string;
+        /**
+          * Set this to true if this component is running outside the default `amplify-authenticator` usage
+         */
+        "standalone": boolean;
         /**
           * Used in order to configure TOTP for a user
          */
@@ -2654,6 +2664,12 @@ declare namespace LocalJSX {
          */
         "handleAuthStateChange"?: AuthStateHandler;
         /**
+          * This is run after totp setup is complete. Useful if using this as standalone.
+         */
+        "handleComplete"?: (
+		user: CognitoUserInterface
+	) => void | Promise<void>;
+        /**
           * Used for header text in totp setup component
          */
         "headerText"?: string;
@@ -2661,6 +2677,10 @@ declare namespace LocalJSX {
           * Used for customizing the issuer string in the qr code image
          */
         "issuer"?: string;
+        /**
+          * Set this to true if this component is running outside the default `amplify-authenticator` usage
+         */
+        "standalone"?: boolean;
         /**
           * Used in order to configure TOTP for a user
          */

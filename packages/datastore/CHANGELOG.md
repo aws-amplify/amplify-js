@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.3.1...@aws-amplify/datastore@3.3.2) (2021-08-19)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [3.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.3.0...@aws-amplify/datastore@3.3.1) (2021-08-12)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+# [3.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.2.2...@aws-amplify/datastore@3.3.0) (2021-07-28)
+
+
+### Features
+
+* **@aws-amplify/datastore:** support lambda authorizers ([52d43cc](https://github.com/aws-amplify/amplify-js/commit/52d43cc73b459148f1ae81ab81d3a5365a4457e3))
+
+
+
+
+
+## [3.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.2.1...@aws-amplify/datastore@3.2.2) (2021-07-22)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** remove null properties from connected model instances ([#8623](https://github.com/aws-amplify/amplify-js/issues/8623)) ([569214c](https://github.com/aws-amplify/amplify-js/commit/569214c762bb3aace1ff96fcbe468780dcaabe35))
+
+
+
+
+
+## [3.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.2.0...@aws-amplify/datastore@3.2.1) (2021-07-16)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
 # [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.1.2...@aws-amplify/datastore@3.2.0) (2021-07-08)
 
 
