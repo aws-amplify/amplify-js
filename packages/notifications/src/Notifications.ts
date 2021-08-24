@@ -224,7 +224,7 @@ class NotificationsClass {
 			}
 			const { storage } = this.config;
 			const storedMessages = storage.getItem(key);
-			return JSON.parse(storedMessages);
+			return storedMessages ? JSON.parse(storedMessages) : [];
 		} catch (err) {
 			logger.error('Failed to retrieve in-app messages from storage', err);
 		}
