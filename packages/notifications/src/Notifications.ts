@@ -31,7 +31,7 @@ import {
 	NotificationsProvider,
 } from './types';
 
-const STORAGE_KEY_SUFFIX = '_notificationKey';
+const STORAGE_KEY_SUFFIX = '_inAppMessages';
 
 const logger = new Logger('Notifications');
 
@@ -48,8 +48,8 @@ class NotificationsClass {
 		...config
 	}: NotificationsConfig = {}) => {
 		this.config = {
-			...parseMobileHubConfig(config).Analytics,
-			...this.config,
+			...parseMobileHubConfig(config).Analytics, // TODO: needs to be updated
+			...config,
 		};
 
 		logger.debug('configure Notifications', config);
@@ -59,17 +59,9 @@ class NotificationsClass {
 		);
 
 		this.pluggables.forEach(pluggable => {
-			// for backward compatibility
-			const providerConfig =
-				pluggable.getProviderName() === 'AWSPinpoint' &&
-				!this.config['AWSPinpoint']
-					? this.config
-					: this.config[pluggable.getProviderName()];
-
 			pluggable.configure({
-				disabled: this.config['disabled'],
-				autoSessionRecord: this.config['autoSessionRecord'], // copied over, does not do anything currently
-				...providerConfig,
+				...this.config,
+				...(this.config[pluggable.getProviderName()] ?? {}),
 			});
 		});
 
@@ -130,20 +122,6 @@ class NotificationsClass {
 		}
 	};
 
-	invokeMessage = async (event: NotificationEvent): Promise<void> => {
-		const messages: any[] = await Promise.all<any[]>(
-			this.pluggables.map(async pluggable => {
-				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
-				const messages = await this.getStoredMessages(key);
-				return pluggable.filterMessages(messages, event);
-			})
-		);
-		// Since there is only one notification provider, just send back the result of that promise for now
-		if (messages[0]) {
-			this.filteredInAppMessagesHandler(messages[0]);
-		}
-	};
-
 	setFilteredInAppMessagesHandler = (
 		handler: FilteredInAppMessagesHandler
 	): FilteredInAppMessagesHandler => {
@@ -181,11 +159,32 @@ class NotificationsClass {
 		}
 	};
 
+	invokeInAppMessages = async (event: NotificationEvent): Promise<void> => {
+		const messages: any[] = await Promise.all<any[]>(
+			this.pluggables.map(async pluggable => {
+				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
+				const messages = await this.getStoredMessages(key);
+				return pluggable.filterMessages(messages, event);
+			})
+		);
+		// Since there is only one notification provider right now, just call the
+		// handler with the result of that promise for now
+		this.filteredInAppMessagesHandler(messages[0]);
+	};
+
+	recordInAppMessageDisplayed = async (messageId: string): Promise<void[]> => {
+		return Promise.all(
+			this.pluggables.map(pluggable =>
+				pluggable.recordInAppMessageDisplayed(messageId)
+			)
+		);
+	};
+
 	private analyticsListener: HubCallback = ({ payload }: HubCapsule) => {
 		const { event, data } = payload;
 		switch (event) {
 			case 'record': {
-				this.invokeMessage(data);
+				this.invokeInAppMessages(data);
 				break;
 			}
 			default:
