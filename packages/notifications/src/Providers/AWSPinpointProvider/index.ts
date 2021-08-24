@@ -106,12 +106,12 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 				.promise();
 			const { InAppMessageCampaigns } = response.InAppMessagesResponse;
 
-			// Clear out stored total counts for messages that are no longer active (i.e. not returned from service)
-			// Create a lookup of ids to avoid nesting .includes() inside of .reduce()
+			// Create a lookup of ids to avoid nesting .includes() inside of .reduce() when updating total counts
 			const idMap = InAppMessageCampaigns.reduce((acc, item) => {
 				acc[item.CampaignId] = true;
 				return acc;
 			}, {});
+			// Clear out stored total counts for messages that are no longer active (i.e. not returned from service)
 			this.setTotalCountMap(
 				Object.entries(this.getTotalCountMap()).reduce((acc, [key, val]) => {
 					if (idMap[key]) {
@@ -143,8 +143,6 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 				matchesMetrics(message, event) &&
 				isBeforeEndDate(message) &&
 				this.isBelowCap(message, CampaignId)
-				// Quiet time is currently not enabled for in-app messages so skip this check
-				// !this.isQuietTime(message)
 			);
 		});
 	};

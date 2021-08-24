@@ -20,6 +20,7 @@ import {
 	parseMobileHubConfig,
 } from '@aws-amplify/core';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import flatten from 'lodash/flatten';
 import noop from 'lodash/noop';
 import { AWSPinpointProvider } from './Providers';
 import {
@@ -167,9 +168,7 @@ class NotificationsClass {
 				return pluggable.filterMessages(messages, event);
 			})
 		);
-		// Since there is only one notification provider right now, just call the
-		// handler with the result of that promise for now
-		this.filteredInAppMessagesHandler(messages[0]);
+		this.filteredInAppMessagesHandler(flatten(messages));
 	};
 
 	recordInAppMessageDisplayed = async (messageId: string): Promise<void[]> => {
