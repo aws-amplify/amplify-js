@@ -27,7 +27,11 @@ import {
 	NotificationsProvider,
 } from '../../types';
 import TempPinpointClient from '../client';
-import { DailyMessageCounter, MessageCountMap, MessageCounts } from './types';
+import {
+	DailyInAppMessageCounter,
+	InAppMessageCountMap,
+	InAppMessageCounts,
+} from './types';
 import {
 	dispatchNotificationEvent,
 	getStartOfDay,
@@ -48,7 +52,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 	private config;
 	private endpointUpdated = false;
 	private initialized = false;
-	private sessionMessageCountMap: MessageCountMap;
+	private sessionMessageCountMap: InAppMessageCountMap;
 	private sessionTracker: SessionTracker;
 
 	constructor() {
@@ -260,14 +264,14 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		const today = getStartOfDay();
 		const item = storage.getItem(MESSAGE_DAILY_COUNT_KEY);
 		// Parse stored count or initialize as empty count
-		const counter: DailyMessageCounter = item
+		const counter: DailyInAppMessageCounter = item
 			? JSON.parse(item)
 			: { count: 0, lastCountTimestamp: today };
 		// If the stored counter timestamp is today, use it as the count, otherwise reset to 0
 		return counter.lastCountTimestamp === today ? counter.count : 0;
 	};
 
-	private getTotalCountMap = (): MessageCountMap => {
+	private getTotalCountMap = (): InAppMessageCountMap => {
 		const { storage } = this.config;
 		const item = storage.getItem(MESSAGE_TOTAL_COUNT_KEY);
 		// Parse stored count map or initialize as empty
@@ -280,7 +284,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		return countMap[messageId] || 0;
 	};
 
-	private getMessageCounts = (messageId: string): MessageCounts => {
+	private getMessageCounts = (messageId: string): InAppMessageCounts => {
 		try {
 			return {
 				sessionCount: this.getSessionCount(messageId),
@@ -298,7 +302,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 
 	private setDailyCount = (count: number): void => {
 		const { storage } = this.config;
-		const dailyCount: DailyMessageCounter = {
+		const dailyCount: DailyInAppMessageCounter = {
 			count,
 			lastCountTimestamp: getStartOfDay(),
 		};
@@ -309,7 +313,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		}
 	};
 
-	private setTotalCountMap = (countMap: MessageCountMap): void => {
+	private setTotalCountMap = (countMap: InAppMessageCountMap): void => {
 		const { storage } = this.config;
 		try {
 			storage.setItem(MESSAGE_TOTAL_COUNT_KEY, JSON.stringify(countMap));
@@ -319,7 +323,10 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 	};
 
 	private setTotalCount = (messageId: string, count: number): void => {
-		const updatedMap = { ...this.getTotalCountMap(), [messageId]: count };
+		const updatedMap = {
+			...this.getTotalCountMap(),
+			[messageId]: count,
+		};
 		this.setTotalCountMap(updatedMap);
 	};
 

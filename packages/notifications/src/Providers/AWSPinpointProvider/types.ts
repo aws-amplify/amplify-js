@@ -1,11 +1,11 @@
-export type MessageCountMap = Record<string, number>;
+export type InAppMessageCountMap = Record<string, number>;
 
-export type DailyMessageCounter = {
+export type DailyInAppMessageCounter = {
 	count: number;
 	lastCountTimestamp: string;
 };
 
-export type MessageCounts = {
+export type InAppMessageCounts = {
 	sessionCount: number;
 	dailyCount: number;
 	totalCount: number;
