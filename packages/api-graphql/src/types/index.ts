@@ -14,12 +14,10 @@
 import { GraphQLError } from 'graphql/error/GraphQLError';
 import { DocumentNode } from 'graphql/language/ast';
 
-type GRAPHQL_STR_MODE = 'API_KEY' | 'AWS_IAM' | 'OPENID_CONNECT' | 'AMAZON_COGNITO_USER_POOLS' | 'AWS_LAMBDA';
-
 export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: object;
-	authMode?: GRAPHQL_AUTH_MODE | GRAPHQL_STR_MODE;
+	authMode?: keyof typeof GRAPHQL_AUTH_MODE;
 	authToken?: string;
 }
 
