@@ -1120,7 +1120,7 @@ describe('verifyAttribute(), getAttributeVerificationCode', () => {
 		netRequestMockSuccess(true);
 		cognitoUser.getAttributeVerificationCode(...getAttrsVerifCodeDefaults);
 		callback.inputVerificationCode = jest.fn();
-		expect(callback.onSuccess.mock.calls.length).toEqual(1);
+		expect(callback.onSuccess).toHaveBeenCalledWith('SUCCESS');
 	});
 
 	test('when inputVerificationCode exists in the callback, call inputVerifier with the data', () => {
@@ -1169,7 +1169,7 @@ describe('confirmPassword() and forgotPassword()', () => {
 	test('happy path should callback onSuccess', () => {
 		netRequestMockSuccess(true);
 		cognitoUser.confirmPassword(...confirmPasswordDefaults);
-		expect(callback.onSuccess.mock.calls.length).toEqual(1);
+		expect(callback.onSuccess).toHaveBeenCalledWith('SUCCESS')
 	});
 
 	test('client request throws an error', () => {
