@@ -12,13 +12,11 @@ import {
 	ParameterizedStatement,
 } from './SQLiteUtils';
 
-import { Adapter } from './index';
-import { ModelInstanceCreator } from '../../datastore/datastore';
 import {
+	Adapter,
+	ModelInstanceCreator,
 	ModelPredicateCreator,
 	ModelSortPredicateCreator,
-} from '../../predicates';
-import {
 	InternalSchema,
 	isPredicateObj,
 	ModelInstanceMetadata,
@@ -31,13 +29,15 @@ import {
 	PredicateObject,
 	PredicatesGroup,
 	QueryOne,
-} from '../../types';
-import {
+	util,
+} from '@aws-amplify/datastore';
+
+const {
 	exhaustiveCheck,
 	traverseModel,
 	validatePredicate,
 	isModelConstructor,
-} from '../../util';
+} = util;
 
 const logger = new Logger('DataStore');
 export class SQLiteAdapter implements Adapter {

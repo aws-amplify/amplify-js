@@ -1,6 +1,7 @@
 import {
 	InternalSchema,
 	SchemaModel,
+	ModelField,
 	PersistentModel,
 	isGraphQLScalarType,
 	GraphQLScalarType,
@@ -12,13 +13,15 @@ import {
 	isPredicateGroup,
 	isModelFieldType,
 	isTargetNameAssociation,
-} from '../../types';
-import {
+	util,
+} from '@aws-amplify/datastore';
+
+const {
 	USER,
 	exhaustiveCheck,
 	isNonModelConstructor,
 	isModelConstructor,
-} from '../../util';
+} = util;
 
 export type ParameterizedStatement = [string, any[]];
 
@@ -34,7 +37,7 @@ const valuesFromModel = (model): [string, any[]] => {
 	return [paramaterized, values];
 };
 
-const updateSet = model => {
+const updateSet: (model: any) => [any, any] = model => {
 	const values = [];
 	const paramaterized = Object.entries(model)
 		.filter(([k]) => k !== 'id')
@@ -85,7 +88,7 @@ export function modelCreateTableStatement(
 	model: SchemaModel,
 	userModel: boolean = false
 ): string {
-	let fields = Object.values(model.fields).reduce((acc, field) => {
+	let fields = Object.values(model.fields).reduce((acc, field: ModelField) => {
 		if (isGraphQLScalarType(field.type)) {
 			if (field.name === 'id') {
 				return acc + '"id" PRIMARY KEY NOT NULL';
@@ -110,7 +113,7 @@ export function modelCreateTableStatement(
 				let columnParam = `"${field.name}" TEXT${required}`;
 				// check if this field has been explicitly defined in the model
 				const fkDefinedInModel = Object.values(model.fields).find(
-					f => f.name === field.association.targetName
+					(f: ModelField) => f.name === field.association.targetName
 				);
 
 				// only add auto-generate it if not

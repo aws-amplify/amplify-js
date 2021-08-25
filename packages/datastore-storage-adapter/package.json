@@ -1,24 +1,17 @@
 {
-	"name": "@aws-amplify/datastore",
-	"version": "3.3.3",
-	"description": "AppSyncLocal support for aws-amplify",
-	"main": "./lib/index.js",
-	"module": "./lib-esm/index.js",
+  "name": "@aws-amplify/datastore-storage-adapter",
+  "version": "1.0.0",
+  "description": "SQLite storage adapter for Amplify DataStore ",
+  "main": "./lib/index.js",
+  "module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js"
 	},
-	"publishConfig": {
+  "publishConfig": {
 		"access": "public"
 	},
-	"sideEffects": [
-		"./src/datastore/datastore.ts",
-		"./lib/datastore/datastore.js",
-		"./lib-esm/datastore/datastore.js",
-		"./dist/aws-amplify-datastore.min.js",
-		"./dist/aws-amplify-datastore.js"
-	],
-	"scripts": {
+  "scripts": {
 		"test": "npm run lint && jest -w 1 --coverage",
 		"build-with-test": "npm test && npm run build",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
@@ -40,27 +33,14 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
-	"devDependencies": {
-		"@react-native-community/netinfo": "4.7.0",
-		"@types/uuid": "3.4.5",
-		"dexie": "3.0.3",
-		"dexie-export-import": "1.0.0-rc.2",
-		"fake-indexeddb": "3.0.0"
-	},
-	"dependencies": {
-		"@aws-amplify/api": "4.0.11",
-		"@aws-amplify/auth": "4.3.1",
-		"@aws-amplify/core": "4.2.5",
-		"@aws-amplify/pubsub": "4.1.3",
-		"amazon-cognito-identity-js": "5.1.0",
-		"idb": "5.0.6",
-		"immer": "8.0.1",
-		"ulid": "2.3.0",
-		"uuid": "3.3.2",
-		"zen-observable-ts": "0.8.19",
-		"zen-push": "0.2.1"
-	},
-	"jest": {
+  "dependencies": {
+    "@aws-amplify/core": "4.2.4",
+    "@aws-amplify/datastore": "3.3.2"
+  },
+  "devDependencies": {
+    "react-native-sqlite-storage": "5.0.0"
+  },
+  "jest": {
 		"globals": {
 			"ts-jest": {
 				"diagnostics": true,
@@ -68,7 +48,6 @@
 					"lib": [
 						"es5",
 						"es2015",
-						"dom",
 						"esnext.asynciterable",
 						"es2019"
 					],

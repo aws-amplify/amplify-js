@@ -11,15 +11,15 @@ import {
 	deleteByIdStatement,
 	deleteByPredicateStatement,
 	modelCreateTableStatement,
-} from '../src/storage/adapter/SQLiteUtils';
+} from '../src/SQLiteAdapter/SQLiteUtils';
 import {
 	InternalSchema,
 	PersistentModelConstructor,
 	QueryOne,
 	SchemaModel,
-} from '../src/types';
+	initSchema as initSchemaType,
+} from '@aws-amplify/datastore';
 import { Model, testSchema, internalTestSchema } from './helpers';
-import { initSchema as initSchemaType } from '../src/datastore/datastore';
 
 let initSchema: typeof initSchemaType;
 
@@ -38,7 +38,7 @@ describe('SQLiteUtils tests', () => {
 	let Model: PersistentModelConstructor<Model>;
 
 	beforeAll(async () => {
-		({ initSchema } = require('../src/datastore/datastore'));
+		({ initSchema } = require('@aws-amplify/datastore'));
 
 		const classes = initSchema(testSchema());
 

@@ -1,6 +1,6 @@
 import SQLite from 'react-native-sqlite-storage';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { PersistentModel } from '../../types';
+import { PersistentModel } from '@aws-amplify/datastore';
 import { ParameterizedStatement } from './SQLiteUtils';
 
 const logger = new Logger('SQLiteDatabase');
