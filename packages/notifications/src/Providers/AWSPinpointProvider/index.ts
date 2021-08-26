@@ -168,10 +168,9 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 				await storage.sync();
 			}
 			this.config.endpointId = await getEndpointId(cacheKey);
-		} catch (err) {
-			logger.error(`failed to initialize ${providerName}`, err);
-		} finally {
 			this.initialized = true;
+		} catch (err) {
+			logger.error(`Failed to initialize ${providerName}`, err);
 		}
 	};
 
