@@ -15,7 +15,6 @@ import { Logger, Hub, Credentials, ICredentials } from '@aws-amplify/core';
 import * as formatURL from '@aws-sdk/util-format-url';
 import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
-import * as events from 'events';
 
 import { S3CopySource, S3CopyDestination, StorageOptions, S3ProviderGetConfig } from '../../src/types';
 /**
@@ -29,11 +28,13 @@ const mockEventEmitter = {
 	on: jest.fn(),
 	removeAllListeners: mockRemoveAllListeners,
 };
+
 jest.mock('events', function () {
 	return {
 		EventEmitter: jest.fn().mockImplementation(() => mockEventEmitter)
 	}
 })
+
 S3Client.prototype.send = jest.fn(async command => {
 	if (command instanceof ListObjectsCommand) {
 		if (command.input.Prefix === 'public/emptyListResultsPath') {
@@ -258,10 +259,8 @@ describe('StorageProvider test', () => {
 			expect(await storage.get('key', { download: true })).toEqual({
 				Body: [1, 2],
 			});
-			// @ts-ignore
 			expect(mockEventEmitter.on).toBeCalledWith('sendDownloadProgress', expect.any(Function));
 			// Get the anonymous function called by the emitter
-			// @ts-ignore
 			const emitterOnFn = mockEventEmitter.on.mock.calls[0][1];
 			// Manully invoke it for testing
 			emitterOnFn('arg');
@@ -274,13 +273,6 @@ describe('StorageProvider test', () => {
 				return Promise.resolve(credentials);
 			});
 			const loggerSpy = jest.spyOn(Logger.prototype, '_log');
-			const mockEventEmitter = {
-				emit: jest.fn(),
-				on: jest.fn(),
-				removeAllListeners: jest.fn(),
-			};
-			// @ts-ignore
-			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
 			const downloadOptionsWithProgressCallback = Object.assign({}, options);
 			const storage = new StorageProvider();
 			storage.configure(downloadOptionsWithProgressCallback);
@@ -656,12 +648,6 @@ describe('StorageProvider test', () => {
 				});
 			});
 			const mockCallback = jest.fn();
-			const mockEventEmitter = {
-				emit: jest.fn(),
-				on: jest.fn(),
-			};
-			// @ts-ignore
-			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
 			const storage = new StorageProvider();
 			storage.configure(options);
 			await storage.put('key', 'object', {
@@ -683,12 +669,6 @@ describe('StorageProvider test', () => {
 				});
 			});
 			const loggerSpy = jest.spyOn(Logger.prototype, '_log');
-			const mockEventEmitter = {
-				emit: jest.fn(),
-				on: jest.fn(),
-			};
-			// @ts-ignore
-			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
 			const storage = new StorageProvider();
 			storage.configure(options);
 			await storage.put('key', 'object', {
