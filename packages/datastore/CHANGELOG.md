@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.3.2...@aws-amplify/datastore@3.3.3) (2021-08-26)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** check read-only at instance level ([#8794](https://github.com/aws-amplify/amplify-js/issues/8794)) ([b278875](https://github.com/aws-amplify/amplify-js/commit/b278875491bf6959591d5aea6fbdddfc78f3fe9b))
+
+
+
+
+
 ## [3.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.3.1...@aws-amplify/datastore@3.3.2) (2021-08-19)
 
 **Note:** Version bump only for package @aws-amplify/datastore
