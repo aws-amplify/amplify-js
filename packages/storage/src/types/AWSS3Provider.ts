@@ -49,6 +49,7 @@ export interface S3ProviderPutConfig extends StorageOptions {
 	expires?: PutObjectRequest['Expires'];
 	metadata?: PutObjectRequest['Metadata'];
 	tagging?: PutObjectRequest['Tagging'];
+	useAccelerateEndpoint?: boolean;
 }
 
 export interface S3ProviderPutOutput {

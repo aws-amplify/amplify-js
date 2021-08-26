@@ -353,6 +353,7 @@ export class AWSS3ProviderManagedUpload {
 			region,
 			dangerouslyConnectToHttpEndpointForTesting,
 			cancelTokenSource,
+			useAccelerateEndpoint
 		} = config;
 		let localTestingConfig = {};
 
@@ -368,6 +369,7 @@ export class AWSS3ProviderManagedUpload {
 		const client = new S3Client({
 			region,
 			credentials,
+			useAccelerateEndpoint,
 			...localTestingConfig,
 			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
 			customUserAgent: getAmplifyUserAgent(),
