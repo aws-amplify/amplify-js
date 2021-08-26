@@ -143,7 +143,7 @@ export function modelCreateTableStatement(
 			if (isTargetNameAssociation(field.association)) {
 				const required = field.isRequired ? ' NOT NULL' : '';
 
-				let columnParam = `"${field.name}" TEXT${required}`;
+				let columnParam = `"${field.name}" TEXT`;
 				// check if this field has been explicitly defined in the model
 				const fkDefinedInModel = Object.values(model.fields).find(
 					(f: ModelField) => f.name === field.association.targetName
@@ -174,7 +174,7 @@ export function modelCreateTableStatement(
 
 	if (userModel) {
 		fields +=
-			', "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" NUMERIC';
+			', "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" INTEGER';
 	}
 
 	const createTableStatement = `CREATE TABLE IF NOT EXISTS "${model.name}" (${fields});`;

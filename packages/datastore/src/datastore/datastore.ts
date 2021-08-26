@@ -280,6 +280,20 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 			const jsType = GraphQLScalarType.getJSType(type);
 			const validateScalar = GraphQLScalarType.getValidationFunction(type);
 
+			if (type === 'AWSJSON') {
+				if (typeof v === jsType) {
+					return;
+				}
+				if (typeof v === 'string') {
+					try {
+						JSON.parse(v);
+						return;
+					} catch (error) {
+						throw new Error(`Field ${name} is an invalid JSON object. ${v}`);
+					}
+				}
+			}
+
 			if (isArray) {
 				let errorTypeText: string = jsType;
 				if (!isRequired) {
@@ -343,6 +357,35 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 	}
 };
 
+const castInstanceType = (
+	modelDefinition: SchemaModel | SchemaNonModel,
+	k: string,
+	v: any
+) => {
+	const { isArray, type } = modelDefinition.fields[k] || {};
+	// attempt to parse stringified JSON
+	if (
+		typeof v === 'string' &&
+		(isArray ||
+			type === 'AWSJSON' ||
+			isNonModelFieldType(type) ||
+			isModelFieldType(type))
+	) {
+		try {
+			return JSON.parse(v);
+		} catch {
+			// if JSON is invalid, don't throw and let modelValidator handle it
+		}
+	}
+
+	// cast from SQLite representation of boolean to JS boolean
+	if (typeof v === 'number' && type === 'Boolean') {
+		return Boolean(v);
+	}
+
+	return v;
+};
+
 const initializeInstance = <T>(
 	init: ModelInit<T>,
 	modelDefinition: SchemaModel | SchemaNonModel,
@@ -350,27 +393,7 @@ const initializeInstance = <T>(
 ) => {
 	const modelValidator = validateModelFields(modelDefinition);
 	Object.entries(init).forEach(([k, v]) => {
-		const { isArray, type } = modelDefinition.fields[k] || {};
-		let parsedValue = v;
-
-		// attempt to parse stringified JSON
-		if (
-			typeof v === 'string' &&
-			(isArray ||
-				type === 'AWSJSON' ||
-				isNonModelFieldType(type) ||
-				isModelFieldType(type))
-		) {
-			try {
-				parsedValue = JSON.parse(v);
-			} catch {
-				// if JSON is invalid, don't throw and let modelValidator handle it
-			}
-		}
-
-		if (typeof v === 'number' && type === 'Boolean') {
-			parsedValue = Boolean(v);
-		}
+		const parsedValue = castInstanceType(modelDefinition, k, v);
 
 		modelValidator(k, parsedValue);
 		(<any>draft)[k] = parsedValue;
@@ -441,7 +464,9 @@ const createModelClass = <T extends PersistentModel>(
 					draft.id = source.id;
 					const modelValidator = validateModelFields(modelDefinition);
 					Object.entries(draft).forEach(([k, v]) => {
-						modelValidator(k, v);
+						const parsedValue = castInstanceType(modelDefinition, k, v);
+
+						modelValidator(k, parsedValue);
 					});
 				},
 				p => (patches = p)

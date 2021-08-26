@@ -26,14 +26,14 @@ let initSchema: typeof initSchemaType;
 
 const INTERNAL_TEST_SCHEMA_STATEMENTS = [
 	'CREATE TABLE IF NOT EXISTS "Setting" ("id" PRIMARY KEY NOT NULL, "key" TEXT NOT NULL, "value" TEXT NOT NULL);',
-	'CREATE TABLE IF NOT EXISTS "Model" ("id" PRIMARY KEY NOT NULL, "field1" TEXT NOT NULL, "optionalField1" TEXT, "dateCreated" TEXT NOT NULL, "emails" TEXT NOT NULL, "ips" TEXT, "metadata" TEXT, "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" NUMERIC);',
-	'CREATE TABLE IF NOT EXISTS "LocalModel" ("id" PRIMARY KEY NOT NULL, "field1" TEXT NOT NULL, "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" NUMERIC);',
+	'CREATE TABLE IF NOT EXISTS "Model" ("id" PRIMARY KEY NOT NULL, "field1" TEXT NOT NULL, "optionalField1" TEXT, "dateCreated" TEXT NOT NULL, "emails" TEXT NOT NULL, "ips" TEXT, "metadata" TEXT, "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" INTEGER);',
+	'CREATE TABLE IF NOT EXISTS "LocalModel" ("id" PRIMARY KEY NOT NULL, "field1" TEXT NOT NULL, "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" INTEGER);',
 	'CREATE TABLE IF NOT EXISTS "MutationEvent" ("id" PRIMARY KEY NOT NULL, "model" TEXT NOT NULL, "data" TEXT NOT NULL, "modelId" TEXT NOT NULL, "operation" TEXT NOT NULL, "condition" TEXT NOT NULL);',
 	'CREATE TABLE IF NOT EXISTS "ModelMetadata" ("id" PRIMARY KEY NOT NULL, "namespace" TEXT NOT NULL, "model" TEXT NOT NULL, "lastSync" INTEGER, "lastFullSync" INTEGER, "fullSyncInterval" INTEGER NOT NULL);',
 ];
 
 const INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT =
-	'CREATE TABLE IF NOT EXISTS "PostEditor" ("id" PRIMARY KEY NOT NULL, "post" TEXT NOT NULL, "postID" TEXT NOT NULL, "editor" TEXT NOT NULL, "editorID" TEXT NOT NULL, "createdAt" TEXT, "updatedAt" TEXT, "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" NUMERIC);';
+	'CREATE TABLE IF NOT EXISTS "PostEditor" ("id" PRIMARY KEY NOT NULL, "post" TEXT, "postID" TEXT NOT NULL, "editor" TEXT, "editorID" TEXT NOT NULL, "createdAt" TEXT, "updatedAt" TEXT, "_version" INTEGER, "_lastChangedAt" INTEGER, "_deleted" INTEGER);';
 
 describe('SQLiteUtils tests', () => {
 	let Model: PersistentModelConstructor<Model>;

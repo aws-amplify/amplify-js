@@ -209,7 +209,7 @@ export namespace GraphQLScalarType {
 			typeof GraphQLScalarType,
 			'getJSType' | 'getValidationFunction' | 'getSQLiteType'
 		>
-	): 'string' | 'number' | 'boolean' {
+	): 'string' | 'number' | 'boolean' | 'object' {
 		switch (scalar) {
 			case 'Boolean':
 				return 'boolean';
@@ -219,7 +219,6 @@ export namespace GraphQLScalarType {
 			case 'AWSTime':
 			case 'AWSDateTime':
 			case 'AWSEmail':
-			case 'AWSJSON':
 			case 'AWSURL':
 			case 'AWSPhone':
 			case 'AWSIPAddress':
@@ -228,6 +227,8 @@ export namespace GraphQLScalarType {
 			case 'Float':
 			case 'AWSTimestamp':
 				return 'number';
+			case 'AWSJSON':
+				return 'object';
 			default:
 				exhaustiveCheck(scalar as never);
 		}
@@ -238,10 +239,12 @@ export namespace GraphQLScalarType {
 			typeof GraphQLScalarType,
 			'getJSType' | 'getValidationFunction' | 'getSQLiteType'
 		>
-	): 'TEXT' | 'INTEGER' | 'REAL' | 'NUMERIC' | 'BLOB' {
+	): 'TEXT' | 'INTEGER' | 'REAL' | 'BLOB' {
 		switch (scalar) {
 			case 'Boolean':
-				return 'NUMERIC';
+			case 'Int':
+			case 'AWSTimestamp':
+				return 'INTEGER';
 			case 'ID':
 			case 'String':
 			case 'AWSDate':
@@ -253,9 +256,6 @@ export namespace GraphQLScalarType {
 			case 'AWSPhone':
 			case 'AWSIPAddress':
 				return 'TEXT';
-			case 'Int':
-			case 'AWSTimestamp':
-				return 'INTEGER';
 			case 'Float':
 				return 'REAL';
 			default:
