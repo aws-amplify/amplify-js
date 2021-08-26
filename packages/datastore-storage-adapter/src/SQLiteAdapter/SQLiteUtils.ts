@@ -13,6 +13,9 @@ import {
 	isPredicateGroup,
 	isModelFieldType,
 	isTargetNameAssociation,
+	isModelAttributeAuth,
+	ModelAttributeAuth,
+	ModelAuthRule,
 	util,
 } from '@aws-amplify/datastore';
 
@@ -84,10 +87,40 @@ export function generateSchemaStatements(schema: InternalSchema): string[] {
 	});
 }
 
+export const implicitAuthFieldsForModel: (model: SchemaModel) => string[] = (
+	model: SchemaModel
+) => {
+	if (!model.attributes || !model.attributes.length) {
+		return [];
+	}
+
+	const authRules: ModelAttributeAuth = model.attributes.find(
+		isModelAttributeAuth
+	);
+
+	if (!authRules) {
+		return [];
+	}
+
+	const authFieldsForModel = authRules.properties.rules
+		.filter((rule: ModelAuthRule) => rule.ownerField || rule.groupsField)
+		.map((rule: ModelAuthRule) => rule.ownerField || rule.groupsField);
+
+	return authFieldsForModel.filter((authField: string) => {
+		const authFieldExplicitlyDefined = Object.values(model.fields).find(
+			(f: ModelField) => f.name === authField
+		);
+		return !authFieldExplicitlyDefined;
+	});
+};
+
 export function modelCreateTableStatement(
 	model: SchemaModel,
 	userModel: boolean = false
 ): string {
+	// implicitly defined auth fields, e.g., `owner`, `groupsField`, etc.
+	const implicitAuthFields = implicitAuthFieldsForModel(model);
+
 	let fields = Object.values(model.fields).reduce((acc, field: ModelField) => {
 		if (isGraphQLScalarType(field.type)) {
 			if (field.name === 'id') {
@@ -134,6 +167,10 @@ export function modelCreateTableStatement(
 
 		return acc + `, ${columnParam}`;
 	}, '');
+
+	implicitAuthFields.forEach((authField: string) => {
+		fields += `, ${authField} TEXT`;
+	});
 
 	if (userModel) {
 		fields +=

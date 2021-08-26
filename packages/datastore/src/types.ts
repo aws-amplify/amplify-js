@@ -80,6 +80,35 @@ export function isTargetNameAssociation(
 export type ModelAttributes = ModelAttribute[];
 type ModelAttribute = { type: string; properties?: Record<string, any> };
 
+export type ModelAuthRule = {
+	allow: string;
+	provider?: string;
+	operations?: string[];
+	ownerField?: string;
+	identityClaim?: string;
+	groups?: string[];
+	groupClaim?: string;
+	groupsField?: string;
+};
+
+export type ModelAttributeAuth = {
+	type: 'auth';
+	properties: {
+		rules: ModelAuthRule[];
+	};
+};
+
+export function isModelAttributeAuth(
+	attr: ModelAttribute
+): attr is ModelAttributeAuth {
+	return (
+		attr.type === 'auth' &&
+		attr.properties &&
+		attr.properties.rules &&
+		attr.properties.rules.length > 0
+	);
+}
+
 type ModelAttributeKey = {
 	type: 'key';
 	properties: {
@@ -308,7 +337,7 @@ export function isEnumFieldType(obj: any): obj is EnumFieldType {
 	return false;
 }
 
-type ModelField = {
+export type ModelField = {
 	name: string;
 	type:
 		| keyof Omit<

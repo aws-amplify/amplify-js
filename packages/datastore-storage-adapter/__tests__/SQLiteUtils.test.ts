@@ -11,6 +11,7 @@ import {
 	deleteByIdStatement,
 	deleteByPredicateStatement,
 	modelCreateTableStatement,
+	implicitAuthFieldsForModel,
 } from '../src/SQLiteAdapter/SQLiteUtils';
 import {
 	InternalSchema,
@@ -68,6 +69,26 @@ describe('SQLiteUtils tests', () => {
 			expect(modelCreateTableStatement(postEditorExplicit, true)).toEqual(
 				INTERNAL_TEST_SCHEMA_MANY_TO_MANY_STATEMENT
 			);
+		});
+	});
+
+	describe('implicitAuthFieldsForModel', () => {
+		it('should extract implicitly defined owner field from model attributes', () => {
+			expect(implicitAuthFieldsForModel(ownerAuthImplicit)).toEqual(['owner']);
+		});
+
+		it('should skip explicitly defined owner field', () => {
+			expect(implicitAuthFieldsForModel(ownerAuthExplicit)).toEqual([]);
+		});
+
+		it('should extract implicitly defined groups field from model attributes', () => {
+			expect(implicitAuthFieldsForModel(groupsAuthImplicit)).toEqual([
+				'allowedGroups',
+			]);
+		});
+
+		it('should skip explicitly defined groups field', () => {
+			expect(implicitAuthFieldsForModel(groupsAuthExplicit)).toEqual([]);
 		});
 	});
 
@@ -481,6 +502,156 @@ const postEditorExplicit: SchemaModel = {
 			properties: {
 				name: 'byEditor',
 				fields: ['editorID', 'postID'],
+			},
+		},
+	],
+};
+
+const ownerAuthImplicit: SchemaModel = {
+	name: 'OwnerAuthImplicit',
+	pluralName: 'OwnerAuthImplicit',
+	fields: {
+		id: {
+			name: 'id',
+			isArray: false,
+			type: 'ID',
+			isRequired: true,
+			attributes: [],
+		},
+	},
+	attributes: [
+		{
+			type: 'auth',
+			properties: {
+				rules: [
+					{
+						provider: 'userPools',
+						ownerField: 'owner',
+						allow: 'owner',
+						identityClaim: 'cognito:username',
+						operations: ['create', 'update', 'delete', 'read'],
+					},
+					{
+						allow: 'public',
+						operations: ['read'],
+					},
+				],
+			},
+		},
+	],
+};
+
+const ownerAuthExplicit: SchemaModel = {
+	name: 'OwnerAuthImplicit',
+	pluralName: 'OwnerAuthImplicit',
+	fields: {
+		id: {
+			name: 'id',
+			isArray: false,
+			type: 'ID',
+			isRequired: true,
+			attributes: [],
+		},
+		owner: {
+			name: 'owner',
+			isArray: false,
+			type: 'String',
+			isRequired: false,
+			attributes: [],
+		},
+	},
+	attributes: [
+		{
+			type: 'auth',
+			properties: {
+				rules: [
+					{
+						provider: 'userPools',
+						ownerField: 'owner',
+						allow: 'owner',
+						identityClaim: 'cognito:username',
+						operations: ['create', 'update', 'delete', 'read'],
+					},
+					{
+						allow: 'public',
+						operations: ['read'],
+					},
+				],
+			},
+		},
+	],
+};
+
+const groupsAuthImplicit: SchemaModel = {
+	name: 'OwnerAuthImplicit',
+	pluralName: 'OwnerAuthImplicit',
+	fields: {
+		id: {
+			name: 'id',
+			isArray: false,
+			type: 'ID',
+			isRequired: true,
+			attributes: [],
+		},
+	},
+	attributes: [
+		{
+			type: 'auth',
+			properties: {
+				rules: [
+					{
+						groupClaim: 'cognito:groups',
+						provider: 'userPools',
+						allow: 'groups',
+						groupsField: 'allowedGroups',
+						operations: ['create', 'update', 'delete', 'read'],
+					},
+					{
+						allow: 'public',
+						operations: ['read'],
+					},
+				],
+			},
+		},
+	],
+};
+
+const groupsAuthExplicit: SchemaModel = {
+	name: 'OwnerAuthImplicit',
+	pluralName: 'OwnerAuthImplicit',
+	fields: {
+		id: {
+			name: 'id',
+			isArray: false,
+			type: 'ID',
+			isRequired: true,
+			attributes: [],
+		},
+		allowedGroups: {
+			name: 'allowedGroups',
+			isArray: false,
+			type: 'String',
+			isRequired: false,
+			attributes: [],
+		},
+	},
+	attributes: [
+		{
+			type: 'auth',
+			properties: {
+				rules: [
+					{
+						groupClaim: 'cognito:groups',
+						provider: 'userPools',
+						allow: 'groups',
+						groupsField: 'allowedGroups',
+						operations: ['create', 'update', 'delete', 'read'],
+					},
+					{
+						allow: 'public',
+						operations: ['read'],
+					},
+				],
 			},
 		},
 	],
