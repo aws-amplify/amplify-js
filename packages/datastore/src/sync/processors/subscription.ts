@@ -19,6 +19,7 @@ import {
 	getModelAuthModes,
 	getUserGroupsFromToken,
 	TransformerMutationType,
+	getTokenForCustomAuth,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
 import { validatePredicate } from '../../util';
@@ -338,7 +339,7 @@ class SubscriptionProcessor {
 							};
 
 							// Retry failed subscriptions with next auth mode (if available)
-							const authModeRetry = operation => {
+							const authModeRetry = async operation => {
 								const {
 									opType: transformerMutationType,
 									opName,
@@ -355,6 +356,11 @@ class SubscriptionProcessor {
 									cognitoTokenPayload,
 									oidcTokenPayload,
 									readAuthModes[operationAuthModeAttempts[operation]]
+								);
+
+								const authToken = await getTokenForCustomAuth(
+									authMode,
+									this.amplifyConfig
 								);
 
 								const variables = {};
@@ -380,7 +386,7 @@ class SubscriptionProcessor {
 									Observable<{
 										value: GraphQLResult<Record<string, PersistentModel>>;
 									}>
-								>(<unknown>API.graphql({ query, variables, ...{ authMode } }));
+								>(<unknown>API.graphql({ query, variables, ...{ authMode }, authToken }));
 								let subscriptionReadyCallback: () => void;
 
 								subscriptions[modelDefinition.name][

@@ -422,6 +422,7 @@ export class AmplifySignUp {
 								<amplify-button
 									type="submit"
 									data-test="sign-up-create-account-button"
+                  disabled={this.loading}
 								>
 									{this.loading ? (
 										<amplify-loading-spinner />

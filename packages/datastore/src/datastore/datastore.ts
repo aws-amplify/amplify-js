@@ -373,13 +373,18 @@ const createModelClass = <T extends PersistentModel>(
 						_deleted,
 					} = modelInstanceMetadata;
 
-					const id =
-						// instancesIds is set by modelInstanceCreator, it is accessible only internally
-						_id !== null && _id !== undefined
-							? _id
-							: modelDefinition.syncable
-							? uuid4()
-							: ulid();
+					// instancesIds are set by modelInstanceCreator, it is accessible only internally
+					const isInternal = _id !== null && _id !== undefined;
+
+					const id = isInternal
+						? _id
+						: modelDefinition.syncable
+						? uuid4()
+						: ulid();
+
+					if (!isInternal) {
+						checkReadOnlyPropertyOnCreate(draft, modelDefinition);
+					}
 
 					draft.id = id;
 
@@ -406,7 +411,7 @@ const createModelClass = <T extends PersistentModel>(
 			const model = produce(
 				source,
 				draft => {
-					fn(<MutableModel<T>>draft);
+					fn(<MutableModel<T>>(draft as unknown));
 					draft.id = source.id;
 					const modelValidator = validateModelFields(modelDefinition);
 					Object.entries(draft).forEach(([k, v]) => {
@@ -418,6 +423,7 @@ const createModelClass = <T extends PersistentModel>(
 
 			if (patches.length) {
 				modelPatchesMap.set(model, [patches, source]);
+				checkReadOnlyPropertyOnUpdate(patches, modelDefinition);
 			}
 
 			return model;
@@ -446,6 +452,36 @@ const createModelClass = <T extends PersistentModel>(
 	Object.defineProperty(clazz, 'name', { value: modelDefinition.name });
 
 	return clazz;
+};
+
+const checkReadOnlyPropertyOnCreate = <T extends PersistentModel>(
+	draft: T,
+	modelDefinition: SchemaModel
+) => {
+	const modelKeys = Object.keys(draft);
+	const { fields } = modelDefinition;
+
+	modelKeys.forEach(key => {
+		if (fields[key] && fields[key].isReadOnly) {
+			throw new Error(`${key} is read-only.`);
+		}
+	});
+};
+
+const checkReadOnlyPropertyOnUpdate = (
+	patches: Patch[],
+	modelDefinition: SchemaModel
+) => {
+	const patchArray = patches.map(p => [p.path[0], p.value]);
+	const { fields } = modelDefinition;
+
+	patchArray.forEach(([key, val]) => {
+		if (!val || !fields[key]) return;
+
+		if (fields[key].isReadOnly) {
+			throw new Error(`${key} is read-only.`);
+		}
+	});
 };
 
 const createNonModelClass = <T>(typeDefinition: SchemaNonModel) => {
@@ -616,6 +652,7 @@ class DataStore {
 		ModelPredicate<any>
 	> = new WeakMap<SchemaModel, ModelPredicate<any>>();
 	private sessionId: string;
+	private getAuthToken: Promise<string>;
 
 	getModuleName() {
 		return 'DataStore';
@@ -1066,6 +1103,7 @@ class DataStore {
 			syncPageSize: configSyncPageSize,
 			fullSyncInterval: configFullSyncInterval,
 			syncExpressions: configSyncExpressions,
+			authProviders: configAuthProviders,
 			...configFromAmplify
 		} = config;
 
@@ -1090,6 +1128,10 @@ class DataStore {
 				this.authModeStrategy = defaultAuthStrategy;
 				break;
 		}
+
+		// store on config object, so that Sync, Subscription, and Mutation processors can have access
+		this.amplifyConfig.authProviders =
+			(configDataStore && configDataStore.authProviders) || configAuthProviders;
 
 		this.syncExpressions =
 			(configDataStore && configDataStore.syncExpressions) ||

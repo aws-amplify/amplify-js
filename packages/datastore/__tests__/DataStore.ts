@@ -528,6 +528,61 @@ describe('DataStore tests', () => {
 			expect(patches2).toMatchObject(expectedPatches2);
 		});
 
+		test('Read-only fields cannot be overwritten', async () => {
+			let model: Model;
+			const save = jest.fn(() => [model]);
+			const query = jest.fn(() => [model]);
+
+			jest.resetModules();
+			jest.doMock('../src/storage/storage', () => {
+				const mock = jest.fn().mockImplementation(() => {
+					const _mock = {
+						init: jest.fn(),
+						save,
+						query,
+						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+					};
+
+					return _mock;
+				});
+
+				(<any>mock).getNamespace = () => ({ models: {} });
+
+				return { ExclusiveStorage: mock };
+			});
+
+			({ initSchema, DataStore } = require('../src/datastore/datastore'));
+
+			const classes = initSchema(testSchema());
+
+			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
+
+			expect(() => {
+				new Model({
+					field1: 'something',
+					dateCreated: new Date().toISOString(),
+					createdAt: '2021-06-03T20:56:23.201Z',
+				} as any);
+			}).toThrow('createdAt is read-only.');
+
+			model = new Model({
+				field1: 'something',
+				dateCreated: new Date().toISOString(),
+			});
+
+			expect(() => {
+				Model.copyOf(model, draft => {
+					(draft as any).createdAt = '2021-06-03T20:56:23.201Z';
+				});
+			}).toThrow('createdAt is read-only.');
+
+			expect(() => {
+				Model.copyOf(model, draft => {
+					(draft as any).updatedAt = '2021-06-03T20:56:23.201Z';
+				});
+			}).toThrow('updatedAt is read-only.');
+		});
+
 		test('Instantiation validations', async () => {
 			expect(() => {
 				new Model({

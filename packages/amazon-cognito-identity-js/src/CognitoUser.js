@@ -503,6 +503,7 @@ export default class CognitoUser {
 		}
 
 		if (challengeName === 'DEVICE_SRP_AUTH') {
+			this.Session = dataAuthenticate.Session;
 			this.getDeviceResponse(callback);
 			return undefined;
 		}
@@ -672,6 +673,7 @@ export default class CognitoUser {
 				ClientId: this.pool.getClientId(),
 				ChallengeResponses: authParameters,
 				ClientMetadata: clientMetadata,
+				Session: this.Session
 			};
 			if (this.getUserContextData()) {
 				jsonReq.UserContextData = this.getUserContextData();
@@ -1339,7 +1341,11 @@ export default class CognitoUser {
 				if (err) {
 					return callback(err, null);
 				}
-				return callback(null, 'SUCCESS');
+
+				// update cached user
+				return this.getUserData(() => callback(null, 'SUCCESS'), {
+					bypassCache: true,
+				});
 			}
 		);
 		return undefined;
@@ -1694,7 +1700,7 @@ export default class CognitoUser {
 			if (err) {
 				return callback.onFailure(err);
 			}
-			return callback.onSuccess();
+			return callback.onSuccess('SUCCESS');
 		});
 	}
 
@@ -1726,7 +1732,7 @@ export default class CognitoUser {
 				if (typeof callback.inputVerificationCode === 'function') {
 					return callback.inputVerificationCode(data);
 				}
-				return callback.onSuccess();
+				return callback.onSuccess('SUCCESS');
 			}
 		);
 		return undefined;
