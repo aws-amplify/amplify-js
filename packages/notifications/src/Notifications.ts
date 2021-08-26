@@ -18,8 +18,8 @@ import {
 	HubCapsule,
 	Hub,
 	parseMobileHubConfig,
+	StorageHelper,
 } from '@aws-amplify/core';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import flatten from 'lodash/flatten';
 import noop from 'lodash/noop';
 import { AWSPinpointProvider } from './Providers';
@@ -38,20 +38,29 @@ const logger = new Logger('Notifications');
 
 class NotificationsClass {
 	private config: Record<string, any> = {};
-	private disabled: boolean = false;
 	private filteredInAppMessagesHandler: FilteredInAppMessagesHandler = noop;
-	private listeningForAnalyticEvents: boolean = false;
+	private listeningForAnalyticEvents = false;
 	private pluggables: NotificationsProvider[] = [];
+	private storageSynced = false;
+
+	constructor() {
+		this.config = {
+			storage: new StorageHelper().getStorage(),
+		};
+	}
 
 	configure = ({
 		listenForAnalyticsEvents = true,
 		filteredInAppMessagesHandler,
 		...config
 	}: NotificationsConfig = {}) => {
-		this.config = {
-			...parseMobileHubConfig(config).Analytics, // TODO: needs to be updated
-			...config,
-		};
+		// TODO: parseMobileHubConfig call needs to be updated with notifications config
+		this.config = Object.assign(
+			{},
+			this.config,
+			parseMobileHubConfig(config).Analytics,
+			config
+		);
 
 		logger.debug('configure Notifications', config);
 
@@ -70,7 +79,7 @@ class NotificationsClass {
 			this.addPluggable(new AWSPinpointProvider());
 		}
 
-		if (!this.listeningForAnalyticEvents) {
+		if (listenForAnalyticsEvents && !this.listeningForAnalyticEvents) {
 			Hub.listen('analytics', this.analyticsListener);
 			this.listeningForAnalyticEvents = true;
 		}
@@ -133,7 +142,7 @@ class NotificationsClass {
 	};
 
 	syncInAppMessages = async (providerName = 'AWSPinpoint'): Promise<any> => {
-		if (this.disabled) {
+		if (this.config.disabled) {
 			logger.debug('Notifications has been disabled');
 			return;
 		}
@@ -154,9 +163,13 @@ class NotificationsClass {
 		const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
 
 		try {
-			await AsyncStorage.removeItem(key);
-		} catch (e) {
-			logger.error(`Removal of stored In-App Messages failed: ${e}`);
+			if (!this.storageSynced) {
+				await this.syncStorage();
+			}
+			const { storage } = this.config;
+			storage.removeItem(key);
+		} catch (err) {
+			logger.error('Failed to remove in-app messages from storage', err);
 		}
 	};
 
@@ -191,12 +204,29 @@ class NotificationsClass {
 		}
 	};
 
+	private syncStorage = async (): Promise<void> => {
+		const { storage } = this.config;
+		try {
+			// Only run sync() if it's available (i.e. React Native)
+			if (typeof storage.sync === 'function') {
+				await storage.sync();
+			}
+			this.storageSynced = true;
+		} catch (err) {
+			logger.error('Failed to sync storage', err);
+		}
+	};
+
 	private getStoredMessages = async (key: string): Promise<any> => {
 		try {
-			const storedMessages = await AsyncStorage.getItem(key);
-			return JSON.parse(storedMessages);
+			if (!this.storageSynced) {
+				await this.syncStorage();
+			}
+			const { storage } = this.config;
+			const storedMessages = storage.getItem(key);
+			return storedMessages ? JSON.parse(storedMessages) : [];
 		} catch (err) {
-			logger.debug(`Unable to retrieve locally stored messages: ${err}`);
+			logger.error('Failed to retrieve in-app messages from storage', err);
 		}
 	};
 
@@ -205,15 +235,17 @@ class NotificationsClass {
 		messages: InAppMessage[]
 	): Promise<void> => {
 		if (!messages) {
-			logger.debug('no messages :(');
 			return;
 		}
 
 		try {
-			await AsyncStorage.setItem(key, JSON.stringify(messages));
-		} catch (e) {
-			// TODO: Add error handling
-			console.warn(e);
+			if (!this.storageSynced) {
+				await this.syncStorage();
+			}
+			const { storage } = this.config;
+			storage.setItem(key, JSON.stringify(messages));
+		} catch (err) {
+			logger.error('Failed to store in-app messages', err);
 		}
 	};
 }

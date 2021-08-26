@@ -49,7 +49,6 @@
 	"devDependencies": {
 		"@babel/core": "^7.12.9",
 		"@babel/runtime": "^7.12.5",
-		"@react-native-async-storage/async-storage": "^1.15.4",
 		"@types/jest": "^26.0.23",
 		"@types/react": "^17.0.11",
 		"@types/react-native": "^0.64.10",
