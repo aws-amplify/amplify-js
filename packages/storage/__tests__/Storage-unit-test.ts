@@ -1,7 +1,7 @@
 import AWSStorageProvider from '../src/providers/AWSS3Provider';
 import { Storage as StorageClass } from '../src/Storage';
 import { Storage as StorageCategory } from '../src';
-import axios from 'axios';
+import axios, { CancelToken } from 'axios';
 import { DeleteObjectCommandOutput } from '@aws-sdk/client-s3/';
 
 const credentials = {
@@ -21,7 +21,7 @@ const options = {
 describe('Storage', () => {
 	describe('constructor test', () => {
 		test('happy case', () => {
-			const storage = new StorageClass();
+			new StorageClass();
 		});
 	});
 
@@ -533,14 +533,7 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			await storage.put('key', 'object', {
-				Storage: {
-					AWSS3: {
-						bucket: 'bucket',
-						region: 'us-east-1',
-					},
-				},
-			});
+			await storage.put('key', 'object');
 			expect(put_spyon).toBeCalled();
 			put_spyon.mockClear();
 		});
@@ -567,14 +560,7 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			await storage.remove('key', {
-				Storage: {
-					AWSS3: {
-						bucket: 'bucket',
-						region: 'us-east-1',
-					},
-				},
-			});
+			await storage.remove('key');
 			expect(remove_spyon).toBeCalled();
 			remove_spyon.mockClear();
 		});
@@ -599,14 +585,7 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			await storage.list('path', {
-				Storage: {
-					AWSS3: {
-						bucket: 'bucket',
-						region: 'us-east-1',
-					},
-				},
-			});
+			await storage.list('path');
 			expect(list_spyon).toBeCalled();
 			list_spyon.mockClear();
 		});
@@ -629,17 +608,9 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			const res = await storage.copy(
+			await storage.copy(
 				{ key: 'src' },
-				{ key: 'dest' },
-				{
-					Storage: {
-						AWSS3: {
-							bucket: 'bucket',
-							region: 'us-east-1',
-						},
-					},
-				}
+				{ key: 'dest' }
 			);
 			expect(copySpyon).toBeCalled();
 		});
@@ -655,10 +626,10 @@ describe('Storage', () => {
 	});
 
 	describe('cancel test', () => {
-		let isCancelSpy = null;
-		let cancelTokenSpy = null;
-		let cancelMock = null;
-		let tokenMock = null;
+		let isCancelSpy: jest.SpyInstance;
+		let cancelTokenSpy: jest.SpyInstance;
+		let cancelMock: jest.Mock;
+		let tokenMock: jest.Mock;
 
 		beforeEach(() => {
 			cancelMock = jest.fn();
@@ -667,7 +638,7 @@ describe('Storage', () => {
 			cancelTokenSpy = jest
 				.spyOn(axios.CancelToken, 'source')
 				.mockImplementation(() => {
-					return { token: tokenMock, cancel: cancelMock };
+					return { token: tokenMock as unknown as CancelToken, cancel: cancelMock };
 				});
 		});
 
@@ -683,14 +654,7 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			const request = storage.put('test.txt', 'test upload', {
-				Storage: {
-					AWSS3: {
-						bucket: 'bucket',
-						region: 'us-east-1',
-					},
-				},
-			});
+			const request = storage.put('test.txt', 'test upload');
 			storage.cancel(request, 'request cancelled');
 			expect(cancelTokenSpy).toBeCalledTimes(1);
 			expect(cancelMock).toHaveBeenCalledTimes(1);
@@ -711,12 +675,6 @@ describe('Storage', () => {
 			storage.addPluggable(provider);
 			storage.configure(options);
 			const request = storage.get('test.txt', {
-				Storage: {
-					AWSS3: {
-						bucket: 'bucket',
-						region: 'us-east-1',
-					},
-				},
 				download: true,
 			});
 			storage.cancel(request, 'request cancelled');
