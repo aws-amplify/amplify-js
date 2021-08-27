@@ -34,8 +34,8 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "4.2.4",
-    "@aws-amplify/datastore": "3.3.2"
+    "@aws-amplify/core": "4.2.5",
+    "@aws-amplify/datastore": "3.3.3"
   },
   "devDependencies": {
     "react-native-sqlite-storage": "5.0.0"
