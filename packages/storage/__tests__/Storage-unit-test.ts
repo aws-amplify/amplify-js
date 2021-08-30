@@ -1,8 +1,14 @@
 import AWSStorageProvider from '../src/providers/AWSS3Provider';
 import { Storage as StorageClass } from '../src/Storage';
-import { Storage as StorageCategory } from '../src';
+import { Storage as StorageCategory, StorageProvider } from '../src';
 import axios, { CancelToken } from 'axios';
-import { DeleteObjectCommandOutput } from '@aws-sdk/client-s3/';
+// import { DeleteObjectCommandOutput } from '@aws-sdk/client-s3/';
+
+type CustomProviderConfig = {
+	provider: 'customProvider';
+	foo: boolean;
+	bar: number;
+};
 
 const credentials = {
 	accessKeyId: 'accessKeyId',
@@ -18,6 +24,13 @@ const options = {
 	credentials,
 	level: 'level',
 };
+
+class TestCustomProvider extends AWSStorageProvider {
+	getProviderName() {
+		return 'customProvider';
+	}
+}
+
 describe('Storage', () => {
 	describe('constructor test', () => {
 		test('happy case', () => {
@@ -32,9 +45,7 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 
-			expect(storage.getPluggable(provider.getProviderName())).toBeInstanceOf(
-				AWSStorageProvider
-			);
+			expect(storage.getPluggable(provider.getProviderName())).toBeInstanceOf(AWSStorageProvider);
 		});
 	});
 
@@ -462,56 +473,124 @@ describe('Storage', () => {
 	});
 
 	describe('type tests', () => {
-		test('should use S3Provider config and output by default', async () => {
-			jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
-				return Promise.resolve('https://this-url-doesnt-exist.gg');
-			});
-			const storage = new StorageClass();
-			const provider = new AWSStorageProvider();
-			storage.addPluggable(provider);
-			storage.configure(options);
-			storage.get('key', {
-				download: false,
-				contentType: 'text/plain',
-			});
+		const storage = new StorageClass();
+		const provider = new AWSStorageProvider();
+		storage.addPluggable(provider);
+		storage.configure(options);
+		['copy', 'get', 'put', 'remove', 'list'].forEach(api => {
+			jest.spyOn(AWSStorageProvider.prototype, api as any).mockImplementation(() => Promise.resolve());
 		});
-
-		test('allow generic types if provider is specified', async () => {
-			jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
-				return Promise.resolve('https://this-url-doesnt-exist.gg');
+		describe('put tests', () => {
+			test('put - all available S3Provider config', async () => {
+				storage.put('key', 'hi', {
+					contentType: 'text/plain',
+					contentDisposition: 'contentDisposition',
+					contentEncoding: 'contentEncoding',
+					cacheControl: 'cacheControl',
+					expires: new Date(),
+					progressCallback: () => {},
+					SSECustomerAlgorithm: 'aes256',
+					SSECustomerKey: 'key',
+					SSECustomerKeyMD5: 'md5',
+					customPrefix: {
+						public: 'public',
+						protected: 'protected',
+						private: 'private',
+					},
+					level: 'private',
+					track: false,
+				});
 			});
-			const storage = new StorageClass();
-			const provider = new AWSStorageProvider();
-			storage.addPluggable(provider);
-			storage.configure(options);
-			type CustomProviderConfig = {
-				provider: 'customProvider';
-				foo: boolean;
-				bar: number;
-			};
-			storage.get<CustomProviderConfig>('key', {
-				provider: 'customProvider',
-				foo: false,
-				bar: 10,
+
+			test('allow generic types if provider is specified and is not AWSS3', async () => {
+				type CustomProviderConfig = {
+					provider: 'customProvider';
+					foo: boolean;
+					bar: number;
+				};
+				type CustomProviderPutReturn = string;
+				const customProvider = provider;
+				// Extends the default provider and make the provider name 'customProvider' for testing
+				customProvider['getProviderName'] = () => 'customProvider';
+				const expectedStr = 'string';
+				jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => Promise.resolve(expectedStr));
+				storage.addPluggable(provider);
+				storage.configure(options);
+				const getReturn = await storage.get<CustomProviderConfig, CustomProviderPutReturn>('key', {
+					provider: 'customProvider',
+					foo: false,
+					bar: 10,
+				});
+				expect(getReturn).toEqual(expectedStr);
 			});
 		});
 	});
 
 	describe('get test', () => {
-		test('get object without download', async () => {
-			const get_spyon = jest
-				.spyOn(AWSStorageProvider.prototype, 'get')
-				.mockImplementation(() => {
-					return Promise.resolve('https://this-url-doesnt-exist.gg');
-				});
-			const storage = new StorageClass();
-			const provider = new AWSStorageProvider();
+		let storage: StorageClass;
+		let provider: StorageProvider;
+
+		beforeEach(() => {
+			storage = new StorageClass();
+			provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			storage.get('key', { download: false });
-			expect(get_spyon).toBeCalled();
-			get_spyon.mockClear();
+			['copy', 'get', 'put', 'remove', 'list'].forEach(api => {
+				jest.spyOn(AWSStorageProvider.prototype, api as any).mockImplementation(() => Promise.resolve());
+			});
 		});
+
+		describe('with default S3 provider', () => {
+			test('get object without download', async () => {
+				const getReturn = 'https://this-url-doesnt-exist.gg';
+				const getSpyon = jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
+					return Promise.resolve(getReturn);
+				});
+				storage.addPluggable(provider);
+				storage.configure(options);
+				const url = await storage.get('key', { download: false });
+				expect(getSpyon).toBeCalled();
+				expect(url).toEqual(getReturn);
+				getSpyon.mockClear();
+			});
+
+			test('get object with download', async () => {
+				const getReturn = { Body: new Blob(['body']) };
+				const getSpyon = jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
+					return Promise.resolve(getReturn);
+				});
+				storage.addPluggable(provider);
+				storage.configure(options);
+				const getOutput = await storage.get('key', { download: true });
+				expect(getSpyon).toBeCalled();
+				expect(getOutput).toBe(getReturn);
+				getSpyon.mockClear();
+			});
+
+			test('get object with all available config', async () => {
+				storage.get('key', {
+					download: false,
+					contentType: 'text/plain',
+					contentDisposition: 'contentDisposition',
+					contentLanguage: 'contentLanguage',
+					contentEncoding: 'contentEncoding',
+					cacheControl: 'cacheControl',
+					expires: 100,
+					progressCallback: () => {},
+					SSECustomerAlgorithm: 'aes256',
+					SSECustomerKey: 'key',
+					SSECustomerKeyMD5: 'md5',
+					customPrefix: {
+						public: 'public',
+						protected: 'protected',
+						private: 'private',
+					},
+					level: 'private',
+					track: false,
+				});
+			});
+		});
+
 		test('get without provider', async () => {
 			const storage = new StorageClass();
 			try {
@@ -520,23 +599,71 @@ describe('Storage', () => {
 				expect(err).toEqual('No plugin found in Storage for the provider');
 			}
 		});
+
+		test('get with custom provider', async () => {
+			type CustomProviderGetReturn = string;
+			const customProvider = new TestCustomProvider();
+			const customProviderGetSpyon = jest
+				.spyOn(customProvider, 'get')
+				.mockImplementation(() => Promise.resolve('string'));
+			storage.addPluggable(customProvider);
+			await storage.get<CustomProviderConfig, CustomProviderGetReturn>('key', {
+				provider: 'customProvider',
+				foo: false,
+				bar: 10,
+			});
+			expect(customProviderGetSpyon).toBeCalled();
+		});
 	});
 
 	describe('put test', () => {
-		test('put object successfully', async () => {
-			const put_spyon = jest
-				.spyOn(AWSStorageProvider.prototype, 'put')
-				.mockImplementation(() => {
-					return Promise.resolve({ key: 'new_object' });
-				});
-			const storage = new StorageClass();
-			const provider = new AWSStorageProvider();
+		let storage: StorageClass;
+		let provider: StorageProvider;
+
+		beforeEach(() => {
+			storage = new StorageClass();
+			provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			await storage.put('key', 'object');
-			expect(put_spyon).toBeCalled();
-			put_spyon.mockClear();
+			jest.spyOn(AWSStorageProvider.prototype, 'put').mockImplementation(() => Promise.resolve({ key: 'new_object' }));
 		});
+
+		describe('with default provider', () => {
+			test('put object successfully', async () => {
+				const putSpyon = jest.spyOn(AWSStorageProvider.prototype, 'put').mockImplementation(() => {
+					return Promise.resolve({ key: 'new_object' });
+				});
+				storage.addPluggable(provider);
+				storage.configure(options);
+				await storage.put('key', 'object');
+				expect(putSpyon).toBeCalled();
+				putSpyon.mockClear();
+			});
+
+			test('call put object with all available config', async () => {
+				const putRes = await storage.put('key', 'object', {
+					progressCallback: _progress => {},
+					track: false,
+					serverSideEncryption: 'serverSideEncryption',
+					SSECustomerAlgorithm: 'aes256',
+					SSECustomerKey: 'key',
+					SSECustomerKeyMD5: 'md5',
+					SSEKMSKeyId: 'id',
+					acl: 'acl',
+					cacheControl: 'cacheControl',
+					contentDisposition: 'contentDisposition',
+					contentEncoding: 'contentEncoding',
+					contentType: 'contentType',
+					expires: new Date(),
+					metadata: {
+						key: 'value',
+					},
+					tagging: 'tag',
+				});
+				expect(putRes).toEqual({ key: 'new_object' });
+			});
+		});
+
 		test('put without provider', async () => {
 			const storage = new StorageClass();
 			try {
@@ -545,24 +672,58 @@ describe('Storage', () => {
 				expect(err).toEqual('No plugin found in Storage for the provider');
 			}
 		});
+
+		test('put with custom provider', async () => {
+			const customProvider = new TestCustomProvider();
+			const customProviderPutSpyon = jest.spyOn(customProvider, 'put').mockImplementation(() =>
+				Promise.resolve({
+					key: 'new_object',
+				})
+			);
+			storage.addPluggable(customProvider);
+			await storage.put<CustomProviderConfig>('key', 'object', {
+				provider: 'customProvider',
+				foo: false,
+				bar: 40,
+			});
+			expect(customProviderPutSpyon).toBeCalled();
+		});
 	});
 
 	describe('remove test', () => {
-		test('remove object successfully', async () => {
-			const remove_spyon = jest
-				.spyOn(AWSStorageProvider.prototype, 'remove')
-				.mockImplementation(() => {
-					return (Promise.resolve() as unknown) as Promise<
-						DeleteObjectCommandOutput
-					>;
-				});
-			const storage = new StorageClass();
-			const provider = new AWSStorageProvider();
+		let storage: StorageClass;
+		let provider: StorageProvider;
+		let removeSpyon: jest.SpyInstance;
+
+		beforeEach(() => {
+			storage = new StorageClass();
+			provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			await storage.remove('key');
-			expect(remove_spyon).toBeCalled();
-			remove_spyon.mockClear();
+			removeSpyon = jest
+				.spyOn(AWSStorageProvider.prototype, 'remove')
+				.mockImplementation(() => Promise.resolve({ $metadata: {} }));
+		});
+
+		describe('with default provider', () => {
+			test('remove object successfully', async () => {
+				await storage.remove('key');
+				expect(removeSpyon).toBeCalled();
+				removeSpyon.mockClear();
+			});
+			test('call remove with all available config', async () => {
+				storage.remove('key', {
+					track: false,
+					level: 'public',
+					customPrefix: {
+						public: 'public',
+						protected: 'protected',
+						private: 'private',
+					},
+				});
+				expect(removeSpyon).toBeCalled();
+				removeSpyon.mockClear();
+			});
 		});
 		test('remove without provider', async () => {
 			const storage = new StorageClass();
@@ -572,23 +733,65 @@ describe('Storage', () => {
 				expect(err).toEqual('No plugin found in Storage for the provider');
 			}
 		});
+		test('remove with custom provider', async () => {
+			const customProvider = new TestCustomProvider();
+			const customProviderRemoveSpyon = jest
+				.spyOn(customProvider, 'remove')
+				.mockImplementation(() => Promise.resolve({ $metadata: {} }));
+			storage.addPluggable(customProvider);
+			storage.remove<CustomProviderConfig>('key', {
+				provider: 'customProvider',
+				foo: false,
+				bar: 40,
+			});
+			expect(customProviderRemoveSpyon).toBeCalled();
+		});
 	});
 
 	describe('list test', () => {
-		test('list object successfully', async () => {
-			const list_spyon = jest
-				.spyOn(AWSStorageProvider.prototype, 'list')
-				.mockImplementation(() => {
-					return Promise.resolve([]);
-				});
-			const storage = new StorageClass();
-			const provider = new AWSStorageProvider();
+		let storage: StorageClass;
+		let provider: StorageProvider;
+		let listSpyon: jest.SpyInstance;
+		const date = new Date();
+
+		beforeEach(() => {
+			storage = new StorageClass();
+			provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			await storage.list('path');
-			expect(list_spyon).toBeCalled();
-			list_spyon.mockClear();
+			listSpyon = jest.spyOn(AWSStorageProvider.prototype, 'list').mockImplementation(() =>
+				Promise.resolve([
+					{
+						key: 'key',
+						eTag: 'etag',
+						lastModified: date,
+						size: 10,
+					},
+				])
+			);
 		});
+
+		describe('with default provider', () => {
+			test('list object successfully', async () => {
+				await storage.list('path');
+				expect(listSpyon).toBeCalled();
+				listSpyon.mockClear();
+			});
+
+			test('call list object with all available config', async () => {
+				storage.list('path', {
+					track: false,
+					maxKeys: 10,
+					level: 'public',
+					customPrefix: {
+						public: 'public',
+						protected: 'protected',
+						private: 'private',
+					},
+				});
+			});
+		});
+
 		test('list without provider', async () => {
 			const storage = new StorageClass();
 			try {
@@ -597,24 +800,63 @@ describe('Storage', () => {
 				expect(err).toEqual('No plugin found in Storage for the provider');
 			}
 		});
+
+		test('list with customProvider', async () => {
+			const customProvider = new TestCustomProvider();
+			const customProviderListSpyon = jest.spyOn(customProvider, 'list').mockImplementation(() => Promise.resolve([]));
+			storage.addPluggable(customProvider);
+			await storage.list<CustomProviderConfig>('path', {
+				provider: 'customProvider',
+				foo: false,
+				bar: 40,
+			});
+			expect(customProviderListSpyon).toBeCalled();
+		});
 	});
 
 	describe('copy test', () => {
-		test('copy object successfully', async () => {
-			const copySpyon = jest
-				.spyOn(AWSStorageProvider.prototype, 'copy')
-				.mockImplementation(() => Promise.resolve({ key: 'key' }));
-			const storage = new StorageClass();
-			const provider = new AWSStorageProvider();
+		let storage: StorageClass;
+		let provider: StorageProvider;
+		let copySpyon: jest.SpyInstance;
+
+		beforeEach(() => {
+			storage = new StorageClass();
+			provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			await storage.copy(
-				{ key: 'src' },
-				{ key: 'dest' }
-			);
-			expect(copySpyon).toBeCalled();
+			copySpyon = jest
+				.spyOn(AWSStorageProvider.prototype, 'copy')
+				.mockImplementation(() => Promise.resolve({ key: 'key' }));
 		});
 
+		describe('default provider', () => {
+			test('copy object successfully', async () => {
+				await storage.copy({ key: 'src' }, { key: 'dest' });
+				expect(copySpyon).toBeCalled();
+				copySpyon.mockReset();
+			});
+			test('call copy object with all available config', async () => {
+				storage.copy(
+					{ key: 'src', level: 'protected', identityId: 'identityId' },
+					{ key: 'dest', level: 'public' },
+					{
+						cacheControl: 'cacheControl',
+						contentDisposition: 'contentDisposition',
+						contentLanguage: 'contentLanguage',
+						contentType: 'contentType',
+						expires: new Date(),
+						tagging: 'tagging',
+						acl: 'acl',
+						metadata: { key: 'value' },
+						serverSideEncryption: 'sse',
+						SSECustomerAlgorithm: 'aes256',
+						SSECustomerKey: 'key',
+						SSECustomerKeyMD5: 'md5',
+						SSEKMSKeyId: 'id',
+					}
+				);
+			});
+		});
 		test('copy object without provider', async () => {
 			const storage = new StorageClass();
 			try {
@@ -622,6 +864,17 @@ describe('Storage', () => {
 			} catch (err) {
 				expect(err).toEqual('No plugin found in Storage for the provider');
 			}
+		});
+		test('copy object with custom provider', async () => {
+			const customProvider = new TestCustomProvider();
+			const customProviderCopySpyon = jest.spyOn(customProvider, 'copy').mockImplementation(() =>
+				Promise.resolve({
+					key: 'key',
+				})
+			);
+			storage.addPluggable(customProvider);
+			await storage.copy({ key: 'src' }, { key: 'dest' });
+			expect(customProviderCopySpyon).toBeCalled();
 		});
 	});
 
@@ -635,11 +888,9 @@ describe('Storage', () => {
 			cancelMock = jest.fn();
 			tokenMock = jest.fn();
 			isCancelSpy = jest.spyOn(axios, 'isCancel').mockReturnValue(true);
-			cancelTokenSpy = jest
-				.spyOn(axios.CancelToken, 'source')
-				.mockImplementation(() => {
-					return { token: tokenMock as unknown as CancelToken, cancel: cancelMock };
-				});
+			cancelTokenSpy = jest.spyOn(axios.CancelToken, 'source').mockImplementation(() => {
+				return { token: (tokenMock as unknown) as CancelToken, cancel: cancelMock };
+			});
 		});
 
 		afterEach(() => {

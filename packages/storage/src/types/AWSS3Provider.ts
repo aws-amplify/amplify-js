@@ -13,7 +13,7 @@ type ListObjectsCommandOutputContent = _Object;
 
 export type CommonStorageOptions = Omit<
 	StorageOptions,
-	'credentials' | 'region'
+	'credentials' | 'region' | 'bucket' | 'dangerouslyConnectToHttpEndpointForTesting'
 >;
 
 export type S3ProviderGetConfig = CommonStorageOptions & {
@@ -90,7 +90,7 @@ export type S3CopySource = S3CopyTarget;
 
 export type S3CopyDestination = Omit<S3CopyTarget, 'identityId'>;
 
-export type S3ProviderCopyConfig = CommonStorageOptions & {
+export type S3ProviderCopyConfig = Omit<CommonStorageOptions, 'level'> & {
 	cancelTokenSource?: CancelTokenSource;
 	bucket?: CopyObjectRequest['Bucket'];
 	cacheControl?: CopyObjectRequest['CacheControl'];
