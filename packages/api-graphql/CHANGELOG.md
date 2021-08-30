@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.1.2...@aws-amplify/api-graphql@2.2.0) (2021-08-26)
+
+
+### Features
+
+* **@aws-amplify/api-graphql:** Add support for string 'authmode' values in TypeScript based apps  ([#8799](https://github.com/aws-amplify/amplify-js/issues/8799)) ([f1dc4a2](https://github.com/aws-amplify/amplify-js/commit/f1dc4a24330bb41295621aaf47f6c4e26828fea5))
+
+
+
+
+
 ## [2.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.1.1...@aws-amplify/api-graphql@2.1.2) (2021-08-19)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql
