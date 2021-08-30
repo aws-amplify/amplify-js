@@ -81,7 +81,7 @@ const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 const OAUTH_FLOW_MS_TIMEOUT = 10 * 1000;
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
+	typeof Symbol.for === 'function'
 	? Symbol.for('amplify_default')
 	: '@@amplify_default') as Symbol;
 
@@ -475,7 +475,7 @@ export class AuthClass {
 		usernameOrSignInOpts: string | SignInOpts,
 		pw?: string,
 		clientMetadata: ClientMetaData = this._config.clientMetadata
-	): Promise<CognitoUser | any> {
+	): Promise<CognitoUser> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
@@ -525,7 +525,7 @@ export class AuthClass {
 	 */
 	private authCallbacks(
 		user: CognitoUser,
-		resolve: (value?: CognitoUser | any) => void,
+		resolve: (value?: CognitoUser) => void,
 		reject: (value?: any) => void
 	): IAuthenticationCallback {
 		const that = this;
@@ -617,7 +617,7 @@ export class AuthClass {
 	 */
 	private signInWithPassword(
 		authDetails: AuthenticationDetails
-	): Promise<CognitoUser | any> {
+	): Promise<CognitoUser> {
 		if (this.pendingSignIn) {
 			throw new Error('Pending sign-in attempt already in progress');
 		}
@@ -652,7 +652,7 @@ export class AuthClass {
 	 */
 	private signInWithoutPassword(
 		authDetails: AuthenticationDetails
-	): Promise<CognitoUser | any> {
+	): Promise<CognitoUser> {
 		const user = this.createCognitoUser(authDetails.getUsername());
 		user.setAuthenticationFlowType('CUSTOM_AUTH');
 
@@ -669,7 +669,7 @@ export class AuthClass {
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves the current preferred mfa option if success
 	 */
-	public getMFAOptions(user: CognitoUser | any): Promise<MFAOption[]> {
+	public getMFAOptions(user: CognitoUser): Promise<MFAOption[]> {
 		return new Promise((res, rej) => {
 			user.getMFAOptions((err, mfaOptions) => {
 				if (err) {
@@ -690,7 +690,7 @@ export class AuthClass {
 	 * @param {GetPreferredMFAOpts} params - options for getting the current user preferred MFA
 	 */
 	public getPreferredMFA(
-		user: CognitoUser | any,
+		user: CognitoUser,
 		params?: GetPreferredMFAOpts
 	): Promise<string> {
 		const that = this;
@@ -772,7 +772,7 @@ export class AuthClass {
 	 * @return - A promise resolve if success
 	 */
 	public async setPreferredMFA(
-		user: CognitoUser | any,
+		user: CognitoUser,
 		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA'
 	): Promise<string> {
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
@@ -918,7 +918,7 @@ export class AuthClass {
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves with the secret code if success
 	 */
-	public setupTOTP(user: CognitoUser | any): Promise<string> {
+	public setupTOTP(user: CognitoUser): Promise<string> {
 		return new Promise((res, rej) => {
 			user.associateSoftwareToken({
 				onFailure: err => {
@@ -942,7 +942,7 @@ export class AuthClass {
 	 * @return - A promise resolves is success
 	 */
 	public verifyTotpToken(
-		user: CognitoUser | any,
+		user: CognitoUser,
 		challengeAnswer: string
 	): Promise<CognitoUserSession> {
 		logger.debug('verification totp token', user, challengeAnswer);
@@ -973,11 +973,11 @@ export class AuthClass {
 	 * @param {String} code - The confirmation code
 	 */
 	public confirmSignIn(
-		user: CognitoUser | any,
+		user: CognitoUser,
 		code: string,
 		mfaType?: 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' | null,
 		clientMetadata: ClientMetaData = this._config.clientMetadata
-	): Promise<CognitoUser | any> {
+	): Promise<CognitoUser> {
 		if (!code) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyCode);
 		}
@@ -1018,11 +1018,11 @@ export class AuthClass {
 	}
 
 	public completeNewPassword(
-		user: CognitoUser | any,
+		user: CognitoUser,
 		password: string,
 		requiredAttributes: any = {},
 		clientMetadata: ClientMetaData = this._config.clientMetadata
-	): Promise<CognitoUser | any> {
+	): Promise<CognitoUser> {
 		if (!password) {
 			return this.rejectAuthError(AuthErrorTypes.EmptyPassword);
 		}
@@ -1090,10 +1090,10 @@ export class AuthClass {
 	 * @param {String} challengeResponses - The confirmation code
 	 */
 	public sendCustomChallengeAnswer(
-		user: CognitoUser | any,
+		user: CognitoUser,
 		challengeResponses: string,
 		clientMetadata: ClientMetaData = this._config.clientMetadata
-	): Promise<CognitoUser | any> {
+	): Promise<CognitoUser> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
@@ -1117,7 +1117,7 @@ export class AuthClass {
 	 * @return {Promise}
 	 **/
 	public deleteUserAttributes(
-		user: CognitoUser | any,
+		user: CognitoUser,
 		attributeNames: string[],
 	) {
 		const that = this;
@@ -1144,7 +1144,7 @@ export class AuthClass {
 	 * @return {Promise}
 	 **/
 	public updateUserAttributes(
-		user: CognitoUser | any,
+		user: CognitoUser,
 		attributes: object,
 		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<string> {
@@ -1181,7 +1181,7 @@ export class AuthClass {
 	 * @return - A promise resolves to user attributes if success
 	 */
 	public userAttributes(
-		user: CognitoUser | any
+		user: CognitoUser
 	): Promise<CognitoUserAttribute[]> {
 		return new Promise((resolve, reject) => {
 			this.userSession(user).then(session => {
@@ -1196,7 +1196,7 @@ export class AuthClass {
 		});
 	}
 
-	public verifiedContact(user: CognitoUser | any) {
+	public verifiedContact(user: CognitoUser) {
 		const that = this;
 		return this.userAttributes(user).then(attributes => {
 			const attrs = that.attributesToObject(attributes);
@@ -1229,7 +1229,7 @@ export class AuthClass {
 	 */
 	public currentUserPoolUser(
 		params?: CurrentUserOpts
-	): Promise<CognitoUser | any> {
+	): Promise<CognitoUser> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
@@ -1240,7 +1240,7 @@ export class AuthClass {
 					if (this.isOAuthInProgress()) {
 						logger.debug('OAuth signIn in progress, waiting for resolution...');
 
-						await new Promise(res => {
+						await new Promise<void>(res => {
 							const timeoutId = setTimeout(() => {
 								logger.debug('OAuth signIn in progress timeout');
 
@@ -1339,7 +1339,7 @@ export class AuthClass {
 							} else {
 								logger.debug(
 									`Unable to get the user data because the ${USER_ADMIN_SCOPE} ` +
-										`is not in the scopes of the access token`
+									`is not in the scopes of the access token`
 								);
 								return res(user);
 							}
@@ -1365,7 +1365,7 @@ export class AuthClass {
 	 */
 	public async currentAuthenticatedUser(
 		params?: CurrentUserOpts
-	): Promise<CognitoUser | any> {
+	): Promise<CognitoUser> {
 		logger.debug('getting current authenticated user');
 		let federatedUser = null;
 		try {
@@ -1402,7 +1402,7 @@ export class AuthClass {
 				if (e === 'No userPool') {
 					logger.error(
 						'Cannot get the current user because the user pool is missing. ' +
-							'Please make sure the Auth module is configured with a valid Cognito User Pool ID'
+						'Please make sure the Auth module is configured with a valid Cognito User Pool ID'
 					);
 				}
 				logger.debug('The user is not authenticated by the error', e);
@@ -1532,7 +1532,7 @@ export class AuthClass {
 	 * @return - A promise resolves to callback data if success
 	 */
 	public verifyUserAttribute(
-		user: CognitoUser | any,
+		user: CognitoUser,
 		attr: string,
 		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<void> {
@@ -1541,7 +1541,7 @@ export class AuthClass {
 				attr,
 				{
 					onSuccess(success) {
-						return resolve(success);
+						return resolve();
 					},
 					onFailure(err) {
 						return reject(err);
@@ -1560,7 +1560,7 @@ export class AuthClass {
 	 * @return - A promise resolves to callback data if success
 	 */
 	public verifyUserAttributeSubmit(
-		user: CognitoUser | any,
+		user: CognitoUser,
 		attr: string,
 		code: string
 	): Promise<string> {
@@ -1607,7 +1607,7 @@ export class AuthClass {
 
 	private async cognitoIdentitySignOut(
 		opts: SignOutOpts,
-		user: CognitoUser | any
+		user: CognitoUser
 	) {
 		try {
 			await this._storageSync;
@@ -1620,7 +1620,7 @@ export class AuthClass {
 			this._oAuthHandler &&
 			this._storage.getItem('amplify-signin-with-hostedUI') === 'true';
 
-		return new Promise((res, rej) => {
+		return new Promise<void>((res, rej) => {
 			if (opts && opts.global) {
 				logger.debug('user global sign out', user);
 				// in order to use global signout
@@ -1734,7 +1734,7 @@ export class AuthClass {
 	 * @return - A promise resolves if success
 	 */
 	public changePassword(
-		user: CognitoUser | any,
+		user: CognitoUser,
 		oldPassword: string,
 		newPassword: string,
 		clientMetadata: ClientMetaData = this._config.clientMetadata
@@ -1775,11 +1775,11 @@ export class AuthClass {
 		}
 
 		const user = this.createCognitoUser(username);
-		return new Promise((resolve, reject) => {
+		return new Promise<any>((resolve, reject) => {
 			user.forgotPassword(
 				{
 					onSuccess: () => {
-						resolve();
+						resolve(undefined);
 						return;
 					},
 					onFailure: err => {
@@ -1990,7 +1990,7 @@ export class AuthClass {
 					logger.warn(`There is already a signed in user: ${loggedInUser} in your app.
 																	You should not call Auth.federatedSignIn method again as it may cause unexpected behavior.`);
 				}
-			} catch (e) {}
+			} catch (e) { }
 
 			const { token, identity_id, expires_at } = response;
 			// Because this.Credentials.set would update the user info with identity id
@@ -2003,7 +2003,7 @@ export class AuthClass {
 			dispatchAuthEvent(
 				'signIn',
 				currentUser,
-				`A user ${currentUser.username} has been signed in`
+				`A user ${currentUser.getUsername()} has been signed in`
 			);
 			logger.debug('federated sign in credentials', credentials);
 			return credentials;
@@ -2350,4 +2350,3 @@ export class AuthClass {
 export const Auth = new AuthClass(null);
 
 Amplify.register(Auth);
-
