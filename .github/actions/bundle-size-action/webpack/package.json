@@ -35,7 +35,7 @@
       },
       {
         "path": "dist/Amplify+Auth+Storage.js.min.js",
-        "maxSize": "115kB"
+        "maxSize": "116kB"
       },
       {
         "path": "dist/Amplify+Storage.js.min.js",

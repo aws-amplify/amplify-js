@@ -12,7 +12,7 @@ runs:
   steps:
     - name: Install stack dependencies
       working-directory: ${{ github.action_path }}/${{ inputs.stack }}
-      run: yarn install
+      run: yarn install --no-lockfile --update-checksums
       shell: bash
 
     - name: Calculate stack bundle sizes

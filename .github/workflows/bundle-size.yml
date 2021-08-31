@@ -2,13 +2,12 @@ name: Bundle Size
 
 on:
   # Use this to run on every PR push:
-  # [pull_request]
-
+  [pull_request]
   # Run once approved:
   # https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows#pull_request_target
-  pull_request_review:
-    types: [submitted]
-    branches: [main]
+  # pull_request_review:
+  #   types: [submitted]
+  #   branches: [main]
 
 jobs:
   bundle-size:
@@ -33,7 +32,7 @@ jobs:
       #     state: pending
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --no-lockfile --update-checksums
 
       - name: Build packages
         run: yarn build

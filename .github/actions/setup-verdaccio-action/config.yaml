@@ -9,16 +9,28 @@ store:
     limit: 1000
 uplinks:
   npmjs:
-    url: https://registry.npmjs.org/
+    url: https://registry.yarnpkg.com
 packages:
-  '@*/*':
+  '@aws-amplify/*':
     access: $all
     publish: $all
-    proxy: npmjs
+
+  'aws-amplify':
+    access: $all
+    publish: $all
+
+  'aws-amplify-*':
+    access: $all
+    publish: $all
+
+  'amazon-cognito-*':
+    access: $all
+    publish: $all
+
   '**':
     access: $all
-    publish: $all
     proxy: npmjs
+
 middlewares:
   audit:
     enabled: true

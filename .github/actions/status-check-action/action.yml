@@ -21,7 +21,7 @@ runs:
   steps:
     - name: Install status check dependencies
       working-directory: ${{ github.action_path }}
-      run: yarn install
+      run: yarn install --no-lockfile --update-checksums
       shell: bash
 
     - name: Update status check
