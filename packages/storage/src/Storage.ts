@@ -34,7 +34,7 @@ import {
 	S3ProviderCopyOutput,
 } from './types';
 import axios, { CancelTokenSource } from 'axios';
-import { PutObjectRequest } from '@aws-sdk/client-s3';
+import { PutObjectCommandInput } from '@aws-sdk/client-s3';
 
 const logger = new Logger('StorageClass');
 
@@ -294,7 +294,7 @@ export class Storage {
 	 */
 	public put<T extends Record<string, any>, X = S3ProviderPutOutput>(
 		key: string,
-		object: PutObjectRequest['Body'] | string,
+		object: PutObjectCommandInput["Body"],
 		config?: StoragePutConfig<T>
 	): Promise<StoragePutOutput<T, X>>;
 	public put(key: string, object, config?): Promise<Object> {
