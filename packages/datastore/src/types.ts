@@ -631,7 +631,7 @@ export type DataStoreConfig = {
 };
 
 export type AuthProviders = {
-	functionAuthProvider: Promise<string>;
+	functionAuthProvider: () => { token: string } | Promise<{ token: string }>;
 };
 
 export enum AuthModeStrategyType {
