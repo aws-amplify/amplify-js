@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.4...@aws-amplify/core@4.2.5) (2021-08-26)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.3...@aws-amplify/core@4.2.4) (2021-08-19)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.2...@aws-amplify/core@4.2.3) (2021-08-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** Include refreshToken in UniversalStorage for SSR ([#7374](https://github.com/aws-amplify/amplify-js/issues/7374)) ([1e0887b](https://github.com/aws-amplify/amplify-js/commit/1e0887bdc45e178f04229c888051ecf10d2bfabc))
+
+
+
+
+
+## [4.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.1...@aws-amplify/core@4.2.2) (2021-07-28)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
 ## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.0...@aws-amplify/core@4.2.1) (2021-07-22)
 
 **Note:** Version bump only for package @aws-amplify/core

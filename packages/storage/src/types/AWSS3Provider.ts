@@ -51,7 +51,8 @@ export type S3ProviderPutConfig = CommonStorageOptions & {
 	expires?: PutObjectRequest['Expires'];
 	metadata?: PutObjectRequest['Metadata'];
 	tagging?: PutObjectRequest['Tagging'];
-};
+	useAccelerateEndpoint?: boolean;
+}
 
 export interface S3ProviderPutOutput {
 	key: string;

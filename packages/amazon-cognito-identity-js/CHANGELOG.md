@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.6...amazon-cognito-identity-js@5.1.0) (2021-08-19)
+
+
+### Features
+
+* **@aws-amplify/auth:** Add a 'SUCCESS' response on successful call to forgotPasswordSubmit and verifyUserAttributes([#8744](https://github.com/aws-amplify/amplify-js/issues/8744)) ([1bd6c35](https://github.com/aws-amplify/amplify-js/commit/1bd6c35c115321d77f48a3954942dd57d7cf9056))
+
+
+
+
+
 ## [5.0.6](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.5...amazon-cognito-identity-js@5.0.6) (2021-07-22)
 
 

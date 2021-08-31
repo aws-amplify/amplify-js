@@ -278,6 +278,9 @@ export class AWSS3Provider implements StorageProvider {
 			contentType,
 			expires,
 			track,
+			SSECustomerAlgorithm,
+			SSECustomerKey,
+			SSECustomerKeyMD5,
 			progressCallback,
 		} = opt;
 		const prefix = this._prefix(opt);
@@ -297,6 +300,15 @@ export class AWSS3Provider implements StorageProvider {
 		if (contentEncoding) params.ResponseContentEncoding = contentEncoding;
 		if (contentLanguage) params.ResponseContentLanguage = contentLanguage;
 		if (contentType) params.ResponseContentType = contentType;
+		if (SSECustomerAlgorithm) {
+			params.SSECustomerAlgorithm = SSECustomerAlgorithm;
+		}
+		if (SSECustomerKey) {
+			params.SSECustomerKey = SSECustomerKey;
+		}
+		if (SSECustomerKeyMD5) {
+			params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
+		}
 
 		if (download === true) {
 			const getObjectCommand = new GetObjectCommand(params);
