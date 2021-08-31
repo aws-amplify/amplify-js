@@ -14,24 +14,14 @@
 import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
 import { AWSS3Provider } from './providers';
 import {
-	S3ProviderGetOuput,
-	S3ProviderPutOutput,
-	S3ProviderRemoveOutput,
 	StorageCopyDestination,
 	StorageCopySource,
 	StorageGetConfig,
-	StorageGetOutput,
 	StorageProvider,
 	StoragePutConfig,
-	StoragePutOutput,
 	StorageRemoveConfig,
-	StorageRemoveOutput,
 	StorageListConfig,
-	StorageListOutput,
 	StorageCopyConfig,
-	StorageCopyOutput,
-	S3ProviderListOutput,
-	S3ProviderCopyOutput,
 } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { PutObjectCommandInput } from '@aws-sdk/client-s3';
@@ -102,9 +92,7 @@ export class Storage {
 	 * @param providerName - the name of the plugin
 	 */
 	public getPluggable(providerName: string) {
-		const pluggable = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === providerName
-		);
+		const pluggable = this._pluggables.find(pluggable => pluggable.getProviderName() === providerName);
 		if (pluggable === undefined) {
 			logger.debug('No plugin found with providerName', providerName);
 			return null;
@@ -116,9 +104,7 @@ export class Storage {
 	 * @param providerName - the name of the plugin
 	 */
 	public removePluggable(providerName: string) {
-		this._pluggables = this._pluggables.filter(
-			pluggable => pluggable.getProviderName() !== providerName
-		);
+		this._pluggables = this._pluggables.filter(pluggable => pluggable.getProviderName() !== providerName);
 		return;
 	}
 
@@ -148,10 +134,8 @@ export class Storage {
 			'SSEKMSKeyId',
 		];
 
-		const isInStorageArrayKeys = (k: string) =>
-			storageArrayKeys.some(x => x === k);
-		const checkConfigKeysFromArray = (k: string[]) =>
-			k.find(k => isInStorageArrayKeys(k));
+		const isInStorageArrayKeys = (k: string) => storageArrayKeys.some(x => x === k);
+		const checkConfigKeysFromArray = (k: string[]) => k.find(k => isInStorageArrayKeys(k));
 
 		if (
 			storageKeysFromConfig &&
@@ -193,10 +177,7 @@ export class Storage {
 		return axios.CancelToken.source();
 	}
 
-	private updateRequestToBeCancellable(
-		request: Promise<any>,
-		cancelTokenSource: CancelTokenSource
-	) {
+	private updateRequestToBeCancellable(request: Promise<any>, cancelTokenSource: CancelTokenSource) {
 		this._cancelTokenSourceMap.set(request, cancelTokenSource);
 	}
 
@@ -223,20 +204,14 @@ export class Storage {
 	 * @param [config] - config for the Storage operation.
 	 * @return A promise resolves to the copied object's key.
 	 */
-	public copy<T extends Record<string, any>, X = S3ProviderCopyOutput>(
-		src: StorageCopySource,
-		dest: StorageCopyDestination,
+	public copy<T extends StorageProvider = AWSS3Provider>(
+		src: Parameters<T['copy']>[0],
+		dest: Parameters<T['copy']>[1],
 		config?: StorageCopyConfig<T>
-	): Promise<StorageCopyOutput<T, X>>;
-	public copy(
-		src: StorageCopySource,
-		dest: StorageCopyDestination,
-		config?
-	): Promise<any> {
+	): ReturnType<T['copy']>;
+	public copy(src: StorageCopySource, dest: StorageCopyDestination, config?: any): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
-		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
-		);
+		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject('No plugin found in Storage for the provider');
@@ -258,15 +233,13 @@ export class Storage {
 	 * @param {Object} [config] - { level : private|protected|public, download: true|false }
 	 * @return - A promise resolves to either a presigned url or the object
 	 */
-	public get<T extends Record<string, any>, X = S3ProviderGetOuput<T>>(
+	public get<T extends StorageProvider = AWSS3Provider>(
 		key: string,
 		config?: StorageGetConfig<T>
-	): Promise<StorageGetOutput<T, X>>;
+	): ReturnType<T['copy']>;
 	public get(key: string, config?): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
-		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
-		);
+		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject('No plugin found in Storage for the provider');
@@ -292,16 +265,14 @@ export class Storage {
 	 *  progressCallback: function }
 	 * @return - promise resolves to object on success
 	 */
-	public put<T extends Record<string, any>, X = S3ProviderPutOutput>(
+	public put<T extends StorageProvider = AWSS3Provider>(
 		key: string,
-		object: PutObjectCommandInput["Body"],
+		object: PutObjectCommandInput['Body'],
 		config?: StoragePutConfig<T>
-	): Promise<StoragePutOutput<T, X>>;
+	): ReturnType<T['put']>;
 	public put(key: string, object, config?): Promise<Object> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
-		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
-		);
+		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject('No plugin found in Storage for the provider');
@@ -321,18 +292,13 @@ export class Storage {
 	 * @param {Object} [config] - { level : private|protected|public }
 	 * @return - Promise resolves upon successful removal of the object
 	 */
-	public async remove<
-		T extends Record<string, any>,
-		X = S3ProviderRemoveOutput
-	>(
+	public remove<T extends StorageProvider = AWSS3Provider> (
 		key: string,
 		config?: StorageRemoveConfig<T>
-	): Promise<StorageRemoveOutput<T, X>>;
+	): ReturnType<T['remove']>;
 	public async remove(key: string, config?): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
-		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
-		);
+		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject('No plugin found in Storage for the provider');
@@ -346,15 +312,13 @@ export class Storage {
 	 * @param {Object} [config] - { level : private|protected|public, maxKeys: NUMBER }
 	 * @return - Promise resolves to list of keys for all objects in path
 	 */
-	public async list<T extends Record<string, any>, X = S3ProviderListOutput>(
+	public list<T extends StorageProvider = AWSS3Provider>(
 		path: string,
 		config?: StorageListConfig<T>
-	): Promise<StorageListOutput<T, X>>;
+	): ReturnType<T['list']>;
 	public async list(path: string, config?): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
-		const prov = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === provider
-		);
+		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
 			return Promise.reject('No plugin found in Storage for the provider');

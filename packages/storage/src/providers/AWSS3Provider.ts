@@ -113,7 +113,7 @@ export class AWSS3Provider implements StorageProvider {
 	/**
 	 * get provider name of the plugin
 	 */
-	getProviderName(): string {
+	getProviderName(): 'AWSS3' {
 		return AWSS3Provider.PROVIDER_NAME;
 	}
 
