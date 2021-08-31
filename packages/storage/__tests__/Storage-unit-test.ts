@@ -472,60 +472,6 @@ describe('Storage', () => {
 		});
 	});
 
-	describe('type tests', () => {
-		const storage = new StorageClass();
-		const provider = new AWSStorageProvider();
-		storage.addPluggable(provider);
-		storage.configure(options);
-		['copy', 'get', 'put', 'remove', 'list'].forEach(api => {
-			jest.spyOn(AWSStorageProvider.prototype, api as any).mockImplementation(() => Promise.resolve());
-		});
-		describe('put tests', () => {
-			test('put - all available S3Provider config', async () => {
-				storage.put('key', 'hi', {
-					contentType: 'text/plain',
-					contentDisposition: 'contentDisposition',
-					contentEncoding: 'contentEncoding',
-					cacheControl: 'cacheControl',
-					expires: new Date(),
-					progressCallback: () => {},
-					SSECustomerAlgorithm: 'aes256',
-					SSECustomerKey: 'key',
-					SSECustomerKeyMD5: 'md5',
-					customPrefix: {
-						public: 'public',
-						protected: 'protected',
-						private: 'private',
-					},
-					level: 'private',
-					track: false,
-				});
-			});
-
-			test('allow generic types if provider is specified and is not AWSS3', async () => {
-				type CustomProviderConfig = {
-					provider: 'customProvider';
-					foo: boolean;
-					bar: number;
-				};
-				type CustomProviderPutReturn = string;
-				const customProvider = provider;
-				// Extends the default provider and make the provider name 'customProvider' for testing
-				customProvider['getProviderName'] = () => 'customProvider';
-				const expectedStr = 'string';
-				jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => Promise.resolve(expectedStr));
-				storage.addPluggable(provider);
-				storage.configure(options);
-				const getReturn = await storage.get<CustomProviderConfig, CustomProviderPutReturn>('key', {
-					provider: 'customProvider',
-					foo: false,
-					bar: 10,
-				});
-				expect(getReturn).toEqual(expectedStr);
-			});
-		});
-	});
-
 	describe('get test', () => {
 		let storage: StorageClass;
 		let provider: StorageProvider;
