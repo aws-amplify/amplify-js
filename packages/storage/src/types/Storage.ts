@@ -27,7 +27,7 @@ type LastParameter<F extends (...args: any) => any> = Last<Parameters<F>>;
 export interface StorageOptions {
 	credentials?: ICredentials;
 	region?: string;
-	level?: StorageLevel;
+	level?: StorageAccessLevel;
 	bucket?: string;
 	provider?: string;
 	/**
@@ -43,10 +43,10 @@ export interface StorageOptions {
 	dangerouslyConnectToHttpEndpointForTesting?: boolean;
 }
 
-export type StorageLevel = 'public' | 'protected' | 'private';
+export type StorageAccessLevel = 'public' | 'protected' | 'private';
 
 export type CustomPrefix = {
-	[key in StorageLevel]?: string;
+	[key in StorageAccessLevel]?: string;
 };
 
 export type StorageCopyTarget = {

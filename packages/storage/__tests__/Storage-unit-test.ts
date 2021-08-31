@@ -544,6 +544,7 @@ describe('Storage', () => {
 					contentLanguage: 'contentLanguage',
 					contentEncoding: 'contentEncoding',
 					cacheControl: 'cacheControl',
+					identityId: 'identityId',
 					expires: 100,
 					progressCallback: () => {},
 					SSECustomerAlgorithm: 'aes256',

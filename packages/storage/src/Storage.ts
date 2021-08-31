@@ -267,7 +267,7 @@ export class Storage {
 	 */
 	public put<T extends StorageProvider = AWSS3Provider>(
 		key: string,
-		object: PutObjectCommandInput['Body'],
+		object: object,
 		config?: StoragePutConfig<T>
 	): ReturnType<T['put']>;
 	public put(key: string, object, config?): Promise<Object> {

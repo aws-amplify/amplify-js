@@ -6,7 +6,7 @@ import {
 	_Object,
 	DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3';
-import { StorageOptions, StorageLevel } from './Storage';
+import { StorageOptions, StorageAccessLevel } from './Storage';
 
 type ListObjectsCommandOutputContent = _Object;
 
@@ -20,6 +20,7 @@ export type S3ProviderGetConfig = CommonStorageOptions & {
 	track?: boolean;
 	expires?: number;
 	provider?: 'AWSS3';
+	identityId?: string;
 	progressCallback?: (progress: any) => any;
 	cacheControl?: GetObjectRequest['ResponseCacheControl'];
 	contentDisposition?: GetObjectRequest['ResponseContentDisposition'];
@@ -52,7 +53,7 @@ export type S3ProviderPutConfig = CommonStorageOptions & {
 	metadata?: PutObjectRequest['Metadata'];
 	tagging?: PutObjectRequest['Tagging'];
 	useAccelerateEndpoint?: boolean;
-}
+};
 
 export interface S3ProviderPutOutput {
 	key: string;
@@ -66,6 +67,7 @@ export type S3ProviderListConfig = CommonStorageOptions & {
 	bucket?: string;
 	maxKeys?: number;
 	provider?: 'AWSS3';
+	identityId?: string;
 };
 
 export interface S3ProviderListOutputItem {
@@ -79,7 +81,7 @@ export type S3ProviderListOutput = S3ProviderListOutputItem[];
 
 export interface S3CopyTarget {
 	key: string;
-	level?: StorageLevel;
+	level?: StorageAccessLevel;
 	identityId?: string;
 }
 
