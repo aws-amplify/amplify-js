@@ -236,7 +236,7 @@ export class Storage {
 	public get<T extends StorageProvider = AWSS3Provider>(
 		key: string,
 		config?: StorageGetConfig<T>
-	): ReturnType<T['copy']>;
+	): ReturnType<T['get']>;
 	public get(key: string, config?): Promise<any> {
 		const { provider = DEFAULT_PROVIDER } = config || {};
 		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
