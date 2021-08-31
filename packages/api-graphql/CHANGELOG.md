@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.1.2...@aws-amplify/api-graphql@2.2.0) (2021-08-26)
+
+
+### Features
+
+* **@aws-amplify/api-graphql:** Add support for string 'authmode' values in TypeScript based apps  ([#8799](https://github.com/aws-amplify/amplify-js/issues/8799)) ([f1dc4a2](https://github.com/aws-amplify/amplify-js/commit/f1dc4a24330bb41295621aaf47f6c4e26828fea5))
+
+
+
+
+
+## [2.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.1.1...@aws-amplify/api-graphql@2.1.2) (2021-08-19)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+## [2.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.1.0...@aws-amplify/api-graphql@2.1.1) (2021-08-12)
+
+**Note:** Version bump only for package @aws-amplify/api-graphql
+
+
+
+
+
+# [2.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.0.7...@aws-amplify/api-graphql@2.1.0) (2021-07-28)
+
+
+### Features
+
+* **@aws-amplify/api:** support lambda authorizers ([aba3d2a](https://github.com/aws-amplify/amplify-js/commit/aba3d2aec7e7c9ad8701b345ab94d796b2bdb897))
+* **@aws-amplify/datastore:** support lambda authorizers ([52d43cc](https://github.com/aws-amplify/amplify-js/commit/52d43cc73b459148f1ae81ab81d3a5365a4457e3))
+
+
+
+
+
 ## [2.0.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/api-graphql@2.0.6...@aws-amplify/api-graphql@2.0.7) (2021-07-22)
 
 **Note:** Version bump only for package @aws-amplify/api-graphql

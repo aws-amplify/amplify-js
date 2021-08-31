@@ -291,7 +291,7 @@ export default class OAuth {
 		);
 		logger.debug(`Signing out from ${oAuthLogoutEndpoint}`);
 
-		return this._urlOpener(oAuthLogoutEndpoint);
+		return this._urlOpener(oAuthLogoutEndpoint, signout_uri);
 	}
 
 	private _generateState(length: number) {

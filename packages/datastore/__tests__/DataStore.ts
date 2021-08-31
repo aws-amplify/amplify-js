@@ -557,36 +557,30 @@ describe('DataStore tests', () => {
 
 			const { Model } = classes as { Model: PersistentModelConstructor<Model> };
 
-			model = new Model({
-				field1: 'something',
-				dateCreated: new Date().toISOString(),
-				createdAt: '2021-06-03T20:56:23.201Z',
-			} as any);
-
-			await expect(DataStore.save(model)).rejects.toThrowError(
-				'createdAt is read-only.'
-			);
+			expect(() => {
+				new Model({
+					field1: 'something',
+					dateCreated: new Date().toISOString(),
+					createdAt: '2021-06-03T20:56:23.201Z',
+				} as any);
+			}).toThrow('createdAt is read-only.');
 
 			model = new Model({
 				field1: 'something',
 				dateCreated: new Date().toISOString(),
 			});
 
-			model = Model.copyOf(model, draft => {
-				(draft as any).createdAt = '2021-06-03T20:56:23.201Z';
-			});
+			expect(() => {
+				Model.copyOf(model, draft => {
+					(draft as any).createdAt = '2021-06-03T20:56:23.201Z';
+				});
+			}).toThrow('createdAt is read-only.');
 
-			await expect(DataStore.save(model)).rejects.toThrowError(
-				'createdAt is read-only.'
-			);
-
-			model = Model.copyOf(model, draft => {
-				(draft as any).updatedAt = '2021-06-03T20:56:23.201Z';
-			});
-
-			await expect(DataStore.save(model)).rejects.toThrowError(
-				'updatedAt is read-only.'
-			);
+			expect(() => {
+				Model.copyOf(model, draft => {
+					(draft as any).updatedAt = '2021-06-03T20:56:23.201Z';
+				});
+			}).toThrow('updatedAt is read-only.');
 		});
 
 		test('Instantiation validations', async () => {
