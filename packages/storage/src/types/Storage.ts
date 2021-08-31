@@ -43,16 +43,6 @@ export interface StorageOptions {
 	dangerouslyConnectToHttpEndpointForTesting?: boolean;
 }
 
-export interface StorageMobileHubConfig {
-	Storage: {
-		AWSS3: {
-			bucket: string;
-			region: string;
-			dangerouslyConnectToHttpEndpointForTesting?: boolean;
-		};
-	};
-}
-
 export type StorageLevel = 'public' | 'protected' | 'private';
 
 export type CustomPrefix = {
