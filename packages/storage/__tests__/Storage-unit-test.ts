@@ -2,7 +2,6 @@ import AWSStorageProvider from '../src/providers/AWSS3Provider';
 import { Storage as StorageClass } from '../src/Storage';
 import { Storage as StorageCategory, StorageProvider } from '../src';
 import axios, { CancelToken } from 'axios';
-// import { DeleteObjectCommandOutput } from '@aws-sdk/client-s3/';
 
 type CustomProviderConfig = {
 	foo: boolean;
