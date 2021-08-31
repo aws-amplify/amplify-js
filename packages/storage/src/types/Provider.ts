@@ -18,7 +18,7 @@ export interface StorageProvider {
 	cancel?(request: Promise<any>): void;
 
 	// copy object from src to dest
-	copy?(src: StorageCopySource, dest: StorageCopyDestination, config?): Promise<any>;
+	copy(src: StorageCopySource, dest: StorageCopyDestination, config?): Promise<any>;
 
 	// configure your provider
 	configure(config: object): object;
@@ -41,3 +41,5 @@ export interface StorageProvider {
 	// return the name of you provider
 	getProviderName(): string;
 }
+
+export type StorageProviderApi = 'copy' | 'get' | 'put' | 'remove' | 'list';

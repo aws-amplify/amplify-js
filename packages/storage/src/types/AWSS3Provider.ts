@@ -6,14 +6,13 @@ import {
 	_Object,
 	DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3';
-import { CancelTokenSource } from 'axios';
 import { StorageOptions, StorageLevel } from './Storage';
 
 type ListObjectsCommandOutputContent = _Object;
 
 export type CommonStorageOptions = Omit<
 	StorageOptions,
-	'credentials' | 'region'
+	'credentials' | 'region' | 'bucket' | 'dangerouslyConnectToHttpEndpointForTesting'
 >;
 
 export type S3ProviderGetConfig = CommonStorageOptions & {
@@ -22,7 +21,6 @@ export type S3ProviderGetConfig = CommonStorageOptions & {
 	expires?: number;
 	provider?: 'AWSS3';
 	progressCallback?: (progress: any) => any;
-	cancelTokenSource?: CancelTokenSource;
 	cacheControl?: GetObjectRequest['ResponseCacheControl'];
 	contentDisposition?: GetObjectRequest['ResponseContentDisposition'];
 	contentEncoding?: GetObjectRequest['ResponseContentEncoding'];
@@ -33,15 +31,12 @@ export type S3ProviderGetConfig = CommonStorageOptions & {
 	SSECustomerKeyMD5?: GetObjectRequest['SSECustomerKeyMD5'];
 };
 
-export type S3ProviderGetOuput<T> = T extends { download: true }
-	? GetObjectCommandOutput
-	: string;
+export type S3ProviderGetOuput<T> = T extends { download: true } ? GetObjectCommandOutput : string;
 
 export type S3ProviderPutConfig = CommonStorageOptions & {
 	progressCallback?: (progress: any) => any;
 	provider?: 'AWSS3';
 	track?: boolean;
-	cancelTokenSource?: CancelTokenSource;
 	serverSideEncryption?: PutObjectRequest['ServerSideEncryption'];
 	SSECustomerAlgorithm?: PutObjectRequest['SSECustomerAlgorithm'];
 	SSECustomerKey?: PutObjectRequest['SSECustomerKey'];
@@ -62,13 +57,14 @@ export interface S3ProviderPutOutput {
 	key: string;
 }
 
-export type S3ProviderRemoveConfig = CommonStorageOptions & { bucket?: string };
+export type S3ProviderRemoveConfig = CommonStorageOptions & { bucket?: string; provider?: 'AWSS3' };
 
 export type S3ProviderRemoveOutput = DeleteObjectCommandOutput;
 
 export type S3ProviderListConfig = CommonStorageOptions & {
 	bucket?: string;
 	maxKeys?: number;
+	provider?: 'AWSS3';
 };
 
 export interface S3ProviderListOutputItem {
@@ -90,8 +86,8 @@ export type S3CopySource = S3CopyTarget;
 
 export type S3CopyDestination = Omit<S3CopyTarget, 'identityId'>;
 
-export type S3ProviderCopyConfig = CommonStorageOptions & {
-	cancelTokenSource?: CancelTokenSource;
+export type S3ProviderCopyConfig = Omit<CommonStorageOptions, 'level'> & {
+	provider?: 'AWSS3';
 	bucket?: CopyObjectRequest['Bucket'];
 	cacheControl?: CopyObjectRequest['CacheControl'];
 	contentDisposition?: CopyObjectRequest['ContentDisposition'];

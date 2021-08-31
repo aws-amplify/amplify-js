@@ -15,24 +15,21 @@
  */
 
 import { ICredentials } from '@aws-amplify/core';
-import {
-	S3ProviderGetConfig,
-	S3ProviderGetOuput,
-	S3ProviderPutConfig,
-	S3ProviderRemoveConfig,
-	S3ProviderListConfig,
-	S3ProviderCopyConfig,
-	S3ProviderPutOutput,
-	S3ProviderRemoveOutput,
-	S3ProviderListOutput,
-	S3ProviderCopyOutput,
-} from './AWSS3Provider';
+import { StorageProvider, StorageProviderApi, AWSS3Provider } from '..';
+
+type Tail<T extends any[]> = ((...t: T) => void) extends (h: any, ...r: infer R) => void ? R : never;
+
+type Last<T extends any[]> = T[Exclude<keyof T, keyof Tail<T>>];
+
+// Utility type to extract the last parameter type of a function
+type LastParameter<F extends (...args: any) => any> = Last<Parameters<F>>;
 
 export interface StorageOptions {
 	credentials?: ICredentials;
 	region?: string;
 	level?: StorageLevel;
 	bucket?: string;
+	provider?: string;
 	/**
 	 * Custom mapping of your prefixes.
 	 * For example, customPrefix: { public: 'myPublicPrefix' } will make public level operations access 'myPublicPrefix/'
@@ -73,78 +70,21 @@ export type StorageCopySource = StorageCopyTarget;
 export type StorageCopyDestination = Omit<StorageCopyTarget, 'identityId'>;
 
 /**
- * If a provider is not the default provider, allow the generic type, else use the default provider's config
+ * If provider is AWSS3, provider doesn't have to be specified since it's the default, else it has to be passed into
+ * config.
  */
-export type StorageOperationConfig<DefaultConfig, T> = T extends {
-	provider: string;
-}
-	? T extends { provider: 'AWSS3' }
-		? DefaultConfig
-		: T & { provider: string }
-	: DefaultConfig;
+export type StorageOperationConfig<T extends StorageProvider, U extends StorageProviderApi> = ReturnType<
+	T['getProviderName']
+> extends 'AWSS3' // Config is always the last parameter of the function
+	? LastParameter<AWSS3Provider[U]>
+	: LastParameter<T[U]> & { provider: ReturnType<T['getProviderName']> };
 
-/**
- * If a provider is not the default provider, allow the generic type, else use the default provider's output
- */
-export type StorageOperationOutput<DefaultOutput, T, U> = T extends {
-	provider: string;
-}
-	? T extends { provider: 'AWSS3' }
-		? DefaultOutput
-		: U
-	: DefaultOutput;
+export type StorageGetConfig<T extends StorageProvider> = StorageOperationConfig<T, 'get'>;
 
-export type StorageGetConfig<T> = StorageOperationConfig<
-	S3ProviderGetConfig,
-	T
->;
+export type StoragePutConfig<T extends StorageProvider> = StorageOperationConfig<T, 'put'>;
 
-export type StorageGetOutput<T, U> = StorageOperationOutput<
-	S3ProviderGetOuput<T>,
-	T,
-	U
->;
+export type StorageRemoveConfig<T extends StorageProvider> = StorageOperationConfig<T, 'remove'>;
 
-export type StoragePutConfig<T> = StorageOperationConfig<
-	S3ProviderPutConfig,
-	T
->;
+export type StorageListConfig<T extends StorageProvider> = StorageOperationConfig<T, 'list'>;
 
-export type StoragePutOutput<T, U> = StorageOperationOutput<
-	S3ProviderPutOutput,
-	T,
-	U
->;
-
-export type StorageRemoveConfig<T> = StorageOperationConfig<
-	S3ProviderRemoveConfig,
-	T
->;
-
-export type StorageRemoveOutput<T, U> = StorageOperationOutput<
-	S3ProviderRemoveOutput,
-	T,
-	U
->;
-
-export type StorageListConfig<T> = StorageOperationConfig<
-	S3ProviderListConfig,
-	T
->;
-
-export type StorageListOutput<T, U> = StorageOperationOutput<
-	S3ProviderListOutput,
-	T,
-	U
->;
-
-export type StorageCopyConfig<T> = StorageOperationConfig<
-	S3ProviderCopyConfig,
-	T
->;
-
-export type StorageCopyOutput<T, U> = StorageOperationOutput<
-	S3ProviderCopyOutput,
-	T,
-	U
->;
+export type StorageCopyConfig<T extends StorageProvider> = StorageOperationConfig<T, 'copy'>;
