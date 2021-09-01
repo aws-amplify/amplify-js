@@ -1101,6 +1101,63 @@ class DataStore {
 		});
 	};
 
+	observeQuery = (
+		model,
+		criteria = undefined,
+		options = {}
+	): Observable<any> => {
+		const SYNCED_ITEMS_THRESHOLD = 1000;
+		// TODO: programmatically toggle 'isSynced' back to false when out of sync... not sure how yet
+		let isSynced = false;
+
+		return new Observable(observer => {
+			let itemsChanged = [];
+			let items = [];
+
+			const handler = this.observe(model, criteria).subscribe(({ element }) => {
+				itemsChanged.push(element);
+
+				if (itemsChanged.length > SYNCED_ITEMS_THRESHOLD) {
+					onQueryComplete();
+				}
+			});
+
+			// return any locally available records
+			(async () => {
+				items = await this.query(model, criteria, options);
+				onQueryComplete();
+			})();
+
+			const onQueryComplete = () => {
+				items = [...items, ...itemsChanged];
+				console.log('onQueryComplete', { items, itemsChanged });
+
+				observer.next({
+					items,
+					isSynced,
+					itemsChanged,
+				});
+
+				itemsChanged = [];
+			};
+
+			Hub.listen('datastore', async hubData => {
+				const { event, data } = hubData.payload;
+				if (event === 'modelSynced' && data?.model?.name === model.name) {
+					isSynced = true;
+					onQueryComplete();
+				}
+			});
+
+			return () => {
+				if (handler) {
+					handler.unsubscribe();
+					observer.next({ items, isSynced, itemsChanged });
+				}
+			};
+		});
+	};
+
 	configure = (config: DataStoreConfig = {}) => {
 		const {
 			DataStore: configDataStore,
