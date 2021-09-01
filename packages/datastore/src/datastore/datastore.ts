@@ -43,6 +43,7 @@ import {
 	SchemaNamespace,
 	SchemaNonModel,
 	SubscriptionMessage,
+	DataStoreSnapshot,
 	SyncConflict,
 	SyncError,
 	TypeConstructorMap,
@@ -1101,46 +1102,56 @@ class DataStore {
 		});
 	};
 
-	observeQuery = (
-		model,
-		criteria = undefined,
-		options = {}
-	): Observable<any> => {
+	// TODO: fix ts-lint error
+	// @ts-ignore
+	observeQuery: {
+		(): Observable<SubscriptionMessage<PersistentModel>>;
+
+		<T extends PersistentModel>(model: T): Observable<SubscriptionMessage<T>>;
+
+		<T extends PersistentModel>(
+			modelConstructor: PersistentModelConstructor<T>,
+			criteria?: string | ProducerModelPredicate<T>
+		): Observable<SubscriptionMessage<T>>;
+	} = <T extends PersistentModel = PersistentModel>(
+		model: T | PersistentModelConstructor<T>,
+		criteria?: ModelPredicate<T>,
+		options?: ProducerPaginationInput<T>
+	): Observable<SubscriptionMessage<T>> => {
 		const SYNCED_ITEMS_THRESHOLD = 1000;
-		// TODO: programmatically toggle 'isSynced' back to false when out of sync... not sure how yet
-		let isSynced = false;
+		// TODO: toggle 'isSynced' back to false when out of sync... not sure how yet
+		let isSynced: boolean = false;
 
-		return new Observable(observer => {
-			let itemsChanged = [];
-			let items = [];
+		return new Observable<SubscriptionMessage<T>>(observer => {
+			let itemsChanged: T[] = [];
+			let items: T[] = [];
 
-			const handler = this.observe(model, criteria).subscribe(({ element }) => {
-				itemsChanged.push(element);
-
-				if (itemsChanged.length > SYNCED_ITEMS_THRESHOLD) {
-					onQueryComplete();
-				}
-			});
-
-			// return any locally available records
+			// first, query and return any locally available records
 			(async () => {
+				// TODO: fix ts-lint error
+				// @ts-ignore
 				items = await this.query(model, criteria, options);
 				onQueryComplete();
 			})();
 
+			// callback for sending snapshots and resetting 'itemsChanged'
 			const onQueryComplete = () => {
 				items = [...items, ...itemsChanged];
-				console.log('onQueryComplete', { items, itemsChanged });
 
-				observer.next({
+				const snapshot: DataStoreSnapshot<T> = {
 					items,
 					isSynced,
 					itemsChanged,
-				});
+				};
+
+				// TODO: fix ts-lint error
+				// @ts-ignore
+				observer.next(snapshot);
 
 				itemsChanged = [];
 			};
 
+			// setting 'isSynced' to true after the last page of records
 			Hub.listen('datastore', async hubData => {
 				const { event, data } = hubData.payload;
 				if (event === 'modelSynced' && data?.model?.name === model.name) {
@@ -1149,10 +1160,32 @@ class DataStore {
 				}
 			});
 
+			// observe the model and send a stream of updates (debounced)
+			const handle: ZenObservable.Subscription = this.observe(
+				// TODO: fix ts-lint error
+				// @ts-ignore
+				model,
+				criteria
+			).subscribe(({ element }) => {
+				itemsChanged.push(element);
+
+				if (itemsChanged.length > SYNCED_ITEMS_THRESHOLD) {
+					onQueryComplete();
+				}
+			});
+
+			// cleanup function called with '.unsubscribe()'
 			return () => {
-				if (handler) {
-					handler.unsubscribe();
-					observer.next({ items, isSynced, itemsChanged });
+				if (handle) {
+					handle.unsubscribe();
+					const snapshot: DataStoreSnapshot<T> = {
+						items,
+						isSynced,
+						itemsChanged,
+					};
+					// TODO: fix ts-lint error
+					// @ts-ignore
+					observer.next(snapshot);
 				}
 			};
 		});
