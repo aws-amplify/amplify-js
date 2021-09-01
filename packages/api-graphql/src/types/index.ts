@@ -17,7 +17,7 @@ import { DocumentNode } from 'graphql/language/ast';
 export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: object;
-	authMode?: GRAPHQL_AUTH_MODE;
+	authMode?: keyof typeof GRAPHQL_AUTH_MODE;
 	authToken?: string;
 }
 
