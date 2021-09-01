@@ -184,8 +184,8 @@ export class Storage {
 	/**
 	 * Cancels an inflight request
 	 *
-	 * @param {Promise<any>} request - The request to cancel
-	 * @param {string} [message] - A message to include in the cancelation exception
+	 * @param request - The request to cancel
+	 * @param [message] - A message to include in the cancelation exception
 	 */
 	public cancel(request: Promise<any>, message?: string) {
 		const cancelTokenSource = this._cancelTokenSourceMap.get(request);
@@ -228,9 +228,8 @@ export class Storage {
 	/**
 	 * Get a presigned URL of the file or the object data when download:true
 	 *
-	 * @param {string} key - key of the object
-	 * @param
-	 * @param {Object} [config] - { level : private|protected|public, download: true|false }
+	 * @param key - key of the object
+	 * @param [config] - config for the Storage operation.
 	 * @return - A promise resolves to either a presigned url or the object
 	 */
 	public get<T extends StorageProvider = AWSS3Provider>(
@@ -259,9 +258,9 @@ export class Storage {
 
 	/**
 	 * Put a file in storage bucket specified to configure method
-	 * @param {string} key - key of the object
-	 * @param {Object} object - File to be put in bucket
-	 * @param {Object} [config] - { level : private|protected|public, contentType: MIME Types,
+	 * @param key - key of the object
+	 * @param object - File to be put in bucket
+	 * @param [config] - { level : private|protected|public, contentType: MIME Types,
 	 *  progressCallback: function }
 	 * @return - promise resolves to object on success
 	 */
@@ -288,8 +287,8 @@ export class Storage {
 
 	/**
 	 * Remove the object for specified key
-	 * @param {string} key - key of the object
-	 * @param {Object} [config] - { level : private|protected|public }
+	 * @param key - key of the object
+	 * @param [config] - { level : private|protected|public }
 	 * @return - Promise resolves upon successful removal of the object
 	 */
 	public remove<T extends StorageProvider = AWSS3Provider> (
@@ -308,8 +307,8 @@ export class Storage {
 
 	/**
 	 * List bucket objects relative to the level and prefix specified
-	 * @param {String} path - the path that contains objects
-	 * @param {Object} [config] - { level : private|protected|public, maxKeys: NUMBER }
+	 * @param path - the path that contains objects
+	 * @param [config] - { level : private|protected|public, maxKeys: NUMBER }
 	 * @return - Promise resolves to list of keys for all objects in path
 	 */
 	public list<T extends StorageProvider = AWSS3Provider>(
