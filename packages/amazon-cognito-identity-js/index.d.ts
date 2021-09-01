@@ -129,7 +129,7 @@ declare module 'amazon-cognito-identity-js' {
 			verificationCode: string,
 			newPassword: string,
 			callbacks: {
-				onSuccess: () => void;
+				onSuccess: (success: string) => void;
 				onFailure: (err: Error) => void;
 			},
 			clientMetaData?: ClientMetadata
@@ -216,7 +216,7 @@ declare module 'amazon-cognito-identity-js' {
 		public getAttributeVerificationCode(
 			name: string,
 			callback: {
-				onSuccess: () => void;
+				onSuccess: (success: string) => void;
 				onFailure: (err: Error) => void;
 				inputVerificationCode?: (data: string) => void | null;
 			}

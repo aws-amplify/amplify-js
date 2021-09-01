@@ -9,7 +9,6 @@ import {
 import {
 	AUTH_CHANNEL,
 	NO_AUTH_MODULE_FOUND,
-	AUTHENTICATOR_AUTHSTATE,
 	UI_AUTH_CHANNEL,
 	TOAST_AUTH_ERROR_EVENT,
 } from '../../common/constants';
@@ -106,24 +105,8 @@ export class AmplifyAuthenticator {
 			.then(user => {
 				dispatchAuthStateChangeEvent(AuthState.SignedIn, user);
 			})
-			.catch(async () => {
-				let cachedAuthState = null;
-				try {
-					cachedAuthState = localStorage.getItem(AUTHENTICATOR_AUTHSTATE);
-				} catch (error) {
-					logger.debug(
-						'Failed to get the auth state from local storage',
-						error
-					);
-				}
-				try {
-					if (cachedAuthState === AuthState.SignedIn) {
-						await Auth.signOut();
-					}
-					dispatchAuthStateChangeEvent(this.initialAuthState);
-				} catch (error) {
-					logger.debug('Failed to sign out', error);
-				}
+			.catch(() => {
+				dispatchAuthStateChangeEvent(this.initialAuthState);
 			});
 	}
 
