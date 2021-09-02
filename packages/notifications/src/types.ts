@@ -98,7 +98,18 @@ type EventFilter = {
 export type InAppMessage = {
 	CampaignId: string;
 	InAppMessage: {
-		Content: string[];
+		Content: [
+			{
+				BackgroundColor?: string;
+				BodyConfig: { Alignment?: string; Body?: string; TextColor?: string };
+				HeaderConfig: {
+					Alignment?: string;
+					Header?: string;
+					TextColor?: string;
+				};
+				ImageUrl?: string;
+			}
+		];
 		Layout: Layout;
 	};
 	Priority: number;
@@ -107,9 +118,9 @@ export type InAppMessage = {
 		EventFilter: EventFilter;
 		QuietTime: any;
 	};
-	SessionCap: number;
-	DailyCap: number;
-	TotalCap: number;
+	SessionCap?: number;
+	DailyCap?: number;
+	TotalCap?: number;
 	TreatmentId: string;
 };
 
