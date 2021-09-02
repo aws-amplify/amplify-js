@@ -19,5 +19,5 @@ Pod::Spec.new do |s|
 
   s.source = { :git => "https://github.com/aws/aws-amplify.git", :tag => "amazon-cognito-identity-js@#{s.version.to_s}" }
   s.source_files     = 'ios/**/*.{h,m,c}'
-  s.dependency 'React'
+  s.dependency 'React-Core'
 end

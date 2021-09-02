@@ -14,17 +14,56 @@
 import { HttpHandlerOptions } from '@aws-sdk/types';
 import { HttpHandler, HttpRequest, HttpResponse } from '@aws-sdk/protocol-http';
 import { buildQueryString } from '@aws-sdk/querystring-builder';
-import axios, { AxiosRequestConfig, Method } from 'axios';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { BrowserHttpOptions } from '@aws-sdk/fetch-http-handler';
+import axios, {
+	AxiosRequestConfig,
+	Method,
+	CancelTokenSource,
+	AxiosTransformer,
+} from 'axios';
+import { ConsoleLogger as Logger, Platform } from '@aws-amplify/core';
+import { FetchHttpHandlerOptions } from '@aws-sdk/fetch-http-handler';
+import * as events from 'events';
 
 const logger = new Logger('axios-http-handler');
-export const SEND_PROGRESS_EVENT = 'sendProgress';
+export const SEND_UPLOAD_PROGRESS_EVENT = 'sendUploadProgress';
+export const SEND_DOWNLOAD_PROGRESS_EVENT = 'sendDownloadProgress';
+
+function isBlob(body: any): body is Blob {
+	return typeof Blob !== 'undefined' && body instanceof Blob;
+}
+
+const normalizeHeaders = (
+	headers: Record<string, string>,
+	normalizedName: string
+) => {
+	for (const [k, v] of Object.entries(headers)) {
+		if (
+			k !== normalizedName &&
+			k.toUpperCase() === normalizedName.toUpperCase()
+		) {
+			headers[normalizedName] = v;
+			delete headers[k];
+		}
+	}
+};
+
+export const reactNativeRequestTransformer: AxiosTransformer[] = [
+	function(data, headers) {
+		if (isBlob(data)) {
+			normalizeHeaders(headers, 'Content-Type');
+			normalizeHeaders(headers, 'Accept');
+			return data;
+		}
+		// Axios' default transformRequest is an array
+		return axios.defaults.transformRequest[0].call(null, data, headers);
+	},
+];
 
 export class AxiosHttpHandler implements HttpHandler {
 	constructor(
-		private readonly httpOptions: BrowserHttpOptions = {},
-		private readonly emitter?: any
+		private readonly httpOptions: FetchHttpHandlerOptions = {},
+		private readonly emitter?: events.EventEmitter,
+		private readonly cancelTokenSource?: CancelTokenSource
 	) {}
 
 	destroy(): void {
@@ -85,13 +124,29 @@ export class AxiosHttpHandler implements HttpHandler {
 		}
 		if (emitter) {
 			axiosRequest.onUploadProgress = function(event) {
-				emitter.emit(SEND_PROGRESS_EVENT, event);
+				emitter.emit(SEND_UPLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
+			axiosRequest.onDownloadProgress = function(event) {
+				emitter.emit(SEND_DOWNLOAD_PROGRESS_EVENT, event);
+				logger.debug(event);
+			};
+		}
+		// If a cancel token source is passed down from the provider, allows cancellation of in-flight requests
+		if (this.cancelTokenSource) {
+			axiosRequest.cancelToken = this.cancelTokenSource.token;
 		}
 
 		// From gamma release, aws-sdk now expects all response type to be of blob or streams
 		axiosRequest.responseType = 'blob';
+		
+		// In Axios, Blobs are identified by calling Object.prototype.toString on the object. However, on React Native,
+		// calling Object.prototype.toString on a Blob returns '[object Object]' instead of '[object Blob]', which causes 
+		// Axios to treat Blobs as generic Javascript objects. Therefore we need a to use a custom request transformer
+		// to correctly handle Blob in React Native.
+		if (Platform.isReactNative) {
+			axiosRequest.transformRequest = reactNativeRequestTransformer;
+		}
 
 		const raceOfPromises = [
 			axios
@@ -107,7 +162,7 @@ export class AxiosHttpHandler implements HttpHandler {
 				})
 				.catch(error => {
 					// Error
-					logger.error(error);
+					logger.error(error.message);
 					throw error;
 				}),
 			requestTimeout(requestTimeoutInMs),

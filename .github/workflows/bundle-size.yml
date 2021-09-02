@@ -1,0 +1,63 @@
+name: Bundle Size
+
+on:
+  # Use this to run on every PR push:
+  # [pull_request]
+
+  # Run once approved:
+  # https://docs.github.com/en/free-pro-team@latest/actions/reference/events-that-trigger-workflows#pull_request_target
+  pull_request_review:
+    types: [submitted]
+    branches: [main]
+
+jobs:
+  bundle-size:
+    # if: github.event.review.state == 'approved'
+    name: Calculate
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        stack: [angular, cra, next, webpack4, webpack]
+    steps:
+      - name: Checkout Amplify JS
+        uses: actions/checkout@v2
+
+      - name: Setup Node + NPM
+        uses: actions/setup-node@v2
+
+      # TODO Re-enable when we have read/write tokens
+      # - name: Pending check
+      #   uses: ./.github/actions/status-check-action
+      #   with:
+      #     context: PR stats for ${{ matrix.stack }}
+      #     state: pending
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Setup Verdaccio
+        uses: ./.github/actions/setup-verdaccio-action
+
+      - name: Use Verdaccio as NPM registry
+        uses: actions/setup-node@v2
+        with:
+          registry-url: 'http://localhost:4873'
+
+      - name: Publish to Verdaccio
+        run: npm run publish:verdaccio
+        shell: bash
+
+      - name: Calculate bundle sizes
+        uses: ./.github/actions/bundle-size-action
+        with:
+          stack: ${{ matrix.stack }}
+      # TODO Re-enable status check when we have read/write tokens
+      # - name: Finished check
+      #   uses: ./.github/actions/status-check-action
+      #   with:
+      #     authToken: ${{ secrets.BUNDLE_SIZE_GITHUB_TOKEN }}
+      #     context: PR stats for ${{ matrix.stack }}
+      #     state: success

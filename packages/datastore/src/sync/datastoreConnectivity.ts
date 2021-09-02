@@ -14,6 +14,8 @@ type ConnectionStatus = {
 export default class DataStoreConnectivity {
 	private connectionStatus: ConnectionStatus;
 	private observer: ZenObservable.SubscriptionObserver<ConnectionStatus>;
+	private subscription: ZenObservable.Subscription;
+	private timeout: ReturnType<typeof setTimeout>;
 	constructor() {
 		this.connectionStatus = {
 			online: false,
@@ -28,7 +30,7 @@ export default class DataStoreConnectivity {
 			this.observer = observer;
 			// Will be used to forward socket connection changes, enhancing Reachability
 
-			const subs = ReachabilityMonitor.subscribe(({ online }) => {
+			this.subscription = ReachabilityMonitor.subscribe(({ online }) => {
 				this.connectionStatus.online = online;
 
 				const observerResult = { ...this.connectionStatus }; // copyOf status
@@ -37,16 +39,24 @@ export default class DataStoreConnectivity {
 			});
 
 			return () => {
-				subs.unsubscribe();
+				clearTimeout(this.timeout);
+				this.unsubscribe();
 			};
 		});
+	}
+
+	unsubscribe() {
+		if (this.subscription) {
+			clearTimeout(this.timeout);
+			this.subscription.unsubscribe();
+		}
 	}
 
 	socketDisconnected() {
 		if (this.observer && typeof this.observer.next === 'function') {
 			this.observer.next({ online: false }); // Notify network issue from the socket
 
-			setTimeout(() => {
+			this.timeout = setTimeout(() => {
 				const observerResult = { ...this.connectionStatus }; // copyOf status
 				this.observer.next(observerResult);
 			}, RECONNECTING_IN); // giving time for socket cleanup and network status stabilization

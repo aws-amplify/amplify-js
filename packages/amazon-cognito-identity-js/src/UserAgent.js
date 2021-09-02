@@ -1,7 +1,8 @@
+import { getUserAgent } from "./Platform";
 // constructor
-function UserAgent() {}
+function UserAgent() { }
 // public
-UserAgent.prototype.userAgent = 'aws-amplify/0.1.x js';
+UserAgent.prototype.userAgent = getUserAgent();
 
 export const appendToCognitoUserAgent = content => {
 	if (!content) {

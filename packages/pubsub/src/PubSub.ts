@@ -15,6 +15,7 @@ import Observable from 'zen-observable-ts';
 
 import {
 	Amplify,
+	browserOrNode,
 	ConsoleLogger as Logger,
 	INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER,
 	INTERNAL_AWS_APPSYNC_REALTIME_PUBSUB_PROVIDER,
@@ -22,6 +23,7 @@ import {
 import { PubSubProvider, PubSubOptions, ProvidertOptions } from './types';
 import { AWSAppSyncProvider, AWSAppSyncRealTimeProvider } from './Providers';
 
+const { isNode } = browserOrNode();
 const logger = new Logger('PubSub');
 
 export class PubSubClass {
@@ -159,7 +161,7 @@ export class PubSubClass {
 		topics: string[] | string,
 		options?: ProvidertOptions
 	): Observable<any> {
-		if (this._options && this._options.ssr) {
+		if (isNode && this._options && this._options.ssr) {
 			throw new Error(
 				'Subscriptions are not supported for Server-Side Rendering (SSR)'
 			);

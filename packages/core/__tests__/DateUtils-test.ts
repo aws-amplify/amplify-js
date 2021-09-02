@@ -80,6 +80,19 @@ describe('DateUtils', () => {
 			expect(DateUtils.isClockSkewError(clockSkewError)).toBe(true);
 		});
 
+		// https://github.com/aws-amplify/amplify-js/issues/7913
+		it('should be true when x-amz-errortype is InvalidSignatureException with a date header', () => {
+			const clockSkewError: any = new Error('InvalidSignatureException');
+			clockSkewError.response = {
+				headers: {
+					'x-amzn-errortype': 'InvalidSignatureException',
+					date: new Date().toString(),
+				},
+			};
+
+			expect(DateUtils.isClockSkewError(clockSkewError)).toBe(true);
+		});
+
 		it('should be false for normal errors', () => {
 			expect(DateUtils.isClockSkewError(new Error('Response error'))).toBe(
 				false

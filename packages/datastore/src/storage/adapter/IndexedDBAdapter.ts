@@ -16,6 +16,7 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicateObject,
+	PredicatesGroup,
 	QueryOne,
 	RelationType,
 } from '../../types';
@@ -47,6 +48,7 @@ class IndexedDBAdapter implements Adapter {
 	private initPromise: Promise<void>;
 	private resolve: (value?: any) => void;
 	private reject: (value?: any) => void;
+	private dbName: string = DB_NAME;
 
 	private async checkPrivate() {
 		const isPrivate = await isPrivateMode().then(isPrivate => {
@@ -84,7 +86,8 @@ class IndexedDBAdapter implements Adapter {
 		getModelConstructorByModelName: (
 			namsespaceName: string,
 			modelName: string
-		) => PersistentModelConstructor<any>
+		) => PersistentModelConstructor<any>,
+		sessionId?: string
 	) {
 		await this.checkPrivate();
 		if (!this.initPromise) {
@@ -95,7 +98,9 @@ class IndexedDBAdapter implements Adapter {
 		} else {
 			await this.initPromise;
 		}
-
+		if (sessionId) {
+			this.dbName = `${DB_NAME}-${sessionId}`;
+		}
 		this.schema = theSchema;
 		this.namespaceResolver = namespaceResolver;
 		this.modelInstanceCreator = modelInstanceCreator;
@@ -104,7 +109,7 @@ class IndexedDBAdapter implements Adapter {
 		try {
 			if (!this.db) {
 				const VERSION = 2;
-				this.db = await idb.openDB(DB_NAME, VERSION, {
+				this.db = await idb.openDB(this.dbName, VERSION, {
 					upgrade: async (db, oldVersion, newVersion, txn) => {
 						if (oldVersion === 0) {
 							Object.keys(theSchema.namespaces).forEach(namespaceName => {
@@ -250,28 +255,18 @@ class IndexedDBAdapter implements Adapter {
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
 			const store = tx.objectStore(storeName);
-
 			const { id } = item;
 
+			const fromDB = <T>await this._get(store, id);
 			const opType: OpType =
-				(await this._get(store, id)) === undefined
-					? OpType.INSERT
-					: OpType.UPDATE;
+				fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
 
-			// It is me
-			if (id === model.id) {
+			// Even if the parent is an INSERT, the child might not be, so we need to get its key
+			if (id === model.id || opType === OpType.INSERT) {
 				const key = await store.index('byId').getKey(item.id);
 				await store.put(item, key);
 
 				result.push([instance, opType]);
-			} else {
-				if (opType === OpType.INSERT) {
-					// Even if the parent is an INSERT, the child might not be, so we need to get its key
-					const key = await store.index('byId').getKey(item.id);
-					await store.put(item, key);
-
-					result.push([instance, opType]);
-				}
 			}
 		}
 
@@ -366,69 +361,86 @@ class IndexedDBAdapter implements Adapter {
 		await this.checkPrivate();
 		const storeName = this.getStorenameForModel(modelConstructor);
 		const namespaceName = this.namespaceResolver(modelConstructor);
-		const sortSpecified = pagination && pagination.sort;
 
-		if (predicate) {
-			const predicates = ModelPredicateCreator.getPredicates(predicate);
-			if (predicates) {
-				const { predicates: predicateObjs, type } = predicates;
-				const idPredicate =
-					predicateObjs.length === 1 &&
-					(predicateObjs.find(
-						p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
-					) as PredicateObject<T>);
+		const predicates =
+			predicate && ModelPredicateCreator.getPredicates(predicate);
+		const queryById = predicates && this.idFromPredicate(predicates);
+		const hasSort = pagination && pagination.sort;
+		const hasPagination = pagination && pagination.limit;
 
-				if (idPredicate) {
-					const { operand: id } = idPredicate;
-
-					const record = <any>await this._get(storeName, id);
-
-					if (record) {
-						const [x] = await this.load(namespaceName, modelConstructor.name, [
-							record,
-						]);
-
-						return [x];
-					}
-					return [];
-				}
-
-				// TODO: Use indices if possible
-				const all = <T[]>await this.db.getAll(storeName);
-
-				const filtered = predicateObjs
-					? all.filter(m => validatePredicate(m, type, predicateObjs))
-					: all;
-
-				return await this.load(
-					namespaceName,
-					modelConstructor.name,
-					this.inMemoryPagination(filtered, pagination)
-				);
+		const records: T[] = await (async () => {
+			if (queryById) {
+				const record = await this.getById(storeName, queryById);
+				return record ? [record] : [];
 			}
-		}
 
-		if (sortSpecified) {
-			const all = <T[]>await this.db.getAll(storeName);
-			return await this.load(
-				namespaceName,
-				modelConstructor.name,
-				this.inMemoryPagination(all, pagination)
-			);
-		}
+			if (predicates) {
+				const filtered = await this.filterOnPredicate(storeName, predicates);
+				return this.inMemoryPagination(filtered, pagination);
+			}
 
-		return await this.load(
-			namespaceName,
-			modelConstructor.name,
-			await this.enginePagination(storeName, pagination)
-		);
+			if (hasSort) {
+				const all = await this.getAll(storeName);
+				return this.inMemoryPagination(all, pagination);
+			}
+
+			if (hasPagination) {
+				return this.enginePagination(storeName, pagination);
+			}
+
+			return this.getAll(storeName);
+		})();
+
+		return await this.load(namespaceName, modelConstructor.name, records);
+	}
+
+	private async getById<T extends PersistentModel>(
+		storeName: string,
+		id: string
+	): Promise<T> {
+		const record = <T>await this._get(storeName, id);
+		return record;
+	}
+
+	private async getAll<T extends PersistentModel>(
+		storeName: string
+	): Promise<T[]> {
+		return await this.db.getAll(storeName);
+	}
+
+	private idFromPredicate<T extends PersistentModel>(
+		predicates: PredicatesGroup<T>
+	) {
+		const { predicates: predicateObjs } = predicates;
+		const idPredicate =
+			predicateObjs.length === 1 &&
+			(predicateObjs.find(
+				p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
+			) as PredicateObject<T>);
+
+		return idPredicate && idPredicate.operand;
+	}
+
+	private async filterOnPredicate<T extends PersistentModel>(
+		storeName: string,
+		predicates: PredicatesGroup<T>
+	) {
+		const { predicates: predicateObjs, type } = predicates;
+
+		const all = <T[]>await this.getAll(storeName);
+
+		const filtered = predicateObjs
+			? all.filter(m => validatePredicate(m, type, predicateObjs))
+			: all;
+
+		return filtered;
 	}
 
 	private inMemoryPagination<T extends PersistentModel>(
 		records: T[],
 		pagination?: PaginationInput<T>
 	): T[] {
-		if (pagination) {
+		if (pagination && records.length > 1) {
 			if (pagination.sort) {
 				const sortPredicates = ModelSortPredicateCreator.getPredicates(
 					pagination.sort
@@ -447,7 +459,6 @@ class IndexedDBAdapter implements Adapter {
 
 			return records.slice(start, end);
 		}
-
 		return records;
 	}
 
@@ -471,21 +482,16 @@ class IndexedDBAdapter implements Adapter {
 			}
 
 			const pageResults: T[] = [];
-
 			const hasLimit = typeof limit === 'number' && limit > 0;
-			let moreRecords = true;
-			let itemsLeft = limit;
-			while (moreRecords && cursor && cursor.value) {
+
+			while (cursor && cursor.value) {
 				pageResults.push(cursor.value);
 
-				cursor = await cursor.continue();
-
-				if (hasLimit) {
-					itemsLeft--;
-					moreRecords = itemsLeft > 0 && cursor !== null;
-				} else {
-					moreRecords = cursor !== null;
+				if (hasLimit && pageResults.length === limit) {
+					break;
 				}
+
+				cursor = await cursor.continue();
 			}
 
 			result = pageResults;
@@ -679,7 +685,7 @@ class IndexedDBAdapter implements Adapter {
 		deleteQueue: { storeName: string; items: T[] }[]
 	): Promise<void> {
 		for await (const rel of relations) {
-			const { relationType, fieldName, modelName } = rel;
+			const { relationType, fieldName, modelName, targetName } = rel;
 			const storeName = this.getStorename(nameSpace, modelName);
 
 			const index: string =
@@ -699,11 +705,16 @@ class IndexedDBAdapter implements Adapter {
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const model of models) {
+						const hasOneIndex = index || 'byId';
+
+						const hasOneCustomField = targetName in model;
+						const value = hasOneCustomField ? model[targetName] : model.id;
+
 						const recordToDelete = <T>await this.db
 							.transaction(storeName, 'readwrite')
 							.objectStore(storeName)
-							.index(index)
-							.get(model.id);
+							.index(hasOneIndex)
+							.get(value);
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
@@ -758,7 +769,7 @@ class IndexedDBAdapter implements Adapter {
 
 		this.db.close();
 
-		await idb.deleteDB(DB_NAME);
+		await idb.deleteDB(this.dbName);
 
 		this.db = undefined;
 		this.initPromise = undefined;

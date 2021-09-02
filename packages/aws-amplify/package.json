@@ -1,6 +1,6 @@
 {
   "name": "aws-amplify",
-  "version": "3.3.9",
+  "version": "4.2.5",
   "description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -34,18 +34,18 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/analytics": "4.0.0",
-    "@aws-amplify/api": "3.2.12",
-    "@aws-amplify/auth": "3.4.12",
-    "@aws-amplify/cache": "3.1.37",
-    "@aws-amplify/core": "3.8.4",
-    "@aws-amplify/datastore": "2.8.0",
-    "@aws-amplify/interactions": "3.3.12",
-    "@aws-amplify/predictions": "3.2.12",
-    "@aws-amplify/pubsub": "3.2.10",
-    "@aws-amplify/storage": "3.3.12",
-    "@aws-amplify/ui": "2.0.2",
-    "@aws-amplify/xr": "2.2.12"
+    "@aws-amplify/analytics": "5.0.11",
+    "@aws-amplify/api": "4.0.11",
+    "@aws-amplify/auth": "4.3.1",
+    "@aws-amplify/cache": "4.0.13",
+    "@aws-amplify/core": "4.2.5",
+    "@aws-amplify/datastore": "3.3.3",
+    "@aws-amplify/interactions": "4.0.11",
+    "@aws-amplify/predictions": "4.0.11",
+    "@aws-amplify/pubsub": "4.1.3",
+    "@aws-amplify/storage": "4.3.6",
+    "@aws-amplify/ui": "2.0.3",
+    "@aws-amplify/xr": "3.0.11"
   },
   "jest": {
     "globals": {
@@ -67,7 +67,9 @@
       "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
     },
     "preset": "ts-jest",
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "testMatch": [
+      "**/__tests__/**/*-test.[jt]s?(x)"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -86,7 +88,10 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "dist",
+      "lib",
+      "lib-esm"
     ]
   }
 }
