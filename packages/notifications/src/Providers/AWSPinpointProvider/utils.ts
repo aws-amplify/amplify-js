@@ -12,6 +12,10 @@ typeof Symbol.for === 'function'
 	? Symbol.for('amplify_default')
 	: '@@amplify_default') as Symbol;
 
+let eventNameMemo = {};
+let eventAttributesMemo = {};
+let eventMetricsMemo = {};
+
 export const logger = new ConsoleLogger('AWSPinpointProvider');
 
 export const dispatchNotificationEvent = (
@@ -34,15 +38,20 @@ export const getStartOfDay = (): string => {
 };
 
 export const matchesEventType = (
-	{ Schedule }: InAppMessage,
+	{ CampaignId, Schedule }: InAppMessage,
 	{ name: eventType }: NotificationEvent
 ) => {
 	const { EventType } = Schedule.EventFilter.Dimensions;
-	return EventType && EventType.Values.includes(eventType);
+	const memoKey = `${CampaignId}:${eventType}`;
+	if (!eventNameMemo.hasOwnProperty(memoKey)) {
+		eventNameMemo[memoKey] =
+			!!EventType && EventType.Values.includes(eventType);
+	}
+	return eventNameMemo[memoKey];
 };
 
 export const matchesAttributes = (
-	{ Schedule }: InAppMessage,
+	{ CampaignId, Schedule }: InAppMessage,
 	{ attributes }: NotificationEvent
 ) => {
 	const { Attributes } = Schedule.EventFilter.Dimensions;
@@ -54,13 +63,17 @@ export const matchesAttributes = (
 		// if message does have attributes but the event does not then it always fails the check
 		return false;
 	}
-	return Object.entries(Attributes).every(([key, { Values }]) =>
-		Values.includes(attributes[key])
-	);
+	const memoKey = `${CampaignId}:${JSON.stringify(attributes)}`;
+	if (!eventAttributesMemo.hasOwnProperty(memoKey)) {
+		eventAttributesMemo[memoKey] = Object.entries(
+			Attributes
+		).every(([key, { Values }]) => Values.includes(attributes[key]));
+	}
+	return eventAttributesMemo[memoKey];
 };
 
 export const matchesMetrics = (
-	{ Schedule }: InAppMessage,
+	{ CampaignId, Schedule }: InAppMessage,
 	{ metrics }: NotificationEvent
 ) => {
 	const { Metrics } = Schedule.EventFilter.Dimensions;
@@ -72,12 +85,16 @@ export const matchesMetrics = (
 		// if message does have metrics but the event does not then it always fails the check
 		return false;
 	}
-	return Object.entries(Metrics).every(
-		([key, { ComparisonOperator, Value }]) => {
-			const compare = getComparator(ComparisonOperator);
-			return compare(Value, metrics[key]);
-		}
-	);
+	const memoKey = `${CampaignId}:${JSON.stringify(metrics)}`;
+	if (!eventMetricsMemo.hasOwnProperty(memoKey)) {
+		eventMetricsMemo[memoKey] = Object.entries(Metrics).every(
+			([key, { ComparisonOperator, Value }]) => {
+				const compare = getComparator(ComparisonOperator);
+				return compare(Value, metrics[key]);
+			}
+		);
+	}
+	return eventMetricsMemo[memoKey];
 };
 
 export const getComparator = (
@@ -138,4 +155,10 @@ export const isQuietTime = (message: InAppMessage): boolean => {
 		logger.debug('message filtered due to quiet time', message);
 	}
 	return isQuietTime;
+};
+
+export const clearMemo = () => {
+	eventNameMemo = {};
+	eventAttributesMemo = {};
+	eventMetricsMemo = {};
 };

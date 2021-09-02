@@ -33,6 +33,7 @@ import {
 	InAppMessageCounts,
 } from './types';
 import {
+	clearMemo,
 	dispatchNotificationEvent,
 	getStartOfDay,
 	isBeforeEndDate,
@@ -90,6 +91,10 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		if (!this.initialized) {
 			await this.init();
 		}
+		// There is no way to granuarly reconcile the filter memoization as the keys are composited from a message id and
+		// event properties thus opting to just clear them out when syncing messages rather than leave potentially
+		// obsolete entries that will no longer serve any purpose.
+		clearMemo();
 		const { appId, endpointId, pinpointClient } = this.config;
 		try {
 			if (!pinpointClient) {
@@ -138,6 +143,9 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		return messages.filter(message => {
 			const { CampaignId } = message;
 			return (
+				// The match utils have built in memoization but having the event type matcher first is important as the
+				// memoization strategy there is more efficient as it does not rely on JSON.stringify to create its key. Having
+				// this matcher first will allow this function to short-circuit on the more efficient memoization.
 				matchesEventType(message, event) &&
 				matchesAttributes(message, event) &&
 				matchesMetrics(message, event) &&
