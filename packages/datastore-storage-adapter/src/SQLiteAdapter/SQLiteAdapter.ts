@@ -13,7 +13,7 @@ import {
 } from './SQLiteUtils';
 
 import {
-	Adapter,
+	StorageAdapter,
 	ModelInstanceCreator,
 	ModelPredicateCreator,
 	ModelSortPredicateCreator,
@@ -40,7 +40,7 @@ const {
 } = util;
 
 const logger = new Logger('DataStore');
-export class SQLiteAdapter implements Adapter {
+export class SQLiteAdapter implements StorageAdapter {
 	private schema: InternalSchema;
 	private namespaceResolver: NamespaceResolver;
 	private modelInstanceCreator: ModelInstanceCreator;

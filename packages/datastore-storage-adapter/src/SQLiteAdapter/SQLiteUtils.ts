@@ -16,15 +16,10 @@ import {
 	isModelAttributeAuth,
 	ModelAttributeAuth,
 	ModelAuthRule,
-	util,
+	utils,
 } from '@aws-amplify/datastore';
 
-const {
-	USER,
-	exhaustiveCheck,
-	isNonModelConstructor,
-	isModelConstructor,
-} = util;
+const { USER, isNonModelConstructor, isModelConstructor } = utils;
 
 export type ParameterizedStatement = [string, any[]];
 
@@ -269,7 +264,7 @@ const whereConditionFromPredicateObject = ({
 				rightExp = [`%${operand}%`];
 				break;
 			default:
-				exhaustiveCheck(logicalOperatorKey);
+				const _: never = logicalOperatorKey;
 				// Incorrect WHERE clause can result in data loss
 				throw new Error('Cannot map predicate to a valid WHERE clause');
 		}
@@ -311,7 +306,8 @@ export function whereClauseFromPredicate<T extends PersistentModel>(
 					filterType = 'OR';
 					break;
 				default:
-					exhaustiveCheck(groupType);
+					const _: never = groupType;
+					throw new Error(`Invalid ${groupType}`);
 			}
 
 			const groupResult = [];

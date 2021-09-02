@@ -4,14 +4,28 @@ export {
 	initSchema,
 	ModelInstanceCreator,
 } from './datastore/datastore';
+
 export {
 	Predicates,
 	ModelPredicateCreator,
 	ModelSortPredicateCreator,
 } from './predicates';
-export { Adapter } from './storage/adapter';
+export { Adapter as StorageAdapter } from './storage/adapter';
 
-import * as util from './util';
-export { util };
+import {
+	traverseModel,
+	validatePredicate,
+	USER,
+	isNonModelConstructor,
+	isModelConstructor,
+} from './util';
+
+export const utils = {
+	USER,
+	traverseModel,
+	validatePredicate,
+	isNonModelConstructor,
+	isModelConstructor,
+};
 
 export * from './types';
