@@ -1102,55 +1102,53 @@ class DataStore {
 		});
 	};
 
-	// TODO: fix ts-lint error
-	// @ts-ignore
 	observeQuery: {
-		(): Observable<SubscriptionMessage<PersistentModel>>;
-
-		<T extends PersistentModel>(model: T): Observable<SubscriptionMessage<T>>;
-
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			criteria?: string | ProducerModelPredicate<T>
-		): Observable<SubscriptionMessage<T>>;
+			criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
+			paginationProducer?: ProducerPaginationInput<T>
+		): Observable<DataStoreSnapshot<T>>;
 	} = <T extends PersistentModel = PersistentModel>(
-		model: T | PersistentModelConstructor<T>,
-		criteria?: ModelPredicate<T>,
+		model: PersistentModelConstructor<T>,
+		criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
 		options?: ProducerPaginationInput<T>
-	): Observable<SubscriptionMessage<T>> => {
+	): Observable<DataStoreSnapshot<T>> => {
+		// TODO: 'this.syncPageSize' comes back as 'undefined'
 		const SYNCED_ITEMS_THRESHOLD = 1000;
-		// TODO: toggle 'isSynced' back to false when out of sync... not sure how yet
+		// TODO: Move `isSynced` to the SyncEngine so we can check real-time synced status
+		// i.e. so the flag doesn't get reset each time `useEffect` re-runs
 		let isSynced: boolean = false;
 
-		return new Observable<SubscriptionMessage<T>>(observer => {
-			let itemsChanged: T[] = [];
-			let items: T[] = [];
+		return new Observable<DataStoreSnapshot<T>>(observer => {
+			let itemsChanged = new Map<string, T>();
+			let items = new Map<string, T>();
 
 			// first, query and return any locally available records
 			(async () => {
-				// TODO: fix ts-lint error
-				// @ts-ignore
-				items = await this.query(model, criteria, options);
+				// using a Map to maintain insertion order
+				items = new Map(
+					(await this.query(model, criteria, options)).map(x => [x.id, x])
+				);
 				onQueryComplete();
 			})();
 
 			// callback for sending snapshots and resetting 'itemsChanged'
 			const onQueryComplete = () => {
-				items = [...items, ...itemsChanged];
-
+				// TODO: extract itemsChanged.values() to a var
+				items = new Map([
+					...Array.from(items.entries()),
+					...Array.from(itemsChanged.entries()),
+				]);
 				const snapshot: DataStoreSnapshot<T> = {
-					items,
+					items: Array.from(items.values()),
 					isSynced,
-					itemsChanged,
+					itemsChanged: Array.from(itemsChanged.values()),
 				};
-
-				// TODO: fix ts-lint error
-				// @ts-ignore
 				observer.next(snapshot);
-
-				itemsChanged = [];
+				itemsChanged = new Map();
 			};
 
+			// TODO: unsubscribe from Hub (.listen() sets up a listener which has a cleanup method)
 			// setting 'isSynced' to true after the last page of records
 			Hub.listen('datastore', async hubData => {
 				const { event, data } = hubData.payload;
@@ -1162,14 +1160,13 @@ class DataStore {
 
 			// observe the model and send a stream of updates (debounced)
 			const handle: ZenObservable.Subscription = this.observe(
-				// TODO: fix ts-lint error
-				// @ts-ignore
 				model,
+				// @ts-ignore TODO: fix this TSlint error
 				criteria
-			).subscribe(({ element }) => {
-				itemsChanged.push(element);
+			).subscribe(({ condition, element, model, opType }) => {
+				itemsChanged.set(element.id, element);
 
-				if (itemsChanged.length > SYNCED_ITEMS_THRESHOLD) {
+				if (itemsChanged.size >= SYNCED_ITEMS_THRESHOLD || isSynced) {
 					onQueryComplete();
 				}
 			});
@@ -1179,12 +1176,10 @@ class DataStore {
 				if (handle) {
 					handle.unsubscribe();
 					const snapshot: DataStoreSnapshot<T> = {
-						items,
+						items: Array.from(items.values()),
 						isSynced,
-						itemsChanged,
+						itemsChanged: Array.from(itemsChanged.values()),
 					};
-					// TODO: fix ts-lint error
-					// @ts-ignore
 					observer.next(snapshot);
 				}
 			};
