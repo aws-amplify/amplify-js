@@ -378,7 +378,7 @@ const castInstanceType = (
 		}
 	}
 
-	// cast from SQLite representation of boolean to JS boolean
+	// cast from numeric representation of boolean to JS boolean
 	if (typeof v === 'number' && type === 'Boolean') {
 		return Boolean(v);
 	}
