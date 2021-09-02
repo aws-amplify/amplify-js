@@ -4,7 +4,6 @@ import {
 	ModelField,
 	PersistentModel,
 	isGraphQLScalarType,
-	GraphQLScalarType,
 	QueryOne,
 	PredicatesGroup,
 	isPredicateObj,
@@ -18,6 +17,8 @@ import {
 	ModelAuthRule,
 	utils,
 } from '@aws-amplify/datastore';
+
+import { getSQLiteType } from './types';
 
 const { USER, isNonModelConstructor, isModelConstructor } = utils;
 
@@ -122,9 +123,7 @@ export function modelCreateTableStatement(
 				return acc + '"id" PRIMARY KEY NOT NULL';
 			}
 
-			let columnParam = `"${field.name}" ${GraphQLScalarType.getSQLiteType(
-				field.type
-			)}`;
+			let columnParam = `"${field.name}" ${getSQLiteType(field.type)}`;
 
 			if (field.isRequired) {
 				columnParam += ' NOT NULL';

@@ -29,15 +29,10 @@ import {
 	PredicateObject,
 	PredicatesGroup,
 	QueryOne,
-	util,
+	utils,
 } from '@aws-amplify/datastore';
 
-const {
-	exhaustiveCheck,
-	traverseModel,
-	validatePredicate,
-	isModelConstructor,
-} = util;
+const { traverseModel, validatePredicate, isModelConstructor } = utils;
 
 const logger = new Logger('DataStore');
 export class SQLiteAdapter implements StorageAdapter {
@@ -241,7 +236,8 @@ export class SQLiteAdapter implements StorageAdapter {
 					// TODO: Lazy loading
 					break;
 				default:
-					exhaustiveCheck(relationType);
+					const _: never = relationType;
+					throw new Error(`invalid relation type ${relationType}`);
 					break;
 			}
 		}
