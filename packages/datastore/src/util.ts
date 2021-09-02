@@ -135,7 +135,6 @@ export const isModelConstructor = <T extends PersistentModel>(
 const nonModelClasses = new WeakSet<NonModelTypeConstructor<any>>();
 
 export function registerNonModelClass(clazz: NonModelTypeConstructor<any>) {
-	// console.log(`Registering non model ${clazz.name}`);
 	nonModelClasses.add(clazz);
 }
 

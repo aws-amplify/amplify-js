@@ -775,8 +775,6 @@ export class SyncEngine {
 
 		const modelsMetadata = await this.storage.query(ModelMetadata);
 
-		console.log('getModelsMetadata', modelsMetadata);
-
 		return modelsMetadata;
 	}
 
