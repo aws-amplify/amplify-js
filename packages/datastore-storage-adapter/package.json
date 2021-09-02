@@ -1,17 +1,17 @@
 {
-  "name": "@aws-amplify/datastore-storage-adapter",
-  "version": "1.0.0",
-  "description": "SQLite storage adapter for Amplify DataStore ",
-  "main": "./lib/index.js",
-  "module": "./lib-esm/index.js",
+	"name": "@aws-amplify/datastore-storage-adapter",
+	"version": "1.1.0",
+	"description": "SQLite storage adapter for Amplify DataStore ",
+	"main": "./lib/index.js",
+	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js"
 	},
-  "publishConfig": {
+	"publishConfig": {
 		"access": "public"
 	},
-  "scripts": {
+	"scripts": {
 		"test": "npm run lint && jest -w 1 --coverage",
 		"build-with-test": "npm test && npm run build",
 		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
@@ -33,14 +33,14 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
-  "dependencies": {
-    "@aws-amplify/core": "4.2.5",
-    "@aws-amplify/datastore": "3.3.3"
-  },
-  "devDependencies": {
-    "react-native-sqlite-storage": "5.0.0"
-  },
-  "jest": {
+	"dependencies": {
+		"@aws-amplify/core": "4.2.6",
+		"@aws-amplify/datastore": "3.4.0"
+	},
+	"devDependencies": {
+		"react-native-sqlite-storage": "5.0.0"
+	},
+	"jest": {
 		"globals": {
 			"ts-jest": {
 				"diagnostics": true,
