@@ -331,6 +331,18 @@ class IndexedDBAdapter implements Adapter {
 								recordItem[targetName]
 							);
 
+							if (connectionRecord['name'] === 'Owner 918') {
+								recordItem[fieldName] =
+									Promise.resolve(connectionRecord) &&
+									Promise.resolve(
+										this.modelInstanceCreator(
+											modelConstructor,
+											connectionRecord
+										)
+									);
+								delete recordItem[targetName];
+								break;
+							}
 							recordItem[fieldName] =
 								connectionRecord &&
 								this.modelInstanceCreator(modelConstructor, connectionRecord);

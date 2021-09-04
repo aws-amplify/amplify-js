@@ -293,6 +293,21 @@ describe('Indexed db storage test', () => {
 		expect(q1.post.id).toEqual(p.id);
 	});
 
+	test('query lazily BelongsTo', async () => {
+		const owner1 = new BlogOwner({ name: 'Owner 918' });
+		const blog1 = new Blog({
+			name: 'Avatar: Last Airbender',
+			owner: owner1,
+		});
+		await DataStore.save(owner1);
+		await DataStore.save(blog1);
+
+		const q1 = await DataStore.query(Blog, blog1.id);
+		expect(q1.owner.id).toEqual(undefined);
+		const awaitedOwner = await q1.owner;
+		expect(awaitedOwner.id).toEqual(owner1.id);
+	});
+
 	test('query with sort on a single field', async () => {
 		const p1 = new Person({
 			firstName: 'John',
