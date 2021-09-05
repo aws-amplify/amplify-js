@@ -198,20 +198,25 @@ describe('PubSub', () => {
 		});
 
 		test('should remove AWSIoTProvider', () => {
-			const config = {
-				PubSub: {
-					aws_pubsub_region: 'region',
-					aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
-				},
-			};
 			const pubsub = new PubSub({});
-			pubsub.configure(config);
-			const awsIotProvider = new AWSIoTProvider();
-			pubsub.addPluggable(awsIotProvider);
+			const originalProvider = new AWSIoTProvider({
+				aws_pubsub_region: 'region',
+				aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
+			})
+			jest.spyOn(originalProvider, 'publish');
+			const newProvider = new AWSIoTProvider({
+				aws_pubsub_region: 'new-region',
+				aws_pubsub_endpoint: 'wss://iot.newEndPoint.org:443/newEndPoint',
+			});
+			jest.spyOn(newProvider, 'publish');
 
-			const removedPluggable = pubsub.removePluggable({provider: 'AWSIoTProvider'});
+			pubsub.addPluggable(originalProvider);
+			pubsub.removePluggable('AWSIoTProvider');
+			pubsub.addPluggable(newProvider);
+			pubsub.publish('someTopic', {msg: 'published Message'}, {provider: 'AWSIoTProvider'});
 
-			expect(removedPluggable).toBe(awsIotProvider);
+			expect(originalProvider.publish).not.toHaveBeenCalled();
+			expect(newProvider.publish).toHaveBeenCalled();
 		});
 
 		test('should exit gracefully when trying to remove provider when no providers have been added', () => {
@@ -224,8 +229,7 @@ describe('PubSub', () => {
 			const pubsub = new PubSub({});
 			pubsub.configure(config);
 
-			const removedPluggable = pubsub.removePluggable({provider: 'AWSIoTProvider'});
-			expect(removedPluggable).toBe(undefined);
+			expect(() => pubsub.removePluggable('AWSIoTProvider')).not.toThrow();
 		});
 	});
 
@@ -272,16 +276,24 @@ describe('PubSub', () => {
 
 		test('should remove MqttOverWSProvider', () => {
 			const pubsub = new PubSub({});
-			const mqttOverWSProvider = new MqttOverWSProvider({
+			const originalProvider = new MqttOverWSProvider({
 				aws_pubsub_region: 'region',
 				aws_appsync_dangerously_connect_to_http_endpoint_for_testing: true,
 			});
+			jest.spyOn(originalProvider, 'publish');
+			const newProvider = new MqttOverWSProvider({
+				aws_pubsub_region: 'region',
+				aws_appsync_dangerously_connect_to_http_endpoint_for_testing: true,
+			});
+			jest.spyOn(newProvider, 'publish');
 
-			pubsub.addPluggable(mqttOverWSProvider);
+			pubsub.addPluggable(originalProvider);
+			pubsub.removePluggable('MqttOverWSProvider');
+			pubsub.addPluggable(newProvider);
+			pubsub.publish('someTopic', {msg: 'published Message'}, {provider:'MqttOverWSProvider'});
 
-			const removedPluggable = pubsub.removePluggable({provider: 'MqttOverWSProvider'});
-
-			expect(removedPluggable).toBe(mqttOverWSProvider);
+			expect(originalProvider.publish).not.toHaveBeenCalled();
+			expect(newProvider.publish).toHaveBeenCalled();
 		});
 	});
 

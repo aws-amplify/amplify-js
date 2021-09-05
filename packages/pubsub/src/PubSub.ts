@@ -108,12 +108,10 @@ export class PubSubClass {
 		}
 	}
 
-	removePluggable(options: ProvidertOptions) {
-		const { provider: providerName } = options;
-
-		const indexOfPluggableToRemove = this._pluggables.indexOf(providerName);
-
-		return this._pluggables.splice(indexOfPluggableToRemove, 1)[0];
+	removePluggable(providerName: string):void {
+		this._pluggables = this._pluggables.filter(
+			pluggable => pluggable.getProviderName() !== providerName
+		);
 	}
 
 	private getProviderByName(providerName) {
