@@ -5,6 +5,8 @@
  * @see https://github.com/aws/aws-sdk-js/blob/6edf586dcc1de7fe8fbfbbd9a0d2b1847921e6e1/lib/util.js#L262
  */
 
+// Comment - TODO: remove
+
 const FIVE_MINUTES_IN_MS = 1000 * 60 * 5;
 
 export const DateUtils = {
@@ -66,7 +68,9 @@ export const DateUtils = {
 		const { headers } = error.response;
 
 		return Boolean(
-			headers['x-amzn-errortype'] === 'BadRequestException' &&
+			['BadRequestException', 'InvalidSignatureException'].includes(
+				headers['x-amzn-errortype']
+			) &&
 				(headers.date || headers.Date)
 		);
 	},

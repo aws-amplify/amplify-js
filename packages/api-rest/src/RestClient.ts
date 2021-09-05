@@ -131,7 +131,10 @@ export class RestClient {
 		const initParams = Object.assign({}, init);
 		const isAllResponse = initParams.response;
 		if (initParams.body) {
-			if (initParams.body instanceof FormData) {
+			if (
+				typeof FormData === 'function' &&
+				initParams.body instanceof FormData
+			) {
 				libraryHeaders['Content-Type'] = 'multipart/form-data';
 				params.data = initParams.body;
 			} else {
@@ -202,7 +205,8 @@ export class RestClient {
 							params.headers['x-amz-date']
 						);
 
-						if (DateUtils.isClockSkewed(requestDate, responseDate)) {
+						// Compare local clock to the server clock
+						if (DateUtils.isClockSkewed(responseDate)) {
 							DateUtils.setClockOffset(
 								responseDate.getTime() - requestDate.getTime()
 							);

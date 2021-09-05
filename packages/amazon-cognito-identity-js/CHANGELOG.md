@@ -3,6 +3,209 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.6...amazon-cognito-identity-js@5.1.0) (2021-08-19)
+
+
+### Features
+
+* **@aws-amplify/auth:** Add a 'SUCCESS' response on successful call to forgotPasswordSubmit and verifyUserAttributes([#8744](https://github.com/aws-amplify/amplify-js/issues/8744)) ([1bd6c35](https://github.com/aws-amplify/amplify-js/commit/1bd6c35c115321d77f48a3954942dd57d7cf9056))
+
+
+
+
+
+## [5.0.6](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.5...amazon-cognito-identity-js@5.0.6) (2021-07-22)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-is, @aws-amplify/auth:** upgrade crypto-js to 4.1.1 to fix bundle size issue ([#8626](https://github.com/aws-amplify/amplify-js/issues/8626)) ([b16f8e7](https://github.com/aws-amplify/amplify-js/commit/b16f8e7801790a59a8ad0c40b598f4962aada60e))
+* **amazon-cognito-identity-js:** Adding Session param for DEVICE_SRP_AUTH and user agent fix ([#8591](https://github.com/aws-amplify/amplify-js/issues/8591)) ([190bd50](https://github.com/aws-amplify/amplify-js/commit/190bd501236a59b16318802b51a0494f7374d299))
+
+
+
+
+
+## [5.0.5](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.4...amazon-cognito-identity-js@5.0.5) (2021-07-16)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** refresh cached user after deleting attributes ([#8578](https://github.com/aws-amplify/amplify-js/issues/8578)) ([bf78611](https://github.com/aws-amplify/amplify-js/commit/bf78611b8e4dbc4c8b774516c765cb6d1add8ea7))
+
+
+
+
+
+## [5.0.4](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.3...amazon-cognito-identity-js@5.0.4) (2021-07-08)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** rewrite retry as promise based method ([#8524](https://github.com/aws-amplify/amplify-js/issues/8524)) ([a84978d](https://github.com/aws-amplify/amplify-js/commit/a84978d61960907957699882bc16724287dd522f))
+
+
+
+
+
+## [5.0.3](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.2...amazon-cognito-identity-js@5.0.3) (2021-06-10)
+
+
+### Bug Fixes
+
+* remove RN-specific peerDeps to correctly hoist core in npm@7 ([#8368](https://github.com/aws-amplify/amplify-js/issues/8368)) ([9cc5218](https://github.com/aws-amplify/amplify-js/commit/9cc52186e687d6782b41581959380bd7f534e5d2))
+
+
+
+
+
+## [5.0.2](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.1...amazon-cognito-identity-js@5.0.2) (2021-05-26)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+
+
+
+
+## [5.0.1](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.0...amazon-cognito-identity-js@5.0.1) (2021-05-14)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+
+
+
+
+# [5.0.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.6.1...amazon-cognito-identity-js@5.0.0) (2021-05-11)
+
+
+* chore!: Upgrade to @react-native-async-storage/async-storage (#8250) ([1de4853](https://github.com/aws-amplify/amplify-js/commit/1de48531b68e3c53c3b7dbf4487da4578cb79888)), closes [#8250](https://github.com/aws-amplify/amplify-js/issues/8250)
+
+
+### BREAKING CHANGES
+
+* Upgrade from React Native AsyncStorage to @react-native-async-storage/async-storage
+
+Co-authored-by: Ashish Nanda <ashish.nanda.5591@gmail.com>
+Co-authored-by: Ivan Artemiev <29709626+iartemiev@users.noreply.github.com>
+
+
+
+
+
+## [4.6.1](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.6.0...amazon-cognito-identity-js@4.6.1) (2021-05-06)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** resolve missing getRandomBase64 implementation in expo >= 41  ([#8162](https://github.com/aws-amplify/amplify-js/issues/8162)) ([2d4052d](https://github.com/aws-amplify/amplify-js/commit/2d4052da555709fe0f759fecb2df4b4b9604461c))
+
+
+
+
+
+# [4.6.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.14...amazon-cognito-identity-js@4.6.0) (2021-03-18)
+
+
+### Features
+
+* Improve Next.js/CRA/Angular bundle sizes ([#7842](https://github.com/aws-amplify/amplify-js/issues/7842)) ([2e0dc61](https://github.com/aws-amplify/amplify-js/commit/2e0dc61fa9e4399351a59a7e8fe801027b6587d5))
+
+
+
+
+
+## [4.5.14](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.13...amazon-cognito-identity-js@4.5.14) (2021-03-12)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** update podspec dep ([#7873](https://github.com/aws-amplify/amplify-js/issues/7873)) ([6c9c4ef](https://github.com/aws-amplify/amplify-js/commit/6c9c4efde6d4da48f5add075ef2f4c3d112c7dea))
+* **amazon-cognito-identity-js:** update sendMFACode callback type ([#7801](https://github.com/aws-amplify/amplify-js/issues/7801)) ([5cce7e6](https://github.com/aws-amplify/amplify-js/commit/5cce7e66ddc5de1ffa190710a7d5847851ec83e5))
+
+
+
+
+
+## [4.5.13](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.12...amazon-cognito-identity-js@4.5.13) (2021-03-08)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** set userDataKey with updated username ([#7903](https://github.com/aws-amplify/amplify-js/issues/7903)) ([8d30ce5](https://github.com/aws-amplify/amplify-js/commit/8d30ce5633fd19acadf621cedc338a4e7504481b))
+
+
+
+
+
+## [4.5.12](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.11...amazon-cognito-identity-js@4.5.12) (2021-02-25)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+
+
+
+
+## [4.5.11](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.10...amazon-cognito-identity-js@4.5.11) (2021-02-18)
+
+
+### Bug Fixes
+
+* AuthenticationHelper - Handle negative BigIntegers ([#7618](https://github.com/aws-amplify/amplify-js/issues/7618)) ([104b278](https://github.com/aws-amplify/amplify-js/commit/104b2783cbf0f94b78f543c94956b98e3611aa4f))
+
+
+
+
+
+## [4.5.10](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.9...amazon-cognito-identity-js@4.5.10) (2021-02-03)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** add default value for options ([#7664](https://github.com/aws-amplify/amplify-js/issues/7664)) ([4ecf425](https://github.com/aws-amplify/amplify-js/commit/4ecf4256e54db42e49c55db8ca14f7dd2b206af1))
+
+
+
+
+
+## [4.5.9](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.8...amazon-cognito-identity-js@4.5.9) (2021-02-01)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** make options optional ([#7654](https://github.com/aws-amplify/amplify-js/issues/7654)) ([08277af](https://github.com/aws-amplify/amplify-js/commit/08277aff76688c091e05c593cb802f90a9c771a6))
+
+
+
+
+
+## [4.5.8](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.7...amazon-cognito-identity-js@4.5.8) (2021-01-29)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth, amazon-cognito-identity-js:** Include clientMetadata for token refresh ([#7633](https://github.com/aws-amplify/amplify-js/issues/7633)) ([3a9efb0](https://github.com/aws-amplify/amplify-js/commit/3a9efb0b596cf2795d7e1424f011f8e59058ecfb))
+* **amazon-cognito-identity-js:** add .web.js version for cryptoSecureRandomInt ([#7521](https://github.com/aws-amplify/amplify-js/issues/7521)) ([13b7ccd](https://github.com/aws-amplify/amplify-js/commit/13b7ccd49b3314580b597dc177f400c1b68e930f))
+
+
+
+
+
+## [4.5.7](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.6...amazon-cognito-identity-js@4.5.7) (2021-01-07)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+
+
+
+
+## [4.5.6](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.5...amazon-cognito-identity-js@4.5.6) (2020-12-17)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+
+
+
+
 ## [4.5.5](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@4.5.4...amazon-cognito-identity-js@4.5.5) (2020-11-20)
 
 **Note:** Version bump only for package amazon-cognito-identity-js

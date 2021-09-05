@@ -1,111 +1,111 @@
 :host {
-  --button-color: var(--amplify-secondary-color);
-  --amazon-button-background: var(--amplify-primary-color);
-  --amazon-button-color: var(--amplify-primary-contrast);
-  --auth0-button-background: #eb5424;
-  --auth0--button-border-color: #e14615;
-  --auth0-button-color: var(--amplify-white);
-  --facebook-button-background: #4267b2;
-  --facebook--button-border-color: #4267b2;
-  --facebook-button-color: var(--amplify-white);
-  --google-button-background: #4285f4;
-  --google--button-border-color: #4285f4;
-  --google-button-color: var(--amplify-white);
-  --oauth-button-background: var(--amplify-white);
-  --oauth--button-color: #152939;
+	--button-color: var(--amplify-secondary-color);
+	--amazon-button-background: var(--amplify-primary-color);
+	--amazon-button-color: var(--amplify-primary-contrast);
+	--auth0-button-background: #eb5424;
+	--auth0--button-border-color: #e14615;
+	--auth0-button-color: var(--amplify-white);
+	--facebook-button-background: #4267b2;
+	--facebook--button-border-color: #4267b2;
+	--facebook-button-color: var(--amplify-white);
+	--google-button-background: #4285f4;
+	--google--button-border-color: #4285f4;
+	--google-button-color: var(--amplify-white);
+	--oauth-button-background: var(--amplify-white);
+	--oauth--button-color: #152939;
 }
 
 .sign-in-button {
-  button {
-    position: relative;
-    width: 100%;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    padding: 0;
-    color: var(--button-color);
-    font-size: var(--amplify-text-sm);
-    box-sizing: content-box;
+	button {
+		position: relative;
+		width: 100%;
+		border-radius: 4px;
+		margin-bottom: 10px;
+		cursor: pointer;
+		padding: 0;
+		color: var(--button-color);
+		font-size: var(--amplify-text-sm);
+		box-sizing: content-box;
 
-    &:hover {
-      opacity: 0.8;
-    }
-  }
+		&:hover {
+			opacity: 0.8;
+		}
+	}
 
-  &.amazon button {
-    background-color: var(--amazon-button-background);
-    border: none;
-    color: var(--amazon-button-color);
-    font-family: 'Amazon Ember';
-  }
+	&.amazon button {
+		background-color: var(--amazon-button-background);
+		border: none;
+		color: var(--amazon-button-color);
+		font-family: 'Amazon Ember';
+	}
 
-  &.auth0 button {
-    background-color: var(--auth0-button-background);
-    font-family: Roboto;
-    border: 1px solid var(--auth0--button-border-color);
-    color: var(--auth0-button-color);
-  }
+	&.auth0 button {
+		background-color: var(--auth0-button-background);
+		font-family: Roboto;
+		border: 1px solid var(--auth0--button-border-color);
+		color: var(--auth0-button-color);
+	}
 
-  &.facebook button {
-    background-color: var(--facebook-button-background);
-    border-color: var(--facebook--button-border-color);
-    font-family: 'Helvetica Neue';
-    color: var(--facebook-button-color);
-  }
+	&.facebook button {
+		background-color: var(--facebook-button-background);
+		border-color: var(--facebook--button-border-color);
+		font-family: 'Helvetica Neue';
+		color: var(--facebook-button-color);
+	}
 
-  &.google button {
-    background-color: var(--google-button-background);
-    font-family: Roboto;
-    border: 1px solid var(--google--button-border-color);
-    color: var(--google-button-color);
-  }
+	&.google button {
+		background-color: var(--google-button-background);
+		font-family: Roboto;
+		border: 1px solid var(--google--button-border-color);
+		color: var(--google-button-color);
+	}
 
-  &.oauth button {
-    background-color: var(--oauth-button-background);
-    color: var(--oauth--button-color);
-  }
+	&.oauth button {
+		background-color: var(--oauth-button-background);
+		color: var(--oauth--button-color);
+	}
 
-  .icon {
-    position: absolute;
-    left: 0;
-  }
+	.icon {
+		position: absolute;
+		left: 0;
+	}
 
-  &.amazon .icon {
-    padding: 10px;
-    height: 32px;
-    width: 32px;
-  }
+	&.amazon .icon {
+		padding: 10px;
+		height: 32px;
+		width: 32px;
+	}
 
-  &.auth0 .icon {
-    border-radius: 4px 0 0 4px;
-    height: 28px;
-    width: 28px;
-    padding: 12px;
-    color: #fff;
-  }
+	&.auth0 .icon {
+		border-radius: 4px 0 0 4px;
+		height: 28px;
+		width: 28px;
+		padding: 12px;
+		color: #fff;
+	}
 
-  &.facebook .icon {
-    height: 33px;
-    width: 18px;
-    padding: 10px 14px;
-  }
+	&.facebook .icon {
+		height: 33px;
+		width: 18px;
+		padding: 10px 14px;
+	}
 
-  &.google .icon {
-    background-color: #fff;
-    border-radius: 4px 0 0 4px;
-    height: 28px;
-    width: 28px;
-    padding: 12px;
-  }
+	&.google .icon {
+		background-color: #fff;
+		border-radius: 4px 0 0 4px;
+		height: 28px;
+		width: 28px;
+		padding: 12px;
+	}
 
-  .content {
-    text-align: center;
-    display: block;
-    padding: 18px 0;
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-align: center;
-  }
+	.content {
+		text-align: center;
+		display: block;
+		padding: 18px 0;
+		text-align: left;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-align: center;
+	}
 }
