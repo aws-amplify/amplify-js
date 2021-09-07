@@ -344,6 +344,7 @@ jobs:
           command: |
             mv .yarnrc ._yarnrc
             yarn
+      - run: yarn bootstrap
       - run: yarn build
       # storing yarn.lock as an artifact, so that we can quickly get a dependency diff
       # with the last working build in the event that some upstream deps break the build in the future
