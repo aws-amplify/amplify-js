@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.4.0...@aws-amplify/datastore@3.4.1) (2021-09-04)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** only stringify nested AWSJSON in mutation event ([#8844](https://github.com/aws-amplify/amplify-js/issues/8844)) ([0febaac](https://github.com/aws-amplify/amplify-js/commit/0febaac79af1b9fd0621dce1e63a139bebdb46f5))
+
+
+
+
+
 # [3.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.3.3...@aws-amplify/datastore@3.4.0) (2021-09-02)
 
 

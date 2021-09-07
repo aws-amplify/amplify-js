@@ -395,11 +395,18 @@ export function createMutationInstanceFromModelOperation<
 			exhaustiveCheck(opType);
 	}
 
-	// stringify nested objects
+	// stringify nested objects of type AWSJSON
 	// this allows us to return parsed JSON to users (see `castInstanceType()` in datastore.ts),
-	// but still send the object correctly over-the-wire
+	// but still send the object correctly over the wire
 	const replacer = (k, v) => {
-		if (k && v !== null && typeof v === 'object' && !Array.isArray(v)) {
+		const isAWSJSON =
+			k &&
+			v !== null &&
+			typeof v === 'object' &&
+			modelDefinition.fields[k] &&
+			modelDefinition.fields[k].type === 'AWSJSON';
+
+		if (isAWSJSON) {
 			return JSON.stringify(v);
 		}
 		return v;
