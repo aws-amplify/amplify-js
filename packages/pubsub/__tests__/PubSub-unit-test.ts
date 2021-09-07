@@ -202,7 +202,7 @@ describe('PubSub', () => {
 			const originalProvider = new AWSIoTProvider({
 				aws_pubsub_region: 'region',
 				aws_pubsub_endpoint: 'wss://iot.mymockendpoint.org:443/notrealmqtt',
-			})
+			});
 			jest.spyOn(originalProvider, 'publish');
 			const newProvider = new AWSIoTProvider({
 				aws_pubsub_region: 'new-region',
@@ -213,7 +213,7 @@ describe('PubSub', () => {
 			pubsub.addPluggable(originalProvider);
 			pubsub.removePluggable('AWSIoTProvider');
 			pubsub.addPluggable(newProvider);
-			pubsub.publish('someTopic', {msg: 'published Message'}, {provider: 'AWSIoTProvider'});
+			pubsub.publish('someTopic', { msg: 'published Message' });
 
 			expect(originalProvider.publish).not.toHaveBeenCalled();
 			expect(newProvider.publish).toHaveBeenCalled();
@@ -290,7 +290,11 @@ describe('PubSub', () => {
 			pubsub.addPluggable(originalProvider);
 			pubsub.removePluggable('MqttOverWSProvider');
 			pubsub.addPluggable(newProvider);
-			pubsub.publish('someTopic', {msg: 'published Message'}, {provider:'MqttOverWSProvider'});
+			pubsub.publish(
+				'someTopic',
+				{ msg: 'published Message' },
+				{ provider: 'MqttOverWSProvider' }
+			);
 
 			expect(originalProvider.publish).not.toHaveBeenCalled();
 			expect(newProvider.publish).toHaveBeenCalled();

@@ -110,7 +110,11 @@ export class PubSubClass {
 		}
 	}
 
-	removePluggable(providerName: string):void {
+	/**
+	 * remove plugin from PubSub category
+	 * @param providerName - the name of the plugin
+	 */
+	removePluggable(providerName: string): void {
 		this._pluggables = this._pluggables.filter(
 			pluggable => pluggable.getProviderName() !== providerName
 		);
