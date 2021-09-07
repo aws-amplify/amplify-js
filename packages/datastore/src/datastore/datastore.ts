@@ -1113,11 +1113,7 @@ class DataStore {
 		criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
 		options?: ProducerPaginationInput<T>
 	): Observable<DataStoreSnapshot<T>> => {
-		// TODO: 'this.syncPageSize' comes back as 'undefined'
 		const SYNCED_ITEMS_THRESHOLD = 1000;
-		// TODO: Move `isSynced` to the SyncEngine so we can check real-time synced status
-		// i.e. so the flag doesn't get reset each time `useEffect` re-runs
-		let isSynced: boolean = false;
 
 		return new Observable<DataStoreSnapshot<T>>(observer => {
 			let itemsChanged = new Map<string, T>();
@@ -1134,7 +1130,8 @@ class DataStore {
 
 			// callback for sending snapshots and resetting 'itemsChanged'
 			const onQueryComplete = () => {
-				// TODO: extract itemsChanged.values() to a var
+				const isSynced = this.sync.getModelSyncedStatus(model);
+
 				items = new Map([
 					...Array.from(items.entries()),
 					...Array.from(itemsChanged.entries()),
@@ -1148,15 +1145,19 @@ class DataStore {
 				itemsChanged = new Map();
 			};
 
-			// TODO: unsubscribe from Hub (.listen() sets up a listener which has a cleanup method)
-			// setting 'isSynced' to true after the last page of records
-			Hub.listen('datastore', async hubData => {
+			const hubCallback = async hubData => {
 				const { event, data } = hubData.payload;
-				if (event === 'modelSynced' && data?.model?.name === model.name) {
-					isSynced = true;
+
+				if (
+					event === ControlMessage.SYNC_ENGINE_MODEL_SYNCED &&
+					data?.model?.name === model.name
+				) {
 					onQueryComplete();
+					Hub.remove('api', hubCallback);
 				}
-			});
+			};
+
+			Hub.listen('datastore', hubCallback);
 
 			// observe the model and send a stream of updates (debounced)
 			const handle: ZenObservable.Subscription = this.observe(
@@ -1165,6 +1166,8 @@ class DataStore {
 				criteria
 			).subscribe(({ condition, element, model, opType }) => {
 				itemsChanged.set(element.id, element);
+
+				const isSynced = this.sync.getModelSyncedStatus(model);
 
 				if (itemsChanged.size >= SYNCED_ITEMS_THRESHOLD || isSynced) {
 					onQueryComplete();
@@ -1175,6 +1178,8 @@ class DataStore {
 			return () => {
 				if (handle) {
 					handle.unsubscribe();
+					const isSynced = this.sync.getModelSyncedStatus(model);
+
 					const snapshot: DataStoreSnapshot<T> = {
 						items: Array.from(items.values()),
 						isSynced,

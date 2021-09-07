@@ -22,7 +22,7 @@ import {
 	ModelPredicate,
 	AuthModeStrategy,
 } from '../types';
-import { exhaustiveCheck, getNow, SYNC } from '../util';
+import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
 import { ModelMerger } from './merger';
 import { MutationEventOutbox } from './outbox';
@@ -95,6 +95,16 @@ export class SyncEngine {
 	private readonly modelMerger: ModelMerger;
 	private readonly outbox: MutationEventOutbox;
 	private readonly datastoreConnectivity: DataStoreConnectivity;
+	private readonly modelSyncedStatus: WeakMap<
+		PersistentModelConstructor<any>,
+		boolean
+	> = new WeakMap();
+
+	public getModelSyncedStatus(
+		modelConstructor: PersistentModelConstructor<any>
+	): boolean {
+		return this.modelSyncedStatus.get(modelConstructor);
+	}
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -615,6 +625,8 @@ export class SyncEngine {
 
 										const counts = count.get(modelConstructor);
 
+										this.modelSyncedStatus.set(modelConstructor, true);
+
 										observer.next({
 											type: ControlMessage.SYNC_ENGINE_MODEL_SYNCED,
 											data: {
@@ -708,6 +720,12 @@ export class SyncEngine {
 				.filter(({ syncable }) => syncable)
 				.forEach(model => {
 					models.push([namespace.name, model]);
+					if (namespace.name === USER) {
+						const modelConstructor = this.userModelClasses[
+							model.name
+						] as PersistentModelConstructor<any>;
+						this.modelSyncedStatus.set(modelConstructor, false);
+					}
 				});
 		});
 
