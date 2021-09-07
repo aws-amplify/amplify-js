@@ -290,11 +290,7 @@ describe('PubSub', () => {
 			pubsub.addPluggable(originalProvider);
 			pubsub.removePluggable('MqttOverWSProvider');
 			pubsub.addPluggable(newProvider);
-			pubsub.publish(
-				'someTopic',
-				{ msg: 'published Message' },
-				{ provider: 'MqttOverWSProvider' }
-			);
+			pubsub.publish('someTopic', { msg: 'published Message' });
 
 			expect(originalProvider.publish).not.toHaveBeenCalled();
 			expect(newProvider.publish).toHaveBeenCalled();
