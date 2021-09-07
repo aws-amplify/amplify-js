@@ -57,7 +57,7 @@ class StorageClass implements StorageFacade {
 		private readonly adapter?: Adapter,
 		private readonly sessionId?: string
 	) {
-		this.adapter = getDefaultAdapter();
+		this.adapter = this.adapter || getDefaultAdapter();
 		this.pushStream = new PushStream();
 	}
 

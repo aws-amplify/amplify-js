@@ -16,6 +16,7 @@ import {
 	ModelSortPredicateCreator,
 	PredicateAll,
 } from '../predicates';
+import { Adapter } from '../storage/adapter';
 import { ExclusiveStorage as Storage } from '../storage/storage';
 import { ControlMessage, SyncEngine } from '../sync';
 import {
@@ -50,7 +51,8 @@ import {
 	ErrorHandler,
 	SyncExpression,
 	AuthModeStrategyType,
-	ModelFields,
+	isNonModelFieldType,
+	isModelFieldType,
 } from '../types';
 import {
 	DATASTORE,
@@ -63,6 +65,7 @@ import {
 	SYNC,
 	USER,
 	isNullOrUndefined,
+	registerNonModelClass,
 } from '../util';
 
 setAutoFreeze(true);
@@ -278,6 +281,20 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 			const jsType = GraphQLScalarType.getJSType(type);
 			const validateScalar = GraphQLScalarType.getValidationFunction(type);
 
+			if (type === 'AWSJSON') {
+				if (typeof v === jsType) {
+					return;
+				}
+				if (typeof v === 'string') {
+					try {
+						JSON.parse(v);
+						return;
+					} catch (error) {
+						throw new Error(`Field ${name} is an invalid JSON object. ${v}`);
+					}
+				}
+			}
+
 			if (isArray) {
 				let errorTypeText: string = jsType;
 				if (!isRequired) {
@@ -341,6 +358,35 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 	}
 };
 
+const castInstanceType = (
+	modelDefinition: SchemaModel | SchemaNonModel,
+	k: string,
+	v: any
+) => {
+	const { isArray, type } = modelDefinition.fields[k] || {};
+	// attempt to parse stringified JSON
+	if (
+		typeof v === 'string' &&
+		(isArray ||
+			type === 'AWSJSON' ||
+			isNonModelFieldType(type) ||
+			isModelFieldType(type))
+	) {
+		try {
+			return JSON.parse(v);
+		} catch {
+			// if JSON is invalid, don't throw and let modelValidator handle it
+		}
+	}
+
+	// cast from numeric representation of boolean to JS boolean
+	if (typeof v === 'number' && type === 'Boolean') {
+		return Boolean(v);
+	}
+
+	return v;
+};
+
 const initializeInstance = <T>(
 	init: ModelInit<T>,
 	modelDefinition: SchemaModel | SchemaNonModel,
@@ -348,8 +394,10 @@ const initializeInstance = <T>(
 ) => {
 	const modelValidator = validateModelFields(modelDefinition);
 	Object.entries(init).forEach(([k, v]) => {
-		modelValidator(k, v);
-		(<any>draft)[k] = v;
+		const parsedValue = castInstanceType(modelDefinition, k, v);
+
+		modelValidator(k, parsedValue);
+		(<any>draft)[k] = parsedValue;
 	});
 };
 
@@ -375,13 +423,18 @@ const createModelClass = <T extends PersistentModel>(
 						_deleted,
 					} = modelInstanceMetadata;
 
-					const id =
-						// instancesIds is set by modelInstanceCreator, it is accessible only internally
-						_id !== null && _id !== undefined
-							? _id
-							: modelDefinition.syncable
-							? uuid4()
-							: ulid();
+					// instancesIds are set by modelInstanceCreator, it is accessible only internally
+					const isInternal = _id !== null && _id !== undefined;
+
+					const id = isInternal
+						? _id
+						: modelDefinition.syncable
+						? uuid4()
+						: ulid();
+
+					if (!isInternal) {
+						checkReadOnlyPropertyOnCreate(draft, modelDefinition);
+					}
 
 					draft.id = id;
 
@@ -412,7 +465,9 @@ const createModelClass = <T extends PersistentModel>(
 					draft.id = source.id;
 					const modelValidator = validateModelFields(modelDefinition);
 					Object.entries(draft).forEach(([k, v]) => {
-						modelValidator(k, v);
+						const parsedValue = castInstanceType(modelDefinition, k, v);
+
+						modelValidator(k, parsedValue);
 					});
 				},
 				p => (patches = p)
@@ -420,6 +475,7 @@ const createModelClass = <T extends PersistentModel>(
 
 			if (patches.length) {
 				modelPatchesMap.set(model, [patches, source]);
+				checkReadOnlyPropertyOnUpdate(patches, modelDefinition);
 			}
 
 			return model;
@@ -450,6 +506,36 @@ const createModelClass = <T extends PersistentModel>(
 	return clazz;
 };
 
+const checkReadOnlyPropertyOnCreate = <T extends PersistentModel>(
+	draft: T,
+	modelDefinition: SchemaModel
+) => {
+	const modelKeys = Object.keys(draft);
+	const { fields } = modelDefinition;
+
+	modelKeys.forEach(key => {
+		if (fields[key] && fields[key].isReadOnly) {
+			throw new Error(`${key} is read-only.`);
+		}
+	});
+};
+
+const checkReadOnlyPropertyOnUpdate = (
+	patches: Patch[],
+	modelDefinition: SchemaModel
+) => {
+	const patchArray = patches.map(p => [p.path[0], p.value]);
+	const { fields } = modelDefinition;
+
+	patchArray.forEach(([key, val]) => {
+		if (!val || !fields[key]) return;
+
+		if (fields[key].isReadOnly) {
+			throw new Error(`${key} is read-only.`);
+		}
+	});
+};
+
 const createNonModelClass = <T>(typeDefinition: SchemaNonModel) => {
 	const clazz = <NonModelTypeConstructor<T>>(<unknown>class Model {
 		constructor(init: ModelInit<T>) {
@@ -467,6 +553,8 @@ const createNonModelClass = <T>(typeDefinition: SchemaNonModel) => {
 	clazz[immerable] = true;
 
 	Object.defineProperty(clazz, 'name', { value: typeDefinition.name });
+
+	registerNonModelClass(clazz);
 
 	return clazz;
 };
@@ -618,7 +706,7 @@ class DataStore {
 		ModelPredicate<any>
 	> = new WeakMap<SchemaModel, ModelPredicate<any>>();
 	private sessionId: string;
-	private getAuthToken: Promise<string>;
+	private storageAdapter: Adapter;
 
 	getModuleName() {
 		return 'DataStore';
@@ -642,7 +730,7 @@ class DataStore {
 			namespaceResolver,
 			getModelConstructorByModelName,
 			modelInstanceCreator,
-			undefined,
+			this.storageAdapter,
 			this.sessionId
 		);
 
@@ -816,9 +904,6 @@ class DataStore {
 
 		const modelDefinition = getModelDefinition(modelConstructor);
 
-		// ensuring "read-only" data isn't being overwritten
-		this.checkReadOnlyProperty(modelDefinition.fields, model, patchesTuple);
-
 		const producedCondition = ModelPredicateCreator.createFromExisting(
 			modelDefinition,
 			condition
@@ -835,46 +920,6 @@ class DataStore {
 
 		return savedModel;
 	};
-
-	private checkReadOnlyProperty(
-		fields: ModelFields,
-		model: Record<string, any>,
-		patchesTuple: [
-			Patch[],
-			Readonly<
-				{
-					id: string;
-				} & Record<string, any>
-			>
-		]
-	) {
-		if (!patchesTuple) {
-			// saving a new model instance
-			const modelKeys = Object.keys(model);
-			modelKeys.forEach(key => {
-				if (fields[key] && fields[key].isReadOnly) {
-					throw new Error(`${key} is read-only.`);
-				}
-			});
-		} else {
-			// * Updating an existing instance via 'patchesTuple'
-			// patchesTuple[0] is an object that contains the info we need
-			// like the 'path' (mapped to the model's key) and the 'value' of the patch
-			const patchArray = patchesTuple[0].map(p => [p.path[0], p.value]);
-			patchArray.forEach(patch => {
-				const [key, val] = [...patch];
-
-				// the value of a read-only field should be undefined - if so, no need to do the following check
-				if (!val || !fields[key]) return;
-
-				// if the value is NOT undefined, we have to check the 'isReadOnly' property
-				// and throw an error to avoid persisting a mutation
-				if (fields[key].isReadOnly) {
-					throw new Error(`${key} is read-only.`);
-				}
-			});
-		}
-	}
 
 	setConflictHandler = (config: DataStoreConfig): ConflictHandler => {
 		const { DataStore: configDataStore } = config;
@@ -1202,6 +1247,7 @@ class DataStore {
 			fullSyncInterval: configFullSyncInterval,
 			syncExpressions: configSyncExpressions,
 			authProviders: configAuthProviders,
+			storageAdapter: configStorageAdapter,
 			...configFromAmplify
 		} = config;
 
@@ -1251,6 +1297,12 @@ class DataStore {
 			this.fullSyncInterval ||
 			configFullSyncInterval ||
 			24 * 60; // 1 day
+
+		this.storageAdapter =
+			(configDataStore && configDataStore.storageAdapter) ||
+			this.storageAdapter ||
+			configStorageAdapter ||
+			undefined;
 
 		this.sessionId = this.retrieveSessionId();
 	};
