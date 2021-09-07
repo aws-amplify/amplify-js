@@ -269,9 +269,10 @@ describe('Indexed db storage test', () => {
 
 		await DataStore.save(blog3);
 		const query1 = await DataStore.query(Blog);
-		query1.forEach(item => {
-			if (item.owner) {
-				expect(item.owner).toHaveProperty('name');
+		query1.forEach(async item => {
+			const itemOwner = await item.owner;
+			if (itemOwner) {
+				expect(itemOwner).toHaveProperty('name');
 			}
 		});
 	});
@@ -289,8 +290,23 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(c2);
 
 		const q1 = await DataStore.query(Comment, c1.id);
+		const q1Post = await q1.post;
+		expect(q1Post.id).toEqual(p.id);
+	});
 
-		expect(q1.post.id).toEqual(p.id);
+	test('query lazily BelongsTo', async () => {
+		const owner1 = new BlogOwner({ name: 'Owner 918' });
+		const blog1 = new Blog({
+			name: 'Avatar: Last Airbender',
+			owner: owner1,
+		});
+		await DataStore.save(owner1);
+		await DataStore.save(blog1);
+
+		const q1 = await DataStore.query(Blog, blog1.id);
+		expect(q1.owner.id).toEqual(undefined);
+		const awaitedOwner = await q1.owner;
+		expect(awaitedOwner.id).toEqual(owner1.id);
 	});
 
 	test('query with sort on a single field', async () => {

@@ -332,8 +332,10 @@ class IndexedDBAdapter implements Adapter {
 							);
 
 							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
+								Promise.resolve(connectionRecord) &&
+								Promise.resolve(
+									this.modelInstanceCreator(modelConstructor, connectionRecord)
+								);
 							delete recordItem[targetName];
 						}
 					}
