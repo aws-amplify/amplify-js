@@ -42,7 +42,7 @@
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
     "@aws-amplify/core": "4.2.7",
-    "axios": "0.21.1"
+    "axios": "0.21.4"
   },
   "jest": {
     "globals": {
