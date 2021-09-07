@@ -269,9 +269,10 @@ describe('Indexed db storage test', () => {
 
 		await DataStore.save(blog3);
 		const query1 = await DataStore.query(Blog);
-		query1.forEach(item => {
-			if (item.owner) {
-				expect(item.owner).toHaveProperty('name');
+		query1.forEach(async item => {
+			const itemOwner = await item.owner;
+			if (itemOwner) {
+				expect(itemOwner).toHaveProperty('name');
 			}
 		});
 	});
@@ -289,8 +290,8 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(c2);
 
 		const q1 = await DataStore.query(Comment, c1.id);
-
-		expect(q1.post.id).toEqual(p.id);
+		const q1Post = await q1.post;
+		expect(q1Post.id).toEqual(p.id);
 	});
 
 	test('query lazily BelongsTo', async () => {
