@@ -16,6 +16,7 @@ import {
 	ModelSortPredicateCreator,
 	PredicateAll,
 } from '../predicates';
+import { Adapter } from '../storage/adapter';
 import { ExclusiveStorage as Storage } from '../storage/storage';
 import { ControlMessage, SyncEngine } from '../sync';
 import {
@@ -49,6 +50,8 @@ import {
 	ErrorHandler,
 	SyncExpression,
 	AuthModeStrategyType,
+	isNonModelFieldType,
+	isModelFieldType,
 } from '../types';
 import {
 	DATASTORE,
@@ -61,6 +64,7 @@ import {
 	SYNC,
 	USER,
 	isNullOrUndefined,
+	registerNonModelClass,
 } from '../util';
 
 setAutoFreeze(true);
@@ -276,6 +280,20 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 			const jsType = GraphQLScalarType.getJSType(type);
 			const validateScalar = GraphQLScalarType.getValidationFunction(type);
 
+			if (type === 'AWSJSON') {
+				if (typeof v === jsType) {
+					return;
+				}
+				if (typeof v === 'string') {
+					try {
+						JSON.parse(v);
+						return;
+					} catch (error) {
+						throw new Error(`Field ${name} is an invalid JSON object. ${v}`);
+					}
+				}
+			}
+
 			if (isArray) {
 				let errorTypeText: string = jsType;
 				if (!isRequired) {
@@ -339,6 +357,35 @@ const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
 	}
 };
 
+const castInstanceType = (
+	modelDefinition: SchemaModel | SchemaNonModel,
+	k: string,
+	v: any
+) => {
+	const { isArray, type } = modelDefinition.fields[k] || {};
+	// attempt to parse stringified JSON
+	if (
+		typeof v === 'string' &&
+		(isArray ||
+			type === 'AWSJSON' ||
+			isNonModelFieldType(type) ||
+			isModelFieldType(type))
+	) {
+		try {
+			return JSON.parse(v);
+		} catch {
+			// if JSON is invalid, don't throw and let modelValidator handle it
+		}
+	}
+
+	// cast from numeric representation of boolean to JS boolean
+	if (typeof v === 'number' && type === 'Boolean') {
+		return Boolean(v);
+	}
+
+	return v;
+};
+
 const initializeInstance = <T>(
 	init: ModelInit<T>,
 	modelDefinition: SchemaModel | SchemaNonModel,
@@ -346,8 +393,10 @@ const initializeInstance = <T>(
 ) => {
 	const modelValidator = validateModelFields(modelDefinition);
 	Object.entries(init).forEach(([k, v]) => {
-		modelValidator(k, v);
-		(<any>draft)[k] = v;
+		const parsedValue = castInstanceType(modelDefinition, k, v);
+
+		modelValidator(k, parsedValue);
+		(<any>draft)[k] = parsedValue;
 	});
 };
 
@@ -415,7 +464,9 @@ const createModelClass = <T extends PersistentModel>(
 					draft.id = source.id;
 					const modelValidator = validateModelFields(modelDefinition);
 					Object.entries(draft).forEach(([k, v]) => {
-						modelValidator(k, v);
+						const parsedValue = castInstanceType(modelDefinition, k, v);
+
+						modelValidator(k, parsedValue);
 					});
 				},
 				p => (patches = p)
@@ -501,6 +552,8 @@ const createNonModelClass = <T>(typeDefinition: SchemaNonModel) => {
 	clazz[immerable] = true;
 
 	Object.defineProperty(clazz, 'name', { value: typeDefinition.name });
+
+	registerNonModelClass(clazz);
 
 	return clazz;
 };
@@ -652,7 +705,7 @@ class DataStore {
 		ModelPredicate<any>
 	> = new WeakMap<SchemaModel, ModelPredicate<any>>();
 	private sessionId: string;
-	private getAuthToken: Promise<string>;
+	private storageAdapter: Adapter;
 
 	getModuleName() {
 		return 'DataStore';
@@ -676,7 +729,7 @@ class DataStore {
 			namespaceResolver,
 			getModelConstructorByModelName,
 			modelInstanceCreator,
-			undefined,
+			this.storageAdapter,
 			this.sessionId
 		);
 
@@ -1104,6 +1157,7 @@ class DataStore {
 			fullSyncInterval: configFullSyncInterval,
 			syncExpressions: configSyncExpressions,
 			authProviders: configAuthProviders,
+			storageAdapter: configStorageAdapter,
 			...configFromAmplify
 		} = config;
 
@@ -1153,6 +1207,12 @@ class DataStore {
 			this.fullSyncInterval ||
 			configFullSyncInterval ||
 			24 * 60; // 1 day
+
+		this.storageAdapter =
+			(configDataStore && configDataStore.storageAdapter) ||
+			this.storageAdapter ||
+			configStorageAdapter ||
+			undefined;
 
 		this.sessionId = this.retrieveSessionId();
 	};
