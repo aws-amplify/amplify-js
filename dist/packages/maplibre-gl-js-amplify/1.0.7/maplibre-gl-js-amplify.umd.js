@@ -546,3 +546,4 @@
     Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
+//# sourceMappingURL=maplibre-gl-js-amplify.umd.js.map
