@@ -110,6 +110,16 @@ export class PubSubClass {
 		}
 	}
 
+	/**
+	 * remove plugin from PubSub category
+	 * @param providerName - the name of the plugin
+	 */
+	removePluggable(providerName: string): void {
+		this._pluggables = this._pluggables.filter(
+			pluggable => pluggable.getProviderName() !== providerName
+		);
+	}
+
 	private getProviderByName(providerName) {
 		if (providerName === INTERNAL_AWS_APPSYNC_PUBSUB_PROVIDER) {
 			return this.awsAppSyncProvider;
