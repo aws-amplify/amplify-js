@@ -22,7 +22,7 @@ export const credentials = {
 
 export const awsConfig = {
 	geo: {
-		amazon_location_services: {
+		amazon_location_service: {
 			maps: {
 				items: {
 					geoJsExampleMap1: {

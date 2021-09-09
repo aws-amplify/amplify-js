@@ -15,7 +15,7 @@ import {
 	ConsoleLogger as Logger,
 	parseMobileHubConfig,
 } from '@aws-amplify/core';
-import { AmazonLocationServicesProvider } from './Providers/AmazonLocationServicesProvider';
+import { AmazonLocationServiceProvider } from './Providers/AmazonLocationServiceProvider';
 
 import {
 	GeoConfig,
@@ -28,7 +28,7 @@ import {
 
 const logger = new Logger('Geo');
 
-const DEFAULT_PROVIDER = 'AmazonLocationServices';
+const DEFAULT_PROVIDER = 'AmazonLocationService';
 export class GeoClass {
 	static MODULE = 'Geo';
 	/**
@@ -109,7 +109,7 @@ export class GeoClass {
 		});
 
 		if (this._pluggables.length === 0) {
-			this.addPluggable(new AmazonLocationServicesProvider());
+			this.addPluggable(new AmazonLocationServiceProvider());
 		}
 		return this._config;
 	}

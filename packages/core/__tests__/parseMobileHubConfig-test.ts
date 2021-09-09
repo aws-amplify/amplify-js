@@ -12,7 +12,7 @@ describe('Parser', () => {
 				aws_user_pools_web_client_id: '',
 				aws_cognito_region: '',
 				geo: {
-					amazon_location_services: {
+					amazon_location_service: {
 						maps: {
 							items: {
 								geoJsExampleMap1: {
@@ -48,7 +48,7 @@ describe('Parser', () => {
 				userPoolWebClientId: '',
 			},
 			Geo: {
-				AmazonLocationServices: {
+				AmazonLocationService: {
 					maps: {
 						items: {
 							geoJsExampleMap1: {
@@ -76,7 +76,7 @@ describe('Parser', () => {
 				aws_user_pools_id: 'b',
 				aws_user_pools_web_client_id: '',
 				geo: {
-					amazon_location_services: {
+					amazon_location_service: {
 						maps: {
 							items: {
 								geoJsExampleMap1: {

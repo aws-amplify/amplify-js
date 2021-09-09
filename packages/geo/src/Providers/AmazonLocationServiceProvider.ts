@@ -35,11 +35,11 @@ import {
 	Coordinates,
 } from '../types';
 
-const logger = new Logger('AmazonLocationServicesProvider');
+const logger = new Logger('AmazonLocationServiceProvider');
 
-export class AmazonLocationServicesProvider implements GeoProvider {
+export class AmazonLocationServiceProvider implements GeoProvider {
 	static CATEGORY = 'Geo';
-	static PROVIDER_NAME = 'AmazonLocationServices';
+	static PROVIDER_NAME = 'AmazonLocationService';
 
 	/**
 	 * @private
@@ -60,7 +60,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 	 * @returns {string} name of the category
 	 */
 	public getCategory(): string {
-		return AmazonLocationServicesProvider.CATEGORY;
+		return AmazonLocationServiceProvider.CATEGORY;
 	}
 
 	/**
@@ -68,7 +68,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 	 * @returns {string} name of the provider
 	 */
 	public getProviderName(): string {
-		return AmazonLocationServicesProvider.PROVIDER_NAME;
+		return AmazonLocationServiceProvider.PROVIDER_NAME;
 	}
 
 	/**
@@ -77,7 +77,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 	 * @return {Object} - Current configuration
 	 */
 	public configure(config?): object {
-		logger.debug('configure Amazon Location Services Provider', config);
+		logger.debug('configure Amazon Location Service Provider', config);
 		if (!config) return this._config;
 		this._config = Object.assign({}, this._config, config);
 		return this._config;
@@ -147,26 +147,26 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		/**
 		 * Setup the searchInput
 		 */
-		const locationServicesInput: SearchPlaceIndexForTextCommandInput = {
+		const locationServiceInput: SearchPlaceIndexForTextCommandInput = {
 			Text: text,
 			IndexName: this._config.search_indices.default,
 		};
 
 		/**
-		 * Map search options to Location Services input object
+		 * Map search options to Amazon Location Service input object
 		 */
 		if (options) {
-			locationServicesInput.FilterCountries = options.countries;
-			locationServicesInput.MaxResults = options.maxResults;
+			locationServiceInput.FilterCountries = options.countries;
+			locationServiceInput.MaxResults = options.maxResults;
 
 			if (options.searchIndexName) {
-				locationServicesInput.IndexName = options.searchIndexName;
+				locationServiceInput.IndexName = options.searchIndexName;
 			}
 
 			if (options['biasPosition']) {
-				locationServicesInput.BiasPosition = options['biasPosition'];
+				locationServiceInput.BiasPosition = options['biasPosition'];
 			} else if (options['searchAreaConstraints']) {
-				locationServicesInput.FilterBBox = options['searchAreaConstraints'];
+				locationServiceInput.FilterBBox = options['searchAreaConstraints'];
 			}
 		}
 
@@ -175,7 +175,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 			region: this._config.region,
 			customUserAgent: getAmplifyUserAgent(),
 		});
-		const command = new SearchPlaceIndexForTextCommand(locationServicesInput);
+		const command = new SearchPlaceIndexForTextCommand(locationServiceInput);
 
 		let response;
 		try {
@@ -186,7 +186,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		}
 
 		/**
-		 * The response from Location Services is a "Results" array of objects with a single `Place` item,
+		 * The response from Amazon Location Service is a "Results" array of objects with a single `Place` item,
 		 * which are Place objects in PascalCase.
 		 * Here we want to flatten that to an array of results and change them to camelCase
 		 */
@@ -215,16 +215,16 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 			throw new Error('No credentials');
 		}
 
-		const locationServicesInput: SearchPlaceIndexForPositionCommandInput = {
+		const locationServiceInput: SearchPlaceIndexForPositionCommandInput = {
 			Position: coordinates,
 			IndexName: this._config.search_indices.default,
 		};
 
 		if (options) {
 			if (options.searchIndexName) {
-				locationServicesInput.IndexName = options.searchIndexName;
+				locationServiceInput.IndexName = options.searchIndexName;
 			}
-			locationServicesInput.MaxResults = options.maxResults;
+			locationServiceInput.MaxResults = options.maxResults;
 		}
 
 		const client = new LocationClient({
@@ -233,7 +233,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 			customUserAgent: getAmplifyUserAgent(),
 		});
 		const command = new SearchPlaceIndexForPositionCommand(
-			locationServicesInput
+			locationServiceInput
 		);
 
 		let response;
@@ -245,7 +245,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		}
 
 		/**
-		 * The response from Location Services is a "Results" array with a single `Place` object
+		 * The response from Amazon Location Service is a "Results" array with a single `Place` object
 		 * which are Place objects in PascalCase.
 		 * Here we want to flatten that to an array of results and change them to camelCase
 		 */
