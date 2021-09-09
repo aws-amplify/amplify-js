@@ -17,7 +17,7 @@ import {
 	SearchPlaceIndexForPositionCommand,
 } from '@aws-sdk/client-location';
 
-import { AmazonLocationServicesProvider } from '../../src/Providers/AmazonLocationServicesProvider';
+import { AmazonLocationServiceProvider } from '../../src/Providers/AmazonLocationServiceProvider';
 import {
 	credentials,
 	awsConfig,
@@ -45,7 +45,7 @@ LocationClient.prototype.send = jest.fn(async command => {
 	}
 });
 
-describe('AmazonLocationServicesProvider', () => {
+describe('AmazonLocationServiceProvider', () => {
 	afterEach(() => {
 		jest.restoreAllMocks();
 		jest.clearAllMocks();
@@ -53,42 +53,42 @@ describe('AmazonLocationServicesProvider', () => {
 
 	describe('constructor', () => {
 		test('happy case', () => {
-			const provider = new AmazonLocationServicesProvider();
+			const provider = new AmazonLocationServiceProvider();
 		});
 	});
 
 	describe('getCategory', () => {
 		test('should return "Geo" when asked for category', () => {
-			const geo = new AmazonLocationServicesProvider();
+			const geo = new AmazonLocationServiceProvider();
 			expect(geo.getCategory()).toBe('Geo');
 		});
 	});
 
 	describe('getProviderName', () => {
-		test('should return "AmazonLocationServices" when asked for Provider', () => {
-			const geo = new AmazonLocationServicesProvider();
-			expect(geo.getProviderName()).toBe('AmazonLocationServices');
+		test('should return "AmazonLocationService" when asked for Provider', () => {
+			const geo = new AmazonLocationServiceProvider();
+			expect(geo.getProviderName()).toBe('AmazonLocationService');
 		});
 	});
 
 	describe('configure', () => {
 		test('should return a blank config object when none is passed in', () => {
-			const geo = new AmazonLocationServicesProvider();
+			const geo = new AmazonLocationServiceProvider();
 			const config = geo.configure();
 			expect(config).toEqual({});
 		});
 
 		test('should return standard configuration given when passing to `geo.configure`', () => {
-			const geo = new AmazonLocationServicesProvider();
+			const geo = new AmazonLocationServiceProvider();
 
-			const config = geo.configure(awsConfig.geo.amazon_location_services);
-			expect(config).toEqual(awsConfig.geo.amazon_location_services);
+			const config = geo.configure(awsConfig.geo.amazon_location_service);
+			expect(config).toEqual(awsConfig.geo.amazon_location_service);
 		});
 	});
 
 	describe('get map resources', () => {
 		test('should tell you if there are no available map resources', () => {
-			const provider = new AmazonLocationServicesProvider();
+			const provider = new AmazonLocationServiceProvider();
 			provider.configure();
 			expect(() => provider.getAvailableMaps()).toThrow(
 				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
@@ -96,12 +96,12 @@ describe('AmazonLocationServicesProvider', () => {
 		});
 
 		test('should get all available map resources', () => {
-			const provider = new AmazonLocationServicesProvider();
-			provider.configure(awsConfig.geo.amazon_location_services);
+			const provider = new AmazonLocationServiceProvider();
+			provider.configure(awsConfig.geo.amazon_location_service);
 
 			const maps = [];
-			const availableMaps = awsConfig.geo.amazon_location_services.maps.items;
-			const region = awsConfig.geo.amazon_location_services.region;
+			const availableMaps = awsConfig.geo.amazon_location_service.maps.items;
+			const region = awsConfig.geo.amazon_location_service.region;
 			for (const mapName in availableMaps) {
 				const style = availableMaps[mapName].style;
 				maps.push({ mapName, style, region });
@@ -111,7 +111,7 @@ describe('AmazonLocationServicesProvider', () => {
 		});
 
 		test('should tell you if there is no map resources available when calling getDefaultMap', () => {
-			const provider = new AmazonLocationServicesProvider();
+			const provider = new AmazonLocationServiceProvider();
 			provider.configure();
 
 			expect(() => provider.getDefaultMap()).toThrow(
@@ -120,7 +120,7 @@ describe('AmazonLocationServicesProvider', () => {
 		});
 
 		test('should tell you if there is no default map resource', () => {
-			const provider = new AmazonLocationServicesProvider();
+			const provider = new AmazonLocationServiceProvider();
 			provider.configure({
 				maps: { testMap: { style: 'teststyle' } },
 			});
@@ -131,13 +131,13 @@ describe('AmazonLocationServicesProvider', () => {
 		});
 
 		test('should get the default map resource', () => {
-			const provider = new AmazonLocationServicesProvider();
-			provider.configure(awsConfig.geo.amazon_location_services);
+			const provider = new AmazonLocationServiceProvider();
+			provider.configure(awsConfig.geo.amazon_location_service);
 
-			const mapName = awsConfig.geo.amazon_location_services.maps.default;
+			const mapName = awsConfig.geo.amazon_location_service.maps.default;
 			const style =
-				awsConfig.geo.amazon_location_services.maps.items[mapName].style;
-			const region = awsConfig.geo.amazon_location_services.region;
+				awsConfig.geo.amazon_location_service.maps.items[mapName].style;
+			const region = awsConfig.geo.amazon_location_service.region;
 
 			const testMap = { mapName, style, region };
 
@@ -154,8 +154,8 @@ describe('AmazonLocationServicesProvider', () => {
 				return Promise.resolve(credentials);
 			});
 
-			const locationProvider = new AmazonLocationServicesProvider();
-			locationProvider.configure(awsConfig.geo.amazon_location_services);
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
 			const results = await locationProvider.searchByText(testString);
 			expect(results).toEqual([testPlaceCamelCase]);
@@ -165,7 +165,7 @@ describe('AmazonLocationServicesProvider', () => {
 			expect(input).toEqual({
 				Text: testString,
 				IndexName:
-					awsConfig.geo.amazon_location_services.search_indices.default,
+					awsConfig.geo.amazon_location_service.search_indices.default,
 			});
 		});
 
@@ -174,8 +174,8 @@ describe('AmazonLocationServicesProvider', () => {
 				return Promise.resolve(credentials);
 			});
 
-			const locationProvider = new AmazonLocationServicesProvider();
-			locationProvider.configure(awsConfig.geo.amazon_location_services);
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
 			const searchOptions: SearchByTextOptions = {
 				countries: ['USA'],
@@ -207,8 +207,8 @@ describe('AmazonLocationServicesProvider', () => {
 				return Promise.resolve(credentials);
 			});
 
-			const locationProvider = new AmazonLocationServicesProvider();
-			locationProvider.configure(awsConfig.geo.amazon_location_services);
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
 			const searchOptions: SearchByTextOptions = {
 				countries: ['USA'],
@@ -239,7 +239,7 @@ describe('AmazonLocationServicesProvider', () => {
 				return Promise.resolve();
 			});
 
-			const locationProvider = new AmazonLocationServicesProvider();
+			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(locationProvider.searchByText(testString)).rejects.toThrow(
 				'No credentials'
@@ -251,7 +251,7 @@ describe('AmazonLocationServicesProvider', () => {
 				return Promise.reject();
 			});
 
-			const locationProvider = new AmazonLocationServicesProvider();
+			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(locationProvider.searchByText(testString)).rejects.toThrow(
 				'No credentials'
@@ -267,8 +267,8 @@ describe('AmazonLocationServicesProvider', () => {
 				return Promise.resolve(credentials);
 			});
 
-			const locationProvider = new AmazonLocationServicesProvider();
-			locationProvider.configure(awsConfig.geo.amazon_location_services);
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
 			const results = await locationProvider.searchByCoordinates(
 				testCoordinates
@@ -280,7 +280,7 @@ describe('AmazonLocationServicesProvider', () => {
 			expect(input).toEqual({
 				Position: testCoordinates,
 				IndexName:
-					awsConfig.geo.amazon_location_services.search_indices.default,
+					awsConfig.geo.amazon_location_service.search_indices.default,
 			});
 		});
 
@@ -289,8 +289,8 @@ describe('AmazonLocationServicesProvider', () => {
 				return Promise.resolve(credentials);
 			});
 
-			const locationProvider = new AmazonLocationServicesProvider();
-			locationProvider.configure(awsConfig.geo.amazon_location_services);
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
 			const searchOptions: SearchByCoordinatesOptions = {
 				maxResults: 40,
@@ -316,7 +316,7 @@ describe('AmazonLocationServicesProvider', () => {
 				return Promise.resolve();
 			});
 
-			const locationProvider = new AmazonLocationServicesProvider();
+			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(
 				locationProvider.searchByCoordinates(testCoordinates)
@@ -328,7 +328,7 @@ describe('AmazonLocationServicesProvider', () => {
 				return Promise.reject();
 			});
 
-			const locationProvider = new AmazonLocationServicesProvider();
+			const locationProvider = new AmazonLocationServiceProvider();
 
 			await expect(
 				locationProvider.searchByCoordinates(testCoordinates)
