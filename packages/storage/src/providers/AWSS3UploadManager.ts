@@ -7,9 +7,10 @@ import {
 	CreateMultipartUploadCommand,
 	AbortMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
-import { StorageHelper } from '@aws-amplify/core';
+import { StorageHelper, Logger } from '@aws-amplify/core';
 import { StorageLevel } from '../types/Storage';
 
+const logger = new Logger('Storage');
 const oneHourInMs = 1000 * 60 * 60;
 
 type UploadId = string;
@@ -75,9 +76,11 @@ export class AWSS3UploadManager {
 		if (!uploads.hasOwnProperty(fileKey)) {
 			return null;
 		}
-		const cachedUploadFileData: FileMetadata = uploads[this._getFileKey(file, bucket, key)] || {};
+		const cachedUploadFileData: FileMetadata =
+			uploads[this._getFileKey(file, bucket, key)] || {};
 		const hasExpired =
-			cachedUploadFileData.hasOwnProperty('lastTouched') && Date.now() - cachedUploadFileData.lastTouched > oneHourInMs;
+			cachedUploadFileData.hasOwnProperty('lastTouched') &&
+			Date.now() - cachedUploadFileData.lastTouched > oneHourInMs;
 		if (cachedUploadFileData && !hasExpired) {
 			cachedUploadFileData.lastTouched = Date.now();
 			this._storage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(uploads));
@@ -101,7 +104,14 @@ export class AWSS3UploadManager {
 	private _getFileKey(blob: Blob, bucket: string, key: string): string {
 		// We should check if it's a File first because File is also instance of a Blob
 		if (this._isFile(blob)) {
-			return [blob.name, blob.lastModified, blob.size, blob.type, bucket, key].join('-');
+			return [
+				blob.name,
+				blob.lastModified,
+				blob.size,
+				blob.type,
+				bucket,
+				key,
+			].join('-');
 		} else if (this._isBlob(blob)) {
 			return [blob.size, blob.type, bucket, key].join('-');
 		} else return '';
@@ -112,13 +122,18 @@ export class AWSS3UploadManager {
 	 *
 	 * @param [ttl] - [Specify how long since the task has started should it be considered expired]
 	 */
-	private _purgeExpiredKeys(input: { s3Client: S3Client; ttl?: number; emitter?: events.EventEmitter }) {
+	private _purgeExpiredKeys(input: {
+		s3Client: S3Client;
+		ttl?: number;
+		emitter?: events.EventEmitter;
+	}) {
 		const { s3Client, ttl = oneHourInMs } = input;
-		const uploads: Record<string, FileMetadata> = JSON.parse(this._storage.getItem(UPLOADS_STORAGE_KEY)) || {};
+		const uploads: Record<string, FileMetadata> =
+			JSON.parse(this._storage.getItem(UPLOADS_STORAGE_KEY)) || {};
 		for (const [k, upload] of Object.entries(uploads)) {
 			const hasExpired =
-				Object.prototype.hasOwnProperty.call(upload, 'timeStarted') && Date.now() - (upload as any).timeStarted > ttl;
-			console.log(`${k} : ${JSON.stringify(upload)}`);
+				Object.prototype.hasOwnProperty.call(upload, 'timeStarted') &&
+				Date.now() - (upload as any).timeStarted > ttl;
 			if (hasExpired) {
 				s3Client
 					.send(
@@ -129,8 +144,6 @@ export class AWSS3UploadManager {
 						})
 					)
 					.then(res => {
-						console.log(res);
-						console.log(`Purging ${k}`);
 						delete uploads[k];
 					});
 			}
@@ -139,8 +152,8 @@ export class AWSS3UploadManager {
 	}
 
 	private _removeKey(key: string) {
-		console.log(`Removing ${key}`);
-		const uploads = JSON.parse(this._storage.getItem(UPLOADS_STORAGE_KEY)) || {};
+		const uploads =
+			JSON.parse(this._storage.getItem(UPLOADS_STORAGE_KEY)) || {};
 		delete uploads[key];
 		this._storage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(uploads));
 	}
@@ -161,16 +174,18 @@ export class AWSS3UploadManager {
 			s3Client,
 		});
 		try {
-			console.log('Finding cached upload parts');
 			cachedUpload =
 				(await this._getCachedUploadParts({
 					s3client: s3Client,
 					bucket,
 					key,
-					file: file,
+					file,
 				})) || {};
 		} catch (err) {
-			console.error('Error finding cached upload parts, will re-initialize the multipart upload');
+			logger.error(
+				'Error finding cached upload parts, will re-initialize the multipart upload',
+				err
+			);
 		}
 		const fileKey = this._getFileKey(file, bucket, key);
 		emitter.on(TaskEvents.UPLOAD_COMPLETE, () => {
@@ -179,17 +194,15 @@ export class AWSS3UploadManager {
 		emitter.on(TaskEvents.ABORT, () => {
 			this._removeKey(fileKey);
 		});
-		console.log({ listUploadTasks: this._listUploadTasks() });
 		if (this._isListPartsOutput(cachedUpload)) {
 			const cachedUploadId = cachedUpload.UploadId;
 			const uploadedPartsOnS3 = cachedUpload.Parts;
-			console.log('Found cached upload parts', uploadedPartsOnS3);
 			this._uploadTasks[cachedUploadId] = new AWSS3UploadTask({
 				s3Client,
 				uploadId: cachedUpload.UploadId,
 				bucket,
 				key,
-				file: file,
+				file,
 				completedParts: cachedUpload.Parts,
 				emitter,
 			});
@@ -199,7 +212,6 @@ export class AWSS3UploadManager {
 	}
 
 	private async _initMultiupload(input: AddTaskInput) {
-		console.log('cached upload not found, creating a new one');
 		const { s3Client, bucket, key, file, emitter, accessLevel } = input;
 		const fileKey = this._getFileKey(file as File, bucket, key);
 		const createMultipartUpload = await s3Client.send(
@@ -224,14 +236,15 @@ export class AWSS3UploadManager {
 			bucket,
 			key,
 			accessLevel,
-			...( this._isFile(file) && { fileName: file.name }),
+			...(this._isFile(file) && { fileName: file.name }),
 		};
 		this._addKey(fileKey, fileMetadata);
 		return newTask;
 	}
 
 	private _addKey(key: string, fileMetadata: FileMetadata) {
-		const uploads = JSON.parse(this._storage.getItem(UPLOADS_STORAGE_KEY)) || {};
+		const uploads =
+			JSON.parse(this._storage.getItem(UPLOADS_STORAGE_KEY)) || {};
 		uploads[key] = fileMetadata;
 		this._storage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(uploads));
 	}

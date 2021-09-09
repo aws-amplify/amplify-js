@@ -12,7 +12,6 @@ import * as events from 'events';
 import axios, { Canceler } from 'axios';
 import { HttpHandlerOptions } from '@aws-sdk/types';
 import { Logger } from '@aws-amplify/core';
-import { md5 } from 'hash-wasm';
 import { TaskEvents } from './AWSS3UploadManager';
 import { UploadTask } from '../types/Provider';
 import { listSingleFile } from '../common/StorageUtils';
@@ -160,62 +159,17 @@ export class AWSS3UploadTask implements UploadTask {
 				})
 			)
 			.then(res => {
-				console.log('Completed upload', res);
 				this.emitter.emit(TaskEvents.UPLOAD_COMPLETE, {
 					key: `${this.bucket}/${this.key}`,
 				});
 			})
 			.catch(err => {
-				console.error('error completing upload', err);
+				logger.error('error completing upload', err);
 			});
 	}
 
 	private _isBlob(x: unknown): x is Blob {
 		return typeof x !== 'undefined' && x instanceof Blob;
-	}
-
-	private _hexToBase64(hex: string) {
-		let str = '';
-		for (let i = 0; i < hex.length; i += 2) {
-			str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
-		}
-		return btoa(str);
-	}
-	private _startNextPartMD5() {
-		if (this.queued.length > 0 && this.state !== State.PAUSED) {
-			const cancelTokenSource = axios.CancelToken.source();
-			const nextPart = this.queued.shift();
-			const fr = new FileReader();
-			fr.onload = async e => {
-				// @ts-ignore
-				const view = new Uint8Array(e.target.result);
-				const base64MD5 = this._hexToBase64(await md5(view));
-				console.log('COMPUTED:', base64MD5);
-				this.inProgress.push({
-					uploadPartInput: nextPart,
-					s3Request: this.s3client
-						.send(
-							new UploadPartCommand({ ...nextPart, ContentMD5: base64MD5 }),
-							{
-								cancelTokenSource,
-							} as HttpHandlerOptions
-						)
-						.then(output => {
-							this._onPartUploadCompletion({
-								eTag: output.ETag,
-								partNumber: nextPart.PartNumber,
-								chunk: nextPart.Body,
-							});
-							return output;
-						})
-						.catch(err => {
-							console.error('Stahp', err);
-						}),
-					cancel: cancelTokenSource.cancel,
-				});
-			};
-			fr.readAsArrayBuffer(nextPart.Body as Blob);
-		}
 	}
 
 	private _startNextPart() {
@@ -237,7 +191,7 @@ export class AWSS3UploadTask implements UploadTask {
 						return output;
 					})
 					.catch(err => {
-						console.error('Stahp', err);
+						logger.error('error starting next part of upload: ', err);
 					}),
 				cancel: cancelTokenSource.cancel,
 			});
@@ -256,8 +210,6 @@ export class AWSS3UploadTask implements UploadTask {
 			key: this.key,
 			bucket: this.bucket,
 		});
-		console.log(obj);
-		console.log(this.file);
 		return obj && obj.Size === this.file.size;
 	}
 
@@ -363,7 +315,7 @@ export class AWSS3UploadTask implements UploadTask {
 				})
 			)
 			.then(res => {
-				console.log(res);
+				logger.log(res);
 			});
 	}
 

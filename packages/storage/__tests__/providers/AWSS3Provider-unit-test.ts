@@ -13,11 +13,13 @@
 import StorageProvider from '../../src/providers/AWSS3Provider';
 import { Logger, Hub, Credentials, ICredentials } from '@aws-amplify/core';
 import * as formatURL from '@aws-sdk/util-format-url';
-import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3';
+import { S3Client, ListObjectsCommand, CreateMultipartUploadCommand } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import * as events from 'events';
 
 import { S3CopySource, S3CopyDestination, StorageOptions, S3ProviderGetConfig } from '../../src/types';
+import { AWSS3UploadTask } from '../../src/providers/AWSS3UploadTask';
+
 /**
  * NOTE - These test cases use Hub.dispatch but they should
  * actually be using dispatchStorageEvent from Storage
@@ -703,6 +705,36 @@ describe('StorageProvider test', () => {
 			} catch (e) {
 				expect(e).not.toBeNull();
 			}
+		});
+
+		test('put with resumeable parameter returns instance of AWSS3UploadTask', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return new Promise((res, _rej) => {
+					res({
+						identityId: 'id',
+					});
+				});
+			});
+
+			const storage = new StorageProvider();
+			storage.configure(options);
+
+			const file = new File(['TestFileContent'], 'testFileName');
+			const testUploadId = 'testUploadId';
+
+			const s3ServiceCallSpy = jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async command => {
+					if (command instanceof CreateMultipartUploadCommand) {
+						return Promise.resolve({ UploadId: testUploadId });
+					}
+				});
+
+			const uploadRequest = await storage.put('key', file, {
+				resumeable: true,
+			});
+
+			expect(uploadRequest instanceof AWSS3UploadTask).toEqual(true);
 		});
 	});
 
