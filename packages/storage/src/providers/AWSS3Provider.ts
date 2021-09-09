@@ -54,7 +54,7 @@ import {
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
-import { AWSS3UploadManager } from './AWSS3UploadManager';
+import { AWSS3UploadManager, TaskEvents } from './AWSS3UploadManager';
 import { AWSS3UploadTask } from './AWSS3UploadTask';
 import * as events from 'events';
 import { CancelTokenSource } from 'axios';
@@ -139,10 +139,6 @@ export class AWSS3Provider implements StorageProvider {
 	}
 
 	private async upload(key: string, file, config?): Promise<AWSS3UploadTask> {
-		const credentialsOK = await this._ensureCredentials();
-		if (!credentialsOK) {
-			return Promise.reject('No credentials');
-		}
 		if (!(file instanceof Blob)) {
 			return Promise.reject('Object must be an instance of Blob');
 		}
@@ -206,20 +202,27 @@ export class AWSS3Provider implements StorageProvider {
 			emitter,
 			accessLevel: level,
 		});
-		emitter.on('uploadPartProgress', event => {
+		emitter.on(TaskEvents.UPLOAD_PROGRESS, event => {
 			if (progressCallback) {
 				if (typeof progressCallback === 'function') {
 					progressCallback(event);
+				} else {
+					logger.warn('progressCallback should be a function, not a ' + typeof progressCallback);
 				}
 			}
 		});
-		emitter.on('uploadComplete', event => {
+		emitter.on(TaskEvents.UPLOAD_COMPLETE, event => {
 			if (completeCallback) {
 				if (typeof completeCallback === 'function') {
 					completeCallback(event);
+				} else {
+					logger.warn('completeCallback should be a function, not a ' + typeof completeCallback);
 				}
 			}
+
+			dispatchStorageEvent(track, 'upload', { method: 'put', result: 'success' }, null, `Upload success for ${key}`);
 		});
+
 		return task;
 	}
 

@@ -41,7 +41,7 @@ export enum TaskEvents {
 	UPLOAD_PROGRESS = 'uploadPartProgress',
 }
 
-const UPLOADS_STORAGE_KEY = '__uploadInProgress';
+export const UPLOADS_STORAGE_KEY = '__uploadInProgress';
 
 export class AWSS3UploadManager {
 	private readonly _storage: Storage;

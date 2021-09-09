@@ -709,7 +709,7 @@ describe('StorageProvider test', () => {
 
 		test('put with resumeable parameter returns instance of AWSS3UploadTask', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return new Promise((res, _rej) => {
+				return new Promise((res, rej) => {
 					res({
 						identityId: 'id',
 					});

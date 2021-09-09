@@ -173,6 +173,7 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private _startNextPart() {
+
 		if (this.queued.length > 0 && this.state !== State.PAUSED) {
 			const cancelTokenSource = axios.CancelToken.source();
 			const nextPart = this.queued.shift();
@@ -191,7 +192,11 @@ export class AWSS3UploadTask implements UploadTask {
 						return output;
 					})
 					.catch(err => {
-						logger.error('error starting next part of upload: ', err);
+						if (this.state === State.PAUSED) {
+							logger.log('upload paused');
+						} else {
+							logger.error('error starting next part of upload: ', err);
+						}
 					}),
 				cancel: cancelTokenSource.cancel,
 			});
