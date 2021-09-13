@@ -926,6 +926,12 @@ export class SyncEngine {
 							isRequired: true,
 							isArray: false,
 						},
+						lastSyncPredicate: {
+							name: 'lastSyncPredicate',
+							type: 'String',
+							isRequired: false,
+							isArray: false,
+						},
 					},
 				},
 			},
