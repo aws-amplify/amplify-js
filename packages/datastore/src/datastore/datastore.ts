@@ -1113,7 +1113,7 @@ class DataStore {
 		criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
 		options?: ProducerPaginationInput<T>
 	): Observable<DataStoreSnapshot<T>> => {
-		const SYNCED_ITEMS_THRESHOLD = 1000;
+		const SYNCED_ITEMS_THRESHOLD = this.syncPageSize || 1000;
 
 		return new Observable<DataStoreSnapshot<T>>(observer => {
 			let itemsChanged = new Map<string, T>();
@@ -1121,11 +1121,15 @@ class DataStore {
 
 			// first, query and return any locally available records
 			(async () => {
-				// using a Map to maintain insertion order
-				items = new Map(
-					(await this.query(model, criteria, options)).map(x => [x.id, x])
-				);
-				onQueryComplete();
+				try {
+					// using a Map to maintain insertion order
+					items = new Map(
+						(await this.query(model, criteria, options)).map(x => [x.id, x])
+					);
+					onQueryComplete();
+				} catch (err) {
+					observer.error(err);
+				}
 			})();
 
 			// callback for sending snapshots and resetting 'itemsChanged'
@@ -1147,7 +1151,6 @@ class DataStore {
 
 			const hubCallback = async hubData => {
 				const { event, data } = hubData.payload;
-
 				if (
 					event === ControlMessage.SYNC_ENGINE_MODEL_SYNCED &&
 					data?.model?.name === model.name
@@ -1179,7 +1182,6 @@ class DataStore {
 				if (handle) {
 					handle.unsubscribe();
 					const isSynced = this.sync.getModelSyncedStatus(model);
-
 					const snapshot: DataStoreSnapshot<T> = {
 						items: Array.from(items.values()),
 						isSynced,
