@@ -1163,13 +1163,17 @@ class DataStore {
 		return new Observable<DataStoreSnapshot<T>>(observer => {
 			let itemsChanged = new Map<string, T>();
 			let items = new Map<string, T>();
+			let deletedItemIds: string[] = [];
 
 			// first, query and return any locally available records
 			(async () => {
 				try {
 					// using a Map to maintain insertion order
 					items = new Map(
-						(await this.query(model, criteria, options)).map(x => [x.id, x])
+						(await this.query(model, criteria, options)).map(item => [
+							item.id,
+							item,
+						])
 					);
 					onQueryComplete();
 				} catch (err) {
@@ -1185,15 +1189,24 @@ class DataStore {
 					...Array.from(items.entries()),
 					...Array.from(itemsChanged.entries()),
 				]);
+
+				// remove deleted items from the final result set
+				deletedItemIds.forEach(id => items.delete(id));
+
 				const snapshot: DataStoreSnapshot<T> = {
 					items: Array.from(items.values()),
 					isSynced,
 					itemsChanged: Array.from(itemsChanged.values()),
 				};
+
 				observer.next(snapshot);
+
+				// reset the changed items sets
 				itemsChanged = new Map();
+				deletedItemIds = [];
 			};
 
+			// fire the callback when the model is fully synced
 			const hubCallback = async hubData => {
 				const { event, data } = hubData.payload;
 				if (
@@ -1204,7 +1217,6 @@ class DataStore {
 					Hub.remove('api', hubCallback);
 				}
 			};
-
 			Hub.listen('datastore', hubCallback);
 
 			// observe the model and send a stream of updates (debounced)
@@ -1212,8 +1224,13 @@ class DataStore {
 				model,
 				// @ts-ignore TODO: fix this TSlint error
 				criteria
-			).subscribe(({ condition, element, model, opType }) => {
+			).subscribe(({ element, model, opType }) => {
 				itemsChanged.set(element.id, element);
+
+				// flag items which have been recently deleted
+				if (opType === 'DELETE') {
+					deletedItemIds.push(element.id);
+				}
 
 				const isSynced = this.sync.getModelSyncedStatus(model);
 
