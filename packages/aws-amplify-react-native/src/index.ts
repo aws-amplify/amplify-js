@@ -21,6 +21,7 @@ export * from './Auth';
 export * from './API';
 export * from './Storage';
 export * from './Interactions';
+export * from './InAppMessaging';
 
 const configure = function(config) {
 	const msg = [
