@@ -345,5 +345,20 @@ describe('AmazonLocationServiceProvider', () => {
 				locationProvider.searchByCoordinates(testCoordinates)
 			).rejects.toThrow('No credentials');
 		});
+
+		test('should fail if there are no search index resources', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure({});
+
+			expect(
+				locationProvider.searchByCoordinates(testCoordinates)
+			).rejects.toThrow(
+				'No Search Index found, please run `amplify add geo` to add one.'
+			);
+		});
 	});
 });
