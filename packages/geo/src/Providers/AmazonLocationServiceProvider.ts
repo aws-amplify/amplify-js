@@ -286,7 +286,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			!optionalSearchIndex
 		) {
 			const errorString =
-				'No Search Index found, please run `amplify add geo` to add one.';
+				'No Search Index found, please run `amplify add geo` to add one and ensure to run `amplify push` after.';
 			logger.warn(errorString);
 			throw new Error(errorString);
 		}

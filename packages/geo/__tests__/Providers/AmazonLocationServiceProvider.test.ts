@@ -266,7 +266,7 @@ describe('AmazonLocationServiceProvider', () => {
 			locationProvider.configure({});
 
 			expect(locationProvider.searchByText(testString)).rejects.toThrow(
-				'No Search Index found, please run `amplify add geo` to add one.'
+				'No Search Index found, please run `amplify add geo` to add one and ensure to run `amplify push` after.'
 			);
 		});
 	});
@@ -357,7 +357,7 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(
 				locationProvider.searchByCoordinates(testCoordinates)
 			).rejects.toThrow(
-				'No Search Index found, please run `amplify add geo` to add one.'
+				'No Search Index found, please run `amplify add geo` to add one and ensure to run `amplify push` after.'
 			);
 		});
 	});
