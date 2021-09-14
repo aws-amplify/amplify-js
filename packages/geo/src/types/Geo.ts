@@ -18,7 +18,10 @@ export interface GeoConfig {
 			items: {};
 			default: string;
 		};
-		place_indexes?: {};
+		search_indices?: {
+			items: string[];
+			default: string;
+		};
 	};
 }
 
