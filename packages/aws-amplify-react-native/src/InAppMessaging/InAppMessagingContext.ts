@@ -21,7 +21,7 @@ export function useInAppMessaging() {
 	const inAppMessagingContext = useContext(InAppMessagingContext);
 	if (!inAppMessagingContext) {
 		throw new Error(
-			'useInAppMessaging must be called from inside an InAppMessagingProvider'
+			'InAppMessagingContext is empty, did you forget the InAppMessagingProvider?'
 		);
 	}
 	return inAppMessagingContext;
