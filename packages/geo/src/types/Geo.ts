@@ -13,7 +13,7 @@
 // configuration shape for the Geo class
 export interface GeoConfig {
 	region?: string;
-	AmazonLocationServices?: {
+	AmazonLocationService?: {
 		maps?: {
 			items: {};
 			default: string;
