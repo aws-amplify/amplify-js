@@ -88,11 +88,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * @returns {AmazonLocationServiceMapStyle[]}- Array of available map resources
 	 */
 	public getAvailableMaps(): AmazonLocationServiceMapStyle[] {
-		if (!this._config.maps) {
-			throw new Error(
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
-			);
-		}
+		this._verifyMapResources();
 
 		const mapStyles: AmazonLocationServiceMapStyle[] = [];
 		const availableMaps = this._config.maps.items;
@@ -111,16 +107,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * @returns {AmazonLocationServiceMapStyle} - Map resource set as the default in amplify config
 	 */
 	public getDefaultMap(): AmazonLocationServiceMapStyle {
-		if (!this._config.maps) {
-			throw new Error(
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
-			);
-		}
-		if (!this._config.maps.default) {
-			throw new Error(
-				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after"
-			);
-		}
+		this._verifyMapResources();
 
 		const mapName = this._config.maps.default;
 		const style = this._config.maps.items[mapName].style;
@@ -143,6 +130,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		if (!credentialsOK) {
 			throw new Error('No credentials');
 		}
+
+		this._verifySearchIndex(options?.searchIndexName);
 
 		/**
 		 * Setup the searchInput
@@ -215,6 +204,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw new Error('No credentials');
 		}
 
+		this._verifySearchIndex(options?.searchIndexName);
+
 		const locationServiceInput: SearchPlaceIndexForPositionCommandInput = {
 			Position: coordinates,
 			IndexName: this._config.search_indices.default,
@@ -265,12 +256,39 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			const credentials = await Credentials.get();
 			if (!credentials) return false;
 			const cred = Credentials.shear(credentials);
-			logger.debug('set credentials for storage', cred);
+			logger.debug('Set credentials for storage. Credentials are:', cred);
 			this._config.credentials = cred;
 			return true;
 		} catch (error) {
-			logger.warn('ensure credentials error', error);
+			logger.warn('Ensure credentials error. Credentials are:', error);
 			return false;
+		}
+	}
+
+	private _verifyMapResources() {
+		if (!this._config.maps) {
+			const errorString =
+				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after";
+			logger.warn(errorString);
+			throw new Error(errorString);
+		}
+		if (!this._config.maps.default) {
+			const errorString =
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after";
+			logger.warn(errorString);
+			throw new Error(errorString);
+		}
+	}
+
+	private _verifySearchIndex(optionalSearchIndex?: string) {
+		if (
+			(!this._config.search_indices || !this._config.search_indices.default) &&
+			!optionalSearchIndex
+		) {
+			const errorString =
+				'No Search Index found, please run `amplify add geo` to add one and ensure to run `amplify push` after.';
+			logger.warn(errorString);
+			throw new Error(errorString);
 		}
 	}
 }

@@ -19,7 +19,11 @@ import {
 
 import { GeoClass } from '../src/Geo';
 import { AmazonLocationServiceProvider } from '../src/Providers/AmazonLocationServiceProvider';
-import { SearchByTextOptions } from '../src/types';
+import {
+	Coordinates,
+	SearchByCoordinatesOptions,
+	SearchByTextOptions,
+} from '../src/types';
 
 import {
 	credentials,
@@ -280,6 +284,70 @@ describe('Geo', () => {
 
 			const testString = 'starbucks';
 			await expect(geo.searchByText(testString)).rejects.toThrow(
+				'No plugin found in Geo for the provider'
+			);
+		});
+	});
+
+	describe('searchByCoordinates', () => {
+		const testCoordinates: Coordinates = [12345, 67890];
+
+		test('should search with just coordinate input', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const results = await geo.searchByCoordinates(testCoordinates);
+			expect(results).toEqual(testPlaceCamelCase);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Position: testCoordinates,
+				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
+			});
+		});
+
+		test('should search using options when given', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const searchOptions: SearchByCoordinatesOptions = {
+				maxResults: 40,
+				searchIndexName: 'geoJSSearchCustomExample',
+			};
+			const results = await geo.searchByCoordinates(
+				testCoordinates,
+				searchOptions
+			);
+			expect(results).toEqual(testPlaceCamelCase);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			expect(input).toEqual({
+				Position: testCoordinates,
+				IndexName: searchOptions.searchIndexName,
+				MaxResults: searchOptions.maxResults,
+			});
+		});
+
+		test('should fail if there is no provider', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+			geo.removePluggable('AmazonLocationService');
+
+			await expect(geo.searchByCoordinates(testCoordinates)).rejects.toThrow(
 				'No plugin found in Geo for the provider'
 			);
 		});
