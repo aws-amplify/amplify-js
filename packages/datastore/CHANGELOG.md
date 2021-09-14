@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.4.2...@aws-amplify/datastore@3.4.3) (2021-09-09)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [3.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.4.1...@aws-amplify/datastore@3.4.2) (2021-09-07)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [3.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.4.0...@aws-amplify/datastore@3.4.1) (2021-09-04)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** only stringify nested AWSJSON in mutation event ([#8844](https://github.com/aws-amplify/amplify-js/issues/8844)) ([0febaac](https://github.com/aws-amplify/amplify-js/commit/0febaac79af1b9fd0621dce1e63a139bebdb46f5))
+
+
+
+
+
+# [3.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.3.3...@aws-amplify/datastore@3.4.0) (2021-09-02)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** patch immer vuln ([#8841](https://github.com/aws-amplify/amplify-js/issues/8841)) ([6521a57](https://github.com/aws-amplify/amplify-js/commit/6521a576572f21a91738e2bdc37ffb21350392d0))
+* **@aws-amplify/datastore:** remove conditional require ([#8828](https://github.com/aws-amplify/amplify-js/issues/8828)) ([48b76e1](https://github.com/aws-amplify/amplify-js/commit/48b76e10602b0b5cc9bc43b9b3abd653e27e1817))
+
+
+### Features
+
+* **@aws-amplify/datastore:** add SQLite storage adapter option for RN apps ([#8809](https://github.com/aws-amplify/amplify-js/issues/8809)) ([46ee5dd](https://github.com/aws-amplify/amplify-js/commit/46ee5dd91c61f49bad4da8286b2f97c737d96631))
+
+
+
+
+
 ## [3.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.3.2...@aws-amplify/datastore@3.3.3) (2021-08-26)
 
 
