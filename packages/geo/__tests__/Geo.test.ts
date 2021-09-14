@@ -18,7 +18,7 @@ import {
 } from '@aws-sdk/client-location';
 
 import { GeoClass } from '../src/Geo';
-import { AmazonLocationServicesProvider } from '../src/Providers/AmazonLocationServicesProvider';
+import { AmazonLocationServiceProvider } from '../src/Providers/AmazonLocationServiceProvider';
 import { SearchByTextOptions } from '../src/types';
 
 import {
@@ -65,17 +65,17 @@ describe('Geo', () => {
 	describe('pluggables', () => {
 		test('getPluggable', () => {
 			const geo = new GeoClass();
-			const provider = new AmazonLocationServicesProvider();
+			const provider = new AmazonLocationServiceProvider();
 			geo.addPluggable(provider);
 
 			expect(geo.getPluggable(provider.getProviderName())).toBeInstanceOf(
-				AmazonLocationServicesProvider
+				AmazonLocationServiceProvider
 			);
 		});
 
 		test('removePluggable', () => {
 			const geo = new GeoClass();
-			const provider = new AmazonLocationServicesProvider();
+			const provider = new AmazonLocationServiceProvider();
 			geo.addPluggable(provider);
 			geo.removePluggable(provider.getProviderName());
 
@@ -85,12 +85,12 @@ describe('Geo', () => {
 		});
 	});
 
-	describe('AmazonLocationServices is used as default provider', () => {
+	describe('AmazonLocationService is used as default provider', () => {
 		test('creates the proper default provider', () => {
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
-			expect(geo.getPluggable('AmazonLocationServices')).toBeInstanceOf(
-				AmazonLocationServicesProvider
+			expect(geo.getPluggable('AmazonLocationService')).toBeInstanceOf(
+				AmazonLocationServiceProvider
 			);
 		});
 	});
@@ -101,7 +101,7 @@ describe('Geo', () => {
 			const config = geo.configure(awsConfig);
 			const expected = {
 				...awsConfig,
-				AmazonLocationServices: awsConfig.geo.amazon_location_services,
+				AmazonLocationService: awsConfig.geo.amazon_location_service,
 			};
 			expect(config).toEqual(expected);
 		});
@@ -115,7 +115,7 @@ describe('Geo', () => {
 
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
-			geo.removePluggable('AmazonLocationServices');
+			geo.removePluggable('AmazonLocationService');
 
 			expect(() => geo.getAvailableMaps()).toThrow(
 				'No plugin found in Geo for the provider'
@@ -139,8 +139,8 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 
 			const maps = [];
-			const availableMaps = awsConfig.geo.amazon_location_services.maps.items;
-			const region = awsConfig.geo.amazon_location_services.region;
+			const availableMaps = awsConfig.geo.amazon_location_service.maps.items;
+			const region = awsConfig.geo.amazon_location_service.region;
 
 			for (const mapName in availableMaps) {
 				const style = availableMaps[mapName].style;
@@ -163,7 +163,7 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 			geo.configure({
 				geo: {
-					amazon_location_services: {
+					amazon_location_service: {
 						maps: { items: { testMap: { style: 'teststyle' } } },
 					},
 				},
@@ -178,10 +178,10 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
 
-			const mapName = awsConfig.geo.amazon_location_services.maps.default;
+			const mapName = awsConfig.geo.amazon_location_service.maps.default;
 			const style =
-				awsConfig.geo.amazon_location_services.maps.items[mapName].style;
-			const region = awsConfig.geo.amazon_location_services.region;
+				awsConfig.geo.amazon_location_service.maps.items[mapName].style;
+			const region = awsConfig.geo.amazon_location_service.region;
 			const testMap = { mapName, style, region };
 
 			const defaultMapsResource = geo.getDefaultMap();
@@ -207,8 +207,7 @@ describe('Geo', () => {
 			const input = spyon.mock.calls[0][0].input;
 			expect(input).toEqual({
 				Text: testString,
-				IndexName:
-					awsConfig.geo.amazon_location_services.search_indices.default,
+				IndexName: awsConfig.geo.amazon_location_service.search_indices.default,
 			});
 		});
 
@@ -277,7 +276,7 @@ describe('Geo', () => {
 
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
-			geo.removePluggable('AmazonLocationServices');
+			geo.removePluggable('AmazonLocationService');
 
 			const testString = 'starbucks';
 			await expect(geo.searchByText(testString)).rejects.toThrow(
