@@ -73,7 +73,10 @@ export type StorageGetConfig<T extends StorageProvider> = { provider?: string } 
 
 export type StoragePutConfig<T extends StorageProvider> = { provider?: string } & StorageOperationConfig<T, 'put'>;
 
-export type StorageRemoveConfig<T extends StorageProvider> = { provider?: string } & StorageOperationConfig<T, 'remove'>;
+export type StorageRemoveConfig<T extends StorageProvider> = { provider?: string } & StorageOperationConfig<
+	T,
+	'remove'
+>;
 
 export type StorageListConfig<T extends StorageProvider> = { provider?: string } & StorageOperationConfig<T, 'list'>;
 
