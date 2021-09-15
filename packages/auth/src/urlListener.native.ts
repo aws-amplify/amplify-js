@@ -14,6 +14,7 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 const logger = new Logger('urlListener');
 
 let handler;
+let subscription;
 
 export default async callback => {
 	if (handler) {
@@ -36,8 +37,8 @@ export default async callback => {
 			callback({ url });
 		});
 
-	Linking.removeEventListener('url', handler);
-	Linking.addEventListener('url', handler);
+	subscription?.remove?.();
+	subscription = Linking.addEventListener('url', handler);
 	AppState.addEventListener('change', async newAppState => {
 		if (newAppState === 'active') {
 			const initialUrl = await Linking.getInitialURL();
