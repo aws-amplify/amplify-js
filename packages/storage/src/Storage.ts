@@ -14,8 +14,6 @@
 import { ConsoleLogger as Logger, Parser } from '@aws-amplify/core';
 import { AWSS3Provider } from './providers';
 import {
-	StorageCopyDestination,
-	StorageCopySource,
 	StorageGetConfig,
 	StorageProvider,
 	StoragePutConfig,
