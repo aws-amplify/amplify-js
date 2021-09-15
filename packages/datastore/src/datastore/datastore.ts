@@ -66,6 +66,7 @@ import {
 	USER,
 	isNullOrUndefined,
 	registerNonModelClass,
+	sortCompareFunction,
 } from '../util';
 
 setAutoFreeze(true);
@@ -1168,7 +1169,7 @@ class DataStore {
 			// first, query and return any locally available records
 			(async () => {
 				try {
-					// using a Map to maintain insertion order
+					// using a Map to maintain insertion order & uniqueness
 					items = new Map(
 						(await this.query(model, criteria, options)).map(item => [
 							item.id,
@@ -1181,14 +1182,30 @@ class DataStore {
 				}
 			})();
 
-			// callback for sending snapshots and resetting 'itemsChanged'
+			// primary callback for sending snapshots via `observer.next()`
 			const onQueryComplete = () => {
 				const isSynced = this.sync.getModelSyncedStatus(model);
 
-				items = new Map([
-					...Array.from(items.entries()),
-					...Array.from(itemsChanged.entries()),
-				]);
+				const itemsArray = [
+					...Array.from(items.values()),
+					...Array.from(itemsChanged.values()),
+				];
+
+				if (options.sort) {
+					const modelDefinition = getModelDefinition(model);
+					const pagination = this.processPagination(modelDefinition, options);
+
+					const sortPredicates = ModelSortPredicateCreator.getPredicates(
+						pagination.sort
+					);
+
+					if (sortPredicates.length) {
+						const compareFn = sortCompareFunction(sortPredicates);
+						itemsArray.sort(compareFn);
+					}
+				}
+
+				items = new Map(itemsArray.map(item => [item.id, item]));
 
 				// remove deleted items from the final result set
 				deletedItemIds.forEach(id => items.delete(id));
@@ -1226,7 +1243,6 @@ class DataStore {
 				criteria
 			).subscribe(({ element, model, opType }) => {
 				itemsChanged.set(element.id, element);
-
 				// flag items which have been recently deleted
 				if (opType === 'DELETE') {
 					deletedItemIds.push(element.id);
