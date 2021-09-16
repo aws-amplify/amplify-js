@@ -69,15 +69,12 @@ type StorageOperationConfig<T extends StorageProvider, U extends StorageProvider
 	? LastParameter<AWSS3Provider[U]>
 	: LastParameter<T[U]> & { provider: ReturnType<T['getProviderName']> };
 
-export type StorageGetConfig<T extends StorageProvider> = { provider?: string } & StorageOperationConfig<T, 'get'>;
+export type StorageGetConfig<T extends StorageProvider> = StorageOperationConfig<T, 'get'>;
 
-export type StoragePutConfig<T extends StorageProvider> = { provider?: string } & StorageOperationConfig<T, 'put'>;
+export type StoragePutConfig<T extends StorageProvider> = StorageOperationConfig<T, 'put'>;
 
-export type StorageRemoveConfig<T extends StorageProvider> = { provider?: string } & StorageOperationConfig<
-	T,
-	'remove'
->;
+export type StorageRemoveConfig<T extends StorageProvider> = StorageOperationConfig<T, 'remove'>;
 
-export type StorageListConfig<T extends StorageProvider> = { provider?: string } & StorageOperationConfig<T, 'list'>;
+export type StorageListConfig<T extends StorageProvider> = StorageOperationConfig<T, 'list'>;
 
-export type StorageCopyConfig<T extends StorageProvider> = { provider?: string } & StorageOperationConfig<T, 'copy'>;
+export type StorageCopyConfig<T extends StorageProvider> = StorageOperationConfig<T, 'copy'>;
