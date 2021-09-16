@@ -23,7 +23,6 @@ const options = {
 	level: 'level',
 };
 
-
 class TestCustomProvider implements StorageProvider {
 	getProviderName(): string {
 		return 'customProvider' as const;
@@ -35,10 +34,6 @@ class TestCustomProvider implements StorageProvider {
 
 	configure(o: any) {
 		return o;
-	}
-
-	copy(src: { key: string }, dest: { key: string }, config: CustomProviderConfig) {
-		return Promise.resolve({ key: 'copy' });
 	}
 
 	get(key: string, config: CustomProviderConfig) {
@@ -58,6 +53,13 @@ class TestCustomProvider implements StorageProvider {
 	}
 
 }
+
+class TestCustomProviderWithCopy extends TestCustomProvider implements StorageProvider {
+	copy(src: { key: string }, dest: { key: string }, config: CustomProviderConfig) {
+		return Promise.resolve({ key: 'copy' });
+	}
+}
+
 
 describe('Storage', () => {
 	describe('constructor test', () => {
@@ -901,14 +903,14 @@ describe('Storage', () => {
 			}
 		});
 		test('copy object with custom provider', async () => {
-			const customProvider = new TestCustomProvider();
-			const customProviderCopySpy = jest.spyOn(customProvider, 'copy').mockImplementation(() =>
+			const customProviderWithCopy = new TestCustomProviderWithCopy();
+			const customProviderCopySpy = jest.spyOn(customProviderWithCopy, 'copy').mockImplementation(() =>
 				Promise.resolve({
 					key: 'key',
 				})
 			);
-			storage.addPluggable(customProvider);
-			storage.copy<TestCustomProvider>(
+			storage.addPluggable(customProviderWithCopy);
+			storage.copy<TestCustomProviderWithCopy>(
 				{ key: 'src' },
 				{ key: 'dest' },
 				{
@@ -921,13 +923,13 @@ describe('Storage', () => {
 		});
 		// backwards compatible with current custom provider user
 		test('copy object with custom provider should work with no generic type provided', async () => {
-			const customProvider = new TestCustomProvider();
-			const customProviderCopySpy = jest.spyOn(customProvider, 'copy').mockImplementation(() =>
+			const customProviderWithCopy = new TestCustomProviderWithCopy();
+			const customProviderCopySpy = jest.spyOn(customProviderWithCopy, 'copy').mockImplementation(() =>
 				Promise.resolve({
 					key: 'key',
 				})
 			);
-			storage.addPluggable(customProvider);
+			storage.addPluggable(customProviderWithCopy);
 			storage.copy(
 				{ key: 'src' },
 				{ key: 'dest' },

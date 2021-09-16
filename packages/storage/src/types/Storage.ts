@@ -63,9 +63,10 @@ export type StorageCopyDestination = Omit<StorageCopyTarget, 'identityId'>;
  * If provider is AWSS3, provider doesn't have to be specified since it's the default, else it has to be passed into
  * config.
  */
-type StorageOperationConfig<T extends StorageProvider | StorageProviderWithCopy, U extends StorageProviderApi> = ReturnType<
-	T['getProviderName']
-> extends 'AWSS3' // Config is always the last parameter of the function
+type StorageOperationConfig<
+	T extends StorageProvider | StorageProviderWithCopy,
+	U extends StorageProviderApi
+> = ReturnType<T['getProviderName']> extends 'AWSS3' // Config is always the last parameter of the function
 	? LastParameter<AWSS3Provider[U]>
 	: T extends StorageProviderWithCopy
 	? LastParameter<T[U]> & { provider: ReturnType<T['getProviderName']> }
