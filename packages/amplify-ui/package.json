@@ -11,7 +11,9 @@
     "test": "webpack",
     "start": "webpack-dev-server",
     "clean": "rimraf dist lib",
-    "build": "npm run clean && webpack && copyfiles -u 1 ./src/*.css.d.ts ./lib"
+    "build": "npm run clean && webpack && copyfiles -u 1 ./src/*.css.d.ts ./lib",
+    "build:cjs:watch": "node ./build es5 --watch",
+    "build:esm:watch": "echo \"ES Modules are not exported in react-native. Use target build:cjs:watch\""
   },
   "license": "Apache-2.0",
   "devDependencies": {
