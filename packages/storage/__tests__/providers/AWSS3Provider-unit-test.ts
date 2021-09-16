@@ -13,7 +13,7 @@
 import StorageProvider from '../../src/providers/AWSS3Provider';
 import { Logger, Hub, Credentials, ICredentials } from '@aws-amplify/core';
 import * as formatURL from '@aws-sdk/util-format-url';
-import { S3Client, ListObjectsCommand, CreateMultipartUploadCommand } from '@aws-sdk/client-s3';
+import { S3Client, ListObjectsCommand, CreateMultipartUploadCommand, UploadPartCommand, CompleteMultipartUploadCommand } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import * as events from 'events';
 
@@ -727,14 +727,18 @@ describe('StorageProvider test', () => {
 				.mockImplementationOnce(async command => {
 					if (command instanceof CreateMultipartUploadCommand) {
 						return Promise.resolve({ UploadId: testUploadId });
+					} else if (command instanceof UploadPartCommand) {
+						return Promise.resolve({
+							ETag: 'test_etag_' + command.input.PartNumber,
+						});
 					}
 				});
 
-			const uploadRequest = await storage.put('key', file, {
+			const uploadTask = await storage.put('key', file, {
 				resumeable: true,
 			});
 
-			expect(uploadRequest instanceof AWSS3UploadTask).toEqual(true);
+			expect(uploadTask instanceof AWSS3UploadTask).toEqual(true);
 		});
 	});
 
