@@ -142,7 +142,6 @@ const scopeToDirectoryName = scopedPackages => {
 	scopedPackages = scopedPackages.map(
 		scoPackage => scoPackage.split('/')[1] ?? scoPackage
 	);
-	console.log(scopedPackages);
 	return scopedPackages.map(packageName =>
 		packageName.includes('ui') ? `amplify-${packageName}` : packageName
 	);

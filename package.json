@@ -90,7 +90,8 @@
 		"webpack": "^4.32.0",
 		"webpack-bundle-analyzer": "^3.3.2",
 		"webpack-cli": "^3.1.0",
-		"winston": "^3.2.1"
+		"winston": "^3.2.1",
+		"wml": "0.0.83"
 	},
 	"resolutions": {
 		"@babel/types": "7.12.10",
