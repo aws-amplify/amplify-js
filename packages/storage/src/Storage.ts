@@ -22,6 +22,7 @@ import {
 	StorageRemoveConfig,
 	StorageListConfig,
 	StorageCopyConfig,
+	StorageProviderWithCopy,
 } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { PutObjectCommandInput } from '@aws-sdk/client-s3';
@@ -209,7 +210,7 @@ export class Storage {
 		dest: StorageCopyDestination,
 		config?: StorageCopyConfig<T>
 	): Promise<any>;
-	public copy<T extends StorageProvider = AWSS3Provider>(
+	public copy<T extends StorageProviderWithCopy = AWSS3Provider>(
 		src: Parameters<T['copy']>[0],
 		dest: Parameters<T['copy']>[1],
 		config?: StorageCopyConfig<T>
@@ -221,6 +222,9 @@ export class Storage {
 			return Promise.reject('No plugin found in Storage for the provider') as ReturnType<T['copy']>;
 		}
 		const cancelTokenSource = this.getCancellableTokenSource();
+		if (typeof prov.copy !== 'function') {
+			return Promise.reject(`.copy is not implemented on provider ${prov.getProviderName()}`) as ReturnType<T['copy']>;
+		}
 		const responsePromise = prov.copy(src, dest, {
 			...config,
 			cancelTokenSource,

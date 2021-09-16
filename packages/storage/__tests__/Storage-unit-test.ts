@@ -570,7 +570,7 @@ describe('Storage', () => {
 			}
 		});
 
-		test('get with custom provider with provider as generic type', async () => {
+		test('get with custom provider', async () => {
 			const customProvider = new TestCustomProvider();
 			const customProviderGetSpy = jest
 				.spyOn(customProvider, 'get')

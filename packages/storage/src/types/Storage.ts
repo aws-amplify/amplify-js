@@ -15,7 +15,7 @@
  */
 
 import { ICredentials } from '@aws-amplify/core';
-import { StorageProvider, StorageProviderApi, AWSS3Provider } from '..';
+import { StorageProvider, StorageProviderApi, AWSS3Provider, StorageProviderWithCopy } from '..';
 
 type Tail<T extends any[]> = ((...t: T) => void) extends (h: any, ...r: infer R) => void ? R : never;
 
@@ -63,10 +63,14 @@ export type StorageCopyDestination = Omit<StorageCopyTarget, 'identityId'>;
  * If provider is AWSS3, provider doesn't have to be specified since it's the default, else it has to be passed into
  * config.
  */
-type StorageOperationConfig<T extends StorageProvider, U extends StorageProviderApi> = ReturnType<
+type StorageOperationConfig<T extends StorageProvider | StorageProviderWithCopy, U extends StorageProviderApi> = ReturnType<
 	T['getProviderName']
 > extends 'AWSS3' // Config is always the last parameter of the function
 	? LastParameter<AWSS3Provider[U]>
+	: T extends StorageProviderWithCopy
+	? LastParameter<T[U]> & { provider: ReturnType<T['getProviderName']> }
+	: U extends 'copy'
+	? never
 	: LastParameter<T[U]> & { provider: ReturnType<T['getProviderName']> };
 
 export type StorageGetConfig<T> = T extends StorageProvider
@@ -85,7 +89,7 @@ export type StorageListConfig<T> = T extends StorageProvider
 	? StorageOperationConfig<T, 'list'>
 	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'list'>, T>;
 
-export type StorageCopyConfig<T> = T extends StorageProvider
+export type StorageCopyConfig<T> = T extends StorageProviderWithCopy
 	? StorageOperationConfig<T, 'copy'>
 	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'copy'>, T>;
 
