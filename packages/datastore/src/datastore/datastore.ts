@@ -128,6 +128,8 @@ let storageClasses: TypeConstructorMap;
 const modelInstanceAssociationsMap = new WeakMap<PersistentModel, object>();
 
 const initSchema = (userSchema: Schema) => {
+	debugger;
+
 	if (schema !== undefined) {
 		console.warn('The schema has already been initialized');
 
@@ -188,6 +190,12 @@ const initSchema = (userSchema: Schema) => {
 				);
 
 			modelAssociations.set(model.name, connectedModels);
+
+			Object.values(model.fields).forEach(field => {
+				Object.defineProperty(field.type, 'modelConstructor', {
+					get: () => schema.namespaces[namespace][field.type.model],
+				});
+			});
 		});
 
 		const result = new Map<string, string[]>();
