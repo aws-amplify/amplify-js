@@ -69,12 +69,32 @@ type StorageOperationConfig<T extends StorageProvider, U extends StorageProvider
 	? LastParameter<AWSS3Provider[U]>
 	: LastParameter<T[U]> & { provider: ReturnType<T['getProviderName']> };
 
-export type StorageGetConfig<T extends StorageProvider> = StorageOperationConfig<T, 'get'>;
+export type StorageGetConfig<T> = T extends StorageProvider
+	? StorageOperationConfig<T, 'get'>
+	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'get'>, T>;
 
-export type StoragePutConfig<T extends StorageProvider> = StorageOperationConfig<T, 'put'>;
+export type StoragePutConfig<T> = T extends StorageProvider
+	? StorageOperationConfig<T, 'put'>
+	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'put'>, T>;
 
-export type StorageRemoveConfig<T extends StorageProvider> = StorageOperationConfig<T, 'remove'>;
+export type StorageRemoveConfig<T> = T extends StorageProvider
+	? StorageOperationConfig<T, 'remove'>
+	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'remove'>, T>;
 
-export type StorageListConfig<T extends StorageProvider> = StorageOperationConfig<T, 'list'>;
+export type StorageListConfig<T> = T extends StorageProvider
+	? StorageOperationConfig<T, 'list'>
+	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'list'>, T>;
 
-export type StorageCopyConfig<T extends StorageProvider> = StorageOperationConfig<T, 'copy'>;
+export type StorageCopyConfig<T> = T extends StorageProvider
+	? StorageOperationConfig<T, 'copy'>
+	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'copy'>, T>;
+
+/**
+ * Utility type to allow custom provider to use any config keys, if provider is set to AWSS3 then it should use
+ * AWSS3Provider's config.
+ */
+export type StorageOperationConfigMap<Default, T extends Record<string, any>> = T extends { provider: string }
+	? T extends { provider: 'AWSS3' }
+		? Default
+		: T & { provider: string }
+	: Default;
