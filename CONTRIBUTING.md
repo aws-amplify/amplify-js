@@ -122,6 +122,37 @@ yarn link @aws-amplify/auth
 
 These tests are only necessary if you’re looking to contribute a Pull Request. If you’re just playing locally you don’t need them. However if you’re contributing a Pull Request for anything other than bug fixes it would be best to validate that first because depending on the scope of the change.
 
+**Using the set-dev:reactnative script to work with React-Native apps**
+
+To develop locally alongside a React-Native app, make sure to finish the build steps mentioned in the section: `Setting up for local development`
+
+Then, run the below command in the root of the amplify-js local repository (auth for example):
+
+```
+npm run setup-dev:reactnative -- -p @aws-amplify/auth -t ~/path/to/your/rn/app/root
+```
+
+The options -p is used to specify single or multiple package names and the -t option is used to specify the path to your sample React-Native app.
+
+To devlop multiple/all packages, provide the package names separated by a comma or use the keyword all:
+
+```
+npm run setup-dev:reactnative -- -p @aws-amplify/auth,aws-amplify-react-native -t ~/path/to/your/rn/app/root
+npm run setup-dev:reactnative -- -p all -t ~/path/to/your/rn/app/root
+```
+
+Note: `--` is important to provide arguments as shown above.
+
+**Debugging problems with the script**
+
+- If the WML command does not do anything after adding the links, watch it's src file using watchman. run the below from the root of this repository:
+
+  ```
+  watchman watch node_modules/wml/src
+  ```
+
+- When using VScode, for the script to open a new terminal and tabs you will need to provide the editor accessiblity permissions.
+
 #### Verdaccio
 
 Verdaccio is a lightweight private npm proxy registry built in Node.js. Install [Verdaccio](https://verdaccio.org/docs/en/installation). You can setup Verdaccio to publish packages locally to test the changes.
