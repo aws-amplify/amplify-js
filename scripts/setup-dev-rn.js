@@ -2,10 +2,9 @@
 
 const path = require('path');
 const yargs = require('yargs');
-var { exec } = require('child_process');
+let { exec } = require('child_process');
 const { readdirSync, existsSync } = require('fs');
-var exec = require('child_process').exec;
-var os = require('os');
+const os = require('os');
 const winston = require('winston');
 const logger = winston.createLogger({
 	level: process.env.LOG_LEVEL ? process.env.LOG_LEVEL.toLowerCase() : 'info',
@@ -19,10 +18,10 @@ const logger = winston.createLogger({
 	],
 });
 
-async function setupDevRn() {
+async function setupDevReactNative() {
 	const args = yargs.argv;
-	const dependentAppPath = args.t;
-	var packages = args.p;
+	const dependentAppPath = args.target ?? args.t;
+	const packages = args.packages ?? args.p;
 	const pkgRootPath = process.cwd();
 
 	// Exit if package option is not given
@@ -48,7 +47,7 @@ async function setupDevRn() {
 	// Exit for unsupported OS
 	if (os.platform() !== 'darwin') {
 		logger.error(
-			'No support for this operating system. Currenlty only supports OSX.'
+			'No support for this operating system. Currently only supports OSX.'
 		);
 		return;
 	}
@@ -56,6 +55,7 @@ async function setupDevRn() {
 	// Remove packages that do not have build:watch script
 	const excludedPacks = [
 		'aws-amplify-vue',
+		'@aws-amplify/ui',
 		'@aws-amplify/ui-vue',
 		'@aws-amplify/ui-angular',
 		'@aws-amplify/ui-components',
@@ -63,17 +63,13 @@ async function setupDevRn() {
 		'aws-amplify-angular',
 	];
 
-	// Exclude unrelated pacakges
-	const allPacks = getPackageNames('./packages/').filter(
+	// Exclude unrelated packages
+	const supportedPacks = getPackageNames('./packages/').filter(
 		el => !excludedPacks.includes(el)
 	);
 
 	// ALL Packages list formation
-	if (packages === 'all') {
-		packages = allPacks.join(',');
-	}
-
-	const packagesArr = packages.split(',');
+	const packagesArr = packages === 'all' ? supportedPacks : packages.split(',');
 
 	const cjsPacksPreset = [
 		'aws-amplify-react-native',
@@ -84,9 +80,9 @@ async function setupDevRn() {
 	const cjsPackages = [];
 
 	packagesArr.forEach(element => {
-		if (!allPacks.includes(element)) {
+		if (!supportedPacks.includes(element)) {
 			logger.error(
-				`Package ${element} is not supported by this script or does not exist. Here is list of supported packages: ${allPacks}`
+				`Package ${element} is not supported by this script or does not exist. Here is list of supported packages: ${supportedPacks}`
 			);
 			process.exit(0);
 		}
@@ -110,27 +106,24 @@ async function setupDevRn() {
 	}
 
 	// WML add command formation
-	const directoryPackNames = scopeToDirectoryName(packagesArr);
-	const wmlAddStrings = buildWmlAddStrings(
-		directoryPackNames,
+	const wmlClearCmd = 'npm-exec wml rm all && ';
+	const wmlAddCmd = buildWmlAddStrings(
+		packagesArr,
 		dependentAppPath,
 		pkgRootPath
 	);
-	const wmlClearCmd = 'npm-exec wml rm all && ';
-	const wmlAddCmd = wmlAddStrings.join(' ');
 	const wmlStart = 'npm-exec wml start';
 	const navToDirAndAlias = `cd ${pkgRootPath} && alias npm-exec='PATH=$(npm bin):$PATH'`;
-	const finalWmlCmd =
-		navToDirAndAlias + ' & ' + wmlClearCmd + wmlAddCmd + wmlStart;
+	const finalWmlCmd = `${navToDirAndAlias} & ${wmlClearCmd} ${wmlAddCmd} ${wmlStart}`;
 
 	finalCmds.push(finalWmlCmd);
 
 	// LERNA build:CJS:watch package command to be run in a new tab
 	if (cjsPackages.length > 0) {
-		var rnPackageBuildWatch = `cd ${pkgRootPath}`;
-		const cjsScopes = `{${cjsPackages.join(',')},}`;
-		rnPackageBuildWatch = `${rnPackageBuildWatch} && npx lerna exec --scope=${cjsPackages} npm run build:cjs:watch --parallel`;
-		finalCmds.push(rnPackageBuildWatch);
+		const cjsPackagesBuildWatch = `cd ${pkgRootPath} && npx lerna exec --scope={${cjsPackages.join(
+			','
+		)},} npm run build:cjs:watch --parallel`;
+		finalCmds.push(cjsPackagesBuildWatch);
 	}
 
 	// Open each command in a new tab in a new terminal
@@ -138,14 +131,11 @@ async function setupDevRn() {
 }
 
 // Convert scoped packagenames to directory names used for path formation for wml commands
-const scopeToDirectoryName = scopedPackages => {
-	scopedPackages = scopedPackages.map(
-		scoPackage => scoPackage.split('/')[1] ?? scoPackage
-	);
-	return scopedPackages.map(packageName =>
-		packageName.includes('ui') ? `amplify-${packageName}` : packageName
-	);
-};
+const scopeToDirectoryName = scopedPackages =>
+	scopedPackages.map(scoPackage => {
+		const packageName = scoPackage.split('/')[1] ?? scoPackage;
+		return packageName.includes('ui') ? `amplify-${packageName}` : packageName;
+	});
 
 // Get all package names from under the packages directory
 const getPackageNames = source =>
@@ -155,32 +145,24 @@ const getPackageNames = source =>
 
 // Form all the wml add commands needed
 function buildWmlAddStrings(packages, dependentAppPath, pkgRootPath) {
-	var wmlAddCmds = [];
+	let wmlAddCmds = [];
 	const packagesDir = path.resolve(pkgRootPath, 'packages');
 	const sampleAppNodeModulesDir = path.join(dependentAppPath, 'node_modules');
 
 	packages.forEach(element => {
-		// Remove scoped package name for the source
-		// but keep it for target
-		var srcPackage = '';
-		if (element.includes('@aws-amplify/')) {
-			srcPackage = element.split('/')[1];
-			if (srcPackage === 'ui-react') {
-				srcPackage = `amplify-${srcPackage}`;
-			}
-		} else {
-			srcPackage = element;
-		}
-		const source = path.resolve(packagesDir, srcPackage);
+		const source = path.resolve(
+			packagesDir,
+			scopeToDirectoryName([element])[0]
+		);
 		const target = path.resolve(sampleAppNodeModulesDir, element);
 		wmlAddCmds.push(` npm-exec wml add ${source} ${target} && `);
 	});
-	return wmlAddCmds;
+	return wmlAddCmds.join(' ');
 }
 
 // OSA script to open a new terminal and tabs for each command execution
 function openTab(cmdArr, cb) {
-	var open = ['osascript -e \'tell application "Terminal" to activate\' '];
+	const open = ['osascript -e \'tell application "Terminal" to activate\' '];
 	cmdArr.forEach(element => {
 		const splitCmds = element.split(' & ');
 		if (splitCmds.length == 2) {
@@ -213,10 +195,9 @@ function openTab(cmdArr, cb) {
 		}
 	});
 
-	open = open.join(' ');
-	exec(open);
+	exec(open.join(' '));
 }
 
-setupDevRn();
+setupDevReactNative();
 
-module.exports = setupDevRn;
+module.exports = setupDevReactNative;

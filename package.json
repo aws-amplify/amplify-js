@@ -5,7 +5,7 @@
 	"description": "",
 	"scripts": {
 		"setup-dev": "yarn && yarn bootstrap && yarn link-all && yarn build",
-		"setup-dev:reactnative": "node ./scripts/setup-dev-rn",
+		"setup-dev:react-native": "node ./scripts/setup-dev-rn",
 		"bootstrap": "lerna bootstrap",
 		"test": "lerna run test --stream",
 		"cypress": "lerna run cypress",

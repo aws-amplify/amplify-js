@@ -126,22 +126,23 @@ These tests are only necessary if you’re looking to contribute a Pull Request.
 
 To develop locally alongside a React-Native app, make sure to finish the build steps mentioned in the section: `Setting up for local development`
 
-Then, run the below command in the root of the amplify-js local repository (auth for example):
+Then, run the below command in the root of the amplify-js local repository with a package name (auth for example):
 
 ```
-npm run setup-dev:reactnative -- -p @aws-amplify/auth -t ~/path/to/your/rn/app/root
+npm run setup-dev:reactnative -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
 ```
 
-The options -p is used to specify single or multiple package names and the -t option is used to specify the path to your sample React-Native app.
+The options --packages is used to specify single or multiple package names and the --target option is used to specify the path to your sample React-Native app.
+Optionally, you can use the shorthands flags `-p` and `-t` for packages and target path respectively.
 
-To devlop multiple/all packages, provide the package names separated by a comma or use the keyword all:
+To develop multiple/all packages, provide the package names separated by a comma or use the keyword all:
 
 ```
-npm run setup-dev:reactnative -- -p @aws-amplify/auth,aws-amplify-react-native -t ~/path/to/your/rn/app/root
-npm run setup-dev:reactnative -- -p all -t ~/path/to/your/rn/app/root
+npm run setup-dev:reactnative -- --packages @aws-amplify/auth,aws-amplify-react-native --target ~/path/to/your/rn/app/root
+npm run setup-dev:reactnative -- --packages all --target ~/path/to/your/rn/app/root
 ```
 
-Note: `--` is important to provide arguments as shown above.
+> Note: `--` is important to provide arguments as shown above.
 
 **Debugging problems with the script**
 
