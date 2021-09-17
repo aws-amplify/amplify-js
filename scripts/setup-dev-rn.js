@@ -2,7 +2,7 @@
 
 const path = require('path');
 const yargs = require('yargs');
-let { exec } = require('child_process');
+const { exec } = require('child_process');
 const { readdirSync, existsSync } = require('fs');
 const os = require('os');
 const winston = require('winston');
@@ -18,7 +18,7 @@ const logger = winston.createLogger({
 	],
 });
 
-async function setupDevReactNative() {
+function setupDevReactNative() {
 	const args = yargs.argv;
 	const dependentAppPath = args.target ?? args.t;
 	const packages = args.packages ?? args.p;
@@ -163,40 +163,32 @@ function buildWmlAddStrings(packages, dependentAppPath, pkgRootPath) {
 // OSA script to open a new terminal and tabs for each command execution
 function openTab(cmdArr, cb) {
 	const open = ['osascript -e \'tell application "Terminal" to activate\' '];
+	const NEW_TAB =
+		'-e \'tell application "System Events" to tell process "Terminal" to keystroke "t"';
+	const DOWN_COMMAND = "using command down' ";
+	const DELAY = "-e 'delay 0.2' ";
 	cmdArr.forEach(element => {
 		const splitCmds = element.split(' & ');
 		if (splitCmds.length == 2) {
 			open.push(
-				'-e \'tell application "System Events" to tell process "Terminal" to keystroke "t"',
-				"using command down' ",
-				'-e \'tell application "Terminal" to do script',
-				'"',
-				splitCmds[0],
-				'"',
-				"in front window' ",
-				"-e 'delay 0.2' ",
-				'-e \'tell application "Terminal" to do script',
-				'"',
-				splitCmds[1],
-				'"',
-				"in front window' "
+				NEW_TAB,
+				DOWN_COMMAND,
+				DELAY,
+				formToDoScriptStr(splitCmds[0]),
+				formToDoScriptStr(splitCmds[1])
 			);
 		} else {
-			open.push(
-				'-e \'tell application "System Events" to tell process "Terminal" to keystroke "t"',
-				"using command down' ",
-				'-e \'tell application "Terminal" to do script',
-				'"',
-				element,
-				'"',
-				"in front window' ",
-				"-e 'delay 0.2' "
-			);
+			open.push(NEW_TAB, DOWN_COMMAND, formToDoScriptStr(element));
 		}
 	});
-
 	exec(open.join(' '));
 }
+
+const formToDoScriptStr = cmd => {
+	const TO_DO_SCRIPT = '-e \'tell application "Terminal" to do script';
+	const IN_FRONT_WINDOW = "in front window' ";
+	return [TO_DO_SCRIPT, '"', cmd, '"', IN_FRONT_WINDOW].join(' ');
+};
 
 setupDevReactNative();
 
