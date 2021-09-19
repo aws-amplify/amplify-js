@@ -117,7 +117,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
 				logger.error(NO_CREDS_ERROR_STRING);
-				throw new Error();
+				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
 			const client = this._initCloudWatchLogs();
@@ -140,7 +140,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
 				logger.error(NO_CREDS_ERROR_STRING);
-				throw new Error();
+				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
 			const client = this._initCloudWatchLogs();
@@ -165,7 +165,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
 				logger.error(NO_CREDS_ERROR_STRING);
-				throw new Error();
+				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
 			const client = this._initCloudWatchLogs();
@@ -187,7 +187,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
 				logger.error(NO_CREDS_ERROR_STRING);
-				throw new Error();
+				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
 			const client = this._initCloudWatchLogs();
@@ -209,7 +209,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
 				logger.error(NO_CREDS_ERROR_STRING);
-				throw new Error();
+				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
 			const client = this._initCloudWatchLogs();
@@ -237,7 +237,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
 				logger.error(NO_CREDS_ERROR_STRING);
-				throw new Error();
+				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
 			const currGroups = await this.getLogGroups({
@@ -277,7 +277,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
 				logger.error(NO_CREDS_ERROR_STRING);
-				throw new Error();
+				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
 			const currStreams = await this.getLogStreams({
@@ -320,7 +320,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
 				logger.error(NO_CREDS_ERROR_STRING);
-				throw new Error();
+				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
 			logger.debug('sending log events to stream - ', params.logStreamName);
