@@ -63,7 +63,7 @@ describe('AWSCloudWatchProvider', () => {
 	});
 
 	describe('credentials test', () => {
-		it('without credentials', async () => {
+		it('should throw an error when no credentials', async () => {
 			const provider = new AWSCloudWatchProvider();
 			provider.configure(testConfig);
 			const spyon = jest.spyOn(Credentials, 'get').mockImplementation(() => {
