@@ -116,7 +116,6 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		try {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
-				logger.error(NO_CREDS_ERROR_STRING);
 				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
@@ -139,7 +138,6 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		try {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
-				logger.error(NO_CREDS_ERROR_STRING);
 				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
@@ -164,7 +162,6 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		try {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
-				logger.error(NO_CREDS_ERROR_STRING);
 				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
@@ -186,7 +183,6 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		try {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
-				logger.error(NO_CREDS_ERROR_STRING);
 				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
@@ -208,7 +204,6 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		try {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
-				logger.error(NO_CREDS_ERROR_STRING);
 				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
@@ -236,7 +231,6 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		try {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
-				logger.error(NO_CREDS_ERROR_STRING);
 				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
@@ -276,7 +270,6 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		try {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
-				logger.error(NO_CREDS_ERROR_STRING);
 				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
@@ -319,7 +312,6 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		try {
 			const credentialsOK = await this._ensureCredentials();
 			if (!credentialsOK) {
-				logger.error(NO_CREDS_ERROR_STRING);
 				throw new Error(NO_CREDS_ERROR_STRING);
 			}
 
