@@ -1,5 +1,5 @@
 import { Predicate } from '../src/predicates/next';
-import { getModelDefinition } from '../src/datastore/datastore';
+// import { getModelDefinition } from '../src/datastore/datastore';
 import { Model, Metadata, testSchema } from './helpers';
 import {
 	NonModelTypeConstructor,
@@ -28,11 +28,15 @@ describe('Predicates', () => {
 			'Zelda from the Legend of Zelda',
 		].map(name => new Author({ name }));
 
-		const authorDefinition = testSchema().models[Author.name];
-		// authorDefinition.fields.name.association.connectionType.
+		// const authorDefinition = testSchema().models[Author.name];
+		// authorDefinition.fields.name.association.targetName;
 
-		test('find matches on eq', () => {
-			Predicate.for(Author);
+		test('find matches on eq', async () => {
+			const query = Predicate.for(Author).name.eq('Adam West');
+			const matches = await query.filter(flatAuthorsArray);
+
+			expect(matches.length).toBe(1);
+			expect(matches[0].name).toBe('Adam West');
 		});
 
 		test('find no false matches on eq', () => {});

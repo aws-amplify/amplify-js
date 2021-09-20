@@ -1,3 +1,5 @@
+// REF: https://tiny.amazon.com/1bqg7c90h/typeorgplay
+
 import { Options } from 'webpack';
 import {
 	Scalar,
@@ -20,6 +22,19 @@ type ScalarOperators = EqualityOperators | ComparisonOperators;
 type CollectionOperators = 'contains' | 'notContains';
 type AllFieldOperators = CollectionOperators | ScalarOperators;
 
+// TODO: this is TEMP to make the types work.
+class AsyncCollection<T> {
+	toArray(): T[] {
+		return [];
+	}
+}
+
+type FinalFieldType<T> = T extends Promise<infer InnerPromiseType>
+	? InnerPromiseType
+	: T extends AsyncCollection<infer InnerCollectionType>
+	? InnerCollectionType
+	: T;
+
 const ops: AllFieldOperators[] = [
 	'eq',
 	'ne',
@@ -27,6 +42,7 @@ const ops: AllFieldOperators[] = [
 	'ge',
 	'lt',
 	'le',
+	'between',
 	'contains',
 	'notContains',
 ];
@@ -48,14 +64,14 @@ type ValuePredicate<RT extends PersistentModel, MT extends MatchableTypes> = {
 };
 
 type ModelPredicateOperator<RT extends PersistentModel> = (
-	...predicates: [ModelPredicateExtendor<RT>] | FinalModelPredicate<RT>[]
+	...predicates: [ModelPredicateExtendor<RT>] | FinalModelPredicate<any>[]
 ) => FinalModelPredicate<RT>;
 
 type ModelPredicate<RT extends PersistentModel> = {
-	[K in keyof RT]: RT[K] extends PersistentModel
-		? ModelPredicate<RT[K]>
-		: RT[K] extends PersistentModel[]
-		? ModelPredicate<Scalar<RT[K]>>
+	[K in keyof RT]: FinalFieldType<RT[K]> extends PersistentModel
+		? ModelPredicate<FinalFieldType<RT[K]>>
+		: FinalFieldType<RT[K]> extends PersistentModel[]
+		? ModelPredicate<FinalFieldType<Scalar<RT[K]>>>
 		: ValuePredicate<RT, RT[K]>;
 } & {
 	or: ModelPredicateOperator<RT>;
@@ -69,6 +85,7 @@ type FinalModelPredicate<RT extends PersistentModel> = {
 	__className: string;
 	__query: GroupCondition;
 	__tail: GroupCondition;
+	filter: (items: RT[]) => Promise<RT[]>;
 };
 
 type GroupConditionType<RT extends PersistentModel> = {
@@ -315,6 +332,9 @@ export const Predicate = {
 										__className: newlink.__className,
 										__query: newlink.__query,
 										__tail: newlink.__tail,
+										filter: items => {
+											return asyncFilter(items, newlink.__query.matches);
+										},
 									};
 								},
 							};

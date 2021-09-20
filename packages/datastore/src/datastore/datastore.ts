@@ -183,10 +183,10 @@ const initSchema = (userSchema: Schema) => {
 					field =>
 						field.association &&
 						field.association.connectionType === 'BELONGS_TO' &&
-						(<ModelFieldType>field.type).model !== model.name
+						(<ModelFieldType<any>>field.type).model !== model.name
 				)
 				.forEach(field =>
-					connectedModels.push((<ModelFieldType>field.type).model)
+					connectedModels.push((<ModelFieldType<any>>field.type).model)
 				);
 
 			modelAssociations.set(model.name, connectedModels);
