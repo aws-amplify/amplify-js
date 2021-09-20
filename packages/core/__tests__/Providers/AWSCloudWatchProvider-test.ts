@@ -3,6 +3,7 @@ import { AWSCloudWatchProviderOptions } from '../../src/types';
 import {
 	AWS_CLOUDWATCH_CATEGORY,
 	AWS_CLOUDWATCH_PROVIDER_NAME,
+	NO_CREDS_ERROR_STRING,
 } from '../../src/Util/Constants';
 import { Credentials } from '../..';
 import { CloudWatchLogsClient } from '@aws-sdk/client-cloudwatch-logs';
@@ -77,7 +78,7 @@ describe('AWSCloudWatchProvider', () => {
 			};
 
 			expect.assertions(1);
-			await expect(action()).rejects.toThrowError();
+			await expect(action()).rejects.toThrowError(Error(NO_CREDS_ERROR_STRING));
 			spyon.mockRestore();
 		});
 	});
