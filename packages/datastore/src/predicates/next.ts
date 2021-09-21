@@ -1,11 +1,11 @@
 // REF: https://tiny.amazon.com/1bqg7c90h/typeorgplay
 
-import { Options } from 'webpack';
 import {
 	Scalar,
 	PersistentModel,
 	PersistentModelConstructor,
 	SchemaModel,
+	ModelFieldType,
 } from '../types';
 
 type MatchableTypes =
@@ -131,8 +131,8 @@ class FieldCondition {
 	async matches(item: Record<string, any>): Promise<boolean> {
 		const v = String(item[this.field]);
 		const operations = {
-			eq: () => v == this.operands[0],
-			ne: () => v != this.operands[0],
+			eq: () => v === this.operands[0],
+			ne: () => v !== this.operands[0],
 			gt: () => v > this.operands[0],
 			ge: () => v >= this.operands[0],
 			lt: () => v < this.operands[0],
@@ -184,14 +184,12 @@ class GroupCondition {
 	}
 
 	async matches(item: Record<string, any>): Promise<boolean> {
-		if (this.field) {
-			item = await item[this.field];
-		}
+		const itemToCheck = this.field ? await item[this.field] : item;
 
 		if (this.operator === 'or') {
-			return asyncSome(this.operands, c => c.matches(item));
+			return asyncSome(this.operands, c => c.matches(itemToCheck));
 		} else if (this.operator === 'and') {
-			return asyncEvery(this.operands, c => c.matches(item));
+			return asyncEvery(this.operands, c => c.matches(itemToCheck));
 		} else if (this.operator === 'not') {
 			// TODO: update TS to make not() take a single conditon.
 			if (this.operands.length !== 1) {
@@ -199,7 +197,7 @@ class GroupCondition {
 					'Invalid arguments! `not()` accepts exactly one predicate expression.'
 				);
 			}
-			return !this.operands[0].matches(item);
+			return !this.operands[0].matches(itemToCheck);
 		} else {
 			throw new Error('Invalid group operator!');
 		}
@@ -210,7 +208,7 @@ async function asyncSome(
 	items: Record<string, any>[],
 	matches: (item: Record<string, any>) => Promise<boolean>
 ): Promise<boolean> {
-	for (let item of items) {
+	for (const item of items) {
 		if (await matches(item)) {
 			return true;
 		}
@@ -222,7 +220,7 @@ async function asyncEvery(
 	items: Record<string, any>[],
 	matches: (item: Record<string, any>) => Promise<boolean>
 ): Promise<boolean> {
-	for (let item of items) {
+	for (const item of items) {
 		if (!(await matches(item))) {
 			return false;
 		}
@@ -230,12 +228,12 @@ async function asyncEvery(
 	return true;
 }
 
-async function asyncFilter(
-	items: Record<string, any>[],
-	matches: (item: Record<string, any>) => Promise<boolean>
-): Promise<Record<string, any>[]> {
+async function asyncFilter<T>(
+	items: T[],
+	matches: (item: T) => Promise<boolean>
+): Promise<T[]> {
 	const results = [];
-	for (let item of items) {
+	for (const item of items) {
 		if (await matches(item)) {
 			results.push(item);
 		}
@@ -245,133 +243,138 @@ async function asyncFilter(
 
 // TODO: wayyyyyy too much nesting. DECOMPOSE.
 // TODO: shouldn't this be returning FinalModelPredicate<T>?
-export const Predicate = {
-	for: function<T extends PersistentModel>(
-		ModelType: PersistentModelConstructor<T>,
-		field?: string,
-		query?: GroupCondition,
-		tail?: GroupCondition
-	): ModelPredicate<T> {
-		//
-		// TODO: when/where/how do we bail if `ModelType.__meta.syncable == false`?
-		//
+export function predicateFor<T extends PersistentModel>(
+	ModelType: PersistentModelConstructor<T>,
+	field?: string,
+	query?: GroupCondition,
+	tail?: GroupCondition
+): ModelPredicate<T> {
+	//
+	// TODO: when/where/how do we bail if `ModelType.__meta.syncable == false`?
+	//
 
-		const link: ModelPredicate<T> = {
-			__class: ModelType as PersistentModelConstructor<T>,
-			__className: ModelType.name,
-			__query: query || new GroupCondition(ModelType.name, field, 'and', []),
-			__tail: new GroupCondition(ModelType.name, field, 'and', []),
-			__copy: () => {
-				const [query, newtail] = link.__query.copy(link.__tail);
-				return Predicate.for(ModelType, undefined, query, newtail);
-			},
-		} as ModelPredicate<T>;
+	// using this type explicitly instead of depending on the inference from ModelType
+	// solves the "Type instantiation is excessively deep and possibly infinite" error.
+	// Why? ... I have no idea. If someone can tell me ... uhh ... please do.
+	type IndirectT = typeof ModelType extends PersistentModelConstructor<infer I>
+		? I
+		: never;
 
-		// if we're already building on a query, we need to extend it.
-		// the tail is already constructed. just add it.
-		if (tail) {
-			link.__tail = tail;
-		} else if (query) {
-			// console.log('a', link.__query, link.__query.operands === undefined);
-			link.__query.operands.push(link.__tail);
-		} else {
-			// only if it's a new query does tail === head
-			link.__tail = link.__query;
-		}
+	const link = {
+		__class: ModelType as PersistentModelConstructor<T>,
+		__className: ModelType.name,
+		__query: query || new GroupCondition(ModelType.name, field, 'and', []),
+		__tail: new GroupCondition(ModelType.name, field, 'and', []),
+		__copy: () => {
+			const [query, newtail] = link.__query.copy(link.__tail);
+			return predicateFor<IndirectT>(ModelType, undefined, query, newtail);
+		},
+	} as ModelPredicate<T>;
 
-		// TODO: better handled with proxy?
-		// TODO: break `not` out? or let TS and runtime checks handle it later?
-		['and', 'or', 'not'].forEach(op => {
-			(link as any)[op] = (
-				...builderOrPredicates:
-					| [ModelPredicateExtendor<T>]
-					| FinalModelPredicate<T>[]
-			): FinalModelPredicate<T> => {
-				const newlink = link.__copy();
-				newlink.__tail.operands.push(
-					new GroupCondition(
-						ModelType.name,
-						field,
-						op as 'and' | 'or' | 'not',
-						typeof builderOrPredicates[0] === 'function'
-							? builderOrPredicates[0](Predicate.for(ModelType)).map(
-									p => p.__query
-							  )
-							: (builderOrPredicates as FinalModelPredicate<T>[]).map(
-									p => p.__query
-							  )
-					)
-				);
+	// if we're already building on a query, we need to extend it.
+	// the tail is already constructed. just add it.
+	if (tail) {
+		link.__tail = tail;
+	} else if (query) {
+		// console.log('a', link.__query, link.__query.operands === undefined);
+		link.__query.operands.push(link.__tail);
+	} else {
+		// only if it's a new query does tail === head
+		link.__tail = link.__query;
+	}
 
-				// wait. is this the right return value?! ... (i think not...)
-				// (it should be a pruned down FinalModelPredicate<T> I think.)
-				return newlink;
-			};
-		});
+	// TODO: better handled with proxy?
+	// TODO: break `not` out? or let TS and runtime checks handle it later?
+	['and', 'or', 'not'].forEach(op => {
+		(link as any)[op] = (
+			...builderOrPredicates:
+				| [ModelPredicateExtendor<T>]
+				| FinalModelPredicate<T>[]
+		): FinalModelPredicate<T> => {
+			const newlink = link.__copy();
+			newlink.__tail.operands.push(
+				new GroupCondition(
+					ModelType.name,
+					field,
+					op as 'and' | 'or' | 'not',
+					typeof builderOrPredicates[0] === 'function'
+						? builderOrPredicates[0](predicateFor<IndirectT>(ModelType)).map(
+								p => p.__query
+						  )
+						: (builderOrPredicates as FinalModelPredicate<T>[]).map(
+								p => p.__query
+						  )
+				)
+			);
 
-		// looks like we need to build in a new/alt schema JSON
-		// parsing thing ...
+			// wait. is this the right return value?! ... (i think not...)
+			// (it should be a pruned down FinalModelPredicate<T> I think.)
+			return newlink;
+		};
+	});
 
-		for (let fieldName in ModelType.__meta.fields) {
-			Object.defineProperty(link, fieldName, {
-				enumerable: true,
-				get: () => {
-					const def = ModelType.__meta.fields[fieldName];
-					if (!def.association) {
-						return ops.reduce((fieldMatcher, operator) => {
-							return {
-								...fieldMatcher,
-								[operator]: (...operands: any[]) => {
-									const newlink = link.__copy();
-									newlink.__tail.operands.push(
-										new FieldCondition(fieldName, operator, operands)
-									);
-									// if we wnat to re-enable implicit and stuff, return newLink here.
-									return {
-										__class: newlink.__class,
-										__className: newlink.__className,
-										__query: newlink.__query,
-										__tail: newlink.__tail,
-										filter: items => {
-											return asyncFilter(items, newlink.__query.matches);
-										},
-									};
-								},
-							};
-						}, {});
+	// looks like we need to build in a new/alt schema JSON
+	// parsing thing ...
+
+	for (const fieldName in ModelType.__meta.fields) {
+		Object.defineProperty(link, fieldName, {
+			enumerable: true,
+			get: () => {
+				const def = ModelType.__meta.fields[fieldName];
+				if (!def.association) {
+					return ops.reduce((fieldMatcher, operator) => {
+						return {
+							...fieldMatcher,
+							[operator]: (...operands: any[]) => {
+								const newlink = link.__copy();
+								newlink.__tail.operands.push(
+									new FieldCondition(fieldName, operator, operands)
+								);
+								// if we wnat to re-enable implicit and stuff, return newLink here.
+								return {
+									__class: newlink.__class,
+									__className: newlink.__className,
+									__query: newlink.__query,
+									__tail: newlink.__tail,
+									filter: items => {
+										return asyncFilter(items, i => newlink.__query.matches(i));
+									},
+								};
+							},
+						};
+					}, {});
+				} else {
+					if (def.association.targetName) {
+						// this gives us the associated model name ... right?
+						const [newquery, oldtail] = link.__query.copy(link.__tail);
+						const newtail = new GroupCondition(
+							def.association.targetName,
+							fieldName,
+							'and',
+							[]
+						);
+						(oldtail as GroupCondition).operands.push(newtail);
+						const newlink = predicateFor(
+							//
+							// how do we get from name to type here?
+							//
+							(<ModelFieldType>def.type).modelConstructor,
+							fieldName,
+							newquery,
+							newtail
+						);
+						// NOTE: Future self, beware! This return-value *is*
+						// correct! It facilitates Model.ChildModel.<more stuff> ...
+						return newlink;
 					} else {
-						if (def.association.targetName) {
-							// this gives us the associated model name ... right?
-							const [newquery, oldtail] = link.__query.copy(link.__tail);
-							const newtail = new GroupCondition(
-								def.association.targetName,
-								fieldName,
-								'and',
-								[]
-							);
-							(oldtail as GroupCondition).operands.push(newtail);
-							const newlink = Predicate.for(
-								//
-								// how do we get from name to type here?
-								//
-								def.type.model,
-								fieldName,
-								newquery,
-								newtail
-							);
-							// NOTE: Future self, beware! This return-value *is*
-							// correct! It facilitates Model.ChildModel.<more stuff> ...
-							return newlink;
-						} else {
-							throw new Error(
-								"Oh no! Related Model definition doesn't have a typedef!"
-							);
-						}
+						throw new Error(
+							"Oh no! Related Model definition doesn't have a typedef!"
+						);
 					}
-				},
-			});
-		}
+				}
+			},
+		});
+	}
 
-		return link;
-	},
-};
+	return link;
+}

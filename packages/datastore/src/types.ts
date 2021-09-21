@@ -296,14 +296,14 @@ export function isGraphQLScalarType(
 	return obj && GraphQLScalarType[obj] !== undefined;
 }
 
-export type ModelFieldType<T extends PersistentModel> = {
+export type ModelFieldType = {
 	model: string;
-	modelConstructor: PersistentModelConstructor<T>;
+	modelConstructor: PersistentModelConstructor<PersistentModel>;
 };
 export function isModelFieldType<T extends PersistentModel>(
 	obj: any
-): obj is ModelFieldType<T> {
-	const modelField: keyof ModelFieldType<T> = 'model';
+): obj is ModelFieldType {
+	const modelField: keyof ModelFieldType = 'model';
 	if (obj && obj[modelField]) return true;
 
 	return false;
@@ -325,14 +325,14 @@ export function isEnumFieldType(obj: any): obj is EnumFieldType {
 	return false;
 }
 
-export type ModelField<T extends PersistentModel> = {
+export type ModelField = {
 	name: string;
 	type:
 		| keyof Omit<
 				typeof GraphQLScalarType,
 				'getJSType' | 'getValidationFunction'
 		  >
-		| ModelFieldType<T>
+		| ModelFieldType
 		| NonModelFieldType
 		| EnumFieldType;
 	isArray: boolean;

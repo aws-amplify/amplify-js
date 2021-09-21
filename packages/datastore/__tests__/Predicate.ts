@@ -1,4 +1,4 @@
-import { Predicate } from '../src/predicates/next';
+import { predicateFor } from '../src/predicates/next';
 // import { getModelDefinition } from '../src/datastore/datastore';
 import { Model, Metadata, testSchema } from './helpers';
 import {
@@ -32,7 +32,7 @@ describe('Predicates', () => {
 		// authorDefinition.fields.name.association.targetName;
 
 		test('find matches on eq', async () => {
-			const query = Predicate.for(Author).name.eq('Adam West');
+			const query = predicateFor(Author).name.eq('Adam West');
 			const matches = await query.filter(flatAuthorsArray);
 
 			expect(matches.length).toBe(1);

@@ -183,18 +183,27 @@ const initSchema = (userSchema: Schema) => {
 					field =>
 						field.association &&
 						field.association.connectionType === 'BELONGS_TO' &&
-						(<ModelFieldType<any>>field.type).model !== model.name
+						(<ModelFieldType>field.type).model !== model.name
 				)
 				.forEach(field =>
-					connectedModels.push((<ModelFieldType<any>>field.type).model)
+					connectedModels.push((<ModelFieldType>field.type).model)
 				);
 
 			modelAssociations.set(model.name, connectedModels);
 
 			Object.values(model.fields).forEach(field => {
-				Object.defineProperty(field.type, 'modelConstructor', {
-					get: () => schema.namespaces[namespace][field.type.model],
-				});
+				if (
+					typeof field.type === 'object' &&
+					!Object.getOwnPropertyDescriptor(
+						<ModelFieldType>field.type,
+						'modelConstructor'
+					)
+				) {
+					Object.defineProperty(field.type, 'modelConstructor', {
+						// get: () => schema.namespaces[namespace][field.type.model],
+						get: () => userClasses[(<ModelFieldType>field.type).model],
+					});
+				}
 			});
 		});
 
