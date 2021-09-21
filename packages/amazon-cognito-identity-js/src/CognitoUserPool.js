@@ -19,6 +19,8 @@ import Client from './Client';
 import CognitoUser from './CognitoUser';
 import StorageHelper from './StorageHelper';
 
+const USER_POOL_ID_MAX_LENGTH = 55;
+
 /** @class */
 export default class CognitoUserPool {
 	/**
@@ -46,7 +48,10 @@ export default class CognitoUserPool {
 		if (!UserPoolId || !ClientId) {
 			throw new Error('Both UserPoolId and ClientId are required.');
 		}
-		if (!/^[\w-]+_.+$/.test(UserPoolId)) {
+		if (
+			UserPoolId.length > USER_POOL_ID_MAX_LENGTH ||
+			!/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId)
+		) {
 			throw new Error('Invalid UserPoolId format.');
 		}
 		const region = UserPoolId.split('_')[0];
