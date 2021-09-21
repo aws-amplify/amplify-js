@@ -1549,13 +1549,9 @@ describe('auth unit test', () => {
 				identityPoolId: 'awsCognitoIdentityPoolId',
 				mandatorySignIn: false,
 			});
-			const errorMessage = new NoUserPoolError(
-				AuthErrorTypes.MissingAuthConfig
-			);
 
-			expect.assertions(2);
-			expect(auth.currentSession().then()).rejects.toThrow(NoUserPoolError);
-			expect(auth.currentSession().then()).rejects.toEqual(errorMessage);
+			expect.assertions(1);
+			expect(auth.currentSession().then()).rejects.toBeUndefined();
 		});
 	});
 
@@ -2698,20 +2694,20 @@ describe('auth unit test', () => {
 				Pool: userPool,
 			});
 
-			const attributeNames = [
-				'email', 'phone_number'
-			];
+			const attributeNames = ['email', 'phone_number'];
 
 			const spyon = jest
 				.spyOn(Auth.prototype, 'userSession')
 				.mockImplementationOnce(() => {
-					return new Promise((res) => {
+					return new Promise(res => {
 						res(session);
 					});
 				});
 
 			expect.assertions(1);
-			expect(await auth.deleteUserAttributes(user, attributeNames)).toBe('SUCCESS');
+			expect(await auth.deleteUserAttributes(user, attributeNames)).toBe(
+				'SUCCESS'
+			);
 
 			spyon.mockClear();
 		});
@@ -2728,11 +2724,10 @@ describe('auth unit test', () => {
 
 			expect(await CognitoUser.prototype.deleteAttributes).toBeCalledWith(
 				['email', 'phone_number'],
-				jasmine.any(Function),
+				jasmine.any(Function)
 			);
 			spyon.mockClear();
 		});
-
 	});
 
 	describe('federatedSignIn test', () => {
