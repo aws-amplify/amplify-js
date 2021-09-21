@@ -20,7 +20,7 @@ const logger = winston.createLogger({
 
 function setupDevReactNative() {
 	const args = yargs.argv;
-	const dependentAppPath = args.target ?? args.t;
+	const targetAppPath = args.target ?? args.t;
 	const packages = args.packages ?? args.p;
 	const pkgRootPath = process.cwd();
 
@@ -30,14 +30,14 @@ function setupDevReactNative() {
 		return;
 	}
 
-	// Exit if dependent app option is not given
-	if (dependentAppPath === undefined || dependentAppPath === true) {
+	// Exit if target app path option is not given
+	if (targetAppPath === undefined || targetAppPath === true) {
 		logger.error('Target App path cannot be empty.');
 		return;
 	}
 
 	// Exit if dependent app path is given but does not exist
-	if (!existsSync(dependentAppPath)) {
+	if (!existsSync(targetAppPath)) {
 		logger.error(
 			'Dependent app path given does not exist. Please provide a valid path'
 		);
@@ -80,6 +80,7 @@ function setupDevReactNative() {
 	const cjsPackages = [];
 
 	packagesArr.forEach(element => {
+		// Exit if the package is not within the supported list of packages
 		if (!supportedPacks.includes(element)) {
 			logger.error(
 				`Package ${element} is not supported by this script or does not exist. Here is list of supported packages: ${supportedPacks}`
@@ -99,36 +100,35 @@ function setupDevReactNative() {
 
 	// LERNA build:ESM:watch command with scopes for multiple or all packages
 	if (esmPackages.length > 0) {
-		const scopes = `{${esmPackages.join(',')},}`;
-		const watchCmd = `npx lerna exec --scope=${scopes} npm run build:esm:watch --parallel`;
-		const lernaBuildWatchCmd = `cd ${pkgRootPath} && ${watchCmd}`;
-		finalCmds.push(lernaBuildWatchCmd);
+		finalCmds.push(formLernaCmd(pkgRootPath, 'esm', esmPackages));
 	}
 
 	// WML add command formation
-	const wmlClearCmd = 'npm-exec wml rm all && ';
-	const wmlAddCmd = buildWmlAddStrings(
-		packagesArr,
-		dependentAppPath,
-		pkgRootPath
-	);
-	const wmlStart = 'npm-exec wml start';
-	const navToDirAndAlias = `cd ${pkgRootPath} && alias npm-exec='PATH=$(npm bin):$PATH'`;
-	const finalWmlCmd = `${navToDirAndAlias} & ${wmlClearCmd} ${wmlAddCmd} ${wmlStart}`;
-
-	finalCmds.push(finalWmlCmd);
+	finalCmds.push(formWmlCmd(packagesArr, targetAppPath, pkgRootPath));
 
 	// LERNA build:CJS:watch package command to be run in a new tab
 	if (cjsPackages.length > 0) {
-		const cjsPackagesBuildWatch = `cd ${pkgRootPath} && npx lerna exec --scope={${cjsPackages.join(
-			','
-		)},} npm run build:cjs:watch --parallel`;
-		finalCmds.push(cjsPackagesBuildWatch);
+		finalCmds.push(formLernaCmd(pkgRootPath, 'cjs', cjsPackages));
 	}
 
 	// Open each command in a new tab in a new terminal
 	openTab(finalCmds);
 }
+
+// Form the lerna sommand for the specific package type with the given list of packages
+const formLernaCmd = (pkgRootPath, packageType, packages) =>
+	`cd ${pkgRootPath} && npx lerna exec --scope={${packages.join(
+		','
+	)},} npm run build:${packageType}:watch --parallel`;
+
+// Form the wml command for the specific packages list with the target path
+const formWmlCmd = (packagesArr, targetAppPath, pkgRootPath) => {
+	const wmlClearCmd = 'npm-exec wml rm all ';
+	const wmlAddCmd = buildWmlAddStrings(packagesArr, targetAppPath, pkgRootPath);
+	const wmlStart = 'npm-exec wml start';
+	const navToDirAndAlias = `cd ${pkgRootPath} && alias npm-exec='PATH=$(npm bin):$PATH'`;
+	return `${navToDirAndAlias} & ${wmlClearCmd} && ${wmlAddCmd} ${wmlStart}`;
+};
 
 // Convert scoped packagenames to directory names used for path formation for wml commands
 const scopeToDirectoryName = scopedPackages =>
@@ -144,10 +144,10 @@ const getPackageNames = source =>
 		.map(dirent => require(`../packages/${dirent.name}/package.json`).name);
 
 // Form all the wml add commands needed
-function buildWmlAddStrings(packages, dependentAppPath, pkgRootPath) {
+function buildWmlAddStrings(packages, targetAppPath, pkgRootPath) {
 	let wmlAddCmds = [];
 	const packagesDir = path.resolve(pkgRootPath, 'packages');
-	const sampleAppNodeModulesDir = path.join(dependentAppPath, 'node_modules');
+	const sampleAppNodeModulesDir = path.join(targetAppPath, 'node_modules');
 
 	packages.forEach(element => {
 		const source = path.resolve(
@@ -184,6 +184,7 @@ function openTab(cmdArr, cb) {
 	exec(open.join(' '));
 }
 
+// Form the part of osaScript needed to run the given command
 const formToDoScriptStr = cmd => {
 	const TO_DO_SCRIPT = '-e \'tell application "Terminal" to do script';
 	const IN_FRONT_WINDOW = "in front window' ";
