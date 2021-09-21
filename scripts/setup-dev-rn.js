@@ -117,17 +117,17 @@ function setupDevReactNative() {
 
 // Form the lerna sommand for the specific package type with the given list of packages
 const formLernaCmd = (packageType, packages) =>
-	`npx lerna exec --scope={${packages.join(
+	`"npx lerna exec --scope={${packages.join(
 		','
-	)},} npm run build:${packageType}:watch --parallel`;
+	)},} npm run build:${packageType}:watch --parallel"`;
 
 // Form the wml command for the specific packages list with the target path
 const formWmlCmd = (packagesArr, targetAppPath, pkgRootPath) => {
 	const wmlClearCmd = 'npm-exec wml rm all ';
 	const wmlAddCmd = buildWmlAddStrings(packagesArr, targetAppPath, pkgRootPath);
 	const wmlStart = 'npm-exec wml start';
-	const aliasCmd = `alias npm-exec='PATH=$(npm bin):$PATH'`;
-	return `${aliasCmd} & ${wmlClearCmd} && ${wmlAddCmd} ${wmlStart}`;
+	const aliasCmd = '("alias " & "npm-exec=\'PATH=$(npm bin):$PATH\'")';
+	return `${aliasCmd} ; "${wmlClearCmd} && ${wmlAddCmd} ${wmlStart}"`;
 };
 
 // Convert scoped packagenames to directory names used for path formation for wml commands
@@ -167,7 +167,8 @@ function openTab(cmdArr, pkgRootPath, cb) {
 	const DOWN_COMMAND = "using command down' ";
 	const DELAY = "-e 'delay 0.2' ";
 	cmdArr.forEach(element => {
-		const splitCmds = element.split(' & ');
+		const splitCmds = element.split(' ; ');
+		console.log('splitCmds->', splitCmds);
 		if (splitCmds.length == 2) {
 			open.push(
 				NEW_TAB,
@@ -180,7 +181,7 @@ function openTab(cmdArr, pkgRootPath, cb) {
 			open.push(NEW_TAB, DOWN_COMMAND, formToDoScriptStr(element, pkgRootPath));
 		}
 	});
-	exec(open.join(' '));
+	exec(open.join(' '), (error, stdout, stderr) => console.log(error));
 }
 
 // Form the part of osaScript needed to run the given command
@@ -196,9 +197,7 @@ const formToDoScriptStr = (cmd, cwd) => {
 		'")',
 		IN_FRONT_WINDOW,
 		TO_DO_SCRIPT,
-		'"',
 		cmd,
-		'"',
 		IN_FRONT_WINDOW,
 	].join(' ');
 };
