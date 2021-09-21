@@ -117,17 +117,17 @@ function setupDevReactNative() {
 
 // Form the lerna sommand for the specific package type with the given list of packages
 const formLernaCmd = (packageType, packages) =>
-	`"npx lerna exec --scope={${packages.join(
+	`npx lerna exec --scope={${packages.join(
 		','
-	)},} npm run build:${packageType}:watch --parallel"`;
+	)},} npm run build:${packageType}:watch --parallel`;
 
 // Form the wml command for the specific packages list with the target path
 const formWmlCmd = (packagesArr, targetAppPath, pkgRootPath) => {
 	const wmlClearCmd = 'npm-exec wml rm all ';
 	const wmlAddCmd = buildWmlAddStrings(packagesArr, targetAppPath, pkgRootPath);
 	const wmlStart = 'npm-exec wml start';
-	const aliasCmd = '("alias " & "npm-exec=\'PATH=$(npm bin):$PATH\'")';
-	return `${aliasCmd} ; "${wmlClearCmd} && ${wmlAddCmd} ${wmlStart}"`;
+	const aliasCmd = '("alias " & "npm-exec=\'PATH=$("npm " & "bin"):$PATH\'")';
+	return `${aliasCmd} ; ${wmlClearCmd} && ${wmlAddCmd} ${wmlStart}`;
 };
 
 // Convert scoped packagenames to directory names used for path formation for wml commands
@@ -166,40 +166,40 @@ function openTab(cmdArr, pkgRootPath, cb) {
 		'-e \'tell application "System Events" to tell process "Terminal" to keystroke "t"';
 	const DOWN_COMMAND = "using command down' ";
 	const DELAY = "-e 'delay 0.2' ";
+	const CD_CWD = `("cd " & "${pkgRootPath}")`;
+
 	cmdArr.forEach(element => {
 		const splitCmds = element.split(' ; ');
-		console.log('splitCmds->', splitCmds);
 		if (splitCmds.length == 2) {
 			open.push(
 				NEW_TAB,
 				DOWN_COMMAND,
 				DELAY,
-				formToDoScriptStr(splitCmds[0], pkgRootPath),
-				formToDoScriptStr(splitCmds[1], pkgRootPath)
+				formToDoScriptStr(CD_CWD),
+				formToDoScriptStr(`${splitCmds[0]}`),
+				formToDoScriptStr(`"${splitCmds[1]}"`)
 			);
 		} else {
-			open.push(NEW_TAB, DOWN_COMMAND, formToDoScriptStr(element, pkgRootPath));
+			open.push(
+				NEW_TAB,
+				DOWN_COMMAND,
+				formToDoScriptStr(CD_CWD),
+				formToDoScriptStr(`"${element}"`)
+			);
 		}
 	});
-	exec(open.join(' '), (error, stdout, stderr) => console.log(error));
+	exec(open.join(' '), (error, stdout, stderr) => {
+		if (error) {
+			return logger.error(`Error with one of the tabs: ${error}`);
+		}
+	});
 }
 
 // Form the part of osaScript needed to run the given command
-const formToDoScriptStr = (cmd, cwd) => {
+const formToDoScriptStr = cmd => {
 	const TO_DO_SCRIPT = '-e \'tell application "Terminal" to do script';
 	const IN_FRONT_WINDOW = "in front window' ";
-	const CD_CMD = '"cd " & "';
-	return [
-		TO_DO_SCRIPT,
-		'(',
-		CD_CMD,
-		cwd,
-		'")',
-		IN_FRONT_WINDOW,
-		TO_DO_SCRIPT,
-		cmd,
-		IN_FRONT_WINDOW,
-	].join(' ');
+	return [TO_DO_SCRIPT, cmd, IN_FRONT_WINDOW].join(' ');
 };
 
 setupDevReactNative();
