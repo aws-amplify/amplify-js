@@ -23,6 +23,11 @@ import {
 	StorageListConfig,
 	StorageCopyConfig,
 	StorageProviderWithCopy,
+	StorageGetOutput,
+	StoragePutOutput,
+	StorageRemoveOutput,
+	StorageListOutput,
+	StorageCopyOutput,
 } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { PutObjectCommandInput } from '@aws-sdk/client-s3';
@@ -209,28 +214,28 @@ export class Storage {
 		src: StorageCopySource,
 		dest: StorageCopyDestination,
 		config?: StorageCopyConfig<T>
-	): Promise<any>;
+	): StorageCopyOutput<T>;
 	public copy<T extends StorageProviderWithCopy = AWSS3Provider>(
 		src: Parameters<T['copy']>[0],
 		dest: Parameters<T['copy']>[1],
 		config?: StorageCopyConfig<T>
-	): ReturnType<T['copy']> {
+	): StorageCopyOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			return Promise.reject('No plugin found in Storage for the provider') as ReturnType<T['copy']>;
+			return Promise.reject('No plugin found in Storage for the provider') as StorageCopyOutput<T>;
 		}
 		const cancelTokenSource = this.getCancellableTokenSource();
 		if (typeof prov.copy !== 'function') {
-			return Promise.reject(`.copy is not implemented on provider ${prov.getProviderName()}`) as ReturnType<T['copy']>;
+			return Promise.reject(`.copy is not implemented on provider ${prov.getProviderName()}`) as StorageCopyOutput<T>;
 		}
 		const responsePromise = prov.copy(src, dest, {
 			...config,
 			cancelTokenSource,
 		});
 		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);
-		return responsePromise as ReturnType<T['copy']>;
+		return responsePromise as StorageCopyOutput<T>;
 	}
 
 	/**
@@ -240,16 +245,20 @@ export class Storage {
 	 * @param [config] - config for the Storage operation.
 	 * @return - A promise resolves to either a presigned url or the object
 	 */
-	public get<T extends Record<string, any>>(key: string, config?: StorageGetConfig<T>): Promise<any>;
-	public get<T extends StorageProvider = AWSS3Provider>(
+	// Adding & { download?: boolean }, if not T extends { download: true } ? ... : ... will not work properly
+	public get<T extends Record<string, any> & { download?: boolean }>(
 		key: string,
-		config: StorageGetConfig<T>
-	): ReturnType<T['get']> {
+		config?: StorageGetConfig<T>
+	): StorageGetOutput<T>;
+	public get<T extends StorageProvider | { [key: string]: any; download?: boolean }>(
+		key: string,
+		config?: StorageGetConfig<T>
+	): StorageGetOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			return Promise.reject('No plugin found in Storage for the provider') as ReturnType<T['get']>;
+			return Promise.reject('No plugin found in Storage for the provider') as StorageGetOutput<T>;
 		}
 		const cancelTokenSource = this.getCancellableTokenSource();
 		const responsePromise = prov.get(key, {
@@ -257,7 +266,7 @@ export class Storage {
 			cancelTokenSource,
 		});
 		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);
-		return responsePromise as ReturnType<T['get']>;
+		return responsePromise as StorageGetOutput<T>;
 	}
 
 	public isCancelError(error: any) {
@@ -272,17 +281,21 @@ export class Storage {
 	 *  progressCallback: function }
 	 * @return - promise resolves to object on success
 	 */
-	public put<T extends Record<string, any>>(key: string, object: any, config?: StoragePutConfig<T>): Promise<Object>;
+	public put<T extends Record<string, any>>(
+		key: string,
+		object: any,
+		config?: StoragePutConfig<T>
+	): StoragePutOutput<T>;
 	public put<T extends StorageProvider = AWSS3Provider>(
 		key: string,
 		object: Omit<PutObjectCommandInput['Body'], 'ReadableStream' | 'Readable'>,
 		config?: StoragePutConfig<T>
-	): ReturnType<T['put']> {
+	): StoragePutOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			return Promise.reject('No plugin found in Storage for the provider') as ReturnType<T['put']>;
+			return Promise.reject('No plugin found in Storage for the provider') as StoragePutOutput<T>;
 		}
 		const cancelTokenSource = this.getCancellableTokenSource();
 		const responsePromise = prov.put(key, object, {
@@ -290,7 +303,7 @@ export class Storage {
 			cancelTokenSource,
 		});
 		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);
-		return responsePromise as ReturnType<T['put']>;
+		return responsePromise as StoragePutOutput<T>;
 	}
 
 	/**
@@ -299,18 +312,18 @@ export class Storage {
 	 * @param [config] - { level : private|protected|public }
 	 * @return - Promise resolves upon successful removal of the object
 	 */
-	public remove<T extends Record<string, any>>(key: string, config?: StorageRemoveConfig<T>): Promise<Object>;
+	public remove<T extends Record<string, any>>(key: string, config?: StorageRemoveConfig<T>): StorageRemoveOutput<T>;
 	public remove<T extends StorageProvider = AWSS3Provider>(
 		key: string,
 		config?: StorageRemoveConfig<T>
-	): ReturnType<T['remove']> {
+	): StorageRemoveOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			return Promise.reject('No plugin found in Storage for the provider') as ReturnType<T['remove']>;
+			return Promise.reject('No plugin found in Storage for the provider') as StorageRemoveOutput<T>;
 		}
-		return prov.remove(key, config) as ReturnType<T['remove']>;
+		return prov.remove(key, config) as StorageRemoveOutput<T>;
 	}
 
 	/**
@@ -319,18 +332,18 @@ export class Storage {
 	 * @param [config] - { level : private|protected|public, maxKeys: NUMBER }
 	 * @return - Promise resolves to list of keys for all objects in path
 	 */
-	public list<T extends Record<string, any>>(key: string, config?: StorageListConfig<T>): Promise<any>;
+	public list<T extends Record<string, any>>(key: string, config?: StorageListConfig<T>): StorageListOutput<T>;
 	public list<T extends StorageProvider = AWSS3Provider>(
 		path: string,
 		config?: StorageListConfig<T>
-	): ReturnType<T['list']> {
+	): StorageListOutput<T> {
 		const provider = config?.provider || DEFAULT_PROVIDER;
 		const prov = this._pluggables.find(pluggable => pluggable.getProviderName() === provider);
 		if (prov === undefined) {
 			logger.debug('No plugin found with providerName', provider);
-			return Promise.reject('No plugin found in Storage for the provider') as ReturnType<T['list']>;
+			return Promise.reject('No plugin found in Storage for the provider') as StorageListOutput<T>;
 		}
-		return prov.list(path, config) as ReturnType<T['list']>;
+		return prov.list(path, config) as StorageListOutput<T>;
 	}
 }
 

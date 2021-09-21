@@ -37,26 +37,26 @@ class TestCustomProvider implements StorageProvider {
 	}
 
 	get(key: string, config: CustomProviderConfig) {
-		return Promise.resolve('get');
+		return Promise.resolve({ newKey: 'get' });
 	}
 
 	put(key: string, object: any, config: CustomProviderConfig) {
-		return Promise.resolve({ key: 'put' });
+		return Promise.resolve({ newKey: 'put' });
 	}
 
 	remove(key: string, config: CustomProviderConfig) {
-		return Promise.resolve('remove');
+		return Promise.resolve({ removed: 'remove' });
 	}
 
 	list(key: string, config: CustomProviderConfig) {
-		return Promise.resolve(['list']);
+		return Promise.resolve({ list: 'list' });
 	}
 
 }
 
 class TestCustomProviderWithCopy extends TestCustomProvider implements StorageProvider {
 	copy(src: { key: string }, dest: { key: string }, config: CustomProviderConfig) {
-		return Promise.resolve({ key: 'copy' });
+		return Promise.resolve({ newKey: 'copy' });
 	}
 }
 
@@ -539,7 +539,7 @@ describe('Storage', () => {
 			});
 
 			test('get object with all available config', async () => {
-				storage.get('key', {
+				await storage.get('key', {
 					download: false,
 					contentType: 'text/plain',
 					contentDisposition: 'contentDisposition',
@@ -575,22 +575,21 @@ describe('Storage', () => {
 		test('get with custom provider', async () => {
 			const customProvider = new TestCustomProvider();
 			const customProviderGetSpy = jest
-				.spyOn(customProvider, 'get')
-				.mockImplementation(() => Promise.resolve('string'));
+				.spyOn(customProvider, 'get');
 			storage.addPluggable(customProvider);
-			await storage.get<TestCustomProvider>('key', {
+			const getRes = await storage.get<TestCustomProvider>('key', {
 				provider: 'customProvider',
 				foo: false,
 				bar: 10,
 			});
 			expect(customProviderGetSpy).toBeCalled();
+			expect(getRes.newKey).toEqual('get');
 		});
 		// backwards compatible with current custom provider user
 		test('get with custom provider should work with no generic type provided', async () => {
 			const customProvider = new TestCustomProvider();
 			const customProviderGetSpy = jest
-				.spyOn(customProvider, 'get')
-				.mockImplementation(() => Promise.resolve('string'));
+				.spyOn(customProvider, 'get');
 			storage.addPluggable(customProvider);
 			await storage.get('key', {
 				provider: 'customProvider',
@@ -662,27 +661,20 @@ describe('Storage', () => {
 
 		test('put with custom provider', async () => {
 			const customProvider = new TestCustomProvider();
-			const customProviderPutSpy = jest.spyOn(customProvider, 'put').mockImplementation(() =>
-				Promise.resolve({
-					key: 'new_object',
-				})
-			);
+			const customProviderPutSpy = jest.spyOn(customProvider, 'put');
 			storage.addPluggable(customProvider);
-			await storage.put<TestCustomProvider>('key', 'object', {
+			const putRes = await storage.put<TestCustomProvider>('key', 'object', {
 				provider: 'customProvider',
 				foo: false,
 				bar: 40,
 			});
 			expect(customProviderPutSpy).toBeCalled();
+			expect(putRes.newKey).toEqual('put');
 		});
 		// backwards compatible with current custom provider user
 		test('put with custom provider should work with no generic type provided', async () => {
 			const customProvider = new TestCustomProvider();
-			const customProviderPutSpy = jest.spyOn(customProvider, 'put').mockImplementation(() =>
-				Promise.resolve({
-					key: 'new_object',
-				})
-			);
+			const customProviderPutSpy = jest.spyOn(customProvider, 'put');
 			storage.addPluggable(customProvider);
 			await storage.put('key', 'object', {
 				provider: 'customProvider',
@@ -747,22 +739,21 @@ describe('Storage', () => {
 		test('remove with custom provider', async () => {
 			const customProvider = new TestCustomProvider();
 			const customProviderRemoveSpy = jest
-				.spyOn(customProvider, 'remove')
-				.mockImplementation(() => Promise.resolve('remove'));
+				.spyOn(customProvider, 'remove');
 			storage.addPluggable(customProvider);
-			storage.remove<TestCustomProvider>('key', {
+			const removeRes = await storage.remove<TestCustomProvider>('key', {
 				provider: 'customProvider',
 				foo: false,
 				bar: 40,
 			});
 			expect(customProviderRemoveSpy).toBeCalled();
+			expect(removeRes.removed).toEqual('remove');
 		});
 		// backwards compatible with current custom provider user
 		test('remove with custom provider should work with no generic type provided', async () => {
 			const customProvider = new TestCustomProvider();
 			const customProviderRemoveSpy = jest
-				.spyOn(customProvider, 'remove')
-				.mockImplementation(() => Promise.resolve('remove'));
+				.spyOn(customProvider, 'remove');
 			storage.addPluggable(customProvider);
 			storage.remove('key', {
 				provider: 'customProvider',
@@ -823,19 +814,20 @@ describe('Storage', () => {
 
 		test('list with customProvider', async () => {
 			const customProvider = new TestCustomProvider();
-			const customProviderListSpy = jest.spyOn(customProvider, 'list').mockImplementation(() => Promise.resolve([]));
+			const customProviderListSpy = jest.spyOn(customProvider, 'list');
 			storage.addPluggable(customProvider);
-			await storage.list<TestCustomProvider>('path', {
+			const listRes = await storage.list<TestCustomProvider>('path', {
 				provider: 'customProvider',
 				foo: false,
 				bar: 40,
 			});
 			expect(customProviderListSpy).toBeCalled();
+			expect(listRes.list).toBe('list');
 		});
 		// backwards compatible with current custom provider user
 		test('list with customProvider should work with no generic type provided', async () => {
 			const customProvider = new TestCustomProvider();
-			const customProviderListSpy = jest.spyOn(customProvider, 'list').mockImplementation(() => Promise.resolve([]));
+			const customProviderListSpy = jest.spyOn(customProvider, 'list');
 			storage.addPluggable(customProvider);
 			await storage.list('path', {
 				provider: 'customProvider',
@@ -904,13 +896,9 @@ describe('Storage', () => {
 		});
 		test('copy object with custom provider', async () => {
 			const customProviderWithCopy = new TestCustomProviderWithCopy();
-			const customProviderCopySpy = jest.spyOn(customProviderWithCopy, 'copy').mockImplementation(() =>
-				Promise.resolve({
-					key: 'key',
-				})
-			);
+			const customProviderCopySpy = jest.spyOn(customProviderWithCopy, 'copy');
 			storage.addPluggable(customProviderWithCopy);
-			storage.copy<TestCustomProviderWithCopy>(
+			const copyRes = await storage.copy<TestCustomProviderWithCopy>(
 				{ key: 'src' },
 				{ key: 'dest' },
 				{
@@ -920,17 +908,14 @@ describe('Storage', () => {
 				}
 			);
 			expect(customProviderCopySpy).toBeCalled();
+			expect(copyRes.newKey).toEqual('copy');
 		});
 		// backwards compatible with current custom provider user
 		test('copy object with custom provider should work with no generic type provided', async () => {
 			const customProviderWithCopy = new TestCustomProviderWithCopy();
-			const customProviderCopySpy = jest.spyOn(customProviderWithCopy, 'copy').mockImplementation(() =>
-				Promise.resolve({
-					key: 'key',
-				})
-			);
+			const customProviderCopySpy = jest.spyOn(customProviderWithCopy, 'copy');
 			storage.addPluggable(customProviderWithCopy);
-			storage.copy(
+			await storage.copy(
 				{ key: 'src' },
 				{ key: 'dest' },
 				{

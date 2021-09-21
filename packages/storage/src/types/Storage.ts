@@ -15,7 +15,17 @@
  */
 
 import { ICredentials } from '@aws-amplify/core';
-import { StorageProvider, StorageProviderApi, AWSS3Provider, StorageProviderWithCopy } from '..';
+import {
+	StorageProvider,
+	StorageProviderApi,
+	AWSS3Provider,
+	StorageProviderWithCopy,
+	S3ProviderGetOuput,
+	S3ProviderPutOutput,
+	S3ProviderRemoveOutput,
+	S3ProviderListOutput,
+	S3ProviderCopyOutput,
+} from '../';
 
 type Tail<T extends any[]> = ((...t: T) => void) extends (h: any, ...r: infer R) => void ? R : never;
 
@@ -66,8 +76,9 @@ export type StorageCopyDestination = Omit<StorageCopyTarget, 'identityId'>;
 type StorageOperationConfig<
 	T extends StorageProvider | StorageProviderWithCopy,
 	U extends StorageProviderApi
-> = ReturnType<T['getProviderName']> extends 'AWSS3' // Config is always the last parameter of the function
-	? LastParameter<AWSS3Provider[U]>
+> = ReturnType<T['getProviderName']> extends 'AWSS3'
+	? // Config is always the last parameter of the function
+	  LastParameter<AWSS3Provider[U]>
 	: T extends StorageProviderWithCopy
 	? LastParameter<T[U]> & { provider: ReturnType<T['getProviderName']> }
 	: U extends 'copy'
@@ -93,6 +104,36 @@ export type StorageListConfig<T> = T extends StorageProvider
 export type StorageCopyConfig<T> = T extends StorageProviderWithCopy
 	? StorageOperationConfig<T, 'copy'>
 	: StorageOperationConfigMap<StorageOperationConfig<AWSS3Provider, 'copy'>, T>;
+
+/**
+ * Utility type for checking if the generic type is a provider or a Record that has the key 'provider'.
+ * If it's a provider, check if it's the S3 Provider, use the default type else use the generic's 'get' method
+ * return type.
+ * If it's a Record, check if provider is 'AWSS3', use the default type else use any.
+ */
+type PickProviderOutput<DefaultOutput, T, api extends StorageProviderApi> = T extends StorageProvider
+	? T['getProviderName'] extends 'AWSS3'
+		? Promise<DefaultOutput>
+		: ReturnType<T[api]>
+	: T extends { provider: string }
+	? T extends { provider: 'AWSS3' }
+		? Promise<DefaultOutput>
+		: Promise<any>
+	: Promise<DefaultOutput>;
+
+export type StorageGetOutput<T extends StorageProvider | Record<string, any>> = PickProviderOutput<
+	S3ProviderGetOuput<T>,
+	T,
+	'get'
+>;
+
+export type StoragePutOutput<T> = PickProviderOutput<S3ProviderPutOutput, T, 'put'>;
+
+export type StorageRemoveOutput<T> = PickProviderOutput<S3ProviderRemoveOutput, T, 'remove'>;
+
+export type StorageListOutput<T> = PickProviderOutput<S3ProviderListOutput, T, 'list'>;
+
+export type StorageCopyOutput<T> = PickProviderOutput<S3ProviderCopyOutput, T, 'copy'>;
 
 /**
  * Utility type to allow custom provider to use any config keys, if provider is set to AWSS3 then it should use
