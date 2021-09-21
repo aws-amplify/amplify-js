@@ -48,10 +48,7 @@ export default class CognitoUserPool {
 		if (!UserPoolId || !ClientId) {
 			throw new Error('Both UserPoolId and ClientId are required.');
 		}
-		if (
-			UserPoolId.length > USER_POOL_ID_MAX_LENGTH ||
-			!/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId)
-		) {
+		if (UserPoolId.length > USER_POOL_ID_MAX_LENGTH || !/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId)) {
 			throw new Error('Invalid UserPoolId format.');
 		}
 		const region = UserPoolId.split('_')[0];

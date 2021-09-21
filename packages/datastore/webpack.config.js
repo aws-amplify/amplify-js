@@ -2,7 +2,7 @@ module.exports = {
 	entry: {
 		'aws-amplify-datastore.min': './lib-esm/index.js',
 	},
-	externals: [{ '@aws-amplify/pubsub': 'aws_amplify_pubsub' }],
+	externals: ['@aws-amplify/pubsub'],
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',

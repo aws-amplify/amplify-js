@@ -4,10 +4,8 @@ module.exports = {
 	},
 	externals: [
 		'react-native',
-		{
-			'@aws-amplify/cache': 'aws_amplify_cache',
-			'@aws-amplify/core': 'aws_amplify_core'
-		},
+		'@aws-amplify/cache',
+		'@aws-amplify/core',
 		'aws-sdk/clients/pinpoint',
 		'aws-sdk/clients/kinesis',
 		'aws-sdk/clients/firehose',
