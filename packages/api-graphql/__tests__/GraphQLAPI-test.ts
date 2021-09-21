@@ -755,7 +755,7 @@ describe('API test', () => {
 					variables,
 					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
 				})
-			).rejects.toThrowError('No federated jwt');
+			).rejects.toThrowError('No current user');
 		});
 
 		test('multi-auth using CUP as auth mode, but no userpool', async () => {
