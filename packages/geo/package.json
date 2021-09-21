@@ -41,7 +41,7 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"dependencies": {
-		"@aws-amplify/core": "4.2.9",
+		"@aws-amplify/core": "4.2.10",
 		"@aws-sdk/client-location": "3.22.0",
 		"camelcase-keys": "6.2.2"
 	},
