@@ -3321,7 +3321,9 @@ describe('auth unit test', () => {
 				Username: 'username',
 				Pool: userPool,
 			});
-			const errorMessage = new NoUserPoolError(AuthErrorTypes.EmptyCode);
+			const errorMessage = new NoUserPoolError(
+				AuthErrorTypes.MissingAuthConfig
+			);
 
 			expect.assertions(2);
 			expect(auth.currentUserPoolUser().then()).rejects.toThrow(
