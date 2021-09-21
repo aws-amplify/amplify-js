@@ -100,7 +100,7 @@ function setupDevReactNative() {
 
 	// LERNA build:ESM:watch command with scopes for multiple or all packages
 	if (esmPackages.length > 0) {
-		finalCmds.push(formLernaCmd(pkgRootPath, 'esm', esmPackages));
+		finalCmds.push(formLernaCmd('esm', esmPackages));
 	}
 
 	// WML add command formation
@@ -108,16 +108,16 @@ function setupDevReactNative() {
 
 	// LERNA build:CJS:watch package command to be run in a new tab
 	if (cjsPackages.length > 0) {
-		finalCmds.push(formLernaCmd(pkgRootPath, 'cjs', cjsPackages));
+		finalCmds.push(formLernaCmd('cjs', cjsPackages));
 	}
 
 	// Open each command in a new tab in a new terminal
-	openTab(finalCmds);
+	openTab(finalCmds, pkgRootPath);
 }
 
 // Form the lerna sommand for the specific package type with the given list of packages
-const formLernaCmd = (pkgRootPath, packageType, packages) =>
-	`cd ${pkgRootPath} && npx lerna exec --scope={${packages.join(
+const formLernaCmd = (packageType, packages) =>
+	`npx lerna exec --scope={${packages.join(
 		','
 	)},} npm run build:${packageType}:watch --parallel`;
 
@@ -126,8 +126,8 @@ const formWmlCmd = (packagesArr, targetAppPath, pkgRootPath) => {
 	const wmlClearCmd = 'npm-exec wml rm all ';
 	const wmlAddCmd = buildWmlAddStrings(packagesArr, targetAppPath, pkgRootPath);
 	const wmlStart = 'npm-exec wml start';
-	const navToDirAndAlias = `cd ${pkgRootPath} && alias npm-exec='PATH=$(npm bin):$PATH'`;
-	return `${navToDirAndAlias} & ${wmlClearCmd} && ${wmlAddCmd} ${wmlStart}`;
+	const aliasCmd = `alias npm-exec='PATH=$(npm bin):$PATH'`;
+	return `${aliasCmd} & ${wmlClearCmd} && ${wmlAddCmd} ${wmlStart}`;
 };
 
 // Convert scoped packagenames to directory names used for path formation for wml commands
@@ -148,7 +148,6 @@ function buildWmlAddStrings(packages, targetAppPath, pkgRootPath) {
 	let wmlAddCmds = [];
 	const packagesDir = path.resolve(pkgRootPath, 'packages');
 	const sampleAppNodeModulesDir = path.join(targetAppPath, 'node_modules');
-
 	packages.forEach(element => {
 		const source = path.resolve(
 			packagesDir,
@@ -161,7 +160,7 @@ function buildWmlAddStrings(packages, targetAppPath, pkgRootPath) {
 }
 
 // OSA script to open a new terminal and tabs for each command execution
-function openTab(cmdArr, cb) {
+function openTab(cmdArr, pkgRootPath, cb) {
 	const open = ['osascript -e \'tell application "Terminal" to activate\' '];
 	const NEW_TAB =
 		'-e \'tell application "System Events" to tell process "Terminal" to keystroke "t"';
@@ -174,21 +173,34 @@ function openTab(cmdArr, cb) {
 				NEW_TAB,
 				DOWN_COMMAND,
 				DELAY,
-				formToDoScriptStr(splitCmds[0]),
-				formToDoScriptStr(splitCmds[1])
+				formToDoScriptStr(splitCmds[0], pkgRootPath),
+				formToDoScriptStr(splitCmds[1], pkgRootPath)
 			);
 		} else {
-			open.push(NEW_TAB, DOWN_COMMAND, formToDoScriptStr(element));
+			open.push(NEW_TAB, DOWN_COMMAND, formToDoScriptStr(element, pkgRootPath));
 		}
 	});
 	exec(open.join(' '));
 }
 
 // Form the part of osaScript needed to run the given command
-const formToDoScriptStr = cmd => {
+const formToDoScriptStr = (cmd, cwd) => {
 	const TO_DO_SCRIPT = '-e \'tell application "Terminal" to do script';
 	const IN_FRONT_WINDOW = "in front window' ";
-	return [TO_DO_SCRIPT, '"', cmd, '"', IN_FRONT_WINDOW].join(' ');
+	const CD_CMD = '"cd " & "';
+	return [
+		TO_DO_SCRIPT,
+		'(',
+		CD_CMD,
+		cwd,
+		'")',
+		IN_FRONT_WINDOW,
+		TO_DO_SCRIPT,
+		'"',
+		cmd,
+		'"',
+		IN_FRONT_WINDOW,
+	].join(' ');
 };
 
 setupDevReactNative();
