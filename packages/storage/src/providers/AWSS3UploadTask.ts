@@ -173,7 +173,6 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private _startNextPart() {
-
 		if (this.queued.length > 0 && this.state !== State.PAUSED) {
 			const cancelTokenSource = axios.CancelToken.source();
 			const nextPart = this.queued.shift();
@@ -232,7 +231,9 @@ export class AWSS3UploadTask implements UploadTask {
 
 	public onComplete(fn: Function) {
 		if (Array.isArray(fn)) {
-			fn.forEach(this._attachUploadCompleteEvent);
+			fn.forEach(cb => {
+				this._attachUploadCompleteEvent(cb);
+			});
 		} else {
 			this._attachUploadCompleteEvent(fn);
 		}
@@ -240,7 +241,9 @@ export class AWSS3UploadTask implements UploadTask {
 
 	public onProgress(fn: Function) {
 		if (Array.isArray(fn)) {
-			fn.forEach(this._attachUploadProgressEvent);
+			fn.forEach(cb => {
+				this._attachUploadProgressEvent(cb);
+			});
 		} else {
 			this._attachUploadProgressEvent(fn);
 		}
