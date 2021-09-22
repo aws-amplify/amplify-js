@@ -379,13 +379,56 @@ describe('Predicates', () => {
 		});
 	});
 
-	describe('as nested filters on related properties', () => {
-		// const flatAuthorsArray = [
-		// 	['Adam West', ,
-		// 	'Bob Jones',
-		// 	'Clarice Starling',
-		// 	'Debbie Donut',
-		// 	'Zelda from the Legend of Zelda',
-		// ].map(([name, other]) => new Author({}));
+	describe('as filters on related/nested properties', () => {
+		const blogs = [
+			'Adam West',
+			'Bob Jones',
+			'Clarice Starling',
+			'Debbie Donut',
+			'Zelda from the Legend of Zelda',
+		].map(
+			author =>
+				new Blog({
+					name: `${author}'s Blog`,
+					owner: new BlogOwner({
+						name: author,
+					}),
+				})
+		);
+
+		test('can filter eq()', async () => {
+			const query = predicateFor(Blog).owner.name.eq('Adam West');
+			const matches = await query.filter(blogs);
+
+			expect(matches.length).toBe(1);
+			expect(matches[0].name).toBe("Adam West's Blog");
+		});
+
+		test('can filter ne()', async () => {
+			const query = predicateFor(Blog).owner.name.ne('Debbie Donut');
+			const matches = await query.filter(blogs);
+
+			expect(matches.length).toBe(4);
+			expect(matches.map(m => m.name)).toEqual([
+				"Adam West's Blog",
+				"Bob Jones's Blog",
+				"Clarice Starling's Blog",
+				"Zelda from the Legend of Zelda's Blog",
+			]);
+		});
+
+		test('can filter nested or() .. and()', async () => {
+			const query = predicateFor(Blog).or(b => [
+				b.owner.and(o => [o.name.contains('Bob'), o.name.contains('Jones')]),
+				b.owner.and(o => [
+					o.name.contains('Debbie'),
+					o.name.contains('Starling'),
+				]),
+			]);
+			const matches = await query.filter(blogs);
+
+			expect(matches.length).toBe(5);
+			expect(matches[0].name).toBe('boots');
+		});
 	});
 });

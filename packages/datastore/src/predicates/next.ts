@@ -239,6 +239,10 @@ class GroupCondition {
 	async matches(item: Record<string, any>): Promise<boolean> {
 		const itemToCheck = this.field ? await item[this.field] : item;
 
+		if (!itemToCheck) {
+			console.log(this, item);
+		}
+
 		if (this.operator === 'or') {
 			return asyncSome(this.operands, c => c.matches(itemToCheck));
 		} else if (this.operator === 'and') {
