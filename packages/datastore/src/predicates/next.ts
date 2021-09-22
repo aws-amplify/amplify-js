@@ -58,6 +58,12 @@ type ModelPredicateExtendor<RT extends PersistentModel> = (
 	__query: GroupCondition;
 }[];
 
+type SingularModelPredicateExtendor<RT extends PersistentModel> = (
+	lambda: ModelPredicate<RT>
+) => {
+	__query: GroupCondition;
+};
+
 type ValuePredicate<RT extends PersistentModel, MT extends MatchableTypes> = {
 	[K in AllFieldOperators]: (
 		...operands: Scalar<MT>[]
@@ -66,6 +72,10 @@ type ValuePredicate<RT extends PersistentModel, MT extends MatchableTypes> = {
 
 type ModelPredicateOperator<RT extends PersistentModel> = (
 	...predicates: [ModelPredicateExtendor<RT>] | FinalModelPredicate<any>[]
+) => FinalModelPredicate<RT>;
+
+type ModelPredicateNegation<RT extends PersistentModel> = (
+	predicate: SingularModelPredicateExtendor<RT> | FinalModelPredicate<any>
 ) => FinalModelPredicate<RT>;
 
 type ModelPredicate<RT extends PersistentModel> = {
@@ -77,7 +87,7 @@ type ModelPredicate<RT extends PersistentModel> = {
 } & {
 	or: ModelPredicateOperator<RT>;
 	and: ModelPredicateOperator<RT>;
-	not: ModelPredicateOperator<RT>;
+	not: ModelPredicateNegation<RT>;
 	__copy: () => ModelPredicate<RT>;
 } & FinalModelPredicate<RT>;
 
@@ -234,13 +244,12 @@ class GroupCondition {
 		} else if (this.operator === 'and') {
 			return asyncEvery(this.operands, c => c.matches(itemToCheck));
 		} else if (this.operator === 'not') {
-			// TODO: update TS to make not() take a single conditon.
 			if (this.operands.length !== 1) {
 				throw new Error(
 					'Invalid arguments! `not()` accepts exactly one predicate expression.'
 				);
 			}
-			return !this.operands[0].matches(itemToCheck);
+			return !(await this.operands[0].matches(itemToCheck));
 		} else {
 			throw new Error('Invalid group operator!');
 		}
@@ -328,7 +337,7 @@ export function predicateFor<T extends PersistentModel>(
 
 	// TODO: better handled with proxy?
 	// TODO: break `not` out? or let TS and runtime checks handle it later?
-	['and', 'or', 'not'].forEach(op => {
+	['and', 'or'].forEach(op => {
 		(link as any)[op] = (
 			...builderOrPredicates:
 				| [ModelPredicateExtendor<T>]
@@ -339,7 +348,7 @@ export function predicateFor<T extends PersistentModel>(
 				new GroupCondition(
 					ModelType.name,
 					field,
-					op as 'and' | 'or' | 'not',
+					op as 'and' | 'or',
 					typeof builderOrPredicates[0] === 'function'
 						? builderOrPredicates[0](predicateFor<IndirectT>(ModelType)).map(
 								p => p.__query
@@ -350,11 +359,47 @@ export function predicateFor<T extends PersistentModel>(
 				)
 			);
 
-			// wait. is this the right return value?! ... (i think not...)
-			// (it should be a pruned down FinalModelPredicate<T> I think.)
-			return newlink;
+			// hmm ... do all these underscore props need to be here?
+			return {
+				__class: newlink.__class,
+				__className: newlink.__className,
+				__query: newlink.__query,
+				__tail: newlink.__tail,
+				filter: items => {
+					return asyncFilter(items, i => newlink.__query.matches(i));
+				},
+			};
 		};
 	});
+
+	link.not = (
+		builderOrPredicate:
+			| SingularModelPredicateExtendor<T>
+			| FinalModelPredicate<T>
+	): FinalModelPredicate<T> => {
+		const newlink = link.__copy();
+		newlink.__tail.operands.push(
+			new GroupCondition(
+				ModelType.name,
+				field,
+				'not',
+				typeof builderOrPredicate === 'function'
+					? [builderOrPredicate(predicateFor<IndirectT>(ModelType)).__query]
+					: [builderOrPredicate.__query]
+			)
+		);
+
+		// hmm ... do all these underscore props need to be here?
+		return {
+			__class: newlink.__class,
+			__className: newlink.__className,
+			__query: newlink.__query,
+			__tail: newlink.__tail,
+			filter: items => {
+				return asyncFilter(items, i => newlink.__query.matches(i));
+			},
+		};
+	};
 
 	// looks like we need to build in a new/alt schema JSON
 	// parsing thing ...
@@ -373,7 +418,8 @@ export function predicateFor<T extends PersistentModel>(
 								newlink.__tail.operands.push(
 									new FieldCondition(fieldName, operator, operands)
 								);
-								// if we wnat to re-enable implicit and stuff, return newLink here.
+
+								// same question as above: do all these underscore props need to be here?
 								return {
 									__class: newlink.__class,
 									__className: newlink.__className,

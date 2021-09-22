@@ -85,7 +85,7 @@ describe('Predicates', () => {
 		});
 	});
 
-	describe('as singular filters on local properties', () => {
+	describe('as filters on local properties', () => {
 		// positive and negative matches.
 		// negatives asserted implicitly by what is NOT returned from the list.
 		// REMINDER! string comparison uses ASCII values. and lowercase > upper case
@@ -238,6 +238,92 @@ describe('Predicates', () => {
 				'Debbie Donut',
 				'Zelda from the Legend of Zelda',
 			]);
+		});
+
+		describe('with a logical grouping', () => {
+			test('can perform and() logic, matching an item', async () => {
+				const query = predicateFor(Author).and(a => [
+					a.name.contains('Bob'),
+					a.name.contains('Jones'),
+				]);
+				const matches = await query.filter(flatAuthorsArray);
+
+				expect(matches.length).toBe(1);
+				expect(matches[0].name).toBe('Bob Jones');
+			});
+
+			test('can perform and() logic, matching no items', async () => {
+				const query = predicateFor(Author).and(a => [
+					a.name.contains('Adam'),
+					a.name.contains('Donut'),
+				]);
+				const matches = await query.filter(flatAuthorsArray);
+
+				expect(matches.length).toBe(0);
+			});
+
+			test('can perform or() logic, matching different items', async () => {
+				const query = predicateFor(Author).or(a => [
+					a.name.contains('Bob'),
+					a.name.contains('Donut'),
+				]);
+				const matches = await query.filter(flatAuthorsArray);
+
+				expect(matches.length).toBe(2);
+				expect(matches.map(m => m.name)).toEqual(['Bob Jones', 'Debbie Donut']);
+			});
+
+			test('can perform or() logic, matching a single item', async () => {
+				const query = predicateFor(Author).or(a => [
+					a.name.contains('Bob'),
+					a.name.contains('Jones'),
+				]);
+				const matches = await query.filter(flatAuthorsArray);
+
+				expect(matches.length).toBe(1);
+				expect(matches[0].name).toEqual('Bob Jones');
+			});
+
+			test('can perform or() logic, matching a single item with extra unmatched conditions', async () => {
+				const query = predicateFor(Author).or(a => [
+					a.name.contains('Bob'),
+					a.name.contains('Thanos'),
+				]);
+				const matches = await query.filter(flatAuthorsArray);
+
+				expect(matches.length).toBe(1);
+				expect(matches[0].name).toEqual('Bob Jones');
+			});
+
+			test('can perform or() logic, matching NO items', async () => {
+				const query = predicateFor(Author).or(a => [
+					a.name.contains('Thanos'),
+					a.name.contains('Thor (God of Thunder, as it just so happens)'),
+				]);
+				const matches = await query.filter(flatAuthorsArray);
+
+				expect(matches.length).toBe(0);
+			});
+
+			test('can perform simple not() logic, matching all but one item', async () => {
+				const query = predicateFor(Author).not(a => a.name.eq('Bob Jones'));
+				const matches = await query.filter(flatAuthorsArray);
+
+				expect(matches.length).toBe(4);
+				expect(matches.map(m => m.name)).toEqual([
+					'Adam West',
+					'Clarice Starling',
+					'Debbie Donut',
+					'Zelda from the Legend of Zelda',
+				]);
+			});
+
+			test('can perform simple not() logic, matching no items', async () => {
+				const query = predicateFor(Author).not(a => a.name.gt('0'));
+				const matches = await query.filter(flatAuthorsArray);
+
+				expect(matches.length).toBe(0);
+			});
 		});
 	});
 
