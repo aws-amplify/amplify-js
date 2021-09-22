@@ -3,6 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.8...@aws-amplify/ui-components@1.7.9) (2021-09-17)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.7.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.7...@aws-amplify/ui-components@1.7.8) (2021-09-09)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.7.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.6...@aws-amplify/ui-components@1.7.7) (2021-09-07)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.7.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.5...@aws-amplify/ui-components@1.7.6) (2021-09-04)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.7.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.4...@aws-amplify/ui-components@1.7.5) (2021-09-02)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.7.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.3...@aws-amplify/ui-components@1.7.4) (2021-08-26)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.7.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.2...@aws-amplify/ui-components@1.7.3) (2021-08-19)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.7.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.1...@aws-amplify/ui-components@1.7.2) (2021-08-12)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** Remove local storage check ([#8730](https://github.com/aws-amplify/amplify-js/issues/8730)) ([fc7f8ab](https://github.com/aws-amplify/amplify-js/commit/fc7f8ab6c965b980b87d9a0d47583672813162bf))
+
+
+
+
+
+## [1.7.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.0...@aws-amplify/ui-components@1.7.1) (2021-07-28)
+
+
+### Bug Fixes
+
+* **@aws-amplify/ui-components:** Empty `newFormfFields` array on rebuild ([#8633](https://github.com/aws-amplify/amplify-js/issues/8633)) ([908cd16](https://github.com/aws-amplify/amplify-js/commit/908cd166779fd40f09d8034c05c3bb2590ba3771))
+
+
+
+
+
 # [1.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.6.2...@aws-amplify/ui-components@1.7.0) (2021-07-22)
 
 

@@ -28,7 +28,11 @@ import {
 	AbortMultipartUploadCommand,
 	CompletedPart,
 } from '@aws-sdk/client-s3';
-import { AxiosHttpHandler, SEND_UPLOAD_PROGRESS_EVENT, SEND_DOWNLOAD_PROGRESS_EVENT } from './axios-http-handler';
+import {
+	AxiosHttpHandler,
+	SEND_UPLOAD_PROGRESS_EVENT,
+	SEND_DOWNLOAD_PROGRESS_EVENT,
+} from './axios-http-handler';
 import * as events from 'events';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
@@ -176,7 +180,13 @@ export class AWSS3ProviderManagedUpload {
 				parts.map(async part => {
 					this.setupEventListener(part);
 					const s3 = await this._createNewS3Client(this.opts, part.emitter);
-					const { Key, Bucket, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5 } = this.params;
+					const {
+						Key,
+						Bucket,
+						SSECustomerAlgorithm,
+						SSECustomerKey,
+						SSECustomerKeyMD5,
+					} = this.params;
 					return s3.send(
 						new UploadPartCommand({
 							PartNumber: part.partNumber,
@@ -184,9 +194,9 @@ export class AWSS3ProviderManagedUpload {
 							UploadId: uploadId,
 							Key,
 							Bucket,
-							...(this.params.SSECustomerAlgorithm && { SSECustomerAlgorithm }),
-							...(this.params.SSECustomerKey && { SSECustomerKey }),
-							...(this.params.SSECustomerKeyMD5 && { SSECustomerKeyMD5 })
+							...(SSECustomerAlgorithm && { SSECustomerAlgorithm }),
+							...(SSECustomerKey && { SSECustomerKey }),
+							...(SSECustomerKeyMD5 && { SSECustomerKeyMD5 }),
 						})
 					);
 				})
@@ -352,6 +362,7 @@ export class AWSS3ProviderManagedUpload {
 			region,
 			dangerouslyConnectToHttpEndpointForTesting,
 			cancelTokenSource,
+			useAccelerateEndpoint,
 		} = config;
 		let localTestingConfig = {};
 
@@ -367,6 +378,7 @@ export class AWSS3ProviderManagedUpload {
 		const client = new S3Client({
 			region,
 			credentials,
+			useAccelerateEndpoint,
 			...localTestingConfig,
 			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
 			customUserAgent: getAmplifyUserAgent(),

@@ -395,9 +395,26 @@ export function createMutationInstanceFromModelOperation<
 			exhaustiveCheck(opType);
 	}
 
+	// stringify nested objects of type AWSJSON
+	// this allows us to return parsed JSON to users (see `castInstanceType()` in datastore.ts),
+	// but still send the object correctly over the wire
+	const replacer = (k, v) => {
+		const isAWSJSON =
+			k &&
+			v !== null &&
+			typeof v === 'object' &&
+			modelDefinition.fields[k] &&
+			modelDefinition.fields[k].type === 'AWSJSON';
+
+		if (isAWSJSON) {
+			return JSON.stringify(v);
+		}
+		return v;
+	};
+
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
 		...(id ? { id } : {}),
-		data: JSON.stringify(element),
+		data: JSON.stringify(element, replacer),
 		modelId: element.id,
 		model: model.name,
 		operation,
@@ -568,4 +585,30 @@ export function getClientSideAuthError(error) {
 			error.message.includes(clientError)
 		);
 	return clientSideError || null;
+}
+
+export async function getTokenForCustomAuth(
+	authMode: GRAPHQL_AUTH_MODE,
+	amplifyConfig: Record<string, any> = {}
+): Promise<string | undefined> {
+	if (authMode === GRAPHQL_AUTH_MODE.AWS_LAMBDA) {
+		const {
+			authProviders: { functionAuthProvider } = { functionAuthProvider: null },
+		} = amplifyConfig;
+		if (functionAuthProvider && typeof functionAuthProvider === 'function') {
+			try {
+				const { token } = await functionAuthProvider();
+				return token;
+			} catch (error) {
+				throw new Error(
+					`Error retrieving token from \`functionAuthProvider\`: ${error}`
+				);
+			}
+		} else {
+			// TODO: add docs link once available
+			throw new Error(
+				`You must provide a \`functionAuthProvider\` function to \`DataStore.configure\` when using ${GRAPHQL_AUTH_MODE.AWS_LAMBDA}`
+			);
+		}
+	}
 }

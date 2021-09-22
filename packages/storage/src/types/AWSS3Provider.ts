@@ -30,7 +30,9 @@ export interface S3ProviderGetConfig extends StorageOptions {
 	SSECustomerKeyMD5?: GetObjectRequest['SSECustomerKeyMD5'];
 }
 
-export type S3ProviderGetOuput<T> = T extends { download: true } ? GetObjectCommandOutput : string;
+export type S3ProviderGetOuput<T> = T extends { download: true }
+	? GetObjectCommandOutput
+	: string;
 
 export interface S3ProviderPutConfig extends StorageOptions {
 	progressCallback?: (progress: any) => any;
@@ -51,6 +53,7 @@ export interface S3ProviderPutConfig extends StorageOptions {
 	metadata?: PutObjectRequest['Metadata'];
 	tagging?: PutObjectRequest['Tagging'];
 	resumeable?: boolean;
+	useAccelerateEndpoint?: boolean;
 }
 
 export interface S3ProviderPutOutput {
@@ -113,7 +116,9 @@ export type PutResult = {
 	key: string;
 };
 
-export type S3PutResult<T> = T extends { resumeable: true } ? AWSS3UploadTask : PutResult;
+export type S3PutResult<T> = T extends { resumeable: true }
+	? AWSS3UploadTask
+	: PutResult;
 
 interface StoragePutConfig {
 	level?: StorageLevel;

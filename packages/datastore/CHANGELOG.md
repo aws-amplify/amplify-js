@@ -3,6 +3,96 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.4.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.4.3...@aws-amplify/datastore@3.4.4) (2021-09-17)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [3.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.4.2...@aws-amplify/datastore@3.4.3) (2021-09-09)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [3.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.4.1...@aws-amplify/datastore@3.4.2) (2021-09-07)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [3.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.4.0...@aws-amplify/datastore@3.4.1) (2021-09-04)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** only stringify nested AWSJSON in mutation event ([#8844](https://github.com/aws-amplify/amplify-js/issues/8844)) ([0febaac](https://github.com/aws-amplify/amplify-js/commit/0febaac79af1b9fd0621dce1e63a139bebdb46f5))
+
+
+
+
+
+# [3.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.3.3...@aws-amplify/datastore@3.4.0) (2021-09-02)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** patch immer vuln ([#8841](https://github.com/aws-amplify/amplify-js/issues/8841)) ([6521a57](https://github.com/aws-amplify/amplify-js/commit/6521a576572f21a91738e2bdc37ffb21350392d0))
+* **@aws-amplify/datastore:** remove conditional require ([#8828](https://github.com/aws-amplify/amplify-js/issues/8828)) ([48b76e1](https://github.com/aws-amplify/amplify-js/commit/48b76e10602b0b5cc9bc43b9b3abd653e27e1817))
+
+
+### Features
+
+* **@aws-amplify/datastore:** add SQLite storage adapter option for RN apps ([#8809](https://github.com/aws-amplify/amplify-js/issues/8809)) ([46ee5dd](https://github.com/aws-amplify/amplify-js/commit/46ee5dd91c61f49bad4da8286b2f97c737d96631))
+
+
+
+
+
+## [3.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.3.2...@aws-amplify/datastore@3.3.3) (2021-08-26)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** check read-only at instance level ([#8794](https://github.com/aws-amplify/amplify-js/issues/8794)) ([b278875](https://github.com/aws-amplify/amplify-js/commit/b278875491bf6959591d5aea6fbdddfc78f3fe9b))
+
+
+
+
+
+## [3.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.3.1...@aws-amplify/datastore@3.3.2) (2021-08-19)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+## [3.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.3.0...@aws-amplify/datastore@3.3.1) (2021-08-12)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+# [3.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.2.2...@aws-amplify/datastore@3.3.0) (2021-07-28)
+
+
+### Features
+
+* **@aws-amplify/datastore:** support lambda authorizers ([52d43cc](https://github.com/aws-amplify/amplify-js/commit/52d43cc73b459148f1ae81ab81d3a5365a4457e3))
+
+
+
+
+
 ## [3.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.2.1...@aws-amplify/datastore@3.2.2) (2021-07-22)
 
 

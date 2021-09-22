@@ -3,6 +3,78 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.16](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.15...aws-amplify-angular@6.0.16) (2021-09-17)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [6.0.15](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.14...aws-amplify-angular@6.0.15) (2021-09-09)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [6.0.14](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.13...aws-amplify-angular@6.0.14) (2021-09-07)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [6.0.13](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.12...aws-amplify-angular@6.0.13) (2021-09-04)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [6.0.12](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.11...aws-amplify-angular@6.0.12) (2021-09-02)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [6.0.11](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.10...aws-amplify-angular@6.0.11) (2021-08-26)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [6.0.10](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.9...aws-amplify-angular@6.0.10) (2021-08-19)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [6.0.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.8...aws-amplify-angular@6.0.9) (2021-08-12)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
+## [6.0.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.7...aws-amplify-angular@6.0.8) (2021-07-28)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
 ## [6.0.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.6...aws-amplify-angular@6.0.7) (2021-07-22)
 
 **Note:** Version bump only for package aws-amplify-angular

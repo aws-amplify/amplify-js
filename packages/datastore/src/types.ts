@@ -13,6 +13,7 @@ import {
 } from './util';
 import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { Adapter } from './storage/adapter';
 
 //#region Schema types
 export type Schema = UserSchema & {
@@ -79,6 +80,35 @@ export function isTargetNameAssociation(
 export type ModelAttributes = ModelAttribute[];
 type ModelAttribute = { type: string; properties?: Record<string, any> };
 
+export type ModelAuthRule = {
+	allow: string;
+	provider?: string;
+	operations?: string[];
+	ownerField?: string;
+	identityClaim?: string;
+	groups?: string[];
+	groupClaim?: string;
+	groupsField?: string;
+};
+
+export type ModelAttributeAuth = {
+	type: 'auth';
+	properties: {
+		rules: ModelAuthRule[];
+	};
+};
+
+export function isModelAttributeAuth(
+	attr: ModelAttribute
+): attr is ModelAttributeAuth {
+	return (
+		attr.type === 'auth' &&
+		attr.properties &&
+		attr.properties.rules &&
+		attr.properties.rules.length > 0
+	);
+}
+
 type ModelAttributeKey = {
 	type: 'key';
 	properties: {
@@ -140,6 +170,7 @@ export type ModelAttributeAuthProperty = {
 };
 
 export enum ModelAttributeAuthAllow {
+	CUSTOM = 'custom',
 	OWNER = 'owner',
 	GROUPS = 'groups',
 	PRIVATE = 'private',
@@ -147,6 +178,7 @@ export enum ModelAttributeAuthAllow {
 }
 
 export enum ModelAttributeAuthProvider {
+	FUNCTION = 'function',
 	USER_POOLS = 'userPools',
 	OIDC = 'oidc',
 	IAM = 'iam',
@@ -177,7 +209,7 @@ export namespace GraphQLScalarType {
 			typeof GraphQLScalarType,
 			'getJSType' | 'getValidationFunction'
 		>
-	): 'string' | 'number' | 'boolean' {
+	): 'string' | 'number' | 'boolean' | 'object' {
 		switch (scalar) {
 			case 'Boolean':
 				return 'boolean';
@@ -187,7 +219,6 @@ export namespace GraphQLScalarType {
 			case 'AWSTime':
 			case 'AWSDateTime':
 			case 'AWSEmail':
-			case 'AWSJSON':
 			case 'AWSURL':
 			case 'AWSPhone':
 			case 'AWSIPAddress':
@@ -196,8 +227,10 @@ export namespace GraphQLScalarType {
 			case 'Float':
 			case 'AWSTimestamp':
 				return 'number';
+			case 'AWSJSON':
+				return 'object';
 			default:
-				exhaustiveCheck(scalar);
+				exhaustiveCheck(scalar as never);
 		}
 	}
 
@@ -275,7 +308,7 @@ export function isEnumFieldType(obj: any): obj is EnumFieldType {
 	return false;
 }
 
-type ModelField = {
+export type ModelField = {
 	name: string;
 	type:
 		| keyof Omit<
@@ -616,6 +649,8 @@ export type DataStoreConfig = {
 		syncPageSize?: number;
 		fullSyncInterval?: number;
 		syncExpressions?: SyncExpression[];
+		authProviders?: AuthProviders;
+		storageAdapter?: Adapter;
 	};
 	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
@@ -624,6 +659,12 @@ export type DataStoreConfig = {
 	syncPageSize?: number;
 	fullSyncInterval?: number;
 	syncExpressions?: SyncExpression[];
+	authProviders?: AuthProviders;
+	storageAdapter?: Adapter;
+};
+
+export type AuthProviders = {
+	functionAuthProvider: () => { token: string } | Promise<{ token: string }>;
 };
 
 export enum AuthModeStrategyType {
