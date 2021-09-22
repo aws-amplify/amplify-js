@@ -6,6 +6,61 @@ const { exec } = require('child_process');
 const { readdirSync, existsSync } = require('fs');
 const os = require('os');
 const winston = require('winston');
+
+// Required constants
+const WHITE_SPACE = ' ';
+
+// Lerna Constants
+const LERNA_BASE = 'npx lerna exec';
+const NPM_BASE = 'npm run';
+const PARALLEL_FLAG = '--parallel';
+
+// WML Constants
+const WML_REMOVE_ALL_LINKS = `npm-exec wml rm all`;
+const WML_START = `npm-exec wml start`;
+const WML_ADD_LINK = 'npm-exec wml add';
+
+// OSAScript constants
+const OSA_SCRIPT_BASE = 'osascript';
+const MULTILINE_FLAG = '-e';
+const TO_DO_SCRIPT = `${MULTILINE_FLAG} 'tell application "Terminal" to do script`;
+const IN_FRONT_WINDOW = `in front window'${WHITE_SPACE}`;
+
+// List of packages to exclude that do not have build:watch script
+const EXCLUDED_PACKAGES = [
+	'aws-amplify-vue',
+	'@aws-amplify/ui',
+	'@aws-amplify/ui-vue',
+	'@aws-amplify/ui-angular',
+	'@aws-amplify/ui-components',
+	'@aws-amplify/ui-storybook',
+	'aws-amplify-angular',
+];
+
+// List of CJS identified packages
+const CJS_PACKAGES_PRESET = [
+	'aws-amplify-react-native',
+	'@aws-amplify/pushnotification',
+	'@aws-amplify/ui',
+];
+
+// Utility functions for string manipulation
+// Explicit functions as they are important in an osaScript
+const singleQuotedFormOf = content => `'${content}'`;
+const doubleQuotedFormOf = content => `"${content}"`;
+// Sanatize the command by seperating it into base and args by &
+const sanatizeCommand = (base, args) => `("${base}${WHITE_SPACE}" & "${args}")`;
+
+// Constants using the utility fuctions
+const ALIAS_WML = sanatizeCommand(
+	'alias',
+	`npm-exec='PATH=$("npm " & "bin"):$PATH'`
+);
+const DELAY = `${MULTILINE_FLAG}  ${singleQuotedFormOf('delay 0.2')}`;
+const OPEN_NEW_TAB = `${MULTILINE_FLAG} ${singleQuotedFormOf(
+	'tell application "System Events" to tell process "Terminal" to keystroke "t" using command down'
+)}`;
+
 const logger = winston.createLogger({
 	level: process.env.LOG_LEVEL ? process.env.LOG_LEVEL.toLowerCase() : 'info',
 	transports: [
@@ -18,6 +73,43 @@ const logger = winston.createLogger({
 	],
 });
 
+// Form the part of osaScript needed to run the given command
+const createDoCommand = command =>
+	`${TO_DO_SCRIPT} ${command} ${IN_FRONT_WINDOW}`;
+
+// OSA script to open a new terminal and tabs for each command execution
+function openTerminalWithTabs(commands, pkgRootPath) {
+	let osaScript = `${OSA_SCRIPT_BASE} ${MULTILINE_FLAG} ${singleQuotedFormOf(
+		'tell application "Terminal" to activate'
+	)} `;
+	const GOTO_PACKAGE_ROOT = sanatizeCommand('cd', pkgRootPath);
+
+	commands.forEach(command => {
+		const splitCommands = command.split(`${WHITE_SPACE};${WHITE_SPACE}`);
+		const hasTwoCommands = splitCommands.length === 2;
+
+		osaScript += `${OPEN_NEW_TAB} ${DELAY} ${createDoCommand(
+			GOTO_PACKAGE_ROOT
+		)}${WHITE_SPACE}`;
+
+		osaScript += hasTwoCommands
+			? `${createDoCommand(splitCommands[0])} ${createDoCommand(
+					doubleQuotedFormOf(splitCommands[1])
+			  )}`
+			: `${createDoCommand(doubleQuotedFormOf(command))}`;
+	});
+
+	exec(osaScript, error => {
+		if (error) {
+			return logger.error(`Error with one of the tabs: ${error}`);
+		}
+	});
+}
+
+// Primary function for the script
+// - Read input arguments
+// - Form the required string commands: lerna build:esm:watch, wml and lerna build:cjs:watch
+// - Open the commands in a new terminal with a tab for each
 function setupDevReactNative() {
 	const args = yargs.argv;
 	const targetAppPath = args.target ?? args.t;
@@ -52,90 +144,72 @@ function setupDevReactNative() {
 		return;
 	}
 
-	// Remove packages that do not have build:watch script
-	const excludedPacks = [
-		'aws-amplify-vue',
-		'@aws-amplify/ui',
-		'@aws-amplify/ui-vue',
-		'@aws-amplify/ui-angular',
-		'@aws-amplify/ui-components',
-		'@aws-amplify/ui-storybook',
-		'aws-amplify-angular',
-	];
-
 	// Exclude unrelated packages
-	const supportedPacks = getPackageNames('./packages/').filter(
-		el => !excludedPacks.includes(el)
+	const supportedPackages = getPackageNames('./packages/').filter(
+		packages => !EXCLUDED_PACKAGES.includes(packages)
 	);
 
 	// ALL Packages list formation
-	const packagesArr = packages === 'all' ? supportedPacks : packages.split(',');
+	const requestedPackages =
+		packages === 'all' ? supportedPackages : packages.split(',');
 
-	const cjsPacksPreset = [
-		'aws-amplify-react-native',
-		'@aws-amplify/pushnotification',
-		'@aws-amplify/ui',
-	];
 	const esmPackages = [];
 	const cjsPackages = [];
 
-	packagesArr.forEach(element => {
+	requestedPackages.forEach(pack => {
 		// Exit if the package is not within the supported list of packages
-		if (!supportedPacks.includes(element)) {
+		if (!supportedPackages.includes(pack)) {
 			logger.error(
-				`Package ${element} is not supported by this script or does not exist. Here is list of supported packages: ${supportedPacks}`
+				`Package ${pack} is not supported by this script or does not exist. Here is list of supported packages: ${supportedPackages}`
 			);
 			process.exit(0);
 		}
 
-		// Divide the packagesArr into cjs and esm packages
-		if (!cjsPacksPreset.includes(element)) {
-			esmPackages.push(element);
-		} else {
-			cjsPackages.push(element);
+		// Divide the requestedPackages into cjs and esm packages
+		if (!CJS_PACKAGES_PRESET.includes(pack)) {
+			esmPackages.push(pack);
+			return;
 		}
+
+		cjsPackages.push(pack);
 	});
 
-	const finalCmds = [];
+	const finalCommands = [];
 
 	// LERNA build:ESM:watch command with scopes for multiple or all packages
 	if (esmPackages.length > 0) {
-		finalCmds.push(formLernaCmd('esm', esmPackages));
+		finalCommands.push(createLernaCommand('esm', esmPackages));
 	}
 
 	// WML add command formation
-	finalCmds.push(formWmlCmd(packagesArr, targetAppPath, pkgRootPath));
+	finalCommands.push(
+		createWmlCommand(requestedPackages, targetAppPath, pkgRootPath)
+	);
 
 	// LERNA build:CJS:watch package command to be run in a new tab
 	if (cjsPackages.length > 0) {
-		finalCmds.push(formLernaCmd('cjs', cjsPackages));
+		finalCommands.push(createLernaCommand('cjs', cjsPackages));
 	}
 
 	// Open each command in a new tab in a new terminal
-	openTab(finalCmds, pkgRootPath);
+	openTerminalWithTabs(finalCommands, pkgRootPath);
 }
 
 // Form the lerna sommand for the specific package type with the given list of packages
-const formLernaCmd = (packageType, packages) =>
-	`npx lerna exec --scope={${packages.join(
+const createLernaCommand = (packageType, packages) =>
+	`${LERNA_BASE} --scope={${packages.join(
 		','
-	)},} npm run build:${packageType}:watch --parallel`;
+	)},} ${NPM_BASE} build:${packageType}:watch ${PARALLEL_FLAG}`;
 
 // Form the wml command for the specific packages list with the target path
-const formWmlCmd = (packagesArr, targetAppPath, pkgRootPath) => {
-	const wmlClearCmd = 'npm-exec wml rm all ';
-	const wmlAddCmd = buildWmlAddStrings(packagesArr, targetAppPath, pkgRootPath);
-	const wmlStart = 'npm-exec wml start';
-	const aliasCmd = '("alias " & "npm-exec=\'PATH=$("npm " & "bin"):$PATH\'")';
-	return `${aliasCmd} ; ${wmlClearCmd} && ${wmlAddCmd} ${wmlStart}`;
+const createWmlCommand = (requestedPackages, targetAppPath, pkgRootPath) => {
+	const wmlAddcommand = buildWmlAddStrings(
+		requestedPackages,
+		targetAppPath,
+		pkgRootPath
+	);
+	return `${ALIAS_WML} ; ${WML_REMOVE_ALL_LINKS} && ${wmlAddcommand} ${WML_START}`;
 };
-
-// Convert scoped packagenames to directory names used for path formation for wml commands
-const scopeToDirectoryName = scopedPackages =>
-	scopedPackages.map(scoPackage => {
-		const packageName = scoPackage.split('/')[1] ?? scoPackage;
-		return packageName.includes('ui') ? `amplify-${packageName}` : packageName;
-	});
 
 // Get all package names from under the packages directory
 const getPackageNames = source =>
@@ -144,62 +218,23 @@ const getPackageNames = source =>
 		.map(dirent => require(`../packages/${dirent.name}/package.json`).name);
 
 // Form all the wml add commands needed
-function buildWmlAddStrings(packages, targetAppPath, pkgRootPath) {
-	let wmlAddCmds = [];
-	const packagesDir = path.resolve(pkgRootPath, 'packages');
-	const sampleAppNodeModulesDir = path.join(targetAppPath, 'node_modules');
-	packages.forEach(element => {
-		const source = path.resolve(
-			packagesDir,
-			scopeToDirectoryName([element])[0]
-		);
-		const target = path.resolve(sampleAppNodeModulesDir, element);
-		wmlAddCmds.push(` npm-exec wml add ${source} ${target} && `);
+const buildWmlAddStrings = (packages, targetAppPath, pkgRootPath) => {
+	let wmlAddCommands = '';
+	const packagesDirectory = path.resolve(pkgRootPath, 'packages');
+	const sampleAppNodeModulesDirectory = path.join(
+		targetAppPath,
+		'node_modules'
+	);
+	packages.forEach(pack => {
+		const packageName = pack.split('/')[1] ?? pack;
+		const sourceDirectoryName = packageName.includes('ui')
+			? `amplify-${packageName}`
+			: packageName;
+		const source = path.resolve(packagesDirectory, sourceDirectoryName);
+		const target = path.resolve(sampleAppNodeModulesDirectory, pack);
+		wmlAddCommands += `${WML_ADD_LINK} ${source} ${target} && `;
 	});
-	return wmlAddCmds.join(' ');
-}
-
-// OSA script to open a new terminal and tabs for each command execution
-function openTab(cmdArr, pkgRootPath, cb) {
-	const open = ['osascript -e \'tell application "Terminal" to activate\' '];
-	const NEW_TAB =
-		'-e \'tell application "System Events" to tell process "Terminal" to keystroke "t"';
-	const DOWN_COMMAND = "using command down' ";
-	const DELAY = "-e 'delay 0.2' ";
-	const CD_CWD = `("cd " & "${pkgRootPath}")`;
-
-	cmdArr.forEach(element => {
-		const splitCmds = element.split(' ; ');
-		if (splitCmds.length == 2) {
-			open.push(
-				NEW_TAB,
-				DOWN_COMMAND,
-				DELAY,
-				formToDoScriptStr(CD_CWD),
-				formToDoScriptStr(`${splitCmds[0]}`),
-				formToDoScriptStr(`"${splitCmds[1]}"`)
-			);
-		} else {
-			open.push(
-				NEW_TAB,
-				DOWN_COMMAND,
-				formToDoScriptStr(CD_CWD),
-				formToDoScriptStr(`"${element}"`)
-			);
-		}
-	});
-	exec(open.join(' '), (error, stdout, stderr) => {
-		if (error) {
-			return logger.error(`Error with one of the tabs: ${error}`);
-		}
-	});
-}
-
-// Form the part of osaScript needed to run the given command
-const formToDoScriptStr = cmd => {
-	const TO_DO_SCRIPT = '-e \'tell application "Terminal" to do script';
-	const IN_FRONT_WINDOW = "in front window' ";
-	return [TO_DO_SCRIPT, cmd, IN_FRONT_WINDOW].join(' ');
+	return wmlAddCommands;
 };
 
 setupDevReactNative();
