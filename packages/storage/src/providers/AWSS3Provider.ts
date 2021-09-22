@@ -48,7 +48,7 @@ import {
 	S3ProviderCopyOutput,
 	S3CopySource,
 	S3CopyDestination,
-	StorageLevel,
+	StorageAccessLevel,
 	CustomPrefix,
 	S3ProviderRemoveOutput,
 } from '../types';
@@ -113,7 +113,7 @@ export class AWSS3Provider implements StorageProvider {
 	/**
 	 * get provider name of the plugin
 	 */
-	getProviderName(): string {
+	getProviderName(): 'AWSS3' {
 		return AWSS3Provider.PROVIDER_NAME;
 	}
 
@@ -599,7 +599,7 @@ export class AWSS3Provider implements StorageProvider {
 
 	private _prefix(config: {
 		credentials: ICredentials;
-		level?: StorageLevel;
+		level?: StorageAccessLevel;
 		customPrefix?: CustomPrefix;
 		identityId?: string;
 	}): string {
