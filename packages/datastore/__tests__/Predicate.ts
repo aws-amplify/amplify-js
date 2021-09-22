@@ -17,6 +17,7 @@ import {
 	PostMetadata,
 	Nested,
 } from './model';
+import { mainModule } from 'process';
 
 describe('Predicates', () => {
 	describe('validate arguments by throwing exceptions for', () => {
@@ -323,6 +324,23 @@ describe('Predicates', () => {
 				const matches = await query.filter(flatAuthorsArray);
 
 				expect(matches.length).toBe(0);
+			});
+
+			test('can perform not() logic around another logical group, matching all but N items', async () => {
+				const query = predicateFor(Author).not(author =>
+					author.or(a => [
+						a.name.eq('Bob Jones'),
+						a.name.eq('Debbie Donut'),
+						a.name.between('C', 'D'),
+					])
+				);
+				const matches = await query.filter(flatAuthorsArray);
+
+				expect(matches.length).toBe(2);
+				expect(matches.map(m => m.name)).toEqual([
+					'Adam West',
+					'Zelda from the Legend of Zelda',
+				]);
 			});
 		});
 	});
