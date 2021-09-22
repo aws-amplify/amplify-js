@@ -13,7 +13,13 @@
 
 import { Credentials, StorageHelper } from '@aws-amplify/core';
 import { getCachedUuid as getEndpointId } from '@aws-amplify/cache';
-import { UpdateEndpointRequest } from '@aws-sdk/client-pinpoint';
+import {
+	GetInAppMessagesCommand,
+	GetInAppMessagesCommandInput,
+	UpdateEndpointCommand,
+	UpdateEndpointCommandInput,
+	PinpointClient,
+} from '@aws-sdk/client-pinpoint';
 import { v1 as uuid } from 'uuid';
 
 import SessionTracker, {
@@ -26,7 +32,6 @@ import {
 	NotificationEvent,
 	NotificationsProvider,
 } from '../../types';
-import TempPinpointClient from '../client';
 import {
 	DailyInAppMessageCounter,
 	InAppMessageCountMap,
@@ -103,12 +108,15 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 			if (!this.endpointUpdated) {
 				await this.updateEndpoint();
 			}
-			const response = await this.config.pinpointClient
-				.getInAppMessages({
-					ApplicationId: appId,
-					EndpointId: endpointId,
-				})
-				.promise();
+			const input: GetInAppMessagesCommandInput = {
+				ApplicationId: appId,
+				EndpointId: endpointId,
+			};
+			const command: GetInAppMessagesCommand = new GetInAppMessagesCommand(
+				input
+			);
+			logger.debug('getting in-app messages', input);
+			const response = await this.config.pinpointClient.send(command);
 			const { InAppMessageCampaigns } = response.InAppMessagesResponse;
 
 			// Create a lookup of ids to avoid nesting .includes() inside of .reduce() when updating total counts
@@ -193,9 +201,9 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 			);
 		}
 
-		this.config.pinpointClient = new TempPinpointClient({
+		this.config.pinpointClient = new PinpointClient({
 			region,
-			...credentials,
+			credentials,
 		});
 	};
 
@@ -215,7 +223,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 
 	private updateEndpoint = async (): Promise<void> => {
 		const { appId, endpointId, pinpointClient } = this.config;
-		const request: UpdateEndpointRequest = {
+		const input: UpdateEndpointCommandInput = {
 			ApplicationId: appId,
 			EndpointId: endpointId,
 			EndpointRequest: {
@@ -223,9 +231,10 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 				EffectiveDate: new Date().toISOString(),
 			},
 		};
+		const command: UpdateEndpointCommand = new UpdateEndpointCommand(input);
 		try {
-			logger.debug('updating endpoint', request);
-			await pinpointClient.updateEndpoint(request).promise();
+			logger.debug('updating endpoint', input);
+			await pinpointClient.send(command);
 			this.endpointUpdated = true;
 		} catch (err) {
 			throw err;
