@@ -13,11 +13,21 @@
 import StorageProvider from '../../src/providers/AWSS3Provider';
 import { Logger, Hub, Credentials, ICredentials } from '@aws-amplify/core';
 import * as formatURL from '@aws-sdk/util-format-url';
-import { S3Client, ListObjectsCommand, CreateMultipartUploadCommand, UploadPartCommand, CompleteMultipartUploadCommand } from '@aws-sdk/client-s3';
+import {
+	S3Client,
+	ListObjectsCommand,
+	CreateMultipartUploadCommand,
+	UploadPartCommand,
+} from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import * as events from 'events';
 
-import { S3CopySource, S3CopyDestination, StorageOptions, S3ProviderGetConfig } from '../../src/types';
+import {
+	S3CopySource,
+	S3CopyDestination,
+	StorageOptions,
+	S3ProviderGetConfig,
+} from '../../src/types';
 import { AWSS3UploadTask } from '../../src/providers/AWSS3UploadTask';
 
 /**
@@ -143,13 +153,17 @@ describe('StorageProvider test', () => {
 			expect.assertions(3);
 			expect(await storage.get('key', { download: false })).toBe('url');
 			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
-			expect(spyon.mock.calls[0][0].hostname).toEqual(options.bucket + '.s3.' + options.region + '.amazonaws.com');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 		});
 
 		test('get object with custom response headers', async () => {
-			const curCredSpyOn = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
-			});
+			const curCredSpyOn = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return Promise.resolve(credentials);
+				});
 			const storage = new StorageProvider();
 			storage.configure(options);
 			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
@@ -174,7 +188,9 @@ describe('StorageProvider test', () => {
 				'x-id': 'GetObject',
 			});
 			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
-			expect(spyon.mock.calls[0][0].hostname).toEqual(options.bucket + '.s3.' + options.region + '.amazonaws.com');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 			spyon.mockClear();
 			curCredSpyOn.mockClear();
 		});
@@ -191,9 +207,13 @@ describe('StorageProvider test', () => {
 			const spyon2 = jest.spyOn(Hub, 'dispatch');
 
 			expect.assertions(4);
-			expect(await storage.get('key', { downloaded: false, track: true })).toBe('url');
+			expect(await storage.get('key', { downloaded: false, track: true })).toBe(
+				'url'
+			);
 			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
-			expect(spyon.mock.calls[0][0].hostname).toEqual(options.bucket + '.s3.' + options.region + '.amazonaws.com');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 			expect(spyon2).toBeCalledWith(
 				'storage',
 				{
@@ -218,9 +238,11 @@ describe('StorageProvider test', () => {
 			});
 			const storage = new StorageProvider();
 			storage.configure(options_with_download);
-			const spyon = jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
-				return { Body: [1, 2] };
-			});
+			const spyon = jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async params => {
+					return { Body: [1, 2] };
+				});
 
 			expect.assertions(2);
 			expect(await storage.get('key', { download: true })).toEqual({
@@ -243,20 +265,27 @@ describe('StorageProvider test', () => {
 				on: jest.fn(),
 				removeAllListeners: mockRemoveAllListeners,
 			};
-			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
+			jest
+				.spyOn(events, 'EventEmitter')
+				.mockImplementationOnce(() => mockEventEmitter);
 			const downloadOptionsWithProgressCallback = Object.assign({}, options, {
 				download: true,
 				progressCallback: mockCallback,
 			});
 			const storage = new StorageProvider();
 			storage.configure(downloadOptionsWithProgressCallback);
-			const spyon = jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
-				return { Body: [1, 2] };
-			});
+			const spyon = jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async params => {
+					return { Body: [1, 2] };
+				});
 			expect(await storage.get('key', { download: true })).toEqual({
 				Body: [1, 2],
 			});
-			expect(mockEventEmitter.on).toBeCalledWith('sendDownloadProgress', expect.any(Function));
+			expect(mockEventEmitter.on).toBeCalledWith(
+				'sendDownloadProgress',
+				expect.any(Function)
+			);
 			// Get the anonymous function called by the emitter
 			const emitterOnFn = mockEventEmitter.on.mock.calls[0][1];
 			// Manully invoke it for testing
@@ -275,18 +304,25 @@ describe('StorageProvider test', () => {
 				on: jest.fn(),
 				removeAllListeners: jest.fn(),
 			};
-			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
+			jest
+				.spyOn(events, 'EventEmitter')
+				.mockImplementationOnce(() => mockEventEmitter);
 			const downloadOptionsWithProgressCallback = Object.assign({}, options);
 			const storage = new StorageProvider();
 			storage.configure(downloadOptionsWithProgressCallback);
-			jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
-				return { Body: [1, 2] };
-			});
+			jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async params => {
+					return { Body: [1, 2] };
+				});
 			await storage.get('key', {
 				download: true,
 				progressCallback: ('this is not a function' as unknown) as S3ProviderGetConfig['progressCallback'], // this is intentional
 			});
-			expect(loggerSpy).toHaveBeenCalledWith('WARN', 'progressCallback should be a function, not a string');
+			expect(loggerSpy).toHaveBeenCalledWith(
+				'WARN',
+				'progressCallback should be a function, not a string'
+			);
 		});
 
 		test('get object with download with failure', async () => {
@@ -298,9 +334,11 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
-				throw 'err';
-			});
+			jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async params => {
+					throw 'err';
+				});
 
 			expect.assertions(1);
 			try {
@@ -327,7 +365,9 @@ describe('StorageProvider test', () => {
 			expect.assertions(3);
 			expect(await storage.get('key', { level: 'private' })).toBe('url');
 			expect(spyon.mock.calls[0][0].path).toEqual('/private/id/key');
-			expect(spyon.mock.calls[0][0].hostname).toEqual(options.bucket + '.s3.' + options.region + '.amazonaws.com');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 		});
 
 		test('sets an empty custom public key', async () => {
@@ -344,7 +384,9 @@ describe('StorageProvider test', () => {
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValueOnce('url');
 			await storage.get('my_key', { customPrefix: { public: '' } });
 			expect(spyon.mock.calls[0][0].path).toEqual('/my_key');
-			expect(spyon.mock.calls[0][0].hostname).toEqual(options.bucket + '.s3.' + options.region + '.amazonaws.com');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 		});
 
 		test('sets a custom key for public accesses', async () => {
@@ -363,7 +405,9 @@ describe('StorageProvider test', () => {
 
 			await storage.get('my_key', { customPrefix: { public: '123/' } });
 			expect(spyon.mock.calls[0][0].path).toEqual('/123/my_key');
-			expect(spyon.mock.calls[0][0].hostname).toEqual(options.bucket + '.s3.' + options.region + '.amazonaws.com');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 		});
 
 		test('get object with expires option', async () => {
@@ -381,7 +425,9 @@ describe('StorageProvider test', () => {
 			expect.assertions(4);
 			expect(await storage.get('key', { expires: 1200 })).toBe('url');
 			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
-			expect(spyon.mock.calls[0][0].hostname).toEqual(options.bucket + '.s3.' + options.region + '.amazonaws.com');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 
 			expect(spyon.mock.calls[0][1].expiresIn).toBe(1200);
 		});
@@ -401,7 +447,9 @@ describe('StorageProvider test', () => {
 			expect.assertions(4);
 			expect(await storage.get('key')).toBe('url');
 			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
-			expect(spyon.mock.calls[0][0].hostname).toEqual(options.bucket + '.s3.' + options.region + '.amazonaws.com');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 
 			expect(spyon.mock.calls[0][1].expiresIn).toBe(900);
 		});
@@ -426,7 +474,9 @@ describe('StorageProvider test', () => {
 				})
 			).toBe('url');
 			expect(spyon.mock.calls[0][0].path).toEqual('/protected/identityId/key');
-			expect(spyon.mock.calls[0][0].hostname).toEqual(options.bucket + '.s3.' + options.region + '.amazonaws.com');
+			expect(spyon.mock.calls[0][0].hostname).toEqual(
+				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+			);
 		});
 
 		test('credentials not ok', async () => {
@@ -452,23 +502,27 @@ describe('StorageProvider test', () => {
 			storage.configure(options);
 			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValue('url');
-			const curCredSpyOn = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return new Promise((res, rej) => {
-					res({
-						cred: 'cred1',
+			const curCredSpyOn = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res({
+							cred: 'cred1',
+						});
 					});
 				});
-			});
 
 			await storage.get('key', { download: false });
 
-			const curCredSpyOn2 = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return new Promise((res, rej) => {
-					res({
-						cred: 'cred2',
+			const curCredSpyOn2 = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res({
+							cred: 'cred2',
+						});
 					});
 				});
-			});
 
 			await storage.get('key', { download: false });
 
@@ -552,9 +606,11 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
-				throw 'err';
-			});
+			const spyon = jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async params => {
+					throw 'err';
+				});
 
 			expect.assertions(1);
 			try {
@@ -655,13 +711,18 @@ describe('StorageProvider test', () => {
 				emit: jest.fn(),
 				on: jest.fn(),
 			};
-			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
+			jest
+				.spyOn(events, 'EventEmitter')
+				.mockImplementationOnce(() => mockEventEmitter);
 			const storage = new StorageProvider();
 			storage.configure(options);
 			await storage.put('key', 'object', {
 				progressCallback: mockCallback,
 			});
-			expect(mockEventEmitter.on).toBeCalledWith('sendUploadProgress', expect.any(Function));
+			expect(mockEventEmitter.on).toBeCalledWith(
+				'sendUploadProgress',
+				expect.any(Function)
+			);
 			const emitterOnFn = mockEventEmitter.on.mock.calls[0][1];
 			// Manually invoke for testing
 			emitterOnFn('arg');
@@ -681,13 +742,18 @@ describe('StorageProvider test', () => {
 				emit: jest.fn(),
 				on: jest.fn(),
 			};
-			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
+			jest
+				.spyOn(events, 'EventEmitter')
+				.mockImplementationOnce(() => mockEventEmitter);
 			const storage = new StorageProvider();
 			storage.configure(options);
 			await storage.put('key', 'object', {
 				progressCallback: ('hello' as unknown) as S3ProviderGetConfig['progressCallback'], // this is intentional
 			});
-			expect(loggerSpy).toHaveBeenCalledWith('WARN', 'progressCallback should be a function, not a string');
+			expect(loggerSpy).toHaveBeenCalledWith(
+				'WARN',
+				'progressCallback should be a function, not a string'
+			);
 		});
 
 		test('credentials not ok', async () => {
@@ -707,7 +773,7 @@ describe('StorageProvider test', () => {
 			}
 		});
 
-		test('put with resumeable parameter returns instance of AWSS3UploadTask', async () => {
+		test('put (resumeable upload) returns instance of AWSS3UploadTask', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
 			});
@@ -735,6 +801,64 @@ describe('StorageProvider test', () => {
 			});
 
 			expect(uploadTask instanceof AWSS3UploadTask).toEqual(true);
+		});
+
+		test('put (resumeable upload) with extra config passed to s3 call', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const storage = new StorageProvider();
+			storage.configure(options);
+
+			const file = new File(['TestFileContent'], 'testFileName');
+			const testUploadId = 'testUploadId';
+
+			const s3ServiceCallSpy = jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async command => {
+					if (command instanceof CreateMultipartUploadCommand) {
+						return Promise.resolve({ UploadId: testUploadId });
+					}
+				});
+
+			const date = new Date();
+			const metadata = { key: 'value' };
+			const uploadTask = await storage.put('key', file, {
+				resumeable: true,
+				contentType: 'application/pdf',
+				cacheControl: 'no-cache',
+				contentDisposition: 'inline',
+				contentEncoding: 'gzip',
+				expires: date,
+				metadata,
+				tagging: 'key1=value1',
+				serverSideEncryption: 'AES256',
+				SSECustomerAlgorithm: 'AES256',
+				SSECustomerKey: 'key',
+				SSECustomerKeyMD5: 'md5',
+				SSEKMSKeyId: 'id',
+				acl: 'public',
+			});
+
+			expect(s3ServiceCallSpy.mock.calls[0][0].input).toStrictEqual({
+				Body: file,
+				Bucket: 'bucket',
+				ContentType: 'application/pdf',
+				Key: 'public/key',
+				CacheControl: 'no-cache',
+				ContentEncoding: 'gzip',
+				ContentDisposition: 'inline',
+				Expires: date,
+				Metadata: metadata,
+				Tagging: 'key1=value1',
+				SSECustomerAlgorithm: 'AES256',
+				SSECustomerKey: 'key',
+				SSECustomerKeyMD5: 'md5',
+				ServerSideEncryption: 'AES256',
+				SSEKMSKeyId: 'id',
+				ACL: 'public',
+			});
 		});
 	});
 
@@ -799,9 +923,11 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
-				throw 'err';
-			});
+			const spyon = jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async params => {
+					throw 'err';
+				});
 
 			expect.assertions(1);
 			try {
@@ -890,7 +1016,9 @@ describe('StorageProvider test', () => {
 			const spyon = jest.spyOn(S3Client.prototype, 'send');
 
 			expect.assertions(2);
-			expect(await storage.list('emptyListResultsPath', { level: 'public' })).toEqual([]);
+			expect(
+				await storage.list('emptyListResultsPath', { level: 'public' })
+			).toEqual([]);
 			expect(spyon.mock.calls[0][0].input).toEqual({
 				Bucket: 'bucket',
 				Prefix: 'public/emptyListResultsPath',
@@ -911,7 +1039,9 @@ describe('StorageProvider test', () => {
 			const spyon2 = jest.spyOn(Hub, 'dispatch');
 
 			expect.assertions(3);
-			expect(await storage.list('path', { level: 'public', track: true })).toEqual([
+			expect(
+				await storage.list('path', { level: 'public', track: true })
+			).toEqual([
 				{
 					eTag: 'etag',
 					key: 'path/itemsKey',
@@ -938,17 +1068,21 @@ describe('StorageProvider test', () => {
 		});
 
 		test('list object with maxKeys', async () => {
-			const curCredSpyOn = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return new Promise((res, rej) => {
-					res({});
+			const curCredSpyOn = jest
+				.spyOn(Credentials, 'get')
+				.mockImplementationOnce(() => {
+					return new Promise((res, rej) => {
+						res({});
+					});
 				});
-			});
 
 			const storage = new StorageProvider();
 			storage.configure(options);
 			const spyon = jest.spyOn(S3Client.prototype, 'send');
 			expect.assertions(2);
-			expect(await storage.list('path', { level: 'public', maxKeys: 1 })).toEqual([
+			expect(
+				await storage.list('path', { level: 'public', maxKeys: 1 })
+			).toEqual([
 				{
 					eTag: 'etag',
 					key: 'path/itemsKey',
@@ -975,9 +1109,11 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
-				throw 'err';
-			});
+			const spyon = jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async params => {
+					throw 'err';
+				});
 
 			expect.assertions(1);
 			try {
@@ -1046,15 +1182,22 @@ describe('StorageProvider test', () => {
 					key: 'dest',
 					level: 'public',
 				})
-			).rejects.toThrowError('source param should be an object with the property "key" with value of type string');
+			).rejects.toThrowError(
+				'source param should be an object with the property "key" with value of type string'
+			);
 
 			// wrong key type
 			await expect(
-				storage.copy(({ level: 'public', key: 123 } as unknown) as S3CopySource, {
-					key: 'dest',
-					level: 'public',
-				})
-			).rejects.toThrowError('source param should be an object with the property "key" with value of type string');
+				storage.copy(
+					({ level: 'public', key: 123 } as unknown) as S3CopySource,
+					{
+						key: 'dest',
+						level: 'public',
+					}
+				)
+			).rejects.toThrowError(
+				'source param should be an object with the property "key" with value of type string'
+			);
 		});
 
 		test('copy with invalid destination key should throw error', async () => {
@@ -1069,7 +1212,9 @@ describe('StorageProvider test', () => {
 				storage.copy({ key: 'src', level: 'public' }, {
 					level: 'public',
 				} as S3CopyDestination)
-			).rejects.toThrowError('destination param should be an object with the property "key" with value of type string');
+			).rejects.toThrowError(
+				'destination param should be an object with the property "key" with value of type string'
+			);
 
 			// wrong key type
 			await expect(
@@ -1077,7 +1222,9 @@ describe('StorageProvider test', () => {
 					key: 123,
 					level: 'public',
 				} as unknown) as S3CopyDestination)
-			).rejects.toThrowError('destination param should be an object with the property "key" with value of type string');
+			).rejects.toThrowError(
+				'destination param should be an object with the property "key" with value of type string'
+			);
 		});
 
 		test('copy object with track', async () => {
@@ -1175,17 +1322,23 @@ describe('StorageProvider test', () => {
 			});
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3Client.prototype, 'send').mockImplementation(async () => {
-				throw new Error('err');
-			});
-			await expect(storage.copy({ key: 'src' }, { key: 'dest' })).rejects.toThrow('err');
+			const spyon = jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementation(async () => {
+					throw new Error('err');
+				});
+			await expect(
+				storage.copy({ key: 'src' }, { key: 'dest' })
+			).rejects.toThrow('err');
 			expect(spyon).toBeCalledTimes(1);
 		});
 
 		test('credentials not ok', async () => {
 			const storage = new StorageProvider();
 			storage.configure(options_no_cred);
-			await expect(storage.copy({ key: 'src' }, { key: 'dest' })).rejects.toThrowError('No credentials');
+			await expect(
+				storage.copy({ key: 'src' }, { key: 'dest' })
+			).rejects.toThrowError('No credentials');
 		});
 	});
 });

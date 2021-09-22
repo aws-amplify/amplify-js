@@ -6,6 +6,7 @@ import {
 	ListPartsCommandOutput,
 	CreateMultipartUploadCommand,
 	AbortMultipartUploadCommand,
+	PutObjectCommandInput,
 } from '@aws-sdk/client-s3';
 import { StorageHelper, Logger } from '@aws-amplify/core';
 import { StorageLevel } from '../types/Storage';
@@ -22,6 +23,7 @@ export interface AddTaskInput {
 	emitter: events.EventEmitter;
 	key: string;
 	s3Client: S3Client;
+	params: PutObjectCommandInput;
 }
 
 interface FileMetadata {
@@ -56,13 +58,13 @@ export class AWSS3UploadManager {
 
 		if (tasks) {
 			return JSON.parse(tasks);
-		} 
+		}
 		return {};
 	}
 
 	private _setUploadTasks(uploads: Record<string, FileMetadata> | {}): void {
 		this._storage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(uploads));
-	} 
+	}
 
 	private async _getCachedUploadParts({
 		s3client,
@@ -82,18 +84,18 @@ export class AWSS3UploadManager {
 		}
 
 		const fileKey = this._getFileKey(file, bucket, key);
-		
+
 		if (!uploads.hasOwnProperty(fileKey)) {
 			return null;
 		}
-		
+
 		const cachedUploadFileData: FileMetadata =
 			uploads[this._getFileKey(file, bucket, key)] || {};
 		const hasExpired =
 			cachedUploadFileData.hasOwnProperty('lastTouched') &&
 			Date.now() - cachedUploadFileData.lastTouched > oneHourInMs;
-		
-			if (cachedUploadFileData && !hasExpired) {
+
+		if (cachedUploadFileData && !hasExpired) {
 			cachedUploadFileData.lastTouched = Date.now();
 
 			this._setUploadTasks(uploads);
@@ -184,7 +186,7 @@ export class AWSS3UploadManager {
 	}
 
 	public async addTask(input: AddTaskInput) {
-		const { s3Client, bucket, key, file, emitter } = input;
+		const { s3Client, bucket, key, file, emitter, params } = input;
 		let cachedUpload = {};
 
 		this._purgeExpiredKeys({
@@ -227,7 +229,7 @@ export class AWSS3UploadManager {
 				completedParts: cachedUpload.Parts,
 				emitter,
 			});
-			
+
 			return this._uploadTasks[cachedUploadId];
 		}
 
@@ -235,13 +237,10 @@ export class AWSS3UploadManager {
 	}
 
 	private async _initMultiupload(input: AddTaskInput) {
-		const { s3Client, bucket, key, file, emitter, accessLevel } = input;
+		const { s3Client, bucket, key, file, emitter, accessLevel, params } = input;
 		const fileKey = this._getFileKey(file as File, bucket, key);
 		const createMultipartUpload = await s3Client.send(
-			new CreateMultipartUploadCommand({
-				Bucket: bucket,
-				Key: key,
-			})
+			new CreateMultipartUploadCommand(params)
 		);
 		const newTask = new AWSS3UploadTask({
 			s3Client,

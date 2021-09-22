@@ -193,6 +193,8 @@ export class AWSS3UploadTask implements UploadTask {
 					.catch(err => {
 						if (this.state === State.PAUSED) {
 							logger.log('upload paused');
+						} else if (this.state === State.ABORTED) {
+							logger.log('upload aborted');
 						} else {
 							logger.error('error starting next part of upload: ', err);
 						}
