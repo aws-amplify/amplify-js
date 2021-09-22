@@ -54,7 +54,9 @@
   "jest": {
     "globals": {
       "ts-jest": {
-        "diagnostics": false,
+				"diagnostics": {
+					"pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
+				},
         "tsConfig": {
           "lib": [
             "es5",
