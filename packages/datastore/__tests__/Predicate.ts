@@ -306,6 +306,40 @@ describe('Predicates', () => {
 				expect(matches.length).toBe(0);
 			});
 
+			test('can perform or() logic with nested and() logic', async () => {
+				const query = predicateFor(Author).or(author_or => [
+					author_or.and(a => [
+						a.name.contains('Bob'),
+						a.name.contains('Jones'),
+					]),
+					author_or.and(a => [
+						a.name.contains('Debbie'),
+						a.name.contains('from the Legend of Zelda'),
+					]),
+				]);
+				const matches = await query.filter(flatAuthorsArray);
+
+				expect(matches.length).toBe(1);
+				expect(matches.map(m => m.name)).toEqual(['Bob Jones']);
+			});
+
+			test('can perform and() logic with nested or() logic', async () => {
+				const query = predicateFor(Author).and(author_and => [
+					author_and.or(a => [
+						a.name.contains('Bob'),
+						a.name.contains('Donut'),
+					]),
+					author_and.or(a => [
+						a.name.contains('Debbie'),
+						a.name.contains('from the Legend of Zelda'),
+					]),
+				]);
+				const matches = await query.filter(flatAuthorsArray);
+
+				expect(matches.length).toBe(1);
+				expect(matches.map(m => m.name)).toEqual(['Debbie Donut']);
+			});
+
 			test('can perform simple not() logic, matching all but one item', async () => {
 				const query = predicateFor(Author).not(a => a.name.eq('Bob Jones'));
 				const matches = await query.filter(flatAuthorsArray);
