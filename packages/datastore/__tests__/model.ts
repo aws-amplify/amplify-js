@@ -1,9 +1,3 @@
-// import {
-// 	// ModelInit,
-// 	// MutableModel,
-// 	// PersistentModelConstructor,
-// } from '@aws-amplify/datastore';
-
 import {
 	initSchema,
 	NonModelTypeConstructor,
@@ -160,6 +154,7 @@ const {
 	Project: PersistentModelConstructor<ProjectModel>;
 	Team: PersistentModelConstructor<TeamModel>;
 };
+``;
 
 export {
 	Author,

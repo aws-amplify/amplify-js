@@ -17,7 +17,7 @@ type MatchableTypes =
 	| boolean[];
 
 type EqualityOperators = 'eq' | 'ne';
-type ComparisonOperators = 'gt' | 'ge' | 'lt' | 'le' | 'between';
+type ComparisonOperators = 'gt' | 'ge' | 'lt' | 'le' | 'between' | 'beginsWith';
 type ScalarOperators = EqualityOperators | ComparisonOperators;
 type CollectionOperators = 'contains' | 'notContains';
 type AllFieldOperators = CollectionOperators | ScalarOperators;
@@ -42,6 +42,7 @@ const ops: AllFieldOperators[] = [
 	'ge',
 	'lt',
 	'le',
+	'beginsWith',
 	'between',
 	'contains',
 	'notContains',
@@ -113,9 +114,11 @@ type UntypedCondition = {
 class FieldCondition {
 	constructor(
 		public field: string,
-		public operator: string,
+		public operator: string, // TODO: tighter type?
 		public operands: string[]
-	) {}
+	) {
+		this.validate();
+	}
 
 	copy(extract: GroupCondition): [FieldCondition, GroupCondition | undefined] {
 		return [
@@ -138,14 +141,54 @@ class FieldCondition {
 			lt: () => v < this.operands[0],
 			le: () => v <= this.operands[0],
 			contains: () => v.indexOf(this.operands[0]) > -1,
+			notContains: () => v.indexOf(this.operands[0]) < 0,
 			beginsWith: () => v.startsWith(this.operands[0]),
-			between: () => v > this.operands[0] && v < this.operands[1],
+			between: () => v >= this.operands[0] && v <= this.operands[1],
 		};
 		const operation = operations[this.operator as keyof typeof operations];
 		if (operation) {
 			return operation();
 		} else {
 			throw new Error(`Invalid operator given: ${this.operator}`);
+		}
+	}
+
+	validate(): void {
+		const _t = this;
+		function argumentCount(count) {
+			const argsClause = count === 1 ? 'argument is' : 'arguments are';
+			return () => {
+				if (_t.operands.length !== count) {
+					return `Exactly ${count} ${argsClause} required.`;
+				}
+			};
+		}
+
+		// NOTE: validations should return a message on failure.
+		// hence, they should be "joined" together with logical OR's.
+		const validations = {
+			eq: argumentCount(1),
+			ne: argumentCount(1),
+			gt: argumentCount(1),
+			ge: argumentCount(1),
+			lt: argumentCount(1),
+			le: argumentCount(1),
+			contains: argumentCount(1),
+			notContains: argumentCount(1),
+			beginsWith: argumentCount(1),
+			between: () =>
+				argumentCount(2)() ||
+				(this.operands[0] > this.operands[1]
+					? 'The first argument must be less than or equal to the second argument.'
+					: null),
+		};
+		const validate = validations[this.operator as keyof typeof validations];
+		if (validate) {
+			const e = validate();
+			if (typeof e === 'string')
+				throw new Error(`Incorrect usage of \`${this.operator}()\`: ${e}`);
+		} else {
+			throw new Error(`Non-existent operator: \`${this.operator}()\``);
 		}
 	}
 }
