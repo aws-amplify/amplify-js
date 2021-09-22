@@ -28,7 +28,6 @@ import {
 	S3ProviderGetConfig,
 } from '../../src/types';
 import { AWSS3UploadTask } from '../../src/providers/AWSS3UploadTask';
-
 /**
  * NOTE - These test cases use Hub.dispatch but they should
  * actually be using dispatchStorageEvent from Storage
@@ -41,11 +40,11 @@ const mockEventEmitter = {
 	removeAllListeners: mockRemoveAllListeners,
 };
 
-jest.mock('events', function () {
+jest.mock('events', function() {
 	return {
-		EventEmitter: jest.fn().mockImplementation(() => mockEventEmitter)
-	}
-})
+		EventEmitter: jest.fn().mockImplementation(() => mockEventEmitter),
+	};
+});
 
 S3Client.prototype.send = jest.fn(async command => {
 	if (command instanceof ListObjectsCommand) {
@@ -277,13 +276,23 @@ describe('StorageProvider test', () => {
 			});
 			const storage = new StorageProvider();
 			storage.configure(downloadOptionsWithProgressCallback);
-			jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
-				return { Body: [1, 2] };
-			});
+			jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async params => {
+					return { Body: [1, 2] };
+				});
 			expect(await storage.get('key', { download: true })).toEqual({
+				Body: [1, 2],
+			});
+			expect(mockEventEmitter.on).toBeCalledWith(
+				'sendDownloadProgress',
+				expect.any(Function)
+			);
+			// Get the anonymous function called by the emitter
 			const emitterOnFn = mockEventEmitter.on.mock.calls[0][1];
 			// Manully invoke it for testing
 			emitterOnFn('arg');
+			expect(mockCallback).toBeCalledWith('arg');
 			expect(mockRemoveAllListeners).toHaveBeenCalled();
 		});
 
@@ -505,6 +514,7 @@ describe('StorageProvider test', () => {
 						cred: 'cred2',
 					});
 				});
+			});
 
 			await storage.get('key', { download: false });
 
@@ -588,9 +598,11 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
-				throw 'err';
-			});
+			jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async params => {
+					throw 'err';
+				});
 
 			expect.assertions(1);
 			try {
@@ -738,8 +750,7 @@ describe('StorageProvider test', () => {
 				expect(e).not.toBeNull();
 			}
 		});
-
-		test('put (resumeable upload) returns instance of AWSS3UploadTask', async () => {
+		test('put (resumable upload) returns instance of AWSS3UploadTask', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
 			});
@@ -763,13 +774,13 @@ describe('StorageProvider test', () => {
 				});
 
 			const uploadTask = await storage.put('key', file, {
-				resumeable: true,
+				resumable: true,
 			});
 
 			expect(uploadTask instanceof AWSS3UploadTask).toEqual(true);
 		});
 
-		test('put (resumeable upload) with extra config passed to s3 call', async () => {
+		test('put (resumable upload) with extra config passed to s3 call', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
 			});
@@ -791,7 +802,7 @@ describe('StorageProvider test', () => {
 			const date = new Date();
 			const metadata = { key: 'value' };
 			const uploadTask = await storage.put('key', file, {
-				resumeable: true,
+				resumable: true,
 				contentType: 'application/pdf',
 				cacheControl: 'no-cache',
 				contentDisposition: 'inline',
@@ -889,9 +900,11 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
-				throw 'err';
-			});
+			jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async params => {
+					throw 'err';
+				});
 
 			expect.assertions(1);
 			try {
@@ -1073,9 +1086,11 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
-				throw 'err';
-			});
+			jest
+				.spyOn(S3Client.prototype, 'send')
+				.mockImplementationOnce(async params => {
+					throw 'err';
+				});
 
 			expect.assertions(1);
 			try {

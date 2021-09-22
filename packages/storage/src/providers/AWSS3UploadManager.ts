@@ -9,7 +9,7 @@ import {
 	PutObjectCommandInput,
 } from '@aws-sdk/client-s3';
 import { StorageHelper, Logger } from '@aws-amplify/core';
-import { StorageLevel } from '../types/Storage';
+import { StorageAccessLevel } from '../types/Storage';
 
 const logger = new Logger('Storage');
 const oneHourInMs = 1000 * 60 * 60;
@@ -17,17 +17,17 @@ const oneHourInMs = 1000 * 60 * 60;
 type UploadId = string;
 
 export interface AddTaskInput {
-	accessLevel: StorageLevel;
+	accessLevel: StorageAccessLevel;
 	file: Blob;
 	bucket: string;
 	emitter: events.EventEmitter;
 	key: string;
 	s3Client: S3Client;
-	params: PutObjectCommandInput;
+	params?: PutObjectCommandInput;
 }
 
 interface FileMetadata {
-	accessLevel: StorageLevel;
+	accessLevel: StorageAccessLevel;
 	bucket: string;
 	fileName: string;
 	key: string;

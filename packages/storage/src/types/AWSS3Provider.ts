@@ -1,4 +1,3 @@
-import { AWSS3UploadTask } from '../providers/AWSS3UploadTask';
 import {
 	GetObjectRequest,
 	GetObjectCommandOutput,
@@ -8,12 +7,17 @@ import {
 	DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { StorageOptions, StorageAccessLevel } from './Storage';
+import { CancelTokenSource } from 'axios';
+import { AWSS3UploadTask } from '../providers/AWSS3UploadTask';
 
 type ListObjectsCommandOutputContent = _Object;
 
 export type CommonStorageOptions = Omit<
 	StorageOptions,
-	'credentials' | 'region' | 'bucket' | 'dangerouslyConnectToHttpEndpointForTesting'
+	| 'credentials'
+	| 'region'
+	| 'bucket'
+	| 'dangerouslyConnectToHttpEndpointForTesting'
 >;
 
 export type S3ProviderGetConfig = CommonStorageOptions & {
@@ -23,6 +27,7 @@ export type S3ProviderGetConfig = CommonStorageOptions & {
 	provider?: 'AWSS3';
 	identityId?: string;
 	progressCallback?: (progress: any) => any;
+	CancelTokenSource?: CancelTokenSource;
 	cacheControl?: GetObjectRequest['ResponseCacheControl'];
 	contentDisposition?: GetObjectRequest['ResponseContentDisposition'];
 	contentEncoding?: GetObjectRequest['ResponseContentEncoding'];
@@ -55,15 +60,18 @@ export type S3ProviderPutConfig = CommonStorageOptions & {
 	expires?: PutObjectRequest['Expires'];
 	metadata?: PutObjectRequest['Metadata'];
 	tagging?: PutObjectRequest['Tagging'];
-	resumeable?: boolean;
 	useAccelerateEndpoint?: boolean;
+	resumable?: boolean;
 };
 
 export interface S3ProviderPutOutput {
 	key: string;
 }
 
-export type S3ProviderRemoveConfig = CommonStorageOptions & { bucket?: string; provider?: 'AWSS3' };
+export type S3ProviderRemoveConfig = CommonStorageOptions & {
+	bucket?: string;
+	provider?: 'AWSS3';
+};
 
 export type S3ProviderRemoveOutput = DeleteObjectCommandOutput;
 
@@ -119,24 +127,6 @@ export type PutResult = {
 	key: string;
 };
 
-export type S3PutResult<T> = T extends { resumeable: true }
+export type S3PutResult<T> = T extends { resumable: true }
 	? AWSS3UploadTask
 	: PutResult;
-
-interface StoragePutConfig {
-	level?: StorageLevel;
-	track?: boolean;
-	provider?: string;
-	progressCallback?: (progress: any) => any;
-	completeCallback?: (progress: any) => any;
-	resumeable?: boolean;
-}
-
-export interface PutObjectConfig {
-	level?: StorageLevel;
-	track?: boolean;
-	provider?: string;
-	progressCallback?: (progress: any) => any;
-	completeCallback?: (progress: any) => any;
-	resumeable?: boolean;
-}

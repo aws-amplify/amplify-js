@@ -556,7 +556,7 @@ export class AWSS3Provider implements StorageProvider {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
 		}
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, track, progressCallback, resumeable } = opt;
+		const { bucket, track, progressCallback, resumable } = opt;
 		const {
 			contentType,
 			contentDisposition,
@@ -576,7 +576,7 @@ export class AWSS3Provider implements StorageProvider {
 		} = opt;
 		const type = contentType ? contentType : 'binary/octet-stream';
 
-		if (resumeable) {
+		if (resumable) {
 			return this.upload(key, object, config);
 		}
 
