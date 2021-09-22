@@ -53,9 +53,6 @@
 		"lodash": "^4.17.20",
 		"uuid": "^3.2.1"
 	},
-	"devDependencies": {
-		"rimraf": "^3.0.2"
-	},
 	"jest": {
 		"globals": {
 			"ts-jest": {
