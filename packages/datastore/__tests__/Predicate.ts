@@ -392,6 +392,12 @@ describe('Predicates', () => {
 					name: `${author}'s Blog`,
 					owner: new BlogOwner({
 						name: author,
+
+						// to fake lazy loading 3-4 levels deep:
+						blog: new Blog({
+							name: `${author}'s Blog`,
+							owner: new BlogOwner({ name: author }),
+						}),
 					}),
 				})
 		);
@@ -429,6 +435,23 @@ describe('Predicates', () => {
 
 			expect(matches.length).toBe(1);
 			expect(matches[0].name).toBe("Bob Jones's Blog");
+		});
+
+		test('can filter 3 level nested, logically grouped', async () => {
+			const query = predicateFor(Blog).or(b => [
+				b.owner.and(o => [o.name.contains('Bob'), o.name.contains('West')]),
+				b.owner.and(owner => [
+					owner.blog.or(innerBlog => [
+						innerBlog.name.contains('Debbie'),
+						innerBlog.name.contains('from the Legend of Zelda'),
+					]),
+					owner.name.contains('Donut'),
+				]),
+			]);
+			const matches = await query.filter(blogs);
+
+			expect(matches.length).toBe(1);
+			expect(matches[0].name).toBe("Debbie Donut's Blog");
 		});
 	});
 });

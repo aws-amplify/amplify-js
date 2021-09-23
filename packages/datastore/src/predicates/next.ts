@@ -6,6 +6,7 @@ import {
 	PersistentModelConstructor,
 	SchemaModel,
 	ModelFieldType,
+	ModelAssociation,
 } from '../types';
 
 type MatchableTypes =
@@ -224,7 +225,6 @@ class GroupCondition {
 
 		this.operands.forEach(o => {
 			const [operandCopy, extractedFromOperand] = o.copy(extract);
-			// console.log('d', copied, copied.operands === undefined);
 			copied.operands.push(operandCopy);
 			extractedCopy = extractedCopy || extractedFromOperand;
 		});
@@ -238,10 +238,6 @@ class GroupCondition {
 
 	async matches(item: Record<string, any>): Promise<boolean> {
 		const itemToCheck = this.field ? await item[this.field] : item;
-
-		if (!itemToCheck) {
-			console.log(this, item);
-		}
 
 		if (this.operator === 'or') {
 			return asyncSome(this.operands, c => c.matches(itemToCheck));
@@ -332,7 +328,6 @@ export function predicateFor<T extends PersistentModel>(
 	if (tail) {
 		link.__tail = tail;
 	} else if (query) {
-		// console.log('a', link.__query, link.__query.operands === undefined);
 		link.__query.operands.push(link.__tail);
 	} else {
 		// only if it's a new query does tail === head
@@ -437,10 +432,14 @@ export function predicateFor<T extends PersistentModel>(
 						};
 					}, {});
 				} else {
-					if (def.association.targetName) {
+					if (
+						def.association.connectionType === 'BELONGS_TO' ||
+						def.association.connectionType === 'HAS_ONE'
+					) {
 						const [newquery, oldtail] = link.__query.copy(link.__tail);
 						const newtail = new GroupCondition(
-							def.association.targetName,
+							def.association.targetName ||
+								(def.association as any).associatedWith,
 							fieldName,
 							'and',
 							[]
@@ -453,6 +452,8 @@ export function predicateFor<T extends PersistentModel>(
 							newtail
 						);
 						return newlink;
+					} else if (def.association.connectionType === 'HAS_MANY') {
+						throw new Error('Not implemented yet.');
 					} else {
 						throw new Error(
 							"Oh no! Related Model definition doesn't have a typedef!"
