@@ -473,5 +473,43 @@ describe('Predicates', () => {
 			expect(matches.length).toBe(1);
 			expect(matches[0].name).toBe("Bob Jones's Blog");
 		});
+
+		test('can filter on child collections in or()', async () => {
+			const query = predicateFor(Blog).or(b => [
+				b.posts.title.contains('Bob Jones'),
+				b.posts.title.contains("Zelda's Blog post"),
+			]);
+			const matches = await query.filter(blogs);
+
+			expect(matches.length).toBe(2);
+			expect(matches.map(m => m.name)).toEqual([
+				"Bob Jones's Blog",
+				"Zelda from the Legend of Zelda's Blog",
+			]);
+		});
+
+		test('can filter on or() extended off child collections', async () => {
+			const query = predicateFor(Blog).posts.or(p => [
+				p.title.contains('Bob Jones'),
+				p.title.contains("Zelda's Blog post"),
+			]);
+			const matches = await query.filter(blogs);
+
+			expect(matches.length).toBe(2);
+			expect(matches.map(m => m.name)).toEqual([
+				"Bob Jones's Blog",
+				"Zelda from the Legend of Zelda's Blog",
+			]);
+		});
+
+		test('can filter and() between parent and child collection properties', async () => {
+			const query = predicateFor(Blog).and(b => [
+				b.name.contains('Bob Jones'),
+				b.posts.title.contains('Zelda'),
+			]);
+			const matches = await query.filter(blogs);
+
+			expect(matches.length).toBe(0);
+		});
 	});
 });
