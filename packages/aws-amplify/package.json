@@ -40,6 +40,7 @@
     "@aws-amplify/cache": "4.0.19",
     "@aws-amplify/core": "4.2.11",
     "@aws-amplify/datastore": "3.4.5",
+    "@aws-amplify/geo": "0.0.1",
     "@aws-amplify/interactions": "4.0.17",
     "@aws-amplify/predictions": "4.0.17",
     "@aws-amplify/pubsub": "4.1.9",
