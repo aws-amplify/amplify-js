@@ -427,8 +427,8 @@ describe('Predicates', () => {
 			]);
 			const matches = await query.filter(blogs);
 
-			expect(matches.length).toBe(5);
-			expect(matches[0].name).toBe('boots');
+			expect(matches.length).toBe(1);
+			expect(matches[0].name).toBe("Bob Jones's Blog");
 		});
 	});
 });

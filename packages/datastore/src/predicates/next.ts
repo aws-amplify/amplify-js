@@ -438,7 +438,6 @@ export function predicateFor<T extends PersistentModel>(
 					}, {});
 				} else {
 					if (def.association.targetName) {
-						// this gives us the associated model name ... right?
 						const [newquery, oldtail] = link.__query.copy(link.__tail);
 						const newtail = new GroupCondition(
 							def.association.targetName,
@@ -448,16 +447,11 @@ export function predicateFor<T extends PersistentModel>(
 						);
 						(oldtail as GroupCondition).operands.push(newtail);
 						const newlink = predicateFor(
-							//
-							// how do we get from name to type here?
-							//
 							(<ModelFieldType>def.type).modelConstructor,
-							fieldName,
+							undefined,
 							newquery,
 							newtail
 						);
-						// NOTE: Future self, beware! This return-value *is*
-						// correct! It facilitates Model.ChildModel.<more stuff> ...
 						return newlink;
 					} else {
 						throw new Error(
