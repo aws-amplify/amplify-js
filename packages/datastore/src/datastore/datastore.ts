@@ -1176,14 +1176,14 @@ class DataStore {
 							item,
 						])
 					);
-					onQueryComplete();
+					generateAndSendSnapshot();
 				} catch (err) {
 					observer.error(err);
 				}
 			})();
 
 			// primary callback for sending snapshots via `observer.next()`
-			const onQueryComplete = () => {
+			const generateAndSendSnapshot = () => {
 				const isSynced = this.sync.getModelSyncedStatus(model);
 
 				const itemsArray = [
@@ -1191,7 +1191,7 @@ class DataStore {
 					...Array.from(itemsChanged.values()),
 				];
 
-				if (options.sort) {
+				if (options?.sort) {
 					const modelDefinition = getModelDefinition(model);
 					const pagination = this.processPagination(modelDefinition, options);
 
@@ -1230,7 +1230,7 @@ class DataStore {
 					event === ControlMessage.SYNC_ENGINE_MODEL_SYNCED &&
 					data?.model?.name === model.name
 				) {
-					onQueryComplete();
+					generateAndSendSnapshot();
 					Hub.remove('api', hubCallback);
 				}
 			};
@@ -1242,16 +1242,17 @@ class DataStore {
 				// @ts-ignore TODO: fix this TSlint error
 				criteria
 			).subscribe(({ element, model, opType }) => {
-				itemsChanged.set(element.id, element);
 				// flag items which have been recently deleted
 				if (opType === 'DELETE') {
 					deletedItemIds.push(element.id);
+				} else {
+					itemsChanged.set(element.id, element);
 				}
 
 				const isSynced = this.sync.getModelSyncedStatus(model);
 
 				if (itemsChanged.size >= SYNCED_ITEMS_THRESHOLD || isSynced) {
-					onQueryComplete();
+					generateAndSendSnapshot();
 				}
 			});
 
