@@ -15,13 +15,25 @@ import { Logger, Hub, Credentials, ICredentials } from '@aws-amplify/core';
 import * as formatURL from '@aws-sdk/util-format-url';
 import { S3Client, ListObjectsCommand } from '@aws-sdk/client-s3';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
-import * as events from 'events';
 
 import { S3CopySource, S3CopyDestination, StorageOptions, S3ProviderGetConfig } from '../../src/types';
 /**
  * NOTE - These test cases use Hub.dispatch but they should
  * actually be using dispatchStorageEvent from Storage
  */
+
+const mockRemoveAllListeners = jest.fn();
+const mockEventEmitter = {
+	emit: jest.fn(),
+	on: jest.fn(),
+	removeAllListeners: mockRemoveAllListeners,
+};
+
+jest.mock('events', function () {
+	return {
+		EventEmitter: jest.fn().mockImplementation(() => mockEventEmitter)
+	}
+})
 
 S3Client.prototype.send = jest.fn(async command => {
 	if (command instanceof ListObjectsCommand) {
@@ -235,20 +247,13 @@ describe('StorageProvider test', () => {
 				return Promise.resolve(credentials);
 			});
 			const mockCallback = jest.fn();
-			const mockRemoveAllListeners = jest.fn();
-			const mockEventEmitter = {
-				emit: jest.fn(),
-				on: jest.fn(),
-				removeAllListeners: mockRemoveAllListeners,
-			};
-			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
 			const downloadOptionsWithProgressCallback = Object.assign({}, options, {
 				download: true,
 				progressCallback: mockCallback,
 			});
 			const storage = new StorageProvider();
 			storage.configure(downloadOptionsWithProgressCallback);
-			const spyon = jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
+			jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
 				return { Body: [1, 2] };
 			});
 			expect(await storage.get('key', { download: true })).toEqual({
@@ -268,12 +273,6 @@ describe('StorageProvider test', () => {
 				return Promise.resolve(credentials);
 			});
 			const loggerSpy = jest.spyOn(Logger.prototype, '_log');
-			const mockEventEmitter = {
-				emit: jest.fn(),
-				on: jest.fn(),
-				removeAllListeners: jest.fn(),
-			};
-			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
 			const downloadOptionsWithProgressCallback = Object.assign({}, options);
 			const storage = new StorageProvider();
 			storage.configure(downloadOptionsWithProgressCallback);
@@ -381,7 +380,7 @@ describe('StorageProvider test', () => {
 			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
 			expect(spyon.mock.calls[0][0].hostname).toEqual(options.bucket + '.s3.' + options.region + '.amazonaws.com');
 
-			expect(spyon.mock.calls[0][1].expiresIn).toBe(1200);
+			expect(spyon.mock.calls[0][1]?.expiresIn).toBe(1200);
 		});
 
 		test('get object with default expires option', async () => {
@@ -401,7 +400,7 @@ describe('StorageProvider test', () => {
 			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
 			expect(spyon.mock.calls[0][0].hostname).toEqual(options.bucket + '.s3.' + options.region + '.amazonaws.com');
 
-			expect(spyon.mock.calls[0][1].expiresIn).toBe(900);
+			expect(spyon.mock.calls[0][1]?.expiresIn).toBe(900);
 		});
 
 		test('get object with identityId option', async () => {
@@ -448,7 +447,7 @@ describe('StorageProvider test', () => {
 		test('always ask for the current credentials', async () => {
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3RequestPresigner.prototype, 'presign');
+			jest.spyOn(S3RequestPresigner.prototype, 'presign');
 			jest.spyOn(formatURL, 'formatUrl').mockReturnValue('url');
 			const curCredSpyOn = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return new Promise((res, rej) => {
@@ -460,7 +459,7 @@ describe('StorageProvider test', () => {
 
 			await storage.get('key', { download: false });
 
-			const curCredSpyOn2 = jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return new Promise((res, rej) => {
 					res({
 						cred: 'cred2',
@@ -550,7 +549,7 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
+			jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
 				throw 'err';
 			});
 
@@ -649,11 +648,6 @@ describe('StorageProvider test', () => {
 				});
 			});
 			const mockCallback = jest.fn();
-			const mockEventEmitter = {
-				emit: jest.fn(),
-				on: jest.fn(),
-			};
-			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
 			const storage = new StorageProvider();
 			storage.configure(options);
 			await storage.put('key', 'object', {
@@ -675,11 +669,6 @@ describe('StorageProvider test', () => {
 				});
 			});
 			const loggerSpy = jest.spyOn(Logger.prototype, '_log');
-			const mockEventEmitter = {
-				emit: jest.fn(),
-				on: jest.fn(),
-			};
-			jest.spyOn(events, 'EventEmitter').mockImplementationOnce(() => mockEventEmitter);
 			const storage = new StorageProvider();
 			storage.configure(options);
 			await storage.put('key', 'object', {
@@ -767,7 +756,7 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
+			jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
 				throw 'err';
 			});
 
@@ -943,7 +932,7 @@ describe('StorageProvider test', () => {
 
 			const storage = new StorageProvider();
 			storage.configure(options);
-			const spyon = jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
+			jest.spyOn(S3Client.prototype, 'send').mockImplementationOnce(async params => {
 				throw 'err';
 			});
 

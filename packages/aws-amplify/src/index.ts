@@ -24,6 +24,7 @@ Amplify.ServiceWorker = ServiceWorker;
 
 export {
 	Analytics,
+	AnalyticsProvider,
 	AWSPinpointProvider,
 	AWSKinesisProvider,
 	AWSKinesisFirehoseProvider,
