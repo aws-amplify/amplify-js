@@ -93,6 +93,7 @@ describe('aws-amplify', () => {
 			  "ServiceWorker",
 			  "AWSCloudWatchProvider",
 			  "withSSRContext",
+			  "Geo",
 			  "default",
 			]
 		`);
