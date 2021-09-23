@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/geo",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"description": "Geo category for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
