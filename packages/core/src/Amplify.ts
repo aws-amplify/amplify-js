@@ -27,6 +27,7 @@ export class AmplifyClass {
 	XR = null;
 	Predictions = null;
 	DataStore = null;
+	Geo = null;
 
 	Logger = LoggerClass;
 	ServiceWorker = null;
