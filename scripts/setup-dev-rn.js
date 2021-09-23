@@ -56,7 +56,8 @@ const ALIAS_WML = sanatizeCommand(
 	'alias',
 	`npm-exec='PATH=$("npm " & "bin"):$PATH'`
 );
-const DELAY = `${MULTILINE_FLAG}  ${singleQuotedFormOf('delay 0.2')}`;
+const DELAY = seconds =>
+	`${MULTILINE_FLAG}  ${singleQuotedFormOf(`delay ${seconds}`)}`;
 const OPEN_NEW_TAB = `${MULTILINE_FLAG} ${singleQuotedFormOf(
 	'tell application "System Events" to tell process "Terminal" to keystroke "t" using command down'
 )}`;
@@ -85,18 +86,21 @@ function openTerminalWithTabs(commands, pkgRootPath) {
 	const GOTO_PACKAGE_ROOT = sanatizeCommand('cd', pkgRootPath);
 
 	commands.forEach(command => {
+		// Split multiple commands to be run in the same using the char ;
 		const splitCommands = command.split(`${WHITE_SPACE};${WHITE_SPACE}`);
-		const hasTwoCommands = splitCommands.length === 2;
+		const hasTwoOrMoreCommands = splitCommands.length >= 2;
 
-		osaScript += `${OPEN_NEW_TAB} ${DELAY} ${createDoCommand(
+		osaScript += `${OPEN_NEW_TAB} ${DELAY(1)} ${createDoCommand(
 			GOTO_PACKAGE_ROOT
 		)}${WHITE_SPACE}`;
 
-		osaScript += hasTwoCommands
-			? `${createDoCommand(splitCommands[0])} ${createDoCommand(
-					doubleQuotedFormOf(splitCommands[1])
-			  )}`
-			: `${createDoCommand(doubleQuotedFormOf(command))}`;
+		if (hasTwoOrMoreCommands) {
+			splitCommands.forEach(splitCommand => {
+				osaScript += `${DELAY(2)} ${createDoCommand(splitCommand)}`;
+			});
+		} else {
+			osaScript += `${createDoCommand(doubleQuotedFormOf(command))}`;
+		}
 	});
 
 	exec(osaScript, error => {
@@ -181,15 +185,15 @@ function setupDevReactNative() {
 		finalCommands.push(createLernaCommand('esm', esmPackages));
 	}
 
-	// WML add command formation
-	finalCommands.push(
-		createWmlCommand(requestedPackages, targetAppPath, pkgRootPath)
-	);
-
 	// LERNA build:CJS:watch package command to be run in a new tab
 	if (cjsPackages.length > 0) {
 		finalCommands.push(createLernaCommand('cjs', cjsPackages));
 	}
+
+	// WML add command formation
+	finalCommands.push(
+		createWmlCommand(requestedPackages, targetAppPath, pkgRootPath)
+	);
 
 	// Open each command in a new tab in a new terminal
 	openTerminalWithTabs(finalCommands, pkgRootPath);
@@ -208,7 +212,11 @@ const createWmlCommand = (requestedPackages, targetAppPath, pkgRootPath) => {
 		targetAppPath,
 		pkgRootPath
 	);
-	return `${ALIAS_WML} ; ${WML_REMOVE_ALL_LINKS} && ${wmlAddcommand} ${WML_START}`;
+
+	// Use char ; to separate commands to be run on the same tab
+	return `${ALIAS_WML} ; ${doubleQuotedFormOf(
+		WML_REMOVE_ALL_LINKS
+	)} ; ${wmlAddcommand} ; ${doubleQuotedFormOf(WML_START)}`;
 };
 
 // Get all package names from under the packages directory
@@ -232,9 +240,15 @@ const buildWmlAddStrings = (packages, targetAppPath, pkgRootPath) => {
 			: packageName;
 		const source = path.resolve(packagesDirectory, sourceDirectoryName);
 		const target = path.resolve(sampleAppNodeModulesDirectory, pack);
-		wmlAddCommands += `${WML_ADD_LINK} ${source} ${target} && `;
+		wmlAddCommands += `${doubleQuotedFormOf(
+			`${WML_ADD_LINK}${WHITE_SPACE}`
+		)} & ${doubleQuotedFormOf(
+			`${source}${WHITE_SPACE}`
+		)} & ${doubleQuotedFormOf(`${target}${WHITE_SPACE}&&${WHITE_SPACE}`)} & `;
 	});
-	return wmlAddCommands;
+
+	// Remove the trailing & with spaces
+	return `(${wmlAddCommands.substring(0, wmlAddCommands.length - 3)})`;
 };
 
 setupDevReactNative();
