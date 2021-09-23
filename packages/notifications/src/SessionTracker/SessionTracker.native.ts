@@ -25,12 +25,12 @@ export default class SessionTracker implements SessionTrackerInterface {
 	start = (): SessionState => {
 		AppState.addEventListener('change', this.appStateChangeHandler);
 		return this.getSessionState();
-	};
+	}
 
 	end = (): SessionState => {
 		AppState.removeEventListener('change', this.appStateChangeHandler);
 		return this.getSessionState();
-	};
+	}
 
 	private getSessionState = (): SessionState => {
 		if (isActive(this.currentAppState)) {
@@ -38,7 +38,7 @@ export default class SessionTracker implements SessionTrackerInterface {
 		}
 		// consider any other app state as session ended
 		return 'ended';
-	};
+	}
 
 	private appStateChangeHandler = nextAppState => {
 		// if going from active to inactive
@@ -53,5 +53,5 @@ export default class SessionTracker implements SessionTrackerInterface {
 		}
 		// otherwise do nothing but always update current state
 		this.currentAppState = nextAppState;
-	};
+	}
 }

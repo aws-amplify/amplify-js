@@ -90,7 +90,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		this.sessionTracker.start();
 		dispatchNotificationEvent('pinpointProvider_configured', null);
 		return this.config;
-	};
+	}
 
 	syncInAppMessages = async () => {
 		if (!this.initialized) {
@@ -139,7 +139,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		} catch (err) {
 			logger.error('Error syncing in-app messages', err);
 		}
-	};
+	}
 
 	filterMessages = async (
 		messages: InAppMessage[] = [],
@@ -161,14 +161,14 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 				this.isBelowCap(message, CampaignId)
 			);
 		});
-	};
+	}
 
 	recordInAppMessageDisplayed = async (messageId: string): Promise<void> => {
 		if (!this.initialized) {
 			await this.init();
 		}
 		await this.incrementCounts(messageId);
-	};
+	}
 
 	private init = async () => {
 		const { appId, disabled, storage } = this.config;
@@ -188,7 +188,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		} catch (err) {
 			logger.error(`Failed to initialize ${providerName}`, err);
 		}
-	};
+	}
 
 	private initPinpointClient = async () => {
 		const { appId, region } = this.config;
@@ -205,7 +205,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 			region,
 			credentials,
 		});
-	};
+	}
 
 	private getCredentials = async () => {
 		try {
@@ -219,7 +219,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 			logger.error('Error getting credentials:', err);
 			return null;
 		}
-	};
+	}
 
 	private updateEndpoint = async (): Promise<void> => {
 		const { appId, endpointId, pinpointClient } = this.config;
@@ -239,7 +239,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		} catch (err) {
 			throw err;
 		}
-	};
+	}
 
 	private sessionStateChangeHandler: SessionStateChangeHandler = (
 		state: SessionState
@@ -248,7 +248,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 			// reset all session counts
 			this.sessionMessageCountMap = {};
 		}
-	};
+	}
 
 	private isBelowCap = (
 		{ SessionCap, DailyCap, TotalCap }: InAppMessage,
@@ -269,11 +269,11 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 			dailyCount < DailyCap &&
 			totalCount < TotalCap
 		);
-	};
+	}
 
 	// Use the current session count in memory or initialize as empty count
 	private getSessionCount = (messageId: string): number =>
-		this.sessionMessageCountMap[messageId] || 0;
+		this.sessionMessageCountMap[messageId] || 0
 
 	private getDailyCount = (): number => {
 		const { storage } = this.config;
@@ -285,20 +285,20 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 			: { count: 0, lastCountTimestamp: today };
 		// If the stored counter timestamp is today, use it as the count, otherwise reset to 0
 		return counter.lastCountTimestamp === today ? counter.count : 0;
-	};
+	}
 
 	private getTotalCountMap = (): InAppMessageCountMap => {
 		const { storage } = this.config;
 		const item = storage.getItem(MESSAGE_TOTAL_COUNT_KEY);
 		// Parse stored count map or initialize as empty
 		return item ? JSON.parse(item) : {};
-	};
+	}
 
 	private getTotalCount = (messageId: string): number => {
 		const countMap = this.getTotalCountMap();
 		// Return stored count or initialize as empty count
 		return countMap[messageId] || 0;
-	};
+	}
 
 	private getMessageCounts = (messageId: string): InAppMessageCounts => {
 		try {
@@ -310,11 +310,11 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		} catch (err) {
 			logger.error('Failed to get message counts from storage', err);
 		}
-	};
+	}
 
 	private setSessionCount = (messageId: string, count: number): void => {
 		this.sessionMessageCountMap[messageId] = count;
-	};
+	}
 
 	private setDailyCount = (count: number): void => {
 		const { storage } = this.config;
@@ -327,7 +327,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		} catch (err) {
 			logger.error('Failed to save daily message count to storage', err);
 		}
-	};
+	}
 
 	private setTotalCountMap = (countMap: InAppMessageCountMap): void => {
 		const { storage } = this.config;
@@ -336,7 +336,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		} catch (err) {
 			logger.error('Failed to save total count to storage', err);
 		}
-	};
+	}
 
 	private setTotalCount = (messageId: string, count: number): void => {
 		const updatedMap = {
@@ -344,7 +344,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 			[messageId]: count,
 		};
 		this.setTotalCountMap(updatedMap);
-	};
+	}
 
 	private incrementCounts = async (messageId: string): Promise<void> => {
 		const { sessionCount, dailyCount, totalCount } = this.getMessageCounts(
@@ -353,5 +353,5 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 		this.setSessionCount(messageId, sessionCount + 1);
 		this.setDailyCount(dailyCount + 1);
 		this.setTotalCount(messageId, totalCount + 1);
-	};
+	}
 }
