@@ -390,12 +390,24 @@ describe('Predicates', () => {
 			author =>
 				new Blog({
 					name: `${author}'s Blog`,
+					posts: [1, 2, 3].map(
+						id =>
+							new Post({
+								title: `${author}'s Blog post ${id}`,
+							})
+					),
 					owner: new BlogOwner({
 						name: author,
 
 						// to fake lazy loading 3-4 levels deep:
 						blog: new Blog({
 							name: `${author}'s Blog`,
+							posts: [1, 2, 3].map(
+								id =>
+									new Post({
+										title: `${author}'s Blog post ${id}`,
+									})
+							),
 							owner: new BlogOwner({ name: author }),
 						}),
 					}),
@@ -452,6 +464,14 @@ describe('Predicates', () => {
 
 			expect(matches.length).toBe(1);
 			expect(matches[0].name).toBe("Debbie Donut's Blog");
+		});
+
+		test('can filter on child collections', async () => {
+			const query = predicateFor(Blog).posts.title.contains('Bob Jones');
+			const matches = await query.filter(blogs);
+
+			expect(matches.length).toBe(1);
+			expect(matches[0].name).toBe("Bob Jones's Blog");
 		});
 	});
 });

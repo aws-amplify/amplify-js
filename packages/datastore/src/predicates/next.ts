@@ -97,7 +97,10 @@ type FinalModelPredicate<RT extends PersistentModel> = {
 	__className: string;
 	__query: GroupCondition;
 	__tail: GroupCondition;
-	filter: (items: RT[]) => Promise<RT[]>;
+
+	// TODO?: change RT -> FT (filter type) and thread a new
+	// RT (return type) through to be used HERE instead of T:
+	filter: <T>(items: T[]) => Promise<T[]>;
 };
 
 type GroupConditionType<RT extends PersistentModel> = {
@@ -208,6 +211,7 @@ class GroupCondition {
 	constructor(
 		public classname: string,
 		public field: string | undefined,
+		public relationshipType: string | undefined,
 		public operator: GroupOperator,
 		public operands: UntypedCondition[]
 	) {}
@@ -216,6 +220,7 @@ class GroupCondition {
 		const copied = new GroupCondition(
 			this.classname,
 			this.field,
+			this.relationshipType,
 			this.operator,
 			[]
 		);
@@ -236,8 +241,25 @@ class GroupCondition {
 		return Promise.reject('Not yet implemented.');
 	}
 
-	async matches(item: Record<string, any>): Promise<boolean> {
-		const itemToCheck = this.field ? await item[this.field] : item;
+	// ALT for `ignoreFieldName` could be to copy and strip off `fieldName`
+	// when recursing for `HAS_MANY`.
+	async matches(
+		item: Record<string, any>,
+		ignoreFieldName: boolean = false
+	): Promise<boolean> {
+		const itemToCheck =
+			this.field && !ignoreFieldName ? await item[this.field] : item;
+
+		// console.log(this, itemToCheck);
+
+		if (this.relationshipType === 'HAS_MANY' && itemToCheck instanceof Array) {
+			for (const singleItem of itemToCheck) {
+				if (await this.matches(singleItem, true)) {
+					return true;
+				}
+			}
+			return false;
+		}
 
 		if (this.operator === 'or') {
 			return asyncSome(this.operands, c => c.matches(itemToCheck));
@@ -315,8 +337,9 @@ export function predicateFor<T extends PersistentModel>(
 	const link = {
 		__class: ModelType as PersistentModelConstructor<T>,
 		__className: ModelType.name,
-		__query: query || new GroupCondition(ModelType.name, field, 'and', []),
-		__tail: new GroupCondition(ModelType.name, field, 'and', []),
+		__query:
+			query || new GroupCondition(ModelType.name, field, undefined, 'and', []),
+		__tail: new GroupCondition(ModelType.name, field, undefined, 'and', []),
 		__copy: () => {
 			const [query, newtail] = link.__query.copy(link.__tail);
 			return predicateFor<IndirectT>(ModelType, undefined, query, newtail);
@@ -347,6 +370,7 @@ export function predicateFor<T extends PersistentModel>(
 				new GroupCondition(
 					ModelType.name,
 					field,
+					undefined,
 					op as 'and' | 'or',
 					typeof builderOrPredicates[0] === 'function'
 						? builderOrPredicates[0](predicateFor<IndirectT>(ModelType)).map(
@@ -381,6 +405,7 @@ export function predicateFor<T extends PersistentModel>(
 			new GroupCondition(
 				ModelType.name,
 				field,
+				undefined,
 				'not',
 				typeof builderOrPredicate === 'function'
 					? [builderOrPredicate(predicateFor<IndirectT>(ModelType)).__query]
@@ -434,13 +459,15 @@ export function predicateFor<T extends PersistentModel>(
 				} else {
 					if (
 						def.association.connectionType === 'BELONGS_TO' ||
-						def.association.connectionType === 'HAS_ONE'
+						def.association.connectionType === 'HAS_ONE' ||
+						def.association.connectionType === 'HAS_MANY'
 					) {
 						const [newquery, oldtail] = link.__query.copy(link.__tail);
 						const newtail = new GroupCondition(
 							def.association.targetName ||
 								(def.association as any).associatedWith,
 							fieldName,
+							def.association.connectionType,
 							'and',
 							[]
 						);
@@ -453,6 +480,8 @@ export function predicateFor<T extends PersistentModel>(
 						);
 						return newlink;
 					} else if (def.association.connectionType === 'HAS_MANY') {
+						// i suspect we'll need a separate implementation here ... but it's not yet
+						// needed for the `filter()` use-case.
 						throw new Error('Not implemented yet.');
 					} else {
 						throw new Error(
