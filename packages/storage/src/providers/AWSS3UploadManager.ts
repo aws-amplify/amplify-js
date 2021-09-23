@@ -186,7 +186,7 @@ export class AWSS3UploadManager {
 	}
 
 	public async addTask(input: AddTaskInput) {
-		const { s3Client, bucket, key, file, emitter, params } = input;
+		const { s3Client, bucket, key, file, emitter } = input;
 		let cachedUpload = {};
 
 		this._purgeExpiredKeys({

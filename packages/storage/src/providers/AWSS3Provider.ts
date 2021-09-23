@@ -151,7 +151,7 @@ export class AWSS3Provider implements StorageProvider {
 
 	private async upload(key: string, file, config?): Promise<AWSS3UploadTask> {
 		if (!(file instanceof Blob)) {
-			return Promise.reject('Object must be an instance of Blob');
+			throw new Error(StorageErrorStrings.INVALID_BLOB);
 		}
 		const opt = Object.assign({}, this._config, config);
 		const { bucket, track, progressCallback, completeCallback, level } = opt;
