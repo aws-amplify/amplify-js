@@ -83,7 +83,7 @@ class NotificationsClass {
 			Hub.listen('analytics', this.analyticsListener);
 			this.listeningForAnalyticEvents = true;
 		}
-	};
+	}
 
 	getModuleName(): NotificationsCategory {
 		return 'Notifications';
@@ -100,7 +100,7 @@ class NotificationsClass {
 		}
 
 		return pluggable;
-	};
+	}
 
 	/**
 	 * add plugin into Analytics category
@@ -119,7 +119,7 @@ class NotificationsClass {
 			pluggable.configure(config);
 			return config;
 		}
-	};
+	}
 
 	removePluggable = (providerName: string): void => {
 		const index = this.pluggables.findIndex(
@@ -130,7 +130,7 @@ class NotificationsClass {
 		} else {
 			this.pluggables.splice(index, 1);
 		}
-	};
+	}
 
 	setFilteredInAppMessagesHandler = (
 		handler: FilteredInAppMessagesHandler
@@ -139,7 +139,7 @@ class NotificationsClass {
 			this.filteredInAppMessagesHandler = handler;
 		}
 		return this.filteredInAppMessagesHandler;
-	};
+	}
 
 	syncInAppMessages = async (providerName = 'AWSPinpoint'): Promise<any> => {
 		if (this.config.disabled) {
@@ -152,7 +152,7 @@ class NotificationsClass {
 		const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
 		await this.storeMessages(key, messages);
 		return messages;
-	};
+	}
 
 	clearStoredInAppMessages = async (
 		providerName = 'AWSPinpoint'
@@ -171,7 +171,7 @@ class NotificationsClass {
 		} catch (err) {
 			logger.error('Failed to remove in-app messages from storage', err);
 		}
-	};
+	}
 
 	invokeInAppMessages = async (event: NotificationEvent): Promise<void> => {
 		const messages: any[] = await Promise.all<any[]>(
@@ -182,7 +182,7 @@ class NotificationsClass {
 			})
 		);
 		this.filteredInAppMessagesHandler(flatten(messages));
-	};
+	}
 
 	recordInAppMessageDisplayed = async (messageId: string): Promise<void[]> => {
 		return Promise.all(
@@ -190,7 +190,7 @@ class NotificationsClass {
 				pluggable.recordInAppMessageDisplayed(messageId)
 			)
 		);
-	};
+	}
 
 	private analyticsListener: HubCallback = ({ payload }: HubCapsule) => {
 		const { event, data } = payload;
@@ -202,7 +202,7 @@ class NotificationsClass {
 			default:
 				break;
 		}
-	};
+	}
 
 	private syncStorage = async (): Promise<void> => {
 		const { storage } = this.config;
@@ -215,7 +215,7 @@ class NotificationsClass {
 		} catch (err) {
 			logger.error('Failed to sync storage', err);
 		}
-	};
+	}
 
 	private getStoredMessages = async (key: string): Promise<any> => {
 		try {
@@ -228,7 +228,7 @@ class NotificationsClass {
 		} catch (err) {
 			logger.error('Failed to retrieve in-app messages from storage', err);
 		}
-	};
+	}
 
 	private storeMessages = async (
 		key: string,
@@ -247,7 +247,7 @@ class NotificationsClass {
 		} catch (err) {
 			logger.error('Failed to store in-app messages', err);
 		}
-	};
+	}
 }
 
 const Notifications = new NotificationsClass();

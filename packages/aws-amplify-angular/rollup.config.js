@@ -34,6 +34,7 @@ export default {
 		'aws-amplify',
 		'@ionic/angular',
 		'@aws-amplify/core',
+		'@aws-amplify/cache',
 	],
 	plugins: [
 		nodeResolve({ preferBuiltins: false, modulesOnly: true }),
