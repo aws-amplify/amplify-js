@@ -1,5 +1,4 @@
-import axios, { CancelTokenSource } from 'axios';
-import * as events from 'events';
+import axios from 'axios';
 
 import {
 	AxiosHttpHandler,
@@ -11,14 +10,14 @@ import { Platform, Logger } from '@aws-amplify/core';
 jest.mock('axios');
 jest.useFakeTimers();
 
-let request: HttpRequest = null;
+let request: HttpRequest;
 
 const options = {};
 
 describe('AxiosHttpHandler', () => {
 	beforeEach(() => {
 		Platform.isReactNative = false;
-		axios.request.mockResolvedValue({});
+		jest.spyOn(axios, 'request').mockResolvedValue({});
 		request = {
 			method: 'get',
 			path: '/',
@@ -27,7 +26,7 @@ describe('AxiosHttpHandler', () => {
 			port: 3000,
 			query: {},
 			headers: {},
-			clone: null,
+			clone: () => null as unknown as HttpRequest,
 		};
 	});
 
@@ -95,7 +94,7 @@ describe('AxiosHttpHandler', () => {
 			const mockCancelToken = jest.fn().mockImplementationOnce(() => ({
 				token: 'token',
 			}));
-			const handler = new AxiosHttpHandler({}, null, mockCancelToken());
+			const handler = new AxiosHttpHandler({}, undefined, mockCancelToken());
 			await handler.handle(request, options);
 
 			expect(axios.request).toHaveBeenLastCalledWith({
@@ -112,11 +111,12 @@ describe('AxiosHttpHandler', () => {
 			const mockEmitter = jest.fn().mockImplementationOnce(() => ({
 				emit: mockEmit,
 			}));
+			const axiosRequestSpy = jest.spyOn(axios, 'request');
 			const handler = new AxiosHttpHandler({}, mockEmitter());
 			await handler.handle(request, options);
 
 			const lastCall =
-				axios.request.mock.calls[axios.request.mock.calls.length - 1][0];
+				axiosRequestSpy.mock.calls[axiosRequestSpy.mock.calls.length - 1][0];
 
 			expect(lastCall).toStrictEqual({
 				headers: {},
@@ -127,15 +127,19 @@ describe('AxiosHttpHandler', () => {
 				onDownloadProgress: expect.any(Function),
 			});
 
-			// Invoke the request's onUploadProgress function manually
-			lastCall.onUploadProgress({ loaded: 10, total: 100 });
+			if (lastCall.onUploadProgress) {
+				// Invoke the request's onUploadProgress function manually
+				lastCall.onUploadProgress({ loaded: 10, total: 100 });
+			}
 			expect(mockEmit).toHaveBeenLastCalledWith('sendUploadProgress', {
 				loaded: 10,
 				total: 100,
 			});
 
-			// Invoke the request's onDownloadProgress function manually
-			lastCall.onDownloadProgress({ loaded: 10, total: 100 });
+			if (lastCall.onDownloadProgress) {
+				// Invoke the request's onDownloadProgress function manually
+				lastCall.onDownloadProgress({ loaded: 10, total: 100 });
+			}
 			expect(mockEmit).toHaveBeenLastCalledWith('sendDownloadProgress', {
 				loaded: 10,
 				total: 100,

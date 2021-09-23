@@ -112,11 +112,9 @@ export default class Client {
 				// Taken from aws-sdk-js/lib/protocol/json.js
 				// eslint-disable-next-line no-underscore-dangle
 				const code = (data.__type || data.code).split('#').pop();
-				const error = {
-					code,
-					name: code,
-					message: data.message || data.Message || null,
-				};
+				const error = new Error(data.message || data.Message || null)
+				error.name = code
+				error.code = code
 				return callback(error);
 			})
 			.catch(err => {
@@ -128,27 +126,19 @@ export default class Client {
 				) {
 					try {
 						const code = response.headers.get('x-amzn-errortype').split(':')[0];
-						const error = {
-							code,
-							name: code,
-							statusCode: response.status,
-							message: response.status ? response.status.toString() : null,
-						};
+						const error = new Error(response.status ? response.status.toString() : null)
+						error.code = code
+						error.name = code
+						error.statusCode = response.status
 						return callback(error);
 					} catch (ex) {
 						return callback(err);
 					}
 					// otherwise check if error is Network error
 				} else if (err instanceof Error && err.message === 'Network error') {
-					const error = {
-						code: 'NetworkError',
-						name: err.name,
-						message: err.message,
-					};
-					return callback(error);
-				} else {
-					return callback(err);
+					err.code = 'NetworkError'
 				}
+				return callback(err);
 			});
 	}
 }
@@ -183,7 +173,7 @@ function retry(functionToRetry, args, delayFn, attempt = 1) {
 
 	return functionToRetry(...args).catch((err) => {
 		logger.debug(`error on ${functionToRetry.name}`, err);
-		
+
 		if (isNonRetryableError(err)) {
 			logger.debug(`${functionToRetry.name} non retryable error`, err);
 			throw err;

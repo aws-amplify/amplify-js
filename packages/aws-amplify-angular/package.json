@@ -1,6 +1,6 @@
 {
 	"name": "aws-amplify-angular",
-	"version": "6.0.15",
+	"version": "6.0.17",
 	"description": "AWS Amplify Angular Components",
 	"main": "bundles/aws-amplify-angular.umd.js",
 	"module": "dist/index.js",
@@ -39,7 +39,7 @@
 		"@types/zen-observable": "^0.5.3",
 		"angular2-template-loader": "^0.6.2",
 		"awesome-typescript-loader": "^4.0.1",
-		"aws-amplify": "4.2.9",
+		"aws-amplify": "4.2.11",
 		"babel-core": "^6.26.3",
 		"babel-plugin-lodash": "^3.3.4",
 		"babel-preset-env": "^1.7.0",

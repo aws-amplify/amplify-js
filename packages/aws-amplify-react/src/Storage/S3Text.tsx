@@ -14,7 +14,7 @@
 import * as React from 'react';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { Storage } from '@aws-amplify/storage';
+import { Storage, StorageAccessLevel } from '@aws-amplify/storage';
 
 import AmplifyTheme from '../AmplifyTheme';
 import { TextPicker } from '../Widget/TextPicker';
@@ -30,7 +30,7 @@ export interface IS3TextProps {
 	| ((param: { name: string; size: number; type: string }) => string);
 	hidden?: any;
 	identityId?: any;
-	level?: string;
+	level?: StorageAccessLevel;
 	onClick?: any;
 	onError?: any;
 	onLoad?: any;
