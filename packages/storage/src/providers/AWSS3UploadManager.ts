@@ -220,7 +220,7 @@ export class AWSS3UploadManager {
 
 		if (this._isListPartsOutput(cachedUpload)) {
 			const cachedUploadId = cachedUpload.UploadId;
-			this._uploadTasks[cachedUploadId] = new AWSS3UploadTask({
+			const existingTask = new AWSS3UploadTask({
 				s3Client,
 				uploadId: cachedUpload.UploadId,
 				bucket,
@@ -230,7 +230,10 @@ export class AWSS3UploadManager {
 				emitter,
 			});
 
-			return this._uploadTasks[cachedUploadId];
+			this._uploadTasks[cachedUploadId] = existingTask;
+			existingTask.start();
+
+			return existingTask;
 		}
 
 		return this._initMultiupload(input);

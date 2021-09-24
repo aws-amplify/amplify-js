@@ -47,7 +47,6 @@ import {
 	S3ProviderRemoveConfig,
 	S3ProviderListOutput,
 	S3ProviderListConfig,
-	S3ProviderPutOutput,
 	S3ProviderCopyConfig,
 	S3ProviderCopyOutput,
 	S3CopySource,
@@ -55,6 +54,7 @@ import {
 	StorageAccessLevel,
 	CustomPrefix,
 	S3ProviderRemoveOutput,
+	S3PutResult,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
@@ -544,13 +544,14 @@ export class AWSS3Provider implements StorageProvider {
 	 * @param {string} key - key of the object
 	 * @param {PutObjectCommandInput["Body"]} object - File to be put in Amazon S3 bucket
 	 * @param {S3ProviderPutConfig} [config] - Optional configuration for the underlying S3 command
-	 * @return {Promise<S3ProviderPutOutput>} - promise resolves to an object with the new object's key on success
+	 * @return {Promise<AWSS3UploadTask | S3ProviderPutOutput>} - promise resolves to an AWSS3Upload object or
+	 * an object with the new object's key on success
 	 */
 	public async put(
 		key: string,
 		object: PutObjectCommandInput['Body'],
 		config?: S3ProviderPutConfig
-	): Promise<S3ProviderPutOutput> {
+	): Promise<S3PutResult<S3ProviderPutConfig>> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
