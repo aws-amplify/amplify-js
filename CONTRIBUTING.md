@@ -124,9 +124,25 @@ These tests are only necessary if you’re looking to contribute a Pull Request.
 
 **Using the set-dev:react-native script to work with React-Native apps**
 
-To develop locally alongside a React-Native app, make sure to finish the build steps mentioned in the section: `Setting up for local development`
+> Note: All the below commands to be run from the local amplify-js library root
 
-Then, run the below command in the root of the amplify-js local repository with a package name (auth for example):
+To develop locally alongside a React-Native app, make sure to,
+
+1. Finish the build steps mentioned in the section: `Setting up for local development`
+
+2. Install the dev dependency package : `wml`
+
+```
+npm install wml --save-dev
+```
+
+3. Add the wml src folder to watchman.
+
+```
+watchman watch node_modules/wml/src
+```
+
+4. Run the below command in the root of the amplify-js local repository with a package name (auth for example):
 
 ```
 npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
@@ -134,6 +150,8 @@ npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/t
 
 The options `--packages` is used to specify single or multiple package names and the `--target` option is used to specify the path to your sample React-Native app.
 Optionally, you can use the shorthands flags `-p` and `-t` for packages and target path respectively.
+
+> All scoped packages must be prefixed by `@aws-amplify/` . For example: `@aws-amplify/auth`
 
 To develop multiple/all packages, provide the package names separated by a comma or use the keyword all:
 
