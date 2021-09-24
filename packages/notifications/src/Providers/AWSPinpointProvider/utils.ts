@@ -1,16 +1,23 @@
-import { ConsoleLogger, Hub } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
+import {
+	InAppMessageCampaign as PinpointInAppMessage,
+	DefaultButtonConfiguration,
+} from '@aws-sdk/client-pinpoint';
 import isEmpty from 'lodash/isEmpty';
 import {
-	ComparisonOperator,
 	InAppMessage,
-	MetricsComparator,
+	InAppMessageAction,
+	InAppMessageContent,
+	InAppMessageStyle,
 	NotificationEvent,
 } from '../../types';
+import { InAppMessageEvent, MetricsComparator } from './types';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
 typeof Symbol.for === 'function'
 	? Symbol.for('amplify_default')
 	: '@@amplify_default') as Symbol;
+const DELIVERY_TYPE = 'IN_APP_MESSAGE';
 
 let eventNameMemo = {};
 let eventAttributesMemo = {};
@@ -31,6 +38,24 @@ export const dispatchNotificationEvent = (
 	);
 };
 
+export const recordAnalyticsEvent = (
+	event: InAppMessageEvent,
+	message: PinpointInAppMessage
+) => {
+	if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
+		Amplify.Analytics.record({
+			name: event,
+			attributes: {
+				campaign_id: message.CampaignId,
+				delivery_type: DELIVERY_TYPE,
+				treatment_id: message.TreatmentId,
+			},
+		});
+	} else {
+		logger.debug('Analytics module is not registered into Amplify');
+	}
+};
+
 export const getStartOfDay = (): string => {
 	const now = new Date();
 	now.setHours(0, 0, 0, 0);
@@ -38,23 +63,22 @@ export const getStartOfDay = (): string => {
 };
 
 export const matchesEventType = (
-	{ CampaignId, Schedule }: InAppMessage,
+	{ CampaignId, Schedule }: PinpointInAppMessage,
 	{ name: eventType }: NotificationEvent
 ) => {
-	const { EventType } = Schedule.EventFilter.Dimensions;
+	const { EventType } = Schedule?.EventFilter?.Dimensions;
 	const memoKey = `${CampaignId}:${eventType}`;
 	if (!eventNameMemo.hasOwnProperty(memoKey)) {
-		eventNameMemo[memoKey] =
-			!!EventType && EventType.Values.includes(eventType);
+		eventNameMemo[memoKey] = !!EventType?.Values.includes(eventType);
 	}
 	return eventNameMemo[memoKey];
 };
 
 export const matchesAttributes = (
-	{ CampaignId, Schedule }: InAppMessage,
+	{ CampaignId, Schedule }: PinpointInAppMessage,
 	{ attributes }: NotificationEvent
-) => {
-	const { Attributes } = Schedule.EventFilter.Dimensions;
+): boolean => {
+	const { Attributes } = Schedule?.EventFilter?.Dimensions;
 	if (isEmpty(Attributes)) {
 		// if message does not have attributes defined it does not matter what attributes are on the event
 		return true;
@@ -73,10 +97,10 @@ export const matchesAttributes = (
 };
 
 export const matchesMetrics = (
-	{ CampaignId, Schedule }: InAppMessage,
+	{ CampaignId, Schedule }: PinpointInAppMessage,
 	{ metrics }: NotificationEvent
-) => {
-	const { Metrics } = Schedule.EventFilter.Dimensions;
+): boolean => {
+	const { Metrics } = Schedule?.EventFilter?.Dimensions;
 	if (isEmpty(Metrics)) {
 		// if message does not have metrics defined it does not matter what metrics are on the event
 		return true;
@@ -90,16 +114,15 @@ export const matchesMetrics = (
 		eventMetricsMemo[memoKey] = Object.entries(Metrics).every(
 			([key, { ComparisonOperator, Value }]) => {
 				const compare = getComparator(ComparisonOperator);
-				return compare(Value, metrics[key]);
+				// if there is some unknown comparison operator, treat as a comparison failure
+				return compare ? compare(Value, metrics[key]) : false;
 			}
 		);
 	}
 	return eventMetricsMemo[memoKey];
 };
 
-export const getComparator = (
-	operator: ComparisonOperator
-): MetricsComparator => {
+export const getComparator = (operator: string): MetricsComparator => {
 	switch (operator) {
 		case 'EQUAL':
 			return (metricsVal, eventVal) => metricsVal === eventVal;
@@ -111,16 +134,23 @@ export const getComparator = (
 			return (metricsVal, eventVal) => metricsVal > eventVal;
 		case 'LESS_THAN_OR_EQUAL':
 			return (metricsVal, eventVal) => metricsVal >= eventVal;
+		default:
+			return null;
 	}
 };
 
-export const isBeforeEndDate = ({ Schedule }: InAppMessage) => {
+export const isBeforeEndDate = ({
+	Schedule,
+}: PinpointInAppMessage): boolean => {
+	if (!Schedule?.EndDate) {
+		return true;
+	}
 	return new Date() < new Date(Schedule.EndDate);
 };
 
-export const isQuietTime = (message: InAppMessage): boolean => {
+export const isQuietTime = (message: PinpointInAppMessage): boolean => {
 	const { Schedule } = message;
-	if (!Schedule.QuietTime) {
+	if (!Schedule?.QuietTime) {
 		return false;
 	}
 
@@ -142,8 +172,18 @@ export const isQuietTime = (message: InAppMessage): boolean => {
 	const [startHours, startMinutes] = Start.split(':');
 	const [endHours, endMinutes] = End.split(':');
 
-	start.setHours(startHours, startMinutes, 0, 0);
-	end.setHours(endHours, endMinutes, 0, 0);
+	start.setHours(
+		Number.parseInt(startHours, 10),
+		Number.parseInt(startMinutes, 10),
+		0,
+		0
+	);
+	end.setHours(
+		Number.parseInt(endHours, 10),
+		Number.parseInt(endMinutes, 10),
+		0,
+		0
+	);
 
 	// if quiet time includes midnight, bump the end time to the next day
 	if (start > end) {
@@ -162,3 +202,72 @@ export const clearMemo = () => {
 	eventAttributesMemo = {};
 	eventMetricsMemo = {};
 };
+
+export const extractContent = ({
+	InAppMessage: message,
+}: PinpointInAppMessage): InAppMessageContent[] => {
+	return (
+		message?.Content?.map(content => {
+			const {
+				BackgroundColor,
+				BodyConfig,
+				HeaderConfig,
+				ImageUrl,
+				PrimaryBtn,
+				SecondaryBtn,
+			} = content;
+			const defaultPrimaryButton =
+				PrimaryBtn?.DefaultConfig ?? ({} as DefaultButtonConfiguration);
+			const defaultSecondaryButton =
+				SecondaryBtn?.DefaultConfig ?? ({} as DefaultButtonConfiguration);
+			return {
+				header: {
+					content: HeaderConfig?.Header,
+					style: {
+						color: HeaderConfig?.TextColor,
+						textAlign: HeaderConfig?.Alignment.toLowerCase(),
+					} as InAppMessageStyle,
+				},
+				body: {
+					content: BodyConfig?.Body,
+					style: {
+						backgroundColor: BackgroundColor,
+						color: BodyConfig?.TextColor,
+						textAlign: BodyConfig?.Alignment.toLowerCase(),
+					} as InAppMessageStyle,
+				},
+				image: {
+					src: ImageUrl,
+				},
+				primaryButton: {
+					title: defaultPrimaryButton.Text,
+					action: defaultPrimaryButton.ButtonAction as InAppMessageAction,
+					url: defaultPrimaryButton.Link,
+					style: {
+						backgroundColor: defaultPrimaryButton.BackgroundColor,
+						borderRadius: defaultPrimaryButton.BorderRadius,
+						color: defaultPrimaryButton.TextColor,
+					} as InAppMessageStyle,
+				},
+				secondaryButton: {
+					title: defaultSecondaryButton.Text,
+					action: defaultSecondaryButton.ButtonAction as InAppMessageAction,
+					url: defaultSecondaryButton.Link,
+					style: {
+						backgroundColor: defaultSecondaryButton.BackgroundColor,
+						borderRadius: defaultSecondaryButton.BorderRadius,
+						color: defaultSecondaryButton.TextColor,
+					} as InAppMessageStyle,
+				},
+			};
+		}) ?? []
+	);
+};
+
+export const extractMetadata = ({
+	Priority,
+	Schedule,
+}: PinpointInAppMessage): InAppMessage['metadata'] => ({
+	endDate: Schedule?.EndDate,
+	priority: Priority,
+});
