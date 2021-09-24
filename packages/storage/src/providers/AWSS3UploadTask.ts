@@ -15,6 +15,7 @@ import { Logger } from '@aws-amplify/core';
 import { TaskEvents } from './AWSS3UploadManager';
 import { UploadTask } from '../types/Provider';
 import { listSingleFile } from '../common/StorageUtils';
+import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
 
 const logger = new Logger('Storage');
 enum State {
@@ -310,7 +311,7 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	public abort(): void {
-		this.pause('Aborted');
+		this.pause();
 		this.queued = [];
 		this.completedParts = [];
 		this.bytesUploaded = 0;
@@ -332,7 +333,7 @@ export class AWSS3UploadTask implements UploadTask {
 	/**
 	 * pause this particular upload task
 	 **/
-	public pause(message?: string): void {
+	public pause(): void {
 		this.state = State.PAUSED;
 		// Use axios cancel token to abort the part request immediately
 		// Add the inProgress parts back to pending
@@ -341,7 +342,7 @@ export class AWSS3UploadTask implements UploadTask {
 			this.inProgress.length
 		);
 		removedInProgressReq.forEach(req => {
-			req.cancel(message);
+			req.cancel(AWSS3ProviderUploadErrorStrings.UPLOAD_PAUSED_MESSAGE);
 		});
 		// Put all removed in progress parts back into the queue
 		this.queued.unshift(

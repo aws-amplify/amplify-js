@@ -12,3 +12,7 @@ export enum AWSS3ProviderMultipartCopierErrors {
 	NO_COPYSOURCE = 'You must specify a copy source',
 	MAX_NUM_PARTS_EXCEEDED = 'Only a maximum of 10000 parts are allowed',
 }
+
+export enum AWSS3ProviderUploadErrorStrings {
+	UPLOAD_PAUSED_MESSAGE = 'paused',
+}
