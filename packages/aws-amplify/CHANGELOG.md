@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.2.11...aws-amplify@4.3.0) (2021-09-24)
+
+
+### Features
+
+* **aws-amplify:** pull `Geo` through the main `aws-amplify` package ([#8669](https://github.com/aws-amplify/amplify-js/issues/8669)) ([8d72d8a](https://github.com/aws-amplify/amplify-js/commit/8d72d8aa63080d6307af5f4500c3e07194bfd4fb))
+
+
+
+
+
 ## [4.2.11](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.2.10...aws-amplify@4.2.11) (2021-09-22)
 
 
