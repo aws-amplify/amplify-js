@@ -1,11 +1,20 @@
-import { predicateFor } from '../src/predicates/next';
+import { predicateFor, StorageAdapter } from '../src/predicates/next';
 // import { getModelDefinition } from '../src/datastore/datastore';
 import { Model, Metadata, testSchema } from './helpers';
 import {
 	NonModelTypeConstructor,
 	PersistentModel,
 	PersistentModelConstructor,
+	ModelPredicate as FlatModelPredicate,
+	PaginationInput,
+	PredicatesGroup as FlatPredicateGroup,
+	PredicateObject as FlatPredicateObject,
 } from '../src/types';
+import {
+	ModelPredicateCreator,
+	ModelSortPredicateCreator,
+} from '../src/predicates';
+import { validatePredicate as flatPredicateMatches } from '../src/util';
 import {
 	Author,
 	Post,
@@ -18,6 +27,8 @@ import {
 	Nested,
 } from './model';
 import { mainModule } from 'process';
+
+type ModelOf<T> = T extends PersistentModelConstructor<infer M> ? M : T;
 
 describe('Predicates', () => {
 	describe('validate arguments by throwing exceptions for', () => {
@@ -85,6 +96,33 @@ describe('Predicates', () => {
 			});
 		});
 	});
+
+	describe('provide a traversable graph', () => {
+		// test('for simple field comparisons', () => {
+		// 	const query = predicateFor(Author).name.eq('Adam West');
+		// 	console.log(JSON.stringify(query.__query, null, 2));
+		// 	const expected = {
+		// 		classname: 'Author',
+		// 		operator: 'and',
+		// 		operands: [
+		// 			{
+		// 				field: 'name',
+		// 				operator: 'eq',
+		// 				operands: ['Adam West'],
+		// 			},
+		// 		],
+		// 	};
+		// 	expect(query.__query).toEqual(expected);
+		// });
+	});
+
+	// defineTests(query => query.filter(staticData))
+
+	// TODO: NOTICE!
+	// All test cases should be able to successfully execute both as filter()
+	// and query() tests. When at all possible and relevant, add test cases HERE
+	// to cover both cases with fidelity. (HERE == inside `defineTests(f)`)
+	// function defineTests(f) {
 
 	describe('as filters on local properties', () => {
 		// positive and negative matches.
@@ -512,4 +550,75 @@ describe('Predicates', () => {
 			expect(matches.length).toBe(0);
 		});
 	});
+
+	describe('as storage predicate on local properties', () => {
+		const flatAuthorsArray = [
+			'Adam West',
+			'Bob Jones',
+			'Clarice Starling',
+			'Debbie Donut',
+			'Zelda from the Legend of Zelda',
+		].map(
+			name =>
+				new Author({
+					name,
+				})
+		);
+
+		// predicate = ModelPredicateCreator.createFromExisting(
+		// 	modelDefinition,
+		// 	idOrCriteria
+		// );
+
+		// scratchpad. this is an example of a of a flat (legacy) predicate group
+
+		let authorpredicate: FlatPredicateGroup<ModelOf<typeof Author>> = {
+			type: 'and',
+			predicates: [
+				{
+					field: 'name',
+					operator: 'eq',
+					operand: 'whatever',
+				},
+			],
+		};
+
+		const storage: StorageAdapter & {
+			collections: Record<string, PersistentModel[]>;
+		} = {
+			collections: {
+				[Author.name]: flatAuthorsArray,
+			},
+
+			async query<T extends PersistentModel>(
+				modelConstructor: PersistentModelConstructor<T>,
+				predicate?: FlatModelPredicate<T>,
+				pagination?: PaginationInput<T>
+			) {
+				const baseSet: T[] = this.collections[modelConstructor.__meta.name];
+				if (!predicate) {
+					return baseSet;
+				} else {
+					console.log('predicate arg', predicate);
+					const predicates = ModelPredicateCreator.getPredicates(predicate);
+					console.log('built predicate', predicates);
+					return baseSet.filter(item =>
+						// need to BUILD the predicate from ... predicate... WTF!!!!!!!!!! ... SOOOO MANY PREDICATE!!
+						flatPredicateMatches(item, 'and', [predicates])
+					);
+				}
+			},
+		};
+
+		test('match on eq', async () => {
+			const query = predicateFor(Author).name.eq('Adam West');
+			console.log('query', query.__query);
+			const matches = await query.__query.fetch(storage);
+
+			expect(matches.length).toBe(1);
+			expect(matches[0].name).toBe('Adam West');
+		});
+	});
+
+	// } // defineTests()
 });

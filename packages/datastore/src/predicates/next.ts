@@ -7,7 +7,13 @@ import {
 	SchemaModel,
 	ModelFieldType,
 	ModelAssociation,
+	PaginationInput,
+	QueryOne,
+	ModelPredicate as FlatModelPredicate,
+	PredicateExpression as FlatPredicateExpression,
 } from '../types';
+
+import { ModelPredicateCreator as FlatModelPredicateCreator } from './index';
 
 type MatchableTypes =
 	| string
@@ -22,6 +28,14 @@ type ComparisonOperators = 'gt' | 'ge' | 'lt' | 'le' | 'between' | 'beginsWith';
 type ScalarOperators = EqualityOperators | ComparisonOperators;
 type CollectionOperators = 'contains' | 'notContains';
 type AllFieldOperators = CollectionOperators | ScalarOperators;
+
+export type StorageAdapter = {
+	query<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
+		predicate?: FlatModelPredicate<T>,
+		pagination?: PaginationInput<T>
+	): Promise<T[]>;
+};
 
 // TODO: this is TEMP to make the types work.
 class AsyncCollection<T> {
@@ -120,7 +134,8 @@ type Condition<T extends PersistentModel> = {
 type GroupOperator = 'and' | 'or' | 'not';
 
 type UntypedCondition = {
-	fetch: () => Promise<Record<string, any>>;
+	// TODO: change from list of record to AsyncCollection
+	fetch: (storage: StorageAdapter) => Promise<Record<string, any>[]>;
 	matches: (item: Record<string, any>) => Promise<boolean>;
 	copy(extract: GroupCondition): [UntypedCondition, GroupCondition | undefined];
 };
@@ -141,7 +156,7 @@ class FieldCondition {
 		];
 	}
 
-	async fetch(): Promise<Record<string, any>> {
+	async fetch(storage: StorageAdapter): Promise<Record<string, any>[]> {
 		return Promise.reject('Not yet implemented.');
 	}
 
@@ -209,7 +224,7 @@ class FieldCondition {
 
 class GroupCondition {
 	constructor(
-		public classname: string,
+		public model: PersistentModelConstructor<PersistentModel>,
 		public field: string | undefined,
 		public relationshipType: string | undefined,
 		public operator: GroupOperator,
@@ -218,7 +233,7 @@ class GroupCondition {
 
 	copy(extract: GroupCondition): [GroupCondition, GroupCondition | undefined] {
 		const copied = new GroupCondition(
-			this.classname,
+			this.model,
 			this.field,
 			this.relationshipType,
 			this.operator,
@@ -237,8 +252,50 @@ class GroupCondition {
 		return [copied, extractedCopy];
 	}
 
-	async fetch(): Promise<Record<string, any>> {
-		return Promise.reject('Not yet implemented.');
+	async fetch(storage: StorageAdapter): Promise<Record<string, any>[]> {
+		const groups = this.operands.filter(op => op instanceof GroupCondition);
+		const conditions = this.operands.filter(
+			op => op instanceof FieldCondition
+		) as FieldCondition[];
+
+		for (const g of groups) {
+			(await g.fetch(storage)).forEach(r => {
+				conditions.push(new FieldCondition('id', 'id', ['id']));
+			});
+		}
+
+		console.log('conditions', conditions);
+
+		const predicate = FlatModelPredicateCreator.createFromExisting(
+			this.model.__meta,
+			base_predicate => {
+				let p = base_predicate;
+				for (const c of conditions) {
+					p = p[c.field](
+						c.operator as never,
+						(c.operator === 'between' ? c.operands : c.operands[0]) as never
+					);
+				}
+				return p;
+			}
+		);
+
+		return storage.query(this.model, predicate);
+
+		// if (this.operator === 'or') {
+		// 	return asyncSome(this.operands, c => c.matches(itemToCheck));
+		// } else if (this.operator === 'and') {
+		// 	return asyncEvery(this.operands, c => c.matches(itemToCheck));
+		// } else if (this.operator === 'not') {
+		// 	if (this.operands.length !== 1) {
+		// 		throw new Error(
+		// 			'Invalid arguments! `not()` accepts exactly one predicate expression.'
+		// 		);
+		// 	}
+		// 	return !(await this.operands[0].matches(itemToCheck));
+		// } else {
+		// 	throw new Error('Invalid group operator!');
+		// }
 	}
 
 	// ALT for `ignoreFieldName` could be to copy and strip off `fieldName`
@@ -338,8 +395,21 @@ export function predicateFor<T extends PersistentModel>(
 		__class: ModelType as PersistentModelConstructor<T>,
 		__className: ModelType.name,
 		__query:
-			query || new GroupCondition(ModelType.name, field, undefined, 'and', []),
-		__tail: new GroupCondition(ModelType.name, field, undefined, 'and', []),
+			query ||
+			new GroupCondition(
+				ModelType as PersistentModelConstructor<PersistentModel>,
+				field,
+				undefined,
+				'and',
+				[]
+			),
+		__tail: new GroupCondition(
+			ModelType as PersistentModelConstructor<PersistentModel>,
+			field,
+			undefined,
+			'and',
+			[]
+		),
 		__copy: () => {
 			const [query, newtail] = link.__query.copy(link.__tail);
 			return predicateFor<IndirectT>(ModelType, undefined, query, newtail);
@@ -368,7 +438,7 @@ export function predicateFor<T extends PersistentModel>(
 			const newlink = link.__copy();
 			newlink.__tail.operands.push(
 				new GroupCondition(
-					ModelType.name,
+					ModelType as PersistentModelConstructor<PersistentModel>,
 					field,
 					undefined,
 					op as 'and' | 'or',
@@ -403,7 +473,7 @@ export function predicateFor<T extends PersistentModel>(
 		const newlink = link.__copy();
 		newlink.__tail.operands.push(
 			new GroupCondition(
-				ModelType.name,
+				ModelType as PersistentModelConstructor<PersistentModel>,
 				field,
 				undefined,
 				'not',
