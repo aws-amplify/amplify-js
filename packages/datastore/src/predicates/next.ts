@@ -264,7 +264,7 @@ class GroupCondition {
 			});
 		}
 
-		console.log('conditions', conditions);
+		// console.log('conditions', conditions);
 
 		const predicate = FlatModelPredicateCreator.createFromExisting(
 			this.model.__meta,

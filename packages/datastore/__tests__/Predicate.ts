@@ -28,7 +28,42 @@ import {
 } from './model';
 import { mainModule } from 'process';
 
-type ModelOf<T> = T extends PersistentModelConstructor<infer M> ? M : T;
+// type ModelOf<T> = T extends PersistentModelConstructor<infer M> ? M : T;
+
+const flatAuthorsArray = [
+	'Adam West',
+	'Bob Jones',
+	'Clarice Starling',
+	'Debbie Donut',
+	'Zelda from the Legend of Zelda',
+].map(name => new Author({ name }));
+
+const storage: StorageAdapter & {
+	collections: Record<string, PersistentModel[]>;
+} = {
+	collections: {
+		[Author.name]: flatAuthorsArray,
+	},
+
+	async query<T extends PersistentModel>(
+		modelConstructor: PersistentModelConstructor<T>,
+		predicate?: FlatModelPredicate<T>,
+		pagination?: PaginationInput<T>
+	) {
+		const baseSet: T[] = this.collections[modelConstructor.__meta.name];
+		if (!predicate) {
+			return baseSet;
+		} else {
+			// console.log('predicate arg', predicate);
+			const predicates = ModelPredicateCreator.getPredicates(predicate);
+			// console.log('built predicate', predicates);
+			return baseSet.filter(item =>
+				// need to BUILD the predicate from ... predicate... WTF!!!!!!!!!! ... SOOOO MANY PREDICATE!!
+				flatPredicateMatches(item, 'and', [predicates])
+			);
+		}
+	},
+};
 
 describe('Predicates', () => {
 	describe('validate arguments by throwing exceptions for', () => {
@@ -97,290 +132,159 @@ describe('Predicates', () => {
 		});
 	});
 
-	describe('provide a traversable graph', () => {
-		// test('for simple field comparisons', () => {
-		// 	const query = predicateFor(Author).name.eq('Adam West');
-		// 	console.log(JSON.stringify(query.__query, null, 2));
-		// 	const expected = {
-		// 		classname: 'Author',
-		// 		operator: 'and',
-		// 		operands: [
-		// 			{
-		// 				field: 'name',
-		// 				operator: 'eq',
-		// 				operands: ['Adam West'],
-		// 			},
-		// 		],
-		// 	};
-		// 	expect(query.__query).toEqual(expected);
-		// });
-	});
-
-	// defineTests(query => query.filter(staticData))
-
 	// TODO: NOTICE!
 	// All test cases should be able to successfully execute both as filter()
 	// and query() tests. When at all possible and relevant, add test cases HERE
 	// to cover both cases with fidelity. (HERE == inside `defineTests(f)`)
 	// function defineTests(f) {
 
-	describe('as filters on local properties', () => {
-		// positive and negative matches.
-		// negatives asserted implicitly by what is NOT returned from the list.
-		// REMINDER! string comparison uses ASCII values. and lowercase > upper case
-		// e.g.: 'a' > 'A' && 'b' > 'a' && 'a' > 'Z'  === true
+	[
+		{
+			name: 'filters',
+			execute: async <T>(query: any) => query.filter(flatAuthorsArray) as T[],
+		},
+		{
+			name: 'storage predicates',
+			execute: async <T>(query: any) =>
+				(await query.__query.fetch(storage)) as T[],
+		},
+	].forEach(mechanism => {
+		describe('as ' + mechanism.name + ' on local properties', () => {
+			// REMINDER! string comparison uses ASCII values. and lowercase > upper case
+			// e.g.: 'a' > 'A' && 'b' > 'a' && 'a' > 'Z'  === true
 
-		const flatAuthorsArray = [
-			'Adam West',
-			'Bob Jones',
-			'Clarice Starling',
-			'Debbie Donut',
-			'Zelda from the Legend of Zelda',
-		].map(name => new Author({ name }));
+			test('match on eq', async () => {
+				const query = predicateFor(Author).name.eq('Adam West');
+				// const matches = await query.filter(flatAuthorsArray);
+				const matches = await mechanism.execute<typeof Author>(query);
 
-		test('match on eq', async () => {
-			const query = predicateFor(Author).name.eq('Adam West');
-			const matches = await query.filter(flatAuthorsArray);
+				expect(matches.length).toBe(1);
+				expect(matches[0].name).toBe('Adam West');
+			});
 
-			expect(matches.length).toBe(1);
-			expect(matches[0].name).toBe('Adam West');
-		});
+			test('match on ne', async () => {
+				const query = predicateFor(Author).name.ne('Adam West');
+				const matches = await mechanism.execute<typeof Author>(query);
 
-		test('match on ne', async () => {
-			const query = predicateFor(Author).name.ne('Adam West');
-			const matches = await query.filter(flatAuthorsArray);
+				expect(matches.length).toBe(flatAuthorsArray.length - 1);
+				expect(matches.some(a => a.name === 'Adam West')).toBe(false);
+			});
 
-			expect(matches.length).toBe(flatAuthorsArray.length - 1);
-			expect(matches.some(a => a.name === 'Adam West')).toBe(false);
-		});
+			test('match on gt', async () => {
+				const query = predicateFor(Author).name.gt('Clarice Starling');
+				const matches = await mechanism.execute<typeof Author>(query);
 
-		test('match on gt', async () => {
-			const query = predicateFor(Author).name.gt('Clarice Starling');
-			const matches = await query.filter(flatAuthorsArray);
-
-			expect(matches.length).toBe(2);
-			expect(matches.map(m => m.name)).toEqual([
-				'Debbie Donut',
-				'Zelda from the Legend of Zelda',
-			]);
-		});
-
-		test('match on ge', async () => {
-			const query = predicateFor(Author).name.ge('Clarice Starling');
-			const matches = await query.filter(flatAuthorsArray);
-
-			expect(matches.length).toBe(3);
-			expect(matches.map(m => m.name)).toEqual([
-				'Clarice Starling',
-				'Debbie Donut',
-				'Zelda from the Legend of Zelda',
-			]);
-		});
-
-		test('match on lt', async () => {
-			const query = predicateFor(Author).name.lt('Clarice Starling');
-			const matches = await query.filter(flatAuthorsArray);
-
-			expect(matches.length).toBe(2);
-			expect(matches.map(m => m.name)).toEqual(['Adam West', 'Bob Jones']);
-		});
-
-		test('match on le', async () => {
-			const query = predicateFor(Author).name.le('Clarice Starling');
-			const matches = await query.filter(flatAuthorsArray);
-
-			expect(matches.length).toBe(3);
-			expect(matches.map(m => m.name)).toEqual([
-				'Adam West',
-				'Bob Jones',
-				'Clarice Starling',
-			]);
-		});
-
-		test('match beginsWith', async () => {
-			const query = predicateFor(Author).name.beginsWith('Debbie');
-			const matches = await query.filter(flatAuthorsArray);
-
-			expect(matches.length).toBe(1);
-			expect(matches[0].name).toBe('Debbie Donut');
-		});
-
-		// GraphQL raises an exception when the given lower > upper.
-		// I assume we're doing the same ...
-
-		test('match between an outer inclusive range', async () => {
-			// `0` is immediately before `A`
-			// `{` is immediately after `z`
-			const query = predicateFor(Author).name.between('0', '{');
-			const matches = await query.filter(flatAuthorsArray);
-
-			expect(matches.length).toBe(5);
-			expect(matches.map(m => m.name)).toEqual([
-				'Adam West',
-				'Bob Jones',
-				'Clarice Starling',
-				'Debbie Donut',
-				'Zelda from the Legend of Zelda',
-			]);
-		});
-
-		test('match between with equality at both ends', async () => {
-			const query = predicateFor(Author).name.between(
-				'Bob Jones',
-				'Debbie Donut'
-			);
-			const matches = await query.filter(flatAuthorsArray);
-
-			expect(matches.length).toBe(3);
-			expect(matches.map(m => m.name)).toEqual([
-				'Bob Jones',
-				'Clarice Starling',
-				'Debbie Donut',
-			]);
-		});
-
-		test('match between an inner range', async () => {
-			const query = predicateFor(Author).name.between('Az', 'E');
-			const matches = await query.filter(flatAuthorsArray);
-
-			expect(matches.length).toBe(3);
-			expect(matches.map(m => m.name)).toEqual([
-				'Bob Jones',
-				'Clarice Starling',
-				'Debbie Donut',
-			]);
-		});
-
-		test('match nothing between a mismatching range', async () => {
-			const query = predicateFor(Author).name.between('{', '}');
-			const matches = await query.filter(flatAuthorsArray);
-
-			expect(matches.length).toBe(0);
-		});
-
-		test('match contains', async () => {
-			const query = predicateFor(Author).name.contains('Jones');
-			const matches = await query.filter(flatAuthorsArray);
-
-			expect(matches.length).toBe(1);
-			expect(matches[0].name).toBe('Bob Jones');
-		});
-
-		test('match notContains', async () => {
-			const query = predicateFor(Author).name.notContains('Jones');
-			const matches = await query.filter(flatAuthorsArray);
-
-			expect(matches.length).toBe(4);
-			expect(matches.map(m => m.name)).toEqual([
-				'Adam West',
-				'Clarice Starling',
-				'Debbie Donut',
-				'Zelda from the Legend of Zelda',
-			]);
-		});
-
-		describe('with a logical grouping', () => {
-			test('can perform and() logic, matching an item', async () => {
-				const query = predicateFor(Author).and(a => [
-					a.name.contains('Bob'),
-					a.name.contains('Jones'),
+				expect(matches.length).toBe(2);
+				expect(matches.map(m => m.name)).toEqual([
+					'Debbie Donut',
+					'Zelda from the Legend of Zelda',
 				]);
-				const matches = await query.filter(flatAuthorsArray);
+			});
+
+			test('match on ge', async () => {
+				const query = predicateFor(Author).name.ge('Clarice Starling');
+				const matches = await mechanism.execute<typeof Author>(query);
+
+				expect(matches.length).toBe(3);
+				expect(matches.map(m => m.name)).toEqual([
+					'Clarice Starling',
+					'Debbie Donut',
+					'Zelda from the Legend of Zelda',
+				]);
+			});
+
+			test('match on lt', async () => {
+				const query = predicateFor(Author).name.lt('Clarice Starling');
+				const matches = await mechanism.execute<typeof Author>(query);
+
+				expect(matches.length).toBe(2);
+				expect(matches.map(m => m.name)).toEqual(['Adam West', 'Bob Jones']);
+			});
+
+			test('match on le', async () => {
+				const query = predicateFor(Author).name.le('Clarice Starling');
+				const matches = await mechanism.execute<typeof Author>(query);
+
+				expect(matches.length).toBe(3);
+				expect(matches.map(m => m.name)).toEqual([
+					'Adam West',
+					'Bob Jones',
+					'Clarice Starling',
+				]);
+			});
+
+			test('match beginsWith', async () => {
+				const query = predicateFor(Author).name.beginsWith('Debbie');
+				const matches = await mechanism.execute<typeof Author>(query);
+
+				expect(matches.length).toBe(1);
+				expect(matches[0].name).toBe('Debbie Donut');
+			});
+
+			// GraphQL raises an exception when the given lower > upper.
+			// I assume we're doing the same ...
+
+			test('match between an outer inclusive range', async () => {
+				// `0` is immediately before `A`
+				// `{` is immediately after `z`
+				const query = predicateFor(Author).name.between('0', '{');
+				const matches = await mechanism.execute<typeof Author>(query);
+
+				expect(matches.length).toBe(5);
+				expect(matches.map(m => m.name)).toEqual([
+					'Adam West',
+					'Bob Jones',
+					'Clarice Starling',
+					'Debbie Donut',
+					'Zelda from the Legend of Zelda',
+				]);
+			});
+
+			test('match between with equality at both ends', async () => {
+				const query = predicateFor(Author).name.between(
+					'Bob Jones',
+					'Debbie Donut'
+				);
+				const matches = await mechanism.execute<typeof Author>(query);
+
+				expect(matches.length).toBe(3);
+				expect(matches.map(m => m.name)).toEqual([
+					'Bob Jones',
+					'Clarice Starling',
+					'Debbie Donut',
+				]);
+			});
+
+			test('match between an inner range', async () => {
+				const query = predicateFor(Author).name.between('Az', 'E');
+				const matches = await mechanism.execute<typeof Author>(query);
+
+				expect(matches.length).toBe(3);
+				expect(matches.map(m => m.name)).toEqual([
+					'Bob Jones',
+					'Clarice Starling',
+					'Debbie Donut',
+				]);
+			});
+
+			test('match nothing between a mismatching range', async () => {
+				const query = predicateFor(Author).name.between('{', '}');
+				const matches = await mechanism.execute<typeof Author>(query);
+
+				expect(matches.length).toBe(0);
+			});
+
+			test('match contains', async () => {
+				const query = predicateFor(Author).name.contains('Jones');
+				const matches = await mechanism.execute<typeof Author>(query);
 
 				expect(matches.length).toBe(1);
 				expect(matches[0].name).toBe('Bob Jones');
 			});
 
-			test('can perform and() logic, matching no items', async () => {
-				const query = predicateFor(Author).and(a => [
-					a.name.contains('Adam'),
-					a.name.contains('Donut'),
-				]);
-				const matches = await query.filter(flatAuthorsArray);
-
-				expect(matches.length).toBe(0);
-			});
-
-			test('can perform or() logic, matching different items', async () => {
-				const query = predicateFor(Author).or(a => [
-					a.name.contains('Bob'),
-					a.name.contains('Donut'),
-				]);
-				const matches = await query.filter(flatAuthorsArray);
-
-				expect(matches.length).toBe(2);
-				expect(matches.map(m => m.name)).toEqual(['Bob Jones', 'Debbie Donut']);
-			});
-
-			test('can perform or() logic, matching a single item', async () => {
-				const query = predicateFor(Author).or(a => [
-					a.name.contains('Bob'),
-					a.name.contains('Jones'),
-				]);
-				const matches = await query.filter(flatAuthorsArray);
-
-				expect(matches.length).toBe(1);
-				expect(matches[0].name).toEqual('Bob Jones');
-			});
-
-			test('can perform or() logic, matching a single item with extra unmatched conditions', async () => {
-				const query = predicateFor(Author).or(a => [
-					a.name.contains('Bob'),
-					a.name.contains('Thanos'),
-				]);
-				const matches = await query.filter(flatAuthorsArray);
-
-				expect(matches.length).toBe(1);
-				expect(matches[0].name).toEqual('Bob Jones');
-			});
-
-			test('can perform or() logic, matching NO items', async () => {
-				const query = predicateFor(Author).or(a => [
-					a.name.contains('Thanos'),
-					a.name.contains('Thor (God of Thunder, as it just so happens)'),
-				]);
-				const matches = await query.filter(flatAuthorsArray);
-
-				expect(matches.length).toBe(0);
-			});
-
-			test('can perform or() logic with nested and() logic', async () => {
-				const query = predicateFor(Author).or(author_or => [
-					author_or.and(a => [
-						a.name.contains('Bob'),
-						a.name.contains('Jones'),
-					]),
-					author_or.and(a => [
-						a.name.contains('Debbie'),
-						a.name.contains('from the Legend of Zelda'),
-					]),
-				]);
-				const matches = await query.filter(flatAuthorsArray);
-
-				expect(matches.length).toBe(1);
-				expect(matches.map(m => m.name)).toEqual(['Bob Jones']);
-			});
-
-			test('can perform and() logic with nested or() logic', async () => {
-				const query = predicateFor(Author).and(author_and => [
-					author_and.or(a => [
-						a.name.contains('Bob'),
-						a.name.contains('Donut'),
-					]),
-					author_and.or(a => [
-						a.name.contains('Debbie'),
-						a.name.contains('from the Legend of Zelda'),
-					]),
-				]);
-				const matches = await query.filter(flatAuthorsArray);
-
-				expect(matches.length).toBe(1);
-				expect(matches.map(m => m.name)).toEqual(['Debbie Donut']);
-			});
-
-			test('can perform simple not() logic, matching all but one item', async () => {
-				const query = predicateFor(Author).not(a => a.name.eq('Bob Jones'));
-				const matches = await query.filter(flatAuthorsArray);
+			test('match notContains', async () => {
+				const query = predicateFor(Author).name.notContains('Jones');
+				const matches = await mechanism.execute<typeof Author>(query);
 
 				expect(matches.length).toBe(4);
 				expect(matches.map(m => m.name)).toEqual([
@@ -391,28 +295,144 @@ describe('Predicates', () => {
 				]);
 			});
 
-			test('can perform simple not() logic, matching no items', async () => {
-				const query = predicateFor(Author).not(a => a.name.gt('0'));
-				const matches = await query.filter(flatAuthorsArray);
+			describe('with a logical grouping', () => {
+				test('can perform and() logic, matching an item', async () => {
+					const query = predicateFor(Author).and(a => [
+						a.name.contains('Bob'),
+						a.name.contains('Jones'),
+					]);
+					const matches = await mechanism.execute<typeof Author>(query);
 
-				expect(matches.length).toBe(0);
-			});
+					expect(matches.length).toBe(1);
+					expect(matches[0].name).toBe('Bob Jones');
+				});
 
-			test('can perform not() logic around another logical group, matching all but N items', async () => {
-				const query = predicateFor(Author).not(author =>
-					author.or(a => [
-						a.name.eq('Bob Jones'),
-						a.name.eq('Debbie Donut'),
-						a.name.between('C', 'D'),
-					])
-				);
-				const matches = await query.filter(flatAuthorsArray);
+				test('can perform and() logic, matching no items', async () => {
+					const query = predicateFor(Author).and(a => [
+						a.name.contains('Adam'),
+						a.name.contains('Donut'),
+					]);
+					const matches = await mechanism.execute<typeof Author>(query);
 
-				expect(matches.length).toBe(2);
-				expect(matches.map(m => m.name)).toEqual([
-					'Adam West',
-					'Zelda from the Legend of Zelda',
-				]);
+					expect(matches.length).toBe(0);
+				});
+
+				test('can perform or() logic, matching different items', async () => {
+					const query = predicateFor(Author).or(a => [
+						a.name.contains('Bob'),
+						a.name.contains('Donut'),
+					]);
+					const matches = await mechanism.execute<typeof Author>(query);
+
+					expect(matches.length).toBe(2);
+					expect(matches.map(m => m.name)).toEqual([
+						'Bob Jones',
+						'Debbie Donut',
+					]);
+				});
+
+				test('can perform or() logic, matching a single item', async () => {
+					const query = predicateFor(Author).or(a => [
+						a.name.contains('Bob'),
+						a.name.contains('Jones'),
+					]);
+					const matches = await mechanism.execute<typeof Author>(query);
+
+					expect(matches.length).toBe(1);
+					expect(matches[0].name).toEqual('Bob Jones');
+				});
+
+				test('can perform or() logic, matching a single item with extra unmatched conditions', async () => {
+					const query = predicateFor(Author).or(a => [
+						a.name.contains('Bob'),
+						a.name.contains('Thanos'),
+					]);
+					const matches = await mechanism.execute<typeof Author>(query);
+
+					expect(matches.length).toBe(1);
+					expect(matches[0].name).toEqual('Bob Jones');
+				});
+
+				test('can perform or() logic, matching NO items', async () => {
+					const query = predicateFor(Author).or(a => [
+						a.name.contains('Thanos'),
+						a.name.contains('Thor (God of Thunder, as it just so happens)'),
+					]);
+					const matches = await mechanism.execute<typeof Author>(query);
+
+					expect(matches.length).toBe(0);
+				});
+
+				test('can perform or() logic with nested and() logic', async () => {
+					const query = predicateFor(Author).or(author_or => [
+						author_or.and(a => [
+							a.name.contains('Bob'),
+							a.name.contains('Jones'),
+						]),
+						author_or.and(a => [
+							a.name.contains('Debbie'),
+							a.name.contains('from the Legend of Zelda'),
+						]),
+					]);
+					const matches = await mechanism.execute<typeof Author>(query);
+
+					expect(matches.length).toBe(1);
+					expect(matches.map(m => m.name)).toEqual(['Bob Jones']);
+				});
+
+				test('can perform and() logic with nested or() logic', async () => {
+					const query = predicateFor(Author).and(author_and => [
+						author_and.or(a => [
+							a.name.contains('Bob'),
+							a.name.contains('Donut'),
+						]),
+						author_and.or(a => [
+							a.name.contains('Debbie'),
+							a.name.contains('from the Legend of Zelda'),
+						]),
+					]);
+					const matches = await mechanism.execute<typeof Author>(query);
+
+					expect(matches.length).toBe(1);
+					expect(matches.map(m => m.name)).toEqual(['Debbie Donut']);
+				});
+
+				test('can perform simple not() logic, matching all but one item', async () => {
+					const query = predicateFor(Author).not(a => a.name.eq('Bob Jones'));
+					const matches = await mechanism.execute<typeof Author>(query);
+
+					expect(matches.length).toBe(4);
+					expect(matches.map(m => m.name)).toEqual([
+						'Adam West',
+						'Clarice Starling',
+						'Debbie Donut',
+						'Zelda from the Legend of Zelda',
+					]);
+				});
+
+				test('can perform simple not() logic, matching no items', async () => {
+					const query = predicateFor(Author).not(a => a.name.gt('0'));
+					const matches = await mechanism.execute<typeof Author>(query);
+
+					expect(matches.length).toBe(0);
+				});
+
+				test('can perform not() logic around another logical group, matching all but N items', async () => {
+					const query = predicateFor(Author).not(author =>
+						author.or(a => [
+							a.name.eq('Bob Jones'),
+							a.name.eq('Debbie Donut'),
+							a.name.between('C', 'D'),
+						])
+					);
+					const matches = await mechanism.execute<typeof Author>(query);
+
+					expect(matches.length).toBe(2);
+					expect(matches.map(m => m.name)).toEqual([
+						'Adam West',
+						'Zelda from the Legend of Zelda',
+					]);
+				});
 			});
 		});
 	});
@@ -550,75 +570,4 @@ describe('Predicates', () => {
 			expect(matches.length).toBe(0);
 		});
 	});
-
-	describe('as storage predicate on local properties', () => {
-		const flatAuthorsArray = [
-			'Adam West',
-			'Bob Jones',
-			'Clarice Starling',
-			'Debbie Donut',
-			'Zelda from the Legend of Zelda',
-		].map(
-			name =>
-				new Author({
-					name,
-				})
-		);
-
-		// predicate = ModelPredicateCreator.createFromExisting(
-		// 	modelDefinition,
-		// 	idOrCriteria
-		// );
-
-		// scratchpad. this is an example of a of a flat (legacy) predicate group
-
-		let authorpredicate: FlatPredicateGroup<ModelOf<typeof Author>> = {
-			type: 'and',
-			predicates: [
-				{
-					field: 'name',
-					operator: 'eq',
-					operand: 'whatever',
-				},
-			],
-		};
-
-		const storage: StorageAdapter & {
-			collections: Record<string, PersistentModel[]>;
-		} = {
-			collections: {
-				[Author.name]: flatAuthorsArray,
-			},
-
-			async query<T extends PersistentModel>(
-				modelConstructor: PersistentModelConstructor<T>,
-				predicate?: FlatModelPredicate<T>,
-				pagination?: PaginationInput<T>
-			) {
-				const baseSet: T[] = this.collections[modelConstructor.__meta.name];
-				if (!predicate) {
-					return baseSet;
-				} else {
-					console.log('predicate arg', predicate);
-					const predicates = ModelPredicateCreator.getPredicates(predicate);
-					console.log('built predicate', predicates);
-					return baseSet.filter(item =>
-						// need to BUILD the predicate from ... predicate... WTF!!!!!!!!!! ... SOOOO MANY PREDICATE!!
-						flatPredicateMatches(item, 'and', [predicates])
-					);
-				}
-			},
-		};
-
-		test('match on eq', async () => {
-			const query = predicateFor(Author).name.eq('Adam West');
-			console.log('query', query.__query);
-			const matches = await query.__query.fetch(storage);
-
-			expect(matches.length).toBe(1);
-			expect(matches[0].name).toBe('Adam West');
-		});
-	});
-
-	// } // defineTests()
 });
