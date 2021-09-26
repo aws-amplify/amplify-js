@@ -253,18 +253,29 @@ class GroupCondition {
 	}
 
 	async fetch(storage: StorageAdapter): Promise<Record<string, any>[]> {
-		const groups = this.operands.filter(op => op instanceof GroupCondition);
+		const groups = this.operands.filter(
+			op => op instanceof GroupCondition
+		) as GroupCondition[];
 		const conditions = this.operands.filter(
 			op => op instanceof FieldCondition
 		) as FieldCondition[];
 
 		for (const g of groups) {
-			(await g.fetch(storage)).forEach(r => {
-				conditions.push(new FieldCondition('id', 'id', ['id']));
+			const relatives = await g.fetch(storage);
+			console.log('relatives', relatives);
+			relatives.forEach(r => {
+				// TODO: what we do here actually depends on relationship type.
+				// we FK (local) and relativeKey (remote). these both needs to be
+				// added to GroupCondition at construction time.
+				if (g.model.__meta.name === this.model.__meta.name) {
+					conditions.push(new FieldCondition('id', 'eq', [r.id]));
+				} else {
+					//
+				}
 			});
 		}
 
-		// console.log('conditions', conditions);
+		console.log('conditions', conditions);
 
 		const predicate = FlatModelPredicateCreator.createFromExisting(
 			this.model.__meta,

@@ -296,7 +296,7 @@ describe('Predicates', () => {
 			});
 
 			describe('with a logical grouping', () => {
-				test('can perform and() logic, matching an item', async () => {
+				test.only('can perform and() logic, matching an item', async () => {
 					const query = predicateFor(Author).and(a => [
 						a.name.contains('Bob'),
 						a.name.contains('Jones'),
