@@ -298,7 +298,7 @@ export function isGraphQLScalarType(
 
 export type ModelFieldType = {
 	model: string;
-	modelConstructor: PersistentModelConstructor<PersistentModel>;
+	modelConstructor?: PersistentModelConstructor<PersistentModel>;
 };
 export function isModelFieldType<T extends PersistentModel>(
 	obj: any

@@ -139,10 +139,10 @@ describe('Predicates', () => {
 	// function defineTests(f) {
 
 	[
-		{
-			name: 'filters',
-			execute: async <T>(query: any) => query.filter(flatAuthorsArray) as T[],
-		},
+		// {
+		// 	name: 'filters',
+		// 	execute: async <T>(query: any) => query.filter(flatAuthorsArray) as T[],
+		// },
 		{
 			name: 'storage predicates',
 			execute: async <T>(query: any) =>
@@ -296,7 +296,7 @@ describe('Predicates', () => {
 			});
 
 			describe('with a logical grouping', () => {
-				test.only('can perform and() logic, matching an item', async () => {
+				test('can perform and() logic, matching an item', async () => {
 					const query = predicateFor(Author).and(a => [
 						a.name.contains('Bob'),
 						a.name.contains('Jones'),
@@ -433,6 +433,9 @@ describe('Predicates', () => {
 						'Zelda from the Legend of Zelda',
 					]);
 				});
+
+				// TODO: test case for not not and not not not
+				// TODO: test case(s) for no predicate / predicate.all
 			});
 		});
 	});

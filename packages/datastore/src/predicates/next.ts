@@ -223,6 +223,10 @@ class FieldCondition {
 }
 
 class GroupCondition {
+	// for debugging
+	public groupId: string =
+		new Date().getTime() + '.' + (Math.random() * 1000).toFixed(3);
+
 	constructor(
 		public model: PersistentModelConstructor<PersistentModel>,
 		public field: string | undefined,
@@ -252,46 +256,149 @@ class GroupCondition {
 		return [copied, extractedCopy];
 	}
 
-	async fetch(storage: StorageAdapter): Promise<Record<string, any>[]> {
+	async fetch(
+		storage: StorageAdapter,
+		breadcrumb = [],
+		negate = false
+	): Promise<Record<string, any>[]> {
+		const resultGroups: Array<Record<string, any>[]> = [];
+
+		const negations = {
+			and: 'or',
+			or: 'and',
+			not: 'and',
+			eq: 'ne',
+			ne: 'eq',
+			gt: 'le',
+			ge: 'lt',
+			lt: 'ge',
+			le: 'gt',
+			contains: 'notContains',
+			notContains: 'contains',
+		};
+
+		const operator = (negate ? negations[this.operator] : this.operator) as
+			| 'or'
+			| 'and'
+			| 'not';
+
+		const negateChildren = negate || operator === 'not';
+
 		const groups = this.operands.filter(
 			op => op instanceof GroupCondition
 		) as GroupCondition[];
+
 		const conditions = this.operands.filter(
 			op => op instanceof FieldCondition
 		) as FieldCondition[];
 
+		// TODO: fetch Predicate.ALL return early here?
+
+		// TODO: parallize. (some storage engines may optimize parallel requests)
 		for (const g of groups) {
-			const relatives = await g.fetch(storage);
-			console.log('relatives', relatives);
-			relatives.forEach(r => {
-				// TODO: what we do here actually depends on relationship type.
-				// we FK (local) and relativeKey (remote). these both needs to be
-				// added to GroupCondition at construction time.
-				if (g.model.__meta.name === this.model.__meta.name) {
-					conditions.push(new FieldCondition('id', 'eq', [r.id]));
+			resultGroups.push(
+				await g.fetch(storage, [...breadcrumb, this.groupId], negateChildren)
+			);
+		}
+
+		function addConditions<T>(predicate: T): T {
+			let p = predicate;
+			let finalConditions = [];
+
+			for (const c of conditions) {
+				if (negateChildren) {
+					if (c.operator === 'between') {
+						finalConditions.push(
+							new FieldCondition(c.field, 'lt', [c.operands[0]]),
+							new FieldCondition(c.field, 'gt', [c.operands[1]])
+						);
+					} else {
+						finalConditions.push(
+							new FieldCondition(c.field, negations[c.operator], c.operands)
+						);
+					}
 				} else {
-					//
+					finalConditions.push(c);
 				}
+			}
+
+			for (const c of finalConditions) {
+				// console.log('adding field', c.field, c.operator, c.operands);
+				p = p[c.field](
+					c.operator as never,
+					(c.operator === 'between' ? c.operands : c.operands[0]) as never
+				);
+			}
+			return p;
+		}
+
+		// if conditions is empty at this point, child predicates found no matches.
+		// i.e., we can stop looking and return empty.
+		if (conditions.length > 0) {
+			const predicate = FlatModelPredicateCreator.createFromExisting(
+				this.model.__meta,
+				p => p[operator](c => addConditions(c))
+			);
+
+			// const innerPredicate = FlatModelPredicateCreator.getPredicates(
+			// 	predicate,
+			// 	false
+			// );
+			// // console.log('inner flat predicate', innerPredicate);
+
+			resultGroups.push(await storage.query(this.model, predicate));
+		}
+
+		// this needs to be read from metadata.
+		const idField = 'id';
+		let resultIndex: Record<string, Record<string, any>> = {};
+
+		if (operator === 'and') {
+			if (resultGroups.length === 0) {
+				console.log('NO RESULT GROUPS');
+				return [];
+			}
+
+			console.log('result groups', breadcrumb, resultGroups);
+
+			resultIndex = resultGroups[0].reduce((agg, item) => {
+				return { ...agg, ...{ [item[idField]]: item } };
+			}, {});
+
+			console.log('result index', breadcrumb, resultIndex);
+
+			resultGroups.forEach(group => {
+				console.log('filtering by group START', breadcrumb, resultIndex, group);
+				resultIndex = group.reduce((agg, item) => {
+					const id = item[idField];
+					if (resultIndex[id]) agg[id] = item;
+					return agg;
+				}, {});
+				console.log('filtering by group END', breadcrumb, resultIndex, group);
+			});
+		} else if (operator === 'or' || operator === 'not') {
+			// it's OK to handle NOT here, because NOT must always only negate
+			// a single child predicate. NOT logic will have been distributed down
+			// to the leaf conditions already.
+			console.log('doing OR or NOT stuff');
+			resultGroups.forEach(group => {
+				resultIndex = {
+					...resultIndex,
+					...group.reduce((agg, item) => {
+						return { ...agg, ...{ [item[idField]]: item } };
+					}, {}),
+				};
 			});
 		}
 
-		console.log('conditions', conditions);
-
-		const predicate = FlatModelPredicateCreator.createFromExisting(
-			this.model.__meta,
-			base_predicate => {
-				let p = base_predicate;
-				for (const c of conditions) {
-					p = p[c.field](
-						c.operator as never,
-						(c.operator === 'between' ? c.operands : c.operands[0]) as never
-					);
-				}
-				return p;
-			}
+		console.log(
+			'final result index',
+			breadcrumb,
+			resultIndex,
+			Object.values(resultIndex)
 		);
 
-		return storage.query(this.model, predicate);
+		return Object.values(resultIndex);
 
 		// if (this.operator === 'or') {
 		// 	return asyncSome(this.operands, c => c.matches(itemToCheck));
