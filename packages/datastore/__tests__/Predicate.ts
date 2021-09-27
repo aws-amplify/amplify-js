@@ -435,6 +435,41 @@ describe('Predicates', () => {
 				});
 
 				// TODO: test case for not not and not not not
+				test('can perform 2-nots', async () => {
+					const query = predicateFor(Author).not(a1 =>
+						a1.not(a2 => a2.name.eq('Bob Jones'))
+					);
+					const matches = await mechanism.execute<typeof Author>(query);
+
+					expect(matches.length).toBe(1);
+					expect(matches.map(m => m.name)).toEqual(['Bob Jones']);
+				});
+
+				test('can perform 3-nots', async () => {
+					const query = predicateFor(Author).not(a1 =>
+						a1.not(a2 => a2.not(a3 => a3.name.eq('Bob Jones')))
+					);
+					const matches = await mechanism.execute<typeof Author>(query);
+
+					expect(matches.length).toBe(4);
+					expect(matches.map(m => m.name)).toEqual([
+						'Adam West',
+						'Clarice Starling',
+						'Debbie Donut',
+						'Zelda from the Legend of Zelda',
+					]);
+				});
+
+				test('can perform 4-nots', async () => {
+					const query = predicateFor(Author).not(a1 =>
+						a1.not(a2 => a2.not(a3 => a3.not(a4 => a4.name.eq('Bob Jones'))))
+					);
+					const matches = await mechanism.execute<typeof Author>(query);
+
+					expect(matches.length).toBe(1);
+					expect(matches.map(m => m.name)).toEqual(['Bob Jones']);
+				});
+
 				// TODO: test case(s) for no predicate / predicate.all
 			});
 		});

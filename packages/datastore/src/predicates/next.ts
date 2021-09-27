@@ -282,7 +282,9 @@ class GroupCondition {
 			| 'and'
 			| 'not';
 
-		const negateChildren = negate || operator === 'not';
+		const negateChildren = negate !== (this.operator === 'not');
+
+		// console.log('status', breadcrumb, negate)
 
 		const groups = this.operands.filter(
 			op => op instanceof GroupCondition
@@ -307,6 +309,7 @@ class GroupCondition {
 
 			for (const c of conditions) {
 				if (negateChildren) {
+					console.log('negating children!!!', breadcrumb);
 					if (c.operator === 'between') {
 						finalConditions.push(
 							new FieldCondition(c.field, 'lt', [c.operands[0]]),
