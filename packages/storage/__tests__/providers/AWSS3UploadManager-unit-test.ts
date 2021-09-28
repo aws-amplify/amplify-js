@@ -59,6 +59,15 @@ Object.defineProperty(window, 'localStorage', {
 	writable: true,
 });
 
+jest.spyOn(Credentials, 'get').mockImplementation(() => {
+	return Promise.resolve(credentials);
+});
+
+afterEach(() => {
+	// jest.useRealTimers();
+	jest.clearAllMocks();
+});
+
 describe('resumable upload test', () => {
 	const s3ServiceCallSpy = jest
 		.spyOn(S3Client.prototype, 'send')
@@ -79,10 +88,6 @@ describe('resumable upload test', () => {
 		});
 
 	test('happy case: upload a file as body, pause, and resume', async () => {
-		jest.spyOn(Credentials, 'get').mockImplementation(() => {
-			return Promise.resolve(credentials);
-		});
-
 		const emitter = new events.EventEmitter();
 		const eventSpy = sinon.spy();
 		emitter.on('sendUploadProgress', eventSpy);
@@ -123,10 +128,6 @@ describe('resumable upload test', () => {
 	});
 
 	test('resuming an existing upload and not create a new file key in __uploadInProgress', async () => {
-		jest.spyOn(Credentials, 'get').mockImplementation(() => {
-			return Promise.resolve(credentials);
-		});
-
 		const emitter = new events.EventEmitter();
 		const storageHelper = new StorageHelper();
 		expect(storageHelper.getStorage()).toBe(localStorageMock);
@@ -158,10 +159,6 @@ describe('resumable upload test', () => {
 	});
 
 	test('aborting a resumable upload removes the file key from __uploadInProgress', async () => {
-		jest.spyOn(Credentials, 'get').mockImplementation(() => {
-			return Promise.resolve(credentials);
-		});
-
 		const emitter = new events.EventEmitter();
 		const storageHelper = new StorageHelper();
 		expect(storageHelper.getStorage()).toBe(localStorageMock);
@@ -199,10 +196,6 @@ describe('resumable upload test', () => {
 	});
 
 	test('resumable should be able to handle blobs', async () => {
-		jest.spyOn(Credentials, 'get').mockImplementation(() => {
-			return Promise.resolve(credentials);
-		});
-
 		const emitter = new events.EventEmitter();
 		const storageHelper = new StorageHelper();
 		expect(storageHelper.getStorage()).toBe(localStorageMock);
@@ -223,5 +216,42 @@ describe('resumable upload test', () => {
 		const uploadTask = await uploadTaskManager.addTask(taskInput);
 
 		expect(uploadTask).toBeInstanceOf(AWSS3UploadTask);
+	});
+
+	test('stale uploads should be purged after 1 hour by default', async () => {
+		const emitter = new events.EventEmitter();
+		const file = new File(['TestFileContent'], 'testFileName');
+		Object.defineProperty(file, 'size', { value: 25048576 });
+
+		const taskInput: AddTaskInput = {
+			accessLevel: 'public',
+			file,
+			bucket: 'testBucket',
+			key: 'testKey',
+			s3Client: new S3Client(testOpts),
+			emitter: emitter,
+		};
+
+		const uploadTaskManager = new AWSS3UploadManager();
+		const currentTimeStamp = Date.now();
+		const oneHour = 1000 * 60 * 60 + 10;
+		const uploadTask = await uploadTaskManager.addTask(taskInput);
+
+		uploadTask.pause();
+
+		//mocking Date.now() to return a timestamp one hour into the future
+		const dateNowSpy = jest
+			.spyOn(Date, 'now')
+			.mockImplementation(() => currentTimeStamp + oneHour);
+
+		const duplicateUploadTask = await uploadTaskManager.addTask(taskInput);
+
+		expect(dateNowSpy).toHaveBeenCalled();
+		expect(duplicateUploadTask).toBeInstanceOf(AWSS3UploadTask);
+		expect(s3ServiceCallSpy.mock.calls[5][0].input).toEqual({
+			Bucket: testParams.Bucket,
+			Key: testParams.Key,
+			UploadId: testUploadId,
+		});
 	});
 });
