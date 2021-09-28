@@ -66,7 +66,14 @@ import {
 	USER,
 	isNullOrUndefined,
 	registerNonModelClass,
+	// inMemoryPagination,
 } from '../util';
+import {
+	ModelPredicateExtendor,
+	FinalModelPredicate,
+	SingularModelPredicateExtendor,
+	predicateFor,
+} from '../predicates/next';
 
 setAutoFreeze(true);
 enablePatches();
@@ -895,12 +902,15 @@ class DataStore {
 		): Promise<T | undefined>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
+			criteria?: SingularModelPredicateExtendor<T> | typeof PredicateAll,
 			paginationProducer?: ProducerPaginationInput<T>
 		): Promise<T[]>;
 	} = async <T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
-		idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll,
+		idOrCriteria?:
+			| string
+			| SingularModelPredicateExtendor<T>
+			| typeof PredicateAll,
 		paginationProducer?: ProducerPaginationInput<T>
 	): Promise<T | T[] | undefined> => {
 		await this.start();
@@ -921,49 +931,50 @@ class DataStore {
 		}
 
 		const modelDefinition = getModelDefinition(modelConstructor);
-		let predicate: ModelPredicate<T>;
-
-		if (isQueryOne(idOrCriteria)) {
-			predicate = ModelPredicateCreator.createForId<T>(
-				modelDefinition,
-				idOrCriteria
-			);
-		} else {
-			if (isPredicatesAll(idOrCriteria)) {
-				// Predicates.ALL means "all records", so no predicate (undefined)
-				predicate = undefined;
-			} else {
-				predicate = ModelPredicateCreator.createFromExisting(
-					modelDefinition,
-					idOrCriteria
-				);
-			}
-		}
+		let result: T[];
 
 		const pagination = this.processPagination(
 			modelDefinition,
 			paginationProducer
 		);
 
+		if (isQueryOne(idOrCriteria)) {
+			result = await this.storage.query<T>(
+				modelConstructor,
+				ModelPredicateCreator.createForId<T>(modelDefinition, idOrCriteria),
+				pagination
+			);
+		} else {
+			if (idOrCriteria === undefined || isPredicatesAll(idOrCriteria)) {
+				// Predicates.ALL means "all records", so no predicate (undefined)
+				result = await this.storage.query<T>(
+					modelConstructor,
+					undefined,
+					pagination
+				);
+			} else {
+				const seedPredicate = predicateFor<T>(modelConstructor);
+				const query = (idOrCriteria as SingularModelPredicateExtendor<T>)(
+					seedPredicate
+				);
+				result = (await query.__query.fetch(this.storage)) as T[];
+				// result = inMemoryPagination(result, pagination);
+			}
+		}
+
 		//#endregion
 
-		logger.debug('params ready', {
-			modelConstructor,
-			predicate: ModelPredicateCreator.getPredicates(predicate, false),
-			pagination: {
-				...pagination,
-				sort: ModelSortPredicateCreator.getPredicates(
-					pagination && pagination.sort,
-					false
-				),
-			},
-		});
-
-		const result = await this.storage.query(
-			modelConstructor,
-			predicate,
-			pagination
-		);
+		// logger.debug('params ready', {
+		// 	modelConstructor,
+		// 	predicate: ModelPredicateCreator.getPredicates(predicate, false),
+		// 	pagination: {
+		// 		...pagination,
+		// 		sort: ModelSortPredicateCreator.getPredicates(
+		// 			pagination && pagination.sort,
+		// 			false
+		// 		),
+		// 	},
+		// });
 
 		return isQueryOne(idOrCriteria) ? result[0] : result;
 	};

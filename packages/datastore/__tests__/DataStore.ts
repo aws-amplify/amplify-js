@@ -1099,7 +1099,7 @@ describe('DataStore tests', () => {
 			});
 		});
 
-		describe('Query', () => {
+		describe.only('Query', () => {
 			test('all', async () => {
 				const allModels = await DataStore.query(Model);
 				expectType<Model[]>(allModels);
@@ -1115,7 +1115,7 @@ describe('DataStore tests', () => {
 			});
 			test('with criteria', async () => {
 				const multiModelWithCriteria = await DataStore.query(Model, c =>
-					c.field1('contains', 'something')
+					c.field1.contains('something')
 				);
 				expectType<Model[]>(multiModelWithCriteria);
 				const [one] = multiModelWithCriteria;

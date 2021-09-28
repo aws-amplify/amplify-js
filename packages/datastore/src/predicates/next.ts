@@ -1,7 +1,7 @@
 // REF: https://tiny.amazon.com/1bqg7c90h/typeorgplay
 
 // debugging.
-const util = require('util');
+// const util = require('util');
 
 import { Model } from '../../__tests__/helpers';
 import {
@@ -71,13 +71,13 @@ type Operator<T extends MatchableTypes> = T extends string[] | number[]
 	? CollectionOperators
 	: ScalarOperators;
 
-type ModelPredicateExtendor<RT extends PersistentModel> = (
+export type ModelPredicateExtendor<RT extends PersistentModel> = (
 	lambda: ModelPredicate<RT>
 ) => {
 	__query: GroupCondition;
 }[];
 
-type SingularModelPredicateExtendor<RT extends PersistentModel> = (
+export type SingularModelPredicateExtendor<RT extends PersistentModel> = (
 	lambda: ModelPredicate<RT>
 ) => {
 	__query: GroupCondition;
@@ -110,7 +110,7 @@ type ModelPredicate<RT extends PersistentModel> = {
 	__copy: () => ModelPredicate<RT>;
 } & FinalModelPredicate<RT>;
 
-type FinalModelPredicate<RT extends PersistentModel> = {
+export type FinalModelPredicate<RT extends PersistentModel> = {
 	__class: PersistentModelConstructor<RT>;
 	__className: string;
 	__query: GroupCondition;
@@ -349,26 +349,26 @@ class GroupCondition {
 						rightHandField = 'id';
 					}
 
-					for (var relative of relatives) {
+					for (const relative of relatives) {
 						const rightHandValue = relative[rightHandField];
 						const predicate = FlatModelPredicateCreator.createFromExisting(
 							this.model.__meta,
 							p => p[leftHandField]('eq' as never, rightHandValue as never)
 						);
-						console.log(
-							'predicate',
-							util.inspect(this.model.__meta, { depth: 8 }),
-							leftHandField,
-							util.inspect(g.model.__meta, { depth: 8 }),
-							relative,
-							rightHandValue
-						);
+						// console.log(
+						// 	'predicate',
+						// 	util.inspect(this.model.__meta, { depth: 8 }),
+						// 	leftHandField,
+						// 	util.inspect(g.model.__meta, { depth: 8 }),
+						// 	relative,
+						// 	rightHandValue
+						// );
 						candidates = [
 							...candidates,
 							...(await storage.query(this.model, predicate)),
 						];
 					}
-					console.log('candidates', candidates);
+					// console.log('candidates', candidates);
 					resultGroups.push(candidates);
 					// } else if (meta.association.connectionType === 'HAS_ONE') {
 					// 	let candidates = [];
@@ -419,7 +419,7 @@ class GroupCondition {
 
 		function addConditions<T>(predicate: T): T {
 			let p = predicate;
-			let finalConditions = [];
+			const finalConditions = [];
 
 			for (const c of conditions) {
 				if (negateChildren) {
@@ -570,7 +570,7 @@ class GroupCondition {
 	}
 }
 
-async function asyncSome(
+export async function asyncSome(
 	items: Record<string, any>[],
 	matches: (item: Record<string, any>) => Promise<boolean>
 ): Promise<boolean> {
@@ -582,7 +582,7 @@ async function asyncSome(
 	return false;
 }
 
-async function asyncEvery(
+export async function asyncEvery(
 	items: Record<string, any>[],
 	matches: (item: Record<string, any>) => Promise<boolean>
 ): Promise<boolean> {
@@ -594,7 +594,7 @@ async function asyncEvery(
 	return true;
 }
 
-async function asyncFilter<T>(
+export async function asyncFilter<T>(
 	items: T[],
 	matches: (item: T) => Promise<boolean>
 ): Promise<T[]> {
