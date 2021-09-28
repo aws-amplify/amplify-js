@@ -570,7 +570,21 @@ describe('Predicates', () => {
 				predicate?: FlatModelPredicate<T>,
 				pagination?: PaginationInput<T>
 			) {
-				const baseSet: T[] = this.collections[modelConstructor.__meta.name];
+				const baseSet: T[] = this.collections[modelConstructor.__meta.name].map(
+					item => {
+						const itemCopy = { ...item };
+
+						// simulating goofiness with DS stuffing ID's into related model field names.
+						for (const field of Object.values(modelConstructor.__meta.fields)) {
+							if (field.association) {
+								// itemCopy['__' + field.name];
+								itemCopy[field.name] = itemCopy[field.association.targetName];
+							}
+						}
+						return itemCopy;
+					}
+				);
+
 				if (!predicate) {
 					return baseSet;
 				} else {
@@ -586,19 +600,22 @@ describe('Predicates', () => {
 		};
 
 		[
-			// {
-			// 	name: 'filters',
-			// 	execute: async <T>(query: any) => query.filter(blogs) as T[],
-			// },
+			{
+				name: 'filters',
+				execute: async <T>(query: any) => query.filter(blogs) as T[],
+			},
 			{
 				name: 'storage predicates',
 				execute: async <T>(query: any) =>
 					(await query.__query.fetch(storage)) as T[],
 			},
 		].forEach(mechanism => {
+			const util = require('util');
 			describe('as ' + mechanism.name, () => {
-				test.only('can filter eq()', async () => {
+				test('can filter eq()', async () => {
 					const query = predicateFor(Blog).owner.name.eq('Adam West');
+					console.log('query', util.inspect(query.__query, { depth: 8 }));
+
 					const matches = await mechanism.execute<typeof Blog>(query);
 
 					expect(matches.length).toBe(1);

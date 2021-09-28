@@ -1,5 +1,9 @@
 // REF: https://tiny.amazon.com/1bqg7c90h/typeorgplay
 
+// debugging.
+const util = require('util');
+
+import { Model } from '../../__tests__/helpers';
 import {
 	Scalar,
 	PersistentModel,
@@ -298,9 +302,119 @@ class GroupCondition {
 
 		// TODO: parallize. (some storage engines may optimize parallel requests)
 		for (const g of groups) {
-			resultGroups.push(
-				await g.fetch(storage, [...breadcrumb, this.groupId], negateChildren)
+			const relatives = await g.fetch(
+				storage,
+				[...breadcrumb, this.groupId],
+				negateChildren
 			);
+
+			// console.log(
+			// 	'group relatives',
+			// 	util.inspect(g, { depth: 12 }),
+			// 	util.inspect(relatives, { depth: 12 })
+			// );
+
+			if (g.field) {
+				// relatives needs to be used to find candidate results.
+				// TODO: replace with lazy loading? ... :D ...
+				const meta = this.model.__meta.fields[g.field];
+				const gIdField = 'id';
+				if (meta.association) {
+					// console.log('here we are!', breadcrumb, g, meta, relatives);
+					// if (
+					// 	meta.association.connectionType === 'BELONGS_TO' ||
+					// 	meta.association.connectionType === 'HAS_ONE'
+					// ) {
+					let candidates = [];
+
+					// sometimes the targetName isn't used locally.
+					// instead, the fieldname itself is used.
+					let leftHandField;
+					if (meta.association.targetName == null) {
+						leftHandField = 'id';
+					} else if (
+						this.model.__meta.fields[meta.association.targetName] != null
+					) {
+						leftHandField = meta.association.targetName;
+					} else if (this.model.__meta.fields[meta.name] != null) {
+						leftHandField = meta.name;
+					} else {
+						throw new Error('Uh oh! Do we have a bad connection?');
+					}
+
+					let rightHandField;
+					if ((meta.association as any).associatedWith) {
+						rightHandField = (meta.association as any).associatedWith;
+					} else {
+						rightHandField = 'id';
+					}
+
+					for (var relative of relatives) {
+						const rightHandValue = relative[rightHandField];
+						const predicate = FlatModelPredicateCreator.createFromExisting(
+							this.model.__meta,
+							p => p[leftHandField]('eq' as never, rightHandValue as never)
+						);
+						console.log(
+							'predicate',
+							util.inspect(this.model.__meta, { depth: 8 }),
+							leftHandField,
+							util.inspect(g.model.__meta, { depth: 8 }),
+							relative,
+							rightHandValue
+						);
+						candidates = [
+							...candidates,
+							...(await storage.query(this.model, predicate)),
+						];
+					}
+					console.log('candidates', candidates);
+					resultGroups.push(candidates);
+					// } else if (meta.association.connectionType === 'HAS_ONE') {
+					// 	let candidates = [];
+
+					// 	// const associatedMeta = g.model.__meta.fields[meta.association.associatedWith];
+
+					// 	// sometimes the targetName isn't used locally.
+					// 	// instead, the fieldname itself is used.
+					// 	const leftHandId =
+					// 		this.model.__meta.fields[associatedMeta.targetName] == null
+					// 			? meta.name
+					// 			: meta.association.targetName;
+
+					// 	for (var relative of relatives) {
+					// 		const rightHandValue =
+					// 			relative[(meta.association as any).associatedWith] ||
+					// 			relative[gIdField];
+
+					// 		const predicate = FlatModelPredicateCreator.createFromExisting(
+					// 			this.model.__meta,
+					// 			p => p[leftHandId]('eq' as never, rightHandValue as never)
+					// 		);
+					// 		console.log(
+					// 			'predicate',
+					// 			util.inspect(this.model.__meta, { depth: 8 }),
+					// 			leftHandId,
+					// 			util.inspect(g.model.__meta, { depth: 8 }),
+					// 			relative,
+					// 			rightHandValue
+					// 		);
+					// 		candidates = [
+					// 			...candidates,
+					// 			...(await storage.query(this.model, predicate)),
+					// 		];
+					// 	}
+					// 	console.log('candidates', candidates);
+					// 	resultGroups.push(candidates);
+					// } else {
+					// }
+				} else {
+					throw new Error('Missing field metadata.');
+				}
+			} else {
+				// relatives are not actually relatives. they're candidate results.
+				resultGroups.push(relatives);
+			}
 		}
 
 		function addConditions<T>(predicate: T): T {
@@ -309,7 +423,7 @@ class GroupCondition {
 
 			for (const c of conditions) {
 				if (negateChildren) {
-					console.log('negating children!!!', breadcrumb);
+					// console.log('negating children!!!', breadcrumb);
 					if (c.operator === 'between') {
 						finalConditions.push(
 							new FieldCondition(c.field, 'lt', [c.operands[0]]),
@@ -358,32 +472,32 @@ class GroupCondition {
 
 		if (operator === 'and') {
 			if (resultGroups.length === 0) {
-				console.log('NO RESULT GROUPS');
+				// console.log('NO RESULT GROUPS');
 				return [];
 			}
 
-			console.log('result groups', breadcrumb, resultGroups);
+			// console.log('result groups', breadcrumb, resultGroups);
 
 			resultIndex = resultGroups[0].reduce((agg, item) => {
 				return { ...agg, ...{ [item[idField]]: item } };
 			}, {});
 
-			console.log('result index', breadcrumb, resultIndex);
+			// console.log('result index', breadcrumb, resultIndex);
 
 			resultGroups.forEach(group => {
-				console.log('filtering by group START', breadcrumb, resultIndex, group);
+				// console.log('filtering by group START', breadcrumb, resultIndex, group);
 				resultIndex = group.reduce((agg, item) => {
 					const id = item[idField];
 					if (resultIndex[id]) agg[id] = item;
 					return agg;
 				}, {});
-				console.log('filtering by group END', breadcrumb, resultIndex, group);
+				// console.log('filtering by group END', breadcrumb, resultIndex, group);
 			});
 		} else if (operator === 'or' || operator === 'not') {
 			// it's OK to handle NOT here, because NOT must always only negate
 			// a single child predicate. NOT logic will have been distributed down
 			// to the leaf conditions already.
-			console.log('doing OR or NOT stuff');
+			// console.log('doing OR or NOT stuff');
 			resultGroups.forEach(group => {
 				resultIndex = {
 					...resultIndex,
@@ -394,12 +508,12 @@ class GroupCondition {
 			});
 		}
 
-		console.log(
-			'final result index',
-			breadcrumb,
-			resultIndex,
-			Object.values(resultIndex)
-		);
+		// console.log(
+		// 	'final result index',
+		// 	breadcrumb,
+		// 	resultIndex,
+		// 	Object.values(resultIndex)
+		// );
 
 		return Object.values(resultIndex);
 
@@ -655,8 +769,8 @@ export function predicateFor<T extends PersistentModel>(
 					) {
 						const [newquery, oldtail] = link.__query.copy(link.__tail);
 						const newtail = new GroupCondition(
-							def.association.targetName ||
-								(def.association as any).associatedWith,
+							// ModelType as PersistentModelConstructor<PersistentModel>,
+							(<ModelFieldType>def.type).modelConstructor,
 							fieldName,
 							def.association.connectionType,
 							'and',
