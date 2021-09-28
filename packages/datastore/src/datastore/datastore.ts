@@ -139,16 +139,16 @@ const initSchema = (userSchema: Schema) => {
 	};
 
 	logger.log('DataStore', 'Init models');
-	userClasses = createTypeClasses(internalUserNamespace);
+	userClasses = createTypeClasses(internalUserNamespace, schema);
 	logger.log('DataStore', 'Models initialized');
 
 	const dataStoreNamespace = getNamespace();
 	const storageNamespace = Storage.getNamespace();
 	const syncNamespace = SyncEngine.getNamespace();
 
-	dataStoreClasses = createTypeClasses(dataStoreNamespace);
-	storageClasses = createTypeClasses(storageNamespace);
-	syncClasses = createTypeClasses(syncNamespace);
+	dataStoreClasses = createTypeClasses(dataStoreNamespace, schema);
+	storageClasses = createTypeClasses(storageNamespace, schema);
+	syncClasses = createTypeClasses(syncNamespace, schema);
 
 	schema = {
 		namespaces: {
@@ -219,12 +219,14 @@ const initSchema = (userSchema: Schema) => {
 };
 
 const createTypeClasses: (
-	namespace: SchemaNamespace
+	namespace: SchemaNamespace,
+	schema: InternalSchema
 ) => TypeConstructorMap = namespace => {
 	const classes: TypeConstructorMap = {};
+	console.log('THIS IS SCHEMA: ', schema);
 
 	Object.entries(namespace.models).forEach(([modelName, modelDefinition]) => {
-		const clazz = createModelClass(modelDefinition);
+		const clazz = createModelClass(modelDefinition, namespace.name);
 		classes[modelName] = clazz;
 
 		modelNamespaceMap.set(clazz, namespace.name);
@@ -385,6 +387,21 @@ const castInstanceType = (
 
 	return v;
 };
+const requiresLazy = (
+	modelDefinition: SchemaModel | SchemaNonModel,
+	k: string
+): boolean => {
+	if (modelDefinition.fields[k] !== undefined) {
+		if (modelDefinition.fields[k].association !== undefined) {
+			const connectionType =
+				modelDefinition.fields[k].association.connectionType;
+			if (connectionType === 'HAS_ONE' || connectionType === 'BELONGS_TO') {
+				return true;
+			}
+		}
+	}
+	return false;
+};
 
 const initializeInstance = <T>(
 	init: ModelInit<T>,
@@ -396,12 +413,20 @@ const initializeInstance = <T>(
 		const parsedValue = castInstanceType(modelDefinition, k, v);
 
 		modelValidator(k, parsedValue);
-		(<any>draft)[k] = parsedValue;
+
+		if (!requiresLazy(modelDefinition, k)) {
+			(<any>draft)[k] = parsedValue;
+		} else {
+			console.log('this is it: ', k);
+		}
+
+		//(<any>draft)[k] = parsedValue;
 	});
 };
 
 const createModelClass = <T extends PersistentModel>(
-	modelDefinition: SchemaModel
+	modelDefinition: SchemaModel,
+	namespace: string
 ) => {
 	const clazz = <PersistentModelConstructor<T>>(<unknown>class Model {
 		constructor(init: ModelInit<T>) {
@@ -501,6 +526,70 @@ const createModelClass = <T extends PersistentModel>(
 	clazz[immerable] = true;
 
 	Object.defineProperty(clazz, 'name', { value: modelDefinition.name });
+
+	const fields = modelDefinition.fields;
+	for (const field in fields) {
+		if (modelDefinition.fields[field].association !== undefined) {
+			const connectionType =
+				modelDefinition.fields[field].association.connectionType;
+			if (connectionType === 'HAS_ONE' || connectionType === 'BELONGS_TO') {
+				Object.defineProperty(
+					clazz.prototype,
+					modelDefinition.fields[field].name,
+					{
+						get: async function() {
+							console.log('THIS IS MODELDEF: ', modelDefinition);
+							const schemaModel =
+								schema.namespaces[namespace].models[
+									modelDefinition.fields[field].name
+								];
+
+							const relatedModel =
+								userClasses[modelDefinition.fields[field].type['model']];
+							if (
+								modelDefinition.fields[field].association.connectionType ===
+								'HAS_ONE'
+							) {
+								console.log('this is field: ', field);
+								const association =
+									modelDefinition.fields[field].association.targetName;
+								console.log('THIS IS ASSOCIATION: ', association);
+								if (association !== undefined) {
+									const targetName = modelDefinition.fields[association].name;
+									console.log('THIS IS TARGETNAME: ', targetName);
+									const queryID = this[targetName];
+									console.log('THIS IS queryID: ', queryID);
+									const result = await instance.query(
+										relatedModel as PersistentModelConstructor<any>,
+										queryID
+									);
+									return result;
+								} else {
+									console.log('ARKAM');
+									const result = await instance.query(
+										relatedModel as PersistentModelConstructor<any>
+									);
+									console.log('RESULT: ', result);
+									return result[0];
+								}
+							} else {
+								const targetName =
+									modelDefinition.fields[field].association.targetName;
+								console.log("here's this: ", this);
+								const queryID = this[targetName];
+								console.log('this is queryID: ', queryID);
+								const result = await instance.query(
+									relatedModel as PersistentModelConstructor<any>,
+									queryID
+								);
+								return result;
+							}
+						},
+					}
+				);
+			}
+		}
+	}
 
 	return clazz;
 };

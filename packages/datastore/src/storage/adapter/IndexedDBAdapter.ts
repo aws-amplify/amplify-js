@@ -249,15 +249,28 @@ class IndexedDBAdapter implements Adapter {
 				throw new Error(msg);
 			}
 		}
+		function isPromise(promise) {
+			return !!promise && typeof promise.then === 'function';
+		}
 
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
-
+		console.log('connectionStoreNames: ', connectionStoreNames);
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
 			const store = tx.objectStore(storeName);
+
 			const { id } = item;
+			console.log('IDB item: ', item);
+			console.log('IDB ID: ', id);
+
+			if (isPromise(item)) {
+				console.log('ITEM IS a PROMISE: ', item);
+				const awaited = await resItem.item;
+				console.log('resItem: ', awaited);
+			}
 
 			const fromDB = <T>await this._get(store, id);
+			console.log('IDB fromDB: ', fromDB);
 			const opType: OpType =
 				fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
 
@@ -265,7 +278,6 @@ class IndexedDBAdapter implements Adapter {
 			if (id === model.id || opType === OpType.INSERT) {
 				const key = await store.index('byId').getKey(item.id);
 				await store.put(item, key);
-
 				result.push([instance, opType]);
 			}
 		}

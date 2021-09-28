@@ -326,6 +326,7 @@ export const traverseModel = <T extends PersistentModel>(
 
 			switch (rItem.relationType) {
 				case 'HAS_ONE':
+					console.log('MADE IT IN');
 					if (instance[rItem.fieldName]) {
 						let modelInstance: T;
 						try {
@@ -336,7 +337,7 @@ export const traverseModel = <T extends PersistentModel>(
 						} catch (error) {
 							// Do nothing
 						}
-
+						//const fieldName = '_' + rItem.fieldName;
 						result.push({
 							modelName: rItem.modelName,
 							item: instance[rItem.fieldName],
@@ -373,12 +374,17 @@ export const traverseModel = <T extends PersistentModel>(
 							});
 						}
 					}
-
+					console.log('THIS IS OLD DRAFT KEY: ', rItem.fieldName);
+					console.log('THIS IS NEW DRAFT KEY: ', rItem.targetName);
+					console.log(
+						'THIS IS DRAFT VALUE: ',
+						(<PersistentModel>draftInstance[rItem.fieldName]).id
+					);
 					if (draftInstance[rItem.fieldName]) {
 						(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
 							draftInstance[rItem.fieldName]
 						)).id;
-						delete draftInstance[rItem.fieldName];
+						//delete draftInstance[rItem.fieldName];
 					}
 
 					break;
