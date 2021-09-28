@@ -72,6 +72,7 @@ typeof Symbol.for === 'function'
 const SET_CONTENT_LENGTH_HEADER = 'contentLengthMiddleware';
 const DEFAULT_STORAGE_LEVEL = 'public';
 const DEFAULT_PRESIGN_EXPIRATION = 900;
+const INVALID_CRED = { accessKeyId: '', secretAccessKey: '' };
 
 const dispatchStorageEvent = (
 	track: boolean,
@@ -843,6 +844,20 @@ export class AWSS3Provider implements StorageProvider {
 		}
 	}
 
+	private async _credentialsProvider() {
+		try {
+			const credentials = await Credentials.get();
+			if (!credentials) return INVALID_CRED;
+			const cred = Credentials.shear(credentials);
+			logger.debug('set credentials for storage', cred);
+
+			return cred;
+		} catch (error) {
+			logger.warn('ensure credentials error', error);
+			return INVALID_CRED;
+		}
+	}
+
 	/**
 	 * Creates an S3 client with new V3 aws sdk
 	 */
@@ -874,7 +889,7 @@ export class AWSS3Provider implements StorageProvider {
 
 		const s3client = new S3Client({
 			region,
-			credentials,
+			credentials: this._credentialsProvider,
 			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
 			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
