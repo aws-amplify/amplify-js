@@ -141,7 +141,7 @@ class NotificationsClass {
 		return this.inAppMessagesHandler;
 	};
 
-	syncInAppMessages = async (providerName = 'AWSPinpoint'): Promise<any> => {
+	syncInAppMessages = async (providerName = 'AWSPinpoint'): Promise<void> => {
 		if (this.config.disabled) {
 			logger.debug('Notifications has been disabled');
 			return;
@@ -151,7 +151,6 @@ class NotificationsClass {
 		const messages = await pluggable.getInAppMessages();
 		const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
 		await this.storeMessages(key, messages);
-		return messages;
 	};
 
 	clearStoredInAppMessages = async (
