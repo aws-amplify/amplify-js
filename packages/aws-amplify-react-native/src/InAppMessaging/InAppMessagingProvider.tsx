@@ -25,7 +25,7 @@ export default function InAppMessagingProvider<T = unknown>({
 	const [inAppMessages, setInAppMessages] = useState<T[]>([]);
 
 	useEffect(() => {
-		Notifications.setFilteredInAppMessagesHandler(setInAppMessages);
+		Notifications.setInAppMessagesHandler(setInAppMessages);
 	}, []);
 
 	const clearInAppMessages = useCallback(() => {

@@ -10,21 +10,20 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
-export type FilteredInAppMessagesHandler = (messages: any) => void;
+export type InAppMessagesHandler = (messages: any) => void;
 
 export type NotificationsCategory = 'Notifications';
-
-export interface NotificationsConfig {
-	listenForAnalyticsEvents?: boolean;
-	filteredInAppMessagesHandler?: FilteredInAppMessagesHandler;
-}
 
 export type NotificationEvent = {
 	name: string;
 	attributes?: Record<string, string>;
 	metrics?: Record<string, number>;
 };
+
+export interface NotificationsConfig {
+	listenForAnalyticsEvents?: boolean;
+	inAppMessagesHandler?: InAppMessagesHandler;
+}
 
 export interface NotificationsProvider {
 	// you need to implement these methods
@@ -38,92 +37,67 @@ export interface NotificationsProvider {
 	// return the name of you provider
 	getProviderName(): string;
 
-	// syncs in-app messages locally
-	syncInAppMessages(): Promise<any>;
+	// get in-app messages from provider
+	getInAppMessages(): Promise<any>;
 
 	// filters in-app messages based on event input and provider logic
-	filterMessages(
+	processInAppMessages(
 		messages: InAppMessage[],
 		event: NotificationEvent
 	): Promise<InAppMessage[]>;
-
-	recordInAppMessageDisplayed(messageId: string): Promise<void>;
 }
 
-export type Layout =
+export type InAppMessageLayout =
 	| 'BOTTOM_BANNER'
 	| 'CAROUSEL'
 	| 'MIDDLE_BANNER'
 	| 'OVERLAYS'
 	| 'TOP_BANNER';
 
-export type ComparisonOperator =
-	| 'EQUAL'
-	| 'GREATER_THAN'
-	| 'GREATER_THAN_OR_EQUAL'
-	| 'LESS_THAN'
-	| 'LESS_THAN_OR_EQUAL';
+export type InAppMessageAction = 'CLOSE' | 'DEEP_LINK' | 'LINK';
 
-export type MetricsComparator = (
-	metricsVal: number,
-	eventVal: number
-) => boolean;
+interface InAppMessageHeader {
+	content: string;
+	style?: InAppMessageStyle;
+}
 
-type Attribute = {
-	AttributeType: any;
-	Values: string[];
-};
+interface InAppMessageBody {
+	content: string;
+	style?: InAppMessageStyle;
+}
 
-type EventType = {
-	DimensionType: any;
-	Values: string[];
-};
+interface InAppMessageImage {
+	src: string;
+}
 
-type Metric = {
-	ComparisonOperator: ComparisonOperator;
-	Value: number;
-};
+interface InAppMessageButton {
+	title: string;
+	action: InAppMessageAction;
+	url?: string;
+	style?: InAppMessageStyle;
+}
 
-type Dimensions = {
-	Attributes?: Record<string, Attribute>;
-	EventType?: EventType;
-	Metrics?: Record<string, Metric>;
-};
+export interface InAppMessageStyle {
+	backgroundColor?: string;
+	borderRadius?: number;
+	color?: string;
+	textAlign?: 'center' | 'left' | 'right';
+}
 
-type EventFilter = {
-	Dimensions: Dimensions;
-	FilterType: any;
-};
+export interface InAppMessageContent {
+	header?: InAppMessageHeader;
+	body?: InAppMessageBody;
+	image?: InAppMessageImage;
+	primaryButton?: InAppMessageButton;
+	secondaryButton?: InAppMessageButton;
+}
 
-export type InAppMessage = {
-	CampaignId: string;
-	InAppMessage: {
-		Content: [
-			{
-				BackgroundColor?: string;
-				BodyConfig: { Alignment?: string; Body?: string; TextColor?: string };
-				HeaderConfig: {
-					Alignment?: string;
-					Header?: string;
-					TextColor?: string;
-				};
-				ImageUrl?: string;
-			}
-		];
-		Layout: Layout;
-	};
-	Priority: number;
-	Schedule: {
-		EndDate: string;
-		EventFilter: EventFilter;
-		QuietTime: any;
-	};
-	SessionCap?: number;
-	DailyCap?: number;
-	TotalCap?: number;
-	TreatmentId: string;
-};
-
-export type InAppNotificationsResponse = {
-	InAppMessagesResponse: { InAppMessageCampaigns: InAppMessage[] };
-};
+export interface InAppMessage {
+	id: string;
+	layout: InAppMessageLayout;
+	content: InAppMessageContent[];
+	metadata?: any;
+	onAction?: () => void;
+	onDismiss?: () => void;
+	onDisplay?: () => void;
+}
