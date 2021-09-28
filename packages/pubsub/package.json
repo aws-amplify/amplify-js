@@ -50,7 +50,7 @@
     "@aws-amplify/core": "4.3.0",
     "graphql": "14.0.0",
     "paho-mqtt": "^1.1.0",
-    "uuid": "^3.2.1",
+    "uuid": "^8.3.2",
     "zen-observable-ts": "0.8.19"
   },
   "jest": {
