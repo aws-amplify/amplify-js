@@ -892,7 +892,7 @@ jobs:
           test_name: 'Token revocation'
           category: 'auth'
           spec: 'token-revocation'
-  integ_geo_auth:
+  integ_react_geo:
     parameters:
       browser:
         type: string
@@ -1252,15 +1252,13 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      - integ_geo_auth:
+      - integ_react_geo:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
-          matrix:
-            parameters:
-              <<: *test_browsers
+          browser: chrome
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1294,6 +1292,7 @@ workflows:
             - integ_datastore_auth
             - integ_duplicate_packages
             - integ_auth_test_cypress_no_ui
+            - integ_react_geo
       - post_release:
           filters:
             branches:
