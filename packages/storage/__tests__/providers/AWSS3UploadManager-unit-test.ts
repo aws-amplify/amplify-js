@@ -64,7 +64,6 @@ jest.spyOn(Credentials, 'get').mockImplementation(() => {
 });
 
 afterEach(() => {
-	// jest.useRealTimers();
 	jest.clearAllMocks();
 });
 
