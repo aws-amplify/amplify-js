@@ -3,7 +3,6 @@
 // debugging.
 // const util = require('util');
 
-import { Model } from '../../__tests__/helpers';
 import {
 	Scalar,
 	PersistentModel,
