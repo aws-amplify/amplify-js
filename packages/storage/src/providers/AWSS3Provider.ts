@@ -105,7 +105,6 @@ const localTestingStorageEndpoint = 'http://localhost:20005';
  */
 export class AWSS3Provider implements StorageProvider {
 	private _uploadTaskManager: AWSS3UploadManager;
-	private _emitter: events.EventEmitter;
 	static readonly CATEGORY = 'Storage';
 	static readonly PROVIDER_NAME = 'AWSS3';
 	private _config: StorageOptions;
@@ -863,7 +862,6 @@ export class AWSS3Provider implements StorageProvider {
 	 */
 	private _createNewS3Client(
 		config: {
-			credentials: ICredentials;
 			region?: string;
 			cancelTokenSource?: CancelTokenSource;
 			dangerouslyConnectToHttpEndpointForTesting?: boolean;
@@ -872,7 +870,6 @@ export class AWSS3Provider implements StorageProvider {
 	): S3Client {
 		const {
 			region,
-			credentials,
 			cancelTokenSource,
 			dangerouslyConnectToHttpEndpointForTesting,
 		} = config;
