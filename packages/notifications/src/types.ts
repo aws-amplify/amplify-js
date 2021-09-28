@@ -71,8 +71,8 @@ interface InAppMessageImage {
 }
 
 interface InAppMessageButton {
-	title?: string;
-	action?: InAppMessageAction;
+	title: string;
+	action: InAppMessageAction;
 	url?: string;
 	style?: InAppMessageStyle;
 }
