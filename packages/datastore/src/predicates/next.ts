@@ -1,8 +1,3 @@
-// REF: https://tiny.amazon.com/1bqg7c90h/typeorgplay
-
-// debugging.
-// const util = require('util');
-
 import {
 	Scalar,
 	PersistentModel,
@@ -93,19 +88,6 @@ type ModelPredicateOperator<RT extends PersistentModel> = (
 type ModelPredicateNegation<RT extends PersistentModel> = (
 	predicate: SingularModelPredicateExtendor<RT> | FinalModelPredicate
 ) => FinalModelPredicate;
-
-// type ModelPredicate<RT extends PersistentModel> = {
-// 	[K in keyof RT]: FinalFieldType<RT[K]> extends PersistentModel
-// 		? ModelPredicate<FinalFieldType<RT[K]>>
-// 		: FinalFieldType<RT[K]> extends PersistentModel[]
-// 		? ModelPredicate<FinalFieldType<Scalar<RT[K]>>>
-// 		: ValuePredicate<RT, RT[K]>;
-// } & {
-// 	or: ModelPredicateOperator<RT>;
-// 	and: ModelPredicateOperator<RT>;
-// 	not: ModelPredicateNegation<RT>;
-// 	__copy: () => ModelPredicate<RT>;
-// } & FinalModelPredicate<RT>;
 
 type ModelPredicate<RT extends PersistentModel> = {
 	[K in keyof RT]: FinalFieldType<RT[K]> extends PersistentModel
@@ -298,8 +280,6 @@ class GroupCondition {
 
 		const negateChildren = negate !== (this.operator === 'not');
 
-		// console.log('status', breadcrumb, negate)
-
 		const groups = this.operands.filter(
 			op => op instanceof GroupCondition
 		) as GroupCondition[];
@@ -309,7 +289,6 @@ class GroupCondition {
 		) as FieldCondition[];
 
 		// TODO: fetch Predicate.ALL return early here?
-
 		// TODO: parallize. (some storage engines may optimize parallel requests)
 		for (const g of groups) {
 			const relatives = await g.fetch(
@@ -318,23 +297,12 @@ class GroupCondition {
 				negateChildren
 			);
 
-			// console.log(
-			// 	'group relatives',
-			// 	util.inspect(g, { depth: 12 }),
-			// 	util.inspect(relatives, { depth: 12 })
-			// );
-
 			if (g.field) {
 				// relatives needs to be used to find candidate results.
 				// TODO: replace with lazy loading? ... :D ...
 				const meta = this.model.__meta.fields[g.field];
 				const gIdField = 'id';
 				if (meta.association) {
-					// console.log('here we are!', breadcrumb, g, meta, relatives);
-					// if (
-					// 	meta.association.connectionType === 'BELONGS_TO' ||
-					// 	meta.association.connectionType === 'HAS_ONE'
-					// ) {
 					let candidates = [];
 
 					// sometimes the targetName isn't used locally.
@@ -365,59 +333,12 @@ class GroupCondition {
 							this.model.__meta,
 							p => p[leftHandField]('eq' as never, rightHandValue as never)
 						);
-						// console.log(
-						// 	'predicate',
-						// 	util.inspect(this.model.__meta, { depth: 8 }),
-						// 	leftHandField,
-						// 	util.inspect(g.model.__meta, { depth: 8 }),
-						// 	relative,
-						// 	rightHandValue
-						// );
 						candidates = [
 							...candidates,
 							...(await storage.query(this.model, predicate)),
 						];
 					}
-					// console.log('candidates', candidates);
 					resultGroups.push(candidates);
-					// } else if (meta.association.connectionType === 'HAS_ONE') {
-					// 	let candidates = [];
-
-					// 	// const associatedMeta = g.model.__meta.fields[meta.association.associatedWith];
-
-					// 	// sometimes the targetName isn't used locally.
-					// 	// instead, the fieldname itself is used.
-					// 	const leftHandId =
-					// 		this.model.__meta.fields[associatedMeta.targetName] == null
-					// 			? meta.name
-					// 			: meta.association.targetName;
-
-					// 	for (var relative of relatives) {
-					// 		const rightHandValue =
-					// 			relative[(meta.association as any).associatedWith] ||
-					// 			relative[gIdField];
-
-					// 		const predicate = FlatModelPredicateCreator.createFromExisting(
-					// 			this.model.__meta,
-					// 			p => p[leftHandId]('eq' as never, rightHandValue as never)
-					// 		);
-					// 		console.log(
-					// 			'predicate',
-					// 			util.inspect(this.model.__meta, { depth: 8 }),
-					// 			leftHandId,
-					// 			util.inspect(g.model.__meta, { depth: 8 }),
-					// 			relative,
-					// 			rightHandValue
-					// 		);
-					// 		candidates = [
-					// 			...candidates,
-					// 			...(await storage.query(this.model, predicate)),
-					// 		];
-					// 	}
-					// 	console.log('candidates', candidates);
-					// 	resultGroups.push(candidates);
-					// } else {
-					// }
 				} else {
 					throw new Error('Missing field metadata.');
 				}
@@ -466,13 +387,6 @@ class GroupCondition {
 				this.model.__meta,
 				p => p[operator](c => addConditions(c))
 			);
-
-			// const innerPredicate = FlatModelPredicateCreator.getPredicates(
-			// 	predicate,
-			// 	false
-			// );
-			// // console.log('inner flat predicate', innerPredicate);
-
 			resultGroups.push(await storage.query(this.model, predicate));
 		} else if (conditions.length === 0 && resultGroups.length === 0) {
 			resultGroups.push(await storage.query(this.model));
@@ -519,30 +433,7 @@ class GroupCondition {
 				};
 			});
 		}
-
-		// console.log(
-		// 	'final result index',
-		// 	breadcrumb,
-		// 	resultIndex,
-		// 	Object.values(resultIndex)
-		// );
-
 		return Object.values(resultIndex);
-
-		// if (this.operator === 'or') {
-		// 	return asyncSome(this.operands, c => c.matches(itemToCheck));
-		// } else if (this.operator === 'and') {
-		// 	return asyncEvery(this.operands, c => c.matches(itemToCheck));
-		// } else if (this.operator === 'not') {
-		// 	if (this.operands.length !== 1) {
-		// 		throw new Error(
-		// 			'Invalid arguments! `not()` accepts exactly one predicate expression.'
-		// 		);
-		// 	}
-		// 	return !(await this.operands[0].matches(itemToCheck));
-		// } else {
-		// 	throw new Error('Invalid group operator!');
-		// }
 	}
 
 	// ALT for `ignoreFieldName` could be to copy and strip off `fieldName`
@@ -675,7 +566,6 @@ export function predicateFor<T extends PersistentModel>(
 	}
 
 	// TODO: better handled with proxy?
-	// TODO: break `not` out? or let TS and runtime checks handle it later?
 	['and', 'or'].forEach(op => {
 		(link as any)[op] = (
 			...builderOrPredicates:
@@ -738,9 +628,6 @@ export function predicateFor<T extends PersistentModel>(
 		};
 	};
 
-	// looks like we need to build in a new/alt schema JSON
-	// parsing thing ...
-
 	for (const fieldName in ModelType.__meta.fields) {
 		Object.defineProperty(link, fieldName, {
 			enumerable: true,
@@ -777,7 +664,6 @@ export function predicateFor<T extends PersistentModel>(
 					) {
 						const [newquery, oldtail] = link.__query.copy(link.__tail);
 						const newtail = new GroupCondition(
-							// ModelType as PersistentModelConstructor<PersistentModel>,
 							(<ModelFieldType>def.type).modelConstructor,
 							fieldName,
 							def.association.connectionType,
