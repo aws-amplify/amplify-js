@@ -51,7 +51,7 @@
 		"@aws-sdk/client-pinpoint": "3.6.1",
 		"@aws-sdk/util-utf8-browser": "3.6.1",
 		"lodash": "^4.17.20",
-		"uuid": "^3.2.1"
+		"uuid": "^8.3.2"
 	},
 	"jest": {
 		"globals": {
