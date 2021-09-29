@@ -1209,7 +1209,7 @@ describe('DataStore tests', () => {
 				});
 			});
 			test('subscribe to model with criteria', async () => {
-				DataStore.observe(Model, c => c.field1('ne', 'somevalue')).subscribe(
+				DataStore.observe(Model, c => c.field1.ne('somevalue')).subscribe(
 					({ element, model }) => {
 						expectType<PersistentModelConstructor<Model>>(model);
 						expectType<Model>(element);
@@ -1246,7 +1246,7 @@ describe('DataStore tests', () => {
 			});
 			test('subscribe to model with criteria', async () => {
 				DataStore.observe<Model>(Model, c =>
-					c.field1('ne', 'somevalue')
+					c.field1.ne('somevalue')
 				).subscribe(({ element, model }) => {
 					expectType<PersistentModelConstructor<Model>>(model);
 					expectType<Model>(element);

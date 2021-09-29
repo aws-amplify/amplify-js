@@ -136,7 +136,7 @@ type UntypedCondition = {
 	copy(extract: GroupCondition): [UntypedCondition, GroupCondition | undefined];
 };
 
-class FieldCondition {
+export class FieldCondition {
 	constructor(
 		public field: string,
 		public operator: string, // TODO: tighter type?
@@ -218,7 +218,7 @@ class FieldCondition {
 	}
 }
 
-class GroupCondition {
+export class GroupCondition {
 	// for debugging
 	public groupId: string =
 		new Date().getTime() + '.' + (Math.random() * 1000).toFixed(3);

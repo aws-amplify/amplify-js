@@ -73,7 +73,9 @@ import {
 	FinalModelPredicate,
 	SingularModelPredicateExtendor,
 	predicateFor,
+	GroupCondition,
 } from '../predicates/next';
+import { notDeepEqual } from 'assert';
 
 setAutoFreeze(true);
 enablePatches();
@@ -1147,15 +1149,16 @@ class DataStore {
 
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			criteria?: string | ProducerModelPredicate<T>
+			criteria?: string | SingularModelPredicateExtendor<T>
 		): Observable<SubscriptionMessage<T>>;
 	} = <T extends PersistentModel = PersistentModel>(
 		modelOrConstructor?: T | PersistentModelConstructor<T>,
-		idOrCriteria?: string | ProducerModelPredicate<T>
+		idOrCriteria?: string | SingularModelPredicateExtendor<T>
 	): Observable<SubscriptionMessage<T>> => {
 		let predicate: ModelPredicate<T>;
+		let query: GroupCondition;
 
-		const modelConstructor: PersistentModelConstructor<T> =
+		const modelConstructor =
 			modelOrConstructor && isValidModelConstructor(modelOrConstructor)
 				? modelOrConstructor
 				: undefined;
@@ -1201,30 +1204,37 @@ class DataStore {
 				getModelDefinition(modelConstructor),
 				idOrCriteria
 			);
-		} else {
-			predicate =
-				modelConstructor &&
-				ModelPredicateCreator.createFromExisting<T>(
-					getModelDefinition(modelConstructor),
-					idOrCriteria
-				);
+		} else if (modelConstructor && typeof idOrCriteria === 'function') {
+			const seedPredicate = predicateFor<T>(
+				modelOrConstructor as PersistentModelConstructor<T>
+			);
+			query = (idOrCriteria as SingularModelPredicateExtendor<T>)(seedPredicate)
+				.__query;
 		}
 
 		return new Observable<SubscriptionMessage<T>>(observer => {
-			let handle: ZenObservable.Subscription;
+			let source: ZenObservable.Subscription;
 
 			(async () => {
 				await this.start();
 
-				handle = this.storage
-					.observe(modelConstructor, predicate)
+				source = this.storage
+					.observe(modelConstructor)
 					.filter(({ model }) => namespaceResolver(model) === USER)
-					.subscribe(observer);
+					.subscribe({
+						next: async item => {
+							if (!query || (await query.matches(item))) {
+								observer.next(item as SubscriptionMessage<T>);
+							}
+						},
+						error: err => observer.error(err),
+						complete: () => observer.complete(),
+					});
 			})();
 
 			return () => {
-				if (handle) {
-					handle.unsubscribe();
+				if (source) {
+					source.unsubscribe();
 				}
 			};
 		});
