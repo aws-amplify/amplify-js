@@ -66,7 +66,7 @@ import {
 	USER,
 	isNullOrUndefined,
 	registerNonModelClass,
-	// inMemoryPagination,
+	inMemoryPagination,
 } from '../util';
 import {
 	ModelPredicateExtendor,
@@ -915,8 +915,6 @@ class DataStore {
 	): Promise<T | T[] | undefined> => {
 		await this.start();
 
-		//#region Input validation
-
 		if (!isValidModelConstructor(modelConstructor)) {
 			const msg = 'Constructor is not for a valid model';
 			logger.error(msg, { modelConstructor });
@@ -946,7 +944,7 @@ class DataStore {
 			);
 		} else {
 			// WARNING: this conditional does not recognize Predicates.ALL ...
-			if (idOrCriteria === undefined || isPredicatesAll(idOrCriteria)) {
+			if (!idOrCriteria || isPredicatesAll(idOrCriteria)) {
 				// Predicates.ALL means "all records", so no predicate (undefined)
 				result = await this.storage.query<T>(
 					modelConstructor,
@@ -959,23 +957,9 @@ class DataStore {
 					seedPredicate
 				);
 				result = (await query.__query.fetch(this.storage)) as T[];
-				// result = inMemoryPagination(result, pagination);
+				result = inMemoryPagination(result, pagination);
 			}
 		}
-
-		//#endregion
-
-		// logger.debug('params ready', {
-		// 	modelConstructor,
-		// 	predicate: ModelPredicateCreator.getPredicates(predicate, false),
-		// 	pagination: {
-		// 		...pagination,
-		// 		sort: ModelSortPredicateCreator.getPredicates(
-		// 			pagination && pagination.sort,
-		// 			false
-		// 		),
-		// 	},
-		// });
 
 		return isQueryOne(idOrCriteria) ? result[0] : result;
 	};

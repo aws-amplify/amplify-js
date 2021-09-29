@@ -128,9 +128,7 @@ describe('Predicates', () => {
 				if (!predicate) {
 					return baseSet;
 				} else {
-					// console.log('predicate arg', predicate);
 					const predicates = ModelPredicateCreator.getPredicates(predicate);
-					// console.log('built predicate', predicates);
 					return baseSet.filter(item =>
 						// need to BUILD the predicate from ... predicate... WTF!!!!!!!!!! ... SOOOO MANY PREDICATE!!
 						flatPredicateMatches(item, 'and', [predicates])
@@ -588,9 +586,7 @@ describe('Predicates', () => {
 				if (!predicate) {
 					return baseSet;
 				} else {
-					// console.log('predicate arg', predicate);
 					const predicates = ModelPredicateCreator.getPredicates(predicate);
-					// console.log('built predicate', predicates);
 					return baseSet.filter(item =>
 						// need to BUILD the predicate from ... predicate... WTF!!!!!!!!!! ... SOOOO MANY PREDICATE!!
 						flatPredicateMatches(item, 'and', [predicates])
@@ -610,12 +606,9 @@ describe('Predicates', () => {
 					(await query.__query.fetch(storage)) as T[],
 			},
 		].forEach(mechanism => {
-			const util = require('util');
 			describe('as ' + mechanism.name, () => {
 				test('can filter eq()', async () => {
 					const query = predicateFor(Blog).owner.name.eq('Adam West');
-					console.log('query', util.inspect(query.__query, { depth: 8 }));
-
 					const matches = await mechanism.execute<typeof Blog>(query);
 
 					expect(matches.length).toBe(1);

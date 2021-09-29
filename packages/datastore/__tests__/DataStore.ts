@@ -1099,7 +1099,7 @@ describe('DataStore tests', () => {
 			});
 		});
 
-		describe.only('Query', () => {
+		describe('Query', () => {
 			test('all', async () => {
 				const allModels = await DataStore.query(Model);
 				expectType<Model[]>(allModels);

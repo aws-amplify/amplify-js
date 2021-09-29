@@ -26,7 +26,7 @@ import {
 	PaginationInput,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
-// import { ModelSortPredicateCreator } from './predicates';
+import { ModelSortPredicateCreator } from './predicates';
 
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
@@ -633,30 +633,30 @@ export function valuesEqual(
 	return true;
 }
 
-// export function inMemoryPagination<T extends PersistentModel>(
-// 	records: T[],
-// 	pagination?: PaginationInput<T>
-// ): T[] {
-// 	if (pagination && records.length > 1) {
-// 		if (pagination.sort) {
-// 			const sortPredicates = ModelSortPredicateCreator.getPredicates(
-// 				pagination.sort
-// 			);
+export function inMemoryPagination<T extends PersistentModel>(
+	records: T[],
+	pagination?: PaginationInput<T>
+): T[] {
+	if (pagination && records.length > 1) {
+		if (pagination.sort) {
+			const sortPredicates = ModelSortPredicateCreator.getPredicates(
+				pagination.sort
+			);
 
-// 			if (sortPredicates.length) {
-// 				const compareFn = sortCompareFunction(sortPredicates);
-// 				records.sort(compareFn);
-// 			}
-// 		}
-// 		const { page = 0, limit = 0 } = pagination;
-// 		const start = Math.max(0, page * limit) || 0;
+			if (sortPredicates.length) {
+				const compareFn = sortCompareFunction(sortPredicates);
+				records.sort(compareFn);
+			}
+		}
+		const { page = 0, limit = 0 } = pagination;
+		const start = Math.max(0, page * limit) || 0;
 
-// 		const end = limit > 0 ? start + limit : records.length;
+		const end = limit > 0 ? start + limit : records.length;
 
-// 		return records.slice(start, end);
-// 	}
-// 	return records;
-// }
+		return records.slice(start, end);
+	}
+	return records;
+}
 
 export const isAWSDate = (val: string): boolean => {
 	return !!/^\d{4}-\d{2}-\d{2}(Z|[+-]\d{2}:\d{2}($|:\d{2}))?$/.exec(val);
