@@ -83,18 +83,29 @@ export type SingularModelPredicateExtendor<RT extends PersistentModel> = (
 };
 
 type ValuePredicate<RT extends PersistentModel, MT extends MatchableTypes> = {
-	[K in AllFieldOperators]: (
-		...operands: Scalar<MT>[]
-	) => FinalModelPredicate<RT>;
+	[K in AllFieldOperators]: (...operands: Scalar<MT>[]) => FinalModelPredicate;
 };
 
 type ModelPredicateOperator<RT extends PersistentModel> = (
-	...predicates: [ModelPredicateExtendor<RT>] | FinalModelPredicate<any>[]
-) => FinalModelPredicate<RT>;
+	...predicates: [ModelPredicateExtendor<RT>] | FinalModelPredicate[]
+) => FinalModelPredicate;
 
 type ModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: SingularModelPredicateExtendor<RT> | FinalModelPredicate<any>
-) => FinalModelPredicate<RT>;
+	predicate: SingularModelPredicateExtendor<RT> | FinalModelPredicate
+) => FinalModelPredicate;
+
+// type ModelPredicate<RT extends PersistentModel> = {
+// 	[K in keyof RT]: FinalFieldType<RT[K]> extends PersistentModel
+// 		? ModelPredicate<FinalFieldType<RT[K]>>
+// 		: FinalFieldType<RT[K]> extends PersistentModel[]
+// 		? ModelPredicate<FinalFieldType<Scalar<RT[K]>>>
+// 		: ValuePredicate<RT, RT[K]>;
+// } & {
+// 	or: ModelPredicateOperator<RT>;
+// 	and: ModelPredicateOperator<RT>;
+// 	not: ModelPredicateNegation<RT>;
+// 	__copy: () => ModelPredicate<RT>;
+// } & FinalModelPredicate<RT>;
 
 type ModelPredicate<RT extends PersistentModel> = {
 	[K in keyof RT]: FinalFieldType<RT[K]> extends PersistentModel
@@ -107,10 +118,10 @@ type ModelPredicate<RT extends PersistentModel> = {
 	and: ModelPredicateOperator<RT>;
 	not: ModelPredicateNegation<RT>;
 	__copy: () => ModelPredicate<RT>;
-} & FinalModelPredicate<RT>;
+} & FinalModelPredicate;
 
-export type FinalModelPredicate<RT extends PersistentModel> = {
-	__class: PersistentModelConstructor<RT>;
+export type FinalModelPredicate = {
+	__class: PersistentModelConstructor<PersistentModel>;
 	__className: string;
 	__query: GroupCondition;
 	__tail: GroupCondition;
@@ -463,6 +474,8 @@ class GroupCondition {
 			// // console.log('inner flat predicate', innerPredicate);
 
 			resultGroups.push(await storage.query(this.model, predicate));
+		} else if (conditions.length === 0 && resultGroups.length === 0) {
+			resultGroups.push(await storage.query(this.model));
 		}
 
 		// this needs to be read from metadata.
@@ -667,8 +680,8 @@ export function predicateFor<T extends PersistentModel>(
 		(link as any)[op] = (
 			...builderOrPredicates:
 				| [ModelPredicateExtendor<T>]
-				| FinalModelPredicate<T>[]
-		): FinalModelPredicate<T> => {
+				| FinalModelPredicate[]
+		): FinalModelPredicate => {
 			const newlink = link.__copy();
 			newlink.__tail.operands.push(
 				new GroupCondition(
@@ -680,9 +693,7 @@ export function predicateFor<T extends PersistentModel>(
 						? builderOrPredicates[0](predicateFor<IndirectT>(ModelType)).map(
 								p => p.__query
 						  )
-						: (builderOrPredicates as FinalModelPredicate<T>[]).map(
-								p => p.__query
-						  )
+						: (builderOrPredicates as FinalModelPredicate[]).map(p => p.__query)
 				)
 			);
 
@@ -700,10 +711,8 @@ export function predicateFor<T extends PersistentModel>(
 	});
 
 	link.not = (
-		builderOrPredicate:
-			| SingularModelPredicateExtendor<T>
-			| FinalModelPredicate<T>
-	): FinalModelPredicate<T> => {
+		builderOrPredicate: SingularModelPredicateExtendor<T> | FinalModelPredicate
+	): FinalModelPredicate => {
 		const newlink = link.__copy();
 		newlink.__tail.operands.push(
 			new GroupCondition(

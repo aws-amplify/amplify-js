@@ -1122,6 +1122,13 @@ describe('DataStore tests', () => {
 				expect(one.field1).toBeDefined();
 				expect(one).toBeInstanceOf(Model);
 			});
+			test('with identity function criteria', async () => {
+				const multiModelWithCriteria = await DataStore.query(Model, c => c);
+				expectType<Model[]>(multiModelWithCriteria);
+				const [one] = multiModelWithCriteria;
+				expect(one.field1).toBeDefined();
+				expect(one).toBeInstanceOf(Model);
+			});
 			test('with pagination', async () => {
 				const allModelsPaginated = await DataStore.query(
 					Model,
@@ -1151,7 +1158,7 @@ describe('DataStore tests', () => {
 			});
 			test('with criteria', async () => {
 				const multiModelWithCriteria = await DataStore.query<Model>(Model, c =>
-					c.field1('contains', 'something')
+					c.field1.contains('something')
 				);
 				expectType<Model[]>(multiModelWithCriteria);
 				const [one] = multiModelWithCriteria;
