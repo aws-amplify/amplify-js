@@ -1,32 +1,13 @@
 import { predicateFor, StorageAdapter } from '../src/predicates/next';
-// import { getModelDefinition } from '../src/datastore/datastore';
-import { Model, Metadata, testSchema } from './helpers';
 import {
-	NonModelTypeConstructor,
 	PersistentModel,
 	PersistentModelConstructor,
 	ModelPredicate as FlatModelPredicate,
 	PaginationInput,
-	PredicatesGroup as FlatPredicateGroup,
-	PredicateObject as FlatPredicateObject,
 } from '../src/types';
-import {
-	ModelPredicateCreator,
-	ModelSortPredicateCreator,
-} from '../src/predicates';
+import { ModelPredicateCreator } from '../src/predicates';
 import { validatePredicate as flatPredicateMatches } from '../src/util';
-import {
-	Author,
-	Post,
-	Comment,
-	Blog,
-	BlogOwner,
-	PostAuthorJoin,
-	Person,
-	PostMetadata,
-	Nested,
-} from './model';
-import { mainModule } from 'process';
+import { Author, Post, Blog, BlogOwner } from './model';
 
 type ModelOf<T> = T extends PersistentModelConstructor<infer M> ? M : T;
 
@@ -153,7 +134,6 @@ describe('Predicates', () => {
 
 				test('match on eq', async () => {
 					const query = predicateFor(Author).name.eq('Adam West');
-					// const matches = await query.filter(flatAuthorsArray);
 					const matches = await mechanism.execute<typeof Author>(query);
 
 					expect(matches.length).toBe(1);
@@ -483,42 +463,6 @@ describe('Predicates', () => {
 			'Zelda from the Legend of Zelda',
 		];
 
-		// const blogs = [
-		// 	'Adam West',
-		// 	'Bob Jones',
-		// 	'Clarice Starling',
-		// 	'Debbie Donut',
-		// 	'Zelda from the Legend of Zelda',
-		// ].map(
-		// 	author =>
-		// 		new Blog({
-		// 			name: `${author}'s Blog`,
-		// 			posts: [1, 2, 3].map(
-		// 				id =>
-		// 					new Post({
-		// 						title: `${author}'s Blog post ${id}`,
-		// 					})
-		// 			),
-		// 			owner: new BlogOwner({
-		// 				name: author,
-
-		// 				// to fake lazy loading 3-4 levels deep:
-		// 				blog: new Blog({
-		// 					name: `${author}'s Blog`,
-		// 					posts: [1, 2, 3].map(
-		// 						id =>
-		// 							new Post({
-		// 								title: `${author}'s Blog post ${id}`,
-		// 							})
-		// 					),
-		// 					owner: new BlogOwner({
-		// 						name: author,
-		// 					}),
-		// 				}),
-		// 			}),
-		// 		})
-		// );
-
 		const owners = blogOwnerNames.map(name => {
 			const owner = {
 				id: `ownerId${name}`,
@@ -575,7 +519,6 @@ describe('Predicates', () => {
 						// simulating goofiness with DS stuffing ID's into related model field names.
 						for (const field of Object.values(modelConstructor.__meta.fields)) {
 							if (field.association) {
-								// itemCopy['__' + field.name];
 								itemCopy[field.name] = itemCopy[field.association.targetName];
 							}
 						}
