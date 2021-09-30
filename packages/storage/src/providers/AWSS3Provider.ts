@@ -848,11 +848,11 @@ export class AWSS3Provider implements StorageProvider {
 			const credentials = await Credentials.get();
 			if (!credentials) return INVALID_CRED;
 			const cred = Credentials.shear(credentials);
-			logger.debug('set credentials for storage', cred);
+			logger.debug('credentials provider get credentials', cred);
 
 			return cred;
 		} catch (error) {
-			logger.warn('ensure credentials error', error);
+			logger.warn('credentials provider error', error);
 			return INVALID_CRED;
 		}
 	}
@@ -886,6 +886,8 @@ export class AWSS3Provider implements StorageProvider {
 
 		const s3client = new S3Client({
 			region,
+			// Using provider instead of a static credentials, so that if an upload task was in progress, but credentials gets
+			// changed or invalidated (e.g user signed out), the subsequent requests will fail.
 			credentials: this._credentialsProvider,
 			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
