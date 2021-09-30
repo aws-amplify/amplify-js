@@ -23,7 +23,7 @@ export interface AddTaskInput {
 	emitter: events.EventEmitter;
 	key: string;
 	s3Client: S3Client;
-	params: PutObjectCommandInput;
+	params?: PutObjectCommandInput;
 }
 
 interface FileMetadata {

@@ -761,7 +761,7 @@ describe('StorageProvider test', () => {
 			const file = new File(['TestFileContent'], 'testFileName');
 			const testUploadId = 'testUploadId';
 
-			const s3ServiceCallSpy = jest
+			jest
 				.spyOn(S3Client.prototype, 'send')
 				.mockImplementationOnce(async command => {
 					if (command instanceof CreateMultipartUploadCommand) {
@@ -801,7 +801,7 @@ describe('StorageProvider test', () => {
 
 			const date = new Date();
 			const metadata = { key: 'value' };
-			const uploadTask = await storage.put('key', file, {
+			await storage.put('key', file, {
 				resumable: true,
 				contentType: 'application/pdf',
 				cacheControl: 'no-cache',

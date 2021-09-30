@@ -34,18 +34,18 @@ const testOpts: any = {
 	level: 'level',
 };
 const localStorageMock = (function() {
-	let store = {};
+	let store: Record<string, any> = {};
 	return {
-		getItem: function(key) {
+		getItem: function(key: string) {
 			return store[key];
 		},
-		setItem: function(key, value) {
+		setItem: function(key: string, value: any) {
 			store[key] = value.toString();
 		},
 		clear: function() {
 			store = {};
 		},
-		removeItem: function(key) {
+		removeItem: function(key: string) {
 			delete store[key];
 		},
 		getAllItems: function() {
@@ -191,7 +191,7 @@ describe('resumable upload test', () => {
 		);
 
 		expect(Object.keys(uploadsInProgress).length).toBe(0);
-		expect(() => uploadTask.start()).toThrowError();
+		expect(() => uploadTask.resume()).toThrowError();
 	});
 
 	test('resumable should be able to handle blobs', async () => {
