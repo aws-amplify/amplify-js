@@ -21,10 +21,10 @@ import {
 	AWSS3Provider,
 	StorageProviderWithCopy,
 	S3ProviderGetOuput,
-	S3ProviderPutOutput,
 	S3ProviderRemoveOutput,
 	S3ProviderListOutput,
 	S3ProviderCopyOutput,
+	S3PutResult,
 } from '../';
 
 type Tail<T extends any[]> = ((...t: T) => void) extends (
@@ -138,11 +138,7 @@ export type StorageGetOutput<
 	T extends StorageProvider | Record<string, any>
 > = PickProviderOutput<S3ProviderGetOuput<T>, T, 'get'>;
 
-export type StoragePutOutput<T> = PickProviderOutput<
-	S3ProviderPutOutput,
-	T,
-	'put'
->;
+export type StoragePutOutput<T> = PickProviderOutput<S3PutResult<T>, T, 'put'>;
 
 export type StorageRemoveOutput<T> = PickProviderOutput<
 	S3ProviderRemoveOutput,

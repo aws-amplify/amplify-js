@@ -23,11 +23,10 @@ export interface AddTaskInput {
 	emitter: events.EventEmitter;
 	key: string;
 	s3Client: S3Client;
-	params?: PutObjectCommandInput;
+	params: PutObjectCommandInput;
 }
 
 interface FileMetadata {
-	accessLevel: StorageAccessLevel;
 	bucket: string;
 	fileName: string;
 	key: string;
@@ -41,6 +40,7 @@ export enum TaskEvents {
 	ABORT = 'abort',
 	UPLOAD_COMPLETE = 'uploadComplete',
 	UPLOAD_PROGRESS = 'uploadPartProgress',
+	ERROR = 'error',
 }
 
 export const UPLOADS_STORAGE_KEY = '__uploadInProgress';
@@ -76,17 +76,17 @@ export class AWSS3UploadManager {
 		bucket: string;
 		key: string;
 		file: Blob;
-	}): Promise<ListPartsCommandOutput> {
+	}): Promise<ListPartsCommandOutput | undefined> {
 		const uploads = this._listUploadTasks();
 
 		if (Object.keys(uploads).length === 0) {
-			return null;
+			return undefined;
 		}
 
 		const fileKey = this._getFileKey(file, bucket, key);
 
 		if (!uploads.hasOwnProperty(fileKey)) {
-			return null;
+			return undefined;
 		}
 
 		const cachedUploadFileData: FileMetadata =
@@ -150,7 +150,7 @@ export class AWSS3UploadManager {
 		for (const [k, upload] of Object.entries(uploads)) {
 			const hasExpired =
 				Object.prototype.hasOwnProperty.call(upload, 'timeStarted') &&
-				Date.now() - (upload as any).timeStarted > ttl;
+				Date.now() - upload.timeStarted > ttl;
 
 			if (hasExpired) {
 				s3Client
@@ -176,7 +176,9 @@ export class AWSS3UploadManager {
 		this._setUploadTasks(uploads);
 	}
 
-	private _isListPartsOutput(x: unknown): x is ListPartsCommandOutput {
+	private _isListPartsOutput(
+		x: unknown
+	): x is ListPartsCommandOutput & { UploadId: string } {
 		return (
 			x &&
 			typeof x === 'object' &&
@@ -240,7 +242,7 @@ export class AWSS3UploadManager {
 	}
 
 	private async _initMultiupload(input: AddTaskInput) {
-		const { s3Client, bucket, key, file, emitter, accessLevel, params } = input;
+		const { s3Client, bucket, key, file, emitter, params } = input;
 		const fileKey = this._getFileKey(file as File, bucket, key);
 		const createMultipartUpload = await s3Client.send(
 			new CreateMultipartUploadCommand(params)
@@ -259,7 +261,6 @@ export class AWSS3UploadManager {
 			lastTouched: Date.now(),
 			bucket,
 			key,
-			accessLevel,
 			...(this._isFile(file) && { fileName: file.name }),
 		};
 
