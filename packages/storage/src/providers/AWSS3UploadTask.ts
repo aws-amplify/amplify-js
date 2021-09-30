@@ -3,7 +3,6 @@ import {
 	CompletedPart,
 	S3Client,
 	UploadPartCommand,
-	UploadPartCommandOutput,
 	CompleteMultipartUploadCommand,
 	Part,
 	AbortMultipartUploadCommand,
@@ -48,9 +47,14 @@ export interface InProgressRequest {
 	cancel: Canceler;
 }
 
-export type PartCompletionEvent = UploadPartCommandOutput & {
-	part: UploadPartCommandInput;
-};
+export interface UploadCompleteEvent {
+	key: string;
+}
+
+export interface UploadProgressEvent {
+	loaded: number;
+	total: number;
+}
 
 const MAX_PARTS = 10000;
 const MIN_PART_SIZE = 5 * 1024 * 1024;
@@ -96,12 +100,19 @@ export class AWSS3UploadTask implements UploadTask {
 		this.totalBytes = this.file.size;
 		this.bytesUploaded = 0;
 		this.emitter = emitter;
-		this.cachedParts = completedParts;
+		this.cachedParts = completedParts || [];
 		this.queued = this._createParts();
 		this._validateParams();
 		if (this.cachedParts) {
 			this._initCachedUploadParts();
 		}
+		// event emitter will re-throw an error if an event emits an error unless there's a listener, attaching a no-op
+		// function to it unless user adds their own onError callback
+		this.emitter.on(TaskEvents.ERROR, () => {});
+	}
+
+	get percent() {
+		return (this.bytesUploaded / this.totalBytes) * 100;
 	}
 
 	private _validateParams() {
@@ -199,6 +210,14 @@ export class AWSS3UploadTask implements UploadTask {
 						} else {
 							logger.error('error starting next part of upload: ', err);
 						}
+						if (
+							!axios.isCancel(err) &&
+							err.message !==
+								AWSS3ProviderUploadErrorStrings.UPLOAD_PAUSED_MESSAGE
+						) {
+							this.emitter.emit(TaskEvents.ERROR, err);
+						}
+						this.pause();
 					}),
 				cancel: cancelTokenSource.cancel,
 			});
@@ -217,7 +236,7 @@ export class AWSS3UploadTask implements UploadTask {
 			key: this.key,
 			bucket: this.bucket,
 		});
-		return obj && obj.Size === this.file.size;
+		return Boolean(obj && obj.Size === this.file.size);
 	}
 
 	private _isDone() {
@@ -232,7 +251,21 @@ export class AWSS3UploadTask implements UploadTask {
 		this.emitter.on(TaskEvents.UPLOAD_PROGRESS, fn.bind(this));
 	}
 
-	public onComplete(fn: Function) {
+	private _attachUploadErrorEvent(fn: Function) {
+		this.emitter.on(TaskEvents.ERROR, fn.bind(this));
+	}
+
+	public onError(fn: (event: Error) => any) {
+		if (Array.isArray(fn)) {
+			fn.forEach(cb => {
+				this._attachUploadErrorEvent(cb);
+			});
+		} else {
+			this._attachUploadErrorEvent(fn);
+		}
+	}
+
+	public onComplete(fn: (event: UploadCompleteEvent) => any) {
 		if (Array.isArray(fn)) {
 			fn.forEach(cb => {
 				this._attachUploadCompleteEvent(cb);
@@ -242,7 +275,7 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 	}
 
-	public onProgress(fn: Function) {
+	public onProgress(fn: (event: UploadProgressEvent) => any) {
 		if (Array.isArray(fn)) {
 			fn.forEach(cb => {
 				this._attachUploadProgressEvent(cb);
@@ -274,7 +307,6 @@ export class AWSS3UploadTask implements UploadTask {
 				Bucket: this.bucket,
 				PartNumber: parts.length + 1,
 				UploadId: this.uploadId,
-				ContentMD5: null,
 			});
 			bodyStart += this.partSize;
 		}
