@@ -111,7 +111,6 @@ describe('Predicates', () => {
 				} else {
 					const predicates = ModelPredicateCreator.getPredicates(predicate);
 					return baseSet.filter(item =>
-						// need to BUILD the predicate from ... predicate... WTF!!!!!!!!!! ... SOOOO MANY PREDICATE!!
 						flatPredicateMatches(item, 'and', [predicates])
 					);
 				}
@@ -531,7 +530,6 @@ describe('Predicates', () => {
 				} else {
 					const predicates = ModelPredicateCreator.getPredicates(predicate);
 					return baseSet.filter(item =>
-						// need to BUILD the predicate from ... predicate... WTF!!!!!!!!!! ... SOOOO MANY PREDICATE!!
 						flatPredicateMatches(item, 'and', [predicates])
 					);
 				}
