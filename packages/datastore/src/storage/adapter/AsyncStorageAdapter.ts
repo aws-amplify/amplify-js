@@ -173,54 +173,70 @@ export class AsyncStorageAdapter implements Adapter {
 			);
 		}
 
-		for await (const relation of relations) {
-			const { fieldName, modelName, targetName, relationType } = relation;
-			const storeName = this.getStorename(namespaceName, modelName);
-			const modelConstructor = this.getModelConstructorByModelName(
-				namespaceName,
-				modelName
-			);
+		// now handled in datastore.ts at the instance level
 
-			switch (relationType) {
-				case 'HAS_ONE':
-					for await (const recordItem of records) {
-						if (recordItem[fieldName]) {
-							const connectionRecord = await this.db.get(
-								recordItem[fieldName],
-								storeName
-							);
+		// for await (const relation of relations) {
+		// 	const {
+		// 		fieldName,
+		// 		modelName,
+		// 		targetName,
+		// 		relationType,
+		// 	} = relation;
+		// 	const storeName = this.getStorename(
+		// 		namespaceName,
+		// 		modelName
+		// 	);
+		// 	const modelConstructor = this.getModelConstructorByModelName(
+		// 		namespaceName,
+		// 		modelName
+		// 	);
 
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-						}
-					}
+		// 	switch (relationType) {
+		// 		case 'HAS_ONE':
+		// 			for await (const recordItem of records) {
+		// 				if (recordItem[fieldName]) {
+		// 					const connectionRecord = await this.db.get(
+		// 						recordItem[fieldName],
+		// 						storeName
+		// 					);
 
-					break;
-				case 'BELONGS_TO':
-					for await (const recordItem of records) {
-						if (recordItem[targetName]) {
-							const connectionRecord = await this.db.get(
-								recordItem[targetName],
-								storeName
-							);
+		// 					recordItem[fieldName] =
+		// 						connectionRecord &&
+		// 						this.modelInstanceCreator(
+		// 							modelConstructor,
+		// 							connectionRecord
+		// 						);
+		// 				}
+		// 			}
 
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-							delete recordItem[targetName];
-						}
-					}
+		// 			break;
+		// 		case 'BELONGS_TO':
+		// 			for await (const recordItem of records) {
+		// 				if (recordItem[targetName]) {
+		// 					const connectionRecord = await this.db.get(
+		// 						recordItem[targetName],
+		// 						storeName
+		// 					);
 
-					break;
-				case 'HAS_MANY':
-					// TODO: Lazy loading
-					break;
-				default:
-					exhaustiveCheck(relationType);
-					break;
-			}
-		}
+		// 					recordItem[fieldName] =
+		// 						connectionRecord &&
+		// 						this.modelInstanceCreator(
+		// 							modelConstructor,
+		// 							connectionRecord
+		// 						);
+		// 					delete recordItem[targetName];
+		// 				}
+		// 			}
+
+		// 			break;
+		// 		case 'HAS_MANY':
+		// 			// TODO: Lazy loading
+		// 			break;
+		// 		default:
+		// 			exhaustiveCheck(relationType);
+		// 			break;
+		// 	}
+		// }
 
 		return records.map(record =>
 			this.modelInstanceCreator(modelConstructor, record)

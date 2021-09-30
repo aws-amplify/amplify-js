@@ -317,91 +317,87 @@ export const traverseModel = <T extends PersistentModel>(
 		instance: T;
 	}[] = [];
 
-	const newInstance = modelConstructor.copyOf(instance, draftInstance => {
-		relation.relationTypes.forEach((rItem: RelationType) => {
-			const modelConstructor = getModelConstructorByModelName(
-				namespace.name,
-				rItem.modelName
-			);
+	// Temporarily disabling this. Logic will be re-worked as part of the Cascading Saves task
 
-			switch (rItem.relationType) {
-				case 'HAS_ONE':
-					console.log('MADE IT IN');
-					if (instance[rItem.fieldName]) {
-						let modelInstance: T;
-						try {
-							modelInstance = modelInstanceCreator(
-								modelConstructor,
-								instance[rItem.fieldName]
-							);
-						} catch (error) {
-							// Do nothing
-						}
-						//const fieldName = '_' + rItem.fieldName;
-						result.push({
-							modelName: rItem.modelName,
-							item: instance[rItem.fieldName],
-							instance: modelInstance,
-						});
+	// const newInstance = modelConstructor.copyOf(instance, draftInstance => {
+	// 	relation.relationTypes.forEach((rItem: RelationType) => {
+	// 		const modelConstructor = getModelConstructorByModelName(
+	// 			namespace.name,
+	// 			rItem.modelName
+	// 		);
 
-						(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
-							draftInstance[rItem.fieldName]
-						)).id;
-					}
+	// 		switch (rItem.relationType) {
+	// 			case 'HAS_ONE':
+	// 				if (instance[rItem.fieldName]) {
+	// 					let modelInstance: T;
+	// 					try {
+	// 						modelInstance = modelInstanceCreator(
+	// 							modelConstructor,
+	// 							instance[rItem.fieldName]
+	// 						);
+	// 					} catch (error) {
+	// 						// Do nothing
+	// 					}
 
-					break;
-				case 'BELONGS_TO':
-					if (instance[rItem.fieldName]) {
-						let modelInstance: T;
-						try {
-							modelInstance = modelInstanceCreator(
-								modelConstructor,
-								instance[rItem.fieldName]
-							);
-						} catch (error) {
-							// Do nothing
-						}
+	// 					result.push({
+	// 						modelName: rItem.modelName,
+	// 						item: instance[rItem.fieldName],
+	// 						instance: modelInstance,
+	// 					});
 
-						const isDeleted = (<ModelInstanceMetadata>(
-							draftInstance[rItem.fieldName]
-						))._deleted;
+	// 					(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
+	// 						draftInstance[rItem.fieldName]
+	// 					)).id;
+	// 				}
 
-						if (!isDeleted) {
-							result.push({
-								modelName: rItem.modelName,
-								item: instance[rItem.fieldName],
-								instance: modelInstance,
-							});
-						}
-					}
-					console.log('THIS IS OLD DRAFT KEY: ', rItem.fieldName);
-					console.log('THIS IS NEW DRAFT KEY: ', rItem.targetName);
-					console.log(
-						'THIS IS DRAFT VALUE: ',
-						(<PersistentModel>draftInstance[rItem.fieldName]).id
-					);
-					if (draftInstance[rItem.fieldName]) {
-						(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
-							draftInstance[rItem.fieldName]
-						)).id;
-						//delete draftInstance[rItem.fieldName];
-					}
+	// 				break;
+	// 			case 'BELONGS_TO':
+	// 				if (instance[rItem.fieldName]) {
+	// 					let modelInstance: T;
+	// 					try {
+	// 						modelInstance = modelInstanceCreator(
+	// 							modelConstructor,
+	// 							instance[rItem.fieldName]
+	// 						);
+	// 					} catch (error) {
+	// 						// Do nothing
+	// 					}
 
-					break;
-				case 'HAS_MANY':
-					// Intentionally blank
-					break;
-				default:
-					exhaustiveCheck(rItem.relationType);
-					break;
-			}
-		});
-	});
+	// 					const isDeleted = (<ModelInstanceMetadata>(
+	// 						draftInstance[rItem.fieldName]
+	// 					))._deleted;
+
+	// 					if (!isDeleted) {
+	// 						result.push({
+	// 							modelName: rItem.modelName,
+	// 							item: instance[rItem.fieldName],
+	// 							instance: modelInstance,
+	// 						});
+	// 					}
+	// 				}
+
+	// 				if (draftInstance[rItem.fieldName]) {
+	// 					(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
+	// 						draftInstance[rItem.fieldName]
+	// 					)).id;
+	// 					delete draftInstance[rItem.fieldName];
+	// 				}
+
+	// 				break;
+	// 			case 'HAS_MANY':
+	// 				// Intentionally blank
+	// 				break;
+	// 			default:
+	// 				exhaustiveCheck(rItem.relationType);
+	// 				break;
+	// 		}
+	// 	});
+	// });
 
 	result.unshift({
 		modelName: srcModelName,
-		item: newInstance,
-		instance: newInstance,
+		item: instance,
+		instance,
 	});
 
 	if (!topologicallySortedModels.has(namespace)) {
