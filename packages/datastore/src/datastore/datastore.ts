@@ -69,9 +69,9 @@ import {
 	inMemoryPagination,
 } from '../util';
 import {
-	ModelPredicateExtendor,
+	ModelPredicateExtender,
 	FinalModelPredicate,
-	SingularModelPredicateExtendor,
+	SingularModelPredicateExtender,
 	predicateFor,
 	GroupCondition,
 } from '../predicates/next';
@@ -904,14 +904,14 @@ class DataStore {
 		): Promise<T | undefined>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			criteria?: SingularModelPredicateExtendor<T> | typeof PredicateAll,
+			criteria?: SingularModelPredicateExtender<T> | typeof PredicateAll,
 			paginationProducer?: ProducerPaginationInput<T>
 		): Promise<T[]>;
 	} = async <T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
 		idOrCriteria?:
 			| string
-			| SingularModelPredicateExtendor<T>
+			| SingularModelPredicateExtender<T>
 			| typeof PredicateAll,
 		paginationProducer?: ProducerPaginationInput<T>
 	): Promise<T | T[] | undefined> => {
@@ -955,7 +955,7 @@ class DataStore {
 				);
 			} else {
 				const seedPredicate = predicateFor<T>(modelConstructor);
-				const query = (idOrCriteria as SingularModelPredicateExtendor<T>)(
+				const query = (idOrCriteria as SingularModelPredicateExtender<T>)(
 					seedPredicate
 				);
 				result = (await query.__query.fetch(this.storage)) as T[];
@@ -1149,11 +1149,11 @@ class DataStore {
 
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			criteria?: string | SingularModelPredicateExtendor<T>
+			criteria?: string | SingularModelPredicateExtender<T>
 		): Observable<SubscriptionMessage<T>>;
 	} = <T extends PersistentModel = PersistentModel>(
 		modelOrConstructor?: T | PersistentModelConstructor<T>,
-		idOrCriteria?: string | SingularModelPredicateExtendor<T>
+		idOrCriteria?: string | SingularModelPredicateExtender<T>
 	): Observable<SubscriptionMessage<T>> => {
 		let predicate: ModelPredicate<T>;
 		let query: GroupCondition;
@@ -1208,7 +1208,7 @@ class DataStore {
 			const seedPredicate = predicateFor<T>(
 				modelOrConstructor as PersistentModelConstructor<T>
 			);
-			query = (idOrCriteria as SingularModelPredicateExtendor<T>)(seedPredicate)
+			query = (idOrCriteria as SingularModelPredicateExtender<T>)(seedPredicate)
 				.__query;
 		}
 

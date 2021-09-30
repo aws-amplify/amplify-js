@@ -65,13 +65,13 @@ type Operator<T extends MatchableTypes> = T extends string[] | number[]
 	? CollectionOperators
 	: ScalarOperators;
 
-export type ModelPredicateExtendor<RT extends PersistentModel> = (
+export type ModelPredicateExtender<RT extends PersistentModel> = (
 	lambda: ModelPredicate<RT>
 ) => {
 	__query: GroupCondition;
 }[];
 
-export type SingularModelPredicateExtendor<RT extends PersistentModel> = (
+export type SingularModelPredicateExtender<RT extends PersistentModel> = (
 	lambda: ModelPredicate<RT>
 ) => {
 	__query: GroupCondition;
@@ -82,11 +82,11 @@ type ValuePredicate<RT extends PersistentModel, MT extends MatchableTypes> = {
 };
 
 type ModelPredicateOperator<RT extends PersistentModel> = (
-	...predicates: [ModelPredicateExtendor<RT>] | FinalModelPredicate[]
+	...predicates: [ModelPredicateExtender<RT>] | FinalModelPredicate[]
 ) => FinalModelPredicate;
 
 type ModelPredicateNegation<RT extends PersistentModel> = (
-	predicate: SingularModelPredicateExtendor<RT> | FinalModelPredicate
+	predicate: SingularModelPredicateExtender<RT> | FinalModelPredicate
 ) => FinalModelPredicate;
 
 type ModelPredicate<RT extends PersistentModel> = {
@@ -569,7 +569,7 @@ export function predicateFor<T extends PersistentModel>(
 	['and', 'or'].forEach(op => {
 		(link as any)[op] = (
 			...builderOrPredicates:
-				| [ModelPredicateExtendor<T>]
+				| [ModelPredicateExtender<T>]
 				| FinalModelPredicate[]
 		): FinalModelPredicate => {
 			const newlink = link.__copy();
@@ -601,7 +601,7 @@ export function predicateFor<T extends PersistentModel>(
 	});
 
 	link.not = (
-		builderOrPredicate: SingularModelPredicateExtendor<T> | FinalModelPredicate
+		builderOrPredicate: SingularModelPredicateExtender<T> | FinalModelPredicate
 	): FinalModelPredicate => {
 		const newlink = link.__copy();
 		newlink.__tail.operands.push(
