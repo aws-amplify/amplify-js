@@ -249,28 +249,14 @@ class IndexedDBAdapter implements Adapter {
 				throw new Error(msg);
 			}
 		}
-		function isPromise(promise) {
-			return !!promise && typeof promise.then === 'function';
-		}
 
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
-		console.log('connectionStoreNames: ', connectionStoreNames);
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
 			const store = tx.objectStore(storeName);
-
 			const { id } = item;
-			console.log('IDB item: ', item);
-			console.log('IDB ID: ', id);
-
-			if (isPromise(item)) {
-				console.log('ITEM IS a PROMISE: ', item);
-				const awaited = await resItem.item;
-				console.log('resItem: ', awaited);
-			}
 
 			const fromDB = <T>await this._get(store, id);
-			console.log('IDB fromDB: ', fromDB);
 			const opType: OpType =
 				fromDB === undefined ? OpType.INSERT : OpType.UPDATE;
 
@@ -308,59 +294,59 @@ class IndexedDBAdapter implements Adapter {
 			);
 		}
 
-		const tx = this.db.transaction([...connectionStoreNames], 'readonly');
+		// now handled in datastore.ts at the instance level
 
-		for await (const relation of relations) {
-			const { fieldName, modelName, targetName } = relation;
-			const storeName = this.getStorename(namespaceName, modelName);
-			const store = tx.objectStore(storeName);
-			const modelConstructor = this.getModelConstructorByModelName(
-				namespaceName,
-				modelName
-			);
+		// const tx = this.db.transaction([...connectionStoreNames], 'readonly');
 
-			switch (relation.relationType) {
-				case 'HAS_ONE':
-					for await (const recordItem of records) {
-						if (recordItem[fieldName]) {
-							const connectionRecord = await this._get(
-								store,
-								recordItem[fieldName]
-							);
+		// for await (const relation of relations) {
+		// 	const { fieldName, modelName, targetName } = relation;
+		// 	const storeName = this.getStorename(namespaceName, modelName);
+		// 	const store = tx.objectStore(storeName);
+		// 	const modelConstructor = this.getModelConstructorByModelName(
+		// 		namespaceName,
+		// 		modelName
+		// 	);
 
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-						}
-					}
+		// 	switch (relation.relationType) {
+		// 		case 'HAS_ONE':
+		// 			for await (const recordItem of records) {
+		// 				if (recordItem[fieldName]) {
+		// 					const connectionRecord = await this._get(
+		// 						store,
+		// 						recordItem[fieldName]
+		// 					);
 
-					break;
-				case 'BELONGS_TO':
-					for await (const recordItem of records) {
-						if (recordItem[targetName]) {
-							const connectionRecord = await this._get(
-								store,
-								recordItem[targetName]
-							);
+		// 					recordItem[fieldName] =
+		// 						connectionRecord &&
+		// 						this.modelInstanceCreator(modelConstructor, connectionRecord);
+		// 				}
+		// 			}
 
-							recordItem[fieldName] =
-								Promise.resolve(connectionRecord) &&
-								Promise.resolve(
-									this.modelInstanceCreator(modelConstructor, connectionRecord)
-								);
-							delete recordItem[targetName];
-						}
-					}
+		// 			break;
+		// 		case 'BELONGS_TO':
+		// 			for await (const recordItem of records) {
+		// 				if (recordItem[targetName]) {
+		// 					const connectionRecord = await this._get(
+		// 						store,
+		// 						recordItem[targetName]
+		// 					);
 
-					break;
-				case 'HAS_MANY':
-					// TODO: Lazy loading
-					break;
-				default:
-					exhaustiveCheck(relation.relationType);
-					break;
-			}
-		}
+		// 					recordItem[fieldName] =
+		// 						connectionRecord &&
+		// 						this.modelInstanceCreator(modelConstructor, connectionRecord);
+		// 					delete recordItem[targetName];
+		// 				}
+		// 			}
+
+		// 			break;
+		// 		case 'HAS_MANY':
+		// 			// TODO: Lazy loading
+		// 			break;
+		// 		default:
+		// 			exhaustiveCheck(relation.relationType);
+		// 			break;
+		// 	}
+		// }
 
 		return records.map(record =>
 			this.modelInstanceCreator(modelConstructor, record)
