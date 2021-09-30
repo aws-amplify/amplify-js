@@ -29,6 +29,7 @@ import {
 	traverseModel,
 	validatePredicate,
 	sortCompareFunction,
+	inMemoryPagination,
 } from '../../util';
 import { Adapter } from './index';
 
@@ -384,26 +385,7 @@ class IndexedDBAdapter implements Adapter {
 		records: T[],
 		pagination?: PaginationInput<T>
 	): T[] {
-		if (pagination && records.length > 1) {
-			if (pagination.sort) {
-				const sortPredicates = ModelSortPredicateCreator.getPredicates(
-					pagination.sort
-				);
-
-				if (sortPredicates.length) {
-					const compareFn = sortCompareFunction(sortPredicates);
-					records.sort(compareFn);
-				}
-			}
-
-			const { page = 0, limit = 0 } = pagination;
-			const start = Math.max(0, page * limit) || 0;
-
-			const end = limit > 0 ? start + limit : records.length;
-
-			return records.slice(start, end);
-		}
-		return records;
+		return inMemoryPagination(records, pagination);
 	}
 
 	private async enginePagination<T extends PersistentModel>(

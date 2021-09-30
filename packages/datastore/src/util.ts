@@ -633,6 +633,13 @@ export function valuesEqual(
 	return true;
 }
 
+/**
+ * Statelessly extracts the specified page from an array.
+ *
+ * @param records - The source array to extract a page from.
+ * @param pagination - A definition of the page to extract.
+ * @returns This items from `records` matching the `pagination` definition.
+ */
 export function inMemoryPagination<T extends PersistentModel>(
 	records: T[],
 	pagination?: PaginationInput<T>
