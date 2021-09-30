@@ -47,7 +47,6 @@ export interface StorageProvider {
 }
 
 export interface UploadTask {
-	start(): any;
 	resume(): any;
 	pause(): any;
 	abort(): any;

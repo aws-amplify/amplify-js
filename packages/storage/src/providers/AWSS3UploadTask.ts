@@ -285,17 +285,6 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 	}
 
-	public start() {
-		if (this.state === State.ABORTED) {
-			throw new Error('This task has already been aborted');
-		} else if (this.bytesUploaded === this.totalBytes) {
-			logger.warn('This task has already been completed');
-		} else if (this.state === State.IN_PROGRESS) {
-			logger.warn('Upload task already in progress');
-		}
-		this.resume();
-	}
-
 	private _createParts() {
 		const size = this.file.size;
 		const parts: UploadPartCommandInput[] = [];
@@ -336,9 +325,17 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	public resume(): void {
-		this.state = State.IN_PROGRESS;
-		for (let i = 0; i < this.queueSize; i++) {
-			this._startNextPart();
+		if (this.state === State.ABORTED) {
+			throw new Error('This task has already been aborted');
+		} else if (this.bytesUploaded === this.totalBytes) {
+			logger.warn('This task has already been completed');
+		} else if (this.state === State.IN_PROGRESS) {
+			logger.warn('Upload task already in progress');
+		} else {
+			this.state = State.IN_PROGRESS;
+			for (let i = 0; i < this.queueSize; i++) {
+				this._startNextPart();
+			}
 		}
 	}
 

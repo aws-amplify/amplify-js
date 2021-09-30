@@ -233,7 +233,8 @@ export class AWSS3UploadManager {
 			});
 
 			this._uploadTasks[cachedUploadId] = existingTask;
-			existingTask.start();
+			// Automatically start the upload
+			existingTask.resume();
 
 			return existingTask;
 		}
@@ -266,7 +267,7 @@ export class AWSS3UploadManager {
 
 		this._uploadTasks[createMultipartUpload.UploadId] = newTask;
 		this._addKey(fileKey, fileMetadata);
-		newTask.start();
+		newTask.resume();
 
 		return newTask;
 	}
