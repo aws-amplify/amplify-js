@@ -1,7 +1,7 @@
 import {
 	Scalar,
 	PersistentModel,
-	PersistentModelConstructor,
+	// PersistentModelConstructor,
 	SchemaModel,
 	ModelFieldType,
 	ModelAssociation,
@@ -9,9 +9,12 @@ import {
 	QueryOne,
 	ModelPredicate as FlatModelPredicate,
 	PredicateExpression as FlatPredicateExpression,
+	InternalSchema,
+	ModelMeta,
 } from '../types';
 
 import { ModelPredicateCreator as FlatModelPredicateCreator } from './index';
+import { ExclusiveStorage as StorageAdapter } from '../storage/storage';
 
 type MatchableTypes =
 	| string
@@ -26,14 +29,6 @@ type ComparisonOperators = 'gt' | 'ge' | 'lt' | 'le' | 'between' | 'beginsWith';
 type ScalarOperators = EqualityOperators | ComparisonOperators;
 type CollectionOperators = 'contains' | 'notContains';
 type AllFieldOperators = CollectionOperators | ScalarOperators;
-
-export type StorageAdapter = {
-	query<T extends PersistentModel>(
-		modelConstructor: PersistentModelConstructor<T>,
-		predicate?: FlatModelPredicate<T>,
-		pagination?: PaginationInput<T>
-	): Promise<T[]>;
-};
 
 // TODO: this is TEMP to make the types work.
 class AsyncCollection<T> {
@@ -103,7 +98,8 @@ type ModelPredicate<RT extends PersistentModel> = {
 } & FinalModelPredicate;
 
 export type FinalModelPredicate = {
-	__class: PersistentModelConstructor<PersistentModel>;
+	// __class: PersistentModelConstructor<PersistentModel>;
+	__class: ModelMeta<PersistentModel>;
 	__className: string;
 	__query: GroupCondition;
 	__tail: GroupCondition;
@@ -130,7 +126,6 @@ type Condition<T extends PersistentModel> = {
 type GroupOperator = 'and' | 'or' | 'not';
 
 type UntypedCondition = {
-	// TODO: change from list of record to AsyncCollection
 	fetch: (storage: StorageAdapter) => Promise<Record<string, any>[]>;
 	matches: (item: Record<string, any>) => Promise<boolean>;
 	copy(extract: GroupCondition): [UntypedCondition, GroupCondition | undefined];
@@ -224,7 +219,7 @@ export class GroupCondition {
 		new Date().getTime() + '.' + (Math.random() * 1000).toFixed(3);
 
 	constructor(
-		public model: PersistentModelConstructor<PersistentModel>,
+		public model: ModelMeta<PersistentModel>,
 		public field: string | undefined,
 		public relationshipType: string | undefined,
 		public operator: GroupOperator,
@@ -300,7 +295,7 @@ export class GroupCondition {
 			if (g.field) {
 				// relatives needs to be used to find candidate results.
 				// TODO: replace with lazy loading? ... :D ...
-				const meta = this.model.__meta.fields[g.field];
+				const meta = this.model.schema.fields[g.field];
 				const gIdField = 'id';
 				if (meta.association) {
 					let candidates = [];
@@ -311,10 +306,10 @@ export class GroupCondition {
 					if (meta.association.targetName == null) {
 						leftHandField = 'id';
 					} else if (
-						this.model.__meta.fields[meta.association.targetName] != null
+						this.model.schema.fields[meta.association.targetName] != null
 					) {
 						leftHandField = meta.association.targetName;
-					} else if (this.model.__meta.fields[meta.name] != null) {
+					} else if (this.model.schema.fields[meta.name] != null) {
 						leftHandField = meta.name;
 					} else {
 						throw new Error('Uh oh! Do we have a bad connection?');
@@ -330,12 +325,12 @@ export class GroupCondition {
 					for (const relative of relatives) {
 						const rightHandValue = relative[rightHandField];
 						const predicate = FlatModelPredicateCreator.createFromExisting(
-							this.model.__meta,
+							this.model.schema,
 							p => p[leftHandField]('eq' as never, rightHandValue as never)
 						);
 						candidates = [
 							...candidates,
-							...(await storage.query(this.model, predicate)),
+							...(await storage.query(this.model.builder, predicate)),
 						];
 					}
 					resultGroups.push(candidates);
@@ -384,12 +379,12 @@ export class GroupCondition {
 		// i.e., we can stop looking and return empty.
 		if (conditions.length > 0) {
 			const predicate = FlatModelPredicateCreator.createFromExisting(
-				this.model.__meta,
+				this.model.schema,
 				p => p[operator](c => addConditions(c))
 			);
-			resultGroups.push(await storage.query(this.model, predicate));
+			resultGroups.push(await storage.query(this.model.builder, predicate));
 		} else if (conditions.length === 0 && resultGroups.length === 0) {
-			resultGroups.push(await storage.query(this.model));
+			resultGroups.push(await storage.query(this.model.builder));
 		}
 
 		// this needs to be read from metadata.
@@ -513,7 +508,7 @@ export async function asyncFilter<T>(
 // TODO: wayyyyyy too much nesting. DECOMPOSE.
 // TODO: shouldn't this be returning FinalModelPredicate<T>?
 export function predicateFor<T extends PersistentModel>(
-	ModelType: PersistentModelConstructor<T>,
+	ModelType: ModelMeta<T>,
 	field?: string,
 	query?: GroupCondition,
 	tail?: GroupCondition
@@ -525,24 +520,26 @@ export function predicateFor<T extends PersistentModel>(
 	// using this type explicitly instead of depending on the inference from ModelType
 	// solves the "Type instantiation is excessively deep and possibly infinite" error.
 	// Why? ... I have no idea. If someone can tell me ... uhh ... please do.
-	type IndirectT = typeof ModelType extends PersistentModelConstructor<infer I>
-		? I
-		: never;
+	type IndirectT = typeof ModelType extends ModelMeta<infer I> ? I : never;
+
+	if (typeof ModelType.builder === 'undefined') {
+		console.log('Model type', ModelType);
+	}
 
 	const link = {
-		__class: ModelType as PersistentModelConstructor<T>,
-		__className: ModelType.name,
+		__class: ModelType as ModelMeta<T>,
+		__className: ModelType.builder.name,
 		__query:
 			query ||
 			new GroupCondition(
-				ModelType as PersistentModelConstructor<PersistentModel>,
+				ModelType as ModelMeta<PersistentModel>,
 				field,
 				undefined,
 				'and',
 				[]
 			),
 		__tail: new GroupCondition(
-			ModelType as PersistentModelConstructor<PersistentModel>,
+			ModelType as ModelMeta<PersistentModel>,
 			field,
 			undefined,
 			'and',
@@ -575,7 +572,7 @@ export function predicateFor<T extends PersistentModel>(
 			const newlink = link.__copy();
 			newlink.__tail.operands.push(
 				new GroupCondition(
-					ModelType as PersistentModelConstructor<PersistentModel>,
+					ModelType as ModelMeta<PersistentModel>,
 					field,
 					undefined,
 					op as 'and' | 'or',
@@ -606,7 +603,7 @@ export function predicateFor<T extends PersistentModel>(
 		const newlink = link.__copy();
 		newlink.__tail.operands.push(
 			new GroupCondition(
-				ModelType as PersistentModelConstructor<PersistentModel>,
+				ModelType as ModelMeta<PersistentModel>,
 				field,
 				undefined,
 				'not',
@@ -628,11 +625,11 @@ export function predicateFor<T extends PersistentModel>(
 		};
 	};
 
-	for (const fieldName in ModelType.__meta.fields) {
+	for (const fieldName in ModelType.schema.fields) {
 		Object.defineProperty(link, fieldName, {
 			enumerable: true,
 			get: () => {
-				const def = ModelType.__meta.fields[fieldName];
+				const def = ModelType.schema.fields[fieldName];
 				if (!def.association) {
 					return ops.reduce((fieldMatcher, operator) => {
 						return {
@@ -664,7 +661,7 @@ export function predicateFor<T extends PersistentModel>(
 					) {
 						const [newquery, oldtail] = link.__query.copy(link.__tail);
 						const newtail = new GroupCondition(
-							(<ModelFieldType>def.type).modelConstructor,
+							(def.type as ModelFieldType).modelConstructor,
 							fieldName,
 							def.association.connectionType,
 							'and',
@@ -672,7 +669,7 @@ export function predicateFor<T extends PersistentModel>(
 						);
 						(oldtail as GroupCondition).operands.push(newtail);
 						const newlink = predicateFor(
-							(<ModelFieldType>def.type).modelConstructor,
+							(def.type as ModelFieldType).modelConstructor,
 							undefined,
 							newquery,
 							newtail

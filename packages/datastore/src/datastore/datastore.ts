@@ -209,8 +209,15 @@ const initSchema = (userSchema: Schema) => {
 					)
 				) {
 					Object.defineProperty(field.type, 'modelConstructor', {
-						// get: () => schema.namespaces[namespace][field.type.model],
-						get: () => userClasses[(<ModelFieldType>field.type).model],
+						get: () => {
+							return {
+								builder: userClasses[(<ModelFieldType>field.type).model],
+								schema:
+									schema.namespaces[namespace].models[
+										(<ModelFieldType>field.type).model
+									],
+							};
+						},
 					});
 				}
 			});
@@ -954,7 +961,10 @@ class DataStore {
 					pagination
 				);
 			} else {
-				const seedPredicate = predicateFor<T>(modelConstructor);
+				const seedPredicate = predicateFor<T>({
+					builder: modelConstructor,
+					schema: modelDefinition,
+				});
 				const query = (idOrCriteria as SingularModelPredicateExtender<T>)(
 					seedPredicate
 				);
@@ -1205,9 +1215,10 @@ class DataStore {
 				idOrCriteria
 			);
 		} else if (modelConstructor && typeof idOrCriteria === 'function') {
-			const seedPredicate = predicateFor<T>(
-				modelOrConstructor as PersistentModelConstructor<T>
-			);
+			const seedPredicate = predicateFor<T>({
+				builder: modelOrConstructor as PersistentModelConstructor<T>,
+				schema: getModelDefinition(modelConstructor),
+			});
 			query = (idOrCriteria as SingularModelPredicateExtender<T>)(seedPredicate)
 				.__query;
 		}

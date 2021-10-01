@@ -1,13 +1,38 @@
-import { predicateFor, StorageAdapter } from '../src/predicates/next';
+import { predicateFor } from '../src/predicates/next';
 import {
 	PersistentModel,
 	PersistentModelConstructor,
 	ModelPredicate as FlatModelPredicate,
 	PaginationInput,
+	SchemaModel,
+	Schema,
 } from '../src/types';
 import { ModelPredicateCreator } from '../src/predicates';
 import { validatePredicate as flatPredicateMatches } from '../src/util';
-import { Author, Post, Blog, BlogOwner } from './model';
+import { schema, Author, Post, Blog, BlogOwner } from './model';
+
+const AuthorMeta = {
+	builder: Author,
+	schema: schema.models['Author'],
+};
+
+const BlogMeta = {
+	builder: Blog,
+	schema: schema.models['Blog'],
+};
+
+const metas = {
+	Author: AuthorMeta,
+	Blog: BlogMeta,
+	Post: {
+		builder: Post,
+		schema: schema.models['Post'],
+	},
+	BlogOwner: {
+		builder: BlogOwner,
+		schema: schema.models['BlogOwner'],
+	},
+};
 
 type ModelOf<T> = T extends PersistentModelConstructor<infer M> ? M : T;
 
@@ -27,7 +52,7 @@ describe('Predicates', () => {
 			describe(`\`${operator}\` when`, () => {
 				test('no argument is given', () => {
 					expect(() => {
-						predicateFor(Author).name[operator]();
+						predicateFor(AuthorMeta).name[operator]();
 					}).toThrow(
 						`Incorrect usage of \`${operator}()\`: Exactly 1 argument is required.`
 					);
@@ -35,7 +60,7 @@ describe('Predicates', () => {
 
 				test('too many arguments are given', () => {
 					expect(() => {
-						predicateFor(Author).name[operator]('a', 'b');
+						predicateFor(AuthorMeta).name[operator]('a', 'b');
 					}).toThrow(
 						`Incorrect usage of \`${operator}()\`: Exactly 1 argument is required.`
 					);
@@ -46,7 +71,7 @@ describe('Predicates', () => {
 		describe('`between` when', () => {
 			test('no bounds are given', async () => {
 				expect(() => {
-					predicateFor(Author).name.between();
+					predicateFor(AuthorMeta).name.between();
 				}).toThrow(
 					'Incorrect usage of `between()`: Exactly 2 arguments are required.'
 				);
@@ -54,7 +79,7 @@ describe('Predicates', () => {
 
 			test('only one bound is given', async () => {
 				expect(() => {
-					predicateFor(Author).name.between('z');
+					predicateFor(AuthorMeta).name.between('z');
 				}).toThrow(
 					'Incorrect usage of `between()`: Exactly 2 arguments are required.'
 				);
@@ -62,7 +87,7 @@ describe('Predicates', () => {
 
 			test('lowerbound > upperbound', async () => {
 				expect(() => {
-					predicateFor(Author).name.between('z', 'a');
+					predicateFor(AuthorMeta).name.between('z', 'a');
 				}).toThrow(
 					'Incorrect usage of `between()`: The first argument must be less than or equal to the second argument.'
 				);
@@ -70,7 +95,7 @@ describe('Predicates', () => {
 
 			test('more than 2 arguments are given', async () => {
 				expect(() => {
-					predicateFor(Author).name.between('a', 'b', 'c');
+					predicateFor(AuthorMeta).name.between('a', 'b', 'c');
 				}).toThrow(
 					'Incorrect usage of `between()`: Exactly 2 arguments are required.'
 				);
@@ -95,9 +120,7 @@ describe('Predicates', () => {
 			].map(name => new Author({ name }));
 		};
 
-		const getStorageFake = (): StorageAdapter & {
-			collections: Record<string, PersistentModel[]>;
-		} => {
+		const getStorageFake = () => {
 			return {
 				collections: {
 					[Author.name]: getFlatAuthorsArrayFixture(),
@@ -108,7 +131,7 @@ describe('Predicates', () => {
 					predicate?: FlatModelPredicate<T>,
 					pagination?: PaginationInput<T>
 				) {
-					const baseSet: T[] = this.collections[modelConstructor.__meta.name];
+					const baseSet: T[] = this.collections[modelConstructor.name];
 					if (!predicate) {
 						return baseSet;
 					} else {
@@ -137,7 +160,7 @@ describe('Predicates', () => {
 				// e.g.: 'a' > 'A' && 'b' > 'a' && 'a' > 'Z'  === true
 
 				test('match on eq', async () => {
-					const query = predicateFor(Author).name.eq('Adam West');
+					const query = predicateFor(AuthorMeta).name.eq('Adam West');
 					const matches = await mechanism.execute<typeof Author>(query);
 
 					expect(matches.length).toBe(1);
@@ -145,7 +168,7 @@ describe('Predicates', () => {
 				});
 
 				test('match on ne', async () => {
-					const query = predicateFor(Author).name.ne('Adam West');
+					const query = predicateFor(AuthorMeta).name.ne('Adam West');
 					const matches = await mechanism.execute<typeof Author>(query);
 
 					expect(matches.length).toBe(getFlatAuthorsArrayFixture().length - 1);
@@ -153,7 +176,7 @@ describe('Predicates', () => {
 				});
 
 				test('match on gt', async () => {
-					const query = predicateFor(Author).name.gt('Clarice Starling');
+					const query = predicateFor(AuthorMeta).name.gt('Clarice Starling');
 					const matches = await mechanism.execute<typeof Author>(query);
 
 					expect(matches.length).toBe(2);
@@ -164,7 +187,7 @@ describe('Predicates', () => {
 				});
 
 				test('match on ge', async () => {
-					const query = predicateFor(Author).name.ge('Clarice Starling');
+					const query = predicateFor(AuthorMeta).name.ge('Clarice Starling');
 					const matches = await mechanism.execute<typeof Author>(query);
 
 					expect(matches.length).toBe(3);
@@ -176,7 +199,7 @@ describe('Predicates', () => {
 				});
 
 				test('match on lt', async () => {
-					const query = predicateFor(Author).name.lt('Clarice Starling');
+					const query = predicateFor(AuthorMeta).name.lt('Clarice Starling');
 					const matches = await mechanism.execute<typeof Author>(query);
 
 					expect(matches.length).toBe(2);
@@ -184,7 +207,7 @@ describe('Predicates', () => {
 				});
 
 				test('match on le', async () => {
-					const query = predicateFor(Author).name.le('Clarice Starling');
+					const query = predicateFor(AuthorMeta).name.le('Clarice Starling');
 					const matches = await mechanism.execute<typeof Author>(query);
 
 					expect(matches.length).toBe(3);
@@ -196,7 +219,7 @@ describe('Predicates', () => {
 				});
 
 				test('match beginsWith', async () => {
-					const query = predicateFor(Author).name.beginsWith('Debbie');
+					const query = predicateFor(AuthorMeta).name.beginsWith('Debbie');
 					const matches = await mechanism.execute<typeof Author>(query);
 
 					expect(matches.length).toBe(1);
@@ -209,7 +232,7 @@ describe('Predicates', () => {
 				test('match between an outer inclusive range', async () => {
 					// `0` is immediately before `A`
 					// `{` is immediately after `z`
-					const query = predicateFor(Author).name.between('0', '{');
+					const query = predicateFor(AuthorMeta).name.between('0', '{');
 					const matches = await mechanism.execute<typeof Author>(query);
 
 					expect(matches.length).toBe(5);
@@ -223,7 +246,7 @@ describe('Predicates', () => {
 				});
 
 				test('match between with equality at both ends', async () => {
-					const query = predicateFor(Author).name.between(
+					const query = predicateFor(AuthorMeta).name.between(
 						'Bob Jones',
 						'Debbie Donut'
 					);
@@ -238,7 +261,7 @@ describe('Predicates', () => {
 				});
 
 				test('match between an inner range', async () => {
-					const query = predicateFor(Author).name.between('Az', 'E');
+					const query = predicateFor(AuthorMeta).name.between('Az', 'E');
 					const matches = await mechanism.execute<typeof Author>(query);
 
 					expect(matches.length).toBe(3);
@@ -250,14 +273,14 @@ describe('Predicates', () => {
 				});
 
 				test('match nothing between a mismatching range', async () => {
-					const query = predicateFor(Author).name.between('{', '}');
+					const query = predicateFor(AuthorMeta).name.between('{', '}');
 					const matches = await mechanism.execute<typeof Author>(query);
 
 					expect(matches.length).toBe(0);
 				});
 
 				test('match contains', async () => {
-					const query = predicateFor(Author).name.contains('Jones');
+					const query = predicateFor(AuthorMeta).name.contains('Jones');
 					const matches = await mechanism.execute<typeof Author>(query);
 
 					expect(matches.length).toBe(1);
@@ -265,7 +288,7 @@ describe('Predicates', () => {
 				});
 
 				test('match notContains', async () => {
-					const query = predicateFor(Author).name.notContains('Jones');
+					const query = predicateFor(AuthorMeta).name.notContains('Jones');
 					const matches = await mechanism.execute<typeof Author>(query);
 
 					expect(matches.length).toBe(4);
@@ -279,7 +302,7 @@ describe('Predicates', () => {
 
 				describe('with a logical grouping', () => {
 					test('can perform and() logic, matching an item', async () => {
-						const query = predicateFor(Author).and(a => [
+						const query = predicateFor(AuthorMeta).and(a => [
 							a.name.contains('Bob'),
 							a.name.contains('Jones'),
 						]);
@@ -290,7 +313,7 @@ describe('Predicates', () => {
 					});
 
 					test('can perform and() logic, matching no items', async () => {
-						const query = predicateFor(Author).and(a => [
+						const query = predicateFor(AuthorMeta).and(a => [
 							a.name.contains('Adam'),
 							a.name.contains('Donut'),
 						]);
@@ -300,7 +323,7 @@ describe('Predicates', () => {
 					});
 
 					test('can perform or() logic, matching different items', async () => {
-						const query = predicateFor(Author).or(a => [
+						const query = predicateFor(AuthorMeta).or(a => [
 							a.name.contains('Bob'),
 							a.name.contains('Donut'),
 						]);
@@ -314,7 +337,7 @@ describe('Predicates', () => {
 					});
 
 					test('can perform or() logic, matching a single item', async () => {
-						const query = predicateFor(Author).or(a => [
+						const query = predicateFor(AuthorMeta).or(a => [
 							a.name.contains('Bob'),
 							a.name.contains('Jones'),
 						]);
@@ -325,7 +348,7 @@ describe('Predicates', () => {
 					});
 
 					test('can perform or() logic, matching a single item with extra unmatched conditions', async () => {
-						const query = predicateFor(Author).or(a => [
+						const query = predicateFor(AuthorMeta).or(a => [
 							a.name.contains('Bob'),
 							a.name.contains('Thanos'),
 						]);
@@ -336,7 +359,7 @@ describe('Predicates', () => {
 					});
 
 					test('can perform or() logic, matching NO items', async () => {
-						const query = predicateFor(Author).or(a => [
+						const query = predicateFor(AuthorMeta).or(a => [
 							a.name.contains('Thanos'),
 							a.name.contains('Thor (God of Thunder, as it just so happens)'),
 						]);
@@ -346,7 +369,7 @@ describe('Predicates', () => {
 					});
 
 					test('can perform or() logic with nested and() logic', async () => {
-						const query = predicateFor(Author).or(author_or => [
+						const query = predicateFor(AuthorMeta).or(author_or => [
 							author_or.and(a => [
 								a.name.contains('Bob'),
 								a.name.contains('Jones'),
@@ -363,7 +386,7 @@ describe('Predicates', () => {
 					});
 
 					test('can perform and() logic with nested or() logic', async () => {
-						const query = predicateFor(Author).and(author_and => [
+						const query = predicateFor(AuthorMeta).and(author_and => [
 							author_and.or(a => [
 								a.name.contains('Bob'),
 								a.name.contains('Donut'),
@@ -380,7 +403,9 @@ describe('Predicates', () => {
 					});
 
 					test('can perform simple not() logic, matching all but one item', async () => {
-						const query = predicateFor(Author).not(a => a.name.eq('Bob Jones'));
+						const query = predicateFor(AuthorMeta).not(a =>
+							a.name.eq('Bob Jones')
+						);
 						const matches = await mechanism.execute<typeof Author>(query);
 
 						expect(matches.length).toBe(4);
@@ -393,14 +418,14 @@ describe('Predicates', () => {
 					});
 
 					test('can perform simple not() logic, matching no items', async () => {
-						const query = predicateFor(Author).not(a => a.name.gt('0'));
+						const query = predicateFor(AuthorMeta).not(a => a.name.gt('0'));
 						const matches = await mechanism.execute<typeof Author>(query);
 
 						expect(matches.length).toBe(0);
 					});
 
 					test('can perform not() logic around another logical group, matching all but N items', async () => {
-						const query = predicateFor(Author).not(author =>
+						const query = predicateFor(AuthorMeta).not(author =>
 							author.or(a => [
 								a.name.eq('Bob Jones'),
 								a.name.eq('Debbie Donut'),
@@ -418,7 +443,7 @@ describe('Predicates', () => {
 
 					// TODO: test case for not not and not not not
 					test('can perform 2-nots', async () => {
-						const query = predicateFor(Author).not(a1 =>
+						const query = predicateFor(AuthorMeta).not(a1 =>
 							a1.not(a2 => a2.name.eq('Bob Jones'))
 						);
 						const matches = await mechanism.execute<typeof Author>(query);
@@ -428,7 +453,7 @@ describe('Predicates', () => {
 					});
 
 					test('can perform 3-nots', async () => {
-						const query = predicateFor(Author).not(a1 =>
+						const query = predicateFor(AuthorMeta).not(a1 =>
 							a1.not(a2 => a2.not(a3 => a3.name.eq('Bob Jones')))
 						);
 						const matches = await mechanism.execute<typeof Author>(query);
@@ -443,7 +468,7 @@ describe('Predicates', () => {
 					});
 
 					test('can perform 4-nots', async () => {
-						const query = predicateFor(Author).not(a1 =>
+						const query = predicateFor(AuthorMeta).not(a1 =>
 							a1.not(a2 => a2.not(a3 => a3.not(a4 => a4.name.eq('Bob Jones'))))
 						);
 						const matches = await mechanism.execute<typeof Author>(query);
@@ -502,13 +527,11 @@ describe('Predicates', () => {
 			})
 			.flat();
 
-		const storage: StorageAdapter & {
-			collections: Record<string, PersistentModel[]>;
-		} = {
+		const storage = {
 			collections: {
-				[BlogOwner.__meta.name]: owners,
-				[Blog.__meta.name]: blogs,
-				[Post.__meta.name]: posts,
+				[BlogOwner.name]: owners,
+				[Blog.name]: blogs,
+				[Post.name]: posts,
 			},
 
 			async query<T extends PersistentModel>(
@@ -516,12 +539,13 @@ describe('Predicates', () => {
 				predicate?: FlatModelPredicate<T>,
 				pagination?: PaginationInput<T>
 			) {
-				const baseSet: T[] = this.collections[modelConstructor.__meta.name].map(
+				const baseSet: T[] = this.collections[modelConstructor.name].map(
 					item => {
 						const itemCopy = { ...item };
 
 						// simulating goofiness with DS stuffing ID's into related model field names.
-						for (const field of Object.values(modelConstructor.__meta.fields)) {
+						const meta = metas[modelConstructor.name].schema as SchemaModel;
+						for (const field of Object.values(meta.fields)) {
 							if (field.association) {
 								itemCopy[field.name] = itemCopy[field.association.targetName];
 							}
@@ -554,7 +578,7 @@ describe('Predicates', () => {
 		].forEach(mechanism => {
 			describe('as ' + mechanism.name, () => {
 				test('can filter eq()', async () => {
-					const query = predicateFor(Blog).owner.name.eq('Adam West');
+					const query = predicateFor(BlogMeta).owner.name.eq('Adam West');
 					const matches = await mechanism.execute<typeof Blog>(query);
 
 					expect(matches.length).toBe(1);
@@ -562,7 +586,7 @@ describe('Predicates', () => {
 				});
 
 				test('can filter ne()', async () => {
-					const query = predicateFor(Blog).owner.name.ne('Debbie Donut');
+					const query = predicateFor(BlogMeta).owner.name.ne('Debbie Donut');
 					const matches = await mechanism.execute<typeof Blog>(query);
 
 					expect(matches.length).toBe(4);
@@ -575,7 +599,7 @@ describe('Predicates', () => {
 				});
 
 				test('can filter nested or() .. and()', async () => {
-					const query = predicateFor(Blog).or(b => [
+					const query = predicateFor(BlogMeta).or(b => [
 						b.owner.and(o => [
 							o.name.contains('Bob'),
 							o.name.contains('Jones'),
@@ -592,7 +616,7 @@ describe('Predicates', () => {
 				});
 
 				test('can filter 3 level nested, logically grouped', async () => {
-					const query = predicateFor(Blog).or(b => [
+					const query = predicateFor(BlogMeta).or(b => [
 						b.owner.and(o => [o.name.contains('Bob'), o.name.contains('West')]),
 						b.owner.and(owner => [
 							owner.blog.or(innerBlog => [
@@ -609,7 +633,9 @@ describe('Predicates', () => {
 				});
 
 				test('can filter on child collections', async () => {
-					const query = predicateFor(Blog).posts.title.contains('Bob Jones');
+					const query = predicateFor(BlogMeta).posts.title.contains(
+						'Bob Jones'
+					);
 					const matches = await mechanism.execute<typeof Blog>(query);
 
 					expect(matches.length).toBe(1);
@@ -617,7 +643,7 @@ describe('Predicates', () => {
 				});
 
 				test('can filter on child collections in or()', async () => {
-					const query = predicateFor(Blog).or(b => [
+					const query = predicateFor(BlogMeta).or(b => [
 						b.posts.title.contains('Bob Jones'),
 						b.posts.title.contains("Zelda's Blog post"),
 					]);
@@ -631,7 +657,7 @@ describe('Predicates', () => {
 				});
 
 				test('can filter on or() extended off child collections', async () => {
-					const query = predicateFor(Blog).posts.or(p => [
+					const query = predicateFor(BlogMeta).posts.or(p => [
 						p.title.contains('Bob Jones'),
 						p.title.contains("Zelda's Blog post"),
 					]);
@@ -645,7 +671,7 @@ describe('Predicates', () => {
 				});
 
 				test('can filter and() between parent and child collection properties', async () => {
-					const query = predicateFor(Blog).and(b => [
+					const query = predicateFor(BlogMeta).and(b => [
 						b.name.contains('Bob Jones'),
 						b.posts.title.contains('Zelda'),
 					]);

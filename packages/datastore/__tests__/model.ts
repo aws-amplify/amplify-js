@@ -4,6 +4,7 @@ import {
 	ModelInit,
 	MutableModel,
 	PersistentModelConstructor,
+	Schema,
 } from '../src/index';
 import { newSchema } from './schema';
 
@@ -168,4 +169,5 @@ export {
 	Nested,
 	Project,
 	Team,
+	newSchema as schema,
 };

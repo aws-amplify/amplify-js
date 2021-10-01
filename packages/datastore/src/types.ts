@@ -58,7 +58,10 @@ type SchemaEnum = {
 	name: string;
 	values: string[];
 };
-
+export type ModelMeta<T extends PersistentModel> = {
+	builder: PersistentModelConstructor<T>;
+	schema: SchemaModel;
+};
 export type ModelAssociation = AssociatedWith | TargetNameAssociation;
 type AssociatedWith = {
 	connectionType: 'HAS_MANY' | 'HAS_ONE';
@@ -298,7 +301,7 @@ export function isGraphQLScalarType(
 
 export type ModelFieldType = {
 	model: string;
-	modelConstructor?: PersistentModelConstructor<PersistentModel>;
+	modelConstructor?: ModelMeta<PersistentModel>;
 };
 export function isModelFieldType<T extends PersistentModel>(
 	obj: any
@@ -358,7 +361,6 @@ export type PersistentModelConstructor<
 > = {
 	new (init: ModelInit<T, K>): T;
 	copyOf(src: T, mutator: (draft: MutableModel<T, K>) => void): T;
-	__meta: SchemaModel;
 };
 
 export type TypeConstructorMap = Record<
