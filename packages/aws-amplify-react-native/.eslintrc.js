@@ -5,8 +5,9 @@ module.exports = {
 	extends: [
 		'airbnb',
 		'airbnb-typescript',
-		'eslint:recommended',
+		'plugin:jest/recommended',
 		'plugin:react/recommended',
+		'plugin:react-hooks/recommended',
 		'plugin:@typescript-eslint/recommended-requiring-type-checking',
 		'plugin:prettier/recommended',
 	],
@@ -29,7 +30,7 @@ module.exports = {
 		tsconfigRootDir: __dirname,
 		sourceType: 'module',
 	},
-	plugins: ['react', '@typescript-eslint', 'react-hooks', 'prettier'],
+	plugins: ['react', '@typescript-eslint', 'react-hooks', 'jest', 'prettier'],
 	rules: {
 		'@typescript-eslint/no-unused-vars': [
 			'error',
@@ -42,6 +43,8 @@ module.exports = {
 		'implicit-arrow-linebreak': 'off',
 		'import/no-extraneous-dependencies': ['off'],
 		'import/prefer-default-export': 'off',
+		'jest/expect-expect': ['error', { assertFunctionNames: ['expect*'] }],
+		'jest/no-mocks-import': 'off',
 		'no-alert': 'error',
 		'no-console': 'error',
 		'no-tabs': ['error', { allowIndentationTabs: true }],
