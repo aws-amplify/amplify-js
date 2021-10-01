@@ -85,46 +85,51 @@ describe('Predicates', () => {
 	// function defineTests(f) {
 
 	describe('on local properties ', () => {
-		const flatAuthorsArray = [
-			'Adam West',
-			'Bob Jones',
-			'Clarice Starling',
-			'Debbie Donut',
-			'Zelda from the Legend of Zelda',
-		].map(name => new Author({ name }));
+		const getFlatAuthorsArrayFixture = function() {
+			return [
+				'Adam West',
+				'Bob Jones',
+				'Clarice Starling',
+				'Debbie Donut',
+				'Zelda from the Legend of Zelda',
+			].map(name => new Author({ name }));
+		};
 
-		const storage: StorageAdapter & {
+		const getStorageFake = (): StorageAdapter & {
 			collections: Record<string, PersistentModel[]>;
-		} = {
-			collections: {
-				[Author.name]: flatAuthorsArray,
-			},
+		} => {
+			return {
+				collections: {
+					[Author.name]: getFlatAuthorsArrayFixture(),
+				},
 
-			async query<T extends PersistentModel>(
-				modelConstructor: PersistentModelConstructor<T>,
-				predicate?: FlatModelPredicate<T>,
-				pagination?: PaginationInput<T>
-			) {
-				const baseSet: T[] = this.collections[modelConstructor.__meta.name];
-				if (!predicate) {
-					return baseSet;
-				} else {
-					const predicates = ModelPredicateCreator.getPredicates(predicate);
-					return baseSet.filter(item =>
-						flatPredicateMatches(item, 'and', [predicates])
-					);
-				}
-			},
+				async query<T extends PersistentModel>(
+					modelConstructor: PersistentModelConstructor<T>,
+					predicate?: FlatModelPredicate<T>,
+					pagination?: PaginationInput<T>
+				) {
+					const baseSet: T[] = this.collections[modelConstructor.__meta.name];
+					if (!predicate) {
+						return baseSet;
+					} else {
+						const predicates = ModelPredicateCreator.getPredicates(predicate);
+						return baseSet.filter(item =>
+							flatPredicateMatches(item, 'and', [predicates])
+						);
+					}
+				},
+			};
 		};
 		[
 			{
 				name: 'filters',
-				execute: async <T>(query: any) => query.filter(flatAuthorsArray) as T[],
+				execute: async <T>(query: any) =>
+					query.filter(getFlatAuthorsArrayFixture()) as T[],
 			},
 			{
 				name: 'storage predicates',
 				execute: async <T>(query: any) =>
-					(await query.__query.fetch(storage)) as T[],
+					(await query.__query.fetch(getStorageFake())) as T[],
 			},
 		].forEach(mechanism => {
 			describe('as ' + mechanism.name, () => {
@@ -143,7 +148,7 @@ describe('Predicates', () => {
 					const query = predicateFor(Author).name.ne('Adam West');
 					const matches = await mechanism.execute<typeof Author>(query);
 
-					expect(matches.length).toBe(flatAuthorsArray.length - 1);
+					expect(matches.length).toBe(getFlatAuthorsArrayFixture().length - 1);
 					expect(matches.some(a => a.name === 'Adam West')).toBe(false);
 				});
 
