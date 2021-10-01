@@ -180,7 +180,11 @@ class NotificationsClass {
 				return pluggable.processInAppMessages(messages, event);
 			})
 		);
-		this.inAppMessagesHandler(flatten(messages));
+
+		const flattenedMessages = flatten(messages);
+		if (flattenedMessages.length) {
+			this.inAppMessagesHandler(flattenedMessages);
+		}
 	};
 
 	private analyticsListener: HubCallback = ({ payload }: HubCapsule) => {
