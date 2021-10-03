@@ -11,20 +11,9 @@
  * and limitations under the License.
  */
 
-import { createContext, useContext } from 'react';
+import { InAppMessage } from '@aws-amplify/notifications';
 
-import { InAppMessagingContextType } from './types';
-
-const InAppMessagingContext = createContext<InAppMessagingContextType>(null);
-
-export function useInAppMessaging() {
-	const inAppMessagingContext = useContext(InAppMessagingContext);
-	if (!inAppMessagingContext) {
-		throw new Error(
-			'InAppMessagingContext is empty, did you forget the InAppMessagingProvider?'
-		);
-	}
-	return inAppMessagingContext;
+// TODO: implement endDate sorting logic
+export default function getInAppMessage(messages: InAppMessage[]) {
+	return messages?.[0] ?? ({} as InAppMessage);
 }
-
-export default InAppMessagingContext;
