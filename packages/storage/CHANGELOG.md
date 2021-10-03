@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.1...@aws-amplify/storage@4.4.2) (2021-09-30)
+
+
+### Bug Fixes
+
+* **@aws-amplify/storage:** fix type error in types/Storage.ts ([#8956](https://github.com/aws-amplify/amplify-js/issues/8956)) ([806d266](https://github.com/aws-amplify/amplify-js/commit/806d266ddba00f5ab42f8c6c83c7b8c94aad49aa))
+
+
+
+
+
+## [4.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.0...@aws-amplify/storage@4.4.1) (2021-09-24)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+# [4.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.11...@aws-amplify/storage@4.4.0) (2021-09-22)
+
+
+### Features
+
+* **@aws-amplify/storage:** Storage category public API Typescript improvement ([1c3b281](https://github.com/aws-amplify/amplify-js/commit/1c3b281d564db8745d3085489643bb33ac067177))
+
+
+
+
+
+## [4.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.10...@aws-amplify/storage@4.3.11) (2021-09-17)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
 ## [4.3.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.9...@aws-amplify/storage@4.3.10) (2021-09-09)
 
 **Note:** Version bump only for package @aws-amplify/storage

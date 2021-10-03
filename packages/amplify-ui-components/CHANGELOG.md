@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.8.1...@aws-amplify/ui-components@1.8.2) (2021-09-30)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+## [1.8.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.8.0...@aws-amplify/ui-components@1.8.1) (2021-09-24)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
+# [1.8.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.9...@aws-amplify/ui-components@1.8.0) (2021-09-22)
+
+
+### Features
+
+* **@aws-amplify/storage:** Storage category public API Typescript improvement ([1c3b281](https://github.com/aws-amplify/amplify-js/commit/1c3b281d564db8745d3085489643bb33ac067177))
+
+
+
+
+
+## [1.7.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.8...@aws-amplify/ui-components@1.7.9) (2021-09-17)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
 ## [1.7.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.7.7...@aws-amplify/ui-components@1.7.8) (2021-09-09)
 
 **Note:** Version bump only for package @aws-amplify/ui-components
