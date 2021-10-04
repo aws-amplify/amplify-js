@@ -10,10 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { InAppMessage } from '@aws-amplify/notifications';
 
-<<<<<<< HEAD
-=======
 import { ReactElement } from 'react';
 import { TextStyle, ViewStyle } from 'react-native';
 import {
@@ -27,14 +24,11 @@ import {
 type ButtonProps = any;
 type IconButtonProps = any;
 
->>>>>>> 5c8efac16 (feat(in-app-messaging): add InAppMessageDisplay and useInAppMessage)
 export type InAppMessagingContextType = {
 	clearInAppMessages: () => void;
 	displayInAppMessage: (inAppMessage: InAppMessage) => void;
 	inAppMessages: InAppMessage[];
-<<<<<<< HEAD
-=======
-	components?: InAppMessageComponents;
+	components: InAppMessageComponents;
 };
 
 export type InAppMessageActionHandler = (
@@ -48,7 +42,7 @@ export interface InAppMessageButtonProps
 }
 
 type InAppMessageComponentStyle = {
-	closeIcon?: IconButtonProps['style'];
+	closeIconButton?: IconButtonProps['style'];
 	container?: ViewStyle;
 	header?: TextStyle;
 	message?: TextStyle;
@@ -68,7 +62,9 @@ export interface InAppMessageContentProps
 	secondaryButton?: InAppMessageButtonProps;
 }
 
-interface InAppMessageBaseComponentProps extends InAppMessageContentProps {
+export interface InAppMessageBaseComponentProps
+	extends InAppMessageContentProps {
+	id: string;
 	onClose?: () => void;
 	style?: InAppMessageComponentStyle;
 }
@@ -77,10 +73,9 @@ export interface BannerMessageProps extends InAppMessageBaseComponentProps {
 	position: InAppMessagePosition;
 }
 
-export interface CarouselMessageProps {
+export interface CarouselMessageProps
+	extends Omit<InAppMessageBaseComponentProps, 'content'> {
 	data: InAppMessageContentProps[];
-	onClose?: InAppMessageBaseComponentProps['onClose'];
-	style?: InAppMessageBaseComponentProps['style'];
 }
 
 export interface FullScreenMessageProps
@@ -99,5 +94,4 @@ export type InAppMessageComponents = {
 	BannerMessage?: (props: BannerMessageProps) => ReactElement;
 	CarouselMessage?: (props: CarouselMessageProps) => ReactElement;
 	FullScreenMessage?: (props: FullScreenMessageProps) => ReactElement;
->>>>>>> 5c8efac16 (feat(in-app-messaging): add InAppMessageDisplay and useInAppMessage)
 };

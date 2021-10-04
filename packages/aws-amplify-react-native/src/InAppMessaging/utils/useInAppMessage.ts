@@ -92,7 +92,7 @@ export default function useInAppMessage(): {
 		FullScreenMessage = DefaultFullScreenMessage,
 	} = components;
 
-	const { content, layout } = getInAppMessage(inAppMessages);
+	const { content, id, layout } = getInAppMessage(inAppMessages);
 
 	const onClose = () => {
 		// TODO: add dismiss notify handler when available
@@ -110,6 +110,7 @@ export default function useInAppMessage(): {
 		case 'TOP_BANNER': {
 			const props: BannerMessageProps = {
 				...getContentProps(content[0], onActionCallback),
+				id,
 				onClose,
 				position: getPositionProp(layout),
 			};
@@ -118,6 +119,7 @@ export default function useInAppMessage(): {
 		case 'CAROUSEL': {
 			const props: CarouselMessageProps = {
 				data: content.map(item => getContentProps(item, onActionCallback)),
+				id,
 				onClose,
 			};
 			return { Component: CarouselMessage, props };
@@ -125,12 +127,13 @@ export default function useInAppMessage(): {
 		case 'OVERLAYS': {
 			const props: FullScreenMessageProps = {
 				...getContentProps(content[0], onActionCallback),
+				id,
 				onClose,
 			};
 			return { Component: FullScreenMessage, props };
 		}
 		default: {
-			return { Component: null, props: {} };
+			return { Component: null, props: {} as InAppMessageComponentProps };
 		}
 	}
 }
