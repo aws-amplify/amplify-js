@@ -91,8 +91,6 @@ type ModelPredicateNegation<RT extends PersistentModel> = (
 type ModelPredicate<RT extends PersistentModel> = {
 	[K in keyof RT]-?: FinalFieldType<RT[K]> extends PersistentModel
 		? ModelPredicate<FinalFieldType<RT[K]>>
-		: FinalFieldType<RT[K]> extends PersistentModel[]
-		? ModelPredicate<FinalFieldType<Scalar<RT[K]>>>
 		: ValuePredicate<RT, RT[K]>;
 } & {
 	or: ModelPredicateOperator<RT>;
@@ -103,7 +101,7 @@ type ModelPredicate<RT extends PersistentModel> = {
 
 export type FinalModelPredicate = {
 	// __class: PersistentModelConstructor<PersistentModel>;
-	__class: ModelMeta<PersistentModel>;
+	__class: ModelMeta;
 	__className: string;
 	__query: GroupCondition;
 	__tail: GroupCondition;
@@ -223,7 +221,7 @@ export class GroupCondition {
 		new Date().getTime() + '.' + (Math.random() * 1000).toFixed(3);
 
 	constructor(
-		public model: ModelMeta<PersistentModel>,
+		public model: ModelMeta,
 		public field: string | undefined,
 		public relationshipType: string | undefined,
 		public operator: GroupOperator,
@@ -258,13 +256,13 @@ export class GroupCondition {
 	): Promise<Record<string, any>[]> {
 		const resultGroups: Array<Record<string, any>[]> = [];
 
-		console.log(
-			'fetching',
-			this.model,
-			this.operator,
-			this.operands,
-			this.groupId
-		);
+		// console.log(
+		// 	'fetching',
+		// 	this.model,
+		// 	this.operator,
+		// 	this.operands,
+		// 	this.groupId
+		// );
 
 		const negations = {
 			and: 'or',
@@ -437,7 +435,7 @@ export class GroupCondition {
 			});
 		}
 		const results = Object.values(resultIndex);
-		console.log('results', this.groupId, results);
+		// console.log('results', this.groupId, results);
 		return results;
 	}
 
@@ -518,7 +516,7 @@ export async function asyncFilter<T>(
 // TODO: wayyyyyy too much nesting. DECOMPOSE.
 // TODO: shouldn't this be returning FinalModelPredicate<T>?
 export function predicateFor<T extends PersistentModel>(
-	ModelType: ModelMeta<T>,
+	ModelType: ModelMeta,
 	field?: string,
 	query?: GroupCondition,
 	tail?: GroupCondition
@@ -530,26 +528,16 @@ export function predicateFor<T extends PersistentModel>(
 	// using this type explicitly instead of depending on the inference from ModelType
 	// solves the "Type instantiation is excessively deep and possibly infinite" error.
 	// Why? ... I have no idea. If someone can tell me ... uhh ... please do.
-	type IndirectT = typeof ModelType extends ModelMeta<infer I> ? I : never;
-
-	if (typeof ModelType.builder === 'undefined') {
-		console.log('Model type', ModelType);
-	}
+	// type IndirectT = typeof ModelType extends ModelMeta<infer I> ? I : never;
 
 	const link = {
-		__class: ModelType as ModelMeta<T>,
+		__class: ModelType as ModelMeta,
 		__className: ModelType.builder.name,
 		__query:
 			query ||
-			new GroupCondition(
-				ModelType as ModelMeta<PersistentModel>,
-				field,
-				undefined,
-				'and',
-				[]
-			),
+			new GroupCondition(ModelType as ModelMeta, field, undefined, 'and', []),
 		__tail: new GroupCondition(
-			ModelType as ModelMeta<PersistentModel>,
+			ModelType as ModelMeta,
 			field,
 			undefined,
 			'and',
@@ -557,7 +545,7 @@ export function predicateFor<T extends PersistentModel>(
 		),
 		__copy: () => {
 			const [query, newtail] = link.__query.copy(link.__tail);
-			return predicateFor<IndirectT>(ModelType, undefined, query, newtail);
+			return predicateFor(ModelType, undefined, query, newtail);
 		},
 	} as ModelPredicate<T>;
 
@@ -582,12 +570,12 @@ export function predicateFor<T extends PersistentModel>(
 			const newlink = link.__copy();
 			newlink.__tail.operands.push(
 				new GroupCondition(
-					ModelType as ModelMeta<PersistentModel>,
+					ModelType as ModelMeta,
 					field,
 					undefined,
 					op as 'and' | 'or',
 					typeof builderOrPredicates[0] === 'function'
-						? builderOrPredicates[0](predicateFor<IndirectT>(ModelType)).map(
+						? builderOrPredicates[0](predicateFor(ModelType)).map(
 								p => p.__query
 						  )
 						: (builderOrPredicates as FinalModelPredicate[]).map(p => p.__query)
@@ -613,12 +601,12 @@ export function predicateFor<T extends PersistentModel>(
 		const newlink = link.__copy();
 		newlink.__tail.operands.push(
 			new GroupCondition(
-				ModelType as ModelMeta<PersistentModel>,
+				ModelType as ModelMeta,
 				field,
 				undefined,
 				'not',
 				typeof builderOrPredicate === 'function'
-					? [builderOrPredicate(predicateFor<IndirectT>(ModelType)).__query]
+					? [builderOrPredicate(predicateFor(ModelType)).__query]
 					: [builderOrPredicate.__query]
 			)
 		);

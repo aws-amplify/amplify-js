@@ -216,8 +216,6 @@ class StorageClass implements StorageFacade {
 	): Promise<T[]> {
 		await this.init();
 
-		console.log('storage.query', modelConstructor.name, predicate);
-
 		return await this.adapter.query(modelConstructor, predicate, pagination);
 	}
 
