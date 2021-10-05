@@ -256,13 +256,13 @@ export class GroupCondition {
 	): Promise<Record<string, any>[]> {
 		const resultGroups: Array<Record<string, any>[]> = [];
 
-		// console.log(
-		// 	'fetching',
-		// 	this.model,
-		// 	this.operator,
-		// 	this.operands,
-		// 	this.groupId
-		// );
+		console.log(
+			'fetching',
+			this.model,
+			this.operator,
+			this.operands,
+			this.groupId
+		);
 
 		const negations = {
 			and: 'or',
@@ -310,6 +310,8 @@ export class GroupCondition {
 				if (meta.association) {
 					let candidates = [];
 
+					console.log('meta.assoc', meta.association);
+
 					// sometimes the targetName isn't used locally.
 					// instead, the fieldname itself is used.
 					let leftHandField;
@@ -330,6 +332,13 @@ export class GroupCondition {
 						const rightHandValue = relative[rightHandField].id
 							? relative[rightHandField].id
 							: relative[rightHandField];
+						console.log(
+							'lh',
+							leftHandField,
+							'rh',
+							rightHandField,
+							rightHandValue
+						);
 						const predicate = FlatModelPredicateCreator.createFromExisting(
 							this.model.schema,
 							p => p[leftHandField]('eq' as never, rightHandValue as never)
@@ -435,7 +444,7 @@ export class GroupCondition {
 			});
 		}
 		const results = Object.values(resultIndex);
-		// console.log('results', this.groupId, results);
+		console.log('results', this.groupId, results);
 		return results;
 	}
 
