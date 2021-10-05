@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.0...@aws-amplify/core@4.3.1) (2021-09-30)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.11...@aws-amplify/core@4.3.0) (2021-09-24)
+
+
+### Features
+
+* **Geo:** add Geo class and amazonLocationServicesProvider - Geo milestone 1 - PR 3/6 ([#8618](https://github.com/aws-amplify/amplify-js/issues/8618)) ([4c1c1fe](https://github.com/aws-amplify/amplify-js/commit/4c1c1fe786f2a4b1d7e1260491357a248dd6d084))
+* **Geo:** getAvailableMaps and getDefaultMap - Geo milestone 1 - PR 4 ([#8620](https://github.com/aws-amplify/amplify-js/issues/8620)) ([229f93e](https://github.com/aws-amplify/amplify-js/commit/229f93edf1bc07de26aebe28f26f3066d3e31a74))
+* **Geo:** searchByCoordinates - Geo milestone 1 - PR 6 ([#8622](https://github.com/aws-amplify/amplify-js/issues/8622)) ([ae725c0](https://github.com/aws-amplify/amplify-js/commit/ae725c0f2d55ba95d4ecc76e46506a888e6b67c5))
+* **Geo:** searchByText - Geo milestone 1 - PR 5 ([#8621](https://github.com/aws-amplify/amplify-js/issues/8621)) ([5346ae1](https://github.com/aws-amplify/amplify-js/commit/5346ae17dcf5672b3c25c46f483af53d5f5dfc93))
+* **Geo:** update aws-amplify/core - Geo milestone 1 - PR 2/6 ([#8617](https://github.com/aws-amplify/amplify-js/issues/8617)) ([3a83893](https://github.com/aws-amplify/amplify-js/commit/3a8389388ebe7a521d0b78c58e24d91b53db4799))
+
+
+
+
+
 ## [4.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.2.10...@aws-amplify/core@4.2.11) (2021-09-22)
 
 
