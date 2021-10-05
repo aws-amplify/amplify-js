@@ -171,7 +171,7 @@ export class AmplifyVerifyContact {
 								}
 								data-test="verify-contact-skip-link"
 							>
-								Skip
+								{I18n.get(Translations.SKIP)}
 							</amplify-button>
 						</span>
 					}
