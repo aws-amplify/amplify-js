@@ -137,8 +137,6 @@ let storageClasses: TypeConstructorMap;
 const modelInstanceAssociationsMap = new WeakMap<PersistentModel, object>();
 
 const initSchema = (userSchema: Schema) => {
-	debugger;
-
 	if (schema !== undefined) {
 		console.warn('The schema has already been initialized');
 
@@ -923,6 +921,8 @@ class DataStore {
 		paginationProducer?: ProducerPaginationInput<T>
 	): Promise<T | T[] | undefined> => {
 		await this.start();
+
+		console.log('query', modelConstructor.name, idOrCriteria);
 
 		if (!isValidModelConstructor(modelConstructor)) {
 			const msg = 'Constructor is not for a valid model';

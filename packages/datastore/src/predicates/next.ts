@@ -37,11 +37,15 @@ class AsyncCollection<T> {
 	}
 }
 
-type FinalFieldType<T> = T extends Promise<infer InnerPromiseType>
-	? InnerPromiseType
-	: T extends AsyncCollection<infer InnerCollectionType>
-	? InnerCollectionType
-	: T;
+type FinalFieldType<T> = NonNullable<
+	Scalar<
+		T extends Promise<infer InnerPromiseType>
+			? InnerPromiseType
+			: T extends AsyncCollection<infer InnerCollectionType>
+			? InnerCollectionType
+			: T
+	>
+>;
 
 const ops: AllFieldOperators[] = [
 	'eq',
@@ -85,7 +89,7 @@ type ModelPredicateNegation<RT extends PersistentModel> = (
 ) => FinalModelPredicate;
 
 type ModelPredicate<RT extends PersistentModel> = {
-	[K in keyof RT]: FinalFieldType<RT[K]> extends PersistentModel
+	[K in keyof RT]-?: FinalFieldType<RT[K]> extends PersistentModel
 		? ModelPredicate<FinalFieldType<RT[K]>>
 		: FinalFieldType<RT[K]> extends PersistentModel[]
 		? ModelPredicate<FinalFieldType<Scalar<RT[K]>>>
@@ -254,6 +258,14 @@ export class GroupCondition {
 	): Promise<Record<string, any>[]> {
 		const resultGroups: Array<Record<string, any>[]> = [];
 
+		console.log(
+			'fetching',
+			this.model,
+			this.operator,
+			this.operands,
+			this.groupId
+		);
+
 		const negations = {
 			and: 'or',
 			or: 'and',
@@ -305,14 +317,8 @@ export class GroupCondition {
 					let leftHandField;
 					if (meta.association.targetName == null) {
 						leftHandField = 'id';
-					} else if (
-						this.model.schema.fields[meta.association.targetName] != null
-					) {
-						leftHandField = meta.association.targetName;
-					} else if (this.model.schema.fields[meta.name] != null) {
-						leftHandField = meta.name;
 					} else {
-						throw new Error('Uh oh! Do we have a bad connection?');
+						leftHandField = meta.association.targetName;
 					}
 
 					let rightHandField;
@@ -323,7 +329,9 @@ export class GroupCondition {
 					}
 
 					for (const relative of relatives) {
-						const rightHandValue = relative[rightHandField];
+						const rightHandValue = relative[rightHandField].id
+							? relative[rightHandField].id
+							: relative[rightHandField];
 						const predicate = FlatModelPredicateCreator.createFromExisting(
 							this.model.schema,
 							p => p[leftHandField]('eq' as never, rightHandValue as never)
@@ -428,7 +436,9 @@ export class GroupCondition {
 				};
 			});
 		}
-		return Object.values(resultIndex);
+		const results = Object.values(resultIndex);
+		console.log('results', this.groupId, results);
+		return results;
 	}
 
 	// ALT for `ignoreFieldName` could be to copy and strip off `fieldName`

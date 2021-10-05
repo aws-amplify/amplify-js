@@ -199,6 +199,7 @@ class IndexedDBAdapter implements Adapter {
 			index = store.index('byId');
 		}
 
+		console.log('_get', storeOrStoreName, id);
 		const result = await index.get(id);
 
 		return result;
@@ -336,7 +337,14 @@ class IndexedDBAdapter implements Adapter {
 			return this.getAll(storeName);
 		})();
 
-		return await this.load(namespaceName, modelConstructor.name, records);
+		console.log('before load', JSON.stringify(records, null, 2));
+		const loaded = await this.load(
+			namespaceName,
+			modelConstructor.name,
+			records
+		);
+		console.log('after load', JSON.stringify(loaded, null, 2));
+		return loaded;
 	}
 
 	private async getById<T extends PersistentModel>(

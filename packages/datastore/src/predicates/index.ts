@@ -44,6 +44,13 @@ export class ModelPredicateCreator {
 	) {
 		const { name: modelName } = modelDefinition;
 		const fieldNames = new Set<keyof T>(Object.keys(modelDefinition.fields));
+		Object.values(modelDefinition.fields).forEach(field => {
+			if (field.association) {
+				if (field.association.targetName) {
+					fieldNames.add(field.association.targetName);
+				}
+			}
+		});
 
 		let handler: ProxyHandler<ModelPredicate<T>>;
 		const predicate = new Proxy(
