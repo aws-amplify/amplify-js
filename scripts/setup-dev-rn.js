@@ -52,13 +52,13 @@ const doubleQuotedFormOf = content => `"${content}"`;
 const sanatizeCommand = (base, args) => `("${base}${WHITE_SPACE}" & "${args}")`;
 
 // Constants using the utility fuctions
-const ALIAS_WML = sanatizeCommand(
+const aliasWml = sanatizeCommand(
 	'alias',
 	`npm-exec='PATH=$("npm " & "bin"):$PATH'`
 );
-const DELAY = seconds =>
+const getDelay = seconds =>
 	`${MULTILINE_FLAG}  ${singleQuotedFormOf(`delay ${seconds}`)}`;
-const OPEN_NEW_TAB = `${MULTILINE_FLAG} ${singleQuotedFormOf(
+const openNewTab = `${MULTILINE_FLAG} ${singleQuotedFormOf(
 	'tell application "System Events" to tell process "Terminal" to keystroke "t" using command down'
 )}`;
 
@@ -90,13 +90,13 @@ function openTerminalWithTabs(commands, pkgRootPath) {
 		const splitCommands = command.split(`${WHITE_SPACE};${WHITE_SPACE}`);
 		const hasTwoOrMoreCommands = splitCommands.length >= 2;
 
-		osaScript += `${OPEN_NEW_TAB} ${DELAY(1)} ${createDoCommand(
+		osaScript += `${openNewTab} ${getDelay(1)} ${createDoCommand(
 			GOTO_PACKAGE_ROOT
 		)}${WHITE_SPACE}`;
 
 		if (hasTwoOrMoreCommands) {
 			splitCommands.forEach(splitCommand => {
-				osaScript += `${DELAY(2)} ${createDoCommand(splitCommand)}`;
+				osaScript += `${getDelay(2)} ${createDoCommand(splitCommand)}`;
 			});
 		} else {
 			osaScript += `${createDoCommand(doubleQuotedFormOf(command))}`;
@@ -214,7 +214,7 @@ const createWmlCommand = (requestedPackages, targetAppPath, pkgRootPath) => {
 	);
 
 	// Use char ; to separate commands to be run on the same tab
-	return `${ALIAS_WML} ; ${doubleQuotedFormOf(
+	return `${aliasWml} ; ${doubleQuotedFormOf(
 		WML_REMOVE_ALL_LINKS
 	)} ; ${wmlAddcommand} ; ${doubleQuotedFormOf(WML_START)}`;
 };
