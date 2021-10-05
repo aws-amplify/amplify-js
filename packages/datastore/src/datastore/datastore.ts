@@ -124,6 +124,8 @@ let userClasses: TypeConstructorMap;
 let dataStoreClasses: TypeConstructorMap;
 let storageClasses: TypeConstructorMap;
 
+const memos = new WeakMap();
+
 const initSchema = (userSchema: Schema) => {
 	if (schema !== undefined) {
 		console.warn('The schema has already been initialized');
@@ -532,34 +534,39 @@ const createModelClass = <T extends PersistentModel>(
 		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
 			set(model: PersistentModel) {
 				if (!model || !model.id) return;
+				if (model.hasOwnProperty('_version')) {
+					const modelConstructor = Object.getPrototypeOf(model || {})
+						.constructor as PersistentModelConstructor<T>;
 
-				// skip this validation for now
-				// TODO: enable after we find a way to determine whether
-				// the setter is being invoked externally or internally by mergePage/batchSave
+					if (!isValidModelConstructor(modelConstructor)) {
+						const msg = `Value passed to ${modelDefinition.name}.${field} is not a valid instance of a model`;
+						logger.error(msg, { model });
 
-				// value needs to be a valid modelInstance
-				// const modelConstructor = Object.getPrototypeOf(model || {})
-				// 	.constructor as PersistentModelConstructor<T>;
+						throw new Error(msg);
+					}
 
-				// if (!isValidModelConstructor(modelConstructor)) {
-				// 	const msg = `Value passed to ${modelDefinition.name}.${field} is not a valid instance of a model`;
-				// 	logger.error(msg, { model });
+					if (
+						modelConstructor.name.toLowerCase() !==
+						relatedModelName.toLowerCase()
+					) {
+						const msg = `Value passed to ${modelDefinition.name}.${field} is not an instance of ${relatedModelName}`;
+						logger.error(msg, { model });
 
-				// 	throw new Error(msg);
-				// }
-
-				// if (modelConstructor.name.toLowerCase() !== field.toLowerCase()) {
-				// 	const msg = `Value passed to ${modelDefinition.name}.${field} is not an instance of ${relatedModelName}`;
-				// 	logger.error(msg, { model });
-
-				// 	throw new Error(msg);
-				// }
-
+						throw new Error(msg);
+					}
+				}
 				if (targetName) {
 					this[targetName] = model.id;
 				}
 			},
 			async get() {
+				if (!memos.has(this)) {
+					memos.set(this, {});
+				}
+				const instanceMemos = memos.get(this);
+				if (instanceMemos[targetName] !== undefined) {
+					return instanceMemos[targetName];
+				}
 				const associatedId = this[targetName];
 
 				const relatedModel = getModelConstructorByModelName(
@@ -573,6 +580,8 @@ const createModelClass = <T extends PersistentModel>(
 				}
 
 				const result = await instance.query(relatedModel, associatedId);
+				instanceMemos[targetName] = result;
+				memos.set(this, instanceMemos);
 				return result;
 			},
 		});
