@@ -402,7 +402,6 @@ export type SubscriptionMessage<T extends PersistentModel> = {
 export type DataStoreSnapshot<T extends PersistentModel> = {
 	items: T[];
 	isSynced: boolean;
-	itemsChanged: T[];
 };
 //#endregion
 

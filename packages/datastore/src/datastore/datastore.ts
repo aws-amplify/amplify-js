@@ -1166,7 +1166,7 @@ class DataStore {
 			let items = new Map<string, T>();
 			let deletedItemIds: string[] = [];
 
-			// first, query and return any locally available records
+			// first, query and return any locally-available records
 			(async () => {
 				try {
 					// using a Map to maintain insertion order & uniqueness
@@ -1183,6 +1183,7 @@ class DataStore {
 			})();
 
 			// primary callback for sending snapshots via `observer.next()`
+			// TODO: abstract this function into a util file to be able to write better unit tests
 			const generateAndSendSnapshot = () => {
 				const isSynced = this.sync.getModelSyncedStatus(model);
 
@@ -1213,9 +1214,9 @@ class DataStore {
 				const snapshot: DataStoreSnapshot<T> = {
 					items: Array.from(items.values()),
 					isSynced,
-					itemsChanged: Array.from(itemsChanged.values()),
 				};
 
+				// send the generated snapshot
 				observer.next(snapshot);
 
 				// reset the changed items sets
@@ -1223,9 +1224,9 @@ class DataStore {
 				deletedItemIds = [];
 			};
 
-			// fire the callback when the model is fully synced
-			const hubCallback = async hubData => {
-				const { event, data } = hubData.payload;
+			// fire the callback one last time when the model is fully synced
+			const hubCallback = ({ payload }) => {
+				const { event, data } = payload;
 				if (
 					event === ControlMessage.SYNC_ENGINE_MODEL_SYNCED &&
 					data?.model?.name === model.name
@@ -1256,17 +1257,9 @@ class DataStore {
 				}
 			});
 
-			// cleanup function called with '.unsubscribe()'
 			return () => {
 				if (handle) {
 					handle.unsubscribe();
-					const isSynced = this.sync.getModelSyncedStatus(model);
-					const snapshot: DataStoreSnapshot<T> = {
-						items: Array.from(items.values()),
-						isSynced,
-						itemsChanged: Array.from(itemsChanged.values()),
-					};
-					observer.next(snapshot);
 				}
 			};
 		});
