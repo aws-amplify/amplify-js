@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.1.2...amazon-cognito-identity-js@5.2.0) (2021-09-30)
+
+
+### Features
+
+* **amazon-cognito-identity-js:** Clears "__uploadInProgress" from local storage ([f21c2d1](https://github.com/aws-amplify/amplify-js/commit/f21c2d146fcabacf0584918b286ec68a644bec20))
+
+
+
+
+
+## [5.1.2](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.1.1...amazon-cognito-identity-js@5.1.2) (2021-09-24)
+
+**Note:** Version bump only for package amazon-cognito-identity-js
+
+
+
+
+
+## [5.1.1](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.1.0...amazon-cognito-identity-js@5.1.1) (2021-09-17)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-js:** Fix UserPoolId validation ReDoS ([#8915](https://github.com/aws-amplify/amplify-js/issues/8915)) ([f405f0e](https://github.com/aws-amplify/amplify-js/commit/f405f0ec6f0766bf66bc77d1450579c61f587979))
+
+
+
+
+
 # [5.1.0](https://github.com/aws-amplify/amplify-js/compare/amazon-cognito-identity-js@5.0.6...amazon-cognito-identity-js@5.1.0) (2021-08-19)
 
 

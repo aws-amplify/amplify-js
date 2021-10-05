@@ -119,3 +119,6 @@ export const genHashDevices = 'generateHashDevice';
 export const getSalt = 'getSaltDevices';
 export const getVerifiers = 'getVerifierDevices';
 export const passwordErr = new Error('New password is required.');
+
+/** LocalStorage misc */
+export const uploadProgressKey = '__uploadInProgress';
