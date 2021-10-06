@@ -5,15 +5,7 @@
 		"outDir": "./lib/",
 		"target": "es5",
 		"noImplicitAny": false,
-		"lib": [
-			"es5",
-			"es2015",
-			"dom",
-			"esnext.asynciterable",
-			"es2017.object",
-			"es2018.promise",
-			"es2016"
-		],
+		"lib": ["dom", "es2019", "esnext.asynciterable"],
 		"sourceMap": true,
 		"module": "commonjs",
 		"moduleResolution": "node",

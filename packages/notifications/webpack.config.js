@@ -6,9 +6,7 @@ module.exports = {
 		'react-native',
 		'@aws-amplify/cache',
 		'@aws-amplify/core',
-		'aws-sdk/clients/pinpoint',
-		'aws-sdk/clients/kinesis',
-		'aws-sdk/clients/firehose',
+		'@aws-sdk/client-pinpoint',
 	],
 	output: {
 		filename: '[name].js',

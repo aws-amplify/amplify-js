@@ -43,7 +43,6 @@
 	"homepage": "https://aws-amplify.github.io/",
 	"dependencies": {
 		"@aws-sdk/client-pinpoint": "^3.33.0",
-		"aws-amplify": "^4.0.2",
 		"lodash": "^4.17.21"
 	},
 	"devDependencies": {
