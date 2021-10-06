@@ -36,7 +36,15 @@ const getUuid = (cacheKey: string): Promise<string> =>
 			}
 			// if uuid for key was not found, generate and store it
 			const generatedUuid = uuid();
-			await Cache.setItem(cacheKey, generatedUuid);
+			// set a longer TTL to avoid id being deleted after the default TTL (3 days)
+			// also set its priority to the highest to reduce its chance of being deleted when cache is full
+			// See also: https://github.com/aws-amplify/amplify-js/pull/8982
+			const ttl = 1000 * 60 * 60 * 24 * 365 * 100; // 100 years
+			const expiration = new Date().getTime() + ttl;
+			await Cache.setItem(cacheKey, generatedUuid, {
+				expires: expiration,
+				priority: 1,
+			});
 			uuids[cacheKey] = generatedUuid;
 			resolve(uuids[cacheKey]);
 		} catch (err) {
