@@ -922,8 +922,6 @@ class DataStore {
 	): Promise<T | T[] | undefined> => {
 		await this.start();
 
-		// console.log('query', modelConstructor.name, idOrCriteria);
-
 		if (!isValidModelConstructor(modelConstructor)) {
 			const msg = 'Constructor is not for a valid model';
 			logger.error(msg, { modelConstructor });

@@ -11,6 +11,8 @@ import {
 	PredicateExpression as FlatPredicateExpression,
 	InternalSchema,
 	ModelMeta,
+	PersistentModelConstructor,
+	AllOperators,
 } from '../types';
 
 import { ModelPredicateCreator as FlatModelPredicateCreator } from './index';
@@ -24,11 +26,7 @@ type MatchableTypes =
 	| boolean
 	| boolean[];
 
-type EqualityOperators = 'eq' | 'ne';
-type ComparisonOperators = 'gt' | 'ge' | 'lt' | 'le' | 'between' | 'beginsWith';
-type ScalarOperators = EqualityOperators | ComparisonOperators;
-type CollectionOperators = 'contains' | 'notContains';
-type AllFieldOperators = CollectionOperators | ScalarOperators;
+type AllFieldOperators = keyof AllOperators;
 
 // TODO: this is TEMP to make the types work.
 class AsyncCollection<T> {
@@ -59,10 +57,6 @@ const ops: AllFieldOperators[] = [
 	'contains',
 	'notContains',
 ];
-
-type Operator<T extends MatchableTypes> = T extends string[] | number[]
-	? CollectionOperators
-	: ScalarOperators;
 
 export type ModelPredicateExtender<RT extends PersistentModel> = (
 	lambda: ModelPredicate<RT>
@@ -100,30 +94,10 @@ type ModelPredicate<RT extends PersistentModel> = {
 } & FinalModelPredicate;
 
 export type FinalModelPredicate = {
-	// __class: PersistentModelConstructor<PersistentModel>;
-	__class: ModelMeta;
-	__className: string;
 	__query: GroupCondition;
 	__tail: GroupCondition;
-
-	// TODO?: change RT -> FT (filter type) and thread a new
-	// RT (return type) through to be used HERE instead of T:
 	filter: <T>(items: T[]) => Promise<T[]>;
 };
-
-type GroupConditionType<RT extends PersistentModel> = {
-	operator: 'and' | 'or' | 'not';
-	// conditions: (ModelPredicate<RT>)[]
-	conditions: (ModelPredicate<RT> | GroupConditionType<RT> | Condition<RT>)[];
-};
-
-type Condition<T extends PersistentModel> = {
-	[K in keyof T]: {
-		fieldName: K;
-		operator: Operator<T[K]>;
-		operands: T[K][];
-	};
-}[keyof T];
 
 type GroupOperator = 'and' | 'or' | 'not';
 
@@ -221,7 +195,7 @@ export class GroupCondition {
 		new Date().getTime() + '.' + (Math.random() * 1000).toFixed(3);
 
 	constructor(
-		public model: ModelMeta,
+		public model: ModelMeta<any>,
 		public field: string | undefined,
 		public relationshipType: string | undefined,
 		public operator: GroupOperator,
@@ -255,14 +229,6 @@ export class GroupCondition {
 		negate = false
 	): Promise<Record<string, any>[]> {
 		const resultGroups: Array<Record<string, any>[]> = [];
-
-		console.log(
-			'fetching',
-			this.model,
-			this.operator,
-			this.operands,
-			this.groupId
-		);
 
 		const negations = {
 			and: 'or',
@@ -310,10 +276,6 @@ export class GroupCondition {
 				if (meta.association) {
 					let candidates = [];
 
-					console.log('meta.assoc', meta.association);
-
-					// sometimes the targetName isn't used locally.
-					// instead, the fieldname itself is used.
 					let leftHandField;
 					if (meta.association.targetName == null) {
 						leftHandField = 'id';
@@ -332,20 +294,13 @@ export class GroupCondition {
 						const rightHandValue = relative[rightHandField].id
 							? relative[rightHandField].id
 							: relative[rightHandField];
-						console.log(
-							'lh',
-							leftHandField,
-							'rh',
-							rightHandField,
-							rightHandValue
-						);
 						const predicate = FlatModelPredicateCreator.createFromExisting(
 							this.model.schema,
 							p => p[leftHandField]('eq' as never, rightHandValue as never)
 						);
 						candidates = [
 							...candidates,
-							...(await storage.query(this.model.builder, predicate)),
+							...(await storage.query(this.model.builder, predicate as any)),
 						];
 					}
 					resultGroups.push(candidates);
@@ -364,7 +319,6 @@ export class GroupCondition {
 
 			for (const c of conditions) {
 				if (negateChildren) {
-					// console.log('negating children!!!', breadcrumb);
 					if (c.operator === 'between') {
 						finalConditions.push(
 							new FieldCondition(c.field, 'lt', [c.operands[0]]),
@@ -381,7 +335,6 @@ export class GroupCondition {
 			}
 
 			for (const c of finalConditions) {
-				// console.log('adding field', c.field, c.operator, c.operands);
 				p = p[c.field](
 					c.operator as never,
 					(c.operator === 'between' ? c.operands : c.operands[0]) as never
@@ -397,7 +350,9 @@ export class GroupCondition {
 				this.model.schema,
 				p => p[operator](c => addConditions(c))
 			);
-			resultGroups.push(await storage.query(this.model.builder, predicate));
+			resultGroups.push(
+				await storage.query(this.model.builder, predicate as any)
+			);
 		} else if (conditions.length === 0 && resultGroups.length === 0) {
 			resultGroups.push(await storage.query(this.model.builder));
 		}
@@ -408,32 +363,24 @@ export class GroupCondition {
 
 		if (operator === 'and') {
 			if (resultGroups.length === 0) {
-				// console.log('NO RESULT GROUPS');
 				return [];
 			}
-
-			// console.log('result groups', breadcrumb, resultGroups);
 
 			resultIndex = resultGroups[0].reduce((agg, item) => {
 				return { ...agg, ...{ [item[idField]]: item } };
 			}, {});
 
-			// console.log('result index', breadcrumb, resultIndex);
-
 			resultGroups.forEach(group => {
-				// console.log('filtering by group START', breadcrumb, resultIndex, group);
 				resultIndex = group.reduce((agg, item) => {
 					const id = item[idField];
 					if (resultIndex[id]) agg[id] = item;
 					return agg;
 				}, {});
-				// console.log('filtering by group END', breadcrumb, resultIndex, group);
 			});
 		} else if (operator === 'or' || operator === 'not') {
 			// it's OK to handle NOT here, because NOT must always only negate
 			// a single child predicate. NOT logic will have been distributed down
 			// to the leaf conditions already.
-			// console.log('doing OR or NOT stuff');
 			resultGroups.forEach(group => {
 				resultIndex = {
 					...resultIndex,
@@ -444,7 +391,6 @@ export class GroupCondition {
 			});
 		}
 		const results = Object.values(resultIndex);
-		console.log('results', this.groupId, results);
 		return results;
 	}
 
@@ -456,8 +402,6 @@ export class GroupCondition {
 	): Promise<boolean> {
 		const itemToCheck =
 			this.field && !ignoreFieldName ? await item[this.field] : item;
-
-		// console.log(this, itemToCheck);
 
 		if (this.relationshipType === 'HAS_MANY' && itemToCheck instanceof Array) {
 			for (const singleItem of itemToCheck) {
@@ -525,7 +469,7 @@ export async function asyncFilter<T>(
 // TODO: wayyyyyy too much nesting. DECOMPOSE.
 // TODO: shouldn't this be returning FinalModelPredicate<T>?
 export function predicateFor<T extends PersistentModel>(
-	ModelType: ModelMeta,
+	ModelType: ModelMeta<T>,
 	field?: string,
 	query?: GroupCondition,
 	tail?: GroupCondition
@@ -540,18 +484,9 @@ export function predicateFor<T extends PersistentModel>(
 	// type IndirectT = typeof ModelType extends ModelMeta<infer I> ? I : never;
 
 	const link = {
-		__class: ModelType as ModelMeta,
-		__className: ModelType.builder.name,
 		__query:
-			query ||
-			new GroupCondition(ModelType as ModelMeta, field, undefined, 'and', []),
-		__tail: new GroupCondition(
-			ModelType as ModelMeta,
-			field,
-			undefined,
-			'and',
-			[]
-		),
+			query || new GroupCondition(ModelType, field, undefined, 'and', []),
+		__tail: new GroupCondition(ModelType, field, undefined, 'and', []),
 		__copy: () => {
 			const [query, newtail] = link.__query.copy(link.__tail);
 			return predicateFor(ModelType, undefined, query, newtail);
@@ -579,7 +514,7 @@ export function predicateFor<T extends PersistentModel>(
 			const newlink = link.__copy();
 			newlink.__tail.operands.push(
 				new GroupCondition(
-					ModelType as ModelMeta,
+					ModelType,
 					field,
 					undefined,
 					op as 'and' | 'or',
@@ -593,8 +528,6 @@ export function predicateFor<T extends PersistentModel>(
 
 			// hmm ... do all these underscore props need to be here?
 			return {
-				__class: newlink.__class,
-				__className: newlink.__className,
 				__query: newlink.__query,
 				__tail: newlink.__tail,
 				filter: items => {
@@ -610,7 +543,7 @@ export function predicateFor<T extends PersistentModel>(
 		const newlink = link.__copy();
 		newlink.__tail.operands.push(
 			new GroupCondition(
-				ModelType as ModelMeta,
+				ModelType,
 				field,
 				undefined,
 				'not',
@@ -622,8 +555,6 @@ export function predicateFor<T extends PersistentModel>(
 
 		// hmm ... do all these underscore props need to be here?
 		return {
-			__class: newlink.__class,
-			__className: newlink.__className,
 			__query: newlink.__query,
 			__tail: newlink.__tail,
 			filter: items => {
@@ -649,8 +580,6 @@ export function predicateFor<T extends PersistentModel>(
 
 								// same question as above: do all these underscore props need to be here?
 								return {
-									__class: newlink.__class,
-									__className: newlink.__className,
 									__query: newlink.__query,
 									__tail: newlink.__tail,
 									filter: items => {
