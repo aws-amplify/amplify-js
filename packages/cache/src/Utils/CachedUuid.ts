@@ -1,7 +1,7 @@
 import Cache from '../AsyncStorageCache';
 import { v1 as uuid } from 'uuid';
 
-const uuids = {};
+let uuids = {};
 const promises = {};
 
 export const getCachedUuid = (cacheKey: string): Promise<string> => {
@@ -14,6 +14,14 @@ export const getCachedUuid = (cacheKey: string): Promise<string> => {
 		promises[cacheKey] = getUuid(cacheKey);
 	}
 	return promises[cacheKey];
+};
+
+export const removeUuid = (cacheKey: string) => {
+	delete uuids[cacheKey];
+};
+
+export const clearUuids = () => {
+	uuids = {};
 };
 
 const getUuid = (cacheKey: string): Promise<string> =>

@@ -13,6 +13,7 @@
 
 import { StorageCache } from './StorageCache';
 import { defaultConfig, getCurrTime } from './Utils';
+import { clearUuids, removeUuid } from './Utils/CachedUuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ICache } from './types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
@@ -111,6 +112,7 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 		// try to remove the item from cache
 		try {
 			await AsyncStorage.removeItem(prefixedKey);
+			removeUuid(prefixedKey);
 		} catch (removeItemError) {
 			// if some error happened, we need to rollback the current size
 			await this._increaseCurSizeInBytes(itemSize);
@@ -420,18 +422,11 @@ export class AsyncStorageCache extends StorageCache implements ICache {
 		logger.debug(`Clear Cache`);
 		try {
 			const keys = await AsyncStorage.getAllKeys();
-
-			const keysToRemove = [];
-			for (let i = 0; i < keys.length; i += 1) {
-				if (keys[i].indexOf(this.config.keyPrefix) === 0) {
-					keysToRemove.push(keys[i]);
-				}
-			}
-
-			// can be improved
-			for (let i = 0; i < keysToRemove.length; i += 1) {
-				await AsyncStorage.removeItem(keysToRemove[i]);
-			}
+			const keysToRemove = keys.filter(key =>
+				key.includes(this.config.keyPrefix)
+			);
+			await AsyncStorage.multiRemove(keysToRemove);
+			clearUuids();
 		} catch (e) {
 			logger.warn(`clear failed! ${e}`);
 		}
