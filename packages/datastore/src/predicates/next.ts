@@ -1,17 +1,8 @@
 import {
 	Scalar,
 	PersistentModel,
-	// PersistentModelConstructor,
-	SchemaModel,
 	ModelFieldType,
-	ModelAssociation,
-	PaginationInput,
-	QueryOne,
-	ModelPredicate as FlatModelPredicate,
-	PredicateExpression as FlatPredicateExpression,
-	InternalSchema,
 	ModelMeta,
-	PersistentModelConstructor,
 	AllOperators,
 } from '../types';
 
