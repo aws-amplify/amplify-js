@@ -64,6 +64,27 @@ export type ModelPredicateExtender<RT extends PersistentModel> = (
 	__query: GroupCondition;
 }[];
 
+/**
+ * A function that accepts a ModelPrecicate<T>, which it must use to return a final condition.
+ *
+ * This is used in `DataStore.query()` as the second argument. E.g.,
+ *
+ * ```
+ * DataStore.query(MyModel, model => model.field.eq('some value'))
+ * ```
+ *
+ * More complex queries should also be supported.
+ *
+ * ```
+ * DataStore.query(MyModel, model => model.and(m => [
+ *   m.relatedEntity.or(relative => [
+ *     relative.relativeField.eq('whatever'),
+ *     relative.relativeField.eq('whatever else')
+ *   ]),
+ *   m.myModelField.ne('something')
+ * ]))
+ * ```
+ */
 export type SingularModelPredicateExtender<RT extends PersistentModel> = (
 	lambda: ModelPredicate<RT>
 ) => {
@@ -107,15 +128,26 @@ type UntypedCondition = {
 	copy(extract: GroupCondition): [UntypedCondition, GroupCondition | undefined];
 };
 
+/**
+ * A condition that can operate against a single "primitive" field of a model or item.
+ * @member field The field of *some record* to test against.
+ * @member operator The equality or comparison operator to use.
+ * @member operands The operands for the equality/comparison check.
+ */
 export class FieldCondition {
 	constructor(
 		public field: string,
-		public operator: string, // TODO: tighter type?
+		public operator: string,
 		public operands: string[]
 	) {
 		this.validate();
 	}
 
+	/**
+	 * Creates a copy of self.
+	 * @param extract Not used. Present only to fulfill the `UntypedCondition` interface.
+	 * @returns A new, identitical `FieldCondition`.
+	 */
 	copy(extract: GroupCondition): [FieldCondition, GroupCondition | undefined] {
 		return [
 			new FieldCondition(this.field, this.operator, [...this.operands]),
@@ -123,12 +155,23 @@ export class FieldCondition {
 		];
 	}
 
+	/**
+	 * Not implemented. Not needed. GroupCondition instead consumes FieldConditions and
+	 * transforms them into legacy predicates. (*For now.*)
+	 * @param storage N/A. If ever implemented, the storage adapter to query.
+	 * @returns N/A. If ever implemented, return items from `storage` that match.
+	 */
 	async fetch(storage: StorageAdapter): Promise<Record<string, any>[]> {
-		return Promise.reject('Not yet implemented.');
+		return Promise.reject('No implementation needed [yet].');
 	}
 
+	/**
+	 * Determins whether a given item matches the expressed condition.
+	 * @param item The item to test.
+	 * @returns `Promise<boolean>`, `true` if matches; `false` otherwise.
+	 */
 	async matches(item: Record<string, any>): Promise<boolean> {
-		const v = String(item[this.field]);
+		const v = String(await item[this.field]);
 		const operations = {
 			eq: () => v === this.operands[0],
 			ne: () => v !== this.operands[0],
@@ -149,8 +192,17 @@ export class FieldCondition {
 		}
 	}
 
+	/**
+	 * Checks `this.operands` for compatibility with `this.operator`.
+	 */
 	validate(): void {
 		const _t = this;
+
+		/**
+		 * Creates a validator that checks for a particular `operands` count.
+		 * Throws an exception if the `count` disagrees with `operands.length`.
+		 * @param count The number of `operands` expected.
+		 */
 		function argumentCount(count) {
 			const argsClause = count === 1 ? 'argument is' : 'arguments are';
 			return () => {
@@ -161,7 +213,8 @@ export class FieldCondition {
 		}
 
 		// NOTE: validations should return a message on failure.
-		// hence, they should be "joined" together with logical OR's.
+		// hence, they should be "joined" together with logical OR's
+		// as seen in the `between:` entry.
 		const validations = {
 			eq: argumentCount(1),
 			ne: argumentCount(1),
@@ -189,8 +242,19 @@ export class FieldCondition {
 	}
 }
 
+/**
+ * A set of sub-conditions to operate against a model, optionally scoped to
+ * a specific field, combined with the given operator (one of `and`, `or`, or `not`).
+ * @member groupId Used to distinguish between GroupCondition instances for
+ * debugging and troublehsooting.
+ * @member model A metadata object that tells GroupCondition what to query and how.
+ * @member field The field on the model that the sub-conditions apply to.
+ * @member operator How to group child conditions together.
+ * @member operands The child conditions.
+ */
 export class GroupCondition {
-	// for debugging
+	// `groupId` was used for development/debugging.
+	// Should we leave this in for future troubleshooting?
 	public groupId: string =
 		new Date().getTime() + '.' + (Math.random() * 1000).toFixed(3);
 
@@ -202,6 +266,12 @@ export class GroupCondition {
 		public operands: UntypedCondition[]
 	) {}
 
+	/**
+	 * Returns a copy of a GroupCondition, which also returns the copy of a
+	 * given reference node to "extract".
+	 * @param extract A node of interest. Its copy will *also* be returned if the node exists.
+	 * @returns [The full copy, the copy of `extract` | undefined]
+	 */
 	copy(extract: GroupCondition): [GroupCondition, GroupCondition | undefined] {
 		const copied = new GroupCondition(
 			this.model,
@@ -223,6 +293,15 @@ export class GroupCondition {
 		return [copied, extractedCopy];
 	}
 
+	// TODO: decompose fetch().
+
+	/**
+	 * Fetches matching records from a given storage adapter using legacy predicates (for now).
+	 * @param storage The storage adapter this predicate will query against.
+	 * @param breadcrumb For debugging/troubleshooting. A list of the `groupId`'s this GroupdCondition.fetch is nested within.
+	 * @param negate Whether to match on the `NOT` of `this`.
+	 * @returns An `Promise` of `any[]` from `storage` matching the child conditions.
+	 */
 	async fetch(
 		storage: StorageAdapter,
 		breadcrumb = [],
@@ -394,8 +473,15 @@ export class GroupCondition {
 		return results;
 	}
 
-	// ALT for `ignoreFieldName` could be to copy and strip off `fieldName`
-	// when recursing for `HAS_MANY`.
+	/**
+	 * Determines whether a single item matches the conditions of `this`.
+	 * When checking the target `item`'s properties, each property will be `await`'d
+	 * to ensure lazy-loading is respected where applicable.
+	 * @param item The item to match against.
+	 * @param ignoreFieldName Tells `match()` that the field name has already been dereferenced.
+	 * (Used for iterating over children on HAS_MANY checks.)
+	 * @returns A boolean (promise): `true` if matched, `false` otherwise.
+	 */
 	async matches(
 		item: Record<string, any>,
 		ignoreFieldName: boolean = false
@@ -429,6 +515,13 @@ export class GroupCondition {
 	}
 }
 
+/**
+ * An `aysnc` implementation of `Array.some()`. Returns as soon as a match is found.
+ * @param items The items to check.
+ * @param matches The async matcher function, expected to
+ * return Promise<boolean>: `true` for a matching item, `false` otherwise.
+ * @returns A `Promise<boolean>`, `true` if "some" items match; `false` otherwise.
+ */
 export async function asyncSome(
 	items: Record<string, any>[],
 	matches: (item: Record<string, any>) => Promise<boolean>
@@ -441,6 +534,13 @@ export async function asyncSome(
 	return false;
 }
 
+/**
+ * An `aysnc` implementation of `Array.every()`. Returns as soon as a non-match is found.
+ * @param items The items to check.
+ * @param matches The async matcher function, expected to
+ * return Promise<boolean>: `true` for a matching item, `false` otherwise.
+ * @returns A `Promise<boolean>`, `true` if every item matches; `false` otherwise.
+ */
 export async function asyncEvery(
 	items: Record<string, any>[],
 	matches: (item: Record<string, any>) => Promise<boolean>
@@ -453,6 +553,14 @@ export async function asyncEvery(
 	return true;
 }
 
+/**
+ * An `async` implementation of `Array.filter()`. Returns after all items have been filtered.
+ * TODO: Return AsyncIterable.
+ * @param items The items to filter.
+ * @param matches The `async` matcher function, expected to
+ * return Promise<boolean>: `true` for a matching item, `false` otherwise.
+ * @returns A `Promise<T>` of matching items.
+ */
 export async function asyncFilter<T>(
 	items: T[],
 	matches: (item: T) => Promise<boolean>
@@ -466,23 +574,43 @@ export async function asyncFilter<T>(
 	return results;
 }
 
-// TODO: wayyyyyy too much nesting. DECOMPOSE.
-// TODO: shouldn't this be returning FinalModelPredicate<T>?
+// TODO: `predicateFor` => too long, too much much nesting. DECOMPOSE.
+// Also ... should this be returning `FinalModelPredicate<T>` instead?
+
+/**
+ * Creates a "seed" predicate that can be used to build an executable condition.
+ * This is used in `query()`, for example, to seed customer- E.g.,
+ *
+ * ```
+ * const p = predicateFor({builder: modelConstructor, schema: modelSchema});
+ * p.and(child => [
+ *   child.field.eq('whatever'),
+ *   child.childModel.childField.eq('whatever else'),
+ *   child.childModel.or(child => [
+ *     child.otherField.contains('x'),
+ *     child.otherField.contains('y'),
+ *     child.otherField.contains('z'),
+ *   ])
+ * ])
+ * ```
+ *
+ * `predicateFor()` returns objecst with recursive getters. To facilitate this,
+ * a `query` and `tail` can be provided to "accumulate" nested conditions.
+ *
+ * @param ModelType The ModelMeta used to build child properties.
+ * @param field Obsolete. (I think!) Was intended to scope to a child model.
+ * This info is now encoded directly in the inner `GroupCondition`.
+ * @param query A base query to build on.
+ * @param tail The point in the base query to attach new conditions to.
+ * @returns A ModelPredicate (builder) that customers can create queries with.
+ * (As shown in function description.)
+ */
 export function predicateFor<T extends PersistentModel>(
 	ModelType: ModelMeta<T>,
 	field?: string,
 	query?: GroupCondition,
 	tail?: GroupCondition
 ): ModelPredicate<T> {
-	//
-	// TODO: when/where/how do we bail if `ModelType.__meta.syncable == false`?
-	//
-
-	// using this type explicitly instead of depending on the inference from ModelType
-	// solves the "Type instantiation is excessively deep and possibly infinite" error.
-	// Why? ... I have no idea. If someone can tell me ... uhh ... please do.
-	// type IndirectT = typeof ModelType extends ModelMeta<infer I> ? I : never;
-
 	const link = {
 		__query:
 			query || new GroupCondition(ModelType, field, undefined, 'and', []),
@@ -526,7 +654,6 @@ export function predicateFor<T extends PersistentModel>(
 				)
 			);
 
-			// hmm ... do all these underscore props need to be here?
 			return {
 				__query: newlink.__query,
 				__tail: newlink.__tail,
@@ -553,7 +680,6 @@ export function predicateFor<T extends PersistentModel>(
 			)
 		);
 
-		// hmm ... do all these underscore props need to be here?
 		return {
 			__query: newlink.__query,
 			__tail: newlink.__tail,
@@ -578,7 +704,6 @@ export function predicateFor<T extends PersistentModel>(
 									new FieldCondition(fieldName, operator, operands)
 								);
 
-								// same question as above: do all these underscore props need to be here?
 								return {
 									__query: newlink.__query,
 									__tail: newlink.__tail,
@@ -611,10 +736,6 @@ export function predicateFor<T extends PersistentModel>(
 							newtail
 						);
 						return newlink;
-					} else if (def.association.connectionType === 'HAS_MANY') {
-						// i suspect we'll need a separate implementation here ... but it's not yet
-						// needed for the `filter()` use-case.
-						throw new Error('Not implemented yet.');
 					} else {
 						throw new Error(
 							"Oh no! Related Model definition doesn't have a typedef!"
