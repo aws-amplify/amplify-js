@@ -25,7 +25,7 @@ describe('aws-amplify', () => {
 			  "PubSub",
 			  "Cache",
 			  "Interactions",
-			  "Notifications",
+			  "InAppMessaging",
 			  "a",
 			  "button",
 			  "signInButton",

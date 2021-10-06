@@ -9,7 +9,7 @@ import {
 	InAppMessageAction,
 	InAppMessageContent,
 	InAppMessageStyle,
-	NotificationEvent,
+	InAppMessagingEvent,
 } from '../../types';
 import { InAppMessageEvent, MetricsComparator } from './types';
 
@@ -25,15 +25,15 @@ let eventMetricsMemo = {};
 
 export const logger = new ConsoleLogger('AWSPinpointProvider');
 
-export const dispatchNotificationEvent = (
+export const dispatchInAppMessagingEvent = (
 	event: string,
 	data: any,
 	message?: string
 ) => {
 	Hub.dispatch(
-		'notification',
+		'inAppMessaging',
 		{ event, data, message },
-		'Notification',
+		'InAppMessaging',
 		AMPLIFY_SYMBOL
 	);
 };
@@ -64,7 +64,7 @@ export const getStartOfDay = (): string => {
 
 export const matchesEventType = (
 	{ CampaignId, Schedule }: PinpointInAppMessage,
-	{ name: eventType }: NotificationEvent
+	{ name: eventType }: InAppMessagingEvent
 ) => {
 	const { EventType } = Schedule?.EventFilter?.Dimensions;
 	const memoKey = `${CampaignId}:${eventType}`;
@@ -76,7 +76,7 @@ export const matchesEventType = (
 
 export const matchesAttributes = (
 	{ CampaignId, Schedule }: PinpointInAppMessage,
-	{ attributes }: NotificationEvent
+	{ attributes }: InAppMessagingEvent
 ): boolean => {
 	const { Attributes } = Schedule?.EventFilter?.Dimensions;
 	if (isEmpty(Attributes)) {
@@ -98,7 +98,7 @@ export const matchesAttributes = (
 
 export const matchesMetrics = (
 	{ CampaignId, Schedule }: PinpointInAppMessage,
-	{ metrics }: NotificationEvent
+	{ metrics }: InAppMessagingEvent
 ): boolean => {
 	const { Metrics } = Schedule?.EventFilter?.Dimensions;
 	if (isEmpty(Metrics)) {

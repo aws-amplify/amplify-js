@@ -12,27 +12,27 @@
  */
 export type InAppMessagesHandler = (messages: any) => void;
 
-export type NotificationsCategory = 'Notifications';
+export type InAppMessagingCategory = 'InAppMessaging';
 
-export type NotificationEvent = {
+export type InAppMessagingEvent = {
 	name: string;
 	attributes?: Record<string, string>;
 	metrics?: Record<string, number>;
 };
 
-export interface NotificationsConfig {
+export interface InAppMessagingConfig {
 	listenForAnalyticsEvents?: boolean;
 	inAppMessagesHandler?: InAppMessagesHandler;
 }
 
-export interface NotificationsProvider {
+export interface InAppMessagingProvider {
 	// you need to implement these methods
 
 	// configure your provider
 	configure(config: object): object;
 
-	// return 'Notification';
-	getCategory(): NotificationsCategory;
+	// return 'InAppMessaging';
+	getCategory(): InAppMessagingCategory;
 
 	// return the name of you provider
 	getProviderName(): string;
@@ -43,7 +43,7 @@ export interface NotificationsProvider {
 	// filters in-app messages based on event input and provider logic
 	processInAppMessages(
 		messages: InAppMessage[],
-		event: NotificationEvent
+		event: InAppMessagingEvent
 	): Promise<InAppMessage[]>;
 }
 

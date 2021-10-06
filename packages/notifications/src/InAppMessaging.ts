@@ -24,23 +24,23 @@ import flatten from 'lodash/flatten';
 import noop from 'lodash/noop';
 import { AWSPinpointProvider } from './Providers';
 import {
-	InAppMessagesHandler,
 	InAppMessage,
-	NotificationEvent,
-	NotificationsCategory,
-	NotificationsConfig,
-	NotificationsProvider,
+	InAppMessagesHandler,
+	InAppMessagingCategory,
+	InAppMessagingConfig,
+	InAppMessagingEvent,
+	InAppMessagingProvider,
 } from './types';
 
 const STORAGE_KEY_SUFFIX = '_inAppMessages';
 
-const logger = new Logger('Notifications');
+const logger = new Logger('InAppMessage');
 
-class NotificationsClass {
+class InAppMessagingClass {
 	private config: Record<string, any> = {};
 	private inAppMessagesHandler: InAppMessagesHandler = noop;
 	private listeningForAnalyticEvents = false;
-	private pluggables: NotificationsProvider[] = [];
+	private pluggables: InAppMessagingProvider[] = [];
 	private storageSynced = false;
 
 	constructor() {
@@ -53,8 +53,8 @@ class NotificationsClass {
 		listenForAnalyticsEvents = true,
 		inAppMessagesHandler,
 		...config
-	}: NotificationsConfig = {}) => {
-		// TODO: parseMobileHubConfig call needs to be updated with notifications config
+	}: InAppMessagingConfig = {}) => {
+		// TODO: parseMobileHubConfig call needs to be updated with InAppMessaging config
 		this.config = Object.assign(
 			{},
 			this.config,
@@ -62,7 +62,7 @@ class NotificationsClass {
 			config
 		);
 
-		logger.debug('configure Notifications', config);
+		logger.debug('configure InAppMessaging', config);
 
 		this.inAppMessagesHandler = this.setInAppMessagesHandler(
 			inAppMessagesHandler
@@ -85,11 +85,11 @@ class NotificationsClass {
 		}
 	};
 
-	getModuleName(): NotificationsCategory {
-		return 'Notifications';
+	getModuleName(): InAppMessagingCategory {
+		return 'InAppMessaging';
 	}
 
-	getPluggable = (providerName: string): NotificationsProvider => {
+	getPluggable = (providerName: string): InAppMessagingProvider => {
 		const pluggable =
 			this.pluggables.find(
 				pluggable => pluggable.getProviderName() === providerName
@@ -106,8 +106,8 @@ class NotificationsClass {
 	 * add plugin into Analytics category
 	 * @param {Object} pluggable - an instance of the plugin
 	 */
-	addPluggable = (pluggable: NotificationsProvider): any => {
-		if (pluggable && pluggable.getCategory() === 'Notifications') {
+	addPluggable = (pluggable: InAppMessagingProvider): any => {
+		if (pluggable && pluggable.getCategory() === 'InAppMessaging') {
 			this.pluggables.push(pluggable);
 			// for backward compatibility
 			const providerConfig =
@@ -143,7 +143,7 @@ class NotificationsClass {
 
 	syncInAppMessages = async (providerName = 'AWSPinpoint'): Promise<void> => {
 		if (this.config.disabled) {
-			logger.debug('Notifications has been disabled');
+			logger.debug('InAppMessaging has been disabled');
 			return;
 		}
 
@@ -172,7 +172,7 @@ class NotificationsClass {
 		}
 	};
 
-	invokeInAppMessages = async (event: NotificationEvent): Promise<void> => {
+	invokeInAppMessages = async (event: InAppMessagingEvent): Promise<void> => {
 		const messages: any[] = await Promise.all<any[]>(
 			this.pluggables.map(async pluggable => {
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
@@ -245,7 +245,7 @@ class NotificationsClass {
 	};
 }
 
-const Notifications = new NotificationsClass();
+const InAppMessaging = new InAppMessagingClass();
 
-export default Notifications;
-Amplify.register(Notifications);
+export default InAppMessaging;
+Amplify.register(InAppMessaging);

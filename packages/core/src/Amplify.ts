@@ -21,13 +21,13 @@ export class AmplifyClass {
 	Cache = null;
 	PubSub = null;
 	Interactions = null;
-	Notifications = null;
 	Pushnotification = null;
 	UI = null;
 	XR = null;
 	Predictions = null;
 	DataStore = null;
 	Geo = null;
+	InAppMessaging = null;
 
 	Logger = LoggerClass;
 	ServiceWorker = null;

@@ -10,10 +10,10 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import { InAppMessage } from '@aws-amplify/notifications';
 
-// TODO: replace generic T with InAppMessage from Notifications lib
-export type InAppMessagingContextType<T = unknown> = {
+export type InAppMessagingContextType = {
 	clearInAppMessages: () => void;
-	displayInAppMessage: (inAppMessage: T) => void;
-	inAppMessages: T[];
+	displayInAppMessage: (inAppMessage: InAppMessage) => void;
+	inAppMessages: InAppMessage[];
 };

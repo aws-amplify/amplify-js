@@ -12,27 +12,26 @@
  */
 
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-import { Notifications } from 'aws-amplify';
+import { InAppMessage, InAppMessaging } from '@aws-amplify/notifications';
 
 import InAppMessagingContext from './InAppMessagingContext';
 
-// TODO: replace generic T with InAppMessage from Notifications lib
-export default function InAppMessagingProvider<T = unknown>({
+export default function InAppMessagingProvider({
 	children,
 }: {
 	children: ReactNode;
 }) {
-	const [inAppMessages, setInAppMessages] = useState<T[]>([]);
+	const [inAppMessages, setInAppMessages] = useState<InAppMessage[]>([]);
 
 	useEffect(() => {
-		Notifications.setInAppMessagesHandler(setInAppMessages);
+		InAppMessaging.setInAppMessagesHandler(setInAppMessages);
 	}, []);
 
 	const clearInAppMessages = useCallback(() => {
 		setInAppMessages([]);
 	}, []);
 
-	const displayInAppMessage = useCallback((inAppMessage: T) => {
+	const displayInAppMessage = useCallback((inAppMessage: InAppMessage) => {
 		setInAppMessages([inAppMessage]);
 	}, []);
 

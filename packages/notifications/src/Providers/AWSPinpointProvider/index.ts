@@ -34,9 +34,9 @@ import SessionTracker, {
 import {
 	InAppMessage,
 	InAppMessageLayout,
-	NotificationsCategory,
-	NotificationEvent,
-	NotificationsProvider,
+	InAppMessagingCategory,
+	InAppMessagingEvent,
+	InAppMessagingProvider,
 } from '../../types';
 import {
 	DailyInAppMessageCounter,
@@ -46,7 +46,7 @@ import {
 } from './types';
 import {
 	clearMemo,
-	dispatchNotificationEvent,
+	dispatchInAppMessagingEvent,
 	extractContent,
 	extractMetadata,
 	getStartOfDay,
@@ -61,8 +61,8 @@ import {
 const MESSAGE_DAILY_COUNT_KEY = 'pinpointProvider_inAppMessages_dailyCount';
 const MESSAGE_TOTAL_COUNT_KEY = 'pinpointProvider_inAppMessages_totalCount';
 
-export default class AWSPinpointProvider implements NotificationsProvider {
-	static category: NotificationsCategory = 'Notifications';
+export default class AWSPinpointProvider implements InAppMessagingProvider {
+	static category: InAppMessagingCategory = 'InAppMessaging';
 	static providerName = 'AWSPinpoint';
 
 	private config: Record<string, any> = {};
@@ -98,7 +98,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 
 		this.sessionTracker = new SessionTracker(this.sessionStateChangeHandler);
 		this.sessionTracker.start();
-		dispatchNotificationEvent('pinpointProvider_configured', null);
+		dispatchInAppMessagingEvent('pinpointProvider_configured', null);
 		return this.config;
 	};
 
@@ -146,7 +146,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 				}, {})
 			);
 
-			dispatchNotificationEvent('syncInAppMessages', messages);
+			dispatchInAppMessagingEvent('syncInAppMessages', messages);
 			return messages;
 		} catch (err) {
 			logger.error('Error syncing in-app messages', err);
@@ -155,7 +155,7 @@ export default class AWSPinpointProvider implements NotificationsProvider {
 
 	processInAppMessages = async (
 		messages: [],
-		event: NotificationEvent
+		event: InAppMessagingEvent
 	): Promise<InAppMessage[]> => {
 		if (!this.initialized) {
 			await this.init();
