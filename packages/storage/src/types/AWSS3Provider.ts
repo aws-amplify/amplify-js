@@ -7,7 +7,6 @@ import {
 	DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { StorageOptions, StorageAccessLevel } from './Storage';
-import { CancelTokenSource } from 'axios';
 import { AWSS3UploadTask } from '../providers/AWSS3UploadTask';
 
 type ListObjectsCommandOutputContent = _Object;
@@ -27,7 +26,6 @@ export type S3ProviderGetConfig = CommonStorageOptions & {
 	provider?: 'AWSS3';
 	identityId?: string;
 	progressCallback?: (progress: any) => any;
-	CancelTokenSource?: CancelTokenSource;
 	cacheControl?: GetObjectRequest['ResponseCacheControl'];
 	contentDisposition?: GetObjectRequest['ResponseContentDisposition'];
 	contentEncoding?: GetObjectRequest['ResponseContentEncoding'];
