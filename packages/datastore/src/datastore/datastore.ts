@@ -124,7 +124,7 @@ let userClasses: TypeConstructorMap;
 let dataStoreClasses: TypeConstructorMap;
 let storageClasses: TypeConstructorMap;
 
-const memos = new WeakMap();
+const modelInstanceAssociationsMap = new WeakMap();
 
 const initSchema = (userSchema: Schema) => {
 	if (schema !== undefined) {
@@ -534,6 +534,7 @@ const createModelClass = <T extends PersistentModel>(
 		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
 			set(model: PersistentModel) {
 				if (!model || !model.id) return;
+				// To avoid object with just id and _deleted fields
 				if (model.hasOwnProperty('_version')) {
 					const modelConstructor = Object.getPrototypeOf(model || {})
 						.constructor as PersistentModelConstructor<T>;
@@ -560,10 +561,7 @@ const createModelClass = <T extends PersistentModel>(
 				}
 			},
 			async get() {
-				if (!memos.has(this)) {
-					memos.set(this, {});
-				}
-				const instanceMemos = memos.get(this);
+				const instanceMemos = modelInstanceAssociationsMap.get(this) || {};
 				if (instanceMemos[targetName] !== undefined) {
 					return instanceMemos[targetName];
 				}
@@ -581,7 +579,7 @@ const createModelClass = <T extends PersistentModel>(
 
 				const result = await instance.query(relatedModel, associatedId);
 				instanceMemos[targetName] = result;
-				memos.set(this, instanceMemos);
+				modelInstanceAssociationsMap.set(this, instanceMemos);
 				return result;
 			},
 		});
