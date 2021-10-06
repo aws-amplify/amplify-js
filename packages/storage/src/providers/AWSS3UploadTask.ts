@@ -57,7 +57,7 @@ export interface UploadProgressEvent {
 }
 
 const MAX_PARTS = 10000;
-const MIN_PART_SIZE = 5 * 1024 * 1024;
+const PART_SIZE = 5 * 1024 * 1024;
 const DEFAULT_QUEUE_SIZE = 4;
 
 function comparePartNumber(a: CompletedPart, b: CompletedPart) {
@@ -96,7 +96,7 @@ export class AWSS3UploadTask implements UploadTask {
 		this.bucket = bucket;
 		this.key = key;
 		this.file = file;
-		this.partSize = MIN_PART_SIZE;
+		this.partSize = PART_SIZE;
 		this.totalBytes = this.file.size;
 		this.bytesUploaded = 0;
 		this.emitter = emitter;
