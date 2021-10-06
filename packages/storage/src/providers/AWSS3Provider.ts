@@ -104,10 +104,10 @@ const localTestingStorageEndpoint = 'http://localhost:20005';
  * Provide storage methods to use AWS S3
  */
 export class AWSS3Provider implements StorageProvider {
-	private _uploadTaskManager: AWSS3UploadManager;
 	static readonly CATEGORY = 'Storage';
 	static readonly PROVIDER_NAME = 'AWSS3';
 	private _config: StorageOptions;
+	private _uploadTaskManager: AWSS3UploadManager;
 
 	/**
 	 * Initialize Storage with AWS configurations
@@ -115,6 +115,7 @@ export class AWSS3Provider implements StorageProvider {
 	 */
 	constructor(config?: StorageOptions) {
 		this._config = config ? config : {};
+		this._uploadTaskManager = new AWSS3UploadManager();
 		logger.debug('Storage Options', this._config);
 	}
 
@@ -145,7 +146,6 @@ export class AWSS3Provider implements StorageProvider {
 		if (!this._config.bucket) {
 			logger.debug('Do not have bucket yet');
 		}
-		this._uploadTaskManager = new AWSS3UploadManager();
 		return this._config;
 	}
 
