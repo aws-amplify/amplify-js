@@ -356,6 +356,12 @@ export class AWSS3UploadTask implements UploadTask {
 			)
 			.then(res => {
 				logger.log(res);
+			})
+			.catch(err => {
+				logger.error(
+					`Error occured while aborting the upload to ${this.bucket}/${this.key}`,
+					err
+				);
 			});
 	}
 
