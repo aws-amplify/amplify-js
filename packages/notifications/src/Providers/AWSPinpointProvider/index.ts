@@ -375,7 +375,6 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 		return messages.map(message => {
 			const { CampaignId, InAppMessage } = message;
 			return {
-				InAppMessage,
 				id: CampaignId,
 				content: extractContent(message),
 				layout: InAppMessage.Layout as InAppMessageLayout,
