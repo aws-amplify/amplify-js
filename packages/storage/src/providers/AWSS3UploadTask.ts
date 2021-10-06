@@ -339,7 +339,7 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 	}
 
-	public abort(): void {
+	public cancel(): void {
 		this.pause();
 		this.queued = [];
 		this.completedParts = [];

@@ -185,7 +185,7 @@ describe('resumable upload test', () => {
 		expect(uploadsInProgress).toBeDefined();
 		expect(Object.keys(uploadsInProgress).length).toBe(1);
 
-		uploadTask.abort();
+		uploadTask.cancel();
 		uploadsInProgress = JSON.parse(
 			storageHelper.getStorage().getItem('__uploadInProgress')
 		);
