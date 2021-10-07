@@ -95,7 +95,7 @@ export const getTextSource = async (
 			identityId,
 		});
 		logger.debug(textSrc);
-		const text = (await readFileAsync(textSrc['Body'])) as string;
+		const text = (await readFileAsync(textSrc['Body'] as Blob)) as string;
 		return text;
 	} catch (error) {
 		throw new Error(error);
