@@ -8,7 +8,7 @@ import {
 	AbortMultipartUploadCommand,
 	PutObjectCommandInput,
 } from '@aws-sdk/client-s3';
-import { StorageHelper, Logger } from '@aws-amplify/core';
+import { StorageHelper, Logger, Hub } from '@aws-amplify/core';
 import { StorageAccessLevel } from '../types/Storage';
 
 const logger = new Logger('Storage');
@@ -51,6 +51,12 @@ export class AWSS3UploadManager {
 
 	constructor() {
 		this._storage = new StorageHelper().getStorage();
+		Hub.listen('auth', data => {
+			const { payload } = data;
+			if (['signIn', 'signOut'].includes(payload.event)) {
+				this._storage.removeItem(UPLOADS_STORAGE_KEY);
+			}
+		});
 	}
 
 	private _listUploadTasks(): Record<string, FileMetadata> | {} {
