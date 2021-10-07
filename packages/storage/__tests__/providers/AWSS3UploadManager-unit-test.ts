@@ -96,12 +96,9 @@ describe('resumable upload test', () => {
 		const mockRemoveItemFn = jest.fn();
 		mockLocalStorage['removeItem'] = mockRemoveItemFn;
 		Hub.dispatch('auth', {
-			event: 'signIn',
-		});
-		Hub.dispatch('auth', {
 			event: 'signOut',
 		});
-		expect(mockRemoveItemFn).toHaveBeenCalledTimes(2);
+		expect(mockRemoveItemFn).toHaveBeenCalled();
 	});
 
 	test('happy case: upload a file as body, pause, and resume', async () => {

@@ -53,7 +53,7 @@ export class AWSS3UploadManager {
 		this._storage = new StorageHelper().getStorage();
 		Hub.listen('auth', data => {
 			const { payload } = data;
-			if (['signIn', 'signOut'].includes(payload.event)) {
+			if (payload.event === 'signOut') {
 				this._storage.removeItem(UPLOADS_STORAGE_KEY);
 			}
 		});
