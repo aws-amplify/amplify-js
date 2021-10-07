@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer';
 import { monotonicFactory, ULID } from 'ulid';
 import { v4 as uuid } from 'uuid';
-import { ModelInstanceCreator } from './datastore/datastore';
+// import { ModelInstanceCreator } from './datastore/datastore';
 import {
 	AllOperators,
 	isPredicateGroup,
