@@ -54,11 +54,10 @@ class InAppMessagingClass {
 		inAppMessagesHandler,
 		...config
 	}: InAppMessagingConfig = {}) => {
-		// TODO: parseMobileHubConfig call needs to be updated with InAppMessaging config
 		this.config = Object.assign(
 			{},
 			this.config,
-			parseMobileHubConfig(config).Analytics,
+			parseMobileHubConfig(config).Notifications?.InAppMessaging ?? {},
 			config
 		);
 
@@ -103,21 +102,16 @@ class InAppMessagingClass {
 	};
 
 	/**
-	 * add plugin into Analytics category
+	 * add plugin into InAppMessaging category
 	 * @param {Object} pluggable - an instance of the plugin
 	 */
-	addPluggable = (pluggable: InAppMessagingProvider): any => {
+	addPluggable = (pluggable: InAppMessagingProvider): void => {
 		if (pluggable && pluggable.getCategory() === 'InAppMessaging') {
 			this.pluggables.push(pluggable);
-			// for backward compatibility
-			const providerConfig =
-				pluggable.getProviderName() === 'AWSPinpoint' &&
-				!this.config['AWSPinpoint']
-					? this.config
-					: this.config[pluggable.getProviderName()];
-			const config = { disabled: this.config['disabled'], ...providerConfig };
-			pluggable.configure(config);
-			return config;
+			pluggable.configure({
+				disabled: this.config.disabled,
+				...this.config[pluggable.getProviderName()],
+			});
 		}
 	};
 
@@ -141,35 +135,30 @@ class InAppMessagingClass {
 		return this.inAppMessagesHandler;
 	};
 
-	syncInAppMessages = async (providerName = 'AWSPinpoint'): Promise<void> => {
+	syncInAppMessages = async (): Promise<void> => {
 		if (this.config.disabled) {
 			logger.debug('InAppMessaging has been disabled');
 			return;
 		}
 
-		const pluggable = this.getPluggable(providerName);
-		const messages = await pluggable.getInAppMessages();
-		const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
-		await this.storeMessages(key, messages);
+		await Promise.all<void>(
+			this.pluggables.map(async pluggable => {
+				const messages = await pluggable.getInAppMessages();
+				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
+				await this.storeMessages(key, messages);
+			})
+		);
 	};
 
-	clearStoredInAppMessages = async (
-		providerName = 'AWSPinpoint'
-	): Promise<void> => {
-		logger.debug('Remove stored In-App Messages');
+	clearStoredInAppMessages = async (): Promise<void> => {
+		logger.debug('clearing In-App Messages');
 
-		const pluggable = this.getPluggable(providerName);
-		const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
-
-		try {
-			if (!this.storageSynced) {
-				await this.syncStorage();
-			}
-			const { storage } = this.config;
-			storage.removeItem(key);
-		} catch (err) {
-			logger.error('Failed to remove in-app messages from storage', err);
-		}
+		await Promise.all<void>(
+			this.pluggables.map(async pluggable => {
+				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
+				await this.removeMessages(key);
+			})
+		);
 	};
 
 	invokeInAppMessages = async (event: InAppMessagingEvent): Promise<void> => {
@@ -241,6 +230,18 @@ class InAppMessagingClass {
 			storage.setItem(key, JSON.stringify(messages));
 		} catch (err) {
 			logger.error('Failed to store in-app messages', err);
+		}
+	};
+
+	private removeMessages = async (key: string): Promise<void> => {
+		try {
+			if (!this.storageSynced) {
+				await this.syncStorage();
+			}
+			const { storage } = this.config;
+			storage.removeItem(key);
+		} catch (err) {
+			logger.error('Failed to remove in-app messages from storage', err);
 		}
 	};
 }
