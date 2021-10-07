@@ -12,7 +12,7 @@ import {
 	UploadPartCommand,
 	CompleteMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
-import { StorageHelper, Credentials } from '@aws-amplify/core';
+import { StorageHelper, Credentials, Hub } from '@aws-amplify/core';
 import * as sinon from 'sinon';
 
 const testUploadId = 'testUploadId';
@@ -85,6 +85,24 @@ describe('resumable upload test', () => {
 				return Promise.resolve({ Key: testParams.Key });
 			}
 		});
+
+	test('should listen to auth signin and signout events', async () => {
+		const hubSpy = jest.spyOn(Hub, 'listen');
+		const storageHelper = new StorageHelper();
+		new AWSS3UploadManager();
+		expect(hubSpy).toHaveBeenCalledTimes(1);
+		expect(hubSpy).toHaveBeenCalledWith('auth', expect.any(Function));
+		const mockLocalStorage = storageHelper.getStorage();
+		const mockRemoveItemFn = jest.fn();
+		mockLocalStorage['removeItem'] = mockRemoveItemFn;
+		Hub.dispatch('auth', {
+			event: 'signIn',
+		});
+		Hub.dispatch('auth', {
+			event: 'signOut',
+		});
+		expect(mockRemoveItemFn).toHaveBeenCalledTimes(2);
+	});
 
 	test('happy case: upload a file as body, pause, and resume', async () => {
 		const emitter = new events.EventEmitter();
