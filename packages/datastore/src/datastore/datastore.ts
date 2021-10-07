@@ -125,7 +125,7 @@ let userClasses: TypeConstructorMap;
 let dataStoreClasses: TypeConstructorMap;
 let storageClasses: TypeConstructorMap;
 
-const modelInstanceAssociationsMap = new WeakMap();
+const modelInstanceAssociationsMap = new WeakMap<PersistentModel>();
 
 const initSchema = (userSchema: Schema) => {
 	if (schema !== undefined) {
@@ -519,7 +519,8 @@ const createModelClass = <T extends PersistentModel>(
 		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
 			set(model: PersistentModel) {
 				if (!model || !model.id) return;
-				// To avoid object with just id and _deleted fields
+				// Avoid validation error on non model object with just
+				// id and _deleted fields that is returned from AppSync
 				if (model.hasOwnProperty('_version')) {
 					const modelConstructor = Object.getPrototypeOf(model || {})
 						.constructor as PersistentModelConstructor<T>;
