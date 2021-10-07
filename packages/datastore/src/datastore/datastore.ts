@@ -125,7 +125,7 @@ let userClasses: TypeConstructorMap;
 let dataStoreClasses: TypeConstructorMap;
 let storageClasses: TypeConstructorMap;
 
-const modelInstanceAssociationsMap = new WeakMap<PersistentModel>();
+const modelInstanceAssociationsMap = new WeakMap<PersistentModel, object>();
 
 const initSchema = (userSchema: Schema) => {
 	if (schema !== undefined) {

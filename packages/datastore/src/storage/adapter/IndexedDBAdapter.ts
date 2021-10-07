@@ -214,9 +214,7 @@ class IndexedDBAdapter implements Adapter {
 		const connectedModels = traverseModel(
 			modelConstructor.name,
 			model,
-			this.schema.namespaces[this.namespaceResolver(modelConstructor)],
-			this.modelInstanceCreator,
-			this.getModelConstructorByModelName
+			this.schema.namespaces[this.namespaceResolver(modelConstructor)]
 		);
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
@@ -742,9 +740,7 @@ class IndexedDBAdapter implements Adapter {
 			const connectedModels = traverseModel(
 				modelConstructor.name,
 				this.modelInstanceCreator(modelConstructor, item),
-				this.schema.namespaces[this.namespaceResolver(modelConstructor)],
-				this.modelInstanceCreator,
-				this.getModelConstructorByModelName
+				this.schema.namespaces[this.namespaceResolver(modelConstructor)]
 			);
 
 			const { id, _deleted } = item;

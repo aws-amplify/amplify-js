@@ -104,9 +104,7 @@ export class AsyncStorageAdapter implements Adapter {
 		const connectedModels = traverseModel(
 			modelConstructor.name,
 			model,
-			this.schema.namespaces[this.namespaceResolver(modelConstructor)],
-			this.modelInstanceCreator,
-			this.getModelConstructorByModelName
+			this.schema.namespaces[this.namespaceResolver(modelConstructor)]
 		);
 		const namespaceName = this.namespaceResolver(modelConstructor);
 		const set = new Set<string>();
@@ -537,9 +535,7 @@ export class AsyncStorageAdapter implements Adapter {
 			const connectedModels = traverseModel(
 				modelConstructor.name,
 				this.modelInstanceCreator(modelConstructor, item),
-				this.schema.namespaces[this.namespaceResolver(modelConstructor)],
-				this.modelInstanceCreator,
-				this.getModelConstructorByModelName
+				this.schema.namespaces[this.namespaceResolver(modelConstructor)]
 			);
 
 			const { instance } = connectedModels.find(
