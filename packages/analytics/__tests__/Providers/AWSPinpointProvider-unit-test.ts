@@ -499,7 +499,7 @@ describe('AnalyticsProvider test', () => {
 					EndpointId: 'endpointId',
 					EndpointRequest: {
 						Attributes: {},
-						ChannelType: 'PUSH',
+						ChannelType: undefined,
 						Demographic: {
 							AppVersion: 'clientInfoAppVersion',
 							Make: 'clientInfoMake',
@@ -541,7 +541,7 @@ describe('AnalyticsProvider test', () => {
 					EndpointId: 'endpointId',
 					EndpointRequest: {
 						Attributes: {},
-						ChannelType: 'PUSH',
+						ChannelType: undefined,
 						Demographic: {
 							AppVersion: 'clientInfoAppVersion',
 							Locale: 'locale',
