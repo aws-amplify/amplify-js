@@ -21,7 +21,7 @@ enum State {
 	INIT,
 	IN_PROGRESS,
 	PAUSED,
-	ABORTED,
+	CANCELLED,
 }
 
 export interface AWSS3UploadTaskParams {
@@ -201,7 +201,7 @@ export class AWSS3UploadTask implements UploadTask {
 					.catch(err => {
 						if (this.state === State.PAUSED) {
 							logger.log('upload paused');
-						} else if (this.state === State.ABORTED) {
+						} else if (this.state === State.CANCELLED) {
 							logger.log('upload aborted');
 						} else {
 							logger.error('error starting next part of upload: ', err);
@@ -321,7 +321,7 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	public resume(): void {
-		if (this.state === State.ABORTED) {
+		if (this.state === State.CANCELLED) {
 			throw new Error('This task has already been aborted');
 		} else if (this.bytesUploaded === this.totalBytes) {
 			logger.warn('This task has already been completed');
@@ -340,7 +340,7 @@ export class AWSS3UploadTask implements UploadTask {
 		this.queued = [];
 		this.completedParts = [];
 		this.bytesUploaded = 0;
-		this.state = State.ABORTED;
+		this.state = State.CANCELLED;
 		this.emitter.emit(TaskEvents.ABORT);
 		this.s3client
 			.send(
