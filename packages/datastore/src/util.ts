@@ -6,7 +6,7 @@ import {
 	AllOperators,
 	isPredicateGroup,
 	isPredicateObj,
-	ModelInstanceMetadata,
+	// ModelInstanceMetadata,
 	PersistentModel,
 	PersistentModelConstructor,
 	PredicateGroups,
@@ -297,20 +297,20 @@ const topologicallySortedModels = new WeakMap<SchemaNamespace, string[]>();
 export const traverseModel = <T extends PersistentModel>(
 	srcModelName: string,
 	instance: T,
-	namespace: SchemaNamespace,
-	modelInstanceCreator: ModelInstanceCreator,
-	getModelConstructorByModelName: (
-		namsespaceName: string,
-		modelName: string
-	) => PersistentModelConstructor<any>
+	namespace: SchemaNamespace
+	// modelInstanceCreator: ModelInstanceCreator,
+	// getModelConstructorByModelName: (
+	// 	namsespaceName: string,
+	// 	modelName: string
+	// ) => PersistentModelConstructor<any>
 ) => {
-	const relationships = namespace.relationships;
-	const modelConstructor = getModelConstructorByModelName(
-		namespace.name,
-		srcModelName
-	);
+	// const relationships = namespace.relationships;
+	// const modelConstructor = getModelConstructorByModelName(
+	// 	namespace.name,
+	// 	srcModelName
+	// );
 
-	const relation = relationships[srcModelName];
+	// const relation = relationships[srcModelName];
 	const result: {
 		modelName: string;
 		item: T;
