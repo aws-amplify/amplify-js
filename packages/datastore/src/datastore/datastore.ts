@@ -52,6 +52,7 @@ import {
 	AuthModeStrategyType,
 	isNonModelFieldType,
 	isModelFieldType,
+	isFieldAssociation,
 } from '../types';
 import {
 	DATASTORE,
@@ -123,6 +124,8 @@ export let syncClasses: TypeConstructorMap;
 let userClasses: TypeConstructorMap;
 let dataStoreClasses: TypeConstructorMap;
 let storageClasses: TypeConstructorMap;
+
+const modelInstanceAssociationsMap = new WeakMap<PersistentModel>();
 
 const initSchema = (userSchema: Schema) => {
 	if (schema !== undefined) {
@@ -501,6 +504,72 @@ const createModelClass = <T extends PersistentModel>(
 	clazz[immerable] = true;
 
 	Object.defineProperty(clazz, 'name', { value: modelDefinition.name });
+
+	for (const field in modelDefinition.fields) {
+		if (!isFieldAssociation(modelDefinition, field)) {
+			continue;
+		}
+
+		const {
+			type,
+			association: { targetName },
+		} = modelDefinition.fields[field];
+		const relatedModelName = type['model'];
+
+		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
+			set(model: PersistentModel) {
+				if (!model || !model.id) return;
+				// Avoid validation error on non model object with just
+				// id and _deleted fields that is returned from AppSync
+				if (model.hasOwnProperty('_version')) {
+					const modelConstructor = Object.getPrototypeOf(model || {})
+						.constructor as PersistentModelConstructor<T>;
+
+					if (!isValidModelConstructor(modelConstructor)) {
+						const msg = `Value passed to ${modelDefinition.name}.${field} is not a valid instance of a model`;
+						logger.error(msg, { model });
+
+						throw new Error(msg);
+					}
+
+					if (
+						modelConstructor.name.toLowerCase() !==
+						relatedModelName.toLowerCase()
+					) {
+						const msg = `Value passed to ${modelDefinition.name}.${field} is not an instance of ${relatedModelName}`;
+						logger.error(msg, { model });
+
+						throw new Error(msg);
+					}
+				}
+				if (targetName) {
+					this[targetName] = model.id;
+				}
+			},
+			async get() {
+				const instanceMemos = modelInstanceAssociationsMap.get(this) || {};
+				if (instanceMemos[targetName] !== undefined) {
+					return instanceMemos[targetName];
+				}
+				const associatedId = this[targetName];
+
+				const relatedModel = getModelConstructorByModelName(
+					USER,
+					relatedModelName
+				);
+
+				if (!associatedId) {
+					// unable to load related model
+					return;
+				}
+
+				const result = await instance.query(relatedModel, associatedId);
+				instanceMemos[targetName] = result;
+				modelInstanceAssociationsMap.set(this, instanceMemos);
+				return result;
+			},
+		});
+	}
 
 	return clazz;
 };

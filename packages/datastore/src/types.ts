@@ -77,6 +77,16 @@ export function isTargetNameAssociation(
 	return obj && obj.targetName;
 }
 
+type FieldAssociation = {
+	connectionType: 'HAS_ONE' | 'BELONGS_TO';
+};
+export function isFieldAssociation(
+	obj: any,
+	fieldName: string
+): obj is FieldAssociation {
+	return obj?.fields[fieldName]?.association?.connectionType;
+}
+
 export type ModelAttributes = ModelAttribute[];
 type ModelAttribute = { type: string; properties?: Record<string, any> };
 

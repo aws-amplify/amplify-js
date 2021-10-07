@@ -173,55 +173,6 @@ export class AsyncStorageAdapter implements Adapter {
 			);
 		}
 
-		for await (const relation of relations) {
-			const { fieldName, modelName, targetName, relationType } = relation;
-			const storeName = this.getStorename(namespaceName, modelName);
-			const modelConstructor = this.getModelConstructorByModelName(
-				namespaceName,
-				modelName
-			);
-
-			switch (relationType) {
-				case 'HAS_ONE':
-					for await (const recordItem of records) {
-						if (recordItem[fieldName]) {
-							const connectionRecord = await this.db.get(
-								recordItem[fieldName],
-								storeName
-							);
-
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-						}
-					}
-
-					break;
-				case 'BELONGS_TO':
-					for await (const recordItem of records) {
-						if (recordItem[targetName]) {
-							const connectionRecord = await this.db.get(
-								recordItem[targetName],
-								storeName
-							);
-
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-							delete recordItem[targetName];
-						}
-					}
-
-					break;
-				case 'HAS_MANY':
-					// TODO: Lazy loading
-					break;
-				default:
-					exhaustiveCheck(relationType);
-					break;
-			}
-		}
-
 		return records.map(record =>
 			this.modelInstanceCreator(modelConstructor, record)
 		);

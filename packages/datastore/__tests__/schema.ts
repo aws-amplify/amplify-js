@@ -364,6 +364,81 @@ export const newSchema: Schema = {
 				},
 			},
 		},
+		Team: {
+			syncable: true,
+			name: 'Team',
+			pluralName: 'Teams',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				name: {
+					name: 'name',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+			},
+		},
+		Project: {
+			syncable: true,
+			name: 'Project',
+			pluralName: 'Projects',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				name: {
+					name: 'name',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				teamID: {
+					name: 'teamID',
+					isArray: false,
+					type: 'ID',
+					isRequired: false,
+					attributes: [],
+				},
+				team: {
+					name: 'team',
+					isArray: false,
+					type: {
+						model: 'Team',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'HAS_ONE',
+						associatedWith: 'id',
+						targetName: 'teamID',
+					},
+				},
+			},
+		},
 	},
 	enums: {},
 	nonModels: {
