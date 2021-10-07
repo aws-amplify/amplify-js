@@ -76,11 +76,12 @@ export class AWSS3UploadTask implements UploadTask {
 	private queued: UploadPartCommandInput[] = [];
 	private bytesUploaded: number = 0;
 	private totalBytes: number = 0;
-	private state: State = State.INIT;
 
 	readonly bucket: string;
 	readonly key: string;
 	readonly uploadId: UploadPartCommandInput['UploadId'];
+
+	public state: State = State.INIT;
 
 	constructor({
 		s3Client,
