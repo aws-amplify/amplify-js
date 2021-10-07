@@ -13,7 +13,7 @@ import { HttpHandlerOptions } from '@aws-sdk/types';
 import { Logger } from '@aws-amplify/core';
 import { TaskEvents } from './AWSS3UploadManager';
 import { UploadTask } from '../types/Provider';
-import { listSingleFile } from '../common/StorageUtils';
+import { listSingleFile, byteLength } from '../common/StorageUtils';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
 
 const logger = new Logger('Storage');
@@ -134,14 +134,13 @@ export class AWSS3UploadTask implements UploadTask {
 	}: {
 		eTag: string;
 		partNumber: number;
-		chunk: unknown;
+		chunk: UploadPartCommandInput['Body'];
 	}) {
-		if (!this._isBlob(chunk)) return;
 		this.completedParts.push({
 			ETag: eTag,
 			PartNumber: partNumber,
 		});
-		this.bytesUploaded += chunk.size;
+		this.bytesUploaded += byteLength(chunk);
 		this.emitter.emit(TaskEvents.UPLOAD_PROGRESS, {
 			loaded: this.bytesUploaded,
 			total: this.totalBytes,
@@ -171,7 +170,7 @@ export class AWSS3UploadTask implements UploadTask {
 					},
 				})
 			)
-			.then(res => {
+			.then(_res => {
 				this.emitter.emit(TaskEvents.UPLOAD_COMPLETE, {
 					key: `${this.bucket}/${this.key}`,
 				});
@@ -179,10 +178,6 @@ export class AWSS3UploadTask implements UploadTask {
 			.catch(err => {
 				logger.error('error completing upload', err);
 			});
-	}
-
-	private _isBlob(x: unknown): x is Blob {
-		return typeof x !== 'undefined' && x instanceof Blob;
 	}
 
 	private _startNextPart() {
