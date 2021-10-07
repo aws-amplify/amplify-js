@@ -11,31 +11,17 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import {
-	InAppMessageAction,
-	InAppMessageButton,
-	InAppMessageContent,
-	InAppMessageLayout,
-} from '@aws-amplify/notifications';
-
 import {
 	BannerMessageProps,
 	CarouselMessageProps,
 	FullScreenMessageProps,
-	InAppMessageButtonProps,
 	InAppMessageComponent,
 	InAppMessageComponents,
 	InAppMessageComponentProps,
-	InAppMessageContentProps,
-	InAppMessagePosition,
 	useInAppMessaging,
-} from '..';
+} from '../..';
 
-import handleAction from './handleAction';
-import getInAppMessage from './getInAppMessage';
-
-const logger = new Logger('InAppMessaging');
+import { getInAppMessage, getContentProps, getPositionProp } from './utils';
 
 // TODO: replace with Amplify default components
 const DefaultBannerMessage: InAppMessageComponents['BannerMessage'] = () =>
@@ -44,42 +30,6 @@ const DefaultCarouselMessage: InAppMessageComponents['CarouselMessage'] = () =>
 	null;
 const DefaultFullScreenMessage: InAppMessageComponents['FullScreenMessage'] = () =>
 	null;
-
-const getPositionProp = (layout: InAppMessageLayout): InAppMessagePosition =>
-	InAppMessagePosition[layout];
-
-const getActionHandler = (
-	action: InAppMessageAction,
-	url: string,
-	onActionCallback: () => void
-) => ({
-	onPress: async function() {
-		try {
-			await handleAction(action, url);
-		} catch (e) {
-			logger.error(`handleAction failure: ${e}`);
-		} finally {
-			onActionCallback();
-		}
-	},
-});
-
-const getButtonProps = (
-	{ action, url, ...baseButtonProps }: InAppMessageButton,
-	onActionCallback: () => void
-): InAppMessageButtonProps => ({
-	...baseButtonProps,
-	...getActionHandler(action, url, onActionCallback),
-});
-
-const getContentProps = (
-	{ primaryButton, secondaryButton, ...baseContentProps }: InAppMessageContent,
-	onActionCallback: () => void
-): InAppMessageContentProps => ({
-	...baseContentProps,
-	primaryButton: getButtonProps(primaryButton, onActionCallback),
-	secondaryButton: getButtonProps(secondaryButton, onActionCallback),
-});
 
 export default function useInAppMessage(): {
 	Component: InAppMessageComponent;

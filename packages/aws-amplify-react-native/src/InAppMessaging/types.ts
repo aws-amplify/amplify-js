@@ -50,11 +50,7 @@ type InAppMessageComponentStyle = {
 	secondaryButton?: ButtonProps['style'];
 };
 
-export enum InAppMessagePosition {
-	BOTTOM_BANNER = 'bottom',
-	MIDDLE_BANNER = 'middle',
-	TOP_BANNER = 'top',
-}
+export type InAppMessagePosition = 'bottom' | 'middle' | 'top';
 
 export interface InAppMessageContentProps
 	extends Omit<InAppMessageContent, 'primaryButton' | 'secondaryButton'> {

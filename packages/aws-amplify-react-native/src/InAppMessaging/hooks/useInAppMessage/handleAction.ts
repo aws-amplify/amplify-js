@@ -11,9 +11,23 @@
  * and limitations under the License.
  */
 
-import { InAppMessage } from '@aws-amplify/notifications';
+import { Linking } from 'react-native';
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
-// TODO: implement endDate sorting logic
-export default function getInAppMessage(messages: InAppMessage[]) {
-	return messages?.[0] ?? ({} as InAppMessage);
-}
+import { InAppMessageActionHandler } from '../..';
+
+const logger = new Logger('InAppMessaging');
+
+const handleAction: InAppMessageActionHandler = async (action, url) => {
+	if ((action === 'LINK' || action === 'DEEP_LINK') && url) {
+		const supported = await Linking.canOpenURL(url);
+		if (supported) {
+			logger.info(`Opening url: ${url}`);
+			await Linking.openURL(url);
+		} else {
+			logger.warn(`Unsupported url given: ${url}`);
+		}
+	}
+};
+
+export default handleAction;
