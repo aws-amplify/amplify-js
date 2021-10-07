@@ -248,7 +248,7 @@ export class AnalyticsClass {
 			params = { event, provider };
 		}
 
-		if (this._config['emit_analytic_events']) {
+		if (Amplify.InAppMessaging) {
 			dispatchAnalyticsEvent(
 				'record',
 				params.event,
