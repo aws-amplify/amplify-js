@@ -660,9 +660,9 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 				? 'GCM'
 				: 'APNS'
 			: 'PUSH';
-		// NOTE: "PUSH" is a historical channel type, which is safe to be used for analytics
+		// NOTE: "PUSH" is a historical channel type, which is safe to be used for web analytics
 		// PUSH channel type will not run into maximum endpoint limitation
-		// if pinpoint supports specific analytics channel type, we should update accordingly
+		// if pinpoint supports specific web analytics channel type, we should update accordingly
 		const tmp = {
 			channelType,
 			requestId: uuid(),
