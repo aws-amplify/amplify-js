@@ -181,12 +181,8 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 	};
 
 	private init = async () => {
-		const { appId, disabled, storage } = this.config;
+		const { appId, storage } = this.config;
 		const providerName = this.getProviderName();
-		if (disabled) {
-			logger.debug(`${providerName} is disabled`);
-			return;
-		}
 		const cacheKey = `${providerName}_${appId}`;
 		try {
 			// Only run sync() if it's available (i.e. React Native)

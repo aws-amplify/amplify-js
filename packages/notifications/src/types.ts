@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-export type InAppMessagesHandler = (messages: any) => void;
+export type OnMessagesReceived = (messages: any) => void;
 
 export type InAppMessagingCategory = 'InAppMessaging';
 
@@ -22,7 +22,7 @@ export type InAppMessagingEvent = {
 
 export interface InAppMessagingConfig {
 	listenForAnalyticsEvents?: boolean;
-	inAppMessagesHandler?: InAppMessagesHandler;
+	onMessagesReceived?: OnMessagesReceived;
 }
 
 export interface InAppMessagingProvider {

@@ -25,11 +25,11 @@ import noop from 'lodash/noop';
 import { AWSPinpointProvider } from './Providers';
 import {
 	InAppMessage,
-	InAppMessagesHandler,
 	InAppMessagingCategory,
 	InAppMessagingConfig,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
+	OnMessagesReceived,
 } from './types';
 
 const STORAGE_KEY_SUFFIX = '_inAppMessages';
@@ -38,7 +38,7 @@ const logger = new Logger('InAppMessage');
 
 class InAppMessagingClass {
 	private config: Record<string, any> = {};
-	private inAppMessagesHandler: InAppMessagesHandler = noop;
+	private onMessagesReceived: OnMessagesReceived = noop;
 	private listeningForAnalyticEvents = false;
 	private pluggables: InAppMessagingProvider[] = [];
 	private storageSynced = false;
@@ -49,9 +49,13 @@ class InAppMessagingClass {
 		};
 	}
 
+	/**
+	 * Configure InAppMessaging
+	 * @param {Object} config - InAppMessaging configuration object
+	 */
 	configure = ({
 		listenForAnalyticsEvents = true,
-		inAppMessagesHandler,
+		onMessagesReceived,
 		...config
 	}: InAppMessagingConfig = {}) => {
 		this.config = Object.assign(
@@ -63,9 +67,7 @@ class InAppMessagingClass {
 
 		logger.debug('configure InAppMessaging', config);
 
-		this.inAppMessagesHandler = this.setInAppMessagesHandler(
-			inAppMessagesHandler
-		);
+		this.onMessagesReceived = this.setOnMessagesReceived(onMessagesReceived);
 
 		this.pluggables.forEach(pluggable => {
 			pluggable.configure({
@@ -84,15 +86,23 @@ class InAppMessagingClass {
 		}
 	};
 
+	/**
+	 * Get the name of the module category
+	 * @returns {string} name of the module category
+	 */
 	getModuleName(): InAppMessagingCategory {
 		return 'InAppMessaging';
 	}
 
+	/**
+	 * Get a plugin from added plugins
+	 * @param {string} providerName - the name of the plugin to get
+	 */
 	getPluggable = (providerName: string): InAppMessagingProvider => {
 		const pluggable =
 			this.pluggables.find(
 				pluggable => pluggable.getProviderName() === providerName
-			) || null;
+			) ?? null;
 
 		if (!pluggable) {
 			logger.debug(`No plugin found with name ${providerName}`);
@@ -102,19 +112,20 @@ class InAppMessagingClass {
 	};
 
 	/**
-	 * add plugin into InAppMessaging category
-	 * @param {Object} pluggable - an instance of the plugin
+	 * Add plugin into InAppMessaging
+	 * @param {InAppMessagingProvider} pluggable - an instance of the plugin
 	 */
 	addPluggable = (pluggable: InAppMessagingProvider): void => {
 		if (pluggable && pluggable.getCategory() === 'InAppMessaging') {
 			this.pluggables.push(pluggable);
-			pluggable.configure({
-				disabled: this.config.disabled,
-				...this.config[pluggable.getProviderName()],
-			});
+			pluggable.configure(this.config[pluggable.getProviderName()]);
 		}
 	};
 
+	/**
+	 * Remove a plugin from added plugins
+	 * @param {string} providerName - the name of the plugin to remove
+	 */
 	removePluggable = (providerName: string): void => {
 		const index = this.pluggables.findIndex(
 			pluggable => pluggable.getProviderName() === providerName
@@ -126,31 +137,29 @@ class InAppMessagingClass {
 		}
 	};
 
-	setInAppMessagesHandler = (
-		handler: InAppMessagesHandler
-	): InAppMessagesHandler => {
-		if (handler && this.inAppMessagesHandler !== handler) {
-			this.inAppMessagesHandler = handler;
+	setOnMessagesReceived = (handler: OnMessagesReceived): OnMessagesReceived => {
+		if (handler && this.onMessagesReceived !== handler) {
+			this.onMessagesReceived = handler;
 		}
-		return this.inAppMessagesHandler;
+		return this.onMessagesReceived;
 	};
 
-	syncInAppMessages = async (): Promise<void> => {
-		if (this.config.disabled) {
-			logger.debug('InAppMessaging has been disabled');
-			return;
-		}
-
+	/**
+	 * Get the map resources that are currently available through the provider
+	 * @param {string} provider
+	 * @returns - Array of available map resources
+	 */
+	syncMessages = async (): Promise<void> => {
 		await Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				const messages = await pluggable.getInAppMessages();
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
-				await this.storeMessages(key, messages);
+				await this.setMessages(key, messages);
 			})
 		);
 	};
 
-	clearStoredInAppMessages = async (): Promise<void> => {
+	clearMessages = async (): Promise<void> => {
 		logger.debug('clearing In-App Messages');
 
 		await Promise.all<void>(
@@ -161,18 +170,18 @@ class InAppMessagingClass {
 		);
 	};
 
-	invokeInAppMessages = async (event: InAppMessagingEvent): Promise<void> => {
+	dispatchEvent = async (event: InAppMessagingEvent): Promise<void> => {
 		const messages: any[] = await Promise.all<any[]>(
 			this.pluggables.map(async pluggable => {
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
-				const messages = await this.getStoredMessages(key);
+				const messages = await this.getMessages(key);
 				return pluggable.processInAppMessages(messages, event);
 			})
 		);
 
 		const flattenedMessages = flatten(messages);
 		if (flattenedMessages.length) {
-			this.inAppMessagesHandler(flattenedMessages);
+			this.onMessagesReceived(flattenedMessages);
 		}
 	};
 
@@ -180,7 +189,7 @@ class InAppMessagingClass {
 		const { event, data } = payload;
 		switch (event) {
 			case 'record': {
-				this.invokeInAppMessages(data);
+				this.dispatchEvent(data);
 				break;
 			}
 			default:
@@ -201,7 +210,7 @@ class InAppMessagingClass {
 		}
 	};
 
-	private getStoredMessages = async (key: string): Promise<any> => {
+	private getMessages = async (key: string): Promise<any> => {
 		try {
 			if (!this.storageSynced) {
 				await this.syncStorage();
@@ -214,7 +223,7 @@ class InAppMessagingClass {
 		}
 	};
 
-	private storeMessages = async (
+	private setMessages = async (
 		key: string,
 		messages: InAppMessage[]
 	): Promise<void> => {
