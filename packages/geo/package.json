@@ -1,0 +1,100 @@
+{
+	"name": "@aws-amplify/geo",
+	"version": "1.1.0",
+	"description": "Geo category for aws-amplify",
+	"main": "./lib/index.js",
+	"module": "./lib-esm/index.js",
+	"typings": "./lib-esm/index.d.ts",
+	"react-native": {
+		"./lib/index": "./lib-esm/index.js"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"sideEffects": [
+		"./src/geo/geo.ts",
+		"./lib/geo/geo.js",
+		"./lib-esm/geo/geo.js",
+		"./dist/aws-amplify-geo.min.js",
+		"./dist/aws-amplify-geo.js"
+	],
+	"scripts": {
+		"test": "yarn run lint && jest -w 1 --coverage",
+		"build-with-test": "yarn test && yarn run build",
+		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "node ./build es6",
+		"build:cjs:watch": "node ./build es5 --watch",
+		"build:esm:watch": "rimraf lib-esm && node ./build es6 --watch",
+		"build": "yarn clean && yarn build:esm && yarn run build:cjs",
+		"clean": "rimraf lib-esm lib dist",
+		"format": "echo \"Not implemented\"",
+		"lint": "tslint '{__tests__,src}/**/*.ts'"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git"
+	},
+	"author": "Amazon Web Services",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/aws/aws-amplify/issues"
+	},
+	"homepage": "https://aws-amplify.github.io/",
+	"dependencies": {
+		"@aws-amplify/core": "4.3.0",
+		"@aws-sdk/client-location": "3.22.0",
+		"camelcase-keys": "6.2.2"
+	},
+	"jest": {
+		"globals": {
+			"ts-jest": {
+				"diagnostics": true,
+				"tsConfig": {
+					"lib": [
+						"es5",
+						"es2015",
+						"dom",
+						"esnext.asynciterable",
+						"es2019.object"
+					],
+					"allowJs": true,
+					"esModuleInterop": true,
+					"downlevelIteration": true
+				}
+			}
+		},
+		"transform": {
+			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+		},
+		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"testPathIgnorePatterns": [
+			"__tests__/model.ts",
+			"__tests__/schema.ts",
+			"__tests__/helpers.ts",
+			"__tests__/data.ts"
+		],
+		"moduleFileExtensions": [
+			"ts",
+			"tsx",
+			"js",
+			"json",
+			"jsx"
+		],
+		"testEnvironment": "jsdom",
+		"testURL": "http://localhost/",
+		"coverageThreshold": {
+			"global": {
+				"branches": 0,
+				"functions": 0,
+				"lines": 0,
+				"statements": 0
+			}
+		},
+		"coveragePathIgnorePatterns": [
+			"/node_modules/",
+			"dist",
+			"lib",
+			"lib-esm"
+		]
+	}
+}
