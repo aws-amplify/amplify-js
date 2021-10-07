@@ -83,7 +83,7 @@ function openTerminalWithTabs(commands, pkgRootPath) {
 	let osaScript = `${OSA_SCRIPT_BASE} ${MULTILINE_FLAG} ${singleQuotedFormOf(
 		'tell application "Terminal" to activate'
 	)} `;
-	const GOTO_PACKAGE_ROOT = sanatizeCommand('cd', pkgRootPath);
+	const goToPackageRoot = sanatizeCommand('cd', pkgRootPath);
 
 	commands.forEach(command => {
 		// Split multiple commands to be run in the same using the char ;
@@ -91,7 +91,7 @@ function openTerminalWithTabs(commands, pkgRootPath) {
 		const hasTwoOrMoreCommands = splitCommands.length >= 2;
 
 		osaScript += `${openNewTab} ${getDelay(1)} ${createDoCommand(
-			GOTO_PACKAGE_ROOT
+			goToPackageRoot
 		)}${WHITE_SPACE}`;
 
 		if (hasTwoOrMoreCommands) {
