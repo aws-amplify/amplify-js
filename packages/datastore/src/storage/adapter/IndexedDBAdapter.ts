@@ -294,60 +294,6 @@ class IndexedDBAdapter implements Adapter {
 			);
 		}
 
-		// now handled in datastore.ts at the instance level
-
-		// const tx = this.db.transaction([...connectionStoreNames], 'readonly');
-
-		// for await (const relation of relations) {
-		// 	const { fieldName, modelName, targetName } = relation;
-		// 	const storeName = this.getStorename(namespaceName, modelName);
-		// 	const store = tx.objectStore(storeName);
-		// 	const modelConstructor = this.getModelConstructorByModelName(
-		// 		namespaceName,
-		// 		modelName
-		// 	);
-
-		// 	switch (relation.relationType) {
-		// 		case 'HAS_ONE':
-		// 			for await (const recordItem of records) {
-		// 				if (recordItem[fieldName]) {
-		// 					const connectionRecord = await this._get(
-		// 						store,
-		// 						recordItem[fieldName]
-		// 					);
-
-		// 					recordItem[fieldName] =
-		// 						connectionRecord &&
-		// 						this.modelInstanceCreator(modelConstructor, connectionRecord);
-		// 				}
-		// 			}
-
-		// 			break;
-		// 		case 'BELONGS_TO':
-		// 			for await (const recordItem of records) {
-		// 				if (recordItem[targetName]) {
-		// 					const connectionRecord = await this._get(
-		// 						store,
-		// 						recordItem[targetName]
-		// 					);
-
-		// 					recordItem[fieldName] =
-		// 						connectionRecord &&
-		// 						this.modelInstanceCreator(modelConstructor, connectionRecord);
-		// 					delete recordItem[targetName];
-		// 				}
-		// 			}
-
-		// 			break;
-		// 		case 'HAS_MANY':
-		// 			// TODO: Lazy loading
-		// 			break;
-		// 		default:
-		// 			exhaustiveCheck(relation.relationType);
-		// 			break;
-		// 	}
-		// }
-
 		return records.map(record =>
 			this.modelInstanceCreator(modelConstructor, record)
 		);

@@ -52,6 +52,7 @@ import {
 	AuthModeStrategyType,
 	isNonModelFieldType,
 	isModelFieldType,
+	isFieldAssociation,
 } from '../types';
 import {
 	DATASTORE,
@@ -386,22 +387,6 @@ const castInstanceType = (
 	}
 
 	return v;
-};
-
-// TODO: refactor into type guard and move to types.ts
-const isFieldAssociation = (
-	modelDefinition: SchemaModel | SchemaNonModel,
-	fieldName: string
-): boolean => {
-	const connectionType =
-		modelDefinition?.fields[fieldName]?.association?.connectionType;
-
-	// TODO: add HAS_MANY
-	if (connectionType === 'HAS_ONE' || connectionType === 'BELONGS_TO') {
-		return true;
-	}
-
-	return false;
 };
 
 const initializeInstance = <T>(
