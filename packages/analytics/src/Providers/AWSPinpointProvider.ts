@@ -614,7 +614,14 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 		);
 		if (!endpointId) {
 			endpointId = uuid();
-			Cache.setItem(cacheKey, endpointId);
+			// set a longer TTL to avoid endpoint id being deleted after the default TTL (3 days)
+			// also set its priority to the highest to reduce its chance of being deleted when cache is full
+			const ttl = 1000 * 60 * 60 * 24 * 365 * 100; // 100 years
+			const expiration = new Date().getTime() + ttl;
+			Cache.setItem(cacheKey, endpointId, {
+				expires: expiration,
+				priority: 1,
+			});
 		}
 		return endpointId;
 	}
@@ -652,7 +659,10 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			? clientInfo.platform === 'android'
 				? 'GCM'
 				: 'APNS'
-			: undefined;
+			: 'PUSH';
+		// NOTE: "PUSH" is a historical channel type, which is safe to be used for analytics
+		// PUSH channel type will not run into maximum endpoint limitation
+		// if pinpoint supports specific analytics channel type, we should update accordingly
 		const tmp = {
 			channelType,
 			requestId: uuid(),
