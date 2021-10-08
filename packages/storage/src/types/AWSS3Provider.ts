@@ -8,6 +8,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { StorageOptions, StorageAccessLevel } from './Storage';
 import { AWSS3UploadTask } from '../providers/AWSS3UploadTask';
+import { UploadTask } from './Provider';
 
 type ListObjectsCommandOutputContent = _Object;
 
@@ -126,5 +127,5 @@ export type PutResult = {
 };
 
 export type S3PutResult<T> = T extends { resumable: true }
-	? AWSS3UploadTask
+	? UploadTask
 	: PutResult;

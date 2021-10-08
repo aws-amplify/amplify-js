@@ -49,8 +49,8 @@ export interface StorageProvider {
 export interface UploadTask {
 	resume(): any;
 	pause(): any;
-	cancel(): any;
 }
+
 export interface StorageProviderWithCopy extends StorageProvider {
 	// copy object from src to dest
 	copy(
