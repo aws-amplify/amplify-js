@@ -12,15 +12,6 @@
  */
 import { NotificationsCategory } from '../types';
 
-export type OnMessagesReceived = (messages: any) => void;
-
-export type OnMessageEventHandler = (message: InAppMessage) => any;
-
-export type OnMessageEventListener = {
-	handleEvent: OnMessageEventHandler;
-	remove: () => void;
-};
-
 export type NotificationsSubcategory = 'InAppMessaging';
 
 export type InAppMessagingEvent = {
@@ -31,7 +22,6 @@ export type InAppMessagingEvent = {
 
 export interface InAppMessagingConfig {
 	listenForAnalyticsEvents?: boolean;
-	onMessagesReceived?: OnMessagesReceived;
 }
 
 export interface InAppMessagingProvider {
@@ -109,4 +99,20 @@ export interface InAppMessage {
 	layout: InAppMessageLayout;
 	content: InAppMessageContent[];
 	metadata?: any;
+}
+
+export type OnMessagesReceivedHandler = (messages: InAppMessage[]) => any;
+
+export type OnMessageEventHandler = (message: InAppMessage) => any;
+
+interface Listener {
+	remove: () => void;
+}
+
+export interface OnMessagesReceivedListener extends Listener {
+	handleEvent: OnMessagesReceivedHandler;
+}
+
+export interface OnMessageEventListener extends Listener {
+	handleEvent: OnMessageEventHandler;
 }
