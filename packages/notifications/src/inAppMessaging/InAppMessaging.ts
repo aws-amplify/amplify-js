@@ -188,13 +188,19 @@ export default class InAppMessaging {
 	): OnMessagesReceivedListener =>
 		addMessageEventListener(handler, MessageEvent.MESSAGES_RECEIVED);
 
-	onMessageDisplay = (handler: OnMessageEventHandler): OnMessageEventListener =>
+	onMessageDisplayed = (
+		handler: OnMessageEventHandler
+	): OnMessageEventListener =>
 		addMessageEventListener(handler, MessageEvent.MESSAGE_DISPLAYED);
 
-	onMessageDismiss = (handler: OnMessageEventHandler): OnMessageEventListener =>
+	onMessageDismissed = (
+		handler: OnMessageEventHandler
+	): OnMessageEventListener =>
 		addMessageEventListener(handler, MessageEvent.MESSAGE_DISMISSED);
 
-	onMessageAction = (handler: OnMessageEventHandler): OnMessageEventListener =>
+	onMessageActionTaken = (
+		handler: OnMessageEventHandler
+	): OnMessageEventListener =>
 		addMessageEventListener(handler, MessageEvent.MESSAGE_ACTION_TAKEN);
 
 	notifyMessageDisplayed = (message: InAppMessage): void => {
