@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.0.19...@aws-amplify/analytics@5.1.0) (2021-10-07)
+
+
+### Features
+
+* **@aws-amplify/analytics:** default to PUSH channel type for web analytics ([#8992](https://github.com/aws-amplify/amplify-js/issues/8992)) ([ada5afe](https://github.com/aws-amplify/amplify-js/commit/ada5afe3ad16233c3b3f393fa3bba4ae05af6798))
+* **@aws-amplify/analytics:** update TTL for the cached pinpoint endpoint id ([#8982](https://github.com/aws-amplify/amplify-js/issues/8982)) ([bd528c7](https://github.com/aws-amplify/amplify-js/commit/bd528c7c2d65a7476bd8601d7f3f135d1a24fd53))
+
+
+### Reverts
+
+* **@aws-amplify/analytics:** pr 8992 ([#8999](https://github.com/aws-amplify/amplify-js/issues/8999)) ([1913bee](https://github.com/aws-amplify/amplify-js/commit/1913beeecd1aa409fe1c028729e7cfc92445c1bb)), closes [#8996](https://github.com/aws-amplify/amplify-js/issues/8996) [#8992](https://github.com/aws-amplify/amplify-js/issues/8992)
+
+
+
+
+
 ## [5.0.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.0.18...@aws-amplify/analytics@5.0.19) (2021-09-30)
 
 **Note:** Version bump only for package @aws-amplify/analytics
