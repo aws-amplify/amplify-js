@@ -21,9 +21,8 @@
 		"@babel/preset-env": "^7.9.6",
 		"@babel/preset-react": "^7.9.4",
 		"@babel/preset-typescript": "^7.9.0",
-		"@types/react-native": "^0.62.5",
+		"@types/react-native": "^0.63.4",
 		"babel-jest": "^21.2.0",
-		"react": "^16.0.0",
 		"rimraf": "^2.6.2"
 	},
 	"dependencies": {
@@ -32,7 +31,9 @@
 	},
 	"peerDependencies": {
 		"aws-amplify": "4.x.x",
-		"graphql": "^14.0.0"
+		"graphql": "^14.0.0",
+		"react": "^16.13.1",
+		"react-native": "^0.63.4"
 	},
 	"repository": {
 		"type": "git",
