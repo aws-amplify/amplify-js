@@ -22,13 +22,20 @@ import flatten from 'lodash/flatten';
 import noop from 'lodash/noop';
 import { AWSPinpointProvider } from './Providers';
 import {
+	addMessageEventListener,
+	MessageEvent,
+	notifyMessageEventListeners,
+} from '../EventListeners';
+import {
 	InAppMessage,
 	InAppMessagingConfig,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
 	NotificationsSubcategory,
+	OnMessageEventListener,
 	OnMessagesReceived,
 } from './types';
+import { OnMessageEventHandler } from '.';
 
 const STORAGE_KEY_SUFFIX = '_inAppMessages';
 
@@ -36,10 +43,10 @@ const logger = new Logger('Notifications.InAppMessaging');
 
 export default class InAppMessaging {
 	private config: Record<string, any> = {};
-	private onMessagesReceived: OnMessagesReceived = noop;
 	private listeningForAnalyticEvents = false;
 	private pluggables: InAppMessagingProvider[] = [];
 	private storageSynced = false;
+	private onMessagesReceived: OnMessagesReceived = noop;
 
 	constructor() {
 		this.config = {
@@ -183,6 +190,27 @@ export default class InAppMessaging {
 			this.onMessagesReceived(flattenedMessages);
 		}
 	};
+
+	notifyMessageDisplayed = (message: InAppMessage): void => {
+		notifyMessageEventListeners(message, MessageEvent.MESSAGE_DISPLAYED);
+	};
+
+	notifyMessageDismissed = (message: InAppMessage): void => {
+		notifyMessageEventListeners(message, MessageEvent.MESSAGE_DISMISSED);
+	};
+
+	notifyMessageActionTaken = (message: InAppMessage): void => {
+		notifyMessageEventListeners(message, MessageEvent.MESSAGE_ACTION_TAKEN);
+	};
+
+	onMessageDisplay = (handler: OnMessageEventHandler): OnMessageEventListener =>
+		addMessageEventListener(handler, MessageEvent.MESSAGE_DISPLAYED);
+
+	onMessageDismiss = (handler: OnMessageEventHandler): OnMessageEventListener =>
+		addMessageEventListener(handler, MessageEvent.MESSAGE_DISMISSED);
+
+	onMessageAction = (handler: OnMessageEventHandler): OnMessageEventListener =>
+		addMessageEventListener(handler, MessageEvent.MESSAGE_ACTION_TAKEN);
 
 	private analyticsListener: HubCallback = ({ payload }: HubCapsule) => {
 		const { event, data } = payload;

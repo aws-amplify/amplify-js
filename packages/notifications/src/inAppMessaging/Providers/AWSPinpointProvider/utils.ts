@@ -11,7 +11,7 @@ import {
 	InAppMessageStyle,
 	InAppMessagingEvent,
 } from '../../types';
-import { InAppMessageEvent, MetricsComparator } from './types';
+import { PinpointMessageEvent, MetricsComparator } from './types';
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
 typeof Symbol.for === 'function'
@@ -39,16 +39,17 @@ export const dispatchInAppMessagingEvent = (
 };
 
 export const recordAnalyticsEvent = (
-	event: InAppMessageEvent,
-	message: PinpointInAppMessage
+	event: PinpointMessageEvent,
+	message: InAppMessage
 ) => {
 	if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
+		const { id, metadata } = message;
 		Amplify.Analytics.record({
 			name: event,
 			attributes: {
-				campaign_id: message.CampaignId,
+				campaign_id: id,
 				delivery_type: DELIVERY_TYPE,
-				treatment_id: message.TreatmentId,
+				treatment_id: metadata.treatmentId,
 			},
 		});
 	} else {
@@ -267,7 +268,9 @@ export const extractContent = ({
 export const extractMetadata = ({
 	Priority,
 	Schedule,
+	TreatmentId,
 }: PinpointInAppMessage): InAppMessage['metadata'] => ({
 	endDate: Schedule?.EndDate,
 	priority: Priority,
+	treatmentId: TreatmentId,
 });
