@@ -527,43 +527,45 @@ describe('Predicates', () => {
 			})
 			.flat();
 
-		const storage = {
-			collections: {
-				[BlogOwner.name]: owners,
-				[Blog.name]: blogs,
-				[Post.name]: posts,
-			},
+		function getStorage() {
+			return {
+				collections: {
+					[BlogOwner.name]: owners,
+					[Blog.name]: blogs,
+					[Post.name]: posts,
+				},
 
-			async query<T extends PersistentModel>(
-				modelConstructor: PersistentModelConstructor<T>,
-				predicate?: FlatModelPredicate<T>,
-				pagination?: PaginationInput<T>
-			) {
-				const baseSet: T[] = this.collections[modelConstructor.name].map(
-					item => {
-						const itemCopy = { ...item };
+				async query<T extends PersistentModel>(
+					modelConstructor: PersistentModelConstructor<T>,
+					predicate?: FlatModelPredicate<T>,
+					pagination?: PaginationInput<T>
+				) {
+					const baseSet: T[] = this.collections[modelConstructor.name].map(
+						item => {
+							const itemCopy = { ...item };
 
-						// simulating goofiness with DS stuffing ID's into related model field names.
-						const meta = metas[modelConstructor.name].schema as SchemaModel;
-						for (const field of Object.values(meta.fields)) {
-							if (field.association) {
-								itemCopy[field.name] = itemCopy[field.association.targetName];
+							// simulating goofiness with DS stuffing ID's into related model field names.
+							const meta = metas[modelConstructor.name].schema as SchemaModel;
+							for (const field of Object.values(meta.fields)) {
+								if (field.association) {
+									itemCopy[field.name] = itemCopy[field.association.targetName];
+								}
 							}
+							return itemCopy;
 						}
-						return itemCopy;
-					}
-				);
-
-				if (!predicate) {
-					return baseSet;
-				} else {
-					const predicates = ModelPredicateCreator.getPredicates(predicate);
-					return baseSet.filter(item =>
-						flatPredicateMatches(item, 'and', [predicates])
 					);
-				}
-			},
-		};
+
+					if (!predicate) {
+						return baseSet;
+					} else {
+						const predicates = ModelPredicateCreator.getPredicates(predicate);
+						return baseSet.filter(item =>
+							flatPredicateMatches(item, 'and', [predicates])
+						);
+					}
+				},
+			};
+		}
 
 		[
 			{
@@ -573,7 +575,7 @@ describe('Predicates', () => {
 			{
 				name: 'storage predicates',
 				execute: async <T>(query: any) =>
-					(await query.__query.fetch(storage)) as T[],
+					(await query.__query.fetch(getStorage())) as T[],
 			},
 		].forEach(mechanism => {
 			describe('as ' + mechanism.name, () => {

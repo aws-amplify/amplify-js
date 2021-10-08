@@ -120,6 +120,66 @@ type UntypedCondition = {
 };
 
 /**
+ * Maps operators to negated operators.
+ * Used to facilitate propagation of negation down a tree of conditions.
+ */
+const negations = {
+	and: 'or',
+	or: 'and',
+	not: 'and',
+	eq: 'ne',
+	ne: 'eq',
+	gt: 'le',
+	ge: 'lt',
+	lt: 'ge',
+	le: 'gt',
+	contains: 'notContains',
+	notContains: 'contains',
+};
+
+/**
+ * Given a V1 predicate "seed", applies a list of V2 field-level conditions
+ * to the predicate, returning a new/final V1 predicate chain link.
+ * @param predicate The base/seed V1 predicate to build on
+ * @param conditions The V2 conditions to add to the predicate chain.
+ * @param negateChildren Whether the conditions should be negated first.
+ * @returns A V1 predicate, with conditions incorporated.
+ */
+function applyConditionsToV1Predicate<T>(
+	predicate: T,
+	conditions: FieldCondition[],
+	negateChildren: boolean
+): T {
+	let p = predicate;
+	const finalConditions = [];
+
+	for (const c of conditions) {
+		if (negateChildren) {
+			if (c.operator === 'between') {
+				finalConditions.push(
+					new FieldCondition(c.field, 'lt', [c.operands[0]]),
+					new FieldCondition(c.field, 'gt', [c.operands[1]])
+				);
+			} else {
+				finalConditions.push(
+					new FieldCondition(c.field, negations[c.operator], c.operands)
+				);
+			}
+		} else {
+			finalConditions.push(c);
+		}
+	}
+
+	for (const c of finalConditions) {
+		p = p[c.field](
+			c.operator as never,
+			(c.operator === 'between' ? c.operands : c.operands[0]) as never
+		);
+	}
+	return p;
+}
+
+/**
  * A condition that can operate against a single "primitive" field of a model or item.
  * @member field The field of *some record* to test against.
  * @member operator The equality or comparison operator to use.
@@ -289,7 +349,8 @@ export class GroupCondition {
 	/**
 	 * Fetches matching records from a given storage adapter using legacy predicates (for now).
 	 * @param storage The storage adapter this predicate will query against.
-	 * @param breadcrumb For debugging/troubleshooting. A list of the `groupId`'s this GroupdCondition.fetch is nested within.
+	 * @param breadcrumb For debugging/troubleshooting. A list of the `groupId`'s this
+	 * GroupdCondition.fetch is nested within.
 	 * @param negate Whether to match on the `NOT` of `this`.
 	 * @returns An `Promise` of `any[]` from `storage` matching the child conditions.
 	 */
@@ -299,20 +360,6 @@ export class GroupCondition {
 		negate = false
 	): Promise<Record<string, any>[]> {
 		const resultGroups: Array<Record<string, any>[]> = [];
-
-		const negations = {
-			and: 'or',
-			or: 'and',
-			not: 'and',
-			eq: 'ne',
-			ne: 'eq',
-			gt: 'le',
-			ge: 'lt',
-			lt: 'ge',
-			le: 'gt',
-			contains: 'notContains',
-			notContains: 'contains',
-		};
 
 		const operator = (negate ? negations[this.operator] : this.operator) as
 			| 'or'
@@ -338,14 +385,40 @@ export class GroupCondition {
 				negateChildren
 			);
 
-			if (g.field) {
-				// relatives needs to be used to find candidate results.
-				// TODO: replace with lazy loading? ... :D ...
-				const meta = this.model.schema.fields[g.field];
-				const gIdField = 'id';
-				if (meta.association) {
-					let candidates = [];
+			// no relatives -> no need to attempt to perform a "join" query for
+			// candidate results:
+			//
+			// select a.* from a,b where b.id in EMPTY_SET ==> EMPTY_SET
+			//
+			// Additionally, the entire (sub)-query can be short-circuited if
+			// the operator is `AND`. Illustrated in SQL:
+			//
+			// select a.* from a where
+			//   id in [a,b,c]
+			//     AND
+			//   id in EMTPY_SET
+			//     AND
+			//   id in [x,y,z]
+			//
+			// YIELDS: EMPTY_SET
+			//
+			if (relatives.length === 0) {
+				// aggressively short-circuit as soon as we know the group condition will fail
+				if (operator === 'and') {
+					return [];
+				}
 
+				// less aggressive short-circuit if we know the relatives will produce no
+				// candidate results; but aren't sure yet how this affects the group condition.
+				resultGroups.push([]);
+				continue;
+			}
+
+			if (g.field) {
+				// Use the relatives to add candidate result sets (`resultGroups`)
+				const meta = this.model.schema.fields[g.field];
+
+				if (meta.association) {
 					let leftHandField;
 					if (meta.association.targetName == null) {
 						leftHandField = 'id';
@@ -360,20 +433,28 @@ export class GroupCondition {
 						rightHandField = 'id';
 					}
 
-					for (const relative of relatives) {
+					const joinConditions = relatives.map(relative => {
 						const rightHandValue = relative[rightHandField].id
 							? relative[rightHandField].id
 							: relative[rightHandField];
-						const predicate = FlatModelPredicateCreator.createFromExisting(
-							this.model.schema,
-							p => p[leftHandField]('eq' as never, rightHandValue as never)
-						);
-						candidates = [
-							...candidates,
-							...(await storage.query(this.model.builder, predicate as any)),
-						];
-					}
-					resultGroups.push(candidates);
+						return new FieldCondition(leftHandField, 'eq', [rightHandValue]);
+					});
+
+					const predicate = FlatModelPredicateCreator.createFromExisting(
+						this.model.schema,
+						p =>
+							p.or(inner =>
+								applyConditionsToV1Predicate(
+									inner,
+									joinConditions,
+									negateChildren
+								)
+							)
+					);
+
+					resultGroups.push(
+						await storage.query(this.model.builder, predicate as any)
+					);
 				} else {
 					throw new Error('Missing field metadata.');
 				}
@@ -383,42 +464,15 @@ export class GroupCondition {
 			}
 		}
 
-		function addConditions<T>(predicate: T): T {
-			let p = predicate;
-			const finalConditions = [];
-
-			for (const c of conditions) {
-				if (negateChildren) {
-					if (c.operator === 'between') {
-						finalConditions.push(
-							new FieldCondition(c.field, 'lt', [c.operands[0]]),
-							new FieldCondition(c.field, 'gt', [c.operands[1]])
-						);
-					} else {
-						finalConditions.push(
-							new FieldCondition(c.field, negations[c.operator], c.operands)
-						);
-					}
-				} else {
-					finalConditions.push(c);
-				}
-			}
-
-			for (const c of finalConditions) {
-				p = p[c.field](
-					c.operator as never,
-					(c.operator === 'between' ? c.operands : c.operands[0]) as never
-				);
-			}
-			return p;
-		}
-
 		// if conditions is empty at this point, child predicates found no matches.
 		// i.e., we can stop looking and return empty.
 		if (conditions.length > 0) {
 			const predicate = FlatModelPredicateCreator.createFromExisting(
 				this.model.schema,
-				p => p[operator](c => addConditions(c))
+				p =>
+					p[operator](c =>
+						applyConditionsToV1Predicate(c, conditions, negateChildren)
+					)
 			);
 			resultGroups.push(
 				await storage.query(this.model.builder, predicate as any)
@@ -436,10 +490,13 @@ export class GroupCondition {
 				return [];
 			}
 
+			// establish a base set to INSERSECT against.
 			resultIndex = resultGroups[0].reduce((agg, item) => {
 				return { ...agg, ...{ [item[idField]]: item } };
 			}, {});
 
+			// for each group, we intersect, omitting items from the new result index
+			// aren't present in each successive group.
 			resultGroups.forEach(group => {
 				resultIndex = group.reduce((agg, item) => {
 					const id = item[idField];
@@ -451,6 +508,8 @@ export class GroupCondition {
 			// it's OK to handle NOT here, because NOT must always only negate
 			// a single child predicate. NOT logic will have been distributed down
 			// to the leaf conditions already.
+
+			// just merge the groups, performing DISTINCT-ification by ID.
 			resultGroups.forEach(group => {
 				resultIndex = {
 					...resultIndex,
