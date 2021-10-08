@@ -6,6 +6,7 @@ import {
 	CompleteMultipartUploadCommand,
 	Part,
 	AbortMultipartUploadCommand,
+	AbortMultipartUploadCommandOutput,
 } from '@aws-sdk/client-s3';
 import * as events from 'events';
 import axios, { Canceler } from 'axios';
@@ -243,48 +244,6 @@ export class AWSS3UploadTask implements UploadTask {
 		return !this.queued.length && !this.inProgress.length;
 	}
 
-	private _attachUploadCompleteEvent(fn: Function) {
-		this.emitter.on(TaskEvents.UPLOAD_COMPLETE, fn.bind(this));
-	}
-
-	private _attachUploadProgressEvent(fn: Function) {
-		this.emitter.on(TaskEvents.UPLOAD_PROGRESS, fn.bind(this));
-	}
-
-	private _attachUploadErrorEvent(fn: Function) {
-		this.emitter.on(TaskEvents.ERROR, fn.bind(this));
-	}
-
-	public onError(fn: (event: Error) => any) {
-		if (Array.isArray(fn)) {
-			fn.forEach(cb => {
-				this._attachUploadErrorEvent(cb);
-			});
-		} else {
-			this._attachUploadErrorEvent(fn);
-		}
-	}
-
-	public onComplete(fn: (event: UploadCompleteEvent) => any) {
-		if (Array.isArray(fn)) {
-			fn.forEach(cb => {
-				this._attachUploadCompleteEvent(cb);
-			});
-		} else {
-			this._attachUploadCompleteEvent(fn);
-		}
-	}
-
-	public onProgress(fn: (event: UploadProgressEvent) => any) {
-		if (Array.isArray(fn)) {
-			fn.forEach(cb => {
-				this._attachUploadProgressEvent(cb);
-			});
-		} else {
-			this._attachUploadProgressEvent(fn);
-		}
-	}
-
 	private _createParts() {
 		const size = this.file.size;
 		const parts: UploadPartCommandInput[] = [];
@@ -339,30 +298,20 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 	}
 
-	public cancel(): void {
+	public cancel(): Promise<AbortMultipartUploadCommandOutput> {
 		this.pause();
 		this.queued = [];
 		this.completedParts = [];
 		this.bytesUploaded = 0;
 		this.state = State.CANCELLED;
 		this.emitter.emit(TaskEvents.ABORT);
-		this.s3client
-			.send(
-				new AbortMultipartUploadCommand({
-					Bucket: this.bucket,
-					Key: this.key,
-					UploadId: this.uploadId,
-				})
-			)
-			.then(res => {
-				logger.log(res);
+		return this.s3client.send(
+			new AbortMultipartUploadCommand({
+				Bucket: this.bucket,
+				Key: this.key,
+				UploadId: this.uploadId,
 			})
-			.catch(err => {
-				logger.error(
-					`Error occured while aborting the upload to ${this.bucket}/${this.key}`,
-					err
-				);
-			});
+		);
 	}
 
 	/**
