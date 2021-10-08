@@ -539,6 +539,13 @@ export class GroupCondition {
 		const itemToCheck =
 			this.field && !ignoreFieldName ? await item[this.field] : item;
 
+		// if there is no item to check, we can stop recursing immediately.
+		// a condition cannot match against an item that does not exist. this
+		// can occur when `item.field` is optional.
+		if (!itemToCheck) {
+			return false;
+		}
+
 		if (this.relationshipType === 'HAS_MANY' && itemToCheck instanceof Array) {
 			for (const singleItem of itemToCheck) {
 				if (await this.matches(singleItem, true)) {
