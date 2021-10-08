@@ -131,21 +131,6 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 				InAppMessageCampaigns: messages,
 			} = response.InAppMessagesResponse;
 
-			// Create a lookup of ids to avoid nesting .includes() inside of .reduce() when updating total counts
-			const idMap = messages.reduce((acc, item) => {
-				acc[item.CampaignId] = true;
-				return acc;
-			}, {});
-			// Clear out stored total counts for messages that are no longer active (i.e. not returned from service)
-			this.setTotalCountMap(
-				Object.entries(this.getTotalCountMap()).reduce((acc, [key, val]) => {
-					if (idMap[key]) {
-						acc[key] = val;
-					}
-					return acc;
-				}, {})
-			);
-
 			dispatchInAppMessagingEvent('syncInAppMessages', messages);
 			return messages;
 		} catch (err) {
