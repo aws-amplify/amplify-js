@@ -548,20 +548,21 @@ const createModelClass = <T extends PersistentModel>(
 			},
 			async get() {
 				const instanceMemos = modelInstanceAssociationsMap.get(this) || {};
-				if (instanceMemos[targetName] !== undefined) {
+				if (instanceMemos.hasOwnProperty(targetName)) {
 					return instanceMemos[targetName];
 				}
 				const associatedId = this[targetName];
+
+				if (!associatedId) {
+					// unable to load related model
+					instanceMemos[targetName] = undefined;
+					return;
+				}
 
 				const relatedModel = getModelConstructorByModelName(
 					USER,
 					relatedModelName
 				);
-
-				if (!associatedId) {
-					// unable to load related model
-					return;
-				}
 
 				const result = await instance.query(relatedModel, associatedId);
 				instanceMemos[targetName] = result;
