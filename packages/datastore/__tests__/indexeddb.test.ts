@@ -298,74 +298,35 @@ describe('Indexed db storage test', () => {
 		expect(q1Post.id).toEqual(p.id);
 	});
 
-	test('query lazily HAS_ONE with explicit field', async () => {
+	test('query lazily HAS_ONE/BELONGS_TO with explicit Field', async () => {
 		const team1 = new Team({ name: 'team' });
+		const savedTeam = DataStore.save(team1);
 		const project1 = new Project({
 			name: 'Avatar: Last Airbender',
 			teamID: team1.id,
-			team: team1,
+			team: savedTeam,
 		});
-		await DataStore.save(team1);
+
 		await DataStore.save(project1);
 
 		const q1 = await DataStore.query(Project, project1.id);
-		expect(q1.team.id).toEqual(undefined);
-		const awaitedProject = await q1.team;
-		expect(awaitedProject.id).toEqual(team1.id);
-	});
-
-	test('query lazily BelongsTo without explicit field', async () => {
-		const owner1 = new BlogOwner({ name: 'Owner 918' });
-		const blog1 = new Blog({
-			name: 'Avatar: Last Airbender',
-			owner: owner1,
-		});
-		await DataStore.save(owner1);
-		await DataStore.save(blog1);
-
-		const q1 = await DataStore.query(Blog, blog1.id);
-		expect(q1.owner.id).toEqual(undefined);
-		const awaitedOwner = await q1.owner;
-		expect(awaitedOwner.id).toEqual(owner1.id);
-	});
-
-	test('Validation of lazyLoaded model', async () => {
-		const team1 = new Team({ name: 'team' });
-		await DataStore.save(team1);
-		expect(() => {
-			new Blog({
-				name: 'Avatar: Last Airbender',
-				owner: team1,
-			});
-		}).toThrowError(
-			'Value passed to Blog.owner is not an instance of BlogOwner'
-		);
+		q1.team.then(value => expect(value.id).toEqual(team1.id));
 	});
 
 	test('Memoization Test', async () => {
-		const owner1 = new BlogOwner({ name: 'Owner 918' });
-		const blog1 = new Blog({
-			name: 'Avatar: Last Airbender',
-			owner: owner1,
-		});
 		const team1 = new Team({ name: 'team' });
+		const savedTeam = DataStore.save(team1);
 		const project1 = new Project({
 			name: 'Avatar: Last Airbender',
 			teamID: team1.id,
-			team: team1,
+			team: savedTeam,
 		});
-		await DataStore.save(owner1);
-		await DataStore.save(blog1);
-		await DataStore.save(team1);
 		await DataStore.save(project1);
 
-		const q1 = await DataStore.query(Blog, blog1.id);
+		const q1 = await DataStore.query(Project, project1.id);
 
-		const awaitedOwner1 = await q1.owner;
-		const awaitedOwner2 = await q1.owner;
-
-		expect(awaitedOwner1.id).toEqual(owner1.id);
-		expect(awaitedOwner2.id).toEqual(owner1.id);
+		q1.team.then(value => expect(value.id).toEqual(team1.id));
+		q1.team.then(value => expect(value.id).toEqual(team1.id));
 	});
 
 	test('query with sort on a single field', async () => {

@@ -38,7 +38,7 @@ declare class ProjectModel {
 	readonly id: string;
 	readonly name?: string;
 	readonly teamID?: string;
-	readonly team?: TeamModel;
+	readonly team?: Promise<TeamModel>;
 	constructor(init: ModelInit<ProjectModel>);
 	static copyOf(
 		source: ProjectModel,
