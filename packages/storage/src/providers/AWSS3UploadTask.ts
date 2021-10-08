@@ -116,6 +116,10 @@ export class AWSS3UploadTask implements UploadTask {
 		return (this.bytesUploaded / this.totalBytes) * 100;
 	}
 
+	get isInProgress() {
+		return this.state === State.IN_PROGRESS;
+	}
+
 	private _validateParams() {
 		if (typeof this.uploadId !== 'string') {
 			throw new Error(
