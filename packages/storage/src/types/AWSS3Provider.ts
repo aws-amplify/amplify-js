@@ -70,6 +70,7 @@ export type _S3ProviderPutConfig = {
 export type S3ProviderPutConfig = CommonStorageOptions &
 	(
 		| _S3ProviderPutConfig
+		// discriminated union so users won't be able to add resumable specific callbacks without the resumable flag
 		| (_S3ProviderPutConfig & {
 				resumable: true;
 				progressCallback?: (progress: UploadTaskProgressEvent) => any;
