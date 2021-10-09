@@ -154,7 +154,14 @@ export class AWSS3Provider implements StorageProvider {
 			throw new Error(StorageErrorStrings.INVALID_BLOB);
 		}
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, track, progressCallback, completeCallback, level } = opt;
+		const {
+			bucket,
+			track,
+			progressCallback,
+			completeCallback,
+			errorCallback,
+			level,
+		} = opt;
 		const {
 			contentType,
 			contentDisposition,
@@ -261,6 +268,7 @@ export class AWSS3Provider implements StorageProvider {
 				}
 			}
 		});
+
 		emitter.on(TaskEvents.UPLOAD_COMPLETE, event => {
 			if (completeCallback) {
 				if (typeof completeCallback === 'function') {
@@ -272,15 +280,27 @@ export class AWSS3Provider implements StorageProvider {
 					);
 				}
 			}
-
-			dispatchStorageEvent(
-				track,
-				'upload',
-				{ method: 'put', result: 'success' },
-				null,
-				`Upload success for ${key}`
-			);
 		});
+
+		emitter.on(TaskEvents.ERROR, err => {
+			if (errorCallback) {
+				if (typeof errorCallback === 'function') {
+					errorCallback(err);
+				} else {
+					logger.warn(
+						'errorCallback should be a function, not a ' + typeof errorCallback
+					);
+				}
+			}
+		});
+
+		dispatchStorageEvent(
+			track,
+			'upload',
+			{ method: 'put', result: 'success' },
+			null,
+			`Upload success for ${key}`
+		);
 
 		return task;
 	}
@@ -417,7 +437,7 @@ export class AWSS3Provider implements StorageProvider {
 	): Promise<S3ProviderGetOuput<T>>;
 	public async get(
 		key: string,
-		config?: S3ProviderGetConfig & StorageOptions
+		config?: S3ProviderGetConfig
 	): Promise<string | GetObjectCommandOutput> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK || !this._isWithCredentials(this._config)) {

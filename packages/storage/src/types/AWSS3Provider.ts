@@ -7,7 +7,11 @@ import {
 	DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { StorageOptions, StorageAccessLevel } from './Storage';
-import { AWSS3UploadTask } from '../providers/AWSS3UploadTask';
+import {
+	AWSS3UploadTask,
+	UploadTaskCompleteEvent,
+	UploadTaskProgressEvent,
+} from '../providers/AWSS3UploadTask';
 import { UploadTask } from './Provider';
 
 type ListObjectsCommandOutputContent = _Object;
@@ -41,7 +45,7 @@ export type S3ProviderGetOuput<T> = T extends { download: true }
 	? GetObjectCommandOutput
 	: string;
 
-export type S3ProviderPutConfig = CommonStorageOptions & {
+export type _S3ProviderPutConfig = {
 	progressCallback?: (progress: any) => any;
 	provider?: 'AWSS3';
 	track?: boolean;
@@ -62,6 +66,17 @@ export type S3ProviderPutConfig = CommonStorageOptions & {
 	useAccelerateEndpoint?: boolean;
 	resumable?: boolean;
 };
+
+export type S3ProviderPutConfig = CommonStorageOptions &
+	(
+		| _S3ProviderPutConfig
+		| (_S3ProviderPutConfig & {
+				resumable: true;
+				progressCallback?: (progress: UploadTaskProgressEvent) => any;
+				completeCallback?: (event: UploadTaskCompleteEvent) => any;
+				errorCallback?: (err: any) => any;
+		  })
+	);
 
 export interface S3ProviderPutOutput {
 	key: string;

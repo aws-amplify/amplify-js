@@ -48,11 +48,11 @@ export interface InProgressRequest {
 	cancel: Canceler;
 }
 
-export interface UploadCompleteEvent {
+export interface UploadTaskCompleteEvent {
 	key: string;
 }
 
-export interface UploadProgressEvent {
+export interface UploadTaskProgressEvent {
 	loaded: number;
 	total: number;
 }
