@@ -18,7 +18,7 @@ import { listSingleFile, byteLength } from '../common/StorageUtils';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
 
 const logger = new Logger('Storage');
-enum State {
+export enum AWSS3UploadTaskState {
 	INIT,
 	IN_PROGRESS,
 	PAUSED,
@@ -80,9 +80,9 @@ export class AWSS3UploadTask implements UploadTask {
 
 	readonly bucket: string;
 	readonly key: string;
-	readonly uploadId: UploadPartCommandInput['UploadId'];
+	readonly uploadId: string;
 
-	public state: State = State.INIT;
+	public state: AWSS3UploadTaskState = AWSS3UploadTaskState.INIT;
 
 	constructor({
 		s3Client,
@@ -118,7 +118,7 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	get isInProgress() {
-		return this.state === State.IN_PROGRESS;
+		return this.state === AWSS3UploadTaskState.IN_PROGRESS;
 	}
 
 	private _validateParams() {
@@ -154,7 +154,7 @@ export class AWSS3UploadTask implements UploadTask {
 		this.inProgress = this.inProgress.filter(
 			job => job.uploadPartInput.PartNumber !== partNumber
 		);
-		if (this.queued.length && this.state !== State.PAUSED)
+		if (this.queued.length && this.state !== AWSS3UploadTaskState.PAUSED)
 			this._startNextPart();
 		if (this._isDone()) {
 			this._completeUpload();
@@ -186,7 +186,7 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private _startNextPart() {
-		if (this.queued.length > 0 && this.state !== State.PAUSED) {
+		if (this.queued.length > 0 && this.state !== AWSS3UploadTaskState.PAUSED) {
 			const cancelTokenSource = axios.CancelToken.source();
 			const nextPart = this.queued.shift();
 			this.inProgress.push({
@@ -204,9 +204,9 @@ export class AWSS3UploadTask implements UploadTask {
 						return output;
 					})
 					.catch(err => {
-						if (this.state === State.PAUSED) {
+						if (this.state === AWSS3UploadTaskState.PAUSED) {
 							logger.log('upload paused');
-						} else if (this.state === State.CANCELLED) {
+						} else if (this.state === AWSS3UploadTaskState.CANCELLED) {
 							logger.log('upload aborted');
 						} else {
 							logger.error('error starting next part of upload: ', err);
@@ -284,14 +284,14 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	public resume(): void {
-		if (this.state === State.CANCELLED) {
+		if (this.state === AWSS3UploadTaskState.CANCELLED) {
 			throw new Error('This task has already been aborted');
 		} else if (this.bytesUploaded === this.totalBytes) {
 			logger.warn('This task has already been completed');
-		} else if (this.state === State.IN_PROGRESS) {
+		} else if (this.state === AWSS3UploadTaskState.IN_PROGRESS) {
 			logger.warn('Upload task already in progress');
 		} else {
-			this.state = State.IN_PROGRESS;
+			this.state = AWSS3UploadTaskState.IN_PROGRESS;
 			for (let i = 0; i < this.queueSize; i++) {
 				this._startNextPart();
 			}
@@ -303,7 +303,7 @@ export class AWSS3UploadTask implements UploadTask {
 		this.queued = [];
 		this.completedParts = [];
 		this.bytesUploaded = 0;
-		this.state = State.CANCELLED;
+		this.state = AWSS3UploadTaskState.CANCELLED;
 		this.emitter.emit(TaskEvents.ABORT);
 		return this.s3client.send(
 			new AbortMultipartUploadCommand({
@@ -318,7 +318,7 @@ export class AWSS3UploadTask implements UploadTask {
 	 * pause this particular upload task
 	 **/
 	public pause(): void {
-		this.state = State.PAUSED;
+		this.state = AWSS3UploadTaskState.PAUSED;
 		// Use axios cancel token to abort the part request immediately
 		// Add the inProgress parts back to pending
 		const removedInProgressReq = this.inProgress.splice(

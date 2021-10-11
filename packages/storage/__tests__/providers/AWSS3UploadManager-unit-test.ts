@@ -86,7 +86,7 @@ describe('resumable upload test', () => {
 			}
 		});
 
-	test('should listen to auth signin and signout events', async () => {
+	test('should listen to auth signout event and remove old file metadata', async () => {
 		const hubSpy = jest.spyOn(Hub, 'listen');
 		const storageHelper = new StorageHelper();
 		new AWSS3UploadManager();
