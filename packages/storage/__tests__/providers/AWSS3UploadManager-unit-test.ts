@@ -90,7 +90,7 @@ describe('resumable upload test', () => {
 		const hubSpy = jest.spyOn(Hub, 'listen');
 		const storageHelper = new StorageHelper();
 		new AWSS3UploadManager();
-		expect(hubSpy).toHaveBeenCalledTimes(1);
+		expect(hubSpy).toHaveBeenCalled();
 		expect(hubSpy).toHaveBeenCalledWith('auth', expect.any(Function));
 		const mockLocalStorage = storageHelper.getStorage();
 		const mockRemoveItemFn = jest.fn();
@@ -118,16 +118,11 @@ describe('resumable upload test', () => {
 			emitter: emitter,
 		};
 
-		const onCompleteSpy = jest.fn();
-		const onProgressSpy = jest.fn();
 		const storageHelper = new StorageHelper();
 		expect(storageHelper.getStorage()).toBe(localStorageMock);
 
 		const uploadTaskManager = new AWSS3UploadManager();
 		const uploadTask = await uploadTaskManager.addTask(taskInput);
-
-		uploadTask.onComplete(onCompleteSpy);
-		uploadTask.onProgress(onProgressSpy);
 
 		expect((<any>uploadTask).state).toEqual(1);
 		expect((<any>uploadTask).inProgress).toHaveLength(4);
