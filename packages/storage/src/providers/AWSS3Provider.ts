@@ -55,10 +55,15 @@ import {
 	CustomPrefix,
 	S3ProviderRemoveOutput,
 	S3PutResult,
+	ResumableUploadConfig,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
-import { AWSS3UploadManager, TaskEvents } from './AWSS3UploadManager';
+import {
+	AWSS3UploadManager,
+	TaskEvents,
+	AddTaskInput,
+} from './AWSS3UploadManager';
 import { AWSS3UploadTask } from './AWSS3UploadTask';
 import * as events from 'events';
 import { CancelTokenSource } from 'axios';
@@ -149,112 +154,21 @@ export class AWSS3Provider implements StorageProvider {
 		return this._config;
 	}
 
-	private async upload(key: string, file, config?): Promise<AWSS3UploadTask> {
-		if (!(file instanceof Blob)) {
-			throw new Error(StorageErrorStrings.INVALID_BLOB);
-		}
-		const opt = Object.assign({}, this._config, config);
+	private async startResumableUpload(
+		addTaskInput: AddTaskInput,
+		config: S3ProviderPutConfig & ResumableUploadConfig
+	): Promise<AWSS3UploadTask> {
+		const { emitter, key, file } = addTaskInput;
 		const {
-			bucket,
-			track,
 			progressCallback,
 			completeCallback,
 			errorCallback,
-			level,
-		} = opt;
-		const {
-			contentType,
-			contentDisposition,
-			contentEncoding,
-			cacheControl,
-			expires,
-			metadata,
-			tagging,
-			acl,
-		} = opt;
-		const {
-			serverSideEncryption,
-			SSECustomerAlgorithm,
-			SSECustomerKey,
-			SSECustomerKeyMD5,
-			SSEKMSKeyId,
-		} = opt;
-		const type = contentType ? contentType : 'binary/octet-stream';
-		const prefix = this._prefix(opt);
-		const s3 = this._createNewS3Client(opt);
-		s3.middlewareStack.remove('contentLengthMiddleware');
-
-		// @aws-sdk/client-s3 seems to be ignoring the `ContentType` parameter, so we
-		// are explicitly adding it via middleware.
-		// https://github.com/aws/aws-sdk-js-v3/issues/2000
-		s3.middlewareStack.add(
-			next => (args: any) => {
-				if (type && args && args.request && args.request.headers) {
-					args.request.headers['Content-Type'] = type;
-				}
-				return next(args);
-			},
-			{
-				step: 'build',
-			}
-		);
-
-		const finalKey = prefix + key;
-		logger.debug('put ' + key + ' to ' + finalKey);
-
-		const params: PutObjectCommandInput = {
-			Bucket: bucket,
-			Key: finalKey,
-			Body: file,
-			ContentType: type,
-		};
-		if (cacheControl) {
-			params.CacheControl = cacheControl;
+			track = false,
+		} = config;
+		if (!(file instanceof Blob)) {
+			throw new Error(StorageErrorStrings.INVALID_BLOB);
 		}
-		if (contentDisposition) {
-			params.ContentDisposition = contentDisposition;
-		}
-		if (contentEncoding) {
-			params.ContentEncoding = contentEncoding;
-		}
-		if (expires) {
-			params.Expires = expires;
-		}
-		if (metadata) {
-			params.Metadata = metadata;
-		}
-		if (tagging) {
-			params.Tagging = tagging;
-		}
-		if (serverSideEncryption) {
-			params.ServerSideEncryption = serverSideEncryption;
-		}
-		if (SSECustomerAlgorithm) {
-			params.SSECustomerAlgorithm = SSECustomerAlgorithm;
-		}
-		if (SSECustomerKey) {
-			params.SSECustomerKey = SSECustomerKey;
-		}
-		if (SSECustomerKeyMD5) {
-			params.SSECustomerKeyMD5 = SSECustomerKeyMD5;
-		}
-		if (SSEKMSKeyId) {
-			params.SSEKMSKeyId = SSEKMSKeyId;
-		}
-		if (acl) {
-			params.ACL = acl;
-		}
-
-		const emitter = new events.EventEmitter();
-		const task = await this._uploadTaskManager.addTask({
-			bucket,
-			key: finalKey,
-			s3Client: s3,
-			file,
-			emitter,
-			accessLevel: level,
-			params,
-		});
+		const task = await this._uploadTaskManager.addTask(addTaskInput);
 
 		emitter.on(TaskEvents.UPLOAD_PROGRESS, event => {
 			if (progressCallback) {
@@ -299,7 +213,7 @@ export class AWSS3Provider implements StorageProvider {
 			'upload',
 			{ method: 'put', result: 'success' },
 			null,
-			`Upload success for ${key}`
+			`Upload Task created successfully for ${key}`
 		);
 
 		return task;
@@ -577,7 +491,7 @@ export class AWSS3Provider implements StorageProvider {
 			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
 		}
 		const opt = Object.assign({}, this._config, config);
-		const { bucket, track, progressCallback, resumable } = opt;
+		const { bucket, track, progressCallback, level, resumable } = opt;
 		const {
 			contentType,
 			contentDisposition,
@@ -596,10 +510,6 @@ export class AWSS3Provider implements StorageProvider {
 			SSEKMSKeyId,
 		} = opt;
 		const type = contentType ? contentType : 'binary/octet-stream';
-
-		if (resumable) {
-			return this.upload(key, object, config);
-		}
 
 		const prefix = this._prefix(opt);
 		const final_key = prefix + key;
@@ -650,6 +560,22 @@ export class AWSS3Provider implements StorageProvider {
 
 		if (acl) {
 			params.ACL = acl;
+		}
+
+		if (resumable) {
+			const addTaskInput: AddTaskInput = {
+				bucket,
+				key: final_key,
+				s3Client: this._createNewS3Client(opt),
+				file: object as Blob,
+				emitter,
+				accessLevel: level,
+				params,
+			};
+			return this.startResumableUpload(
+				addTaskInput,
+				config as typeof config & { resumable: true }
+			);
 		}
 
 		try {

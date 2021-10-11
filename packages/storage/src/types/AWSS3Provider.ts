@@ -8,7 +8,6 @@ import {
 } from '@aws-sdk/client-s3';
 import { StorageOptions, StorageAccessLevel } from './Storage';
 import {
-	AWSS3UploadTask,
 	UploadTaskCompleteEvent,
 	UploadTaskProgressEvent,
 } from '../providers/AWSS3UploadTask';
@@ -45,7 +44,7 @@ export type S3ProviderGetOuput<T> = T extends { download: true }
 	? GetObjectCommandOutput
 	: string;
 
-export type _S3ProviderPutConfig = {
+type _S3ProviderPutConfig = {
 	progressCallback?: (progress: any) => any;
 	provider?: 'AWSS3';
 	track?: boolean;
@@ -67,16 +66,18 @@ export type _S3ProviderPutConfig = {
 	resumable?: boolean;
 };
 
+export type ResumableUploadConfig = {
+	resumable: true;
+	progressCallback?: (progress: UploadTaskProgressEvent) => any;
+	completeCallback?: (event: UploadTaskCompleteEvent) => any;
+	errorCallback?: (err: any) => any;
+};
+
 export type S3ProviderPutConfig = CommonStorageOptions &
 	(
 		| _S3ProviderPutConfig
 		// discriminated union so users won't be able to add resumable specific callbacks without the resumable flag
-		| (_S3ProviderPutConfig & {
-				resumable: true;
-				progressCallback?: (progress: UploadTaskProgressEvent) => any;
-				completeCallback?: (event: UploadTaskCompleteEvent) => any;
-				errorCallback?: (err: any) => any;
-		  })
+		| (_S3ProviderPutConfig & ResumableUploadConfig)
 	);
 
 export interface S3ProviderPutOutput {
