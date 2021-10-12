@@ -1176,34 +1176,22 @@ class DataStore {
 							item,
 						])
 					);
-					generateAndSendSnapshot();
+					generateAndEmitSnapshot();
 				} catch (err) {
 					observer.error(err);
 				}
 			})();
 
-			// primary callback for sending snapshots via `observer.next()`
 			// TODO: abstract this function into a util file to be able to write better unit tests
-			const generateAndSendSnapshot = () => {
+			const generateSnapshot = (): DataStoreSnapshot<T> => {
 				const isSynced = this.sync.getModelSyncedStatus(model);
-
-				const itemsArray = [
+				let itemsArray = [
 					...Array.from(items.values()),
 					...Array.from(itemsChanged.values()),
 				];
 
 				if (options?.sort) {
-					const modelDefinition = getModelDefinition(model);
-					const pagination = this.processPagination(modelDefinition, options);
-
-					const sortPredicates = ModelSortPredicateCreator.getPredicates(
-						pagination.sort
-					);
-
-					if (sortPredicates.length) {
-						const compareFn = sortCompareFunction(sortPredicates);
-						itemsArray.sort(compareFn);
-					}
+					itemsArray = sortItems(itemsArray);
 				}
 
 				items = new Map(itemsArray.map(item => [item.id, item]));
@@ -1211,17 +1199,40 @@ class DataStore {
 				// remove deleted items from the final result set
 				deletedItemIds.forEach(id => items.delete(id));
 
-				const snapshot: DataStoreSnapshot<T> = {
+				return {
 					items: Array.from(items.values()),
 					isSynced,
 				};
+			};
 
-				// send the generated snapshot
+			const emitSnapshot = (snapshot: DataStoreSnapshot<T>) => {
+				// send the generated snapshot to the primary subscription
 				observer.next(snapshot);
 
 				// reset the changed items sets
 				itemsChanged = new Map();
 				deletedItemIds = [];
+			};
+
+			const generateAndEmitSnapshot = () => {
+				const snapshot = generateSnapshot();
+				emitSnapshot(snapshot);
+			};
+
+			const sortItems = itemsToSort => {
+				const modelDefinition = getModelDefinition(model);
+				const pagination = this.processPagination(modelDefinition, options);
+
+				const sortPredicates = ModelSortPredicateCreator.getPredicates(
+					pagination.sort
+				);
+
+				if (sortPredicates.length) {
+					const compareFn = sortCompareFunction(sortPredicates);
+					return itemsToSort.sort(compareFn);
+				} else {
+					return itemsToSort;
+				}
 			};
 
 			// fire the callback one last time when the model is fully synced
@@ -1231,7 +1242,7 @@ class DataStore {
 					event === ControlMessage.SYNC_ENGINE_MODEL_SYNCED &&
 					data?.model?.name === model.name
 				) {
-					generateAndSendSnapshot();
+					generateAndEmitSnapshot();
 					Hub.remove('api', hubCallback);
 				}
 			};
@@ -1253,7 +1264,7 @@ class DataStore {
 				const isSynced = this.sync.getModelSyncedStatus(model);
 
 				if (itemsChanged.size >= SYNCED_ITEMS_THRESHOLD || isSynced) {
-					generateAndSendSnapshot();
+					generateAndEmitSnapshot();
 				}
 			});
 
