@@ -11,8 +11,8 @@
  * and limitations under the License.
  */
 
-import { ReactElement } from 'react';
-import { TextStyle, ViewStyle } from 'react-native';
+import { ReactElement, ReactNode } from 'react';
+import { StyleProp, TextStyle, ViewStyle } from 'react-native';
 import {
 	InAppMessage,
 	InAppMessageAction,
@@ -24,11 +24,34 @@ import {
 type ButtonProps = any;
 type IconButtonProps = any;
 
+type InAppMessageComponentStyle = {
+	closeIconButton?: StyleProp<IconButtonProps['style']>;
+	container?: StyleProp<ViewStyle>;
+	header?: StyleProp<TextStyle>;
+	message?: StyleProp<TextStyle>;
+	primaryButton?: StyleProp<ButtonProps['style']>;
+	secondaryButton?: StyleProp<ButtonProps['style']>;
+};
+
+export type InAppMessageComponentStyles = {
+	BannerMessage?: InAppMessageComponentStyle;
+	CarouselMessage?: InAppMessageComponentStyle;
+	FullScreenMessage?: InAppMessageComponentStyle;
+	ModalMessage?: InAppMessageComponentStyle;
+};
+
 export type InAppMessagingContextType = {
 	clearInAppMessages: () => void;
+	components: InAppMessageComponents;
 	displayInAppMessage: (inAppMessage: InAppMessage) => void;
 	inAppMessages: InAppMessage[];
-	components: InAppMessageComponents;
+	style: InAppMessageComponentStyles;
+};
+
+export type InAppMessagingProviderProps = {
+	children: ReactNode;
+	components?: InAppMessageComponents;
+	style?: InAppMessageComponentStyles;
 };
 
 export type InAppMessageActionHandler = (
@@ -40,15 +63,6 @@ export interface InAppMessageButtonProps
 	extends Omit<InAppMessageButton, 'action' | 'url'> {
 	onPress: () => void;
 }
-
-type InAppMessageComponentStyle = {
-	closeIconButton?: IconButtonProps['style'];
-	container?: ViewStyle;
-	header?: TextStyle;
-	message?: TextStyle;
-	primaryButton?: ButtonProps['style'];
-	secondaryButton?: ButtonProps['style'];
-};
 
 export type InAppMessagePosition = 'bottom' | 'middle' | 'top';
 

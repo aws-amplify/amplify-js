@@ -35,7 +35,12 @@ export default function useInAppMessage(): {
 	Component: InAppMessageComponent;
 	props: InAppMessageComponentProps;
 } {
-	const { clearInAppMessages, components, inAppMessages } = useInAppMessaging();
+	const {
+		clearInAppMessages,
+		components,
+		inAppMessages,
+		style,
+	} = useInAppMessaging();
 	const {
 		BannerMessage = DefaultBannerMessage,
 		CarouselMessage = DefaultCarouselMessage,
@@ -63,6 +68,7 @@ export default function useInAppMessage(): {
 				id,
 				onClose,
 				position: getPositionProp(layout),
+				style: style?.BannerMessage,
 			};
 			return { Component: BannerMessage, props };
 		}
@@ -71,6 +77,7 @@ export default function useInAppMessage(): {
 				data: content.map(item => getContentProps(item, onActionCallback)),
 				id,
 				onClose,
+				style: style?.CarouselMessage,
 			};
 			return { Component: CarouselMessage, props };
 		}
@@ -79,6 +86,7 @@ export default function useInAppMessage(): {
 				...getContentProps(content[0], onActionCallback),
 				id,
 				onClose,
+				style: style?.FullScreenMessage,
 			};
 			return { Component: FullScreenMessage, props };
 		}

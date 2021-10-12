@@ -14,7 +14,7 @@
 import React, { useEffect } from 'react';
 import isEmpty from 'lodash/isEmpty';
 
-import { useInAppMessage } from '../..';
+import { useInAppMessage } from '../../hooks';
 
 export default function InAppMessageDisplay() {
 	const { Component, props } = useInAppMessage();
