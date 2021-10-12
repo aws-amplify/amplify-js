@@ -90,7 +90,7 @@ body:
         - GraphQL API
         - DataStore
         - Storage
-	- Geo
+        - Geo
         - Push Notifications
         - Interactions
         - PubSub
@@ -109,7 +109,7 @@ body:
       options:
         - auth
         - storage
-	- geo
+        - geo
         - function
         - api
         - analytics
