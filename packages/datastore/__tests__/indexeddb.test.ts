@@ -299,6 +299,7 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('query lazily HAS_ONE/BELONGS_TO with explicit Field', async () => {
+		expect.assertions(1);
 		const team1 = new Team({ name: 'team' });
 		const savedTeam = DataStore.save(team1);
 		const project1 = new Project({
@@ -310,10 +311,11 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(project1);
 
 		const q1 = await DataStore.query(Project, project1.id);
-		q1.team.then(value => expect(value.id).toEqual(team1.id));
+		return q1.team.then(value => expect(value.id).toEqual(team1.id));
 	});
 
 	test('Memoization Test', async () => {
+		expect.assertions(2);
 		const team1 = new Team({ name: 'team' });
 		const savedTeam = DataStore.save(team1);
 		const project1 = new Project({
@@ -325,8 +327,12 @@ describe('Indexed db storage test', () => {
 
 		const q1 = await DataStore.query(Project, project1.id);
 
-		q1.team.then(value => expect(value.id).toEqual(team1.id));
-		q1.team.then(value => expect(value.id).toEqual(team1.id));
+		return q1.team.then(value => {
+			expect(value.id).toEqual(team1.id);
+			q1.team.then(value => {
+				expect(value.id).toEqual(team1.id);
+			});
+		});
 	});
 
 	test('query with sort on a single field', async () => {
