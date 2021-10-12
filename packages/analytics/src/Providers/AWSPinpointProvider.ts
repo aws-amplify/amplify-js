@@ -659,10 +659,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			? clientInfo.platform === 'android'
 				? 'GCM'
 				: 'APNS'
-			: 'PUSH';
-		// NOTE: "PUSH" is a historical channel type, which is safe to be used for analytics
-		// PUSH channel type will not run into maximum endpoint limitation
-		// if pinpoint supports specific analytics channel type, we should update accordingly
+			: undefined;
 		const tmp = {
 			channelType,
 			requestId: uuid(),
