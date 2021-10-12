@@ -122,7 +122,7 @@ yarn link @aws-amplify/auth
 
 These tests are only necessary if you’re looking to contribute a Pull Request. If you’re just playing locally you don’t need them. However if you’re contributing a Pull Request for anything other than bug fixes it would be best to validate that first because depending on the scope of the change.
 
-**Using the set-dev:react-native script to work with React-Native apps**
+**Using the setup-dev:react-native script to work with React-Native apps**
 
 > Note: All the below commands to be run from the local amplify-js library root
 
@@ -153,16 +153,16 @@ Optionally, you can use the shorthands flags `-p` and `-t` for packages and targ
 
 > All scoped packages must be prefixed by `@aws-amplify/` . For example: `@aws-amplify/auth`
 
-To develop multiple/all packages, provide the package names separated by a comma or use the keyword all:
+To develop multiple/all packages, provide the package names separated by a comma or the flag `--all` or `-a`:
 
 ```
 npm run setup-dev:react-native -- --packages @aws-amplify/auth,aws-amplify-react-native --target ~/path/to/your/rn/app/root
-npm run setup-dev:react-native -- --packages all --target ~/path/to/your/rn/app/root
+npm run setup-dev:react-native -- --all --target ~/path/to/your/rn/app/root
 ```
 
-> Note: `--` is important to provide arguments as shown above.
+> Note: `--` right after the script name is important to provide the flags with their values.
 
-**Debugging problems with the `set-dev:react-native` script**
+**Debugging problems with the `setup-dev:react-native` script**
 
 - If the WML command does not do anything after adding the links, watch it's src file using watchman. run the below from the root of this repository:
 

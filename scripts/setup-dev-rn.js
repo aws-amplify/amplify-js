@@ -117,11 +117,12 @@ function openTerminalWithTabs(commands, pkgRootPath) {
 function setupDevReactNative() {
 	const args = yargs.argv;
 	const targetAppPath = args.target ?? args.t;
+	const all = args.all ?? args.a;
 	const packages = args.packages ?? args.p;
 	const pkgRootPath = process.cwd();
 
 	// Exit if package option is not given
-	if (packages === undefined || packages === true) {
+	if ((packages === undefined || packages === true) && !all) {
 		logger.error('Package option cannot be empty.');
 		return;
 	}
@@ -154,8 +155,7 @@ function setupDevReactNative() {
 	);
 
 	// ALL Packages list formation
-	const requestedPackages =
-		packages === 'all' ? supportedPackages : packages.split(',');
+	const requestedPackages = all ? supportedPackages : packages.split(',');
 
 	const esmPackages = [];
 	const cjsPackages = [];
@@ -164,7 +164,7 @@ function setupDevReactNative() {
 		// Exit if the package is not within the supported list of packages
 		if (!supportedPackages.includes(pack)) {
 			logger.error(
-				`Package ${pack} is not supported by this script or does not exist. Here is list of supported packages: ${supportedPackages}`
+				`Package ${pack} is not supported by this script or does not exist. Here is a list of supported packages: ${supportedPackages}`
 			);
 			process.exit(0);
 		}
