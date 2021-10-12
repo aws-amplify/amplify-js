@@ -44,6 +44,8 @@ const CJS_PACKAGES_PRESET = [
 	'@aws-amplify/ui',
 ];
 
+const UI_PACKAGES_PRESET = ['@aws-amplify/ui-react'];
+
 // Utility functions for string manipulation
 // Explicit functions as they are important in an osaScript
 const singleQuotedFormOf = content => `'${content}'`;
@@ -235,9 +237,13 @@ const buildWmlAddStrings = (packages, targetAppPath, pkgRootPath) => {
 	);
 	packages.forEach(pack => {
 		const packageName = pack.split('/')[1] ?? pack;
-		const sourceDirectoryName = packageName.includes('ui')
-			? `amplify-${packageName}`
-			: packageName;
+
+		let sourceDirectoryName = '';
+		if (UI_PACKAGES_PRESET.includes(pack)) {
+			sourceDirectoryName = `amplify-${packageName}`;
+		} else {
+			sourceDirectoryName = packageName;
+		}
 		const source = path.resolve(packagesDirectory, sourceDirectoryName);
 		const target = path.resolve(sampleAppNodeModulesDirectory, pack);
 		wmlAddCommands += `${doubleQuotedFormOf(
