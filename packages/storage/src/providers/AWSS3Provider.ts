@@ -120,7 +120,6 @@ export class AWSS3Provider implements StorageProvider {
 	 */
 	constructor(config?: StorageOptions) {
 		this._config = config ? config : {};
-		this._uploadTaskManager = new AWSS3UploadManager();
 		logger.debug('Storage Options', this._config);
 	}
 
@@ -150,6 +149,13 @@ export class AWSS3Provider implements StorageProvider {
 		this._config = Object.assign({}, this._config, amplifyConfig.Storage);
 		if (!this._config.bucket) {
 			logger.debug('Do not have bucket yet');
+		}
+		if (!this._uploadTaskManager) {
+			const s3 = this._createNewS3Client(this._config);
+			s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
+			this._uploadTaskManager = new AWSS3UploadManager(
+				this._createNewS3Client(this._config)
+			);
 		}
 		return this._config;
 	}
@@ -566,7 +572,6 @@ export class AWSS3Provider implements StorageProvider {
 			const addTaskInput: AddTaskInput = {
 				bucket,
 				key: final_key,
-				s3Client: this._createNewS3Client(opt),
 				file: object as Blob,
 				emitter,
 				accessLevel: level,

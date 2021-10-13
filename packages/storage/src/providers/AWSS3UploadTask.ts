@@ -24,12 +24,11 @@ export enum AWSS3UploadTaskState {
 	PAUSED,
 	CANCELLED,
 }
+type PartialUploadPartInput = Omit<UploadPartCommandInput, 'PartNumber'> &
+	Partial<Pick<UploadPartCommandInput, 'PartNumber'>>;
 
 export interface AWSS3UploadTaskParams {
 	s3Client: S3Client;
-	uploadId: string;
-	bucket: string;
-	key: string;
 	file: Blob;
 	/**
 	 * File size of each chunk of the parts
@@ -40,6 +39,7 @@ export interface AWSS3UploadTaskParams {
 	 */
 	completedParts?: Part[];
 	emitter?: events.EventEmitter;
+	uploadPartInput: PartialUploadPartInput;
 }
 
 export interface InProgressRequest {
@@ -86,17 +86,15 @@ export class AWSS3UploadTask implements UploadTask {
 
 	constructor({
 		s3Client,
-		uploadId,
-		bucket,
-		key,
 		file,
 		completedParts,
 		emitter,
+		uploadPartInput,
 	}: AWSS3UploadTaskParams) {
 		this.s3client = s3Client;
-		this.uploadId = uploadId;
-		this.bucket = bucket;
-		this.key = key;
+		this.uploadId = uploadPartInput.UploadId;
+		this.key = uploadPartInput.Key;
+		this.bucket = uploadPartInput.Bucket;
 		this.file = file;
 		this.partSize = PART_SIZE;
 		this.totalBytes = this.file.size;
@@ -211,6 +209,8 @@ export class AWSS3UploadTask implements UploadTask {
 						} else {
 							logger.error('error starting next part of upload: ', err);
 						}
+						// axios' cancel will also throw an error, however we don't need to emit an event in that case as it's an
+						// expected behavior
 						if (
 							!axios.isCancel(err) &&
 							err.message !==
