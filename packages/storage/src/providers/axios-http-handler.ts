@@ -119,7 +119,13 @@ export class AxiosHttpHandler implements HttpHandler {
 			// removing the content-type header. Link for the source code
 			// https://github.com/axios/axios/blob/dc4bc49673943e35280e5df831f5c3d0347a9393/lib/adapters/xhr.js#L121-L123
 
-			if (axiosRequest.headers['Content-Type']) {
+			if (
+				axiosRequest.headers[
+					Object.keys(axiosRequest.headers).find(
+						key => key.toLowerCase() === 'content-type'
+					)
+				]
+			) {
 				axiosRequest.data = null;
 			}
 		}
