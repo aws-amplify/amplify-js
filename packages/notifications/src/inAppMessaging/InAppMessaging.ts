@@ -12,12 +12,10 @@
  */
 
 import {
-	Amplify,
 	ConsoleLogger as Logger,
 	HubCallback,
 	HubCapsule,
 	Hub,
-	parseMobileHubConfig,
 	StorageHelper,
 } from '@aws-amplify/core';
 import flatten from 'lodash/flatten';
@@ -25,18 +23,18 @@ import noop from 'lodash/noop';
 import { AWSPinpointProvider } from './Providers';
 import {
 	InAppMessage,
-	InAppMessagingCategory,
 	InAppMessagingConfig,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
+	InAppMessagingSubCategory,
 	OnMessagesReceived,
 } from './types';
 
 const STORAGE_KEY_SUFFIX = '_inAppMessages';
 
-const logger = new Logger('InAppMessage');
+const logger = new Logger('Notifications.InAppMessaging');
 
-class InAppMessagingClass {
+export default class InAppMessaging {
 	private config: Record<string, any> = {};
 	private onMessagesReceived: OnMessagesReceived = noop;
 	private listeningForAnalyticEvents = false;
@@ -57,15 +55,10 @@ class InAppMessagingClass {
 		listenForAnalyticsEvents = true,
 		onMessagesReceived,
 		...config
-	}: InAppMessagingConfig = {}) => {
-		this.config = Object.assign(
-			{},
-			this.config,
-			parseMobileHubConfig(config).Notifications?.InAppMessaging ?? {},
-			config
-		);
+	}: InAppMessagingConfig = {}): InAppMessagingConfig => {
+		this.config = Object.assign({}, this.config, config);
 
-		logger.debug('configure InAppMessaging', config);
+		logger.debug('configure InAppMessaging', this.config);
 
 		this.onMessagesReceived = this.setOnMessagesReceived(onMessagesReceived);
 
@@ -84,13 +77,15 @@ class InAppMessagingClass {
 			Hub.listen('analytics', this.analyticsListener);
 			this.listeningForAnalyticEvents = true;
 		}
+
+		return this.config;
 	};
 
 	/**
-	 * Get the name of the module category
-	 * @returns {string} name of the module category
+	 * Get the name of this module
+	 * @returns {string} name of this module
 	 */
-	getModuleName(): InAppMessagingCategory {
+	getModuleName(): InAppMessagingSubCategory {
 		return 'InAppMessaging';
 	}
 
@@ -116,7 +111,11 @@ class InAppMessagingClass {
 	 * @param {InAppMessagingProvider} pluggable - an instance of the plugin
 	 */
 	addPluggable = (pluggable: InAppMessagingProvider): void => {
-		if (pluggable && pluggable.getCategory() === 'InAppMessaging') {
+		if (
+			pluggable &&
+			pluggable.getCategory() === 'Notifications' &&
+			pluggable.getSubCategory() === 'InAppMessaging'
+		) {
 			this.pluggables.push(pluggable);
 			pluggable.configure(this.config[pluggable.getProviderName()]);
 		}
@@ -254,8 +253,3 @@ class InAppMessagingClass {
 		}
 	};
 }
-
-const InAppMessaging = new InAppMessagingClass();
-
-export default InAppMessaging;
-Amplify.register(InAppMessaging);

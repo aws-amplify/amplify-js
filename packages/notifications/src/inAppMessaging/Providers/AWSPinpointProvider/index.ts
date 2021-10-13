@@ -27,6 +27,7 @@ import {
 } from '@aws-sdk/client-pinpoint';
 import { v1 as uuid } from 'uuid';
 
+import { NotificationsCategory } from '../../../types';
 import SessionTracker, {
 	SessionState,
 	SessionStateChangeHandler,
@@ -34,7 +35,7 @@ import SessionTracker, {
 import {
 	InAppMessage,
 	InAppMessageLayout,
-	InAppMessagingCategory,
+	InAppMessagingSubCategory,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
 } from '../../types';
@@ -62,7 +63,8 @@ const MESSAGE_DAILY_COUNT_KEY = 'pinpointProvider_inAppMessages_dailyCount';
 const MESSAGE_TOTAL_COUNT_KEY = 'pinpointProvider_inAppMessages_totalCount';
 
 export default class AWSPinpointProvider implements InAppMessagingProvider {
-	static category: InAppMessagingCategory = 'InAppMessaging';
+	static category: NotificationsCategory = 'Notifications';
+	static subCategory: InAppMessagingSubCategory = 'InAppMessaging';
 	static providerName = 'AWSPinpoint';
 
 	private config: Record<string, any> = {};
@@ -83,6 +85,13 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 	 */
 	getCategory() {
 		return AWSPinpointProvider.category;
+	}
+
+	/**
+	 * get the sub-category of the plugin
+	 */
+	getSubCategory() {
+		return AWSPinpointProvider.subCategory;
 	}
 
 	/**

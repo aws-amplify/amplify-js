@@ -12,9 +12,11 @@
  */
 
 import React, { ReactNode, useCallback, useEffect, useState } from 'react';
-import { InAppMessage, InAppMessaging } from '@aws-amplify/notifications';
+import { InAppMessage, Notifications } from '@aws-amplify/notifications';
 
 import InAppMessagingContext from './InAppMessagingContext';
+
+const { InAppMessaging } = Notifications;
 
 export default function InAppMessagingProvider({
 	children,

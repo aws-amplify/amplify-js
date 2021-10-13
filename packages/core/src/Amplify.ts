@@ -27,7 +27,7 @@ export class AmplifyClass {
 	Predictions = null;
 	DataStore = null;
 	Geo = null;
-	InAppMessaging = null;
+	Notifications = null;
 
 	Logger = LoggerClass;
 	ServiceWorker = null;
