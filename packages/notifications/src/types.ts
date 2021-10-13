@@ -16,6 +16,7 @@ export {
 	InAppMessagingEvent,
 	InAppMessage,
 	InAppMessageAction,
+	InAppMessageButton,
 	InAppMessageContent,
 	InAppMessageLayout,
 	InAppMessageStyle,

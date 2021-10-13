@@ -75,7 +75,7 @@ interface InAppMessageImage {
 	src: string;
 }
 
-interface InAppMessageButton {
+export interface InAppMessageButton {
 	title: string;
 	action: InAppMessageAction;
 	url?: string;
