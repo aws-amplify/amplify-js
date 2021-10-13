@@ -2,7 +2,10 @@ import {
 	AWSS3UploadManager,
 	AddTaskInput,
 } from '../../src/providers/AWSS3UploadManager';
-import { AWSS3UploadTask } from '../../src/providers/AWSS3UploadTask';
+import {
+	AWSS3UploadTask,
+	AWSS3UploadTaskState,
+} from '../../src/providers/AWSS3UploadTask';
 import * as events from 'events';
 import {
 	S3Client,
@@ -124,15 +127,16 @@ describe('resumable upload test', () => {
 		const uploadTaskManager = new AWSS3UploadManager();
 		const uploadTask = await uploadTaskManager.addTask(taskInput);
 
-		expect((<any>uploadTask).state).toEqual(1);
+		// upload task defaults to auto-starting
+		expect((<any>uploadTask).state).toEqual(AWSS3UploadTaskState.IN_PROGRESS);
 		expect((<any>uploadTask).inProgress).toHaveLength(4);
 
 		uploadTask.pause();
-		expect((<any>uploadTask).state).toEqual(2);
+		expect((<any>uploadTask).state).toEqual(AWSS3UploadTaskState.PAUSED);
 		expect((<any>uploadTask).inProgress).toEqual([]);
 
 		uploadTask.resume();
-		expect((<any>uploadTask).state).toEqual(1);
+		expect((<any>uploadTask).state).toEqual(AWSS3UploadTaskState.IN_PROGRESS);
 		expect((<any>uploadTask).inProgress).toHaveLength(4);
 	});
 
@@ -257,6 +261,9 @@ describe('resumable upload test', () => {
 
 		expect(dateNowSpy).toHaveBeenCalled();
 		expect(duplicateUploadTask).toBeInstanceOf(AWSS3UploadTask);
+		expect(s3ServiceCallSpy.mock.calls[5][0]).toBeInstanceOf(
+			AbortMultipartUploadCommand
+		);
 		expect(s3ServiceCallSpy.mock.calls[5][0].input).toEqual({
 			Bucket: testParams.Bucket,
 			Key: testParams.Key,

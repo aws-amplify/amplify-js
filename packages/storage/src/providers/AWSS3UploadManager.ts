@@ -32,7 +32,6 @@ interface FileMetadata {
 	key: string;
 	// Unix timestamp in ms
 	lastTouched: number;
-	timeStarted: number;
 	uploadId: UploadId;
 }
 
@@ -83,25 +82,22 @@ export class AWSS3UploadManager {
 		key: string;
 		file: Blob;
 	}): Promise<ListPartsCommandOutput | undefined> {
-		const uploads = this._listUploadTasks();
-
-		if (Object.keys(uploads).length === 0) {
-			return undefined;
-		}
-
 		const fileKey = this._getFileKey(file, bucket, key);
 
-		if (!uploads.hasOwnProperty(fileKey)) {
+		// scan for expired multipart upload requests every time localStorage is queried
+		await this._abortExpiredRequests({
+			s3Client: s3client,
+		});
+
+		const uploads = this._listUploadTasks();
+
+		if (Object.keys(uploads).length === 0 || !uploads.hasOwnProperty(fileKey)) {
 			return undefined;
 		}
 
-		const cachedUploadFileData: FileMetadata =
-			uploads[this._getFileKey(file, bucket, key)] || {};
-		const hasExpired =
-			cachedUploadFileData.hasOwnProperty('lastTouched') &&
-			Date.now() - cachedUploadFileData.lastTouched > oneHourInMs;
+		const cachedUploadFileData: FileMetadata = uploads[fileKey];
 
-		if (cachedUploadFileData && !hasExpired) {
+		if (cachedUploadFileData) {
 			cachedUploadFileData.lastTouched = Date.now();
 
 			this._setUploadTasks(uploads);
@@ -145,31 +141,29 @@ export class AWSS3UploadManager {
 	 *
 	 * @param [ttl] - [Specify how long since the task has started should it be considered expired]
 	 */
-	private _purgeExpiredKeys(input: {
+	private async _abortExpiredRequests({
+		s3Client,
+		ttl = oneHourInMs,
+	}: {
 		s3Client: S3Client;
 		ttl?: number;
-		emitter?: events.EventEmitter;
 	}) {
-		const { s3Client, ttl = oneHourInMs } = input;
 		const uploads = this._listUploadTasks();
 
 		for (const [k, upload] of Object.entries(uploads)) {
 			const hasExpired =
-				Object.prototype.hasOwnProperty.call(upload, 'timeStarted') &&
-				Date.now() - upload.timeStarted > ttl;
+				Object.prototype.hasOwnProperty.call(upload, 'lastTouched') &&
+				Date.now() - upload.lastTouched > ttl;
 
 			if (hasExpired) {
-				s3Client
-					.send(
-						new AbortMultipartUploadCommand({
-							Bucket: upload.bucket,
-							Key: upload.key,
-							UploadId: upload.uploadId,
-						})
-					)
-					.then(res => {
-						delete uploads[k];
-					});
+				await s3Client.send(
+					new AbortMultipartUploadCommand({
+						Bucket: upload.bucket,
+						Key: upload.key,
+						UploadId: upload.uploadId,
+					})
+				);
+				delete uploads[k];
 			}
 		}
 
@@ -196,10 +190,6 @@ export class AWSS3UploadManager {
 	public async addTask(input: AddTaskInput) {
 		const { s3Client, bucket, key, file, emitter } = input;
 		let cachedUpload = {};
-
-		this._purgeExpiredKeys({
-			s3Client,
-		});
 
 		try {
 			cachedUpload =
@@ -268,7 +258,6 @@ export class AWSS3UploadManager {
 		});
 		const fileMetadata: FileMetadata = {
 			uploadId: createMultipartUpload.UploadId,
-			timeStarted: Date.now(),
 			lastTouched: Date.now(),
 			bucket,
 			key,
