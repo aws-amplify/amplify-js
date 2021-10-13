@@ -247,6 +247,9 @@ export class AnalyticsClass {
 		} else {
 			params = { event, provider };
 		}
+
+		dispatchAnalyticsEvent('record', params.event, 'Recording Analytics event');
+
 		return this._sendEvent(params);
 	}
 

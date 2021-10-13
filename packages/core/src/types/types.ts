@@ -9,6 +9,9 @@ export interface AmplifyConfig {
 	Storage?: object;
 	Cache?: object;
 	Geo?: object;
+	Notifications?: {
+		InAppMessaging?: object;
+	};
 	ssr?: boolean;
 }
 
