@@ -40,7 +40,7 @@
 	"bugs": {
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
-	"homepage": "https://aws-amplify.github.io/",
+	"homepage": "https://docs.amplify.aws/",
 	"dependencies": {
 		"@aws-amplify/cache": "4.0.22",
 		"@aws-amplify/core": "4.3.2",
