@@ -42,12 +42,11 @@ class NotificationsClass {
 	 * @param {Object} config - Notifications configuration object
 	 */
 	configure = ({ ...config }: NotificationsConfig = {}) => {
-		this.config = Object.assign(
-			{},
-			this.config,
-			parseMobileHubConfig(config).Notifications ?? {},
-			config
-		);
+		this.config = {
+			...this.config,
+			...(parseMobileHubConfig(config).Notifications ?? {}),
+			...config,
+		};
 
 		logger.debug('configure Notifications', config);
 

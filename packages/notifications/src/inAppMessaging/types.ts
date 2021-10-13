@@ -14,7 +14,7 @@ import { NotificationsCategory } from '../types';
 
 export type OnMessagesReceived = (messages: any) => void;
 
-export type InAppMessagingSubCategory = 'InAppMessaging';
+export type NotificationsSubcategory = 'InAppMessaging';
 
 export type InAppMessagingEvent = {
 	name: string;
@@ -37,7 +37,7 @@ export interface InAppMessagingProvider {
 	getCategory(): NotificationsCategory;
 
 	// return sub-category ('InAppMessaging')
-	getSubCategory(): InAppMessagingSubCategory;
+	getSubCategory(): NotificationsSubcategory;
 
 	// return the name of you provider
 	getProviderName(): string;

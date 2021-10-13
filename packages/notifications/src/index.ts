@@ -1,2 +1,11 @@
 export { default as Notifications } from './Notifications';
-export * from './types';
+export {
+	InAppMessagingConfig,
+	InAppMessagingEvent,
+	InAppMessage,
+	InAppMessageAction,
+	InAppMessageContent,
+	InAppMessageLayout,
+	InAppMessageStyle,
+	NotificationsConfig,
+} from './types';

@@ -11,7 +11,15 @@
  * and limitations under the License.
  */
 import { InAppMessagingConfig } from './inAppMessaging';
-export * from './inAppMessaging/types';
+export {
+	InAppMessagingConfig,
+	InAppMessagingEvent,
+	InAppMessage,
+	InAppMessageAction,
+	InAppMessageContent,
+	InAppMessageLayout,
+	InAppMessageStyle,
+} from './inAppMessaging/types';
 
 export type NotificationsCategory = 'Notifications';
 

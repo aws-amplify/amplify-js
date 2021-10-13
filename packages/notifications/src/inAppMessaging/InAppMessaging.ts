@@ -26,7 +26,7 @@ import {
 	InAppMessagingConfig,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
-	InAppMessagingSubCategory,
+	NotificationsSubcategory,
 	OnMessagesReceived,
 } from './types';
 
@@ -56,7 +56,7 @@ export default class InAppMessaging {
 		onMessagesReceived,
 		...config
 	}: InAppMessagingConfig = {}): InAppMessagingConfig => {
-		this.config = Object.assign({}, this.config, config);
+		this.config = { ...this.config, config };
 
 		logger.debug('configure InAppMessaging', this.config);
 
@@ -85,7 +85,7 @@ export default class InAppMessaging {
 	 * Get the name of this module
 	 * @returns {string} name of this module
 	 */
-	getModuleName(): InAppMessagingSubCategory {
+	getModuleName(): NotificationsSubcategory {
 		return 'InAppMessaging';
 	}
 

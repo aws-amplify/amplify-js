@@ -35,7 +35,7 @@ import SessionTracker, {
 import {
 	InAppMessage,
 	InAppMessageLayout,
-	InAppMessagingSubCategory,
+	NotificationsSubcategory,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
 } from '../../types';
@@ -64,7 +64,7 @@ const MESSAGE_TOTAL_COUNT_KEY = 'pinpointProvider_inAppMessages_totalCount';
 
 export default class AWSPinpointProvider implements InAppMessagingProvider {
 	static category: NotificationsCategory = 'Notifications';
-	static subCategory: InAppMessagingSubCategory = 'InAppMessaging';
+	static subCategory: NotificationsSubcategory = 'InAppMessaging';
 	static providerName = 'AWSPinpoint';
 
 	private config: Record<string, any> = {};
