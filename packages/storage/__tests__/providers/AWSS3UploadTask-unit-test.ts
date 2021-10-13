@@ -31,11 +31,13 @@ describe('resumable upload task test', () => {
 		const params = {
 			accessLevel: 'public',
 			file,
-			bucket: 'testBucket',
-			key: 'testKey',
 			s3Client: new S3Client(testOpts),
 			emitter: emitter,
-			uploadId: 'uploadId',
+			uploadPartInput: {
+				Bucket: 'testBucket',
+				Key: 'testKey',
+				UploadId: 'uploadId',
+			},
 		};
 		const uploadTask = new AWSS3UploadTask(params);
 		expect(uploadTask.isInProgress).toBeFalsy();
@@ -48,15 +50,17 @@ describe('resumable upload task test', () => {
 		const params = {
 			accessLevel: 'public',
 			file,
-			bucket: 'testBucket',
-			key: 'testKey',
 			s3Client: new S3Client(testOpts),
 			emitter: emitter,
-			uploadId: 'uploadId',
+			uploadPartInput: {
+				Bucket: 'testBucket',
+				Key: 'testKey',
+				UploadId: 'uploadId',
+			},
 		};
 		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
 			if (command instanceof AbortMultipartUploadCommand) {
-				return Promise.resolve({ Key: params.key });
+				return Promise.resolve({ Key: params.uploadPartInput.Key });
 			}
 		});
 		const uploadTask = new AWSS3UploadTask(params);

@@ -24,6 +24,7 @@ export enum AWSS3UploadTaskState {
 	PAUSED,
 	CANCELLED,
 }
+
 type PartialUploadPartInput = Omit<UploadPartCommandInput, 'PartNumber'> &
 	Partial<Pick<UploadPartCommandInput, 'PartNumber'>>;
 
@@ -86,15 +87,15 @@ export class AWSS3UploadTask implements UploadTask {
 
 	constructor({
 		s3Client,
+		uploadPartInput,
 		file,
 		completedParts,
 		emitter,
-		uploadPartInput,
 	}: AWSS3UploadTaskParams) {
 		this.s3client = s3Client;
 		this.uploadId = uploadPartInput.UploadId;
-		this.key = uploadPartInput.Key;
 		this.bucket = uploadPartInput.Bucket;
+		this.key = uploadPartInput.Key;
 		this.file = file;
 		this.partSize = PART_SIZE;
 		this.totalBytes = this.file.size;
