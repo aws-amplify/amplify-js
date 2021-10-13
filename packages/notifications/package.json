@@ -42,6 +42,8 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"dependencies": {
+		"@aws-amplify/cache": "4.0.22",
+		"@aws-amplify/core": "4.3.2",
 		"@aws-sdk/client-pinpoint": "^3.33.0",
 		"lodash": "^4.17.21"
 	},
