@@ -49,6 +49,8 @@ export interface StorageProvider {
 export interface UploadTask {
 	resume(): any;
 	pause(): any;
+	percent: number;
+	isInProgress: boolean;
 }
 
 export interface StorageProviderWithCopy extends StorageProvider {
