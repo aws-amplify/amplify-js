@@ -11,7 +11,7 @@ import {
 import { StorageHelper, Logger, Hub } from '@aws-amplify/core';
 import { StorageAccessLevel } from '../types/Storage';
 
-const logger = new Logger('Storage');
+const logger = new Logger('AWSS3UploadManager');
 const oneHourInMs = 1000 * 60 * 60;
 
 type UploadId = string;

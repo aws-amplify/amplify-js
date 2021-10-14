@@ -18,7 +18,7 @@ import { listSingleFile, byteLength } from '../common/StorageUtils';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
 import { SET_CONTENT_LENGTH_HEADER } from '../common/StorageConstants';
 
-const logger = new Logger('AWSS3Provider');
+const logger = new Logger('AWSS3UploadTask');
 export enum AWSS3UploadTaskState {
 	INIT,
 	IN_PROGRESS,
