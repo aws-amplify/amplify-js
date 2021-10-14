@@ -214,9 +214,7 @@ class IndexedDBAdapter implements Adapter {
 		const connectedModels = traverseModel(
 			modelConstructor.name,
 			model,
-			this.schema.namespaces[this.namespaceResolver(modelConstructor)],
-			this.modelInstanceCreator,
-			this.getModelConstructorByModelName
+			this.schema.namespaces[this.namespaceResolver(modelConstructor)]
 		);
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
@@ -251,7 +249,6 @@ class IndexedDBAdapter implements Adapter {
 		}
 
 		const result: [T, OpType.INSERT | OpType.UPDATE][] = [];
-
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
 			const store = tx.objectStore(storeName);
@@ -265,7 +262,6 @@ class IndexedDBAdapter implements Adapter {
 			if (id === model.id || opType === OpType.INSERT) {
 				const key = await store.index('byId').getKey(item.id);
 				await store.put(item, key);
-
 				result.push([instance, opType]);
 			}
 		}
@@ -294,58 +290,6 @@ class IndexedDBAdapter implements Adapter {
 			return records.map(record =>
 				this.modelInstanceCreator(modelConstructor, record)
 			);
-		}
-
-		const tx = this.db.transaction([...connectionStoreNames], 'readonly');
-
-		for await (const relation of relations) {
-			const { fieldName, modelName, targetName } = relation;
-			const storeName = this.getStorename(namespaceName, modelName);
-			const store = tx.objectStore(storeName);
-			const modelConstructor = this.getModelConstructorByModelName(
-				namespaceName,
-				modelName
-			);
-
-			switch (relation.relationType) {
-				case 'HAS_ONE':
-					for await (const recordItem of records) {
-						if (recordItem[fieldName]) {
-							const connectionRecord = await this._get(
-								store,
-								recordItem[fieldName]
-							);
-
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-						}
-					}
-
-					break;
-				case 'BELONGS_TO':
-					for await (const recordItem of records) {
-						if (recordItem[targetName]) {
-							const connectionRecord = await this._get(
-								store,
-								recordItem[targetName]
-							);
-
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-							delete recordItem[targetName];
-						}
-					}
-
-					break;
-				case 'HAS_MANY':
-					// TODO: Lazy loading
-					break;
-				default:
-					exhaustiveCheck(relation.relationType);
-					break;
-			}
 		}
 
 		return records.map(record =>
@@ -796,9 +740,7 @@ class IndexedDBAdapter implements Adapter {
 			const connectedModels = traverseModel(
 				modelConstructor.name,
 				this.modelInstanceCreator(modelConstructor, item),
-				this.schema.namespaces[this.namespaceResolver(modelConstructor)],
-				this.modelInstanceCreator,
-				this.getModelConstructorByModelName
+				this.schema.namespaces[this.namespaceResolver(modelConstructor)]
 			);
 
 			const { id, _deleted } = item;
