@@ -315,7 +315,7 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('Memoization Test', async () => {
-		expect.assertions(2);
+		expect.assertions(3);
 		const team1 = new Team({ name: 'team' });
 		const savedTeam = DataStore.save(team1);
 		const project1 = new Project({
@@ -326,13 +326,39 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(project1);
 
 		const q1 = await DataStore.query(Project, project1.id);
+		const q2 = await DataStore.query(Project, project1.id);
 
-		return q1.team.then(value => {
-			expect(value.id).toEqual(team1.id);
-			q1.team.then(value => {
-				expect(value.id).toEqual(team1.id);
+		// Ensure that model fields are actually promises
+		if (
+			typeof q1.team.then !== 'function' ||
+			typeof q2.team.then !== 'function'
+		) {
+			throw new Error('Not a promise');
+		}
+
+		const team = await q1.team;
+		const team2 = await q1.team;
+		const team3 = await q2.team;
+
+		// equality by reference proves memoization works
+		expect(team).toBe(team2);
+
+		// new instance of the same record will be equal by value
+		expect(team).toEqual(team3);
+
+		// but not by reference
+		expect(team).not.toBe(team3);
+	});
+
+	test('Test lazy validation', async () => {
+		const owner1 = new BlogOwner({ name: 'Blog' });
+		expect(() => {
+			new Project({
+				name: 'Avatar: Last Airbender',
+				teamID: owner1.id,
+				team: owner1 as any,
 			});
-		});
+		}).toThrow('Value passed to Project.team is not an instance of Team');
 	});
 
 	test('query with sort on a single field', async () => {

@@ -519,8 +519,9 @@ const createModelClass = <T extends PersistentModel>(
 		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
 			set(model: PersistentModel) {
 				if (!model || !model.id) return;
-				// Avoid validation error on non model object with just
-				// id and _deleted fields that is returned from AppSync
+				// Avoid validation error when processing AppSync response with nested
+				// selection set. Nested entitites lack version field and can not be validated
+				// TODO: explore a more reliable method to solve this
 				if (model.hasOwnProperty('_version')) {
 					const modelConstructor = Object.getPrototypeOf(model || {})
 						.constructor as PersistentModelConstructor<T>;
