@@ -277,10 +277,6 @@ export class AWSS3UploadManager {
 		this._setUploadTasks(uploads);
 	}
 
-	public getTask(uploadId: UploadId) {
-		return this._uploadTasks[uploadId];
-	}
-
 	private _isBlob(x: unknown): x is Blob {
 		return x instanceof Blob;
 	}
