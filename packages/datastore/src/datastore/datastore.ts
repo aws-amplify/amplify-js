@@ -1162,20 +1162,43 @@ class DataStore {
 		const SYNCED_ITEMS_THRESHOLD = this.syncPageSize || 1000;
 
 		return new Observable<DataStoreSnapshot<T>>(observer => {
+			const items = new Map<string, T>();
 			let itemsChanged = new Map<string, T>();
-			let items = new Map<string, T>();
 			let deletedItemIds: string[] = [];
+			let handle: ZenObservable.Subscription;
 
-			// first, query and return any locally-available records
 			(async () => {
 				try {
-					// using a Map to maintain insertion order & uniqueness
-					items = new Map(
-						(await this.query(model, criteria, options)).map(item => [
-							item.id,
-							item,
-						])
+					// first, query and return any locally-available records
+					(await this.query(model, criteria, options)).forEach(item =>
+						items.set(item.id, item)
 					);
+
+					// observe the model and send a stream of updates (debounced)
+					handle = this.observe(
+						model,
+						// @ts-ignore TODO: fix this TSlint error
+						criteria
+					).subscribe(({ element, model, opType }) => {
+						// flag items which have been recently deleted
+						if (opType === 'DELETE') {
+							deletedItemIds.push(element.id);
+						} else {
+							itemsChanged.set(element.id, element);
+						}
+
+						const isSynced = this.sync.getModelSyncedStatus(model);
+
+						if (
+							itemsChanged.size - deletedItemIds.length >=
+								SYNCED_ITEMS_THRESHOLD ||
+							isSynced
+						) {
+							generateAndEmitSnapshot();
+						}
+					});
+
+					// will return any locally-available items in the first snapshot
 					generateAndEmitSnapshot();
 				} catch (err) {
 					observer.error(err);
@@ -1191,10 +1214,11 @@ class DataStore {
 				];
 
 				if (options?.sort) {
-					itemsArray = sortItems(itemsArray);
+					sortItems(itemsArray);
 				}
 
-				items = new Map(itemsArray.map(item => [item.id, item]));
+				items.clear();
+				itemsArray.forEach(item => items.set(item.id, item));
 
 				// remove deleted items from the final result set
 				deletedItemIds.forEach(id => items.delete(id));
@@ -1210,7 +1234,7 @@ class DataStore {
 				observer.next(snapshot);
 
 				// reset the changed items sets
-				itemsChanged = new Map();
+				itemsChanged.clear();
 				deletedItemIds = [];
 			};
 
@@ -1219,7 +1243,7 @@ class DataStore {
 				emitSnapshot(snapshot);
 			};
 
-			const sortItems = itemsToSort => {
+			const sortItems = (itemsToSort: T[]): void => {
 				const modelDefinition = getModelDefinition(model);
 				const pagination = this.processPagination(modelDefinition, options);
 
@@ -1229,13 +1253,13 @@ class DataStore {
 
 				if (sortPredicates.length) {
 					const compareFn = sortCompareFunction(sortPredicates);
-					return itemsToSort.sort(compareFn);
+					itemsToSort.sort(compareFn);
 				} else {
-					return itemsToSort;
+					itemsToSort;
 				}
 			};
 
-			// fire the callback one last time when the model is fully synced
+			// send one last snapshot when the model is fully synced
 			const hubCallback = ({ payload }) => {
 				const { event, data } = payload;
 				if (
@@ -1247,26 +1271,6 @@ class DataStore {
 				}
 			};
 			Hub.listen('datastore', hubCallback);
-
-			// observe the model and send a stream of updates (debounced)
-			const handle: ZenObservable.Subscription = this.observe(
-				model,
-				// @ts-ignore TODO: fix this TSlint error
-				criteria
-			).subscribe(({ element, model, opType }) => {
-				// flag items which have been recently deleted
-				if (opType === 'DELETE') {
-					deletedItemIds.push(element.id);
-				} else {
-					itemsChanged.set(element.id, element);
-				}
-
-				const isSynced = this.sync.getModelSyncedStatus(model);
-
-				if (itemsChanged.size >= SYNCED_ITEMS_THRESHOLD || isSynced) {
-					generateAndEmitSnapshot();
-				}
-			});
 
 			return () => {
 				if (handle) {
