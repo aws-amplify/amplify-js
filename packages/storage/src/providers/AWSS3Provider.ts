@@ -65,17 +65,20 @@ import {
 	AddTaskInput,
 } from './AWSS3UploadManager';
 import { AWSS3UploadTask } from './AWSS3UploadTask';
+import {
+	localTestingStorageEndpoint,
+	SET_CONTENT_LENGTH_HEADER,
+} from '../common/StorageConstants';
 import * as events from 'events';
 import { CancelTokenSource } from 'axios';
 
 const logger = new Logger('AWSS3Provider');
 
-const SET_CONTENT_LENGTH_HEADER = 'contentLengthMiddleware';
 const DEFAULT_STORAGE_LEVEL = 'public';
 const DEFAULT_PRESIGN_EXPIRATION = 900;
+// placeholder credentials in order to satisfy type requirement, always results in 403 when used
 const INVALID_CRED = { accessKeyId: '', secretAccessKey: '' };
 
-const localTestingStorageEndpoint = 'http://localhost:20005';
 /**
  * Provide storage methods to use AWS S3
  */

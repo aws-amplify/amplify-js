@@ -16,8 +16,9 @@ import { TaskEvents } from './AWSS3UploadManager';
 import { UploadTask } from '../types/Provider';
 import { listSingleFile, byteLength } from '../common/StorageUtils';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
+import { SET_CONTENT_LENGTH_HEADER } from '../common/StorageConstants';
 
-const logger = new Logger('Storage');
+const logger = new Logger('AWSS3Provider');
 export enum AWSS3UploadTaskState {
 	INIT,
 	IN_PROGRESS,
@@ -93,6 +94,7 @@ export class AWSS3UploadTask implements UploadTask {
 		emitter,
 	}: AWSS3UploadTaskParams) {
 		this.s3client = s3Client;
+		this.s3client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		this.uploadId = uploadPartInput.UploadId;
 		this.bucket = uploadPartInput.Bucket;
 		this.key = uploadPartInput.Key;
