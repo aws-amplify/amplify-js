@@ -25,6 +25,7 @@ describe('aws-amplify', () => {
 			  "PubSub",
 			  "Cache",
 			  "Interactions",
+			  "Notifications",
 			  "a",
 			  "button",
 			  "signInButton",
@@ -94,7 +95,6 @@ describe('aws-amplify', () => {
 			  "AWSCloudWatchProvider",
 			  "withSSRContext",
 			  "Geo",
-			  "Notifications",
 			  "default",
 			]
 		`);
