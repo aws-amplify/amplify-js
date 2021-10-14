@@ -1254,8 +1254,6 @@ class DataStore {
 				if (sortPredicates.length) {
 					const compareFn = sortCompareFunction(sortPredicates);
 					itemsToSort.sort(compareFn);
-				} else {
-					itemsToSort;
 				}
 			};
 
