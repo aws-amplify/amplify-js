@@ -58,6 +58,7 @@ import {
 	ResumableUploadConfig,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
+import { dispatchStorageEvent } from '../common/StorageUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import {
 	AWSS3UploadManager,
@@ -70,39 +71,10 @@ import { CancelTokenSource } from 'axios';
 
 const logger = new Logger('AWSS3Provider');
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
 const SET_CONTENT_LENGTH_HEADER = 'contentLengthMiddleware';
 const DEFAULT_STORAGE_LEVEL = 'public';
 const DEFAULT_PRESIGN_EXPIRATION = 900;
 const INVALID_CRED = { accessKeyId: '', secretAccessKey: '' };
-
-const dispatchStorageEvent = (
-	track: boolean,
-	event: string,
-	attrs: any,
-	metrics: any,
-	message: string
-): void => {
-	if (track) {
-		const data = { attrs };
-		if (metrics) {
-			data['metrics'] = metrics;
-		}
-		Hub.dispatch(
-			'storage',
-			{
-				event,
-				data,
-				message,
-			},
-			'Storage',
-			AMPLIFY_SYMBOL
-		);
-	}
-};
 
 const localTestingStorageEndpoint = 'http://localhost:20005';
 /**
@@ -562,7 +534,7 @@ export class AWSS3Provider implements StorageProvider {
 			params.ACL = acl;
 		}
 
-		if (resumable) {
+		if (resumable === true) {
 			const addTaskInput: AddTaskInput = {
 				bucket,
 				key: final_key,
@@ -572,6 +544,7 @@ export class AWSS3Provider implements StorageProvider {
 				accessLevel: level,
 				params,
 			};
+			// explicitly asserting the type here as Typescript could not infer that resumable is of type true
 			return this.startResumableUpload(
 				addTaskInput,
 				config as typeof config & { resumable: true }

@@ -1,4 +1,5 @@
 import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { Hub } from '@aws-amplify/core';
 
 export const listSingleFile = async ({
 	s3Client,
@@ -28,7 +29,37 @@ export const byteLength = (x: unknown) => {
 	} else if (isBlob(x)) {
 		return x.size;
 	} else {
-		throw new Error(`Cannot determine byte length of ${x}`);
+		throw new Error('Cannot determine byte length of ' + x);
+	}
+};
+
+const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
+typeof Symbol.for === 'function'
+	? Symbol.for('amplify_default')
+	: '@@amplify_default') as Symbol;
+
+export const dispatchStorageEvent = (
+	track: boolean,
+	event: string,
+	attrs: any,
+	metrics: any,
+	message: string
+): void => {
+	if (track) {
+		const data = { attrs };
+		if (metrics) {
+			data['metrics'] = metrics;
+		}
+		Hub.dispatch(
+			'storage',
+			{
+				event,
+				data,
+				message,
+			},
+			'Storage',
+			AMPLIFY_SYMBOL
+		);
 	}
 };
 
