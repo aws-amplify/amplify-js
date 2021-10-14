@@ -206,7 +206,7 @@ export class Storage {
 	public cancel(
 		request: AWSS3UploadTask,
 		message?: string
-	): Promise<ReturnType<AWSS3UploadTask['cancel']>>;
+	): ReturnType<AWSS3UploadTask['cancel']>;
 	public cancel(request: Promise<any>, message?: string): void;
 	public cancel(
 		request: Promise<any> | AWSS3UploadTask,
