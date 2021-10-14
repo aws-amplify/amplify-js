@@ -12,7 +12,6 @@
  */
 import {
 	ConsoleLogger as Logger,
-	Hub,
 	Credentials,
 	Parser,
 	getAmplifyUserAgent,
