@@ -9,7 +9,7 @@ import {
 	AbortMultipartUploadCommandOutput,
 } from '@aws-sdk/client-s3';
 import * as events from 'events';
-import axios, { Canceler } from 'axios';
+import axios, { Canceler, CancelTokenSource } from 'axios';
 import { HttpHandlerOptions } from '@aws-sdk/types';
 import { Logger } from '@aws-amplify/core';
 import { TaskEvents } from './AWSS3UploadManager';
@@ -185,43 +185,46 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 	}
 
+	private async _makeUploadPartRequest(
+		input: UploadPartCommandInput,
+		cancelTokenSource: CancelTokenSource
+	) {
+		try {
+			const res = await this.s3client.send(new UploadPartCommand(input), {
+				cancelTokenSource,
+			} as HttpHandlerOptions);
+			await this._onPartUploadCompletion({
+				eTag: res.ETag,
+				partNumber: input.PartNumber,
+				chunk: input.Body,
+			});
+		} catch (err) {
+			if (this.state === AWSS3UploadTaskState.PAUSED) {
+				logger.log('upload paused');
+			} else if (this.state === AWSS3UploadTaskState.CANCELLED) {
+				logger.log('upload aborted');
+			} else {
+				logger.error('error starting next part of upload: ', err);
+			}
+			// axios' cancel will also throw an error, however we don't need to emit an event in that case as it's an
+			// expected behavior
+			if (
+				!axios.isCancel(err) &&
+				err.message !== AWSS3ProviderUploadErrorStrings.UPLOAD_PAUSED_MESSAGE
+			) {
+				this.emitter.emit(TaskEvents.ERROR, err);
+			}
+			this.pause();
+		}
+	}
+
 	private _startNextPart() {
 		if (this.queued.length > 0 && this.state !== AWSS3UploadTaskState.PAUSED) {
 			const cancelTokenSource = axios.CancelToken.source();
 			const nextPart = this.queued.shift();
 			this.inProgress.push({
 				uploadPartInput: nextPart,
-				s3Request: this.s3client
-					.send(new UploadPartCommand(nextPart), {
-						cancelTokenSource,
-					} as HttpHandlerOptions)
-					.then(output => {
-						this._onPartUploadCompletion({
-							eTag: output.ETag,
-							partNumber: nextPart.PartNumber,
-							chunk: nextPart.Body,
-						});
-						return output;
-					})
-					.catch(err => {
-						if (this.state === AWSS3UploadTaskState.PAUSED) {
-							logger.log('upload paused');
-						} else if (this.state === AWSS3UploadTaskState.CANCELLED) {
-							logger.log('upload aborted');
-						} else {
-							logger.error('error starting next part of upload: ', err);
-						}
-						// axios' cancel will also throw an error, however we don't need to emit an event in that case as it's an
-						// expected behavior
-						if (
-							!axios.isCancel(err) &&
-							err.message !==
-								AWSS3ProviderUploadErrorStrings.UPLOAD_PAUSED_MESSAGE
-						) {
-							this.emitter.emit(TaskEvents.ERROR, err);
-						}
-						this.pause();
-					}),
+				s3Request: this._makeUploadPartRequest(nextPart, cancelTokenSource),
 				cancel: cancelTokenSource.cancel,
 			});
 		}
