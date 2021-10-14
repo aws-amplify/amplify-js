@@ -34,6 +34,30 @@ declare class PostModel {
 	): PostModel;
 }
 
+declare class ProjectModel {
+	readonly id: string;
+	readonly name?: string;
+	readonly teamID?: string;
+	readonly team?: Promise<TeamModel>;
+	constructor(init: ModelInit<ProjectModel>);
+	static copyOf(
+		source: ProjectModel,
+		mutator: (
+			draft: MutableModel<ProjectModel>
+		) => MutableModel<ProjectModel> | void
+	): ProjectModel;
+}
+
+declare class TeamModel {
+	readonly id: string;
+	readonly name: string;
+	constructor(init: ModelInit<TeamModel>);
+	static copyOf(
+		source: TeamModel,
+		mutator: (draft: MutableModel<TeamModel>) => MutableModel<TeamModel> | void
+	): TeamModel;
+}
+
 declare class PostMetadataType {
 	readonly rating: number;
 	readonly tags?: string[];
@@ -115,6 +139,8 @@ const {
 	Person,
 	PostMetadata,
 	Nested,
+	Project,
+	Team,
 } = initSchema(newSchema) as {
 	Author: PersistentModelConstructor<AuthorModel>;
 	Post: PersistentModelConstructor<PostModel>;
@@ -125,6 +151,8 @@ const {
 	Person: PersistentModelConstructor<PersonModel>;
 	PostMetadata: NonModelTypeConstructor<PostMetadataType>;
 	Nested: NonModelTypeConstructor<NestedType>;
+	Project: PersistentModelConstructor<ProjectModel>;
+	Team: PersistentModelConstructor<TeamModel>;
 };
 ``;
 export {
@@ -137,4 +165,6 @@ export {
 	Person,
 	PostMetadata,
 	Nested,
+	Project,
+	Team,
 };
