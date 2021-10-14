@@ -637,8 +637,7 @@ export async function asyncFilter<T>(
 	return results;
 }
 
-// TODO: `predicateFor` => too long, too much much nesting. DECOMPOSE.
-// Also ... should this be returning `FinalModelPredicate<T>` instead?
+// TODO: `predicateFor` is potentially too long, too complicatd. DECOMPOSE?
 
 /**
  * Creates a "seed" predicate that can be used to build an executable condition.
@@ -660,11 +659,16 @@ export async function asyncFilter<T>(
  * `predicateFor()` returns objecst with recursive getters. To facilitate this,
  * a `query` and `tail` can be provided to "accumulate" nested conditions.
  *
+ * TODO: the sortof-immutable algorithm was originally done to support legacy style
+ * predicate branching (`p => p.x.eq(value).y.eq(value)`). i'm not sure this is
+ * necessary or beneficial at this point, since we decided that each field condition
+ * must flly terminate a branch. is the strong mutation barrier between chain links
+ * still necessary or helpful?
+ *
  * @param ModelType The ModelMeta used to build child properties.
- * @param field Obsolete. (I think!) Was intended to scope to a child model.
- * This info is now encoded directly in the inner `GroupCondition`.
- * @param query A base query to build on.
- * @param tail The point in the base query to attach new conditions to.
+ * @param field Scopes the query branch to a field.
+ * @param query A base query to build on. Omit to start a new query.
+ * @param tail The point in an existing `query` to attach new conditions to.
  * @returns A ModelPredicate (builder) that customers can create queries with.
  * (As shown in function description.)
  */
@@ -674,35 +678,38 @@ export function predicateFor<T extends PersistentModel>(
 	query?: GroupCondition,
 	tail?: GroupCondition
 ): ModelPredicate<T> {
+	let starter: GroupCondition;
+	// if we don't have an existing query + tail to build onto,
+	// we need to start a new query chain.
+	if (!query || !tail) {
+		starter = new GroupCondition(ModelType, field, undefined, 'and', []);
+	}
+
+	// our eventual return object, which can be built upon.
+	// next steps will be to add or(), and(), not(), and field.op() methods.
 	const link = {
-		__query:
-			query || new GroupCondition(ModelType, field, undefined, 'and', []),
-		__tail: new GroupCondition(ModelType, field, undefined, 'and', []),
+		__query: starter || query,
+		__tail: starter || tail,
 		__copy: () => {
 			const [query, newtail] = link.__query.copy(link.__tail);
 			return predicateFor(ModelType, undefined, query, newtail);
 		},
 	} as ModelPredicate<T>;
 
-	// if we're already building on a query, we need to extend it.
-	// the tail is already constructed. just add it.
-	if (tail) {
-		link.__tail = tail;
-	} else if (query) {
-		link.__query.operands.push(link.__tail);
-	} else {
-		// only if it's a new query does tail === head
-		link.__tail = link.__query;
-	}
-
-	// TODO: better handled with proxy?
+	// TODO: consider a proxy
+	// adds .or() and .and() methods to the link.
 	['and', 'or'].forEach(op => {
 		(link as any)[op] = (
 			...builderOrPredicates:
 				| [ModelPredicateExtender<T>]
 				| FinalModelPredicate[]
 		): FinalModelPredicate => {
+			// or() and and() will return a copy of the original link
+			// to head off mutability concerns.
 			const newlink = link.__copy();
+
+			// the customer will supply a child predicate, which apply to the `model.field`
+			// of the tail GroupCondition.
 			newlink.__tail.operands.push(
 				new GroupCondition(
 					ModelType,
@@ -710,13 +717,16 @@ export function predicateFor<T extends PersistentModel>(
 					undefined,
 					op as 'and' | 'or',
 					typeof builderOrPredicates[0] === 'function'
-						? builderOrPredicates[0](predicateFor(ModelType)).map(
+						? // handle the the `c => [c.field.eq(v)]` form
+						  builderOrPredicates[0](predicateFor(ModelType)).map(
 								p => p.__query
 						  )
-						: (builderOrPredicates as FinalModelPredicate[]).map(p => p.__query)
+						: // handle the `[MyModel.field.eq(v)]` form (not yet available)
+						  (builderOrPredicates as FinalModelPredicate[]).map(p => p.__query)
 				)
 			);
 
+			// FinalPredicate
 			return {
 				__query: newlink.__query,
 				__tail: newlink.__tail,
@@ -727,10 +737,17 @@ export function predicateFor<T extends PersistentModel>(
 		};
 	});
 
+	// TODO: consider proxy
 	link.not = (
 		builderOrPredicate: SingularModelPredicateExtender<T> | FinalModelPredicate
 	): FinalModelPredicate => {
+		// not() will return a copy of the original link
+		// to head off mutability concerns.
 		const newlink = link.__copy();
+
+		// unlike and() and or(), the customer will supply a "singular" child predicate.
+		// the difference being: not() does not accept an array of predicate-like objects.
+		// it negates only a *single* predicate subtree.
 		newlink.__tail.operands.push(
 			new GroupCondition(
 				ModelType,
@@ -738,11 +755,16 @@ export function predicateFor<T extends PersistentModel>(
 				undefined,
 				'not',
 				typeof builderOrPredicate === 'function'
-					? [builderOrPredicate(predicateFor(ModelType)).__query]
-					: [builderOrPredicate.__query]
+					? // handle the the `c => c.field.eq(v)` form
+					  [builderOrPredicate(predicateFor(ModelType)).__query]
+					: // handle the `MyModel.field.eq(v)` form (not yet available)
+					  [builderOrPredicate.__query]
 			)
 		);
 
+		// A `FinalModelPredicate`.
+		// Return a thing that can no longer be extended, but instead used to `async filter(items)`
+		// or query storage: `.__query.fetch(storage)`.
 		return {
 			__query: newlink.__query,
 			__tail: newlink.__tail,
@@ -752,21 +774,42 @@ export function predicateFor<T extends PersistentModel>(
 		};
 	};
 
+	// TODO: consider a proxy
+	// for each field on the model schema, we want to add a getter
+	// that creates the appropriate new `link` in the query chain.
 	for (const fieldName in ModelType.schema.fields) {
 		Object.defineProperty(link, fieldName, {
 			enumerable: true,
 			get: () => {
 				const def = ModelType.schema.fields[fieldName];
+
 				if (!def.association) {
+					// we're looking at a value field. we need to return a
+					// "field matcher object", which contains all of the comparison
+					// functions ('eq', 'ne', 'gt', etc.), scoped to operate
+					// against the target field (fieldName).
 					return ops.reduce((fieldMatcher, operator) => {
 						return {
 							...fieldMatcher,
+
+							// each operator on the fieldMatcher objcect is a function.
+							// when the customer calls the function, it returns a new link
+							// in the chain -- for now -- this is the "leaf" link that
+							// cannot be further extended.
 							[operator]: (...operands: any[]) => {
+								// build off a fresh copy of the existing `link`, just in case
+								// the same link is being used elsewhere by the customer.
 								const newlink = link.__copy();
+
+								// add the given condition to the link's TAIL node.
+								// remember: the base link might go N nodes deep! e.g.,
 								newlink.__tail.operands.push(
 									new FieldCondition(fieldName, operator, operands)
 								);
 
+								// A `FinalModelPredicate`.
+								// Return a thing that can no longer be extended, but instead used to `async filter(items)`
+								// or query storage: `.__query.fetch(storage)`.
 								return {
 									__query: newlink.__query,
 									__tail: newlink.__tail,
@@ -783,6 +826,12 @@ export function predicateFor<T extends PersistentModel>(
 						def.association.connectionType === 'HAS_ONE' ||
 						def.association.connectionType === 'HAS_MANY'
 					) {
+						// the use has just typed '.someRelatedModel'. we need to given them
+						// back a predicate chain.
+
+						// `Model.reletedModelField` returns a copy of the original link,
+						// and will contains copies of internal GroupConditions
+						// to head off mutability concerns.
 						const [newquery, oldtail] = link.__query.copy(link.__tail);
 						const newtail = new GroupCondition(
 							(def.type as ModelFieldType).modelConstructor,
@@ -791,6 +840,10 @@ export function predicateFor<T extends PersistentModel>(
 							'and',
 							[]
 						);
+
+						// `oldtail` here refers to the *copy* of the old tail.
+						// so, it's safe to modify at this point. and we need to modify
+						// it to push the *new* tail onto the end of it.
 						(oldtail as GroupCondition).operands.push(newtail);
 						const newlink = predicateFor(
 							(def.type as ModelFieldType).modelConstructor,
