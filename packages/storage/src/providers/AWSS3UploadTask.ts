@@ -32,6 +32,7 @@ type PartialUploadPartInput = Omit<UploadPartCommandInput, 'PartNumber'> &
 export interface AWSS3UploadTaskParams {
 	s3Client: S3Client;
 	file: Blob;
+	uploadPartInput: PartialUploadPartInput;
 	/**
 	 * File size of each chunk of the parts
 	 */
@@ -41,7 +42,6 @@ export interface AWSS3UploadTaskParams {
 	 */
 	completedParts?: Part[];
 	emitter?: events.EventEmitter;
-	uploadPartInput: PartialUploadPartInput;
 }
 
 export interface InProgressRequest {
@@ -133,7 +133,7 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 	}
 
-	private _onPartUploadCompletion({
+	private async _onPartUploadCompletion({
 		eTag,
 		partNumber,
 		chunk,
@@ -163,9 +163,9 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 	}
 
-	private _completeUpload() {
-		this.s3client
-			.send(
+	private async _completeUpload() {
+		try {
+			await this.s3client.send(
 				new CompleteMultipartUploadCommand({
 					Bucket: this.bucket,
 					Key: this.key,
@@ -175,15 +175,14 @@ export class AWSS3UploadTask implements UploadTask {
 						Parts: this.completedParts.sort(comparePartNumber),
 					},
 				})
-			)
-			.then(_res => {
-				this.emitter.emit(TaskEvents.UPLOAD_COMPLETE, {
-					key: `${this.bucket}/${this.key}`,
-				});
-			})
-			.catch(err => {
-				logger.error('error completing upload', err);
+			);
+			this.emitter.emit(TaskEvents.UPLOAD_COMPLETE, {
+				key: `${this.bucket}/${this.key}`,
 			});
+		} catch (err) {
+			logger.error('error completing upload', err);
+			this.emitter.emit(TaskEvents.ERROR, err);
+		}
 	}
 
 	private _startNextPart() {
