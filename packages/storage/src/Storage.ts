@@ -207,14 +207,14 @@ export class Storage {
 	public cancel(
 		request: UploadTask,
 		message?: string
-	): ReturnType<AWSS3UploadTask['cancel']>;
+	): ReturnType<AWSS3UploadTask['_cancel']>;
 	public cancel(request: Promise<any>, message?: string): void;
 	public cancel(
 		request: Promise<any> | UploadTask,
 		message?: string
-	): void | ReturnType<AWSS3UploadTask['cancel']> {
+	): void | ReturnType<AWSS3UploadTask['_cancel']> {
 		if (request instanceof AWSS3UploadTask) {
-			return request.cancel();
+			return request._cancel();
 		}
 		const cancelTokenSource = this._cancelTokenSourceMap.get(
 			request as Promise<any>

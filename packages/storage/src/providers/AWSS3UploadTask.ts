@@ -305,7 +305,7 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 	}
 
-	public cancel(): Promise<AbortMultipartUploadCommandOutput> {
+	_cancel(): Promise<AbortMultipartUploadCommandOutput> {
 		this.pause();
 		this.queued = [];
 		this.completedParts = [];
