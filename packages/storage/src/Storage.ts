@@ -28,6 +28,7 @@ import {
 	StorageRemoveOutput,
 	StorageListOutput,
 	StorageCopyOutput,
+	UploadTask,
 } from './types';
 import axios, { CancelTokenSource } from 'axios';
 import { PutObjectCommandInput } from '@aws-sdk/client-s3';
@@ -204,18 +205,20 @@ export class Storage {
 	 * @param [message] - A message to include in the cancelation exception
 	 */
 	public cancel(
-		request: AWSS3UploadTask,
+		request: UploadTask,
 		message?: string
 	): ReturnType<AWSS3UploadTask['cancel']>;
 	public cancel(request: Promise<any>, message?: string): void;
 	public cancel(
-		request: Promise<any> | AWSS3UploadTask,
+		request: Promise<any> | UploadTask,
 		message?: string
-	): void | Promise<any> {
+	): void | ReturnType<AWSS3UploadTask['cancel']> {
 		if (request instanceof AWSS3UploadTask) {
 			return request.cancel();
 		}
-		const cancelTokenSource = this._cancelTokenSourceMap.get(request);
+		const cancelTokenSource = this._cancelTokenSourceMap.get(
+			request as Promise<any>
+		);
 		if (cancelTokenSource) {
 			cancelTokenSource.cancel(message);
 		} else {
