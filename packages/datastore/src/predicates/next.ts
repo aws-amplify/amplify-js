@@ -222,7 +222,7 @@ export class FieldCondition {
 	 * @returns `Promise<boolean>`, `true` if matches; `false` otherwise.
 	 */
 	async matches(item: Record<string, any>): Promise<boolean> {
-		const v = String(await item[this.field]);
+		const v = String(item[this.field]);
 		const operations = {
 			eq: () => v === this.operands[0],
 			ne: () => v !== this.operands[0],
@@ -433,12 +433,15 @@ export class GroupCondition {
 						rightHandField = 'id';
 					}
 
-					const joinConditions = relatives.map(relative => {
-						const rightHandValue = relative[rightHandField].id
-							? relative[rightHandField].id
-							: relative[rightHandField];
-						return new FieldCondition(leftHandField, 'eq', [rightHandValue]);
-					});
+					const joinConditions = [];
+					for (const relative of relatives) {
+						// await right-hand value, b/c it will eventually be lazy-loaded in some cases.
+						const rightHandValue =
+							(await relative[rightHandField]).id || relative[rightHandField];
+						joinConditions.push(
+							new FieldCondition(leftHandField, 'eq', [rightHandValue])
+						);
+					}
 
 					const predicate = FlatModelPredicateCreator.createFromExisting(
 						this.model.schema,
@@ -483,44 +486,47 @@ export class GroupCondition {
 
 		// this needs to be read from metadata.
 		const idField = 'id';
-		let resultIndex: Record<string, Record<string, any>> = {};
+
+		// will be used for intersecting or unioning results
+		let resultIndex: Map<string, Record<string, any>>;
 
 		if (operator === 'and') {
 			if (resultGroups.length === 0) {
 				return [];
 			}
 
-			// establish a base set to INSERSECT against.
-			resultIndex = resultGroups[0].reduce((agg, item) => {
-				return { ...agg, ...{ [item[idField]]: item } };
-			}, {});
-
-			// for each group, we intersect, omitting items from the new result index
-			// aren't present in each successive group.
-			resultGroups.forEach(group => {
-				resultIndex = group.reduce((agg, item) => {
-					const id = item[idField];
-					if (resultIndex[id]) agg[id] = item;
-					return agg;
-				}, {});
-			});
+			// for each group, we intersect, removing items from the result index
+			// that aren't present in each subsequent group.
+			for (const group of resultGroups) {
+				if (resultIndex === undefined) {
+					resultIndex = new Map(group.map(item => [item[idField], item]));
+				} else {
+					const intersectWith = new Map<string, Record<string, any>>(
+						group.map(item => [item[idField], item])
+					);
+					for (const k of resultIndex.keys()) {
+						if (!intersectWith.has(k)) {
+							resultIndex.delete(k);
+						}
+					}
+				}
+			}
 		} else if (operator === 'or' || operator === 'not') {
 			// it's OK to handle NOT here, because NOT must always only negate
 			// a single child predicate. NOT logic will have been distributed down
 			// to the leaf conditions already.
 
+			resultIndex = new Map();
+
 			// just merge the groups, performing DISTINCT-ification by ID.
-			resultGroups.forEach(group => {
-				resultIndex = {
-					...resultIndex,
-					...group.reduce((agg, item) => {
-						return { ...agg, ...{ [item[idField]]: item } };
-					}, {}),
-				};
-			});
+			for (const group of resultGroups) {
+				for (const item of group) {
+					resultIndex.set(item[idField], item);
+				}
+			}
 		}
-		const results = Object.values(resultIndex);
-		return results;
+
+		return Array.from(resultIndex.values());
 	}
 
 	/**
