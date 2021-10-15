@@ -70,7 +70,7 @@ describe('resumable upload task test', () => {
 		expect(uploadTask.isInProgress).toBeTruthy();
 		uploadTask.pause();
 		expect(uploadTask.state).toEqual(AWSS3UploadTaskState.PAUSED);
-		uploadTask.cancel();
+		uploadTask._cancel();
 		expect(uploadTask.state).toEqual(AWSS3UploadTaskState.CANCELLED);
 	});
 });
