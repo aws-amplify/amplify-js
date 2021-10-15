@@ -12,24 +12,22 @@
  */
 
 import React, { useEffect } from 'react';
-import isEmpty from 'lodash/isEmpty';
 
 import { useInAppMessage } from '../../hooks';
 
 export default function InAppMessageDisplay() {
 	const { Component, props } = useInAppMessage();
 
-	const hasInAppMessage = !!(Component || !isEmpty(props));
 	const { id } = props;
 
 	useEffect(() => {
-		if (hasInAppMessage) {
+		if (Component) {
 			// TODO: add display notify handler when available
 			console.log(`display InAppMessage: ${id}`);
 		}
-	}, [hasInAppMessage, id]);
+	}, [Component, id]);
 
-	if (!hasInAppMessage) {
+	if (!Component) {
 		return null;
 	}
 

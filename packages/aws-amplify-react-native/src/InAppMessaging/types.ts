@@ -54,38 +54,38 @@ export type InAppMessagingProviderProps = {
 	style?: InAppMessageComponentStyles;
 };
 
-export type InAppMessageActionHandler = (
+export type InAppMessageComponentActionHandler = (
 	action: InAppMessageAction,
 	url?: string
 ) => Promise<void>;
 
-export interface InAppMessageButtonProps
+export interface InAppMessageComponentButtonProps
 	extends Omit<InAppMessageButton, 'action' | 'url'> {
 	onPress: () => void;
 }
 
-export type InAppMessagePosition = 'bottom' | 'middle' | 'top';
+export type InAppMessageComponentPosition = 'bottom' | 'middle' | 'top';
 
-export interface InAppMessageContentProps
+export interface InAppMessageComponentContentProps
 	extends Omit<InAppMessageContent, 'primaryButton' | 'secondaryButton'> {
-	primaryButton?: InAppMessageButtonProps;
-	secondaryButton?: InAppMessageButtonProps;
+	primaryButton?: InAppMessageComponentButtonProps;
+	secondaryButton?: InAppMessageComponentButtonProps;
 }
 
 export interface InAppMessageBaseComponentProps
-	extends InAppMessageContentProps {
+	extends InAppMessageComponentContentProps {
 	id: string;
 	onClose?: () => void;
 	style?: InAppMessageComponentStyle;
 }
 
 export interface BannerMessageProps extends InAppMessageBaseComponentProps {
-	position: InAppMessagePosition;
+	position: InAppMessageComponentPosition;
 }
 
 export interface CarouselMessageProps
 	extends Omit<InAppMessageBaseComponentProps, 'content'> {
-	data: InAppMessageContentProps[];
+	data: InAppMessageComponentContentProps[];
 }
 
 export interface FullScreenMessageProps

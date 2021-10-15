@@ -14,17 +14,21 @@
 import { Linking } from 'react-native';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
-import { InAppMessageActionHandler } from '../..';
+import { InAppMessageComponentActionHandler } from '../..';
 
-const logger = new Logger('InAppMessaging');
+const logger = new Logger('Notifications.InAppMessaging');
 
-const handleAction: InAppMessageActionHandler = async (action, url) => {
+const handleAction: InAppMessageComponentActionHandler = async (
+	action,
+	url
+) => {
 	if ((action === 'LINK' || action === 'DEEP_LINK') && url) {
 		const supported = await Linking.canOpenURL(url);
 		if (supported) {
 			logger.info(`Opening url: ${url}`);
 			await Linking.openURL(url);
 		} else {
+			// TODO: determine how to allow for custom reporting of this scenario
 			logger.warn(`Unsupported url given: ${url}`);
 		}
 	}

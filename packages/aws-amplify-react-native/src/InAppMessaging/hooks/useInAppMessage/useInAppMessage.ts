@@ -10,6 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import {
 	BannerMessageProps,
@@ -22,6 +23,8 @@ import {
 } from '../..';
 
 import { getInAppMessage, getContentProps, getPositionProp } from './utils';
+
+const logger = new Logger('Notifications.InAppMessaging');
 
 // TODO: replace with Amplify default components
 const DefaultBannerMessage: InAppMessageComponents['BannerMessage'] = () =>
@@ -91,6 +94,7 @@ export default function useInAppMessage(): {
 			return { Component: FullScreenMessage, props };
 		}
 		default: {
+			logger.info(`Reecived unknown InAppMessage layout: ${layout}`);
 			return { Component: null, props: {} as InAppMessageComponentProps };
 		}
 	}

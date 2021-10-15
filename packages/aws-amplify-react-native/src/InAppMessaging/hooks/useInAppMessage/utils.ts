@@ -21,14 +21,14 @@ import {
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import {
-	InAppMessageButtonProps,
-	InAppMessageContentProps,
-	InAppMessagePosition,
+	InAppMessageComponentButtonProps,
+	InAppMessageComponentContentProps,
+	InAppMessageComponentPosition,
 } from '../..';
 
 import handleAction from './handleAction';
 
-const logger = new Logger('InAppMessaging');
+const logger = new Logger('Notifications.InAppMessaging');
 
 // TODO: implement endDate sorting logic
 export function getInAppMessage(messages: InAppMessage[]) {
@@ -37,7 +37,7 @@ export function getInAppMessage(messages: InAppMessage[]) {
 
 export const getPositionProp = (
 	layout: InAppMessageLayout
-): InAppMessagePosition => {
+): InAppMessageComponentPosition => {
 	switch (layout) {
 		case 'BOTTOM_BANNER': {
 			return 'bottom';
@@ -55,8 +55,7 @@ export const getPositionProp = (
 };
 
 const getActionHandler = (
-	action: InAppMessageAction,
-	url: string,
+	{ action, url }: { action: InAppMessageAction; url?: string },
 	onActionCallback: () => void
 ) => ({
 	onPress: async function() {
@@ -73,15 +72,15 @@ const getActionHandler = (
 const getButtonProps = (
 	{ action, url, ...baseButtonProps }: InAppMessageButton,
 	onActionCallback: () => void
-): InAppMessageButtonProps => ({
+): InAppMessageComponentButtonProps => ({
 	...baseButtonProps,
-	...getActionHandler(action, url, onActionCallback),
+	...getActionHandler({ action, url }, onActionCallback),
 });
 
 export const getContentProps = (
 	{ primaryButton, secondaryButton, ...baseContentProps }: InAppMessageContent,
 	onActionCallback: () => void
-): InAppMessageContentProps => ({
+): InAppMessageComponentContentProps => ({
 	...baseContentProps,
 	primaryButton: getButtonProps(primaryButton, onActionCallback),
 	secondaryButton: getButtonProps(secondaryButton, onActionCallback),
