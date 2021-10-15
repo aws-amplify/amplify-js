@@ -21,18 +21,18 @@ import {
 import flatten from 'lodash/flatten';
 import { AWSPinpointProvider } from './Providers';
 import {
-	addMessageEventListener,
-	MessageEvent,
-	notifyMessageEventListeners,
-} from '../EventListeners';
+	addMessageInteractionEventListener,
+	notifyMessageInteractionEventListeners,
+} from './eventListeners';
 import {
 	InAppMessage,
+	InAppMessageInteractionEvent,
 	InAppMessagingConfig,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
 	NotificationsSubcategory,
-	OnMessageEventHandler,
-	OnMessageEventListener,
+	OnMessageInteractionEventHandler,
+	OnMessageInteractionEventListener,
 	OnMessagesReceivedHandler,
 	OnMessagesReceivedListener,
 } from './types';
@@ -176,9 +176,9 @@ export default class InAppMessaging {
 
 		const flattenedMessages = flatten(messages);
 		if (flattenedMessages.length) {
-			notifyMessageEventListeners(
+			notifyMessageInteractionEventListeners(
 				flattenedMessages,
-				MessageEvent.MESSAGES_RECEIVED
+				InAppMessageInteractionEvent.MESSAGES_RECEIVED
 			);
 		}
 	};
@@ -186,33 +186,40 @@ export default class InAppMessaging {
 	onMessagesReceived = (
 		handler: OnMessagesReceivedHandler
 	): OnMessagesReceivedListener =>
-		addMessageEventListener(handler, MessageEvent.MESSAGES_RECEIVED);
+		addMessageInteractionEventListener(
+			handler,
+			InAppMessageInteractionEvent.MESSAGES_RECEIVED
+		);
 
 	onMessageDisplayed = (
-		handler: OnMessageEventHandler
-	): OnMessageEventListener =>
-		addMessageEventListener(handler, MessageEvent.MESSAGE_DISPLAYED);
+		handler: OnMessageInteractionEventHandler
+	): OnMessageInteractionEventListener =>
+		addMessageInteractionEventListener(
+			handler,
+			InAppMessageInteractionEvent.MESSAGE_DISPLAYED
+		);
 
 	onMessageDismissed = (
-		handler: OnMessageEventHandler
-	): OnMessageEventListener =>
-		addMessageEventListener(handler, MessageEvent.MESSAGE_DISMISSED);
+		handler: OnMessageInteractionEventHandler
+	): OnMessageInteractionEventListener =>
+		addMessageInteractionEventListener(
+			handler,
+			InAppMessageInteractionEvent.MESSAGE_DISMISSED
+		);
 
 	onMessageActionTaken = (
-		handler: OnMessageEventHandler
-	): OnMessageEventListener =>
-		addMessageEventListener(handler, MessageEvent.MESSAGE_ACTION_TAKEN);
+		handler: OnMessageInteractionEventHandler
+	): OnMessageInteractionEventListener =>
+		addMessageInteractionEventListener(
+			handler,
+			InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN
+		);
 
-	notifyMessageDisplayed = (message: InAppMessage): void => {
-		notifyMessageEventListeners(message, MessageEvent.MESSAGE_DISPLAYED);
-	};
-
-	notifyMessageDismissed = (message: InAppMessage): void => {
-		notifyMessageEventListeners(message, MessageEvent.MESSAGE_DISMISSED);
-	};
-
-	notifyMessageActionTaken = (message: InAppMessage): void => {
-		notifyMessageEventListeners(message, MessageEvent.MESSAGE_ACTION_TAKEN);
+	notifyMessageInteraction = (
+		message: InAppMessage,
+		event: InAppMessageInteractionEvent
+	): void => {
+		notifyMessageInteractionEventListeners(message, event);
 	};
 
 	private analyticsListener: HubCallback = ({ payload }: HubCapsule) => {

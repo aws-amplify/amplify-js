@@ -27,7 +27,7 @@ import {
 } from '@aws-sdk/client-pinpoint';
 import { v1 as uuid } from 'uuid';
 
-import { addMessageEventListener, MessageEvent } from '../../../EventListeners';
+import { addMessageInteractionEventListener } from '../../eventListeners';
 import { NotificationsCategory } from '../../../types';
 import SessionTracker, {
 	SessionState,
@@ -35,10 +35,11 @@ import SessionTracker, {
 } from '../../SessionTracker';
 import {
 	InAppMessage,
+	InAppMessageInteractionEvent,
 	InAppMessageLayout,
-	NotificationsSubcategory,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
+	NotificationsSubcategory,
 } from '../../types';
 import {
 	DailyInAppMessageCounter,
@@ -112,24 +113,24 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 			this.sessionTracker = new SessionTracker(this.sessionStateChangeHandler);
 			this.sessionTracker.start();
 			// wire up default Pinpoint message event handling
-			addMessageEventListener((message: InAppMessage) => {
+			addMessageInteractionEventListener((message: InAppMessage) => {
 				this.recordMessageEvent(
 					message,
 					PinpointMessageEvent.MESSAGE_DISPLAYED
 				);
-			}, MessageEvent.MESSAGE_DISPLAYED);
-			addMessageEventListener((message: InAppMessage) => {
+			}, InAppMessageInteractionEvent.MESSAGE_DISPLAYED);
+			addMessageInteractionEventListener((message: InAppMessage) => {
 				this.recordMessageEvent(
 					message,
 					PinpointMessageEvent.MESSAGE_DISMISSED
 				);
-			}, MessageEvent.MESSAGE_DISMISSED);
-			addMessageEventListener((message: InAppMessage) => {
+			}, InAppMessageInteractionEvent.MESSAGE_DISMISSED);
+			addMessageInteractionEventListener((message: InAppMessage) => {
 				this.recordMessageEvent(
 					message,
 					PinpointMessageEvent.MESSAGE_ACTION_TAKEN
 				);
-			}, MessageEvent.MESSAGE_ACTION_TAKEN);
+			}, InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN);
 		}
 
 		this.configured = true;

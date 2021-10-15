@@ -103,7 +103,7 @@ export interface InAppMessage {
 
 export type OnMessagesReceivedHandler = (messages: InAppMessage[]) => any;
 
-export type OnMessageEventHandler = (message: InAppMessage) => any;
+export type OnMessageInteractionEventHandler = (message: InAppMessage) => any;
 
 interface Listener {
 	remove: () => void;
@@ -113,6 +113,13 @@ export interface OnMessagesReceivedListener extends Listener {
 	handleEvent: OnMessagesReceivedHandler;
 }
 
-export interface OnMessageEventListener extends Listener {
-	handleEvent: OnMessageEventHandler;
+export interface OnMessageInteractionEventListener extends Listener {
+	handleEvent: OnMessageInteractionEventHandler;
+}
+
+export enum InAppMessageInteractionEvent {
+	MESSAGES_RECEIVED,
+	MESSAGE_DISPLAYED,
+	MESSAGE_DISMISSED,
+	MESSAGE_ACTION_TAKEN,
 }
