@@ -105,7 +105,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 
 	configure = (config = {}): object => {
 		logger.debug('configure', config);
-		this.config = Object.assign({}, this.config, config);
+		this.config = { ...this.config, ...config };
 
 		// some configuration steps should not be re-run even if provider is re-configured for some reason
 		if (!this.configured) {
