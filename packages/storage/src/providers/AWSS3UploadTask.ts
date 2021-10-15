@@ -311,7 +311,7 @@ export class AWSS3UploadTask implements UploadTask {
 		this.completedParts = [];
 		this.bytesUploaded = 0;
 		this.state = AWSS3UploadTaskState.CANCELLED;
-		this.emitter.emit(TaskEvents.ABORT);
+		this.emitter.emit(TaskEvents.CANCEL);
 		return this.s3client.send(
 			new AbortMultipartUploadCommand({
 				Bucket: this.bucket,

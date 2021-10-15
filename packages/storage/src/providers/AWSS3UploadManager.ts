@@ -36,7 +36,7 @@ interface FileMetadata {
 }
 
 export enum TaskEvents {
-	ABORT = 'abort',
+	CANCEL = 'cancel',
 	UPLOAD_COMPLETE = 'uploadComplete',
 	UPLOAD_PROGRESS = 'uploadPartProgress',
 	ERROR = 'error',
@@ -211,8 +211,7 @@ export class AWSS3UploadManager {
 		emitter.on(TaskEvents.UPLOAD_COMPLETE, () => {
 			this._removeKey(fileKey);
 		});
-
-		emitter.on(TaskEvents.ABORT, () => {
+		emitter.on(TaskEvents.CANCEL, () => {
 			this._removeKey(fileKey);
 		});
 
