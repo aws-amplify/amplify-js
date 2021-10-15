@@ -56,7 +56,7 @@ export default class InAppMessaging {
 		onMessagesReceived,
 		...config
 	}: InAppMessagingConfig = {}): InAppMessagingConfig => {
-		this.config = { ...this.config, config };
+		this.config = { ...this.config, ...config };
 
 		logger.debug('configure InAppMessaging', this.config);
 
