@@ -773,7 +773,7 @@ describe('StorageProvider test', () => {
 					}
 				});
 
-			const uploadTask = await storage.put('key', file, {
+			const uploadTask = storage.put('key', file, {
 				resumable: true,
 			});
 

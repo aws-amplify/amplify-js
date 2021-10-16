@@ -6,3 +6,5 @@ typeof Symbol.for === 'function'
 export const SET_CONTENT_LENGTH_HEADER = 'contentLengthMiddleware';
 
 export const localTestingStorageEndpoint = 'http://localhost:20005';
+
+export const UPLOADS_STORAGE_KEY = '__uploadInProgress';

@@ -15,6 +15,15 @@ import { UploadTask } from './Provider';
 
 type ListObjectsCommandOutputContent = _Object;
 
+export interface FileMetadata {
+	bucket: string;
+	fileName: string;
+	key: string;
+	// Unix timestamp in ms
+	lastTouched: number;
+	uploadId: string;
+}
+
 export type CommonStorageOptions = Omit<
 	StorageOptions,
 	| 'credentials'
@@ -145,4 +154,4 @@ export type PutResult = {
 
 export type S3PutResult<T> = T extends { resumable: true }
 	? UploadTask
-	: PutResult;
+	: Promise<PutResult>;

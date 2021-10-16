@@ -7,16 +7,26 @@ import {
 	Part,
 	AbortMultipartUploadCommand,
 	AbortMultipartUploadCommandOutput,
+	ListPartsCommand,
+	CreateMultipartUploadCommand,
 } from '@aws-sdk/client-s3';
 import * as events from 'events';
 import axios, { Canceler, CancelTokenSource } from 'axios';
 import { HttpHandlerOptions } from '@aws-sdk/types';
 import { Logger } from '@aws-amplify/core';
-import { TaskEvents } from './AWSS3UploadManager';
 import { UploadTask } from '../types/Provider';
 import { listSingleFile, byteLength } from '../common/StorageUtils';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
-import { SET_CONTENT_LENGTH_HEADER } from '../common/StorageConstants';
+import {
+	SET_CONTENT_LENGTH_HEADER,
+	UPLOADS_STORAGE_KEY,
+} from '../common/StorageConstants';
+import { isFile, isBlob } from '../common/StorageUtils';
+import {
+	S3ProviderPutConfig,
+	ResumableUploadConfig,
+	FileMetadata,
+} from '../types/AWSS3Provider';
 
 const logger = new Logger('AWSS3UploadTask');
 export enum AWSS3UploadTaskState {
@@ -26,13 +36,25 @@ export enum AWSS3UploadTaskState {
 	CANCELLED,
 }
 
-type PartialUploadPartInput = Omit<UploadPartCommandInput, 'PartNumber'> &
-	Partial<Pick<UploadPartCommandInput, 'PartNumber'>>;
+export enum TaskEvents {
+	CANCEL = 'cancel',
+	UPLOAD_COMPLETE = 'uploadComplete',
+	UPLOAD_PROGRESS = 'uploadPartProgress',
+	ERROR = 'error',
+}
+
+type PartialUploadPartInput = Omit<
+	UploadPartCommandInput,
+	'PartNumber' | 'UploadId'
+> &
+	Partial<Pick<UploadPartCommandInput, 'PartNumber' | 'UploadId'>>;
 
 export interface AWSS3UploadTaskParams {
 	s3Client: S3Client;
 	file: Blob;
 	uploadPartInput: PartialUploadPartInput;
+	storage: Storage;
+	config?: S3ProviderPutConfig & ResumableUploadConfig;
 	/**
 	 * File size of each chunk of the parts
 	 */
@@ -75,16 +97,17 @@ export class AWSS3UploadTask implements UploadTask {
 	private readonly partSize: number;
 	private readonly queueSize = DEFAULT_QUEUE_SIZE;
 	private readonly s3client: S3Client;
+	private readonly storage: Storage;
 	private inProgress: InProgressRequest[] = [];
 	private completedParts: CompletedPart[] = [];
 	private cachedParts: Part[] = [];
 	private queued: UploadPartCommandInput[] = [];
 	private bytesUploaded: number = 0;
 	private totalBytes: number = 0;
+	private uploadId: string;
 
 	readonly bucket: string;
 	readonly key: string;
-	readonly uploadId: string;
 
 	public state: AWSS3UploadTaskState = AWSS3UploadTaskState.INIT;
 
@@ -94,9 +117,11 @@ export class AWSS3UploadTask implements UploadTask {
 		file,
 		completedParts,
 		emitter,
+		storage,
 	}: AWSS3UploadTaskParams) {
 		this.s3client = s3Client;
 		this.s3client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
+		this.storage = storage;
 		this.uploadId = uploadPartInput.UploadId;
 		this.bucket = uploadPartInput.Bucket;
 		this.key = uploadPartInput.Key;
@@ -106,7 +131,7 @@ export class AWSS3UploadTask implements UploadTask {
 		this.bytesUploaded = 0;
 		this.emitter = emitter;
 		this.cachedParts = completedParts || [];
-		this.queued = this._createParts();
+		this.queued = [];
 		this._validateParams();
 		if (this.cachedParts) {
 			this._initCachedUploadParts();
@@ -124,15 +149,89 @@ export class AWSS3UploadTask implements UploadTask {
 		return this.state === AWSS3UploadTaskState.IN_PROGRESS;
 	}
 
-	private _validateParams() {
-		if (typeof this.uploadId !== 'string') {
-			throw new Error(
-				'UploadId must be specified and should be a string for an upload task'
-			);
+	private _getFileKey(): string {
+		// We should check if it's a File first because File is also instance of a Blob
+		if (isFile(this.file)) {
+			return [
+				this.file.name,
+				this.file.lastModified,
+				this.file.size,
+				this.file.type,
+				this.bucket,
+				this.key,
+			].join('-');
+		} else if (isBlob(this.file)) {
+			return [this.file.size, this.file.type, this.bucket, this.key].join('-');
+		} else return '';
+	}
+
+	private async _findCachedUploadParts(): Promise<{
+		parts: Part[];
+		uploadId: string;
+	}> {
+		const fileKey = this._getFileKey();
+		const uploadRequests = this._listCachedUploadRequests();
+
+		if (
+			Object.keys(uploadRequests).length === 0 ||
+			!Object.prototype.hasOwnProperty.call(uploadRequests, fileKey)
+		) {
+			return { parts: [], uploadId: null };
 		}
+
+		const cachedUploadFileData = uploadRequests[fileKey];
+		cachedUploadFileData.lastTouched = Date.now();
+		this._saveCachedUploadRequests(uploadRequests);
+
+		const listPartsOutput = await this.s3client.send(
+			new ListPartsCommand({
+				Bucket: this.bucket,
+				Key: this.key,
+				UploadId: cachedUploadFileData.uploadId,
+			}),
+			{}
+		);
+
+		return {
+			parts: listPartsOutput.Parts || [],
+			uploadId: cachedUploadFileData.uploadId,
+		};
+	}
+
+	private _validateParams() {
 		if (this.file.size / this.partSize > MAX_PARTS) {
 			throw new Error('Too many parts');
 		}
+	}
+
+	private _listCachedUploadRequests(): Record<string, FileMetadata> {
+		const tasks = localStorage.getItem(UPLOADS_STORAGE_KEY) || '{}';
+		return JSON.parse(tasks);
+	}
+
+	private _saveCachedUploadRequests(
+		uploadRequests: Record<string, FileMetadata>
+	): void {
+		this.storage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(uploadRequests));
+	}
+
+	private _addCachedUploadRequest(fileMetadata: FileMetadata): void {
+		const uploadRequests = this._listCachedUploadRequests();
+		uploadRequests[this._getFileKey()] = fileMetadata;
+		this._saveCachedUploadRequests(uploadRequests);
+	}
+
+	private _hasCachedUploadRequest() {
+		return Object.prototype.hasOwnProperty.call(
+			this._listCachedUploadRequests(),
+			this._getFileKey()
+		);
+	}
+
+	private _removeCachedUploadRequest() {
+		const uploadRequests = this._listCachedUploadRequests();
+		delete uploadRequests[this._getFileKey()];
+		this._saveCachedUploadRequests(uploadRequests);
 	}
 
 	private async _onPartUploadCompletion({
@@ -161,7 +260,6 @@ export class AWSS3UploadTask implements UploadTask {
 			this._startNextPart();
 		if (this._isDone()) {
 			this._completeUpload();
-			this._verifyFileSize();
 		}
 	}
 
@@ -181,6 +279,7 @@ export class AWSS3UploadTask implements UploadTask {
 			this.emitter.emit(TaskEvents.UPLOAD_COMPLETE, {
 				key: `${this.bucket}/${this.key}`,
 			});
+			this._removeCachedUploadRequest();
 		} catch (err) {
 			logger.error('error completing upload', err);
 			this.emitter.emit(TaskEvents.ERROR, err);
@@ -290,41 +389,99 @@ export class AWSS3UploadTask implements UploadTask {
 		});
 	}
 
-	public resume(): void {
-		if (this.state === AWSS3UploadTaskState.CANCELLED) {
-			throw new Error('This task has already been aborted');
-		} else if (this.bytesUploaded === this.totalBytes) {
-			logger.warn('This task has already been completed');
-		} else if (this.state === AWSS3UploadTaskState.IN_PROGRESS) {
-			logger.warn('Upload task already in progress');
+	private async _initMultipartUpload() {
+		const res = await this.s3client.send(
+			new CreateMultipartUploadCommand({
+				Bucket: this.bucket,
+				Key: this.key,
+			})
+		);
+		this._addCachedUploadRequest({
+			uploadId: res.UploadId,
+			lastTouched: Date.now(),
+			bucket: this.bucket,
+			key: this.key,
+			fileName: this.file instanceof File ? this.file.name : '',
+		});
+		return res.UploadId;
+	}
+
+	private _initializeUploadTask() {
+		if (this._hasCachedUploadRequest()) {
+			this._findCachedUploadParts()
+				.then(({ parts, uploadId }) => {
+					this.cachedParts = parts;
+					this.uploadId = uploadId;
+					this.queued = this._createParts();
+					this._initCachedUploadParts();
+					this._startUpload();
+				})
+				.catch(err => {
+					if (!axios.isCancel(err)) {
+						logger.error('Error listing upload parts from S3', err);
+					}
+				});
 		} else {
-			this.state = AWSS3UploadTaskState.IN_PROGRESS;
-			for (let i = 0; i < this.queueSize; i++) {
-				this._startNextPart();
+			if (!this.uploadId) {
+				this._initMultipartUpload().then(uploadId => {
+					this.uploadId = uploadId;
+					this.queued = this._createParts();
+					this._startUpload();
+				});
 			}
 		}
 	}
 
-	_cancel(): Promise<AbortMultipartUploadCommandOutput> {
+	public resume(): void {
+		if (this.state === AWSS3UploadTaskState.CANCELLED) {
+			logger.warn('This task has already been aborted');
+		} else if (this.bytesUploaded === this.totalBytes) {
+			logger.warn('This task has already been completed');
+		} else if (this.state === AWSS3UploadTaskState.IN_PROGRESS) {
+			logger.warn('Upload task already in progress');
+			// first time running resume, find any cached parts on s3 or start a new multipart upload request before
+			// starting the upload
+		} else if (this.state === AWSS3UploadTaskState.INIT) {
+			this._initializeUploadTask();
+		} else {
+			this._startUpload();
+		}
+	}
+
+	private _startUpload() {
+		this.state = AWSS3UploadTaskState.IN_PROGRESS;
+		for (let i = 0; i < this.queueSize; i++) {
+			this._startNextPart();
+		}
+	}
+
+	async _cancel(): Promise<AbortMultipartUploadCommandOutput> {
 		this.pause();
 		this.queued = [];
 		this.completedParts = [];
 		this.bytesUploaded = 0;
 		this.state = AWSS3UploadTaskState.CANCELLED;
 		this.emitter.emit(TaskEvents.CANCEL);
-		return this.s3client.send(
+		const res = await this.s3client.send(
 			new AbortMultipartUploadCommand({
 				Bucket: this.bucket,
 				Key: this.key,
 				UploadId: this.uploadId,
 			})
 		);
+		this._removeCachedUploadRequest();
+		return res;
 	}
 
 	/**
 	 * pause this particular upload task
 	 **/
 	public pause(): void {
+		// this can happen if user pauses before the task has been properly initialized (i.e has it's uploadId and
+		// cahcedUploadParts setup)
+		if (this.state === AWSS3UploadTaskState.INIT) {
+			return;
+		}
 		this.state = AWSS3UploadTaskState.PAUSED;
 		// Use axios cancel token to abort the part request immediately
 		// Add the inProgress parts back to pending

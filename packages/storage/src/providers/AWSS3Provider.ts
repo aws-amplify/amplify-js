@@ -16,6 +16,8 @@ import {
 	Parser,
 	getAmplifyUserAgent,
 	ICredentials,
+	StorageHelper,
+	Hub,
 } from '@aws-amplify/core';
 import {
 	S3Client,
@@ -59,14 +61,11 @@ import {
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
-import {
-	AWSS3UploadManager,
-	TaskEvents,
-	AddTaskInput,
-} from './AWSS3UploadManager';
-import { AWSS3UploadTask } from './AWSS3UploadTask';
+import { AddTaskInput } from './AWSS3UploadManager';
+import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import {
 	localTestingStorageEndpoint,
+	UPLOADS_STORAGE_KEY,
 	SET_CONTENT_LENGTH_HEADER,
 } from '../common/StorageConstants';
 import * as events from 'events';
@@ -86,7 +85,7 @@ export class AWSS3Provider implements StorageProvider {
 	static readonly CATEGORY = 'Storage';
 	static readonly PROVIDER_NAME = 'AWSS3';
 	private _config: StorageOptions;
-	private _uploadTaskManager: AWSS3UploadManager;
+	private _storage: Storage;
 
 	/**
 	 * Initialize Storage with AWS configurations
@@ -94,7 +93,13 @@ export class AWSS3Provider implements StorageProvider {
 	 */
 	constructor(config?: StorageOptions) {
 		this._config = config ? config : {};
-		this._uploadTaskManager = new AWSS3UploadManager();
+		this._storage = new StorageHelper().getStorage();
+		Hub.listen('auth', data => {
+			const { payload } = data;
+			if (payload.event === 'signOut') {
+				this._storage.removeItem(UPLOADS_STORAGE_KEY);
+			}
+		});
 		logger.debug('Storage Options', this._config);
 	}
 
@@ -128,11 +133,11 @@ export class AWSS3Provider implements StorageProvider {
 		return this._config;
 	}
 
-	private async startResumableUpload(
+	private startResumableUpload(
 		addTaskInput: AddTaskInput,
 		config: S3ProviderPutConfig & ResumableUploadConfig
-	): Promise<AWSS3UploadTask> {
-		const { emitter, key, file } = addTaskInput;
+	): AWSS3UploadTask {
+		const { s3Client, emitter, key, bucket, file } = addTaskInput;
 		const {
 			progressCallback,
 			completeCallback,
@@ -142,7 +147,16 @@ export class AWSS3Provider implements StorageProvider {
 		if (!(file instanceof Blob)) {
 			throw new Error(StorageErrorStrings.INVALID_BLOB);
 		}
-		const task = await this._uploadTaskManager.addTask(addTaskInput);
+		const task = new AWSS3UploadTask({
+			s3Client,
+			file,
+			uploadPartInput: {
+				Bucket: bucket,
+				Key: key,
+			},
+			emitter,
+			storage: this._storage,
+		});
 
 		emitter.on(TaskEvents.UPLOAD_PROGRESS, event => {
 			if (progressCallback) {
@@ -189,6 +203,9 @@ export class AWSS3Provider implements StorageProvider {
 			null,
 			`Upload Task created successfully for ${key}`
 		);
+
+		// automatically start the upload task
+		task.resume();
 
 		return task;
 	}
@@ -449,21 +466,17 @@ export class AWSS3Provider implements StorageProvider {
 
 	/**
 	 * Put a file in S3 bucket specified to configure method
-	 * @param {string} key - key of the object
-	 * @param {PutObjectCommandInput["Body"]} object - File to be put in Amazon S3 bucket
-	 * @param {S3ProviderPutConfig} [config] - Optional configuration for the underlying S3 command
-	 * @return {Promise<AWSS3UploadTask | S3ProviderPutOutput>} - promise resolves to an AWSS3Upload object or
-	 * an object with the new object's key on success
+	 * @param key - key of the object
+	 * @param object - File to be put in Amazon S3 bucket
+	 * @param [config] - Optional configuration for the underlying S3 command
+	 * @return an instance of AWSS3UploadTask or a promise that resolves to an object with the new object's key on
+	 * success.
 	 */
-	public async put(
+	public put(
 		key: string,
 		object: PutObjectCommandInput['Body'],
 		config?: S3ProviderPutConfig
-	): Promise<S3PutResult<S3ProviderPutConfig>> {
-		const credentialsOK = await this._ensureCredentials();
-		if (!credentialsOK || !this._isWithCredentials(this._config)) {
-			throw new Error(StorageErrorStrings.NO_CREDENTIALS);
-		}
+	): S3PutResult<S3ProviderPutConfig> {
 		const opt = Object.assign({}, this._config, config);
 		const { bucket, track, progressCallback, level, resumable } = opt;
 		const {
@@ -485,13 +498,9 @@ export class AWSS3Provider implements StorageProvider {
 		} = opt;
 		const type = contentType ? contentType : 'binary/octet-stream';
 
-		const prefix = this._prefix(opt);
-		const final_key = prefix + key;
-		logger.debug('put ' + key + ' to ' + final_key);
-
 		const params: PutObjectCommandInput = {
 			Bucket: bucket,
-			Key: final_key,
+			Key: key,
 			Body: object,
 			ContentType: type,
 		};
@@ -531,6 +540,28 @@ export class AWSS3Provider implements StorageProvider {
 
 		const emitter = new events.EventEmitter();
 		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
+		const s3Client = this._createNewS3Client(opt);
+		// we are using aws sdk middleware to inject the prefix to Key, this way we don't have to call
+		// this._ensureCredentials() which allows us to make this function sync so we can return non-Promise like UploadTask
+		s3Client.middlewareStack.add(
+			(next, _context) => async args => {
+				const credentials = await Credentials.get();
+				const cred = Credentials.shear(credentials);
+				const prefix = this._prefix({
+					...opt,
+					credentials: cred,
+				});
+				if (Object.prototype.hasOwnProperty.call(args.input, 'Key')) {
+					(args.input as { Key: string }).Key = prefix + key;
+				}
+				const result = next(args);
+				return result;
+			},
+			{
+				step: 'initialize',
+				name: 'addPrefixMiddleware',
+			}
+		);
 
 		if (acl) {
 			params.ACL = acl;
@@ -539,8 +570,8 @@ export class AWSS3Provider implements StorageProvider {
 		if (resumable === true) {
 			const addTaskInput: AddTaskInput = {
 				bucket,
-				key: final_key,
-				s3Client: this._createNewS3Client(opt),
+				key,
+				s3Client,
 				file: object as Blob,
 				emitter,
 				accessLevel: level,
@@ -567,19 +598,17 @@ export class AWSS3Provider implements StorageProvider {
 				}
 			}
 
-			const response = await uploader.upload();
-
-			logger.debug('upload result', response);
-			dispatchStorageEvent(
-				track,
-				'upload',
-				{ method: 'put', result: 'success' },
-				null,
-				`Upload success for ${key}`
-			);
-			return {
-				key,
-			};
+			return uploader.upload().then(response => {
+				logger.debug('upload result', response);
+				dispatchStorageEvent(
+					track,
+					'upload',
+					{ method: 'put', result: 'success' },
+					null,
+					`Upload success for ${key}`
+				);
+				return { key };
+			});
 		} catch (error) {
 			logger.warn('error uploading', error);
 			dispatchStorageEvent(

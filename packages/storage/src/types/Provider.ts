@@ -31,7 +31,7 @@ export interface StorageProvider {
 	get(key: string, options?): Promise<string | Object>;
 
 	// upload storage object
-	put(key: string, object, options?): Promise<Object>;
+	put(key: string, object, options?): Promise<Object> | any;
 
 	// remove object
 	remove(key: string, options?): Promise<any>;

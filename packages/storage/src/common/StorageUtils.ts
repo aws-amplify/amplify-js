@@ -63,7 +63,11 @@ export const dispatchStorageEvent = (
 	}
 };
 
-const isBlob = (x: unknown): x is Blob => {
+export const isFile = (x: unknown): x is File => {
+	return typeof x !== 'undefined' && x instanceof File;
+};
+
+export const isBlob = (x: unknown): x is Blob => {
 	return typeof x !== 'undefined' && x instanceof Blob;
 };
 

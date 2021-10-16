@@ -124,36 +124,36 @@ type PickProviderOutput<
 	api extends StorageProviderApi
 > = T extends StorageProvider
 	? T['getProviderName'] extends 'AWSS3'
-		? Promise<DefaultOutput>
+		? DefaultOutput
 		: T extends StorageProviderWithCopy
 		? ReturnType<T[api]>
 		: ReturnType<T[Exclude<api, 'copy'>]>
 	: T extends { provider: string }
 	? T extends { provider: 'AWSS3' }
-		? Promise<DefaultOutput>
+		? DefaultOutput
 		: Promise<any>
-	: Promise<DefaultOutput>;
+	: DefaultOutput;
 
 export type StorageGetOutput<
 	T extends StorageProvider | Record<string, any>
-> = PickProviderOutput<S3ProviderGetOuput<T>, T, 'get'>;
+> = PickProviderOutput<Promise<S3ProviderGetOuput<T>>, T, 'get'>;
 
 export type StoragePutOutput<T> = PickProviderOutput<S3PutResult<T>, T, 'put'>;
 
 export type StorageRemoveOutput<T> = PickProviderOutput<
-	S3ProviderRemoveOutput,
+	Promise<S3ProviderRemoveOutput>,
 	T,
 	'remove'
 >;
 
 export type StorageListOutput<T> = PickProviderOutput<
-	S3ProviderListOutput,
+	Promise<S3ProviderListOutput>,
 	T,
 	'list'
 >;
 
 export type StorageCopyOutput<T> = PickProviderOutput<
-	S3ProviderCopyOutput,
+	Promise<S3ProviderCopyOutput>,
 	T,
 	'copy'
 >;
