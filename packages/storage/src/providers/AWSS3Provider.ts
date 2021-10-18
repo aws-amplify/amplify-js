@@ -61,7 +61,6 @@ import {
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
-import { AddTaskInput } from './AWSS3UploadManager';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import {
 	localTestingStorageEndpoint,

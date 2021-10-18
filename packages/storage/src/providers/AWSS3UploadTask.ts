@@ -15,13 +15,17 @@ import axios, { Canceler, CancelTokenSource } from 'axios';
 import { HttpHandlerOptions } from '@aws-sdk/types';
 import { Logger } from '@aws-amplify/core';
 import { UploadTask } from '../types/Provider';
-import { listSingleFile, byteLength } from '../common/StorageUtils';
+import {
+	listSingleFile,
+	byteLength,
+	isFile,
+	isBlob,
+} from '../common/StorageUtils';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
 import {
 	SET_CONTENT_LENGTH_HEADER,
 	UPLOADS_STORAGE_KEY,
 } from '../common/StorageConstants';
-import { isFile, isBlob } from '../common/StorageUtils';
 import {
 	S3ProviderPutConfig,
 	ResumableUploadConfig,
@@ -100,7 +104,6 @@ export class AWSS3UploadTask implements UploadTask {
 	private readonly storage: Storage;
 	private inProgress: InProgressRequest[] = [];
 	private completedParts: CompletedPart[] = [];
-	private cachedParts: Part[] = [];
 	private queued: UploadPartCommandInput[] = [];
 	private bytesUploaded: number = 0;
 	private totalBytes: number = 0;
@@ -115,7 +118,6 @@ export class AWSS3UploadTask implements UploadTask {
 		s3Client,
 		uploadPartInput,
 		file,
-		completedParts,
 		emitter,
 		storage,
 	}: AWSS3UploadTaskParams) {
@@ -130,12 +132,8 @@ export class AWSS3UploadTask implements UploadTask {
 		this.totalBytes = this.file.size;
 		this.bytesUploaded = 0;
 		this.emitter = emitter;
-		this.cachedParts = completedParts || [];
 		this.queued = [];
 		this._validateParams();
-		if (this.cachedParts) {
-			this._initCachedUploadParts();
-		}
 		// event emitter will re-throw an error if an event emits an error unless there's a listener, attaching a no-op
 		// function to it unless user adds their own onError callback
 		this.emitter.on(TaskEvents.ERROR, () => {});
@@ -367,19 +365,16 @@ export class AWSS3UploadTask implements UploadTask {
 		return parts;
 	}
 
-	private _initCachedUploadParts() {
-		this.bytesUploaded += this.cachedParts.reduce(
-			(acc, part) => acc + part.Size,
-			0
-		);
+	private _initCachedUploadParts(cachedParts: Part[]) {
+		this.bytesUploaded += cachedParts.reduce((acc, part) => acc + part.Size, 0);
 		// Find the set of part numbers that have already been uploaded
 		const uploadedPartNumSet = new Set(
-			this.cachedParts.map(part => part.PartNumber)
+			cachedParts.map(part => part.PartNumber)
 		);
 		this.queued = this.queued.filter(
 			part => !uploadedPartNumSet.has(part.PartNumber)
 		);
-		this.completedParts = this.cachedParts.map(part => ({
+		this.completedParts = cachedParts.map(part => ({
 			PartNumber: part.PartNumber,
 			ETag: part.ETag,
 		}));
@@ -410,10 +405,9 @@ export class AWSS3UploadTask implements UploadTask {
 		if (this._hasCachedUploadRequest()) {
 			this._findCachedUploadParts()
 				.then(({ parts, uploadId }) => {
-					this.cachedParts = parts;
 					this.uploadId = uploadId;
 					this.queued = this._createParts();
-					this._initCachedUploadParts();
+					this._initCachedUploadParts(parts);
 					this._startUpload();
 				})
 				.catch(err => {
