@@ -77,6 +77,16 @@ const DEFAULT_PRESIGN_EXPIRATION = 900;
 // placeholder credentials in order to satisfy type requirement, always results in 403 when used
 const INVALID_CRED = { accessKeyId: '', secretAccessKey: '' };
 
+interface AddTaskInput {
+	accessLevel: StorageAccessLevel;
+	file: Blob;
+	bucket: string;
+	emitter: events.EventEmitter;
+	key: string;
+	s3Client: S3Client;
+	params?: PutObjectCommandInput;
+}
+
 /**
  * Provide storage methods to use AWS S3
  */

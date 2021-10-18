@@ -168,7 +168,7 @@ export class AWSS3UploadTask implements UploadTask {
 		uploadId: string;
 	}> {
 		const fileKey = this._getFileKey();
-		const uploadRequests = this._listCachedUploadRequests();
+		const uploadRequests = this._listCachedUploadTasks();
 
 		if (
 			Object.keys(uploadRequests).length === 0 ||
@@ -179,7 +179,7 @@ export class AWSS3UploadTask implements UploadTask {
 
 		const cachedUploadFileData = uploadRequests[fileKey];
 		cachedUploadFileData.lastTouched = Date.now();
-		this._saveCachedUploadRequests(uploadRequests);
+		this.storage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(uploadRequests));
 
 		const listPartsOutput = await this.s3client.send(
 			new ListPartsCommand({
@@ -202,34 +202,28 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 	}
 
-	private _listCachedUploadRequests(): Record<string, FileMetadata> {
+	private _listCachedUploadTasks(): Record<string, FileMetadata> {
 		const tasks = localStorage.getItem(UPLOADS_STORAGE_KEY) || '{}';
 		return JSON.parse(tasks);
 	}
 
-	private _saveCachedUploadRequests(
-		uploadRequests: Record<string, FileMetadata>
-	): void {
+	private _cache(fileMetadata: FileMetadata): void {
+		const uploadRequests = this._listCachedUploadTasks();
+		uploadRequests[this._getFileKey()] = fileMetadata;
 		this.storage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(uploadRequests));
 	}
 
-	private _addCachedUploadRequest(fileMetadata: FileMetadata): void {
-		const uploadRequests = this._listCachedUploadRequests();
-		uploadRequests[this._getFileKey()] = fileMetadata;
-		this._saveCachedUploadRequests(uploadRequests);
-	}
-
-	private _hasCachedUploadRequest() {
+	private _isCached() {
 		return Object.prototype.hasOwnProperty.call(
-			this._listCachedUploadRequests(),
+			this._listCachedUploadTasks(),
 			this._getFileKey()
 		);
 	}
 
-	private _removeCachedUploadRequest() {
-		const uploadRequests = this._listCachedUploadRequests();
+	private _removeFromCache() {
+		const uploadRequests = this._listCachedUploadTasks();
 		delete uploadRequests[this._getFileKey()];
-		this._saveCachedUploadRequests(uploadRequests);
+		this.storage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(uploadRequests));
 	}
 
 	private async _onPartUploadCompletion({
@@ -277,7 +271,7 @@ export class AWSS3UploadTask implements UploadTask {
 			this.emitter.emit(TaskEvents.UPLOAD_COMPLETE, {
 				key: `${this.bucket}/${this.key}`,
 			});
-			this._removeCachedUploadRequest();
+			this._removeFromCache();
 		} catch (err) {
 			logger.error('error completing upload', err);
 			this.emitter.emit(TaskEvents.ERROR, err);
@@ -391,7 +385,7 @@ export class AWSS3UploadTask implements UploadTask {
 				Key: this.key,
 			})
 		);
-		this._addCachedUploadRequest({
+		this._cache({
 			uploadId: res.UploadId,
 			lastTouched: Date.now(),
 			bucket: this.bucket,
@@ -402,7 +396,7 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private _initializeUploadTask() {
-		if (this._hasCachedUploadRequest()) {
+		if (this._isCached()) {
 			this._findCachedUploadParts()
 				.then(({ parts, uploadId }) => {
 					this.uploadId = uploadId;
@@ -455,7 +449,6 @@ export class AWSS3UploadTask implements UploadTask {
 		this.completedParts = [];
 		this.bytesUploaded = 0;
 		this.state = AWSS3UploadTaskState.CANCELLED;
-		this.emitter.emit(TaskEvents.CANCEL);
 		const res = await this.s3client.send(
 			new AbortMultipartUploadCommand({
 				Bucket: this.bucket,
@@ -463,7 +456,7 @@ export class AWSS3UploadTask implements UploadTask {
 				UploadId: this.uploadId,
 			})
 		);
-		this._removeCachedUploadRequest();
+		this._removeFromCache();
 		return res;
 	}
 
