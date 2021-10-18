@@ -59,7 +59,7 @@ import {
 	ResumableUploadConfig,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
-import { dispatchStorageEvent } from '../common/StorageUtils';
+import { dispatchStorageEvent, isFile } from '../common/StorageUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import {
@@ -146,7 +146,7 @@ export class AWSS3Provider implements StorageProvider {
 		addTaskInput: AddTaskInput,
 		config: S3ProviderPutConfig & ResumableUploadConfig
 	): AWSS3UploadTask {
-		const { s3Client, emitter, key, bucket, file } = addTaskInput;
+		const { s3Client, emitter, key, file, params } = addTaskInput;
 		const {
 			progressCallback,
 			completeCallback,
@@ -156,16 +156,6 @@ export class AWSS3Provider implements StorageProvider {
 		if (!(file instanceof Blob)) {
 			throw new Error(StorageErrorStrings.INVALID_BLOB);
 		}
-		const task = new AWSS3UploadTask({
-			s3Client,
-			file,
-			uploadPartInput: {
-				Bucket: bucket,
-				Key: key,
-			},
-			emitter,
-			storage: this._storage,
-		});
 
 		emitter.on(TaskEvents.UPLOAD_PROGRESS, event => {
 			if (progressCallback) {
@@ -203,6 +193,15 @@ export class AWSS3Provider implements StorageProvider {
 					);
 				}
 			}
+		});
+
+		const task = new AWSS3UploadTask({
+			s3Client,
+			file,
+			emitter,
+			level: config.level,
+			storage: this._storage,
+			params,
 		});
 
 		dispatchStorageEvent(
