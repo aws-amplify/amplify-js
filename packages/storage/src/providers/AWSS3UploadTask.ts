@@ -93,6 +93,7 @@ export class AWSS3UploadTask implements UploadTask {
 	private readonly queueSize = DEFAULT_QUEUE_SIZE;
 	private readonly s3client: S3Client;
 	private readonly storage: Storage;
+	private readonly storageSync: Promise<any>;
 	private readonly fileId: string;
 	private readonly params: PutObjectCommandInput;
 	private inProgress: InProgressRequest[] = [];
@@ -115,6 +116,10 @@ export class AWSS3UploadTask implements UploadTask {
 		this.s3client = s3Client;
 		this.s3client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		this.storage = storage;
+		this.storageSync = Promise.resolve();
+		if (typeof this.storage['sync'] === 'function') {
+			this.storageSync = this.storage['sync']();
+		}
 		this.params = params;
 		this.file = file;
 		this.partSize = PART_SIZE;
@@ -164,7 +169,7 @@ export class AWSS3UploadTask implements UploadTask {
 		parts: Part[];
 		uploadId: string;
 	}> {
-		const uploadRequests = this._listCachedUploadTasks();
+		const uploadRequests = await this._listCachedUploadTasks();
 
 		if (
 			Object.keys(uploadRequests).length === 0 ||
@@ -201,26 +206,29 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 	}
 
-	private _listCachedUploadTasks(): Record<string, FileMetadata> {
+	private async _listCachedUploadTasks(): Promise<
+		Record<string, FileMetadata>
+	> {
+		await this.storageSync;
 		const tasks = this.storage.getItem(UPLOADS_STORAGE_KEY) || '{}';
 		return JSON.parse(tasks);
 	}
 
-	private _cache(fileMetadata: FileMetadata): void {
-		const uploadRequests = this._listCachedUploadTasks();
+	private async _cache(fileMetadata: FileMetadata): Promise<void> {
+		const uploadRequests = await this._listCachedUploadTasks();
 		uploadRequests[this.fileId] = fileMetadata;
 		this.storage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(uploadRequests));
 	}
 
-	private _isCached() {
+	private async _isCached(): Promise<boolean> {
 		return Object.prototype.hasOwnProperty.call(
-			this._listCachedUploadTasks(),
+			await this._listCachedUploadTasks(),
 			this.fileId
 		);
 	}
 
-	private _removeFromCache() {
-		const uploadRequests = this._listCachedUploadTasks();
+	private async _removeFromCache(): Promise<void> {
+		const uploadRequests = await this._listCachedUploadTasks();
 		delete uploadRequests[this.fileId];
 		this.storage.setItem(UPLOADS_STORAGE_KEY, JSON.stringify(uploadRequests));
 	}
