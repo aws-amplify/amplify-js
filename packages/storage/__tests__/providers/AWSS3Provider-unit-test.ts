@@ -525,6 +525,9 @@ describe('StorageProvider test', () => {
 	});
 
 	describe('put test', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
 		test('put object successfully', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return new Promise((res, rej) => {
@@ -734,22 +737,6 @@ describe('StorageProvider test', () => {
 			);
 		});
 
-		// test('credentials not ok', async () => {
-		// 	jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-		// 		return new Promise((res, rej) => {
-		// 			rej('err');
-		// 		});
-		// 	});
-
-		// 	const storage = new StorageProvider();
-		// 	storage.configure(options_no_cred);
-		// 	expect.assertions(1);
-		// 	try {
-		// 		await storage.put('key', 'obj', {});
-		// 	} catch (e) {
-		// 		expect(e).not.toBeNull();
-		// 	}
-		// });
 		test('put (resumable upload) returns instance of AWSS3UploadTask', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
@@ -817,7 +804,6 @@ describe('StorageProvider test', () => {
 				SSEKMSKeyId: 'id',
 				acl: 'public',
 			});
-			console.log(s3ServiceCallSpy.mock.calls);
 
 			expect(s3ServiceCallSpy.mock.calls[0][0].input).toStrictEqual({
 				Body: file,
