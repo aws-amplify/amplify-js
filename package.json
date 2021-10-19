@@ -5,6 +5,7 @@
 	"description": "",
 	"scripts": {
 		"setup-dev": "yarn && yarn bootstrap && yarn link-all && yarn build",
+		"setup-dev:react-native": "node ./scripts/setup-dev-rn",
 		"bootstrap": "lerna bootstrap",
 		"test": "lerna run test --stream",
 		"cypress": "lerna run cypress",
@@ -90,7 +91,8 @@
 		"webpack": "^4.32.0",
 		"webpack-bundle-analyzer": "^3.3.2",
 		"webpack-cli": "^3.1.0",
-		"winston": "^3.2.1"
+		"winston": "^3.2.1",
+		"wml": "0.0.83"
 	},
 	"resolutions": {
 		"@babel/types": "7.12.10",
