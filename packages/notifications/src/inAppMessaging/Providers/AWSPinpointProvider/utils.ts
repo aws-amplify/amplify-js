@@ -42,6 +42,12 @@ export const recordAnalyticsEvent = (
 	event: PinpointMessageEvent,
 	message: InAppMessage
 ) => {
+	if (!message) {
+		logger.debug(
+			'Unable to record analytics event - no InAppMessage was received'
+		);
+		return;
+	}
 	if (Amplify.Analytics && typeof Amplify.Analytics.record === 'function') {
 		const { id, metadata } = message;
 		Amplify.Analytics.record({
@@ -49,7 +55,7 @@ export const recordAnalyticsEvent = (
 			attributes: {
 				campaign_id: id,
 				delivery_type: DELIVERY_TYPE,
-				treatment_id: metadata.treatmentId,
+				treatment_id: metadata?.treatmentId,
 			},
 		});
 	} else {
