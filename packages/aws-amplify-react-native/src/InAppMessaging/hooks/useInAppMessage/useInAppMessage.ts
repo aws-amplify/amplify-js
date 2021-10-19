@@ -94,7 +94,7 @@ export default function useInAppMessage(): {
 			return { Component: FullScreenMessage, props };
 		}
 		default: {
-			logger.info(`Reecived unknown InAppMessage layout: ${layout}`);
+			logger.info(`Received unknown InAppMessage layout: ${layout}`);
 			return { Component: null, props: {} as InAppMessageComponentProps };
 		}
 	}

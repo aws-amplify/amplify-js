@@ -64,7 +64,7 @@ export interface InAppMessageComponentButtonProps
 	onPress: () => void;
 }
 
-export type InAppMessageComponentPosition = 'bottom' | 'middle' | 'top';
+export type InAppMessageComponentPosition = 'bottom' | 'middle' | 'top' | null;
 
 export interface InAppMessageComponentContentProps
 	extends Omit<InAppMessageContent, 'primaryButton' | 'secondaryButton'> {
