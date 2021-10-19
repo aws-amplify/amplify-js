@@ -1290,7 +1290,10 @@ class DataStore {
 			...configFromAmplify
 		} = config;
 
-		this.amplifyConfig = { ...configFromAmplify, ...this.amplifyConfig };
+		this.amplifyConfig = {
+			...configFromAmplify,
+			...this.amplifyConfig,
+		};
 
 		this.conflictHandler = this.setConflictHandler(config);
 		this.errorHandler = this.setErrorHandler(config);
@@ -1336,6 +1339,12 @@ class DataStore {
 
 		// store on config object, so that Sync, Subscription, and Mutation processors can have access
 		this.amplifyConfig.syncPageSize = this.syncPageSize;
+
+		this.fullSyncInterval =
+			(configDataStore && configDataStore.fullSyncInterval) ||
+			this.fullSyncInterval ||
+			configFullSyncInterval ||
+			24 * 60; // 1 day
 
 		this.storageAdapter =
 			(configDataStore && configDataStore.storageAdapter) ||
