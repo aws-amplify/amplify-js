@@ -24,7 +24,7 @@ export const config: Config = {
 		}),
 		nodePolyfills(),
 		sass({
-			injectGlobalPaths: [['src/global/breakpoint.scss', '*']],
+			injectGlobalPaths: ['src/global/breakpoint.scss'],
 		}),
 	],
 	nodeResolve: {
