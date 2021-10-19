@@ -67,9 +67,23 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
         // Construct and load our normal React JS code bundle
         ReactInstanceManager mReactInstanceManager = ((ReactApplication) context.getApplicationContext()).getReactNativeHost().getReactInstanceManager();
         ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-        RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery((ReactApplicationContext) reactContext);
-        jsDelivery.emitNotificationOpened(intent.getBundleExtra("notification"));
-
+        if (reactContext != null) {
+            RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery((ReactApplicationContext) reactContext);
+            jsDelivery.emitNotificationOpened(intent.getBundleExtra("notification"));
+        } else {
+            // If the ReactContext is null, use a listener to use it when ready
+            mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
+                public void onReactContextInitialized(ReactContext currentReactContext) {
+                    RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery((ReactApplicationContext) currentReactContext);
+                    jsDelivery.emitNotificationOpened(intent.getBundleExtra("notification"));
+                    mReactInstanceManager.removeReactInstanceEventListener(this);
+                }
+            });
+            // Build the ReactContext in the background
+            if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
+                mReactInstanceManager.createReactContextInBackground();
+            }
+        }
         openApp(context);
     }
 }
