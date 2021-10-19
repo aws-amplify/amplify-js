@@ -30,6 +30,7 @@ export enum AWSS3UploadTaskState {
 	IN_PROGRESS,
 	PAUSED,
 	CANCELLED,
+	COMPLETED,
 }
 
 export enum TaskEvents {
@@ -45,10 +46,6 @@ export interface AWSS3UploadTaskParams {
 	storage: Storage;
 	level: StorageAccessLevel;
 	params: PutObjectCommandInput;
-	/**
-	 * File size of each chunk of the parts in bytes
-	 */
-	partSize?: number;
 	emitter?: events.EventEmitter;
 }
 
@@ -96,7 +93,7 @@ function comparePartNumber(a: CompletedPart, b: CompletedPart) {
 export class AWSS3UploadTask implements UploadTask {
 	private readonly emitter: events.EventEmitter;
 	private readonly file: Blob;
-	private readonly partSize: number;
+	private readonly partSize: number = PART_SIZE;
 	private readonly queueSize = DEFAULT_QUEUE_SIZE;
 	private readonly s3client: S3Client;
 	private readonly storage: Storage;
@@ -129,7 +126,6 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 		this.params = params;
 		this.file = file;
-		this.partSize = PART_SIZE;
 		this.totalBytes = this.file.size;
 		this.bytesUploaded = 0;
 		this.emitter = emitter;
@@ -209,7 +205,10 @@ export class AWSS3UploadTask implements UploadTask {
 
 	private _validateParams() {
 		if (this.file.size / this.partSize > MAX_PARTS) {
-			throw new Error('Too many parts');
+			throw new Error(
+				`Too many parts. Number of parts is ${this.file.size /
+					this.partSize}, maximum is ${MAX_PARTS}.`
+			);
 		}
 	}
 
@@ -284,6 +283,7 @@ export class AWSS3UploadTask implements UploadTask {
 				key: `${this.params.Bucket}/${this.params.Key}`,
 			});
 			this._removeFromCache();
+			this.state = AWSS3UploadTaskState.COMPLETED;
 		} catch (err) {
 			logger.error('error completing upload', err);
 			this._emitEvent(TaskEvents.ERROR, err);
@@ -351,7 +351,11 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private _isDone() {
-		return !this.queued.length && !this.inProgress.length;
+		return (
+			!this.queued.length &&
+			!this.inProgress.length &&
+			this.bytesUploaded === this.totalBytes
+		);
 	}
 
 	private _createParts() {
@@ -431,7 +435,7 @@ export class AWSS3UploadTask implements UploadTask {
 	public resume(): void {
 		if (this.state === AWSS3UploadTaskState.CANCELLED) {
 			logger.warn('This task has already been aborted');
-		} else if (this.bytesUploaded === this.totalBytes) {
+		} else if (this.state === AWSS3UploadTaskState.COMPLETED) {
 			logger.warn('This task has already been completed');
 		} else if (this.state === AWSS3UploadTaskState.IN_PROGRESS) {
 			logger.warn('Upload task already in progress');
