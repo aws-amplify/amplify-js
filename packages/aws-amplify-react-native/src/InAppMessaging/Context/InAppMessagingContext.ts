@@ -13,7 +13,7 @@
 
 import { createContext, useContext } from 'react';
 
-import { InAppMessagingContextType } from './types';
+import { InAppMessagingContextType } from '..';
 
 const InAppMessagingContext = createContext<InAppMessagingContextType>(null);
 

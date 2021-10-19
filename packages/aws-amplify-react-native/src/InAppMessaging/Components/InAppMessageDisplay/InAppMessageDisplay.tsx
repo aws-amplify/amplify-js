@@ -10,21 +10,26 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { InAppMessagingConfig } from './inAppMessaging';
-export {
-	InAppMessage,
-	InAppMessageAction,
-	InAppMessageButton,
-	InAppMessageContent,
-	InAppMessageInteractionEvent,
-	InAppMessageLayout,
-	InAppMessageStyle,
-	InAppMessagingConfig,
-	InAppMessagingEvent,
-} from './inAppMessaging';
 
-export type NotificationsCategory = 'Notifications';
+import React, { useEffect } from 'react';
 
-export interface NotificationsConfig {
-	InAppMessaging?: InAppMessagingConfig;
+import { useInAppMessage } from '../../hooks';
+
+export default function InAppMessageDisplay() {
+	const { Component, props } = useInAppMessage();
+
+	const { id } = props;
+
+	useEffect(() => {
+		if (Component) {
+			// TODO: add display notify handler when available
+			console.log(`display InAppMessage: ${id}`);
+		}
+	}, [Component, id]);
+
+	if (!Component) {
+		return null;
+	}
+
+	return <Component {...props} />;
 }
