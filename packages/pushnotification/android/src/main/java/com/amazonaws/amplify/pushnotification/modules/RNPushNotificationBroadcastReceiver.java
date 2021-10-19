@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -68,14 +68,12 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
         ReactInstanceManager mReactInstanceManager = ((ReactApplication) context.getApplicationContext()).getReactNativeHost().getReactInstanceManager();
         ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
         if (reactContext != null) {
-            RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery((ReactApplicationContext) reactContext);
-            jsDelivery.emitNotificationOpened(intent.getBundleExtra("notification"));
+            emitNotificationOpenedEvent(reactContext);
         } else {
             // If the ReactContext is null, use a listener to use it when ready
             mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
                 public void onReactContextInitialized(ReactContext currentReactContext) {
-                    RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery((ReactApplicationContext) currentReactContext);
-                    jsDelivery.emitNotificationOpened(intent.getBundleExtra("notification"));
+                    emitNotificationOpenedEvent(currentReactContext);
                     mReactInstanceManager.removeReactInstanceEventListener(this);
                 }
             });
@@ -85,5 +83,10 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
             }
         }
         openApp(context);
+    }
+
+    private void emitNotificationOpenedEvent(ReactContext reactContext){
+            RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery((ReactApplicationContext) reactContext);
+            jsDelivery.emitNotificationOpened(intent.getBundleExtra("notification"));
     }
 }
