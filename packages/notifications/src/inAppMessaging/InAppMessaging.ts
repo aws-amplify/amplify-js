@@ -28,13 +28,12 @@ import {
 	InAppMessage,
 	InAppMessageInteractionEvent,
 	InAppMessagingConfig,
+	InAppMessageConflictHandler,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
 	NotificationsSubcategory,
 	OnMessageInteractionEventHandler,
 	OnMessageInteractionEventListener,
-	OnMessagesReceivedHandler,
-	OnMessagesReceivedListener,
 } from './types';
 
 const STORAGE_KEY_SUFFIX = '_inAppMessages';
@@ -43,6 +42,7 @@ const logger = new Logger('Notifications.InAppMessaging');
 
 export default class InAppMessaging {
 	private config: Record<string, any> = {};
+	private conflictHandler: InAppMessageConflictHandler;
 	private listeningForAnalyticEvents = false;
 	private pluggables: InAppMessagingProvider[] = [];
 	private storageSynced = false;
@@ -51,6 +51,7 @@ export default class InAppMessaging {
 		this.config = {
 			storage: new StorageHelper().getStorage(),
 		};
+		this.setConflictHandler(this.defaultConflictHandler);
 	}
 
 	/**
@@ -166,7 +167,7 @@ export default class InAppMessaging {
 	};
 
 	dispatchEvent = async (event: InAppMessagingEvent): Promise<void> => {
-		const messages: any[] = await Promise.all<any[]>(
+		const messages: InAppMessage[][] = await Promise.all<InAppMessage[]>(
 			this.pluggables.map(async pluggable => {
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
 				const messages = await this.getMessages(key);
@@ -175,20 +176,21 @@ export default class InAppMessaging {
 		);
 
 		const flattenedMessages = flatten(messages);
+
 		if (flattenedMessages.length) {
 			notifyMessageInteractionEventListeners(
-				flattenedMessages,
-				InAppMessageInteractionEvent.MESSAGES_RECEIVED
+				this.conflictHandler(flattenedMessages),
+				InAppMessageInteractionEvent.MESSAGE_RECEIVED
 			);
 		}
 	};
 
-	onMessagesReceived = (
-		handler: OnMessagesReceivedHandler
-	): OnMessagesReceivedListener =>
+	onMessageReceived = (
+		handler: OnMessageInteractionEventHandler
+	): OnMessageInteractionEventListener =>
 		addMessageInteractionEventListener(
 			handler,
-			InAppMessageInteractionEvent.MESSAGES_RECEIVED
+			InAppMessageInteractionEvent.MESSAGE_RECEIVED
 		);
 
 	onMessageDisplayed = (
@@ -220,6 +222,10 @@ export default class InAppMessaging {
 		event: InAppMessageInteractionEvent
 	): void => {
 		notifyMessageInteractionEventListeners(message, event);
+	};
+
+	setConflictHandler = (handler: InAppMessageConflictHandler): void => {
+		this.conflictHandler = handler;
 	};
 
 	private analyticsListener: HubCallback = ({ payload }: HubCapsule) => {
@@ -289,5 +295,30 @@ export default class InAppMessaging {
 		} catch (err) {
 			logger.error('Failed to remove in-app messages from storage', err);
 		}
+	};
+
+	private defaultConflictHandler = (messages: InAppMessage[]): InAppMessage => {
+		// default behavior is to return the message closest to expiry
+		// this function assumes that messages processed by providers already filters out expired messages
+		const sorted = messages.sort((a, b) => {
+			const endDateA = a.metadata?.endDate;
+			const endDateB = b.metadata?.endDate;
+			// if both message end dates are falsy or have the same date string, treat them as equal
+			if (endDateA === endDateB) {
+				return 0;
+			}
+			// if only message A has an end date, treat it as closer to expiry
+			if (endDateA && !endDateB) {
+				return -1;
+			}
+			// if only message B has an end date, treat it as closer to expiry
+			if (!endDateA && endDateB) {
+				return 1;
+			}
+			// otherwise, compare them
+			return new Date(endDateA) < new Date(endDateB) ? -1 : 1;
+		});
+		// always return the top sorted
+		return sorted[0];
 	};
 }

@@ -101,25 +101,20 @@ export interface InAppMessage {
 	metadata?: any;
 }
 
-export type OnMessagesReceivedHandler = (messages: InAppMessage[]) => any;
-
 export type OnMessageInteractionEventHandler = (message: InAppMessage) => any;
 
-interface Listener {
+export interface OnMessageInteractionEventListener {
+	handleEvent: OnMessageInteractionEventHandler;
 	remove: () => void;
 }
 
-export interface OnMessagesReceivedListener extends Listener {
-	handleEvent: OnMessagesReceivedHandler;
-}
-
-export interface OnMessageInteractionEventListener extends Listener {
-	handleEvent: OnMessageInteractionEventHandler;
-}
-
 export enum InAppMessageInteractionEvent {
-	MESSAGES_RECEIVED,
+	MESSAGE_RECEIVED,
 	MESSAGE_DISPLAYED,
 	MESSAGE_DISMISSED,
 	MESSAGE_ACTION_TAKEN,
 }
+
+export type InAppMessageConflictHandler = (
+	messages: InAppMessage[]
+) => InAppMessage;
