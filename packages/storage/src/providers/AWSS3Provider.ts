@@ -110,7 +110,7 @@ export class AWSS3Provider implements StorageProvider {
 		this._storage = new StorageHelper().getStorage();
 		Hub.listen('auth', data => {
 			const { payload } = data;
-			if (payload.event === 'signOut') {
+			if (payload.event === 'signOut' || payload.event === 'signIn') {
 				this._storage.removeItem(UPLOADS_STORAGE_KEY);
 			}
 		});
