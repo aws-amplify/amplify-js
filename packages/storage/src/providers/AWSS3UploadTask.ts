@@ -79,6 +79,7 @@ export interface FileMetadata {
 // maximum number of parts per upload request according the S3 spec,
 // see: https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html
 const MAX_PARTS = 10000;
+// 5MB in bytes
 const PART_SIZE = 5 * 1024 * 1024;
 const DEFAULT_QUEUE_SIZE = 4;
 
