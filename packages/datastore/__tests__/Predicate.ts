@@ -50,13 +50,6 @@ function getStorageFake(collections) {
 			const baseSet: T[] = this.collections[modelConstructor.name].map(item => {
 				const itemCopy = { ...item };
 
-				// simulating goofiness with DS stuffing ID's into related model field names.
-				// const meta = metas[modelConstructor.name].schema as SchemaModel;
-				// for (const field of Object.values(meta.fields)) {
-				// 	if (field.association) {
-				// 		itemCopy[field.name] = itemCopy[field.association.targetName];
-				// 	}
-				// }
 				return itemCopy;
 			});
 

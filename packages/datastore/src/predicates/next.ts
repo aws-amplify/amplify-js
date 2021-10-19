@@ -19,12 +19,9 @@ type MatchableTypes =
 
 type AllFieldOperators = keyof AllOperators;
 
-// TODO: this is TEMP to make the types work.
-class AsyncCollection<T> {
-	toArray(): T[] {
-		return [];
-	}
-}
+type AsyncCollection<T> = {
+	toArray(): T[];
+};
 
 type FinalFieldType<T> = NonNullable<
 	Scalar<
@@ -231,7 +228,7 @@ export class FieldCondition {
 			lt: () => v < this.operands[0],
 			le: () => v <= this.operands[0],
 			contains: () => v.indexOf(this.operands[0]) > -1,
-			notContains: () => v.indexOf(this.operands[0]) < 0,
+			notContains: () => v.indexOf(this.operands[0]) === -1,
 			beginsWith: () => v.startsWith(this.operands[0]),
 			between: () => v >= this.operands[0] && v <= this.operands[1],
 		};
@@ -247,17 +244,15 @@ export class FieldCondition {
 	 * Checks `this.operands` for compatibility with `this.operator`.
 	 */
 	validate(): void {
-		const _t = this;
-
 		/**
 		 * Creates a validator that checks for a particular `operands` count.
 		 * Throws an exception if the `count` disagrees with `operands.length`.
 		 * @param count The number of `operands` expected.
 		 */
-		function argumentCount(count) {
+		const argumentCount = (count) => {
 			const argsClause = count === 1 ? 'argument is' : 'arguments are';
 			return () => {
-				if (_t.operands.length !== count) {
+				if (this.operands.length !== count) {
 					return `Exactly ${count} ${argsClause} required.`;
 				}
 			};
