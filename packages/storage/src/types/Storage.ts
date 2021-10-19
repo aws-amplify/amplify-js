@@ -24,7 +24,7 @@ import {
 	S3ProviderRemoveOutput,
 	S3ProviderListOutput,
 	S3ProviderCopyOutput,
-	S3PutResult,
+	S3ProviderPutOutput,
 } from '../';
 
 type Tail<T extends any[]> = ((...t: T) => void) extends (
@@ -138,7 +138,11 @@ export type StorageGetOutput<
 	T extends StorageProvider | Record<string, any>
 > = PickProviderOutput<Promise<S3ProviderGetOuput<T>>, T, 'get'>;
 
-export type StoragePutOutput<T> = PickProviderOutput<S3PutResult<T>, T, 'put'>;
+export type StoragePutOutput<T> = PickProviderOutput<
+	S3ProviderPutOutput<T>,
+	T,
+	'put'
+>;
 
 export type StorageRemoveOutput<T> = PickProviderOutput<
 	Promise<S3ProviderRemoveOutput>,

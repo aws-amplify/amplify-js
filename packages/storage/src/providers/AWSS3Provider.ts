@@ -55,11 +55,12 @@ import {
 	StorageAccessLevel,
 	CustomPrefix,
 	S3ProviderRemoveOutput,
-	S3PutResult,
+	S3ProviderPutOutput,
 	ResumableUploadConfig,
+	UploadTask,
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
-import { dispatchStorageEvent, isFile } from '../common/StorageUtils';
+import { dispatchStorageEvent } from '../common/StorageUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import {
@@ -145,7 +146,7 @@ export class AWSS3Provider implements StorageProvider {
 	private startResumableUpload(
 		addTaskInput: AddTaskInput,
 		config: S3ProviderPutConfig & ResumableUploadConfig
-	): AWSS3UploadTask {
+	): UploadTask {
 		const { s3Client, emitter, key, file, params } = addTaskInput;
 		const {
 			progressCallback,
@@ -480,11 +481,11 @@ export class AWSS3Provider implements StorageProvider {
 	 * @return an instance of AWSS3UploadTask or a promise that resolves to an object with the new object's key on
 	 * success.
 	 */
-	public put(
+	public put<T extends S3ProviderPutConfig>(
 		key: string,
 		object: PutObjectCommandInput['Body'],
-		config?: S3ProviderPutConfig
-	): S3PutResult<S3ProviderPutConfig> {
+		config?: T
+	): S3ProviderPutOutput<T> {
 		const opt = Object.assign({}, this._config, config);
 		const { bucket, track, progressCallback, level, resumable } = opt;
 		const {
@@ -589,7 +590,7 @@ export class AWSS3Provider implements StorageProvider {
 			return this.startResumableUpload(
 				addTaskInput,
 				config as typeof config & { resumable: true }
-			);
+			) as S3ProviderPutOutput<T>;
 		}
 
 		try {
@@ -616,7 +617,7 @@ export class AWSS3Provider implements StorageProvider {
 					`Upload success for ${key}`
 				);
 				return { key };
-			});
+			}) as S3ProviderPutOutput<T>;
 		} catch (error) {
 			logger.warn('error uploading', error);
 			dispatchStorageEvent(

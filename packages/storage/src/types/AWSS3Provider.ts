@@ -89,10 +89,6 @@ export type S3ProviderPutConfig = CommonStorageOptions &
 		| (_S3ProviderPutConfig & ResumableUploadConfig)
 	);
 
-export interface S3ProviderPutOutput {
-	key: string;
-}
-
 export type S3ProviderRemoveConfig = CommonStorageOptions & {
 	bucket?: string;
 	provider?: 'AWSS3';
@@ -152,6 +148,6 @@ export type PutResult = {
 	key: string;
 };
 
-export type S3PutResult<T> = T extends { resumable: true }
+export type S3ProviderPutOutput<T> = T extends { resumable: true }
 	? UploadTask
 	: Promise<PutResult>;
