@@ -70,7 +70,7 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
         if (reactContext != null) {
             emitNotificationOpenedEvent(reactContext);
         } else {
-            // If the ReactContext is null, use a listener to use it when ready
+            // If the ReactContext is null, add a listener to use it when it becomes initialized
             mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
                 public void onReactContextInitialized(ReactContext currentReactContext) {
                     emitNotificationOpenedEvent(currentReactContext);
