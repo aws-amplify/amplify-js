@@ -71,7 +71,7 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
             RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery((ReactApplicationContext) reactContext);
             jsDelivery.emitNotificationOpened(intent.getBundleExtra("notification"));
         } else {
-            // If the ReactContext is null, use a listener to use it when ready
+            // If the ReactContext is null, add a listener to use it when it becomes initialized
             mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
                 public void onReactContextInitialized(ReactContext currentReactContext) {
                     RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery((ReactApplicationContext) currentReactContext);
