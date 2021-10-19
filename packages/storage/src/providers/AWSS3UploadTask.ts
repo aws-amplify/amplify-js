@@ -46,7 +46,7 @@ export interface AWSS3UploadTaskParams {
 	level: StorageAccessLevel;
 	params: PutObjectCommandInput;
 	/**
-	 * File size of each chunk of the parts
+	 * File size of each chunk of the parts in bytes
 	 */
 	partSize?: number;
 	emitter?: events.EventEmitter;
@@ -63,7 +63,13 @@ export interface UploadTaskCompleteEvent {
 }
 
 export interface UploadTaskProgressEvent {
+	/**
+	 * bytes that has been sent to S3 so far
+	 */
 	loaded: number;
+	/**
+	 * total bytes that needs to be sent to S3
+	 */
 	total: number;
 }
 
