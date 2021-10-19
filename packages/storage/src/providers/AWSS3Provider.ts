@@ -61,6 +61,10 @@ import {
 } from '../types';
 import { StorageErrorStrings } from '../common/StorageErrorStrings';
 import { dispatchStorageEvent } from '../common/StorageUtils';
+import {
+	createPrefixMiddleware,
+	prefixMiddlewareOptions,
+} from '../common/S3ClientUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
 import {
@@ -548,29 +552,14 @@ export class AWSS3Provider implements StorageProvider {
 		}
 
 		const emitter = new events.EventEmitter();
-		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
 		const s3Client = this._createNewS3Client(opt);
 		// we are using aws sdk middleware to inject the prefix to Key, this way we don't have to call
 		// this._ensureCredentials() which allows us to make this function sync so we can return non-Promise like UploadTask
 		s3Client.middlewareStack.add(
-			(next, _context) => async args => {
-				const credentials = await Credentials.get();
-				const cred = Credentials.shear(credentials);
-				const prefix = this._prefix({
-					...opt,
-					credentials: cred,
-				});
-				if (Object.prototype.hasOwnProperty.call(args.input, 'Key')) {
-					(args.input as { Key: string }).Key = prefix + key;
-				}
-				const result = next(args);
-				return result;
-			},
-			{
-				step: 'initialize',
-				name: 'addPrefixMiddleware',
-			}
+			createPrefixMiddleware(opt, key),
+			prefixMiddlewareOptions
 		);
+		const uploader = new AWSS3ProviderManagedUpload(params, opt, emitter);
 
 		if (acl) {
 			params.ACL = acl;

@@ -38,6 +38,10 @@ import {
 	localTestingStorageEndpoint,
 } from '../common/StorageConstants';
 import * as events from 'events';
+import {
+	createPrefixMiddleware,
+	prefixMiddlewareOptions,
+} from '../common/S3ClientUtils';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
 
@@ -56,7 +60,7 @@ export class AWSS3ProviderManagedUpload {
 
 	// Data for current upload
 	private body = null;
-	private params = null;
+	private params: PutObjectRequest = null;
 	private opts = null;
 	private completedParts: CompletedPart[] = [];
 	private cancel = false;
@@ -364,6 +368,10 @@ export class AWSS3ProviderManagedUpload {
 			customUserAgent: getAmplifyUserAgent(),
 		});
 		client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
+		client.middlewareStack.add(
+			createPrefixMiddleware(this.opts, this.params.Key),
+			prefixMiddlewareOptions
+		);
 		return client;
 	}
 
