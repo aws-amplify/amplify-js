@@ -11,18 +11,19 @@
  * and limitations under the License.
  */
 
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { InAppMessage, Notifications } from '@aws-amplify/notifications';
 
+import { InAppMessagingProviderProps } from '..';
 import InAppMessagingContext from './InAppMessagingContext';
 
 const { InAppMessaging } = Notifications;
 
 export default function InAppMessagingProvider({
 	children,
-}: {
-	children: ReactNode;
-}) {
+	components = {},
+	style = {},
+}: InAppMessagingProviderProps) {
 	const [inAppMessages, setInAppMessages] = useState<InAppMessage[]>([]);
 
 	useEffect(() => {
@@ -41,8 +42,10 @@ export default function InAppMessagingProvider({
 		<InAppMessagingContext.Provider
 			value={{
 				clearInAppMessages,
+				components,
 				displayInAppMessage,
 				inAppMessages,
+				style,
 			}}
 		>
 			{children}
