@@ -10,13 +10,14 @@ import {
 	ListPartsCommand,
 	CreateMultipartUploadCommand,
 	PutObjectCommandInput,
+	ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
 import * as events from 'events';
 import axios, { Canceler, CancelTokenSource } from 'axios';
 import { HttpHandlerOptions } from '@aws-sdk/types';
 import { Logger } from '@aws-amplify/core';
 import { UploadTask } from '../types/Provider';
-import { listSingleFile, byteLength, isFile } from '../common/StorageUtils';
+import { byteLength, isFile } from '../common/StorageUtils';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
 import {
 	SET_CONTENT_LENGTH_HEADER,
@@ -143,6 +144,26 @@ export class AWSS3UploadTask implements UploadTask {
 
 	get isInProgress() {
 		return this.state === AWSS3UploadTaskState.IN_PROGRESS;
+	}
+
+	private async _listSingleFile({
+		s3Client,
+		key,
+		bucket,
+	}: {
+		s3Client: S3Client;
+		key: string;
+		bucket: string;
+	}) {
+		const listObjectRes = await s3Client.send(
+			new ListObjectsV2Command({
+				Bucket: bucket,
+				Prefix: key,
+			})
+		);
+		const { Contents = [] } = listObjectRes;
+		const obj = Contents.find(o => o.Key === key);
+		return obj;
 	}
 
 	private _getFileId(level: StorageAccessLevel): string {
@@ -279,6 +300,7 @@ export class AWSS3UploadTask implements UploadTask {
 					},
 				})
 			);
+			this._verifyFileSize();
 			this._emitEvent<UploadTaskCompleteEvent>(TaskEvents.UPLOAD_COMPLETE, {
 				key: `${this.params.Bucket}/${this.params.Key}`,
 			});
@@ -339,15 +361,21 @@ export class AWSS3UploadTask implements UploadTask {
 	 * Verify on S3 side that the file size matches the one on the client side.
 	 *
 	 * @async
-	 * @return {Promise<boolean>} If the local file size matches the one on S3.
+	 * @throws throws an error if the file size does not match between local copy of the file and the file on s3.
 	 */
-	private async _verifyFileSize(): Promise<boolean> {
-		const obj = await listSingleFile({
+	private async _verifyFileSize() {
+		const obj = await this._listSingleFile({
 			s3Client: this.s3client,
 			key: this.params.Key,
 			bucket: this.params.Bucket,
 		});
-		return Boolean(obj && obj.Size === this.file.size);
+		const valid = Boolean(obj && obj.Size === this.file.size);
+		if (!valid) {
+			throw new Error(
+				'File size does not match between local file and file on s3'
+			);
+		}
+		return valid;
 	}
 
 	private _isDone() {
