@@ -18,4 +18,4 @@ packages/**/cjs/
 packages/**/cypress/videos/
 yarn.lock
 package-lock.json
-**/*/.watchmanconfig
+packages/*/.watchmanconfig
