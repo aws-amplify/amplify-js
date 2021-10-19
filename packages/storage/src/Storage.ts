@@ -198,6 +198,14 @@ export class Storage {
 		this._cancelTokenSourceMap.set(request, cancelTokenSource);
 	}
 
+	private isUploadTask(x: any): x is UploadTask {
+		return (
+			typeof x !== 'undefined' &&
+			typeof x.pause === 'function' &&
+			x.resume === 'function'
+		);
+	}
+
 	/**
 	 * Cancels an inflight request
 	 *
@@ -335,12 +343,14 @@ export class Storage {
 			) as StoragePutOutput<T>;
 		}
 		const cancelTokenSource = this.getCancellableTokenSource();
-		const responsePromise = prov.put(key, object, {
+		const response = prov.put(key, object, {
 			...config,
 			cancelTokenSource,
 		});
-		this.updateRequestToBeCancellable(responsePromise, cancelTokenSource);
-		return responsePromise as StoragePutOutput<T>;
+		if (!this.isUploadTask(response)) {
+			this.updateRequestToBeCancellable(response, cancelTokenSource);
+		}
+		return response as StoragePutOutput<T>;
 	}
 
 	/**
