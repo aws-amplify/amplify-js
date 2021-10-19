@@ -377,10 +377,10 @@ export class AWSS3UploadTask implements UploadTask {
 			PartNumber: part.PartNumber,
 			ETag: part.ETag,
 		}));
-		this._emitEvent<UploadTaskProgressEvent>(TaskEvents.UPLOAD_PROGRESS, {
-			loaded: this.bytesUploaded,
-			total: this.totalBytes,
-		});
+		// this._emitEvent<UploadTaskProgressEvent>(TaskEvents.UPLOAD_PROGRESS, {
+		// 	loaded: this.bytesUploaded,
+		// 	total: this.totalBytes,
+		// });
 	}
 
 	private async _initMultipartUpload() {
@@ -397,28 +397,26 @@ export class AWSS3UploadTask implements UploadTask {
 		return res.UploadId;
 	}
 
-	private _initializeUploadTask() {
+	private async _initializeUploadTask() {
 		this.state = AWSS3UploadTaskState.IN_PROGRESS;
-		if (this._isCached()) {
-			this._findCachedUploadParts()
-				.then(({ parts, uploadId }) => {
-					this.uploadId = uploadId;
-					this.queued = this._createParts();
-					this._initCachedUploadParts(parts);
-					this._startUpload();
-				})
-				.catch(err => {
-					if (!axios.isCancel(err)) {
-						logger.error('Error listing upload parts from S3', err);
-					}
-				});
-		} else {
-			if (!this.uploadId) {
-				this._initMultipartUpload().then(uploadId => {
+		try {
+			if (await this._isCached()) {
+				const { parts, uploadId } = await this._findCachedUploadParts();
+				this.uploadId = uploadId;
+				this.queued = this._createParts();
+				this._initCachedUploadParts(parts);
+				this._startUpload();
+			} else {
+				if (!this.uploadId) {
+					const uploadId = await this._initMultipartUpload();
 					this.uploadId = uploadId;
 					this.queued = this._createParts();
 					this._startUpload();
-				});
+				}
+			}
+		} catch (err) {
+			if (!axios.isCancel(err)) {
+				logger.error('Error initializing the upload task', err);
 			}
 		}
 	}
@@ -459,7 +457,7 @@ export class AWSS3UploadTask implements UploadTask {
 				UploadId: this.uploadId,
 			})
 		);
-		this._removeFromCache();
+		await this._removeFromCache();
 		return res;
 	}
 

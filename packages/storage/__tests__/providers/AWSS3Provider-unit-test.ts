@@ -783,12 +783,13 @@ describe('StorageProvider test', () => {
 				.mockImplementationOnce(async command => {
 					if (command instanceof CreateMultipartUploadCommand) {
 						return Promise.resolve({ UploadId: testUploadId });
+					} else if (command instanceof UploadPartCommand) {
 					}
 				});
 
 			const date = new Date();
 			const metadata = { key: 'value' };
-			await storage.put('key', file, {
+			const task = storage.put('key', file, {
 				resumable: true,
 				contentType: 'application/pdf',
 				cacheControl: 'no-cache',
@@ -803,30 +804,36 @@ describe('StorageProvider test', () => {
 				SSECustomerKeyMD5: 'md5',
 				SSEKMSKeyId: 'id',
 				acl: 'public',
-			});
-
-			expect(s3ServiceCallSpy.mock.calls[0][0].input).toStrictEqual({
-				Body: file,
-				Bucket: 'bucket',
-				ContentType: 'application/pdf',
-				Key: 'key',
-				CacheControl: 'no-cache',
-				ContentEncoding: 'gzip',
-				ContentDisposition: 'inline',
-				Expires: date,
-				Metadata: metadata,
-				Tagging: 'key1=value1',
-				SSECustomerAlgorithm: 'AES256',
-				SSECustomerKey: 'key',
-				SSECustomerKeyMD5: 'md5',
-				ServerSideEncryption: 'AES256',
-				SSEKMSKeyId: 'id',
-				ACL: 'public',
+				progressCallback: async () => {
+					console.log('progress');
+					expect(s3ServiceCallSpy.mock.calls[0][0].input).toStrictEqual({
+						Body: file,
+						Bucket: 'bucket',
+						ContentType: 'application/pdf',
+						Key: 'key',
+						CacheControl: 'no-cache',
+						ContentEncoding: 'gzip',
+						ContentDisposition: 'inline',
+						Expires: date,
+						Metadata: metadata,
+						Tagging: 'key1=value1',
+						SSECustomerAlgorithm: 'AES256',
+						SSECustomerKey: 'key',
+						SSECustomerKeyMD5: 'md5',
+						ServerSideEncryption: 'AES256',
+						SSEKMSKeyId: 'id',
+						ACL: 'public',
+					});
+					await (task as AWSS3UploadTask)._cancel();
+				},
 			});
 		});
 	});
 
 	describe('remove test', () => {
+		afterEach(() => {
+			jest.clearAllMocks();
+		});
 		test('remove object successfully', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return new Promise((res, rej) => {

@@ -1,6 +1,7 @@
 import {
 	AWSS3UploadTask,
 	AWSS3UploadTaskState,
+	TaskEvents,
 } from '../../src/providers/AWSS3UploadTask';
 import * as events from 'events';
 import {
@@ -105,6 +106,12 @@ describe('resumable upload task test', () => {
 		expect(res).toStrictEqual({
 			Key: input.params.Key,
 		});
+		uploadTask._cancel().then(res => {
+			expect(uploadTask.state).toEqual(AWSS3UploadTaskState.CANCELLED);
+			expect(res).toStrictEqual({
+				Key: input.params.Key,
+			});
+		});
 	});
 
 	test('should send listParts request if the upload task is cached', async () => {
@@ -170,9 +177,10 @@ describe('resumable upload task test', () => {
 			JSON.stringify(cachedUploadTasks)
 		);
 		const uploadTask = new AWSS3UploadTask(input);
+		// kick off the upload task
 		uploadTask.resume();
-		expect(mockLocalStorage.getItem).toHaveBeenCalledWith(UPLOADS_STORAGE_KEY);
 		await uploadTask._cancel();
+		expect(mockLocalStorage.getItem).toHaveBeenCalledWith(UPLOADS_STORAGE_KEY);
 		expect(mockLocalStorage.setItem).toHaveBeenLastCalledWith(
 			UPLOADS_STORAGE_KEY,
 			'{}'
