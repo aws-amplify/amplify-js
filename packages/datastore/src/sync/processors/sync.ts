@@ -25,9 +25,6 @@ import {
 } from '@aws-amplify/core';
 import { ModelPredicateCreator } from '../../predicates';
 
-const DEFAULT_PAGINATION_LIMIT = 1000;
-const DEFAULT_MAX_RECORDS_TO_SYNC = 10000;
-
 const opResultDefaults = {
 	items: [],
 	nextToken: null,
@@ -41,8 +38,6 @@ class SyncProcessor {
 
 	constructor(
 		private readonly schema: InternalSchema,
-		private readonly maxRecordsToSync: number = DEFAULT_MAX_RECORDS_TO_SYNC,
-		private readonly syncPageSize: number = DEFAULT_PAGINATION_LIMIT,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
 		private readonly amplifyConfig: Record<string, any> = {},
 		private readonly authModeStrategy: AuthModeStrategy
@@ -289,19 +284,9 @@ class SyncProcessor {
 		typesLastSync: Map<SchemaModel, [string, number]>
 	): Observable<SyncModelPage> {
 		let processing = true;
-
-		const maxRecordsToSync =
-			this.maxRecordsToSync !== undefined
-				? this.maxRecordsToSync
-				: DEFAULT_MAX_RECORDS_TO_SYNC;
-
-		const syncPageSize =
-			this.syncPageSize !== undefined
-				? this.syncPageSize
-				: DEFAULT_PAGINATION_LIMIT;
-
+		const maxRecordsToSync = this.amplifyConfig.maxRecordsToSync;
+		const syncPageSize = this.amplifyConfig.syncPageSize;
 		const parentPromises = new Map<string, Promise<void>>();
-
 		const observable = new Observable<SyncModelPage>(observer => {
 			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce(
 				(map, namespace) => {

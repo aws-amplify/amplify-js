@@ -1159,8 +1159,6 @@ class DataStore {
 		criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
 		options?: ProducerPaginationInput<T>
 	): Observable<DataStoreSnapshot<T>> => {
-		const SYNCED_ITEMS_THRESHOLD = this.syncPageSize || 1000;
-
 		return new Observable<DataStoreSnapshot<T>>(observer => {
 			const items = new Map<string, T>();
 			let itemsChanged = new Map<string, T>();
@@ -1190,8 +1188,7 @@ class DataStore {
 						const isSynced = this.sync.getModelSyncedStatus(model);
 
 						if (
-							itemsChanged.size - deletedItemIds.length >=
-								SYNCED_ITEMS_THRESHOLD ||
+							itemsChanged.size - deletedItemIds.length >= this.syncPageSize ||
 							isSynced
 						) {
 							generateAndEmitSnapshot();
@@ -1326,19 +1323,19 @@ class DataStore {
 
 		this.maxRecordsToSync =
 			(configDataStore && configDataStore.maxRecordsToSync) ||
-			this.maxRecordsToSync ||
-			configMaxRecordsToSync;
+			configMaxRecordsToSync ||
+			10000;
+
+		// store on config object, so that Sync, Subscription, and Mutation processors can have access
+		this.amplifyConfig.maxRecordsToSync = this.maxRecordsToSync;
 
 		this.syncPageSize =
 			(configDataStore && configDataStore.syncPageSize) ||
-			this.syncPageSize ||
-			configSyncPageSize;
+			configSyncPageSize ||
+			1000;
 
-		this.fullSyncInterval =
-			(configDataStore && configDataStore.fullSyncInterval) ||
-			this.fullSyncInterval ||
-			configFullSyncInterval ||
-			24 * 60; // 1 day
+		// store on config object, so that Sync, Subscription, and Mutation processors can have access
+		this.amplifyConfig.syncPageSize = this.syncPageSize;
 
 		this.storageAdapter =
 			(configDataStore && configDataStore.storageAdapter) ||

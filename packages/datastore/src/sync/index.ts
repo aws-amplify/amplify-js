@@ -136,8 +136,6 @@ export class SyncEngine {
 
 		this.syncQueriesProcessor = new SyncProcessor(
 			this.schema,
-			this.maxRecordsToSync,
-			this.syncPageSize,
 			this.syncPredicates,
 			this.amplifyConfig,
 			this.authModeStrategy
