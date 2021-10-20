@@ -23,6 +23,7 @@ export default function InAppMessageDisplay() {
 	useEffect(() => {
 		if (Component) {
 			// TODO: add display notify handler when available
+			// eslint-disable-next-line no-console
 			console.log(`display InAppMessage: ${id}`);
 		}
 	}, [Component, id]);

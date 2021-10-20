@@ -35,9 +35,7 @@ export function getInAppMessage(messages: InAppMessage[]) {
 	return messages?.[0] ?? ({} as InAppMessage);
 }
 
-export const getPositionProp = (
-	layout: InAppMessageLayout
-): InAppMessageComponentPosition => {
+export const getPositionProp = (layout: InAppMessageLayout): InAppMessageComponentPosition => {
 	switch (layout) {
 		case 'BOTTOM_BANNER': {
 			return 'bottom';
@@ -58,7 +56,7 @@ const getActionHandler = (
 	{ action, url }: { action: InAppMessageAction; url?: string },
 	onActionCallback: () => void
 ) => ({
-	onPress: async function() {
+	onPress: async function onPress() {
 		try {
 			await handleAction(action, url);
 		} catch (e) {

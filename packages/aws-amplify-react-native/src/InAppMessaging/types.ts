@@ -13,12 +13,7 @@
 
 import { ReactElement, ReactNode } from 'react';
 import { StyleProp, TextStyle, ViewStyle } from 'react-native';
-import {
-	InAppMessage,
-	InAppMessageAction,
-	InAppMessageButton,
-	InAppMessageContent,
-} from '@aws-amplify/notifications';
+import { InAppMessage, InAppMessageAction, InAppMessageButton, InAppMessageContent } from '@aws-amplify/notifications';
 
 // TODO: replace with actual Component types
 type ButtonProps = any;
@@ -54,13 +49,9 @@ export type InAppMessagingProviderProps = {
 	style?: InAppMessageComponentStyles;
 };
 
-export type InAppMessageComponentActionHandler = (
-	action: InAppMessageAction,
-	url?: string
-) => Promise<void>;
+export type InAppMessageComponentActionHandler = (action: InAppMessageAction, url?: string) => Promise<void>;
 
-export interface InAppMessageComponentButtonProps
-	extends Omit<InAppMessageButton, 'action' | 'url'> {
+export interface InAppMessageComponentButtonProps extends Omit<InAppMessageButton, 'action' | 'url'> {
 	onPress: () => void;
 }
 
@@ -72,8 +63,7 @@ export interface InAppMessageComponentContentProps
 	secondaryButton?: InAppMessageComponentButtonProps;
 }
 
-export interface InAppMessageBaseComponentProps
-	extends InAppMessageComponentContentProps {
+export interface InAppMessageBaseComponentProps extends InAppMessageComponentContentProps {
 	id: string;
 	onClose?: () => void;
 	style?: InAppMessageComponentStyle;
@@ -83,22 +73,15 @@ export interface BannerMessageProps extends InAppMessageBaseComponentProps {
 	position: InAppMessageComponentPosition;
 }
 
-export interface CarouselMessageProps
-	extends Omit<InAppMessageBaseComponentProps, 'content'> {
+export interface CarouselMessageProps extends Omit<InAppMessageBaseComponentProps, 'content'> {
 	data: InAppMessageComponentContentProps[];
 }
 
-export interface FullScreenMessageProps
-	extends InAppMessageBaseComponentProps {}
+export interface FullScreenMessageProps extends InAppMessageBaseComponentProps {}
 
-export type InAppMessageComponentProps =
-	| BannerMessageProps
-	| CarouselMessageProps
-	| FullScreenMessageProps;
+export type InAppMessageComponentProps = BannerMessageProps | CarouselMessageProps | FullScreenMessageProps;
 
-export type InAppMessageComponent = (
-	props: InAppMessageComponentProps
-) => ReactElement;
+export type InAppMessageComponent = (props: InAppMessageComponentProps) => ReactElement;
 
 export type InAppMessageComponents = {
 	BannerMessage?: (props: BannerMessageProps) => ReactElement;
