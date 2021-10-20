@@ -19,7 +19,7 @@
 		"@babel/cli": "^7.15.7",
 		"@babel/core": "7.15.5",
 		"@babel/preset-env": "7.15.6",
-		"@types/react-native": "^0.62.5",
+		"@types/react-native": "^0.63.45",
 		"@types/react-test-renderer": "^17.0.1",
 		"@typescript-eslint/eslint-plugin": "^4.32.0",
 		"@typescript-eslint/parser": "^4.32.0",
