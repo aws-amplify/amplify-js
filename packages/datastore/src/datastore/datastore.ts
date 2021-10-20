@@ -1178,7 +1178,10 @@ class DataStore {
 						// @ts-ignore TODO: fix this TSlint error
 						criteria
 					).subscribe(({ element, model, opType }) => {
-						// flag items which have been recently deleted
+						// Flag items which have been recently deleted
+						// NOTE: Merging of separate operations to the same model instance is handled upstream
+						// in the `mergePage` method within src/sync/merger.ts. The final state of a model instance
+						// depends on the LATEST record (for a given id).
 						if (opType === 'DELETE') {
 							deletedItemIds.push(element.id);
 						} else {
