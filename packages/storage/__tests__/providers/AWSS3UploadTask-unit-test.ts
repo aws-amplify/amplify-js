@@ -102,15 +102,15 @@ describe('resumable upload task test', () => {
 		expect(uploadTask.state).toEqual(AWSS3UploadTaskState.INIT);
 		uploadTask.resume();
 		expect(uploadTask.state).toEqual(AWSS3UploadTaskState.IN_PROGRESS);
-		expect(uploadTask.isInProgress).toBeTruthy();
+		expect(uploadTask.isInProgress).toBe(true);
 		uploadTask.pause();
 		expect(uploadTask.state).toEqual(AWSS3UploadTaskState.PAUSED);
 		const cancelled = await uploadTask._cancel();
 		expect(uploadTask.state).toEqual(AWSS3UploadTaskState.CANCELLED);
-		expect(cancelled).toBeTruthy();
+		expect(cancelled).toBe(true);
 		uploadTask._cancel().then(cancelled => {
 			expect(uploadTask.state).toEqual(AWSS3UploadTaskState.CANCELLED);
-			expect(cancelled).toBeTruthy();
+			expect(cancelled).toBe(true);
 		});
 	});
 
