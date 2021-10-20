@@ -2,10 +2,7 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import AsyncStorageDatabase from './AsyncStorageDatabase';
 import { Adapter } from './index';
 import { ModelInstanceCreator } from '../../datastore/datastore';
-import {
-	ModelPredicateCreator,
-	ModelSortPredicateCreator,
-} from '../../predicates';
+import { ModelPredicateCreator } from '../../predicates';
 import {
 	InternalSchema,
 	isPredicateObj,
@@ -28,7 +25,6 @@ import {
 	isModelConstructor,
 	traverseModel,
 	validatePredicate,
-	sortCompareFunction,
 	inMemoryPagination,
 } from '../../util';
 

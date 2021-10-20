@@ -69,13 +69,10 @@ import {
 	inMemoryPagination,
 } from '../util';
 import {
-	ModelPredicateExtender,
-	FinalModelPredicate,
 	SingularModelPredicateExtender,
 	predicateFor,
 	GroupCondition,
 } from '../predicates/next';
-import { notDeepEqual } from 'assert';
 
 setAutoFreeze(true);
 enablePatches();
@@ -1224,19 +1221,19 @@ class DataStore {
 			throw new Error(msg);
 		}
 
-		if (typeof idOrCriteria === 'string') {
-			predicate = ModelPredicateCreator.createForId<T>(
-				getModelDefinition(modelConstructor),
-				idOrCriteria
-			);
-		} else if (modelConstructor && typeof idOrCriteria === 'function') {
-			const seedPredicate = predicateFor<T>({
+		const buildSeedPredicate = () =>
+			predicateFor<T>({
 				builder: modelOrConstructor as PersistentModelConstructor<T>,
 				schema: getModelDefinition(modelConstructor),
 				pkField: getModelPKFieldName(modelConstructor),
 			});
+
+		if (typeof idOrCriteria === 'string') {
+			const buildIdPredicate = seed => seed.id.eq(idOrCriteria);
+			executivePredicate = buildIdPredicate(buildSeedPredicate()).__query;
+		} else if (modelConstructor && typeof idOrCriteria === 'function') {
 			executivePredicate = (idOrCriteria as SingularModelPredicateExtender<T>)(
-				seedPredicate
+				buildSeedPredicate()
 			).__query;
 		}
 
@@ -1253,7 +1250,7 @@ class DataStore {
 						next: async item => {
 							if (
 								!executivePredicate ||
-								(await executivePredicate.matches(item))
+								(await executivePredicate.matches(item.element))
 							) {
 								observer.next(item as SubscriptionMessage<T>);
 							}

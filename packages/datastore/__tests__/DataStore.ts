@@ -13,29 +13,10 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 } from '../src/types';
-import { Model, Metadata, testSchema } from './helpers';
+import { Model, Post, Metadata, testSchema } from './helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
-
-beforeEach(() => {
-	jest.resetModules();
-
-	jest.doMock('../src/storage/storage', () => {
-		const mock = jest.fn().mockImplementation(() => ({
-			init: jest.fn(),
-			runExclusive: jest.fn(),
-			query: jest.fn(() => []),
-			save: jest.fn(() => []),
-			observe: jest.fn(() => Observable.of()),
-		}));
-
-		(<any>mock).getNamespace = () => ({ models: {} });
-
-		return { ExclusiveStorage: mock };
-	});
-	({ initSchema, DataStore } = require('../src/datastore/datastore'));
-});
 
 const nameOf = <T>(name: keyof T) => name;
 
@@ -44,7 +25,178 @@ const nameOf = <T>(name: keyof T) => name;
  */
 const expectType: <T>(param: T) => void = () => {};
 
+describe('DataStore observe, unmocked, with fake-indexeddb', () => {
+	let Model: PersistentModelConstructor<Model>;
+	let Post: PersistentModelConstructor<Post>;
+
+	beforeEach(async () => {
+		({ initSchema, DataStore } = require('../src/datastore/datastore'));
+		const classes = initSchema(testSchema());
+		({ Model, Post } = classes as {
+			Model: PersistentModelConstructor<Model>;
+			Post: PersistentModelConstructor<Post>;
+		});
+		await DataStore.clear();
+	});
+
+	test('subscribe to all models', async done => {
+		DataStore.observe().subscribe(({ element, opType, model }) => {
+			expectType<PersistentModelConstructor<PersistentModel>>(model);
+			expectType<PersistentModel>(element);
+			expect(opType).toEqual('INSERT');
+			expect(element.field1).toEqual('Smurfs');
+			done();
+		});
+		DataStore.save(
+			new Model({
+				field1: 'Smurfs',
+				dateCreated: new Date().toISOString(),
+			})
+		);
+	});
+
+	test('subscribe to model instance', async done => {
+		const original = await DataStore.save(
+			new Model({
+				field1: 'somevalue',
+				dateCreated: new Date().toISOString(),
+			})
+		);
+
+		DataStore.observe(original).subscribe(({ element, opType, model }) => {
+			expectType<PersistentModelConstructor<Model>>(model);
+			expectType<Model>(element);
+			expect(opType).toEqual('UPDATE');
+			expect(element.id).toEqual(original.id);
+			expect(element.field1).toEqual('new field 1 value');
+			done();
+		});
+
+		// decoy
+		await DataStore.save(
+			new Model({
+				field1: "this one shouldn't get through",
+				dateCreated: new Date().toISOString(),
+			})
+		);
+
+		await DataStore.save(
+			Model.copyOf(original, m => (m.field1 = 'new field 1 value'))
+		);
+	});
+
+	test('subscribe to Model', async done => {
+		const original = await DataStore.save(
+			new Model({
+				field1: 'somevalue',
+				dateCreated: new Date().toISOString(),
+			})
+		);
+
+		DataStore.observe(Model).subscribe(({ element, opType, model }) => {
+			expectType<PersistentModelConstructor<Model>>(model);
+			expectType<Model>(element);
+			expect(opType).toEqual('UPDATE');
+			expect(element.id).toEqual(original.id);
+			expect(element.field1).toEqual('new field 1 value');
+			done();
+		});
+
+		// decoy
+		await DataStore.save(
+			new Post({
+				title: "This one's a decoy!",
+			})
+		);
+
+		await DataStore.save(
+			Model.copyOf(original, m => (m.field1 = 'new field 1 value'))
+		);
+	});
+
+	test('subscribe with criteria', async done => {
+		const original = await DataStore.save(
+			new Model({
+				field1: 'somevalue',
+				dateCreated: new Date().toISOString(),
+			})
+		);
+
+		DataStore.observe(Model, m => m.field1.contains('new field 1')).subscribe(
+			({ element, opType, model }) => {
+				expectType<PersistentModelConstructor<Model>>(model);
+				expectType<Model>(element);
+				expect(opType).toEqual('UPDATE');
+				expect(element.id).toEqual(original.id);
+				expect(element.field1).toEqual('new field 1 value');
+				done();
+			}
+		);
+
+		// decoy
+		await DataStore.save(
+			new Model({
+				field1: "This one's a decoy!",
+				dateCreated: new Date().toISOString(),
+			})
+		);
+
+		await DataStore.save(
+			Model.copyOf(original, m => (m.field1 = 'new field 1 value'))
+		);
+	});
+
+	test('subscribe with criteria on deletes', async done => {
+		const original = await DataStore.save(
+			new Model({
+				field1: 'somevalue',
+				dateCreated: new Date().toISOString(),
+			})
+		);
+
+		DataStore.observe(Model, m => m.field1.contains('value')).subscribe(
+			({ element, opType, model }) => {
+				expectType<PersistentModelConstructor<Model>>(model);
+				expectType<Model>(element);
+				expect(opType).toEqual('DELETE');
+				expect(element.id).toEqual(original.id);
+				expect(element.field1).toEqual('somevalue');
+				done();
+			}
+		);
+
+		// decoy
+		await DataStore.save(
+			new Model({
+				field1: "This one's a decoy!",
+				dateCreated: new Date().toISOString(),
+			})
+		);
+
+		await DataStore.delete(original);
+	});
+});
+
 describe('DataStore tests', () => {
+	beforeEach(() => {
+		jest.resetModules();
+
+		jest.doMock('../src/storage/storage', () => {
+			const mock = jest.fn().mockImplementation(() => ({
+				init: jest.fn(),
+				runExclusive: jest.fn(),
+				query: jest.fn(() => []),
+				save: jest.fn(() => []),
+				observe: jest.fn(() => Observable.of()),
+			}));
+
+			(<any>mock).getNamespace = () => ({ models: {} });
+
+			return { ExclusiveStorage: mock };
+		});
+		({ initSchema, DataStore } = require('../src/datastore/datastore'));
+	});
+
 	describe('initSchema tests', () => {
 		test('Model class is created', () => {
 			const classes = initSchema(testSchema());

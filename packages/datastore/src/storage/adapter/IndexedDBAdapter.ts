@@ -1,10 +1,7 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import * as idb from 'idb';
 import { ModelInstanceCreator } from '../../datastore/datastore';
-import {
-	ModelPredicateCreator,
-	ModelSortPredicateCreator,
-} from '../../predicates';
+import { ModelPredicateCreator } from '../../predicates';
 import {
 	InternalSchema,
 	isPredicateObj,
@@ -28,7 +25,6 @@ import {
 	isPrivateMode,
 	traverseModel,
 	validatePredicate,
-	sortCompareFunction,
 	inMemoryPagination,
 } from '../../util';
 import { Adapter } from './index';
