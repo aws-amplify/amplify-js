@@ -805,7 +805,6 @@ describe('StorageProvider test', () => {
 				SSEKMSKeyId: 'id',
 				acl: 'public',
 				progressCallback: async () => {
-					console.log('progress');
 					expect(s3ServiceCallSpy.mock.calls[0][0].input).toStrictEqual({
 						Body: file,
 						Bucket: 'bucket',
