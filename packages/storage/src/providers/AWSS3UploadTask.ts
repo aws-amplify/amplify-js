@@ -147,15 +147,13 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	private async _listSingleFile({
-		s3Client,
 		key,
 		bucket,
 	}: {
-		s3Client: S3Client;
 		key: string;
 		bucket: string;
 	}) {
-		const listObjectRes = await s3Client.send(
+		const listObjectRes = await this.s3client.send(
 			new ListObjectsV2Command({
 				Bucket: bucket,
 				Prefix: key,
@@ -416,10 +414,10 @@ export class AWSS3UploadTask implements UploadTask {
 			PartNumber: part.PartNumber,
 			ETag: part.ETag,
 		}));
-		// this._emitEvent<UploadTaskProgressEvent>(TaskEvents.UPLOAD_PROGRESS, {
-		// 	loaded: this.bytesUploaded,
-		// 	total: this.totalBytes,
-		// });
+		this._emitEvent<UploadTaskProgressEvent>(TaskEvents.UPLOAD_PROGRESS, {
+			loaded: this.bytesUploaded,
+			total: this.totalBytes,
+		});
 	}
 
 	private async _initMultipartUpload() {
