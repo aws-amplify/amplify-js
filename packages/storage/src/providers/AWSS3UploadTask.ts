@@ -342,8 +342,8 @@ export class AWSS3UploadTask implements UploadTask {
 				err.message !== AWSS3ProviderUploadErrorStrings.UPLOAD_PAUSED_MESSAGE
 			) {
 				this._emitEvent(TaskEvents.ERROR, err);
+				this.pause();
 			}
-			this.pause();
 		}
 	}
 
@@ -463,7 +463,7 @@ export class AWSS3UploadTask implements UploadTask {
 
 	public resume(): void {
 		if (this.state === AWSS3UploadTaskState.CANCELLED) {
-			logger.warn('This task has already been aborted');
+			logger.warn('This task has already been cancelled');
 		} else if (this.state === AWSS3UploadTaskState.COMPLETED) {
 			logger.warn('This task has already been completed');
 		} else if (this.state === AWSS3UploadTaskState.IN_PROGRESS) {
@@ -485,24 +485,32 @@ export class AWSS3UploadTask implements UploadTask {
 	}
 
 	async _cancel(): Promise<boolean> {
-		this.pause();
-		this.queued = [];
-		this.completedParts = [];
-		this.bytesUploaded = 0;
-		this.state = AWSS3UploadTaskState.CANCELLED;
-		try {
-			await this.s3client.send(
-				new AbortMultipartUploadCommand({
-					Bucket: this.params.Bucket,
-					Key: this.params.Key,
-					UploadId: this.uploadId,
-				})
-			);
-			await this._removeFromCache();
-			return true;
-		} catch (err) {
-			logger.error('Error cancelling upload task', err);
+		if (this.state === AWSS3UploadTaskState.CANCELLED) {
+			logger.warn('This task has already been cancelled');
 			return false;
+		} else if (this.state === AWSS3UploadTaskState.COMPLETED) {
+			logger.warn('This task has already been completed');
+			return false;
+		} else {
+			this.pause();
+			this.queued = [];
+			this.completedParts = [];
+			this.bytesUploaded = 0;
+			this.state = AWSS3UploadTaskState.CANCELLED;
+			try {
+				await this.s3client.send(
+					new AbortMultipartUploadCommand({
+						Bucket: this.params.Bucket,
+						Key: this.params.Key,
+						UploadId: this.uploadId,
+					})
+				);
+				await this._removeFromCache();
+				return true;
+			} catch (err) {
+				logger.error('Error cancelling upload task', err);
+				return false;
+			}
 		}
 	}
 
@@ -510,6 +518,13 @@ export class AWSS3UploadTask implements UploadTask {
 	 * pause this particular upload task
 	 **/
 	public pause(): void {
+		if (this.state === AWSS3UploadTaskState.CANCELLED) {
+			logger.warn('This task has already been cancelled');
+		} else if (this.state === AWSS3UploadTaskState.COMPLETED) {
+			logger.warn('This task has already been completed');
+		} else if (this.state === AWSS3UploadTaskState.PAUSED) {
+			logger.warn('This task is already paused');
+		}
 		this.state = AWSS3UploadTaskState.PAUSED;
 		// Use axios cancel token to abort the part request immediately
 		// Add the inProgress parts back to pending
