@@ -6,7 +6,6 @@ import {
 	CompleteMultipartUploadCommand,
 	Part,
 	AbortMultipartUploadCommand,
-	AbortMultipartUploadCommandOutput,
 	ListPartsCommand,
 	CreateMultipartUploadCommand,
 	PutObjectCommandInput,
