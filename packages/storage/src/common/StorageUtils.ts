@@ -1,4 +1,5 @@
 import { Hub } from '@aws-amplify/core';
+import { AMPLIFY_SYMBOL } from './StorageConstants';
 
 export const byteLength = (x: unknown) => {
 	if (typeof x === 'string') {
@@ -11,11 +12,6 @@ export const byteLength = (x: unknown) => {
 		throw new Error('Cannot determine byte length of ' + x);
 	}
 };
-
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
 
 export const dispatchStorageEvent = (
 	track: boolean,
