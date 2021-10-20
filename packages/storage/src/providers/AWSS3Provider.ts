@@ -553,7 +553,7 @@ export class AWSS3Provider implements StorageProvider {
 
 		const emitter = new events.EventEmitter();
 		const s3Client = this._createNewS3Client(opt);
-		// we are using aws sdk middleware to inject the prefix to Key, this way we don't have to call
+		// we are using aws sdk middleware to inject the prefix to key, this way we don't have to call
 		// this._ensureCredentials() which allows us to make this function sync so we can return non-Promise like UploadTask
 		s3Client.middlewareStack.add(
 			createPrefixMiddleware(opt, key),
