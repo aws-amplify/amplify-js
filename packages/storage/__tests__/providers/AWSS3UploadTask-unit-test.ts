@@ -1,6 +1,7 @@
 import {
 	AWSS3UploadTask,
 	AWSS3UploadTaskState,
+	AWSS3UploadTaskParams,
 } from '../../src/providers/AWSS3UploadTask';
 import * as events from 'events';
 import {
@@ -56,8 +57,7 @@ describe('resumable upload task test', () => {
 	test('constructor test', () => {
 		const file = new File(['TestFileContent'], 'testFileName');
 		const emitter = new events.EventEmitter();
-		const input = {
-			accessLevel: 'public',
+		const input: AWSS3UploadTaskParams = {
 			file,
 			s3Client: new S3Client(testOpts),
 			emitter: emitter,
@@ -76,8 +76,7 @@ describe('resumable upload task test', () => {
 		const file = new File(['TestFileContent'], 'testFileName');
 		Object.defineProperty(file, 'size', { value: 25048576 });
 		const emitter = new events.EventEmitter();
-		const input = {
-			accessLevel: 'public',
+		const input: AWSS3UploadTaskParams = {
 			file,
 			s3Client: new S3Client(testOpts),
 			emitter: emitter,
@@ -144,8 +143,7 @@ describe('resumable upload task test', () => {
 		const file = new File(['TestFileContent'], 'testFileName');
 		Object.defineProperty(file, 'size', { value: 25048576 });
 		const emitter = new events.EventEmitter();
-		const input = {
-			accessLevel: 'public',
+		const input: AWSS3UploadTaskParams = {
 			file,
 			s3Client: new S3Client(testOpts),
 			emitter: emitter,
