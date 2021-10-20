@@ -24,7 +24,12 @@ module.exports = {
 	},
 	plugins: ['react', '@typescript-eslint', 'react-hooks', 'jest', 'prettier'],
 	rules: {
+		'@typescript-eslint/member-ordering': 'error',
+		'@typescript-eslint/no-extra-semi': 'error',
+		'@typescript-eslint/no-unused-expressions': ['error', { allowTernary: true }],
+		'@typescript-eslint/no-floating-promises': ['off'],
 		'@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '_', varsIgnorePattern: '_' }],
+		'@typescript-eslint/prefer-nullish-coalescing': 'error',
 		'@typescript-eslint/restrict-template-expressions': ['off'],
 		'comma-dangle': ['error', 'only-multiline'],
 		'function-paren-newline': 'off',
