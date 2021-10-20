@@ -198,11 +198,11 @@ export class Storage {
 		this._cancelTokenSourceMap.set(request, cancelTokenSource);
 	}
 
-	private isUploadTask(x: any): x is UploadTask {
+	private isUploadTask(x: unknown): x is UploadTask {
 		return (
 			typeof x !== 'undefined' &&
-			typeof x.pause === 'function' &&
-			typeof x.resume === 'function'
+			typeof x['pause'] === 'function' &&
+			typeof x['resume'] === 'function'
 		);
 	}
 
