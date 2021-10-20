@@ -1161,7 +1161,7 @@ class DataStore {
 	): Observable<DataStoreSnapshot<T>> => {
 		return new Observable<DataStoreSnapshot<T>>(observer => {
 			const items = new Map<string, T>();
-			let itemsChanged = new Map<string, T>();
+			const itemsChanged = new Map<string, T>();
 			let deletedItemIds: string[] = [];
 			let handle: ZenObservable.Subscription;
 
@@ -1208,7 +1208,7 @@ class DataStore {
 			// TODO: abstract this function into a util file to be able to write better unit tests
 			const generateSnapshot = (): DataStoreSnapshot<T> => {
 				const isSynced = this.sync.getModelSyncedStatus(model);
-				let itemsArray = [
+				const itemsArray = [
 					...Array.from(items.values()),
 					...Array.from(itemsChanged.values()),
 				];
