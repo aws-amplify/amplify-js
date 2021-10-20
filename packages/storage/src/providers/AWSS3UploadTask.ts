@@ -14,7 +14,7 @@ import {
 import * as events from 'events';
 import axios, { Canceler, CancelTokenSource } from 'axios';
 import { HttpHandlerOptions } from '@aws-sdk/types';
-import { Logger } from '@aws-amplify/core';
+import { Logger, Credentials } from '@aws-amplify/core';
 import { UploadTask } from '../types/Provider';
 import { byteLength, isFile } from '../common/StorageUtils';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
@@ -46,6 +46,7 @@ export interface AWSS3UploadTaskParams {
 	storage: Storage;
 	level: StorageAccessLevel;
 	params: PutObjectCommandInput;
+	prefixPromise: Promise<string>;
 	emitter?: events.EventEmitter;
 }
 
@@ -100,6 +101,7 @@ export class AWSS3UploadTask implements UploadTask {
 	private readonly storageSync: Promise<any>;
 	private readonly fileId: string;
 	private readonly params: PutObjectCommandInput;
+	private readonly prefixPromise: Promise<string>;
 	private inProgress: InProgressRequest[] = [];
 	private completedParts: CompletedPart[] = [];
 	private queued: UploadPartCommandInput[] = [];
@@ -116,7 +118,9 @@ export class AWSS3UploadTask implements UploadTask {
 		storage,
 		params,
 		level,
+		prefixPromise,
 	}: AWSS3UploadTaskParams) {
+		this.prefixPromise = prefixPromise;
 		this.s3client = s3Client;
 		this.s3client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		this.storage = storage;
@@ -159,7 +163,8 @@ export class AWSS3UploadTask implements UploadTask {
 			})
 		);
 		const { Contents = [] } = listObjectRes;
-		const obj = Contents.find(o => o.Key === key);
+		const prefix = await this.prefixPromise;
+		const obj = Contents.find(o => o.Key === `${prefix}${key}`);
 		return obj;
 	}
 

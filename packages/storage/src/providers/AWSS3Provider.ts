@@ -64,6 +64,7 @@ import { dispatchStorageEvent } from '../common/StorageUtils';
 import {
 	createPrefixMiddleware,
 	prefixMiddlewareOptions,
+	getPrefix,
 } from '../common/S3ClientUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
@@ -200,6 +201,18 @@ export class AWSS3Provider implements StorageProvider {
 			}
 		});
 
+		// we want to keep this function sync so we defer this promise to AWSS3UploadTask to resolve when it's needed
+		// when its doing a final check with _listSingleFile function
+		const prefixPromise: Promise<string> = Credentials.get().then(
+			(credentials: any) => {
+				const cred = Credentials.shear(credentials);
+				return getPrefix({
+					...config,
+					credentials: cred,
+				});
+			}
+		);
+
 		const task = new AWSS3UploadTask({
 			s3Client,
 			file,
@@ -207,6 +220,7 @@ export class AWSS3Provider implements StorageProvider {
 			level: config.level,
 			storage: this._storage,
 			params,
+			prefixPromise,
 		});
 
 		dispatchStorageEvent(
