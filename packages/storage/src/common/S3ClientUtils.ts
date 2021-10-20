@@ -3,10 +3,10 @@ import { StorageAccessLevel, CustomPrefix } from '../types';
 import { InitializeMiddleware, InitializeHandlerOptions } from '@aws-sdk/types';
 
 export const getPrefix = (config: {
+	credentials: ICredentials;
 	level?: StorageAccessLevel;
 	customPrefix?: CustomPrefix;
 	identityId?: string;
-	credentials: ICredentials;
 }): string => {
 	const { credentials, level, customPrefix, identityId } = config;
 
