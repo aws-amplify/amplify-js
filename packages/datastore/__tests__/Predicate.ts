@@ -7,23 +7,30 @@ import {
 	SchemaModel,
 	Schema,
 } from '../src/types';
-import { ModelPredicateCreator } from '../src/predicates';
+import {
+	ModelPredicateCreator,
+	PredicateAll,
+	Predicates as V1Predicates,
+} from '../src/predicates';
 import { validatePredicate as flatPredicateMatches } from '../src/util';
 import { schema, Author, Post, Blog, BlogOwner } from './model';
 
 const AuthorMeta = {
 	builder: Author,
 	schema: schema.models['Author'],
+	pkField: ['id'],
 };
 
 const BlogMeta = {
 	builder: Blog,
 	schema: schema.models['Blog'],
+	pkField: ['id'],
 };
 
 const PostMeta = {
 	builder: Post,
 	schema: schema.models['Post'],
+	pkField: ['id'],
 };
 
 const metas = {
@@ -33,6 +40,7 @@ const metas = {
 	BlogOwner: {
 		builder: BlogOwner,
 		schema: schema.models['BlogOwner'],
+		pkField: ['id'],
 	},
 };
 
@@ -499,7 +507,6 @@ describe('Predicates', () => {
 						]);
 					});
 
-					// TODO: test case for not not and not not not
 					test('can perform 2-nots', async () => {
 						const query = predicateFor(AuthorMeta).not(a1 =>
 							a1.not(a2 => a2.name.eq('Bob Jones'))
@@ -541,7 +548,32 @@ describe('Predicates', () => {
 						expect(matches.map(m => m.name)).toEqual(['Bob Jones']);
 					});
 
-					// TODO: test case(s) for no predicate / predicate.all
+					// NOTE: `DataStore.query(Model)` should not construct a base predicate, and there
+					// is therefore nothing to test on this interface. However, if Predicate.ALL is
+					// explicitly passed, it *sometimes* fails the `isPredicateAll()` check. So, we're
+					// supporting that use-case with V2 predicates.
+
+					test('can fetch ALL with Predicates.ALL', async () => {
+						// REMEMBER: When `DataStore.query(Model, Predicates.ALL)` is invoked,
+						// `Predicates.ALL` is a symbol, but it also expected to be the identity
+						// function. So, we need to ensure it operates as the identify function,
+						// returns our base predicate as-is, AND that our base predicate operates
+						// like a "get all" from the target table/set.
+
+						const query = (V1Predicates.ALL as any)(predicateFor(AuthorMeta));
+						const matches = await mechanism.execute<ModelOf<typeof Author>>(
+							query
+						);
+
+						expect(matches.length).toBe(5);
+						expect(matches.map(m => m.name)).toEqual([
+							'Adam West',
+							'Bob Jones',
+							'Clarice Starling',
+							'Debbie Donut',
+							'Zelda from the Legend of Zelda',
+						]);
+					});
 				});
 			});
 		});

@@ -61,6 +61,7 @@ type SchemaEnum = {
 export type ModelMeta<T extends PersistentModel> = {
 	builder: PersistentModelConstructor<T>;
 	schema: SchemaModel;
+	pkField: string[];
 };
 export type ModelAssociation = AssociatedWith | TargetNameAssociation;
 type AssociatedWith = {

@@ -119,6 +119,17 @@ const getModelDefinition = (
 	return schema.namespaces[namespace].models[modelConstructor.name];
 };
 
+const getModelPKFieldName = (
+	modelConstructor: PersistentModelConstructor<any>
+) => {
+	const namespace = modelNamespaceMap.get(modelConstructor);
+	return (
+		schema.namespaces[namespace].keys[modelConstructor.name].primaryKey || [
+			'id',
+		]
+	);
+};
+
 const isValidModelConstructor = <T extends PersistentModel>(
 	obj: any
 ): obj is PersistentModelConstructor<T> => {
@@ -214,6 +225,11 @@ const initSchema = (userSchema: Schema) => {
 									schema.namespaces[namespace].models[
 										(<ModelFieldType>field.type).model
 									],
+								pkField: getModelPKFieldName(
+									userClasses[
+										(<ModelFieldType>field.type).model
+									] as PersistentModelConstructor<any>
+								),
 							};
 						},
 					});
@@ -962,6 +978,7 @@ class DataStore {
 				const seedPredicate = predicateFor<T>({
 					builder: modelConstructor,
 					schema: modelDefinition,
+					pkField: getModelPKFieldName(modelConstructor),
 				});
 				const predicate = (idOrCriteria as SingularModelPredicateExtender<T>)(
 					seedPredicate
@@ -1216,6 +1233,7 @@ class DataStore {
 			const seedPredicate = predicateFor<T>({
 				builder: modelOrConstructor as PersistentModelConstructor<T>,
 				schema: getModelDefinition(modelConstructor),
+				pkField: getModelPKFieldName(modelConstructor),
 			});
 			executivePredicate = (idOrCriteria as SingularModelPredicateExtender<T>)(
 				seedPredicate

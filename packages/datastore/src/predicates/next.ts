@@ -8,6 +8,7 @@ import {
 
 import { ModelPredicateCreator as FlatModelPredicateCreator } from './index';
 import { ExclusiveStorage as StorageAdapter } from '../storage/storage';
+import { asyncSome, asyncEvery, asyncFilter } from '../util';
 
 type MatchableTypes =
 	| string
@@ -249,14 +250,14 @@ export class FieldCondition {
 		 * Throws an exception if the `count` disagrees with `operands.length`.
 		 * @param count The number of `operands` expected.
 		 */
-		const argumentCount = (count) => {
+		const argumentCount = count => {
 			const argsClause = count === 1 ? 'argument is' : 'arguments are';
 			return () => {
 				if (this.operands.length !== count) {
 					return `Exactly ${count} ${argsClause} required.`;
 				}
 			};
-		}
+		};
 
 		// NOTE: validations should return a message on failure.
 		// hence, they should be "joined" together with logical OR's
@@ -289,6 +290,16 @@ export class FieldCondition {
 }
 
 /**
+ * Small utility function to generate a monotonically increasing ID.
+ * Used by GroupCondition to help keep track of which group is doing what,
+ * when, and where during troubleshooting.
+ */
+const getGroupId = (() => {
+	let seed = 1;
+	return () => `group_${seed++}`;
+})();
+
+/**
  * A set of sub-conditions to operate against a model, optionally scoped to
  * a specific field, combined with the given operator (one of `and`, `or`, or `not`).
  * @member groupId Used to distinguish between GroupCondition instances for
@@ -301,8 +312,7 @@ export class FieldCondition {
 export class GroupCondition {
 	// `groupId` was used for development/debugging.
 	// Should we leave this in for future troubleshooting?
-	public groupId: string =
-		new Date().getTime() + '.' + (Math.random() * 1000).toFixed(3);
+	public groupId = getGroupId();
 
 	constructor(
 		public model: ModelMeta<any>,
@@ -338,8 +348,6 @@ export class GroupCondition {
 
 		return [copied, extractedCopy];
 	}
-
-	// TODO: decompose fetch().
 
 	/**
 	 * Fetches matching records from a given storage adapter using legacy predicates (for now).
@@ -479,8 +487,11 @@ export class GroupCondition {
 			resultGroups.push(await storage.query(this.model.builder));
 		}
 
-		// this needs to be read from metadata.
-		const idField = 'id';
+		// PK might be a single field, like `id`, or it might be several fields.
+		// so, we'll need to extract the list of PK fields from an object
+		// and stringify the list it for easy comparision / merging.
+		const getPKValue = item =>
+			JSON.stringify(this.model.pkField.map(name => item[name]));
 
 		// will be used for intersecting or unioning results
 		let resultIndex: Map<string, Record<string, any>>;
@@ -494,10 +505,10 @@ export class GroupCondition {
 			// that aren't present in each subsequent group.
 			for (const group of resultGroups) {
 				if (resultIndex === undefined) {
-					resultIndex = new Map(group.map(item => [item[idField], item]));
+					resultIndex = new Map(group.map(item => [getPKValue(item), item]));
 				} else {
 					const intersectWith = new Map<string, Record<string, any>>(
-						group.map(item => [item[idField], item])
+						group.map(item => [getPKValue(item), item])
 					);
 					for (const k of resultIndex.keys()) {
 						if (!intersectWith.has(k)) {
@@ -516,7 +527,7 @@ export class GroupCondition {
 			// just merge the groups, performing DISTINCT-ification by ID.
 			for (const group of resultGroups) {
 				for (const item of group) {
-					resultIndex.set(item[idField], item);
+					resultIndex.set(getPKValue(item), item);
 				}
 			}
 		}
@@ -573,65 +584,6 @@ export class GroupCondition {
 	}
 }
 
-/**
- * An `aysnc` implementation of `Array.some()`. Returns as soon as a match is found.
- * @param items The items to check.
- * @param matches The async matcher function, expected to
- * return Promise<boolean>: `true` for a matching item, `false` otherwise.
- * @returns A `Promise<boolean>`, `true` if "some" items match; `false` otherwise.
- */
-export async function asyncSome(
-	items: Record<string, any>[],
-	matches: (item: Record<string, any>) => Promise<boolean>
-): Promise<boolean> {
-	for (const item of items) {
-		if (await matches(item)) {
-			return true;
-		}
-	}
-	return false;
-}
-
-/**
- * An `aysnc` implementation of `Array.every()`. Returns as soon as a non-match is found.
- * @param items The items to check.
- * @param matches The async matcher function, expected to
- * return Promise<boolean>: `true` for a matching item, `false` otherwise.
- * @returns A `Promise<boolean>`, `true` if every item matches; `false` otherwise.
- */
-export async function asyncEvery(
-	items: Record<string, any>[],
-	matches: (item: Record<string, any>) => Promise<boolean>
-): Promise<boolean> {
-	for (const item of items) {
-		if (!(await matches(item))) {
-			return false;
-		}
-	}
-	return true;
-}
-
-/**
- * An `async` implementation of `Array.filter()`. Returns after all items have been filtered.
- * TODO: Return AsyncIterable.
- * @param items The items to filter.
- * @param matches The `async` matcher function, expected to
- * return Promise<boolean>: `true` for a matching item, `false` otherwise.
- * @returns A `Promise<T>` of matching items.
- */
-export async function asyncFilter<T>(
-	items: T[],
-	matches: (item: T) => Promise<boolean>
-): Promise<T[]> {
-	const results = [];
-	for (const item of items) {
-		if (await matches(item)) {
-			results.push(item);
-		}
-	}
-	return results;
-}
-
 // TODO: `predicateFor` is potentially too long, too complicatd. DECOMPOSE?
 
 /**
@@ -639,7 +591,7 @@ export async function asyncFilter<T>(
  * This is used in `query()`, for example, to seed customer- E.g.,
  *
  * ```
- * const p = predicateFor({builder: modelConstructor, schema: modelSchema});
+ * const p = predicateFor({builder: modelConstructor, schema: modelSchema, pkField: string[]});
  * p.and(child => [
  *   child.field.eq('whatever'),
  *   child.childModel.childField.eq('whatever else'),
@@ -688,6 +640,9 @@ export function predicateFor<T extends PersistentModel>(
 		__copy: () => {
 			const [query, newtail] = link.__query.copy(link.__tail);
 			return predicateFor(ModelType, undefined, query, newtail);
+		},
+		filter: items => {
+			return asyncFilter(items, i => link.__query.matches(i));
 		},
 	} as ModelPredicate<T>;
 
