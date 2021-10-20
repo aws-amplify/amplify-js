@@ -14,7 +14,7 @@ import {
 import * as events from 'events';
 import axios, { Canceler, CancelTokenSource } from 'axios';
 import { HttpHandlerOptions } from '@aws-sdk/types';
-import { Logger, Credentials } from '@aws-amplify/core';
+import { Logger } from '@aws-amplify/core';
 import { UploadTask } from '../types/Provider';
 import { byteLength, isFile } from '../common/StorageUtils';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
