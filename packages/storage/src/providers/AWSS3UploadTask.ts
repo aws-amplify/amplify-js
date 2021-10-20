@@ -480,21 +480,26 @@ export class AWSS3UploadTask implements UploadTask {
 		}
 	}
 
-	async _cancel(): Promise<AbortMultipartUploadCommandOutput> {
+	async _cancel(): Promise<boolean> {
 		this.pause();
 		this.queued = [];
 		this.completedParts = [];
 		this.bytesUploaded = 0;
 		this.state = AWSS3UploadTaskState.CANCELLED;
-		const res = await this.s3client.send(
-			new AbortMultipartUploadCommand({
-				Bucket: this.params.Bucket,
-				Key: this.params.Key,
-				UploadId: this.uploadId,
-			})
-		);
-		await this._removeFromCache();
-		return res;
+		try {
+			await this.s3client.send(
+				new AbortMultipartUploadCommand({
+					Bucket: this.params.Bucket,
+					Key: this.params.Key,
+					UploadId: this.uploadId,
+				})
+			);
+			await this._removeFromCache();
+			return true;
+		} catch (err) {
+			logger.error('Error cancelling upload task', err);
+			return false;
+		}
 	}
 
 	/**

@@ -212,15 +212,12 @@ export class Storage {
 	 * @param request - The request to cancel
 	 * @param [message] - A message to include in the cancelation exception
 	 */
-	public cancel(
-		request: UploadTask,
-		message?: string
-	): ReturnType<AWSS3UploadTask['_cancel']>;
+	public cancel(request: UploadTask, message?: string): Promise<boolean>;
 	public cancel(request: Promise<any>, message?: string): void;
 	public cancel(
 		request: Promise<any> | UploadTask,
 		message?: string
-	): void | ReturnType<AWSS3UploadTask['_cancel']> {
+	): void | Promise<boolean> {
 		if (request instanceof AWSS3UploadTask) {
 			return request._cancel();
 		}

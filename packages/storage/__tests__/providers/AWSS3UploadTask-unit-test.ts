@@ -1,7 +1,6 @@
 import {
 	AWSS3UploadTask,
 	AWSS3UploadTaskState,
-	TaskEvents,
 } from '../../src/providers/AWSS3UploadTask';
 import * as events from 'events';
 import {
@@ -9,6 +8,7 @@ import {
 	AbortMultipartUploadCommand,
 	ListPartsCommand,
 	CreateMultipartUploadCommand,
+	ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
 import { StorageAccessLevel, FileMetadata } from '../../src/types';
 import { UPLOADS_STORAGE_KEY } from '../../src/common/StorageConstants';
@@ -91,6 +91,10 @@ describe('resumable upload task test', () => {
 		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
 			if (command instanceof AbortMultipartUploadCommand) {
 				return Promise.resolve({ Key: input.params.Key });
+			} else if (command instanceof ListObjectsV2Command) {
+				return Promise.resolve({
+					Contents: [{ Key: input.params.Key, Size: 25048576 }],
+				});
 			}
 		});
 		const uploadTask = new AWSS3UploadTask(input);
@@ -101,16 +105,12 @@ describe('resumable upload task test', () => {
 		expect(uploadTask.isInProgress).toBeTruthy();
 		uploadTask.pause();
 		expect(uploadTask.state).toEqual(AWSS3UploadTaskState.PAUSED);
-		const res = await uploadTask._cancel();
+		const cancelled = await uploadTask._cancel();
 		expect(uploadTask.state).toEqual(AWSS3UploadTaskState.CANCELLED);
-		expect(res).toStrictEqual({
-			Key: input.params.Key,
-		});
-		uploadTask._cancel().then(res => {
+		expect(cancelled).toBeTruthy();
+		uploadTask._cancel().then(cancelled => {
 			expect(uploadTask.state).toEqual(AWSS3UploadTaskState.CANCELLED);
-			expect(res).toStrictEqual({
-				Key: input.params.Key,
-			});
+			expect(cancelled).toBeTruthy();
 		});
 	});
 
@@ -131,10 +131,13 @@ describe('resumable upload task test', () => {
 						},
 					],
 				});
-			}
-			if (command instanceof CreateMultipartUploadCommand) {
+			} else if (command instanceof CreateMultipartUploadCommand) {
 				return Promise.resolve({
 					UploadId: 'uploadId',
+				});
+			} else if (command instanceof ListObjectsV2Command) {
+				return Promise.resolve({
+					Contents: [{ Key: input.params.Key, Size: 25048576 }],
 				});
 			}
 		});
