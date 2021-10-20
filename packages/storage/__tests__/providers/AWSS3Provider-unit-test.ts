@@ -165,7 +165,7 @@ describe('StorageProvider test', () => {
 			expect(await storage.get('key', { download: false })).toBe('url');
 			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
 			expect(spyon.mock.calls[0][0].hostname).toEqual(
-				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+				`${options.bucket}.s3.${options.region}.amazonaws.com`
 			);
 		});
 
@@ -200,7 +200,7 @@ describe('StorageProvider test', () => {
 			});
 			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
 			expect(spyon.mock.calls[0][0].hostname).toEqual(
-				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+				`${options.bucket}.s3.${options.region}.amazonaws.com`
 			);
 			spyon.mockClear();
 			curCredSpyOn.mockClear();
@@ -223,7 +223,7 @@ describe('StorageProvider test', () => {
 			);
 			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
 			expect(spyon.mock.calls[0][0].hostname).toEqual(
-				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+				`${options.bucket}.s3.${options.region}.amazonaws.com`
 			);
 			expect(spyon2).toBeCalledWith(
 				'storage',
@@ -360,7 +360,7 @@ describe('StorageProvider test', () => {
 			expect(await storage.get('key', { level: 'private' })).toBe('url');
 			expect(spyon.mock.calls[0][0].path).toEqual('/private/id/key');
 			expect(spyon.mock.calls[0][0].hostname).toEqual(
-				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+				`${options.bucket}.s3.${options.region}.amazonaws.com`
 			);
 		});
 
@@ -379,7 +379,7 @@ describe('StorageProvider test', () => {
 			await storage.get('my_key', { customPrefix: { public: '' } });
 			expect(spyon.mock.calls[0][0].path).toEqual('/my_key');
 			expect(spyon.mock.calls[0][0].hostname).toEqual(
-				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+				`${options.bucket}.s3.${options.region}.amazonaws.com`
 			);
 		});
 
@@ -400,7 +400,7 @@ describe('StorageProvider test', () => {
 			await storage.get('my_key', { customPrefix: { public: '123/' } });
 			expect(spyon.mock.calls[0][0].path).toEqual('/123/my_key');
 			expect(spyon.mock.calls[0][0].hostname).toEqual(
-				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+				`${options.bucket}.s3.${options.region}.amazonaws.com`
 			);
 		});
 
@@ -420,7 +420,7 @@ describe('StorageProvider test', () => {
 			expect(await storage.get('key', { expires: 1200 })).toBe('url');
 			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
 			expect(spyon.mock.calls[0][0].hostname).toEqual(
-				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+				`${options.bucket}.s3.${options.region}.amazonaws.com`
 			);
 
 			expect(spyon.mock.calls[0][1]?.expiresIn).toBe(1200);
@@ -442,7 +442,7 @@ describe('StorageProvider test', () => {
 			expect(await storage.get('key')).toBe('url');
 			expect(spyon.mock.calls[0][0].path).toEqual('/public/key');
 			expect(spyon.mock.calls[0][0].hostname).toEqual(
-				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+				`${options.bucket}.s3.${options.region}.amazonaws.com`
 			);
 
 			expect(spyon.mock.calls[0][1]?.expiresIn).toBe(900);
@@ -469,7 +469,7 @@ describe('StorageProvider test', () => {
 			).toBe('url');
 			expect(spyon.mock.calls[0][0].path).toEqual('/protected/identityId/key');
 			expect(spyon.mock.calls[0][0].hostname).toEqual(
-				options.bucket + '.s3.' + options.region + '.amazonaws.com'
+				`${options.bucket}.s3.${options.region}.amazonaws.com`
 			);
 		});
 
