@@ -1177,7 +1177,6 @@ class DataStore {
 		modelOrConstructor?: T | PersistentModelConstructor<T>,
 		idOrCriteria?: string | SingularModelPredicateExtender<T>
 	): Observable<SubscriptionMessage<T>> => {
-		let predicate: ModelPredicate<T>;
 		let executivePredicate: GroupCondition;
 
 		const modelConstructor =
