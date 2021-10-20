@@ -324,8 +324,6 @@ function jitteredRetrySyncProcessorSetup({
 
 	const SyncProcessor = new SyncProcessorClass(
 		testInternalSchema,
-		1000, // default maxRecordsToSync
-		10000, // default syncPageSize
 		null, // syncPredicates
 		{ aws_appsync_authenticationType: 'userPools' },
 		defaultAuthStrategy
