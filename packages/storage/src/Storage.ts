@@ -202,7 +202,7 @@ export class Storage {
 		return (
 			typeof x !== 'undefined' &&
 			typeof x.pause === 'function' &&
-			x.resume === 'function'
+			typeof x.resume === 'function'
 		);
 	}
 
