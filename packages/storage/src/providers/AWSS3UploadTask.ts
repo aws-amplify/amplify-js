@@ -363,7 +363,6 @@ export class AWSS3UploadTask implements UploadTask {
 	 */
 	private async _verifyFileSize() {
 		const obj = await this._listSingleFile({
-			s3Client: this.s3client,
 			key: this.params.Key,
 			bucket: this.params.Bucket,
 		});
