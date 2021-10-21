@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.2.14...@aws-amplify/pushnotification@4.3.0) (2021-10-21)
+
+
+### Features
+
+* **amplify-js:** script to improve React-Native local development  ([#8913](https://github.com/aws-amplify/amplify-js/issues/8913)) ([95d83fb](https://github.com/aws-amplify/amplify-js/commit/95d83fb302258dd0e26e02874bcc8eba5cf39646))
+
+
+
+
+
 ## [4.2.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pushnotification@4.2.13...@aws-amplify/pushnotification@4.2.14) (2021-10-07)
 
 **Note:** Version bump only for package @aws-amplify/pushnotification
