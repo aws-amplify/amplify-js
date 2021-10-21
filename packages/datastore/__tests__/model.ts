@@ -1,10 +1,11 @@
 import {
+	initSchema,
+	NonModelTypeConstructor,
 	ModelInit,
 	MutableModel,
 	PersistentModelConstructor,
-} from '@aws-amplify/datastore';
-
-import { initSchema, NonModelTypeConstructor } from '../src/index';
+	Schema,
+} from '../src/index';
 import { newSchema } from './schema';
 
 declare class BlogModel {
@@ -155,6 +156,7 @@ const {
 	Team: PersistentModelConstructor<TeamModel>;
 };
 ``;
+
 export {
 	Author,
 	Post,
@@ -167,4 +169,5 @@ export {
 	Nested,
 	Project,
 	Team,
+	newSchema as schema,
 };

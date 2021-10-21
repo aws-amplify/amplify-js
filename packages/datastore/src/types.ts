@@ -15,6 +15,8 @@ import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { Adapter } from './storage/adapter';
 
+export type Scalar<T> = T extends Array<infer InnerType> ? InnerType : T;
+
 //#region Schema types
 export type Schema = UserSchema & {
 	version: string;
@@ -56,7 +58,11 @@ type SchemaEnum = {
 	name: string;
 	values: string[];
 };
-
+export type ModelMeta<T extends PersistentModel> = {
+	builder: PersistentModelConstructor<T>;
+	schema: SchemaModel;
+	pkField: string[];
+};
 export type ModelAssociation = AssociatedWith | TargetNameAssociation;
 type AssociatedWith = {
 	connectionType: 'HAS_MANY' | 'HAS_ONE';
@@ -294,8 +300,13 @@ export function isGraphQLScalarType(
 	return obj && GraphQLScalarType[obj] !== undefined;
 }
 
-export type ModelFieldType = { model: string };
-export function isModelFieldType(obj: any): obj is ModelFieldType {
+export type ModelFieldType = {
+	model: string;
+	modelConstructor?: ModelMeta<PersistentModel>;
+};
+export function isModelFieldType<T extends PersistentModel>(
+	obj: any
+): obj is ModelFieldType {
 	const modelField: keyof ModelFieldType = 'model';
 	if (obj && obj[modelField]) return true;
 

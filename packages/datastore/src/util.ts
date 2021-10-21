@@ -23,8 +23,10 @@ import {
 	isModelAttributePrimaryKey,
 	isModelAttributeCompositeKey,
 	NonModelTypeConstructor,
+	PaginationInput,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
+import { ModelSortPredicateCreator } from './predicates';
 
 export const exhaustiveCheck = (obj: never, throwOnError: boolean = true) => {
 	if (throwOnError) {
@@ -629,6 +631,97 @@ export function valuesEqual(
 	}
 
 	return true;
+}
+
+/**
+ * Statelessly extracts the specified page from an array.
+ *
+ * @param records - The source array to extract a page from.
+ * @param pagination - A definition of the page to extract.
+ * @returns This items from `records` matching the `pagination` definition.
+ */
+export function inMemoryPagination<T extends PersistentModel>(
+	records: T[],
+	pagination?: PaginationInput<T>
+): T[] {
+	if (pagination && records.length > 1) {
+		if (pagination.sort) {
+			const sortPredicates = ModelSortPredicateCreator.getPredicates(
+				pagination.sort
+			);
+
+			if (sortPredicates.length) {
+				const compareFn = sortCompareFunction(sortPredicates);
+				records.sort(compareFn);
+			}
+		}
+		const { page = 0, limit = 0 } = pagination;
+		const start = Math.max(0, page * limit) || 0;
+
+		const end = limit > 0 ? start + limit : records.length;
+
+		return records.slice(start, end);
+	}
+	return records;
+}
+
+/**
+ * An `aysnc` implementation of `Array.some()`. Returns as soon as a match is found.
+ * @param items The items to check.
+ * @param matches The async matcher function, expected to
+ * return Promise<boolean>: `true` for a matching item, `false` otherwise.
+ * @returns A `Promise<boolean>`, `true` if "some" items match; `false` otherwise.
+ */
+export async function asyncSome(
+	items: Record<string, any>[],
+	matches: (item: Record<string, any>) => Promise<boolean>
+): Promise<boolean> {
+	for (const item of items) {
+		if (await matches(item)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * An `aysnc` implementation of `Array.every()`. Returns as soon as a non-match is found.
+ * @param items The items to check.
+ * @param matches The async matcher function, expected to
+ * return Promise<boolean>: `true` for a matching item, `false` otherwise.
+ * @returns A `Promise<boolean>`, `true` if every item matches; `false` otherwise.
+ */
+export async function asyncEvery(
+	items: Record<string, any>[],
+	matches: (item: Record<string, any>) => Promise<boolean>
+): Promise<boolean> {
+	for (const item of items) {
+		if (!(await matches(item))) {
+			return false;
+		}
+	}
+	return true;
+}
+
+/**
+ * An `async` implementation of `Array.filter()`. Returns after all items have been filtered.
+ * TODO: Return AsyncIterable.
+ * @param items The items to filter.
+ * @param matches The `async` matcher function, expected to
+ * return Promise<boolean>: `true` for a matching item, `false` otherwise.
+ * @returns A `Promise<T>` of matching items.
+ */
+export async function asyncFilter<T>(
+	items: T[],
+	matches: (item: T) => Promise<boolean>
+): Promise<T[]> {
+	const results = [];
+	for (const item of items) {
+		if (await matches(item)) {
+			results.push(item);
+		}
+	}
+	return results;
 }
 
 export const isAWSDate = (val: string): boolean => {
