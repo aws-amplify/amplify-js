@@ -7,12 +7,29 @@ import {
 	DeleteObjectCommandOutput,
 } from '@aws-sdk/client-s3';
 import { StorageOptions, StorageAccessLevel } from './Storage';
+import {
+	UploadTaskCompleteEvent,
+	UploadTaskProgressEvent,
+} from '../providers/AWSS3UploadTask';
+import { UploadTask } from './Provider';
 
 type ListObjectsCommandOutputContent = _Object;
 
+export interface FileMetadata {
+	bucket: string;
+	fileName: string;
+	key: string;
+	// Unix timestamp in ms
+	lastTouched: number;
+	uploadId: string;
+}
+
 export type CommonStorageOptions = Omit<
 	StorageOptions,
-	'credentials' | 'region' | 'bucket' | 'dangerouslyConnectToHttpEndpointForTesting'
+	| 'credentials'
+	| 'region'
+	| 'bucket'
+	| 'dangerouslyConnectToHttpEndpointForTesting'
 >;
 
 export type S3ProviderGetConfig = CommonStorageOptions & {
@@ -32,9 +49,11 @@ export type S3ProviderGetConfig = CommonStorageOptions & {
 	SSECustomerKeyMD5?: GetObjectRequest['SSECustomerKeyMD5'];
 };
 
-export type S3ProviderGetOuput<T> = T extends { download: true } ? GetObjectCommandOutput : string;
+export type S3ProviderGetOuput<T> = T extends { download: true }
+	? GetObjectCommandOutput
+	: string;
 
-export type S3ProviderPutConfig = CommonStorageOptions & {
+type _S3ProviderPutConfig = {
 	progressCallback?: (progress: any) => any;
 	provider?: 'AWSS3';
 	track?: boolean;
@@ -53,13 +72,27 @@ export type S3ProviderPutConfig = CommonStorageOptions & {
 	metadata?: PutObjectRequest['Metadata'];
 	tagging?: PutObjectRequest['Tagging'];
 	useAccelerateEndpoint?: boolean;
+	resumable?: boolean;
 };
 
-export interface S3ProviderPutOutput {
-	key: string;
-}
+export type ResumableUploadConfig = {
+	resumable: true;
+	progressCallback?: (progress: UploadTaskProgressEvent) => any;
+	completeCallback?: (event: UploadTaskCompleteEvent) => any;
+	errorCallback?: (err: any) => any;
+};
 
-export type S3ProviderRemoveConfig = CommonStorageOptions & { bucket?: string; provider?: 'AWSS3' };
+export type S3ProviderPutConfig = CommonStorageOptions &
+	(
+		| _S3ProviderPutConfig
+		// discriminated union so users won't be able to add resumable specific callbacks without the resumable flag
+		| (_S3ProviderPutConfig & ResumableUploadConfig)
+	);
+
+export type S3ProviderRemoveConfig = CommonStorageOptions & {
+	bucket?: string;
+	provider?: 'AWSS3';
+};
 
 export type S3ProviderRemoveOutput = DeleteObjectCommandOutput;
 
@@ -110,3 +143,11 @@ export type S3ProviderCopyConfig = Omit<CommonStorageOptions, 'level'> & {
 export type S3ProviderCopyOutput = {
 	key: string;
 };
+
+export type PutResult = {
+	key: string;
+};
+
+export type S3ProviderPutOutput<T> = T extends { resumable: true }
+	? UploadTask
+	: Promise<PutResult>;
