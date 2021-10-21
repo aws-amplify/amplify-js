@@ -67,6 +67,7 @@ describe('resumable upload task test', () => {
 				Bucket: 'bucket',
 				Key: 'key',
 			},
+			prefixPromise: Promise.resolve('prefix'),
 		};
 		const uploadTask = new AWSS3UploadTask(input);
 		expect(uploadTask.isInProgress).toBeFalsy();
@@ -86,6 +87,7 @@ describe('resumable upload task test', () => {
 				Bucket: 'bucket',
 				Key: 'key',
 			},
+			prefixPromise: Promise.resolve('prefix'),
 		};
 		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
 			if (command instanceof AbortMultipartUploadCommand) {
@@ -153,6 +155,7 @@ describe('resumable upload task test', () => {
 				Bucket: 'bucket',
 				Key: 'key',
 			},
+			prefixPromise: Promise.resolve('prefix'),
 		};
 		const fileMetadata: FileMetadata = {
 			bucket: 'bucket',
