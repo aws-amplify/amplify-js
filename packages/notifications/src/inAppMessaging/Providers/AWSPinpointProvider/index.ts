@@ -181,16 +181,41 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 		if (!this.initialized) {
 			await this.init();
 		}
+		let highestPrioritySeen;
 		return this.normalizeMessages(
-			(messages as PinpointInAppMessage[]).filter(message => {
-				return (
+			(messages as PinpointInAppMessage[]).reduce((acc, message) => {
+				const messageQualifies =
 					matchesEventType(message, event) &&
 					matchesAttributes(message, event) &&
 					matchesMetrics(message, event) &&
 					isBeforeEndDate(message) &&
-					this.isBelowCap(message)
-				);
-			})
+					this.isBelowCap(message);
+				// filter all qualifying messages returning only those that are of (relative) highest priority
+				if (messageQualifies) {
+					// have not yet encountered message with priority
+					if (!highestPrioritySeen) {
+						// this message has priority, so reset the accumulator with this message only
+						if (message.Priority) {
+							highestPrioritySeen = message.Priority;
+							acc = [message];
+						} else {
+							// this message also has no priority, so just add this message to accumulator
+							acc.push(message);
+						}
+						// have previously encountered message with priority, so only messages with priority matter now
+					} else if (message.Priority) {
+						// this message has higher priority (lower number), so reset the accumulator with this message only
+						if (message.Priority < highestPrioritySeen) {
+							highestPrioritySeen = message.Priority;
+							acc = [message];
+							// this message has the same priority, so just add this message to accumulator
+						} else if (message.Priority === highestPrioritySeen) {
+							acc.push(message);
+						}
+					}
+				}
+				return acc;
+			}, [])
 		);
 	};
 

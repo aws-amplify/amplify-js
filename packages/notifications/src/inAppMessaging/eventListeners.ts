@@ -3,43 +3,37 @@ import {
 	InAppMessageInteractionEvent,
 	OnMessageInteractionEventHandler,
 	OnMessageInteractionEventListener,
-	OnMessagesReceivedHandler,
-	OnMessagesReceivedListener,
 } from './types';
 
 const onMessageActionListeners: Record<
 	InAppMessageInteractionEvent,
-	Set<OnMessageInteractionEventListener | OnMessagesReceivedListener>
+	Set<OnMessageInteractionEventListener>
 > = {
-	[InAppMessageInteractionEvent.MESSAGES_RECEIVED]: new Set(),
+	[InAppMessageInteractionEvent.MESSAGE_RECEIVED]: new Set(),
 	[InAppMessageInteractionEvent.MESSAGE_DISPLAYED]: new Set(),
 	[InAppMessageInteractionEvent.MESSAGE_DISMISSED]: new Set(),
 	[InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN]: new Set(),
 };
 
 export const notifyMessageInteractionEventListeners = (
-	message: InAppMessage | InAppMessage[],
+	message: InAppMessage,
 	event: InAppMessageInteractionEvent
 ): void => {
 	onMessageActionListeners[event].forEach(listener => {
-		listener.handleEvent(message as any);
+		listener.handleEvent(message);
 	});
 };
 
-export const addMessageInteractionEventListener = <
-	Handler extends OnMessageInteractionEventHandler | OnMessagesReceivedHandler
->(
-	handler: Handler,
+export const addMessageInteractionEventListener = (
+	handler: OnMessageInteractionEventHandler,
 	event: InAppMessageInteractionEvent
-): Handler extends OnMessageInteractionEventHandler
-	? OnMessageInteractionEventListener
-	: OnMessagesReceivedListener => {
+): OnMessageInteractionEventListener => {
 	const listener = {
 		handleEvent: handler,
 		remove: () => {
-			onMessageActionListeners[event].delete(listener as any);
+			onMessageActionListeners[event].delete(listener);
 		},
 	};
-	onMessageActionListeners[event].add(listener as any);
-	return listener as any;
+	onMessageActionListeners[event].add(listener);
+	return listener;
 };
