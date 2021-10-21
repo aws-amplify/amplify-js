@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.10...@aws-amplify/auth@4.3.11) (2021-10-21)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** RN Linking removeEventListener() deprecated [#8902](https://github.com/aws-amplify/amplify-js/issues/8902) ([d9415e2](https://github.com/aws-amplify/amplify-js/commit/d9415e2b292d69418c40b58183098e04b1c8aad7))
+
+
+
+
+
 ## [4.3.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.9...@aws-amplify/auth@4.3.10) (2021-10-07)
 
 **Note:** Version bump only for package @aws-amplify/auth
