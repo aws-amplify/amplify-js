@@ -64,8 +64,8 @@ export const parseMobileHubConfig = (config): AmplifyConfig => {
 	}
 
 	// Notifications
-	if (config.notifications) {
-		amplifyConfig.Notifications = Object.assign({}, config.notifications);
+	if (config.Notifications) {
+		amplifyConfig.Notifications = Object.assign({}, config.Notifications);
 	}
 
 	amplifyConfig.Analytics = Object.assign(

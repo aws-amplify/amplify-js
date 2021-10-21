@@ -19,15 +19,22 @@ import {
 	StorageHelper,
 } from '@aws-amplify/core';
 import flatten from 'lodash/flatten';
-import noop from 'lodash/noop';
 import { AWSPinpointProvider } from './Providers';
 import {
+	addMessageInteractionEventListener,
+	notifyMessageInteractionEventListeners,
+} from './eventListeners';
+import {
 	InAppMessage,
+	InAppMessageInteractionEvent,
 	InAppMessagingConfig,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
 	NotificationsSubcategory,
-	OnMessagesReceived,
+	OnMessageInteractionEventHandler,
+	OnMessageInteractionEventListener,
+	OnMessagesReceivedHandler,
+	OnMessagesReceivedListener,
 } from './types';
 
 const STORAGE_KEY_SUFFIX = '_inAppMessages';
@@ -36,7 +43,6 @@ const logger = new Logger('Notifications.InAppMessaging');
 
 export default class InAppMessaging {
 	private config: Record<string, any> = {};
-	private onMessagesReceived: OnMessagesReceived = noop;
 	private listeningForAnalyticEvents = false;
 	private pluggables: InAppMessagingProvider[] = [];
 	private storageSynced = false;
@@ -53,14 +59,11 @@ export default class InAppMessaging {
 	 */
 	configure = ({
 		listenForAnalyticsEvents = true,
-		onMessagesReceived,
 		...config
 	}: InAppMessagingConfig = {}): InAppMessagingConfig => {
 		this.config = { ...this.config, ...config };
 
 		logger.debug('configure InAppMessaging', this.config);
-
-		this.onMessagesReceived = this.setOnMessagesReceived(onMessagesReceived);
 
 		this.pluggables.forEach(pluggable => {
 			pluggable.configure({
@@ -136,13 +139,6 @@ export default class InAppMessaging {
 		}
 	};
 
-	setOnMessagesReceived = (handler: OnMessagesReceived): OnMessagesReceived => {
-		if (handler && this.onMessagesReceived !== handler) {
-			this.onMessagesReceived = handler;
-		}
-		return this.onMessagesReceived;
-	};
-
 	/**
 	 * Get the map resources that are currently available through the provider
 	 * @param {string} provider
@@ -180,8 +176,50 @@ export default class InAppMessaging {
 
 		const flattenedMessages = flatten(messages);
 		if (flattenedMessages.length) {
-			this.onMessagesReceived(flattenedMessages);
+			notifyMessageInteractionEventListeners(
+				flattenedMessages,
+				InAppMessageInteractionEvent.MESSAGES_RECEIVED
+			);
 		}
+	};
+
+	onMessagesReceived = (
+		handler: OnMessagesReceivedHandler
+	): OnMessagesReceivedListener =>
+		addMessageInteractionEventListener(
+			handler,
+			InAppMessageInteractionEvent.MESSAGES_RECEIVED
+		);
+
+	onMessageDisplayed = (
+		handler: OnMessageInteractionEventHandler
+	): OnMessageInteractionEventListener =>
+		addMessageInteractionEventListener(
+			handler,
+			InAppMessageInteractionEvent.MESSAGE_DISPLAYED
+		);
+
+	onMessageDismissed = (
+		handler: OnMessageInteractionEventHandler
+	): OnMessageInteractionEventListener =>
+		addMessageInteractionEventListener(
+			handler,
+			InAppMessageInteractionEvent.MESSAGE_DISMISSED
+		);
+
+	onMessageActionTaken = (
+		handler: OnMessageInteractionEventHandler
+	): OnMessageInteractionEventListener =>
+		addMessageInteractionEventListener(
+			handler,
+			InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN
+		);
+
+	notifyMessageInteraction = (
+		message: InAppMessage,
+		event: InAppMessageInteractionEvent
+	): void => {
+		notifyMessageInteractionEventListeners(message, event);
 	};
 
 	private analyticsListener: HubCallback = ({ payload }: HubCapsule) => {

@@ -51,7 +51,7 @@ class NotificationsClass {
 		logger.debug('configure Notifications', config);
 
 		const inAppMessagingConfig = this.inAppMessaging.configure(
-			this.config.InAppMessaging
+			this.config.inAppMessaging
 		);
 
 		return { ...inAppMessagingConfig };

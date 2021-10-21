@@ -12,15 +12,16 @@
  */
 import { InAppMessagingConfig } from './inAppMessaging';
 export {
-	InAppMessagingConfig,
-	InAppMessagingEvent,
 	InAppMessage,
 	InAppMessageAction,
 	InAppMessageButton,
 	InAppMessageContent,
+	InAppMessageInteractionEvent,
 	InAppMessageLayout,
 	InAppMessageStyle,
-} from './inAppMessaging/types';
+	InAppMessagingConfig,
+	InAppMessagingEvent,
+} from './inAppMessaging';
 
 export type NotificationsCategory = 'Notifications';
 

@@ -27,6 +27,7 @@ import {
 } from '@aws-sdk/client-pinpoint';
 import { v1 as uuid } from 'uuid';
 
+import { addMessageInteractionEventListener } from '../../eventListeners';
 import { NotificationsCategory } from '../../../types';
 import SessionTracker, {
 	SessionState,
@@ -34,16 +35,17 @@ import SessionTracker, {
 } from '../../SessionTracker';
 import {
 	InAppMessage,
+	InAppMessageInteractionEvent,
 	InAppMessageLayout,
-	NotificationsSubcategory,
 	InAppMessagingEvent,
 	InAppMessagingProvider,
+	NotificationsSubcategory,
 } from '../../types';
 import {
 	DailyInAppMessageCounter,
 	InAppMessageCountMap,
 	InAppMessageCounts,
-	InAppMessageEvent,
+	PinpointMessageEvent,
 } from './types';
 import {
 	clearMemo,
@@ -68,6 +70,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 	static providerName = 'AWSPinpoint';
 
 	private config: Record<string, any> = {};
+	private configured = false;
 	private endpointUpdated = false;
 	private initialized = false;
 	private sessionMessageCountMap: InAppMessageCountMap;
@@ -103,10 +106,34 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 
 	configure = (config = {}): object => {
 		logger.debug('configure', config);
-		this.config = Object.assign({}, this.config, config);
+		this.config = { ...this.config, ...config };
 
-		this.sessionTracker = new SessionTracker(this.sessionStateChangeHandler);
-		this.sessionTracker.start();
+		// some configuration steps should not be re-run even if provider is re-configured for some reason
+		if (!this.configured) {
+			this.sessionTracker = new SessionTracker(this.sessionStateChangeHandler);
+			this.sessionTracker.start();
+			// wire up default Pinpoint message event handling
+			addMessageInteractionEventListener((message: InAppMessage) => {
+				this.recordMessageEvent(
+					message,
+					PinpointMessageEvent.MESSAGE_DISPLAYED
+				);
+			}, InAppMessageInteractionEvent.MESSAGE_DISPLAYED);
+			addMessageInteractionEventListener((message: InAppMessage) => {
+				this.recordMessageEvent(
+					message,
+					PinpointMessageEvent.MESSAGE_DISMISSED
+				);
+			}, InAppMessageInteractionEvent.MESSAGE_DISMISSED);
+			addMessageInteractionEventListener((message: InAppMessage) => {
+				this.recordMessageEvent(
+					message,
+					PinpointMessageEvent.MESSAGE_ACTION_TAKEN
+				);
+			}, InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN);
+		}
+
+		this.configured = true;
 		dispatchInAppMessagingEvent('pinpointProvider_configured', null);
 		return this.config;
 	};
@@ -165,13 +192,6 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 				);
 			})
 		);
-	};
-
-	recordInAppMessageDisplayed = async (messageId: string): Promise<void> => {
-		if (!this.initialized) {
-			await this.init();
-		}
-		await this.incrementCounts(messageId);
 	};
 
 	private init = async () => {
@@ -361,7 +381,6 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 	private normalizeMessages = (
 		messages: PinpointInAppMessage[]
 	): InAppMessage[] => {
-		const that = this;
 		return messages.map(message => {
 			const { CampaignId, InAppMessage } = message;
 			return {
@@ -369,38 +388,20 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 				content: extractContent(message),
 				layout: InAppMessage.Layout as InAppMessageLayout,
 				metadata: extractMetadata(message),
-				onDisplay() {
-					that.recordMessageEvent(
-						InAppMessageEvent.MESSAGE_DISPLAYED_EVENT,
-						message
-					);
-				},
-				onDismiss() {
-					that.recordMessageEvent(
-						InAppMessageEvent.MESSAGE_DISMISSED_EVENT,
-						message
-					);
-				},
-				onAction() {
-					that.recordMessageEvent(
-						InAppMessageEvent.MESSAGE_ACTION_EVENT,
-						message
-					);
-				},
 			};
 		});
 	};
 
 	private recordMessageEvent = async (
-		event: InAppMessageEvent,
-		message: PinpointInAppMessage
+		message: InAppMessage,
+		event: PinpointMessageEvent
 	): Promise<void> => {
 		if (!this.initialized) {
 			await this.init();
 		}
 		recordAnalyticsEvent(event, message);
-		if (event === InAppMessageEvent.MESSAGE_DISPLAYED_EVENT) {
-			await this.incrementCounts(message.CampaignId);
+		if (event === PinpointMessageEvent.MESSAGE_DISPLAYED) {
+			await this.incrementCounts(message.id);
 		}
 	};
 }
