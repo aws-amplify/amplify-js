@@ -29,7 +29,6 @@ import {
 	passwordErr,
 	vRefreshToken,
 	ivRefreshToken,
-	uploadProgressKey,
 } from './constants';
 import { CognitoUserSession } from 'amazon-cognito-identity-js';
 
@@ -384,21 +383,12 @@ describe('authenticateUserInternal()', () => {
 	});
 
 	test('DEVICE_SRP_AUTH calls getDeviceResponse and sends session', () => {
-		const clientSpy = jest
-			.spyOn(Client.prototype, 'request')
-			.mockImplementation((...args) => {});
-		const authDataGetDeviceResponse = {
-			...authData,
-			ChallengeName: 'DEVICE_SRP_AUTH',
-			Session: 'abcd',
-		};
+		const clientSpy = jest.spyOn(Client.prototype, 'request')
+			.mockImplementation((...args) => { });
+		const authDataGetDeviceResponse = { ...authData, ChallengeName: 'DEVICE_SRP_AUTH', Session: 'abcd' };
 		const spyon = jest.spyOn(user, 'getDeviceResponse');
 
-		user.authenticateUserInternal(
-			authDataGetDeviceResponse,
-			authHelper,
-			callback
-		);
+		user.authenticateUserInternal(authDataGetDeviceResponse, authHelper, callback);
 		expect(clientSpy.mock.calls[0][1]).toMatchObject({ Session: 'abcd' });
 		expect(spyon).toHaveBeenCalledTimes(1);
 	});
@@ -903,12 +893,6 @@ describe('signOut() and globalSignOut', () => {
 		expect(cognitoUser.signInUserSession).toEqual(null);
 	});
 
-	test('signOut expected to set __uploadInProgress to equal null', () => {
-		cognitoUser.storage.setItem(uploadProgressKey, '');
-		cognitoUser.signOut();
-		expect(cognitoUser.storage.getItem(uploadProgressKey)).toEqual(null);
-	});
-
 	test('global signOut Happy Path', () => {
 		netRequestMockSuccess(true);
 		cognitoUser.setSignInUserSession(vCognitoUserSession);
@@ -1185,7 +1169,7 @@ describe('confirmPassword() and forgotPassword()', () => {
 	test('happy path should callback onSuccess', () => {
 		netRequestMockSuccess(true);
 		cognitoUser.confirmPassword(...confirmPasswordDefaults);
-		expect(callback.onSuccess).toHaveBeenCalledWith('SUCCESS');
+		expect(callback.onSuccess).toHaveBeenCalledWith('SUCCESS')
 	});
 
 	test('client request throws an error', () => {
@@ -1588,9 +1572,8 @@ describe('refreshSession()', () => {
 	const callback = jest.fn();
 	const refreshSessionDefaults = [new CognitoRefreshToken(), callback, {}];
 
-	const keyPrefix = `CognitoIdentityServiceProvider.${cognitoUser.pool.getClientId()}.${
-		cognitoUser.username
-	}`;
+	const keyPrefix = `CognitoIdentityServiceProvider.${cognitoUser.pool.getClientId()}.${cognitoUser.username
+		}`;
 
 	const idTokenKey = `${keyPrefix}.idToken`;
 	const accessTokenKey = `${keyPrefix}.accessToken`;
