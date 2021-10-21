@@ -49,7 +49,7 @@
     "@aws-amplify/cache": "4.0.23",
     "@aws-amplify/core": "4.3.3",
     "@aws-amplify/pubsub": "4.1.13",
-    "graphql": "14.5.0",
+    "graphql": "15.6.0",
     "zen-observable-ts": "0.8.19"
   },
   "jest": {
