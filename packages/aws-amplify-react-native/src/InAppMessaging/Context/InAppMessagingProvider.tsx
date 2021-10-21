@@ -19,11 +19,7 @@ import InAppMessagingContext from './InAppMessagingContext';
 
 const { InAppMessaging } = Notifications;
 
-export default function InAppMessagingProvider({
-	children,
-	components = {},
-	style = {},
-}: InAppMessagingProviderProps) {
+export default function InAppMessagingProvider({ children, components = {}, style = {} }: InAppMessagingProviderProps) {
 	const [inAppMessages, setInAppMessages] = useState<InAppMessage[]>([]);
 
 	useEffect(() => {

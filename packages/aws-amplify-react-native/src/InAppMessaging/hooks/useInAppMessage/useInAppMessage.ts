@@ -27,23 +27,15 @@ import { getInAppMessage, getContentProps, getPositionProp } from './utils';
 const logger = new Logger('Notifications.InAppMessaging');
 
 // TODO: replace with Amplify default components
-const DefaultBannerMessage: InAppMessageComponents['BannerMessage'] = () =>
-	null;
-const DefaultCarouselMessage: InAppMessageComponents['CarouselMessage'] = () =>
-	null;
-const DefaultFullScreenMessage: InAppMessageComponents['FullScreenMessage'] = () =>
-	null;
+const DefaultBannerMessage: InAppMessageComponents['BannerMessage'] = () => null;
+const DefaultCarouselMessage: InAppMessageComponents['CarouselMessage'] = () => null;
+const DefaultFullScreenMessage: InAppMessageComponents['FullScreenMessage'] = () => null;
 
 export default function useInAppMessage(): {
 	Component: InAppMessageComponent;
 	props: InAppMessageComponentProps;
 } {
-	const {
-		clearInAppMessages,
-		components,
-		inAppMessages,
-		style,
-	} = useInAppMessaging();
+	const { clearInAppMessages, components, inAppMessages, style } = useInAppMessaging();
 	const {
 		BannerMessage = DefaultBannerMessage,
 		CarouselMessage = DefaultCarouselMessage,
@@ -77,7 +69,7 @@ export default function useInAppMessage(): {
 		}
 		case 'CAROUSEL': {
 			const props: CarouselMessageProps = {
-				data: content.map(item => getContentProps(item, onActionCallback)),
+				data: content.map((item) => getContentProps(item, onActionCallback)),
 				id,
 				onClose,
 				style: style?.CarouselMessage,

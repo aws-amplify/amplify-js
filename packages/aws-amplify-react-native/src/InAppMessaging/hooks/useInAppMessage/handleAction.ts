@@ -18,10 +18,7 @@ import { InAppMessageComponentActionHandler } from '../..';
 
 const logger = new Logger('Notifications.InAppMessaging');
 
-const handleAction: InAppMessageComponentActionHandler = async (
-	action,
-	url
-) => {
+const handleAction: InAppMessageComponentActionHandler = async (action, url) => {
 	if ((action === 'LINK' || action === 'DEEP_LINK') && url) {
 		const supported = await Linking.canOpenURL(url);
 		if (supported) {

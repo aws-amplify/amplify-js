@@ -20,9 +20,7 @@ const InAppMessagingContext = createContext<InAppMessagingContextType>(null);
 export function useInAppMessaging() {
 	const inAppMessagingContext = useContext(InAppMessagingContext);
 	if (!inAppMessagingContext) {
-		throw new Error(
-			'InAppMessagingContext is empty, did you forget the InAppMessagingProvider?'
-		);
+		throw new Error('InAppMessagingContext is empty, did you forget the InAppMessagingProvider?');
 	}
 	return inAppMessagingContext;
 }
