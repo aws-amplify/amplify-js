@@ -90,6 +90,7 @@ body:
         - GraphQL API
         - DataStore
         - Storage
+        - Geo
         - Push Notifications
         - Interactions
         - PubSub
@@ -108,6 +109,7 @@ body:
       options:
         - auth
         - storage
+        - geo
         - function
         - api
         - analytics
@@ -169,7 +171,7 @@ body:
     attributes:
       label: Code Snippet
       description: |
-        Please provide a code snippet or a link to sample code of the issue you are experiencing to help us reproduce the issue. 
+        Please provide a code snippet or a link to sample code of the issue you are experiencing to help us reproduce the issue.
 
         **Be sure to remove any sensitive data.**
       value: |
@@ -183,12 +185,12 @@ body:
       description: |
         For example, error messages, or stack traces.
 
-        You can turn on the debug mode to provide more info for us 
+        You can turn on the debug mode to provide more info for us
         by using the below statement in your app.
 
         ```javascript
         window.LOG_LEVEL = 'DEBUG';
-        ``` 
+        ```
         **Be sure to remove any sensitive data.**
       value: |
         <details>
@@ -248,9 +250,9 @@ body:
     attributes:
       label: Additional configuration
       description: |
-        If applicable, provide more configuration data. 
+        If applicable, provide more configuration data.
 
-        For example, for Amazon Cognito, run `aws cognito-idp describe-user-pool --user-pool-id us-west-2_xxxxxx`. 
+        For example, for Amazon Cognito, run `aws cognito-idp describe-user-pool --user-pool-id us-west-2_xxxxxx`.
 
         **Be sure to remove any sensitive data**
 

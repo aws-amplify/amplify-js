@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.9.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.8.2...@aws-amplify/ui-components@1.9.0) (2021-10-07)
+
+
+### Features
+
+* adding translation for skip text ([#8993](https://github.com/aws-amplify/amplify-js/issues/8993)) ([3402060](https://github.com/aws-amplify/amplify-js/commit/3402060a040c89ef90199f61d1eae77b0a2830c1))
+
+
+
+
+
+## [1.8.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.8.1...@aws-amplify/ui-components@1.8.2) (2021-09-30)
+
+**Note:** Version bump only for package @aws-amplify/ui-components
+
+
+
+
+
 ## [1.8.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-components@1.8.0...@aws-amplify/ui-components@1.8.1) (2021-09-24)
 
 **Note:** Version bump only for package @aws-amplify/ui-components

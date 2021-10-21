@@ -2,6 +2,8 @@ import AWSStorageProvider from '../src/providers/AWSS3Provider';
 import { Storage as StorageClass } from '../src/Storage';
 import { Storage as StorageCategory, StorageProvider } from '../src';
 import axios, { CancelToken } from 'axios';
+import { AWSS3UploadTask } from '../src/providers/AWSS3UploadTask';
+import { S3Client } from '@aws-sdk/client-s3';
 
 type CustomProviderConfig = {
 	foo: boolean;
@@ -51,15 +53,18 @@ class TestCustomProvider implements StorageProvider {
 	list(key: string, config: CustomProviderConfig) {
 		return Promise.resolve({ list: 'list' });
 	}
-
 }
 
-class TestCustomProviderWithCopy extends TestCustomProvider implements StorageProvider {
-	copy(src: { key: string }, dest: { key: string }, config: CustomProviderConfig) {
+class TestCustomProviderWithCopy extends TestCustomProvider
+	implements StorageProvider {
+	copy(
+		src: { key: string },
+		dest: { key: string },
+		config: CustomProviderConfig
+	) {
 		return Promise.resolve({ newKey: 'copy' });
 	}
 }
-
 
 describe('Storage', () => {
 	describe('constructor test', () => {
@@ -75,7 +80,9 @@ describe('Storage', () => {
 			const provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 
-			expect(storage.getPluggable(provider.getProviderName())).toBeInstanceOf(AWSStorageProvider);
+			expect(storage.getPluggable(provider.getProviderName())).toBeInstanceOf(
+				AWSStorageProvider
+			);
 		});
 	});
 
@@ -512,7 +519,9 @@ describe('Storage', () => {
 			provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			getSpy = jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => Promise.resolve('url'));
+			getSpy = jest
+				.spyOn(AWSStorageProvider.prototype, 'get')
+				.mockImplementation(() => Promise.resolve('url'));
 		});
 
 		afterEach(() => {
@@ -529,9 +538,11 @@ describe('Storage', () => {
 
 			test('get object with download', async () => {
 				const blob = { Body: new Blob(['body']) };
-				getSpy = jest.spyOn(AWSStorageProvider.prototype, 'get').mockImplementation(() => {
-					return Promise.resolve(blob);
-				});
+				getSpy = jest
+					.spyOn(AWSStorageProvider.prototype, 'get')
+					.mockImplementation(() => {
+						return Promise.resolve(blob);
+					});
 				const getOutput = await storage.get('key', { download: true });
 				expect(getSpy).toBeCalled();
 				expect(getOutput).toBe(blob);
@@ -574,8 +585,7 @@ describe('Storage', () => {
 
 		test('get with custom provider', async () => {
 			const customProvider = new TestCustomProvider();
-			const customProviderGetSpy = jest
-				.spyOn(customProvider, 'get');
+			const customProviderGetSpy = jest.spyOn(customProvider, 'get');
 			storage.addPluggable(customProvider);
 			const getRes = await storage.get<TestCustomProvider>('key', {
 				provider: 'customProvider',
@@ -588,8 +598,7 @@ describe('Storage', () => {
 		// backwards compatible with current custom provider user
 		test('get with custom provider should work with no generic type provided', async () => {
 			const customProvider = new TestCustomProvider();
-			const customProviderGetSpy = jest
-				.spyOn(customProvider, 'get');
+			const customProviderGetSpy = jest.spyOn(customProvider, 'get');
 			storage.addPluggable(customProvider);
 			await storage.get('key', {
 				provider: 'customProvider',
@@ -657,6 +666,24 @@ describe('Storage', () => {
 			} catch (err) {
 				expect(err).toEqual('No plugin found in Storage for the provider');
 			}
+		});
+
+		test('put with resumable flag', async () => {
+			putSpy = jest
+				.spyOn(AWSStorageProvider.prototype, 'put')
+				.mockImplementation(() => ({
+					pause: jest.fn(),
+					resume: jest.fn(),
+					percent: 0,
+					isInProgress: false,
+				}));
+			const blob = new Blob(['blob']);
+			const uploadTask = storage.put('key', blob, {
+				resumable: true,
+			});
+			uploadTask.pause();
+			uploadTask.resume();
+			storage.cancel(uploadTask);
 		});
 
 		test('put with custom provider', async () => {
@@ -738,8 +765,7 @@ describe('Storage', () => {
 		});
 		test('remove with custom provider', async () => {
 			const customProvider = new TestCustomProvider();
-			const customProviderRemoveSpy = jest
-				.spyOn(customProvider, 'remove');
+			const customProviderRemoveSpy = jest.spyOn(customProvider, 'remove');
 			storage.addPluggable(customProvider);
 			const removeRes = await storage.remove<TestCustomProvider>('key', {
 				provider: 'customProvider',
@@ -752,8 +778,7 @@ describe('Storage', () => {
 		// backwards compatible with current custom provider user
 		test('remove with custom provider should work with no generic type provided', async () => {
 			const customProvider = new TestCustomProvider();
-			const customProviderRemoveSpy = jest
-				.spyOn(customProvider, 'remove');
+			const customProviderRemoveSpy = jest.spyOn(customProvider, 'remove');
 			storage.addPluggable(customProvider);
 			storage.remove('key', {
 				provider: 'customProvider',
@@ -775,7 +800,9 @@ describe('Storage', () => {
 			provider = new AWSStorageProvider();
 			storage.addPluggable(provider);
 			storage.configure(options);
-			listSpy = jest.spyOn(AWSStorageProvider.prototype, 'list').mockImplementation(() => Promise.resolve([]));
+			listSpy = jest
+				.spyOn(AWSStorageProvider.prototype, 'list')
+				.mockImplementation(() => Promise.resolve([]));
 		});
 
 		afterEach(() => {
@@ -939,9 +966,14 @@ describe('Storage', () => {
 			cancelMock = jest.fn();
 			tokenMock = jest.fn();
 			isCancelSpy = jest.spyOn(axios, 'isCancel').mockReturnValue(true);
-			cancelTokenSpy = jest.spyOn(axios.CancelToken, 'source').mockImplementation(() => {
-				return { token: (tokenMock as unknown) as CancelToken, cancel: cancelMock };
-			});
+			cancelTokenSpy = jest
+				.spyOn(axios.CancelToken, 'source')
+				.mockImplementation(() => {
+					return {
+						token: (tokenMock as unknown) as CancelToken,
+						cancel: cancelMock,
+					};
+				});
 		});
 
 		afterEach(() => {
