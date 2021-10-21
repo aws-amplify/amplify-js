@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.5.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.4.8...@aws-amplify/datastore@3.5.0) (2021-10-21)
+
+
+### Features
+
+* **@aws-amplify/datastore:** observeQuery API ([#8864](https://github.com/aws-amplify/amplify-js/issues/8864)) ([25f06e3](https://github.com/aws-amplify/amplify-js/commit/25f06e3ad8bbcd5fc297c3da0936481b49aaa3a9))
+
+
+
+
+
 ## [3.4.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.4.7...@aws-amplify/datastore@3.4.8) (2021-10-07)
 
 **Note:** Version bump only for package @aws-amplify/datastore
