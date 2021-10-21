@@ -398,6 +398,11 @@ export type SubscriptionMessage<T extends PersistentModel> = {
 	model: PersistentModelConstructor<T>;
 	condition: PredicatesGroup<T> | null;
 };
+
+export type DataStoreSnapshot<T extends PersistentModel> = {
+	items: T[];
+	isSynced: boolean;
+};
 //#endregion
 
 //#region Predicates
