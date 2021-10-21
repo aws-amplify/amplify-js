@@ -18,7 +18,11 @@ export interface StorageProvider {
 	cancel?(request: Promise<any>): void;
 
 	// copy object from src to dest
-	copy?(src: StorageCopySource, dest: StorageCopyDestination, config?): Promise<any>;
+	copy?(
+		src: StorageCopySource,
+		dest: StorageCopyDestination,
+		config?
+	): Promise<any>;
 
 	// configure your provider
 	configure(config: object): object;
@@ -27,7 +31,7 @@ export interface StorageProvider {
 	get(key: string, options?): Promise<string | Object>;
 
 	// upload storage object
-	put(key: string, object, options?): Promise<Object>;
+	put(key: string, object, options?): Promise<Object> | UploadTask;
 
 	// remove object
 	remove(key: string, options?): Promise<any>;
@@ -42,9 +46,20 @@ export interface StorageProvider {
 	getProviderName(): string;
 }
 
+export interface UploadTask {
+	resume(): any;
+	pause(): any;
+	percent: number;
+	isInProgress: boolean;
+}
+
 export interface StorageProviderWithCopy extends StorageProvider {
 	// copy object from src to dest
-	copy(src: StorageCopySource, dest: StorageCopyDestination, config?): Promise<any>;
+	copy(
+		src: StorageCopySource,
+		dest: StorageCopyDestination,
+		config?
+	): Promise<any>;
 }
 
 export type StorageProviderApi = 'copy' | 'get' | 'put' | 'remove' | 'list';
