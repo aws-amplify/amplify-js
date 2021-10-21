@@ -100,7 +100,6 @@ export default class CognitoUser {
 
 		this.keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
 		this.userDataKey = `${this.keyPrefix}.${this.username}.userData`;
-		this.uploadProgressKey = '__uploadInProgress';
 	}
 
 	/**
@@ -1551,7 +1550,6 @@ export default class CognitoUser {
 	 */
 	clearCachedUserData() {
 		this.storage.removeItem(this.userDataKey);
-		this.storage.removeItem(this.uploadProgressKey);
 	}
 
 	clearCachedUser() {
