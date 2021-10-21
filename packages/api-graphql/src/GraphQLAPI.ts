@@ -10,11 +10,13 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { GraphQLError } from 'graphql/error/GraphQLError';
-// @ts-ignore
-import { DocumentNode, OperationDefinitionNode } from 'graphql/language';
-import { print } from 'graphql/language/printer';
-import { parse } from 'graphql/language/parser';
+import {
+	DocumentNode,
+	OperationDefinitionNode,
+	print,
+	parse,
+	GraphQLError,
+} from 'graphql';
 import Observable from 'zen-observable-ts';
 import {
 	Amplify,
