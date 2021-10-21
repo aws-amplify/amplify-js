@@ -100,7 +100,6 @@ export default class CognitoUser {
 
 		this.keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
 		this.userDataKey = `${this.keyPrefix}.${this.username}.userData`;
-		this.uploadProgressKey = '__uploadInProgress';
 	}
 
 	/**
@@ -674,7 +673,7 @@ export default class CognitoUser {
 				ClientId: this.pool.getClientId(),
 				ChallengeResponses: authParameters,
 				ClientMetadata: clientMetadata,
-				Session: this.Session,
+				Session: this.Session
 			};
 			if (this.getUserContextData()) {
 				jsonReq.UserContextData = this.getUserContextData();
@@ -1398,9 +1397,8 @@ export default class CognitoUser {
 			return callback(null, this.signInUserSession);
 		}
 
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
-			this.username
-		}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
+			}`;
 		const idTokenKey = `${keyPrefix}.idToken`;
 		const accessTokenKey = `${keyPrefix}.accessToken`;
 		const refreshTokenKey = `${keyPrefix}.refreshToken`;
@@ -1551,7 +1549,6 @@ export default class CognitoUser {
 	 */
 	clearCachedUserData() {
 		this.storage.removeItem(this.userDataKey);
-		this.storage.removeItem(this.uploadProgressKey);
 	}
 
 	clearCachedUser() {
@@ -1564,9 +1561,8 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	cacheDeviceKeyAndPassword() {
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
-			this.username
-		}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1581,9 +1577,8 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	getCachedDeviceKeyAndPassword() {
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
-			this.username
-		}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1600,9 +1595,8 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	clearCachedDeviceKeyAndPassword() {
-		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${
-			this.username
-		}`;
+		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}.${this.username
+			}`;
 		const deviceKeyKey = `${keyPrefix}.deviceKey`;
 		const randomPasswordKey = `${keyPrefix}.randomPasswordKey`;
 		const deviceGroupKeyKey = `${keyPrefix}.deviceGroupKey`;
@@ -1976,7 +1970,7 @@ export default class CognitoUser {
 	 */
 	signOut(revokeTokenCallback) {
 		// If tokens won't be revoked, we just clean the client data.
-		if (!revokeTokenCallback || typeof revokeTokenCallback !== 'function') {
+		if (!revokeTokenCallback || typeof revokeTokenCallback !== "function") {
 			this.cleanClientData();
 
 			return;
@@ -1987,7 +1981,7 @@ export default class CognitoUser {
 				return revokeTokenCallback(error);
 			}
 
-			this.revokeTokens(err => {
+			this.revokeTokens((err) => {
 				this.cleanClientData();
 
 				revokeTokenCallback(err);
@@ -1995,9 +1989,9 @@ export default class CognitoUser {
 		});
 	}
 
-	revokeTokens(revokeTokenCallback = () => {}) {
+	revokeTokens(revokeTokenCallback = () => { }) {
 		if (typeof revokeTokenCallback !== 'function') {
-			throw new Error('Invalid revokeTokenCallback. It should be a function.');
+			throw new Error('Invalid revokeTokenCallback. It should be a function.')
 		}
 
 		const tokensToBeRevoked = [];
@@ -2019,10 +2013,7 @@ export default class CognitoUser {
 
 		if (this.isSessionRevocable(accessToken)) {
 			if (refreshToken) {
-				return this.revokeToken({
-					token: refreshToken,
-					callback: revokeTokenCallback,
-				});
+				return this.revokeToken({ token: refreshToken, callback: revokeTokenCallback });
 			}
 		}
 		revokeTokenCallback();
@@ -2051,16 +2042,17 @@ export default class CognitoUser {
 			'RevokeToken',
 			{
 				Token: token,
-				ClientId: this.pool.getClientId(),
+				ClientId: this.pool.getClientId()
 			},
 			err => {
+
 				if (err) {
 					return callback(err);
 				}
 
 				callback();
 			}
-		);
+		)
 	}
 
 	/**
