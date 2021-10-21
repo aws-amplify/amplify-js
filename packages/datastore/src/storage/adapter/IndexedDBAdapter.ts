@@ -1,10 +1,7 @@
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import * as idb from 'idb';
 import { ModelInstanceCreator } from '../../datastore/datastore';
-import {
-	ModelPredicateCreator,
-	ModelSortPredicateCreator,
-} from '../../predicates';
+import { ModelPredicateCreator } from '../../predicates';
 import {
 	InternalSchema,
 	isPredicateObj,
@@ -28,7 +25,7 @@ import {
 	isPrivateMode,
 	traverseModel,
 	validatePredicate,
-	sortCompareFunction,
+	inMemoryPagination,
 } from '../../util';
 import { Adapter } from './index';
 
@@ -198,9 +195,7 @@ class IndexedDBAdapter implements Adapter {
 			index = store.index('byId');
 		}
 
-		const result = await index.get(id);
-
-		return result;
+		return await index.get(id);
 	}
 
 	async save<T extends PersistentModel>(
@@ -384,26 +379,7 @@ class IndexedDBAdapter implements Adapter {
 		records: T[],
 		pagination?: PaginationInput<T>
 	): T[] {
-		if (pagination && records.length > 1) {
-			if (pagination.sort) {
-				const sortPredicates = ModelSortPredicateCreator.getPredicates(
-					pagination.sort
-				);
-
-				if (sortPredicates.length) {
-					const compareFn = sortCompareFunction(sortPredicates);
-					records.sort(compareFn);
-				}
-			}
-
-			const { page = 0, limit = 0 } = pagination;
-			const start = Math.max(0, page * limit) || 0;
-
-			const end = limit > 0 ? start + limit : records.length;
-
-			return records.slice(start, end);
-		}
-		return records;
+		return inMemoryPagination(records, pagination);
 	}
 
 	private async enginePagination<T extends PersistentModel>(

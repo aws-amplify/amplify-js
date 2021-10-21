@@ -66,7 +66,13 @@ import {
 	USER,
 	isNullOrUndefined,
 	registerNonModelClass,
+	inMemoryPagination,
 } from '../util';
+import {
+	SingularModelPredicateExtender,
+	predicateFor,
+	GroupCondition,
+} from '../predicates/next';
 
 setAutoFreeze(true);
 enablePatches();
@@ -108,6 +114,17 @@ const getModelDefinition = (
 	const namespace = modelNamespaceMap.get(modelConstructor);
 
 	return schema.namespaces[namespace].models[modelConstructor.name];
+};
+
+const getModelPKFieldName = (
+	modelConstructor: PersistentModelConstructor<any>
+) => {
+	const namespace = modelNamespaceMap.get(modelConstructor);
+	return (
+		schema.namespaces[namespace].keys[modelConstructor.name].primaryKey || [
+			'id',
+		]
+	);
 };
 
 const isValidModelConstructor = <T extends PersistentModel>(
@@ -188,6 +205,33 @@ const initSchema = (userSchema: Schema) => {
 				);
 
 			modelAssociations.set(model.name, connectedModels);
+
+			Object.values(model.fields).forEach(field => {
+				if (
+					typeof field.type === 'object' &&
+					!Object.getOwnPropertyDescriptor(
+						<ModelFieldType>field.type,
+						'modelConstructor'
+					)
+				) {
+					Object.defineProperty(field.type, 'modelConstructor', {
+						get: () => {
+							return {
+								builder: userClasses[(<ModelFieldType>field.type).model],
+								schema:
+									schema.namespaces[namespace].models[
+										(<ModelFieldType>field.type).model
+									],
+								pkField: getModelPKFieldName(
+									userClasses[
+										(<ModelFieldType>field.type).model
+									] as PersistentModelConstructor<any>
+								),
+							};
+						},
+					});
+				}
+			});
 		});
 
 		const result = new Map<string, string[]>();
@@ -878,17 +922,18 @@ class DataStore {
 		): Promise<T | undefined>;
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
+			criteria?: SingularModelPredicateExtender<T> | typeof PredicateAll,
 			paginationProducer?: ProducerPaginationInput<T>
 		): Promise<T[]>;
 	} = async <T extends PersistentModel>(
 		modelConstructor: PersistentModelConstructor<T>,
-		idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll,
+		idOrCriteria?:
+			| string
+			| SingularModelPredicateExtender<T>
+			| typeof PredicateAll,
 		paginationProducer?: ProducerPaginationInput<T>
 	): Promise<T | T[] | undefined> => {
 		await this.start();
-
-		//#region Input validation
 
 		if (!isValidModelConstructor(modelConstructor)) {
 			const msg = 'Constructor is not for a valid model';
@@ -904,49 +949,41 @@ class DataStore {
 		}
 
 		const modelDefinition = getModelDefinition(modelConstructor);
-		let predicate: ModelPredicate<T>;
-
-		if (isQueryOne(idOrCriteria)) {
-			predicate = ModelPredicateCreator.createForId<T>(
-				modelDefinition,
-				idOrCriteria
-			);
-		} else {
-			if (isPredicatesAll(idOrCriteria)) {
-				// Predicates.ALL means "all records", so no predicate (undefined)
-				predicate = undefined;
-			} else {
-				predicate = ModelPredicateCreator.createFromExisting(
-					modelDefinition,
-					idOrCriteria
-				);
-			}
-		}
+		let result: T[];
 
 		const pagination = this.processPagination(
 			modelDefinition,
 			paginationProducer
 		);
 
-		//#endregion
-
-		logger.debug('params ready', {
-			modelConstructor,
-			predicate: ModelPredicateCreator.getPredicates(predicate, false),
-			pagination: {
-				...pagination,
-				sort: ModelSortPredicateCreator.getPredicates(
-					pagination && pagination.sort,
-					false
-				),
-			},
-		});
-
-		const result = await this.storage.query(
-			modelConstructor,
-			predicate,
-			pagination
-		);
+		if (isQueryOne(idOrCriteria)) {
+			result = await this.storage.query<T>(
+				modelConstructor,
+				ModelPredicateCreator.createForId<T>(modelDefinition, idOrCriteria),
+				pagination
+			);
+		} else {
+			// WARNING: this conditional does not recognize Predicates.ALL ...
+			if (!idOrCriteria || isPredicatesAll(idOrCriteria)) {
+				// Predicates.ALL means "all records", so no predicate (undefined)
+				result = await this.storage.query<T>(
+					modelConstructor,
+					undefined,
+					pagination
+				);
+			} else {
+				const seedPredicate = predicateFor<T>({
+					builder: modelConstructor,
+					schema: modelDefinition,
+					pkField: getModelPKFieldName(modelConstructor),
+				});
+				const predicate = (idOrCriteria as SingularModelPredicateExtender<T>)(
+					seedPredicate
+				).__query;
+				result = (await predicate.fetch(this.storage)) as T[];
+				result = inMemoryPagination(result, pagination);
+			}
+		}
 
 		return isQueryOne(idOrCriteria) ? result[0] : result;
 	};
@@ -1134,15 +1171,15 @@ class DataStore {
 
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
-			criteria?: string | ProducerModelPredicate<T>
+			criteria?: string | SingularModelPredicateExtender<T>
 		): Observable<SubscriptionMessage<T>>;
 	} = <T extends PersistentModel = PersistentModel>(
 		modelOrConstructor?: T | PersistentModelConstructor<T>,
-		idOrCriteria?: string | ProducerModelPredicate<T>
+		idOrCriteria?: string | SingularModelPredicateExtender<T>
 	): Observable<SubscriptionMessage<T>> => {
-		let predicate: ModelPredicate<T>;
+		let executivePredicate: GroupCondition;
 
-		const modelConstructor: PersistentModelConstructor<T> =
+		const modelConstructor =
 			modelOrConstructor && isValidModelConstructor(modelOrConstructor)
 				? modelOrConstructor
 				: undefined;
@@ -1183,35 +1220,48 @@ class DataStore {
 			throw new Error(msg);
 		}
 
+		const buildSeedPredicate = () =>
+			predicateFor<T>({
+				builder: modelOrConstructor as PersistentModelConstructor<T>,
+				schema: getModelDefinition(modelConstructor),
+				pkField: getModelPKFieldName(modelConstructor),
+			});
+
 		if (typeof idOrCriteria === 'string') {
-			predicate = ModelPredicateCreator.createForId<T>(
-				getModelDefinition(modelConstructor),
-				idOrCriteria
-			);
-		} else {
-			predicate =
-				modelConstructor &&
-				ModelPredicateCreator.createFromExisting<T>(
-					getModelDefinition(modelConstructor),
-					idOrCriteria
-				);
+			const buildIdPredicate = seed => seed.id.eq(idOrCriteria);
+			executivePredicate = buildIdPredicate(buildSeedPredicate()).__query;
+		} else if (modelConstructor && typeof idOrCriteria === 'function') {
+			executivePredicate = (idOrCriteria as SingularModelPredicateExtender<T>)(
+				buildSeedPredicate()
+			).__query;
 		}
 
 		return new Observable<SubscriptionMessage<T>>(observer => {
-			let handle: ZenObservable.Subscription;
+			let source: ZenObservable.Subscription;
 
 			(async () => {
 				await this.start();
 
-				handle = this.storage
-					.observe(modelConstructor, predicate)
+				source = this.storage
+					.observe(modelConstructor)
 					.filter(({ model }) => namespaceResolver(model) === USER)
-					.subscribe(observer);
+					.subscribe({
+						next: async item => {
+							if (
+								!executivePredicate ||
+								(await executivePredicate.matches(item.element))
+							) {
+								observer.next(item as SubscriptionMessage<T>);
+							}
+						},
+						error: err => observer.error(err),
+						complete: () => observer.complete(),
+					});
 			})();
 
 			return () => {
-				if (handle) {
-					handle.unsubscribe();
+				if (source) {
+					source.unsubscribe();
 				}
 			};
 		});

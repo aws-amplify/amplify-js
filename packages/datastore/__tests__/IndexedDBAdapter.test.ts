@@ -67,7 +67,7 @@ describe('IndexedDBAdapter tests', () => {
 
 		it('Should call getAll & inMemoryPagination for query with a predicate', async () => {
 			const results = await DataStore.query(Model, c =>
-				c.field1('eq', 'another value')
+				c.field1.eq('another value')
 			);
 
 			expect(results.length).toEqual(1);
