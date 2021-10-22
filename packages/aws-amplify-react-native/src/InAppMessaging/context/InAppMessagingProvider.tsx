@@ -23,7 +23,9 @@ export default function InAppMessagingProvider({ children, components = {}, styl
 	const [inAppMessages, setInAppMessages] = useState<InAppMessage[]>([]);
 
 	useEffect(() => {
-		const listener = InAppMessaging.onMessagesReceived(setInAppMessages);
+		const listener = InAppMessaging.onMessageReceived((message) => {
+			setInAppMessages([message]);
+		});
 		return listener.remove;
 	}, []);
 
