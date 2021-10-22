@@ -1,14 +1,12 @@
 import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
-import {
-	InAppMessageCampaign as PinpointInAppMessage,
-	DefaultButtonConfiguration,
-} from '@aws-sdk/client-pinpoint';
+import { InAppMessageCampaign as PinpointInAppMessage } from '@aws-sdk/client-pinpoint';
 import isEmpty from 'lodash/isEmpty';
 import {
 	InAppMessage,
 	InAppMessageAction,
 	InAppMessageContent,
 	InAppMessageStyle,
+	InAppMessageTextAlign,
 	InAppMessagingEvent,
 } from '../../types';
 import { PinpointMessageEvent, MetricsComparator } from './types';
@@ -223,30 +221,41 @@ export const extractContent = ({
 				PrimaryBtn,
 				SecondaryBtn,
 			} = content;
-			const defaultPrimaryButton =
-				PrimaryBtn?.DefaultConfig ?? ({} as DefaultButtonConfiguration);
-			const defaultSecondaryButton =
-				SecondaryBtn?.DefaultConfig ?? ({} as DefaultButtonConfiguration);
-			return {
-				header: {
+			const defaultPrimaryButton = PrimaryBtn?.DefaultConfig;
+			const defaultSecondaryButton = SecondaryBtn?.DefaultConfig;
+			const extractedContent: InAppMessageContent = {};
+			if (BackgroundColor) {
+				extractedContent.container = {
+					style: {
+						backgroundColor: BackgroundColor,
+					},
+				};
+			}
+			if (HeaderConfig) {
+				extractedContent.header = {
 					content: HeaderConfig?.Header,
 					style: {
 						color: HeaderConfig?.TextColor,
-						textAlign: HeaderConfig?.Alignment.toLowerCase(),
-					} as InAppMessageStyle,
-				},
-				body: {
+						textAlign: HeaderConfig?.Alignment.toLowerCase() as InAppMessageTextAlign,
+					},
+				};
+			}
+			if (BodyConfig) {
+				extractedContent.body = {
 					content: BodyConfig?.Body,
 					style: {
-						backgroundColor: BackgroundColor,
 						color: BodyConfig?.TextColor,
-						textAlign: BodyConfig?.Alignment.toLowerCase(),
-					} as InAppMessageStyle,
-				},
-				image: {
+						textAlign: BodyConfig?.Alignment.toLowerCase() as InAppMessageTextAlign,
+					},
+				};
+			}
+			if (ImageUrl) {
+				extractedContent.image = {
 					src: ImageUrl,
-				},
-				primaryButton: {
+				};
+			}
+			if (defaultPrimaryButton) {
+				extractedContent.primaryButton = {
 					title: defaultPrimaryButton.Text,
 					action: defaultPrimaryButton.ButtonAction as InAppMessageAction,
 					url: defaultPrimaryButton.Link,
@@ -254,9 +263,11 @@ export const extractContent = ({
 						backgroundColor: defaultPrimaryButton.BackgroundColor,
 						borderRadius: defaultPrimaryButton.BorderRadius,
 						color: defaultPrimaryButton.TextColor,
-					} as InAppMessageStyle,
-				},
-				secondaryButton: {
+					},
+				};
+			}
+			if (defaultSecondaryButton) {
+				extractedContent.secondaryButton = {
 					title: defaultSecondaryButton.Text,
 					action: defaultSecondaryButton.ButtonAction as InAppMessageAction,
 					url: defaultSecondaryButton.Link,
@@ -264,9 +275,10 @@ export const extractContent = ({
 						backgroundColor: defaultSecondaryButton.BackgroundColor,
 						borderRadius: defaultSecondaryButton.BorderRadius,
 						color: defaultSecondaryButton.TextColor,
-					} as InAppMessageStyle,
-				},
-			};
+					},
+				};
+			}
+			return extractedContent;
 		}) ?? []
 	);
 };
