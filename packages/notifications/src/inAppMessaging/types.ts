@@ -58,6 +58,12 @@ export type InAppMessageLayout =
 
 export type InAppMessageAction = 'CLOSE' | 'DEEP_LINK' | 'LINK';
 
+export type InAppMessageTextAlign = 'center' | 'left' | 'right';
+
+interface InAppMessageContainer {
+	style?: InAppMessageStyle;
+}
+
 interface InAppMessageHeader {
 	content: string;
 	style?: InAppMessageStyle;
@@ -83,10 +89,11 @@ export interface InAppMessageStyle {
 	backgroundColor?: string;
 	borderRadius?: number;
 	color?: string;
-	textAlign?: 'center' | 'left' | 'right';
+	textAlign?: InAppMessageTextAlign;
 }
 
 export interface InAppMessageContent {
+	container?: InAppMessageContainer;
 	header?: InAppMessageHeader;
 	body?: InAppMessageBody;
 	image?: InAppMessageImage;

@@ -8,6 +8,7 @@ export {
 	InAppMessageInteractionEvent,
 	InAppMessageLayout,
 	InAppMessageStyle,
+	InAppMessageTextAlign,
 	InAppMessagingConfig,
 	InAppMessagingEvent,
 } from './types';
