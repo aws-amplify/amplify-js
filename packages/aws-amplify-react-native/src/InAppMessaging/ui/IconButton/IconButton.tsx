@@ -11,16 +11,17 @@
  * and limitations under the License.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Image, Pressable } from 'react-native';
 
 import { getStyles } from './styles';
 import { IconButtonProps } from './types';
 
-export function IconButton({ color, source, size = 16, style, ...pressableProps }: IconButtonProps) {
-	const { container, icon } = getStyles(color, size, style);
+export function IconButton({ color, source, size = 16, ...pressableProps }: IconButtonProps) {
+	const { icon } = useMemo(() => getStyles(color, size), [color, size]);
+
 	return (
-		<Pressable {...pressableProps} style={container}>
+		<Pressable {...pressableProps}>
 			<Image source={source} style={icon} />
 		</Pressable>
 	);

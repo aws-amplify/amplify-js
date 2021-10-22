@@ -15,13 +15,8 @@ import { StyleSheet, ViewStyle } from 'react-native';
 
 import { IconButtonProps, IconButtonStyles } from '.';
 
-export const getStyles = (
-	color: IconButtonProps['color'],
-	size: IconButtonProps['size'],
-	style: IconButtonProps['style']
-): IconButtonStyles =>
+export const getStyles = (color: IconButtonProps['color'], size: IconButtonProps['size']): IconButtonStyles =>
 	StyleSheet.create({
-		container: Array.isArray(style) ? StyleSheet.flatten(style) : (style as ViewStyle),
 		icon: {
 			height: size,
 			resizeMode: 'contain',
