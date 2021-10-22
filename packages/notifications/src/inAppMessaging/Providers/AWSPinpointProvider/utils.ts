@@ -233,19 +233,19 @@ export const extractContent = ({
 			}
 			if (HeaderConfig) {
 				extractedContent.header = {
-					content: HeaderConfig?.Header,
+					content: HeaderConfig.Header,
 					style: {
-						color: HeaderConfig?.TextColor,
-						textAlign: HeaderConfig?.Alignment.toLowerCase() as InAppMessageTextAlign,
+						color: HeaderConfig.TextColor,
+						textAlign: HeaderConfig.Alignment.toLowerCase() as InAppMessageTextAlign,
 					},
 				};
 			}
 			if (BodyConfig) {
 				extractedContent.body = {
-					content: BodyConfig?.Body,
+					content: BodyConfig.Body,
 					style: {
-						color: BodyConfig?.TextColor,
-						textAlign: BodyConfig?.Alignment.toLowerCase() as InAppMessageTextAlign,
+						color: BodyConfig.TextColor,
+						textAlign: BodyConfig.Alignment.toLowerCase() as InAppMessageTextAlign,
 					},
 				};
 			}
