@@ -5,6 +5,7 @@ import { ModelPredicateCreator } from '../../predicates';
 import {
 	InternalSchema,
 	isPredicateObj,
+	isPredicateGroup,
 	ModelInstanceMetadata,
 	ModelPredicate,
 	NamespaceResolver,
@@ -360,18 +361,111 @@ class IndexedDBAdapter implements Adapter {
 		return idPredicate && idPredicate.operand;
 	}
 
+	private matchingIndex(
+		storeName: string,
+		fieldName: string,
+		transaction: idb.IDBPTransaction<unknown, [string]>
+	) {
+		// const tx = transaction || this.db.transaction(storeName);
+		const store = transaction.objectStore(storeName);
+		for (const name of store.indexNames) {
+			const idx = store.index(name);
+			if (idx.keyPath === fieldName) {
+				return idx;
+			}
+		}
+	}
+
 	private async filterOnPredicate<T extends PersistentModel>(
 		storeName: string,
 		predicates: PredicatesGroup<T>
 	) {
-		const { predicates: predicateObjs, type } = predicates;
+		let { predicates: predicateObjs, type } = predicates;
 
-		const all = <T[]>await this.getAll(storeName);
+		while (predicateObjs.length === 1 && isPredicateGroup(predicateObjs[0])) {
+			type = (predicateObjs[0] as PredicatesGroup<T>).type;
+			predicateObjs = (predicateObjs[0] as PredicatesGroup<T>).predicates;
+		}
+
+		// console.log(
+		// 	'predicates',
+		// 	JSON.stringify(predicates),
+		// 	JSON.stringify(predicateObjs)
+		// );
+
+		let candidateResults: T[];
+
+		const fieldPredicates = predicateObjs.filter(p =>
+			isPredicateObj(p)
+		) as PredicateObject<T>[];
+
+		const txn = this.db.transaction(storeName);
+
+		const predicateIndexes = fieldPredicates.map(p => {
+			return {
+				predicate: p,
+				index: this.matchingIndex(storeName, String(p.field), txn),
+			};
+		});
+
+		// if (fieldPredicates.length > 0) {
+		// 	console.log('fieldPredicates', fieldPredicates);
+		// 	console.log('predicateIndexes', predicateIndexes);
+		// }
+
+		// semi-naive implementation:
+		if (type === 'and') {
+			// each condition must be satsified, we can form a base set with any
+			// ONE of those conditions and then filter.
+			const actualPredicateIndexes = predicateIndexes.filter(
+				i => i.index && i.predicate.operator === 'eq'
+			);
+			if (actualPredicateIndexes.length > 0) {
+				// console.log('using indexes for AND');
+				const predicateIndex = actualPredicateIndexes[0];
+				candidateResults = <T[]>(
+					await predicateIndex.index.getAll(predicateIndex.predicate.operand)
+				);
+			} else {
+				// console.log('NOT using indexes for AND');
+				candidateResults = <T[]>await this.getAll(storeName);
+			}
+		} else if (type === 'or') {
+			// each condition implies a potentially distinct set. we only benefit
+			// from using indexes here if EVERY condition uses an index. if any one
+			// index requires a table scan, we gain nothing from the indexes.
+			// results must be DISTINCT-ified if we leverage indexes.
+			if (
+				predicateIndexes.every(i => i.index && i.predicate.operator === 'eq')
+			) {
+				// console.log('using indexes for OR', predicates, predicateIndexes);
+				const distinctResults = new Map<string, T>();
+				for (const predicateIndex of predicateIndexes) {
+					const resultGroup = <T[]>(
+						await predicateIndex.index.getAll(predicateIndex.predicate.operand)
+					);
+					// console.log('resultGroup', resultGroup);
+					for (const item of resultGroup) {
+						// TODO: custom PK
+						distinctResults.set(item.id, item);
+					}
+				}
+				await txn.done;
+				return Array.from(distinctResults.values());
+			} else {
+				// console.log('NOT using indexes for OR');
+				candidateResults = <T[]>await this.getAll(storeName);
+			}
+		} else {
+			// console.log('neither OR nor AND');
+			candidateResults = <T[]>await this.getAll(storeName);
+		}
 
 		const filtered = predicateObjs
-			? all.filter(m => validatePredicate(m, type, predicateObjs))
-			: all;
+			? candidateResults.filter(m => validatePredicate(m, type, predicateObjs))
+			: candidateResults;
 
+		await txn.done;
 		return filtered;
 	}
 
