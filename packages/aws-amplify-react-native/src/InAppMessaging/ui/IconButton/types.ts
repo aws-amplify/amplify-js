@@ -11,10 +11,9 @@
  * and limitations under the License.
  */
 
-import { ColorValue, ImageSourcePropType, ImageStyle, PressableProps, ViewStyle } from 'react-native';
+import { ColorValue, ImageSourcePropType, ImageStyle, PressableProps } from 'react-native';
 
 export interface IconButtonStyles {
-	container: ViewStyle;
 	icon: ImageStyle;
 }
 

@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { StyleSheet, ViewStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { IconButtonProps, IconButtonStyles } from '.';
 
