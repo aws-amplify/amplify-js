@@ -197,7 +197,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 						// this message has priority, so reset the accumulator with this message only
 						if (message.Priority) {
 							highestPrioritySeen = message.Priority;
-							acc = [message];
+							return [message];
 						} else {
 							// this message also has no priority, so just add this message to accumulator
 							acc.push(message);
@@ -207,7 +207,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 						// this message has higher priority (lower number), so reset the accumulator with this message only
 						if (message.Priority < highestPrioritySeen) {
 							highestPrioritySeen = message.Priority;
-							acc = [message];
+							return [message];
 							// this message has the same priority, so just add this message to accumulator
 						} else if (message.Priority === highestPrioritySeen) {
 							acc.push(message);
