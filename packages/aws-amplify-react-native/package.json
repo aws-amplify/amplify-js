@@ -19,7 +19,8 @@
 		"@babel/cli": "^7.15.7",
 		"@babel/core": "7.15.5",
 		"@babel/preset-env": "7.15.6",
-		"@types/react-native": "^0.62.5",
+		"@types/react": "^16.13.1",
+		"@types/react-native": "^0.63.45",
 		"@types/react-test-renderer": "^17.0.1",
 		"@typescript-eslint/eslint-plugin": "^4.32.0",
 		"@typescript-eslint/parser": "^4.32.0",
@@ -36,7 +37,6 @@
 		"eslint-plugin-react-hooks": "^4.2.0",
 		"metro-react-native-babel-preset": "^0.66.2",
 		"prettier": "2.4.1",
-		"react": "^16.0.0",
 		"react-test-renderer": "^17.0.2",
 		"rimraf": "^2.6.2"
 	},
