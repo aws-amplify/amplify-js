@@ -436,6 +436,7 @@ class IndexedDBAdapter implements Adapter {
 			// index requires a table scan, we gain nothing from the indexes.
 			// results must be DISTINCT-ified if we leverage indexes.
 			if (
+				predicateIndexes.length > 0 &&
 				predicateIndexes.every(i => i.index && i.predicate.operator === 'eq')
 			) {
 				// console.log('using indexes for OR', predicates, predicateIndexes);
