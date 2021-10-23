@@ -19,11 +19,23 @@ import { InAppMessageComponentActionHandler } from '../..';
 const logger = new Logger('Notifications.InAppMessaging');
 
 const handleAction: InAppMessageComponentActionHandler = async (action, url) => {
+	logger.info(`Handle action: ${action}`);
+
 	if ((action === 'LINK' || action === 'DEEP_LINK') && url) {
-		const supported = await Linking.canOpenURL(url);
+		let supported;
+		try {
+			supported = await Linking.canOpenURL(url);
+		} catch (e) {
+			logger.error(`Call to Linking.canOpenURL failed: ${e}`);
+		}
+
 		if (supported) {
-			logger.info(`Opening url: ${url}`);
-			await Linking.openURL(url);
+			try {
+				logger.info(`Opening url: ${url}`);
+				await Linking.openURL(url);
+			} catch (e) {
+				logger.error(`Call to Linking.openURL failed: ${e}`);
+			}
 		} else {
 			// TODO: determine how to allow for custom reporting of this scenario
 			logger.warn(`Unsupported url given: ${url}`);

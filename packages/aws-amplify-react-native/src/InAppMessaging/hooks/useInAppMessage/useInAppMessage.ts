@@ -59,7 +59,7 @@ export default function useInAppMessage(): {
 		case 'MIDDLE_BANNER':
 		case 'TOP_BANNER': {
 			const props: BannerMessageProps = {
-				...getContentProps(content[0], onActionCallback),
+				...getContentProps(content?.[0], onActionCallback),
 				id,
 				onClose,
 				position: getPositionProp(layout),
@@ -78,7 +78,7 @@ export default function useInAppMessage(): {
 		}
 		case 'OVERLAYS': {
 			const props: FullScreenMessageProps = {
-				...getContentProps(content[0], onActionCallback),
+				...getContentProps(content?.[0], onActionCallback),
 				id,
 				onClose,
 				style: style?.FullScreenMessage,
