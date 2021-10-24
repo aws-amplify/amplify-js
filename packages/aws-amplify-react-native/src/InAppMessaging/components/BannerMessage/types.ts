@@ -11,18 +11,8 @@
  * and limitations under the License.
  */
 
-import { createContext, useContext } from 'react';
+import { InAppMessageComponentPosition, InAppMessageBaseComponentProps } from '../types';
 
-import { InAppMessagingContextType } from './types';
-
-const InAppMessagingContext = createContext<InAppMessagingContextType>(null);
-
-export function useInAppMessaging() {
-	const inAppMessagingContext = useContext(InAppMessagingContext);
-	if (!inAppMessagingContext) {
-		throw new Error('InAppMessagingContext is empty, did you forget the InAppMessagingProvider?');
-	}
-	return inAppMessagingContext;
+export interface BannerMessageProps extends InAppMessageBaseComponentProps {
+	position: InAppMessageComponentPosition;
 }
-
-export default InAppMessagingContext;

@@ -14,8 +14,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { InAppMessage, Notifications } from '@aws-amplify/notifications';
 
-import { InAppMessagingProviderProps } from '..';
 import InAppMessagingContext from './InAppMessagingContext';
+import { InAppMessagingProviderProps } from './types';
 
 const { InAppMessaging } = Notifications;
 

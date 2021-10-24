@@ -11,18 +11,13 @@
  * and limitations under the License.
  */
 
-import { createContext, useContext } from 'react';
+import { ReactElement } from 'react';
 
-import { InAppMessagingContextType } from './types';
+import { InAppMessageAction } from '@aws-amplify/notifications';
+import { BannerMessageProps, CarouselMessageProps, FullScreenMessageProps } from '../../components';
 
-const InAppMessagingContext = createContext<InAppMessagingContextType>(null);
+export type InAppMessageComponentActionHandler = (action: InAppMessageAction, url?: string) => Promise<void>;
 
-export function useInAppMessaging() {
-	const inAppMessagingContext = useContext(InAppMessagingContext);
-	if (!inAppMessagingContext) {
-		throw new Error('InAppMessagingContext is empty, did you forget the InAppMessagingProvider?');
-	}
-	return inAppMessagingContext;
-}
+export type InAppMessageComponent = (props: InAppMessageComponentProps) => ReactElement;
 
-export default InAppMessagingContext;
+export type InAppMessageComponentProps = BannerMessageProps | CarouselMessageProps | FullScreenMessageProps;
