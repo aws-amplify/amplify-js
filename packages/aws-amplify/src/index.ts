@@ -38,7 +38,9 @@ export {
 	AuthModeStrategyType,
 	DataStore,
 	Predicates,
+	Schema,
 	SortDirection,
+	initSchema,
 	syncExpression,
 } from '@aws-amplify/datastore';
 export { PubSub } from '@aws-amplify/pubsub';
