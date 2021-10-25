@@ -1,5 +1,6 @@
 export { default as Notifications } from './Notifications';
 export {
+	AWSPinpointUserInfo,
 	InAppMessage,
 	InAppMessageAction,
 	InAppMessageButton,
@@ -10,5 +11,6 @@ export {
 	InAppMessageTextAlign,
 	InAppMessagingConfig,
 	InAppMessagingEvent,
+	UserInfo,
 } from './inAppMessaging';
 export { NotificationsConfig } from './types';

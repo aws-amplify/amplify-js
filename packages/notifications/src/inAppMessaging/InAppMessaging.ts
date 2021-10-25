@@ -34,6 +34,7 @@ import {
 	NotificationsSubcategory,
 	OnMessageInteractionEventHandler,
 	OnMessageInteractionEventListener,
+	UserInfo,
 } from './types';
 
 const STORAGE_KEY_SUFFIX = '_inAppMessages';
@@ -184,6 +185,13 @@ export default class InAppMessaging {
 			);
 		}
 	};
+
+	identifyUser = async (userId: string, userInfo: UserInfo): Promise<void[]> =>
+		Promise.all<void>(
+			this.pluggables.map(async pluggable =>
+				pluggable.identifyUser(userId, userInfo)
+			)
+		);
 
 	onMessageReceived = (
 		handler: OnMessageInteractionEventHandler

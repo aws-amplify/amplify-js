@@ -15,7 +15,6 @@ import { Amplify } from '@aws-amplify/core';
 import { BrowserStorageCache } from './BrowserStorageCache';
 import { InMemoryCache } from './InMemoryCache';
 import { CacheConfig } from './types';
-export { getCachedUuid } from './Utils/CachedUuid';
 
 export { BrowserStorageCache, InMemoryCache, CacheConfig };
 /**
