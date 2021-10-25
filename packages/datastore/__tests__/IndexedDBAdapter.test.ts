@@ -5,7 +5,7 @@ import {
 	initSchema as initSchemaType,
 } from '../src/datastore/datastore';
 import { PersistentModelConstructor, SortDirection } from '../src/types';
-import { Model, User, Post, Comment, Profile, testSchema } from './helpers';
+import { Model, User, Profile, testSchema } from './helpers';
 import { Predicates } from '../src/predicates';
 
 let initSchema: typeof initSchemaType;
@@ -16,8 +16,6 @@ const IDBAdapter = <any>Adapter;
 describe('IndexedDBAdapter tests', () => {
 	describe('Query', () => {
 		let Model: PersistentModelConstructor<Model>;
-		let Post: PersistentModelConstructor<Post>;
-		let Comment: PersistentModelConstructor<Comment>;
 		let model1Id: string;
 		const spyOnGetOne = jest.spyOn(IDBAdapter, 'getById');
 		const spyOnGetAll = jest.spyOn(IDBAdapter, 'getAll');
@@ -29,10 +27,8 @@ describe('IndexedDBAdapter tests', () => {
 
 			const classes = initSchema(testSchema());
 
-			({ Model, Post, Comment } = classes as {
+			({ Model } = classes as {
 				Model: PersistentModelConstructor<Model>;
-				Post: PersistentModelConstructor<Post>;
-				Comment: PersistentModelConstructor<Comment>;
 			});
 
 			({ id: model1Id } = await DataStore.save(

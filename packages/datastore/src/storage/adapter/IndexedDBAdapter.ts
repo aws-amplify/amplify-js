@@ -387,12 +387,6 @@ class IndexedDBAdapter implements Adapter {
 			predicateObjs = (predicateObjs[0] as PredicatesGroup<T>).predicates;
 		}
 
-		// console.log(
-		// 	'predicates',
-		// 	JSON.stringify(predicates),
-		// 	JSON.stringify(predicateObjs)
-		// );
-
 		let candidateResults: T[];
 
 		const fieldPredicates = predicateObjs.filter(p =>
@@ -408,11 +402,6 @@ class IndexedDBAdapter implements Adapter {
 			};
 		});
 
-		// if (fieldPredicates.length > 0) {
-		// 	console.log('fieldPredicates', fieldPredicates);
-		// 	console.log('predicateIndexes', predicateIndexes);
-		// }
-
 		// semi-naive implementation:
 		if (type === 'and') {
 			// each condition must be satsified, we can form a base set with any
@@ -421,44 +410,37 @@ class IndexedDBAdapter implements Adapter {
 				i => i.index && i.predicate.operator === 'eq'
 			);
 			if (actualPredicateIndexes.length > 0) {
-				// console.log('using indexes for AND');
 				const predicateIndex = actualPredicateIndexes[0];
 				candidateResults = <T[]>(
 					await predicateIndex.index.getAll(predicateIndex.predicate.operand)
 				);
 			} else {
-				// console.log('NOT using indexes for AND');
 				candidateResults = <T[]>await this.getAll(storeName);
 			}
 		} else if (type === 'or') {
-			// each condition implies a potentially distinct set. we only benefit
+			// NOTE: each condition implies a potentially distinct set. we only benefit
 			// from using indexes here if EVERY condition uses an index. if any one
 			// index requires a table scan, we gain nothing from the indexes.
-			// results must be DISTINCT-ified if we leverage indexes.
+			// NOTE: results must be DISTINCT-ified if we leverage indexes.
 			if (
 				predicateIndexes.length > 0 &&
 				predicateIndexes.every(i => i.index && i.predicate.operator === 'eq')
 			) {
-				// console.log('using indexes for OR', predicates, predicateIndexes);
 				const distinctResults = new Map<string, T>();
 				for (const predicateIndex of predicateIndexes) {
 					const resultGroup = <T[]>(
 						await predicateIndex.index.getAll(predicateIndex.predicate.operand)
 					);
-					// console.log('resultGroup', resultGroup);
 					for (const item of resultGroup) {
 						// TODO: custom PK
 						distinctResults.set(item.id, item);
 					}
 				}
-				await txn.done;
 				return Array.from(distinctResults.values());
 			} else {
-				// console.log('NOT using indexes for OR');
 				candidateResults = <T[]>await this.getAll(storeName);
 			}
 		} else {
-			// console.log('neither OR nor AND');
 			candidateResults = <T[]>await this.getAll(storeName);
 		}
 
@@ -466,7 +448,6 @@ class IndexedDBAdapter implements Adapter {
 			? candidateResults.filter(m => validatePredicate(m, type, predicateObjs))
 			: candidateResults;
 
-		await txn.done;
 		return filtered;
 	}
 
