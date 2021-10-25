@@ -23,6 +23,7 @@ import axios, {
 import { ConsoleLogger as Logger, Platform } from '@aws-amplify/core';
 import { FetchHttpHandlerOptions } from '@aws-sdk/fetch-http-handler';
 import * as events from 'events';
+import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
 
 const logger = new Logger('axios-http-handler');
 export const SEND_UPLOAD_PROGRESS_EVENT = 'sendUploadProgress';
@@ -73,7 +74,7 @@ export class AxiosHttpHandler implements HttpHandler {
 
 	handle(
 		request: HttpRequest,
-		options: HttpHandlerOptions
+		options: HttpHandlerOptions & { cancelTokenSource?: CancelTokenSource }
 	): Promise<{ response: HttpResponse }> {
 		const requestTimeoutInMs = this.httpOptions.requestTimeout;
 		const emitter = this.emitter;
@@ -118,7 +119,13 @@ export class AxiosHttpHandler implements HttpHandler {
 			// removing the content-type header. Link for the source code
 			// https://github.com/axios/axios/blob/dc4bc49673943e35280e5df831f5c3d0347a9393/lib/adapters/xhr.js#L121-L123
 
-			if (axiosRequest.headers['Content-Type']) {
+			if (
+				axiosRequest.headers[
+					Object.keys(axiosRequest.headers).find(
+						key => key.toLowerCase() === 'content-type'
+					)
+				]
+			) {
 				axiosRequest.data = null;
 			}
 		}
@@ -137,11 +144,14 @@ export class AxiosHttpHandler implements HttpHandler {
 			axiosRequest.cancelToken = this.cancelTokenSource.token;
 		}
 
+		if (options.cancelTokenSource) {
+			axiosRequest.cancelToken = options.cancelTokenSource.token;
+		}
+
 		// From gamma release, aws-sdk now expects all response type to be of blob or streams
 		axiosRequest.responseType = 'blob';
-		
 		// In Axios, Blobs are identified by calling Object.prototype.toString on the object. However, on React Native,
-		// calling Object.prototype.toString on a Blob returns '[object Object]' instead of '[object Blob]', which causes 
+		// calling Object.prototype.toString on a Blob returns '[object Object]' instead of '[object Blob]', which causes
 		// Axios to treat Blobs as generic Javascript objects. Therefore we need a to use a custom request transformer
 		// to correctly handle Blob in React Native.
 		if (Platform.isReactNative) {
@@ -162,7 +172,13 @@ export class AxiosHttpHandler implements HttpHandler {
 				})
 				.catch(error => {
 					// Error
-					logger.error(error.message);
+					if (
+						error.message !==
+						AWSS3ProviderUploadErrorStrings.UPLOAD_PAUSED_MESSAGE
+					) {
+						logger.error(error.message);
+					}
+
 					throw error;
 				}),
 			requestTimeout(requestTimeoutInMs),
