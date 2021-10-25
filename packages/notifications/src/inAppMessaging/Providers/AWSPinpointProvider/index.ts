@@ -173,6 +173,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 			return messages;
 		} catch (err) {
 			logger.error('Error syncing in-app messages', err);
+			throw err;
 		}
 	};
 
@@ -229,6 +230,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 			await this.updateEndpoint(userId, userInfo);
 		} catch (err) {
 			logger.error('Error identifying user', err);
+			throw err;
 		}
 	};
 
