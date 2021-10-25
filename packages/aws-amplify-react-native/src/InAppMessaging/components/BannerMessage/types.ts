@@ -11,8 +11,8 @@
  * and limitations under the License.
  */
 
-import { InAppMessageComponentPosition, InAppMessageBaseComponentProps } from '../types';
+import { InAppMessageComponentPosition, InAppMessageComponentBaseProps } from '../types';
 
-export interface BannerMessageProps extends InAppMessageBaseComponentProps {
+export interface BannerMessageProps extends InAppMessageComponentBaseProps {
 	position: InAppMessageComponentPosition;
 }

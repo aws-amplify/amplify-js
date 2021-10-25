@@ -11,8 +11,8 @@
  * and limitations under the License.
  */
 
-import { InAppMessageBaseComponentProps, InAppMessageComponentContentProps } from '../types';
+import { InAppMessageComponentBaseProps, InAppMessageComponentContentProps } from '../types';
 
-export interface CarouselMessageProps extends Omit<InAppMessageBaseComponentProps, 'content'> {
+export interface CarouselMessageProps extends Omit<InAppMessageComponentBaseProps, 'content'> {
 	data: InAppMessageComponentContentProps[];
 }
