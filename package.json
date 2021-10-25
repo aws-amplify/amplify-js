@@ -1,7 +1,7 @@
 {
 	"name": "aws-amplify-monorepo",
 	"private": true,
-	"version": "0.1.31",
+	"version": "0.1.30",
 	"description": "",
 	"scripts": {
 		"setup-dev": "yarn && yarn bootstrap && yarn link-all && yarn build",
