@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/analytics",
-	"version": "5.1.0",
+	"version": "5.1.1",
 	"description": "Analytics category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -43,15 +43,15 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"dependencies": {
-		"@aws-amplify/cache": "4.0.22",
-		"@aws-amplify/core": "4.3.2",
+		"@aws-amplify/cache": "4.0.23",
+		"@aws-amplify/core": "4.3.3",
 		"@aws-sdk/client-firehose": "3.6.1",
 		"@aws-sdk/client-kinesis": "3.6.1",
 		"@aws-sdk/client-personalize-events": "3.6.1",
 		"@aws-sdk/client-pinpoint": "3.6.1",
 		"@aws-sdk/util-utf8-browser": "3.6.1",
 		"lodash": "^4.17.20",
-		"uuid": "^3.2.1"
+		"uuid": "^8.3.2"
 	},
 	"jest": {
 		"globals": {
