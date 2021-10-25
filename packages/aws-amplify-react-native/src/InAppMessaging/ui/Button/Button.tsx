@@ -20,12 +20,7 @@ import { ButtonProps } from './types';
 export function Button({ children, textStyle, ...pressableProps }: ButtonProps) {
 	return (
 		<Pressable {...pressableProps}>
-			{() => {
-				if (typeof children === 'string') {
-					return <Text style={[styles.text, textStyle]}>{children}</Text>;
-				}
-				return children;
-			}}
+			{typeof children === 'string' ? <Text style={[styles.text, textStyle]}>{children}</Text> : children}
 		</Pressable>
 	);
 }
