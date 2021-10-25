@@ -366,7 +366,7 @@ describe('AsyncStorage tests', () => {
 
 		const sortedPersons = await DataStore.query(
 			Person,
-			c => c.username('ne', undefined),
+			c => c.username.ne(undefined),
 			{
 				page: 0,
 				limit: 20,
