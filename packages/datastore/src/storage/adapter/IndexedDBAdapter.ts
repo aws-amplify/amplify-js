@@ -381,19 +381,30 @@ class IndexedDBAdapter implements Adapter {
 	) {
 		let { predicates: predicateObjs, type } = predicates;
 
+		// the predicate objects we care about tend to be nested at least
+		// one level down: `{and: {or: {and: { <the predicates we want> }}}}`
+		// so, we unpack and/or groups until we find a group with more than 1
+		// child OR a child that is not a group (and is therefore a predicate "object").
 		while (predicateObjs.length === 1 && isPredicateGroup(predicateObjs[0])) {
 			type = (predicateObjs[0] as PredicatesGroup<T>).type;
 			predicateObjs = (predicateObjs[0] as PredicatesGroup<T>).predicates;
 		}
 
+		// where we'll accumulate candidate results, which will be filtered at the end.
 		let candidateResults: T[];
 
+		// AFAIK, this will always be a homogenous group of predicate objects at this point.
+		// but, if that ever changes, this pulls out just the predicates from the list that
+		// are field-level predicate objects we can potentially smash against an index.
 		const fieldPredicates = predicateObjs.filter(p =>
 			isPredicateObj(p)
 		) as PredicateObject<T>[];
 
+		// several sub-queries could occur here. explicitly start a txn here to avoid
+		// opening/closing multiple txns.
 		const txn = this.db.transaction(storeName);
 
+		// our potential indexes or lacks thereof.
 		const predicateIndexes = fieldPredicates.map(p => {
 			return {
 				predicate: p,
@@ -414,6 +425,7 @@ class IndexedDBAdapter implements Adapter {
 					await predicateIndex.index.getAll(predicateIndex.predicate.operand)
 				);
 			} else {
+				// no usable indexes
 				candidateResults = <T[]>await this.getAll(storeName);
 			}
 		} else if (type === 'or') {
@@ -435,11 +447,18 @@ class IndexedDBAdapter implements Adapter {
 						distinctResults.set(item.id, item);
 					}
 				}
-				return Array.from(distinctResults.values());
+
+				// we could conceivably check for special conditions and return early here.
+				// but, this is simpler and has not yet had a measurable performance impact.
+				candidateResults = Array.from(distinctResults.values());
 			} else {
+				// either no usable indexes or not all conditions can use one.
 				candidateResults = <T[]>await this.getAll(storeName);
 			}
 		} else {
+			// nothing intelligent we can do with `not` groups unless or until we start
+			// smashing comparison operators against indexes -- at which point we could
+			// perform some reversal here.
 			candidateResults = <T[]>await this.getAll(storeName);
 		}
 
