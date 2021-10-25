@@ -366,7 +366,6 @@ class IndexedDBAdapter implements Adapter {
 		fieldName: string,
 		transaction: idb.IDBPTransaction<unknown, [string]>
 	) {
-		// const tx = transaction || this.db.transaction(storeName);
 		const store = transaction.objectStore(storeName);
 		for (const name of store.indexNames) {
 			const idx = store.index(name);
