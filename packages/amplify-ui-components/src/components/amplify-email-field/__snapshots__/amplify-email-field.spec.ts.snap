@@ -2,16 +2,12 @@
 
 exports[`amplify-email-field spec: Render logic -> should render \`placeholder\` and \`label values 1`] = `
 <amplify-email-field label="New email *" placeholder="Enter new email address">
-  <mock:shadow-root>
-    <amplify-form-field fieldid="email" label="New email *" placeholder="Enter new email address" type="email"></amplify-form-field>
-  </mock:shadow-root>
+  <amplify-form-field fieldid="email" label="New email *" name="email" placeholder="Enter new email address" type="email"></amplify-form-field>
 </amplify-email-field>
 `;
 
 exports[`amplify-email-field spec: Render logic -> should render default values by default 1`] = `
 <amplify-email-field>
-  <mock:shadow-root>
-    <amplify-form-field fieldid="email" label="Email Address *" placeholder="Enter your email address" type="email"></amplify-form-field>
-  </mock:shadow-root>
+  <amplify-form-field fieldid="email" label="Email Address *" name="email" placeholder="Enter your email address" type="email"></amplify-form-field>
 </amplify-email-field>
 `;

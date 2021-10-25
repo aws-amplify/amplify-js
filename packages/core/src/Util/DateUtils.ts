@@ -68,7 +68,9 @@ export const DateUtils = {
 		const { headers } = error.response;
 
 		return Boolean(
-			headers['x-amzn-errortype'] === 'BadRequestException' &&
+			['BadRequestException', 'InvalidSignatureException'].includes(
+				headers['x-amzn-errortype']
+			) &&
 				(headers.date || headers.Date)
 		);
 	},

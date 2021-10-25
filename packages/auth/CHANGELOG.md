@@ -3,6 +3,238 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.10...@aws-amplify/auth@4.3.11) (2021-10-21)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** RN Linking removeEventListener() deprecated [#8902](https://github.com/aws-amplify/amplify-js/issues/8902) ([d9415e2](https://github.com/aws-amplify/amplify-js/commit/d9415e2b292d69418c40b58183098e04b1c8aad7))
+
+
+
+
+
+## [4.3.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.9...@aws-amplify/auth@4.3.10) (2021-10-07)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [4.3.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.8...@aws-amplify/auth@4.3.9) (2021-09-30)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [4.3.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.7...@aws-amplify/auth@4.3.8) (2021-09-24)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [4.3.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.6...@aws-amplify/auth@4.3.7) (2021-09-22)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [4.3.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.5...@aws-amplify/auth@4.3.6) (2021-09-17)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [4.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.4...@aws-amplify/auth@4.3.5) (2021-09-09)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [4.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.3...@aws-amplify/auth@4.3.4) (2021-09-07)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [4.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.2...@aws-amplify/auth@4.3.3) (2021-09-04)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [4.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.1...@aws-amplify/auth@4.3.2) (2021-09-02)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [4.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.0...@aws-amplify/auth@4.3.1) (2021-08-26)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.2.1...@aws-amplify/auth@4.3.0) (2021-08-19)
+
+
+### Features
+
+* **@aws-amplify/auth:** Add a 'SUCCESS' response on successful call to forgotPasswordSubmit and verifyUserAttributes([#8744](https://github.com/aws-amplify/amplify-js/issues/8744)) ([1bd6c35](https://github.com/aws-amplify/amplify-js/commit/1bd6c35c115321d77f48a3954942dd57d7cf9056))
+
+
+
+
+
+## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.2.0...@aws-amplify/auth@4.2.1) (2021-08-12)
+
+
+### Bug Fixes
+
+* function parameters partiy with signIn ([#8713](https://github.com/aws-amplify/amplify-js/issues/8713)) ([b5d4243](https://github.com/aws-amplify/amplify-js/commit/b5d424372d382e638bd58844ec34c512026cae02))
+
+
+
+
+
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.1.3...@aws-amplify/auth@4.2.0) (2021-07-28)
+
+
+### Features
+
+* **@aws-amplify/auth:** delete user attributes ([#7342](https://github.com/aws-amplify/amplify-js/issues/7342)) ([1b1df67](https://github.com/aws-amplify/amplify-js/commit/1b1df679d874e824bc89f95054008b2f46ae76cf))
+
+
+
+
+
+## [4.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.1.2...@aws-amplify/auth@4.1.3) (2021-07-22)
+
+
+### Bug Fixes
+
+* **amazon-cognito-identity-is, @aws-amplify/auth:** upgrade crypto-js to 4.1.1 to fix bundle size issue ([#8626](https://github.com/aws-amplify/amplify-js/issues/8626)) ([b16f8e7](https://github.com/aws-amplify/amplify-js/commit/b16f8e7801790a59a8ad0c40b598f4962aada60e))
+
+
+
+
+
+## [4.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.1.1...@aws-amplify/auth@4.1.2) (2021-07-16)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.1.0...@aws-amplify/auth@4.1.1) (2021-07-08)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.0.3...@aws-amplify/auth@4.1.0) (2021-06-24)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Device tracking name field fix ([#8502](https://github.com/aws-amplify/amplify-js/issues/8502)) ([02e2bfb](https://github.com/aws-amplify/amplify-js/commit/02e2bfba9ce240ee2cd1c5ae21b27693966a1f9b))
+* **@aws-amplify/core:** Dummy commit to force version bump ([#8503](https://github.com/aws-amplify/amplify-js/issues/8503)) ([0670ec1](https://github.com/aws-amplify/amplify-js/commit/0670ec17a250089f42b669d53e072719d99a507b))
+
+
+### Features
+
+* **@aws-amplify/auth:** adding capabilities for device tracking in JS ([3a9646a](https://github.com/aws-amplify/amplify-js/commit/3a9646a7ace4eb5b134ce96aadab620f8b93a8fb))
+* add handleSignUp prop to override auth signup method ([#8474](https://github.com/aws-amplify/amplify-js/issues/8474)) ([a5f2466](https://github.com/aws-amplify/amplify-js/commit/a5f2466454f0cc1e0223fb03e78142209cf1f033))
+
+
+
+
+
+## [4.0.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.0.2...@aws-amplify/auth@4.0.3) (2021-06-18)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [4.0.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.0.1...@aws-amplify/auth@4.0.2) (2021-06-10)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [4.0.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.33...@aws-amplify/auth@4.0.1) (2021-05-26)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [3.4.33](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.32...@aws-amplify/auth@3.4.33) (2021-05-14)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [3.4.32](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.31...@aws-amplify/auth@3.4.32) (2021-05-11)
+
+**Note:** Version bump only for package @aws-amplify/auth
+
+
+
+
+
+## [3.4.31](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.30...@aws-amplify/auth@3.4.31) (2021-05-06)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** Handle URIs with no path part ([#8198](https://github.com/aws-amplify/amplify-js/issues/8198)) ([028e4ee](https://github.com/aws-amplify/amplify-js/commit/028e4ee1f7a660ae811b0e1ee846c978958719ae)), closes [#7468](https://github.com/aws-amplify/amplify-js/issues/7468)
+* **@aws-amplify/auth:** Ignores case when converting strings to booleans for user attributes ([#8206](https://github.com/aws-amplify/amplify-js/issues/8206)) ([89a2250](https://github.com/aws-amplify/amplify-js/commit/89a225059f6c0232aca3e1f3659348a984a5f277))
+
+
+
+
+
+## [3.4.30](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.29...@aws-amplify/auth@3.4.30) (2021-04-15)
+
+
+### Bug Fixes
+
+* **@aws-amplify/auth:** define validationData type as object literal ([#8045](https://github.com/aws-amplify/amplify-js/issues/8045)) ([6d0b67c](https://github.com/aws-amplify/amplify-js/commit/6d0b67c4ee4e2275707f462a315b9c8ea536b91d))
+
+
+
+
+
 ## [3.4.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@3.4.28...@aws-amplify/auth@3.4.29) (2021-03-25)
 
 **Note:** Version bump only for package @aws-amplify/auth

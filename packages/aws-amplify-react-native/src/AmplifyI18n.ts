@@ -116,21 +116,26 @@ Veuillez utiliser un format de numéro de téléphone du +12345678900`,
 	},
 
 	es: {
-		'Loading...': 'Espere por favor',
-		'Sign In': 'Registrarse',
-		'Sign Up': 'Regístrate',
+		'Sign in to your account': 'Iniciar sesíon',
+		'Loading...': 'Cargando...',
+		'Confirmation Code': 'Codigo de confirmación',
+
+		'Sign In': 'Iniciar sesíon',
+		'Sign Up': 'Regístrase',
 		'Sign Out': 'Desconectar',
-		'Forgot Password': 'Se te olvidó tu contraseña',
+		'Forgot Password': 'Se te olvidó la contraseña?',
 		Username: 'Nombre de usuario',
 		Password: 'Contraseña',
 		'Change Password': 'Cambia la contraseña',
 		'New Password': 'Nueva contraseña',
 		Email: 'Email',
 		'Phone Number': 'Número de teléfono',
+		'Resend Code': 'Mandar codigo otra vez',
+		'Create a new account': 'Crear una cuenta nueva',
 		'Confirm a Code': 'Confirmar un código',
 		'Confirm Sign In': 'Confirmar inicio de sesión',
-		'Confirm Sign Up': 'Confirmar Registrarse',
-		'Back to Sign In': 'Volver a Iniciar sesión',
+		'Confirm Sign Up': 'Confirmar Registración',
+		'Back to Sign In': 'Iniciar sesión',
 		'Send Code': 'Enviar código',
 		Confirm: 'Confirmar',
 		'Resend a Code': 'Reenviar un código',
@@ -139,17 +144,19 @@ Veuillez utiliser un format de numéro de téléphone du +12345678900`,
 		Verify: 'Verificar',
 		'Verify Contact': 'Verificar contacto',
 		Code: 'Código',
+
 		'Account recovery requires verified contact information':
 			'La recuperación de la cuenta requiere información de contacto verificada',
-
-		'User does not exist': 'el usuario no existe',
+		'Username cannot be empty': 'El campo de usuario no puede estar vacido',
+		'User does not exist': 'El usuario no existe',
 		'User already exists': 'El usuario ya existe',
 		'Incorrect username or password':
 			'Nombre de usuario o contraseña incorrecta',
 		'Invalid password format': 'Formato de contraseña inválido',
-		'Invalid phone number format': `Formato de número de teléfono inválido.
-Utilice el formato de número de teléfono +12345678900`,
+		'Invalid phone number format':
+			'Formato de n\xFAmero de tel\xE9fono inv\xE1lido.\nUtilice el formato de n\xFAmero de tel\xE9fono +12345678900',
 	},
+	
 	it: {
 		Loading: 'Caricamento in corso',
 		'Account recovery requires verified contact information':

@@ -1,5 +1,11 @@
-import { SchemaModel, SchemaNamespace } from '../src/types';
-import { generateSelectionSet } from '../src/sync/utils';
+import {
+	AuthModeStrategy,
+	InternalSchema,
+	SchemaModel,
+	SchemaNamespace,
+} from '../src/types';
+import { generateSelectionSet, getModelAuthModes } from '../src/sync/utils';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 
 describe('DataStore - utils', () => {
 	describe('generateSelectionSet', () => {
@@ -354,6 +360,100 @@ _deleted`;
 			expect(generateSelectionSet(namespace, modelDefinition)).toEqual(
 				selectionSet
 			);
+		});
+	});
+
+	describe('getModel', () => {
+		test('handles an array of auth modes', async () => {
+			const authModeStrategy: AuthModeStrategy = () => [
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+			];
+
+			const authModes = await getModelAuthModes({
+				authModeStrategy,
+				defaultAuthMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				modelName: 'Post',
+				schema: {} as InternalSchema, // schema is only passed directly to the authModeStrategy
+			});
+
+			const expectedAuthModes = {
+				CREATE: ['AMAZON_COGNITO_USER_POOLS'],
+				READ: ['AMAZON_COGNITO_USER_POOLS'],
+				UPDATE: ['AMAZON_COGNITO_USER_POOLS'],
+				DELETE: ['AMAZON_COGNITO_USER_POOLS'],
+			};
+
+			expect(authModes).toEqual(expectedAuthModes);
+		});
+
+		test('handles a string auth mode', async () => {
+			const authModeStrategy: AuthModeStrategy = () =>
+				GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS;
+
+			const authModes = await getModelAuthModes({
+				authModeStrategy,
+				defaultAuthMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+				modelName: 'Post',
+				schema: {} as InternalSchema,
+			});
+
+			const expectedAuthModes = {
+				CREATE: ['AMAZON_COGNITO_USER_POOLS'],
+				READ: ['AMAZON_COGNITO_USER_POOLS'],
+				UPDATE: ['AMAZON_COGNITO_USER_POOLS'],
+				DELETE: ['AMAZON_COGNITO_USER_POOLS'],
+			};
+
+			expect(authModes).toEqual(expectedAuthModes);
+		});
+
+		test('falls back to default auth mode', async () => {
+			const expectedAuthModes = {
+				CREATE: ['AMAZON_COGNITO_USER_POOLS'],
+				READ: ['AMAZON_COGNITO_USER_POOLS'],
+				UPDATE: ['AMAZON_COGNITO_USER_POOLS'],
+				DELETE: ['AMAZON_COGNITO_USER_POOLS'],
+			};
+
+			// using blocks in order to be able to re-use the same const-declared variables below
+			{
+				const authModeStrategy: AuthModeStrategy = () => null;
+
+				const authModes = await getModelAuthModes({
+					authModeStrategy,
+					defaultAuthMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+					modelName: 'Post',
+					schema: {} as InternalSchema,
+				});
+
+				expect(authModes).toEqual(expectedAuthModes);
+			}
+
+			{
+				const authModeStrategy: AuthModeStrategy = () => undefined;
+
+				const authModes = await getModelAuthModes({
+					authModeStrategy,
+					defaultAuthMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+					modelName: 'Post',
+					schema: {} as InternalSchema,
+				});
+
+				expect(authModes).toEqual(expectedAuthModes);
+			}
+
+			{
+				const authModeStrategy: AuthModeStrategy = () => [];
+
+				const authModes = await getModelAuthModes({
+					authModeStrategy,
+					defaultAuthMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+					modelName: 'Post',
+					schema: {} as InternalSchema,
+				});
+
+				expect(authModes).toEqual(expectedAuthModes);
+			}
 		});
 	});
 });

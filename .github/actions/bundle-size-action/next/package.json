@@ -19,7 +19,7 @@
 			},
 			{
 				"path": ".next/static/chunks/pages/Amplify+Auth-*.js",
-				"maxSize": "40kB"
+				"maxSize": "175kB"
 			},
 			{
 				"path": ".next/static/chunks/pages/Amplify+Storage-*.js",

@@ -20,8 +20,9 @@ import {
 	SchemaNamespace,
 	TypeConstructorMap,
 	ModelPredicate,
+	AuthModeStrategy,
 } from '../types';
-import { exhaustiveCheck, getNow, SYNC } from '../util';
+import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
 import { ModelMerger } from './merger';
 import { MutationEventOutbox } from './outbox';
@@ -52,9 +53,9 @@ export declare class MutationEvent {
 	public readonly id: string;
 	public readonly model: string;
 	public readonly operation: TransformerMutationType;
-	public readonly data: string;
 	public readonly modelId: string;
 	public readonly condition: string;
+	public data: string;
 }
 
 declare class ModelMetadata {
@@ -94,6 +95,16 @@ export class SyncEngine {
 	private readonly modelMerger: ModelMerger;
 	private readonly outbox: MutationEventOutbox;
 	private readonly datastoreConnectivity: DataStoreConnectivity;
+	private readonly modelSyncedStatus: WeakMap<
+		PersistentModelConstructor<any>,
+		boolean
+	> = new WeakMap();
+
+	public getModelSyncedStatus(
+		modelConstructor: PersistentModelConstructor<any>
+	): boolean {
+		return this.modelSyncedStatus.get(modelConstructor);
+	}
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -107,7 +118,8 @@ export class SyncEngine {
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
-		private readonly amplifyConfig: Record<string, any> = {}
+		private readonly amplifyConfig: Record<string, any> = {},
+		private readonly authModeStrategy: AuthModeStrategy
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -115,24 +127,24 @@ export class SyncEngine {
 
 		this.outbox = new MutationEventOutbox(
 			this.schema,
-			this.userModelClasses,
 			MutationEvent,
-			ownSymbol,
-			this.getModelDefinition.bind(this)
+			modelInstanceCreator,
+			ownSymbol
 		);
 
 		this.modelMerger = new ModelMerger(this.outbox, ownSymbol);
 
 		this.syncQueriesProcessor = new SyncProcessor(
 			this.schema,
-			this.maxRecordsToSync,
-			this.syncPageSize,
-			this.syncPredicates
+			this.syncPredicates,
+			this.amplifyConfig,
+			this.authModeStrategy
 		);
 		this.subscriptionsProcessor = new SubscriptionProcessor(
 			this.schema,
 			this.syncPredicates,
-			this.amplifyConfig
+			this.amplifyConfig,
+			this.authModeStrategy
 		);
 		this.mutationsProcessor = new MutationProcessor(
 			this.schema,
@@ -141,6 +153,8 @@ export class SyncEngine {
 			this.outbox,
 			this.modelInstanceCreator,
 			MutationEvent,
+			this.amplifyConfig,
+			this.authModeStrategy,
 			conflictHandler,
 			errorHandler
 		);
@@ -609,6 +623,8 @@ export class SyncEngine {
 
 										const counts = count.get(modelConstructor);
 
+										this.modelSyncedStatus.set(modelConstructor, true);
+
 										observer.next({
 											type: ControlMessage.SYNC_ENGINE_MODEL_SYNCED,
 											data: {
@@ -702,6 +718,12 @@ export class SyncEngine {
 				.filter(({ syncable }) => syncable)
 				.forEach(model => {
 					models.push([namespace.name, model]);
+					if (namespace.name === USER) {
+						const modelConstructor = this.userModelClasses[
+							model.name
+						] as PersistentModelConstructor<any>;
+						this.modelSyncedStatus.set(modelConstructor, false);
+					}
 				});
 		});
 
@@ -900,6 +922,12 @@ export class SyncEngine {
 							name: 'fullSyncInterval',
 							type: 'Int',
 							isRequired: true,
+							isArray: false,
+						},
+						lastSyncPredicate: {
+							name: 'lastSyncPredicate',
+							type: 'String',
+							isRequired: false,
 							isArray: false,
 						},
 					},

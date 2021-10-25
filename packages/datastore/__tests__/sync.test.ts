@@ -1,5 +1,8 @@
 // These tests should be replaced once SyncEngine.partialDataFeatureFlagEnabled is removed.
 
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { defaultAuthStrategy } from '../src/authModeStrategies';
+
 const sessionStorageMock = (() => {
 	let store = {};
 
@@ -42,6 +45,7 @@ describe('Sync', () => {
 		const defaultVariables = {};
 		const defaultOpName = 'syncPosts';
 		const defaultModelDefinition = { name: 'Post' };
+		const defaultAuthMode = GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS;
 
 		beforeEach(() => {
 			window.sessionStorage.clear();
@@ -125,6 +129,7 @@ describe('Sync', () => {
 				variables: defaultVariables,
 				opName: defaultOpName,
 				modelDefinition: defaultModelDefinition,
+				authMode: defaultAuthMode,
 			});
 
 			expect(data).toMatchSnapshot();
@@ -185,6 +190,7 @@ describe('Sync', () => {
 					variables: defaultVariables,
 					opName: defaultOpName,
 					modelDefinition: defaultModelDefinition,
+					authMode: defaultAuthMode,
 				});
 			} catch (e) {
 				expect(e).toMatchSnapshot();
@@ -212,10 +218,69 @@ describe('Sync', () => {
 					variables: defaultVariables,
 					opName: defaultOpName,
 					modelDefinition: defaultModelDefinition,
+					authMode: defaultAuthMode,
 				});
 			} catch (e) {
 				expect(e).toMatchSnapshot();
 			}
+		});
+
+		it('should return NonRetryableError for 403 error', async () => {
+			const rejectResponse = {
+				data: null,
+				errors: [
+					{
+						message: 'Request failed with status code 403',
+					},
+				],
+			};
+
+			const SyncProcessor = jitteredRetrySyncProcessorSetup({
+				rejectResponse,
+			});
+
+			try {
+				await SyncProcessor.jitteredRetry({
+					query: defaultQuery,
+					variables: defaultVariables,
+					opName: defaultOpName,
+					modelDefinition: defaultModelDefinition,
+					authMode: defaultAuthMode,
+				});
+			} catch (e) {
+				// NonRetryableError has a `nonRetryable` property
+				expect(e).toHaveProperty('nonRetryable');
+			}
+		});
+
+		[
+			'No api-key configured',
+			'No current user',
+			'No credentials',
+			'No federated jwt',
+		].forEach(authError => {
+			it(`should return NonRetryableError for client-side error: ${authError}`, async () => {
+				const rejectResponse = {
+					message: authError,
+				};
+
+				const SyncProcessor = jitteredRetrySyncProcessorSetup({
+					rejectResponse,
+				});
+
+				try {
+					await SyncProcessor.jitteredRetry({
+						query: defaultQuery,
+						variables: defaultVariables,
+						opName: defaultOpName,
+						modelDefinition: defaultModelDefinition,
+						authMode: defaultAuthMode,
+					});
+				} catch (e) {
+					// NonRetryableError has a `nonRetryable` property
+					expect(e).toHaveProperty('nonRetryable');
+				}
+			});
 		});
 	});
 });
@@ -230,6 +295,7 @@ function jitteredRetrySyncProcessorSetup({
 	coreMocks?: object;
 }) {
 	jest.mock('@aws-amplify/api', () => ({
+		...jest.requireActual('@aws-amplify/api'),
 		graphql: () =>
 			new Promise((res, rej) => {
 				if (resolveResponse) {
@@ -258,9 +324,9 @@ function jitteredRetrySyncProcessorSetup({
 
 	const SyncProcessor = new SyncProcessorClass(
 		testInternalSchema,
-		1000, // default maxRecordsToSync
-		10000, // default syncPageSize
-		null
+		null, // syncPredicates
+		{ aws_appsync_authenticationType: 'userPools' },
+		defaultAuthStrategy
 	);
 
 	return SyncProcessor;
