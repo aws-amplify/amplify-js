@@ -17,7 +17,8 @@ import { DocumentNode } from 'graphql/language/ast';
 export interface GraphQLOptions {
 	query: string | DocumentNode;
 	variables?: object;
-	authMode?: GRAPHQL_AUTH_MODE;
+	authMode?: keyof typeof GRAPHQL_AUTH_MODE;
+	authToken?: string;
 }
 
 export enum GRAPHQL_AUTH_MODE {
@@ -25,6 +26,7 @@ export enum GRAPHQL_AUTH_MODE {
 	AWS_IAM = 'AWS_IAM',
 	OPENID_CONNECT = 'OPENID_CONNECT',
 	AMAZON_COGNITO_USER_POOLS = 'AMAZON_COGNITO_USER_POOLS',
+	AWS_LAMBDA = 'AWS_LAMBDA',
 }
 
 export interface GraphQLResult<T = object> {
@@ -33,4 +35,12 @@ export interface GraphQLResult<T = object> {
 	extensions?: {
 		[key: string]: any;
 	};
+}
+
+export enum GraphQLAuthError {
+	NO_API_KEY = 'No api-key configured',
+	NO_CURRENT_USER = 'No current user',
+	NO_CREDENTIALS = 'No credentials',
+	NO_FEDERATED_JWT = 'No federated jwt',
+	NO_AUTH_TOKEN = 'No auth token specified',
 }

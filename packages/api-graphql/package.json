@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api-graphql",
-  "version": "1.2.29",
+  "version": "2.2.10",
   "description": "Api-graphql category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -44,13 +44,12 @@
     "@types/zen-observable": "^0.8.0"
   },
   "dependencies": {
-    "@aws-amplify/api-rest": "1.2.29",
-    "@aws-amplify/auth": "3.4.29",
-    "@aws-amplify/cache": "3.1.54",
-    "@aws-amplify/core": "3.8.21",
-    "@aws-amplify/pubsub": "3.2.27",
-    "graphql": "14.0.0",
-    "uuid": "^3.2.1",
+    "@aws-amplify/api-rest": "2.0.21",
+    "@aws-amplify/auth": "4.3.11",
+    "@aws-amplify/cache": "4.0.23",
+    "@aws-amplify/core": "4.3.3",
+    "@aws-amplify/pubsub": "4.1.13",
+    "graphql": "14.5.0",
     "zen-observable-ts": "0.8.19"
   },
   "jest": {

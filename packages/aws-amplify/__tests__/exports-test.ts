@@ -17,6 +17,7 @@ describe('aws-amplify', () => {
 			  "API",
 			  "APIClass",
 			  "graphqlOperation",
+			  "AuthModeStrategyType",
 			  "DataStore",
 			  "Predicates",
 			  "SortDirection",
@@ -90,7 +91,9 @@ describe('aws-amplify', () => {
 			  "Signer",
 			  "I18n",
 			  "ServiceWorker",
+			  "AWSCloudWatchProvider",
 			  "withSSRContext",
+			  "Geo",
 			  "default",
 			]
 		`);

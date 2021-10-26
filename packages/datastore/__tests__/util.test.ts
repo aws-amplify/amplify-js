@@ -1,5 +1,4 @@
 import {
-	objectsEqual,
 	isAWSDate,
 	isAWSDateTime,
 	isAWSEmail,
@@ -9,25 +8,63 @@ import {
 	isAWSURL,
 	isAWSPhone,
 	isAWSIPAddress,
+	validatePredicateField,
+	valuesEqual,
+	processCompositeKeys,
 } from '../src/util';
 
 describe('datastore util', () => {
-	test('objectsEqual', () => {
-		expect(objectsEqual({}, {})).toEqual(true);
-		expect(objectsEqual([], [])).toEqual(true);
-		expect(objectsEqual([], {})).toEqual(false);
-		expect(objectsEqual([1, 2, 3], [1, 2, 3])).toEqual(true);
-		expect(objectsEqual([1, 2, 3], [1, 2, 3, 4])).toEqual(false);
-		expect(objectsEqual({ a: 1 }, { a: 1 })).toEqual(true);
-		expect(objectsEqual({ a: 1 }, { a: 2 })).toEqual(false);
+	test('validatePredicateField', () => {
+		expect(validatePredicateField(undefined, 'contains', 'test')).toEqual(
+			false
+		);
+		expect(validatePredicateField(null, 'contains', 'test')).toEqual(false);
+		expect(validatePredicateField('some test', 'contains', 'test')).toEqual(
+			true
+		);
+
+		expect(validatePredicateField(undefined, 'beginsWith', 'test')).toEqual(
+			false
+		);
+		expect(validatePredicateField(null, 'beginsWith', 'test')).toEqual(false);
+		expect(validatePredicateField('some test', 'beginsWith', 'test')).toEqual(
+			false
+		);
+		expect(validatePredicateField('testing', 'beginsWith', 'test')).toEqual(
+			true
+		);
+
+		expect(validatePredicateField(undefined, 'notContains', 'test')).toEqual(
+			true
+		);
+		expect(validatePredicateField(null, 'notContains', 'test')).toEqual(true);
+		expect(validatePredicateField('abcdef', 'notContains', 'test')).toEqual(
+			true
+		);
+		expect(validatePredicateField('test', 'notContains', 'test')).toEqual(
+			false
+		);
+		expect(validatePredicateField('testing', 'notContains', 'test')).toEqual(
+			false
+		);
+	});
+
+	test('valuesEqual', () => {
+		expect(valuesEqual({}, {})).toEqual(true);
+		expect(valuesEqual([], [])).toEqual(true);
+		expect(valuesEqual([], {})).toEqual(false);
+		expect(valuesEqual([1, 2, 3], [1, 2, 3])).toEqual(true);
+		expect(valuesEqual([1, 2, 3], [1, 2, 3, 4])).toEqual(false);
+		expect(valuesEqual({ a: 1 }, { a: 1 })).toEqual(true);
+		expect(valuesEqual({ a: 1 }, { a: 2 })).toEqual(false);
 		expect(
-			objectsEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 3 }] })
+			valuesEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 3 }] })
 		).toEqual(true);
 		expect(
-			objectsEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 4 }] })
+			valuesEqual({ a: [{ b: 2 }, { c: 3 }] }, { a: [{ b: 2 }, { c: 4 }] })
 		).toEqual(false);
-		expect(objectsEqual(new Set([1, 2, 3]), new Set([1, 2, 3]))).toEqual(true);
-		expect(objectsEqual(new Set([1, 2, 3]), new Set([1, 2, 3, 4]))).toEqual(
+		expect(valuesEqual(new Set([1, 2, 3]), new Set([1, 2, 3]))).toEqual(true);
+		expect(valuesEqual(new Set([1, 2, 3]), new Set([1, 2, 3, 4]))).toEqual(
 			false
 		);
 
@@ -37,9 +74,300 @@ describe('datastore util', () => {
 		const map2 = new Map();
 		map2.set('a', 1);
 
-		expect(objectsEqual(map1, map2)).toEqual(true);
+		expect(valuesEqual(map1, map2)).toEqual(true);
 		map2.set('b', 2);
-		expect(objectsEqual(map1, map2)).toEqual(false);
+		expect(valuesEqual(map1, map2)).toEqual(false);
+
+		// nullish - treat null and undefined as equal in Objects and Maps
+		expect(valuesEqual({ a: 1, b: null }, { a: 1 }, true)).toEqual(true);
+		expect(valuesEqual({ a: 1 }, { a: 1, b: null }, true)).toEqual(true);
+		expect(valuesEqual({ a: 1 }, { a: 1, b: 2 }, true)).toEqual(false);
+		expect(
+			valuesEqual({ a: 1, b: null }, { a: 1, b: undefined }, true)
+		).toEqual(true);
+		expect(valuesEqual({ a: 1, b: false }, { a: 1 }, true)).toEqual(false);
+
+		const map3 = new Map();
+		map3.set('a', null);
+		const map4 = new Map();
+
+		expect(valuesEqual(map3, map4, true)).toEqual(true);
+
+		const map5 = new Map();
+		map5.set('a', false);
+		const map6 = new Map();
+
+		expect(valuesEqual(map5, map6, true)).toEqual(false);
+
+		// array nullish explicit undefined
+		expect(valuesEqual([null], [undefined], true)).toEqual(true);
+		expect(valuesEqual([undefined], [null], true)).toEqual(true);
+		expect(valuesEqual(new Set([null]), new Set([undefined]), true)).toEqual(
+			true
+		);
+
+		// empty list [] should not equal [null]
+		expect(valuesEqual([null], [], true)).toEqual(false);
+		expect(valuesEqual(new Set([null]), new Set([]), true)).toEqual(false);
+
+		expect(valuesEqual([null], [], false)).toEqual(false);
+		expect(valuesEqual([null], [undefined], false)).toEqual(false);
+		expect(valuesEqual(new Set([null]), new Set([]), false)).toEqual(false);
+		expect(valuesEqual(new Set([null]), new Set([undefined]), false)).toEqual(
+			false
+		);
+
+		// primitive types
+		expect(valuesEqual(null, undefined)).toEqual(false);
+		expect(valuesEqual(null, undefined, true)).toEqual(true);
+		expect(valuesEqual(undefined, null, true)).toEqual(true);
+
+		expect(valuesEqual(undefined, undefined)).toEqual(true);
+		expect(valuesEqual(undefined, undefined, true)).toEqual(true);
+
+		expect(valuesEqual(null, null)).toEqual(true);
+		expect(valuesEqual(null, null, true)).toEqual(true);
+
+		expect(valuesEqual('string', 'string')).toEqual(true);
+		expect(valuesEqual('string', 'string2')).toEqual(false);
+		expect(valuesEqual('string', 'string', true)).toEqual(true);
+
+		expect(valuesEqual(123, 123)).toEqual(true);
+		expect(valuesEqual(123, 1234)).toEqual(false);
+		expect(valuesEqual(123, 123, true)).toEqual(true);
+
+		expect(valuesEqual(true, true)).toEqual(true);
+		expect(valuesEqual(true, false)).toEqual(false);
+		expect(valuesEqual(true, true, true)).toEqual(true);
+	});
+
+	test('processCompositeKeys', () => {
+		let attributes = [
+			{
+				type: 'model',
+				properties: {},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '1',
+					fields: ['hk', 'a'],
+				},
+			},
+		];
+
+		let expected = [];
+
+		expect(processCompositeKeys(attributes)).toEqual(expected);
+
+		attributes = [
+			{
+				type: 'model',
+				properties: {},
+			},
+		];
+
+		expected = [];
+
+		expect(processCompositeKeys(attributes)).toEqual(expected);
+
+		attributes = [
+			{
+				type: 'model',
+				properties: {},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '1',
+					fields: ['hk', 'a', 'b'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '2',
+					fields: ['hk', 'a', 'b'],
+				},
+			},
+		];
+
+		expected = [new Set(['a', 'b'])];
+
+		expect(processCompositeKeys(attributes)).toEqual(expected);
+
+		attributes = [
+			{
+				type: 'key',
+				properties: {
+					name: '1',
+					fields: ['hk', 'a', 'b', 'c'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '2',
+					fields: ['hk', 'a', 'b', 'd'],
+				},
+			},
+		];
+
+		expected = [new Set(['a', 'b', 'c', 'd'])];
+
+		expect(processCompositeKeys(attributes)).toEqual(expected);
+
+		attributes = [
+			{
+				type: 'key',
+				properties: {
+					name: '1',
+					fields: ['hk', 'a', 'b', 'c'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '2',
+					fields: ['hk', 'a', 'b', 'd'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '3',
+					fields: ['hk', 'x', 'y', 'z'],
+				},
+			},
+		];
+
+		expected = [new Set(['a', 'b', 'c', 'd']), new Set(['x', 'y', 'z'])];
+
+		expect(processCompositeKeys(attributes)).toEqual(expected);
+
+		attributes = [
+			{
+				type: 'key',
+				properties: {
+					name: '1',
+					fields: ['hk', 'a', 'b', 'c'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '2',
+					fields: ['hk', 'a', 'b', 'd'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '3',
+					fields: ['hk', 'x', 'y', 'z'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '4',
+					fields: ['hk', 'a', 'x'],
+				},
+			},
+		];
+
+		expected = [new Set(['a', 'b', 'c', 'd', 'x', 'y', 'z'])];
+
+		expect(processCompositeKeys(attributes)).toEqual(expected);
+
+		attributes = [
+			{
+				type: 'key',
+				properties: {
+					name: '1',
+					fields: ['hk', 'a', 'b', 'c'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '2',
+					fields: ['hk', 'a', 'b', 'd'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '3',
+					fields: ['hk', 'x', 'y', 'z'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '4',
+					fields: ['hk', '1', '2', '3'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '5',
+					fields: ['hk', 'a', 'x'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '6',
+					fields: ['hk', 'l', 'm', 'n'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '7',
+					fields: ['hk', '8', '9', '10'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '8',
+					fields: ['hk', 'a', 'y'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '9',
+					fields: ['hk', 'h', 'j', 'k'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '10',
+					fields: ['hk', '9', '3'],
+				},
+			},
+			{
+				type: 'key',
+				properties: {
+					name: '11',
+					fields: ['hk', 'h', 'r', 'q'],
+				},
+			},
+		];
+
+		expected = [
+			new Set(['a', 'b', 'c', 'd', 'x', 'y', 'z']),
+			new Set(['1', '2', '3', '9', '8', '10']),
+			new Set(['l', 'm', 'n']),
+			new Set(['h', 'j', 'k', 'r', 'q']),
+		];
+
+		expect(processCompositeKeys(attributes)).toEqual(expected);
 	});
 
 	test('isAWSDate', () => {

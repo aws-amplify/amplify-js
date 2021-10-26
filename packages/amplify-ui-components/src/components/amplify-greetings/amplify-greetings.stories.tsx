@@ -1,5 +1,5 @@
 export default {
-  title: 'amplify-greetings',
+	title: 'amplify-greetings',
 };
 
 export const defaults = () => `<amplify-greetings />`;

@@ -1,4 +1,10 @@
-import { ModelInit, MutableModel, Schema, InternalSchema } from '../src/types';
+import {
+	ModelInit,
+	MutableModel,
+	Schema,
+	InternalSchema,
+	SchemaModel,
+} from '../src/types';
 
 export declare class Model {
 	public readonly id: string;
@@ -8,6 +14,8 @@ export declare class Model {
 	public readonly emails?: string[];
 	public readonly ips?: (string | null)[];
 	public readonly metadata?: Metadata;
+	public readonly createdAt?: string;
+	public readonly updatedAt?: string;
 
 	constructor(init: ModelInit<Model>);
 
@@ -35,6 +43,46 @@ export declare class Comment {
 	public readonly id: string;
 	public readonly content: string;
 	public readonly post: Post;
+}
+
+export declare class User {
+	public readonly id: string;
+	public readonly name: string;
+	public readonly profileID: string;
+}
+export declare class Profile {
+	public readonly id: string;
+	public readonly firstName: string;
+	public readonly lastName: string;
+}
+
+export declare class PostComposite {
+	public readonly id: string;
+	public readonly title: string;
+	public readonly description: string;
+	public readonly created: string;
+	public readonly sort: number;
+}
+
+export declare class PostCustomPK {
+	public readonly id: string;
+	public readonly postId: number;
+	public readonly title: string;
+	public readonly description?: string;
+}
+
+export declare class PostCustomPKSort {
+	public readonly id: string;
+	public readonly postId: number;
+	public readonly title: string;
+	public readonly description?: string;
+}
+export declare class PostCustomPKComposite {
+	public readonly id: string;
+	public readonly postId: number;
+	public readonly title: string;
+	public readonly description?: string;
+	public readonly sort: number;
 }
 
 export function testSchema(): Schema {
@@ -95,6 +143,22 @@ export function testSchema(): Schema {
 						},
 						isRequired: false,
 						attributes: [],
+					},
+					createdAt: {
+						name: 'createdAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
+					},
+					updatedAt: {
+						name: 'updatedAt',
+						isArray: false,
+						type: 'AWSDateTime',
+						isRequired: false,
+						attributes: [],
+						isReadOnly: true,
 					},
 				},
 			},
@@ -204,6 +268,291 @@ export function testSchema(): Schema {
 						isRequired: true,
 					},
 				},
+			},
+			User: {
+				name: 'User',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					name: {
+						name: 'name',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					profileID: {
+						name: 'profileID',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					profile: {
+						name: 'profile',
+						isArray: false,
+						type: {
+							model: 'Profile',
+						},
+						isRequired: false,
+						attributes: [],
+						association: {
+							connectionType: 'HAS_ONE',
+							associatedWith: 'id',
+							targetName: 'profileID',
+						},
+					},
+				},
+				syncable: true,
+				pluralName: 'Users',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
+			Profile: {
+				name: 'Profile',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					firstName: {
+						name: 'firstName',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					lastName: {
+						name: 'lastName',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'Profiles',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+				],
+			},
+			PostComposite: {
+				name: 'PostComposite',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					description: {
+						name: 'description',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					created: {
+						name: 'created',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					sort: {
+						name: 'sort',
+						isArray: false,
+						type: 'Int',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'PostComposites',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							name: 'titleCreatedSort',
+							fields: ['title', 'created', 'sort'],
+						},
+					},
+				],
+			},
+			PostCustomPK: {
+				name: 'PostCustomPK',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					postId: {
+						name: 'postId',
+						isArray: false,
+						type: 'Int',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					description: {
+						name: 'description',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'PostCustomPKS',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['postId'],
+						},
+					},
+				],
+			},
+			PostCustomPKSort: {
+				name: 'PostCustomPKSort',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					postId: {
+						name: 'postId',
+						isArray: false,
+						type: 'Int',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					description: {
+						name: 'description',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'PostCustomPKSorts',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id', 'postId'],
+						},
+					},
+				],
+			},
+			PostCustomPKComposite: {
+				name: 'PostCustomPKComposite',
+				fields: {
+					id: {
+						name: 'id',
+						isArray: false,
+						type: 'ID',
+						isRequired: true,
+						attributes: [],
+					},
+					postId: {
+						name: 'postId',
+						isArray: false,
+						type: 'Int',
+						isRequired: true,
+						attributes: [],
+					},
+					title: {
+						name: 'title',
+						isArray: false,
+						type: 'String',
+						isRequired: true,
+						attributes: [],
+					},
+					description: {
+						name: 'description',
+						isArray: false,
+						type: 'String',
+						isRequired: false,
+						attributes: [],
+					},
+					sort: {
+						name: 'sort',
+						isArray: false,
+						type: 'Int',
+						isRequired: true,
+						attributes: [],
+					},
+				},
+				syncable: true,
+				pluralName: 'PostCustomPKComposites',
+				attributes: [
+					{
+						type: 'model',
+						properties: {},
+					},
+					{
+						type: 'key',
+						properties: {
+							fields: ['id', 'postId', 'sort'],
+						},
+					},
+				],
 			},
 		},
 		nonModels: {

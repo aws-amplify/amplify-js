@@ -1,17 +1,17 @@
 export interface AmplifyForgotPasswordHintProps {
-  forgotPasswordText: string;
-  resetPasswordText: string;
-  onAuthStateChange?: any;
+	forgotPasswordText: string;
+	resetPasswordText: string;
+	onAuthStateChange?: any;
 }
 
 export interface AmplifySignInFormFooterProps {
-  submitButtonText: string;
-  noAccountText: string;
-  createAccountText: string;
-  onAuthStateChange?: any;
+	submitButtonText: string;
+	noAccountText: string;
+	createAccountText: string;
+	onAuthStateChange?: any;
 }
 
 export interface SignInAttributes {
-  userInput: string;
-  password: string;
+	userInput: string;
+	password: string;
 }
