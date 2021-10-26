@@ -18,7 +18,7 @@ describe('ServiceWorker test', () => {
 			return expect(enablePush).toThrow('Service Worker not registered');
 		});
 		test('fails when registering', async () => {
-			global.navigator.serviceWorker = {
+			(global as any).navigator.serviceWorker = {
 				register: () => Promise.reject('an error'),
 			};
 
@@ -36,7 +36,7 @@ describe('ServiceWorker test', () => {
 		statuses.forEach(status => {
 			test(`can register (${status})`, () => {
 				const bla = { [status]: { addEventListener: () => {} } };
-				global.navigator.serviceWorker = {
+				(global as any).navigator.serviceWorker = {
 					register: () => Promise.resolve(bla),
 				};
 
@@ -52,7 +52,7 @@ describe('ServiceWorker test', () => {
 					[status]: { addEventListener: jest.fn() },
 				};
 
-				global.navigator.serviceWorker = {
+				(global as any).navigator.serviceWorker = {
 					register: () => Promise.resolve(bla),
 				};
 
@@ -69,7 +69,7 @@ describe('ServiceWorker test', () => {
 				installing: { postMessage: jest.fn(), addEventListener: jest.fn() },
 			};
 
-			global.navigator.serviceWorker = {
+			(global as any).navigator.serviceWorker = {
 				register: () => Promise.resolve(bla),
 			};
 
@@ -84,7 +84,7 @@ describe('ServiceWorker test', () => {
 				installing: { postMessage: jest.fn(), addEventListener: jest.fn() },
 			};
 
-			global.navigator.serviceWorker = {
+			(global as any).navigator.serviceWorker = {
 				register: () => Promise.resolve(bla),
 			};
 
@@ -100,7 +100,7 @@ describe('ServiceWorker test', () => {
 				installing: { postMessage: jest.fn(), addEventListener: jest.fn() },
 			};
 
-			global.navigator.serviceWorker = {
+			(global as any).navigator.serviceWorker = {
 				register: () => Promise.resolve(bla),
 			};
 
@@ -127,7 +127,7 @@ describe('ServiceWorker test', () => {
 				},
 			};
 
-			global.navigator.serviceWorker = {
+			(global as any).navigator.serviceWorker = {
 				register: () => Promise.resolve(bla),
 			};
 
@@ -149,7 +149,7 @@ describe('ServiceWorker test', () => {
 				},
 			};
 
-			global.navigator.serviceWorker = {
+			(global as any).navigator.serviceWorker = {
 				register: () => Promise.resolve(bla),
 			};
 

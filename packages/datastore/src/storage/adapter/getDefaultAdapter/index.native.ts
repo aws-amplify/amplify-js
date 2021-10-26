@@ -1,5 +1,5 @@
 import { Adapter } from '..';
-import AsyncStorageAdapter from '../asyncstorage';
+import AsyncStorageAdapter from '../AsyncStorageAdapter';
 
 const getDefaultAdapter: () => Adapter = () => {
 	return AsyncStorageAdapter;

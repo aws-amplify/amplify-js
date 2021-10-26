@@ -1,6 +1,7 @@
 import { DeviceEventEmitter, Platform, NativeModules } from 'react-native';
 import Amplify from 'aws-amplify';
 import PushNotificationIOS from '@react-native-community/push-notification-ios';
+import RegisteredPushNotification from '../src';
 import PushNotification from '../src/PushNotification';
 
 const defaultPlatform = 'ios';
@@ -9,10 +10,6 @@ jest.mock('react-native', () => ({
 	AppState: {
 		currentState: 'active',
 		addEventListener: (event, callback) => callback('active'),
-	},
-	AsyncStorage: {
-		getItem: () => new Promise(res => res('item')),
-		setItem: jest.fn(),
 	},
 	DeviceEventEmitter: {
 		addListener: jest.fn(),
@@ -26,6 +23,11 @@ jest.mock('react-native', () => ({
 	Platform: {
 		OS: defaultPlatform,
 	},
+}));
+
+jest.mock('@react-native-async-storage/async-storage', () => ({
+	getItem: () => new Promise(res => res('item')),
+	setItem: jest.fn(),
 }));
 
 jest.mock('@react-native-community/push-notification-ios', () => ({
@@ -64,10 +66,20 @@ describe('PushNotification:', () => {
 		test('should register with Amplify', () => {
 			const registerSpy = jest.spyOn(Amplify, 'register');
 
-			expect.assertions(2);
+			expect.assertions(4);
+
+			// Global Amplify should register with `import "@aws-amplify/pushnotification"`
+			expect(Amplify.Pushnotification).toEqual(RegisteredPushNotification);
+
+			// Spy should be at 0 (it was already called on import)
 			expect(registerSpy).toHaveBeenCalledTimes(0);
-			new PushNotification(null);
-			expect(registerSpy).toHaveBeenCalledTimes(1);
+
+			// Global Amplify should keep original instance, not new instances
+			const NewPushNotification = new PushNotification(null);
+			expect(Amplify.Pushnotification).not.toEqual(NewPushNotification);
+
+			// Amplify.register should not have been called for the new instance
+			expect(registerSpy).toHaveBeenCalledTimes(0);
 			registerSpy.mockClear();
 		});
 	});

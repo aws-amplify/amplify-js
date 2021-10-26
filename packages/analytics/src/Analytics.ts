@@ -75,7 +75,6 @@ export class AnalyticsClass {
 		Hub.listen('auth', listener);
 		Hub.listen('storage', listener);
 		Hub.listen('analytics', listener);
-		Amplify.register(this);
 	}
 
 	public getModuleName() {
@@ -100,6 +99,11 @@ export class AnalyticsClass {
 			this._disabled = true;
 		}
 
+		// turn on the autoSessionRecord if not specified
+		if (this._config['autoSessionRecord'] === undefined) {
+			this._config['autoSessionRecord'] = true;
+		}
+
 		this._pluggables.forEach(pluggable => {
 			// for backward compatibility
 			const providerConfig =
@@ -110,17 +114,13 @@ export class AnalyticsClass {
 
 			pluggable.configure({
 				disabled: this._config['disabled'],
+				autoSessionRecord: this._config['autoSessionRecord'],
 				...providerConfig,
 			});
 		});
 
 		if (this._pluggables.length === 0) {
 			this.addPluggable(new AWSPinpointProvider());
-		}
-
-		// turn on the autoSessionRecord if not specified
-		if (this._config['autoSessionRecord'] === undefined) {
-			this._config['autoSessionRecord'] = true;
 		}
 
 		dispatchAnalyticsEvent(
@@ -402,3 +402,4 @@ const sendEvents = () => {
 };
 
 export const Analytics = new AnalyticsClass();
+Amplify.register(Analytics);

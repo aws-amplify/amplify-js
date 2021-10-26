@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/api-rest",
-  "version": "1.1.5",
+  "version": "2.0.21",
   "description": "Api-rest category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -8,7 +8,13 @@
   "react-native": {
     "./lib/index": "./lib-esm/index.js"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/RestAPI.ts",
+    "./lib/RestAPI.js",
+    "./lib-esm/RestAPI.js",
+    "./dist/aws-amplify-api-rest.js",
+    "./dist/aws-amplify-api-rest.min.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -35,8 +41,8 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "^3.4.5",
-    "axios": "0.19.0"
+    "@aws-amplify/core": "4.3.3",
+    "axios": "0.21.4"
   },
   "jest": {
     "globals": {
@@ -76,7 +82,10 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "dist",
+      "lib",
+      "lib-esm"
     ]
   }
 }

@@ -36,6 +36,9 @@ var config = {
 		devtoolModuleFilenameTemplate: require('../aws-amplify/webpack-utils')
 			.devtoolModuleFilenameTemplate,
 	},
+	externals: {
+		crypto: 'crypto',
+	},
 	plugins: [
 		new webpack.optimize.OccurrenceOrderPlugin(),
 		new webpack.BannerPlugin({ banner, raw: true }),

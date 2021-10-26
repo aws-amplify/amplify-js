@@ -19,5 +19,5 @@
 #import "JKBigInteger.h"
 
 @interface RNAWSCognito : NSObject <RCTBridgeModule>
-
+-(NSString*)getRandomBase64:(NSUInteger)byteLength;
 @end

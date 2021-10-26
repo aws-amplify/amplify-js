@@ -28,6 +28,7 @@
 ```mermaid
 graph TD;
   amplify-picker --> amplify-button
+  amplify-button --> amplify-icon
   amplify-photo-picker --> amplify-picker
   amplify-s3-album --> amplify-picker
   amplify-s3-text-picker --> amplify-picker

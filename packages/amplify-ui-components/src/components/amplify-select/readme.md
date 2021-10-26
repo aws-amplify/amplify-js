@@ -13,6 +13,17 @@
 | `selected`          | `selected` | Default selected option                                                                                                     | `number \| string`                               | `undefined`             |
 
 
+## CSS Custom Properties
+
+| Name                 | Description                                                                    |
+| -------------------- | ------------------------------------------------------------------------------ |
+| `--background-color` | Background color of the input container                                        |
+| `--background-image` | Image of the icon displayed next to text. Defaults to an upside down triangle. |
+| `--border-color`     | Border color of the input container                                            |
+| `--border-focus`     | Border color of the input container when focused on                            |
+| `--color`            | Text color of the select choices                                               |
+
+
 ## Dependencies
 
 ### Used by

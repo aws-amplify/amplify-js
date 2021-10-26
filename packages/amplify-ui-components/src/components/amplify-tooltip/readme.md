@@ -11,6 +11,23 @@
 | `text`           | `text`             | (Required) The text in the tooltip                                                                       | `string`  | `undefined` |
 
 
+## Slots
+
+| Slot          | Description                                                    |
+| ------------- | -------------------------------------------------------------- |
+| `"(default)"` | Text displayed below the tooltip. This will always be visible. |
+
+
+## CSS Custom Properties
+
+| Name                 | Description                                       |
+| -------------------- | ------------------------------------------------- |
+| `--background-color` | Background color of the tooltip                   |
+| `--border-color`     | Border color of the tooltip                       |
+| `--color`            | Text color within the tooltip                     |
+| `--font-family`      | Font family of the text placed within the tooltip |
+
+
 ## Dependencies
 
 ### Used by

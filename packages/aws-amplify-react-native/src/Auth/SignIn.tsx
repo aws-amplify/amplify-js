@@ -26,6 +26,7 @@ import {
 } from '../AmplifyUI';
 import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
+import { setTestId } from '../Utils';
 
 const logger = new Logger('SignIn');
 
@@ -33,6 +34,7 @@ interface ISignInProps extends IAuthPieceProps {}
 
 interface ISignInState extends IAuthPieceState {
 	password?: string;
+	hasPendingSignIn: boolean;
 }
 
 export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
@@ -44,20 +46,27 @@ export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 			username: null,
 			password: null,
 			error: null,
+			hasPendingSignIn: false,
 		};
 
 		this.checkContact = this.checkContact.bind(this);
 		this.signIn = this.signIn.bind(this);
 	}
 
-	signIn() {
+	async signIn() {
+		const { password, hasPendingSignIn } = this.state;
+
+		if (hasPendingSignIn) {
+			logger.debug('Previous sign in attempt active');
+			return;
+		}
+
+		this.setState({ hasPendingSignIn: true });
 		const username = this.getUsernameFromInput() || '';
-		const { password } = this.state;
 		logger.debug('Sign In for ' + username);
-		return Auth.signIn(username, password)
+		await Auth.signIn(username, password)
 			.then(user => {
 				logger.debug(user);
-				const requireMFA = user.Session !== null;
 				if (user.challengeName === 'SMS_MFA') {
 					this.changeState('confirmSignIn', user);
 				} else if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
@@ -75,9 +84,11 @@ export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 					this.error(err);
 				}
 			});
+		this.setState({ hasPendingSignIn: false });
 	}
 
 	showComponent(theme: AmplifyThemeType) {
+		const { hasPendingSignIn, password } = this.state;
 		return (
 			<Wrapper>
 				<View style={theme.section}>
@@ -97,16 +108,17 @@ export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 								placeholder={I18n.get('Enter your password')}
 								secureTextEntry={true}
 								required={true}
-								testID={TEST_ID.AUTH.PASSWORD_INPUT}
+								{...setTestId(TEST_ID.AUTH.PASSWORD_INPUT)}
 							/>
 							<AmplifyButton
 								text={I18n.get('Sign In').toUpperCase()}
 								theme={theme}
 								onPress={this.signIn}
 								disabled={
-									!!(!this.getUsernameFromInput() && this.state.password)
+									!!(!this.getUsernameFromInput() && password) ||
+									hasPendingSignIn
 								}
-								testID={TEST_ID.AUTH.SIGN_IN_BUTTON}
+								{...setTestId(TEST_ID.AUTH.SIGN_IN_BUTTON)}
 							/>
 						</View>
 						<View style={theme.sectionFooter}>

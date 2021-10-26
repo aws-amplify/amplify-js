@@ -15,6 +15,7 @@
 module.exports = {
 	AUTH: {
 		BACK_TO_SIGN_IN_BUTTON: 'aws-amplify__auth--back-to-sign-in-button',
+		CHANGE_PASSWORD_BUTTON: 'aws-amplify__auth--change-password-button',
 		CHANGE_PASSWORD_TEXT: 'aws-amplify__auth--change-password-text',
 		CONFIRM_A_CODE_BUTTON: 'aws-amplify__auth--confirm-a-code-button',
 		CONFIRM_BUTTON: 'aws-amplify__auth--confirm-button',
@@ -33,8 +34,7 @@ module.exports = {
 		RESEND_CODE_BUTTON: 'aws-amplify__auth--resend-code-button',
 		SEND_BUTTON: 'aws-amplify__auth--send-button',
 		SIGN_IN_BUTTON: 'aws-amplify__auth--sign-in-button',
-		SIGN_IN_TO_YOUR_ACCOUNT_TEXT:
-			'aws-amplify__auth--sign-in-to-your-account-text',
+		SIGN_IN_TO_YOUR_ACCOUNT_TEXT: 'aws-amplify__auth--sign-in-to-your-account-text',
 		SIGN_OUT_BUTTON: 'aws-amplify__auth--sign-out-button',
 		SIGN_UP_BUTTON: 'aws-amplify__auth--sign-up-button',
 		SIGN_UP_TEXT: 'aws-amplify__auth--sign-up-text',

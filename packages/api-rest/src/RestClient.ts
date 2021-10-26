@@ -13,10 +13,10 @@
 
 import {
 	ConsoleLogger as Logger,
+	Credentials,
 	DateUtils,
 	Signer,
 	Platform,
-	Credentials,
 } from '@aws-amplify/core';
 
 import { apiOptions, ApiInfo } from './types';
@@ -59,6 +59,8 @@ export class RestClient {
 	 * For more details, see https://github.com/aws-amplify/amplify-js/pull/3769#issuecomment-552660025
 	 */
 	private _cancelTokenMap: WeakMap<any, CancelTokenSource> = null;
+
+	Credentials = Credentials;
 
 	/**
 	 * @param {RestClientOptions} [options] - Instance options
@@ -129,8 +131,16 @@ export class RestClient {
 		const initParams = Object.assign({}, init);
 		const isAllResponse = initParams.response;
 		if (initParams.body) {
-			libraryHeaders['Content-Type'] = 'application/json; charset=UTF-8';
-			params.data = JSON.stringify(initParams.body);
+			if (
+				typeof FormData === 'function' &&
+				initParams.body instanceof FormData
+			) {
+				libraryHeaders['Content-Type'] = 'multipart/form-data';
+				params.data = initParams.body;
+			} else {
+				libraryHeaders['Content-Type'] = 'application/json; charset=UTF-8';
+				params.data = JSON.stringify(initParams.body);
+			}
 		}
 		if (initParams.responseType) {
 			params.responseType = initParams.responseType;
@@ -181,7 +191,7 @@ export class RestClient {
 		}
 
 		// Signing the request in case there credentials are available
-		return Credentials.get().then(
+		return this.Credentials.get().then(
 			credentials => {
 				return this._signed({ ...params }, credentials, isAllResponse, {
 					region,
@@ -195,7 +205,8 @@ export class RestClient {
 							params.headers['x-amz-date']
 						);
 
-						if (DateUtils.isClockSkewed(requestDate, responseDate)) {
+						// Compare local clock to the server clock
+						if (DateUtils.isClockSkewed(responseDate)) {
 							DateUtils.setClockOffset(
 								responseDate.getTime() - requestDate.getTime()
 							);

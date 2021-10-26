@@ -5,7 +5,6 @@ import {
 	PersistentModelConstructor,
 } from '../types';
 import { MutationEventOutbox } from './outbox';
-
 class ModelMerger {
 	constructor(
 		private readonly outbox: MutationEventOutbox,
@@ -38,7 +37,16 @@ class ModelMerger {
 		modelConstructor: PersistentModelConstructor<any>,
 		items: ModelInstanceMetadata[]
 	): Promise<[ModelInstanceMetadata, OpType][]> {
-		return await storage.batchSave(modelConstructor, items, this.ownSymbol);
+		const itemsMap: Map<string, ModelInstanceMetadata> = new Map();
+
+		for (const item of items) {
+			// merge items by model id. Latest record for a given id remains.
+			itemsMap.set(item.id, item);
+		}
+
+		const page = [...itemsMap.values()];
+
+		return await storage.batchSave(modelConstructor, page, this.ownSymbol);
 	}
 }
 

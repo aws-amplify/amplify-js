@@ -5,12 +5,46 @@
 
 ## Properties
 
-| Property                | Attribute            | Description                                                                                                                     | Type                                                | Default            |
-| ----------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------ |
-| `federated`             | --                   | Federated credentials & configuration.                                                                                          | `FederatedConfig`                                   | `undefined`        |
-| `handleAuthStateChange` | --                   | Callback for Authenticator state machine changes                                                                                | `(nextAuthState: AuthState, data?: object) => void` | `() => {}`         |
-| `initialAuthState`      | `initial-auth-state` | Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp | `AuthState.SignIn \| AuthState.SignUp`              | `AuthState.SignIn` |
-| `usernameAlias`         | `username-alias`     | Username Alias is used to setup authentication with `username`, `email` or `phone_number`                                       | `"email" \| "phone_number" \| "username"`           | `undefined`        |
+| Property                | Attribute            | Description                                                                                                                     | Type                                                               | Default            |
+| ----------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------ |
+| `federated`             | --                   | Federated credentials & configuration.                                                                                          | `FederatedConfig`                                                  | `undefined`        |
+| `handleAuthStateChange` | --                   | Callback for Authenticator state machine changes                                                                                | `(nextAuthState: AuthState, data?: object) => void`                | `() => {}`         |
+| `hideToast`             | `hide-toast`         | Hide amplify-toast for auth errors                                                                                              | `boolean`                                                          | `false`            |
+| `initialAuthState`      | `initial-auth-state` | Initial starting state of the Authenticator component. E.g. If `signup` is passed the default component is set to AmplifySignUp | `AuthState.ForgotPassword \| AuthState.SignIn \| AuthState.SignUp` | `AuthState.SignIn` |
+| `usernameAlias`         | `username-alias`     | Username Alias is used to setup authentication with `username`, `email` or `phone_number`                                       | `"email" \| "phone_number" \| "username"`                          | `undefined`        |
+
+
+## Slots
+
+| Slot                     | Description                                                                                                            |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `"confirm-sign-in"`      | Content placed inside of the confirm sign in workflow for when a user needs to confirm the account they signed in with |
+| `"confirm-sign-up"`      | Content placed inside of the confirm sign up workflow for when a user needs to confirm the account they signed up with |
+| `"forgot-password"`      | Content placed inside of the forgot password workflow for when a user wants to reset their password                    |
+| `"greetings"`            | Content placed inside of the greetings navigation for when a user is signed in                                         |
+| `"loading"`              | Content placed inside of the loading workflow for when the app is loading                                              |
+| `"require-new-password"` | Content placed inside of the require new password workflow for when a user is required to update their password        |
+| `"sign-in"`              | Content placed inside of the sign in workflow for when a user wants to sign into their account                         |
+| `"sign-up"`              | Content placed inside of the sign up workflow for when a user wants to register a new account                          |
+| `"totp-setup"`           | Content placed inside of the totp-setup workflow for when a user opts to use TOTP MFA                                  |
+| `"verify-contact"`       | Content placed inside of the verify-contact workflow for when a user must verify their contact information             |
+
+
+## CSS Custom Properties
+
+| Name                  | Description                                        |
+| --------------------- | -------------------------------------------------- |
+| `--background-color`  | Background color of the container                  |
+| `--border-radius`     | Border radius of the container                     |
+| `--box-shadow`        | Bow shadow of the container                        |
+| `--container-align`   | `align-items` property of a flex container         |
+| `--container-display` | Display option of the container. Defaults to flex. |
+| `--container-height`  | Height of the container. Defaults to 100vh.        |
+| `--container-justify` | `justify-content` property of a flex container     |
+| `--margin-bottom`     | Margin below the component                         |
+| `--min-width`         | Minimum width of the container                     |
+| `--padding`           | Padding within the component                       |
+| `--width`             | Width of the container                             |
 
 
 ## Dependencies
@@ -45,6 +79,7 @@ graph TD;
   amplify-sign-in --> amplify-strike
   amplify-sign-in --> amplify-auth-fields
   amplify-sign-in --> amplify-loading-spinner
+  amplify-button --> amplify-icon
   amplify-form-section --> amplify-section
   amplify-form-section --> amplify-button
   amplify-form-section --> amplify-loading-spinner

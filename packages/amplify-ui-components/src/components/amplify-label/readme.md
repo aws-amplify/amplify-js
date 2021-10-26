@@ -10,6 +10,20 @@
 | `htmlFor` | `html-for` | Reflects the value of the for content property of html element | `string` | `undefined` |
 
 
+## Slots
+
+| Slot          | Description   |
+| ------------- | ------------- |
+| `"(default)"` | Label content |
+
+
+## CSS Custom Properties
+
+| Name            | Description                 |
+| --------------- | --------------------------- |
+| `--label-color` | Text color within the label |
+
+
 ## Dependencies
 
 ### Used by

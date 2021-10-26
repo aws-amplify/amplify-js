@@ -1,84 +1,120 @@
-:host {
-  --background-color: var(--amplify-primary-color);
-  --background-color-active: var(--amplify-primary-shade);
-  --background-color-disable: var(--amplify-primary-tint);
-  --color: var(--amplify-primary-contrast);
-  --border-width: 0;
-  --border-color: initial;
-  --border-style: initial;
-  --link-color: var(--amplify-primary-color);
-  --link-hover: var(--amplify-primary-tint);
-  --link-active: var(--amplify-primary-shade);
-  --text-transform: uppercase;
+/**
+ * @prop --background-color: Background color of the button
+ * @prop --background-color-active: Background color of the button when it's active
+ * @prop --background-color-disable: Background color of the button when it's disabled
+ * @prop --color: Text color within the button
+ * @prop --border-width: Border width of the button
+ * @prop --border-color: Border color of the button
+ * @prop --border-radius: Border radius of the button
+ * @prop --border-style: Border style of the button
+ * @prop --link-color: Text color within an anchor variant button
+ * @prop --link-hover: Text color within an anchor variant button when hovering
+ * @prop --link-active: Text color within the anchor variant button when active
+ * @prop --text-transform: Text capitalization transform within the button
+ * @prop --icon-fill: Icon fill color within an icon variant button
+ * @prop --icon-height: Icon height within an icon variant button
+ * @prop --padding: Padding within the button
+ * @prop --width: Width of the button
+ */
+amplify-button {
+	--background-color: var(--amplify-primary-color);
+	--background-color-active: var(--amplify-primary-shade);
+	--background-color-disable: var(--amplify-primary-tint);
+	--color: var(--amplify-primary-contrast);
+	--border-width: 0;
+	--border-color: initial;
+	--border-style: initial;
+	--border-radius: initial;
+	--link-color: var(--amplify-primary-color);
+	--link-hover: var(--amplify-primary-tint);
+	--link-active: var(--amplify-primary-shade);
+	--text-transform: uppercase;
+	--icon-fill: var(--amplify-white);
+	--icon-height: 1.25rem;
+	--padding: 1rem;
+	--width: 100%;
 
-  width: 100%;
-  text-align: center;
+	width: var(--width);
+	text-align: center;
 
-  @include md {
-    width: inherit;
-  }
+	@include md {
+		width: inherit;
+	}
 }
 
 .button {
-  width: 100%;
-  min-width: 153px;
-  display: inline-block;
-  margin-bottom: 0;
-  font-size: var(--amplify-text-sm);
-  font-family: var(--amplify-font-family);
-  font-weight: 600;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-  touch-action: manipulation;
-  cursor: pointer;
-  user-select: none;
-  background-image: none;
-  color: var(--color);
-  padding: 1rem;
-  letter-spacing: 0.75px;
-  text-transform: var(--text-transform);
-  background-color: var(--background-color);
-  border-width: var(--border-width);
-  border-color: var(--border-color);
-  border-style: var(--border-style);
+	width: 100%;
+	min-width: 153px;
+	display: inline-block;
+	margin-bottom: 0;
+	font-size: var(--amplify-text-sm);
+	font-family: var(--amplify-font-family);
+	font-weight: 600;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	touch-action: manipulation;
+	cursor: pointer;
+	user-select: none;
+	background-image: none;
+	color: var(--color);
+	padding: var(--padding);
+	letter-spacing: 0.75px;
+	text-transform: var(--text-transform);
+	background-color: var(--background-color);
+	border-width: var(--border-width);
+	border-color: var(--border-color);
+	border-style: var(--border-style);
+	border-radius: var(--border-radius);
 
-  &:active {
-    opacity: 1;
-    background-color: var(--background-color-active);
-  }
+	&:active {
+		opacity: 1;
+		background-color: var(--background-color-active);
+	}
 
-  &:hover {
-    opacity: 0.8;
-  }
+	&:hover {
+		opacity: 0.8;
+	}
 
-  &:disabled {
-    opacity: 0.65;
-    cursor: auto;
-    background-color: var(--background-color-disable);
-  }
+	&:disabled {
+		opacity: 0.65;
+		cursor: auto;
+		background-color: var(--background-color-disable);
+	}
+}
+
+.icon {
+	background-color: inherit;
+	border: none;
+	font: inherit;
+	cursor: pointer;
+	padding: var(--padding);
+	amplify-icon {
+		--icon-fill-color: var(--icon-fill);
+		--height: var(--icon-height);
+	}
 }
 
 .anchor {
-  color: var(--link-color);
-  background-color: inherit;
-  padding: 0;
-  border: none;
-  font: inherit;
-  cursor: pointer;
+	color: var(--link-color);
+	background-color: inherit;
+	padding: 0;
+	border: none;
+	font: inherit;
+	cursor: pointer;
 
-  &:link {
-    color: var(--link-color);
-    text-decoration: none;
-  }
+	&:link {
+		color: var(--link-color);
+		text-decoration: none;
+	}
 
-  &:hover {
-    color: var(--link-hover);
-    text-decoration: underline;
-  }
+	&:hover {
+		color: var(--link-hover);
+		text-decoration: underline;
+	}
 
-  &:active {
-    color: var(--link-active);
-    text-decoration: underline;
-  }
+	&:active {
+		color: var(--link-active);
+		text-decoration: underline;
+	}
 }

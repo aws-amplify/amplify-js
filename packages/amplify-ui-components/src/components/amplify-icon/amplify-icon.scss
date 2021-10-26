@@ -1,7 +1,16 @@
+/**
+ * @prop --width: Width of the icon
+ * @prop --height: Height of the icon
+ * @prop --icon-fill-color: Fill color of the icon
+ */
 :host {
-  --icon-fill-color: var(--amplify-white);
+	--width: auto;
+	--height: auto;
+	--icon-fill-color: var(--amplify-white);
 }
 
-.icon {
-  fill: var(--icon-fill-color);
+svg {
+	fill: var(--icon-fill-color);
+	width: var(--width);
+	height: var(--height);
 }
