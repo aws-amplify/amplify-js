@@ -21,13 +21,15 @@ exports[`amplify-sign-in spec: Render logic -> should render a \`sign in\` form 
               </amplify-button>
             </span>
           </slot>
-          <slot name="primary-footer-content">
-            <amplify-button data-test="sign-in-sign-in-button" type="submit">
-              <span>
-                Sign In
-              </span>
-            </amplify-button>
-          </slot>
+          <div>
+            <slot name="primary-footer-content">
+              <amplify-button data-test="sign-in-sign-in-button" type="submit">
+                <span>
+                  Sign In
+                </span>
+              </amplify-button>
+            </slot>
+          </div>
         </slot>
       </div>
     </amplify-form-section>
@@ -56,13 +58,15 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withEmptyFederate
               </amplify-button>
             </span>
           </slot>
-          <slot name="primary-footer-content">
-            <amplify-button data-test="sign-in-sign-in-button" type="submit">
-              <span>
-                Sign In
-              </span>
-            </amplify-button>
-          </slot>
+          <div>
+            <slot name="primary-footer-content">
+              <amplify-button data-test="sign-in-sign-in-button" type="submit">
+                <span>
+                  Sign In
+                </span>
+              </amplify-button>
+            </slot>
+          </div>
         </slot>
       </div>
     </amplify-form-section>
@@ -94,13 +98,15 @@ exports[`amplify-sign-in spec: amplify-sign-in stories stories withFederated 1`]
               </amplify-button>
             </span>
           </slot>
-          <slot name="primary-footer-content">
-            <amplify-button data-test="sign-in-sign-in-button" type="submit">
-              <span>
-                Sign In
-              </span>
-            </amplify-button>
-          </slot>
+          <div>
+            <slot name="primary-footer-content">
+              <amplify-button data-test="sign-in-sign-in-button" type="submit">
+                <span>
+                  Sign In
+                </span>
+              </amplify-button>
+            </slot>
+          </div>
         </slot>
       </div>
     </amplify-form-section>

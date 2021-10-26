@@ -26,6 +26,7 @@ import {
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
+import { setTestId } from '../Utils'
 
 const logger = new Logger('VerifyContact');
 
@@ -119,7 +120,7 @@ export default class VerifyContact extends AuthPiece<
 				<Picker
 					selectedValue={this.state.pickAttr}
 					onValueChange={(value, index) => this.setState({ pickAttr: value })}
-					testID={TEST_ID.AUTH.VERIFY_CONTACT_PICKER}
+					{...setTestId(TEST_ID.AUTH.VERIFY_CONTACT_PICKER)}
 				>
 					<Picker.Item label={I18n.get('Email')} value="email" />
 					<Picker.Item label={I18n.get('Phone Number')} value="phone_number" />
@@ -130,7 +131,7 @@ export default class VerifyContact extends AuthPiece<
 				<Picker
 					selectedValue={this.state.pickAttr}
 					onValueChange={(value, index) => this.setState({ pickAttr: value })}
-					testID={TEST_ID.AUTH.VERIFY_CONTACT_PICKER}
+					{...setTestId(TEST_ID.AUTH.VERIFY_CONTACT_PICKER)}
 				>
 					<Picker.Item label={I18n.get('Email')} value="email" />
 				</Picker>
@@ -140,7 +141,7 @@ export default class VerifyContact extends AuthPiece<
 				<Picker
 					selectedValue={this.state.pickAttr}
 					onValueChange={(value, index) => this.setState({ pickAttr: value })}
-					testID={TEST_ID.AUTH.VERIFY_CONTACT_PICKER}
+					{...setTestId(TEST_ID.AUTH.VERIFY_CONTACT_PICKER)}
 				>
 					<Picker.Item label={I18n.get('Phone Number')} value="phone_number" />
 				</Picker>
@@ -166,7 +167,7 @@ export default class VerifyContact extends AuthPiece<
 					text={I18n.get('Verify')}
 					onPress={this.verify}
 					disabled={!this.state.pickAttr}
-					testID={TEST_ID.AUTH.VERIFY_BUTTON}
+					{...setTestId(TEST_ID.AUTH.VERIFY_BUTTON)}
 				/>
 			</View>
 		);
@@ -181,14 +182,14 @@ export default class VerifyContact extends AuthPiece<
 					label={I18n.get('Confirmation Code')}
 					placeholder={I18n.get('Enter your confirmation code')}
 					required={true}
-					testID={TEST_ID.AUTH.CONFIRMATION_CODE_INPUT}
+					{...setTestId(TEST_ID.AUTH.CONFIRMATION_CODE_INPUT)}
 				/>
 				<AmplifyButton
 					theme={theme}
 					text={I18n.get('Submit')}
 					onPress={this.submit}
 					disabled={!this.state.code}
-					testID={TEST_ID.AUTH.SUBMIT_BUTTON}
+					{...setTestId(TEST_ID.AUTH.SUBMIT_BUTTON)}
 				/>
 			</View>
 		);

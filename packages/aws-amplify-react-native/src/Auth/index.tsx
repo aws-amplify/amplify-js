@@ -58,7 +58,7 @@ interface IWithAuthenticatorState {
 
 export function withAuthenticator<Props extends object>(
 	Comp: React.ComponentType<Props>,
-	includeGreetings = false,
+	includeGreetings: boolean | { [index: string]: any } = false,
 	authenticatorComponents = [],
 	federated = null,
 	theme: AmplifyThemeType = null,
@@ -80,6 +80,9 @@ export function withAuthenticator<Props extends object>(
 			this.authConfig = {};
 
 			if (typeof includeGreetings === 'object' && includeGreetings !== null) {
+				if (includeGreetings.theme) {
+					theme = includeGreetings.theme;
+				}
 				this.authConfig = Object.assign(this.authConfig, includeGreetings);
 			} else {
 				this.authConfig = {

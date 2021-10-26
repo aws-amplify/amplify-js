@@ -2,27 +2,27 @@
  * @prop --font-family: Font family of the text within the container
  * @prop --background-color: Background color of the container
  */
-:host {
-  --font-family: var(--amplify-font-family);
-  --background-color: var(--amplify-background-color);
+amplify-section {
+	--font-family: var(--amplify-font-family);
+	--background-color: var(--amplify-background-color);
 }
 
 .section {
-  position: relative;
-  margin-bottom: var(--margin-bottom, 20px);
-  background-color: var(--background-color);
-  padding: var(--padding, 35px 40px);
-  text-align: left;
-  display: inline-block;
-  border-radius: var(--border-radius, 6px);
-  box-shadow: var(--box-shadow, 1px 1px 4px 0 rgba(0, 0, 0, 0.15));
-  box-sizing: border-box;
-  font-family: var(--font-family);
+	position: relative;
+	margin-bottom: var(--margin-bottom, 20px);
+	background-color: var(--background-color);
+	padding: var(--padding, 35px 40px);
+	text-align: left;
+	display: inline-block;
+	border-radius: var(--border-radius, 6px);
+	box-shadow: var(--box-shadow, 1px 1px 4px 0 rgba(0, 0, 0, 0.15));
+	box-sizing: border-box;
+	font-family: var(--font-family);
 
-  width: 100%;
-  min-width: var(--min-width, 20rem);
+	width: 100%;
+	min-width: var(--min-width, 20rem);
 
-  @include md {
-    width: var(--width, 28.75rem);
-  }
+	@include md {
+		width: var(--width, 28.75rem);
+	}
 }
