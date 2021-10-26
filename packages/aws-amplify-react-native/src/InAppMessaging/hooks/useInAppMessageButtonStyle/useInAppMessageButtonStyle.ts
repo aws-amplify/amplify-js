@@ -15,18 +15,19 @@ import { useMemo } from 'react';
 import { TextStyle, ViewStyle } from 'react-native';
 import { InAppMessageStyle } from '@aws-amplify/notifications';
 
-import { InAppMessageComponentButtonProps, InAppMessageComponentButtonStyle } from '../../components/types';
+import { InAppMessageComponentButtonStyle } from '../../components';
+import { UseInAppMessageButtonStyleParams } from './types';
 
 const getButtonComponentStyle = (
-	componentStyle: { buttonContainer: ViewStyle; buttonText: TextStyle },
+	baseStyle: { buttonContainer: ViewStyle; buttonText: TextStyle },
 	messageStyle: InAppMessageStyle,
 	overrideStyle: InAppMessageComponentButtonStyle
 ): InAppMessageComponentButtonStyle => {
 	// default component styles defined at the UI component level
-	const { buttonContainer, buttonText } = componentStyle;
+	const { buttonContainer, buttonText } = baseStyle;
 
-	// message specific styles passed in the in-app nessage payload, overrides default component styles
-	const { backgroundColor, color, textAlign } = messageStyle;
+	// message specific styles in the in-app message payload, overrides default component styles
+	const { backgroundColor, color, textAlign } = messageStyle ?? {};
 
 	// custom component override styles passed as style prop, overrides all previous styles
 	const { container, text } = overrideStyle ?? {};
@@ -38,25 +39,23 @@ const getButtonComponentStyle = (
 };
 
 export default function useInAppMessageButtonStyle({
-	buttons: { primaryButton, secondaryButton },
-	componentStyle,
-	overrideStyle,
-}: {
-	buttons: { primaryButton: InAppMessageComponentButtonProps; secondaryButton: InAppMessageComponentButtonProps };
-	componentStyle: { buttonContainer: ViewStyle; buttonText: TextStyle };
-	overrideStyle: {
-		primaryButton?: InAppMessageComponentButtonStyle;
-		secondaryButton?: InAppMessageComponentButtonStyle;
-	};
-}) {
+	baseButtonStyle,
+	messageButtonStyle,
+	overrideButtonStyle,
+}: UseInAppMessageButtonStyleParams) {
 	return useMemo(
 		() => ({
-			primaryButtonStyle:
-				primaryButton && getButtonComponentStyle(componentStyle, primaryButton.style, overrideStyle?.primaryButton),
-			secondaryButtonStyle:
-				secondaryButton &&
-				getButtonComponentStyle(componentStyle, secondaryButton.style, overrideStyle?.secondaryButton),
+			primaryButtonStyle: getButtonComponentStyle(
+				baseButtonStyle,
+				messageButtonStyle?.primaryButton,
+				overrideButtonStyle?.primaryButton
+			),
+			secondaryButtonStyle: getButtonComponentStyle(
+				baseButtonStyle,
+				messageButtonStyle?.secondaryButton,
+				overrideButtonStyle?.secondaryButton
+			),
 		}),
-		[componentStyle, primaryButton, overrideStyle?.primaryButton, secondaryButton, overrideStyle?.secondaryButton]
+		[baseButtonStyle, messageButtonStyle, overrideButtonStyle]
 	);
 }

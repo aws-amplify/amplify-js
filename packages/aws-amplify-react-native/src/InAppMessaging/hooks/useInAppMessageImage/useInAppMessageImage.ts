@@ -12,13 +12,13 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { ImageStyle, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { InAppMessageImage, InAppMessageLayout } from '@aws-amplify/notifications';
 
 import { BANNER_IMAGE_SCREEN_SIZE, CAROUSEL_IMAGE_SCREEN_SIZE, FULL_SCREEN_IMAGE_SCREEN_SIZE } from './constants';
 
-import { ImageLoadingState } from './types';
+import { ImageLoadingState, UseInAppMessageImage } from './types';
 import { prefetchNetworkImage } from './utils';
 
 const inAppMessageImageSizes: Record<InAppMessageLayout, number> = {
@@ -32,7 +32,7 @@ const inAppMessageImageSizes: Record<InAppMessageLayout, number> = {
 export default function useInAppMessageImage(
 	{ src }: InAppMessageImage,
 	layout: InAppMessageLayout
-): { delayMessageRendering: boolean; imageStyle: ImageStyle; shouldRenderImage: boolean } {
+): UseInAppMessageImage {
 	const hasImage = !!src;
 	const [imageLoadingState, setImageLoadingState] = useState<ImageLoadingState>(hasImage ? 'loading' : null);
 
@@ -48,7 +48,7 @@ export default function useInAppMessageImage(
 	const isLoaded = imageLoadingState === 'loaded';
 	const isLoading = imageLoadingState === 'loading';
 
-	const delayMessageRendering = hasImage && isLoading;
+	const shouldDelayMessageRendering = hasImage && isLoading;
 	const shouldRenderImage = hasImage && !hasFailed && isLoaded;
 
 	const { imageStyle } = useMemo(() => {
@@ -56,8 +56,8 @@ export default function useInAppMessageImage(
 			const imageSize = inAppMessageImageSizes[layout];
 			return StyleSheet.create({ imageStyle: { height: imageSize, width: imageSize, resizeMode: 'contain' } });
 		}
-		return null;
+		return { imageStyle: null };
 	}, [layout, shouldRenderImage]);
 
-	return { delayMessageRendering, imageStyle, shouldRenderImage };
+	return { imageStyle, shouldDelayMessageRendering, shouldRenderImage };
 }
