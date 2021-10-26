@@ -20,7 +20,11 @@ import axios, {
 	CancelTokenSource,
 	AxiosTransformer,
 } from 'axios';
-import { ConsoleLogger as Logger, Platform } from '@aws-amplify/core';
+import {
+	ConsoleLogger as Logger,
+	Platform,
+	DateUtils,
+} from '@aws-amplify/core';
 import { FetchHttpHandlerOptions } from '@aws-sdk/fetch-http-handler';
 import * as events from 'events';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';
@@ -180,9 +184,9 @@ export class AxiosHttpHandler implements HttpHandler {
 					}
 					return {
 						response: new HttpResponse({
-							statusCode: error?.response?.status,
-							body: error?.response?.data,
-							headers: error?.response?.headers,
+							statusCode: error.response?.status,
+							body: error.response?.data,
+							headers: error.response?.headers,
 						}),
 					};
 				}),
