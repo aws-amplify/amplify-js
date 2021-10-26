@@ -146,26 +146,22 @@ export default class InAppMessaging {
 	 * @param {string} provider
 	 * @returns - Array of available map resources
 	 */
-	syncMessages = async (): Promise<void> => {
-		await Promise.all<void>(
+	syncMessages = (): Promise<void[]> =>
+		Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				const messages = await pluggable.getInAppMessages();
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
 				await this.setMessages(key, messages);
 			})
 		);
-	};
 
-	clearMessages = async (): Promise<void> => {
-		logger.debug('clearing In-App Messages');
-
-		await Promise.all<void>(
+	clearMessages = (): Promise<void[]> =>
+		Promise.all<void>(
 			this.pluggables.map(async pluggable => {
 				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
 				await this.removeMessages(key);
 			})
 		);
-	};
 
 	dispatchEvent = async (event: InAppMessagingEvent): Promise<void> => {
 		const messages: InAppMessage[][] = await Promise.all<InAppMessage[]>(
@@ -186,7 +182,7 @@ export default class InAppMessaging {
 		}
 	};
 
-	identifyUser = async (userId: string, userInfo: UserInfo): Promise<void[]> =>
+	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> =>
 		Promise.all<void>(
 			this.pluggables.map(async pluggable =>
 				pluggable.identifyUser(userId, userInfo)
