@@ -186,6 +186,17 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					options,
 					observer,
 					subscriptionId,
+				}).catch(err => {
+					observer.error({
+						errors: [
+							{
+								...new GraphQLError(
+									`${CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR}: ${err}`
+								),
+							},
+						],
+					});
+					observer.complete();
 				});
 
 				return async () => {
@@ -262,6 +273,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				payload: dataString,
 				canonicalUri: '',
 				region,
+				additionalHeaders,
 			})),
 			...(await graphql_headers()),
 			...additionalHeaders,
@@ -289,6 +301,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				appSyncGraphqlEndpoint,
 				authenticationType,
 				region,
+				additionalHeaders,
 			});
 		} catch (err) {
 			logger.debug({ err });
@@ -296,7 +309,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			observer.error({
 				errors: [
 					{
-						...new GraphQLError(`Connection failed: ${message}`),
+						...new GraphQLError(`${CONTROL_MSG.CONNECTION_FAILED}: ${message}`),
 					},
 				],
 			});
@@ -496,7 +509,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				errors: [
 					{
 						...new GraphQLError(
-							`Connection failed: ${JSON.stringify(payload)}`
+							`${CONTROL_MSG.CONNECTION_FAILED}: ${JSON.stringify(payload)}`
 						),
 					},
 				],
@@ -545,7 +558,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 				errors: [
 					{
 						...new GraphQLError(
-							`Subscription timeout ${JSON.stringify({ query, variables })}`
+							`Subscription timeout ${JSON.stringify({
+								query,
+								variables,
+							})}`
 						),
 					},
 				],
@@ -564,6 +580,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		authenticationType,
 		apiKey,
 		region,
+		additionalHeaders,
 	}) {
 		if (this.socketStatus === SOCKET_STATUS.READY) {
 			return;
@@ -591,6 +608,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 							apiKey,
 							appSyncGraphqlEndpoint,
 							region,
+							additionalHeaders,
 						})
 					);
 					const headerQs = Buffer.from(headerString).toString('base64');
@@ -742,12 +760,14 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		appSyncGraphqlEndpoint,
 		apiKey,
 		region,
+		additionalHeaders,
 	}): Promise<any> {
 		const headerHandler = {
 			API_KEY: this._awsRealTimeApiKeyHeader.bind(this),
 			AWS_IAM: this._awsRealTimeIAMHeader.bind(this),
 			OPENID_CONNECT: this._awsRealTimeOPENIDHeader.bind(this),
 			AMAZON_COGNITO_USER_POOLS: this._awsRealTimeCUPHeader.bind(this),
+			AWS_LAMBDA: this._customAuthHeader,
 		};
 
 		const handler = headerHandler[authenticationType];
@@ -766,6 +786,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			apiKey,
 			region,
 			host,
+			additionalHeaders,
 		});
 
 		return result;
@@ -841,6 +862,17 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 		const signed_params = Signer.sign(request, creds, endpointInfo);
 		return signed_params.headers;
+	}
+
+	private _customAuthHeader({ host, additionalHeaders }) {
+		if (!additionalHeaders.Authorization) {
+			throw new Error('No auth token specified');
+		}
+
+		return {
+			Authorization: additionalHeaders.Authorization,
+			host,
+		};
 	}
 
 	/**

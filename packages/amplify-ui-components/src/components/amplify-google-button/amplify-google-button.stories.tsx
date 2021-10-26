@@ -1,5 +1,5 @@
 export default {
-  title: 'amplify-google-button',
+	title: 'amplify-google-button',
 };
 
 export const defaults = () => `<amplify-google-button />`;

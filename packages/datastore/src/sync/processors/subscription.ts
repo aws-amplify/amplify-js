@@ -11,12 +11,15 @@ import {
 	SchemaNamespace,
 	PredicatesGroup,
 	ModelPredicate,
+	AuthModeStrategy,
 } from '../../types';
 import {
 	buildSubscriptionGraphQLOperation,
 	getAuthorizationRules,
+	getModelAuthModes,
 	getUserGroupsFromToken,
 	TransformerMutationType,
+	getTokenForCustomAuth,
 } from '../utils';
 import { ModelPredicateCreator } from '../../predicates';
 import { validatePredicate } from '../../util';
@@ -55,7 +58,8 @@ class SubscriptionProcessor {
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
-		private readonly amplifyConfig: Record<string, any> = {}
+		private readonly amplifyConfig: Record<string, any> = {},
+		private readonly authModeStrategy: AuthModeStrategy
 	) {}
 
 	private buildSubscription(
@@ -64,7 +68,8 @@ class SubscriptionProcessor {
 		transformerMutationType: TransformerMutationType,
 		userCredentials: USER_CREDENTIALS,
 		cognitoTokenPayload: { [field: string]: any } | undefined,
-		oidcTokenPayload: { [field: string]: any } | undefined
+		oidcTokenPayload: { [field: string]: any } | undefined,
+		authMode: GRAPHQL_AUTH_MODE
 	): {
 		opType: TransformerMutationType;
 		opName: string;
@@ -75,13 +80,14 @@ class SubscriptionProcessor {
 		ownerValue?: string;
 	} {
 		const { aws_appsync_authenticationType } = this.amplifyConfig;
-		const { authMode, isOwner, ownerField, ownerValue } =
+		const { isOwner, ownerField, ownerValue } =
 			this.getAuthorizationInfo(
 				model,
 				userCredentials,
 				aws_appsync_authenticationType,
 				cognitoTokenPayload,
-				oidcTokenPayload
+				oidcTokenPayload,
+				authMode
 			) || {};
 
 		const [opType, opName, query] = buildSubscriptionGraphQLOperation(
@@ -99,13 +105,14 @@ class SubscriptionProcessor {
 		userCredentials: USER_CREDENTIALS,
 		defaultAuthType: GRAPHQL_AUTH_MODE,
 		cognitoTokenPayload: { [field: string]: any } = {},
-		oidcTokenPayload: { [field: string]: any } = {}
+		oidcTokenPayload: { [field: string]: any } = {},
+		authMode: GRAPHQL_AUTH_MODE
 	): AuthorizationInfo {
 		const rules = getAuthorizationRules(model);
 
 		// Return null if user doesn't have proper credentials for private API with IAM auth
 		const iamPrivateAuth =
-			defaultAuthType === GRAPHQL_AUTH_MODE.AWS_IAM &&
+			authMode === GRAPHQL_AUTH_MODE.AWS_IAM &&
 			rules.find(
 				rule => rule.authStrategy === 'private' && rule.provider === 'iam'
 			);
@@ -125,8 +132,8 @@ class SubscriptionProcessor {
 		);
 
 		const validGroup =
-			(defaultAuthType === GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS ||
-				defaultAuthType === GRAPHQL_AUTH_MODE.OPENID_CONNECT) &&
+			(authMode === GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS ||
+				authMode === GRAPHQL_AUTH_MODE.OPENID_CONNECT) &&
 			groupAuthRules.find(groupAuthRule => {
 				// validate token against groupClaim
 				const cognitoUserGroups = getUserGroupsFromToken(
@@ -145,7 +152,7 @@ class SubscriptionProcessor {
 
 		if (validGroup) {
 			return {
-				authMode: defaultAuthType,
+				authMode,
 				isOwner: false,
 			};
 		}
@@ -154,7 +161,7 @@ class SubscriptionProcessor {
 		// the correct parameters so we are getting the owner value from the Cognito token via the
 		// identityClaim from the auth rule.
 		const cognitoOwnerAuthRules =
-			defaultAuthType === GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+			authMode === GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
 				? rules.filter(
 						rule =>
 							rule.authStrategy === 'owner' && rule.provider === 'userPools'
@@ -183,7 +190,7 @@ class SubscriptionProcessor {
 		// the correct parameters so we are getting the owner value from the OIDC token via the
 		// identityClaim from the auth rule.
 		const oidcOwnerAuthRules =
-			defaultAuthType === GRAPHQL_AUTH_MODE.OPENID_CONNECT
+			authMode === GRAPHQL_AUTH_MODE.OPENID_CONNECT
 				? rules.filter(
 						rule => rule.authStrategy === 'owner' && rule.provider === 'oidc'
 				  )
@@ -206,9 +213,9 @@ class SubscriptionProcessor {
 			return ownerAuthInfo;
 		}
 
-		// Fallback: return default auth type
+		// Fallback: return authMode or default auth type
 		return {
-			authMode: defaultAuthType,
+			authMode: authMode || defaultAuthType,
 			isOwner: false,
 		};
 	}
@@ -229,7 +236,16 @@ class SubscriptionProcessor {
 	] {
 		const ctlObservable = new Observable<CONTROL_MSG>(observer => {
 			const promises: Promise<void>[] = [];
-			const subscriptions: ZenObservable.Subscription[] = [];
+
+			// Creating subs for each model/operation combo so they can be unsubscribed
+			// independently, since the auth retry behavior is asynchronous.
+			let subscriptions: {
+				[modelName: string]: {
+					[TransformerMutationType.CREATE]: ZenObservable.Subscription[];
+					[TransformerMutationType.UPDATE]: ZenObservable.Subscription[];
+					[TransformerMutationType.DELETE]: ZenObservable.Subscription[];
+				};
+			} = {};
 			let cognitoTokenPayload: { [field: string]: any },
 				oidcTokenPayload: { [field: string]: any };
 			let userCredentials = USER_CREDENTIALS.none;
@@ -290,23 +306,41 @@ class SubscriptionProcessor {
 					Object.values(namespace.models)
 						.filter(({ syncable }) => syncable)
 						.forEach(async modelDefinition => {
-							const queriesMetadata = [
+							const modelAuthModes = await getModelAuthModes({
+								authModeStrategy: this.authModeStrategy,
+								defaultAuthMode: this.amplifyConfig
+									.aws_appsync_authenticationType,
+								modelName: modelDefinition.name,
+								schema: this.schema,
+							});
+
+							// subscriptions are created only based on the READ auth mode(s)
+							const readAuthModes = modelAuthModes.READ;
+
+							subscriptions = {
+								...subscriptions,
+								[modelDefinition.name]: {
+									[TransformerMutationType.CREATE]: [],
+									[TransformerMutationType.UPDATE]: [],
+									[TransformerMutationType.DELETE]: [],
+								},
+							};
+
+							const operations = [
 								TransformerMutationType.CREATE,
 								TransformerMutationType.UPDATE,
 								TransformerMutationType.DELETE,
-							].map(op =>
-								this.buildSubscription(
-									namespace,
-									modelDefinition,
-									op,
-									userCredentials,
-									cognitoTokenPayload,
-									oidcTokenPayload
-								)
-							);
+							];
 
-							queriesMetadata.forEach(
-								async ({
+							const operationAuthModeAttempts = {
+								[TransformerMutationType.CREATE]: 0,
+								[TransformerMutationType.UPDATE]: 0,
+								[TransformerMutationType.DELETE]: 0,
+							};
+
+							// Retry failed subscriptions with next auth mode (if available)
+							const authModeRetry = async operation => {
+								const {
 									opType: transformerMutationType,
 									opName,
 									query,
@@ -314,121 +348,202 @@ class SubscriptionProcessor {
 									ownerField,
 									ownerValue,
 									authMode,
-								}) => {
-									const variables = {};
+								} = this.buildSubscription(
+									namespace,
+									modelDefinition,
+									operation,
+									userCredentials,
+									cognitoTokenPayload,
+									oidcTokenPayload,
+									readAuthModes[operationAuthModeAttempts[operation]]
+								);
 
-									if (isOwner) {
-										if (!ownerValue) {
-											// Check if there is an owner field, check where this error should be located
-											observer.error(
-												'Owner field required, sign in is needed in order to perform this operation'
-											);
-											return;
-										}
+								const authToken = await getTokenForCustomAuth(
+									authMode,
+									this.amplifyConfig
+								);
 
-										variables[ownerField] = ownerValue;
+								const variables = {};
+
+								if (isOwner) {
+									if (!ownerValue) {
+										observer.error(
+											'Owner field required, sign in is needed in order to perform this operation'
+										);
+										return;
 									}
 
-									const queryObservable = <
-										Observable<{
-											value: GraphQLResult<Record<string, PersistentModel>>;
-										}>
-									>(<unknown>API.graphql({ query, variables, ...{ authMode } })); // use default authMode if not found
+									variables[ownerField] = ownerValue;
+								}
 
-									let subscriptionReadyCallback: () => void;
+								logger.debug(
+									`Attempting ${operation} subscription with authMode: ${
+										readAuthModes[operationAuthModeAttempts[operation]]
+									}`
+								);
 
-									subscriptions.push(
-										queryObservable
-											.map(({ value }) => value)
-											.subscribe({
-												next: ({ data, errors }) => {
-													if (Array.isArray(errors) && errors.length > 0) {
-														const messages = (<
-															{
-																message: string;
-															}[]
-														>errors).map(({ message }) => message);
+								const queryObservable = <
+									Observable<{
+										value: GraphQLResult<Record<string, PersistentModel>>;
+									}>
+								>(<unknown>API.graphql({ query, variables, ...{ authMode }, authToken }));
+								let subscriptionReadyCallback: () => void;
 
-														logger.warn(
-															`Skipping incoming subscription. Messages: ${messages.join(
-																'\n'
-															)}`
-														);
+								subscriptions[modelDefinition.name][
+									transformerMutationType
+								].push(
+									queryObservable
+										.map(({ value }) => value)
+										.subscribe({
+											next: ({ data, errors }) => {
+												if (Array.isArray(errors) && errors.length > 0) {
+													const messages = (<
+														{
+															message: string;
+														}[]
+													>errors).map(({ message }) => message);
 
-														this.drainBuffer();
-														return;
-													}
-
-													const predicatesGroup = ModelPredicateCreator.getPredicates(
-														this.syncPredicates.get(modelDefinition),
-														false
+													logger.warn(
+														`Skipping incoming subscription. Messages: ${messages.join(
+															'\n'
+														)}`
 													);
 
-													const { [opName]: record } = data;
-
-													// checking incoming subscription against syncPredicate.
-													// once AppSync implements filters on subscriptions, we'll be
-													// able to set these when establishing the subscription instead.
-													// Until then, we'll need to filter inbound
-													if (
-														this.passesPredicateValidation(
-															record,
-															predicatesGroup
-														)
-													) {
-														this.pushToBuffer(
-															transformerMutationType,
-															modelDefinition,
-															record
-														);
-													}
 													this.drainBuffer();
-												},
-												error: subscriptionError => {
-													const {
-														error: { errors: [{ message = '' } = {}] } = {
-															errors: [],
-														},
-													} = subscriptionError;
-													logger.warn('subscriptionError', message);
+													return;
+												}
 
-													if (typeof subscriptionReadyCallback === 'function') {
-														subscriptionReadyCallback();
-													}
+												const predicatesGroup = ModelPredicateCreator.getPredicates(
+													this.syncPredicates.get(modelDefinition),
+													false
+												);
 
-													if (message.includes('"errorType":"Unauthorized"')) {
+												const { [opName]: record } = data;
+
+												// checking incoming subscription against syncPredicate.
+												// once AppSync implements filters on subscriptions, we'll be
+												// able to set these when establishing the subscription instead.
+												// Until then, we'll need to filter inbound
+												if (
+													this.passesPredicateValidation(
+														record,
+														predicatesGroup
+													)
+												) {
+													this.pushToBuffer(
+														transformerMutationType,
+														modelDefinition,
+														record
+													);
+												}
+												this.drainBuffer();
+											},
+											error: subscriptionError => {
+												const {
+													error: { errors: [{ message = '' } = {}] } = {
+														errors: [],
+													},
+												} = subscriptionError;
+
+												if (
+													message.includes(
+														PUBSUB_CONTROL_MSG.REALTIME_SUBSCRIPTION_INIT_ERROR
+													) ||
+													message.includes(PUBSUB_CONTROL_MSG.CONNECTION_FAILED)
+												) {
+													// Unsubscribe and clear subscription array for model/operation
+													subscriptions[modelDefinition.name][
+														transformerMutationType
+													].forEach(subscription => subscription.unsubscribe());
+													subscriptions[modelDefinition.name][
+														transformerMutationType
+													] = [];
+
+													operationAuthModeAttempts[operation]++;
+													if (
+														operationAuthModeAttempts[operation] >=
+														readAuthModes.length
+													) {
+														logger.debug(
+															`${operation} subscription failed with authMode: ${
+																readAuthModes[
+																	operationAuthModeAttempts[operation] - 1
+																]
+															}`
+														);
+														logger.warn('subscriptionError', message);
+														return;
+													} else {
+														logger.debug(
+															`${operation} subscription failed with authMode: ${
+																readAuthModes[
+																	operationAuthModeAttempts[operation] - 1
+																]
+															}. Retrying with authMode: ${
+																readAuthModes[
+																	operationAuthModeAttempts[operation]
+																]
+															}`
+														);
+														authModeRetry(operation);
 														return;
 													}
+												}
 
-													observer.error(message);
-												},
-											})
-									);
+												logger.warn('subscriptionError', message);
 
-									promises.push(
-										(async () => {
-											let boundFunction: any;
+												if (typeof subscriptionReadyCallback === 'function') {
+													subscriptionReadyCallback();
+												}
 
-											await new Promise(res => {
-												subscriptionReadyCallback = res;
-												boundFunction = this.hubQueryCompletionListener.bind(
-													this,
-													res
-												);
-												Hub.listen('api', boundFunction);
-											});
-											Hub.remove('api', boundFunction);
-										})()
-									);
-								}
-							);
+												if (
+													message.includes('"errorType":"Unauthorized"') ||
+													message.includes('"errorType":"OperationDisabled"')
+												) {
+													return;
+												}
+
+												observer.error(message);
+											},
+										})
+								);
+
+								promises.push(
+									(async () => {
+										let boundFunction: any;
+
+										await new Promise(res => {
+											subscriptionReadyCallback = res;
+											boundFunction = this.hubQueryCompletionListener.bind(
+												this,
+												res
+											);
+											Hub.listen('api', boundFunction);
+										});
+										Hub.remove('api', boundFunction);
+									})()
+								);
+							};
+
+							operations.forEach(op => authModeRetry(op));
 						});
 				});
+
 				Promise.all(promises).then(() => observer.next(CONTROL_MSG.CONNECTED));
 			})();
 
 			return () => {
-				subscriptions.forEach(subscription => subscription.unsubscribe());
+				Object.keys(subscriptions).map(modelName => {
+					subscriptions[modelName][
+						TransformerMutationType.CREATE
+					].forEach(subscription => subscription.unsubscribe());
+					subscriptions[modelName][
+						TransformerMutationType.UPDATE
+					].forEach(subscription => subscription.unsubscribe());
+					subscriptions[modelName][
+						TransformerMutationType.DELETE
+					].forEach(subscription => subscription.unsubscribe());
+				});
 			};
 		});
 

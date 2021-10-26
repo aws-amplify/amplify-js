@@ -2,16 +2,12 @@
 
 exports[`amplify-code-field spec: Render logic -> should render \`placeholder\` and \`label values 1`] = `
 <amplify-code-field label="New code *" placeholder="Enter new code">
-  <mock:shadow-root>
-    <amplify-form-field fieldid="code" label="New code *" placeholder="Enter new code" type="number"></amplify-form-field>
-  </mock:shadow-root>
+  <amplify-form-field fieldid="code" label="New code *" placeholder="Enter new code" type="number"></amplify-form-field>
 </amplify-code-field>
 `;
 
 exports[`amplify-code-field spec: Render logic -> should render default values by default 1`] = `
 <amplify-code-field>
-  <mock:shadow-root>
-    <amplify-form-field fieldid="code" label="Verification code" placeholder="Enter code" type="number"></amplify-form-field>
-  </mock:shadow-root>
+  <amplify-form-field fieldid="code" label="Verification code" placeholder="Enter code" type="number"></amplify-form-field>
 </amplify-code-field>
 `;
