@@ -1,23 +1,23 @@
 {
 	"name": "@aws-amplify/ui-storybook",
-	"version": "0.2.27",
+	"version": "2.0.21",
 	"private": true,
 	"dependencies": {
-		"@aws-amplify/ui-react": "^0.2.27",
+		"@aws-amplify/ui-react": "0.2.38",
 		"@storybook/addon-knobs": "^5.3.13",
 		"@storybook/theming": "^5.3.14",
 		"@types/jest": "^24.0.0",
 		"@types/node": "^12.0.0",
 		"@types/react": "^16.9.0",
 		"@types/react-dom": "^16.9.0",
-		"aws-amplify": "^3.3.7",
+		"aws-amplify": "4.3.3",
 		"react": "^16.12.0",
 		"react-app-polyfill": "^1.0.6",
 		"react-dom": "^16.12.0",
 		"react-scripts": "3.4.1"
 	},
 	"scripts": {
-		"test": "react-scripts test --passWithNoTests",
+		"test": "CI=true react-scripts test --passWithNoTests",
 		"start": "start-storybook -p 3000 -s public",
 		"prebuild": "rimraf dist",
 		"build-storybook": "build-storybook -s public -o dist --quiet"

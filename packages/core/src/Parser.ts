@@ -44,6 +44,25 @@ export const parseMobileHubConfig = (config): AmplifyConfig => {
 	} else {
 		storageConfig = config ? config.Storage || config : {};
 	}
+
+	// Logging
+	if (config['Logging']) {
+		amplifyConfig.Logging = {
+			...config['Logging'],
+			region: config['aws_project_region'],
+		};
+	}
+
+	// Geo
+	if (config['geo']) {
+		amplifyConfig.Geo = Object.assign({}, config.geo);
+		if (config.geo['amazon_location_service']) {
+			amplifyConfig.Geo = {
+				AmazonLocationService: config.geo['amazon_location_service'],
+			};
+		}
+	}
+
 	amplifyConfig.Analytics = Object.assign(
 		{},
 		amplifyConfig.Analytics,
@@ -51,6 +70,11 @@ export const parseMobileHubConfig = (config): AmplifyConfig => {
 	);
 	amplifyConfig.Auth = Object.assign({}, amplifyConfig.Auth, config.Auth);
 	amplifyConfig.Storage = Object.assign({}, storageConfig);
+	amplifyConfig.Logging = Object.assign(
+		{},
+		amplifyConfig.Logging,
+		config.Logging
+	);
 	logger.debug('parse config', config, 'to amplifyconfig', amplifyConfig);
 	return amplifyConfig;
 };

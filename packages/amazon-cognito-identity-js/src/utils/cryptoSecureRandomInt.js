@@ -15,6 +15,13 @@ if (!crypto && typeof global !== 'undefined' && global.crypto) {
 	crypto = global.crypto;
 }
 
+// Native crypto import via require (NodeJS)
+if (!crypto && typeof require === 'function') {
+	try {
+		crypto = require('crypto');
+	} catch (err) {}
+}
+
 /*
  * Cryptographically secure pseudorandom number generator
  * As Math.random() is cryptographically not safe to use

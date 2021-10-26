@@ -1,4 +1,4 @@
-import API, { GraphQLResult } from '@aws-amplify/api';
+import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import {
 	ConsoleLogger as Logger,
 	jitteredExponentialRetry,
@@ -9,6 +9,7 @@ import { MutationEvent } from '../';
 import { ModelInstanceCreator } from '../../datastore/datastore';
 import { ExclusiveStorage as Storage } from '../../storage/storage';
 import {
+	AuthModeStrategy,
 	ConflictHandler,
 	DISCARD,
 	ErrorHandler,
@@ -28,7 +29,9 @@ import { MutationEventOutbox } from '../outbox';
 import {
 	buildGraphQLOperation,
 	createMutationInstanceFromModelOperation,
+	getModelAuthModes,
 	TransformerMutationType,
+	getTokenForCustomAuth,
 } from '../utils';
 
 const MAX_ATTEMPTS = 10;
@@ -57,6 +60,8 @@ class MutationProcessor {
 		private readonly outbox: MutationEventOutbox,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly MutationEvent: PersistentModelConstructor<MutationEvent>,
+		private readonly amplifyConfig: Record<string, any> = {},
+		private readonly authModeStrategy: AuthModeStrategy,
 		private readonly conflictHandler?: ConflictHandler,
 		private readonly errorHandler?: ErrorHandler
 	) {
@@ -133,16 +138,60 @@ class MutationProcessor {
 			let opName: string;
 			let modelDefinition: SchemaModel;
 			try {
-				[result, opName, modelDefinition] = await this.jitteredRetry(
-					namespaceName,
-					model,
-					operation,
-					data,
-					condition,
-					modelConstructor,
-					this.MutationEvent,
-					head
-				);
+				const modelAuthModes = await getModelAuthModes({
+					authModeStrategy: this.authModeStrategy,
+					defaultAuthMode: this.amplifyConfig.aws_appsync_authenticationType,
+					modelName: model,
+					schema: this.schema,
+				});
+
+				const operationAuthModes = modelAuthModes[operation.toUpperCase()];
+
+				let authModeAttempts = 0;
+				const authModeRetry = async () => {
+					try {
+						logger.debug(
+							`Attempting mutation with authMode: ${operationAuthModes[authModeAttempts]}`
+						);
+						const response = await this.jitteredRetry(
+							namespaceName,
+							model,
+							operation,
+							data,
+							condition,
+							modelConstructor,
+							this.MutationEvent,
+							head,
+							operationAuthModes[authModeAttempts]
+						);
+
+						logger.debug(
+							`Mutation sent successfully with authMode: ${operationAuthModes[authModeAttempts]}`
+						);
+
+						return response;
+					} catch (error) {
+						authModeAttempts++;
+						if (authModeAttempts >= operationAuthModes.length) {
+							logger.debug(
+								`Mutation failed with authMode: ${
+									operationAuthModes[authModeAttempts - 1]
+								}`
+							);
+							throw error;
+						}
+						logger.debug(
+							`Mutation failed with authMode: ${
+								operationAuthModes[authModeAttempts - 1]
+							}. Retrying with authMode: ${
+								operationAuthModes[authModeAttempts]
+							}`
+						);
+						return await authModeRetry();
+					}
+				};
+
+				[result, opName, modelDefinition] = await authModeRetry();
 			} catch (error) {
 				if (error.message === 'Offline' || error.message === 'RetryMutation') {
 					continue;
@@ -151,14 +200,21 @@ class MutationProcessor {
 
 			if (result === undefined) {
 				logger.debug('done retrying');
-				await this.outbox.dequeue(this.storage);
+				await this.storage.runExclusive(async storage => {
+					await this.outbox.dequeue(storage);
+				});
 				continue;
 			}
 
 			const record = result.data[opName];
-			await this.outbox.dequeue(this.storage);
+			let hasMore = false;
 
-			const hasMore = (await this.outbox.peek(this.storage)) !== undefined;
+			await this.storage.runExclusive(async storage => {
+				// using runExclusive to prevent possible race condition
+				// when another record gets enqueued between dequeue and peek
+				await this.outbox.dequeue(storage, record, operation);
+				hasMore = (await this.outbox.peek(storage)) !== undefined;
+			});
 
 			this.observer.next({
 				operation,
@@ -180,7 +236,8 @@ class MutationProcessor {
 		condition: string,
 		modelConstructor: PersistentModelConstructor<PersistentModel>,
 		MutationEvent: PersistentModelConstructor<MutationEvent>,
-		mutationEvent: MutationEvent
+		mutationEvent: MutationEvent,
+		authMode: GRAPHQL_AUTH_MODE
 	): Promise<
 		[GraphQLResult<Record<string, PersistentModel>>, string, SchemaModel]
 	> {
@@ -207,7 +264,13 @@ class MutationProcessor {
 					data,
 					condition
 				);
-				const tryWith = { query, variables };
+
+				const authToken = await getTokenForCustomAuth(
+					authMode,
+					this.amplifyConfig
+				);
+
+				const tryWith = { query, variables, authMode, authToken };
 				let attempt = 0;
 
 				const opType = this.opTypeFromTransformerOperation(operation);
@@ -221,7 +284,16 @@ class MutationProcessor {
 					} catch (err) {
 						if (err.errors && err.errors.length > 0) {
 							const [error] = err.errors;
-							if (error.message === 'Network Error') {
+							const { originalError: { code = null } = {} } = error;
+
+							if (error.errorType === 'Unauthorized') {
+								throw new NonRetryableError('Unauthorized');
+							}
+
+							if (
+								error.message === 'Network Error' ||
+								code === 'ECONNABORTED' // refers to axios timeout error caused by device's bad network condition
+							) {
 								if (!this.processing) {
 									throw new NonRetryableError('Offline');
 								}
@@ -229,8 +301,8 @@ class MutationProcessor {
 								throw new Error('Network Error');
 							}
 
-							// TODO: add on ConflictConditionalCheck error query last from server
 							if (error.errorType === 'ConflictUnhandled') {
+								// TODO: add on ConflictConditionalCheck error query last from server
 								attempt++;
 								let retryWith: PersistentModel | typeof DISCARD;
 
@@ -266,11 +338,18 @@ class MutationProcessor {
 										'GET'
 									);
 
+									const authToken = await getTokenForCustomAuth(
+										authMode,
+										this.amplifyConfig
+									);
+
 									const serverData = <
 										GraphQLResult<Record<string, PersistentModel>>
 									>await API.graphql({
 										query,
 										variables: { id: variables.input.id },
+										authMode,
+										authToken,
 									});
 
 									return [serverData, opName, modelDefinition];
@@ -296,7 +375,7 @@ class MutationProcessor {
 								throw new NonRetryableError('RetryMutation');
 							} else {
 								try {
-									this.errorHandler({
+									await this.errorHandler({
 										localModel: this.modelInstanceCreator(
 											modelConstructor,
 											variables.input
@@ -322,6 +401,10 @@ class MutationProcessor {
 										: [];
 								}
 							}
+						} else {
+							// Catch-all for client-side errors that don't come back in the `GraphQLError` format.
+							// These errors should not be retried.
+							throw new NonRetryableError(err);
 						}
 					}
 				} while (tryWith);
@@ -346,6 +429,7 @@ class MutationProcessor {
 		condition: string
 	): [string, Record<string, any>, GraphQLCondition, string, SchemaModel] {
 		const modelDefinition = this.schema.namespaces[namespaceName].models[model];
+		const { primaryKey } = this.schema.namespaces[namespaceName].keys[model];
 
 		const queriesTuples = this.typeQuery.get(modelDefinition);
 
@@ -355,11 +439,21 @@ class MutationProcessor {
 
 		const { _version, ...parsedData } = <ModelInstanceMetadata>JSON.parse(data);
 
+		// include all the fields that comprise a custom PK if one is specified
+		const deleteInput = {};
+		if (primaryKey && primaryKey.length) {
+			for (const pkField of primaryKey) {
+				deleteInput[pkField] = parsedData[pkField];
+			}
+		} else {
+			deleteInput['id'] = parsedData.id;
+		}
+
 		const filteredData =
 			operation === TransformerMutationType.DELETE
-				? <ModelInstanceMetadata>{ id: parsedData.id } // For DELETE mutations, only ID is sent
+				? <ModelInstanceMetadata>deleteInput // For DELETE mutations, only PK is sent
 				: Object.values(modelDefinition.fields)
-						.filter(({ type, association }) => {
+						.filter(({ name, type, association }) => {
 							// connections
 							if (isModelFieldType(type)) {
 								// BELONGS_TO
@@ -372,6 +466,11 @@ class MutationProcessor {
 
 								// All other connections
 								return false;
+							}
+
+							if (operation === TransformerMutationType.UPDATE) {
+								// this limits the update mutation input to changed fields only
+								return parsedData.hasOwnProperty(name);
 							}
 
 							// scalars and non-model types
