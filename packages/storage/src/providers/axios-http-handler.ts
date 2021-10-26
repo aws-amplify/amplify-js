@@ -178,8 +178,13 @@ export class AxiosHttpHandler implements HttpHandler {
 					) {
 						logger.error(error.message);
 					}
-
-					throw error;
+					return {
+						response: new HttpResponse({
+							statusCode: error?.response?.status,
+							body: error?.response?.data,
+							headers: error?.response?.headers,
+						}),
+					};
 				}),
 			requestTimeout(requestTimeoutInMs),
 		];
