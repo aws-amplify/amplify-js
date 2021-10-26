@@ -1,7 +1,6 @@
-import Auth from '@aws-amplify/auth';
 import * as React from 'react';
-import withAuth0, { Auth0Button } from '../../../src/Auth/Provider/withAuth0';
-import { SignInButton, Button } from '../../../src/AmplifyUI';
+import { Auth } from '@aws-amplify/auth';
+import { withAuth0, Auth0Button } from '../../../src/Auth/Provider/withAuth0';
 
 const auth0_config = {
 	domain: 'your auth0 domain',
@@ -47,7 +46,7 @@ describe('withAuth0 test', () => {
 			try {
 				await comp.signIn();
 				expect(mockFn).toBeCalled();
-			} catch (e) { }
+			} catch (e) {}
 		});
 	});
 

@@ -11,8 +11,13 @@
  * and limitations under the License.
  */
 
-import { ConsoleLogger as Logger, Hub, Parser } from '@aws-amplify/core';
-import AWSPinpointProvider from './Providers/AWSPinpointProvider';
+import {
+	Amplify,
+	ConsoleLogger as Logger,
+	Hub,
+	Parser,
+} from '@aws-amplify/core';
+import { AWSPinpointProvider } from './Providers/AWSPinpointProvider';
 
 import {
 	AnalyticsProvider,
@@ -44,10 +49,12 @@ const trackers = {
 	session: SessionTracker,
 };
 
+let _instance = null;
+
 /**
  * Provide mobile analytics client functions
  */
-export default class AnalyticsClass {
+export class AnalyticsClass {
 	private _config;
 	private _pluggables: AnalyticsProvider[];
 	private _disabled;
@@ -62,8 +69,12 @@ export default class AnalyticsClass {
 		this._pluggables = [];
 		this._disabled = false;
 		this._trackers = {};
+		_instance = this;
 
 		this.record = this.record.bind(this);
+		Hub.listen('auth', listener);
+		Hub.listen('storage', listener);
+		Hub.listen('analytics', listener);
 	}
 
 	public getModuleName() {
@@ -88,6 +99,11 @@ export default class AnalyticsClass {
 			this._disabled = true;
 		}
 
+		// turn on the autoSessionRecord if not specified
+		if (this._config['autoSessionRecord'] === undefined) {
+			this._config['autoSessionRecord'] = true;
+		}
+
 		this._pluggables.forEach(pluggable => {
 			// for backward compatibility
 			const providerConfig =
@@ -98,6 +114,7 @@ export default class AnalyticsClass {
 
 			pluggable.configure({
 				disabled: this._config['disabled'],
+				autoSessionRecord: this._config['autoSessionRecord'],
 				...providerConfig,
 			});
 		});
@@ -106,18 +123,12 @@ export default class AnalyticsClass {
 			this.addPluggable(new AWSPinpointProvider());
 		}
 
-		// turn on the autoSessionRecord if not specified
-		if (this._config['autoSessionRecord'] === undefined) {
-			this._config['autoSessionRecord'] = true;
-		}
-
 		dispatchAnalyticsEvent(
 			'configured',
 			null,
 			`The Analytics category has been configured successfully`
 		);
 		logger.debug('current configuration', this._config);
-
 		return this._config;
 	}
 
@@ -213,7 +224,7 @@ export default class AnalyticsClass {
 	/**
 	 * Record one analytic event and send it to Pinpoint
 	 * @param {String} name - The name of the event
-	 * @param {Object} [attributs] - Attributes of the event
+	 * @param {Object} [attributes] - Attributes of the event
 	 * @param {Object} [metrics] - Event metrics
 	 * @return - A promise which resolves if buffer doesn't overflow
 	 */
@@ -222,12 +233,6 @@ export default class AnalyticsClass {
 		provider?,
 		metrics?: EventMetrics
 	) {
-		if (!this.isAnalyticsConfigured()) {
-			const errMsg = 'Analytics has not been configured';
-			logger.debug(errMsg);
-			return Promise.reject(new Error(errMsg));
-		}
-
 		let params = null;
 		// this is just for compatibility, going to be deprecated
 		if (typeof event === 'string') {
@@ -252,12 +257,6 @@ export default class AnalyticsClass {
 	}
 
 	private _sendEvent(params) {
-		if (!this.isAnalyticsConfigured()) {
-			const errMsg = 'Analytics has not been configured';
-			logger.debug(errMsg);
-			return Promise.reject(new Error(errMsg));
-		}
-
 		if (this._disabled) {
 			logger.debug('Analytics has been disabled');
 			return Promise.resolve();
@@ -295,8 +294,112 @@ export default class AnalyticsClass {
 			tracker.configure(opts);
 		}
 	}
-
-	private isAnalyticsConfigured() {
-		return this._config && Object.entries(this._config).length > 0;
-	}
 }
+
+let endpointUpdated = false;
+let authConfigured = false;
+let analyticsConfigured = false;
+const listener = capsule => {
+	const { channel, payload } = capsule;
+	logger.debug('on hub capsule ' + channel, payload);
+
+	switch (channel) {
+		case 'auth':
+			authEvent(payload);
+			break;
+		case 'storage':
+			storageEvent(payload);
+			break;
+		case 'analytics':
+			analyticsEvent(payload);
+			break;
+		default:
+			break;
+	}
+};
+
+const storageEvent = payload => {
+	const {
+		data: { attrs, metrics },
+	} = payload;
+	if (!attrs) return;
+
+	if (analyticsConfigured) {
+		_instance
+			.record({
+				name: 'Storage',
+				attributes: attrs,
+				metrics,
+			})
+			.catch(e => {
+				logger.debug('Failed to send the storage event automatically', e);
+			});
+	}
+};
+
+const authEvent = payload => {
+	const { event } = payload;
+	if (!event) {
+		return;
+	}
+
+	const recordAuthEvent = async eventName => {
+		if (authConfigured && analyticsConfigured) {
+			try {
+				return await _instance.record({ name: `_userauth.${eventName}` });
+			} catch (err) {
+				logger.debug(
+					`Failed to send the ${eventName} event automatically`,
+					err
+				);
+			}
+		}
+	};
+
+	switch (event) {
+		case 'signIn':
+			return recordAuthEvent('sign_in');
+		case 'signUp':
+			return recordAuthEvent('sign_up');
+		case 'signOut':
+			return recordAuthEvent('sign_out');
+		case 'signIn_failure':
+			return recordAuthEvent('auth_fail');
+		case 'configured':
+			authConfigured = true;
+			if (authConfigured && analyticsConfigured) {
+				sendEvents();
+			}
+			break;
+	}
+};
+
+const analyticsEvent = payload => {
+	const { event } = payload;
+	if (!event) return;
+
+	switch (event) {
+		case 'pinpointProvider_configured':
+			analyticsConfigured = true;
+			if (authConfigured && analyticsConfigured) {
+				sendEvents();
+			}
+			break;
+	}
+};
+
+const sendEvents = () => {
+	const config = _instance.configure();
+	if (!endpointUpdated && config['autoSessionRecord']) {
+		_instance.updateEndpoint({ immediate: true }).catch(e => {
+			logger.debug('Failed to update the endpoint', e);
+		});
+		endpointUpdated = true;
+	}
+	_instance.autoTrack('session', {
+		enable: config['autoSessionRecord'],
+	});
+};
+
+export const Analytics = new AnalyticsClass();
+Amplify.register(Analytics);

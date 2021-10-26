@@ -12,13 +12,17 @@
  */
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
-import { AWSKinesisProvider } from './index';
-import * as Firehose from 'aws-sdk/clients/firehose';
+import { AWSKinesisProvider } from './AWSKinesisProvider';
+import {
+	PutRecordBatchCommand,
+	FirehoseClient,
+} from '@aws-sdk/client-firehose';
+import { fromUtf8 } from '@aws-sdk/util-utf8-browser';
 
 const logger = new Logger('AWSKineisFirehoseProvider');
 
-export default class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
-	private _kinesisFirehose;
+export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
+	private _kinesisFirehose: FirehoseClient;
 
 	constructor(config?) {
 		super(config);
@@ -44,18 +48,16 @@ export default class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 		const records = {};
 
 		group.map(params => {
-			// spit by streamName
+			// split by streamName
 			const evt = params.event;
-			const { streamName } = evt;
+			const { streamName, data } = evt;
 			if (records[streamName] === undefined) {
 				records[streamName] = [];
 			}
 
-			const PartitionKey =
-				evt.partitionKey || `partition-${credentials.identityId}`;
-
-			Object.assign(evt.data, { PartitionKey });
-			const Data = JSON.stringify(evt.data);
+			const bufferData =
+				data && typeof data !== 'string' ? JSON.stringify(data) : data;
+			const Data = fromUtf8(bufferData);
 			const record = { Data };
 			records[streamName].push(record);
 		});
@@ -67,16 +69,16 @@ export default class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 				'with records',
 				records[streamName]
 			);
-			this._kinesisFirehose.putRecordBatch(
-				{
-					Records: records[streamName],
-					DeliveryStreamName: streamName,
-				},
-				err => {
-					if (err) logger.debug('Failed to upload records to Kinesis', err);
-					else logger.debug('Upload records to stream', streamName);
-				}
-			);
+
+			this._kinesisFirehose
+				.send(
+					new PutRecordBatchCommand({
+						Records: records[streamName],
+						DeliveryStreamName: streamName,
+					})
+				)
+				.then(res => logger.debug('Upload records to stream', streamName))
+				.catch(err => logger.debug('Failed to upload records to Kinesis', err));
 		});
 	}
 
@@ -101,7 +103,7 @@ export default class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 
 	private _initFirehose(region, credentials) {
 		logger.debug('initialize kinesis firehose with credentials', credentials);
-		this._kinesisFirehose = new Firehose({
+		this._kinesisFirehose = new FirehoseClient({
 			apiVersion: '2015-08-04',
 			region,
 			credentials,
@@ -109,3 +111,8 @@ export default class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 		return true;
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AWSKinesisFirehoseProvider;

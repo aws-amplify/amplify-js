@@ -1,12 +1,19 @@
+jest.mock('@aws-amplify/analytics', () => {
+	return {
+		Analytics: {
+			record: jest.fn(),
+		},
+	};
+});
+
 import * as React from 'react';
-import { Component } from 'react';
-import Analytics from '@aws-amplify/analytics';
+import { Analytics } from '@aws-amplify/analytics';
 import { trackLifecycle } from '../../src/Analytics/trackLifecycle';
 
 describe('trackLifecycle test', () => {
 	test('render correctly', () => {
 		const spyon = jest.spyOn(Analytics, 'record');
-		const MockComp = class extends Component {
+		const MockComp = class extends React.Component {
 			render() {
 				return <div />;
 			}
@@ -22,7 +29,7 @@ describe('trackLifecycle test', () => {
 
 	test('track when mounting', () => {
 		const spyon = jest.spyOn(Analytics, 'record');
-		const MockComp = class extends Component {
+		const MockComp = class extends React.Component {
 			render() {
 				return <div />;
 			}
@@ -38,7 +45,7 @@ describe('trackLifecycle test', () => {
 
 	test('track when unmounting', () => {
 		const spyon = jest.spyOn(Analytics, 'record');
-		const MockComp = class extends Component {
+		const MockComp = class extends React.Component {
 			render() {
 				return <div />;
 			}
@@ -54,7 +61,7 @@ describe('trackLifecycle test', () => {
 
 	test('track when updating', () => {
 		const spyon = jest.spyOn(Analytics, 'record');
-		const MockComp = class extends Component {
+		const MockComp = class extends React.Component {
 			render() {
 				return <div />;
 			}

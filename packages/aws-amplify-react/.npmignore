@@ -13,3 +13,4 @@ lib-esm/.tsbuildinfo
 prepend-license.js
 cypress/**
 cypress.json
+tsc-out/**

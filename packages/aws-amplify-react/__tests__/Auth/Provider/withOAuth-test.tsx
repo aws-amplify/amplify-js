@@ -1,6 +1,6 @@
-import Auth from '@aws-amplify/auth';
 import * as React from 'react';
-import withOAuth, { OAuthButton } from '../../../src/Auth/Provider/withOAuth';
+import { Auth } from '@aws-amplify/auth';
+import { withOAuth, OAuthButton } from '../../../src/Auth/Provider/withOAuth';
 
 describe('withOAuth test', () => {
 	describe('render test', () => {
@@ -24,6 +24,8 @@ describe('withOAuth test', () => {
 
 	describe('signIn test', () => {
 		test('happy case with connected response', () => {
+			const mockFn = jest.fn();
+			window.location.assign = mockFn;
 			const MockComp = class extends React.Component {
 				render() {
 					return <div />;

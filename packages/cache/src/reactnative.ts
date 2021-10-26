@@ -11,10 +11,13 @@
  * and limitations under the License.
  */
 
-import Amplify from '@aws-amplify/core';
-import { default as Cache, AsyncStorageCache } from './AsyncStorageCache';
+import { Amplify } from '@aws-amplify/core';
+import { Cache, AsyncStorageCache } from './AsyncStorageCache';
 
-export { AsyncStorageCache };
+export { Cache, AsyncStorageCache };
+/**
+ * @deprecated use named import
+ */
 export default Cache;
 
 Amplify.register(Cache);

@@ -1,22 +1,46 @@
-import API, { GraphQLResult } from '@aws-amplify/api';
+import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import Observable from 'zen-observable-ts';
 import {
 	InternalSchema,
 	ModelInstanceMetadata,
 	SchemaModel,
+	ModelPredicate,
+	PredicatesGroup,
+	GraphQLFilter,
+	AuthModeStrategy,
 } from '../../types';
-import { buildGraphQLOperation } from '../utils';
-import { jitteredExponentialRetry } from '@aws-amplify/core';
+import {
+	buildGraphQLOperation,
+	getModelAuthModes,
+	getClientSideAuthError,
+	getForbiddenError,
+	predicateToGraphQLFilter,
+	getTokenForCustomAuth,
+} from '../utils';
+import {
+	jitteredExponentialRetry,
+	ConsoleLogger as Logger,
+	Hub,
+	NonRetryableError,
+} from '@aws-amplify/core';
+import { ModelPredicateCreator } from '../../predicates';
 
-const DEFAULT_PAGINATION_LIMIT = 100;
-const DEFAULT_MAX_RECORDS_TO_SYNC = 10000;
+const opResultDefaults = {
+	items: [],
+	nextToken: null,
+	startedAt: null,
+};
+
+const logger = new Logger('DataStore');
 
 class SyncProcessor {
 	private readonly typeQuery = new WeakMap<SchemaModel, [string, string]>();
 
 	constructor(
 		private readonly schema: InternalSchema,
-		private readonly maxRecordsToSync: number = DEFAULT_MAX_RECORDS_TO_SYNC
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly amplifyConfig: Record<string, any> = {},
+		private readonly authModeStrategy: AuthModeStrategy
 	) {
 		this.generateQueries();
 	}
@@ -26,13 +50,31 @@ class SyncProcessor {
 			Object.values(namespace.models)
 				.filter(({ syncable }) => syncable)
 				.forEach(model => {
-					const [
-						[_transformerMutationType, ...opNameQuery],
-					] = buildGraphQLOperation(model, 'LIST');
+					const [[, ...opNameQuery]] = buildGraphQLOperation(
+						namespace,
+						model,
+						'LIST'
+					);
 
 					this.typeQuery.set(model, opNameQuery);
 				});
 		});
+	}
+
+	private graphqlFilterFromPredicate(model: SchemaModel): GraphQLFilter {
+		if (!this.syncPredicates) {
+			return null;
+		}
+		const predicatesGroup: PredicatesGroup<any> = ModelPredicateCreator.getPredicates(
+			this.syncPredicates.get(model),
+			false
+		);
+
+		if (!predicatesGroup) {
+			return null;
+		}
+
+		return predicateToGraphQLFilter(predicatesGroup);
 	}
 
 	private async retrievePage<
@@ -41,7 +83,8 @@ class SyncProcessor {
 		modelDefinition: SchemaModel,
 		lastSync: number,
 		nextToken: string,
-		limit: number = null
+		limit: number = null,
+		filter: GraphQLFilter
 	): Promise<{ nextToken: string; startedAt: number; items: T[] }> {
 		const [opName, query] = this.typeQuery.get(modelDefinition);
 
@@ -49,30 +92,100 @@ class SyncProcessor {
 			limit,
 			nextToken,
 			lastSync,
+			filter,
 		};
 
-		// TODO: Use retryStartegy from core
-		const { data } = <
-			GraphQLResult<{
-				[opName: string]: {
-					items: T[];
-					nextToken: string;
-					startedAt: number;
-				};
-			}>
-		>await this.jitteredRetry<T>(query, variables);
+		const modelAuthModes = await getModelAuthModes({
+			authModeStrategy: this.authModeStrategy,
+			defaultAuthMode: this.amplifyConfig.aws_appsync_authenticationType,
+			modelName: modelDefinition.name,
+			schema: this.schema,
+		});
+
+		// sync only needs the READ auth mode(s)
+		const readAuthModes = modelAuthModes.READ;
+
+		let authModeAttempts = 0;
+		const authModeRetry = async () => {
+			try {
+				logger.debug(
+					`Attempting sync with authMode: ${readAuthModes[authModeAttempts]}`
+				);
+				const response = await this.jitteredRetry<T>({
+					query,
+					variables,
+					opName,
+					modelDefinition,
+					authMode: readAuthModes[authModeAttempts],
+				});
+				logger.debug(
+					`Sync successful with authMode: ${readAuthModes[authModeAttempts]}`
+				);
+				return response;
+			} catch (error) {
+				authModeAttempts++;
+				if (authModeAttempts >= readAuthModes.length) {
+					const authMode = readAuthModes[authModeAttempts - 1];
+					logger.debug(`Sync failed with authMode: ${authMode}`, error);
+					if (getClientSideAuthError(error) || getForbiddenError(error)) {
+						// return empty list of data so DataStore will continue to sync other models
+						logger.warn(
+							`User is unauthorized to query ${opName} with auth mode ${authMode}. No data could be returned.`
+						);
+
+						return {
+							data: {
+								[opName]: opResultDefaults,
+							},
+						};
+					}
+					throw error;
+				}
+				logger.debug(
+					`Sync failed with authMode: ${
+						readAuthModes[authModeAttempts - 1]
+					}. Retrying with authMode: ${readAuthModes[authModeAttempts]}`
+				);
+				return await authModeRetry();
+			}
+		};
+
+		const { data } = await authModeRetry();
 
 		const { [opName]: opResult } = data;
 
 		const { items, nextToken: newNextToken, startedAt } = opResult;
 
-		return { nextToken: newNextToken, startedAt, items };
+		return {
+			nextToken: newNextToken,
+			startedAt,
+			items,
+		};
 	}
 
-	private async jitteredRetry<T>(
-		query: string,
-		variables: { limit: number; lastSync: number; nextToken: string }
-	): Promise<
+	// Partial data private feature flag. Not a public API. This will be removed in a future release.
+	private partialDataFeatureFlagEnabled() {
+		try {
+			const flag = sessionStorage.getItem('datastorePartialData');
+			return Boolean(flag);
+		} catch (e) {
+			return false;
+		}
+	}
+
+	private async jitteredRetry<T>({
+		query,
+		variables,
+		opName,
+		modelDefinition,
+		authMode,
+	}: {
+		query: string;
+		variables: { limit: number; lastSync: number; nextToken: string };
+		opName: string;
+		modelDefinition: SchemaModel;
+		authMode: GRAPHQL_AUTH_MODE;
+	}): Promise<
 		GraphQLResult<{
 			[opName: string]: {
 				items: T[];
@@ -83,10 +196,85 @@ class SyncProcessor {
 	> {
 		return await jitteredExponentialRetry(
 			async (query, variables) => {
-				return await API.graphql({
-					query,
-					variables,
-				});
+				try {
+					const authToken = await getTokenForCustomAuth(
+						authMode,
+						this.amplifyConfig
+					);
+
+					return await API.graphql({
+						query,
+						variables,
+						authMode,
+						authToken,
+					});
+				} catch (error) {
+					// Catch client-side (GraphQLAuthError) & 401/403 errors here so that we don't continue to retry
+					const clientOrForbiddenErrorMessage =
+						getClientSideAuthError(error) || getForbiddenError(error);
+					if (clientOrForbiddenErrorMessage) {
+						throw new NonRetryableError(clientOrForbiddenErrorMessage);
+					}
+
+					const hasItems = Boolean(
+						error &&
+							error.data &&
+							error.data[opName] &&
+							error.data[opName].items
+					);
+
+					if (this.partialDataFeatureFlagEnabled()) {
+						if (hasItems) {
+							const result = error;
+							result.data[opName].items = result.data[opName].items.filter(
+								item => item !== null
+							);
+
+							if (error.errors) {
+								Hub.dispatch('datastore', {
+									event: 'syncQueriesPartialSyncError',
+									data: {
+										errors: error.errors,
+										modelName: modelDefinition.name,
+									},
+								});
+							}
+
+							return result;
+						} else {
+							throw error;
+						}
+					}
+
+					// If the error is unauthorized, filter out unauthorized items and return accessible items
+					const unauthorized =
+						error &&
+						error.errors &&
+						(error.errors as [any]).some(
+							err => err.errorType === 'Unauthorized'
+						);
+					if (unauthorized) {
+						const result = error;
+
+						if (hasItems) {
+							result.data[opName].items = result.data[opName].items.filter(
+								item => item !== null
+							);
+						} else {
+							result.data[opName] = {
+								...opResultDefaults,
+								...result.data[opName],
+							};
+						}
+						logger.warn(
+							'queryError',
+							`User is unauthorized to query ${opName}, some items could not be returned.`
+						);
+						return result;
+					} else {
+						throw error;
+					}
+				}
 			},
 			[query, variables]
 		);
@@ -96,14 +284,8 @@ class SyncProcessor {
 		typesLastSync: Map<SchemaModel, [string, number]>
 	): Observable<SyncModelPage> {
 		let processing = true;
-
-		const maxRecordsToSync =
-			this.maxRecordsToSync !== undefined
-				? this.maxRecordsToSync
-				: DEFAULT_MAX_RECORDS_TO_SYNC;
-
+		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
-
 		const observable = new Observable<SyncModelPage>(observer => {
 			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce(
 				(map, namespace) => {
@@ -127,6 +309,7 @@ class SyncProcessor {
 					let items: ModelInstanceMetadata[] = null;
 
 					let recordsReceived = 0;
+					const filter = this.graphqlFilterFromPredicate(modelDefinition);
 
 					const parents = this.schema.namespaces[
 						namespace
@@ -145,14 +328,15 @@ class SyncProcessor {
 
 							const limit = Math.min(
 								maxRecordsToSync - recordsReceived,
-								DEFAULT_PAGINATION_LIMIT
+								syncPageSize
 							);
 
 							({ items, nextToken, startedAt } = await this.retrievePage(
 								modelDefinition,
 								lastSync,
 								nextToken,
-								limit
+								limit,
+								filter
 							));
 
 							recordsReceived += items.length;

@@ -19,6 +19,8 @@ import Client from './Client';
 import CognitoUser from './CognitoUser';
 import StorageHelper from './StorageHelper';
 
+const USER_POOL_ID_MAX_LENGTH = 55;
+
 /** @class */
 export default class CognitoUserPool {
 	/**
@@ -26,23 +28,27 @@ export default class CognitoUserPool {
 	 * @param {object} data Creation options.
 	 * @param {string} data.UserPoolId Cognito user pool id.
 	 * @param {string} data.ClientId User pool application client id.
+	 * @param {string} data.endpoint Optional custom service endpoint.
+	 * @param {object} data.fetchOptions Optional options for fetch API.
+	 *        (only credentials option is supported)
 	 * @param {object} data.Storage Optional storage object.
 	 * @param {boolean} data.AdvancedSecurityDataCollectionFlag Optional:
 	 *        boolean flag indicating if the data collection is enabled
 	 *        to support cognito advanced security features. By default, this
 	 *        flag is set to true.
 	 */
-	constructor(data) {
+	constructor(data, wrapRefreshSessionCallback) {
 		const {
 			UserPoolId,
 			ClientId,
 			endpoint,
+			fetchOptions,
 			AdvancedSecurityDataCollectionFlag,
 		} = data || {};
 		if (!UserPoolId || !ClientId) {
 			throw new Error('Both UserPoolId and ClientId are required.');
 		}
-		if (!/^[\w-]+_.+$/.test(UserPoolId)) {
+		if (UserPoolId.length > USER_POOL_ID_MAX_LENGTH || !/^[\w-]+_[0-9a-zA-Z]+$/.test(UserPoolId)) {
 			throw new Error('Invalid UserPoolId format.');
 		}
 		const region = UserPoolId.split('_')[0];
@@ -50,7 +56,7 @@ export default class CognitoUserPool {
 		this.userPoolId = UserPoolId;
 		this.clientId = ClientId;
 
-		this.client = new Client(region, endpoint);
+		this.client = new Client(region, endpoint, fetchOptions);
 
 		/**
 		 * By default, AdvancedSecurityDataCollectionFlag is set to true,
@@ -60,6 +66,10 @@ export default class CognitoUserPool {
 			AdvancedSecurityDataCollectionFlag !== false;
 
 		this.storage = data.Storage || new StorageHelper().getStorage();
+
+		if (wrapRefreshSessionCallback) {
+			this.wrapRefreshSessionCallback = wrapRefreshSessionCallback;
+		}
 	}
 
 	/**
@@ -89,6 +99,7 @@ export default class CognitoUserPool {
 	 * @param {(AttributeArg[])=} validationData Application metadata.
 	 * @param {(AttributeArg[])=} clientMetadata Client metadata.
 	 * @param {nodeCallback<SignUpResult>} callback Called on error or with the new user.
+	 * @param {ClientMetadata} clientMetadata object which is passed from client to Cognito Lambda trigger
 	 * @returns {void}
 	 */
 	signUp(

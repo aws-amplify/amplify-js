@@ -1,13 +1,20 @@
 {
   "name": "@aws-amplify/storage",
-  "version": "2.2.1",
+  "version": "4.4.4",
   "description": "Storage category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
   "typings": "./lib-esm/index.d.ts",
   "react-native": {
-    "./index": "./lib/index.js"
+    "./lib/index": "./lib-esm/index.js"
   },
+  "sideEffects": [
+    "./src/index.ts",
+    "./lib/index.js",
+    "./lib-esm/index.js",
+    "./dist/aws-amplify-storage.min.js",
+    "./dist/aws-amplify-storage.js"
+  ],
   "publishConfig": {
     "access": "public"
   },
@@ -34,12 +41,21 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "^2.2.5"
+    "@aws-amplify/core": "4.3.3",
+    "@aws-sdk/client-s3": "3.6.1",
+    "@aws-sdk/s3-request-presigner": "3.6.1",
+    "@aws-sdk/util-create-request": "3.6.1",
+    "@aws-sdk/util-format-url": "3.6.1",
+    "axios": "0.21.4",
+    "events": "^3.1.0",
+    "sinon": "^7.5.0"
   },
   "jest": {
     "globals": {
       "ts-jest": {
-        "diagnostics": false,
+        "diagnostics": {
+          "pathRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$"
+        },
         "tsConfig": {
           "lib": [
             "es5",
@@ -74,7 +90,13 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "dist",
+      "lib",
+      "lib-esm"
     ]
+  },
+  "devDependencies": {
+    "@types/sinon": "^7.5.1"
   }
 }

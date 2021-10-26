@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/pushnotification",
-  "version": "2.1.6",
+  "version": "4.3.0",
   "description": "Push notifications category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -9,9 +9,11 @@
     "access": "public"
   },
   "scripts": {
-    "test": "jest -w 1 --coverage --passWithNoTests",
-    "build-with-test": "npm run clean && npm test && tsc",
+    "test": "tslint 'src/**/*.ts' && jest -w 1 --coverage",
+    "build-with-test": "npm test && npm run build",
     "build": "npm run clean && tsc",
+    "build:cjs:watch": "node ./build es5 --watch",
+    "build:esm:watch": "echo \"ES Modules are not exported in react-native. Use target build:cjs:watch\"",
     "clean": "rimraf lib lib-esm dist",
     "format": "echo \"Not implemented\"",
     "lint": "tslint 'src/**/*.ts'"
@@ -36,27 +38,38 @@
     "babel-preset-stage-2": "^6.24.1",
     "compression-webpack-plugin": "^1.1.3",
     "find": "^0.2.7",
-    "jest": "^22.4.3",
     "json-loader": "^0.5.7",
     "prepend-file": "^1.3.1",
     "rimraf": "^2.6.2",
     "source-map-loader": "^0.2.1",
-    "ts-jest": "^22.0.0",
-    "tslint": "^5.7.0",
-    "tslint-config-airbnb": "^5.8.0",
     "uglifyjs-webpack-plugin": "^0.4.6",
     "webpack": "^3.5.5"
   },
   "dependencies": {
-    "@aws-amplify/core": "^2.2.5",
+    "@aws-amplify/core": "4.3.3",
     "@react-native-community/push-notification-ios": "1.0.3"
   },
   "peerdependencies": {
     "react-native": "^0.55.0"
   },
   "jest": {
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false,
+        "tsConfig": {
+          "lib": [
+            "es5",
+            "es2015",
+            "dom",
+            "esnext.asynciterable",
+            "es2017.object"
+          ],
+          "allowJs": true
+        }
+      }
+    },
     "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>../../node_modules/ts-jest/preprocessor.js"
+      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
     "moduleFileExtensions": [
@@ -68,8 +81,17 @@
     ],
     "testEnvironment": "jsdom",
     "testURL": "http://localhost/",
+    "coverageThreshold": {
+      "global": {
+        "branches": 0,
+        "functions": 0,
+        "lines": 0,
+        "statements": 0
+      }
+    },
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "lib"
     ]
   }
 }

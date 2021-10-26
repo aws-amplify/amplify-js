@@ -143,6 +143,13 @@ export const genericAttrs = {
 	dialCodeSelect: 'dial-code-select',
 };
 
+export const chatBot = {
+	title: 'chatbot-title',
+	dialog: 'chatbot-dialog',
+	messageInput: 'chatbot-message-input',
+	sendMessageButton: 'chatbot-send-message-button',
+};
+
 export const auth = {
 	signIn,
 	signOut,

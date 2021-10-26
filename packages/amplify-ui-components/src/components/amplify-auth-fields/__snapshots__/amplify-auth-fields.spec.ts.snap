@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-auth-fields spec: Render logic -> should render custom type fields 1`] = `
+<amplify-auth-fields>
+  <div class="auth-fields">
+    <amplify-form-field label="date" type="date"></amplify-form-field>
+  </div>
+</amplify-auth-fields>
+`;
+
+exports[`amplify-auth-fields spec: Render logic -> should render with a \`username\` and \`password\` field 1`] = `
+<amplify-auth-fields>
+  <div class="auth-fields">
+    <amplify-username-field></amplify-username-field>
+    <amplify-password-field></amplify-password-field>
+  </div>
+</amplify-auth-fields>
+`;
+
+exports[`amplify-auth-fields spec: Render logic -> should render with no default values and a empty string 1`] = `
+<amplify-auth-fields>
+  <div class="auth-fields"></div>
+</amplify-auth-fields>
+`;

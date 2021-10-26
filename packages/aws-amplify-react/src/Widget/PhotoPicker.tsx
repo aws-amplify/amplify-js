@@ -12,10 +12,9 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Picker from './Picker';
+import { Picker } from './Picker';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import {
 	FormSection,
@@ -35,7 +34,7 @@ export interface IPhotoPickerProps {
 	headerText?: string;
 	onLoad?: (dataUrl: any) => void;
 	onPick?: (data: any) => void;
-	preview?: 'hidden';
+	preview?: boolean | 'hidden';
 	previewSrc?: string;
 	title?: string;
 	theme?: any;
@@ -45,7 +44,7 @@ export interface IPhotoPickerState {
 	previewSrc?: string;
 }
 
-export default class PhotoPicker extends Component<
+export class PhotoPicker extends React.Component<
 	IPhotoPickerProps,
 	IPhotoPickerState
 > {
@@ -68,7 +67,7 @@ export default class PhotoPicker extends Component<
 			onPick(data);
 		}
 
-		if (preview) {
+		if (preview && preview !== 'hidden') {
 			const reader = new FileReader();
 			reader.onload = function(e) {
 				const url = e.target.result;
@@ -94,7 +93,7 @@ export default class PhotoPicker extends Component<
 		const theme = this.props.theme || AmplifyTheme;
 		const previewStyle = Object.assign({}, PickerPreview, theme.pickerPreview);
 
-		const previewHidden = !(preview && preview !== 'hidden');
+		const previewHidden = !preview || preview === 'hidden';
 
 		return (
 			<FormSection theme={theme}>
@@ -122,3 +121,8 @@ export default class PhotoPicker extends Component<
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default PhotoPicker;

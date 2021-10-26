@@ -33,7 +33,7 @@ depending on your project setup and experience with modern JavaScript build tool
 ```javascript
 // Using ES6 modules
 import 'cross-fetch/polyfill';
-import { AmazonCognitoIdentity } from 'amazon-cognito-identity-js';
+import AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 
 // Or, using CommonJS modules
 require('cross-fetch/polyfill');
@@ -88,7 +88,7 @@ migration.
   Package Manager, which is installed with Node.js):
 
   ```
-  > npm install --save-dev webpack json-loader
+  > npm install --save-dev webpack-cli
   > npm install --save amazon-cognito-identity-js
   ```
 
@@ -109,14 +109,6 @@ migration.
   	output: {
   		path: __dirname + '/dist',
   		filename: 'my-app.js',
-  	},
-  	module: {
-  		rules: [
-  			{
-  				test: /\.json$/,
-  				loader: 'json-loader',
-  			},
-  		],
   	},
   };
   ```
@@ -732,16 +724,28 @@ cognitoUser.forgetDevice({
 
 ```
 
-**Use case 24.** Retrieve the MFA Options for the user in case MFA is optional.
+**Use case 24.** Retrieve the MFA settings for the user.
 
 ```javascript
-cognitoUser.getMFAOptions(function(err, mfaOptions) {
+cognitoUser.getUserData((err, data) => {
 	if (err) {
 		alert(err.message || JSON.stringify(err));
 		return;
 	}
-	console.log('MFA options for user ' + mfaOptions);
+	const { PreferredMfaSetting, UserMFASettingList } = data;
+	console.log(
+		JSON.stringify({ PreferredMfaSetting, UserMFASettingList }, null, 2)
+	);
 });
+```
+
+E.g.
+
+```json
+{
+	"PreferredMfaSetting": "SMS_MFA",
+	"UserMFASettingList": ["SMS_MFA"]
+}
 ```
 
 **Use case 25.** Authenticating a user with a passwordless custom flow.
@@ -765,9 +769,6 @@ cognitoUser.initiateAuth(authenticationDetails, {
 ```
 
 **Use case 26.** Using cookies to store cognito tokens
-
-```javascript
-```
 
 To use the CookieStorage you have to pass it in the constructor map of CognitoUserPool and CognitoUser (when constructed directly):
 
@@ -793,6 +794,7 @@ The CookieStorage object receives a map (data) in its constructor that may have 
 - data.path Cookies path (default: '/')
 - data.expires Cookie expiration (in days, default: 365)
 - data.secure Cookie secure flag (default: true)
+- data.sameSite Cookie request behaviour (default: null)
 
 **Use case 27.** Selecting the MFA method and authenticating using TOTP.
 
@@ -853,7 +855,7 @@ cognitoUser.authenticateUser(authenticationDetails, {
 **Use case 28.** Enabling and setting SMS MFA as the preferred MFA method for the user.
 
 ```js
-smsMfaSettings = {
+var smsMfaSettings = {
 	PreferredMfa: true,
 	Enabled: true,
 };
@@ -868,7 +870,7 @@ cognitoUser.setUserMfaPreference(smsMfaSettings, null, function(err, result) {
 **Use case 29.** Enabling and setting TOTP MFA as the preferred MFA method for the user.
 
 ```js
-totpMfaSettings = {
+var totpMfaSettings = {
 	PreferredMfa: true,
 	Enabled: true,
 };
@@ -928,7 +930,7 @@ cognitoUser.getUserData(
 **Use case 32.** Handling expiration of the Id Token.
 
 ```js
-refresh_token = session.getRefreshToken(); // receive session from calling cognitoUser.getSession()
+var refresh_token = session.getRefreshToken(); // receive session from calling cognitoUser.getSession()
 if (AWS.config.credentials.needsRefresh()) {
 	cognitoUser.refreshSession(refresh_token, (err, session) => {
 		if (err) {

@@ -1,14 +1,10 @@
-import Auth from '@aws-amplify/auth';
-import SignUp from '../../src/Auth/SignUp';
 import * as React from 'react';
+import { Auth } from '@aws-amplify/auth';
+import { SignUp } from '../../src/Auth/SignUp';
 import AmplifyTheme from '../../src/AmplifyTheme';
-import AuthPiece from '../../src/Auth/AuthPiece';
 import {
-	Header,
-	Footer,
 	Input,
 	Button,
-	SelectInput,
 	InputLabel,
 } from '../../src/Amplify-UI/Amplify-UI-Components-React';
 import { PhoneField } from '../../src/Auth/PhoneField';
@@ -125,7 +121,7 @@ describe('signUp without signUpConfig prop', () => {
 			spyon_changeState.mockClear();
 		});
 
-		test('state.requestPending should be true when signUp execution begins', async () => {
+		test('state.requestPending should be true when signUp execution begins', () => {
 			const wrapper = shallow(<SignUp />);
 			wrapper.setProps({
 				authState: 'signUp',
@@ -172,8 +168,9 @@ describe('signUp without signUpConfig prop', () => {
 
 			const button = wrapper.find(Button);
 			expect(button.props().disabled).toEqual(false);
+			expect(wrapper.state().requestPending).toEqual(false);
 
-			await button.simulate('click');
+			button.simulate('click');
 			expect(wrapper.state().requestPending).toEqual(true);
 		});
 

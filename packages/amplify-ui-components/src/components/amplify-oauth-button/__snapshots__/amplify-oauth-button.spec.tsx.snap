@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-oauth-button stories defaults 1`] = `
+<amplify-oauth-button>
+  <mock:shadow-root>
+    <amplify-sign-in-button provider="oauth">
+      Sign in with AWS
+    </amplify-sign-in-button>
+  </mock:shadow-root>
+</amplify-oauth-button>
+`;

@@ -1,0 +1,16 @@
+__mocks__/**
+__tests__/**
+coverage/**
+docs/**
+media/**
+node_modules/**
+test_Setup/**
+.vscode/**
+.DS_Store
+*.log
+lib/.tsbuildinfo
+lib-esm/.tsbuildinfo
+prepend-license.js
+cypress/**
+cypress.json
+tsc-out/**

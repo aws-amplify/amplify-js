@@ -13,7 +13,7 @@
 
 const lists: MethodEmbed[] = [];
 
-export default class MethodEmbed {
+export class MethodEmbed {
 	public context;
 	public methodName;
 	private _originalMethod;
@@ -57,3 +57,8 @@ function getInstance(context, methodName): MethodEmbed {
 
 	return instance;
 }
+
+/**
+ * @deprecated use named import
+ */
+export default MethodEmbed;

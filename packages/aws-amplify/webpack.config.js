@@ -5,7 +5,7 @@ module.exports = {
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',
-		library: 'aws-amplify',
+		library: 'aws_amplify',
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
 		globalObject: 'this',

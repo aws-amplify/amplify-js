@@ -130,9 +130,7 @@ export class ForgotPasswordComponentCore implements OnInit {
 	country_code: string = '1';
 	email: string;
 
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		this.logger = this.amplifyService.logger('ForgotPasswordComponent');
 	}
 

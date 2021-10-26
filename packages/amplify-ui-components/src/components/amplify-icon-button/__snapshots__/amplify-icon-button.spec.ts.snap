@@ -1,0 +1,225 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-icon-button spec: Render logic -> renders amazon icon button correctly 1`] = `
+<amplify-icon-button name="amazon">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="amazon"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders auth0 icon button correctly 1`] = `
+<amplify-icon-button name="auth0">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="auth0"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders ban icon button correctly 1`] = `
+<amplify-icon-button name="ban">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="ban"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders enter-vr icon button correctly 1`] = `
+<amplify-icon-button name="enter-vr">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="enter-vr"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders exit-vr icon button correctly 1`] = `
+<amplify-icon-button name="exit-vr">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="exit-vr"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders facebook icon button correctly 1`] = `
+<amplify-icon-button name="facebook">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="facebook"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders google icon button correctly 1`] = `
+<amplify-icon-button name="google">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="google"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders loading icon button correctly 1`] = `
+<amplify-icon-button name="loading">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="loading"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders maximize icon button correctly 1`] = `
+<amplify-icon-button name="maximize">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="maximize"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders microphone icon button correctly 1`] = `
+<amplify-icon-button name="microphone">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="microphone"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders minimize icon button correctly 1`] = `
+<amplify-icon-button name="minimize">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="minimize"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders photoPlaceholder icon button correctly 1`] = `
+<amplify-icon-button name="photoPlaceholder">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="photoPlaceholder"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders send icon button correctly 1`] = `
+<amplify-icon-button name="send">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="send"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders sound icon button correctly 1`] = `
+<amplify-icon-button name="sound">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="sound"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders sound-mute icon button correctly 1`] = `
+<amplify-icon-button name="sound-mute">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="sound-mute"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;
+
+exports[`amplify-icon-button spec: Render logic -> renders warning icon button correctly 1`] = `
+<amplify-icon-button name="warning">
+  <mock:shadow-root>
+    <span class="action-button">
+      <amplify-tooltip>
+        <button>
+          <amplify-icon name="warning"></amplify-icon>
+        </button>
+      </amplify-tooltip>
+    </span>
+  </mock:shadow-root>
+</amplify-icon-button>
+`;

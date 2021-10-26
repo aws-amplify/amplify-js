@@ -11,4 +11,4 @@
  * and limitations under the License.
  */
 
-export { default as Connect } from './Connect';
+export { Connect } from './Connect';

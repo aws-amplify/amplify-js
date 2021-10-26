@@ -1,13 +1,10 @@
 import * as React from 'react';
-import { Component } from 'react';
-import withFacebook from '../../../src/Auth/Provider/withFacebook';
-import withGoogle from '../../../src/Auth/Provider/withGoogle';
 import { withFederated } from '../../../src/Auth/Provider/index';
 
 describe('withFederated test', () => {
 	describe('render test', () => {
 		test('render correctly', () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}

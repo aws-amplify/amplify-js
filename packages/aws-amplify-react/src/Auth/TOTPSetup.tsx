@@ -12,16 +12,16 @@
  */
 
 import * as React from 'react';
-import { JS, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
-import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
-import TOTPSetupComp from '../Widget/TOTPSetupComp';
+import { isEmpty, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState  } from './AuthPiece';
+import { TOTPSetupComp } from '../Widget/TOTPSetupComp';
 
 import { auth } from '../Amplify-UI/data-test-attributes';
 
 const logger = new Logger('TOTPSetup');
 
-export default class TOTPSetup extends AuthPiece<
+export class TOTPSetup extends AuthPiece<
 	IAuthPieceProps,
 	IAuthPieceState
 > {
@@ -40,7 +40,7 @@ export default class TOTPSetup extends AuthPiece<
 			);
 		}
 		Auth.verifiedContact(user).then(data => {
-			if (!JS.isEmpty(data.verified)) {
+			if (!isEmpty(data.verified)) {
 				this.changeState('signedIn', user);
 			} else {
 				const newUser = Object.assign(user, data);
@@ -74,3 +74,8 @@ export default class TOTPSetup extends AuthPiece<
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default TOTPSetup;

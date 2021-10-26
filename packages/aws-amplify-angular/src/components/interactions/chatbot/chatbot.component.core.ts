@@ -23,7 +23,7 @@ import {
 	Inject,
 } from '@angular/core';
 import { AmplifyService } from '../../../providers/amplify.service';
-import { isUndefined } from 'util';
+import { chatBot } from '../../../assets/data-test-attributes';
 require('./aws-lex-audio.js');
 
 const template = `
@@ -42,6 +42,7 @@ const template = `
 			</div>
 			<div class="amplify-interactions-actions">
 				<input #inputValue
+					data-test="${chatBot.messageInput}"
 					type='text'
 					class="amplify-form-input"
 					placeholder="{{currentVoiceState}}"
@@ -127,7 +128,7 @@ export class ChatbotComponentCore implements OnInit {
 
 	constructor(
 		ref: ChangeDetectorRef,
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
+		@Inject(AmplifyService) public amplifyService: AmplifyService
 	) {
 		this.ref = ref;
 		this.continueConversation = false;
@@ -139,13 +140,11 @@ export class ChatbotComponentCore implements OnInit {
 		this.botName = data.bot;
 		this.chatTitle = data.title;
 		this.clearComplete = data.clearComplete;
-		this.conversationModeOn = isUndefined(data.conversationModeOn)
-			? false
-			: data.conversationModeOn;
-		this.voiceEnabled = isUndefined(data.voiceEnabled)
-			? false
-			: data.voiceEnabled;
-		this.textEnabled = isUndefined(data.textEnabled) ? true : data.textEnabled;
+		this.conversationModeOn =
+			data.conversationModeOn === undefined ? false : data.conversationModeOn;
+		this.voiceEnabled =
+			data.voiceEnabled === undefined ? false : data.voiceEnabled;
+		this.textEnabled = data.textEnabled === undefined ? true : data.textEnabled;
 		this.voiceConfig = data.voiceConfig || this.voiceConfig;
 		this.performOnComplete = this.performOnComplete.bind(this);
 		this.amplifyService

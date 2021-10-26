@@ -1,0 +1,19 @@
+/**
+ * @prop --font-family: Text font family
+ */
+:host {
+	--font-family: var(--amplify-font-family);
+}
+
+.checkbox {
+	margin-bottom: 22px;
+	display: block;
+	width: 100%;
+	padding: 16px;
+	font-size: var(--amplify-text-sm);
+	font-family: var(--font-family);
+
+	input {
+		margin-right: 12px;
+	}
+}

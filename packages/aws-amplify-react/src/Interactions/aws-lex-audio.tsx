@@ -112,8 +112,11 @@
 							if (!audioSupported) {
 								throw new Error(UNSUPPORTED);
 							}
-							recorder = audioRecorder.createRecorder(silenceDetectionConfig);
-							recorder.record(onSilence, visualizer);
+							const context = audioRecorder.audioContext();
+							context.resume().then(() => {
+								recorder = audioRecorder.createRecorder(silenceDetectionConfig);
+								recorder.record(onSilence, visualizer);
+							});
 						};
 
 						/**

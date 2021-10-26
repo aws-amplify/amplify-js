@@ -13,8 +13,8 @@
 
 import * as React from 'react';
 import { I18n, ConsoleLogger as Logger, Hub } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
-import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { Auth } from '@aws-amplify/auth';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import {
 	NavBar,
 	Nav,
@@ -23,7 +23,7 @@ import {
 } from '../Amplify-UI/Amplify-UI-Components-React';
 import { auth } from '../Amplify-UI/data-test-attributes';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
-import SignOut from './SignOut';
+import { SignOut } from './SignOut';
 import { withGoogle, withAmazon, withFacebook, withAuth0 } from './Provider';
 import { UsernameAttributes } from './common/types';
 
@@ -41,10 +41,7 @@ export interface IGreetingsState extends IAuthPieceState {
 	stateFromStorage?: boolean;
 }
 
-export default class Greetings extends AuthPiece<
-	IGreetingsProps,
-	IGreetingsState
-> {
+export class Greetings extends AuthPiece<IGreetingsProps, IGreetingsState> {
 	private _isMounted: boolean;
 
 	constructor(props: IGreetingsProps) {
@@ -219,3 +216,8 @@ export default class Greetings extends AuthPiece<
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default Greetings;

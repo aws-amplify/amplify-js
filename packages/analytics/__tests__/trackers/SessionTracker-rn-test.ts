@@ -31,6 +31,7 @@ describe('SessionTracker test', () => {
 				{
 					name: '_session.start',
 					attributes: {},
+					immediate: false,
 				},
 				'AWSPinpoint'
 			);
@@ -94,6 +95,7 @@ describe('SessionTracker test', () => {
 				{
 					name: '_session.start',
 					attributes: {},
+					immediate: false,
 				},
 				'AWSPinpoint'
 			);
@@ -108,7 +110,7 @@ describe('SessionTracker test', () => {
 			sessionTracker._trackFunc('inactive');
 
 			expect(tracker).toBeCalledWith(
-				{ attributes: {}, immediate: true, name: '_session.stop' },
+				{ attributes: {}, immediate: false, name: '_session.stop' },
 				'AWSPinpoint'
 			);
 		});

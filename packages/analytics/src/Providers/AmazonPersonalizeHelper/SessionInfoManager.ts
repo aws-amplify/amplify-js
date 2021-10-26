@@ -10,10 +10,11 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { RequestParams, SessionInfo } from './DataType';
-import { isEmpty, isEqual } from 'lodash';
+import { SessionInfo } from './DataType';
+import isEmpty from 'lodash/isEmpty';
+import isEqual from 'lodash/isEqual';
 import { v1 as uuid } from 'uuid';
-import { StorageHelper, ConsoleLogger as Logger, JS } from '@aws-amplify/core';
+import { ConsoleLogger as Logger, JS } from '@aws-amplify/core';
 
 import Cache from '@aws-amplify/cache';
 

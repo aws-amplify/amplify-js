@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 
 /** @class */
 export default class CognitoJwtToken {

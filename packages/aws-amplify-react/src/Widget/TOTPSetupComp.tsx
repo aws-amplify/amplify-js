@@ -12,9 +12,8 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import {
@@ -30,7 +29,7 @@ import {
 
 import { totpQrcode } from '@aws-amplify/ui';
 
-const QRCode = require('qrcode.react');
+import QRCode from 'qrcode.react';
 
 const logger = new Logger('TOTPSetupComp');
 
@@ -45,7 +44,7 @@ export interface ITOTPSetupCompState {
 	setupMessage: string | null;
 }
 
-export default class TOTPSetupComp extends Component<
+export class TOTPSetupComp extends React.Component<
 	ITOTPSetupCompProps,
 	ITOTPSetupCompState
 > {
@@ -82,7 +81,7 @@ export default class TOTPSetupComp extends Component<
 		const { name, value, type, checked } = evt.target;
 		// @ts-ignore
 		const check_type = ['radio', 'checkbox'].includes(type);
-		this.inputs[name] = check_type ? checked : value;
+		this.inputs[name] = check_type ? `${checked}` : value;
 	}
 
 	setup() {
@@ -199,3 +198,8 @@ export default class TOTPSetupComp extends Component<
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default TOTPSetupComp;

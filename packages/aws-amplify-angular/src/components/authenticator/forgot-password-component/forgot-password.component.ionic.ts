@@ -50,7 +50,7 @@ const template = `
         #code
         type="text"
         class="amplify-form-input"
-        (keyup)="setCode(code.value)"
+        (input)="setCode(code.value)"
         data-test="${auth.forgotPassword.codeInput}"
       ></ion-input>
     </ion-item>
@@ -62,7 +62,7 @@ const template = `
         #password
         type="password"
         class="amplify-form-input"
-        (keyup)="setPassword(password.value)"
+        (input)="setPassword(password.value)"
         (keyup.enter)="onSubmit()"
         data-test="${auth.forgotPassword.newPasswordInput}"
       ></ion-input>
@@ -117,9 +117,7 @@ const template = `
 	template,
 })
 export class ForgotPasswordComponentIonic extends ForgotPasswordComponentCore {
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		super(amplifyService);
 	}
 

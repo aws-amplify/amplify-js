@@ -1,7 +1,7 @@
-export { default as closest } from './closest';
-export { default as delegate } from './delegate';
-export { default as dispatch } from './dispatch';
-export { default as getAttributes } from './get-attributes';
-export { default as matches } from './matches';
-export { default as parents } from './parents';
-export { default as parseUrl } from './parse-url';
+export { closest } from './closest';
+export { delegate } from './delegate';
+export { dispatch } from './dispatch';
+export { getAttributes } from './get-attributes';
+export { matches } from './matches';
+export { parents } from './parents';
+export { parseUrl } from './parse-url';

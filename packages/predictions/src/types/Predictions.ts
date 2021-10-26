@@ -221,7 +221,7 @@ export interface Point {
 	y?: Number;
 }
 
-export type Polygon = Point[];
+export type Polygon = Array<Point> | Iterable<Point>;
 
 export interface BoundingBox {
 	width?: Number;
@@ -352,3 +352,30 @@ export function isInterpretTextInput(obj: any): obj is InterpretTextInput {
 	const key: keyof InterpretTextInput = 'text';
 	return obj && obj.hasOwnProperty(key);
 }
+
+export interface Geometry {
+	/**
+	 * <p>An axis-aligned coarse representation of the detected text's location on the image.</p>
+	 */
+	BoundingBox?: BoundingBox;
+
+	/**
+	 * <p>Within the bounding box, a fine-grained polygon around the detected text.</p>
+	 */
+	Polygon?: Array<Point> | Iterable<Point>;
+}
+
+export interface Relationship {
+	/**
+	 * <p>The type of relationship that the blocks in the IDs array have with the current block. The relationship can be <code>VALUE</code> or <code>CHILD</code>.</p>
+	 */
+	Type?: 'VALUE' | 'CHILD' | string;
+
+	/**
+	 * <p>An array of IDs for related blocks. You can get the type of the relationship from the <code>Type</code> element.</p>
+	 */
+	Ids?: Array<string> | Iterable<string>;
+}
+
+export type FeatureType = 'TABLES' | 'FORMS' | string;
+export type FeatureTypes = FeatureType[];

@@ -9,7 +9,7 @@
  *     values are the attribute values. If no attributes exist, an empty
  *     object is returned.
  */
-export default function getAttributes(element) {
+export function getAttributes(element) {
 	const attrs = {};
 
 	// Validate input.

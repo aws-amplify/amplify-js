@@ -4,24 +4,17 @@ import {
 	TranslateTextOutput,
 	TextToSpeechInput,
 	ProviderOptions,
-	isTranslateTextInput,
 	TextToSpeechOutput,
 	SpeechToTextInput,
 	SpeechToTextOutput,
-	isTextToSpeechInput,
-	isSpeechToTextInput,
 	IdentifyTextInput,
 	IdentifyTextOutput,
 	IdentifyLabelsOutput,
 	IdentifyLabelsInput,
 	IdentifyEntitiesInput,
 	IdentifyEntitiesOutput,
-	isIdentifyTextInput,
-	isIdentifyLabelsInput,
-	isIdentifyEntitiesInput,
 	InterpretTextOutput,
 	InterpretTextInput,
-	isInterpretTextInput,
 } from './types';
 import {
 	AbstractConvertPredictionsProvider,
@@ -29,11 +22,11 @@ import {
 	AbstractInterpretPredictionsProvider,
 	AbstractPredictionsProvider,
 } from './types/Providers';
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Predictions');
 
-export default class Predictions {
+export class PredictionsClass {
 	private _options: PredictionsOptions;
 
 	private _convertPluggables: AbstractConvertPredictionsProvider[];
@@ -251,3 +244,6 @@ export default class Predictions {
 		return obj && typeof obj.interpret === 'function';
 	}
 }
+
+export const Predictions = new PredictionsClass({});
+Amplify.register(Predictions);

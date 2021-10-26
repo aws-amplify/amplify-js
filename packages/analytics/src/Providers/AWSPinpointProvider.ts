@@ -14,15 +14,19 @@
 import {
 	ConsoleLogger as Logger,
 	ClientDevice,
-	Platform,
 	Credentials,
 	Signer,
 	JS,
 	Hub,
+	getAmplifyUserAgent,
 } from '@aws-amplify/core';
-
-import * as Pinpoint from 'aws-sdk/clients/pinpoint';
-
+import {
+	EventsBatch,
+	PinpointClient,
+	PutEventsCommand,
+	PutEventsCommandInput,
+	UpdateEndpointCommand,
+} from '@aws-sdk/client-pinpoint';
 import Cache from '@aws-amplify/cache';
 
 import {
@@ -49,7 +53,6 @@ const logger = new Logger('AWSPinpointProvider');
 const RETRYABLE_CODES = [429, 500];
 const ACCEPTED_CODES = [202];
 const FORBIDDEN_CODE = 403;
-const BAD_REQUEST_CODE = 400;
 const MOBILE_SERVICE_NAME = 'mobiletargeting';
 const EXPIRED_TOKEN_CODE = 'ExpiredTokenException';
 const UPDATE_ENDPOINT = '_update_endpoint';
@@ -67,8 +70,8 @@ const FLUSH_SIZE = 100;
 const FLUSH_INTERVAL = 5 * 1000; // 5s
 const RESEND_LIMIT = 5;
 
-// params: { event: {name: , .... }, timeStamp, config, resendLimit }
-export default class AWSPinpointProvider implements AnalyticsProvider {
+// params: { event: {name: , .... }, timeStamp, config, resendLimits }
+export class AWSPinpointProvider implements AnalyticsProvider {
 	static category = 'Analytics';
 	static providerName = 'AWSPinpoint';
 
@@ -115,6 +118,10 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		logger.debug('configure Analytics', config);
 		const conf = config || {};
 		this._config = Object.assign({}, this._config, conf);
+
+		// If autoSessionRecord is enabled, we need to wait for the endpoint to be
+		// updated before sending any events. See `sendEvents` in `Analytics.ts`
+		this._endpointGenerating = !!config['autoSessionRecord'];
 
 		if (this._config.appId && !this._config.disabled) {
 			if (!this._config.endpointId) {
@@ -257,15 +264,14 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
 		const endpointContext = {};
 
-		const eventParams = {
+		const eventParams: PutEventsCommandInput = {
 			ApplicationId: appId,
 			EventsRequest: {
 				BatchItem: {},
 			},
 		};
 
-		eventParams.EventsRequest.BatchItem[endpointId] = {};
-		const endpointObj = eventParams.EventsRequest.BatchItem[endpointId];
+		const endpointObj: EventsBatch = {} as EventsBatch;
 		endpointObj.Endpoint = endpointContext;
 		endpointObj.Events = {
 			[eventId]: {
@@ -276,6 +282,7 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 				Session: session,
 			},
 		};
+		eventParams.EventsRequest.BatchItem[endpointId] = endpointObj;
 
 		return eventParams;
 	}
@@ -286,9 +293,10 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 			config: { endpointId },
 		} = params;
 		const eventParams = this._generateBatchItemContext(params);
+		const command: PutEventsCommand = new PutEventsCommand(eventParams);
 
 		try {
-			const data = await this.pinpointClient.putEvents(eventParams).promise();
+			const data = await this.pinpointClient.send(command);
 			const {
 				EventsResponse: {
 					Results: {
@@ -400,9 +408,10 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		};
 
 		try {
-			const data = await this.pinpointClient
-				.updateEndpoint(update_params)
-				.promise();
+			const command: UpdateEndpointCommand = new UpdateEndpointCommand(
+				update_params
+			);
+			const data = await this.pinpointClient.send(command);
 
 			logger.debug('updateEndpoint success', data);
 			this._endpointGenerating = false;
@@ -423,12 +432,11 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 
 	private async _handleEndpointUpdateFailure(failureData: EndpointFailureData) {
 		const { err, endpointObject } = failureData;
-		const { statusCode } = err;
-		logger.debug('updateEndpoint failed', err);
+		const statusCode = err.$metadata && err.$metadata.httpStatusCode;
+
+		logger.debug('updateEndpoint error', err);
 
 		switch (statusCode) {
-			case BAD_REQUEST_CODE:
-				return this._handleEndpointUpdateBadRequest(failureData);
 			case FORBIDDEN_CODE:
 				return this._handleEndpointUpdateForbidden(failureData);
 			default:
@@ -437,43 +445,14 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 					const exponential = true;
 					return this._retryEndpointUpdate(endpointObject, exponential);
 				}
+				logger.error('updateEndpoint failed', err);
 				endpointObject.handlers.reject(err);
-		}
-	}
-
-	private async _handleEndpointUpdateBadRequest(
-		failureData: EndpointFailureData
-	) {
-		const { err, update_params, endpointObject } = failureData;
-		const { message } = err;
-		const { ApplicationId, EndpointRequest } = update_params;
-
-		if (
-			!String(message).startsWith('Exceeded maximum endpoint per user count')
-		) {
-			return endpointObject.handlers.reject(err);
-		}
-
-		try {
-			await this._removeUnusedEndpoints(
-				ApplicationId,
-				EndpointRequest.User.UserId
-			);
-			logger.debug('Removed unused endpoints successfully');
-			this._retryEndpointUpdate(endpointObject);
-		} catch (err) {
-			logger.warn(`Failed to remove unused endpoints with error: ${err}`);
-			logger.warn(
-				`Please ensure you have updated your Pinpoint IAM Policy ` +
-					`with the Action: "mobiletargeting:GetUserEndpoints" ` +
-					`in order to get endpoints info of the user`
-			);
-			return endpointObject.handlers.reject(err);
 		}
 	}
 
 	private _handleEndpointUpdateForbidden(failureData: EndpointFailureData) {
 		const { err, endpointObject } = failureData;
+
 		const { code, retryable } = err;
 
 		if (code !== EXPIRED_TOKEN_CODE && !retryable) {
@@ -518,67 +497,6 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		}
 	}
 
-	private async _removeUnusedEndpoints(appId, userId) {
-		return new Promise((res, rej) => {
-			// TODO: re-write with Promise (during refactor pt. 2)
-			this.pinpointClient.getUserEndpoints(
-				{
-					ApplicationId: appId,
-					UserId: userId,
-				},
-				(err, data) => {
-					if (err) {
-						logger.debug(
-							`Failed to get endpoints associated with the userId: ${userId} with error`,
-							err
-						);
-						return rej(err);
-					}
-					const endpoints = data.EndpointsResponse.Item;
-					logger.debug(
-						`get endpoints associated with the userId: ${userId} with data`,
-						endpoints
-					);
-					let endpointToBeDeleted = endpoints[0];
-					for (let i = 1; i < endpoints.length; i++) {
-						const timeStamp1 = Date.parse(endpointToBeDeleted['EffectiveDate']);
-						const timeStamp2 = Date.parse(endpoints[i]['EffectiveDate']);
-						// delete the one with invalid effective date
-						if (isNaN(timeStamp1)) break;
-						if (isNaN(timeStamp2)) {
-							endpointToBeDeleted = endpoints[i];
-							break;
-						}
-
-						if (timeStamp2 < timeStamp1) {
-							endpointToBeDeleted = endpoints[i];
-						}
-					}
-					// update the endpoint's user id with an empty string
-					const update_params = {
-						ApplicationId: appId,
-						EndpointId: endpointToBeDeleted['Id'],
-						EndpointRequest: {
-							User: {
-								UserId: '',
-							},
-						},
-					};
-					this.pinpointClient.updateEndpoint(update_params, (err, data) => {
-						if (err) {
-							logger.debug('Failed to update the endpoint', err);
-							return rej(err);
-						}
-						logger.debug(
-							'The old endpoint is updated with an empty string for user id'
-						);
-						return res(data);
-					});
-				}
-			);
-		});
-	}
-
 	/**
 	 * @private
 	 * @param config
@@ -604,7 +522,25 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		this._config.credentials = credentials;
 		const { region } = this._config;
 		logger.debug('init clients with credentials', credentials);
-		this.pinpointClient = new Pinpoint({ region, credentials });
+		this.pinpointClient = new PinpointClient({
+			region,
+			credentials,
+			customUserAgent: getAmplifyUserAgent(),
+		});
+
+		// TODO: remove this middleware once a long term fix is implemented by aws-sdk-js team.
+		this.pinpointClient.middlewareStack.addRelativeTo(
+			next => args => {
+				delete args.request.headers['amz-sdk-invocation-id'];
+				delete args.request.headers['amz-sdk-request'];
+				return next(args);
+			},
+			{
+				step: 'finalizeRequest',
+				relation: 'after',
+				toMiddleware: 'retryMiddleware',
+			}
+		);
 
 		if (this._bufferExists() && identityId === credentials.identityId) {
 			// if the identity has remained the same, pass the updated client to the buffer
@@ -657,18 +593,14 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 	}
 
 	private _customizePinpointClientReq() {
-		this.pinpointClient.customizeRequests(request => {
-			request.on('build', req => {
-				if (Platform.isReactNative) {
-					req.httpRequest.headers['user-agent'] = Platform.userAgent;
-				}
-
-				// TODO: remove this after we switch to using the current API (non-legacy)
-				if (req.httpRequest.path.includes('/events')) {
-					req.httpRequest.path += '/legacy';
-				}
-			});
-		});
+		// TODO FIXME: Find a middleware to do this with AWS V3 SDK
+		// if (Platform.isReactNative) {
+		// 	this.pinpointClient.customizeRequests(request => {
+		// 		request.on('build', req => {
+		// 			req.httpRequest.headers['user-agent'] = Platform.userAgent;
+		// 		});
+		// 	});
+		// }
 	}
 
 	private async _getEndpointId(cacheKey) {
@@ -682,7 +614,14 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		);
 		if (!endpointId) {
 			endpointId = uuid();
-			Cache.setItem(cacheKey, endpointId);
+			// set a longer TTL to avoid endpoint id being deleted after the default TTL (3 days)
+			// also set its priority to the highest to reduce its chance of being deleted when cache is full
+			const ttl = 1000 * 60 * 60 * 24 * 365 * 100; // 100 years
+			const expiration = new Date().getTime() + ttl;
+			Cache.setItem(cacheKey, endpointId, {
+				expires: expiration,
+				priority: 1,
+			});
 		}
 		return endpointId;
 	}
@@ -796,3 +735,8 @@ export default class AWSPinpointProvider implements AnalyticsProvider {
 		}
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default AWSPinpointProvider;

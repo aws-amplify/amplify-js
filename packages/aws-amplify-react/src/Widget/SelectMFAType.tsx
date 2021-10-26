@@ -12,9 +12,8 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 import {
@@ -27,7 +26,7 @@ import {
 	Toast,
 } from '../Amplify-UI/Amplify-UI-Components-React';
 
-import TOTPSetupComp from './TOTPSetupComp';
+import { TOTPSetupComp } from './TOTPSetupComp';
 
 const logger = new Logger('SelectMFAType');
 
@@ -49,12 +48,11 @@ export interface ISelectMFATypeState {
 	TOTPSetup: boolean;
 }
 
-export default class SelectMFAType extends Component<
+export class SelectMFAType extends React.Component<
 	ISelectMFATypeProps,
 	ISelectMFATypeState
-> {
+	> {
 	public inputs: any;
-
 	constructor(props) {
 		super(props);
 
@@ -77,7 +75,7 @@ export default class SelectMFAType extends Component<
 		const { name, value, type, checked } = evt.target;
 		// @ts-ignore
 		const check_type = ['radio', 'checkbox'].includes(type);
-		this.inputs[value] = check_type ? checked : value;
+		this.inputs[value] = check_type ? `${checked}` : value;
 	}
 
 	verify() {
@@ -201,7 +199,7 @@ export default class SelectMFAType extends Component<
 	}
 
 	render() {
-		const theme = this.props.theme ? this.props.theme : AmplifyTheme;
+		const theme = this.props.theme || AmplifyTheme;
 		return (
 			<div>
 				{this.selectView(theme)}
@@ -210,3 +208,8 @@ export default class SelectMFAType extends Component<
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default SelectMFAType;

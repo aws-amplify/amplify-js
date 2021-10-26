@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@1.1.2...aws-amplify-vue@1.1.4) (2020-02-07)
+## [2.1.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@2.1.4...aws-amplify-vue@2.1.5) (2021-01-29)
 
 **Note:** Version bump only for package aws-amplify-vue
 
@@ -11,62 +11,88 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [1.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@1.1.1...aws-amplify-vue@1.1.2) (2020-01-10)
+## [2.1.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@2.1.3...aws-amplify-vue@2.1.4) (2021-01-07)
+
+**Note:** Version bump only for package aws-amplify-vue
+
+
+
+
+
+## [2.1.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@2.1.2...aws-amplify-vue@2.1.3) (2020-10-29)
 
 
 ### Bug Fixes
 
-* correct Czech Republic phone country code ([#4694](https://github.com/aws-amplify/amplify-js/issues/4694)) ([9f8c7ed](https://github.com/aws-amplify/amplify-js/commit/9f8c7ed8515347bb4a5b6606202d85095406f7b9))
+* rewrite "forget password" to "forgot password" ([#7009](https://github.com/aws-amplify/amplify-js/issues/7009)) ([fd989e4](https://github.com/aws-amplify/amplify-js/commit/fd989e405a7bc024f780cc7df552ebd489e0be60)), closes [#6921](https://github.com/aws-amplify/amplify-js/issues/6921)
 
 
 
 
+
+## [2.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@2.1.1...aws-amplify-vue@2.1.2) (2020-07-27)
+
+
+### Bug Fixes
+
+* **@aws-amplify/interactions:** fix interactions v3 bugs and refactor type ([#6381](https://github.com/aws-amplify/amplify-js/issues/6381)) ([8c6fb4a](https://github.com/aws-amplify/amplify-js/commit/8c6fb4aefa60b36ed33d89c431e743f674119bde))
+
+
+
+
+
+## [2.1.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@2.1.0...aws-amplify-vue@2.1.1) (2020-04-02)
+
+**Note:** Version bump only for package aws-amplify-vue
+
+
+
+
+
+# [2.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@1.1.4...aws-amplify-vue@2.1.0) (2020-03-31)
+
+
+### Features
+
+* **@aws-amplify/storage:** S3 upload progress reporting and multipart upload ([#4558](https://github.com/aws-amplify/amplify-js/issues/4558)) ([64b0bec](https://github.com/aws-amplify/amplify-js/commit/64b0bec958c7d31b1b82208e397b3013a98de625)), closes [#4404](https://github.com/aws-amplify/amplify-js/issues/4404) [#4474](https://github.com/aws-amplify/amplify-js/issues/4474)
+
+
+
+
+
+## [1.1.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@1.1.2...aws-amplify-vue@1.1.4) (2020-02-07)
+
+**Note:** Version bump only for package aws-amplify-vue
+
+## [1.1.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@1.1.1...aws-amplify-vue@1.1.2) (2020-01-10)
+
+### Bug Fixes
+
+- correct Czech Republic phone country code ([#4694](https://github.com/aws-amplify/amplify-js/issues/4694)) ([9f8c7ed](https://github.com/aws-amplify/amplify-js/commit/9f8c7ed8515347bb4a5b6606202d85095406f7b9))
 
 ## [1.1.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@1.1.0...aws-amplify-vue@1.1.1) (2019-12-03)
 
 **Note:** Version bump only for package aws-amplify-vue
 
-
-
-
-
 # [1.1.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.3.3...aws-amplify-vue@1.1.0) (2019-11-15)
-
 
 ### Features
 
-* enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
-
-
-
-
+- enable watch mode for builds ([#4358](https://github.com/aws-amplify/amplify-js/issues/4358)) ([055e530](https://github.com/aws-amplify/amplify-js/commit/055e5308efc308ae6beee78f8963bb2f812e1f85))
 
 ## [0.3.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.3.2...aws-amplify-vue@0.3.3) (2019-10-23)
 
 **Note:** Version bump only for package aws-amplify-vue
 
-
-
-
-
 ## [0.3.2](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.3.0...aws-amplify-vue@0.3.2) (2019-10-10)
 
 **Note:** Version bump only for package aws-amplify-vue
 
-
-
-
-
 # [0.3.0](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.17...aws-amplify-vue@0.3.0) (2019-10-10)
-
 
 ### Features
 
-* Added Prettier formatting ([4dfd9aa](https://github.com/aws-amplify/amplify-js/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
-
-
-
-
+- Added Prettier formatting ([4dfd9aa](https://github.com/aws-amplify/amplify-js/commit/4dfd9aa9ab900307c9d17c68448a6ca4aa08fd5a))
 
 ## [0.2.17](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-vue@0.2.14...aws-amplify-vue@0.2.17) (2019-09-05)
 

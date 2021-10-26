@@ -13,9 +13,9 @@
 
 import { AuthErrorMessages, AuthErrorTypes } from './types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { AuthErrorStrings } from './common/AuthErrorStrings';
 
 const logger = new Logger('AuthError');
-const DEFAULT_MSG = 'Authentication Error';
 
 export class AuthError extends Error {
 	public log: string;
@@ -50,7 +50,7 @@ export class NoUserPoolError extends AuthError {
 
 export const authErrorMessages: AuthErrorMessages = {
 	noConfig: {
-		message: DEFAULT_MSG,
+		message: AuthErrorStrings.DEFAULT_MSG,
 		log: `
             Error: Amplify has not been configured correctly.
             This error is typically caused by one of the following scenarios:
@@ -58,50 +58,59 @@ export const authErrorMessages: AuthErrorMessages = {
             1. Make sure you're passing the awsconfig object to Amplify.configure() in your app's entry point
                 See https://aws-amplify.github.io/docs/js/authentication#configure-your-app for more information
             
-            2. There might be multiple conflicting versions of aws-amplify or amplify packages in your node_modules.
-                Try deleting your node_modules folder and reinstalling the dependencies with \`yarn install\`
+            2. There might be multiple conflicting versions of amplify packages in your node_modules.
+				Refer to our docs site for help upgrading Amplify packages (https://docs.amplify.aws/lib/troubleshooting/upgrading/q/platform/js)
         `,
 	},
 	missingAuthConfig: {
-		message: DEFAULT_MSG,
+		message: AuthErrorStrings.DEFAULT_MSG,
 		log: `
             Error: Amplify has not been configured correctly. 
-            The configuration object is missing required auth properties. 
-            Did you run \`amplify push\` after adding auth via \`amplify add auth\`?
-            See https://aws-amplify.github.io/docs/js/authentication#amplify-project-setup for more information
+            The configuration object is missing required auth properties.
+            This error is typically caused by one of the following scenarios:
+
+            1. Did you run \`amplify push\` after adding auth via \`amplify add auth\`?
+                See https://aws-amplify.github.io/docs/js/authentication#amplify-project-setup for more information
+
+            2. This could also be caused by multiple conflicting versions of amplify packages, see (https://docs.amplify.aws/lib/troubleshooting/upgrading/q/platform/js) for help upgrading Amplify packages.
         `,
 	},
 	emptyUsername: {
-		message: 'Username cannot be empty',
+		message: AuthErrorStrings.EMPTY_USERNAME,
 	},
 	// TODO: should include a list of valid sign-in types
 	invalidUsername: {
-		message:
-			'The username should either be a string or one of the sign in types',
+		message: AuthErrorStrings.INVALID_USERNAME,
 	},
 	emptyPassword: {
-		message: 'Password cannot be empty',
+		message: AuthErrorStrings.EMPTY_PASSWORD,
 	},
 	emptyCode: {
-		message: 'Confirmation code cannot be empty',
+		message: AuthErrorStrings.EMPTY_CODE,
 	},
 	signUpError: {
-		message: 'Error creating account',
+		message: AuthErrorStrings.SIGN_UP_ERROR,
 		log: 'The first parameter should either be non-null string or object',
 	},
 	noMFA: {
-		message: 'No valid MFA method provided',
+		message: AuthErrorStrings.NO_MFA,
 	},
 	invalidMFA: {
-		message: 'Invalid MFA type',
+		message: AuthErrorStrings.INVALID_MFA,
 	},
 	emptyChallengeResponse: {
-		message: 'Challenge response cannot be empty',
+		message: AuthErrorStrings.EMPTY_CHALLENGE,
 	},
 	noUserSession: {
-		message: 'Failed to get the session because the user is empty',
+		message: AuthErrorStrings.NO_USER_SESSION,
+	},
+	deviceConfig: {
+		message: AuthErrorStrings.DEVICE_CONFIG,
+	},
+	networkError: {
+		message: AuthErrorStrings.NETWORK_ERROR,
 	},
 	default: {
-		message: DEFAULT_MSG,
+		message: AuthErrorStrings.DEFAULT_MSG,
 	},
 };

@@ -1,83 +1,98 @@
 {
-  "name": "@aws-amplify/predictions",
-  "version": "2.1.6",
-  "description": "Machine learning category of aws-amplify",
-  "main": "./lib/index.js",
-  "module": "./lib-esm/index.js",
-  "typings": "./lib-esm/index.d.ts",
-  "react-native": {
-    "./index": "./lib/index.js"
-  },
-  "scripts": {
-    "test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
-    "build-with-test": "npm run clean && npm test && tsc && webpack -p",
-    "build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
-    "build:esm": "node ./build es6",
-    "build:cjs:watch": "node ./build es5 --watch",
-    "build:esm:watch": "node ./build es6 --watch",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "clean": "rimraf lib-esm lib dist",
-    "format": "echo \"Not implemented\"",
-    "lint": "tslint 'src/**/*.ts'",
-    "generate-docs-local": "typedoc --out docs src",
-    "generate-docs-root": "typedoc --out ../../docs src"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aws-amplify/amplify-js.git"
-  },
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/aws/aws-amplify/issues"
-  },
-  "homepage": "https://aws-amplify.github.io/",
-  "dependencies": {
-    "@aws-amplify/core": "^2.2.5",
-    "@aws-amplify/storage": "^2.2.1",
-    "@aws-sdk/eventstream-marshaller": "0.1.0-preview.2",
-    "@aws-sdk/util-utf8-node": "0.1.0-preview.1",
-    "uuid": "^3.2.1"
-  },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "diagnostics": false,
-        "tsConfig": {
-          "lib": [
-            "es5",
-            "es2015",
-            "dom",
-            "esnext.asynciterable",
-            "es2017.object"
-          ],
-          "allowJs": true
-        }
-      }
-    },
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json",
-      "jsx"
-    ],
-    "testEnvironment": "jsdom",
-    "testURL": "http://localhost/",
-    "coverageThreshold": {
-      "global": {
-        "branches": 0,
-        "functions": 0,
-        "lines": 0,
-        "statements": 0
-      }
-    },
-    "coveragePathIgnorePatterns": [
-      "/node_modules/"
-    ]
-  }
+	"name": "@aws-amplify/predictions",
+	"version": "4.0.21",
+	"description": "Machine learning category of aws-amplify",
+	"main": "./lib/index.js",
+	"module": "./lib-esm/index.js",
+	"typings": "./lib-esm/index.d.ts",
+	"react-native": {
+		"./lib/index": "./lib-esm/index.js"
+	},
+	"sideEffects": [
+		"./src/Predictions.ts",
+		"./lib/Predictions.js",
+		"./lib-esm/Predictions.js",
+		"./dist/aws-amplify-predictions.min.js",
+		"./dist/aws-amplify-predictions.js"
+	],
+	"scripts": {
+		"test": "jest -w 1 --passWithNoTests --coverage --maxWorkers 2",
+		"build-with-test": "npm run clean && npm test && tsc && webpack -p",
+		"build:cjs": "node ./build es5 && webpack && webpack --config ./webpack.config.dev.js",
+		"build:esm": "node ./build es6",
+		"build:cjs:watch": "node ./build es5 --watch",
+		"build:esm:watch": "node ./build es6 --watch",
+		"build": "npm run clean && npm run build:esm && npm run build:cjs",
+		"clean": "rimraf lib-esm lib dist",
+		"format": "echo \"Not implemented\"",
+		"lint": "tslint 'src/**/*.ts'",
+		"generate-docs-local": "typedoc --out docs src",
+		"generate-docs-root": "typedoc --out ../../docs src"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aws-amplify/amplify-js.git"
+	},
+	"author": "Amazon Web Services",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/aws/aws-amplify/issues"
+	},
+	"homepage": "https://aws-amplify.github.io/",
+	"dependencies": {
+		"@aws-amplify/core": "4.3.3",
+		"@aws-amplify/storage": "4.4.4",
+		"@aws-sdk/client-comprehend": "3.6.1",
+		"@aws-sdk/client-polly": "3.6.1",
+		"@aws-sdk/client-rekognition": "3.6.1",
+		"@aws-sdk/client-textract": "3.6.1",
+		"@aws-sdk/client-translate": "3.6.1",
+		"@aws-sdk/eventstream-marshaller": "3.6.1",
+		"@aws-sdk/util-utf8-node": "3.6.1",
+		"uuid": "^8.3.2"
+	},
+	"jest": {
+		"globals": {
+			"ts-jest": {
+				"diagnostics": false,
+				"tsConfig": {
+					"lib": [
+						"es5",
+						"es2015",
+						"dom",
+						"esnext.asynciterable",
+						"es2017.object"
+					],
+					"allowJs": true
+				}
+			}
+		},
+		"transform": {
+			"^.+\\.(js|jsx|ts|tsx)$": "ts-jest"
+		},
+		"testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+		"moduleFileExtensions": [
+			"ts",
+			"tsx",
+			"js",
+			"json",
+			"jsx"
+		],
+		"testEnvironment": "jsdom",
+		"testURL": "http://localhost/",
+		"coverageThreshold": {
+			"global": {
+				"branches": 0,
+				"functions": 0,
+				"lines": 0,
+				"statements": 0
+			}
+		},
+		"coveragePathIgnorePatterns": [
+			"/node_modules/",
+			"dist",
+			"lib",
+			"lib-esm"
+		]
+	}
 }

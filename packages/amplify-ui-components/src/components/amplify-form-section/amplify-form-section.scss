@@ -1,0 +1,56 @@
+/**
+ * @prop --header-color: Text color within the form header
+ * @prop --header-size: Text size within the form header
+ * @prop --subtitle-color: Text color within the subtitle
+ * @prop --subtitle-size: Text size within the subtitle
+ * @prop --footer-color: Text color within the footer
+ * @prop --footer-size: Text size within the footer
+ * @prop --font-family: Text font family within the footer
+ * @prop --font-weight: Text weight within the footer
+ */
+amplify-form-section {
+	--header-color: var(--amplify-secondary-color);
+	--header-size: var(--amplify-text-md-sub);
+	--subtitle-size: var(--amplify-grey);
+	--subtitle-color: var(--amplify-grey);
+	--footer-color: var(--amplify-grey);
+	--footer-size: var(--amplify-text-sm);
+	--font-family: var(--amplify-font-family);
+	--font-weight: var(--amplify-font-weight);
+}
+
+.form-section-header {
+	.header {
+		color: var(--header-color);
+		font-size: var(--header-size);
+		font-weight: 700;
+		margin-bottom: 0.75rem;
+	}
+	.subtitle {
+		font-weight: 400;
+		font-size: var(--amplify-text-sm);
+		color: var(--subtitle-color);
+	}
+	margin: 1rem 0 1.5rem 0;
+}
+
+.form-section-footer {
+	font-family: var(--font-family);
+	font-weight: var(--font-weight);
+	font-size: var(--footer-size);
+	color: var(--footer-color);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+
+	@include md {
+		display: flex;
+		flex-direction: row-reverse;
+		justify-content: space-between;
+		align-items: baseline;
+	}
+
+	* + * {
+		margin-top: 15px;
+	}
+}

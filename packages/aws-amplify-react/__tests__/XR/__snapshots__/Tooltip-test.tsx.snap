@@ -1,20 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Tooltip renders successfully with no props 1`] = `
-<Tooltip>
+<Component>
   <div
     className="XR__tooltip___UYyhn"
   />
-</Tooltip>
+</Component>
 `;
 
 exports[`Tooltip renders successfully with text 1`] = `
-<Tooltip
+<Component
   text="Test Tooltip"
 >
   <div
     className="XR__tooltip___UYyhn"
     data-text="Test Tooltip"
   />
-</Tooltip>
+</Component>
 `;

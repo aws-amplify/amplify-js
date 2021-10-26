@@ -30,7 +30,7 @@ const nativeMatches = proto
  *     selector, or an array of DOM elements or CSS selectors to match against.
  * @return {boolean} True of any part of the test matches.
  */
-export default function matches(element, test) {
+export function matches(element, test) {
 	// Validate input.
 	if (element && element.nodeType === 1 && test) {
 		// if test is a string or DOM element test it.

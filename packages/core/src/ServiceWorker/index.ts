@@ -11,4 +11,4 @@
  * and limitations under the License.
  */
 
-export { default } from './ServiceWorker';
+export { ServiceWorkerClass as ServiceWorker } from './ServiceWorker';

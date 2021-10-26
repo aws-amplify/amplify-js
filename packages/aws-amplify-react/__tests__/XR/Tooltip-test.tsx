@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Tooltip from '../../src/XR/Tooltip';
+import { Tooltip } from '../../src/XR/Tooltip';
 
 describe('Tooltip', () => {
 	test('renders successfully with no props', () => {

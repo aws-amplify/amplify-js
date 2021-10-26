@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import CryptoJS from 'crypto-js/core';
 import TypedArrays from 'crypto-js/lib-typedarrays'; // necessary for crypto js
 import Base64 from 'crypto-js/enc-base64';
@@ -70,8 +70,8 @@ import StorageHelper from './StorageHelper';
  * @param {bool=} userConfirmationNecessary User must be confirmed.
  */
 
-const isBrowser = typeof navigator !== "undefined";
-const userAgent = isBrowser ? navigator.userAgent : "nodejs";
+const isBrowser = typeof navigator !== 'undefined';
+const userAgent = isBrowser ? navigator.userAgent : 'nodejs';
 
 /** @class */
 export default class CognitoUser {
@@ -84,7 +84,7 @@ export default class CognitoUser {
 	 */
 	constructor(data) {
 		if (data == null || data.Username == null || data.Pool == null) {
-			throw new Error('Username and pool information are required.');
+			throw new Error('Username and Pool information are required.');
 		}
 
 		this.username = data.Username || '';
@@ -287,6 +287,7 @@ export default class CognitoUser {
 				const challengeParameters = data.ChallengeParameters;
 
 				this.username = challengeParameters.USER_ID_FOR_SRP;
+				this.userDataKey = `${this.keyPrefix}.${this.username}.userData`;
 				serverBValue = new BigInteger(challengeParameters.SRP_B, 16);
 				salt = new BigInteger(challengeParameters.SALT, 16);
 				this.getCachedDeviceKeyAndPassword();
@@ -502,6 +503,7 @@ export default class CognitoUser {
 		}
 
 		if (challengeName === 'DEVICE_SRP_AUTH') {
+			this.Session = dataAuthenticate.Session;
 			this.getDeviceResponse(callback);
 			return undefined;
 		}
@@ -671,6 +673,7 @@ export default class CognitoUser {
 				ClientId: this.pool.getClientId(),
 				ChallengeResponses: authParameters,
 				ClientMetadata: clientMetadata,
+				Session: this.Session,
 			};
 			if (this.getUserContextData()) {
 				jsonReq.UserContextData = this.getUserContextData();
@@ -1133,7 +1136,11 @@ export default class CognitoUser {
 				if (err) {
 					return callback(err, null);
 				}
-				return callback(null, 'SUCCESS');
+
+				// update cached user
+				return this.getUserData(() => callback(null, 'SUCCESS'), {
+					bypassCache: true,
+				});
 			}
 		);
 		return undefined;
@@ -1177,7 +1184,10 @@ export default class CognitoUser {
 	}
 
 	/**
-	 * This is used by an authenticated user to get the MFAOptions
+	 * This was previously used by an authenticated user to get MFAOptions,
+	 * but no longer returns a meaningful response. Refer to the documentation for
+	 * how to setup and use MFA: https://docs.amplify.aws/lib/auth/mfa/q/platform/js
+	 * @deprecated
 	 * @param {nodeCallback<MFAOptions>} callback Called on success or error.
 	 * @returns {void}
 	 */
@@ -1203,8 +1213,41 @@ export default class CognitoUser {
 	}
 
 	/**
+	 * PRIVATE ONLY: This is an internal only method and should not
+	 * be directly called by the consumers.
+	 */
+	createGetUserRequest() {
+		return this.client.promisifyRequest('GetUser', {
+			AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+		});
+	}
+
+	/**
+	 * PRIVATE ONLY: This is an internal only method and should not
+	 * be directly called by the consumers.
+	 */
+	refreshSessionIfPossible(options = {}) {
+		// best effort, if not possible
+		return new Promise(resolve => {
+			const refresh = this.signInUserSession.getRefreshToken();
+			if (refresh && refresh.getToken()) {
+				this.refreshSession(refresh, resolve, options.clientMetadata);
+			} else {
+				resolve();
+			}
+		});
+	}
+
+	/**
+	 * @typedef {Object} GetUserDataOptions
+	 * @property {boolean} bypassCache - force getting data from Cognito service
+	 * @property {Record<string, string>} clientMetadata - clientMetadata for getSession
+	 */
+
+	/**
 	 * This is used by an authenticated users to get the userData
 	 * @param {nodeCallback<UserData>} callback Called on success or error.
+	 * @param {GetUserDataOptions} params
 	 * @returns {void}
 	 */
 	getUserData(callback, params) {
@@ -1213,44 +1256,68 @@ export default class CognitoUser {
 			return callback(new Error('User is not authenticated'), null);
 		}
 
-		const bypassCache = params ? params.bypassCache : false;
+		const userData = this.getUserDataFromCache();
 
-		const userData = this.storage.getItem(this.userDataKey);
-		// get the cached user data
-
-		if (!userData || bypassCache) {
-			this.client.request(
-				'GetUser',
-				{
-					AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
-				},
-				(err, latestUserData) => {
-					if (err) {
-						return callback(err, null);
-					}
-					this.cacheUserData(latestUserData);
-					const refresh = this.signInUserSession.getRefreshToken();
-					if (refresh && refresh.getToken()) {
-						this.refreshSession(refresh, (refreshError, data) => {
-							if (refreshError) {
-								return callback(refreshError, null);
-							}
-							return callback(null, latestUserData);
-						});
-					} else {
-						return callback(null, latestUserData);
-					}
-				}
-			);
-		} else {
-			try {
-				return callback(null, JSON.parse(userData));
-			} catch (err) {
-				this.clearCachedUserData();
-				return callback(err, null);
-			}
+		if (!userData) {
+			this.fetchUserData()
+				.then(data => {
+					callback(null, data);
+				})
+				.catch(callback);
+			return;
 		}
-		return undefined;
+
+		if (this.isFetchUserDataAndTokenRequired(params)) {
+			this.fetchUserData()
+				.then(data => {
+					return this.refreshSessionIfPossible(params).then(() => data);
+				})
+				.then(data => callback(null, data))
+				.catch(callback);
+			return;
+		}
+
+		try {
+			callback(null, JSON.parse(userData));
+			return;
+		} catch (err) {
+			this.clearCachedUserData();
+			callback(err, null);
+			return;
+		}
+	}
+
+	/**
+	 *
+	 * PRIVATE ONLY: This is an internal only method and should not
+	 * be directly called by the consumers.
+	 */
+	getUserDataFromCache() {
+		const userData = this.storage.getItem(this.userDataKey);
+
+		return userData;
+	}
+
+	/**
+	 *
+	 * PRIVATE ONLY: This is an internal only method and should not
+	 * be directly called by the consumers.
+	 */
+	isFetchUserDataAndTokenRequired(params) {
+		const { bypassCache = false } = params || {};
+
+		return bypassCache;
+	}
+	/**
+	 *
+	 * PRIVATE ONLY: This is an internal only method and should not
+	 * be directly called by the consumers.
+	 */
+	fetchUserData() {
+		return this.createGetUserRequest().then(data => {
+			this.cacheUserData(data);
+			return data;
+		});
 	}
 
 	/**
@@ -1274,7 +1341,11 @@ export default class CognitoUser {
 				if (err) {
 					return callback(err, null);
 				}
-				return callback(null, 'SUCCESS');
+
+				// update cached user
+				return this.getUserData(() => callback(null, 'SUCCESS'), {
+					bypassCache: true,
+				});
 			}
 		);
 		return undefined;
@@ -1302,13 +1373,19 @@ export default class CognitoUser {
 	}
 
 	/**
+	 * @typedef {Object} GetSessionOptions
+	 * @property {Record<string, string>} clientMetadata - clientMetadata for getSession
+	 */
+
+	/**
 	 * This is used to get a session, either from the session object
 	 * or from  the local storage, or by using a refresh token
 	 *
 	 * @param {nodeCallback<CognitoUserSession>} callback Called on success or error.
+	 * @param {GetSessionOptions} options
 	 * @returns {void}
 	 */
-	getSession(callback) {
+	getSession(callback, options = {}) {
 		if (this.username == null) {
 			return callback(
 				new Error('Username is null. Cannot retrieve a new session'),
@@ -1347,6 +1424,7 @@ export default class CognitoUser {
 				ClockDrift: clockDrift,
 			};
 			const cachedSession = new CognitoUserSession(sessionData);
+
 			if (cachedSession.isValid()) {
 				this.signInUserSession = cachedSession;
 				return callback(null, this.signInUserSession);
@@ -1359,7 +1437,7 @@ export default class CognitoUser {
 				);
 			}
 
-			this.refreshSession(refreshToken, callback);
+			this.refreshSession(refreshToken, callback, options.clientMetadata);
 		} else {
 			callback(
 				new Error('Local storage is missing an ID Token, Please authenticate'),
@@ -1378,6 +1456,9 @@ export default class CognitoUser {
 	 * @returns {void}
 	 */
 	refreshSession(refreshToken, callback, clientMetadata) {
+		const wrappedCallback = this.pool.wrapRefreshSessionCallback
+			? this.pool.wrapRefreshSessionCallback(callback)
+			: callback;
 		const authParameters = {};
 		authParameters.REFRESH_TOKEN = refreshToken.getToken();
 		const keyPrefix = `CognitoIdentityServiceProvider.${this.pool.getClientId()}`;
@@ -1404,7 +1485,7 @@ export default class CognitoUser {
 				if (err.code === 'NotAuthorizedException') {
 					this.clearCachedUser();
 				}
-				return callback(err, null);
+				return wrappedCallback(err, null);
 			}
 			if (authResult) {
 				const authenticationResult = authResult.AuthenticationResult;
@@ -1420,7 +1501,7 @@ export default class CognitoUser {
 					authenticationResult
 				);
 				this.cacheTokens();
-				return callback(null, this.signInUserSession);
+				return wrappedCallback(null, this.signInUserSession);
 			}
 			return undefined;
 		});
@@ -1623,7 +1704,7 @@ export default class CognitoUser {
 			if (err) {
 				return callback.onFailure(err);
 			}
-			return callback.onSuccess();
+			return callback.onSuccess('SUCCESS');
 		});
 	}
 
@@ -1655,7 +1736,7 @@ export default class CognitoUser {
 				if (typeof callback.inputVerificationCode === 'function') {
 					return callback.inputVerificationCode(data);
 				}
-				return callback.onSuccess();
+				return callback.onSuccess('SUCCESS');
 			}
 		);
 		return undefined;
@@ -1831,7 +1912,7 @@ export default class CognitoUser {
 	 * This is used to list all devices for a user
 	 *
 	 * @param {int} limit the number of devices returned in a call
-	 * @param {string} paginationToken the pagination token in case any was returned before
+	 * @param {string | null} paginationToken the pagination token in case any was returned before
 	 * @param {object} callback Result callback map.
 	 * @param {onFailure} callback.onFailure Called on any error.
 	 * @param {onSuccess<*>} callback.onSuccess Called on success with device list.
@@ -1841,21 +1922,21 @@ export default class CognitoUser {
 		if (this.signInUserSession == null || !this.signInUserSession.isValid()) {
 			return callback.onFailure(new Error('User is not authenticated'));
 		}
+		const requestParams = {
+			AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
+			Limit: limit,
+		};
 
-		this.client.request(
-			'ListDevices',
-			{
-				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
-				Limit: limit,
-				PaginationToken: paginationToken,
-			},
-			(err, data) => {
-				if (err) {
-					return callback.onFailure(err);
-				}
-				return callback.onSuccess(data);
+		if (paginationToken) {
+			requestParams.PaginationToken = paginationToken;
+		}
+
+		this.client.request('ListDevices', requestParams, (err, data) => {
+			if (err) {
+				return callback.onFailure(err);
 			}
-		);
+			return callback.onSuccess(data);
+		});
 		return undefined;
 	}
 
@@ -1891,9 +1972,93 @@ export default class CognitoUser {
 	 * This is used for the user to signOut of the application and clear the cached tokens.
 	 * @returns {void}
 	 */
-	signOut() {
+	signOut(revokeTokenCallback) {
+		// If tokens won't be revoked, we just clean the client data.
+		if (!revokeTokenCallback || typeof revokeTokenCallback !== 'function') {
+			this.cleanClientData();
+
+			return;
+		}
+
+		this.getSession((error, _session) => {
+			if (error) {
+				return revokeTokenCallback(error);
+			}
+
+			this.revokeTokens(err => {
+				this.cleanClientData();
+
+				revokeTokenCallback(err);
+			});
+		});
+	}
+
+	revokeTokens(revokeTokenCallback = () => {}) {
+		if (typeof revokeTokenCallback !== 'function') {
+			throw new Error('Invalid revokeTokenCallback. It should be a function.');
+		}
+
+		const tokensToBeRevoked = [];
+
+		if (!this.signInUserSession) {
+			const error = new Error('User is not authenticated');
+
+			return revokeTokenCallback(error);
+		}
+
+		if (!this.signInUserSession.getAccessToken()) {
+			const error = new Error('No Access token available');
+
+			return revokeTokenCallback(error);
+		}
+
+		const refreshToken = this.signInUserSession.getRefreshToken().getToken();
+		const accessToken = this.signInUserSession.getAccessToken();
+
+		if (this.isSessionRevocable(accessToken)) {
+			if (refreshToken) {
+				return this.revokeToken({
+					token: refreshToken,
+					callback: revokeTokenCallback,
+				});
+			}
+		}
+		revokeTokenCallback();
+	}
+
+	isSessionRevocable(token) {
+		if (token && typeof token.decodePayload === 'function') {
+			try {
+				const { origin_jti } = token.decodePayload();
+				return !!origin_jti;
+			} catch (err) {
+				// Nothing to do, token doesnt have origin_jti claim
+			}
+		}
+
+		return false;
+	}
+
+	cleanClientData() {
 		this.signInUserSession = null;
 		this.clearCachedUser();
+	}
+
+	revokeToken({ token, callback }) {
+		this.client.requestWithRetry(
+			'RevokeToken',
+			{
+				Token: token,
+				ClientId: this.pool.getClientId(),
+			},
+			err => {
+				if (err) {
+					return callback(err);
+				}
+
+				callback();
+			}
+		);
 	}
 
 	/**
@@ -1923,14 +2088,14 @@ export default class CognitoUser {
 			this.Session = data.Session;
 			if (answerChallenge === 'SMS_MFA') {
 				return callback.mfaRequired(
-					data.challengeName,
-					data.challengeParameters
+					data.ChallengeName,
+					data.ChallengeParameters
 				);
 			}
 			if (answerChallenge === 'SOFTWARE_TOKEN_MFA') {
 				return callback.totpRequired(
-					data.challengeName,
-					data.challengeParameters
+					data.ChallengeName,
+					data.ChallengeParameters
 				);
 			}
 			return undefined;
@@ -1939,7 +2104,7 @@ export default class CognitoUser {
 
 	/**
 	 * This returns the user context data for advanced security feature.
-	 * @returns {void}
+	 * @returns {string} the user context data from CognitoUserPool
 	 */
 	getUserContextData() {
 		const pool = this.pool;

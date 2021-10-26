@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-strike stories withText 1`] = `
+<amplify-strike>
+  <!---->
+  <span class="strike-content">
+    or
+  </span>
+</amplify-strike>
+`;

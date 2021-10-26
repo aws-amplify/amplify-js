@@ -15,9 +15,7 @@
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+        "watch": "tsc -watch -p ./"
     },
     "repository": {
         "type": "git",
@@ -91,10 +89,9 @@
         ]
     },
     "dependencies": {
-        "jshint": "^2.9.5",
-        "simplebuild-jshint": "^1.3.0"
+        "@types/vscode": "^1.34.0"
     },
     "devDependencies": {
-        "vscode": "^1.1.18"
+        "typescript": "^3.9.5"
     }
 }

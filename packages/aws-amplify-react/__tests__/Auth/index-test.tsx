@@ -1,11 +1,10 @@
-import { withAuthenticator, AuthenticatorWrapper } from '../../src/Auth/index';
 import * as React from 'react';
-import { Component } from 'react';
+import { withAuthenticator, AuthenticatorWrapper } from '../../src/Auth/index';
 
 describe('hoc tests', () => {
 	describe('withAuthenticator test', () => {
 		test('when signed in', () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}
@@ -16,7 +15,7 @@ describe('hoc tests', () => {
 		});
 
 		test('when not signed in', () => {
-			const MockComp = class extends Component {
+			const MockComp = class extends React.Component {
 				render() {
 					return <div />;
 				}

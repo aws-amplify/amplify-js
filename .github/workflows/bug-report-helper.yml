@@ -1,0 +1,51 @@
+name: Issue Test
+
+on: issues
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    if: |
+      false &&
+      (github.event.action == 'edited' || github.event.action == 'opened') &&
+      !contains(github.event.issue.labels.*.name, 'production-issue') && 
+      (contains(github.event.issue.body, '- [x] (check box if yes)') ||
+      contains(github.event.issue.body, '- [ x] (check box if yes)') ||
+      contains(github.event.issue.body, '- [x ] (check box if yes)') ||
+      contains(github.event.issue.body, '- [ x ] (check box if yes)'))
+
+    steps:
+      - name: Add production-issue label
+        # Apache License - https://github.com/actions-ecosystem/action-add-labels
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          # Create scoped-down token
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          labels: production-issue
+
+      - name: Respond with suggestion
+        # MIT License - https://github.com/peter-evans/create-or-update-comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Thanks for reporting this issue! The team has been alerted and someone will respond shortly.
+            In the mean time, please try installing a previous version of Amplify
+            ```bash
+              rm -rf node_modules yarn.lock package-lock.json
+              npm i aws-amplify
+            ```
+
+      - name: Sanitize Issue Title
+        run: |
+          export sanitized_issue_title=`echo "${{ github.event.issue.title }}" | sed 's/[^a-zA-Z0-9 ]//g'`
+          echo "sanitized_issue_title=$sanitized_issue_title" >> $GITHUB_ENV
+
+      - name: Execute Slack Workflow
+        # MIT License - https://github.com/fjogeleit/http-request-action
+        uses: fjogeleit/http-request-action@master
+        with:
+          url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          method: POST
+          data: '{ "issue_url": "${{ github.event.issue.html_url }}", "issue_title": "${{ env.sanitized_issue_title }}" }'

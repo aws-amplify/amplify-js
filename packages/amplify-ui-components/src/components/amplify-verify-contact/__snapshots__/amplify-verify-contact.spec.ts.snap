@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-verify-contact stories withNoProps 1`] = `
+<amplify-verify-contact>
+  <mock:shadow-root>
+    <amplify-form-section headertext="Account recovery requires verified contact information" submitbuttontext="Verify"></amplify-form-section>
+  </mock:shadow-root>
+</amplify-verify-contact>
+`;
+
+exports[`amplify-verify-contact stories withUnverifiedUser 1`] = `
+<amplify-verify-contact>
+  <mock:shadow-root>
+    <amplify-form-section headertext="Account recovery requires verified contact information" submitbuttontext="Verify">
+      <div>
+        <amplify-radio-button label="Email" name="contact" value="email"></amplify-radio-button>
+        <amplify-radio-button label="Phone Number" name="contact" value="phone_number"></amplify-radio-button>
+      </div>
+    </amplify-form-section>
+  </mock:shadow-root>
+</amplify-verify-contact>
+`;

@@ -1,6 +1,17 @@
 import Amplify from '../src';
 
 describe('Amplify config test', () => {
+	test('empty config', () => {
+		const mockComp = {
+			configure: jest.fn(),
+		};
+
+		Amplify.register(mockComp);
+		const res = Amplify.configure(null);
+
+		expect(mockComp.configure).toBeCalledWith({});
+	});
+
 	test('happy case', () => {
 		const mockComp = {
 			configure: jest.fn(),
@@ -10,20 +21,8 @@ describe('Amplify config test', () => {
 		const res = Amplify.configure({
 			attr: 'attr',
 		});
-
 		expect(mockComp.configure).toBeCalled();
 		expect(res).toEqual({ attr: 'attr' });
-	});
-
-	test('empty config', () => {
-		const mockComp = {
-			configure: jest.fn(),
-		};
-
-		Amplify.register(mockComp);
-		const res = Amplify.configure(null);
-
-		expect(mockComp.configure).not.toBeCalled();
 	});
 });
 
@@ -35,6 +34,7 @@ describe('addPluggable test', () => {
 
 		const mockComp = {
 			addPluggable: jest.fn(),
+			configure: jest.fn(),
 		};
 
 		Amplify.register(mockComp);

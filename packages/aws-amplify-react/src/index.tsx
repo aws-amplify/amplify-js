@@ -12,7 +12,7 @@
  */
 import { I18n } from '@aws-amplify/core';
 
-import dict from './AmplifyI18n';
+import { dict } from './AmplifyI18n';
 
 export * from './AmplifyUI';
 export * from './Auth';
@@ -23,7 +23,7 @@ export * from './API';
 export * from './Interactions';
 export * from './XR';
 
-export { default as AmplifyTheme } from './AmplifyTheme';
+export { Bootstrap as AmplifyTheme } from './AmplifyTheme';
 export { MapEntries as AmplifyMessageMapEntries } from './AmplifyMessageMap';
 export { transparent1X1, white1X1 } from './AmplifyUI';
 

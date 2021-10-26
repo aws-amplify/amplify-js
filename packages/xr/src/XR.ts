@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
 import { XRProvider, XROptions, SceneOptions } from './types';
 import { SumerianProvider } from './Providers/SumerianProvider';
 import { XRProviderNotConfigured } from './Errors';
@@ -19,7 +19,7 @@ const logger = new Logger('XR');
 
 const DEFAULT_PROVIDER_NAME = 'SumerianProvider';
 
-export default class XR {
+export class XRClass {
 	private _options: XROptions;
 
 	private _pluggables: { [key: string]: XRProvider };
@@ -209,3 +209,6 @@ export default class XR {
 		return this._pluggables[provider].enableAudio(sceneName);
 	}
 }
+
+export const XR = new XRClass(null);
+Amplify.register(XR);

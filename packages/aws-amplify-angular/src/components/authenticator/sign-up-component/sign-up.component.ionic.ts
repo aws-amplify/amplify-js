@@ -103,9 +103,7 @@ const template = `
 	template,
 })
 export class SignUpComponentIonic extends SignUpComponentCore {
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		super(amplifyService);
 	}
 

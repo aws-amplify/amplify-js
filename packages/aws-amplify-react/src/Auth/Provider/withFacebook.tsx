@@ -14,7 +14,7 @@
 import * as React from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 import AmplifyTheme from '../../Amplify-UI/Amplify-UI-Theme';
 import { facebookSignInButton } from '@aws-amplify/ui';
 import {
@@ -22,11 +22,11 @@ import {
 	SignInButtonIcon,
 	SignInButtonContent,
 } from '../../Amplify-UI/Amplify-UI-Components-React';
-import Constants from '../common/constants';
+import { Constants } from '../common/constants';
 
 const logger = new Logger('withFacebook');
 
-export default function withFacebook(Comp) {
+export function withFacebook(Comp) {
 	return class extends React.Component<any, any> {
 		constructor(props: any) {
 			super(props);
@@ -86,10 +86,11 @@ export default function withFacebook(Comp) {
 			}
 
 			const fb = window.FB;
-			fb.api('/me', { fields: 'name,email' }, response => {
+			fb.api('/me', { fields: 'name,email,picture' }, response => {
 				const user = {
 					name: response.name,
 					email: response.email,
+					picture: response.picture.data.url,
 				};
 				if (
 					!Auth ||
@@ -213,3 +214,8 @@ const Button = (props: any) => (
 );
 
 export const FacebookButton = withFacebook(Button);
+
+/**
+ * @deprecated use named import
+ */
+export default withFacebook;

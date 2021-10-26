@@ -205,7 +205,9 @@ exports[`AmplifyUi test render SectionFooter correctly 1`] = `
   className="amplify-section-footer"
   style={Object {}}
 >
-  <Component />
+  <Component
+    theme="theme"
+  />
 </div>
 `;
 

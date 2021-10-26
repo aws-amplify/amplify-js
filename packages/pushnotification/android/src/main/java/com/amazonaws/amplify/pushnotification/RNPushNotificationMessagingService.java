@@ -31,7 +31,7 @@ import android.util.Log;
 
 import java.util.Map;
 import java.util.List;
-import java.util.Random;
+import java.security.SecureRandom;
 
 import org.json.JSONObject;
 import org.json.JSONException;
@@ -107,7 +107,8 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
     private void sendNotification(ReactApplicationContext context, Bundle bundle, Boolean isForeground) {
         // If notification ID is not provided by the user for push notification, generate one at random
         if (bundle.getString("id") == null) {
-            Random randomNumberGenerator = new Random(System.currentTimeMillis());
+            SecureRandom randomNumberGenerator = new SecureRandom();
+            randomNumberGenerator.setSeed(System.currentTimeMillis());
             bundle.putString("id", String.valueOf(randomNumberGenerator.nextInt()));
         }
 

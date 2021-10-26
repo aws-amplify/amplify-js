@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Component } from 'react';
-import PhotoPicker from '../../src/Widget/PhotoPicker';
-import Picker from '../../src/Widget/Picker';
+import { PhotoPicker } from '../../src/Widget/PhotoPicker';
+import { Picker } from '../../src/Widget/Picker';
 
 describe('PhotoPicker test', () => {
 	describe('render test', () => {
@@ -85,16 +84,28 @@ describe('PhotoPicker test', () => {
 				size: 'size',
 				type: 'type',
 			};
-			const props = {
-				preview: false,
-				onLoad: onLoadFn,
-			};
 			const wrapper = shallow(<PhotoPicker />);
 			const photoPicker = wrapper.instance();
-			wrapper.setProps(props);
 
+			wrapper.setProps({
+				preview: false,
+				onLoad: onLoadFn,
+			});
 			photoPicker.handlePick(data);
+			expect(spyon).not.toBeCalledWith('file');
 
+			wrapper.setProps({
+				preview: 'hidden',
+				onLoad: onLoadFn,
+			});
+			photoPicker.handlePick(data);
+			expect(spyon).not.toBeCalledWith('file');
+
+			wrapper.setProps({
+				preview: undefined,
+				onLoad: onLoadFn,
+			});
+			photoPicker.handlePick(data);
 			expect(spyon).not.toBeCalledWith('file');
 
 			spyon.mockClear();

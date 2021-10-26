@@ -13,7 +13,7 @@
 
 import { CacheList, defaultConfig, getCurrTime, CacheObject } from './Utils';
 
-import StorageCache from './StorageCache';
+import { StorageCache } from './StorageCache';
 import { ICache, CacheConfig, CacheItem, CacheItemOptions } from './types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
@@ -27,7 +27,7 @@ const logger = new Logger('InMemoryCache');
  * @member maxPriority - max of the priority
  * @member cacheSizeLimit - the limit of cache size
  */
-export class InMemoryCache extends StorageCache implements ICache {
+export class InMemoryCacheClass extends StorageCache implements ICache {
 	private cacheList: CacheList[];
 	private curSizeInBytes: number;
 	private maxPriority: number;
@@ -351,9 +351,12 @@ export class InMemoryCache extends StorageCache implements ICache {
 	 * @param config - the customized configuration
 	 */
 	public createInstance(config: CacheConfig): ICache {
-		return new InMemoryCache(config);
+		return new InMemoryCacheClass(config);
 	}
 }
 
-const instance: ICache = new InMemoryCache();
-export default instance;
+export const InMemoryCache: ICache = new InMemoryCacheClass();
+/**
+ * @deprecated use named import
+ */
+export default InMemoryCache;

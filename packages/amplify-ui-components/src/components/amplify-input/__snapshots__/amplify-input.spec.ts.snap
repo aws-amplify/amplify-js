@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-input spec: Render logic -> renders correct HTML 1`] = `
+<amplify-input class="input-host">
+  <input class="input" placeholder="" type="text">
+</amplify-input>
+`;
+
+exports[`amplify-input spec: Render logic -> renders with a name for the input 1`] = `
+<amplify-input class="input-host" name="seattle">
+  <input class="input" name="seattle" placeholder="" type="text">
+</amplify-input>
+`;
+
+exports[`amplify-input spec: Render logic -> renders with complex prop: inputProps spread on the input element 1`] = `
+<amplify-input class="input-host">
+  <input autocomplete="off" class="input" max="10" min="3" placeholder="" type="text">
+</amplify-input>
+`;

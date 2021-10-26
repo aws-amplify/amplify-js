@@ -4,7 +4,7 @@ import {
 	PersistentModelConstructor,
 } from '@aws-amplify/datastore';
 
-import { initSchema } from '../src/index';
+import { initSchema, NonModelTypeConstructor } from '../src/index';
 import { newSchema } from './schema';
 
 declare class BlogModel {
@@ -26,11 +26,24 @@ declare class PostModel {
 	readonly reference?: PostModel;
 	readonly comments?: CommentModel[];
 	readonly authors?: PostAuthorJoinModel[];
+	readonly metadata?: PostMetadataType;
 	constructor(init: ModelInit<PostModel>);
 	static copyOf(
 		source: PostModel,
 		mutator: (draft: MutableModel<PostModel>) => MutableModel<PostModel> | void
 	): PostModel;
+}
+
+declare class PostMetadataType {
+	readonly rating: number;
+	readonly tags?: string[];
+	readonly nested?: NestedType;
+	constructor(init: ModelInit<PostMetadataType>);
+}
+
+declare class NestedType {
+	readonly aField: string;
+	constructor(init: ModelInit<NestedType>);
 }
 
 declare class CommentModel {
@@ -85,15 +98,43 @@ declare class BlogOwnerModel {
 	): BlogOwnerModel;
 }
 
-const { Author, Post, Comment, Blog, BlogOwner, PostAuthorJoin } = initSchema(
-	newSchema
-) as {
+declare class PersonModel {
+	readonly id: string;
+	readonly firstName: string;
+	readonly lastName: string;
+	readonly username?: string;
+}
+
+const {
+	Author,
+	Post,
+	Comment,
+	Blog,
+	BlogOwner,
+	PostAuthorJoin,
+	Person,
+	PostMetadata,
+	Nested,
+} = initSchema(newSchema) as {
 	Author: PersistentModelConstructor<AuthorModel>;
 	Post: PersistentModelConstructor<PostModel>;
 	Comment: PersistentModelConstructor<CommentModel>;
 	Blog: PersistentModelConstructor<BlogModel>;
 	BlogOwner: PersistentModelConstructor<BlogOwnerModel>;
 	PostAuthorJoin: PersistentModelConstructor<PostAuthorJoinModel>;
+	Person: PersistentModelConstructor<PersonModel>;
+	PostMetadata: NonModelTypeConstructor<PostMetadataType>;
+	Nested: NonModelTypeConstructor<NestedType>;
 };
-
-export { Author, Post, Comment, Blog, BlogOwner, PostAuthorJoin };
+``;
+export {
+	Author,
+	Post,
+	Comment,
+	Blog,
+	BlogOwner,
+	PostAuthorJoin,
+	Person,
+	PostMetadata,
+	Nested,
+};

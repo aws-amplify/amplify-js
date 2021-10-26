@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-username-field spec: Render logic -> should render \`placeholder\` and \`label values 1`] = `
+<amplify-username-field label="New username *" placeholder="Enter new user name">
+  <amplify-form-field fieldid="username" label="New username *" name="username" placeholder="Enter new user name"></amplify-form-field>
+</amplify-username-field>
+`;
+
+exports[`amplify-username-field spec: Render logic -> should render default values by default 1`] = `
+<amplify-username-field>
+  <amplify-form-field fieldid="username" label="Username *" name="username" placeholder="Enter your username"></amplify-form-field>
+</amplify-username-field>
+`;

@@ -16,7 +16,7 @@ const cache = {};
  * @param {string} url The url to parse.
  * @return {!Object} An object with the same properties as a `Location`.
  */
-export default function parseUrl(u) {
+export function parseUrl(u) {
 	let url = u;
 	// All falsy values (as well as ".") should map to the current URL.
 	url = !url || url === '.' ? location.href : url;

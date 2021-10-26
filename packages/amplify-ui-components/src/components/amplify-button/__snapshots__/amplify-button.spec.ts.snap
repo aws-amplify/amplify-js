@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-button spec: Render logic -> renders with button text FOO 1`] = `
+<amplify-button>
+  <!---->
+  <button class="button" type="button">
+    FOO
+  </button>
+</amplify-button>
+`;
+
+exports[`amplify-button spec: Render logic -> renders with danger class when button type is reset 1`] = `
+<amplify-button type="reset">
+  <!---->
+  <button class="button" type="reset">
+    FOO
+  </button>
+</amplify-button>
+`;
+
+exports[`amplify-button spec: Render logic -> renders with no button text 1`] = `
+<amplify-button>
+  <!---->
+  <button class="button" type="button"></button>
+</amplify-button>
+`;

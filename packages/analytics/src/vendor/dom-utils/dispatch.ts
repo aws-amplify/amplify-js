@@ -15,7 +15,7 @@
  * @return {boolean} The return value of `element.dispatchEvent`, which will
  *     be false if any of the event listeners called `preventDefault`.
  */
-export default function dispatch(
+export function dispatch(
 	element,
 	eventType,
 	evtName = 'Event',

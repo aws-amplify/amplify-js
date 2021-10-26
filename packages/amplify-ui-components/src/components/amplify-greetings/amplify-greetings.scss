@@ -1,0 +1,35 @@
+/**
+ * @prop --background-color: Background color of the container
+ * @prop --border-color: Border color of the container
+ * @prop --font-family: Font family of the text
+ */
+:host {
+	--background-color: var(--amplify-white);
+	--border-color: var(--amplify-light-grey);
+	--font-family: var(--amplify-font-family);
+}
+
+.greetings {
+	display: flex;
+	border: 1px solid transparent;
+	background-color: var(--background-color);
+	border-color: var(--border-color);
+	padding: 0.625rem;
+	font-family: var(--font-family);
+	justify-content: space-between;
+}
+
+.nav {
+	display: flex;
+	align-self: center;
+}
+
+.logo {
+	display: flex;
+	align-self: center;
+	justify-self: flex-start;
+}
+
+amplify-sign-out {
+	margin-left: 1rem;
+}

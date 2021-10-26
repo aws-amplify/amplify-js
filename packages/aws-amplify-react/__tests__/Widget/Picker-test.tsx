@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Picker from '../../src/Widget/Picker';
+import { Picker } from '../../src/Widget/Picker';
 
 describe('Picker test', () => {
 	describe('render test', () => {

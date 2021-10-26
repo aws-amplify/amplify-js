@@ -147,14 +147,25 @@ function reportWatchStatusChanged(diagnostic, newLine, options, errorCount) {
 	logger.info(ts.formatDiagnostic(diagnostic, formatHost));
 }
 
-async function buildES5(typeScriptCompiler) {
-	const jsx = packageInfo.name === 'aws-amplify-react' ? 'react' : undefined;
+async function buildES5(typeScriptCompiler, watchMode) {
+	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
+		packageInfo.name
+	)
+		? 'react'
+		: undefined;
 	// tsconfig for ES5 generating
 	let compilerOptions = {
+		esModuleInterop: true,
 		noImplicitAny: false,
-		lib: ['dom', 'es2017', 'esnext.asynciterable'],
+		lib: [
+			'dom',
+			'es2017',
+			'esnext.asynciterable',
+			'es2018.asyncgenerator',
+			'es2019',
+		],
+		downlevelIteration: true,
 		jsx: jsx,
-		sourceMap: true,
 		target: 'es5',
 		module: 'commonjs',
 		moduleResolution: 'node',
@@ -167,6 +178,13 @@ async function buildES5(typeScriptCompiler) {
 		types: ['node'],
 		outDir: pkgTscES5OutDir,
 	};
+
+	if (watchMode) {
+		compilerOptions.inlineSourceMap = true;
+		compilerOptions.inlineSources = true;
+	} else {
+		compilerOptions.sourceMap = true;
+	}
 
 	compilerOptions = ts.convertCompilerOptionsFromJson(compilerOptions);
 	const include = [pkgSrcDir];
@@ -186,14 +204,25 @@ async function buildES5(typeScriptCompiler) {
 	});
 }
 
-function buildES6(typeScriptCompiler) {
-	const jsx = packageInfo.name === 'aws-amplify-react' ? 'react' : undefined;
+function buildES6(typeScriptCompiler, watchMode) {
+	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
+		packageInfo.name
+	)
+		? 'react'
+		: undefined;
 	// tsconfig for ESM generating
 	let compilerOptions = {
+		esModuleInterop: true,
 		noImplicitAny: false,
-		lib: ['dom', 'es2017', 'esnext.asynciterable'],
+		lib: [
+			'dom',
+			'es2017',
+			'esnext.asynciterable',
+			'es2018.asyncgenerator',
+			'es2019',
+		],
+		downlevelIteration: true,
 		jsx: jsx,
-		sourceMap: true,
 		target: 'es5',
 		module: 'es2015',
 		moduleResolution: 'node',
@@ -206,6 +235,13 @@ function buildES6(typeScriptCompiler) {
 		types: ['node'],
 		outDir: pkgTscES6OutDir,
 	};
+
+	if (watchMode) {
+		compilerOptions.inlineSourceMap = true;
+		compilerOptions.inlineSources = true;
+	} else {
+		compilerOptions.sourceMap = true;
+	}
 
 	compilerOptions = ts.convertCompilerOptionsFromJson(compilerOptions);
 	const include = [pkgSrcDir];
@@ -231,8 +267,9 @@ function build(type, watchMode) {
 	var typeScriptCompiler = watchMode
 		? runTypeScriptWithWatchMode
 		: runTypeScriptWithoutWatchMode;
-	if (type === 'es5') buildES5(typeScriptCompiler);
-	if (type === 'es6') buildES6(typeScriptCompiler);
+
+	if (type === 'es5') buildES5(typeScriptCompiler, watchMode);
+	if (type === 'es6') buildES6(typeScriptCompiler, watchMode);
 }
 
 module.exports = build;

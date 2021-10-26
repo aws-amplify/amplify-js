@@ -132,6 +132,15 @@ export const newSchema: Schema = {
 						associatedWith: 'post',
 					},
 				},
+				metadata: {
+					name: 'metadata',
+					isArray: false,
+					type: {
+						nonModel: 'PostMetadata',
+					},
+					isRequired: false,
+					attributes: [],
+				},
 			},
 		},
 		Comment: {
@@ -314,7 +323,244 @@ export const newSchema: Schema = {
 				},
 			},
 		},
+		Person: {
+			syncable: true,
+			name: 'Person',
+			pluralName: 'Persons',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				firstName: {
+					name: 'firstName',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				lastName: {
+					name: 'lastName',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				username: {
+					name: 'username',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+			},
+		},
 	},
 	enums: {},
+	nonModels: {
+		PostMetadata: {
+			name: 'PostMetadata',
+			fields: {
+				author: {
+					name: 'rating',
+					isArray: false,
+					type: 'Int',
+					isRequired: true,
+					attributes: [],
+				},
+				tags: {
+					name: 'tags',
+					isArray: true,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+				nested: {
+					name: 'nested',
+					isArray: false,
+					type: {
+						nonModel: 'Nested',
+					},
+					isRequired: true,
+					attributes: [],
+				},
+			},
+		},
+		Nested: {
+			name: 'Nested',
+			fields: {
+				aField: {
+					name: 'aField',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+			},
+		},
+	},
 	version: 'a66372d29356c40e7cd29e41527cead7',
+};
+
+export const implicitOwnerSchema = {
+	models: {
+		Post: {
+			name: 'Post',
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				title: {
+					name: 'title',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+			},
+			syncable: true,
+			pluralName: 'Posts',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+				{
+					type: 'auth',
+					properties: {
+						rules: [
+							{
+								provider: 'userPools',
+								ownerField: 'owner',
+								allow: 'owner',
+								identityClaim: 'cognito:username',
+								operations: ['create', 'update', 'delete', 'read'],
+							},
+						],
+					},
+				},
+			],
+		},
+	},
+	enums: {},
+	nonModels: {},
+	version: '0e29e95012de2d43cf8329d731a5cfb2',
+};
+
+export const explicitOwnerSchema = {
+	models: {
+		Post: {
+			name: 'Post',
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				title: {
+					name: 'title',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				owner: {
+					name: 'owner',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+			},
+			syncable: true,
+			pluralName: 'Posts',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+				{
+					type: 'auth',
+					properties: {
+						rules: [
+							{
+								provider: 'userPools',
+								ownerField: 'owner',
+								allow: 'owner',
+								identityClaim: 'cognito:username',
+								operations: ['create', 'update', 'delete', 'read'],
+							},
+						],
+					},
+				},
+			],
+		},
+	},
+	enums: {},
+	nonModels: {},
+	version: '0e29e95012de2d43cf8329d731a5cfb2',
+};
+
+export const groupSchema = {
+	models: {
+		Post: {
+			name: 'Post',
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				title: {
+					name: 'title',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+			},
+			syncable: true,
+			pluralName: 'Posts',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+				{
+					type: 'auth',
+					properties: {
+						rules: [
+							{
+								groupClaim: 'cognito:groups',
+								provider: 'userPools',
+								allow: 'groups',
+								groups: ['Admin'],
+								operations: ['create', 'update', 'delete', 'read'],
+							},
+						],
+					},
+				},
+			],
+		},
+	},
+	enums: {},
+	nonModels: {},
+	version: '0e29e95012de2d43cf8329d731a5cfb2',
 };

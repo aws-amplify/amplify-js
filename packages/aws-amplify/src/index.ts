@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -11,25 +11,43 @@
  * and limitations under the License.
  */
 
-import Analytics, {
-	AnalyticsClass,
+import { Amplify, ServiceWorker } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
+import Cache from '@aws-amplify/cache';
+
+/** Always importing Auth when users import Amplify such that
+	for unauthenticated access (no sign in and sign up),
+	users don't have to import Auth explicitly **/
+Amplify.Auth = Auth;
+Amplify.Cache = Cache;
+Amplify.ServiceWorker = ServiceWorker;
+
+export {
+	Analytics,
 	AnalyticsProvider,
 	AWSPinpointProvider,
 	AWSKinesisProvider,
 	AWSKinesisFirehoseProvider,
 	AmazonPersonalizeProvider,
 } from '@aws-amplify/analytics';
-import Auth, { AuthClass } from '@aws-amplify/auth';
-import Storage, { StorageClass } from '@aws-amplify/storage';
-import API, { APIClass, graphqlOperation } from '@aws-amplify/api';
-import PubSub, { PubSubClass } from '@aws-amplify/pubsub';
-import Cache from '@aws-amplify/cache';
-import Interactions, { InteractionsClass } from '@aws-amplify/interactions';
-import * as UI from '@aws-amplify/ui';
-import XR, { XRClass } from '@aws-amplify/xr';
-import Predictions from '@aws-amplify/predictions';
 
-import Amplify, {
+export { Auth } from '@aws-amplify/auth';
+export { Storage, StorageClass } from '@aws-amplify/storage';
+export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
+export {
+	AuthModeStrategyType,
+	DataStore,
+	Predicates,
+	SortDirection,
+	syncExpression,
+} from '@aws-amplify/datastore';
+export { PubSub } from '@aws-amplify/pubsub';
+export { default as Cache } from '@aws-amplify/cache';
+export { Interactions } from '@aws-amplify/interactions';
+export * from '@aws-amplify/ui';
+export { XR } from '@aws-amplify/xr';
+export { Predictions } from '@aws-amplify/predictions';
+export {
 	ConsoleLogger as Logger,
 	Hub,
 	JS,
@@ -37,56 +55,14 @@ import Amplify, {
 	Signer,
 	I18n,
 	ServiceWorker,
+	AWSCloudWatchProvider,
 } from '@aws-amplify/core';
+export { withSSRContext } from './withSSRContext';
+export { Geo } from '@aws-amplify/geo';
 
+export { Amplify };
+
+/**
+ * @deprecated use named import
+ */
 export default Amplify;
-
-Amplify.Auth = Auth;
-Amplify.Analytics = Analytics;
-Amplify.API = API;
-Amplify.Storage = Storage;
-Amplify.I18n = I18n;
-Amplify.Cache = Cache;
-Amplify.PubSub = PubSub;
-Amplify.Logger = Logger;
-Amplify.ServiceWorker = ServiceWorker;
-Amplify.Interactions = Interactions;
-Amplify.UI = UI;
-Amplify.XR = XR;
-Amplify.Predictions = Predictions;
-
-export {
-	Auth,
-	Analytics,
-	Storage,
-	API,
-	PubSub,
-	I18n,
-	Logger,
-	Hub,
-	Cache,
-	JS,
-	ClientDevice,
-	Signer,
-	ServiceWorker,
-	Interactions,
-	UI,
-	XR,
-	Predictions,
-};
-
-export {
-	AuthClass,
-	AnalyticsClass,
-	APIClass,
-	StorageClass,
-	PubSubClass,
-	InteractionsClass,
-	XRClass,
-	AnalyticsProvider,
-	AWSPinpointProvider,
-	AWSKinesisProvider,
-	AWSKinesisFirehoseProvider,
-	AmazonPersonalizeProvider,
-};
-export { graphqlOperation };

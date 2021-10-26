@@ -13,10 +13,10 @@ layout: default
       <img src="https://img.shields.io/npm/dm/aws-amplify.svg" alt="npm downloads" height="18">
     </a>
     <a href="https://travis-ci.org/aws/aws-amplify">
-      <img src="https://travis-ci.org/aws/aws-amplify.svg?branch=master" alt="build:started">
+      <img src="https://travis-ci.org/aws/aws-amplify.svg?branch=main" alt="build:started">
     </a>
     <a href="https://codecov.io/gh/aws/aws-amplify">
-      <img src="https://codecov.io/gh/aws/aws-amplify/branch/master/graph/badge.svg" />
+      <img src="https://codecov.io/gh/aws/aws-amplify/branch/main/graph/badge.svg" />
     </a>
   </p>
   
@@ -67,4 +67,4 @@ layout: default
   
   ## Contributing
   
-  See [Contributing Guidelines](https://github.com/aws/aws-amplify/blob/master/CONTRIBUTING.md)
+  See [Contributing Guidelines](https://github.com/aws-amplify/amplify-js/blob/main/CONTRIBUTING.md)

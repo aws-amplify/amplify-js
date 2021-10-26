@@ -41,7 +41,7 @@ const template = `
           #password
           type="password"
           class="amplify-form-input"
-          (keyup)="setPassword(password.value)"
+          (input)="setPassword(password.value)"
           (keyup.enter)="onSubmit()"
           data-test="${auth.requireNewPassword.newPasswordInput}"
         ></ion-input>
@@ -81,9 +81,7 @@ const template = `
 	template,
 })
 export class RequireNewPasswordComponentIonic extends RequireNewPasswordComponentCore {
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		super(amplifyService);
 	}
 }

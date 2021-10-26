@@ -1,84 +1,382 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+# Javascript Node CircleCI 2.1 configuration file
 #
 version: 2.1
-machine:
+
+executors:
+  build-executor:
+    docker:
+      - image: cypress/base:12
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
+
+    resource_class: large
+    working_directory: ~/amplify-js
+
+  unit-test-executor:
+    docker:
+      - image: cypress/base:12
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
+
+    resource_class: xlarge
+    working_directory: ~/amplify-js
+
+  js-test-executor:
+    docker:
+      - image: cypress/included:5.2.0
+      - image: verdaccio/verdaccio
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
+    resource_class: large
+
+  macos-executor:
+    macos:
+      xcode: 11.5.0
+
+test_env_vars: &test_env_vars
   environment:
-    PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
-
-defaults: &defaults
-  docker:
-    - image: cypress/base:10
-      environment:
-        ## this enables colors in the output
-        TERM: xterm
-
-defaults_rn: &defaults_rn
-  macos:
-    xcode: '11.3.1'
-  working_directory: ~/amplify-js-samples-staging
+    NPM_REGISTRY: http://0.0.0.0:4873/
+    NPM_USER: circleci
+    NPM_PASS: circleci
+    NPM_EMAIL: circleci@amplify.js
 
 commands:
-  restore_pods:
+  publish_to_verdaccio:
     steps:
-      - restore_cache:
-          keys:
-            - v1-storage-app-pods-{{ checksum "ios/Podfile.lock" }}
-            - v1-storage-app-pods-
+      - run:
+          name: 'Set registry to Verdaccio and verify'
+          # If the registry isn't set correctly, fail the job
+          command: |
+            yarn config set registry $NPM_REGISTRY
+            npm set registry $NPM_REGISTRY
+            CURRENT_REGISTRY=$(yarn config get registry)
+            if [ "$CURRENT_REGISTRY" = "$NPM_REGISTRY" ]; then
+              exit 0
+            fi
+            exit 1
+      - run:
+          # npm-cli-login allows us to log in to verdaccio in a noninteractive way
+          # logs in with NPM_USER, NPM_PASS, and NPM_EMAIL env vars
+          name: 'Install and run npm-cli-login'
+          command: |
+            npm i -g npm-cli-adduser
+            npm-cli-adduser
+            sleep 1
+      - run:
+          name: 'Publish to Verdaccio'
+          command: |
+            cd ~/amplify-js
+            git config --global user.email $NPM_EMAIL
+            git config --global user.name $NPM_USER
+            git status
+            git --no-pager diff
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s publish:verdaccio -n 5 -r true
 
-  save_pods:
+  prepare_test_env:
     steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
+      - publish_to_verdaccio
+
+  prepare_no_ui_test_env:
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
+
+  integ_test_js:
+    parameters:
+      test_name:
+        type: string
+      framework:
+        type: string
+      category:
+        type: string
+      sample_name:
+        type: string
+      spec:
+        # optional - the script will use sample_name by default
+        type: string
+        default: ''
+      browser:
+        type: string
+        default: ''
+    steps:
+      - run:
+          name: 'Install << parameters.test_name >> sample'
+          command: |
+            echo "Current NPM registry: " $(yarn config get registry)
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
+      - run:
+          name: 'Run cypress tests for << parameters.test_name >> sample on dev'
+          command: |
+            cd ~/amplify-js-samples-staging
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> dev' -n 3
+      - run:
+          name: 'Run cypress tests for << parameters.test_name >> sample on prod'
+          command: |
+            cd ~/amplify-js-samples-staging
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> prod' -n 3
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/videos
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/screenshots
+
+  integ_test_node_js:
+    parameters:
+      test_name:
+        type: string
+      category:
+        type: string
+      sample_name:
+        type: string
+    steps:
+      - run:
+          name: 'Install << parameters.test_name >> sample'
+          command: |
+            echo "Current NPM registry: " $(yarn config get registry)
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
+      - run:
+          name: 'Run Node tests for << parameters.test_name >> sample'
+          command: |
+            cd ~/amplify-js-samples-staging
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test node << parameters.category >> << parameters.sample_name >> dev' -n 3
+
+  integ_test_cypress_no_ui:
+    parameters:
+      test_name:
+        type: string
+      category:
+        type: string
+      spec:
+        type: string
+    steps:
+      - run:
+          name: 'Change directory into build and run link'
+          command: |
+            cd ~/amplify-js/
+            yarn link-all
+      - run:
+          name: 'Link packages into samples staging root'
+          command: |
+            yarn link amazon-cognito-identity-js @aws-amplify/core @aws-amplify/cache @aws-amplify/auth
+      - run:
+          name: 'Run cypress test << parameters.spec >>'
+          command: |
+            cd ~/amplify-js-samples-staging
+            yarn cypress run --headless --spec ./cypress/integration/auth/<< parameters.spec >>.spec.js --config baseUrl=https://aws.amazon.com/
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/videos
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/screenshots
+
+  install_verdaccio:
+    steps:
+      - run:
+          name: Install Verdaccio
+          command: npm i -g verdaccio
+      - run:
+          name: Run Verdaccio
+          background: true
+          command: |
+            cd ~
+            verdaccio
+
+  integ_test_rn_ios:
+    steps:
+      - attach_workspace:
+          at: ~/
+      - install_verdaccio
+      - publish_to_verdaccio
+      - run:
+          name: Yarn Install
+          command: |
+            echo "Current NPM registry: " $(yarn config get registry)
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
+      - run:
+          name: Install CocoaPods
+          command: |
+            cd ios
+            pod install
+      - run:
+          background: true
+          command: xcrun simctl boot "iPhone 11" || true
+          name: Start iOS simulator (background)
+      - run:
+          background: true
+          command: yarn start
+          name: Start Metro Packager (background)
+      - run:
+          name: Configure Detox
+          environment:
+            HOMEBREW_NO_AUTO_UPDATE: '1'
+          command: |
+            brew tap wix/brew
+            brew install applesimutils
+            yarn global add detox-cli
+      - run:
+          name: Detox Build
+          command: detox build -c ios.sim.debug
+      - run:
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
+            JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
+          name: Detox Test
+          command: |
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'detox test -c ios.sim.debug -u' -n 3
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
+
+  integ_test_rn_android:
+    steps:
+      - attach_workspace:
+          at: ~/
+      - install_verdaccio
+      - publish_to_verdaccio
+      - run:
+          # https://reactnative.dev/docs/environment-setup
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh export-env
+          name: Configure Environment Variables
+      - restore_cache:
+          key: |
+            brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
+      - run:
+          # React Native Android can have issues with later versions of Node:
+          # https://github.com/facebook/react-native/issues/26808
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh install-node
+          name: Install node@10
+      - run:
+          # https://reactnative.dev/docs/environment-setup
+          environment:
+            HOMEBREW_NO_AUTO_UPDATE: '1'
+          command: |
+            brew tap wix/brew >/dev/null
+            brew tap homebrew/cask >/dev/null
+            brew install android-sdk >/dev/null
+            yarn global add detox-cli
+            touch .watchmanconfig
+            node -v
+          name: Configure Detox Environment
       - save_cache:
-          key: v1-storage-app-pods-{{ checksum "ios/Podfile.lock" }}
+          key: |
+            brew-cache-{{ arch }}-{{ .Environment.CACHE_VERSION }}
           paths:
-            - ios/Pods
+            - /usr/local/Homebrew
+            - ~/Library/Caches/Homebrew
+      - run:
+          name: Yarn Install
+          command: |
+            echo "Current NPM registry: " $(yarn config get registry)
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install --frozen-lockfile --non-interactive' -n 3
+      - run:
+          # Install Android Emulator without Android Studio
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh sdkmanager
+          name: Install Android Emulator
+          shell: /bin/bash -e
+      - run:
+          # Force ssh key generation for emulators
+          command: |
+            adb start-server
+            adb devices
+            adb kill-server
+            ls -la ~/.android
+          name: ADB Start Stop
+      - run:
+          # Create Android Emulator without Android Studio
+          command: >-
+            avdmanager create avd --force --name TestingAVD
+            --package "system-images;android-28;default;x86_64"
+            --tag default --device pixel
+          name: Create Android Emulator
+      - run:
+          background: true
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh start-emulator
+          name: Start Android Emulator (background)
+      - run:
+          command: |
+            cd ~/amplify-js
+            ./.circleci/android-rn.sh wait-for-avd
+          name: Wait for AVD to be ready
+          no_output_timeout: 5m
+      - run:
+          background: true
+          command: yarn start
+          name: Start Metro Packager (background)
+      - run:
+          name: Detox Build
+          command: detox build -c android.emu.debug
+      - run:
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
+            JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
+          name: Detox Test
+          command: |
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'detox test -c android.emu.debug -u' -n 3
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
 
 jobs:
   build:
-    <<: *defaults
-    working_directory: ~/amplify-js
-    resource_class: large
+    executor: build-executor
     steps:
       - checkout
-      - run: yarn config set workspaces-experimental true
-      - run: yarn
+      - run:
+          name: yarn install --non-interactive
+          # temporarily rename .yarnrc before installing so that we can generate a yarn.lock artifact
+          command: |
+            mv .yarnrc ._yarnrc
+            yarn
       - run: yarn bootstrap
       - run: yarn build
-
+      # storing yarn.lock as an artifact, so that we can quickly get a dependency diff
+      # with the last working build in the event that some upstream deps break the build in the future
+      - store_artifacts:
+          path: yarn.lock
+      - run:
+          name: delete lockfile after persisting
+          command: |
+            mv ._yarnrc .yarnrc
+            rm yarn.lock
       - save_cache:
           key: amplify-ssh-deps-{{ .Branch }}
           paths:
             - ~/.ssh
       - persist_to_workspace:
           root: /root
-          paths: amplify-js
+          paths:
+            - amplify-js
+
   unit_test:
-    <<: *defaults
-    working_directory: ~/amplify-js
+    executor: unit-test-executor
     steps:
       - attach_workspace:
           at: /root
       - run:
           name: 'Run Amplify JS unit tests'
           command: |
-            yarn run test --scope @aws-amplify/auth
-            yarn run test --scope @aws-amplify/api
-            yarn run test --scope @aws-amplify/analytics
-            yarn run test --scope @aws-amplify/cache
-            yarn run test --scope @aws-amplify/core
-            yarn run test --scope @aws-amplify/interactions
-            yarn run test --scope @aws-amplify/pubsub
-            yarn run test --scope @aws-amplify/predictions
-            yarn run test --scope @aws-amplify/storage
-            yarn run test --scope @aws-amplify/xr
-            yarn run test --scope amazon-cognito-identity-js
-            yarn run test --scope aws-amplify-react
-            yarn run test --scope aws-amplify-angular
-            yarn run test --scope aws-amplify-vue
-            yarn run coverage
+            yarn test
+            yarn coverage
+
   integ_setup:
-    <<: *defaults
+    executor: build-executor
     working_directory: ~/
     steps:
       - run:
@@ -95,286 +393,568 @@ jobs:
             - ~/.cache ## cache both yarn and Cypress
       - persist_to_workspace:
           root: /root
-          paths: amplify-js-samples-staging
-  integ_react_predictions:
-    <<: *defaults
-    working_directory: ~/
-    steps:
-      - attach_workspace:
-          at: /root
-      - restore_cache:
-          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
-      - run:
-          name: 'Link aws-amplify'
-          command: |
-            cd amplify-js/packages/aws-amplify
-            yarn link
-      - run:
-          name: 'Link predictions'
-          command: |
-            cd amplify-js/packages/predictions
-            yarn link
-      - run:
-          name: 'Install Predictions React sample'
-          command: |
-            cd amplify-js-samples-staging/samples/react/predictions/multi-user-translation
-            yarn
-            yarn link aws-amplify
-            yarn link @aws-amplify/predictions
-      - run:
-          name: 'Start Predictions React Sample server in background'
-          command: |
-            cd amplify-js-samples-staging/samples/react/predictions/multi-user-translation
-            yarn start
-          background: true
-      - run:
-          name: 'Run cypress tests for Predictions React Sample'
-          command: |
-            cd amplify-js-samples-staging
-            yarn cypress:react --spec "cypress/integration/predictions/multiuser-translation.spec.js"
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/videos
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/screenshots
-  integ_react_auth:
-    <<: *defaults
-    working_directory: ~/
-    steps:
-      - attach_workspace:
-          at: /root
-      - restore_cache:
-          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
-      - run:
-          name: 'Install React Authenticator sample'
-          command: |
-            cd amplify-js-samples-staging/samples/react/auth/with-authenticator
-            yarn
-      - run:
-          name: 'Link aws-amplify'
-          command: |
-            cd amplify-js/packages/aws-amplify
-            yarn link
-      - run:
-          name: 'Link aws-amplify-react'
-          command: |
-            cd amplify-js/packages/aws-amplify-react
-            yarn link
-      - run:
-          name: 'Install React Authenticator sample'
-          command: |
-            cd amplify-js-samples-staging/samples/react/auth/with-authenticator
-            yarn
-            yarn link aws-amplify
-            yarn link aws-amplify-react
-      - run:
-          name: 'Start React Authenticator Sample server in background'
-          command: |
-            cd amplify-js-samples-staging/samples/react/auth/with-authenticator
-            yarn start
-          background: true
-      - run:
-          name: 'Run cypress tests for React Authenticator Sample'
-          command: |
-            cd amplify-js-samples-staging
-            yarn cypress:react --spec "cypress/integration/auth/authenticator.spec.js"
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/videos
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/screenshots
-  integ_angular_auth:
-    <<: *defaults
-    working_directory: ~/
-    steps:
-      - attach_workspace:
-          at: /root
-      - restore_cache:
-          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
-      - run:
-          name: 'Install Angular Authenticator sample'
-          command: |
-            cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
-            yarn
-      - run:
-          name: 'Link aws-amplify'
-          command: |
-            cd amplify-js/packages/aws-amplify
-            yarn link
-      - run:
-          name: 'Link aws-amplify-angular'
-          command: |
-            cd amplify-js/packages/aws-amplify-angular
-            yarn link
-      - run:
-          name: 'Link @aws-amplify/analytics'
-          command: |
-            cd amplify-js/packages/analytics
-            yarn link
-      - run:
-          name: 'Install Angular Authenticator sample'
-          command: |
-            cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
-            yarn
-            yarn link aws-amplify
-            yarn link aws-amplify-angular
-            yarn link @aws-amplify/analytics
-      - run:
-          name: 'Start Angular Authenticator Sample server in background'
-          command: |
-            cd amplify-js-samples-staging/samples/angular/auth/amplify-authenticator
-            yarn start
-          background: true
-      - run:
-          name: 'Run cypress tests for Angular Authenticator Sample'
-          command: |
-            cd amplify-js-samples-staging
-            yarn cypress:angular --spec "cypress/integration/auth/authenticator.spec.js"
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/videos
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/screenshots
-  integ_vue_auth:
-    <<: *defaults
-    working_directory: ~/
-    steps:
-      - attach_workspace:
-          at: /root
-      - restore_cache:
-          key: amplify-js-{{ .Branch }}-{{ checksum "amplify-js-samples-staging/yarn.lock" }}
-      - run:
-          name: 'Install Vue Authenticator sample'
-          command: |
-            cd amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
-            yarn
-      - run:
-          name: 'Link aws-amplify'
-          command: |
-            cd amplify-js/packages/aws-amplify
-            yarn link
-      - run:
-          name: 'Link aws-amplify-vue'
-          command: |
-            cd amplify-js/packages/aws-amplify-vue
-            yarn link
-      - run:
-          name: 'Start Vue Authenticator Sample server in background'
-          command: |
-            cd amplify-js-samples-staging/samples/vue/auth/amplify-authenticator
-            yarn start
-          background: true
-      - run:
-          name: 'Run cypress tests for Vue Authenticator Sample'
-          command: |
-            cd amplify-js-samples-staging
-            yarn cypress:vue --spec "cypress/integration/auth/authenticator.spec.js"
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/videos
-      - store_artifacts:
-          path: amplify-js-samples-staging/cypress/screenshots
+          paths:
+            - amplify-js-samples-staging
 
+  integ_react_auth:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Authenticator'
+          framework: react
+          category: auth
+          sample_name: with-authenticator-legacy
+          spec: authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'React Authenticator'
+          framework: react
+          category: auth
+          sample_name: amplify-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Guest to Authenticated User"'
+          framework: react
+          category: auth
+          sample_name: guest-to-auth-user
+          spec: guest-to-auth-user
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'React Typescript Authenticator'
+          framework: react
+          category: auth
+          sample_name: typescript-amplify-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'React Custom Authenticator'
+          framework: react
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'React Custom Authenticator'
+          framework: react
+          category: auth
+          sample_name: with-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+  integ_angular_auth:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Angular Authenticator'
+          framework: angular
+          category: auth
+          sample_name: amplify-authenticator-legacy
+          spec: authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Angular Authenticator'
+          framework: angular
+          category: auth
+          sample_name: amplify-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Angular Custom Authenticator'
+          framework: angular
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
+          browser: << parameters.browser >>
+  integ_vue_auth:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Legacy Vue Authenticator'
+          framework: vue
+          category: auth
+          sample_name: amplify-authenticator-legacy
+          spec: authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Vue 2 Authenticator'
+          framework: vue
+          category: auth
+          sample_name: amplify-authenticator
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Vue 3 Authenticator'
+          framework: vue
+          category: auth
+          sample_name: authenticator-vue3
+          spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Vue Custom Authenticator'
+          framework: vue
+          category: auth
+          sample_name: amplify-authenticator
+          spec: custom-authenticator
+          browser: << parameters.browser >>
+  integ_react_predictions:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/predictions/multi-user-translation
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Predictions'
+          framework: react
+          category: predictions
+          sample_name: multi-user-translation
+          spec: multiuser-translation
+          browser: << parameters.browser >>
+
+  integ_react_interactions:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/interactions/chatbot-component
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Interactions'
+          framework: react
+          category: interactions
+          sample_name: chatbot-component
+          spec: chatbot-component
+          browser: << parameters.browser >>
+
+  integ_vue_interactions:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/vue/interactions/chatbot-component
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Vue 2 Interactions'
+          framework: vue
+          category: interactions
+          sample_name: chatbot-component
+          spec: chatbot-component
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Vue 3 Interactions'
+          framework: vue
+          category: interactions
+          sample_name: chatbot-component-vue3
+          spec: chatbot-component
+          browser: << parameters.browser >>
+  integ_angular_interactions:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/angular/interactions/chatbot-component
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Angular Interactions'
+          framework: angular
+          category: interactions
+          sample_name: chatbot-component
+          spec: chatbot-component
+          browser: << parameters.browser >>
+
+  integ_react_datastore:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/many-to-many
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore'
+          framework: react
+          category: datastore
+          sample_name: many-to-many
+          spec: many-to-many
+          browser: << parameters.browser >>
+
+  integ_react_datastore_multi_auth_one_rule:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/multi-auth
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - One Rule'
+          framework: react
+          category: datastore
+          sample_name: multi-auth
+          spec: multi-auth-one-rule
+          browser: << parameters.browser >>
+
+  integ_react_datastore_multi_auth_two_rules:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/multi-auth
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - Two Rules'
+          framework: react
+          category: datastore
+          sample_name: multi-auth
+          spec: multi-auth-two-rules
+          browser: << parameters.browser >>
+
+  integ_react_datastore_multi_auth_three_plus_rules:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/multi-auth
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - Three Plus Rules'
+          framework: react
+          category: datastore
+          sample_name: multi-auth
+          spec: multi-auth-three-plus-rules
+          browser: << parameters.browser >>
+
+  integ_react_datastore_subs_disabled:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/subs-disabled
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Subs Disabled'
+          framework: react
+          category: datastore
+          sample_name: subs-disabled
+          spec: subs-disabled
+          browser: << parameters.browser >>
+
+  integ_react_datastore_consecutive_saves:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/consecutive-saves
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Subs Disabled'
+          framework: react
+          category: datastore
+          sample_name: consecutive-saves
+          spec: consecutive-saves
+          browser: << parameters.browser >>
+
+  integ_react_storage:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageApp
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Storage'
+          framework: react
+          category: storage
+          sample_name: storageApp
+          spec: storage
+          browser: << parameters.browser >>
+  integ_react_storage_multipart_progress:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/multi-part-upload-with-progress
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Storage Multi-Part Upload with Progress'
+          framework: react
+          category: storage
+          sample_name: multi-part-upload-with-progress
+          spec: multi-part-upload-with-progress
+          browser: << parameters.browser >>
+  integ_react_storage_copy:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/multi-part-copy-with-progress
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Storage Copy'
+          framework: react
+          category: storage
+          sample_name: multi-part-copy-with-progress
+          spec: multi-part-copy-with-progress
+          browser: << parameters.browser >>
+  integ_react_storage_ui:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/storageComp
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Storage UI Components'
+          framework: react
+          category: storage
+          sample_name: storageComp
+          spec: storage-comp
+  integ_react_amazon_cognito_identity_js_cookie_storage:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/amazon-cognito-identity-js-cookie-storage
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'amazon-cognito-identity-js-cookie-storage'
+          framework: react
+          category: auth
+          sample_name: amazon-cognito-identity-js-cookie-storage
+          spec: amazon-cognito-identity-js-cookie-storage
+          browser: << parameters.browser >>
+  integ_react_amazon_cognito_identity_js:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/amazon-cognito-identity-js
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'amazon-cognito-identity-js'
+          framework: react
+          category: auth
+          sample_name: amazon-cognito-identity-js
+          spec: amazon-cognito-identity-js
+          browser: << parameters.browser >>
+  integ_node_amazon_cognito_identity_js:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/node/auth/amazon-cognito-identity-js
+    steps:
+      - prepare_test_env
+      - integ_test_node_js:
+          test_name: 'amazon-cognito-identity-js'
+          category: auth
+          sample_name: amazon-cognito-identity-js
+  integ_react_device_tracking:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/device-tracking
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'cognito-device-tracking'
+          framework: react
+          category: auth
+          sample_name: device-tracking
+          spec: device-tracking
+          browser: << parameters.browser >>
   integ_rn_ios_storage:
-    <<: *defaults_rn
+    executor: macos-executor
+    <<: *test_env_vars
     working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+    steps:
+      - integ_test_rn_ios
+
+  integ_rn_ios_storage_multipart_progress:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
+    steps:
+      - integ_test_rn_ios
+
+  integ_rn_ios_push_notifications:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/push-notifications/PushNotificationApp
+    steps:
+      - integ_test_rn_ios
+
+  integ_rn_android_storage:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/StorageApp
+    steps:
+      - integ_test_rn_android
+
+  integ_rn_android_storage_multipart_progress:
+    executor: macos-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react-native/storage/MultiPartUploadWithProgress
+    steps:
+      - integ_test_rn_android
+
+  integ_datastore_auth:
+    parameters:
+      scenario:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore Auth - Chrome'
+          framework: react
+          category: datastore
+          sample_name: << parameters.scenario >>
+          spec: << parameters.scenario >>
+          browser: chrome
+      - integ_test_js:
+          test_name: 'DataStore Auth - Firefox'
+          framework: react
+          category: datastore
+          sample_name: << parameters.scenario >>
+          spec: << parameters.scenario >>
+          browser: firefox
+
+  integ_duplicate_packages:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/version-conflict/duplicate-packages
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Duplicate Package Errors'
+          framework: react
+          category: version-conflict
+          sample_name: duplicate-packages
+          spec: duplicate-packages
+          browser: << parameters.browser >>
+  integ_auth_test_cypress_no_ui:
+    working_directory: ~/amplify-js-samples-staging/
+    executor: js-test-executor
+    steps:
+      - prepare_no_ui_test_env
+      - integ_test_cypress_no_ui:
+          test_name: 'Token revocation'
+          category: 'auth'
+          spec: 'token-revocation'
+  integ_react_geo:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Display Map'
+          framework: react
+          category: geo
+          sample_name: display-map
+          spec: display-map
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Marker Map'
+          framework: react
+          category: geo
+          sample_name: marker-map
+          spec: marker-map
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Cluster Map'
+          framework: react
+          category: geo
+          sample_name: cluster-marker-map
+          spec: cluster-marker-map
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Search Map'
+          framework: react
+          category: geo
+          sample_name: search-map
+          spec: search-map
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Search Outside Map'
+          framework: react
+          category: geo
+          sample_name: search-outside-map
+          spec: search-outside-map
+          browser: << parameters.browser >>
+  deploy:
+    executor: macos-executor
+    working_directory: ~/amplify-js
     steps:
       - attach_workspace:
           at: ~/
       - run:
-          name: Yarn Install
-          command: yarn install --non-interactive --no-lockfile
-      # Metro Bundler doesn't work with linked packages so we're copying them from amplify-js
-      # TODO: utilize Verdaccio for this instead
-      - run:
-          name: 'Link aws-amplify'
+          name: 'Publish to Amplify Package'
           command: |
-            cp -rf ~/amplify-js/packages/aws-amplify/dist ./node_modules/aws-amplify/dist
-            cp -rf ~/amplify-js/packages/aws-amplify/lib ./node_modules/aws-amplify/lib
-            cp -rf ~/amplify-js/packages/aws-amplify/lib-esm ./node_modules/aws-amplify/lib-esm
+            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+            npm whoami
+            git config --global user.email $GITHUB_EMAIL
+            git config --global user.name $GITHUB_USER
+            git status
+            git --no-pager diff
+            yarn publish:$CIRCLE_BRANCH
 
-            cp -rf ~/amplify-js/packages/amazon-cognito-identity-js/dist ./node_modules/amazon-cognito-identity-js/dist
-            cp -rf ~/amplify-js/packages/amazon-cognito-identity-js/lib ./node_modules/amazon-cognito-identity-js/lib
-
-            cp -rf ~/amplify-js/packages/analytics/dist ./node_modules/@aws-amplify/analytics/dist
-            cp -rf ~/amplify-js/packages/analytics/lib ./node_modules/@aws-amplify/analytics/lib
-            cp -rf ~/amplify-js/packages/analytics/lib-esm ./node_modules/@aws-amplify/analytics/lib-esm
-
-            cp -rf ~/amplify-js/packages/api/dist ./node_modules/@aws-amplify/api/dist
-            cp -rf ~/amplify-js/packages/api/lib ./node_modules/@aws-amplify/api/lib
-            cp -rf ~/amplify-js/packages/api/lib-esm ./node_modules/@aws-amplify/api/lib-esm
-
-            cp -rf ~/amplify-js/packages/auth/dist ./node_modules/@aws-amplify/auth/dist
-            cp -rf ~/amplify-js/packages/auth/lib ./node_modules/@aws-amplify/auth/lib
-            cp -rf ~/amplify-js/packages/auth/lib-esm ./node_modules/@aws-amplify/auth/lib-esm
-
-            cp -rf ~/amplify-js/packages/cache/dist ./node_modules/@aws-amplify/cache/dist
-            cp -rf ~/amplify-js/packages/cache/lib ./node_modules/@aws-amplify/cache/lib
-            cp -rf ~/amplify-js/packages/cache/lib-esm ./node_modules/@aws-amplify/cache/lib-esm
-
-            cp -rf ~/amplify-js/packages/core/dist ./node_modules/@aws-amplify/core/dist
-            cp -rf ~/amplify-js/packages/core/lib ./node_modules/@aws-amplify/core/lib
-            cp -rf ~/amplify-js/packages/core/lib-esm ./node_modules/@aws-amplify/core/lib-esm
-
-            cp -rf ~/amplify-js/packages/interactions/dist ./node_modules/@aws-amplify/interactions/dist
-            cp -rf ~/amplify-js/packages/interactions/lib ./node_modules/@aws-amplify/interactions/lib
-            cp -rf ~/amplify-js/packages/interactions/lib-esm ./node_modules/@aws-amplify/interactions/lib-esm
-
-            cp -rf ~/amplify-js/packages/predictions/dist ./node_modules/@aws-amplify/predictions/dist
-            cp -rf ~/amplify-js/packages/predictions/lib ./node_modules/@aws-amplify/predictions/lib
-            cp -rf ~/amplify-js/packages/predictions/lib-esm ./node_modules/@aws-amplify/predictions/lib-esm
-
-            cp -rf ~/amplify-js/packages/pubsub/dist ./node_modules/@aws-amplify/pubsub/dist
-            cp -rf ~/amplify-js/packages/pubsub/lib ./node_modules/@aws-amplify/pubsub/lib
-            cp -rf ~/amplify-js/packages/pubsub/lib-esm ./node_modules/@aws-amplify/pubsub/lib-esm
-
-            cp -rf ~/amplify-js/packages/storage/dist ./node_modules/@aws-amplify/storage/dist
-            cp -rf ~/amplify-js/packages/storage/lib ./node_modules/@aws-amplify/storage/lib
-            cp -rf ~/amplify-js/packages/storage/lib-esm ./node_modules/@aws-amplify/storage/lib-esm
-
-            cp -rf ~/amplify-js/packages/amplify-ui/dist ./node_modules/@aws-amplify/ui/dist
-            cp -rf ~/amplify-js/packages/amplify-ui/lib ./node_modules/@aws-amplify/ui/lib
-
-            cp -rf ~/amplify-js/packages/xr/dist ./node_modules/@aws-amplify/xr/dist
-            cp -rf ~/amplify-js/packages/xr/lib ./node_modules/@aws-amplify/xr/lib
-            cp -rf ~/amplify-js/packages/xr/lib-esm ./node_modules/@aws-amplify/xr/lib-esm
-
-      - restore_pods
-      - run:
-          name: Install CocoaPods
-          command: |
-            cd ios
-            pod install
-      - save_pods
-      - run:
-          background: true
-          command: xcrun simctl boot "iPhone 11" || true
-          name: Start iOS simulator (background)
-      - run:
-          background: true
-          command: yarn start
-          name: Start Metro Packager (background)
-      - run:
-          name: Configure Detox
-          environment:
-            HOMEBREW_NO_AUTO_UPDATE: 1
-          command: |
-            brew tap wix/brew
-            brew install applesimutils
-            yarn global add detox-cli
-      - run:
-          name: Detox Build
-          command: detox build -c ios.sim.debug
-      - run:
-          environment:
-            JEST_JUNIT_OUTPUT_DIR: 'reports/junit'
-            JEST_JUNIT_OUTPUT_NAME: 'detox-test-results.xml'
-          name: Detox Test
-          command: detox test -c ios.sim.debug -u
-      - store_test_results:
-          path: reports/junit
-      - store_artifacts:
-          path: reports/junit
-
-  deploy:
-    <<: *defaults
-    working_directory: ~/amplify-js
+  post_release:
+    executor: build-executor
     steps:
       - attach_workspace:
           at: /root
@@ -383,94 +963,339 @@ jobs:
             - amplify-ssh-deps-{{ .Branch }}
             - amplify-ssh-deps
       - run:
-          name: 'Publish to Amplify Package'
+          name: 'Post-release steps'
           command: |
-            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
-              echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-              npm whoami
-              git config --global user.email $GITHUB_EMAIL
-              git config --global user.name $GITHUB_USER
-              git status
-              git --no-pager diff
-              yarn run publish:$CIRCLE_BRANCH
-            else
-              echo "Skipping deploy."
-            fi
+            git config --global user.email $GITHUB_EMAIL
+            git config --global user.name $GITHUB_USER
+            git pull origin release
+            yarn workspace @aws-amplify/core build
+            git add ./packages/core/src/Platform/version.ts
+            git commit -m "chore(release): update version.ts [ci skip]"
+            git push origin release
+            git push origin release:main
+
+releasable_branches: &releasable_branches
+  branches:
+    only:
+      - release
+      - main
+      - ui-components/main
+      - 1.0-stable
+      - geo/main
+
+test_browsers: &test_browsers
+  browser: [chrome, firefox]
+
+datastore_auth_scenarios: &datastore_auth_scenarios
+  scenario: [
+      owner-based-default, # TODO: Add `owner-based-operations` when tests pass
+      static-user-pool-groups-default,
+      static-user-pool-groups-operations,
+      owner-and-group-different-models-default,
+      owner-and-group-same-model-default,
+      owner-and-group-same-model-operations,
+      dynamic-user-pool-groups-default,
+      dynamic-user-pool-groups-owner-based-default,
+      private-auth-default,
+      private-auth-iam,
+      public-auth-default,
+      public-auth-iam,
+      owner-custom-claim-default,
+      owner-custom-field-default,
+    ]
 
 workflows:
-  version: 2
   build_test_deploy:
     jobs:
       - build
+      - integ_setup:
+          filters:
+            <<: *releasable_branches
       - unit_test:
           requires:
             - build
-      - integ_setup:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
-          requires:
-            - build
-      - integ_react_predictions:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
-          requires:
-            - integ_setup
       - integ_react_auth:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
           requires:
             - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_auth_test_cypress_no_ui:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_angular_auth:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
           requires:
             - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_vue_auth:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
           requires:
             - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_predictions:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_interactions:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_vue_interactions:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_angular_interactions:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_one_rule:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_two_rules:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_three_plus_rules:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_subs_disabled:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_consecutive_saves:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_storage_multipart_progress:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_storage_copy:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_storage_ui:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_amazon_cognito_identity_js_cookie_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_amazon_cognito_identity_js:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_node_amazon_cognito_identity_js:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_device_tracking:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_rn_ios_storage:
-          filters:
-            branches:
-              only:
-                - release
-                - master
-                - 1.0-stable
           requires:
             - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_ios_storage_multipart_progress:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_ios_push_notifications:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_rn_android_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      # - integ_rn_android_storage_multipart_progress:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
+      - integ_datastore_auth:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *datastore_auth_scenarios
+      - integ_duplicate_packages:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_geo:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          browser: chrome
       - deploy:
           filters:
-            branches:
-              only:
-                - release
-                - master
-                - beta
-                - 1.0-stable
+            <<: *releasable_branches
           requires:
             - unit_test
             - integ_react_predictions
+            - integ_react_datastore
+            - integ_react_datastore_multi_auth_one_rule
+            - integ_react_datastore_multi_auth_two_rules
+            - integ_react_datastore_multi_auth_three_plus_rules
+            - integ_react_datastore_subs_disabled
+            - integ_react_datastore_consecutive_saves
+            - integ_react_storage
+            - integ_react_storage_multipart_progress
+            - integ_react_storage_copy
+            - integ_react_storage_ui
+            - integ_react_interactions
+            - integ_angular_interactions
+            - integ_vue_interactions
+            - integ_react_amazon_cognito_identity_js_cookie_storage
+            - integ_react_amazon_cognito_identity_js
+            - integ_node_amazon_cognito_identity_js
             - integ_react_auth
             - integ_angular_auth
             - integ_vue_auth
             - integ_rn_ios_storage
+            - integ_rn_ios_storage_multipart_progress
+            # - integ_rn_android_storage_multipart_progress
+            - integ_rn_ios_push_notifications
+            - integ_rn_android_storage
+            - integ_datastore_auth
+            - integ_duplicate_packages
+            - integ_auth_test_cypress_no_ui
+            - integ_react_geo
+      - post_release:
+          filters:
+            branches:
+              only:
+                - release
+          requires:
+            - deploy

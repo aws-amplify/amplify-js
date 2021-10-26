@@ -12,13 +12,13 @@
  */
 
 import * as React from 'react';
-import { I18n, JS, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { I18n, isEmpty, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { FederatedButtons } from './FederatedSignIn';
-import SignUp from './SignUp';
-import ForgotPassword from './ForgotPassword';
+import { SignUp } from './SignUp';
+import { ForgotPassword } from './ForgotPassword';
 
 import {
 	FormSection,
@@ -48,7 +48,7 @@ export interface ISignInState extends IAuthPieceState {
 	loading?: boolean;
 }
 
-export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
+export class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 	constructor(props: ISignInProps) {
 		super(props);
 
@@ -66,7 +66,7 @@ export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 			);
 		}
 		Auth.verifiedContact(user).then(data => {
-			if (!JS.isEmpty(data.verified)) {
+			if (!isEmpty(data.verified)) {
 				this.changeState('signedIn', user);
 			} else {
 				user = Object.assign(user, data);
@@ -176,7 +176,7 @@ export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 							/>
 							{!hideForgotPassword && (
 								<Hint theme={theme}>
-									{I18n.get('Forget your password? ')}
+									{I18n.get('Forgot your password? ')}
 									<Link
 										theme={theme}
 										onClick={() => this.changeState('forgotPassword')}
@@ -217,3 +217,8 @@ export default class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default SignIn;

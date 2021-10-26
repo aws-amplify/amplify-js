@@ -40,9 +40,7 @@ export class GreetingComponentCore implements OnInit {
 	_usernameAttributes: string = 'username';
 	protected logger: any;
 
-	constructor(
-		@Inject(AmplifyService) protected amplifyService: AmplifyService
-	) {
+	constructor(@Inject(AmplifyService) public amplifyService: AmplifyService) {
 		this.logger = this.amplifyService.logger('GreetingComponent');
 		this.subscribe();
 	}

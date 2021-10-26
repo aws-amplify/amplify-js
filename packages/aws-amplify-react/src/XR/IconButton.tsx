@@ -14,7 +14,7 @@ import * as React from 'react';
 import Tooltip from './Tooltip';
 import * as AmplifyUI from '@aws-amplify/ui';
 
-const IconButton = props => {
+export const IconButton = props => {
 	let buttonIcon;
 	switch (props.variant) {
 		case 'sound-mute':
@@ -143,4 +143,7 @@ const IconButton = props => {
 	);
 };
 
+/**
+ * @deprecated use named import
+ */
 export default IconButton;

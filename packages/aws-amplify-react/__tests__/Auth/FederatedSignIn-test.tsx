@@ -1,6 +1,7 @@
-import Auth from '@aws-amplify/auth';
 import * as React from 'react';
-import FederatedSignIn, {
+import { Auth } from '@aws-amplify/auth';
+import {
+	FederatedSignIn,
 	FederatedButtons,
 } from '../../src/Auth/FederatedSignIn';
 

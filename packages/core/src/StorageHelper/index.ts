@@ -21,7 +21,7 @@ export class MemoryStorage {
 	 * @param {object} value - the value
 	 * @returns {string} value that was set
 	 */
-	static setItem(key, value) {
+	static setItem(key: string, value: any) {
 		dataMemory[key] = value;
 		return dataMemory[key];
 	}
@@ -32,7 +32,7 @@ export class MemoryStorage {
 	 * This is used to clear the storage
 	 * @returns {string} the data item
 	 */
-	static getItem(key) {
+	static getItem(key: string) {
 		return Object.prototype.hasOwnProperty.call(dataMemory, key)
 			? dataMemory[key]
 			: undefined;
@@ -43,7 +43,7 @@ export class MemoryStorage {
 	 * @param {string} key - the key being set
 	 * @returns {string} value - value that was deleted
 	 */
-	static removeItem(key) {
+	static removeItem(key: string) {
 		return delete dataMemory[key];
 	}
 
@@ -57,8 +57,8 @@ export class MemoryStorage {
 	}
 }
 
-export default class StorageHelper {
-	private storageWindow;
+export class StorageHelper {
+	private storageWindow: any;
 	/**
 	 * This is used to get a storage object
 	 * @returns {object} the storage
@@ -77,7 +77,12 @@ export default class StorageHelper {
 	 * This is used to return the storage
 	 * @returns {object} the storage
 	 */
-	getStorage() {
+	getStorage(): any {
 		return this.storageWindow;
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default StorageHelper;

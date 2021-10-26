@@ -1,5 +1,3 @@
-import * as Rekognition from 'aws-sdk/clients/rekognition';
-import * as Textract from 'aws-sdk/clients/textract';
 import {
 	IdentifyTextOutput,
 	Table,
@@ -8,31 +6,29 @@ import {
 	Content,
 	BoundingBox,
 	Polygon,
+	Geometry,
 } from '../types';
+import { Block, BlockList, TextDetectionList } from '../types/AWSTypes';
 import { makeCamelCaseArray, makeCamelCase } from './Utils';
 
-function getBoundingBox(
-	geometry: Rekognition.Geometry | Textract.Geometry
-): BoundingBox {
+function getBoundingBox(geometry: Geometry): BoundingBox {
 	if (!geometry) return undefined;
 	return makeCamelCase(geometry.BoundingBox);
 }
 
-function getPolygon(
-	geometry: Rekognition.Geometry | Textract.Geometry
-): Polygon {
+function getPolygon(geometry: Geometry): Polygon {
 	if (!geometry) return undefined;
-	return makeCamelCaseArray(geometry.Polygon);
+	return makeCamelCaseArray(Array.from(geometry.Polygon));
 }
 
 /**
  * Organizes blocks from Rekognition API to each of the categories and and structures
  * their data accordingly.
- * @param {Textract.BlockList} source - Array containing blocks returned from Textract API.
+ * @param {BlockList} source - Array containing blocks returned from Textract API.
  * @return {IdentifyTextOutput} -  Object that categorizes each block and its information.
  */
 export function categorizeRekognitionBlocks(
-	blocks: Rekognition.TextDetectionList
+	blocks: TextDetectionList
 ): IdentifyTextOutput {
 	// Skeleton IdentifyText API response. We will populate it as we iterate through blocks.
 	const response: IdentifyTextOutput = {
@@ -76,11 +72,11 @@ export function categorizeRekognitionBlocks(
 /**
  * Organizes blocks from Textract API to each of the categories and and structures
  * their data accordingly.
- * @param {Textract.BlockList} source - Array containing blocks returned from Textract API.
+ * @param {BlockList} source - Array containing blocks returned from Textract API.
  * @return {IdentifyTextOutput} -  Object that categorizes each block and its information.
  */
 export function categorizeTextractBlocks(
-	blocks: Textract.BlockList
+	blocks: BlockList
 ): IdentifyTextOutput {
 	// Skeleton IdentifyText API response. We will populate it as we iterate through blocks.
 	const response: IdentifyTextOutput = {
@@ -103,9 +99,9 @@ export function categorizeTextractBlocks(
 	 * Note that we do not map `WORD` and `TABLE` in `blockMap` because they will not be referenced by any other
 	 * block except the Page block.
 	 */
-	const tableBlocks: Textract.BlockList = Array();
-	const keyValueBlocks: Textract.BlockList = Array();
-	const blockMap: { [id: string]: Textract.Block } = {};
+	const tableBlocks: BlockList = Array();
+	const keyValueBlocks: BlockList = Array();
+	const blockMap: { [id: string]: Block } = {};
 
 	blocks.forEach(block => {
 		switch (block.BlockType) {
@@ -167,7 +163,8 @@ export function categorizeTextractBlocks(
 		const keyValueResponse: KeyValue[] = Array();
 		keyValueBlocks.forEach(keyValue => {
 			// We need the KeyValue blocks of EntityType = `KEY`, which has both key and value references.
-			if (keyValue.EntityTypes.indexOf('KEY') !== -1) {
+			const entityTypes = Array.from(keyValue.EntityTypes);
+			if (entityTypes.indexOf('KEY') !== -1) {
 				keyValueResponse.push(constructKeyValue(keyValue, blockMap));
 			}
 		});
@@ -178,19 +175,19 @@ export function categorizeTextractBlocks(
 
 /**
  * Constructs a table object using data from its children cells.
- * @param {Textract.Block} table - Table block that has references (`Relationships`) to its cells
- * @param {[id: string]: Textract.Block} blockMap - Maps block Ids to blocks.
+ * @param {Block} table - Table block that has references (`Relationships`) to its cells
+ * @param {[id: string]: Block} blockMap - Maps block Ids to blocks.
  */
 export function constructTable(
-	table: Textract.Block,
-	blockMap: { [key: string]: Textract.Block }
+	table: Block,
+	blockMap: { [key: string]: Block }
 ): Table {
 	let tableMatrix: TableCell[][];
 	tableMatrix = [];
 	// visit each of the cell associated with the table's relationship.
-	table.Relationships.forEach(tableRelation => {
-		tableRelation.Ids.forEach(cellId => {
-			const cellBlock: Textract.Block = blockMap[cellId];
+	for (const tableRelation of table.Relationships) {
+		for (const cellId of tableRelation.Ids) {
+			const cellBlock: Block = blockMap[cellId];
 			const row = cellBlock.RowIndex - 1; // textract starts indexing at 1, so subtract it by 1.
 			const col = cellBlock.ColumnIndex - 1; // textract starts indexing at 1, so subtract it by 1.
 			// extract data contained inside the cell.
@@ -205,8 +202,8 @@ export function constructTable(
 			};
 			if (!tableMatrix[row]) tableMatrix[row] = [];
 			tableMatrix[row][col] = cell;
-		});
-	});
+		}
+	}
 	const rowSize = tableMatrix.length;
 	const columnSize = tableMatrix[0].length;
 	// Note that we leave spanned cells undefined for distinction
@@ -220,31 +217,31 @@ export function constructTable(
 
 /**
  * Constructs a key value object from its children key and value blocks.
- * @param {Textract.Block} KeyValue - KeyValue block that has references (`Relationships`) to its children.
- * @param {[id: string]: Textract.Block} blockMap - Maps block Ids to blocks.
+ * @param {Block} KeyValue - KeyValue block that has references (`Relationships`) to its children.
+ * @param {[id: string]: Block} blockMap - Maps block Ids to blocks.
  */
 export function constructKeyValue(
-	keyBlock: Textract.Block,
-	blockMap: { [key: string]: Textract.Block }
+	keyBlock: Block,
+	blockMap: { [key: string]: Block }
 ): KeyValue {
 	let keyText: string = '';
 	let valueText: string = '';
 	let valueSelected: boolean;
-	keyBlock.Relationships.forEach(keyValueRelation => {
+	for (const keyValueRelation of keyBlock.Relationships) {
 		if (keyValueRelation.Type === 'CHILD') {
 			// relation refers to key
 			const contents = extractContentsFromBlock(keyBlock, blockMap);
 			keyText = contents.text;
 		} else if (keyValueRelation.Type === 'VALUE') {
 			// relation refers to value
-			keyValueRelation.Ids.forEach(valueId => {
+			for (const valueId of keyValueRelation.Ids) {
 				const valueBlock = blockMap[valueId];
 				const contents = extractContentsFromBlock(valueBlock, blockMap);
 				valueText = contents.text;
 				if (contents.selected != null) valueSelected = contents.selected;
-			});
+			}
 		}
-	});
+	}
 	return {
 		key: keyText,
 		value: { text: valueText, selected: valueSelected },
@@ -255,12 +252,12 @@ export function constructKeyValue(
 
 /**
  * Extracts text and selection from input block's children.
- * @param {Textract.Block}} block - Block that we want to extract contents from.
- * @param {[id: string]: Textract.Block} blockMap - Maps block Ids to blocks.
+ * @param {Block}} block - Block that we want to extract contents from.
+ * @param {[id: string]: Block} blockMap - Maps block Ids to blocks.
  */
 export function extractContentsFromBlock(
-	block: Textract.Block,
-	blockMap: { [id: string]: Textract.Block }
+	block: Block,
+	blockMap: { [id: string]: Block }
 ): Content {
 	let words: string = '';
 	let isSelected: boolean;
@@ -269,16 +266,16 @@ export function extractContentsFromBlock(
 		// some block might have no content
 		return { text: '', selected: undefined };
 	}
-	block.Relationships.forEach(relation => {
-		relation.Ids.forEach(contentId => {
+	for (const relation of block.Relationships) {
+		for (const contentId of relation.Ids) {
 			const contentBlock = blockMap[contentId];
 			if (contentBlock.BlockType === 'WORD') {
 				words += contentBlock.Text + ' ';
 			} else if (contentBlock.BlockType === 'SELECTION_ELEMENT') {
 				isSelected = contentBlock.SelectionStatus === 'SELECTED' ? true : false;
 			}
-		});
-	});
+		}
+	}
 
 	words = words.substr(0, words.length - 1); // remove trailing space.
 	return { text: words, selected: isSelected };

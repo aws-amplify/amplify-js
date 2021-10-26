@@ -14,9 +14,9 @@
 import * as React from 'react';
 
 import { I18n, ConsoleLogger as Logger } from '@aws-amplify/core';
-import Auth from '@aws-amplify/auth';
+import { Auth } from '@aws-amplify/auth';
 
-import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import AmplifyTheme from '../Amplify-UI/Amplify-UI-Theme';
 
 import {
@@ -41,7 +41,7 @@ export interface IForgotPasswordState extends IAuthPieceState {
 	delivery: any;
 }
 
-export default class ForgotPassword extends AuthPiece<
+export class ForgotPassword extends AuthPiece<
 	IAuthPieceProps,
 	IForgotPasswordState
 > {
@@ -189,3 +189,8 @@ export default class ForgotPassword extends AuthPiece<
 		);
 	}
 }
+
+/**
+ * @deprecated use named import
+ */
+export default ForgotPassword;

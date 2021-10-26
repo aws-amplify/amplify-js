@@ -11,45 +11,38 @@
  * and limitations under the License.
  */
 
-import { AWS } from './Facet';
-import { ConsoleLogger as Logger } from './Logger';
-import Amplify from './Amplify';
+import { Amplify } from './Amplify';
+import { Platform } from './Platform';
 
-export * from './Facet';
-export { default as ClientDevice } from './ClientDevice';
+export { AmplifyClass } from './Amplify';
+export { ClientDevice } from './ClientDevice';
 export { ConsoleLogger, ConsoleLogger as Logger } from './Logger';
 export * from './Errors';
-export { default as Hub } from './Hub';
-export { default as I18n } from './I18n';
-export { default as JS } from './JS';
-export { default as Signer } from './Signer';
-export { default as Parser } from './Parser';
+export { Hub, HubCapsule, HubCallback, HubPayload } from './Hub';
+export { I18n } from './I18n';
+export * from './JS';
+export { Signer } from './Signer';
+export * from './Parser';
+export * from './Providers';
 export { FacebookOAuth, GoogleOAuth } from './OAuthHelper';
 export * from './RNComponents';
-export { default as Credentials } from './Credentials';
-export { default as ServiceWorker } from './ServiceWorker';
+export { Credentials, CredentialsClass } from './Credentials';
+export { ServiceWorker } from './ServiceWorker';
 export { ICredentials } from './types';
-export { default as StorageHelper, MemoryStorage } from './StorageHelper';
-export { default as Platform } from './Platform';
+export { StorageHelper, MemoryStorage } from './StorageHelper';
+export { UniversalStorage } from './UniversalStorage';
+export { Platform, getAmplifyUserAgent } from './Platform';
+export * from './constants';
 
-import Platform from './Platform';
 export const Constants = {
 	userAgent: Platform.userAgent,
 };
 
 export * from './constants';
-export default Amplify;
-
 export * from './Util';
 
-const logger = new Logger('Core');
-
-if (AWS['util']) {
-	AWS['util'].userAgent = () => {
-		return Constants.userAgent;
-	};
-} else if (AWS.config) {
-	AWS.config.update({ customUserAgent: Constants.userAgent });
-} else {
-	logger.warn('No AWS.config');
-}
+export { Amplify };
+/**
+ * @deprecated use named import
+ */
+export default Amplify;

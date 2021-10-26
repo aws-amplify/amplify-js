@@ -14,9 +14,20 @@ export interface InteractionsOptions {
 	[key: string]: any;
 }
 
-export interface InteractionsMessage {
-	content: string | Object;
+export type InteractionsTextMessage = {
+	content: string;
 	options: {
-		[key: string]: string;
+		messageType: 'text';
 	};
-}
+};
+
+export type InteractionsVoiceMessage = {
+	content: object;
+	options: {
+		messageType: 'voice';
+	};
+};
+
+export type InteractionsMessage =
+	| InteractionsTextMessage
+	| InteractionsVoiceMessage;

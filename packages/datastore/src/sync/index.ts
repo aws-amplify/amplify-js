@@ -1,32 +1,41 @@
-import { ConsoleLogger as Logger, Reachability } from '@aws-amplify/core';
-import Observable from 'zen-observable-ts';
+import { browserOrNode, ConsoleLogger as Logger } from '@aws-amplify/core';
+import { CONTROL_MSG as PUBSUB_CONTROL_MSG } from '@aws-amplify/pubsub';
+import Observable, { ZenObservable } from 'zen-observable-ts';
 import { ModelInstanceCreator } from '../datastore/datastore';
 import { ModelPredicateCreator } from '../predicates';
-import Storage from '../storage/storage';
+import { ExclusiveStorage as Storage } from '../storage/storage';
 import {
 	ConflictHandler,
+	ControlMessageType,
 	ErrorHandler,
 	InternalSchema,
 	ModelInit,
+	ModelInstanceMetadata,
 	MutableModel,
 	NamespaceResolver,
+	OpType,
 	PersistentModel,
 	PersistentModelConstructor,
 	SchemaModel,
 	SchemaNamespace,
+	TypeConstructorMap,
+	ModelPredicate,
+	AuthModeStrategy,
 } from '../types';
-import { SYNC } from '../util';
+import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
+import DataStoreConnectivity from './datastoreConnectivity';
 import { ModelMerger } from './merger';
 import { MutationEventOutbox } from './outbox';
 import { MutationProcessor } from './processors/mutation';
 import { CONTROL_MSG, SubscriptionProcessor } from './processors/subscription';
-import { SyncModelPage, SyncProcessor } from './processors/sync';
+import { SyncProcessor } from './processors/sync';
 import {
 	createMutationInstanceFromModelOperation,
 	predicateToGraphQLCondition,
 	TransformerMutationType,
 } from './utils';
 
+const { isNode } = browserOrNode();
 const logger = new Logger('DataStore');
 
 const ownSymbol = Symbol('sync');
@@ -44,9 +53,9 @@ export declare class MutationEvent {
 	public readonly id: string;
 	public readonly model: string;
 	public readonly operation: TransformerMutationType;
-	public readonly data: string;
 	public readonly modelId: string;
 	public readonly condition: string;
+	public data: string;
 }
 
 declare class ModelMetadata {
@@ -61,43 +70,65 @@ declare class ModelMetadata {
 	public readonly fullSyncInterval: number;
 	public readonly lastSync?: number;
 	public readonly lastFullSync?: number;
+	public readonly lastSyncPredicate?: null | string;
+}
+
+export enum ControlMessage {
+	SYNC_ENGINE_STORAGE_SUBSCRIBED = 'storageSubscribed',
+	SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED = 'subscriptionsEstablished',
+	SYNC_ENGINE_SYNC_QUERIES_STARTED = 'syncQueriesStarted',
+	SYNC_ENGINE_SYNC_QUERIES_READY = 'syncQueriesReady',
+	SYNC_ENGINE_MODEL_SYNCED = 'modelSynced',
+	SYNC_ENGINE_OUTBOX_MUTATION_ENQUEUED = 'outboxMutationEnqueued',
+	SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED = 'outboxMutationProcessed',
+	SYNC_ENGINE_OUTBOX_STATUS = 'outboxStatus',
+	SYNC_ENGINE_NETWORK_STATUS = 'networkStatus',
+	SYNC_ENGINE_READY = 'ready',
 }
 
 export class SyncEngine {
-	private started: boolean = false;
 	private online = false;
-	private processingMutations = false;
-	private fullSyncTimeoutId: number;
 
 	private readonly syncQueriesProcessor: SyncProcessor;
 	private readonly subscriptionsProcessor: SubscriptionProcessor;
 	private readonly mutationsProcessor: MutationProcessor;
 	private readonly modelMerger: ModelMerger;
 	private readonly outbox: MutationEventOutbox;
+	private readonly datastoreConnectivity: DataStoreConnectivity;
+	private readonly modelSyncedStatus: WeakMap<
+		PersistentModelConstructor<any>,
+		boolean
+	> = new WeakMap();
+
+	public getModelSyncedStatus(
+		modelConstructor: PersistentModelConstructor<any>
+	): boolean {
+		return this.modelSyncedStatus.get(modelConstructor);
+	}
 
 	constructor(
 		private readonly schema: InternalSchema,
 		private readonly namespaceResolver: NamespaceResolver,
-		private readonly modelClasses: Record<
-			string,
-			PersistentModelConstructor<any>
-		>,
-		private readonly userModelClasses: Record<
-			string,
-			PersistentModelConstructor<any>
-		>,
+		private readonly modelClasses: TypeConstructorMap,
+		private readonly userModelClasses: TypeConstructorMap,
 		private readonly storage: Storage,
 		private readonly modelInstanceCreator: ModelInstanceCreator,
 		private readonly maxRecordsToSync: number,
+		private readonly syncPageSize: number,
 		conflictHandler: ConflictHandler,
-		errorHandler: ErrorHandler
+		errorHandler: ErrorHandler,
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly amplifyConfig: Record<string, any> = {},
+		private readonly authModeStrategy: AuthModeStrategy
 	) {
-		const MutationEvent = this.modelClasses['MutationEvent'];
+		const MutationEvent = this.modelClasses[
+			'MutationEvent'
+		] as PersistentModelConstructor<any>;
 
 		this.outbox = new MutationEventOutbox(
 			this.schema,
-			this.namespaceResolver,
 			MutationEvent,
+			modelInstanceCreator,
 			ownSymbol
 		);
 
@@ -105,9 +136,16 @@ export class SyncEngine {
 
 		this.syncQueriesProcessor = new SyncProcessor(
 			this.schema,
-			maxRecordsToSync
+			this.syncPredicates,
+			this.amplifyConfig,
+			this.authModeStrategy
 		);
-		this.subscriptionsProcessor = new SubscriptionProcessor(this.schema);
+		this.subscriptionsProcessor = new SubscriptionProcessor(
+			this.schema,
+			this.syncPredicates,
+			this.amplifyConfig,
+			this.authModeStrategy
+		);
 		this.mutationsProcessor = new MutationProcessor(
 			this.schema,
 			this.storage,
@@ -115,120 +153,205 @@ export class SyncEngine {
 			this.outbox,
 			this.modelInstanceCreator,
 			MutationEvent,
+			this.amplifyConfig,
+			this.authModeStrategy,
 			conflictHandler,
 			errorHandler
 		);
+		this.datastoreConnectivity = new DataStoreConnectivity();
 	}
 
 	start(params: StartParams) {
-		return new Observable<void>(observer => {
+		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			logger.log('starting sync engine...');
-			this.started = true;
 
 			let subscriptions: ZenObservable.Subscription[] = [];
+
 			(async () => {
 				try {
 					await this.setupModels(params);
 				} catch (err) {
-					logger.error('Sync engine error on start', err);
+					observer.error(err);
 					return;
 				}
 
-				new Reachability().networkMonitor().subscribe(async ({ online }) => {
-					this.online = online;
-					if (online) {
-						//#region GraphQL Subscriptions
-						const [
-							ctlSubsObservable,
-							dataSubsObservable,
-						] = this.subscriptionsProcessor.start();
-						try {
-							subscriptions.push(
-								await this.waitForSubscriptionsReady(ctlSubsObservable)
-							);
-						} catch (err) {
-							observer.error(err);
-							return;
-						}
+				const startPromise = new Promise(resolve => {
+					this.datastoreConnectivity.status().subscribe(async ({ online }) => {
+						// From offline to online
+						if (online && !this.online) {
+							this.online = online;
 
-						logger.log('Realtime ready');
-						//#endregion
+							observer.next({
+								type: ControlMessage.SYNC_ENGINE_NETWORK_STATUS,
+								data: {
+									active: this.online,
+								},
+							});
 
-						//#region Base & Sync queries
-						const currentTimeStamp = new Date().getTime();
+							let ctlSubsObservable: Observable<CONTROL_MSG>;
+							let dataSubsObservable: Observable<[
+								TransformerMutationType,
+								SchemaModel,
+								PersistentModel
+							]>;
 
-						const modelLastSync: Map<
-							SchemaModel,
-							[string, number]
-						> = await this.getModelsMetadataWithNextFullSync(currentTimeStamp);
-						const paginatingModels = new Set(modelLastSync.keys());
+							if (isNode) {
+								logger.warn(
+									'Realtime disabled when in a server-side environment'
+								);
+							} else {
+								//#region GraphQL Subscriptions
+								[
+									// const ctlObservable: Observable<CONTROL_MSG>
+									ctlSubsObservable,
+									// const dataObservable: Observable<[TransformerMutationType, SchemaModel, Readonly<{
+									// id: string;
+									// } & Record<string, any>>]>
+									dataSubsObservable,
+								] = this.subscriptionsProcessor.start();
 
-						const syncQueriesObservable = this.syncQueriesProcessor.start(
-							modelLastSync
-						);
+								try {
+									await new Promise((resolve, reject) => {
+										const ctlSubsSubscription = ctlSubsObservable.subscribe({
+											next: msg => {
+												if (msg === CONTROL_MSG.CONNECTED) {
+													resolve();
+												}
+											},
+											error: err => {
+												reject(err);
+												const handleDisconnect = this.disconnectionHandler();
+												handleDisconnect(err);
+											},
+										});
 
-						if (this.isFullSync(modelLastSync)) {
-							clearTimeout(this.fullSyncTimeoutId);
-							this.fullSyncTimeoutId = undefined;
-						}
+										subscriptions.push(ctlSubsSubscription);
+									});
+								} catch (err) {
+									observer.error(err);
+									return;
+								}
 
-						try {
-							const syncQuerySubscription = await this.waitForSyncQueries(
-								syncQueriesObservable,
-								paginatingModels
-							);
+								logger.log('Realtime ready');
 
-							if (syncQuerySubscription) {
-								subscriptions.push(syncQuerySubscription);
+								observer.next({
+									type: ControlMessage.SYNC_ENGINE_SUBSCRIPTIONS_ESTABLISHED,
+								});
+
+								//#endregion
 							}
-						} catch (err) {
-							observer.error(err);
-							return;
-						}
-						//#endregion
 
-						//#region process mutations
-						subscriptions.push(
-							this.mutationsProcessor
-								.start()
-								.subscribe(
-									([_transformerMutationType, modelDefinition, item]) => {
+							//#region Base & Sync queries
+							try {
+								await new Promise((resolve, reject) => {
+									const syncQuerySubscription = this.syncQueriesObservable().subscribe(
+										{
+											next: message => {
+												const { type } = message;
+
+												if (
+													type === ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY
+												) {
+													resolve();
+												}
+
+												observer.next(message);
+											},
+											complete: () => {
+												resolve();
+											},
+											error: error => {
+												reject(error);
+											},
+										}
+									);
+
+									if (syncQuerySubscription) {
+										subscriptions.push(syncQuerySubscription);
+									}
+								});
+							} catch (error) {
+								observer.error(error);
+								return;
+							}
+							//#endregion
+
+							//#region process mutations
+							subscriptions.push(
+								this.mutationsProcessor
+									.start()
+									.subscribe(({ modelDefinition, model: item, hasMore }) => {
 										const modelConstructor = this.userModelClasses[
 											modelDefinition.name
-										];
+										] as PersistentModelConstructor<any>;
 
 										const model = this.modelInstanceCreator(
 											modelConstructor,
 											item
 										);
 
-										this.modelMerger.merge(this.storage, model);
-									}
-								)
-						);
-						//#endregion
+										this.storage.runExclusive(storage =>
+											this.modelMerger.merge(storage, model)
+										);
 
-						// TODO: extract to function
-						subscriptions.push(
-							dataSubsObservable.subscribe(
-								([_transformerMutationType, modelDefinition, item]) => {
-									const modelConstructor = this.userModelClasses[
-										modelDefinition.name
-									];
+										observer.next({
+											type:
+												ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
+											data: {
+												model: modelConstructor,
+												element: model,
+											},
+										});
 
-									const model = this.modelInstanceCreator(
-										modelConstructor,
-										item
-									);
+										observer.next({
+											type: ControlMessage.SYNC_ENGINE_OUTBOX_STATUS,
+											data: {
+												isEmpty: !hasMore,
+											},
+										});
+									})
+							);
+							//#endregion
 
-									this.modelMerger.merge(this.storage, model);
-								}
-							)
-						);
-					} else {
-						subscriptions.forEach(sub => sub.unsubscribe());
-						subscriptions = [];
-					}
+							//#region Merge subscriptions buffer
+							// TODO: extract to function
+							if (!isNode) {
+								subscriptions.push(
+									dataSubsObservable.subscribe(
+										([_transformerMutationType, modelDefinition, item]) => {
+											const modelConstructor = this.userModelClasses[
+												modelDefinition.name
+											] as PersistentModelConstructor<any>;
+
+											const model = this.modelInstanceCreator(
+												modelConstructor,
+												item
+											);
+
+											this.storage.runExclusive(storage =>
+												this.modelMerger.merge(storage, model)
+											);
+										}
+									)
+								);
+							}
+							//#endregion
+						} else if (!online) {
+							this.online = online;
+
+							observer.next({
+								type: ControlMessage.SYNC_ENGINE_NETWORK_STATUS,
+								data: {
+									active: this.online,
+								},
+							});
+
+							subscriptions.forEach(sub => sub.unsubscribe());
+							subscriptions = [];
+						}
+
+						resolve();
+					});
 				});
 
 				this.storage
@@ -245,7 +368,7 @@ export class SyncEngine {
 							];
 							const MutationEventConstructor = this.modelClasses[
 								'MutationEvent'
-							];
+							] as PersistentModelConstructor<MutationEvent>;
 							const graphQLCondition = predicateToGraphQLCondition(condition);
 							const mutationEvent = createMutationInstanceFromModelOperation(
 								namespace.relationships,
@@ -260,12 +383,49 @@ export class SyncEngine {
 
 							await this.outbox.enqueue(this.storage, mutationEvent);
 
+							observer.next({
+								type: ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_ENQUEUED,
+								data: {
+									model,
+									element,
+								},
+							});
+
+							observer.next({
+								type: ControlMessage.SYNC_ENGINE_OUTBOX_STATUS,
+								data: {
+									isEmpty: false,
+								},
+							});
+
+							await startPromise;
+
 							if (this.online) {
 								this.mutationsProcessor.resume();
 							}
 						},
 					});
+
+				observer.next({
+					type: ControlMessage.SYNC_ENGINE_STORAGE_SUBSCRIBED,
+				});
+
+				const hasMutationsInOutbox =
+					(await this.outbox.peek(this.storage)) === undefined;
+				observer.next({
+					type: ControlMessage.SYNC_ENGINE_OUTBOX_STATUS,
+					data: {
+						isEmpty: hasMutationsInOutbox,
+					},
+				});
+
+				await startPromise;
+
+				observer.next({
+					type: ControlMessage.SYNC_ENGINE_READY,
+				});
 			})();
+
 			return () => {
 				subscriptions.forEach(sub => sub.unsubscribe());
 			};
@@ -277,7 +437,14 @@ export class SyncEngine {
 	): Promise<Map<SchemaModel, [string, number]>> {
 		const modelLastSync: Map<SchemaModel, [string, number]> = new Map(
 			(await this.getModelsMetadata()).map(
-				({ namespace, model, lastSync, lastFullSync, fullSyncInterval }) => {
+				({
+					namespace,
+					model,
+					lastSync,
+					lastFullSync,
+					fullSyncInterval,
+					lastSyncPredicate,
+				}) => {
 					const nextFullSync = lastFullSync + fullSyncInterval;
 					const syncFrom =
 						!lastFullSync || nextFullSync < currentTimeStamp
@@ -295,123 +462,247 @@ export class SyncEngine {
 		return modelLastSync;
 	}
 
-	private isFullSync(modelsMap: Map<SchemaModel, [string, number]>) {
-		for (const [, syncFrom] of Array.from(modelsMap.values())) {
-			if (syncFrom === 0) {
-				return true;
-			}
+	private syncQueriesObservable(): Observable<
+		ControlMessageType<ControlMessage>
+	> {
+		if (!this.online) {
+			return Observable.of<ControlMessageType<ControlMessage>>();
 		}
 
-		return false;
-	}
+		return new Observable<ControlMessageType<ControlMessage>>(observer => {
+			let syncQueriesSubscription: ZenObservable.Subscription;
+			let waitTimeoutId: ReturnType<typeof setTimeout>;
 
-	private async waitForSyncQueries(
-		observable: Observable<SyncModelPage>,
-		paginatingModels: Set<SchemaModel>
-	): Promise<ZenObservable.Subscription> {
-		return new Promise((resolve, reject) => {
-			if (!this.online) {
-				resolve();
-			}
-			const currentTimeStamp = new Date().getTime();
-			const subscription = observable.subscribe({
-				error: err => {
-					reject(err);
-				},
-				next: async ({
-					namespace,
-					modelDefinition,
-					items,
-					done,
-					startedAt,
-					isFullSync,
-				}) => {
-					const promises = items.map(async item => {
-						const modelConstructor = this.userModelClasses[
-							modelDefinition.name
-						];
+			(async () => {
+				while (!observer.closed) {
+					const count: WeakMap<
+						PersistentModelConstructor<any>,
+						{
+							new: number;
+							updated: number;
+							deleted: number;
+						}
+					> = new WeakMap();
 
-						const model = this.modelInstanceCreator(modelConstructor, item);
+					const modelLastSync = await this.getModelsMetadataWithNextFullSync(
+						Date.now()
+					);
+					const paginatingModels = new Set(modelLastSync.keys());
 
-						return this.modelMerger.merge(this.storage, model);
+					let newestFullSyncStartedAt: number;
+					let theInterval: number;
+
+					let start: number;
+					let duration: number;
+					let newestStartedAt: number;
+					await new Promise(resolve => {
+						syncQueriesSubscription = this.syncQueriesProcessor
+							.start(modelLastSync)
+							.subscribe({
+								next: async ({
+									namespace,
+									modelDefinition,
+									items,
+									done,
+									startedAt,
+									isFullSync,
+								}) => {
+									const modelConstructor = this.userModelClasses[
+										modelDefinition.name
+									] as PersistentModelConstructor<any>;
+
+									if (!count.has(modelConstructor)) {
+										count.set(modelConstructor, {
+											new: 0,
+											updated: 0,
+											deleted: 0,
+										});
+
+										start = getNow();
+										newestStartedAt =
+											newestStartedAt === undefined
+												? startedAt
+												: Math.max(newestStartedAt, startedAt);
+									}
+
+									/**
+									 * If there are mutations in the outbox for a given id, those need to be
+									 * merged individually. Otherwise, we can merge them in batches.
+									 */
+									await this.storage.runExclusive(async storage => {
+										const idsInOutbox = await this.outbox.getModelIds(storage);
+
+										const oneByOne: ModelInstanceMetadata[] = [];
+										const page = items.filter(item => {
+											if (!idsInOutbox.has(item.id)) {
+												return true;
+											}
+
+											oneByOne.push(item);
+											return false;
+										});
+
+										const opTypeCount: [any, OpType][] = [];
+
+										for (const item of oneByOne) {
+											const opType = await this.modelMerger.merge(
+												storage,
+												item
+											);
+
+											if (opType !== undefined) {
+												opTypeCount.push([item, opType]);
+											}
+										}
+
+										opTypeCount.push(
+											...(await this.modelMerger.mergePage(
+												storage,
+												modelConstructor,
+												page
+											))
+										);
+
+										const counts = count.get(modelConstructor);
+
+										opTypeCount.forEach(([, opType]) => {
+											switch (opType) {
+												case OpType.INSERT:
+													counts.new++;
+													break;
+												case OpType.UPDATE:
+													counts.updated++;
+													break;
+												case OpType.DELETE:
+													counts.deleted++;
+													break;
+												default:
+													exhaustiveCheck(opType);
+											}
+										});
+									});
+
+									if (done) {
+										const { name: modelName } = modelDefinition;
+
+										//#region update last sync for type
+										let modelMetadata = await this.getModelMetadata(
+											namespace,
+											modelName
+										);
+
+										const { lastFullSync, fullSyncInterval } = modelMetadata;
+
+										theInterval = fullSyncInterval;
+
+										newestFullSyncStartedAt =
+											newestFullSyncStartedAt === undefined
+												? lastFullSync
+												: Math.max(
+														newestFullSyncStartedAt,
+														isFullSync ? startedAt : lastFullSync
+												  );
+
+										modelMetadata = (this.modelClasses
+											.ModelMetadata as PersistentModelConstructor<any>).copyOf(
+											modelMetadata,
+											draft => {
+												draft.lastSync = startedAt;
+												draft.lastFullSync = isFullSync
+													? startedAt
+													: modelMetadata.lastFullSync;
+											}
+										);
+
+										await this.storage.save(
+											modelMetadata,
+											undefined,
+											ownSymbol
+										);
+										//#endregion
+
+										const counts = count.get(modelConstructor);
+
+										this.modelSyncedStatus.set(modelConstructor, true);
+
+										observer.next({
+											type: ControlMessage.SYNC_ENGINE_MODEL_SYNCED,
+											data: {
+												model: modelConstructor,
+												isFullSync,
+												isDeltaSync: !isFullSync,
+												counts,
+											},
+										});
+
+										paginatingModels.delete(modelDefinition);
+
+										if (paginatingModels.size === 0) {
+											duration = getNow() - start;
+											resolve();
+											observer.next({
+												type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_READY,
+											});
+											syncQueriesSubscription.unsubscribe();
+										}
+									}
+								},
+								error: error => {
+									observer.error(error);
+								},
+							});
+
+						observer.next({
+							type: ControlMessage.SYNC_ENGINE_SYNC_QUERIES_STARTED,
+							data: {
+								models: Array.from(paginatingModels).map(({ name }) => name),
+							},
+						});
 					});
 
-					await Promise.all(promises);
+					const msNextFullSync =
+						newestFullSyncStartedAt +
+						theInterval -
+						(newestStartedAt + duration);
 
-					if (done) {
-						paginatingModels.delete(modelDefinition);
+					logger.debug(
+						`Next fullSync in ${msNextFullSync / 1000} seconds. (${new Date(
+							Date.now() + msNextFullSync
+						)})`
+					);
 
-						// update last sync for type
-						let modelMetadata = await this.getModelMetadata(
-							namespace,
-							modelDefinition.name
-						);
+					await new Promise(res => {
+						waitTimeoutId = setTimeout(res, msNextFullSync);
+					});
+				}
+			})();
 
-						modelMetadata = this.modelClasses.ModelMetadata.copyOf(
-							modelMetadata,
-							draft => {
-								draft.lastSync = startedAt;
-								draft.lastFullSync = isFullSync
-									? currentTimeStamp
-									: modelMetadata.lastFullSync;
-							}
-						);
+			return () => {
+				if (syncQueriesSubscription) {
+					syncQueriesSubscription.unsubscribe();
+				}
 
-						const { fullSyncInterval } = modelMetadata;
-
-						await this.storage.save(modelMetadata, undefined, ownSymbol);
-
-						// resolve promise if all done
-						if (paginatingModels.size === 0) {
-							resolve(subscription);
-						}
-
-						if (isFullSync && !this.fullSyncTimeoutId) {
-							// register next full sync when no full sync is already scheduled
-
-							this.fullSyncTimeoutId = <number>(
-								(<unknown>setTimeout(async () => {
-									const currentTimeStamp = new Date().getTime();
-
-									const modelLastSync = await this.getModelsMetadataWithNextFullSync(
-										currentTimeStamp
-									);
-
-									const paginatingModels = new Set(modelLastSync.keys());
-
-									const syncQueriesObservable = this.syncQueriesProcessor.start(
-										modelLastSync
-									);
-
-									this.fullSyncTimeoutId = undefined;
-									this.waitForSyncQueries(
-										syncQueriesObservable,
-										paginatingModels
-									);
-								}, fullSyncInterval))
-							);
-						}
-					}
-				},
-			});
+				if (waitTimeoutId) {
+					clearTimeout(waitTimeoutId);
+				}
+			};
 		});
 	}
 
-	private async waitForSubscriptionsReady(
-		ctlSubsObservable: Observable<CONTROL_MSG>
-	): Promise<ZenObservable.Subscription> {
-		return new Promise((resolve, reject) => {
-			const subscription = ctlSubsObservable.subscribe({
-				next: msg => {
-					if (msg === CONTROL_MSG.CONNECTED) {
-						resolve(subscription);
-					}
-				},
-				error: err => {
-					reject(`subscription failed ${err}`);
-				},
-			});
-		});
+	private disconnectionHandler(): (msg: string) => void {
+		return (msg: string) => {
+			// This implementation is tied to AWSAppSyncRealTimeProvider 'Connection closed', 'Timeout disconnect' msg
+			if (
+				PUBSUB_CONTROL_MSG.CONNECTION_CLOSED === msg ||
+				PUBSUB_CONTROL_MSG.TIMEOUT_DISCONNECT === msg
+			) {
+				this.datastoreConnectivity.socketDisconnected();
+			}
+		};
+	}
+
+	public unsubscribeConnectivity() {
+		this.datastoreConnectivity.unsubscribe();
 	}
 
 	private async setupModels(params: StartParams) {
@@ -419,41 +710,79 @@ export class SyncEngine {
 		const ModelMetadata = this.modelClasses
 			.ModelMetadata as PersistentModelConstructor<ModelMetadata>;
 
-		const models: [string, string][] = [];
+		const models: [string, SchemaModel][] = [];
+		let savedModel;
 
 		Object.values(this.schema.namespaces).forEach(namespace => {
 			Object.values(namespace.models)
 				.filter(({ syncable }) => syncable)
 				.forEach(model => {
-					models.push([namespace.name, model.name]);
+					models.push([namespace.name, model]);
+					if (namespace.name === USER) {
+						const modelConstructor = this.userModelClasses[
+							model.name
+						] as PersistentModelConstructor<any>;
+						this.modelSyncedStatus.set(modelConstructor, false);
+					}
 				});
 		});
 
 		const promises = models.map(async ([namespace, model]) => {
-			const modelMetadata = await this.getModelMetadata(namespace, model);
+			const modelMetadata = await this.getModelMetadata(namespace, model.name);
+			const syncPredicate = ModelPredicateCreator.getPredicates(
+				this.syncPredicates.get(model),
+				false
+			);
+			const lastSyncPredicate = syncPredicate
+				? JSON.stringify(syncPredicate)
+				: null;
 
 			if (modelMetadata === undefined) {
-				await this.storage.save(
+				[[savedModel]] = await this.storage.save(
 					this.modelInstanceCreator(ModelMetadata, {
-						model,
+						model: model.name,
 						namespace,
 						lastSync: null,
 						fullSyncInterval,
 						lastFullSync: null,
+						lastSyncPredicate,
 					}),
 					undefined,
 					ownSymbol
 				);
 			} else {
-				await this.storage.save(
-					this.modelClasses.ModelMetadata.copyOf(modelMetadata, draft => {
+				const prevSyncPredicate = modelMetadata.lastSyncPredicate
+					? modelMetadata.lastSyncPredicate
+					: null;
+				const syncPredicateUpdated = prevSyncPredicate !== lastSyncPredicate;
+
+				[[savedModel]] = await this.storage.save(
+					(this.modelClasses.ModelMetadata as PersistentModelConstructor<
+						any
+					>).copyOf(modelMetadata, draft => {
 						draft.fullSyncInterval = fullSyncInterval;
+						// perform a base sync if the syncPredicate changed in between calls to DataStore.start
+						// ensures that the local store contains all the data specified by the syncExpression
+						if (syncPredicateUpdated) {
+							draft.lastSync = null;
+							draft.lastFullSync = null;
+							draft.lastSyncPredicate = lastSyncPredicate;
+						}
 					})
 				);
 			}
+
+			return savedModel;
 		});
 
-		await Promise.all(promises);
+		const result: Record<string, ModelMetadata> = {};
+		for (const modelMetadata of await Promise.all(promises)) {
+			const { model: modelName } = modelMetadata;
+
+			result[modelName] = modelMetadata;
+		}
+
+		return result;
 	}
 
 	private async getModelsMetadata(): Promise<ModelMetadata[]> {
@@ -477,7 +806,10 @@ export class SyncEngine {
 			c => c.namespace('eq', namespace).model('eq', model)
 		);
 
-		const [modelMetadata] = await this.storage.query(ModelMetadata, predicate);
+		const [modelMetadata] = await this.storage.query(ModelMetadata, predicate, {
+			page: 0,
+			limit: 1,
+		});
 
 		return modelMetadata;
 	}
@@ -504,6 +836,7 @@ export class SyncEngine {
 					values: ['CREATE', 'UPDATE', 'DELETE'],
 				},
 			},
+			nonModels: {},
 			models: {
 				MutationEvent: {
 					name: 'MutationEvent',
@@ -589,6 +922,12 @@ export class SyncEngine {
 							name: 'fullSyncInterval',
 							type: 'Int',
 							isRequired: true,
+							isArray: false,
+						},
+						lastSyncPredicate: {
+							name: 'lastSyncPredicate',
+							type: 'String',
+							isRequired: false,
 							isArray: false,
 						},
 					},

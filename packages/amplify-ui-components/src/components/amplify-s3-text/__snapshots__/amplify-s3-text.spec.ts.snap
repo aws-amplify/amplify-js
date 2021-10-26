@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`amplify-s3-image spec: Render logic -> should render no pre tag without 'textKey' or 'path' 1`] = `
+<amplify-s3-text>
+  <mock:shadow-root>
+    <div>
+      <div class="text-container">
+        <pre>
+          Fallback Content
+        </pre>
+      </div>
+    </div>
+  </mock:shadow-root>
+</amplify-s3-text>
+`;

@@ -1,6 +1,6 @@
 import * as React from 'react';
-import TextPicker from '../../src/Widget/TextPicker';
-import Picker from '../../src/Widget/Picker';
+import { TextPicker } from '../../src/Widget/TextPicker';
+import { Picker } from '../../src/Widget/Picker';
 
 describe('TextPicker test', () => {
 	describe('render test', () => {

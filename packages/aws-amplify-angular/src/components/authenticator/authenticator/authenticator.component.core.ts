@@ -79,7 +79,7 @@ export class AuthenticatorComponentCore implements OnInit {
 	_signUpConfig: any = {};
 	_usernameAttributes: string = 'username';
 
-	constructor(protected amplifyService: AmplifyService) {
+	constructor(public amplifyService: AmplifyService) {
 		this.subscribe();
 	}
 
