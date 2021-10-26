@@ -11,18 +11,6 @@
  * and limitations under the License.
  */
 
-import { createContext, useContext } from 'react';
+import { InAppMessageComponentBaseProps } from '../types';
 
-import { InAppMessagingContextType } from './types';
-
-const InAppMessagingContext = createContext<InAppMessagingContextType>(null);
-
-export function useInAppMessaging() {
-	const inAppMessagingContext = useContext(InAppMessagingContext);
-	if (!inAppMessagingContext) {
-		throw new Error('InAppMessagingContext is empty, did you forget the InAppMessagingProvider?');
-	}
-	return inAppMessagingContext;
-}
-
-export default InAppMessagingContext;
+export interface FullScreenMessageProps extends InAppMessageComponentBaseProps {}
