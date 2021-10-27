@@ -13,6 +13,16 @@ executors:
     resource_class: large
     working_directory: ~/amplify-js
 
+  unit-test-executor:
+    docker:
+      - image: cypress/base:12
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_ACCESS_TOKEN
+
+    resource_class: xlarge
+    working_directory: ~/amplify-js
+
   js-test-executor:
     docker:
       - image: cypress/included:5.2.0
@@ -73,6 +83,13 @@ commands:
           key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
       - publish_to_verdaccio
 
+  prepare_no_ui_test_env:
+    steps:
+      - attach_workspace:
+          at: /root
+      - restore_cache:
+          key: amplify-js-{{ .Branch }}-{{ checksum "~/amplify-js-samples-staging/yarn.lock" }}
+
   integ_test_js:
     parameters:
       test_name:
@@ -106,6 +123,54 @@ commands:
           command: |
             cd ~/amplify-js-samples-staging
             ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test << parameters.framework >> << parameters.category >> << parameters.sample_name >> << parameters.spec >> << parameters.browser >> prod' -n 3
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/videos
+      - store_artifacts:
+          path: ~/amplify-js-samples-staging/cypress/screenshots
+
+  integ_test_node_js:
+    parameters:
+      test_name:
+        type: string
+      category:
+        type: string
+      sample_name:
+        type: string
+    steps:
+      - run:
+          name: 'Install << parameters.test_name >> sample'
+          command: |
+            echo "Current NPM registry: " $(yarn config get registry)
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'install' -n 3
+      - run:
+          name: 'Run Node tests for << parameters.test_name >> sample'
+          command: |
+            cd ~/amplify-js-samples-staging
+            ~/amplify-js/.circleci/retry-yarn-script.sh -s 'ci:test node << parameters.category >> << parameters.sample_name >> dev' -n 3
+
+  integ_test_cypress_no_ui:
+    parameters:
+      test_name:
+        type: string
+      category:
+        type: string
+      spec:
+        type: string
+    steps:
+      - run:
+          name: 'Change directory into build and run link'
+          command: |
+            cd ~/amplify-js/
+            yarn link-all
+      - run:
+          name: 'Link packages into samples staging root'
+          command: |
+            yarn link amazon-cognito-identity-js @aws-amplify/core @aws-amplify/cache @aws-amplify/auth
+      - run:
+          name: 'Run cypress test << parameters.spec >>'
+          command: |
+            cd ~/amplify-js-samples-staging
+            yarn cypress run --headless --spec ./cypress/integration/auth/<< parameters.spec >>.spec.js --config baseUrl=https://aws.amazon.com/
       - store_artifacts:
           path: ~/amplify-js-samples-staging/cypress/videos
       - store_artifacts:
@@ -199,7 +264,7 @@ commands:
           command: |
             brew tap wix/brew >/dev/null
             brew tap homebrew/cask >/dev/null
-            brew cask install android-sdk >/dev/null
+            brew install android-sdk >/dev/null
             yarn global add detox-cli
             touch .watchmanconfig
             node -v
@@ -279,6 +344,7 @@ jobs:
           command: |
             mv .yarnrc ._yarnrc
             yarn
+      - run: yarn bootstrap
       - run: yarn build
       # storing yarn.lock as an artifact, so that we can quickly get a dependency diff
       # with the last working build in the event that some upstream deps break the build in the future
@@ -299,7 +365,7 @@ jobs:
             - amplify-js
 
   unit_test:
-    executor: build-executor
+    executor: unit-test-executor
     steps:
       - attach_workspace:
           at: /root
@@ -352,6 +418,13 @@ jobs:
           category: auth
           sample_name: amplify-authenticator
           spec: ui-amplify-authenticator
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Guest to Authenticated User"'
+          framework: react
+          category: auth
+          sample_name: guest-to-auth-user
+          spec: guest-to-auth-user
           browser: << parameters.browser >>
       - integ_test_js:
           test_name: 'React Typescript Authenticator'
@@ -531,6 +604,92 @@ jobs:
           sample_name: many-to-many
           spec: many-to-many
           browser: << parameters.browser >>
+
+  integ_react_datastore_multi_auth_one_rule:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/multi-auth
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - One Rule'
+          framework: react
+          category: datastore
+          sample_name: multi-auth
+          spec: multi-auth-one-rule
+          browser: << parameters.browser >>
+
+  integ_react_datastore_multi_auth_two_rules:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/multi-auth
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - Two Rules'
+          framework: react
+          category: datastore
+          sample_name: multi-auth
+          spec: multi-auth-two-rules
+          browser: << parameters.browser >>
+
+  integ_react_datastore_multi_auth_three_plus_rules:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/multi-auth
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React DataStore Multi-Auth - Three Plus Rules'
+          framework: react
+          category: datastore
+          sample_name: multi-auth
+          spec: multi-auth-three-plus-rules
+          browser: << parameters.browser >>
+
+  integ_react_datastore_subs_disabled:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/subs-disabled
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Subs Disabled'
+          framework: react
+          category: datastore
+          sample_name: subs-disabled
+          spec: subs-disabled
+          browser: << parameters.browser >>
+
+  integ_react_datastore_consecutive_saves:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/consecutive-saves
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Subs Disabled'
+          framework: react
+          category: datastore
+          sample_name: consecutive-saves
+          spec: consecutive-saves
+          browser: << parameters.browser >>
+
   integ_react_storage:
     parameters:
       browser:
@@ -563,6 +722,22 @@ jobs:
           sample_name: multi-part-upload-with-progress
           spec: multi-part-upload-with-progress
           browser: << parameters.browser >>
+  integ_react_storage_copy:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/storage/multi-part-copy-with-progress
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'React Storage Copy'
+          framework: react
+          category: storage
+          sample_name: multi-part-copy-with-progress
+          spec: multi-part-copy-with-progress
+          browser: << parameters.browser >>
   integ_react_storage_ui:
     executor: js-test-executor
     <<: *test_env_vars
@@ -575,7 +750,23 @@ jobs:
           category: storage
           sample_name: storageComp
           spec: storage-comp
-  integ_amazon_cognito_identity_js:
+  integ_react_amazon_cognito_identity_js_cookie_storage:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/amazon-cognito-identity-js-cookie-storage
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'amazon-cognito-identity-js-cookie-storage'
+          framework: react
+          category: auth
+          sample_name: amazon-cognito-identity-js-cookie-storage
+          spec: amazon-cognito-identity-js-cookie-storage
+          browser: << parameters.browser >>
+  integ_react_amazon_cognito_identity_js:
     parameters:
       browser:
         type: string
@@ -591,7 +782,32 @@ jobs:
           sample_name: amazon-cognito-identity-js
           spec: amazon-cognito-identity-js
           browser: << parameters.browser >>
-
+  integ_node_amazon_cognito_identity_js:
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/node/auth/amazon-cognito-identity-js
+    steps:
+      - prepare_test_env
+      - integ_test_node_js:
+          test_name: 'amazon-cognito-identity-js'
+          category: auth
+          sample_name: amazon-cognito-identity-js
+  integ_react_device_tracking:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/auth/device-tracking
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'cognito-device-tracking'
+          framework: react
+          category: auth
+          sample_name: device-tracking
+          spec: device-tracking
+          browser: << parameters.browser >>
   integ_rn_ios_storage:
     executor: macos-executor
     <<: *test_env_vars
@@ -651,6 +867,75 @@ jobs:
           spec: << parameters.scenario >>
           browser: firefox
 
+  integ_duplicate_packages:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/version-conflict/duplicate-packages
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Duplicate Package Errors'
+          framework: react
+          category: version-conflict
+          sample_name: duplicate-packages
+          spec: duplicate-packages
+          browser: << parameters.browser >>
+  integ_auth_test_cypress_no_ui:
+    working_directory: ~/amplify-js-samples-staging/
+    executor: js-test-executor
+    steps:
+      - prepare_no_ui_test_env
+      - integ_test_cypress_no_ui:
+          test_name: 'Token revocation'
+          category: 'auth'
+          spec: 'token-revocation'
+  integ_react_geo:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Display Map'
+          framework: react
+          category: geo
+          sample_name: display-map
+          spec: display-map
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Marker Map'
+          framework: react
+          category: geo
+          sample_name: marker-map
+          spec: marker-map
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Cluster Map'
+          framework: react
+          category: geo
+          sample_name: cluster-marker-map
+          spec: cluster-marker-map
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Search Map'
+          framework: react
+          category: geo
+          sample_name: search-map
+          spec: search-map
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Search Outside Map'
+          framework: react
+          category: geo
+          sample_name: search-outside-map
+          spec: search-outside-map
+          browser: << parameters.browser >>
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -660,17 +945,13 @@ jobs:
       - run:
           name: 'Publish to Amplify Package'
           command: |
-            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
-              echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
-              npm whoami
-              git config --global user.email $GITHUB_EMAIL
-              git config --global user.name $GITHUB_USER
-              git status
-              git --no-pager diff
-              yarn publish:$CIRCLE_BRANCH
-            else
-              echo "Skipping deploy."
-            fi
+            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+            npm whoami
+            git config --global user.email $GITHUB_EMAIL
+            git config --global user.name $GITHUB_USER
+            git status
+            git --no-pager diff
+            yarn publish:$CIRCLE_BRANCH
 
   post_release:
     executor: build-executor
@@ -700,7 +981,7 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/main
       - 1.0-stable
-      - native
+      - geo/main
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -742,6 +1023,12 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_auth_test_cypress_no_ui:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
       - integ_angular_auth:
           requires:
             - integ_setup
@@ -805,6 +1092,51 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_datastore_multi_auth_one_rule:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_two_rules:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_multi_auth_three_plus_rules:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_subs_disabled:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_consecutive_saves:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_storage:
           requires:
             - integ_setup
@@ -823,13 +1155,46 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_storage_copy:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_storage_ui:
           requires:
             - integ_setup
             - build
           filters:
             <<: *releasable_branches
-      - integ_amazon_cognito_identity_js:
+      - integ_react_amazon_cognito_identity_js_cookie_storage:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_amazon_cognito_identity_js:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_node_amazon_cognito_identity_js:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+      - integ_react_device_tracking:
           requires:
             - integ_setup
             - build
@@ -862,12 +1227,12 @@ workflows:
             - build
           filters:
             <<: *releasable_branches
-      - integ_rn_android_storage_multipart_progress:
-          requires:
-            - integ_setup
-            - build
-          filters:
-            <<: *releasable_branches
+      # - integ_rn_android_storage_multipart_progress:
+      #     requires:
+      #       - integ_setup
+      #       - build
+      #     filters:
+      #       <<: *releasable_branches
       - integ_datastore_auth:
           requires:
             - integ_setup
@@ -877,6 +1242,22 @@ workflows:
           matrix:
             parameters:
               <<: *datastore_auth_scenarios
+      - integ_duplicate_packages:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_geo:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          browser: chrome
       - deploy:
           filters:
             <<: *releasable_branches
@@ -884,22 +1265,33 @@ workflows:
             - unit_test
             - integ_react_predictions
             - integ_react_datastore
+            - integ_react_datastore_multi_auth_one_rule
+            - integ_react_datastore_multi_auth_two_rules
+            - integ_react_datastore_multi_auth_three_plus_rules
+            - integ_react_datastore_subs_disabled
+            - integ_react_datastore_consecutive_saves
             - integ_react_storage
             - integ_react_storage_multipart_progress
+            - integ_react_storage_copy
             - integ_react_storage_ui
             - integ_react_interactions
             - integ_angular_interactions
             - integ_vue_interactions
-            - integ_amazon_cognito_identity_js
+            - integ_react_amazon_cognito_identity_js_cookie_storage
+            - integ_react_amazon_cognito_identity_js
+            - integ_node_amazon_cognito_identity_js
             - integ_react_auth
             - integ_angular_auth
             - integ_vue_auth
             - integ_rn_ios_storage
             - integ_rn_ios_storage_multipart_progress
+            # - integ_rn_android_storage_multipart_progress
             - integ_rn_ios_push_notifications
             - integ_rn_android_storage
-            - integ_rn_android_storage_multipart_progress
             - integ_datastore_auth
+            - integ_duplicate_packages
+            - integ_auth_test_cypress_no_ui
+            - integ_react_geo
       - post_release:
           filters:
             branches:
