@@ -20,11 +20,7 @@ import axios, {
 	CancelTokenSource,
 	AxiosTransformer,
 } from 'axios';
-import {
-	ConsoleLogger as Logger,
-	Platform,
-	DateUtils,
-} from '@aws-amplify/core';
+import { ConsoleLogger as Logger, Platform } from '@aws-amplify/core';
 import { FetchHttpHandlerOptions } from '@aws-sdk/fetch-http-handler';
 import * as events from 'events';
 import { AWSS3ProviderUploadErrorStrings } from '../common/StorageErrorStrings';

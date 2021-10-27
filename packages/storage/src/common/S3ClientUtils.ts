@@ -1,4 +1,4 @@
-import { Credentials, ICredentials, DateUtils } from '@aws-amplify/core';
+import { Credentials, ICredentials } from '@aws-amplify/core';
 import { StorageAccessLevel, CustomPrefix } from '../types';
 import {
 	InitializeMiddleware,
