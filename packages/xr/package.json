@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/xr",
-  "version": "2.2.14",
+  "version": "3.0.21",
   "description": "XR category of aws-amplify",
   "main": "./lib/index.js",
   "module": "./lib-esm/index.js",
@@ -41,7 +41,7 @@
   },
   "homepage": "https://aws-amplify.github.io/",
   "dependencies": {
-    "@aws-amplify/core": "3.8.6"
+    "@aws-amplify/core": "4.3.3"
   },
   "jest": {
     "globals": {
@@ -81,7 +81,10 @@
       }
     },
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "dist",
+      "lib",
+      "lib-esm"
     ]
   }
 }

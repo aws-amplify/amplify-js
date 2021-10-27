@@ -3,364 +3,367 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.3.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.13...@aws-amplify/storage@3.3.14) (2020-11-30)
+## [4.4.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.3...@aws-amplify/storage@4.4.4) (2021-10-21)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
+## [4.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.2...@aws-amplify/storage@4.4.3) (2021-10-07)
 
+**Note:** Version bump only for package @aws-amplify/storage
 
+## [4.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.1...@aws-amplify/storage@4.4.2) (2021-09-30)
 
+### Bug Fixes
+
+- **@aws-amplify/storage:** fix type error in types/Storage.ts ([#8956](https://github.com/aws-amplify/amplify-js/issues/8956)) ([806d266](https://github.com/aws-amplify/amplify-js/commit/806d266ddba00f5ab42f8c6c83c7b8c94aad49aa))
+
+## [4.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.0...@aws-amplify/storage@4.4.1) (2021-09-24)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [4.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.11...@aws-amplify/storage@4.4.0) (2021-09-22)
+
+### Features
+
+- **@aws-amplify/storage:** Storage category public API Typescript improvement ([1c3b281](https://github.com/aws-amplify/amplify-js/commit/1c3b281d564db8745d3085489643bb33ac067177))
+
+## [4.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.10...@aws-amplify/storage@4.3.11) (2021-09-17)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [4.3.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.9...@aws-amplify/storage@4.3.10) (2021-09-09)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [4.3.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.8...@aws-amplify/storage@4.3.9) (2021-09-07)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [4.3.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.7...@aws-amplify/storage@4.3.8) (2021-09-04)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [4.3.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.6...@aws-amplify/storage@4.3.7) (2021-09-02)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [4.3.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.5...@aws-amplify/storage@4.3.6) (2021-08-26)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [4.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.4...@aws-amplify/storage@4.3.5) (2021-08-19)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [4.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.3...@aws-amplify/storage@4.3.4) (2021-08-12)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [4.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.2...@aws-amplify/storage@4.3.3) (2021-07-28)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [4.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.1...@aws-amplify/storage@4.3.2) (2021-07-22)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [4.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.3.0...@aws-amplify/storage@4.3.1) (2021-07-16)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [4.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.2.1...@aws-amplify/storage@4.3.0) (2021-07-08)
+
+### Features
+
+- **@aws-amplify/storage:** Adding download progress tracker for Storage.get ([#8295](https://github.com/aws-amplify/amplify-js/issues/8295)) ([8fe1853](https://github.com/aws-amplify/amplify-js/commit/8fe18534b752d807d175104cbd8ccb3099997b2d))
+
+## [4.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.2.0...@aws-amplify/storage@4.2.1) (2021-06-24)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.1.1...@aws-amplify/storage@4.2.0) (2021-06-18)
+
+### Features
+
+- **storage:** Adding copy API to Storage ([#8431](https://github.com/aws-amplify/amplify-js/issues/8431)) ([9981403](https://github.com/aws-amplify/amplify-js/commit/99814030d45044701bdce02bf34994304379c84c))
+
+## [4.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.1.0...@aws-amplify/storage@4.1.1) (2021-06-10)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [4.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.4.3...@aws-amplify/storage@4.1.0) (2021-05-26)
+
+### Features
+
+- **Storage:** content encoding optional on put ([#7751](https://github.com/aws-amplify/amplify-js/issues/7751)) ([09c0daa](https://github.com/aws-amplify/amplify-js/commit/09c0daac5bdb08d238c31adb15e936449c4a322d))
+
+## [3.4.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.4.2...@aws-amplify/storage@3.4.3) (2021-05-14)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.4.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.4.1...@aws-amplify/storage@3.4.2) (2021-05-11)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.4.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.4.0...@aws-amplify/storage@3.4.1) (2021-05-06)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+# [3.4.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.29...@aws-amplify/storage@3.4.0) (2021-04-15)
+
+### Features
+
+- **@aws-amplify/storage:** Make get and put requests cancellable ([c1ce5ac](https://github.com/aws-amplify/amplify-js/commit/c1ce5ac25cf79cfe649ed5676ef62ef7f283febe))
+
+## [3.3.29](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.28...@aws-amplify/storage@3.3.29) (2021-03-25)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.3.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.27...@aws-amplify/storage@3.3.28) (2021-03-18)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.3.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.26...@aws-amplify/storage@3.3.27) (2021-03-12)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.3.26](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.25...@aws-amplify/storage@3.3.26) (2021-03-08)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.3.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.24...@aws-amplify/storage@3.3.25) (2021-03-03)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.3.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.23...@aws-amplify/storage@3.3.24) (2021-02-25)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.3.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.22...@aws-amplify/storage@3.3.23) (2021-02-18)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.3.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.21...@aws-amplify/storage@3.3.22) (2021-02-15)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.3.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.20...@aws-amplify/storage@3.3.21) (2021-02-09)
+
+### Reverts
+
+- Revert "chore: bump aws-sdk to 3.4.1 (#7674)" (#7716) ([f142314](https://github.com/aws-amplify/amplify-js/commit/f1423144cf73304f3dc048233b35c831c9a1742d)), closes [#7674](https://github.com/aws-amplify/amplify-js/issues/7674) [#7716](https://github.com/aws-amplify/amplify-js/issues/7716)
+
+## [3.3.20](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.19...@aws-amplify/storage@3.3.20) (2021-02-03)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.3.19](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.18...@aws-amplify/storage@3.3.19) (2021-02-01)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.3.18](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.17...@aws-amplify/storage@3.3.18) (2021-01-29)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.3.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.16...@aws-amplify/storage@3.3.17) (2021-01-07)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.3.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.15...@aws-amplify/storage@3.3.16) (2020-12-17)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.3.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.14...@aws-amplify/storage@3.3.15) (2020-12-10)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+## [3.3.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.13...@aws-amplify/storage@3.3.14) (2020-11-30)
+
+**Note:** Version bump only for package @aws-amplify/storage
 
 ## [3.3.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.12...@aws-amplify/storage@3.3.13) (2020-11-23)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.3.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.11...@aws-amplify/storage@3.3.12) (2020-11-20)
 
 **Note:** Version bump only for package @aws-amplify/storage
-
-
-
-
 
 ## [3.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.10...@aws-amplify/storage@3.3.11) (2020-11-13)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.3.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.9...@aws-amplify/storage@3.3.10) (2020-11-03)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.3.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.8...@aws-amplify/storage@3.3.9) (2020-10-31)
-
 
 ### Bug Fixes
 
-* **amazon-cognito-identity-js:** update random implementation ([#7090](https://github.com/aws-amplify/amplify-js/issues/7090)) ([7048453](https://github.com/aws-amplify/amplify-js/commit/70484532da8a9953384b00b223b2b3ba0c0e845e))
-
-
-
-
+- **amazon-cognito-identity-js:** update random implementation ([#7090](https://github.com/aws-amplify/amplify-js/issues/7090)) ([7048453](https://github.com/aws-amplify/amplify-js/commit/70484532da8a9953384b00b223b2b3ba0c0e845e))
 
 ## [3.3.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.7...@aws-amplify/storage@3.3.8) (2020-10-29)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.3.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.6...@aws-amplify/storage@3.3.7) (2020-10-15)
 
 **Note:** Version bump only for package @aws-amplify/storage
-
-
-
-
 
 ## [3.3.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.5...@aws-amplify/storage@3.3.6) (2020-10-01)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.4...@aws-amplify/storage@3.3.5) (2020-09-25)
-
 
 ### Bug Fixes
 
-* Add files with Amplify.register to sideEffects array ([#6867](https://github.com/aws-amplify/amplify-js/issues/6867)) ([58ddbf8](https://github.com/aws-amplify/amplify-js/commit/58ddbf8811e44695d97b6ab8be8f7cd2a2242921))
-
-
-
-
+- Add files with Amplify.register to sideEffects array ([#6867](https://github.com/aws-amplify/amplify-js/issues/6867)) ([58ddbf8](https://github.com/aws-amplify/amplify-js/commit/58ddbf8811e44695d97b6ab8be8f7cd2a2242921))
 
 ## [3.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.3...@aws-amplify/storage@3.3.4) (2020-09-16)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.3.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.2...@aws-amplify/storage@3.3.3) (2020-09-15)
 
 **Note:** Version bump only for package @aws-amplify/storage
-
-
-
-
 
 ## [3.3.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.1...@aws-amplify/storage@3.3.2) (2020-09-10)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.3.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.3.0...@aws-amplify/storage@3.3.1) (2020-09-03)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 # [3.3.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.14...@aws-amplify/storage@3.3.0) (2020-09-03)
-
 
 ### Features
 
-* **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
-
-
-
-
+- **SSR:** withSSRContext ([#6146](https://github.com/aws-amplify/amplify-js/issues/6146)) ([1cb1afd](https://github.com/aws-amplify/amplify-js/commit/1cb1afd1e56135908dceb2ef6403f0b3e78067fe))
 
 ## [3.2.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.13...@aws-amplify/storage@3.2.14) (2020-09-01)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.2.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.12...@aws-amplify/storage@3.2.13) (2020-08-19)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.2.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.11...@aws-amplify/storage@3.2.12) (2020-08-06)
-
 
 ### Bug Fixes
 
-* **@aws-amplify/storage:** fix s3 multipart upload for very large files ([#6509](https://github.com/aws-amplify/amplify-js/issues/6509)) ([621966e](https://github.com/aws-amplify/amplify-js/commit/621966e97c3eb3f9ee356cae201cd62a72db1e08))
-
-
-
-
+- **@aws-amplify/storage:** fix s3 multipart upload for very large files ([#6509](https://github.com/aws-amplify/amplify-js/issues/6509)) ([621966e](https://github.com/aws-amplify/amplify-js/commit/621966e97c3eb3f9ee356cae201cd62a72db1e08))
 
 ## [3.2.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.10...@aws-amplify/storage@3.2.11) (2020-07-27)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.2.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.9...@aws-amplify/storage@3.2.10) (2020-07-22)
 
 **Note:** Version bump only for package @aws-amplify/storage
-
-
-
-
 
 ## [3.2.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.8...@aws-amplify/storage@3.2.9) (2020-07-09)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.2.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.7...@aws-amplify/storage@3.2.8) (2020-07-07)
 
 **Note:** Version bump only for package @aws-amplify/storage
-
-
-
-
 
 ## [3.2.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.6...@aws-amplify/storage@3.2.7) (2020-06-18)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.2.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.5...@aws-amplify/storage@3.2.6) (2020-06-09)
 
 **Note:** Version bump only for package @aws-amplify/storage
-
-
-
-
 
 ## [3.2.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.4...@aws-amplify/storage@3.2.5) (2020-06-04)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.2.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.3...@aws-amplify/storage@3.2.4) (2020-06-03)
 
 **Note:** Version bump only for package @aws-amplify/storage
-
-
-
-
 
 ## [3.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.2...@aws-amplify/storage@3.2.3) (2020-06-02)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.2.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.1...@aws-amplify/storage@3.2.2) (2020-05-26)
-
 
 ### Bug Fixes
 
-* **core:** bump SDK verion to gamma.2 ([#5909](https://github.com/aws-amplify/amplify-js/issues/5909)) ([3bd2d25](https://github.com/aws-amplify/amplify-js/commit/3bd2d2509c2db59cffd7ac81c08ac4f9ef298198))
-
-
-
-
+- **core:** bump SDK verion to gamma.2 ([#5909](https://github.com/aws-amplify/amplify-js/issues/5909)) ([3bd2d25](https://github.com/aws-amplify/amplify-js/commit/3bd2d2509c2db59cffd7ac81c08ac4f9ef298198))
 
 ## [3.2.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.2.0...@aws-amplify/storage@3.2.1) (2020-05-22)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 # [3.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.1.9...@aws-amplify/storage@3.2.0) (2020-05-14)
-
 
 ### Features
 
-* **@aws-amplify/storage:** AWSS3Provider.ts supports ACL ([#5520](https://github.com/aws-amplify/amplify-js/issues/5520)) ([cc1f981](https://github.com/aws-amplify/amplify-js/commit/cc1f981f65889562949095000f79c58ac7a88388))
-
-
-
-
+- **@aws-amplify/storage:** AWSS3Provider.ts supports ACL ([#5520](https://github.com/aws-amplify/amplify-js/issues/5520)) ([cc1f981](https://github.com/aws-amplify/amplify-js/commit/cc1f981f65889562949095000f79c58ac7a88388))
 
 ## [3.1.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.1.8...@aws-amplify/storage@3.1.9) (2020-04-30)
 
-
 ### Reverts
 
-* Revert "Upgrade aws-sdk clients to beta4 (#5575)" (#5577) ([f2dcabb](https://github.com/aws-amplify/amplify-js/commit/f2dcabb78110c0bab84780d045d046fabf97b6f4)), closes [#5575](https://github.com/aws-amplify/amplify-js/issues/5575) [#5577](https://github.com/aws-amplify/amplify-js/issues/5577)
-
-
-
-
+- Revert "Upgrade aws-sdk clients to beta4 (#5575)" (#5577) ([f2dcabb](https://github.com/aws-amplify/amplify-js/commit/f2dcabb78110c0bab84780d045d046fabf97b6f4)), closes [#5575](https://github.com/aws-amplify/amplify-js/issues/5575) [#5577](https://github.com/aws-amplify/amplify-js/issues/5577)
 
 ## [3.1.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.1.7...@aws-amplify/storage@3.1.8) (2020-04-24)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.1.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.1.6...@aws-amplify/storage@3.1.7) (2020-04-14)
 
 **Note:** Version bump only for package @aws-amplify/storage
-
-
-
-
 
 ## [3.1.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.1.5...@aws-amplify/storage@3.1.6) (2020-04-08)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.1.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.1.4...@aws-amplify/storage@3.1.5) (2020-04-07)
 
 **Note:** Version bump only for package @aws-amplify/storage
-
-
-
-
 
 ## [3.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.1.3...@aws-amplify/storage@3.1.4) (2020-04-03)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.1.2...@aws-amplify/storage@3.1.3) (2020-04-02)
-
 
 ### Bug Fixes
 
-* **@aws-amplify/ui-components:** Fix shadow dom form submit ([#5160](https://github.com/aws-amplify/amplify-js/issues/5160)) ([766c5ac](https://github.com/aws-amplify/amplify-js/commit/766c5ac5bdcf22f772340f78f5d45790f3142b71))
-
-
-
-
+- **@aws-amplify/ui-components:** Fix shadow dom form submit ([#5160](https://github.com/aws-amplify/amplify-js/issues/5160)) ([766c5ac](https://github.com/aws-amplify/amplify-js/commit/766c5ac5bdcf22f772340f78f5d45790f3142b71))
 
 ## [3.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.1.1...@aws-amplify/storage@3.1.2) (2020-04-01)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 ## [3.1.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@3.1.0...@aws-amplify/storage@3.1.1) (2020-04-01)
 
 **Note:** Version bump only for package @aws-amplify/storage
 
-
-
-
-
 # [3.1.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@2.2.3...@aws-amplify/storage@3.1.0) (2020-03-31)
-
 
 ### Bug Fixes
 
-* **@aws-amplify/storage:** expose tree-shaking for Webpack ([28a34a5](https://github.com/aws-amplify/amplify-js/commit/28a34a5fa7d7cc98343a2f630bb3232e16c0c047))
-
+- **@aws-amplify/storage:** expose tree-shaking for Webpack ([28a34a5](https://github.com/aws-amplify/amplify-js/commit/28a34a5fa7d7cc98343a2f630bb3232e16c0c047))
 
 ### Features
 
-* **@aws-amplify/storage:** publish ES2015/ESM artifacts ([bc8610a](https://github.com/aws-amplify/amplify-js/commit/bc8610a3eaeb667ef98e492a41485b14c09312cb))
-* append amplify user agent to all V3 SDK calls ([#4564](https://github.com/aws-amplify/amplify-js/issues/4564)) ([175d4c3](https://github.com/aws-amplify/amplify-js/commit/175d4c34ccb9cd5674c228db14513827d1c80d3f))
-* **@aws-amplify/storage:** S3 upload progress reporting and multipart upload ([#4558](https://github.com/aws-amplify/amplify-js/issues/4558)) ([64b0bec](https://github.com/aws-amplify/amplify-js/commit/64b0bec958c7d31b1b82208e397b3013a98de625)), closes [#4404](https://github.com/aws-amplify/amplify-js/issues/4404) [#4474](https://github.com/aws-amplify/amplify-js/issues/4474)
-
+- **@aws-amplify/storage:** publish ES2015/ESM artifacts ([bc8610a](https://github.com/aws-amplify/amplify-js/commit/bc8610a3eaeb667ef98e492a41485b14c09312cb))
+- append amplify user agent to all V3 SDK calls ([#4564](https://github.com/aws-amplify/amplify-js/issues/4564)) ([175d4c3](https://github.com/aws-amplify/amplify-js/commit/175d4c34ccb9cd5674c228db14513827d1c80d3f))
+- **@aws-amplify/storage:** S3 upload progress reporting and multipart upload ([#4558](https://github.com/aws-amplify/amplify-js/issues/4558)) ([64b0bec](https://github.com/aws-amplify/amplify-js/commit/64b0bec958c7d31b1b82208e397b3013a98de625)), closes [#4404](https://github.com/aws-amplify/amplify-js/issues/4404) [#4474](https://github.com/aws-amplify/amplify-js/issues/4474)
 
 ### Reverts
 
-* Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
-
-
-
-
+- Revert "Publish" ([1319d31](https://github.com/aws-amplify/amplify-js/commit/1319d319b69717e76660fbfa6f1a845195c6d635))
 
 ## [2.2.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@2.2.2...@aws-amplify/storage@2.2.3) (2020-03-30)
 

@@ -5,7 +5,6 @@ exports[`amplify-totp spec: Render logic -> should render a \`less than 2 mfa ty
   <mock:shadow-root>
     <amplify-form-section headertext="Scan then enter verification code" submitbuttontext="Verify Security Token">
       <div class="totp-setup">
-        <img alt="qrcode">
         <amplify-form-field fieldid="totpCode" label="Enter Security Code:" name="totpCode"></amplify-form-field>
       </div>
     </amplify-form-section>

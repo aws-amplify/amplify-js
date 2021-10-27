@@ -1,6 +1,8 @@
 # Contributing Guidelines
 
-Thank you for your interest in contributing to our project! <3 Whether it's a bug report, new feature, correction, or additional documentation, we greatly value feedback and contributions from our community. Please read through these guidelines carefully before submitting a PR or issue and let us know if it's not up-to-date (or even better, submit a PR with your corrections ;)).
+Thank you for your interest in contributing to our project! 💛
+
+Whether it's a bug report, new feature, correction, or additional documentation, we greatly value feedback and contributions from our community. Please read through these guidelines carefully before submitting a PR or issue and let us know if it's not up-to-date (or even better, submit a PR with your corrections 😉).
 
 - [Our History and Ethos](#our-history-and-ethos)
 - [Our Design](#our-design)
@@ -8,6 +10,7 @@ Thank you for your interest in contributing to our project! <3 Whether it's a bu
   - [Setting up for local development](#setting-up-for-local-development)
   - [Architecture of the codebase](#architecture-of-the-codebase)
   - [Steps towards contributions](#steps-towards-contributions)
+- [Bug Reports](#bug-reports)
 - [Pull Requests](#pull-requests)
 - [Debugging](#debugging)
 - [Release](#release)
@@ -41,53 +44,30 @@ Amplify has established the concepts of categories and plugins. A category is a 
 
 # Development Process
 
-Our work is done directly on Github and PR's are sent to the github repo by core team members and contributors. Everyone undergoes the same review process to get their changes into the repo.
+Our work is done directly on Github and PR's are sent to the GitHub repo by core team members and contributors. Everyone undergoes the same review process to get their changes into the repo.
 
 ## Setting up for local development
 
-This section should get you running with **Amplify JS** and get you familiar with the basics of the codebase. You will need the latest version of [nodejs](https://nodejs.org/en/) on your system and developing locally also requires `yarn` workspaces. You can install it [here](https://classic.yarnpkg.com/en/docs/install#mac-stable).
+This section should get you running with **Amplify JS** and get you familiar with the basics of the codebase. You will need the latest version of [Node.js](https://nodejs.org/en/) on your system and developing locally also requires `yarn` workspaces. You can install it [here](https://classic.yarnpkg.com/en/docs/install#mac-stable).
 
-Start by, [Forking](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the main branch of [amplify-js](https://github.com/aws-amplify/amplify-js).
+Start by [forking](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the main branch of [amplify-js](https://github.com/aws-amplify/amplify-js).
 
 ```
-$ git clone git@github.com:[username]/amplify-js.git
-$ cd amplify-js
+git clone git@github.com:[username]/amplify-js.git
+cd amplify-js
 
-$ yarn
-$ yarn bootstrap
-$ yarn build
+yarn
+yarn bootstrap
+yarn build
 ```
 
-> Note: Make sure to always [sync your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with main branch of amplify-js
+> Note: Make sure to always [sync your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with main branch of `amplify-js`
 
 ## Architecture of the codebase
 
 Amplify JS is a monorepo built with `Yarn` and `Lerna`. All the categories of Amplify live within the `packages` directory in the root. Each category inside packages has its own `src/` and `package.json`.
 
-#### Packages inside Amplify JS
-
-- [core](https://github.com/aws-amplify/amplify-js/tree/main/packages/core)
-- [cache](https://github.com/aws-amplify/amplify-js/tree/main/packages/cache)
-- [auth](https://github.com/aws-amplify/amplify-js/tree/main/packages/auth)
-- [api](https://github.com/aws-amplify/amplify-js/tree/main/packages/api)
-- [analytics](https://github.com/aws-amplify/amplify-js/tree/main/packages/analytics)
-- [storage](https://github.com/aws-amplify/amplify-js/tree/main/packages/storage)
-- [interactions](https://github.com/aws-amplify/amplify-js/tree/main/packages/interactions)
-- [predictions](https://github.com/aws-amplify/amplify-js/tree/main/packages/predictions)
-- [pubsub](https://github.com/aws-amplify/amplify-js/tree/main/packages/pubsub)
-- [datastore](https://github.com/aws-amplify/amplify-js/tree/main/packages/datastore)
-- [pushnotification](https://github.com/aws-amplify/amplify-js/tree/main/packages/pushnotification)
-- [xr](https://github.com/aws-amplify/amplify-js/tree/main/packages/xr)
-- [amplify-ui](https://github.com/aws-amplify/amplify-js/tree/main/packages/amplify-ui)
-- [aws-amplify-react](https://github.com/aws-amplify/amplify-js/tree/main/packages/aws-amplify-react)
-- [aws-amplify-react-native](https://github.com/aws-amplify/amplify-js/tree/main/packages/aws-amplify-react-native)
-- [aws-amplify-angular](https://github.com/aws-amplify/amplify-js/tree/main/packages/aws-amplify-angular)
-- [aws-amplify-vue](https://github.com/aws-amplify/amplify-js/tree/main/packages/aws-amplify-vue)
-- [amplify-ui-components](https://github.com/aws-amplify/amplify-js/tree/main/packages/amplify-ui-components)
-- [amplify-ui-react](https://github.com/aws-amplify/amplify-js/tree/main/packages/amplify-ui-react)
-- [amplify-ui-angular](https://github.com/aws-amplify/amplify-js/tree/main/packages/amplify-ui-angular)
-- [amplify-ui-vue](https://github.com/aws-amplify/amplify-js/tree/main/packages/amplify-ui-vue)
-- [amplify-ui-storybook](https://github.com/aws-amplify/amplify-js/tree/main/packages/amplify-ui-storybook)
+[**Packages inside Amplify JS Monorepo**](https://github.com/aws-amplify/amplify-js/tree/main/packages)
 
 ## Steps towards contributions
 
@@ -102,14 +82,14 @@ Amplify JS is a monorepo built with `Yarn` and `Lerna`. All the categories of Am
 #### Build step:
 
 ```
-$ yarn build --scope @aws-amplify/auth
+yarn build --scope @aws-amplify/auth
 ```
 
 #### Testing:
 
 ```
-$ yarn run test --scope @aws-amplify/auth
-$ yarn run test --scope @aws-amplify/ui-components
+yarn run test --scope @aws-amplify/auth
+yarn run test --scope @aws-amplify/ui-components
 ```
 
 > Note: There is a commit hook that will run the tests prior to committing. Please make sure if you are going to provide a pull request to be sure you include unit tests with your functionality and that all tests pass.
@@ -122,73 +102,157 @@ The best way to develop locally and test is to link the individual package you�
 Run watch mode while editing (auth for example):
 
 ```
-$ npx lerna exec --scope @aws-amplify/auth yarn link
-$ npx lerna exec --scope @aws-amplify/auth yarn build:esm:watch
+npx lerna exec --scope @aws-amplify/auth yarn link
+npx lerna exec --scope @aws-amplify/auth yarn build:esm:watch
 ```
 
 Or run the whole library in watch mode if you are working on multiple packages
 
 ```
-$ yarn build # Build the whole library
-$ yarn link-all # Make all the packages available to link
-$ yarn build:esm:watch # All packages are building ES6 modules in watch mode
+yarn build # Build the whole library
+yarn link-all # Make all the packages available to link
+yarn build:esm:watch # All packages are building ES6 modules in watch mode
 ```
 
-In you sample project, you can now link specific packages
+In your sample project, you can now link specific packages
 
 ```
-$ yarn link @aws-amplify/auth
+yarn link @aws-amplify/auth
 ```
 
 These tests are only necessary if you’re looking to contribute a Pull Request. If you’re just playing locally you don’t need them. However if you’re contributing a Pull Request for anything other than bug fixes it would be best to validate that first because depending on the scope of the change.
 
-#### Verdaccio
+**Using the setup-dev:react-native script to work with React-Native apps**
 
-Verdaccio is a lightweight private npm proxy registry built in Node.js. Install [Verdaccio](https://verdaccio.org/docs/en/installation). You can setup veradaccio to publish packages locally to test the changes.
+> Note: All the below commands to be run from the local amplify-js library root
 
-To publish in Verdaccio, start a verdaccio instance and then,
+To develop locally alongside a React-Native app, make sure to,
+
+1. Finish the build steps mentioned in the section: `Setting up for local development`
+
+2. Install the dev dependency package : `wml`
 
 ```
-npm set registry http://localhost:4873/
-yarn lerna publish --skip-git --force-publish
+npm install wml --save-dev
+```
+
+3. Add the wml src folder to watchman.
+
+```
+watchman watch node_modules/wml/src
+```
+
+4. Run the below command in the root of the amplify-js local repository with a package name (auth for example):
+
+```
+npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
+```
+
+> Note: This script runs a continious job in the newly opened tabs to watch, build and copy the changes unlike the usual linking method.
+
+The options `--packages` is used to specify single or multiple package names and the `--target` option is used to specify the path to your sample React-Native app.
+Optionally, you can use the shorthands flags `-p` and `-t` for packages and target path respectively.
+
+> All scoped packages must be prefixed by `@aws-amplify/` . For example: `@aws-amplify/auth`
+
+To develop multiple/all packages, provide the package names separated by a comma or the flag `--all` or `-a`:
+
+```
+npm run setup-dev:react-native -- --packages @aws-amplify/auth,aws-amplify-react-native --target ~/path/to/your/rn/app/root
+npm run setup-dev:react-native -- --all --target ~/path/to/your/rn/app/root
+```
+
+> Note: `--` right after the script name is important to provide the flags with their values.
+
+**Debugging problems with the `setup-dev:react-native` script**
+
+- If the WML command does not do anything after adding the links, watch it's src file using watchman. run the below from the root of this repository:
+
+  ```
+  watchman watch node_modules/wml/src
+  ```
+
+- When using VScode, for the script to open a new terminal and tabs you will need to provide the editor accessiblity permissions.
+
+#### Verdaccio
+
+Verdaccio is a lightweight private npm proxy registry built in Node.js. Install [Verdaccio](https://verdaccio.org/docs/en/installation). You can setup Verdaccio to publish packages locally to test the changes.
+
+To publish in Verdaccio, start a Verdaccio instance and then,
+
+```
+yarn config set registry http://localhost:4873/
+yarn lerna publish --no-git-tag-version --no-push --force-publish
 ```
 
 To publish a local version of a specific package,
 
 ```
 cd packages/<category>
-npm publish --registry http://localhost:4873 (http://localhost:4873/)
+yarn publish --registry http://localhost:4873/
 ```
 
-Once you are done with Verdaccio, you can reset to npm registry by doing,
+Once you are done with Verdaccio, you can reset to the default registry by doing,
 
 ```
-npm set registry https://registry.npmjs.com/
+yarn config set registry https://registry.yarnpkg.com
 ```
+
+## Bug Reports
+
+Bug reports and feature requests are always welcome. Good bug reports are extremely helpful, so thanks in advance!
+
+When filing a bug, please try to be as detailed as possible. In addition to the bug report form information, details like these are incredibly useful:
+
+- A reproducible test case or series of steps
+- The date/commit/version(s) of the code you're running
+- Any modifications you've made relevant to the bug
+- Anything unusual about your environment or deployment
+
+Guidelines for bug reports:
+
+- Check to see if a [duplicate or closed issue](https://github.com/aws-amplify/amplify-js/issues?q=is%3Aissue+) already exists!
+- Provide a short and descriptive issue title
+- Remove any sensitive data from your examples or snippets
+- Format any code snippets using [Markdown](https://docs.github.com/en/github/writing-on-github/creating-and-highlighting-code-blocks) syntax
+- If you're not using the latest version of a [specific package](https://github.com/aws-amplify/amplify-js/tree/main/packages), see if the issue still persists after upgrading - this helps to isolate regressions!
+
+Finally, thank you for taking the time to read this, and taking the time to write a good bug report.
 
 # Pull Requests
 
-This is mostly the same as GitHub's guide on creating a pull request.
+Pull requests are welcome!
+
+You should open an issue to discuss your pull request, unless it's a trivial change. It's best to ensure that your proposed change would be accepted so that you don't waste your own time. If you would like to implement support for a significant feature that is not yet available, please talk to us beforehand to avoid any duplication of effort.
 
 _[Skip step 1 to 3 if you have already done this]_
 
-1. Fork aws-amplify/amplify-js
+1. Fork [`aws-amplify/amplify-js`](https://github.com/aws-amplify/amplify-js)
 2. Clone your fork locally: `git clone git@github.com:YOUR_GITHUB_USERNAME/amplify-js.git`
 3. Run `yarn && yarn bootstrap` in the repository root
 4. Within your fork, create a new branch based on the issue (e.g. Issue #123) you're addressing - `git checkout -b "group-token/short-token-[branch-name]"` or `git checkout -b "short-token/[branch-name]"`
-   - Use grouping tokens at the beginning of the branch names. \_For e.g, if you are working on changes specific to `amplify-ui-components`, then you could start the branch name as `ui-components/...`
+   - Use grouping tokens at the beginning of the branch names. For e.g, if you are working on changes specific to `amplify-ui-components`, then you could start the branch name as `ui-components/...`
    - short token
-     - feat
-     - chore
-     - bug
-   - use slashes to seperate parts of branch names
-   - Hyphenate well defined branch name
+     - feat: A new feature
+     - fix: A bug fix
+     - docs: Documentation only changes
+     - style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc.)
+     - refactor: A code change that neither fixes a bug nor adds a feature
+     - perf: A code change that improves performance
+     - test: Adding missing tests or correcting existing tests
+     - build: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
+     - ci: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
+     - chore: Other changes that don't modify src or test files
+     - revert: Reverts a previous commit
+   - Use slashes to separate parts of branch names
+   - Hyphenate well-defined branch name
 5. Once your work is committed and you're ready to share, run test `yarn test`.
+
    **Note:** Manually test your changes in a sample app with different edge cases and also test across different browsers and platform
+
 6. Then, Push your branch `git push origin -u`
 7. This previous step will give you a URL to view a GitHub page in your browser. Copy-paste this, and complete the workflow in the UI. It will invite you to "create a PR" from your newly published branch. Fill out the PR template to submit a PR.
-8. Finally, the Amplify JS team will review your PR. Add reviewers based on the core member who is tracking the issue with you or code owners.
-   _In the meantime, address any automated check that fail (such as linting, unit tests, etc. in CI)_
+8. Finally, the Amplify JS team will review your PR. Add reviewers based on the core member who is tracking the issue with you or code owners. _In the meantime, address any automated check that fail (such as linting, unit tests, etc. in CI)_
 
 # Debugging
 
@@ -204,7 +268,7 @@ To give a bird's eye view of the release cycle,
 
 ## Finding contributions to work on
 
-Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any ['help wanted'](https://github.com/aws-amplify/amplify-ios/labels/help%20wanted) or ['good first issue'](https://github.com/aws-amplify/amplify-ios/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) is a great place to start.
+Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any [`help wanted`](https://github.com/aws-amplify/amplify-js/labels/help%20wanted) or [`good first issue`](https://github.com/aws-amplify/amplify-js/issues?q=is:open+is:issue+label:%22good+first+issue%22) is a great place to start.
 
 You could also contribute by reporting bugs, reproduction of bugs with sample code, documentation and test improvements.
 
@@ -231,7 +295,7 @@ opensource-codeofconduct@amazon.com with any additional questions or comments.
 
 ## Security issue notifications
 
-If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our [vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/). Please do **not** create a public github issue.
+If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our [vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/). Please do **not** create a public GitHub issue.
 
 ## Licensing
 

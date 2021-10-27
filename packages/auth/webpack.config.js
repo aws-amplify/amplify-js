@@ -2,7 +2,10 @@ module.exports = {
 	entry: {
 		'aws-amplify-auth.min': './lib-esm/index.js',
 	},
-	externals: ['react-native', '@aws-amplify/cache', '@aws-amplify/core'],
+	externals: ['react-native', {
+		'@aws-amplify/cache': 'aws_amplify_cache',
+		'@aws-amplify/core': 'aws_amplify_core'
+	}],
 	output: {
 		filename: '[name].js',
 		path: __dirname + '/dist',

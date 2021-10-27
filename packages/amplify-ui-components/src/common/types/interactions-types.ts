@@ -1,4 +1,4 @@
 export interface ChatResult {
-  data?: object;
-  err?: string;
+	data?: object;
+	err?: string;
 }

@@ -18,6 +18,7 @@
  */
 export {
 	graphqlOperation,
+	GraphQLAuthError,
 	GraphQLResult,
 	GRAPHQL_AUTH_MODE,
 } from '@aws-amplify/api-graphql';

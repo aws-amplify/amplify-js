@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { RequestParams, SessionInfo } from './DataType';
+import { RequestParams } from './DataType';
 
 enum HTML5_MEDIA_EVENT {
 	'PLAY' = 'play',
