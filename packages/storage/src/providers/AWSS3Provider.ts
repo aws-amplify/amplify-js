@@ -77,8 +77,6 @@ const logger = new Logger('AWSS3Provider');
 
 const DEFAULT_STORAGE_LEVEL = 'public';
 const DEFAULT_PRESIGN_EXPIRATION = 900;
-// placeholder credentials in order to satisfy type requirement, always results in 403 when used
-const INVALID_CRED = { accessKeyId: '', secretAccessKey: '' };
 
 interface AddTaskInput {
 	accessLevel: StorageAccessLevel;
@@ -798,20 +796,6 @@ export class AWSS3Provider implements StorageProvider {
 				return protectedPath;
 			default:
 				return publicPath;
-		}
-	}
-
-	private async _credentialsProvider() {
-		try {
-			const credentials = await Credentials.get();
-			if (!credentials) return INVALID_CRED;
-			const cred = Credentials.shear(credentials);
-			logger.debug('credentials provider get credentials', cred);
-
-			return cred;
-		} catch (error) {
-			logger.warn('credentials provider error', error);
-			return INVALID_CRED;
 		}
 	}
 
