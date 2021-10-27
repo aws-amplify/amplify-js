@@ -2,8 +2,14 @@ import {
 	getPrefix,
 	createPrefixMiddleware,
 	autoAdjustClockskewMiddleware,
+	createS3Client,
+	credentialsProvider,
 } from '../../src/common/S3ClientUtils';
-import { ICredentials, Credentials } from '@aws-amplify/core';
+import {
+	ICredentials,
+	Credentials,
+	getAmplifyUserAgent,
+} from '@aws-amplify/core';
 import { S3ClientConfig } from '@aws-sdk/client-s3';
 
 const credentials: ICredentials = {
@@ -111,6 +117,57 @@ describe('S3ClientUtils tests', () => {
 		expect(publicPrefix).toEqual('public/key');
 		expect(protectedPrefix).toEqual('protected/identityId/key');
 		expect(privatePrefix).toEqual('private/identityId/key');
+	});
+
+	test('createS3Client test', async () => {
+		const s3client = createS3Client({
+			region: 'us-west-2',
+			useAccelerateEndpoint: true,
+		});
+		// ensure customUserAgent is set properly
+		expect(s3client.config.customUserAgent).toEqual([[getAmplifyUserAgent()]]);
+		expect(await s3client.config.region()).toEqual('us-west-2');
+		expect(s3client.config.useAccelerateEndpoint).toBe(true);
+	});
+
+	test('createS3Client test - dangerouslyConnectToHttpEndpointForTesting', async () => {
+		const s3client = createS3Client({
+			region: 'us-west-2',
+			dangerouslyConnectToHttpEndpointForTesting: true,
+		});
+		expect(await s3client.config.endpoint()).toStrictEqual({
+			hostname: 'localhost',
+			path: '/',
+			port: 20005,
+			protocol: 'http:',
+			query: undefined,
+		});
+		expect(s3client.config.tls).toBe(false);
+		expect(s3client.config.bucketEndpoint).toBe(false);
+		expect(s3client.config.forcePathStyle).toBe(true);
+	});
+
+	test('credentialsProvider test', async () => {
+		const mockCredentials: ICredentials = {
+			accessKeyId: 'accessKeyId',
+			sessionToken: 'sessionToken',
+			secretAccessKey: 'secretAccessKey',
+			identityId: 'identityId',
+			authenticated: true,
+		};
+		jest
+			.spyOn(Credentials, 'get')
+			.mockImplementationOnce(() => Promise.resolve(mockCredentials));
+		const credentials = await credentialsProvider();
+		expect(credentials).toStrictEqual(mockCredentials);
+	});
+
+	test('credentialsProvider - Credentials.get error', async () => {
+		jest
+			.spyOn(Credentials, 'get')
+			.mockImplementationOnce(() => Promise.reject('err'));
+		const credentials = await credentialsProvider();
+		expect(credentials).toStrictEqual({ accessKeyId: '', secretAccessKey: '' });
 	});
 
 	test('autoAdjustClockskewMiddleware tests', async () => {

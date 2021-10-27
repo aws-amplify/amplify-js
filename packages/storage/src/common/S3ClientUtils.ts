@@ -114,7 +114,7 @@ export const prefixMiddlewareOptions: InitializeHandlerOptions = {
 	name: 'addPrefixMiddleware',
 };
 
-const credentialsProvider = async () => {
+export const credentialsProvider = async () => {
 	try {
 		const credentials = await Credentials.get();
 		if (!credentials) return INVALID_CRED;
