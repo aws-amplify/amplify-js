@@ -1,1 +1,1 @@
-export * from './types';
+export { BannerMessageProps } from './types';

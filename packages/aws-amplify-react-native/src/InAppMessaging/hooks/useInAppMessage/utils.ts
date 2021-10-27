@@ -24,7 +24,7 @@ import {
 	InAppMessageComponentButtonProps,
 	InAppMessageComponentContentProps,
 	InAppMessageComponentPosition,
-} from '../..';
+} from '../../components';
 
 import handleAction from './handleAction';
 

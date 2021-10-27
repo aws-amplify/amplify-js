@@ -1,1 +1,1 @@
-export * from './types';
+export { FullScreenMessageProps } from './types';

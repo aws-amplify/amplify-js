@@ -1,5 +1,12 @@
-export * from './BannerMessage';
-export * from './CarouselMessage';
-export * from './FullScreenMessage';
-export * from './InAppMessageDisplay';
-export * from './types';
+export { BannerMessageProps } from './BannerMessage';
+export { CarouselMessageProps } from './CarouselMessage';
+export { FullScreenMessageProps } from './FullScreenMessage';
+export { default as InAppMessageDisplay } from './InAppMessageDisplay';
+export {
+	InAppMessageComponentButtonProps,
+	InAppMessageComponentButtonStyle,
+	InAppMessageComponentContentProps,
+	InAppMessageComponentPosition,
+	InAppMessageComponentStyle,
+	InAppMessageComponentStyles,
+} from './types';

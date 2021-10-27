@@ -1,1 +1,1 @@
-export * from './types';
+export { CarouselMessageProps } from './types';
