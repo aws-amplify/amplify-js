@@ -344,6 +344,7 @@ jobs:
           command: |
             mv .yarnrc ._yarnrc
             yarn
+      - run: yarn bootstrap
       - run: yarn build
       # storing yarn.lock as an artifact, so that we can quickly get a dependency diff
       # with the last working build in the event that some upstream deps break the build in the future
@@ -891,6 +892,50 @@ jobs:
           test_name: 'Token revocation'
           category: 'auth'
           spec: 'token-revocation'
+  integ_react_geo:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'Display Map'
+          framework: react
+          category: geo
+          sample_name: display-map
+          spec: display-map
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Marker Map'
+          framework: react
+          category: geo
+          sample_name: marker-map
+          spec: marker-map
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Cluster Map'
+          framework: react
+          category: geo
+          sample_name: cluster-marker-map
+          spec: cluster-marker-map
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Search Map'
+          framework: react
+          category: geo
+          sample_name: search-map
+          spec: search-map
+          browser: << parameters.browser >>
+      - integ_test_js:
+          test_name: 'Search Outside Map'
+          framework: react
+          category: geo
+          sample_name: search-outside-map
+          spec: search-outside-map
+          browser: << parameters.browser >>
   deploy:
     executor: macos-executor
     working_directory: ~/amplify-js
@@ -936,6 +981,7 @@ releasable_branches: &releasable_branches
       - main
       - ui-components/main
       - 1.0-stable
+      - geo/main
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
@@ -1205,6 +1251,13 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_geo:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          browser: chrome
       - deploy:
           filters:
             <<: *releasable_branches
@@ -1238,6 +1291,7 @@ workflows:
             - integ_datastore_auth
             - integ_duplicate_packages
             - integ_auth_test_cypress_no_ui
+            - integ_react_geo
       - post_release:
           filters:
             branches:

@@ -5,6 +5,7 @@
 	"description": "",
 	"scripts": {
 		"setup-dev": "yarn && yarn bootstrap && yarn link-all && yarn build",
+		"setup-dev:react-native": "node ./scripts/setup-dev-rn",
 		"bootstrap": "lerna bootstrap",
 		"test": "lerna run test --stream",
 		"cypress": "lerna run cypress",
@@ -25,8 +26,8 @@
 		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
 		"publish:1.0-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-1.0 --message 'chore(release): Publish [ci skip]' --no-verify-access",
 		"publish:ui-components/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=ui-preview --preid=ui-preview --exact --no-verify-access",
-		"publish:native": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=native --preid=native --exact --no-verify-access",
-		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes --no-verify-access"
+		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes --no-verify-access",
+		"publish:geo/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=geo --preid=geo --exact --no-verify-access"
 	},
 	"husky": {
 		"hooks": {
@@ -90,7 +91,8 @@
 		"webpack": "^4.32.0",
 		"webpack-bundle-analyzer": "^3.3.2",
 		"webpack-cli": "^3.1.0",
-		"winston": "^3.2.1"
+		"winston": "^3.2.1",
+		"wml": "0.0.83"
 	},
 	"resolutions": {
 		"@babel/types": "7.12.10",

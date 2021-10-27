@@ -52,6 +52,7 @@ export enum AuthStrings {
 	SIGN_UP_PASSWORD_PLACEHOLDER = 'Password',
 	SIGN_UP_SUBMIT_BUTTON_TEXT = 'Create Account',
 	SIGN_UP_USERNAME_PLACEHOLDER = 'Username',
+	SKIP = 'Skip',
 	SUCCESS_MFA_TYPE = 'Success! Your MFA Type is now:',
 	TOTP_HEADER_TEXT = 'Scan then enter verification code',
 	TOTP_LABEL = 'Enter Security Code:',
