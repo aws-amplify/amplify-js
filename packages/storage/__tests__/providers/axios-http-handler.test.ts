@@ -26,7 +26,7 @@ describe('AxiosHttpHandler', () => {
 			port: 3000,
 			query: {},
 			headers: {},
-			clone: () => null as unknown as HttpRequest,
+			clone: () => (null as unknown) as HttpRequest,
 		};
 	});
 
@@ -57,7 +57,7 @@ describe('AxiosHttpHandler', () => {
 				method: 'get',
 				responseType: 'blob',
 				url: 'http://localhost:3000/?key=value',
-			})
+			});
 		});
 
 		it("should update data to null when it's undefined and content-type header is set", async () => {
@@ -156,18 +156,6 @@ describe('AxiosHttpHandler', () => {
 				'Request did not complete within 1000 ms'
 			);
 		});
-
-		it('axios request should log and re-throw error', async () => {
-			axios.request = jest
-				.fn()
-				.mockImplementation(() => Promise.reject(new Error('err')));
-			const loggerSpy = jest.spyOn(Logger.prototype, '_log');
-			const handler = new AxiosHttpHandler();
-			await expect(handler.handle(request, options)).rejects.toThrowError(
-				'err'
-			);
-			expect(loggerSpy).toHaveBeenCalledWith('ERROR', 'err');
-		});
 	});
 
 	describe('React Native Request Transformer', () => {
@@ -182,10 +170,10 @@ describe('AxiosHttpHandler', () => {
 		});
 
 		it('should run defaultTransformers logic on everything else', () => {
-			const mockTransformer = jest.fn()
+			const mockTransformer = jest.fn();
 			axios.defaults.transformRequest = [mockTransformer];
 			reactNativeRequestTransformer[0]('data', {});
 			expect(mockTransformer).toHaveBeenCalledTimes(1);
-		})
+		});
 	});
 });
