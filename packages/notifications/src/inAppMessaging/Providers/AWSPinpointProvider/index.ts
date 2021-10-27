@@ -12,12 +12,15 @@
  */
 
 import {
+	ClientDevice,
 	Credentials,
 	getAmplifyUserAgent,
 	StorageHelper,
+	transferKeyToUpperCase,
 } from '@aws-amplify/core';
-import { getCachedUuid as getEndpointId } from '@aws-amplify/cache';
+import Cache from '@aws-amplify/cache';
 import {
+	ChannelType,
 	GetInAppMessagesCommand,
 	GetInAppMessagesCommandInput,
 	InAppMessageCampaign as PinpointInAppMessage,
@@ -25,7 +28,7 @@ import {
 	UpdateEndpointCommandInput,
 	PinpointClient,
 } from '@aws-sdk/client-pinpoint';
-import { v1 as uuid } from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 import { addMessageInteractionEventListener } from '../../eventListeners';
 import { NotificationsCategory } from '../../../types';
@@ -40,8 +43,10 @@ import {
 	InAppMessagingEvent,
 	InAppMessagingProvider,
 	NotificationsSubcategory,
+	UserInfo,
 } from '../../types';
 import {
+	AWSPinpointUserInfo,
 	DailyInAppMessageCounter,
 	InAppMessageCountMap,
 	InAppMessageCounts,
@@ -69,9 +74,10 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 	static subCategory: NotificationsSubcategory = 'InAppMessaging';
 	static providerName = 'AWSPinpoint';
 
+	private clientInfo;
 	private config: Record<string, any> = {};
 	private configured = false;
-	private endpointUpdated = false;
+	private endpointInitialized = false;
 	private initialized = false;
 	private sessionMessageCountMap: InAppMessageCountMap;
 	private sessionTracker: SessionTracker;
@@ -81,6 +87,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 		this.config = {
 			storage: new StorageHelper().getStorage(),
 		};
+		this.clientInfo = ClientDevice.clientInfo() ?? {};
 	}
 
 	/**
@@ -146,14 +153,9 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 		// event properties thus opting to just clear them out when syncing messages rather than leave potentially
 		// obsolete entries that will no longer serve any purpose.
 		clearMemo();
-		const { appId, endpointId, pinpointClient } = this.config;
 		try {
-			if (!pinpointClient) {
-				await this.initPinpointClient();
-			}
-			if (!this.endpointUpdated) {
-				await this.updateEndpoint();
-			}
+			await this.updateEndpoint();
+			const { appId, endpointId, pinpointClient } = this.config;
 			const input: GetInAppMessagesCommandInput = {
 				ApplicationId: appId,
 				EndpointId: endpointId,
@@ -162,7 +164,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 				input
 			);
 			logger.debug('getting in-app messages', input);
-			const response = await this.config.pinpointClient.send(command);
+			const response = await pinpointClient.send(command);
 			const {
 				InAppMessageCampaigns: messages,
 			} = response.InAppMessagesResponse;
@@ -171,6 +173,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 			return messages;
 		} catch (err) {
 			logger.error('Error syncing in-app messages', err);
+			throw err;
 		}
 	};
 
@@ -219,16 +222,30 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 		);
 	};
 
+	identifyUser = async (userId: string, userInfo: UserInfo): Promise<void> => {
+		if (!this.initialized) {
+			await this.init();
+		}
+		try {
+			await this.updateEndpoint(userId, userInfo);
+		} catch (err) {
+			logger.error('Error identifying user', err);
+			throw err;
+		}
+	};
+
 	private init = async () => {
-		const { appId, storage } = this.config;
+		const { endpointId, storage } = this.config;
 		const providerName = this.getProviderName();
-		const cacheKey = `${providerName}_${appId}`;
 		try {
 			// Only run sync() if it's available (i.e. React Native)
 			if (typeof storage.sync === 'function') {
 				await storage.sync();
 			}
-			this.config.endpointId = await getEndpointId(cacheKey);
+			// If an endpoint was not provided via configuration, try to get it from cache
+			if (!endpointId) {
+				this.config.endpointId = await this.getEndpointId();
+			}
 			this.initialized = true;
 		} catch (err) {
 			logger.error(`Failed to initialize ${providerName}`, err);
@@ -236,9 +253,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 	};
 
 	private initPinpointClient = async () => {
-		const { appId, region } = this.config;
-
-		const credentials = await this.getCredentials();
+		const { appId, credentials, pinpointClient, region } = this.config;
 
 		if (!appId || !credentials || !region) {
 			throw new Error(
@@ -246,11 +261,125 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 			);
 		}
 
+		if (pinpointClient) {
+			pinpointClient.destroy();
+		}
+
 		this.config.pinpointClient = new PinpointClient({
 			region,
 			credentials,
 			customUserAgent: getAmplifyUserAgent(),
 		});
+	};
+
+	private getEndpointId = async () => {
+		const { appId } = this.config;
+		// Each Pinpoint channel requires its own Endpoint ID
+		const cacheKey = `${this.getSubCategory()}:${this.getProviderName()}:${appId}`;
+		// First attempt to retrieve the ID from cache
+		const cachedEndpointId = await Cache.getItem(cacheKey);
+		// Found in cache, just return it
+		if (cachedEndpointId) {
+			return cachedEndpointId;
+		}
+		// Otherwise, generate a new ID and store it in long-lived cache before returning it
+		const endpointId = uuid();
+		// Set a longer TTL to avoid endpoint id being deleted after the default TTL (3 days)
+		// Also set its priority to the highest to reduce its chance of being deleted when cache is full
+		const ttl = 1000 * 60 * 60 * 24 * 365 * 100; // 100 years
+		const expiration = new Date().getTime() + ttl;
+		Cache.setItem(cacheKey, endpointId, {
+			expires: expiration,
+			priority: 1,
+		});
+		return endpointId;
+	};
+
+	private updateEndpoint = async (
+		userId: string = null,
+		userInfo: AWSPinpointUserInfo = null
+	) => {
+		const {
+			appId,
+			credentials,
+			endpointId,
+			endpointInfo = {},
+			pinpointClient,
+		} = this.config;
+		const currentCredentials = await this.getCredentials();
+		// Shallow compare to determine if credentials stored here are outdated
+		const credentialsUpdated =
+			!credentials ||
+			Object.keys(currentCredentials).some(
+				key => currentCredentials[key] !== credentials[key]
+			);
+		// If endpoint is already initialized, and nothing else is changing, just early return
+		if (
+			this.endpointInitialized &&
+			!credentialsUpdated &&
+			!userId &&
+			!userInfo
+		) {
+			return;
+		}
+		// Update credentials
+		this.config.credentials = currentCredentials;
+		try {
+			// Initialize a new pinpoint client if one isn't already configured or if credentials changed
+			if (!pinpointClient || credentialsUpdated) {
+				await this.initPinpointClient();
+			}
+			const { address, attributes, demographic, location, metrics, optOut } =
+				userInfo ?? {};
+			const { appVersion, make, model, platform, version } = this.clientInfo;
+			// Create the UpdateEndpoint input, prioritizing passed in user info and falling back to
+			// defaults (if any) obtained from the config
+			const input: UpdateEndpointCommandInput = {
+				ApplicationId: appId,
+				EndpointId: endpointId,
+				EndpointRequest: {
+					RequestId: uuid(),
+					EffectiveDate: new Date().toISOString(),
+					ChannelType: ChannelType.IN_APP,
+					Address: address ?? endpointInfo.address,
+					Attributes: {
+						...endpointInfo.attributes,
+						...attributes,
+					},
+					Demographic: {
+						AppVersion: appVersion,
+						Make: make,
+						Model: model,
+						ModelVersion: version,
+						Platform: platform,
+						...transferKeyToUpperCase({
+							...endpointInfo.demographic,
+							...demographic,
+						}),
+					},
+					Location: transferKeyToUpperCase({
+						...endpointInfo.location,
+						...location,
+					}),
+					Metrics: {
+						...endpointInfo.metrics,
+						...metrics,
+					},
+					OptOut: optOut ?? endpointInfo.optOut,
+					User: {
+						UserId:
+							userId ?? endpointInfo.userId ?? currentCredentials.identityId,
+						UserAttributes: attributes ?? endpointInfo.userAttributes,
+					},
+				},
+			};
+			const command: UpdateEndpointCommand = new UpdateEndpointCommand(input);
+			logger.debug('updating endpoint', input);
+			await this.config.pinpointClient.send(command);
+			this.endpointInitialized = true;
+		} catch (err) {
+			throw err;
+		}
 	};
 
 	private getCredentials = async () => {
@@ -264,26 +393,6 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 		} catch (err) {
 			logger.error('Error getting credentials:', err);
 			return null;
-		}
-	};
-
-	private updateEndpoint = async (): Promise<void> => {
-		const { appId, endpointId, pinpointClient } = this.config;
-		const input: UpdateEndpointCommandInput = {
-			ApplicationId: appId,
-			EndpointId: endpointId,
-			EndpointRequest: {
-				RequestId: uuid(),
-				EffectiveDate: new Date().toISOString(),
-			},
-		};
-		const command: UpdateEndpointCommand = new UpdateEndpointCommand(input);
-		try {
-			logger.debug('updating endpoint', input);
-			await pinpointClient.send(command);
-			this.endpointUpdated = true;
-		} catch (err) {
-			throw err;
 		}
 	};
 

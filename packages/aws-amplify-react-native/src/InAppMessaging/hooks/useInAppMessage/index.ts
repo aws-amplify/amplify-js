@@ -1,1 +1,1 @@
-export { default as useInAppMessage } from './useInAppMessage';
+export { default } from './useInAppMessage';

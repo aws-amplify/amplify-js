@@ -10,13 +10,6 @@
 		"jsx": "react-native",
 		"noUnusedLocals": true
 	},
-	"include": [
-		".eslintrc.js",
-		"jest.config.js",
-		"babel.config.js",
-		"src/**/*.ts",
-		"src/**/*.tsx",
-		"src/**/*.js"
-	],
+	"include": [".eslintrc.js", "jest.config.js", "babel.config.js", "src/**/*.ts", "src/**/*.tsx", "src/**/*.js"],
 	"exclude": ["node_modules"]
 }

@@ -14,6 +14,29 @@ import { NotificationsCategory } from '../types';
 
 export type NotificationsSubcategory = 'InAppMessaging';
 
+export type UserInfo = {
+	attributes?: Record<string, string[]>;
+	demographic?: {
+		appVersion?: string;
+		locale?: string;
+		make?: string;
+		model?: string;
+		modelVersion?: string;
+		platform?: string;
+		platformVersion?: string;
+		timezone?: string;
+	};
+	location?: {
+		city?: string;
+		country?: string;
+		latitude?: number;
+		longitude?: number;
+		postalCode?: string;
+		region?: string;
+	};
+	metrics?: Record<string, number>;
+};
+
 export type InAppMessagingEvent = {
 	name: string;
 	attributes?: Record<string, string>;
@@ -47,6 +70,9 @@ export interface InAppMessagingProvider {
 		messages: InAppMessage[],
 		event: InAppMessagingEvent
 	): Promise<InAppMessage[]>;
+
+	// identify the current user with the provider
+	identifyUser(userId: string, userInfo: UserInfo): Promise<void>;
 }
 
 export type InAppMessageLayout =
@@ -74,7 +100,7 @@ interface InAppMessageBody {
 	style?: InAppMessageStyle;
 }
 
-interface InAppMessageImage {
+export interface InAppMessageImage {
 	src: string;
 }
 

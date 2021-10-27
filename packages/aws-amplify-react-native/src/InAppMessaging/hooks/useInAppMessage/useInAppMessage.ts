@@ -16,12 +16,11 @@ import {
 	BannerMessageProps,
 	CarouselMessageProps,
 	FullScreenMessageProps,
-	InAppMessageComponent,
 	InAppMessageComponents,
-	InAppMessageComponentProps,
 	useInAppMessaging,
 } from '../..';
 
+import { InAppMessageComponent, InAppMessageComponentProps } from './types';
 import { getInAppMessage, getContentProps, getPositionProp } from './utils';
 
 const logger = new Logger('Notifications.InAppMessaging');
