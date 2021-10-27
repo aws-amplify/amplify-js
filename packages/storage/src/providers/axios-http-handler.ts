@@ -191,7 +191,7 @@ export class AxiosHttpHandler implements HttpHandler {
 						throw error;
 					}
 					// otherwise, we should re-construct an HttpResponse from the error, so that it can be passed down to other
-					// aws sdk middleware (e.g retry, clowSkew correction, error serializing)
+					// aws sdk middleware (e.g retry, clock skew correction, error message serializing)
 					return {
 						response: new HttpResponse({
 							statusCode: error.response?.status,
