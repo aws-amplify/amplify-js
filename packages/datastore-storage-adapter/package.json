@@ -33,12 +33,10 @@
 		"url": "https://github.com/aws/aws-amplify/issues"
 	},
 	"homepage": "https://aws-amplify.github.io/",
-	"dependencies": {
+	"devDependencies": {
+		"react-native-sqlite-storage": "5.0.0",
 		"@aws-amplify/core": "4.3.3",
 		"@aws-amplify/datastore": "3.5.0"
-	},
-	"devDependencies": {
-		"react-native-sqlite-storage": "5.0.0"
 	},
 	"jest": {
 		"globals": {
