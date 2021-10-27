@@ -65,6 +65,8 @@ import {
 	createPrefixMiddleware,
 	prefixMiddlewareOptions,
 	getPrefix,
+	autoAdjustClockskewMiddleware,
+	autoAdjustClockskewMiddlewareOptions,
 } from '../common/S3ClientUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
@@ -855,6 +857,10 @@ export class AWSS3Provider implements StorageProvider {
 			...localTestingConfig,
 			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
 		});
+		s3client.middlewareStack.add(
+			autoAdjustClockskewMiddleware(s3client.config),
+			autoAdjustClockskewMiddlewareOptions
+		);
 		return s3client;
 	}
 }
