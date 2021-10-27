@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        stack: [next, webpack4, webpack]
+        stack: [angular, cra, next, webpack4, webpack]
     steps:
       - name: Checkout Amplify JS
         uses: actions/checkout@v2

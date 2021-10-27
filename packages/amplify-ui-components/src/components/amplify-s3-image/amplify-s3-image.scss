@@ -3,14 +3,14 @@
  * @prop --width: Image width
  */
 :host {
-  height: inherit;
-  width: inherit;
+	height: inherit;
+	width: inherit;
 
-  --height: inherit;
-  --width: inherit;
+	--height: inherit;
+	--width: inherit;
 }
 
 img {
-  height: var(--height);
-  width: var(--width);
+	height: var(--height);
+	width: var(--width);
 }

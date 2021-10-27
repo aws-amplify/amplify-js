@@ -17,8 +17,14 @@ import {
 	QueryOne,
 	SchemaNamespace,
 	SubscriptionMessage,
+	isTargetNameAssociation,
 } from '../types';
-import { isModelConstructor, STORAGE, validatePredicate } from '../util';
+import {
+	isModelConstructor,
+	STORAGE,
+	validatePredicate,
+	valuesEqual,
+} from '../util';
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
@@ -32,7 +38,6 @@ export type StorageFacade = Omit<Adapter, 'setUp'>;
 export type Storage = InstanceType<typeof StorageClass>;
 
 const logger = new Logger('DataStore');
-
 class StorageClass implements StorageFacade {
 	private initialized: Promise<void>;
 	private readonly pushStream: {
@@ -52,7 +57,7 @@ class StorageClass implements StorageFacade {
 		private readonly adapter?: Adapter,
 		private readonly sessionId?: string
 	) {
-		this.adapter = getDefaultAdapter();
+		this.adapter = this.adapter || getDefaultAdapter();
 		this.pushStream = new PushStream();
 	}
 
@@ -100,7 +105,7 @@ class StorageClass implements StorageFacade {
 		model: T,
 		condition?: ModelPredicate<T>,
 		mutator?: Symbol,
-		patches?: Patch[]
+		patchesTuple?: [Patch[], PersistentModel]
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		await this.init();
 
@@ -109,31 +114,26 @@ class StorageClass implements StorageFacade {
 		result.forEach(r => {
 			const [originalElement, opType] = r;
 
-			let updatedElement;
-			if (opType === OpType.UPDATE && patches && patches.length) {
-				updatedElement = {};
-				// extract array of updated fields from patches
-				const updatedFields = patches.map(patch => patch.path && patch.path[0]);
+			// truthy when save is called by the Merger
+			const syncResponse = !!mutator;
 
-				// set original values for these fields
-				updatedFields.forEach(field => {
-					updatedElement[field] = originalElement[field];
-				});
-
-				const { id, _version, _lastChangedAt, _deleted } = originalElement;
-
-				// For update mutations we only want to send fields with changes
-				// and the required internal fields
-				updatedElement = {
-					...updatedElement,
-					id,
-					_version,
-					_lastChangedAt,
-					_deleted,
-				};
+			let updateMutationInput;
+			// don't attempt to calc mutation input when storage.save
+			// is called by Merger, i.e., when processing an AppSync response
+			if (opType === OpType.UPDATE && !syncResponse) {
+				updateMutationInput = this.getUpdateMutationInput(
+					model,
+					originalElement,
+					patchesTuple
+				);
+				// // an update without changed user fields
+				// => don't create mutationEvent
+				if (updateMutationInput === null) {
+					return result;
+				}
 			}
 
-			const element = updatedElement || originalElement;
+			const element = updateMutationInput || originalElement;
 
 			const modelConstructor = (Object.getPrototypeOf(
 				originalElement
@@ -295,6 +295,85 @@ class StorageClass implements StorageFacade {
 
 		return result as any;
 	}
+
+	// returns null if no user fields were changed (determined by value comparison)
+	private getUpdateMutationInput<T extends PersistentModel>(
+		model: T,
+		originalElement: T,
+		patchesTuple?: [Patch[], PersistentModel]
+	): PersistentModel | null {
+		const containsPatches = patchesTuple && patchesTuple.length;
+		if (!containsPatches) {
+			return null;
+		}
+
+		const [patches, source] = patchesTuple;
+		const updatedElement = {};
+		// extract array of updated fields from patches
+		const updatedFields = <string[]>(
+			patches.map(patch => patch.path && patch.path[0])
+		);
+
+		// check model def for association and replace with targetName if exists
+		const modelConstructor = Object.getPrototypeOf(model)
+			.constructor as PersistentModelConstructor<T>;
+		const namespace = this.namespaceResolver(modelConstructor);
+		const { fields } = this.schema.namespaces[namespace].models[
+			modelConstructor.name
+		];
+		const { primaryKey, compositeKeys = [] } = this.schema.namespaces[
+			namespace
+		].keys[modelConstructor.name];
+
+		// set original values for these fields
+		updatedFields.forEach((field: string) => {
+			const targetName: any = isTargetNameAssociation(
+				fields[field].association
+			);
+
+			// if field refers to a belongsTo relation, use the target field instead
+			const key = targetName || field;
+
+			// check field values by value. Ignore unchanged fields
+			if (!valuesEqual(source[key], originalElement[key])) {
+				// if the field was updated to 'undefined', replace with 'null' for compatibility with JSON and GraphQL
+				updatedElement[key] =
+					originalElement[key] === undefined ? null : originalElement[key];
+
+				for (const fieldSet of compositeKeys) {
+					// include all of the fields that comprise the composite key
+					if (fieldSet.has(key)) {
+						for (const compositeField of fieldSet) {
+							updatedElement[compositeField] = originalElement[compositeField];
+						}
+					}
+				}
+			}
+		});
+
+		// include field(s) from custom PK if one is specified for the model
+		if (primaryKey && primaryKey.length) {
+			for (const pkField of primaryKey) {
+				updatedElement[pkField] = originalElement[pkField];
+			}
+		}
+
+		if (Object.keys(updatedElement).length === 0) {
+			return null;
+		}
+
+		const { id, _version, _lastChangedAt, _deleted } = originalElement;
+
+		// For update mutations we only want to send fields with changes
+		// and the required internal fields
+		return {
+			...updatedElement,
+			id,
+			_version,
+			_lastChangedAt,
+			_deleted,
+		};
+	}
 }
 
 class ExclusiveStorage implements StorageFacade {
@@ -329,10 +408,10 @@ class ExclusiveStorage implements StorageFacade {
 		model: T,
 		condition?: ModelPredicate<T>,
 		mutator?: Symbol,
-		patches?: Patch[]
+		patchesTuple?: [Patch[], PersistentModel]
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
 		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>(storage =>
-			storage.save<T>(model, condition, mutator, patches)
+			storage.save<T>(model, condition, mutator, patchesTuple)
 		);
 	}
 

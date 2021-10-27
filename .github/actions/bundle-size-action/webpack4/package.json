@@ -19,7 +19,7 @@
       },
       {
         "path": "dist/amazon-cognito-identity-js.js.min.js",
-        "maxSize": "150kB"
+        "maxSize": "155kB"
       },
       {
         "path": "dist/Amplify.js.min.js",
