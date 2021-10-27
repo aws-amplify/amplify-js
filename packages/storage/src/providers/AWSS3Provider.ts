@@ -14,7 +14,6 @@ import {
 	ConsoleLogger as Logger,
 	Credentials,
 	Parser,
-	getAmplifyUserAgent,
 	ICredentials,
 	StorageHelper,
 	Hub,
@@ -35,7 +34,6 @@ import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import {
-	AxiosHttpHandler,
 	SEND_DOWNLOAD_PROGRESS_EVENT,
 	SEND_UPLOAD_PROGRESS_EVENT,
 } from './axios-http-handler';
@@ -67,14 +65,11 @@ import {
 	getPrefix,
 	autoAdjustClockskewMiddleware,
 	autoAdjustClockskewMiddlewareOptions,
+	createS3Client,
 } from '../common/S3ClientUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
-import {
-	localTestingStorageEndpoint,
-	UPLOADS_STORAGE_KEY,
-	SET_CONTENT_LENGTH_HEADER,
-} from '../common/StorageConstants';
+import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
 import * as events from 'events';
 import { CancelTokenSource } from 'axios';
 
@@ -326,7 +321,6 @@ export class AWSS3Provider implements StorageProvider {
 		if (acl) params.ACL = acl;
 
 		const s3 = this._createNewS3Client(opt);
-		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		try {
 			await s3.send(new CopyObjectCommand(params));
 			dispatchStorageEvent(
@@ -832,31 +826,7 @@ export class AWSS3Provider implements StorageProvider {
 		},
 		emitter?: events.EventEmitter
 	): S3Client {
-		const {
-			region,
-			cancelTokenSource,
-			dangerouslyConnectToHttpEndpointForTesting,
-		} = config;
-		let localTestingConfig = {};
-
-		if (dangerouslyConnectToHttpEndpointForTesting) {
-			localTestingConfig = {
-				endpoint: localTestingStorageEndpoint,
-				tls: false,
-				bucketEndpoint: false,
-				forcePathStyle: true,
-			};
-		}
-
-		const s3client = new S3Client({
-			region,
-			// Using provider instead of a static credentials, so that if an upload task was in progress, but credentials gets
-			// changed or invalidated (e.g user signed out), the subsequent requests will fail.
-			credentials: this._credentialsProvider,
-			customUserAgent: getAmplifyUserAgent(),
-			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
-		});
+		const s3client = createS3Client(config, emitter);
 		s3client.middlewareStack.add(
 			autoAdjustClockskewMiddleware(s3client.config),
 			autoAdjustClockskewMiddlewareOptions

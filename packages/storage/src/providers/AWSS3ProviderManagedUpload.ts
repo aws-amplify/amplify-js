@@ -11,13 +11,8 @@
  * and limitations under the License.
  */
 
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import {
-	ConsoleLogger as Logger,
-	getAmplifyUserAgent,
-	Credentials,
-} from '@aws-amplify/core';
-import {
-	S3Client,
 	PutObjectCommand,
 	PutObjectRequest,
 	CreateMultipartUploadCommand,
@@ -29,18 +24,16 @@ import {
 	CompletedPart,
 } from '@aws-sdk/client-s3';
 import {
-	AxiosHttpHandler,
 	SEND_UPLOAD_PROGRESS_EVENT,
 	SEND_DOWNLOAD_PROGRESS_EVENT,
 } from './axios-http-handler';
-import {
-	SET_CONTENT_LENGTH_HEADER,
-	localTestingStorageEndpoint,
-} from '../common/StorageConstants';
 import * as events from 'events';
 import {
 	createPrefixMiddleware,
 	prefixMiddlewareOptions,
+	autoAdjustClockskewMiddleware,
+	autoAdjustClockskewMiddlewareOptions,
+	createS3Client,
 } from '../common/S3ClientUtils';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
@@ -336,59 +329,16 @@ export class AWSS3ProviderManagedUpload {
 		return false;
 	}
 
-	/**
-	 * @private
-	 * creates an S3 client with new V3 aws sdk
-	 */
 	protected async _createNewS3Client(config, emitter?: events.EventEmitter) {
-		const credentials = await this._getCredentials();
-		const {
-			region,
-			dangerouslyConnectToHttpEndpointForTesting,
-			cancelTokenSource,
-			useAccelerateEndpoint,
-		} = config;
-		let localTestingConfig = {};
-
-		if (dangerouslyConnectToHttpEndpointForTesting) {
-			localTestingConfig = {
-				endpoint: localTestingStorageEndpoint,
-				tls: false,
-				bucketEndpoint: false,
-				forcePathStyle: true,
-			};
-		}
-
-		const client = new S3Client({
-			region,
-			credentials,
-			useAccelerateEndpoint,
-			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
-			customUserAgent: getAmplifyUserAgent(),
-		});
-		client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
-		client.middlewareStack.add(
+		const s3client = createS3Client(config, emitter);
+		s3client.middlewareStack.add(
 			createPrefixMiddleware(this.opts, this.params.Key),
 			prefixMiddlewareOptions
 		);
-		return client;
-	}
-
-	/**
-	 * @private
-	 */
-	_getCredentials() {
-		return Credentials.get()
-			.then(credentials => {
-				if (!credentials) return false;
-				const cred = Credentials.shear(credentials);
-				logger.debug('set credentials for storage', cred);
-				return cred;
-			})
-			.catch(error => {
-				logger.warn('ensure credentials error', error);
-				return false;
-			});
+		s3client.middlewareStack.add(
+			autoAdjustClockskewMiddleware(s3client.config),
+			autoAdjustClockskewMiddlewareOptions
+		);
+		return s3client;
 	}
 }
