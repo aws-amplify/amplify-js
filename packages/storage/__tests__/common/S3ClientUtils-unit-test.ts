@@ -1,8 +1,10 @@
 import {
 	getPrefix,
 	createPrefixMiddleware,
+	autoAdjustClockskewMiddleware,
 } from '../../src/common/S3ClientUtils';
 import { ICredentials, Credentials } from '@aws-amplify/core';
+import { S3ClientConfig } from '@aws-sdk/client-s3';
 
 const credentials: ICredentials = {
 	accessKeyId: 'accessKeyId',
@@ -109,5 +111,26 @@ describe('S3ClientUtils tests', () => {
 		expect(publicPrefix).toEqual('public/key');
 		expect(protectedPrefix).toEqual('protected/identityId/key');
 		expect(privatePrefix).toEqual('private/identityId/key');
+	});
+
+	test('autoAdjustClockskewMiddleware tests', async () => {
+		const dateNow = Date.now();
+		// keep the Date.now() call inside the middleware consistent
+		jest.spyOn(Date, 'now').mockImplementation(() => dateNow);
+		const s3ClientConfig = { systemClockOffset: 0 } as S3ClientConfig;
+		const middleware = autoAdjustClockskewMiddleware(s3ClientConfig);
+		const oneHourInMs = 1000 * 60 * 60;
+		try {
+			await middleware(
+				arg =>
+					Promise.reject({
+						ServerTime: new Date(dateNow + oneHourInMs),
+						Code: 'RequestTimeTooSkewed',
+					}),
+				null
+			)({ request: null, input: {} });
+		} catch (err) {
+			expect(s3ClientConfig.systemClockOffset).toBe(oneHourInMs);
+		}
 	});
 });

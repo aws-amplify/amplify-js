@@ -1,6 +1,13 @@
-import { Credentials, ICredentials } from '@aws-amplify/core';
+import { Credentials, ICredentials, DateUtils } from '@aws-amplify/core';
 import { StorageAccessLevel, CustomPrefix } from '../types';
-import { InitializeMiddleware, InitializeHandlerOptions } from '@aws-sdk/types';
+import {
+	InitializeMiddleware,
+	InitializeHandlerOptions,
+	FinalizeRequestHandlerOptions,
+	FinalizeRequestMiddleware,
+	HandlerExecutionContext,
+} from '@aws-sdk/types';
+import { S3ClientConfig } from '@aws-sdk/client-s3';
 
 export const getPrefix = (config: {
 	credentials: ICredentials;
@@ -56,6 +63,34 @@ export const createPrefixMiddleware = (
 	}
 	const result = next(args);
 	return result;
+};
+
+const isTimeSkewedError = (err: any): boolean =>
+	err.ServerTime &&
+	typeof err.Code === 'string' &&
+	err.Code === 'RequestTimeTooSkewed';
+
+// we want to take the S3Client config in parameter so we can modify it's systemClockOffset
+export const autoAdjustClockskewMiddleware = (
+	config: S3ClientConfig
+): FinalizeRequestMiddleware<any, any> => (
+	next,
+	_context: HandlerExecutionContext
+) => async args => {
+	try {
+		return await next(args);
+	} catch (err) {
+		if (isTimeSkewedError(err)) {
+			const serverDate = new Date(err.ServerTime);
+			config.systemClockOffset = serverDate.getTime() - Date.now();
+		}
+		throw err;
+	}
+};
+
+export const autoAdjustClockskewMiddlewareOptions: FinalizeRequestHandlerOptions = {
+	step: 'finalizeRequest',
+	name: 'autoAdjustClockskewMiddleware',
 };
 
 export const prefixMiddlewareOptions: InitializeHandlerOptions = {
