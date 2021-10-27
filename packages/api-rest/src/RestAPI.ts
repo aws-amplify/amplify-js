@@ -109,7 +109,7 @@ export class RestAPIClass {
 
 	/**
 	 * Make a GET request
-	 * @param {string} apiName  - The api name of the request
+	 * @param {string} apiName - The api name of the request
 	 * @param {string} path - The path of the request
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
@@ -135,7 +135,7 @@ export class RestAPIClass {
 
 	/**
 	 * Make a POST request
-	 * @param {string} apiName  - The api name of the request
+	 * @param {string} apiName - The api name of the request
 	 * @param {string} path - The path of the request
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
@@ -161,7 +161,7 @@ export class RestAPIClass {
 
 	/**
 	 * Make a PUT request
-	 * @param {string} apiName  - The api name of the request
+	 * @param {string} apiName - The api name of the request
 	 * @param {string} path - The path of the request
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
@@ -187,7 +187,7 @@ export class RestAPIClass {
 
 	/**
 	 * Make a PATCH request
-	 * @param {string} apiName  - The api name of the request
+	 * @param {string} apiName - The api name of the request
 	 * @param {string} path - The path of the request
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
@@ -213,7 +213,7 @@ export class RestAPIClass {
 
 	/**
 	 * Make a DEL request
-	 * @param {string} apiName  - The api name of the request
+	 * @param {string} apiName - The api name of the request
 	 * @param {string} path - The path of the request
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
@@ -239,7 +239,7 @@ export class RestAPIClass {
 
 	/**
 	 * Make a HEAD request
-	 * @param {string} apiName  - The api name of the request
+	 * @param {string} apiName - The api name of the request
 	 * @param {string} path - The path of the request
 	 * @param {json} [init] - Request extra params
 	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.

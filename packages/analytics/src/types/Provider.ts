@@ -17,7 +17,7 @@ export interface PromiseHandlers {
 }
 
 export interface AnalyticsProvider {
-	// you need to implement those  methods
+	// you need to implement those methods
 
 	// configure your provider
 	configure(config: object): object;

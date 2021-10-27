@@ -20,8 +20,9 @@ import {
 	SchemaNamespace,
 	TypeConstructorMap,
 	ModelPredicate,
+	AuthModeStrategy,
 } from '../types';
-import { exhaustiveCheck, getNow, SYNC } from '../util';
+import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
 import { ModelMerger } from './merger';
 import { MutationEventOutbox } from './outbox';
@@ -52,9 +53,9 @@ export declare class MutationEvent {
 	public readonly id: string;
 	public readonly model: string;
 	public readonly operation: TransformerMutationType;
-	public readonly data: string;
 	public readonly modelId: string;
 	public readonly condition: string;
+	public data: string;
 }
 
 declare class ModelMetadata {
@@ -93,6 +94,17 @@ export class SyncEngine {
 	private readonly mutationsProcessor: MutationProcessor;
 	private readonly modelMerger: ModelMerger;
 	private readonly outbox: MutationEventOutbox;
+	private readonly datastoreConnectivity: DataStoreConnectivity;
+	private readonly modelSyncedStatus: WeakMap<
+		PersistentModelConstructor<any>,
+		boolean
+	> = new WeakMap();
+
+	public getModelSyncedStatus(
+		modelConstructor: PersistentModelConstructor<any>
+	): boolean {
+		return this.modelSyncedStatus.get(modelConstructor);
+	}
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -105,7 +117,9 @@ export class SyncEngine {
 		private readonly syncPageSize: number,
 		conflictHandler: ConflictHandler,
 		errorHandler: ErrorHandler,
-		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>
+		private readonly syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>>,
+		private readonly amplifyConfig: Record<string, any> = {},
+		private readonly authModeStrategy: AuthModeStrategy
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
@@ -113,8 +127,8 @@ export class SyncEngine {
 
 		this.outbox = new MutationEventOutbox(
 			this.schema,
-			this.namespaceResolver,
 			MutationEvent,
+			modelInstanceCreator,
 			ownSymbol
 		);
 
@@ -122,13 +136,15 @@ export class SyncEngine {
 
 		this.syncQueriesProcessor = new SyncProcessor(
 			this.schema,
-			this.maxRecordsToSync,
-			this.syncPageSize,
-			this.syncPredicates
+			this.syncPredicates,
+			this.amplifyConfig,
+			this.authModeStrategy
 		);
 		this.subscriptionsProcessor = new SubscriptionProcessor(
 			this.schema,
-			this.syncPredicates
+			this.syncPredicates,
+			this.amplifyConfig,
+			this.authModeStrategy
 		);
 		this.mutationsProcessor = new MutationProcessor(
 			this.schema,
@@ -137,9 +153,12 @@ export class SyncEngine {
 			this.outbox,
 			this.modelInstanceCreator,
 			MutationEvent,
+			this.amplifyConfig,
+			this.authModeStrategy,
 			conflictHandler,
 			errorHandler
 		);
+		this.datastoreConnectivity = new DataStoreConnectivity();
 	}
 
 	start(params: StartParams) {
@@ -156,10 +175,8 @@ export class SyncEngine {
 					return;
 				}
 
-				const datastoreConnectivity = new DataStoreConnectivity();
-
 				const startPromise = new Promise(resolve => {
-					datastoreConnectivity.status().subscribe(async ({ online }) => {
+					this.datastoreConnectivity.status().subscribe(async ({ online }) => {
 						// From offline to online
 						if (online && !this.online) {
 							this.online = online;
@@ -194,12 +211,22 @@ export class SyncEngine {
 								] = this.subscriptionsProcessor.start();
 
 								try {
-									subscriptions.push(
-										await this.waitForSubscriptionsReady(
-											ctlSubsObservable,
-											datastoreConnectivity
-										)
-									);
+									await new Promise((resolve, reject) => {
+										const ctlSubsSubscription = ctlSubsObservable.subscribe({
+											next: msg => {
+												if (msg === CONTROL_MSG.CONNECTED) {
+													resolve();
+												}
+											},
+											error: err => {
+												reject(err);
+												const handleDisconnect = this.disconnectionHandler();
+												handleDisconnect(err);
+											},
+										});
+
+										subscriptions.push(ctlSubsSubscription);
+									});
 								} catch (err) {
 									observer.error(err);
 									return;
@@ -596,6 +623,8 @@ export class SyncEngine {
 
 										const counts = count.get(modelConstructor);
 
+										this.modelSyncedStatus.set(modelConstructor, true);
+
 										observer.next({
 											type: ControlMessage.SYNC_ENGINE_MODEL_SYNCED,
 											data: {
@@ -660,40 +689,20 @@ export class SyncEngine {
 		});
 	}
 
-	private disconnectionHandler(
-		datastoreConnectivity: DataStoreConnectivity
-	): (msg: string) => void {
+	private disconnectionHandler(): (msg: string) => void {
 		return (msg: string) => {
-			// This implementation is tight to AWSAppSyncRealTimeProvider 'Connection closed', 'Timeout disconnect' msg
+			// This implementation is tied to AWSAppSyncRealTimeProvider 'Connection closed', 'Timeout disconnect' msg
 			if (
 				PUBSUB_CONTROL_MSG.CONNECTION_CLOSED === msg ||
 				PUBSUB_CONTROL_MSG.TIMEOUT_DISCONNECT === msg
 			) {
-				datastoreConnectivity.socketDisconnected();
+				this.datastoreConnectivity.socketDisconnected();
 			}
 		};
 	}
 
-	private async waitForSubscriptionsReady(
-		ctlSubsObservable: Observable<CONTROL_MSG>,
-		datastoreConnectivity: DataStoreConnectivity
-	): Promise<ZenObservable.Subscription> {
-		return new Promise((resolve, reject) => {
-			const subscription = ctlSubsObservable.subscribe({
-				next: msg => {
-					if (msg === CONTROL_MSG.CONNECTED) {
-						resolve(subscription);
-					}
-				},
-				error: err => {
-					reject(err);
-					const handleDisconnect = this.disconnectionHandler(
-						datastoreConnectivity
-					);
-					handleDisconnect(err);
-				},
-			});
-		});
+	public unsubscribeConnectivity() {
+		this.datastoreConnectivity.unsubscribe();
 	}
 
 	private async setupModels(params: StartParams) {
@@ -709,6 +718,12 @@ export class SyncEngine {
 				.filter(({ syncable }) => syncable)
 				.forEach(model => {
 					models.push([namespace.name, model]);
+					if (namespace.name === USER) {
+						const modelConstructor = this.userModelClasses[
+							model.name
+						] as PersistentModelConstructor<any>;
+						this.modelSyncedStatus.set(modelConstructor, false);
+					}
 				});
 		});
 
@@ -737,7 +752,7 @@ export class SyncEngine {
 				);
 			} else {
 				const prevSyncPredicate = modelMetadata.lastSyncPredicate
-					? JSON.stringify(modelMetadata.lastSyncPredicate)
+					? modelMetadata.lastSyncPredicate
 					: null;
 				const syncPredicateUpdated = prevSyncPredicate !== lastSyncPredicate;
 
@@ -907,6 +922,12 @@ export class SyncEngine {
 							name: 'fullSyncInterval',
 							type: 'Int',
 							isRequired: true,
+							isArray: false,
+						},
+						lastSyncPredicate: {
+							name: 'lastSyncPredicate',
+							type: 'String',
+							isRequired: false,
 							isArray: false,
 						},
 					},

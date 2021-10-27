@@ -1,5 +1,19 @@
 import { ModelInstanceCreator } from './datastore/datastore';
-import { exhaustiveCheck } from './util';
+import {
+	exhaustiveCheck,
+	isAWSDate,
+	isAWSTime,
+	isAWSDateTime,
+	isAWSTimestamp,
+	isAWSEmail,
+	isAWSJSON,
+	isAWSURL,
+	isAWSPhone,
+	isAWSIPAddress,
+} from './util';
+import { PredicateAll } from './predicates';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { Adapter } from './storage/adapter';
 
 //#region Schema types
 export type Schema = UserSchema & {
@@ -9,6 +23,7 @@ export type UserSchema = {
 	models: SchemaModels;
 	nonModels?: SchemaNonModels;
 	relationships?: RelationshipType;
+	keys?: ModelKeys;
 	enums: SchemaEnums;
 	modelTopologicalOrdering?: Map<string, string[]>;
 };
@@ -46,6 +61,7 @@ export type ModelAssociation = AssociatedWith | TargetNameAssociation;
 type AssociatedWith = {
 	connectionType: 'HAS_MANY' | 'HAS_ONE';
 	associatedWith: string;
+	targetName?: string;
 };
 export function isAssociatedWith(obj: any): obj is AssociatedWith {
 	return obj && obj.associatedWith;
@@ -61,8 +77,113 @@ export function isTargetNameAssociation(
 	return obj && obj.targetName;
 }
 
-type ModelAttributes = ModelAttribute[];
+export type ModelAttributes = ModelAttribute[];
 type ModelAttribute = { type: string; properties?: Record<string, any> };
+
+export type ModelAuthRule = {
+	allow: string;
+	provider?: string;
+	operations?: string[];
+	ownerField?: string;
+	identityClaim?: string;
+	groups?: string[];
+	groupClaim?: string;
+	groupsField?: string;
+};
+
+export type ModelAttributeAuth = {
+	type: 'auth';
+	properties: {
+		rules: ModelAuthRule[];
+	};
+};
+
+export function isModelAttributeAuth(
+	attr: ModelAttribute
+): attr is ModelAttributeAuth {
+	return (
+		attr.type === 'auth' &&
+		attr.properties &&
+		attr.properties.rules &&
+		attr.properties.rules.length > 0
+	);
+}
+
+type ModelAttributeKey = {
+	type: 'key';
+	properties: {
+		name?: string;
+		fields: string[];
+	};
+};
+
+type ModelAttributePrimaryKey = {
+	type: 'key';
+	properties: {
+		fields: string[];
+	};
+};
+
+type ModelAttributeCompositeKey = {
+	type: 'key';
+	properties: {
+		name: string;
+		fields: [string, string, string, string?, string?];
+	};
+};
+
+export function isModelAttributeKey(
+	attr: ModelAttribute
+): attr is ModelAttributeKey {
+	return (
+		attr.type === 'key' &&
+		attr.properties &&
+		attr.properties.fields &&
+		attr.properties.fields.length > 0
+	);
+}
+
+export function isModelAttributePrimaryKey(
+	attr: ModelAttribute
+): attr is ModelAttributePrimaryKey {
+	return isModelAttributeKey(attr) && attr.properties.name === undefined;
+}
+
+export function isModelAttributeCompositeKey(
+	attr: ModelAttribute
+): attr is ModelAttributeCompositeKey {
+	return (
+		isModelAttributeKey(attr) &&
+		attr.properties.name !== undefined &&
+		attr.properties.fields.length > 2
+	);
+}
+
+export type ModelAttributeAuthProperty = {
+	allow: ModelAttributeAuthAllow;
+	identityClaim?: string;
+	groupClaim?: string;
+	groups?: string[];
+	operations?: string[];
+	ownerField?: string;
+	provider?: ModelAttributeAuthProvider;
+};
+
+export enum ModelAttributeAuthAllow {
+	CUSTOM = 'custom',
+	OWNER = 'owner',
+	GROUPS = 'groups',
+	PRIVATE = 'private',
+	PUBLIC = 'public',
+}
+
+export enum ModelAttributeAuthProvider {
+	FUNCTION = 'function',
+	USER_POOLS = 'userPools',
+	OIDC = 'oidc',
+	IAM = 'iam',
+	API_KEY = 'apiKey',
+}
 
 export type ModelFields = Record<string, ModelField>;
 export enum GraphQLScalarType {
@@ -84,8 +205,11 @@ export enum GraphQLScalarType {
 
 export namespace GraphQLScalarType {
 	export function getJSType(
-		scalar: keyof Omit<typeof GraphQLScalarType, 'getJSType'>
-	): 'string' | 'number' | 'boolean' {
+		scalar: keyof Omit<
+			typeof GraphQLScalarType,
+			'getJSType' | 'getValidationFunction'
+		>
+	): 'string' | 'number' | 'boolean' | 'object' {
 		switch (scalar) {
 			case 'Boolean':
 				return 'boolean';
@@ -95,7 +219,6 @@ export namespace GraphQLScalarType {
 			case 'AWSTime':
 			case 'AWSDateTime':
 			case 'AWSEmail':
-			case 'AWSJSON':
 			case 'AWSURL':
 			case 'AWSPhone':
 			case 'AWSIPAddress':
@@ -104,8 +227,40 @@ export namespace GraphQLScalarType {
 			case 'Float':
 			case 'AWSTimestamp':
 				return 'number';
+			case 'AWSJSON':
+				return 'object';
 			default:
-				exhaustiveCheck(scalar);
+				exhaustiveCheck(scalar as never);
+		}
+	}
+
+	export function getValidationFunction(
+		scalar: keyof Omit<
+			typeof GraphQLScalarType,
+			'getJSType' | 'getValidationFunction'
+		>
+	): ((val: string | number) => boolean) | undefined {
+		switch (scalar) {
+			case 'AWSDate':
+				return isAWSDate;
+			case 'AWSTime':
+				return isAWSTime;
+			case 'AWSDateTime':
+				return isAWSDateTime;
+			case 'AWSTimestamp':
+				return isAWSTimestamp;
+			case 'AWSEmail':
+				return isAWSEmail;
+			case 'AWSJSON':
+				return isAWSJSON;
+			case 'AWSURL':
+				return isAWSURL;
+			case 'AWSPhone':
+				return isAWSPhone;
+			case 'AWSIPAddress':
+				return isAWSIPAddress;
+			default:
+				return undefined;
 		}
 	}
 }
@@ -122,7 +277,10 @@ export type AuthorizationRule = {
 
 export function isGraphQLScalarType(
 	obj: any
-): obj is keyof Omit<typeof GraphQLScalarType, 'getJSType'> {
+): obj is keyof Omit<
+	typeof GraphQLScalarType,
+	'getJSType' | 'getValidationFunction'
+> {
 	return obj && GraphQLScalarType[obj] !== undefined;
 }
 
@@ -150,15 +308,19 @@ export function isEnumFieldType(obj: any): obj is EnumFieldType {
 	return false;
 }
 
-type ModelField = {
+export type ModelField = {
 	name: string;
 	type:
-		| keyof Omit<typeof GraphQLScalarType, 'getJSType'>
+		| keyof Omit<
+				typeof GraphQLScalarType,
+				'getJSType' | 'getValidationFunction'
+		  >
 		| ModelFieldType
 		| NonModelFieldType
 		| EnumFieldType;
 	isArray: boolean;
 	isRequired?: boolean;
+	isReadOnly?: boolean;
 	isArrayNullable?: boolean;
 	association?: ModelAssociation;
 	attributes?: ModelAttributes[];
@@ -171,24 +333,48 @@ export type NonModelTypeConstructor<T> = {
 };
 
 // Class for model
-export type PersistentModelConstructor<T extends PersistentModel> = {
-	new (init: ModelInit<T>): T;
-	copyOf(src: T, mutator: (draft: MutableModel<T>) => void): T;
+export type PersistentModelConstructor<
+	T extends PersistentModel,
+	K extends PersistentModelMetaData = {
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	}
+> = {
+	new (init: ModelInit<T, K>): T;
+	copyOf(src: T, mutator: (draft: MutableModel<T, K>) => void): T;
 };
+
 export type TypeConstructorMap = Record<
 	string,
 	PersistentModelConstructor<any> | NonModelTypeConstructor<any>
 >;
 
 // Instance of model
+export type PersistentModelMetaData = {
+	readOnlyFields: string;
+};
+
 export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
-export type ModelInit<T> = Omit<T, 'id'>;
+export type ModelInit<
+	T,
+	K extends PersistentModelMetaData = {
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	}
+> = Omit<T, 'id' | K['readOnlyFields']>;
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
 		? T[P]
 		: DeepWritable<T[P]>;
 };
-export type MutableModel<T> = Omit<DeepWritable<T>, 'id'>;
+
+export type MutableModel<
+	T extends Record<string, any>,
+	K extends PersistentModelMetaData = {
+		readOnlyFields: 'createdAt' | 'updatedAt';
+	}
+	// This provides Intellisense with ALL of the properties, regardless of read-only
+	// but will throw a linting error if trying to overwrite a read-only property
+> = DeepWritable<Omit<T, 'id' | K['readOnlyFields']>> &
+	Readonly<Pick<T, 'id' | K['readOnlyFields']>>;
 
 export type ModelInstanceMetadata = {
 	id: string;
@@ -211,6 +397,11 @@ export type SubscriptionMessage<T extends PersistentModel> = {
 	element: T;
 	model: PersistentModelConstructor<T>;
 	condition: PredicatesGroup<T> | null;
+};
+
+export type DataStoreSnapshot<T extends PersistentModel> = {
+	items: T[];
+	isSynced: boolean;
 };
 //#endregion
 
@@ -410,7 +601,8 @@ export type SystemComponent = {
 		getModelConstructorByModelName: (
 			namsespaceName: string,
 			modelName: string
-		) => PersistentModelConstructor<any>
+		) => PersistentModelConstructor<any>,
+		appId: string
 	): Promise<void>;
 };
 
@@ -440,23 +632,80 @@ export type RelationshipType = {
 
 //#endregion
 
+//#region Key type
+export type KeyType = {
+	primaryKey?: string[];
+	compositeKeys?: Set<string>[];
+};
+
+export type ModelKeys = {
+	[modelName: string]: KeyType;
+};
+
+//#endregion
+
 //#region DataStore config types
 export type DataStoreConfig = {
 	DataStore?: {
+		authModeStrategyType?: AuthModeStrategyType;
 		conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 		errorHandler?: (error: SyncError) => void; // default : logger.warn
 		maxRecordsToSync?: number; // merge
 		syncPageSize?: number;
 		fullSyncInterval?: number;
 		syncExpressions?: SyncExpression[];
+		authProviders?: AuthProviders;
+		storageAdapter?: Adapter;
 	};
+	authModeStrategyType?: AuthModeStrategyType;
 	conflictHandler?: ConflictHandler; // default : retry until client wins up to x times
 	errorHandler?: (error: SyncError) => void; // default : logger.warn
 	maxRecordsToSync?: number; // merge
 	syncPageSize?: number;
 	fullSyncInterval?: number;
 	syncExpressions?: SyncExpression[];
+	authProviders?: AuthProviders;
+	storageAdapter?: Adapter;
 };
+
+export type AuthProviders = {
+	functionAuthProvider: () => { token: string } | Promise<{ token: string }>;
+};
+
+export enum AuthModeStrategyType {
+	DEFAULT = 'DEFAULT',
+	MULTI_AUTH = 'MULTI_AUTH',
+}
+
+export type AuthModeStrategyReturn =
+	| GRAPHQL_AUTH_MODE
+	| GRAPHQL_AUTH_MODE[]
+	| undefined
+	| null;
+
+export type AuthModeStrategyParams = {
+	schema: InternalSchema;
+	modelName: string;
+	operation: ModelOperation;
+};
+
+export type AuthModeStrategy = (
+	authModeStrategyParams: AuthModeStrategyParams
+) => AuthModeStrategyReturn | Promise<AuthModeStrategyReturn>;
+
+export enum ModelOperation {
+	CREATE = 'CREATE',
+	READ = 'READ',
+	UPDATE = 'UPDATE',
+	DELETE = 'DELETE',
+}
+
+export type ModelAuthModes = Record<
+	string,
+	{
+		[Property in ModelOperation]: GRAPHQL_AUTH_MODE[];
+	}
+>;
 
 export type SyncExpression = Promise<{
 	modelConstructor: any;
@@ -482,7 +731,10 @@ type Option1<T extends PersistentModel> = [ModelPredicate<T> | undefined];
 type Option<T extends PersistentModel> = Option0 | Option1<T>;
 
 type Lookup<T extends PersistentModel> = {
-	0: ProducerModelPredicate<T> | Promise<ProducerModelPredicate<T>>;
+	0:
+		| ProducerModelPredicate<T>
+		| Promise<ProducerModelPredicate<T>>
+		| typeof PredicateAll;
 	1: ModelPredicate<T> | undefined;
 };
 

@@ -46,7 +46,7 @@ const template = `
       </ion-item>
 
       <ion-item lines="none">
-        <ion-label  class="amplify-input-label amplify-input-label-ionic" position="stacked">
+        <ion-label class="amplify-input-label amplify-input-label-ionic" position="stacked">
           {{ this.amplifyService.i18n().get('Code *') }}
         </ion-label>
         <ion-input

@@ -17,4 +17,5 @@ module.exports = {
 	collectCoverage: true,
 	coverageReporters: ['lcov'],
 	setupTestFrameworkScriptFile: '<rootDir>/test_setup/setup-jest.ts',
+	coveragePathIgnorePatterns: ['/node_modules/', 'dist'],
 };

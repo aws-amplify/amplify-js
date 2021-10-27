@@ -26,6 +26,10 @@ jest.mock('axios', () => {
 					res({
 						data: 'blob' + withCredentialsSuffix,
 					});
+				} else if (signed_params && signed_params.data instanceof FormData) {
+					res({
+						data: signed_params.data.get('key') + withCredentialsSuffix,
+					});
 				} else {
 					res({
 						data: 'data' + withCredentialsSuffix,
@@ -149,6 +153,27 @@ describe('RestClient test', () => {
 			expect(await restClient.ajax('url', 'method', { body: 'body' })).toEqual(
 				'data'
 			);
+		});
+
+		test('ajax with formData', async () => {
+			const apiOptions = {
+				headers: {},
+				endpoints: {},
+				credentials: {
+					accessKeyId: 'accessKeyId',
+					secretAccessKey: 'secretAccessKey',
+					sessionToken: 'sessionToken',
+				},
+			};
+
+			const restClient = new RestClient(apiOptions);
+
+			const formData = new FormData();
+			formData.append('key', 'contents');
+
+			expect(
+				await restClient.ajax('url', 'method', { body: formData })
+			).toEqual('contents');
 		});
 
 		test('ajax with custom responseType', async () => {
