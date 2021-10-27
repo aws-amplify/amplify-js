@@ -100,7 +100,7 @@ interface InAppMessageBody {
 	style?: InAppMessageStyle;
 }
 
-interface InAppMessageImage {
+export interface InAppMessageImage {
 	src: string;
 }
 
