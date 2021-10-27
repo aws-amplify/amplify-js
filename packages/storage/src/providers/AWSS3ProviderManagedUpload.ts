@@ -24,7 +24,6 @@ import {
 	CompletedPart,
 	S3Client,
 } from '@aws-sdk/client-s3';
-import { HttpHandlerOptions } from '@aws-sdk/types';
 import {
 	SEND_UPLOAD_PROGRESS_EVENT,
 	SEND_DOWNLOAD_PROGRESS_EVENT,
