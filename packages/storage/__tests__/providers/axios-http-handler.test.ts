@@ -156,6 +156,16 @@ describe('AxiosHttpHandler', () => {
 				'Request did not complete within 1000 ms'
 			);
 		});
+
+		it('axios request should log errors', async () => {
+			axios.request = jest
+				.fn()
+				.mockImplementation(() => Promise.reject(new Error('err')));
+			const loggerSpy = jest.spyOn(Logger.prototype, '_log');
+			const handler = new AxiosHttpHandler();
+			await handler.handle(request, options);
+			expect(loggerSpy).toHaveBeenCalledWith('ERROR', 'err');
+		});
 	});
 
 	describe('React Native Request Transformer', () => {
