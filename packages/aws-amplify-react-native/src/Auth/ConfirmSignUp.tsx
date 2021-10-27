@@ -25,6 +25,7 @@ import {
 } from '../AmplifyUI';
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import TEST_ID from '../AmplifyTestIDs';
+import { setTestId } from '../Utils'
 
 const logger = new Logger('ConfirmSignUp');
 
@@ -73,7 +74,7 @@ export default class ConfirmSignUp extends AuthPiece<
 		const username = props.authData;
 
 		if (username && !state.username) {
-			return { username };
+			return { [props.usernameAttributes]: username };
 		}
 
 		return null;
@@ -96,14 +97,14 @@ export default class ConfirmSignUp extends AuthPiece<
 								label={I18n.get('Confirmation Code')}
 								placeholder={I18n.get('Enter your confirmation code')}
 								required={true}
-								testID={TEST_ID.AUTH.CONFIRMATION_CODE_INPUT}
+								{...setTestId(TEST_ID.AUTH.CONFIRMATION_CODE_INPUT)}
 							/>
 							<AmplifyButton
 								theme={theme}
 								text={I18n.get('Confirm')}
 								onPress={this.confirm}
 								disabled={!username || !this.state.code}
-								testID={TEST_ID.AUTH.CONFIRM_BUTTON}
+								{...setTestId(TEST_ID.AUTH.CONFIRM_BUTTON)}
 							/>
 						</View>
 						<View style={theme.sectionFooter}>
