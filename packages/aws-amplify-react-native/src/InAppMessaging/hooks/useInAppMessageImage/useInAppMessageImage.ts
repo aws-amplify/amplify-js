@@ -30,9 +30,10 @@ const inAppMessageImageSizes: Record<InAppMessageLayout, number> = {
 };
 
 export default function useInAppMessageImage(
-	{ src }: InAppMessageImage,
+	image: InAppMessageImage,
 	layout: InAppMessageLayout
 ): UseInAppMessageImage {
+	const { src } = image ?? {};
 	const hasImage = !!src;
 	const [imageLoadingState, setImageLoadingState] = useState<ImageLoadingState>(hasImage ? 'loading' : null);
 

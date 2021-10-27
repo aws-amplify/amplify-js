@@ -27,14 +27,14 @@ const getButtonComponentStyle = (
 	const { buttonContainer, buttonText } = baseStyle;
 
 	// message specific styles in the in-app message payload, overrides default component styles
-	const { backgroundColor, color, textAlign } = messageStyle ?? {};
+	const { backgroundColor, borderRadius, color } = messageStyle ?? {};
 
 	// custom component override styles passed as style prop, overrides all previous styles
 	const { container, text } = overrideStyle ?? {};
 
 	return {
-		container: [buttonContainer, { backgroundColor }, container],
-		text: [buttonText, { color, textAlign }, text],
+		container: [buttonContainer, { backgroundColor, borderRadius }, container],
+		text: [buttonText, { color }, text],
 	};
 };
 

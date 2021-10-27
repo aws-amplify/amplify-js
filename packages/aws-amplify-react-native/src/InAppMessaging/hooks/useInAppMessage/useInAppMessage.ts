@@ -13,13 +13,8 @@
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
-import {
-	BannerMessageProps,
-	CarouselMessageProps,
-	FullScreenMessageProps,
-	InAppMessageComponents,
-	useInAppMessaging,
-} from '../..';
+import { BannerMessageProps, CarouselMessageProps, FullScreenMessageProps } from '../../components';
+import { InAppMessageComponents, useInAppMessaging } from '../../context';
 
 import { InAppMessageComponent, InAppMessageComponentProps } from './types';
 import { getInAppMessage, getContentProps, getPositionProp } from './utils';
@@ -61,6 +56,7 @@ export default function useInAppMessage(): {
 			const props: BannerMessageProps = {
 				...getContentProps(content?.[0], onActionCallback),
 				id,
+				layout,
 				onClose,
 				position: getPositionProp(layout),
 				style: style?.BannerMessage,
@@ -71,6 +67,7 @@ export default function useInAppMessage(): {
 			const props: CarouselMessageProps = {
 				data: content?.map((item) => getContentProps(item, onActionCallback)),
 				id,
+				layout,
 				onClose,
 				style: style?.CarouselMessage,
 			};
@@ -80,6 +77,7 @@ export default function useInAppMessage(): {
 			const props: FullScreenMessageProps = {
 				...getContentProps(content?.[0], onActionCallback),
 				id,
+				layout,
 				onClose,
 				style: style?.FullScreenMessage,
 			};
