@@ -17,7 +17,7 @@ import { Text } from 'react-native';
 import { styles } from './styles';
 import { ParagraphProps } from './types';
 
-export function Paragraph({ children, style, ...textProps }: ParagraphProps) {
+export default function Paragraph({ children, style, ...textProps }: ParagraphProps) {
 	return (
 		<Text {...textProps} style={[styles.container, style]}>
 			{children}

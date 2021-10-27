@@ -17,7 +17,7 @@ import { Image, Pressable } from 'react-native';
 import { getStyles } from './styles';
 import { IconButtonProps } from './types';
 
-export function IconButton({ color, source, size = 16, ...pressableProps }: IconButtonProps) {
+export default function IconButton({ color, source, size = 16, ...pressableProps }: IconButtonProps) {
 	const { icon } = useMemo(() => getStyles(color, size), [color, size]);
 
 	return (

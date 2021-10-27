@@ -19,7 +19,7 @@ export type InAppMessageComponentButtonStyle = {
 	text?: StyleProp<TextStyle>;
 };
 
-type InAppMessageComponentStyle = {
+export type InAppMessageComponentStyle = {
 	closeIconButton?: StyleProp<ViewStyle>;
 	closeIconColor?: ColorValue;
 	container?: StyleProp<ViewStyle>;

@@ -24,7 +24,7 @@ import {
 	InAppMessageComponentButtonProps,
 	InAppMessageComponentContentProps,
 	InAppMessageComponentPosition,
-} from '../..';
+} from '../../components';
 
 import handleAction from './handleAction';
 
@@ -56,13 +56,13 @@ const getActionHandler = (
 	{ action, url }: { action: InAppMessageAction; url?: string },
 	onActionCallback: () => void
 ) => ({
-	onPress: async function onPress() {
+	async onPress() {
 		try {
 			await handleAction(action, url);
 		} catch (e) {
 			logger.error(`handleAction failure: ${e}`);
 		} finally {
-			onActionCallback();
+			onActionCallback?.();
 		}
 	},
 });
@@ -76,10 +76,24 @@ const getButtonProps = (
 });
 
 export const getContentProps = (
-	{ primaryButton, secondaryButton, ...baseContentProps }: InAppMessageContent,
+	content: InAppMessageContent,
 	onActionCallback: () => void
-): InAppMessageComponentContentProps => ({
-	...baseContentProps,
-	primaryButton: getButtonProps(primaryButton, onActionCallback),
-	secondaryButton: getButtonProps(secondaryButton, onActionCallback),
-});
+): InAppMessageComponentContentProps => {
+	const props: InAppMessageComponentContentProps = {};
+
+	if (!content) {
+		return props;
+	}
+
+	const { primaryButton, secondaryButton, ...restContent } = content;
+
+	if (primaryButton) {
+		props.primaryButton = getButtonProps(primaryButton, onActionCallback);
+	}
+
+	if (secondaryButton) {
+		props.secondaryButton = getButtonProps(secondaryButton, onActionCallback);
+	}
+
+	return { ...props, ...restContent };
+};

@@ -1,2 +1,2 @@
-export * from './Paragraph';
-export * from './types';
+export { default } from './Paragraph';
+export { ParagraphProps } from './types';

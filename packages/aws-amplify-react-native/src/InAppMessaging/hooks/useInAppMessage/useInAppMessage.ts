@@ -10,6 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 import {
@@ -58,7 +59,7 @@ export default function useInAppMessage(): {
 		case 'MIDDLE_BANNER':
 		case 'TOP_BANNER': {
 			const props: BannerMessageProps = {
-				...getContentProps(content[0], onActionCallback),
+				...getContentProps(content?.[0], onActionCallback),
 				id,
 				onClose,
 				position: getPositionProp(layout),
@@ -68,7 +69,7 @@ export default function useInAppMessage(): {
 		}
 		case 'CAROUSEL': {
 			const props: CarouselMessageProps = {
-				data: content.map((item) => getContentProps(item, onActionCallback)),
+				data: content?.map((item) => getContentProps(item, onActionCallback)),
 				id,
 				onClose,
 				style: style?.CarouselMessage,
@@ -77,7 +78,7 @@ export default function useInAppMessage(): {
 		}
 		case 'OVERLAYS': {
 			const props: FullScreenMessageProps = {
-				...getContentProps(content[0], onActionCallback),
+				...getContentProps(content?.[0], onActionCallback),
 				id,
 				onClose,
 				style: style?.FullScreenMessage,

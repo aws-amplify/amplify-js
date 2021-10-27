@@ -17,7 +17,7 @@ import { Pressable, Text } from 'react-native';
 import { styles } from './styles';
 import { ButtonProps } from './types';
 
-export function Button({ children, textStyle, ...pressableProps }: ButtonProps) {
+export default function Button({ children, textStyle, ...pressableProps }: ButtonProps) {
 	return (
 		<Pressable {...pressableProps}>
 			{typeof children === 'string' ? <Text style={[styles.text, textStyle]}>{children}</Text> : children}

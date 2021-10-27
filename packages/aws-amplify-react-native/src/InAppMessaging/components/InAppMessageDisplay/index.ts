@@ -1,1 +1,1 @@
-export { default as InAppMessagesDisplay } from './InAppMessageDisplay';
+export { default } from './InAppMessageDisplay';
