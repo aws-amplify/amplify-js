@@ -29,6 +29,7 @@ export default {
 	},
 	external: [
 		'aws-sdk',
+		'uuid',
 		'@angular/core',
 		'@angular/common',
 		'aws-amplify',
