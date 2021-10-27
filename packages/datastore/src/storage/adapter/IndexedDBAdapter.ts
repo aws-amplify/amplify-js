@@ -5,6 +5,7 @@ import { ModelPredicateCreator } from '../../predicates';
 import {
 	InternalSchema,
 	isPredicateObj,
+	isPredicateGroup,
 	ModelInstanceMetadata,
 	ModelPredicate,
 	NamespaceResolver,
@@ -360,17 +361,110 @@ class IndexedDBAdapter implements Adapter {
 		return idPredicate && idPredicate.operand;
 	}
 
+	private matchingIndex(
+		storeName: string,
+		fieldName: string,
+		transaction: idb.IDBPTransaction<unknown, [string]>
+	) {
+		const store = transaction.objectStore(storeName);
+		for (const name of store.indexNames) {
+			const idx = store.index(name);
+			if (idx.keyPath === fieldName) {
+				return idx;
+			}
+		}
+	}
+
 	private async filterOnPredicate<T extends PersistentModel>(
 		storeName: string,
 		predicates: PredicatesGroup<T>
 	) {
-		const { predicates: predicateObjs, type } = predicates;
+		let { predicates: predicateObjs, type } = predicates;
 
-		const all = <T[]>await this.getAll(storeName);
+		// the predicate objects we care about tend to be nested at least
+		// one level down: `{and: {or: {and: { <the predicates we want> }}}}`
+		// so, we unpack and/or groups until we find a group with more than 1
+		// child OR a child that is not a group (and is therefore a predicate "object").
+		while (predicateObjs.length === 1 && isPredicateGroup(predicateObjs[0])) {
+			type = (predicateObjs[0] as PredicatesGroup<T>).type;
+			predicateObjs = (predicateObjs[0] as PredicatesGroup<T>).predicates;
+		}
+
+		// where we'll accumulate candidate results, which will be filtered at the end.
+		let candidateResults: T[];
+
+		// AFAIK, this will always be a homogenous group of predicate objects at this point.
+		// but, if that ever changes, this pulls out just the predicates from the list that
+		// are field-level predicate objects we can potentially smash against an index.
+		const fieldPredicates = predicateObjs.filter(p =>
+			isPredicateObj(p)
+		) as PredicateObject<T>[];
+
+		// several sub-queries could occur here. explicitly start a txn here to avoid
+		// opening/closing multiple txns.
+		const txn = this.db.transaction(storeName);
+
+		// our potential indexes or lacks thereof.
+		const predicateIndexes = fieldPredicates.map(p => {
+			return {
+				predicate: p,
+				index: this.matchingIndex(storeName, String(p.field), txn),
+			};
+		});
+
+		// semi-naive implementation:
+		if (type === 'and') {
+			// each condition must be satsified, we can form a base set with any
+			// ONE of those conditions and then filter.
+			const actualPredicateIndexes = predicateIndexes.filter(
+				i => i.index && i.predicate.operator === 'eq'
+			);
+			if (actualPredicateIndexes.length > 0) {
+				const predicateIndex = actualPredicateIndexes[0];
+				candidateResults = <T[]>(
+					await predicateIndex.index.getAll(predicateIndex.predicate.operand)
+				);
+			} else {
+				// no usable indexes
+				candidateResults = <T[]>await this.getAll(storeName);
+			}
+		} else if (type === 'or') {
+			// NOTE: each condition implies a potentially distinct set. we only benefit
+			// from using indexes here if EVERY condition uses an index. if any one
+			// index requires a table scan, we gain nothing from the indexes.
+			// NOTE: results must be DISTINCT-ified if we leverage indexes.
+			if (
+				predicateIndexes.length > 0 &&
+				predicateIndexes.every(i => i.index && i.predicate.operator === 'eq')
+			) {
+				const distinctResults = new Map<string, T>();
+				for (const predicateIndex of predicateIndexes) {
+					const resultGroup = <T[]>(
+						await predicateIndex.index.getAll(predicateIndex.predicate.operand)
+					);
+					for (const item of resultGroup) {
+						// TODO: custom PK
+						distinctResults.set(item.id, item);
+					}
+				}
+
+				// we could conceivably check for special conditions and return early here.
+				// but, this is simpler and has not yet had a measurable performance impact.
+				candidateResults = Array.from(distinctResults.values());
+			} else {
+				// either no usable indexes or not all conditions can use one.
+				candidateResults = <T[]>await this.getAll(storeName);
+			}
+		} else {
+			// nothing intelligent we can do with `not` groups unless or until we start
+			// smashing comparison operators against indexes -- at which point we could
+			// perform some reversal here.
+			candidateResults = <T[]>await this.getAll(storeName);
+		}
 
 		const filtered = predicateObjs
-			? all.filter(m => validatePredicate(m, type, predicateObjs))
-			: all;
+			? candidateResults.filter(m => validatePredicate(m, type, predicateObjs))
+			: candidateResults;
 
 		return filtered;
 	}
