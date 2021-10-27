@@ -1,18 +1,8 @@
-import { Amplify, Auth } from 'aws-amplify';
 import Head from 'next/head';
-import { useEffect } from 'react';
 
 import styles from '../styles/Home.module.css';
 
-Amplify.configure();
-
 export default function Home() {
-	useEffect(() => {
-		Auth.currentAuthenticatedUser()
-			.then(console.log)
-			.catch(console.warn);
-	}, []);
-
 	return (
 		<div className={styles.container}>
 			<Head>

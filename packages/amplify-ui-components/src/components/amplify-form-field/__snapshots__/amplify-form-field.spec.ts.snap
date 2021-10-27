@@ -2,125 +2,119 @@
 
 exports[`amplify-form-field spec: Render logic -> renders a label and description, if they are provided, and no id 1`] = `
 <amplify-form-field description="description" label="label">
-  <mock:shadow-root>
-    <div class="form-field">
-      <div class="form-field-label">
-        <amplify-label>
-          label
-        </amplify-label>
-      </div>
-      <div class="form-field-description" data-test="form-field-description" id="undefined-description">
-        description
-      </div>
-      <div>
-        <slot name="input">
-          <amplify-input description="description" placeholder="" type="text"></amplify-input>
-        </slot>
-      </div>
+  <!---->
+  <div class="form-field">
+    <div class="form-field-label">
+      <amplify-label>
+        label
+      </amplify-label>
     </div>
-  </mock:shadow-root>
+    <div class="form-field-description" data-test="form-field-description" id="undefined-description">
+      description
+    </div>
+    <div>
+      <slot-fb name="input">
+        <amplify-input description="description" placeholder="" type="text"></amplify-input>
+      </slot-fb>
+    </div>
+  </div>
 </amplify-form-field>
 `;
 
 exports[`amplify-form-field spec: Render logic -> renders no label or description if none are provided 1`] = `
 <amplify-form-field>
-  <mock:shadow-root>
-    <div class="form-field">
-      <div>
-        <slot name="input">
-          <amplify-input placeholder="" type="text"></amplify-input>
-        </slot>
-      </div>
+  <!---->
+  <div class="form-field">
+    <div>
+      <slot-fb name="input">
+        <amplify-input placeholder="" type="text"></amplify-input>
+      </slot-fb>
     </div>
-  </mock:shadow-root>
+  </div>
 </amplify-form-field>
 `;
 
 exports[`amplify-form-field spec: Render logic -> renders with an id, if it is provided 1`] = `
 <amplify-form-field description="description" field-id="id" label="label">
-  <mock:shadow-root>
-    <div class="form-field">
-      <div class="form-field-label">
-        <amplify-label htmlfor="id">
-          label
-        </amplify-label>
-      </div>
-      <div class="form-field-description" data-test="form-field-description" id="id-description">
-        description
-      </div>
-      <div>
-        <slot name="input">
-          <amplify-input description="description" fieldid="id" placeholder="" type="text"></amplify-input>
-        </slot>
-      </div>
+  <!---->
+  <div class="form-field">
+    <div class="form-field-label">
+      <amplify-label htmlfor="id">
+        label
+      </amplify-label>
     </div>
-  </mock:shadow-root>
+    <div class="form-field-description" data-test="form-field-description" id="id-description">
+      description
+    </div>
+    <div>
+      <slot-fb name="input">
+        <amplify-input description="description" fieldid="id" placeholder="" type="text"></amplify-input>
+      </slot-fb>
+    </div>
+  </div>
 </amplify-form-field>
 `;
 
 exports[`amplify-form-field spec: Render logic -> renders with an name, if it is provided 1`] = `
 <amplify-form-field description="description" field-id="id" label="label" name="seattle">
-  <mock:shadow-root>
-    <div class="form-field">
-      <div class="form-field-label">
-        <amplify-label htmlfor="id">
-          label
-        </amplify-label>
-      </div>
-      <div class="form-field-description" data-test="form-field-description" id="id-description">
-        description
-      </div>
-      <div>
-        <slot name="input">
-          <amplify-input description="description" fieldid="id" name="seattle" placeholder="" type="text"></amplify-input>
-        </slot>
-      </div>
+  <!---->
+  <div class="form-field">
+    <div class="form-field-label">
+      <amplify-label htmlfor="id">
+        label
+      </amplify-label>
     </div>
-  </mock:shadow-root>
+    <div class="form-field-description" data-test="form-field-description" id="id-description">
+      description
+    </div>
+    <div>
+      <slot-fb name="input">
+        <amplify-input description="description" fieldid="id" name="seattle" placeholder="" type="text"></amplify-input>
+      </slot-fb>
+    </div>
+  </div>
 </amplify-form-field>
 `;
 
 exports[`amplify-form-field spec: Render logic -> renders without Emotion CSS classes 1`] = `
 <amplify-form-field description="description" field-id="id" label="label">
-  <mock:shadow-root>
-    <div class="form-field">
-      <div class="form-field-label">
-        <amplify-label htmlfor="id">
-          label
-        </amplify-label>
-      </div>
-      <div class="form-field-description" data-test="form-field-description" id="id-description">
-        description
-      </div>
-      <div>
-        <slot name="input">
-          <amplify-input description="description" fieldid="id" placeholder="" type="text"></amplify-input>
-        </slot>
-      </div>
+  <!---->
+  <div class="form-field">
+    <div class="form-field-label">
+      <amplify-label htmlfor="id">
+        label
+      </amplify-label>
     </div>
-  </mock:shadow-root>
+    <div class="form-field-description" data-test="form-field-description" id="id-description">
+      description
+    </div>
+    <div>
+      <slot-fb name="input">
+        <amplify-input description="description" fieldid="id" placeholder="" type="text"></amplify-input>
+      </slot-fb>
+    </div>
+  </div>
 </amplify-form-field>
 `;
 
 exports[`amplify-form-field spec: Render logic -> replaces the input component, if a new one is provided 1`] = `
 <amplify-form-field description="description" field-id="id" label="label">
-  <mock:shadow-root>
-    <div class="form-field">
-      <div class="form-field-label">
-        <amplify-label htmlfor="id">
-          label
-        </amplify-label>
-      </div>
-      <div class="form-field-description" data-test="form-field-description" id="id-description">
-        description
-      </div>
-      <div>
-        <slot name="input">
-          <amplify-input description="description" fieldid="id" placeholder="" type="text"></amplify-input>
-        </slot>
-      </div>
+  <!---->
+  <div class="form-field">
+    <div class="form-field-label">
+      <amplify-label htmlfor="id">
+        label
+      </amplify-label>
     </div>
-  </mock:shadow-root>
-  <input slot="input">
+    <div class="form-field-description" data-test="form-field-description" id="id-description">
+      description
+    </div>
+    <div>
+      <input slot="input">
+      <slot-fb name="input">
+        <amplify-input description="description" fieldid="id" placeholder="" type="text"></amplify-input>
+      </slot-fb>
+    </div>
+  </div>
 </amplify-form-field>
 `;

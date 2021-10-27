@@ -6,7 +6,7 @@ describe('amplify-nav spec:', () => {
 		it('should render', async () => {
 			const page = await newSpecPage({
 				components: [AmplifyNav],
-				html: `<amplify-nav></amplify-nav>`
+				html: `<amplify-nav></amplify-nav>`,
 			});
 
 			expect(page.root).toMatchSnapshot();

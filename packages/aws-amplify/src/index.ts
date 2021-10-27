@@ -24,6 +24,7 @@ Amplify.ServiceWorker = ServiceWorker;
 
 export {
 	Analytics,
+	AnalyticsProvider,
 	AWSPinpointProvider,
 	AWSKinesisProvider,
 	AWSKinesisFirehoseProvider,
@@ -34,6 +35,7 @@ export { Auth } from '@aws-amplify/auth';
 export { Storage, StorageClass } from '@aws-amplify/storage';
 export { API, APIClass, graphqlOperation } from '@aws-amplify/api';
 export {
+	AuthModeStrategyType,
 	DataStore,
 	Predicates,
 	SortDirection,
@@ -53,8 +55,10 @@ export {
 	Signer,
 	I18n,
 	ServiceWorker,
+	AWSCloudWatchProvider,
 } from '@aws-amplify/core';
 export { withSSRContext } from './withSSRContext';
+export { Geo } from '@aws-amplify/geo';
 
 export { Amplify };
 
