@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 import {
 	AxiosHttpHandler,
 	reactNativeRequestTransformer,
@@ -165,6 +164,18 @@ describe('AxiosHttpHandler', () => {
 			const handler = new AxiosHttpHandler();
 			await handler.handle(request, options);
 			expect(loggerSpy).toHaveBeenCalledWith('ERROR', 'err');
+		});
+
+		it('cancel request should throw error', async () => {
+			expect.assertions(1);
+			axios.isCancel = jest.fn().mockImplementation(() => true);
+			axios.request = jest
+				.fn()
+				.mockImplementation(() => Promise.reject(new Error('err')));
+			const handler = new AxiosHttpHandler();
+			await expect(handler.handle(request, options)).rejects.toThrowError(
+				'err'
+			);
 		});
 	});
 
