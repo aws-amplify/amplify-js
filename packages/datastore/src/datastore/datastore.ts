@@ -612,7 +612,7 @@ const createModelClass = <T extends PersistentModel>(
 						const result = await instance.query(relatedModel, c =>
 							(c as any)[associatedWith].eq(this.id)
 						);
-						const asyncResult = new AsyncCollection(0, result.length, result);
+						const asyncResult = new AsyncCollection(result);
 						instanceMemos[field] = asyncResult;
 						return asyncResult;
 					}
@@ -641,9 +641,9 @@ export class AsyncCollection<T> implements AsyncIterable<T> {
 	start: number;
 	end: number;
 	values: Array<any>;
-	constructor(start: number, end: number, values: Array<any>) {
-		this.start = start;
-		this.end = end;
+	constructor(values: Array<any>) {
+		this.start = 0;
+		this.end = values.length;
 		this.values = values;
 	}
 	[Symbol.asyncIterator](): AsyncIterator<T> {
@@ -665,10 +665,17 @@ export class AsyncCollection<T> implements AsyncIterable<T> {
 			},
 		};
 	}
-	async toArray(): Promise<T[]> {
+	async toArray(arg?): Promise<T[]> {
+		const max = arg && arg.hasOwnProperty('max') ? arg.max : this.values.length;
 		const output = [];
+		let i = 0;
 		for await (const element of this) {
-			output.push(element);
+			if (i < max) {
+				output.push(element);
+				i++;
+			} else {
+				break;
+			}
 		}
 		return output;
 	}

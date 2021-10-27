@@ -333,7 +333,7 @@ describe('Indexed db storage test', () => {
 
 		const songs = await q1.songs;
 		expect(songs).toStrictEqual(
-			new AsyncCollection(0, 3, [savedSong1, savedSong2, savedSong3])
+			new AsyncCollection([savedSong1, savedSong2, savedSong3])
 		);
 	});
 
@@ -408,15 +408,33 @@ describe('Indexed db storage test', () => {
 		const song1 = new Song({ name: 'Put you on Game', songID: album1.id });
 		const song2 = new Song({ name: 'Streets on Fire', songID: album1.id });
 		const song3 = new Song({ name: 'Superstar', songID: album1.id });
+		const song4 = new Song({ name: 'The Coolest', songID: album1.id });
 
 		const savedSong1 = await DataStore.save(song1);
 		const savedSong2 = await DataStore.save(song2);
 		const savedSong3 = await DataStore.save(song3);
+		const savedSong4 = await DataStore.save(song4);
 
 		const q1 = await DataStore.query(Album, album1.id);
 		const songs = await q1.songs;
 
 		songs.toArray().then(value => {
+			expect(value).toStrictEqual([
+				savedSong1,
+				savedSong2,
+				savedSong3,
+				savedSong4,
+			]);
+		});
+		songs.toArray({}).then(value => {
+			expect(value).toStrictEqual([
+				savedSong1,
+				savedSong2,
+				savedSong3,
+				savedSong4,
+			]);
+		});
+		songs.toArray({ max: 3 }).then(value => {
 			expect(value).toStrictEqual([savedSong1, savedSong2, savedSong3]);
 		});
 	});
