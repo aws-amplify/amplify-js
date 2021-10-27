@@ -68,7 +68,11 @@ import { parse } from 'url';
 import OAuth from './OAuth/OAuth';
 import { default as urlListener } from './urlListener';
 import { AuthError, NoUserPoolError } from './Errors';
-import { AuthErrorTypes, CognitoHostedUIIdentityProvider } from './types/Auth';
+import {
+	AuthErrorTypes,
+	CognitoHostedUIIdentityProvider,
+	IAuthDevice,
+} from './types/Auth';
 
 const logger = new Logger('AuthClass');
 const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
@@ -84,6 +88,11 @@ typeof Symbol.for === 'function'
 const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
 };
+
+// Cognito Documentation for max device
+// tslint:disable-next-line:max-line-length
+// https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ListDevices.html#API_ListDevices_RequestSyntax
+const MAX_DEVICES = 60;
 
 /**
  * Provide authentication steps
@@ -197,7 +206,7 @@ export class AuthClass {
 			storage: this._storage,
 		});
 
-		// initiailize cognitoauth client if hosted ui options provided
+		// initialize cognitoauth client if hosted ui options provided
 		// to keep backward compatibility:
 		const cognitoHostedUIConfig = oauth
 			? isCognitoHostedOpts(this._config.oauth)
@@ -328,7 +337,10 @@ export class AuthClass {
 				validationData = [];
 				Object.keys(validationDataObject).map(key => {
 					validationData.push(
-						new CognitoUserAttribute({ Name: key, Value: validationDataObject[key] })
+						new CognitoUserAttribute({
+							Name: key,
+							Value: validationDataObject[key],
+						})
 					);
 				});
 			}
@@ -650,8 +662,9 @@ export class AuthClass {
 	}
 
 	/**
-	 * get user current preferred mfa option
-	 * this method doesn't work with totp, we need to deprecate it.
+	 * This was previously used by an authenticated user to get MFAOptions,
+	 * but no longer returns a meaningful response. Refer to the documentation for
+	 * how to setup and use MFA: https://docs.amplify.aws/lib/auth/mfa/q/platform/js
 	 * @deprecated
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves the current preferred mfa option if success
@@ -760,7 +773,7 @@ export class AuthClass {
 	 */
 	public async setPreferredMFA(
 		user: CognitoUser | any,
-		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA'
+		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' 
 	): Promise<string> {
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
@@ -772,13 +785,15 @@ export class AuthClass {
 		let totpMfaSettings = null;
 
 		switch (mfaMethod) {
-			case 'TOTP' || 'SOFTWARE_TOKEN_MFA':
+			case 'TOTP':
+			case 'SOFTWARE_TOKEN_MFA':
 				totpMfaSettings = {
 					PreferredMfa: true,
 					Enabled: true,
 				};
 				break;
-			case 'SMS' || 'SMS_MFA':
+			case 'SMS':
+			case 'SMS_MFA':	
 				smsMfaSettings = {
 					PreferredMfa: true,
 					Enabled: true,
@@ -859,7 +874,7 @@ export class AuthClass {
 	}
 
 	/**
-	 * diable SMS
+	 * disable SMS
 	 * @deprecated
 	 * @param {CognitoUser} user - the current user
 	 * @return - A promise resolves is success
@@ -1096,6 +1111,33 @@ export class AuthClass {
 				clientMetadata
 			);
 		});
+	}
+
+	/**
+	 * Delete an authenticated users' attributes
+	 * @param {CognitoUser} - The currently logged in user object
+	 * @return {Promise}
+	 **/
+	public deleteUserAttributes(
+		user: CognitoUser | any,
+		attributeNames: string[],
+	) {
+		const that = this;
+		return new Promise((resolve, reject) => {
+			that.userSession(user).then(session => {
+				user.deleteAttributes(
+					attributeNames,
+					(err, result) => {
+						if (err) {
+							return reject(err);
+						} else {
+							return resolve(result);
+						}
+					}
+				);
+			});
+		});
+
 	}
 
 	/**
@@ -1500,8 +1542,8 @@ export class AuthClass {
 			user.getAttributeVerificationCode(
 				attr,
 				{
-					onSuccess() {
-						return resolve();
+					onSuccess(success) {
+						return resolve(success);
 					},
 					onFailure(err) {
 						return reject(err);
@@ -1612,12 +1654,13 @@ export class AuthClass {
 				);
 			} else {
 				logger.debug('user sign out', user);
-				user.signOut();
-				if (isSignedInHostedUI) {
-					this.oAuthSignOutRedirect(res, rej);
-				} else {
-					return res();
-				}
+				user.signOut(() => {
+					if (isSignedInHostedUI) {
+						this.oAuthSignOutRedirect(res, rej);
+					} else {
+						return res();
+					}
+				});
 			}
 		});
 	}
@@ -1778,7 +1821,7 @@ export class AuthClass {
 		code: string,
 		password: string,
 		clientMetadata: ClientMetaData = this._config.clientMetadata
-	): Promise<void> {
+	): Promise<string> {
 		if (!this.userPool) {
 			return this.rejectNoUserPool();
 		}
@@ -1798,13 +1841,13 @@ export class AuthClass {
 				code,
 				password,
 				{
-					onSuccess: () => {
+					onSuccess: (success) => {
 						dispatchAuthEvent(
 							'forgotPasswordSubmit',
 							user,
 							`${username} forgotPasswordSubmit successful`
 						);
-						resolve();
+						resolve(success);
 						return;
 					},
 					onFailure: err => {
@@ -1832,7 +1875,7 @@ export class AuthClass {
 
 		if (!source || source === 'aws' || source === 'userPool') {
 			const user = await this.currentUserPoolUser().catch(err =>
-				logger.debug(err)
+				logger.error(err)
 			);
 			if (!user) {
 				return null;
@@ -1858,7 +1901,7 @@ export class AuthClass {
 				};
 				return info;
 			} catch (err) {
-				logger.debug('currentUserInfo error', err);
+				logger.error('currentUserInfo error', err);
 				return {};
 			}
 		}
@@ -2088,6 +2131,17 @@ export class AuthClass {
 					return credentials;
 				} catch (err) {
 					logger.debug('Error in cognito hosted auth response', err);
+
+					// Just like a successful handling of `?code`, replace the window history to "dispose" of the `code`.
+					// Otherwise, reloading the page will throw errors as the `code` has already been spent.
+					if (window && typeof window.history !== 'undefined') {
+						window.history.replaceState(
+							{},
+							null,
+							(this._config.oauth as AwsCognitoOAuthOpts).redirectSignIn
+						);
+					}
+
 					dispatchAuthEvent(
 						'signIn_failure',
 						err,
@@ -2134,13 +2188,19 @@ export class AuthClass {
 					attribute.Name === 'phone_number_verified'
 				) {
 					obj[attribute.Name] =
-						attribute.Value === 'true' || attribute.Value === true;
+						this.isTruthyString(attribute.Value) || attribute.Value === true;
 				} else {
 					obj[attribute.Name] = attribute.Value;
 				}
 			});
 		}
 		return obj;
+	}
+
+	private isTruthyString(value: any): boolean {
+		return (
+			typeof value.toLowerCase === 'function' && value.toLowerCase() === 'true'
+		);
 	}
 
 	private createCognitoUser(username: string): CognitoUser {
@@ -2187,8 +2247,109 @@ export class AuthClass {
 		const type = this.noUserPoolErrorHandler(this._config);
 		return Promise.reject(new NoUserPoolError(type));
 	}
+
+	public async rememberDevice(): Promise<string | AuthError> {
+		let currUser;
+
+		try {
+			currUser = await this.currentUserPoolUser();
+		} catch (error) {
+			logger.debug('The user is not authenticated by the error', error);
+			return Promise.reject('The user is not authenticated');
+		}
+
+		currUser.getCachedDeviceKeyAndPassword();
+		return new Promise((res, rej) => {
+			currUser.setDeviceStatusRemembered({
+				onSuccess: data => {
+					res(data);
+				},
+				onFailure: err => {
+					if (err.code === 'InvalidParameterException') {
+						rej(new AuthError(AuthErrorTypes.DeviceConfig));
+					} else if (err.code === 'NetworkError') {
+						rej(new AuthError(AuthErrorTypes.NetworkError));
+					} else {
+						rej(err);
+					}
+				},
+			});
+		});
+	}
+
+	public async forgetDevice(): Promise<void> {
+		let currUser;
+
+		try {
+			currUser = await this.currentUserPoolUser();
+		} catch (error) {
+			logger.debug('The user is not authenticated by the error', error);
+			return Promise.reject('The user is not authenticated');
+		}
+
+		currUser.getCachedDeviceKeyAndPassword();
+		return new Promise((res, rej) => {
+			currUser.forgetDevice({
+				onSuccess: data => {
+					res(data);
+				},
+				onFailure: err => {
+					if (err.code === 'InvalidParameterException') {
+						rej(new AuthError(AuthErrorTypes.DeviceConfig));
+					} else if (err.code === 'NetworkError') {
+						rej(new AuthError(AuthErrorTypes.NetworkError));
+					} else {
+						rej(err);
+					}
+				},
+			});
+		});
+	}
+
+	public async fetchDevices(): Promise<IAuthDevice[]> {
+		let currUser;
+
+		try {
+			currUser = await this.currentUserPoolUser();
+		} catch (error) {
+			logger.debug('The user is not authenticated by the error', error);
+			throw new Error('The user is not authenticated');
+		}
+
+		currUser.getCachedDeviceKeyAndPassword();
+		return new Promise((res, rej) => {
+			const cb = {
+				onSuccess(data) {
+					const deviceList: IAuthDevice[] = data.Devices.map(device => {
+						const deviceName =
+							device.DeviceAttributes.find(
+								({ Name }) => Name === 'device_name'
+							) || {};
+
+						const deviceInfo: IAuthDevice = {
+							id: device.DeviceKey,
+							name: deviceName.Value,
+						};
+						return deviceInfo;
+					});
+					res(deviceList);
+				},
+				onFailure: err => {
+					if (err.code === 'InvalidParameterException') {
+						rej(new AuthError(AuthErrorTypes.DeviceConfig));
+					} else if (err.code === 'NetworkError') {
+						rej(new AuthError(AuthErrorTypes.NetworkError));
+					} else {
+						rej(err);
+					}
+				},
+			};
+			currUser.listDevices(MAX_DEVICES, null, cb);
+		});
+	}
 }
 
 export const Auth = new AuthClass(null);
 
 Amplify.register(Auth);
+

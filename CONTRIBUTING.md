@@ -53,12 +53,12 @@ This section should get you running with **Amplify JS** and get you familiar wit
 Start by [forking](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the main branch of [amplify-js](https://github.com/aws-amplify/amplify-js).
 
 ```
-$ git clone git@github.com:[username]/amplify-js.git
-$ cd amplify-js
+git clone git@github.com:[username]/amplify-js.git
+cd amplify-js
 
-$ yarn
-$ yarn bootstrap
-$ yarn build
+yarn
+yarn bootstrap
+yarn build
 ```
 
 > Note: Make sure to always [sync your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork) with main branch of `amplify-js`
@@ -82,14 +82,14 @@ Amplify JS is a monorepo built with `Yarn` and `Lerna`. All the categories of Am
 #### Build step:
 
 ```
-$ yarn build --scope @aws-amplify/auth
+yarn build --scope @aws-amplify/auth
 ```
 
 #### Testing:
 
 ```
-$ yarn run test --scope @aws-amplify/auth
-$ yarn run test --scope @aws-amplify/ui-components
+yarn run test --scope @aws-amplify/auth
+yarn run test --scope @aws-amplify/ui-components
 ```
 
 > Note: There is a commit hook that will run the tests prior to committing. Please make sure if you are going to provide a pull request to be sure you include unit tests with your functionality and that all tests pass.
@@ -102,25 +102,77 @@ The best way to develop locally and test is to link the individual package you�
 Run watch mode while editing (auth for example):
 
 ```
-$ npx lerna exec --scope @aws-amplify/auth yarn link
-$ npx lerna exec --scope @aws-amplify/auth yarn build:esm:watch
+npx lerna exec --scope @aws-amplify/auth yarn link
+npx lerna exec --scope @aws-amplify/auth yarn build:esm:watch
 ```
 
 Or run the whole library in watch mode if you are working on multiple packages
 
 ```
-$ yarn build # Build the whole library
-$ yarn link-all # Make all the packages available to link
-$ yarn build:esm:watch # All packages are building ES6 modules in watch mode
+yarn build # Build the whole library
+yarn link-all # Make all the packages available to link
+yarn build:esm:watch # All packages are building ES6 modules in watch mode
 ```
 
 In your sample project, you can now link specific packages
 
 ```
-$ yarn link @aws-amplify/auth
+yarn link @aws-amplify/auth
 ```
 
 These tests are only necessary if you’re looking to contribute a Pull Request. If you’re just playing locally you don’t need them. However if you’re contributing a Pull Request for anything other than bug fixes it would be best to validate that first because depending on the scope of the change.
+
+**Using the setup-dev:react-native script to work with React-Native apps**
+
+> Note: All the below commands to be run from the local amplify-js library root
+
+To develop locally alongside a React-Native app, make sure to,
+
+1. Finish the build steps mentioned in the section: `Setting up for local development`
+
+2. Install the dev dependency package : `wml`
+
+```
+npm install wml --save-dev
+```
+
+3. Add the wml src folder to watchman.
+
+```
+watchman watch node_modules/wml/src
+```
+
+4. Run the below command in the root of the amplify-js local repository with a package name (auth for example):
+
+```
+npm run setup-dev:react-native -- --packages @aws-amplify/auth --target ~/path/to/your/rn/app/root
+```
+
+> Note: This script runs a continious job in the newly opened tabs to watch, build and copy the changes unlike the usual linking method.
+
+The options `--packages` is used to specify single or multiple package names and the `--target` option is used to specify the path to your sample React-Native app.
+Optionally, you can use the shorthands flags `-p` and `-t` for packages and target path respectively.
+
+> All scoped packages must be prefixed by `@aws-amplify/` . For example: `@aws-amplify/auth`
+
+To develop multiple/all packages, provide the package names separated by a comma or the flag `--all` or `-a`:
+
+```
+npm run setup-dev:react-native -- --packages @aws-amplify/auth,aws-amplify-react-native --target ~/path/to/your/rn/app/root
+npm run setup-dev:react-native -- --all --target ~/path/to/your/rn/app/root
+```
+
+> Note: `--` right after the script name is important to provide the flags with their values.
+
+**Debugging problems with the `setup-dev:react-native` script**
+
+- If the WML command does not do anything after adding the links, watch it's src file using watchman. run the below from the root of this repository:
+
+  ```
+  watchman watch node_modules/wml/src
+  ```
+
+- When using VScode, for the script to open a new terminal and tabs you will need to provide the editor accessiblity permissions.
 
 #### Verdaccio
 
@@ -130,7 +182,7 @@ To publish in Verdaccio, start a Verdaccio instance and then,
 
 ```
 yarn config set registry http://localhost:4873/
-yarn lerna publish --skip-git --force-publish
+yarn lerna publish --no-git-tag-version --no-push --force-publish
 ```
 
 To publish a local version of a specific package,

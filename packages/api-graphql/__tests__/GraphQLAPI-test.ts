@@ -1,7 +1,7 @@
 import Auth from '@aws-amplify/auth';
 import { GraphQLAPIClass as API } from '../src';
 import { graphqlOperation } from '../src/GraphQLAPI';
-import { GRAPHQL_AUTH_MODE } from '../src/types';
+import { GRAPHQL_AUTH_MODE, GraphQLAuthError } from '../src/types';
 import { RestClient } from '@aws-amplify/api-rest';
 import { print } from 'graphql/language/printer';
 import { parse } from 'graphql/language/parser';
@@ -36,6 +36,25 @@ const config = {
 		header: {},
 	},
 };
+
+const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
+	getEvent(id: $id) {
+		id
+		name
+		where
+		when
+		description
+		comments(nextToken: $nextToken) {
+			items {
+			commentId
+			content
+			createdAt
+			}
+		}
+	}
+}`;
+const getEventDoc = parse(GetEvent);
+const getEventQuery = print(getEventDoc);
 
 afterEach(() => {
 	jest.restoreAllMocks();
@@ -82,25 +101,6 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'API_KEY',
 				aws_appsync_apiKey: apiKey,
 			});
-			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
-				getEvent(id: $id) {
-					id
-					name
-					where
-					when
-					description
-					comments(nextToken: $nextToken) {
-						items {
-						commentId
-						content
-						createdAt
-						}
-					}
-				}
-			}`;
-
-			const doc = parse(GetEvent);
-			const query = print(doc);
 
 			const headers = {
 				Authorization: null,
@@ -109,7 +109,7 @@ describe('API test', () => {
 			};
 
 			const body = {
-				query,
+				query: getEventQuery,
 				variables,
 			};
 
@@ -156,25 +156,6 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'API_KEY',
 				aws_appsync_apiKey: apiKey,
 			});
-			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
-				getEvent(id: $id) {
-					id
-					name
-					where
-					when
-					description
-					comments(nextToken: $nextToken) {
-						items {
-						commentId
-						content
-						createdAt
-						}
-					}
-				}
-			}`;
-
-			const doc = parse(GetEvent);
-			const query = print(doc);
 
 			const headers = {
 				Authorization: null,
@@ -183,7 +164,7 @@ describe('API test', () => {
 			};
 
 			const body = {
-				query,
+				query: getEventQuery,
 				variables,
 			};
 
@@ -243,25 +224,6 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'API_KEY',
 				aws_appsync_apiKey: apiKey,
 			});
-			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
-				getEvent(id: $id) {
-					id
-					name
-					where
-					when
-					description
-					comments(nextToken: $nextToken) {
-						items {
-							commentId
-							content
-							createdAt
-						}
-					}
-				}
-			}`;
-
-			const doc = parse(GetEvent);
-			const query = print(doc);
 
 			const headers = {
 				Authorization: null,
@@ -270,7 +232,7 @@ describe('API test', () => {
 			};
 
 			const body = {
-				query,
+				query: getEventQuery,
 				variables,
 			};
 
@@ -284,7 +246,7 @@ describe('API test', () => {
 				cancellableToken: mockCancellableToken,
 			};
 
-			await api.graphql(graphqlOperation(doc, variables));
+			await api.graphql(graphqlOperation(getEventDoc, variables));
 
 			expect(spyon).toBeCalledWith(url, init);
 		});
@@ -334,25 +296,6 @@ describe('API test', () => {
 				aws_appsync_region: region,
 				aws_appsync_authenticationType: 'OPENID_CONNECT',
 			});
-			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
-				getEvent(id: $id) {
-					id
-					name
-					where
-					when
-					description
-					comments(nextToken: $nextToken) {
-						items {
-						commentId
-						content
-						createdAt
-						}
-					}
-				}
-			}`;
-
-			const doc = parse(GetEvent);
-			const query = print(doc);
 
 			const headers = {
 				Authorization: 'id_token',
@@ -360,7 +303,7 @@ describe('API test', () => {
 			};
 
 			const body = {
-				query,
+				query: getEventQuery,
 				variables,
 			};
 
@@ -435,25 +378,6 @@ describe('API test', () => {
 				aws_appsync_region: region,
 				aws_appsync_authenticationType: 'OPENID_CONNECT',
 			});
-			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
-				getEvent(id: $id) {
-					id
-					name
-					where
-					when
-					description
-					comments(nextToken: $nextToken) {
-						items {
-						commentId
-						content
-						createdAt
-						}
-					}
-				}
-			}`;
-
-			const doc = parse(GetEvent);
-			const query = print(doc);
 
 			const headers = {
 				Authorization: 'federated_token_from_storage',
@@ -461,7 +385,7 @@ describe('API test', () => {
 			};
 
 			const body = {
-				query,
+				query: getEventQuery,
 				variables,
 			};
 
@@ -482,6 +406,103 @@ describe('API test', () => {
 			spyonCredentials.mockClear();
 			spyonCache.mockClear();
 			spyonAuth.mockClear();
+		});
+
+		test('happy case query with AWS_LAMBDA', async () => {
+			expect.assertions(1);
+
+			const spyon = jest
+				.spyOn(RestClient.prototype, 'post')
+				.mockReturnValue(Promise.resolve({}));
+
+			const api = new API(config);
+			const url = 'https://appsync.amazonaws.com';
+			const region = 'us-east-2';
+			const variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+
+			api.configure({
+				aws_appsync_graphqlEndpoint: url,
+				aws_appsync_region: region,
+				aws_appsync_authenticationType: 'AWS_LAMBDA',
+			});
+
+			const headers = {
+				'x-amz-user-agent': Constants.userAgent,
+				Authorization: 'myAuthToken',
+			};
+
+			const body = {
+				query: getEventQuery,
+				variables,
+			};
+
+			const init = {
+				headers,
+				body,
+				signerServiceInfo: {
+					service: 'appsync',
+					region,
+				},
+				cancellableToken: mockCancellableToken,
+			};
+
+			await api.graphql({
+				query: GetEvent,
+				variables,
+				authToken: 'myAuthToken',
+			});
+
+			expect(spyon).toBeCalledWith(url, init);
+		});
+
+		test('additional headers with AWS_LAMBDA', async () => {
+			expect.assertions(1);
+
+			const spyon = jest
+				.spyOn(RestClient.prototype, 'post')
+				.mockReturnValue(Promise.resolve({}));
+
+			const api = new API(config);
+			const url = 'https://appsync.amazonaws.com';
+			const region = 'us-east-2';
+			const variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+
+			api.configure({
+				aws_appsync_graphqlEndpoint: url,
+				aws_appsync_region: region,
+				aws_appsync_authenticationType: 'AWS_LAMBDA',
+			});
+
+			const headers = {
+				'x-amz-user-agent': Constants.userAgent,
+				Authorization: 'myAuthToken',
+			};
+
+			const body = {
+				query: getEventQuery,
+				variables,
+			};
+
+			const init = {
+				headers,
+				body,
+				signerServiceInfo: {
+					service: 'appsync',
+					region,
+				},
+				cancellableToken: mockCancellableToken,
+			};
+
+			await api.graphql(
+				{
+					query: GetEvent,
+					variables,
+					authToken: 'myAuthToken',
+				},
+				{ Authorization: 'anotherAuthToken' }
+			);
+
+			expect(spyon).toBeCalledWith(url, init);
 		});
 
 		test('multi-auth default case AWS_IAM, using API_KEY as auth mode', async () => {
@@ -513,25 +534,6 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'AWS_IAM',
 				aws_appsync_apiKey: apiKey,
 			});
-			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
-				getEvent(id: $id) {
-					id
-					name
-					where
-					when
-					description
-					comments(nextToken: $nextToken) {
-						items {
-						commentId
-						content
-						createdAt
-						}
-					}
-				}
-			}`;
-
-			const doc = parse(GetEvent);
-			const query = print(doc);
 
 			const headers = {
 				Authorization: null,
@@ -540,7 +542,7 @@ describe('API test', () => {
 			};
 
 			const body = {
-				query,
+				query: getEventQuery,
 				variables,
 			};
 
@@ -582,30 +584,11 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'API_KEY',
 				aws_appsync_apiKey: apiKey,
 			});
-			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
-				getEvent(id: $id) {
-					id
-					name
-					where
-					when
-					description
-					comments(nextToken: $nextToken) {
-						items {
-						commentId
-						content
-						createdAt
-						}
-					}
-				}
-			}`;
-
-			const doc = parse(GetEvent);
-			const query = print(doc);
 
 			const headers = { 'x-amz-user-agent': Constants.userAgent };
 
 			const body = {
-				query,
+				query: getEventQuery,
 				variables,
 			};
 
@@ -623,6 +606,56 @@ describe('API test', () => {
 				query: GetEvent,
 				variables,
 				authMode: GRAPHQL_AUTH_MODE.AWS_IAM,
+			});
+
+			expect(spyon).toBeCalledWith(url, init);
+		});
+
+		test('multi-auth default case api-key, using AWS_LAMBDA as auth mode', async () => {
+			expect.assertions(1);
+
+			const spyon = jest
+				.spyOn(RestClient.prototype, 'post')
+				.mockReturnValue(Promise.resolve({}));
+
+			const api = new API(config);
+			const url = 'https://appsync.amazonaws.com',
+				region = 'us-east-2',
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' },
+				apiKey = 'secret-api-key';
+
+			api.configure({
+				aws_appsync_graphqlEndpoint: url,
+				aws_appsync_region: region,
+				aws_appsync_authenticationType: 'API_KEY',
+				aws_appsync_apiKey: apiKey,
+			});
+
+			const headers = {
+				'x-amz-user-agent': Constants.userAgent,
+				Authorization: 'myAuthToken',
+			};
+
+			const body = {
+				query: getEventQuery,
+				variables,
+			};
+
+			const init = {
+				headers,
+				body,
+				signerServiceInfo: {
+					service: 'appsync',
+					region,
+				},
+				cancellableToken: mockCancellableToken,
+			};
+
+			await api.graphql({
+				query: GetEvent,
+				variables,
+				authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
+				authToken: 'myAuthToken',
 			});
 
 			expect(spyon).toBeCalledWith(url, init);
@@ -658,25 +691,6 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'API_KEY',
 				aws_appsync_apiKey: apiKey,
 			});
-			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
-				getEvent(id: $id) {
-					id
-					name
-					where
-					when
-					description
-					comments(nextToken: $nextToken) {
-						items {
-						commentId
-						content
-						createdAt
-						}
-					}
-				}
-			}`;
-
-			const doc = parse(GetEvent);
-			const query = print(doc);
 
 			const headers = {
 				Authorization: 'oidc_token',
@@ -684,7 +698,7 @@ describe('API test', () => {
 			};
 
 			const body = {
-				query,
+				query: getEventQuery,
 				variables,
 			};
 
@@ -734,22 +748,6 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'API_KEY',
 				aws_appsync_apiKey: apiKey,
 			});
-			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
-				getEvent(id: $id) {
-					id
-					name
-					where
-					when
-					description
-					comments(nextToken: $nextToken) {
-							items {
-							commentId
-							content
-							createdAt
-						}
-					}
-				}
-			}`;
 
 			expect(
 				api.graphql({
@@ -774,22 +772,6 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'API_KEY',
 				aws_appsync_apiKey: apiKey,
 			});
-			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
-				getEvent(id: $id) {
-					id
-					name
-					where
-					when
-					description
-					comments(nextToken: $nextToken) {
-						items {
-						commentId
-						content
-						createdAt
-					}
-					}
-				}
-			}`;
 
 			expect(
 				api.graphql({
@@ -798,6 +780,29 @@ describe('API test', () => {
 					authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
 				})
 			).rejects.toThrow();
+		});
+
+		test('multi-auth using AWS_LAMBDA as auth mode, but no auth token specified', async () => {
+			expect.assertions(1);
+
+			const api = new API(config);
+			const url = 'https://appsync.amazonaws.com',
+				region = 'us-east-2',
+				variables = { id: '809392da-ec91-4ef0-b219-5238a8f942b2' };
+
+			api.configure({
+				aws_appsync_graphqlEndpoint: url,
+				aws_appsync_region: region,
+				aws_appsync_authenticationType: 'AWS_IAM',
+			});
+
+			expect(
+				api.graphql({
+					query: GetEvent,
+					variables,
+					authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
+				})
+			).rejects.toThrowError(GraphQLAuthError.NO_AUTH_TOKEN);
 		});
 
 		test('multi-auth using API_KEY as auth mode, but no api-key configured', async () => {
@@ -823,22 +828,6 @@ describe('API test', () => {
 				aws_appsync_region: region,
 				aws_appsync_authenticationType: 'AWS_IAM',
 			});
-			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
-				getEvent(id: $id) {
-					id
-					name
-					where
-					when
-					description
-					comments(nextToken: $nextToken) {
-						items {
-						commentId
-						content
-						createdAt
-						}
-					}
-				}
-			}`;
 
 			expect(
 				api.graphql({
@@ -865,22 +854,6 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'API_KEY',
 				aws_appsync_apiKey: apiKey,
 			});
-			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
-				getEvent(id: $id) {
-					id
-					name
-					where
-					when
-					description
-					comments(nextToken: $nextToken) {
-						items {
-						commentId
-						content
-						createdAt
-						}
-					}
-				}
-			}`;
 
 			expect(
 				api.graphql({
@@ -914,25 +887,6 @@ describe('API test', () => {
 				aws_appsync_authenticationType: 'API_KEY',
 				aws_appsync_apiKey: apiKey,
 			});
-			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
-				getEvent(id: $id) {
-					id
-					name
-					where
-					when
-					description
-					comments(nextToken: $nextToken) {
-						items {
-						commentId
-						content
-						createdAt
-						}
-					}
-				}
-			}`;
-
-			const doc = parse(GetEvent);
-			const query = print(doc);
 
 			const headers = {
 				Authorization: 'Secret-Token',
@@ -940,7 +894,7 @@ describe('API test', () => {
 			};
 
 			const body = {
-				query,
+				query: getEventQuery,
 				variables,
 			};
 
@@ -1241,25 +1195,6 @@ describe('API test', () => {
 						someOtherHeaderSetAtConfig: 'expectedValue',
 					}),
 			});
-			const GetEvent = `query GetEvent($id: ID! $nextToken: String) {
-                getEvent(id: $id) {
-                    id
-                    name
-                    where
-                    when
-                    description
-                    comments(nextToken: $nextToken) {
-                      items {
-                        commentId
-                        content
-                        createdAt
-                      }
-                    }
-                  }
-                }`;
-
-			const doc = parse(GetEvent);
-			const query = print(doc);
 
 			const headers = {
 				Authorization: null,
@@ -1268,7 +1203,7 @@ describe('API test', () => {
 			};
 
 			const body = {
-				query,
+				query: getEventQuery,
 				variables,
 			};
 

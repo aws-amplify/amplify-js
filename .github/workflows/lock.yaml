@@ -1,0 +1,24 @@
+name: 'Lock Threads'
+
+on:
+  schedule:
+    - cron: '30 1 * * *'
+
+jobs:
+  lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/lock-threads@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-lock-inactive-days: '365'
+          issue-lock-reason: 'resolved'
+          issue-lock-comment: |
+            This issue has been automatically locked since there hasn't been any recent activity after it was closed. Please open a [new issue](https://github.com/aws-amplify/amplify-js/issues/new?assignees=&labels=&template=1.bug_report.yaml) for related bugs.
+
+            Looking for a help forum? We recommend joining the [Amplify Community Discord server](https://discord.com/invite/amplify) `*-help` channels or [Discussions](https://github.com/aws-amplify/amplify-js/discussions) for those types of questions.
+
+          pr-lock-comment: |
+            This pull request has been automatically locked since there hasn't been any recent activity after it was closed. Please open a [new issue](https://github.com/aws-amplify/amplify-js/issues/new?assignees=&labels=&template=1.bug_report.yaml) for related bugs.
+
+            Looking for a help forum? We recommend joining the [Amplify Community Discord server](https://discord.com/invite/amplify) `*-help` channels or [Discussions](https://github.com/aws-amplify/amplify-js/discussions) for those types of questions.

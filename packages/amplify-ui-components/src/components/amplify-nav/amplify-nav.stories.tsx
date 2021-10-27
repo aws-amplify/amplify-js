@@ -1,5 +1,5 @@
 export default {
-  title: 'amplify-nav',
+	title: 'amplify-nav',
 };
 
 export const defaults = () => `<amplify-nav />`;

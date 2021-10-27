@@ -5,6 +5,7 @@
 	"description": "",
 	"scripts": {
 		"setup-dev": "yarn && yarn bootstrap && yarn link-all && yarn build",
+		"setup-dev:react-native": "node ./scripts/setup-dev-rn",
 		"bootstrap": "lerna bootstrap",
 		"test": "lerna run test --stream",
 		"cypress": "lerna run cypress",
@@ -20,13 +21,13 @@
 		"lint": "lerna run lint",
 		"link-all": "yarn unlink-all && lerna exec --no-bail --parallel yarn link",
 		"unlink-all": "lerna exec --no-bail --parallel -- yarn unlink; exit 0",
-		"publish:main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=unstable --preid=unstable --exact",
-		"publish:beta": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=beta --preid=beta --exact",
-		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]'",
-		"publish:1.0-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-1.0 --message 'chore(release): Publish [ci skip]'",
-		"publish:ui-components/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=ui-preview --preid=ui-preview --exact",
-		"publish:native": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=native --preid=native --exact",
-		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes"
+		"publish:main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=unstable --preid=unstable --exact --no-verify-access",
+		"publish:beta": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=beta --preid=beta --exact --no-verify-access",
+		"publish:release": "lerna publish --conventional-commits --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
+		"publish:1.0-stable": "lerna publish --conventional-commits --yes --dist-tag=stable-1.0 --message 'chore(release): Publish [ci skip]' --no-verify-access",
+		"publish:ui-components/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=ui-preview --preid=ui-preview --exact --no-verify-access",
+		"publish:verdaccio": "lerna publish --no-push --canary minor --dist-tag=unstable --preid=unstable --exact --force-publish --yes --no-verify-access",
+		"publish:geo/main": "lerna publish --canary --force-publish \"*\" --yes --dist-tag=geo --preid=geo --exact --no-verify-access"
 	},
 	"husky": {
 		"hooks": {
@@ -84,13 +85,14 @@
 		"tslint": "^5.7.0",
 		"tslint-config-airbnb": "^5.8.0",
 		"typedoc": "^0.16.9",
-		"typescript": "~3.6.4",
+		"typescript": "~3.7.7",
 		"uglifyjs-webpack-plugin": "^0.4.6",
 		"uuid-validate": "^0.0.3",
 		"webpack": "^4.32.0",
 		"webpack-bundle-analyzer": "^3.3.2",
 		"webpack-cli": "^3.1.0",
-		"winston": "^3.2.1"
+		"winston": "^3.2.1",
+		"wml": "0.0.83"
 	},
 	"resolutions": {
 		"@babel/types": "7.12.10",
