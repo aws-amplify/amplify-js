@@ -84,7 +84,7 @@ export function isTargetNameAssociation(
 }
 
 type FieldAssociation = {
-	connectionType: 'HAS_ONE' | 'BELONGS_TO';
+	connectionType: 'HAS_ONE' | 'BELONGS_TO' | 'HAS_MANY';
 };
 export function isFieldAssociation(
 	obj: any,

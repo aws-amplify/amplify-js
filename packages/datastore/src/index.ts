@@ -3,6 +3,7 @@ export {
 	DataStoreClass,
 	initSchema,
 	ModelInstanceCreator,
+	AsyncCollection,
 } from './datastore/datastore';
 
 export {

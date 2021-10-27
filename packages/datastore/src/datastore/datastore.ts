@@ -556,6 +556,7 @@ const createModelClass = <T extends PersistentModel>(
 
 		const {
 			type,
+			association,
 			association: { targetName },
 		} = modelDefinition.fields[field];
 		const relatedModelName = type['model'];
@@ -599,6 +600,22 @@ const createModelClass = <T extends PersistentModel>(
 				const associatedId = this[targetName];
 
 				if (!associatedId) {
+					if (association.connectionType === 'HAS_MANY') {
+						if (instanceMemos.hasOwnProperty(field)) {
+							return instanceMemos[field];
+						}
+						const associatedWith = association.associatedWith;
+						const relatedModel = getModelConstructorByModelName(
+							USER,
+							relatedModelName
+						);
+						const result = await instance.query(relatedModel, c =>
+							(c as any)[associatedWith].eq(this.id)
+						);
+						const asyncResult = new AsyncCollection(0, result.length, result);
+						instanceMemos[field] = asyncResult;
+						return asyncResult;
+					}
 					// unable to load related model
 					instanceMemos[targetName] = undefined;
 					return;
@@ -619,6 +636,43 @@ const createModelClass = <T extends PersistentModel>(
 
 	return clazz;
 };
+
+export class AsyncCollection<T> implements AsyncIterable<T> {
+	start: number;
+	end: number;
+	values: Array<any>;
+	constructor(start: number, end: number, values: Array<any>) {
+		this.start = start;
+		this.end = end;
+		this.values = values;
+	}
+	[Symbol.asyncIterator](): AsyncIterator<T> {
+		let index = this.start;
+		return {
+			next: async () => {
+				if (index < this.end) {
+					const result = {
+						value: this.values[index],
+						done: false,
+					};
+					index++;
+					return result;
+				}
+				return {
+					value: null,
+					done: true,
+				};
+			},
+		};
+	}
+	async toArray(): Promise<T[]> {
+		const output = [];
+		for await (const element of this) {
+			output.push(element);
+		}
+		return output;
+	}
+}
 
 const checkReadOnlyPropertyOnCreate = <T extends PersistentModel>(
 	draft: T,

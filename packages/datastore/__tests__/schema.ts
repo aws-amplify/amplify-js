@@ -183,6 +183,81 @@ export const newSchema: Schema = {
 				},
 			},
 		},
+		Song: {
+			syncable: true,
+			name: 'Song',
+			pluralName: 'Songs',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				songID: {
+					name: 'songID',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				content: {
+					name: 'content',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+			},
+		},
+		Album: {
+			syncable: true,
+			name: 'Album',
+			pluralName: 'Albums',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				name: {
+					name: 'name',
+					isArray: false,
+					type: 'String',
+					isRequired: false,
+					attributes: [],
+				},
+				songs: {
+					name: 'songs',
+					isArray: true,
+					type: {
+						model: 'Song',
+					},
+					isRequired: false,
+					attributes: [],
+					isArrayNullable: true,
+					association: {
+						connectionType: 'HAS_MANY',
+						associatedWith: 'songID',
+					},
+				},
+			},
+		},
 		PostAuthorJoin: {
 			syncable: true,
 			name: 'PostAuthorJoin',

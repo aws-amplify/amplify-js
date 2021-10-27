@@ -4,6 +4,7 @@ import {
 	ModelInit,
 	MutableModel,
 	PersistentModelConstructor,
+	AsyncCollection,
 	Schema,
 } from '../src/index';
 import { newSchema } from './schema';
@@ -130,8 +131,38 @@ declare class PersonModel {
 	readonly username?: string;
 }
 
+declare class SongModel {
+	readonly id: string;
+	readonly songID: string;
+	readonly name: string;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(init: ModelInit<SongModel>);
+	static copyOf(
+		source: SongModel,
+		mutator: (draft: MutableModel<SongModel>) => MutableModel<SongModel> | void
+	): SongModel;
+}
+
+declare class AlbumModel {
+	readonly id: string;
+	readonly name: string;
+	readonly songs?: AsyncCollection<SongModel | null>;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(init: ModelInit<AlbumModel>);
+	static copyOf(
+		source: AlbumModel,
+		mutator: (
+			draft: MutableModel<AlbumModel>
+		) => MutableModel<AlbumModel> | void
+	): AlbumModel;
+}
+
 const {
 	Author,
+	Album,
+	Song,
 	Post,
 	Comment,
 	Blog,
@@ -144,6 +175,8 @@ const {
 	Team,
 } = initSchema(newSchema) as {
 	Author: PersistentModelConstructor<AuthorModel>;
+	Album: PersistentModelConstructor<AlbumModel>;
+	Song: PersistentModelConstructor<SongModel>;
 	Post: PersistentModelConstructor<PostModel>;
 	Comment: PersistentModelConstructor<CommentModel>;
 	Blog: PersistentModelConstructor<BlogModel>;
@@ -159,6 +192,8 @@ const {
 
 export {
 	Author,
+	Album,
+	Song,
 	Post,
 	Comment,
 	Blog,

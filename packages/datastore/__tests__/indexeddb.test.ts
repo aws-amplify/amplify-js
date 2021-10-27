@@ -2,10 +2,12 @@ import Dexie from 'dexie';
 import 'dexie-export-import';
 import 'fake-indexeddb/auto';
 import * as idb from 'idb';
-import { DataStore, SortDirection } from '../src/index';
+import { AsyncCollection, DataStore, SortDirection } from '../src/index';
 import { DATASTORE, SYNC, USER } from '../src/util';
 import {
 	Author,
+	Album,
+	Song,
 	Blog,
 	BlogOwner,
 	Comment,
@@ -59,6 +61,7 @@ describe('Indexed db storage test', () => {
 			`${DATASTORE}_Setting`,
 			`${SYNC}_ModelMetadata`,
 			`${SYNC}_MutationEvent`,
+			`${USER}_Album`,
 			`${USER}_Author`,
 			`${USER}_Blog`,
 			`${USER}_BlogOwner`,
@@ -67,6 +70,7 @@ describe('Indexed db storage test', () => {
 			`${USER}_Post`,
 			`${USER}_PostAuthorJoin`,
 			`${USER}_Project`,
+			`${USER}_Song`,
 			`${USER}_Team`,
 		];
 
@@ -314,6 +318,25 @@ describe('Indexed db storage test', () => {
 		return q1.team.then(value => expect(value.id).toEqual(team1.id));
 	});
 
+	test('query lazily HAS_MANY', async () => {
+		const album1 = new Album({ name: "Lupe Fiasco's The Cool" });
+		await DataStore.save(album1);
+		const song1 = new Song({ name: 'Put you on Game', songID: album1.id });
+		const song2 = new Song({ name: 'Streets on Fire', songID: album1.id });
+		const song3 = new Song({ name: 'Superstar', songID: album1.id });
+
+		const savedSong1 = await DataStore.save(song1);
+		const savedSong2 = await DataStore.save(song2);
+		const savedSong3 = await DataStore.save(song3);
+
+		const q1 = await DataStore.query(Album, album1.id);
+
+		const songs = await q1.songs;
+		expect(songs).toStrictEqual(
+			new AsyncCollection(0, 3, [savedSong1, savedSong2, savedSong3])
+		);
+	});
+
 	test('Memoization Test', async () => {
 		expect.assertions(3);
 		const team1 = new Team({ name: 'team' });
@@ -348,6 +371,54 @@ describe('Indexed db storage test', () => {
 
 		// but not by reference
 		expect(team).not.toBe(team3);
+	});
+
+	test('Memoization Test AsyncCollection', async () => {
+		const album1 = new Album({ name: "Lupe Fiasco's The Cool" });
+
+		await DataStore.save(album1);
+		await DataStore.save(
+			new Song({ name: 'Put you on Game', songID: album1.id })
+		);
+		await DataStore.save(
+			new Song({ name: 'Streets on Fire', songID: album1.id })
+		);
+		await DataStore.save(new Song({ name: 'Superstar', songID: album1.id }));
+
+		const q1 = await DataStore.query(Album, album1.id);
+		const q2 = await DataStore.query(Album, album1.id);
+
+		const song = await q1.songs;
+		const song2 = await q1.songs;
+		const song3 = await q2.songs;
+
+		// equality by reference proves memoization works
+		expect(song).toStrictEqual(song2);
+
+		// new instance of the same record will be equal by value
+		expect(song).toEqual(song3);
+
+		// but not by reference
+		expect(song).not.toBe(song3);
+	});
+
+	test('AsyncCollection toArray test', async () => {
+		const album1 = new Album({ name: "Lupe Fiasco's The Cool" });
+		await DataStore.save(album1);
+		const song1 = new Song({ name: 'Put you on Game', songID: album1.id });
+		const song2 = new Song({ name: 'Streets on Fire', songID: album1.id });
+		const song3 = new Song({ name: 'Superstar', songID: album1.id });
+
+		const savedSong1 = await DataStore.save(song1);
+		const savedSong2 = await DataStore.save(song2);
+		const savedSong3 = await DataStore.save(song3);
+
+		const q1 = await DataStore.query(Album, album1.id);
+		const songs = await q1.songs;
+
+		songs.toArray().then(value => {
+			expect(value).toStrictEqual([savedSong1, savedSong2, savedSong3]);
+		});
 	});
 
 	test('Test lazy validation', async () => {
