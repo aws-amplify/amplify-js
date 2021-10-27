@@ -22,10 +22,13 @@ import {
 	ListPartsCommand,
 	AbortMultipartUploadCommand,
 	CompletedPart,
+	S3Client,
 } from '@aws-sdk/client-s3';
+import { HttpHandlerOptions } from '@aws-sdk/types';
 import {
 	SEND_UPLOAD_PROGRESS_EVENT,
 	SEND_DOWNLOAD_PROGRESS_EVENT,
+	AxiosHttpHandlerOptions,
 } from './axios-http-handler';
 import * as events from 'events';
 import {
@@ -57,6 +60,7 @@ export class AWSS3ProviderManagedUpload {
 	private opts = null;
 	private completedParts: CompletedPart[] = [];
 	private cancel = false;
+	private s3client: S3Client;
 
 	// Progress reporting
 	private bytesUploaded = 0;
@@ -67,6 +71,7 @@ export class AWSS3ProviderManagedUpload {
 		this.params = params;
 		this.opts = opts;
 		this.emitter = emitter;
+		this.s3client = this._createNewS3Client(opts, emitter);
 	}
 
 	public async upload() {
@@ -76,8 +81,7 @@ export class AWSS3ProviderManagedUpload {
 			// Multipart upload is not required. Upload the sanitized body as is
 			this.params.Body = this.body;
 			const putObjectCommand = new PutObjectCommand(this.params);
-			const s3 = await this._createNewS3Client(this.opts, this.emitter);
-			return s3.send(putObjectCommand);
+			return this.s3client.send(putObjectCommand);
 		} else {
 			// Step 1: Initiate the multi part upload
 			const uploadId = await this.createMultiPartUpload();
@@ -141,8 +145,7 @@ export class AWSS3ProviderManagedUpload {
 		const createMultiPartUploadCommand = new CreateMultipartUploadCommand(
 			this.params
 		);
-		const s3 = await this._createNewS3Client(this.opts);
-		const response = await s3.send(createMultiPartUploadCommand);
+		const response = await this.s3client.send(createMultiPartUploadCommand);
 		logger.debug(response.UploadId);
 		return response.UploadId;
 	}
@@ -156,7 +159,7 @@ export class AWSS3ProviderManagedUpload {
 			const allResults = await Promise.all(
 				parts.map(async part => {
 					this.setupEventListener(part);
-					const s3 = await this._createNewS3Client(this.opts, part.emitter);
+					const options: AxiosHttpHandlerOptions = { emitter: part.emitter };
 					const {
 						Key,
 						Bucket,
@@ -164,7 +167,7 @@ export class AWSS3ProviderManagedUpload {
 						SSECustomerKey,
 						SSECustomerKeyMD5,
 					} = this.params;
-					return s3.send(
+					const res = await this.s3client.send(
 						new UploadPartCommand({
 							PartNumber: part.partNumber,
 							Body: part.bodyPart,
@@ -174,8 +177,10 @@ export class AWSS3ProviderManagedUpload {
 							...(SSECustomerAlgorithm && { SSECustomerAlgorithm }),
 							...(SSECustomerKey && { SSECustomerKey }),
 							...(SSECustomerKeyMD5 && { SSECustomerKeyMD5 }),
-						})
+						}),
+						options
 					);
+					return res;
 				})
 			);
 			// The order of resolved promises is the same as input promise order.
@@ -203,9 +208,8 @@ export class AWSS3ProviderManagedUpload {
 			MultipartUpload: { Parts: this.completedParts },
 		};
 		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
-		const s3 = await this._createNewS3Client(this.opts);
 		try {
-			const data = await s3.send(completeUploadCommand);
+			const data = await this.s3client.send(completeUploadCommand);
 			return data.Key;
 		} catch (error) {
 			logger.error(
@@ -246,11 +250,10 @@ export class AWSS3ProviderManagedUpload {
 			UploadId: uploadId,
 		};
 
-		const s3 = await this._createNewS3Client(this.opts);
-		await s3.send(new AbortMultipartUploadCommand(input));
+		await this.s3client.send(new AbortMultipartUploadCommand(input));
 
 		// verify that all parts are removed.
-		const data = await s3.send(new ListPartsCommand(input));
+		const data = await this.s3client.send(new ListPartsCommand(input));
 
 		if (data && data.Parts && data.Parts.length > 0) {
 			throw new Error('Multi Part upload clean up failed');
@@ -329,7 +332,7 @@ export class AWSS3ProviderManagedUpload {
 		return false;
 	}
 
-	protected async _createNewS3Client(config, emitter?: events.EventEmitter) {
+	protected _createNewS3Client(config, emitter?: events.EventEmitter) {
 		const s3client = createS3Client(config, emitter);
 		s3client.middlewareStack.add(
 			createPrefixMiddleware(this.opts, this.params.Key),
