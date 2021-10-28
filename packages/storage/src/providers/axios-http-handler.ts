@@ -62,7 +62,6 @@ export const reactNativeRequestTransformer: AxiosTransformer[] = [
 
 export type AxiosHttpHandlerOptions = HttpHandlerOptions & {
 	cancelTokenSource?: CancelTokenSource;
-	emitter?: events.EventEmitter;
 };
 
 export class AxiosHttpHandler implements HttpHandler {
@@ -82,9 +81,7 @@ export class AxiosHttpHandler implements HttpHandler {
 		options: AxiosHttpHandlerOptions
 	): Promise<{ response: HttpResponse }> {
 		const requestTimeoutInMs = this.httpOptions.requestTimeout;
-		// prioritize the call specific event emitter, this is useful for multipart upload as each individual parts has
-		// their own event emitter, without having to create s3client for every individual calls.
-		const emitter = options.emitter || this.emitter;
+		const emitter = this.emitter;
 
 		let path = request.path;
 		if (request.query) {
