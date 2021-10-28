@@ -22,18 +22,19 @@ export const LIGHT_GREY = '#e8e8e8';
 export const WHITE = '#fff';
 
 // spacing
-export const SMALL_SPACING = 4;
-export const BASE_SPACING = 8;
-export const LARGE_SPACING = 12;
-export const EXTRA_LARGE_SPACING = 16;
+export const SPACING_SMALL = 4;
+export const SPACING_MEDIUM = 8;
+export const SPACING_LARGE = 12;
+export const SPACING_EXTRA_LARGE = 16;
 
-// button
-export const BUTTON_BORDER_RADIUS = 4;
+// border radius
+export const BORDER_RADIUS_BASE = 4;
 
 // font
-export const BASE_FONT_SIZE = 16;
-export const LARGE_FONT_SIZE = 18;
-export const BASE_FONT_WEIGHT = '400';
+export const FONT_SIZE_BASE = 16;
+export const FONT_SIZE_LARGE = 18;
+
+export const FONT_WEIGHT_BASE = '400';
 
 export const LINE_HEIGHT_MULTIPLIER = 1.5;
 
@@ -52,16 +53,3 @@ export const BANNER_SHADOW_RADIUS = 2;
 
 // android shadow values
 export const BANNER_ELEVATION = 3;
-
-// TODO: delete these once they are no longer needed
-// pinpoint max chars 150
-export const MAX_MESSAGE =
-	'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar,';
-
-// pinpoint max chars 64
-export const MAX_HEADER =
-	'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum';
-
-// pinpoint max chars 30
-export const MAX_BUTTON =
-	'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis,';

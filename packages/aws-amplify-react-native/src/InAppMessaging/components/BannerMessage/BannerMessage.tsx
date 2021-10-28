@@ -13,13 +13,14 @@
 
 import React from 'react';
 import { Image, Text, View } from 'react-native';
+import isEmpty from 'lodash/isEmpty';
 
 import icons from '../../../icons';
-import { ICON_BUTTON_HIT_SLOP, ICON_BUTTON_SIZE } from '../constants';
 import { useInAppMessageButtonStyle, useInAppMessageImage } from '../../hooks';
 import { Button, IconButton } from '../../ui';
 
-import { MessageWrapper } from '../MessageWrapper';
+import { ICON_BUTTON_HIT_SLOP, ICON_BUTTON_SIZE } from '../constants';
+import MessageWrapper from '../MessageWrapper';
 import { styles } from './styles';
 import { BannerMessageProps } from './types';
 
@@ -36,11 +37,16 @@ export default function BannerMessage({
 	style,
 }: BannerMessageProps) {
 	const { imageStyle, shouldDelayMessageRendering, shouldRenderImage } = useInAppMessageImage(image, layout);
+
+	const messageButtonStyle = { primaryButton: primaryButton?.style, secondaryButton: secondaryButton?.style };
 	const { primaryButtonStyle, secondaryButtonStyle } = useInAppMessageButtonStyle({
 		baseButtonStyle: styles,
-		messageButtonStyle: { primaryButton: primaryButton?.style, secondaryButton: secondaryButton?.style },
+		messageButtonStyle,
 		overrideButtonStyle: style,
 	});
+
+	const hasPrimaryButton = !isEmpty(primaryButton);
+	const hasSecondaryButton = !isEmpty(secondaryButton);
 
 	return shouldDelayMessageRendering ? null : (
 		<MessageWrapper>
@@ -49,7 +55,7 @@ export default function BannerMessage({
 					<View style={styles.contentContainer}>
 						{shouldRenderImage && (
 							<View style={styles.imageContainer}>
-								<Image source={{ uri: image.src }} style={imageStyle} />
+								<Image source={{ uri: image?.src }} style={imageStyle} />
 							</View>
 						)}
 						<View style={styles.textContainer}>
@@ -65,9 +71,9 @@ export default function BannerMessage({
 							style={[styles.iconButton, style?.closeIconButton]}
 						/>
 					</View>
-					{primaryButton && (
+					{(hasPrimaryButton || hasSecondaryButton) && (
 						<View style={styles.buttonsContainer}>
-							{secondaryButton && (
+							{hasSecondaryButton && (
 								<Button
 									onPress={secondaryButton.onPress}
 									style={secondaryButtonStyle.container}
@@ -76,13 +82,15 @@ export default function BannerMessage({
 									{secondaryButton.title}
 								</Button>
 							)}
-							<Button
-								onPress={primaryButton.onPress}
-								style={primaryButtonStyle.container}
-								textStyle={primaryButtonStyle.text}
-							>
-								{primaryButton.title}
-							</Button>
+							{hasPrimaryButton && (
+								<Button
+									onPress={primaryButton.onPress}
+									style={primaryButtonStyle.container}
+									textStyle={primaryButtonStyle.text}
+								>
+									{primaryButton.title}
+								</Button>
+							)}
 						</View>
 					)}
 				</View>

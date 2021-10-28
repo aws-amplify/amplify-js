@@ -1,2 +1,2 @@
-export * from './MessageWrapper';
-export * from './types';
+export { default } from './MessageWrapper';
+export { MessageWrapperProps, MessageWrapperStyle } from './types';
