@@ -15,6 +15,12 @@ import { ImageStyle } from 'react-native';
 
 export type ImageLoadingState = 'loading' | 'loaded' | 'failed';
 
+export type ImageDimensions = {
+	aspectRatio: number;
+	height: number;
+	width: number;
+};
+
 export type UseInAppMessageImage = {
 	imageStyle: ImageStyle;
 	shouldDelayMessageRendering: boolean;

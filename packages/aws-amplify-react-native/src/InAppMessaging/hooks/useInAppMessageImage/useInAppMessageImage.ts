@@ -12,14 +12,18 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
+import isEmpty from 'lodash/isEmpty';
 
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { InAppMessageImage, InAppMessageLayout } from '@aws-amplify/notifications';
 
 import { BANNER_IMAGE_SCREEN_SIZE, CAROUSEL_IMAGE_SCREEN_SIZE, FULL_SCREEN_IMAGE_SCREEN_SIZE } from './constants';
 
-import { ImageLoadingState, UseInAppMessageImage } from './types';
+import { ImageDimensions, UseInAppMessageImage } from './types';
 import { prefetchNetworkImage } from './utils';
+
+const logger = new Logger('Notifications.InAppMessaging');
 
 const inAppMessageImageSizes: Record<InAppMessageLayout, number> = {
 	BOTTOM_BANNER: BANNER_IMAGE_SCREEN_SIZE,
@@ -33,32 +37,78 @@ export default function useInAppMessageImage(
 	image: InAppMessageImage,
 	layout: InAppMessageLayout
 ): UseInAppMessageImage {
+	const [imageDimensions, setImageDimensions] = useState<ImageDimensions>(null);
 	const { src } = image ?? {};
+
+	const hasSetDimensions = !isEmpty(imageDimensions);
 	const hasImage = !!src;
-	const [imageLoadingState, setImageLoadingState] = useState<ImageLoadingState>(hasImage ? 'loading' : null);
+
+	const shouldDelayMessageRendering = hasImage && !hasSetDimensions;
+	const shouldRenderImage = hasImage && hasSetDimensions;
 
 	useEffect(() => {
 		if (hasImage) {
 			prefetchNetworkImage(src).then((loadingState) => {
-				setImageLoadingState(loadingState);
+				// get image size once loaded
+				if (loadingState === 'loaded') {
+					Image.getSize(
+						src,
+						(width, height) => {
+							// determine aspect ratio for scaling rendered image
+							const aspectRatio = width / height;
+							setImageDimensions({ aspectRatio, height, width });
+						},
+						(error) => {
+							logger.error(`Unable to retrieve size for image: ${error}`);
+
+							// set dimension values to 0 if size retrieval failure
+							setImageDimensions({ aspectRatio: 0, height: 0, width: 0 });
+						}
+					);
+				}
+
+				// set dimension values to 0 if prefetch failure
+				setImageDimensions({ aspectRatio: 0, height: 0, width: 0 });
 			});
 		}
 	}, [hasImage, src]);
 
-	const hasFailed = imageLoadingState === 'failed';
-	const isLoaded = imageLoadingState === 'loaded';
-	const isLoading = imageLoadingState === 'loading';
-
-	const shouldDelayMessageRendering = hasImage && isLoading;
-	const shouldRenderImage = hasImage && !hasFailed && isLoaded;
-
 	const { imageStyle } = useMemo(() => {
 		if (shouldRenderImage) {
-			const imageSize = inAppMessageImageSizes[layout];
-			return StyleSheet.create({ imageStyle: { height: imageSize, width: imageSize, resizeMode: 'contain' } });
+			const { aspectRatio, height: imageHeight, width: imageWidth } = imageDimensions;
+
+			const isSquare = aspectRatio === 1;
+			const isPortrait = imageHeight > imageWidth;
+			const isLandcape = imageWidth < imageHeight;
+
+			const maxImageDimension = inAppMessageImageSizes[layout];
+			const minImageDimension = maxImageDimension / aspectRatio;
+
+			let height: number;
+			let width: number;
+
+			// set square image dimensions
+			if (isSquare) {
+				height = maxImageDimension;
+				width = maxImageDimension;
+			}
+
+			// set portrait image dimensions
+			if (isPortrait) {
+				height = maxImageDimension;
+				width = minImageDimension;
+			}
+
+			// set landscape image dimensions
+			if (isLandcape) {
+				height = minImageDimension;
+				width = maxImageDimension;
+			}
+
+			return StyleSheet.create({ imageStyle: { height, resizeMode: 'contain', width } });
 		}
 		return { imageStyle: null };
-	}, [layout, shouldRenderImage]);
+	}, [imageDimensions, layout, shouldRenderImage]);
 
 	return { imageStyle, shouldDelayMessageRendering, shouldRenderImage };
 }
