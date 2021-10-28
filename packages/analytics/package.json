@@ -65,7 +65,8 @@
 						"esnext.asynciterable",
 						"es2017.object"
 					],
-					"allowJs": true
+					"allowJs": true,
+					"esModuleInterop": true
 				}
 			}
 		},
