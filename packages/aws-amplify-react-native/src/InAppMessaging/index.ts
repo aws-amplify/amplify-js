@@ -7,6 +7,7 @@ export {
 	useInAppMessaging,
 } from './context';
 export {
+	BannerMessage,
 	BannerMessageProps,
 	CarouselMessageProps,
 	FullScreenMessageProps,

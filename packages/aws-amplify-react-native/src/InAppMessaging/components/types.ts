@@ -12,7 +12,8 @@
  */
 
 import { ColorValue, StyleProp, TextStyle, ViewStyle } from 'react-native';
-import { InAppMessageButton, InAppMessageContent } from '@aws-amplify/notifications';
+
+import { InAppMessageButton, InAppMessageContent, InAppMessageLayout } from '@aws-amplify/notifications';
 
 export type InAppMessageComponentButtonStyle = {
 	container?: StyleProp<ViewStyle>;
@@ -49,6 +50,7 @@ export interface InAppMessageComponentContentProps
 }
 
 export interface InAppMessageComponentBaseProps extends InAppMessageComponentContentProps {
+	layout: InAppMessageLayout;
 	id: string;
 	onClose?: () => void;
 	style?: InAppMessageComponentStyle;
