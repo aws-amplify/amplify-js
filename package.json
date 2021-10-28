@@ -40,7 +40,9 @@
 		],
 		"nohoist": [
 			"**/@types/react-native",
-			"**/@types/react-native/**"
+			"**/@types/react-native/**",
+			"aws-amplify-react-native/prettier",
+			"aws-amplify-react-native/eslint-plugin-prettier"
 		]
 	},
 	"repository": {
@@ -71,7 +73,7 @@
 		"jest-config": "24.8.0",
 		"json-loader": "^0.5.7",
 		"lerna": "^3.13.1",
-		"prettier": "^2.4.2",
+		"prettier": "^2.4.1",
 		"pretty-quick": "^1.11.1",
 		"rimraf": "^2.6.2",
 		"rollup": "^0.67.4",
