@@ -53,6 +53,7 @@ import {
 	AuthModeStrategyType,
 	isNonModelFieldType,
 	isModelFieldType,
+	ObserveQueryOptions,
 } from '../types';
 import {
 	DATASTORE,
@@ -1152,12 +1153,12 @@ class DataStore {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
-			paginationProducer?: ProducerPaginationInput<T>
+			paginationProducer?: ObserveQueryOptions<T>
 		): Observable<DataStoreSnapshot<T>>;
 	} = <T extends PersistentModel = PersistentModel>(
 		model: PersistentModelConstructor<T>,
 		criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
-		options?: ProducerPaginationInput<T>
+		options?: ObserveQueryOptions<T>
 	): Observable<DataStoreSnapshot<T>> => {
 		return new Observable<DataStoreSnapshot<T>>(observer => {
 			const items = new Map<string, T>();
@@ -1165,10 +1166,13 @@ class DataStore {
 			let deletedItemIds: string[] = [];
 			let handle: ZenObservable.Subscription;
 
+			const { sort } = options || {};
+			const sortOptions = sort ? { sort } : undefined;
+
 			(async () => {
 				try {
 					// first, query and return any locally-available records
-					(await this.query(model, criteria, options)).forEach(item =>
+					(await this.query(model, criteria, sortOptions)).forEach(item =>
 						items.set(item.id, item)
 					);
 
