@@ -11,9 +11,7 @@
  * and limitations under the License.
  */
 
-import { StyleSheet } from 'react-native';
-
-import { getLineHeight } from '../utils';
+import { ImageStyle, StyleSheet, ViewStyle } from 'react-native';
 import {
 	BANNER_ELEVATION,
 	BANNER_SHADOW_HEIGHT,
@@ -26,20 +24,17 @@ import {
 	FONT_SIZE_LARGE,
 	FONT_WEIGHT_BASE,
 	LIGHT_GREY,
+	LINE_HEIGHT_BASE,
+	LINE_HEIGHT_LARGE,
 	SPACING_EXTRA_LARGE,
 	SPACING_LARGE,
 	SPACING_MEDIUM,
 	SPACING_SMALL,
 	WHITE,
 } from '../constants';
-import { BannerMessageStyle } from './types';
+import { BannerMessagePositionStyle, BannerMessageStyle } from './types';
 
-export const styles: BannerMessageStyle = StyleSheet.create({
-	// position style
-	positionContainer: {
-		flex: 1,
-		backgroundColor: 'transparent',
-	},
+export const positionStyle: BannerMessagePositionStyle = {
 	bottom: {
 		justifyContent: 'flex-end',
 	},
@@ -49,62 +44,72 @@ export const styles: BannerMessageStyle = StyleSheet.create({
 	top: {
 		justifyContent: 'flex-start',
 	},
+};
 
-	// shared style
-	buttonContainer: {
-		backgroundColor: LIGHT_GREY,
-		borderRadius: BORDER_RADIUS_BASE,
-		flex: 1,
-		margin: SPACING_MEDIUM,
-		padding: SPACING_LARGE,
-	},
-	buttonsContainer: {
-		flexDirection: 'row',
-		justifyContent: 'center',
-		paddingHorizontal: SPACING_SMALL,
-	},
-	buttonText: {
-		fontSize: FONT_SIZE_BASE,
-		fontWeight: FONT_WEIGHT_BASE,
-		lineHeight: getLineHeight(FONT_SIZE_BASE),
-		textAlign: 'center',
-	},
-	container: {
-		backgroundColor: WHITE,
-		elevation: BANNER_ELEVATION,
-		margin: SPACING_EXTRA_LARGE,
-		shadowColor: BLACK,
-		shadowOffset: {
-			width: BANNER_SHADOW_WIDTH,
-			height: BANNER_SHADOW_HEIGHT,
+export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { position: ViewStyle }): BannerMessageStyle =>
+	StyleSheet.create({
+		body: {
+			fontSize: FONT_SIZE_BASE,
+			fontWeight: FONT_WEIGHT_BASE,
+			lineHeight: LINE_HEIGHT_BASE,
 		},
-		shadowOpacity: BANNER_SHADOW_OPACITY,
-		shadowRadius: BANNER_SHADOW_RADIUS,
-	},
-	contentContainer: {
-		flexDirection: 'row',
-		padding: SPACING_LARGE,
-	},
-	header: {
-		fontSize: FONT_SIZE_LARGE,
-		fontWeight: FONT_WEIGHT_BASE,
-		lineHeight: getLineHeight(FONT_SIZE_LARGE),
-	},
-	iconButton: {
-		alignSelf: 'flex-start',
-		marginLeft: 'auto',
-	},
-	imageContainer: {
-		justifyContent: 'center',
-	},
-	message: {
-		fontSize: FONT_SIZE_BASE,
-		fontWeight: FONT_WEIGHT_BASE,
-		lineHeight: getLineHeight(FONT_SIZE_BASE),
-	},
-	textContainer: {
-		marginHorizontal: SPACING_SMALL,
-		paddingLeft: SPACING_MEDIUM,
-		flex: 1,
-	},
-});
+		buttonContainer: {
+			backgroundColor: LIGHT_GREY,
+			borderRadius: BORDER_RADIUS_BASE,
+			flex: 1,
+			margin: SPACING_MEDIUM,
+			padding: SPACING_LARGE,
+		},
+		buttonsContainer: {
+			flexDirection: 'row',
+			justifyContent: 'center',
+			paddingHorizontal: SPACING_SMALL,
+		},
+		buttonText: {
+			fontSize: FONT_SIZE_BASE,
+			fontWeight: FONT_WEIGHT_BASE,
+			lineHeight: LINE_HEIGHT_BASE,
+			textAlign: 'center',
+		},
+		container: {
+			backgroundColor: WHITE,
+			elevation: BANNER_ELEVATION,
+			margin: SPACING_EXTRA_LARGE,
+			shadowColor: BLACK,
+			shadowOffset: {
+				width: BANNER_SHADOW_WIDTH,
+				height: BANNER_SHADOW_HEIGHT,
+			},
+			shadowOpacity: BANNER_SHADOW_OPACITY,
+			shadowRadius: BANNER_SHADOW_RADIUS,
+		},
+		contentContainer: {
+			flexDirection: 'row',
+			padding: SPACING_LARGE,
+		},
+		header: {
+			fontSize: FONT_SIZE_LARGE,
+			fontWeight: FONT_WEIGHT_BASE,
+			lineHeight: LINE_HEIGHT_LARGE,
+		},
+		iconButton: {
+			alignSelf: 'flex-start',
+			marginLeft: 'auto',
+		},
+		image: {
+			...imageDimensions,
+		},
+		imageContainer: {
+			justifyContent: 'center',
+		},
+		textContainer: {
+			flex: 1,
+			marginHorizontal: SPACING_SMALL,
+			paddingLeft: SPACING_MEDIUM,
+		},
+		wrapper: {
+			...additionalStyle.position,
+			backgroundColor: 'transparent',
+			flex: 1,
+		},
+	});

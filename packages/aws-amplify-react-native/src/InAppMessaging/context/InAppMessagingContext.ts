@@ -11,18 +11,10 @@
  * and limitations under the License.
  */
 
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
 import { InAppMessagingContextType } from './types';
 
 const InAppMessagingContext = createContext<InAppMessagingContextType>(null);
-
-export function useInAppMessaging() {
-	const inAppMessagingContext = useContext(InAppMessagingContext);
-	if (!inAppMessagingContext) {
-		throw new Error('InAppMessagingContext is empty, did you forget the InAppMessagingProvider?');
-	}
-	return inAppMessagingContext;
-}
 
 export default InAppMessagingContext;

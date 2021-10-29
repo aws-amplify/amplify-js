@@ -11,18 +11,15 @@
  * and limitations under the License.
  */
 
-import { ImageStyle } from 'react-native';
-
-export type ImageLoadingState = 'loading' | 'loaded' | 'failed';
-
 export type ImageDimensions = {
-	aspectRatio: number;
 	height: number;
 	width: number;
 };
 
-export type UseInAppMessageImage = {
-	imageStyle: ImageStyle;
-	shouldDelayMessageRendering: boolean;
-	shouldRenderImage: boolean;
+export type ImageLoadingState = 'loading' | 'loaded' | 'failed';
+
+export type UseMessageImage = {
+	imageDimensions: ImageDimensions;
+	isImageFetching: boolean;
+	renderImage: boolean;
 };

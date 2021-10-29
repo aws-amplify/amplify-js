@@ -15,12 +15,12 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Notifications, InAppMessageInteractionEvent } from '@aws-amplify/notifications';
 import isNil from 'lodash/isNil';
 
-import { InAppMessageComponents } from '../../../context';
-import { useInAppMessaging } from '../../../hooks';
-
 import DefaultBannerMessage, { BannerMessageProps } from '../../BannerMessage';
 import { CarouselMessageProps } from '../../CarouselMessage';
 import DefaultFullScreenMessage, { FullScreenMessageProps } from '../../FullScreenMessage';
+
+import { InAppMessageComponents } from '../../../context';
+import { useInAppMessaging } from '../../../hooks';
 
 import { InAppMessageComponent, InAppMessageComponentProps } from './types';
 import { getContentProps, getPositionProp } from './utils';

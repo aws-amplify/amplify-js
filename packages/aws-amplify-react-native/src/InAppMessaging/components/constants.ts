@@ -16,6 +16,8 @@
  * Some values, such as spacing, are slightly different to allow for a more mobile friendly UX
  */
 
+import { getLineHeight } from './utils';
+
 // color
 export const BLACK = '#000';
 export const LIGHT_GREY = '#e8e8e8';
@@ -34,9 +36,10 @@ export const BORDER_RADIUS_BASE = 4;
 export const FONT_SIZE_BASE = 16;
 export const FONT_SIZE_LARGE = 18;
 
-export const FONT_WEIGHT_BASE = '400';
+export const LINE_HEIGHT_BASE = getLineHeight(FONT_SIZE_BASE);
+export const LINE_HEIGHT_LARGE = getLineHeight(FONT_SIZE_LARGE);
 
-export const LINE_HEIGHT_MULTIPLIER = 1.5;
+export const FONT_WEIGHT_BASE = '400';
 
 // icon
 export const ICON_BUTTON_SIZE = 20;

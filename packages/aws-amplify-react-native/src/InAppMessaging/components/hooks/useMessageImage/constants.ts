@@ -21,8 +21,8 @@ const BASE_SCREEN_DIMENSION =
 	SCREEN_DIMENSIONS.width < SCREEN_DIMENSIONS.height ? SCREEN_DIMENSIONS.width : SCREEN_DIMENSIONS.height;
 
 // base size that message images should fill
-// - all banner message images should fill 20 percent of the screen
-// - all other components should fill 50 percent of the screen
+// - all banner message images should fill 20 percent of the base screen dimension
+// - all other components should fill 60 percent of the base screen dimension
 export const BANNER_IMAGE_SCREEN_SIZE = 0.2 * BASE_SCREEN_DIMENSION;
-export const CAROUSEL_IMAGE_SCREEN_SIZE = 0.5 * BASE_SCREEN_DIMENSION;
-export const FULL_SCREEN_IMAGE_SCREEN_SIZE = 0.5 * BASE_SCREEN_DIMENSION;
+export const CAROUSEL_IMAGE_SCREEN_SIZE = 0.6 * BASE_SCREEN_DIMENSION;
+export const FULL_SCREEN_IMAGE_SCREEN_SIZE = 0.6 * BASE_SCREEN_DIMENSION;

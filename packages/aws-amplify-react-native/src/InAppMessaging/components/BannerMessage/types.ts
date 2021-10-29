@@ -22,10 +22,9 @@ export interface BannerMessageProps extends InAppMessageComponentBaseProps {
 	position: InAppMessageComponentPosition;
 }
 
-export interface BannerMessageStyle extends InAppMessageComponentBaseStyle {
-	positionContainer: ViewStyle;
+export interface BannerMessageStyle extends InAppMessageComponentBaseStyle {}
 
-	// position specific style
+export interface BannerMessagePositionStyle {
 	bottom: ViewStyle;
 	middle: ViewStyle;
 	top: ViewStyle;

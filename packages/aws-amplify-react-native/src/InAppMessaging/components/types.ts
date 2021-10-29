@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { ColorValue, StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { ColorValue, ImageStyle, StyleProp, TextStyle, ViewStyle } from 'react-native';
 
 import { InAppMessageButton, InAppMessageContent, InAppMessageLayout } from '@aws-amplify/notifications';
 
@@ -21,11 +21,12 @@ export type InAppMessageComponentButtonStyle = {
 };
 
 export type InAppMessageComponentStyle = {
+	body?: StyleProp<TextStyle>;
 	closeIconButton?: StyleProp<ViewStyle>;
 	closeIconColor?: ColorValue;
 	container?: StyleProp<ViewStyle>;
 	header?: StyleProp<TextStyle>;
-	message?: StyleProp<TextStyle>;
+	image?: StyleProp<ImageStyle>;
 	primaryButton?: InAppMessageComponentButtonStyle;
 	secondaryButton?: InAppMessageComponentButtonStyle;
 };
@@ -57,6 +58,7 @@ export interface InAppMessageComponentBaseProps extends InAppMessageComponentCon
 }
 
 export interface InAppMessageComponentBaseStyle {
+	body: TextStyle;
 	buttonContainer: ViewStyle;
 	buttonsContainer: ViewStyle;
 	buttonText: TextStyle;
@@ -64,7 +66,8 @@ export interface InAppMessageComponentBaseStyle {
 	contentContainer: ViewStyle;
 	header: TextStyle;
 	iconButton: ViewStyle;
+	image: ImageStyle;
 	imageContainer: ViewStyle;
-	message: TextStyle;
 	textContainer: ViewStyle;
+	wrapper: ViewStyle;
 }
