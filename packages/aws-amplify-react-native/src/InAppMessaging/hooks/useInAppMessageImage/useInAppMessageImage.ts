@@ -79,7 +79,7 @@ export default function useInAppMessageImage(
 
 			const isSquare = aspectRatio === 1;
 			const isPortrait = imageHeight > imageWidth;
-			const isLandcape = imageWidth < imageHeight;
+			const isLandscape = imageWidth > imageHeight;
 
 			const maxImageDimension = inAppMessageImageSizes[layout];
 			const minImageDimension = maxImageDimension / aspectRatio;
@@ -100,7 +100,7 @@ export default function useInAppMessageImage(
 			}
 
 			// set landscape image dimensions
-			if (isLandcape) {
+			if (isLandscape) {
 				height = minImageDimension;
 				width = maxImageDimension;
 			}

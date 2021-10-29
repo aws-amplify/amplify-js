@@ -58,12 +58,13 @@ export const styles: FullScreenMessageStyle = {
 	},
 	iconButton: {
 		alignSelf: 'flex-start',
+		marginBottom: SPACING_MEDIUM,
 		marginLeft: 'auto',
 		marginRight: SPACING_MEDIUM,
 	},
 	imageContainer: {
 		alignItems: 'center',
-		marginTop: SPACING_LARGE,
+		marginVertical: SPACING_LARGE,
 	},
 	message: {
 		fontSize: FONT_SIZE_BASE,
