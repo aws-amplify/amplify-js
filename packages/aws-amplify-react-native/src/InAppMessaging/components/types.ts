@@ -55,3 +55,16 @@ export interface InAppMessageComponentBaseProps extends InAppMessageComponentCon
 	onClose?: () => void;
 	style?: InAppMessageComponentStyle;
 }
+
+export interface InAppMessageComponentBaseStyle {
+	buttonContainer: ViewStyle;
+	buttonsContainer: ViewStyle;
+	buttonText: TextStyle;
+	container: ViewStyle;
+	contentContainer: ViewStyle;
+	header: TextStyle;
+	iconButton: ViewStyle;
+	imageContainer: ViewStyle;
+	message: TextStyle;
+	textContainer: ViewStyle;
+}

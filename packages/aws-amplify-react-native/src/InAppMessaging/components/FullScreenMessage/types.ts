@@ -11,6 +11,8 @@
  * and limitations under the License.
  */
 
-import { InAppMessageComponentBaseProps } from '../types';
+import { InAppMessageComponentBaseProps, InAppMessageComponentBaseStyle } from '../types';
 
 export interface FullScreenMessageProps extends InAppMessageComponentBaseProps {}
+
+export interface FullScreenMessageStyle extends InAppMessageComponentBaseStyle {}

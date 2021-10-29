@@ -10,6 +10,7 @@ export {
 	BannerMessage,
 	BannerMessageProps,
 	CarouselMessageProps,
+	FullScreenMessage,
 	FullScreenMessageProps,
 	InAppMessageDisplay,
 	InAppMessageComponentStyle,

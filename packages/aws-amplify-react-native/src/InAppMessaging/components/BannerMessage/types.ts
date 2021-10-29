@@ -11,29 +11,22 @@
  * and limitations under the License.
  */
 
-import { TextStyle, ViewStyle } from 'react-native';
-import { InAppMessageComponentPosition, InAppMessageComponentBaseProps } from '../types';
+import { ViewStyle } from 'react-native';
+import {
+	InAppMessageComponentBaseProps,
+	InAppMessageComponentBaseStyle,
+	InAppMessageComponentPosition,
+} from '../types';
 
 export interface BannerMessageProps extends InAppMessageComponentBaseProps {
 	position: InAppMessageComponentPosition;
 }
 
-export interface BannerMessageStyle {
+export interface BannerMessageStyle extends InAppMessageComponentBaseStyle {
+	positionContainer: ViewStyle;
+
 	// position specific style
 	bottom: ViewStyle;
 	middle: ViewStyle;
 	top: ViewStyle;
-
-	// component style
-	buttonContainer: ViewStyle;
-	buttonsContainer: ViewStyle;
-	buttonText: TextStyle;
-	container: ViewStyle;
-	contentContainer: ViewStyle;
-	header: TextStyle;
-	iconButton: ViewStyle;
-	imageContainer: ViewStyle;
-	message: TextStyle;
-	positionContainer: ViewStyle;
-	textContainer: ViewStyle;
 }
