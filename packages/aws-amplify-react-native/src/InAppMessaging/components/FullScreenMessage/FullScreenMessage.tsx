@@ -36,9 +36,11 @@ export default function FullScreenMessage({
 	style,
 }: FullScreenMessageProps) {
 	const { imageStyle, shouldDelayMessageRendering, shouldRenderImage } = useInAppMessageImage(image, layout);
+
+	const messageButtonStyle = { primaryButton: primaryButton?.style, secondaryButton: secondaryButton?.style };
 	const { primaryButtonStyle, secondaryButtonStyle } = useInAppMessageButtonStyle({
 		baseButtonStyle: styles,
-		messageButtonStyle: { primaryButton: primaryButton?.style, secondaryButton: secondaryButton?.style },
+		messageButtonStyle,
 		overrideButtonStyle: style,
 	});
 

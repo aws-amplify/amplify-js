@@ -13,7 +13,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Image, StyleSheet } from 'react-native';
-import isEmpty from 'lodash/isEmpty';
+import isNull from 'lodash/isNull';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { InAppMessageImage, InAppMessageLayout } from '@aws-amplify/notifications';
@@ -40,7 +40,7 @@ export default function useInAppMessageImage(
 	const [imageDimensions, setImageDimensions] = useState<ImageDimensions>(null);
 	const { src } = image ?? {};
 
-	const hasSetDimensions = !isEmpty(imageDimensions);
+	const hasSetDimensions = !isNull(imageDimensions);
 	const hasImage = !!src;
 
 	const shouldDelayMessageRendering = hasImage && !hasSetDimensions;
