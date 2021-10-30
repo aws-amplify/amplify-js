@@ -91,7 +91,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const provider = new AmazonLocationServiceProvider();
 			provider.configure();
 			expect(() => provider.getAvailableMaps()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create them and run `amplify push` after"
 			);
 		});
 
@@ -115,7 +115,7 @@ describe('AmazonLocationServiceProvider', () => {
 			provider.configure();
 
 			expect(() => provider.getDefaultMap()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create them and run `amplify push` after"
 			);
 		});
 
@@ -126,7 +126,7 @@ describe('AmazonLocationServiceProvider', () => {
 			});
 
 			expect(() => provider.getDefaultMap()).toThrow(
-				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after"
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
 			);
 		});
 
@@ -266,7 +266,7 @@ describe('AmazonLocationServiceProvider', () => {
 			locationProvider.configure({});
 
 			expect(locationProvider.searchByText(testString)).rejects.toThrow(
-				'No Search Index found, please run `amplify add geo` to add one and ensure to run `amplify push` after.'
+				'No Search Index found, please run `amplify add geo` to add one and run `amplify push` after.'
 			);
 		});
 	});
@@ -357,7 +357,7 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(
 				locationProvider.searchByCoordinates(testCoordinates)
 			).rejects.toThrow(
-				'No Search Index found, please run `amplify add geo` to add one and ensure to run `amplify push` after.'
+				'No Search Index found, please run `amplify add geo` to add one and run `amplify push` after.'
 			);
 		});
 	});

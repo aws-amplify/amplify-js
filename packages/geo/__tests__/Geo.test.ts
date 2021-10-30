@@ -134,7 +134,7 @@ describe('Geo', () => {
 			geo.configure({});
 
 			expect(() => geo.getAvailableMaps()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create them and run `amplify push` after"
 			);
 		});
 
@@ -159,7 +159,7 @@ describe('Geo', () => {
 			geo.configure({});
 
 			expect(() => geo.getDefaultMap()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create them and run `amplify push` after"
 			);
 		});
 
@@ -174,7 +174,7 @@ describe('Geo', () => {
 			});
 
 			expect(() => geo.getDefaultMap()).toThrow(
-				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after"
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
 			);
 		});
 
