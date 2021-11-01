@@ -121,6 +121,11 @@ export default class InAppMessaging {
 			pluggable.getCategory() === 'Notifications' &&
 			pluggable.getSubCategory() === 'InAppMessaging'
 		) {
+			if (this.getPluggable(pluggable.getProviderName())) {
+				throw new Error(
+					`Pluggable ${pluggable.getProviderName()} has already been added.`
+				);
+			}
 			this.pluggables.push(pluggable);
 			pluggable.configure(this.config[pluggable.getProviderName()]);
 		}
