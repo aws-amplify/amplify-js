@@ -51,8 +51,8 @@ export interface InAppMessageComponentContentProps
 
 export interface InAppMessageComponentBaseProps extends InAppMessageComponentContentProps {
 	layout: InAppMessageLayout;
-	id: string;
 	onClose?: () => void;
+	onDisplay?: () => void;
 	style?: InAppMessageComponentStyle;
 }
 

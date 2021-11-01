@@ -11,13 +11,13 @@
  * and limitations under the License.
  */
 
-import React from 'react';
-import isNull from 'lodash/isNull';
+import { ReactElement } from 'react';
 
-import { useMessage } from '../hooks';
+import { InAppMessageAction } from '@aws-amplify/notifications';
+import { BannerMessageProps, CarouselMessageProps, FullScreenMessageProps } from '../..';
 
-export default function InAppMessageDisplay() {
-	const { Component, props } = useMessage();
+export type InAppMessageComponentActionHandler = (action: InAppMessageAction, url?: string) => Promise<void>;
 
-	return !isNull(Component) ? <Component {...props} /> : null;
-}
+export type InAppMessageComponent = (props: InAppMessageComponentProps) => ReactElement;
+
+export type InAppMessageComponentProps = BannerMessageProps | CarouselMessageProps | FullScreenMessageProps;

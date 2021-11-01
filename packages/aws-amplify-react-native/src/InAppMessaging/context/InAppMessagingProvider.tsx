@@ -20,30 +20,30 @@ import { InAppMessagingProviderProps } from './types';
 const { InAppMessaging } = Notifications;
 
 export default function InAppMessagingProvider({ children, components = {}, style = {} }: InAppMessagingProviderProps) {
-	const [inAppMessages, setInAppMessages] = useState<InAppMessage[]>([]);
+	const [inAppMessage, setInAppMessage] = useState<InAppMessage>(null);
 
 	useEffect(() => {
 		const listener = InAppMessaging.onMessageReceived((message) => {
-			setInAppMessages([message]);
+			setInAppMessage(message);
 		});
 		return listener.remove;
 	}, []);
 
-	const clearInAppMessages = useCallback(() => {
-		setInAppMessages([]);
+	const clearInAppMessage = useCallback(() => {
+		setInAppMessage(null);
 	}, []);
 
-	const displayInAppMessage = useCallback((inAppMessage: InAppMessage) => {
-		setInAppMessages([inAppMessage]);
+	const displayInAppMessage = useCallback((message: InAppMessage) => {
+		setInAppMessage(message);
 	}, []);
 
 	return (
 		<InAppMessagingContext.Provider
 			value={{
-				clearInAppMessages,
+				clearInAppMessage,
 				components,
 				displayInAppMessage,
-				inAppMessages,
+				inAppMessage,
 				style,
 			}}
 		>

@@ -20,6 +20,7 @@ import { useInAppMessageButtonStyle, useInAppMessageImage } from '../../hooks';
 import { Button, IconButton } from '../../ui';
 
 import { ICON_BUTTON_HIT_SLOP, ICON_BUTTON_SIZE } from '../constants';
+import { useMessageOnDisplay } from '../hooks';
 import MessageWrapper from '../MessageWrapper';
 import { styles } from './styles';
 import { FullScreenMessageProps } from './types';
@@ -31,11 +32,14 @@ export default function FullScreenMessage({
 	image,
 	layout,
 	onClose,
+	onDisplay,
 	primaryButton,
 	secondaryButton,
 	style,
 }: FullScreenMessageProps) {
 	const { imageStyle, shouldDelayMessageRendering, shouldRenderImage } = useInAppMessageImage(image, layout);
+
+	useMessageOnDisplay(onDisplay);
 
 	const messageButtonStyle = { primaryButton: primaryButton?.style, secondaryButton: secondaryButton?.style };
 	const { primaryButtonStyle, secondaryButtonStyle } = useInAppMessageButtonStyle({

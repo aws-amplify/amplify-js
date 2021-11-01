@@ -11,13 +11,21 @@
  * and limitations under the License.
  */
 
-import React from 'react';
-import isNull from 'lodash/isNull';
+import { useEffect, useRef } from 'react';
 
-import { useMessage } from '../hooks';
+/**
+ * Utility hook used for invoking onDisplay in message components
+ *
+ * @param onDisplay - function to be invoked on message display
+ * @param shouldDisplay - boolean indicating whether message should display, defaults to true
+ */
 
-export default function InAppMessageDisplay() {
-	const { Component, props } = useMessage();
-
-	return !isNull(Component) ? <Component {...props} /> : null;
+export default function useMessageOnDisplay(onDisplay: () => void) {
+	const hasDisplayed = useRef(false);
+	useEffect(() => {
+		if (!hasDisplayed.current) {
+			onDisplay();
+			hasDisplayed.current = true;
+		}
+	}, [onDisplay]);
 }

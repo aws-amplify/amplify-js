@@ -12,7 +12,6 @@
  */
 
 import {
-	InAppMessage,
 	InAppMessageAction,
 	InAppMessageButton,
 	InAppMessageContent,
@@ -24,16 +23,11 @@ import {
 	InAppMessageComponentButtonProps,
 	InAppMessageComponentContentProps,
 	InAppMessageComponentPosition,
-} from '../../components';
+} from '../..';
 
 import handleAction from './handleAction';
 
 const logger = new Logger('Notifications.InAppMessaging');
-
-// TODO: implement endDate sorting logic
-export function getInAppMessage(messages: InAppMessage[]) {
-	return messages?.[0] ?? ({} as InAppMessage);
-}
 
 export const getPositionProp = (layout: InAppMessageLayout): InAppMessageComponentPosition => {
 	switch (layout) {
