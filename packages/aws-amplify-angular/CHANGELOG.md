@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.22](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.21...aws-amplify-angular@6.0.22) (2021-10-28)
+
+**Note:** Version bump only for package aws-amplify-angular
+
+
+
+
+
 ## [6.0.21](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-angular@6.0.20...aws-amplify-angular@6.0.21) (2021-10-21)
 
 **Note:** Version bump only for package aws-amplify-angular
