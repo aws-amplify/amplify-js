@@ -42,13 +42,11 @@
 	"dependencies": {
 		"@aws-amplify/core": "4.3.3",
 		"@aws-amplify/storage": "4.4.4",
-		"@aws-sdk/client-comprehend": "3.6.1",
-		"@aws-sdk/client-polly": "3.6.1",
-		"@aws-sdk/client-rekognition": "3.6.1",
-		"@aws-sdk/client-textract": "3.6.1",
-		"@aws-sdk/client-translate": "3.6.1",
-		"@aws-sdk/eventstream-marshaller": "3.6.1",
-		"@aws-sdk/util-utf8-node": "3.6.1",
+		"@aws-sdk/client-comprehend": "3.38.0",
+		"@aws-sdk/client-polly": "3.38.0",
+		"@aws-sdk/client-rekognition": "3.38.0",
+		"@aws-sdk/client-textract": "3.38.0",
+		"@aws-sdk/client-translate": "3.38.0",
 		"uuid": "^8.3.2"
 	},
 	"jest": {
