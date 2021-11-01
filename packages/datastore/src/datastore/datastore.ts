@@ -53,6 +53,7 @@ import {
 	AuthModeStrategyType,
 	isNonModelFieldType,
 	isModelFieldType,
+	ObserveQueryOptions,
 } from '../types';
 import {
 	DATASTORE,
@@ -1152,12 +1153,12 @@ class DataStore {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
-			paginationProducer?: ProducerPaginationInput<T>
+			paginationProducer?: ObserveQueryOptions<T>
 		): Observable<DataStoreSnapshot<T>>;
 	} = <T extends PersistentModel = PersistentModel>(
 		model: PersistentModelConstructor<T>,
 		criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
-		options?: ProducerPaginationInput<T>
+		options?: ObserveQueryOptions<T>
 	): Observable<DataStoreSnapshot<T>> => {
 		return new Observable<DataStoreSnapshot<T>>(observer => {
 			const items = new Map<string, T>();
@@ -1165,10 +1166,28 @@ class DataStore {
 			let deletedItemIds: string[] = [];
 			let handle: ZenObservable.Subscription;
 
+			// a mechanism to return data after X amount of seconds OR after the
+			// "limit" (itemsChanged >= this.syncPageSize) has been reached, whichever comes first
+			const TIMER_INTERVAL = 2000;
+			let timer: NodeJS.Timer;
+			let timerPromise: Promise<any>;
+			function LimitPromise(): void {
+				const self = this;
+				this.promise = new Promise((resolve, reject) => {
+					self.resolve = resolve;
+					self.reject = reject;
+				});
+			}
+			let limitPromise = new LimitPromise();
+			let raceInFlight = false;
+
+			const { sort } = options || {};
+			const sortOptions = sort ? { sort } : undefined;
+
 			(async () => {
 				try {
 					// first, query and return any locally-available records
-					(await this.query(model, criteria, options)).forEach(item =>
+					(await this.query(model, criteria, sortOptions)).forEach(item =>
 						items.set(item.id, item)
 					);
 
@@ -1190,20 +1209,48 @@ class DataStore {
 
 						const isSynced = this.sync.getModelSyncedStatus(model);
 
-						if (
-							itemsChanged.size - deletedItemIds.length >= this.syncPageSize ||
-							isSynced
-						) {
-							generateAndEmitSnapshot();
+						const limit =
+							itemsChanged.size - deletedItemIds.length >= this.syncPageSize;
+
+						if (limit || isSynced) {
+							limitPromise.resolve('limitPromise resolves');
 						}
+
+						// kicks off every subsequent race as results sync down
+						if (!raceInFlight) racePromises();
 					});
 
-					// will return any locally-available items in the first snapshot
-					generateAndEmitSnapshot();
+					// kicks off the first race to return any initial results
+					if (!raceInFlight) racePromises();
 				} catch (err) {
 					observer.error(err);
 				}
 			})();
+
+			const racePromises = async (): Promise<any> => {
+				raceInFlight = true;
+				startTimer();
+
+				try {
+					await Promise.race([timerPromise, limitPromise]);
+				} catch (err) {
+					observer.error(err);
+				}
+
+				generateAndEmitSnapshot();
+
+				// reset for the next race
+				raceInFlight = false;
+				limitPromise = new LimitPromise();
+			};
+
+			const startTimer = (): void => {
+				timerPromise = new Promise((resolve, reject) => {
+					timer = setTimeout(() => {
+						resolve('timerPromise resolves');
+					}, TIMER_INTERVAL);
+				});
+			};
 
 			// TODO: abstract this function into a util file to be able to write better unit tests
 			const generateSnapshot = (): DataStoreSnapshot<T> => {
@@ -1229,7 +1276,8 @@ class DataStore {
 				};
 			};
 
-			const emitSnapshot = (snapshot: DataStoreSnapshot<T>) => {
+			const emitSnapshot = (snapshot: DataStoreSnapshot<T>): void => {
+				clearTimeout(timer);
 				// send the generated snapshot to the primary subscription
 				observer.next(snapshot);
 
@@ -1238,7 +1286,7 @@ class DataStore {
 				deletedItemIds = [];
 			};
 
-			const generateAndEmitSnapshot = () => {
+			const generateAndEmitSnapshot = (): void => {
 				const snapshot = generateSnapshot();
 				emitSnapshot(snapshot);
 			};
@@ -1258,7 +1306,7 @@ class DataStore {
 			};
 
 			// send one last snapshot when the model is fully synced
-			const hubCallback = ({ payload }) => {
+			const hubCallback = ({ payload }): void => {
 				const { event, data } = payload;
 				if (
 					event === ControlMessage.SYNC_ENGINE_MODEL_SYNCED &&

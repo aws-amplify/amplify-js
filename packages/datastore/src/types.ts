@@ -555,6 +555,11 @@ export type ProducerPaginationInput<T extends PersistentModel> = {
 	page?: number;
 };
 
+export type ObserveQueryOptions<T extends PersistentModel> = Pick<
+	ProducerPaginationInput<T>,
+	'sort'
+>;
+
 export type PaginationInput<T extends PersistentModel> = {
 	sort?: SortPredicate<T>;
 	limit?: number;
