@@ -605,12 +605,12 @@ const createModelClass = <T extends PersistentModel>(
 							return instanceMemos[field];
 						}
 						const associatedWith = association.associatedWith;
-						const relatedModel = getModelConstructorByModelName(
+						const relatedModel: PersistentModelConstructor<typeof relatedModelName> = getModelConstructorByModelName(
 							USER,
 							relatedModelName
 						);
 						const result = await instance.query(relatedModel, c =>
-							(c as any)[associatedWith].eq(this.id)
+							c[associatedWith].eq(this.id)
 						);
 						const asyncResult = new AsyncCollection(result);
 						instanceMemos[field] = asyncResult;
@@ -665,8 +665,9 @@ export class AsyncCollection<T> implements AsyncIterable<T> {
 			},
 		};
 	}
-	async toArray(arg?): Promise<T[]> {
-		const max = arg && arg.hasOwnProperty('max') ? arg.max : this.values.length;
+	async toArray({
+		max = Number.MAX_SAFE_INTEGER,
+	}: { max?: number } = {}): Promise<T[]> {
 		const output = [];
 		let i = 0;
 		for await (const element of this) {
