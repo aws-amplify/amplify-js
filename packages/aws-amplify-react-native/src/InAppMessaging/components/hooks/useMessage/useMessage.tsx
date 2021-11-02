@@ -13,7 +13,7 @@
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Notifications, InAppMessageInteractionEvent } from '@aws-amplify/notifications';
-import isNull from 'lodash/isNull';
+import isNil from 'lodash/isNil';
 
 import { InAppMessageComponents } from '../../../context';
 import { useInAppMessaging } from '../../../hooks';
@@ -51,9 +51,11 @@ export default function useMessage(): {
 		FullScreenMessage = DefaultFullScreenMessage,
 	} = components;
 
-	if (isNull(inAppMessage)) {
+	if (isNil(inAppMessage)) {
 		return { Component: null, props: null };
 	}
+
+	const { content, layout } = inAppMessage;
 
 	const onActionCallback = () => {
 		InAppMessaging.notifyMessageInteraction(inAppMessage, InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN);
@@ -68,8 +70,6 @@ export default function useMessage(): {
 	const onDisplay = () => {
 		InAppMessaging.notifyMessageInteraction(inAppMessage, InAppMessageInteractionEvent.MESSAGE_DISPLAYED);
 	};
-
-	const { content, layout } = inAppMessage;
 
 	switch (layout) {
 		case 'BOTTOM_BANNER':

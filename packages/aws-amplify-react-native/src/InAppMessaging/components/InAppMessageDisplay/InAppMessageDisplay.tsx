@@ -12,12 +12,12 @@
  */
 
 import React from 'react';
-import isNull from 'lodash/isNull';
+import isNil from 'lodash/isNil';
 
 import { useMessage } from '../hooks';
 
 export default function InAppMessageDisplay() {
 	const { Component, props } = useMessage();
 
-	return !isNull(Component) ? <Component {...props} /> : null;
+	return !isNil(Component) ? <Component {...props} /> : null;
 }
