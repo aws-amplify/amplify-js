@@ -7,8 +7,8 @@
 	"typings": "./lib-esm/index.d.ts",
 	"typesVersions": {
 		"<3.8": {
-		  "./lib-esm/index.d.ts": [
-			"types/ts3.7/index.d.ts"
+		  "lib-esm/index.d.ts": [
+			"index.v37.d.ts"
 		  ]
 		}
 	},
