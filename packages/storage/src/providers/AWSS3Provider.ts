@@ -827,6 +827,7 @@ export class AWSS3Provider implements StorageProvider {
 			region?: string;
 			cancelTokenSource?: CancelTokenSource;
 			dangerouslyConnectToHttpEndpointForTesting?: boolean;
+			useAccelerateEndpoint?: boolean;
 		},
 		emitter?: events.EventEmitter
 	): S3Client {
@@ -834,6 +835,7 @@ export class AWSS3Provider implements StorageProvider {
 			region,
 			cancelTokenSource,
 			dangerouslyConnectToHttpEndpointForTesting,
+			useAccelerateEndpoint = false,
 		} = config;
 		let localTestingConfig = {};
 
@@ -854,6 +856,7 @@ export class AWSS3Provider implements StorageProvider {
 			customUserAgent: getAmplifyUserAgent(),
 			...localTestingConfig,
 			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
+			useAccelerateEndpoint,
 		});
 		return s3client;
 	}
