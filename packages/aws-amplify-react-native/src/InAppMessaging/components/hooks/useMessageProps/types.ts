@@ -14,7 +14,11 @@
 import { ColorValue, ImageStyle, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { InAppMessageLayout, InAppMessageStyle } from '@aws-amplify/notifications';
 
-import { InAppMessageComponentBaseStyle, InAppMessageComponentButtonStyle, InAppMessageComponentStyle } from '../..';
+import {
+	InAppMessageComponentBaseStyle,
+	InAppMessageComponentButtonStyle,
+	InAppMessageComponentStyle,
+} from '../../types';
 import { ImageDimensions } from '../useMessageImage';
 
 type InAppMessagePayloadStyle = {

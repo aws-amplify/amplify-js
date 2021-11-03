@@ -14,7 +14,7 @@
 import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { InAppMessageStyle } from '@aws-amplify/notifications';
 
-import { InAppMessageComponentBaseProps, InAppMessageComponentButtonStyle } from '../..';
+import { InAppMessageComponentBaseProps, InAppMessageComponentButtonStyle } from '../../types';
 import { MessageStylePropParams, MessageStyleProps } from './types';
 
 /**

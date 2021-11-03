@@ -39,9 +39,9 @@ export default function useMessageProps(
 
 	useMessageOnDisplay(onDisplay);
 
-	const { imageDimensions, isImageFetching, renderImage } = useMessageImage(image, layout);
+	const { imageDimensions, imageFetching, renderImage } = useMessageImage(image, layout);
 
-	const renderMessage = !isImageFetching;
+	const renderMessage = !imageFetching;
 
 	const renderPrimaryButton = !isEmpty(primaryButton);
 	const renderSecondaryButton = !isEmpty(secondaryButton);
