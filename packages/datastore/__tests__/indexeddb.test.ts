@@ -302,8 +302,7 @@ describe('Indexed db storage test', () => {
 		expect(q1Post.id).toEqual(p.id);
 	});
 
-	test('query lazily HAS_ONE/BELONGS_TO with explicit Field', async () => {
-		expect.assertions(1);
+	test('query lazily HAS_ONE/BELONGS_TO with explicit Field', async done => {
 		const team1 = new Team({ name: 'team' });
 		const savedTeam = DataStore.save(team1);
 		const project1 = new Project({
@@ -315,7 +314,12 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(project1);
 
 		const q1 = await DataStore.query(Project, project1.id);
-		return q1.team.then(value => expect(value.id).toEqual(team1.id));
+		try {
+			q1.team.then(value => expect(value.id).toEqual(team1.id));
+			done();
+		} catch (error) {
+			done(error);
+		}
 	});
 
 	test('query lazily HAS_MANY', async () => {
@@ -402,7 +406,7 @@ describe('Indexed db storage test', () => {
 		expect(song).not.toBe(song3);
 	});
 
-	test('AsyncCollection toArray test', async () => {
+	test('AsyncCollection toArray test', async done => {
 		const album1 = new Album({ name: "Lupe Fiasco's The Cool" });
 		await DataStore.save(album1);
 		const song1 = new Song({ name: 'Put you on Game', songID: album1.id });
@@ -417,26 +421,30 @@ describe('Indexed db storage test', () => {
 
 		const q1 = await DataStore.query(Album, album1.id);
 		const songs = await q1.songs;
-
-		songs.toArray().then(value => {
-			expect(value).toStrictEqual([
-				savedSong1,
-				savedSong2,
-				savedSong3,
-				savedSong4,
-			]);
-		});
-		songs.toArray({}).then(value => {
-			expect(value).toStrictEqual([
-				savedSong1,
-				savedSong2,
-				savedSong3,
-				savedSong4,
-			]);
-		});
-		songs.toArray({ max: 3 }).then(value => {
-			expect(value).toStrictEqual([savedSong1, savedSong2, savedSong3]);
-		});
+		try {
+			songs.toArray().then(value => {
+				expect(value).toStrictEqual([
+					savedSong1,
+					savedSong2,
+					savedSong3,
+					savedSong4,
+				]);
+			});
+			songs.toArray({}).then(value => {
+				expect(value).toStrictEqual([
+					savedSong1,
+					savedSong2,
+					savedSong3,
+					savedSong4,
+				]);
+			});
+			songs.toArray({ max: 3 }).then(value => {
+				expect(value).toStrictEqual([savedSong1, savedSong2, savedSong3]);
+			});
+			done();
+		} catch (error) {
+			done(error);
+		}
 	});
 
 	test('Test lazy validation', async () => {
