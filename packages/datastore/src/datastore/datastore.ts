@@ -68,6 +68,7 @@ import {
 	isNullOrUndefined,
 	registerNonModelClass,
 	sortCompareFunction,
+	DeferredPromise,
 } from '../util';
 
 setAutoFreeze(true);
@@ -1170,15 +1171,8 @@ class DataStore {
 			// "limit" (itemsChanged >= this.syncPageSize) has been reached, whichever comes first
 			const TIMER_INTERVAL = 2000;
 			let timer: NodeJS.Timer;
-			let timerPromise: Promise<any>;
-			function LimitPromise(): void {
-				const self = this;
-				this.promise = new Promise((resolve, reject) => {
-					self.resolve = resolve;
-					self.reject = reject;
-				});
-			}
-			let limitPromise = new LimitPromise();
+			let timerPromise: Promise<void>;
+			let limitPromise = new DeferredPromise();
 			let raceInFlight = false;
 
 			const { sort } = options || {};
@@ -1213,15 +1207,15 @@ class DataStore {
 							itemsChanged.size - deletedItemIds.length >= this.syncPageSize;
 
 						if (limit || isSynced) {
-							limitPromise.resolve('limitPromise resolves');
+							limitPromise.resolve();
 						}
 
 						// kicks off every subsequent race as results sync down
 						if (!raceInFlight) racePromises();
 					});
 
-					// kicks off the first race to return any initial results
-					if (!raceInFlight) racePromises();
+					// returns a set of initial/locally-available results
+					generateAndEmitSnapshot();
 				} catch (err) {
 					observer.error(err);
 				}
@@ -1230,9 +1224,8 @@ class DataStore {
 			const racePromises = async (): Promise<any> => {
 				raceInFlight = true;
 				startTimer();
-
 				try {
-					await Promise.race([timerPromise, limitPromise]);
+					await Promise.race([timerPromise, limitPromise?.promise]);
 				} catch (err) {
 					observer.error(err);
 				}
@@ -1241,13 +1234,13 @@ class DataStore {
 
 				// reset for the next race
 				raceInFlight = false;
-				limitPromise = new LimitPromise();
+				limitPromise = new DeferredPromise();
 			};
 
 			const startTimer = (): void => {
 				timerPromise = new Promise((resolve, reject) => {
 					timer = setTimeout(() => {
-						resolve('timerPromise resolves');
+						resolve();
 					}, TIMER_INTERVAL);
 				});
 			};

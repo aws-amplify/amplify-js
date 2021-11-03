@@ -681,3 +681,11 @@ export const isAWSIPAddress = (val: string): boolean => {
 		val
 	);
 };
+
+export function DeferredPromise(): void {
+	const self = this;
+	this.promise = new Promise((resolve, reject) => {
+		self.resolve = resolve;
+		self.reject = reject;
+	});
+}
