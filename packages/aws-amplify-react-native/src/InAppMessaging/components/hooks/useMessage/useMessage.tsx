@@ -17,13 +17,10 @@ import isNil from 'lodash/isNil';
 
 import { InAppMessageComponents } from '../../../context';
 import { useInAppMessaging } from '../../../hooks';
-import {
-	BannerMessage as DefaultBannerMessage,
-	BannerMessageProps,
-	CarouselMessageProps,
-	FullScreenMessage as DefaultFullScreenMessage,
-	FullScreenMessageProps,
-} from '../..';
+
+import DefaultBannerMessage, { BannerMessageProps } from '../../BannerMessage';
+import { CarouselMessageProps } from '../../CarouselMessage';
+import DefaultFullScreenMessage, { FullScreenMessageProps } from '../../FullScreenMessage';
 
 import { InAppMessageComponent, InAppMessageComponentProps } from './types';
 import { getContentProps, getPositionProp } from './utils';

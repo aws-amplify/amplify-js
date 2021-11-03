@@ -17,7 +17,6 @@ import { useEffect, useRef } from 'react';
  * Utility hook used for invoking onDisplay in message components
  *
  * @param onDisplay - function to be invoked on message display
- * @param shouldDisplay - boolean indicating whether message should display, defaults to true
  */
 
 export default function useMessageOnDisplay(onDisplay: () => void) {
