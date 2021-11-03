@@ -12,41 +12,60 @@
  */
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import { Notifications, InAppMessageInteractionEvent } from '@aws-amplify/notifications';
+import isNil from 'lodash/isNil';
 
-import { BannerMessageProps, CarouselMessageProps, FullScreenMessageProps } from '../../components';
-import { InAppMessageComponents, useInAppMessaging } from '../../context';
+import { InAppMessageComponents } from '../../../context';
+import { useInAppMessaging } from '../../../hooks';
+
+import DefaultBannerMessage, { BannerMessageProps } from '../../BannerMessage';
+import { CarouselMessageProps } from '../../CarouselMessage';
+import DefaultFullScreenMessage, { FullScreenMessageProps } from '../../FullScreenMessage';
 
 import { InAppMessageComponent, InAppMessageComponentProps } from './types';
-import { getInAppMessage, getContentProps, getPositionProp } from './utils';
+import { getContentProps, getPositionProp } from './utils';
+
+const { InAppMessaging } = Notifications;
 
 const logger = new Logger('Notifications.InAppMessaging');
 
-// TODO: replace with Amplify default components
-const DefaultBannerMessage: InAppMessageComponents['BannerMessage'] = () => null;
+// TODO: replace with Amplify default component
 const DefaultCarouselMessage: InAppMessageComponents['CarouselMessage'] = () => null;
-const DefaultFullScreenMessage: InAppMessageComponents['FullScreenMessage'] = () => null;
 
-export default function useInAppMessage(): {
+/**
+ * Utility hook for parsing a message and retrieving its corresponding UI component and props
+ *
+ * @returns {object} contains the message UI component and props
+ */
+export default function useMessage(): {
 	Component: InAppMessageComponent;
 	props: InAppMessageComponentProps;
 } {
-	const { clearInAppMessages, components, inAppMessages, style } = useInAppMessaging();
+	const { clearInAppMessage, components, inAppMessage, style } = useInAppMessaging();
 	const {
 		BannerMessage = DefaultBannerMessage,
 		CarouselMessage = DefaultCarouselMessage,
 		FullScreenMessage = DefaultFullScreenMessage,
 	} = components;
 
-	const { content, id, layout } = getInAppMessage(inAppMessages);
+	if (isNil(inAppMessage)) {
+		return { Component: null, props: null };
+	}
 
-	const onClose = () => {
-		// TODO: add dismiss notify handler when available
-		clearInAppMessages();
-	};
+	const { content, layout } = inAppMessage;
 
 	const onActionCallback = () => {
-		// TODO: add action notify handler when available
-		clearInAppMessages();
+		InAppMessaging.notifyMessageInteraction(inAppMessage, InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN);
+		clearInAppMessage();
+	};
+
+	const onClose = () => {
+		InAppMessaging.notifyMessageInteraction(inAppMessage, InAppMessageInteractionEvent.MESSAGE_DISMISSED);
+		clearInAppMessage();
+	};
+
+	const onDisplay = () => {
+		InAppMessaging.notifyMessageInteraction(inAppMessage, InAppMessageInteractionEvent.MESSAGE_DISPLAYED);
 	};
 
 	switch (layout) {
@@ -55,9 +74,9 @@ export default function useInAppMessage(): {
 		case 'TOP_BANNER': {
 			const props: BannerMessageProps = {
 				...getContentProps(content?.[0], onActionCallback),
-				id,
 				layout,
 				onClose,
+				onDisplay,
 				position: getPositionProp(layout),
 				style: style?.BannerMessage,
 			};
@@ -66,9 +85,9 @@ export default function useInAppMessage(): {
 		case 'CAROUSEL': {
 			const props: CarouselMessageProps = {
 				data: content?.map((item) => getContentProps(item, onActionCallback)),
-				id,
 				layout,
 				onClose,
+				onDisplay,
 				style: style?.CarouselMessage,
 			};
 			return { Component: CarouselMessage, props };
@@ -76,16 +95,16 @@ export default function useInAppMessage(): {
 		case 'OVERLAYS': {
 			const props: FullScreenMessageProps = {
 				...getContentProps(content?.[0], onActionCallback),
-				id,
 				layout,
 				onClose,
+				onDisplay,
 				style: style?.FullScreenMessage,
 			};
 			return { Component: FullScreenMessage, props };
 		}
 		default: {
 			logger.info(`Received unknown InAppMessage layout: ${layout}`);
-			return { Component: null, props: {} as InAppMessageComponentProps };
+			return { Component: null, props: null };
 		}
 	}
 }

@@ -4,7 +4,6 @@ export {
 	InAppMessagingContextType,
 	InAppMessagingProvider,
 	InAppMessagingProviderProps,
-	useInAppMessaging,
 } from './context';
 export {
 	BannerMessage,
@@ -16,3 +15,4 @@ export {
 	InAppMessageComponentStyle,
 	InAppMessageComponentStyles,
 } from './components';
+export { useInAppMessaging } from './hooks';

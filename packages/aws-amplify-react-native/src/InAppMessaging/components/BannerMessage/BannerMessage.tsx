@@ -20,6 +20,7 @@ import { useInAppMessageButtonStyle, useInAppMessageImage } from '../../hooks';
 import { Button, IconButton } from '../../ui';
 
 import { ICON_BUTTON_HIT_SLOP, ICON_BUTTON_SIZE } from '../constants';
+import { useMessageOnDisplay } from '../hooks';
 import MessageWrapper from '../MessageWrapper';
 import { styles } from './styles';
 import { BannerMessageProps } from './types';
@@ -31,6 +32,7 @@ export default function BannerMessage({
 	image,
 	layout,
 	onClose,
+	onDisplay,
 	position,
 	primaryButton,
 	secondaryButton,
@@ -47,6 +49,8 @@ export default function BannerMessage({
 
 	const hasPrimaryButton = !isEmpty(primaryButton);
 	const hasSecondaryButton = !isEmpty(secondaryButton);
+
+	useMessageOnDisplay(onDisplay);
 
 	return shouldDelayMessageRendering ? null : (
 		<MessageWrapper>

@@ -28,10 +28,10 @@ export type InAppMessageComponents = {
 };
 
 export type InAppMessagingContextType = {
-	clearInAppMessages: () => void;
+	clearInAppMessage: () => void;
 	components: InAppMessageComponents;
 	displayInAppMessage: (inAppMessage: InAppMessage) => void;
-	inAppMessages: InAppMessage[];
+	inAppMessage: InAppMessage;
 	style: InAppMessageComponentStyles;
 };
 
