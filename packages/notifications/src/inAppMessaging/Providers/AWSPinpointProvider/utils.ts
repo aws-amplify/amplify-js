@@ -284,10 +284,12 @@ export const extractContent = ({
 };
 
 export const extractMetadata = ({
+	InAppMessage,
 	Priority,
 	Schedule,
 	TreatmentId,
 }: PinpointInAppMessage): InAppMessage['metadata'] => ({
+	customData: InAppMessage?.CustomConfig,
 	endDate: Schedule?.EndDate,
 	priority: Priority,
 	treatmentId: TreatmentId,
