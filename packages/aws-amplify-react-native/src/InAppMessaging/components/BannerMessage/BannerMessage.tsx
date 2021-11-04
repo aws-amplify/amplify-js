@@ -33,12 +33,16 @@ export default function BannerMessage(props: BannerMessageProps) {
 		[position]
 	);
 
-	const { hasButtons, renderImage, renderMessage, hasPrimaryButton, hasSecondaryButton, styles } = useMessageProps(
-		props,
-		getBannerStyle
-	);
+	const {
+		hasButtons,
+		hasPrimaryButton,
+		hasRenderableImage,
+		hasSecondaryButton,
+		shouldRenderMessage,
+		styles,
+	} = useMessageProps(props, getBannerStyle);
 
-	if (!renderMessage) {
+	if (!shouldRenderMessage) {
 		return null;
 	}
 
@@ -46,7 +50,7 @@ export default function BannerMessage(props: BannerMessageProps) {
 		<MessageWrapper style={styles.componentWrapper}>
 			<View style={styles.container}>
 				<View style={styles.contentContainer}>
-					{renderImage && (
+					{hasRenderableImage && (
 						<View style={styles.imageContainer}>
 							<Image source={{ uri: image?.src }} style={styles.image} />
 						</View>

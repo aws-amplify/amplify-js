@@ -51,10 +51,10 @@ export type GetDefaultStyle = (
 
 export type UseMessageProps = {
 	hasButtons: boolean;
-	renderImage: boolean;
-	renderMessage: boolean;
 	hasPrimaryButton: boolean;
+	hasRenderableImage: boolean;
 	hasSecondaryButton: boolean;
+	shouldRenderMessage: boolean;
 	styles: MessageStyleProps;
 };
 

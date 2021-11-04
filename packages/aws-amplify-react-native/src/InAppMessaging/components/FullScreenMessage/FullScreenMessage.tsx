@@ -26,12 +26,16 @@ import { FullScreenMessageProps } from './types';
 
 export default function FullScreenMessage(props: FullScreenMessageProps) {
 	const { body, header, image, onClose, primaryButton, secondaryButton } = props;
-	const { hasButtons, renderImage, renderMessage, hasPrimaryButton, hasSecondaryButton, styles } = useMessageProps(
-		props,
-		getStyles
-	);
+	const {
+		hasButtons,
+		hasPrimaryButton,
+		hasRenderableImage,
+		hasSecondaryButton,
+		shouldRenderMessage,
+		styles,
+	} = useMessageProps(props, getStyles);
 
-	if (!renderMessage) {
+	if (!shouldRenderMessage) {
 		return null;
 	}
 
@@ -47,7 +51,7 @@ export default function FullScreenMessage(props: FullScreenMessageProps) {
 						source={icons.close}
 						style={styles.iconButton.container}
 					/>
-					{renderImage && (
+					{hasRenderableImage && (
 						<View style={styles.imageContainer}>
 							<Image source={{ uri: image?.src }} style={styles.image} />
 						</View>

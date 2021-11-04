@@ -37,16 +37,16 @@ export default function useMessageProps(
 	const { image, layout, onDisplay, primaryButton, secondaryButton } = props;
 	const hasDisplayed = useRef(false);
 
-	const { imageDimensions, isImageFetching, renderImage } = useMessageImage(image, layout);
+	const { hasRenderableImage, imageDimensions, isImageFetching } = useMessageImage(image, layout);
 
-	const renderMessage = !isImageFetching;
+	const shouldRenderMessage = !isImageFetching;
 
 	useEffect(() => {
-		if (!hasDisplayed.current && renderMessage) {
+		if (!hasDisplayed.current && shouldRenderMessage) {
 			onDisplay();
 			hasDisplayed.current = true;
 		}
-	}, [onDisplay, renderMessage]);
+	}, [onDisplay, shouldRenderMessage]);
 
 	const hasPrimaryButton = !isEmpty(primaryButton);
 	const hasSecondaryButton = !isEmpty(secondaryButton);
@@ -54,7 +54,7 @@ export default function useMessageProps(
 
 	const styles = useMemo(() => {
 		// prevent generating style if message rendering is delayed
-		if (!renderMessage) {
+		if (!shouldRenderMessage) {
 			return null;
 		}
 
@@ -63,14 +63,14 @@ export default function useMessageProps(
 		const overrideStyle = props.style;
 
 		return getMessageStyleProps({ styleParams: { defaultStyle, messageStyle, overrideStyle }, layout });
-	}, [getDefaultStyle, layout, imageDimensions, props, renderMessage]);
+	}, [getDefaultStyle, layout, imageDimensions, props, shouldRenderMessage]);
 
 	return {
 		hasButtons,
 		hasPrimaryButton,
+		hasRenderableImage,
 		hasSecondaryButton,
-		renderImage,
-		renderMessage,
+		shouldRenderMessage,
 		styles,
 	};
 }

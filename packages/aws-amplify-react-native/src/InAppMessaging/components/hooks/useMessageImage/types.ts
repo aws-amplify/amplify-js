@@ -19,7 +19,7 @@ export type ImageDimensions = {
 export type ImageLoadingState = 'loading' | 'loaded' | 'failed';
 
 export type UseMessageImage = {
+	hasRenderableImage: boolean;
 	imageDimensions: ImageDimensions;
 	isImageFetching: boolean;
-	renderImage: boolean;
 };
