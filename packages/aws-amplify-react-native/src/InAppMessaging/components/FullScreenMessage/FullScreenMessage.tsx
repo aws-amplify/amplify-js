@@ -26,14 +26,8 @@ import { FullScreenMessageProps } from './types';
 
 export default function FullScreenMessage(props: FullScreenMessageProps) {
 	const { body, header, image, onClose, primaryButton, secondaryButton } = props;
-	const {
-		hasButtons,
-		hasPrimaryButton,
-		hasRenderableImage,
-		hasSecondaryButton,
-		shouldRenderMessage,
-		styles,
-	} = useMessageProps(props, getStyles);
+	const { hasButtons, hasPrimaryButton, hasRenderableImage, hasSecondaryButton, shouldRenderMessage, styles } =
+		useMessageProps(props, getStyles);
 
 	if (!shouldRenderMessage) {
 		return null;

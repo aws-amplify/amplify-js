@@ -33,14 +33,8 @@ export default function BannerMessage(props: BannerMessageProps) {
 		[position]
 	);
 
-	const {
-		hasButtons,
-		hasPrimaryButton,
-		hasRenderableImage,
-		hasSecondaryButton,
-		shouldRenderMessage,
-		styles,
-	} = useMessageProps(props, getBannerStyle);
+	const { hasButtons, hasPrimaryButton, hasRenderableImage, hasSecondaryButton, shouldRenderMessage, styles } =
+		useMessageProps(props, getBannerStyle);
 
 	if (!shouldRenderMessage) {
 		return null;
