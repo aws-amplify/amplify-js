@@ -807,6 +807,7 @@ export class AWSS3Provider implements StorageProvider {
 			region?: string;
 			cancelTokenSource?: CancelTokenSource;
 			dangerouslyConnectToHttpEndpointForTesting?: boolean;
+			useAccelerateEndpoint?: boolean;
 		},
 		emitter?: events.EventEmitter
 	): S3Client {
