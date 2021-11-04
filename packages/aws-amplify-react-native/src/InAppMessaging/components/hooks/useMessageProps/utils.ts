@@ -47,7 +47,7 @@ export const getButtonComponentStyle = (
 };
 
 /**
- * Parse and assign appropriate message container and wapper style from style objects params
+ * Parse and assign appropriate message container and wrapper style from style params
  *
  * @param {params} object - contains message styleParams and layout
  * @returns {object} contains resolved containerStyle and wrapperStyle
@@ -59,8 +59,8 @@ export const getContainerAndWrapperStyle = ({ styleParams, layout }: MessageStyl
 	// banner layouts requires no special handling of container or wrapper styles
 	if (layout === 'TOP_BANNER' || layout === 'MIDDLE_BANNER' || layout === 'BOTTOM_BANNER') {
 		return {
+			componentWrapper: defaultStyle.componentWrapper,
 			container: [defaultStyle.container, messageStyle?.container, overrideStyle?.container],
-			wrapper: defaultStyle.wrapper,
 		};
 	}
 
@@ -68,22 +68,22 @@ export const getContainerAndWrapperStyle = ({ styleParams, layout }: MessageStyl
 	// wrapperStyle to the MessageWrapper to ensure that the is applied to the entire screen
 	const { container: baseOverrideContainerStyle } = overrideStyle ?? {};
 
-	// flatten overrideStyles to access override backgroundColor
-	const flattenedOverrideStyles = StyleSheet.flatten(baseOverrideContainerStyle);
-	const { backgroundColor: overrideBackgroundColor, ...overrideContainerStyle } = flattenedOverrideStyles ?? {};
+	// flatten overrideStyle to access override backgroundColor
+	const flattenedOverrideStyle = StyleSheet.flatten(baseOverrideContainerStyle);
+	const { backgroundColor: overrideBackgroundColor, ...overrideContainerStyle } = flattenedOverrideStyle ?? {};
 	const { backgroundColor: messageBackgroundColor, ...messageContainerStyle } = messageStyle?.container;
 
 	// default and all non-backgroundColor container override style are applied to the container View
 	const container = [defaultStyle.container, messageContainerStyle, overrideContainerStyle];
 
 	// use ternaries to prevent passing backgroundColor object with undefined or null value
-	const wrapper: StyleProp<ViewStyle> = [
-		defaultStyle.wrapper,
+	const componentWrapper: StyleProp<ViewStyle> = [
+		defaultStyle.componentWrapper,
 		messageBackgroundColor ? { backgroundColor: messageBackgroundColor } : null,
 		overrideBackgroundColor ? { backgroundColor: overrideBackgroundColor } : null,
 	];
 
-	return { container, wrapper };
+	return { componentWrapper, container };
 };
 
 /**
@@ -122,8 +122,8 @@ export const getMessageStyle = ({
  */
 
 export function getMessageStyleProps({ styleParams, layout }: MessageStylePropParams): MessageStyleProps {
-	// view style applied to the container and wrapper views
-	const { container, wrapper } = getContainerAndWrapperStyle({ styleParams, layout });
+	// view style applied to the componentWrapper and primary container views
+	const { componentWrapper, container } = getContainerAndWrapperStyle({ styleParams, layout });
 
 	const { defaultStyle, messageStyle, overrideStyle } = styleParams;
 
@@ -158,6 +158,7 @@ export function getMessageStyleProps({ styleParams, layout }: MessageStylePropPa
 	return {
 		body,
 		buttonsContainer,
+		componentWrapper,
 		contentContainer,
 		container,
 		header,
@@ -167,6 +168,5 @@ export function getMessageStyleProps({ styleParams, layout }: MessageStylePropPa
 		primaryButton,
 		secondaryButton,
 		textContainer,
-		wrapper,
 	};
 }

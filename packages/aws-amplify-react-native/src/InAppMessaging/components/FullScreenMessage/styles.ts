@@ -14,17 +14,17 @@
 import { ImageStyle, StyleSheet } from 'react-native';
 import {
 	BORDER_RADIUS_BASE,
+	COLOR_LIGHT_GREY,
+	COLOR_WHITE,
 	FONT_SIZE_BASE,
 	FONT_SIZE_LARGE,
 	FONT_WEIGHT_BASE,
-	LIGHT_GREY,
 	LINE_HEIGHT_BASE,
 	LINE_HEIGHT_LARGE,
 	SPACING_EXTRA_LARGE,
 	SPACING_LARGE,
 	SPACING_MEDIUM,
 	SPACING_SMALL,
-	WHITE,
 } from '../constants';
 
 import { FullScreenMessageStyle } from './types';
@@ -37,7 +37,7 @@ export const getStyles = (imageDimensions: ImageStyle): FullScreenMessageStyle =
 			lineHeight: LINE_HEIGHT_BASE,
 		},
 		buttonContainer: {
-			backgroundColor: LIGHT_GREY,
+			backgroundColor: COLOR_LIGHT_GREY,
 			borderRadius: BORDER_RADIUS_BASE,
 			flex: 1,
 			margin: SPACING_MEDIUM,
@@ -52,6 +52,9 @@ export const getStyles = (imageDimensions: ImageStyle): FullScreenMessageStyle =
 			fontWeight: FONT_WEIGHT_BASE,
 			lineHeight: LINE_HEIGHT_BASE,
 			textAlign: 'center',
+		},
+		componentWrapper: {
+			backgroundColor: COLOR_WHITE,
 		},
 		container: {
 			flex: 1,
@@ -83,8 +86,5 @@ export const getStyles = (imageDimensions: ImageStyle): FullScreenMessageStyle =
 			marginHorizontal: SPACING_SMALL,
 			marginVertical: SPACING_LARGE,
 			paddingLeft: SPACING_MEDIUM,
-		},
-		wrapper: {
-			backgroundColor: WHITE,
 		},
 	});

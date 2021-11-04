@@ -19,9 +19,9 @@
 import { getLineHeight } from './utils';
 
 // color
-export const BLACK = '#000';
-export const LIGHT_GREY = '#e8e8e8';
-export const WHITE = '#fff';
+export const COLOR_BLACK = '#000';
+export const COLOR_LIGHT_GREY = '#e8e8e8';
+export const COLOR_WHITE = '#fff';
 
 // spacing
 export const SPACING_SMALL = 4;

@@ -18,19 +18,19 @@ import {
 	BANNER_SHADOW_OPACITY,
 	BANNER_SHADOW_RADIUS,
 	BANNER_SHADOW_WIDTH,
-	BLACK,
 	BORDER_RADIUS_BASE,
+	COLOR_BLACK,
+	COLOR_LIGHT_GREY,
+	COLOR_WHITE,
 	FONT_SIZE_BASE,
 	FONT_SIZE_LARGE,
 	FONT_WEIGHT_BASE,
-	LIGHT_GREY,
 	LINE_HEIGHT_BASE,
 	LINE_HEIGHT_LARGE,
 	SPACING_EXTRA_LARGE,
 	SPACING_LARGE,
 	SPACING_MEDIUM,
 	SPACING_SMALL,
-	WHITE,
 } from '../constants';
 import { BannerMessagePositionStyle, BannerMessageStyle } from './types';
 
@@ -54,7 +54,7 @@ export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { positi
 			lineHeight: LINE_HEIGHT_BASE,
 		},
 		buttonContainer: {
-			backgroundColor: LIGHT_GREY,
+			backgroundColor: COLOR_LIGHT_GREY,
 			borderRadius: BORDER_RADIUS_BASE,
 			flex: 1,
 			margin: SPACING_MEDIUM,
@@ -71,11 +71,16 @@ export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { positi
 			lineHeight: LINE_HEIGHT_BASE,
 			textAlign: 'center',
 		},
+		componentWrapper: {
+			...additionalStyle.position,
+			backgroundColor: 'transparent',
+			flex: 1,
+		},
 		container: {
-			backgroundColor: WHITE,
+			backgroundColor: COLOR_WHITE,
 			elevation: BANNER_ELEVATION,
 			margin: SPACING_EXTRA_LARGE,
-			shadowColor: BLACK,
+			shadowColor: COLOR_BLACK,
 			shadowOffset: {
 				width: BANNER_SHADOW_WIDTH,
 				height: BANNER_SHADOW_HEIGHT,
@@ -106,10 +111,5 @@ export const getStyles = (imageDimensions: ImageStyle, additionalStyle: { positi
 			flex: 1,
 			marginHorizontal: SPACING_SMALL,
 			paddingLeft: SPACING_MEDIUM,
-		},
-		wrapper: {
-			...additionalStyle.position,
-			backgroundColor: 'transparent',
-			flex: 1,
 		},
 	});

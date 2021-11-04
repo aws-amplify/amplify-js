@@ -38,7 +38,7 @@ export default function useMessageImage(image: InAppMessageImage, layout: InAppM
 	const hasSetDimensions = !isNull(imageDimensions);
 	const hasImage = !!src;
 
-	const imageFetching = hasImage && !hasSetDimensions;
+	const isImageFetching = hasImage && !hasSetDimensions;
 	const renderImage = hasImage && hasSetDimensions;
 
 	useEffect(() => {
@@ -66,5 +66,5 @@ export default function useMessageImage(image: InAppMessageImage, layout: InAppM
 		}
 	}, [hasImage, layout, src]);
 
-	return { imageDimensions, imageFetching, renderImage };
+	return { imageDimensions, isImageFetching, renderImage };
 }

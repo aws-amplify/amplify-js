@@ -33,15 +33,17 @@ export default function BannerMessage(props: BannerMessageProps) {
 		[position]
 	);
 
-	const { renderButtons, renderImage, renderMessage, renderPrimaryButton, renderSecondaryButton, styles } =
-		useMessageProps(props, getBannerStyle);
+	const { hasButtons, renderImage, renderMessage, hasPrimaryButton, hasSecondaryButton, styles } = useMessageProps(
+		props,
+		getBannerStyle
+	);
 
 	if (!renderMessage) {
 		return null;
 	}
 
 	return (
-		<MessageWrapper style={styles.wrapper}>
+		<MessageWrapper style={styles.componentWrapper}>
 			<View style={styles.container}>
 				<View style={styles.contentContainer}>
 					{renderImage && (
@@ -62,9 +64,9 @@ export default function BannerMessage(props: BannerMessageProps) {
 						style={styles.iconButton.container}
 					/>
 				</View>
-				{renderButtons && (
+				{hasButtons && (
 					<View style={styles.buttonsContainer}>
-						{renderSecondaryButton && (
+						{hasSecondaryButton && (
 							<Button
 								onPress={secondaryButton.onPress}
 								style={styles.secondaryButton.container}
@@ -73,7 +75,7 @@ export default function BannerMessage(props: BannerMessageProps) {
 								{secondaryButton.title}
 							</Button>
 						)}
-						{renderPrimaryButton && (
+						{hasPrimaryButton && (
 							<Button
 								onPress={primaryButton.onPress}
 								style={styles.primaryButton.container}

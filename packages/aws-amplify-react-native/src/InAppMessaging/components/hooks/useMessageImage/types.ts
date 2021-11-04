@@ -20,6 +20,6 @@ export type ImageLoadingState = 'loading' | 'loaded' | 'failed';
 
 export type UseMessageImage = {
 	imageDimensions: ImageDimensions;
-	imageFetching: boolean;
+	isImageFetching: boolean;
 	renderImage: boolean;
 };

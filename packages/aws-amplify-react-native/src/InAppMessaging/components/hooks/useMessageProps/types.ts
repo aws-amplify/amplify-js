@@ -32,6 +32,7 @@ type InAppMessagePayloadStyle = {
 export type MessageStyleProps = {
 	body: StyleProp<TextStyle>;
 	buttonsContainer: StyleProp<ViewStyle>;
+	componentWrapper: StyleProp<ViewStyle>;
 	container: StyleProp<ViewStyle>;
 	contentContainer: StyleProp<ViewStyle>;
 	header: StyleProp<TextStyle>;
@@ -41,7 +42,6 @@ export type MessageStyleProps = {
 	primaryButton: InAppMessageComponentButtonStyle;
 	secondaryButton: InAppMessageComponentButtonStyle;
 	textContainer: StyleProp<ViewStyle>;
-	wrapper: StyleProp<ViewStyle>;
 };
 
 export type GetDefaultStyle = (
@@ -50,11 +50,11 @@ export type GetDefaultStyle = (
 ) => InAppMessageComponentBaseStyle;
 
 export type UseMessageProps = {
-	renderButtons: boolean;
+	hasButtons: boolean;
 	renderImage: boolean;
 	renderMessage: boolean;
-	renderPrimaryButton: boolean;
-	renderSecondaryButton: boolean;
+	hasPrimaryButton: boolean;
+	hasSecondaryButton: boolean;
 	styles: MessageStyleProps;
 };
 

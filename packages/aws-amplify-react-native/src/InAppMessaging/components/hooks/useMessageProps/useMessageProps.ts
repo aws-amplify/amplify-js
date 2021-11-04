@@ -11,11 +11,10 @@
  * and limitations under the License.
  */
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import isEmpty from 'lodash/isEmpty';
 
 import useMessageImage from '../useMessageImage';
-import useMessageOnDisplay from '../useMessageOnDisplay';
 import { InAppMessageComponentProps } from '../useMessage';
 
 import { getMessageStyle, getMessageStyleProps } from './utils';
@@ -28,7 +27,7 @@ import { GetDefaultStyle, UseMessageProps } from './types';
  * @param {props} object - message UI component props
  * @param {getDefaultStyle} function - returns default UI component style
  
-* @returns {UseMessageProps} common message UI component render related booleans and styles
+ * @returns {UseMessageProps} common message UI component render related booleans and styles
  */
 
 export default function useMessageProps(
@@ -36,16 +35,22 @@ export default function useMessageProps(
 	getDefaultStyle: GetDefaultStyle
 ): UseMessageProps {
 	const { image, layout, onDisplay, primaryButton, secondaryButton } = props;
+	const hasDisplayed = useRef(false);
 
-	useMessageOnDisplay(onDisplay);
+	const { imageDimensions, isImageFetching, renderImage } = useMessageImage(image, layout);
 
-	const { imageDimensions, imageFetching, renderImage } = useMessageImage(image, layout);
+	const renderMessage = !isImageFetching;
 
-	const renderMessage = !imageFetching;
+	useEffect(() => {
+		if (!hasDisplayed.current && renderMessage) {
+			onDisplay();
+			hasDisplayed.current = true;
+		}
+	}, [onDisplay, renderMessage]);
 
-	const renderPrimaryButton = !isEmpty(primaryButton);
-	const renderSecondaryButton = !isEmpty(secondaryButton);
-	const renderButtons = renderPrimaryButton || renderSecondaryButton;
+	const hasPrimaryButton = !isEmpty(primaryButton);
+	const hasSecondaryButton = !isEmpty(secondaryButton);
+	const hasButtons = hasPrimaryButton || hasSecondaryButton;
 
 	const styles = useMemo(() => {
 		// prevent generating style if message rendering is delayed
@@ -61,11 +66,11 @@ export default function useMessageProps(
 	}, [getDefaultStyle, layout, imageDimensions, props, renderMessage]);
 
 	return {
-		renderButtons,
+		hasButtons,
+		hasPrimaryButton,
+		hasSecondaryButton,
 		renderImage,
 		renderMessage,
-		renderPrimaryButton,
-		renderSecondaryButton,
 		styles,
 	};
 }

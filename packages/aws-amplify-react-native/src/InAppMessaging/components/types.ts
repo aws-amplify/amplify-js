@@ -62,6 +62,7 @@ export interface InAppMessageComponentBaseStyle {
 	buttonContainer: ViewStyle;
 	buttonsContainer: ViewStyle;
 	buttonText: TextStyle;
+	componentWrapper: ViewStyle;
 	container: ViewStyle;
 	contentContainer: ViewStyle;
 	header: TextStyle;
@@ -69,5 +70,4 @@ export interface InAppMessageComponentBaseStyle {
 	image: ImageStyle;
 	imageContainer: ViewStyle;
 	textContainer: ViewStyle;
-	wrapper: ViewStyle;
 }

@@ -26,7 +26,7 @@ import { FullScreenMessageProps } from './types';
 
 export default function FullScreenMessage(props: FullScreenMessageProps) {
 	const { body, header, image, onClose, primaryButton, secondaryButton } = props;
-	const { renderButtons, renderImage, renderMessage, renderSecondaryButton, styles } = useMessageProps(
+	const { hasButtons, renderImage, renderMessage, hasPrimaryButton, hasSecondaryButton, styles } = useMessageProps(
 		props,
 		getStyles
 	);
@@ -36,7 +36,7 @@ export default function FullScreenMessage(props: FullScreenMessageProps) {
 	}
 
 	return (
-		<MessageWrapper style={styles.wrapper}>
+		<MessageWrapper style={styles.componentWrapper}>
 			<View style={styles.container}>
 				<View style={styles.contentContainer}>
 					<IconButton
@@ -57,9 +57,9 @@ export default function FullScreenMessage(props: FullScreenMessageProps) {
 						{body?.content && <Text style={styles.body}>{body.content}</Text>}
 					</View>
 				</View>
-				{renderButtons && (
+				{hasButtons && (
 					<View style={styles.buttonsContainer}>
-						{renderSecondaryButton && (
+						{hasSecondaryButton && (
 							<Button
 								onPress={secondaryButton.onPress}
 								style={styles.secondaryButton.container}
@@ -68,7 +68,7 @@ export default function FullScreenMessage(props: FullScreenMessageProps) {
 								{secondaryButton.title}
 							</Button>
 						)}
-						{renderSecondaryButton && (
+						{hasPrimaryButton && (
 							<Button
 								onPress={primaryButton.onPress}
 								style={styles.primaryButton.container}
