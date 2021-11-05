@@ -13,7 +13,7 @@ export enum AuthErrorStrings {
 	NO_USER_SESSION = 'Failed to get the session because the user is empty',
 	NETWORK_ERROR = 'Network Error',
 	DEVICE_CONFIG = 'Device tracking has not been configured in this User Pool',
-	
+
 	/**
    * **The user is attempting to sign-up with an email already configured in the User Pool.**
    */
@@ -49,6 +49,14 @@ export enum AuthErrorStrings {
 	 * @see `AuthErrorStrings.USER_IS_ALREADY_CONFIRMED`
    */
 	USER_CANNOT_BE_CONFIRMED_IS_ALREADY_CONFIRMED = 'User cannot be confirmed. Current status is CONFIRMED',
+	
+	/**
+   * **Method performing action on user yields no results**
+	 *
+	 * Error encountered in following scenarios:
+	 * - User attempts sign-in and provides non-existent email or phone to `signIn`
+   */
+	USER_DOES_NOT_EXIST = 'User does not exist.',
 
 	/**
    * **The user attempts to confirm their email a second time, when it's already confirmed.**
