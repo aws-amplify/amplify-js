@@ -41,5 +41,10 @@ export enum AuthErrorStrings {
 	 * Error encountered in following scenarios:
 	 * - User attempts confirm sign-up and provides incorrect code to `confirmSignUp`
    */
-	INVALID_EMAIL_CONFIRMATION_CODE = 'Invalid code provided, please request a code again.'
+	INVALID_EMAIL_CONFIRMATION_CODE = 'Invalid code provided, please request a code again.',
+	
+	/**
+   * **The user attempts to confirm their email a second time, when it's already confirmed.**
+   */
+	USER_EMAIL_IS_ALREADY_CONFIRMED = 'User cannot be confirmed. Current status is CONFIRMED'
 }
