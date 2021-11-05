@@ -54,6 +54,10 @@ export const getImageDimensions = (
 	const isPortrait = imageHeight > imageWidth;
 	const isLandscape = imageWidth > imageHeight;
 
+	// an image that has smaller dimensions than the max image dimension (e.g. 10px x 10px)
+	// will be scaled up in size to match the size the message component expects.
+	// While this could lead to pixelated images, it was ultimately a product decision,
+	// ideally the message creator would follow the image guidelines in the pinpoint console
 	const maxImageDimension = inAppMessageImageSizes[layout];
 
 	let height: number;
