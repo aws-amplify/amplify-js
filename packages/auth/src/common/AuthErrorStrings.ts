@@ -18,7 +18,16 @@ export enum AuthErrorStrings {
    * **The user session is invalid and are required to sign-in again.**
 	 * 
 	 * Error encountered in following scenarios:
-	 * - User attempts sign-in and does not respond to MFA challenge quick enough
+	 * - User attempts sign-in and does not respond to MFA challenge quick enough via `confirmSignIn`
    */
-	INVALID_SESSION = "Invalid session for the user, session is expired."
+	INVALID_SESSION = "Invalid session for the user, session is expired.",
+	
+	/**
+   * **The user provided an invalid code when responding to MFA challenge.**
+	 * 
+	 * Error encountered in following scenarios:
+	 * - User attempts sign-in and provides incorrect code to `confirmSignIn`
+   */
+	INVALID_CODE = "Invalid code received for user"
+	
 }
