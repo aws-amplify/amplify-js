@@ -983,6 +983,7 @@ releasable_branches: &releasable_branches
       - 1.0-stable
       - geo/main
       - in-app-messaging/main
+      - in-app-messaging/update-regexp-pattern
 
 test_browsers: &test_browsers
   browser: [chrome, firefox]
