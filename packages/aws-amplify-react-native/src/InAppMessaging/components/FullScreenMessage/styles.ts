@@ -11,70 +11,80 @@
  * and limitations under the License.
  */
 
+import { ImageStyle, StyleSheet } from 'react-native';
 import {
 	BORDER_RADIUS_BASE,
+	COLOR_LIGHT_GREY,
+	COLOR_WHITE,
 	FONT_SIZE_BASE,
 	FONT_SIZE_LARGE,
 	FONT_WEIGHT_BASE,
-	LIGHT_GREY,
+	LINE_HEIGHT_BASE,
+	LINE_HEIGHT_LARGE,
 	SPACING_EXTRA_LARGE,
 	SPACING_LARGE,
 	SPACING_MEDIUM,
 	SPACING_SMALL,
 } from '../constants';
-import { getLineHeight } from '../utils';
 
 import { FullScreenMessageStyle } from './types';
 
-export const styles: FullScreenMessageStyle = {
-	buttonContainer: {
-		backgroundColor: LIGHT_GREY,
-		borderRadius: BORDER_RADIUS_BASE,
-		flex: 1,
-		margin: SPACING_MEDIUM,
-		padding: SPACING_LARGE,
-	},
-	buttonsContainer: {
-		flexDirection: 'row',
-		justifyContent: 'center',
-	},
-	buttonText: {
-		fontSize: FONT_SIZE_BASE,
-		fontWeight: FONT_WEIGHT_BASE,
-		lineHeight: getLineHeight(FONT_SIZE_BASE),
-		textAlign: 'center',
-	},
-	container: {
-		padding: SPACING_EXTRA_LARGE,
-		flex: 1,
-	},
-	contentContainer: {
-		flex: 1,
-	},
-	header: {
-		fontSize: FONT_SIZE_LARGE,
-		fontWeight: FONT_WEIGHT_BASE,
-		lineHeight: getLineHeight(FONT_SIZE_LARGE),
-	},
-	iconButton: {
-		alignSelf: 'flex-start',
-		marginBottom: SPACING_MEDIUM,
-		marginLeft: 'auto',
-		marginRight: SPACING_MEDIUM,
-	},
-	imageContainer: {
-		alignItems: 'center',
-		marginVertical: SPACING_LARGE,
-	},
-	message: {
-		fontSize: FONT_SIZE_BASE,
-		fontWeight: FONT_WEIGHT_BASE,
-		lineHeight: getLineHeight(FONT_SIZE_BASE),
-	},
-	textContainer: {
-		flex: 1,
-		marginVertical: SPACING_LARGE,
-		marginHorizontal: SPACING_SMALL,
-		paddingLeft: SPACING_MEDIUM,
-	},
-};
+export const getStyles = (imageDimensions: ImageStyle): FullScreenMessageStyle =>
+	StyleSheet.create({
+		body: {
+			fontSize: FONT_SIZE_BASE,
+			fontWeight: FONT_WEIGHT_BASE,
+			lineHeight: LINE_HEIGHT_BASE,
+		},
+		buttonContainer: {
+			backgroundColor: COLOR_LIGHT_GREY,
+			borderRadius: BORDER_RADIUS_BASE,
+			flex: 1,
+			margin: SPACING_MEDIUM,
+			padding: SPACING_LARGE,
+		},
+		buttonsContainer: {
+			flexDirection: 'row',
+			justifyContent: 'center',
+		},
+		buttonText: {
+			fontSize: FONT_SIZE_BASE,
+			fontWeight: FONT_WEIGHT_BASE,
+			lineHeight: LINE_HEIGHT_BASE,
+			textAlign: 'center',
+		},
+		componentWrapper: {
+			backgroundColor: COLOR_WHITE,
+		},
+		container: {
+			flex: 1,
+			padding: SPACING_EXTRA_LARGE,
+		},
+		contentContainer: {
+			flex: 1,
+		},
+		header: {
+			fontSize: FONT_SIZE_LARGE,
+			fontWeight: FONT_WEIGHT_BASE,
+			lineHeight: LINE_HEIGHT_LARGE,
+		},
+		iconButton: {
+			alignSelf: 'flex-start',
+			marginBottom: SPACING_MEDIUM,
+			marginLeft: 'auto',
+			marginRight: SPACING_MEDIUM,
+		},
+		image: {
+			...imageDimensions,
+		},
+		imageContainer: {
+			alignItems: 'center',
+			marginVertical: SPACING_LARGE,
+		},
+		textContainer: {
+			flex: 1,
+			marginHorizontal: SPACING_SMALL,
+			marginVertical: SPACING_LARGE,
+			paddingLeft: SPACING_MEDIUM,
+		},
+	});

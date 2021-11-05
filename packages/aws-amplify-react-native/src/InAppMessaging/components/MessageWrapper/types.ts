@@ -12,10 +12,12 @@
  */
 
 import { ReactNode } from 'react';
+import { InAppMessageLayout } from '@aws-amplify/notifications';
 import { StyleProp, ViewStyle } from 'react-native';
 
 export interface MessageWrapperProps {
 	children: ReactNode;
+	layout?: InAppMessageLayout;
 	style?: StyleProp<ViewStyle>;
 }
 
