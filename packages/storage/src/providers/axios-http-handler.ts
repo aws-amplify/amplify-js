@@ -60,6 +60,11 @@ export const reactNativeRequestTransformer: AxiosTransformer[] = [
 	},
 ];
 
+export type AxiosHttpHandlerOptions = HttpHandlerOptions & {
+	cancelTokenSource?: CancelTokenSource;
+	emitter?: events.EventEmitter;
+};
+
 export class AxiosHttpHandler implements HttpHandler {
 	constructor(
 		private readonly httpOptions: FetchHttpHandlerOptions = {},
@@ -74,10 +79,12 @@ export class AxiosHttpHandler implements HttpHandler {
 
 	handle(
 		request: HttpRequest,
-		options: HttpHandlerOptions & { cancelTokenSource?: CancelTokenSource }
+		options: AxiosHttpHandlerOptions
 	): Promise<{ response: HttpResponse }> {
 		const requestTimeoutInMs = this.httpOptions.requestTimeout;
-		const emitter = this.emitter;
+		// prioritize the call specific event emitter, this is useful for multipart upload as each individual parts has
+		// their own event emitter, without having to create s3client for every individual calls.
+		const emitter = options.emitter || this.emitter;
 
 		let path = request.path;
 		if (request.query) {
@@ -178,8 +185,20 @@ export class AxiosHttpHandler implements HttpHandler {
 					) {
 						logger.error(error.message);
 					}
-
-					throw error;
+					// for axios' cancel error, we should re-throw it back so it's not considered an s3client error
+					// if we return empty, or an abitrary error HttpResponse, it will be hard to debug down the line
+					if (axios.isCancel(error)) {
+						throw error;
+					}
+					// otherwise, we should re-construct an HttpResponse from the error, so that it can be passed down to other
+					// aws sdk middleware (e.g retry, clock skew correction, error message serializing)
+					return {
+						response: new HttpResponse({
+							statusCode: error.response?.status,
+							body: error.response?.data,
+							headers: error.response?.headers,
+						}),
+					};
 				}),
 			requestTimeout(requestTimeoutInMs),
 		];
