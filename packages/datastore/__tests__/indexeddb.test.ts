@@ -314,12 +314,10 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(project1);
 
 		const q1 = await DataStore.query(Project, project1.id);
-		try {
-			q1.team.then(value => expect(value.id).toEqual(team1.id));
+		q1.team.then(value => {
+			expect(value.id).toEqual(team1.id);
 			done();
-		} catch (error) {
-			done(error);
-		}
+		});
 	});
 
 	test('query lazily HAS_MANY', async () => {
@@ -404,47 +402,6 @@ describe('Indexed db storage test', () => {
 
 		// but not by reference
 		expect(song).not.toBe(song3);
-	});
-
-	test('AsyncCollection toArray test', async done => {
-		const album1 = new Album({ name: "Lupe Fiasco's The Cool" });
-		await DataStore.save(album1);
-		const song1 = new Song({ name: 'Put you on Game', songID: album1.id });
-		const song2 = new Song({ name: 'Streets on Fire', songID: album1.id });
-		const song3 = new Song({ name: 'Superstar', songID: album1.id });
-		const song4 = new Song({ name: 'The Coolest', songID: album1.id });
-
-		const savedSong1 = await DataStore.save(song1);
-		const savedSong2 = await DataStore.save(song2);
-		const savedSong3 = await DataStore.save(song3);
-		const savedSong4 = await DataStore.save(song4);
-
-		const q1 = await DataStore.query(Album, album1.id);
-		const songs = await q1.songs;
-		try {
-			songs.toArray().then(value => {
-				expect(value).toStrictEqual([
-					savedSong1,
-					savedSong2,
-					savedSong3,
-					savedSong4,
-				]);
-			});
-			songs.toArray({}).then(value => {
-				expect(value).toStrictEqual([
-					savedSong1,
-					savedSong2,
-					savedSong3,
-					savedSong4,
-				]);
-			});
-			songs.toArray({ max: 3 }).then(value => {
-				expect(value).toStrictEqual([savedSong1, savedSong2, savedSong3]);
-			});
-			done();
-		} catch (error) {
-			done(error);
-		}
 	});
 
 	test('Test lazy validation', async () => {
@@ -691,6 +648,64 @@ describe('Indexed db storage test', () => {
 			.get(author.id);
 
 		expect(fromDB).toBeUndefined();
+	});
+});
+
+describe('AsyncCollection toArray Test', () => {
+	describe('Validating differing Parameters', () => {
+		[
+			{
+				input: undefined,
+				expected: [0, 1, 2, 3],
+			},
+			{
+				input: {},
+				expected: [0, 1, 2, 3],
+			},
+			{
+				input: { max: 3 },
+				expected: [0, 1, 2],
+			},
+		].forEach(Parameter => {
+			test(`Testing input of ${Parameter.input}`, async done => {
+				const { input, expected } = Parameter;
+				const album1 = new Album({
+					name: "Lupe Fiasco's The Cool",
+				});
+				const song1 = new Song({
+					name: 'Put you on Game',
+					songID: album1.id,
+				});
+				const song2 = new Song({
+					name: 'Streets on Fire',
+					songID: album1.id,
+				});
+				const song3 = new Song({
+					name: 'Superstar',
+					songID: album1.id,
+				});
+				const song4 = new Song({
+					name: 'The Coolest',
+					songID: album1.id,
+				});
+				await DataStore.save(album1);
+				const savedSong1 = await DataStore.save(song1);
+				const savedSong2 = await DataStore.save(song2);
+				const savedSong3 = await DataStore.save(song3);
+				const savedSong4 = await DataStore.save(song4);
+				const songsArray = [savedSong1, savedSong2, savedSong3, savedSong4];
+				const q1 = await DataStore.query(Album, album1.id);
+				const songs = await q1.songs;
+				const expectedValues = [];
+				for (const num of expected) {
+					expectedValues.push(songsArray[num]);
+				}
+				songs.toArray(input).then(value => {
+					expect(value).toStrictEqual(expectedValues);
+					done();
+				});
+			});
+		});
 	});
 });
 
