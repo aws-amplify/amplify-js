@@ -28,6 +28,13 @@ export enum AuthErrorStrings {
 	 * Error encountered in following scenarios:
 	 * - User attempts sign-in and provides incorrect code to `confirmSignIn`
    */
-	INVALID_MFA_CODE = "Invalid code received for user"
+	INVALID_MFA_CODE = "Invalid code received for user",
 	
+	/**
+   * **The user provided an invalid code when responding to an email confirmation.**
+	 * 
+	 * Error encountered in following scenarios:
+	 * - User attempts confirm sign-up and provides incorrect code to `confirmSignUp`
+   */
+	INVALID_EMAIL_CONFIRMATION_CODE = "Invalid code provided, please request a code again."
 }
