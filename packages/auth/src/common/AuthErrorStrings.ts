@@ -15,6 +15,11 @@ export enum AuthErrorStrings {
 	DEVICE_CONFIG = 'Device tracking has not been configured in this User Pool',
 	
 	/**
+   * **The user is attempting to sign-up with an email already configured in the User Pool.**
+   */
+	EMAIL_ALREADY_EXISTS = "An account with the given email already exists.",
+	
+	/**
    * **The user session is invalid and are required to sign-in again.**
 	 * 
 	 * Error encountered in following scenarios:
