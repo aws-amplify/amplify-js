@@ -13,4 +13,12 @@ export enum AuthErrorStrings {
 	NO_USER_SESSION = 'Failed to get the session because the user is empty',
 	NETWORK_ERROR = 'Network Error',
 	DEVICE_CONFIG = 'Device tracking has not been configured in this User Pool',
+	
+	/**
+   * **The user session is invalid and are required to sign-in again.**
+	 * 
+	 * Error encountered in following scenarios:
+	 * - User attempts sign-in and does not respond to MFA challenge quick enough
+   */
+	INVALID_SESSION = "Invalid session for the user, session is expired."
 }
