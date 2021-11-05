@@ -161,15 +161,14 @@ export const isQuietTime = (message: PinpointInAppMessage): boolean => {
 		return false;
 	}
 
-	// const pattern = new RegExp(/^[0-2]\d:[0-5]\d$/); // basic sanity check, not a fully featured HH:MM validation
+	const pattern = /^[0-2]\d:[0-5]\d$/; // basic sanity check, not a fully featured HH:MM validation
 	const { Start, End } = Schedule.QuietTime;
 	if (
 		!Start ||
 		!End ||
-		Start === End
-		// Start === End ||
-		// !pattern.test(Start) ||
-		// !pattern.test(End)
+		Start === End ||
+		!pattern.test(Start) ||
+		!pattern.test(End)
 	) {
 		return false;
 	}
