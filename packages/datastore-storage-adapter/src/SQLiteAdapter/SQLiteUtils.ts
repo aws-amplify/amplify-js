@@ -142,8 +142,7 @@ export function modelCreateTableStatement(
 					(f: ModelField) => f.name === field.association.targetName
 				);
 
-				// if the field is not defined in the model, we have to add it in order to prevent
-				// "has no column named ${targetName}" error when inserting data
+				// if the FK is not explicitly defined in the model, we have to add it here
 				if (!fkDefinedInModel) {
 					const required = field.isRequired ? ' NOT NULL' : '';
 					columnParam += `, "${field.association.targetName}" TEXT${required}`;
