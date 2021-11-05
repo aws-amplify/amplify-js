@@ -45,6 +45,15 @@ export enum AuthErrorStrings {
 	
 	/**
    * **The user attempts to confirm their email a second time, when it's already confirmed.**
+	 *
+	 * @see `AuthErrorStrings.USER_IS_ALREADY_CONFIRMED`
    */
-	USER_EMAIL_IS_ALREADY_CONFIRMED = 'User cannot be confirmed. Current status is CONFIRMED'
+	USER_CANNOT_BE_CONFIRMED_IS_ALREADY_CONFIRMED = 'User cannot be confirmed. Current status is CONFIRMED',
+
+	/**
+   * **The user attempts to confirm their email a second time, when it's already confirmed.**
+	 *
+	 * @see `AuthErrorStrings.USER_CANNOT_BE_CONFIRMED_IS_ALREADY_CONFIRMED`
+   */
+	USER_IS_ALREADY_CONFIRMED = 'User is already confirmed.'
 }
