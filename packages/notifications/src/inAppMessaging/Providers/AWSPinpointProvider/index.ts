@@ -19,16 +19,17 @@ import {
 	transferKeyToUpperCase,
 } from '@aws-amplify/core';
 import Cache from '@aws-amplify/cache';
-import {
-	ChannelType,
-	GetInAppMessagesCommand,
-	GetInAppMessagesCommandInput,
-	InAppMessageCampaign as PinpointInAppMessage,
-	UpdateEndpointCommand,
-	UpdateEndpointCommandInput,
-	PinpointClient,
-} from '@aws-sdk/client-pinpoint';
+// import {
+// 	ChannelType,
+// 	GetInAppMessagesCommand,
+// 	GetInAppMessagesCommandInput,
+// 	InAppMessageCampaign as PinpointInAppMessage,
+// 	UpdateEndpointCommand,
+// 	UpdateEndpointCommandInput,
+// 	PinpointClient,
+// } from '@aws-sdk/client-pinpoint';
 import { v4 as uuid } from 'uuid';
+import noop from 'lodash/noop';
 
 import { addMessageInteractionEventListener } from '../../eventListeners';
 import { NotificationsCategory } from '../../../types';
@@ -65,6 +66,15 @@ import {
 	matchesMetrics,
 	recordAnalyticsEvent,
 } from './utils';
+
+enum ChannelType {
+	IN_APP,
+}
+type GetInAppMessagesCommandInput = any;
+type PinpointInAppMessage = any;
+const UpdateEndpointCommand = noop;
+const GetInAppMessagesCommand = noop;
+const PinpointClient = noop;
 
 const MESSAGE_DAILY_COUNT_KEY = 'pinpointProvider_inAppMessages_dailyCount';
 const MESSAGE_TOTAL_COUNT_KEY = 'pinpointProvider_inAppMessages_totalCount';
@@ -160,9 +170,11 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 				ApplicationId: appId,
 				EndpointId: endpointId,
 			};
-			const command: GetInAppMessagesCommand = new GetInAppMessagesCommand(
-				input
-			);
+			// const command: GetInAppMessagesCommand = new GetInAppMessagesCommand(
+			// 	input
+			// );
+			const command = new GetInAppMessagesCommand(input);
+
 			logger.debug('getting in-app messages', input);
 			const response = await pinpointClient.send(command);
 			const {
@@ -334,7 +346,8 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 			const { appVersion, make, model, platform, version } = this.clientInfo;
 			// Create the UpdateEndpoint input, prioritizing passed in user info and falling back to
 			// defaults (if any) obtained from the config
-			const input: UpdateEndpointCommandInput = {
+			// const input: UpdateEndpointCommandInput = {
+			const input = {
 				ApplicationId: appId,
 				EndpointId: endpointId,
 				EndpointRequest: {
@@ -373,7 +386,8 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 					},
 				},
 			};
-			const command: UpdateEndpointCommand = new UpdateEndpointCommand(input);
+			// const command: UpdateEndpointCommand = new UpdateEndpointCommand(input);
+			const command = new UpdateEndpointCommand(input);
 			logger.debug('updating endpoint', input);
 			await this.config.pinpointClient.send(command);
 			this.endpointInitialized = true;

@@ -1,5 +1,5 @@
 import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
-import { InAppMessageCampaign as PinpointInAppMessage } from '@aws-sdk/client-pinpoint';
+// import { InAppMessageCampaign as PinpointInAppMessage } from '@aws-sdk/client-pinpoint';
 import isEmpty from 'lodash/isEmpty';
 import {
 	InAppMessage,
@@ -10,6 +10,8 @@ import {
 	InAppMessagingEvent,
 } from '../../types';
 import { PinpointMessageEvent, MetricsComparator } from './types';
+
+type PinpointInAppMessage = any;
 
 const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
 typeof Symbol.for === 'function'
@@ -94,9 +96,10 @@ export const matchesAttributes = (
 	}
 	const memoKey = `${CampaignId}:${JSON.stringify(attributes)}`;
 	if (!eventAttributesMemo.hasOwnProperty(memoKey)) {
-		eventAttributesMemo[memoKey] = Object.entries(
-			Attributes
-		).every(([key, { Values }]) => Values.includes(attributes[key]));
+		eventAttributesMemo[memoKey] = Object.entries(Attributes).every(value => {
+			const [key, { Values }] = value as any;
+			return Values.includes(attributes[key]);
+		});
 	}
 	return eventAttributesMemo[memoKey];
 };
@@ -116,13 +119,12 @@ export const matchesMetrics = (
 	}
 	const memoKey = `${CampaignId}:${JSON.stringify(metrics)}`;
 	if (!eventMetricsMemo.hasOwnProperty(memoKey)) {
-		eventMetricsMemo[memoKey] = Object.entries(Metrics).every(
-			([key, { ComparisonOperator, Value }]) => {
-				const compare = getComparator(ComparisonOperator);
-				// if there is some unknown comparison operator, treat as a comparison failure
-				return compare ? compare(Value, metrics[key]) : false;
-			}
-		);
+		eventMetricsMemo[memoKey] = Object.entries(Metrics).every(metric => {
+			const [key, { ComparisonOperator, Value }] = metric as any;
+			const compare = getComparator(ComparisonOperator);
+			// if there is some unknown comparison operator, treat as a comparison failure
+			return compare ? compare(Value, metrics[key]) : false;
+		});
 	}
 	return eventMetricsMemo[memoKey];
 };
