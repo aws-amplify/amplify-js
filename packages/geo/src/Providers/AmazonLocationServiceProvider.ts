@@ -152,9 +152,15 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 				locationServiceInput.IndexName = options.searchIndexName;
 			}
 
+			if (options['biasPosition'] && options['searchAreaConstraints']) {
+				throw new Error(
+					'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
+				);
+			}
 			if (options['biasPosition']) {
 				locationServiceInput.BiasPosition = options['biasPosition'];
-			} else if (options['searchAreaConstraints']) {
+			}
+			if (options['searchAreaConstraints']) {
 				locationServiceInput.FilterBBox = options['searchAreaConstraints'];
 			}
 		}
