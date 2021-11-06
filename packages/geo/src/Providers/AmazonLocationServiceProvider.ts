@@ -18,9 +18,11 @@ import {
 } from '@aws-amplify/core';
 import {
 	Place as PlaceResult,
-	SearchPlaceIndexForTextCommandInput,
 	LocationClient,
 	SearchPlaceIndexForTextCommand,
+	SearchPlaceIndexForTextCommandInput,
+	SearchPlaceIndexForSuggestionsCommand,
+	SearchPlaceIndexForSuggestionsCommandInput,
 	SearchPlaceIndexForPositionCommand,
 	SearchPlaceIndexForPositionCommandInput,
 } from '@aws-sdk/client-location';
@@ -33,6 +35,7 @@ import {
 	Place,
 	AmazonLocationServiceMapStyle,
 	Coordinates,
+	SearchForSuggestionsResults,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServiceProvider');
@@ -191,6 +194,82 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const results: Place[] = (camelcaseKeys(PascalResults, {
 			deep: true,
 		}) as undefined) as Place[];
+
+		return results;
+	}
+
+	/**
+	 * Search for suggestions based on the input text
+	 * @param  {string} text - The text string that is to be searched for
+	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
+	 * @returns {Promise<SearchForSuggestionsResults> - Promise resolves to an array of suggestion strings that match search parameters
+	 */
+
+	public async searchForSuggestions(
+		text: string,
+		options?: SearchByTextOptions
+	): Promise<SearchForSuggestionsResults> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			throw new Error('No credentials');
+		}
+
+		this._verifySearchIndex(options?.searchIndexName);
+
+		/**
+		 * Setup the searchInput
+		 */
+		const locationServiceInput: SearchPlaceIndexForSuggestionsCommandInput = {
+			Text: text,
+			IndexName: this._config.search_indices.default,
+		};
+
+		/**
+		 * Map search options to Amazon Location Service input object
+		 */
+		if (options) {
+			locationServiceInput.FilterCountries = options.countries;
+			locationServiceInput.MaxResults = options.maxResults;
+
+			if (options.searchIndexName) {
+				locationServiceInput.IndexName = options.searchIndexName;
+			}
+
+			if (options['biasPosition'] && options['searchAreaConstraints']) {
+				throw new Error(
+					'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
+				);
+			}
+			if (options['biasPosition']) {
+				locationServiceInput.BiasPosition = options['biasPosition'];
+			}
+			if (options['searchAreaConstraints']) {
+				locationServiceInput.FilterBBox = options['searchAreaConstraints'];
+			}
+		}
+
+		const client = new LocationClient({
+			credentials: this._config.credentials,
+			region: this._config.region,
+			customUserAgent: getAmplifyUserAgent(),
+		});
+		const command = new SearchPlaceIndexForSuggestionsCommand(
+			locationServiceInput
+		);
+
+		let response;
+		try {
+			response = await client.send(command);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		/**
+		 * The response from Amazon Location Service is a "Results" array of objects with a single `Text` item.
+		 * Here we want to flatten that to an array of just the strings from those `Text` items.
+		 */
+		const results = response.Results.map(result => result.Text);
 
 		return results;
 	}
