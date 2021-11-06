@@ -194,6 +194,8 @@ describe('Geo', () => {
 	});
 
 	describe('searchByText', () => {
+		const testString = 'starbucks';
+
 		test('should search with just text input', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
@@ -201,8 +203,6 @@ describe('Geo', () => {
 
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
-
-			const testString = 'starbucks';
 
 			const results = await geo.searchByText(testString);
 			expect(results).toEqual([testPlaceCamelCase]);
@@ -223,7 +223,6 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
 
-			const testString = 'starbucks';
 			const searchOptions: SearchByTextOptions = {
 				biasPosition: [12345, 67890],
 				countries: ['USA'],
@@ -252,7 +251,6 @@ describe('Geo', () => {
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
 
-			const testString = 'starbucks';
 			const searchOptions: SearchByTextOptions = {
 				searchAreaConstraints: [123, 456, 789, 321],
 				countries: ['USA'],
@@ -271,6 +269,31 @@ describe('Geo', () => {
 				FilterCountries: searchOptions.countries,
 				MaxResults: searchOptions.maxResults,
 			});
+		});
+
+		test('should throw an error if both BiasPosition and SearchAreaConstraints are given in the options', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const searchOptions: SearchByTextOptions = {
+				countries: ['USA'],
+				maxResults: 40,
+				searchIndexName: 'geoJSSearchCustomExample',
+				biasPosition: [12345, 67890],
+				searchAreaConstraints: [123, 456, 789, 321],
+			};
+
+			const resultsWithConstraints = await geo.searchByText(
+				testString,
+				searchOptions
+			);
+			expect(resultsWithConstraints).rejects.toThrow(
+				'BiasPosition and SearchAreaConstraints are mutually exclusive, please remove one or the other from the options object'
+			);
 		});
 
 		test('should fail if there is no provider', async () => {
