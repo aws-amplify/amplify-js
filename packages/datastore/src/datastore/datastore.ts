@@ -68,7 +68,7 @@ import {
 	isNullOrUndefined,
 	registerNonModelClass,
 	sortCompareFunction,
-	DeferredPromise,
+	SubscriptionBuffer,
 } from '../util';
 
 setAutoFreeze(true);
@@ -1167,13 +1167,18 @@ class DataStore {
 			let deletedItemIds: string[] = [];
 			let handle: ZenObservable.Subscription;
 
+			const generateAndEmitSnapshot = (): void => {
+				const snapshot = generateSnapshot();
+				emitSnapshot(snapshot);
+			};
+
 			// a mechanism to return data after X amount of seconds OR after the
 			// "limit" (itemsChanged >= this.syncPageSize) has been reached, whichever comes first
-			const TIMER_INTERVAL = 2000;
-			let timer: NodeJS.Timer;
-			let timerPromise: Promise<void>;
-			let limitPromise = new DeferredPromise();
-			let raceInFlight = false;
+			const buffer = new SubscriptionBuffer({
+				callback: generateAndEmitSnapshot,
+				errorHandler: observer.error,
+				maxInterval: 2000,
+			});
 
 			const { sort } = options || {};
 			const sortOptions = sort ? { sort } : undefined;
@@ -1207,11 +1212,12 @@ class DataStore {
 							itemsChanged.size - deletedItemIds.length >= this.syncPageSize;
 
 						if (limit || isSynced) {
-							limitPromise.resolve();
+							buffer.resolveBasePromise();
 						}
 
 						// kicks off every subsequent race as results sync down
-						if (!raceInFlight) racePromises();
+						const raceInFlight = buffer.getIsRaceInFlight();
+						if (!raceInFlight) buffer.start();
 					});
 
 					// returns a set of initial/locally-available results
@@ -1220,30 +1226,6 @@ class DataStore {
 					observer.error(err);
 				}
 			})();
-
-			const racePromises = async (): Promise<any> => {
-				raceInFlight = true;
-				startTimer();
-				try {
-					await Promise.race([timerPromise, limitPromise?.promise]);
-				} catch (err) {
-					observer.error(err);
-				}
-
-				generateAndEmitSnapshot();
-
-				// reset for the next race
-				raceInFlight = false;
-				limitPromise = new DeferredPromise();
-			};
-
-			const startTimer = (): void => {
-				timerPromise = new Promise((resolve, reject) => {
-					timer = setTimeout(() => {
-						resolve();
-					}, TIMER_INTERVAL);
-				});
-			};
 
 			// TODO: abstract this function into a util file to be able to write better unit tests
 			const generateSnapshot = (): DataStoreSnapshot<T> => {
@@ -1270,18 +1252,12 @@ class DataStore {
 			};
 
 			const emitSnapshot = (snapshot: DataStoreSnapshot<T>): void => {
-				clearTimeout(timer);
 				// send the generated snapshot to the primary subscription
 				observer.next(snapshot);
 
 				// reset the changed items sets
 				itemsChanged.clear();
 				deletedItemIds = [];
-			};
-
-			const generateAndEmitSnapshot = (): void => {
-				const snapshot = generateSnapshot();
-				emitSnapshot(snapshot);
 			};
 
 			const sortItems = (itemsToSort: T[]): void => {

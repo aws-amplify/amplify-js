@@ -789,4 +789,10 @@ export type ConflictHandler = (
 	| PersistentModel
 	| typeof DISCARD;
 export type ErrorHandler = (error: SyncError) => void;
+
+export type SubscriptionBufferOptions = {
+	callback: () => void;
+	maxInterval?: number;
+	errorHandler?: (errorValue?: any) => void;
+};
 //#endregion

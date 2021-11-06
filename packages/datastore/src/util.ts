@@ -23,6 +23,7 @@ import {
 	isModelAttributePrimaryKey,
 	isModelAttributeCompositeKey,
 	NonModelTypeConstructor,
+	SubscriptionBufferOptions,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
 
@@ -688,4 +689,64 @@ export function DeferredPromise(): void {
 		self.resolve = resolve;
 		self.reject = reject;
 	});
+}
+
+export class SubscriptionBuffer {
+	private limitPromise = new DeferredPromise();
+	private timerPromise: Promise<void>;
+	private TIMER_INTERVAL = 2000;
+	private timer: NodeJS.Timer;
+	private raceInFlight = false;
+	private callback = () => {};
+	private errorHandler = (msg = 'SubscriptionBuffer error') => {
+		console.error(msg);
+	};
+
+	constructor(options: SubscriptionBufferOptions) {
+		this.callback = options.callback;
+		this.errorHandler = options.errorHandler;
+		this.TIMER_INTERVAL = options.maxInterval;
+	}
+
+	private startTimer(): void {
+		this.timerPromise = new Promise((resolve, reject) => {
+			this.timer = setTimeout(() => {
+				resolve();
+			}, this.TIMER_INTERVAL);
+		});
+	}
+
+	private async racePromises(): Promise<any> {
+		this.raceInFlight = true;
+		this.startTimer();
+
+		try {
+			await Promise.race([this.timerPromise, this.limitPromise.promise]);
+		} catch (err) {
+			this.errorHandler(err);
+		}
+
+		this.callback();
+
+		// reset for the next race
+		clearTimeout(this.timer);
+		this.raceInFlight = false;
+		this.limitPromise = new DeferredPromise();
+	}
+
+	public start(): void {
+		this.racePromises();
+	}
+
+	public close(): void {
+		clearTimeout(this.timer);
+	}
+
+	public getIsRaceInFlight(): boolean {
+		return this.raceInFlight;
+	}
+
+	public resolveBasePromise(): void {
+		this.limitPromise.resolve();
+	}
 }
