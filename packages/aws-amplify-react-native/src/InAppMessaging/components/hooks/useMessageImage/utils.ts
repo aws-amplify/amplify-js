@@ -43,7 +43,7 @@ export const prefetchNetworkImage = async (url: string): Promise<ImageLoadingSta
 	}
 };
 
-export const getImageDimensions = (
+export const getLayoutImageDimensions = (
 	imageHeight: number,
 	imageWidth: number,
 	layout: InAppMessageLayout
