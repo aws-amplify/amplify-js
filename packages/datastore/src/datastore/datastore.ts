@@ -558,6 +558,7 @@ const createModelClass = <T extends PersistentModel>(
 
 		const {
 			type,
+			association,
 			association: { targetName },
 		} = modelDefinition.fields[field];
 		const relatedModelName = type['model'];
@@ -601,6 +602,22 @@ const createModelClass = <T extends PersistentModel>(
 				const associatedId = this[targetName];
 
 				if (!associatedId) {
+					if (association.connectionType === 'HAS_MANY') {
+						if (instanceMemos.hasOwnProperty(field)) {
+							return instanceMemos[field];
+						}
+						const associatedWith = association.associatedWith;
+						const relatedModel: PersistentModelConstructor<typeof relatedModelName> = getModelConstructorByModelName(
+							USER,
+							relatedModelName
+						);
+						const result = await instance.query(relatedModel, c =>
+							c[associatedWith].eq(this.id)
+						);
+						const asyncResult = new AsyncCollection(result);
+						instanceMemos[field] = asyncResult;
+						return asyncResult;
+					}
 					// unable to load related model
 					instanceMemos[targetName] = undefined;
 					return;
@@ -621,6 +638,51 @@ const createModelClass = <T extends PersistentModel>(
 
 	return clazz;
 };
+
+export class AsyncCollection<T> implements AsyncIterable<T> {
+	start: number;
+	end: number;
+	values: Array<any>;
+	constructor(values: Array<any>) {
+		this.start = 0;
+		this.end = values.length;
+		this.values = values;
+	}
+	[Symbol.asyncIterator](): AsyncIterator<T> {
+		let index = this.start;
+		return {
+			next: async () => {
+				if (index < this.end) {
+					const result = {
+						value: this.values[index],
+						done: false,
+					};
+					index++;
+					return result;
+				}
+				return {
+					value: null,
+					done: true,
+				};
+			},
+		};
+	}
+	async toArray({
+		max = Number.MAX_SAFE_INTEGER,
+	}: { max?: number } = {}): Promise<T[]> {
+		const output = [];
+		let i = 0;
+		for await (const element of this) {
+			if (i < max) {
+				output.push(element);
+				i++;
+			} else {
+				break;
+			}
+		}
+		return output;
+	}
+}
 
 const checkReadOnlyPropertyOnCreate = <T extends PersistentModel>(
 	draft: T,
