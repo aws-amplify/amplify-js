@@ -11,16 +11,11 @@
  * and limitations under the License.
  */
 
-import React from 'react';
-import { Modal, SafeAreaView } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { MessageWrapperStyle } from './types';
 
-import { styles } from './styles';
-import { MessageWrapperProps } from './types';
-
-export default function MessageWrapper({ children, style }: MessageWrapperProps) {
-	return (
-		<Modal transparent visible>
-			<SafeAreaView style={[styles.messageWrapper, style]}>{children}</SafeAreaView>
-		</Modal>
-	);
-}
+export const styles: MessageWrapperStyle = StyleSheet.create({
+	messageWrapper: {
+		flex: 1,
+	},
+});

@@ -18,3 +18,7 @@ export interface MessageWrapperProps {
 	children: ReactNode;
 	style?: StyleProp<ViewStyle>;
 }
+
+export interface MessageWrapperStyle {
+	messageWrapper: ViewStyle;
+}
