@@ -12,11 +12,14 @@
  */
 
 import React from 'react';
-import { SafeAreaView } from 'react-native';
+import { Modal, SafeAreaView } from 'react-native';
 
-import { styles } from './styles';
 import { MessageWrapperProps } from './types';
 
 export default function MessageWrapper({ children, style }: MessageWrapperProps) {
-	return <SafeAreaView style={[styles.safeArea, style]}>{children}</SafeAreaView>;
+	return (
+		<Modal transparent visible>
+			<SafeAreaView style={style}>{children}</SafeAreaView>
+		</Modal>
+	);
 }
