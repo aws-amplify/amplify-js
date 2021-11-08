@@ -6,6 +6,7 @@ import {
 } from '../src/types';
 import { generateSelectionSet, getModelAuthModes } from '../src/sync/utils';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { SubscriptionBuffer } from '../src/util';
 
 describe('DataStore - utils', () => {
 	describe('generateSelectionSet', () => {
@@ -454,6 +455,59 @@ _deleted`;
 
 				expect(authModes).toEqual(expectedAuthModes);
 			}
+		});
+	});
+
+	describe.only('subscription buffer utility class', () => {
+		test('happy path', async done => {
+			const bufferCallback = () => {
+				try {
+					done();
+				} catch (error) {
+					done(error);
+				}
+			};
+			const buffer = new SubscriptionBuffer({
+				maxInterval: 2000,
+				callback: bufferCallback,
+			});
+
+			expect(buffer.getIsRaceInFlight()).toBe(false);
+
+			const proto = Object.getPrototypeOf(buffer);
+			const spyOnRace = jest.spyOn(proto, 'racePromises');
+
+			buffer.start();
+			expect(buffer.getIsRaceInFlight()).toBe(true);
+			expect(spyOnRace).toBeCalledTimes(1);
+			buffer.resolveBasePromise();
+			buffer.close();
+		});
+
+		test('handles errors gracefully', async done => {
+			const bufferCallback = () => {
+				try {
+					done();
+				} catch (error) {
+					done(error);
+				}
+			};
+			const bufferErrorHandler = jest.fn();
+			const buffer = new SubscriptionBuffer({
+				maxInterval: 2000,
+				callback: bufferCallback,
+				errorHandler: bufferErrorHandler,
+			});
+			const proto = Object.getPrototypeOf(buffer);
+			const spyOnTimer = jest.spyOn(proto, 'startTimer');
+
+			// force the Promise to reject
+			spyOnTimer.mockImplementationOnce(() => {
+				throw new Error();
+			});
+
+			buffer.start();
+			expect(bufferErrorHandler).toHaveBeenCalledTimes(1);
 		});
 	});
 });

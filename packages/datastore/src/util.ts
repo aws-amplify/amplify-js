@@ -693,34 +693,34 @@ export function DeferredPromise(): void {
 
 export class SubscriptionBuffer {
 	private limitPromise = new DeferredPromise();
-	private timerPromise: Promise<void>;
+	private timerPromise: Promise<string>;
 	private TIMER_INTERVAL = 2000;
 	private timer: NodeJS.Timer;
 	private raceInFlight = false;
 	private callback = () => {};
-	private errorHandler = (msg = 'SubscriptionBuffer error') => {
-		console.error(msg);
+	private errorHandler: (error: string) => void;
+	private defaultErrorHandler = (msg = 'SubscriptionBuffer error'): void => {
+		throw new Error(msg);
 	};
 
 	constructor(options: SubscriptionBufferOptions) {
 		this.callback = options.callback;
-		this.errorHandler = options.errorHandler;
+		this.errorHandler = options.errorHandler || this.defaultErrorHandler;
 		this.TIMER_INTERVAL = options.maxInterval;
 	}
 
 	private startTimer(): void {
 		this.timerPromise = new Promise((resolve, reject) => {
 			this.timer = setTimeout(() => {
-				resolve();
+				resolve('timerPromise resolves');
 			}, this.TIMER_INTERVAL);
 		});
 	}
 
-	private async racePromises(): Promise<any> {
-		this.raceInFlight = true;
-		this.startTimer();
-
+	private async racePromises(): Promise<void> {
 		try {
+			this.raceInFlight = true;
+			this.startTimer();
 			await Promise.race([this.timerPromise, this.limitPromise.promise]);
 		} catch (err) {
 			this.errorHandler(err);

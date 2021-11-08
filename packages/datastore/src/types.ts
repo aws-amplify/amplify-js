@@ -793,6 +793,6 @@ export type ErrorHandler = (error: SyncError) => void;
 export type SubscriptionBufferOptions = {
 	callback: () => void;
 	maxInterval?: number;
-	errorHandler?: (errorValue?: any) => void;
+	errorHandler?: (error: string) => void;
 };
 //#endregion
