@@ -29,7 +29,6 @@ import {
 	passwordErr,
 	vRefreshToken,
 	ivRefreshToken,
-	uploadProgressKey,
 } from './constants';
 import { CognitoUserSession } from 'amazon-cognito-identity-js';
 
@@ -901,12 +900,6 @@ describe('signOut() and globalSignOut', () => {
 		cognitoUser.signOut();
 		expect(cognitoUser.storage.getItem('')).toEqual(null);
 		expect(cognitoUser.signInUserSession).toEqual(null);
-	});
-
-	test('signOut expected to set __uploadInProgress to equal null', () => {
-		cognitoUser.storage.setItem(uploadProgressKey, '');
-		cognitoUser.signOut();
-		expect(cognitoUser.storage.getItem(uploadProgressKey)).toEqual(null);
 	});
 
 	test('global signOut Happy Path', () => {

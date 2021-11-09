@@ -533,7 +533,7 @@ class SubscriptionProcessor {
 			})();
 
 			return () => {
-				Object.keys(subscriptions).map(modelName => {
+				Object.keys(subscriptions).forEach(modelName => {
 					subscriptions[modelName][
 						TransformerMutationType.CREATE
 					].forEach(subscription => subscription.unsubscribe());
