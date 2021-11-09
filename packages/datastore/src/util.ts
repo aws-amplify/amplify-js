@@ -683,19 +683,26 @@ export const isAWSIPAddress = (val: string): boolean => {
 	);
 };
 
-export function DeferredPromise(): void {
-	const self = this;
-	this.promise = new Promise((resolve, reject) => {
-		self.resolve = resolve;
-		self.reject = reject;
-	});
+export class DeferredPromise {
+	public promise: Promise<string>;
+	public resolve: (value: string | PromiseLike<string>) => void;
+	public reject: () => void;
+	constructor() {
+		const self = this;
+		this.promise = new Promise(
+			(resolve: (value: string | PromiseLike<string>) => void, reject) => {
+				self.resolve = resolve;
+				self.reject = reject;
+			}
+		);
+	}
 }
 
 export class SubscriptionBuffer {
 	private limitPromise = new DeferredPromise();
 	private timerPromise: Promise<string>;
-	private TIMER_INTERVAL = 2000;
-	private timer: NodeJS.Timer;
+	private maxInterval: number;
+	private timer: ReturnType<typeof setTimeout>;
 	private raceInFlight = false;
 	private callback = () => {};
 	private errorHandler: (error: string) => void;
@@ -706,47 +713,48 @@ export class SubscriptionBuffer {
 	constructor(options: SubscriptionBufferOptions) {
 		this.callback = options.callback;
 		this.errorHandler = options.errorHandler || this.defaultErrorHandler;
-		this.TIMER_INTERVAL = options.maxInterval;
+		this.maxInterval = options.maxInterval || 2000;
 	}
 
 	private startTimer(): void {
 		this.timerPromise = new Promise((resolve, reject) => {
 			this.timer = setTimeout(() => {
-				resolve('timerPromise resolves');
-			}, this.TIMER_INTERVAL);
+				resolve('TIMER');
+			}, this.maxInterval);
 		});
 	}
 
-	private async racePromises(): Promise<void> {
+	private async racePromises(): Promise<string> {
+		let winner: string;
 		try {
 			this.raceInFlight = true;
 			this.startTimer();
-			await Promise.race([this.timerPromise, this.limitPromise.promise]);
+			winner = await Promise.race([
+				this.timerPromise,
+				this.limitPromise.promise,
+			]);
+			this.callback();
 		} catch (err) {
 			this.errorHandler(err);
+		} finally {
+			// reset for the next race
+			this.close();
+			this.raceInFlight = false;
+			this.limitPromise = new DeferredPromise();
+
+			return winner;
 		}
-
-		this.callback();
-
-		// reset for the next race
-		clearTimeout(this.timer);
-		this.raceInFlight = false;
-		this.limitPromise = new DeferredPromise();
 	}
 
 	public start(): void {
-		this.racePromises();
+		if (!this.raceInFlight) this.racePromises();
 	}
 
 	public close(): void {
 		clearTimeout(this.timer);
 	}
 
-	public getIsRaceInFlight(): boolean {
-		return this.raceInFlight;
-	}
-
 	public resolveBasePromise(): void {
-		this.limitPromise.resolve();
+		this.limitPromise.resolve('LIMIT');
 	}
 }

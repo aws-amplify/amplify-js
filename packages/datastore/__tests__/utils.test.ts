@@ -458,56 +458,131 @@ _deleted`;
 		});
 	});
 
-	describe('subscription buffer utility class', () => {
-		test('happy path', async done => {
-			const bufferCallback = () => {
-				try {
-					done();
-				} catch (error) {
-					done(error);
-				}
-			};
-			const buffer = new SubscriptionBuffer({
-				maxInterval: 2000,
+	describe.only('subscription buffer utility class', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+		});
+
+		test('happy path - limit wins', async () => {
+			expect.assertions(5);
+			const bufferCallback = jest.fn();
+
+			// casting to any -> in order to access private members
+			const buffer: any = new SubscriptionBuffer({
+				maxInterval: 500,
 				callback: bufferCallback,
 			});
 
-			expect(buffer.getIsRaceInFlight()).toBe(false);
+			const spyOnRace = jest.spyOn(buffer, 'racePromises');
 
-			const proto = Object.getPrototypeOf(buffer);
-			const spyOnRace = jest.spyOn(proto, 'racePromises');
+			expect(buffer.raceInFlight).toBe(false);
 
 			buffer.start();
-			expect(buffer.getIsRaceInFlight()).toBe(true);
+
 			expect(spyOnRace).toBeCalledTimes(1);
 			buffer.resolveBasePromise();
+
+			const winner = await spyOnRace.mock.results[0].value;
+			expect(winner).toEqual('LIMIT');
+
+			expect(buffer.raceInFlight).toBe(false);
+			expect(bufferCallback).toBeCalledTimes(1);
+
 			buffer.close();
 		});
 
-		test('handles errors gracefully', async done => {
-			const bufferCallback = () => {
-				try {
-					done();
-				} catch (error) {
-					done(error);
-				}
-			};
-			const bufferErrorHandler = jest.fn();
-			const buffer = new SubscriptionBuffer({
-				maxInterval: 2000,
+		test('happy path - timer wins', async () => {
+			expect.assertions(5);
+			const bufferCallback = jest.fn();
+
+			// casting to any -> in order to access private members
+			const buffer: any = new SubscriptionBuffer({
+				maxInterval: 500,
+				callback: bufferCallback,
+			});
+
+			const spyOnRace = jest.spyOn(buffer, 'racePromises');
+
+			expect(buffer.raceInFlight).toBe(false);
+
+			buffer.start();
+
+			expect(spyOnRace).toBeCalledTimes(1);
+
+			const winner = await spyOnRace.mock.results[0].value;
+			expect(winner).toEqual('TIMER');
+
+			expect(buffer.raceInFlight).toBe(false);
+			expect(bufferCallback).toBeCalledTimes(1);
+
+			buffer.close();
+		});
+
+		test('throws default error', async () => {
+			expect.assertions(4);
+			const bufferCallback = jest.fn();
+
+			// casting to any -> in order to access private members
+			const buffer: any = new SubscriptionBuffer({
+				maxInterval: 500,
+				callback: bufferCallback,
+			});
+
+			const spyOnRace = jest.spyOn(buffer, 'racePromises');
+			const spyOnErrorHandler = jest.spyOn(buffer, 'errorHandler');
+			const spyOnTimer = jest.spyOn(buffer, 'startTimer');
+			// force the Promise to reject
+			spyOnTimer.mockImplementation(() => {
+				throw new Error('customErrorMsg');
+			});
+
+			expect(buffer.raceInFlight).toBe(false);
+
+			buffer.start();
+
+			expect(spyOnRace).toBeCalledTimes(1);
+
+			expect(spyOnErrorHandler).toThrowError('SubscriptionBuffer error');
+
+			expect(bufferCallback).toBeCalledTimes(0);
+
+			buffer.close();
+		});
+
+		test('accepts custom error handler and throws custom error', async () => {
+			expect.assertions(4);
+			const bufferCallback = jest.fn();
+			const customErrorMsg = 'something went wrong with the buffer';
+			const bufferErrorHandler = jest.fn(err => {
+				throw new Error(customErrorMsg);
+			});
+
+			// casting to any -> in order to access private members
+			const buffer: any = new SubscriptionBuffer({
+				maxInterval: 500,
 				callback: bufferCallback,
 				errorHandler: bufferErrorHandler,
 			});
-			const proto = Object.getPrototypeOf(buffer);
-			const spyOnTimer = jest.spyOn(proto, 'startTimer');
 
-			// force the Promise to reject
-			spyOnTimer.mockImplementationOnce(() => {
-				throw new Error();
+			const spyOnRace = jest.spyOn(buffer, 'racePromises');
+			const spyOnErrorHandler = jest.spyOn(buffer, 'errorHandler');
+			const spyOnTimer = jest.spyOn(buffer, 'startTimer');
+			// force the 'racePromises' to fail
+			spyOnTimer.mockImplementation(() => {
+				throw new Error('timer error');
 			});
 
+			expect(buffer.raceInFlight).toBe(false);
+
 			buffer.start();
-			expect(bufferErrorHandler).toHaveBeenCalledTimes(1);
+
+			expect(spyOnRace).toBeCalledTimes(1);
+
+			expect(spyOnErrorHandler).toThrowError(customErrorMsg);
+
+			expect(bufferCallback).toBeCalledTimes(0);
+
+			buffer.close();
 		});
 	});
 });

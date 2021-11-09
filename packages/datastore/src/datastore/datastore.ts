@@ -1216,7 +1216,7 @@ class DataStore {
 						}
 
 						// kicks off every subsequent race as results sync down
-						if (!buffer.getIsRaceInFlight()) buffer.start();
+						buffer.start();
 					});
 
 					// returns a set of initial/locally-available results
