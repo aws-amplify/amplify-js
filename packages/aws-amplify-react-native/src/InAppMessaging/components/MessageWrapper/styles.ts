@@ -15,7 +15,7 @@ import { StyleSheet } from 'react-native';
 import { MessageWrapperStyle } from './types';
 
 export const styles: MessageWrapperStyle = StyleSheet.create({
-	safeArea: {
-		...StyleSheet.absoluteFillObject,
+	messageWrapper: {
+		flex: 1,
 	},
 });
