@@ -10,7 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
- 
+
 package com.amazonaws.amplify.pushnotification;
 
 import android.util.Log;
@@ -18,6 +18,8 @@ import android.os.Bundle;
 import android.app.Application;
 import android.content.IntentFilter;
 import android.content.BroadcastReceiver;
+
+import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -29,7 +31,9 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationJsDelivery;
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationBroadcastReceiver;
@@ -64,9 +68,15 @@ public class RNPushNotificationModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getToken(Callback callback) {
-        String token =  FirebaseInstanceId.getInstance().getToken();
-        Log.i(LOG_TAG, "getting token" + token);
-        callback.invoke(token);
+    public void getToken(final Callback callback) {
+        final Task<String> taskToken =  FirebaseMessaging.getInstance().getToken();
+			taskToken.addOnSuccessListener(new OnSuccessListener<String>() {
+				@Override
+				public void onSuccess(String token) {
+					Log.i(LOG_TAG, "getting token " + token);
+					callback.invoke(token);
+				}
+			});
+
     }
 }
