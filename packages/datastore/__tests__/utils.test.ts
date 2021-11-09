@@ -458,7 +458,7 @@ _deleted`;
 		});
 	});
 
-	describe.only('subscription buffer utility class', () => {
+	describe('subscription buffer utility class', () => {
 		beforeEach(() => {
 			jest.clearAllMocks();
 		});
