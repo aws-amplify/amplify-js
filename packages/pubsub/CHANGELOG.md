@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.1.14...@aws-amplify/pubsub@4.1.15) (2021-11-09)
+
+
+### Reverts
+
+* uuid dependency upgrade ([#9159](https://github.com/aws-amplify/amplify-js/issues/9159)) ([4ef8aa9](https://github.com/aws-amplify/amplify-js/commit/4ef8aa9c7c25dbe921fd02b6205b8defb93fbaec))
+
+
+
+
+
 ## [4.1.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.1.13...@aws-amplify/pubsub@4.1.14) (2021-10-28)
 
 **Note:** Version bump only for package @aws-amplify/pubsub

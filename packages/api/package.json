@@ -1,15 +1,15 @@
 {
 	"name": "@aws-amplify/api",
-	"version": "4.0.22",
+	"version": "4.0.23",
 	"description": "Api category of aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
 	"typesVersions": {
 		"<3.8": {
-		  "lib-esm/index.d.ts": [
-			"index.v37.d.ts"
-		  ]
+			"lib-esm/index.d.ts": [
+				"index.v37.d.ts"
+			]
 		}
 	},
 	"react-native": {
@@ -51,8 +51,8 @@
 		"@types/zen-observable": "^0.8.0"
 	},
 	"dependencies": {
-		"@aws-amplify/api-graphql": "2.2.11",
-		"@aws-amplify/api-rest": "2.0.22"
+		"@aws-amplify/api-graphql": "2.2.12",
+		"@aws-amplify/api-rest": "2.0.23"
 	},
 	"jest": {
 		"globals": {
