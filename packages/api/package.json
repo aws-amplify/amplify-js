@@ -5,6 +5,13 @@
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
 	"typings": "./lib-esm/index.d.ts",
+	"typesVersions": {
+		"<3.8": {
+		  "lib-esm/index.d.ts": [
+			"index.v37.d.ts"
+		  ]
+		}
+	},
 	"react-native": {
 		"./lib/index": "./lib-esm/index.js"
 	},
