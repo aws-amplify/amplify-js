@@ -56,7 +56,7 @@
 	},
 	"dependencies": {
 		"@aws-crypto/sha256-js": "1.0.0-alpha.0",
-		"@aws-sdk/client-cloudwatch-logs": "3.6.1",
+		"@aws-sdk/client-cloudwatch-logs": "^3.40.0",
 		"@aws-sdk/client-cognito-identity": "3.6.1",
 		"@aws-sdk/credential-provider-cognito-identity": "3.6.1",
 		"@aws-sdk/types": "3.6.1",
