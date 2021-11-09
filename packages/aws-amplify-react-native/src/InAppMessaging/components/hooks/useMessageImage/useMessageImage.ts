@@ -19,7 +19,9 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { InAppMessageImage, InAppMessageLayout } from '@aws-amplify/notifications';
 
 import { ImageDimensions, UseMessageImage } from './types';
-import { getImageDimensions, prefetchNetworkImage } from './utils';
+import { getLayoutImageDimensions, prefetchNetworkImage } from './utils';
+
+const FAILURE_IMAGE_DIMENSIONS: ImageDimensions = { height: 0, width: 0 };
 
 const logger = new Logger('Notifications.InAppMessaging');
 
@@ -44,24 +46,24 @@ export default function useMessageImage(image: InAppMessageImage, layout: InAppM
 	useEffect(() => {
 		if (hasImage) {
 			prefetchNetworkImage(src).then((loadingState) => {
-				// get image size once loaded
 				if (loadingState === 'loaded') {
+					// get image size once loaded
 					Image.getSize(
 						src,
 						(width, height) => {
-							setImageDimensions(getImageDimensions(height, width, layout));
+							setImageDimensions(getLayoutImageDimensions(height, width, layout));
 						},
 						(error) => {
 							logger.error(`Unable to retrieve size for image: ${error}`);
 
-							// set dimension values to 0 if size retrieval failure
-							setImageDimensions({ height: 0, width: 0 });
+							// set failure dimension values on size retrieval failure
+							setImageDimensions(FAILURE_IMAGE_DIMENSIONS);
 						}
 					);
+				} else {
+					// set failure dimension values on prefetch failure
+					setImageDimensions(FAILURE_IMAGE_DIMENSIONS);
 				}
-
-				// set dimension values to 0 if prefetch failure
-				setImageDimensions({ height: 0, width: 0 });
 			});
 		}
 	}, [hasImage, layout, src]);
