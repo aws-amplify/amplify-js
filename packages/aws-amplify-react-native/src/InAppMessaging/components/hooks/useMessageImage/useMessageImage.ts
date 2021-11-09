@@ -56,12 +56,12 @@ export default function useMessageImage(image: InAppMessageImage, layout: InAppM
 						(error) => {
 							logger.error(`Unable to retrieve size for image: ${error}`);
 
-							// set dimension values to 0 if size retrieval failure
+							// set failure dimension values on size retrieval failure
 							setImageDimensions(FAILURE_IMAGE_DIMENSIONS);
 						}
 					);
 				} else {
-					// set dimension values to 0 if prefetch failure
+					// set failure dimension values on prefetch failure
 					setImageDimensions(FAILURE_IMAGE_DIMENSIONS);
 				}
 			});
