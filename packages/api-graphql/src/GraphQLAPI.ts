@@ -209,9 +209,8 @@ export class GraphQLAPIClass {
 	getGraphqlOperationType(operation: GraphQLOperation) {
 		const doc = parse(operation);
 		const {
-			// @ts-ignore
 			definitions: [{ operation: operationType }],
-		} = doc;
+		} = (doc as unknown) as { definitions: OperationDefinitionNode[] };
 
 		return operationType;
 	}
