@@ -790,9 +790,14 @@ export type ConflictHandler = (
 	| typeof DISCARD;
 export type ErrorHandler = (error: SyncError) => void;
 
-export type SubscriptionBufferOptions = {
+export type DeferredCallbackResolverOptions = {
 	callback: () => void;
 	maxInterval?: number;
 	errorHandler?: (error: string) => void;
 };
+
+export enum LimitTimerRaceResolvedValues {
+	LIMIT = 'LIMIT',
+	TIMER = 'TIMER',
+}
 //#endregion

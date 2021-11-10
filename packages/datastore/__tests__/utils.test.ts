@@ -1,12 +1,13 @@
 import {
 	AuthModeStrategy,
 	InternalSchema,
+	LimitTimerRaceResolvedValues,
 	SchemaModel,
 	SchemaNamespace,
 } from '../src/types';
 import { generateSelectionSet, getModelAuthModes } from '../src/sync/utils';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
-import { SubscriptionBuffer } from '../src/util';
+import { DeferredCallbackResolver } from '../src/util';
 
 describe('DataStore - utils', () => {
 	describe('generateSelectionSet', () => {
@@ -458,131 +459,132 @@ _deleted`;
 		});
 	});
 
-	describe('subscription buffer utility class', () => {
+	describe('DeferredCallbackResolver utility class', () => {
 		beforeEach(() => {
 			jest.clearAllMocks();
 		});
 
 		test('happy path - limit wins', async () => {
 			expect.assertions(5);
-			const bufferCallback = jest.fn();
+			const limitTimerRaceCallback = jest.fn();
 
 			// casting to any -> in order to access private members
-			const buffer: any = new SubscriptionBuffer({
+			const limitTimerRace: any = new DeferredCallbackResolver({
 				maxInterval: 500,
-				callback: bufferCallback,
+				callback: limitTimerRaceCallback,
 			});
 
-			const spyOnRace = jest.spyOn(buffer, 'racePromises');
+			const spyOnRace = jest.spyOn(limitTimerRace, 'racePromises');
 
-			expect(buffer.raceInFlight).toBe(false);
+			expect(limitTimerRace.raceInFlight).toBe(false);
 
-			buffer.start();
+			limitTimerRace.start();
 
 			expect(spyOnRace).toBeCalledTimes(1);
-			buffer.resolveBasePromise();
+			limitTimerRace.resolve();
 
 			const winner = await spyOnRace.mock.results[0].value;
-			expect(winner).toEqual('LIMIT');
+			expect(winner).toEqual(LimitTimerRaceResolvedValues.LIMIT);
 
-			expect(buffer.raceInFlight).toBe(false);
-			expect(bufferCallback).toBeCalledTimes(1);
+			expect(limitTimerRace.raceInFlight).toBe(false);
+			expect(limitTimerRaceCallback).toBeCalledTimes(1);
 
-			buffer.close();
+			limitTimerRace.clear();
 		});
 
 		test('happy path - timer wins', async () => {
 			expect.assertions(5);
-			const bufferCallback = jest.fn();
+			const limitTimerRaceCallback = jest.fn();
 
 			// casting to any -> in order to access private members
-			const buffer: any = new SubscriptionBuffer({
+			const limitTimerRace: any = new DeferredCallbackResolver({
 				maxInterval: 500,
-				callback: bufferCallback,
+				callback: limitTimerRaceCallback,
 			});
 
-			const spyOnRace = jest.spyOn(buffer, 'racePromises');
+			const spyOnRace = jest.spyOn(limitTimerRace, 'racePromises');
 
-			expect(buffer.raceInFlight).toBe(false);
+			expect(limitTimerRace.raceInFlight).toBe(false);
 
-			buffer.start();
+			limitTimerRace.start();
 
 			expect(spyOnRace).toBeCalledTimes(1);
 
 			const winner = await spyOnRace.mock.results[0].value;
-			expect(winner).toEqual('TIMER');
+			expect(winner).toEqual(LimitTimerRaceResolvedValues.TIMER);
 
-			expect(buffer.raceInFlight).toBe(false);
-			expect(bufferCallback).toBeCalledTimes(1);
+			expect(limitTimerRace.raceInFlight).toBe(false);
+			expect(limitTimerRaceCallback).toBeCalledTimes(1);
 
-			buffer.close();
+			limitTimerRace.clear();
 		});
 
 		test('throws default error', async () => {
 			expect.assertions(4);
-			const bufferCallback = jest.fn();
+			const limitTimerRaceCallback = jest.fn();
 
 			// casting to any -> in order to access private members
-			const buffer: any = new SubscriptionBuffer({
+			const limitTimerRace: any = new DeferredCallbackResolver({
 				maxInterval: 500,
-				callback: bufferCallback,
+				callback: limitTimerRaceCallback,
 			});
 
-			const spyOnRace = jest.spyOn(buffer, 'racePromises');
-			const spyOnErrorHandler = jest.spyOn(buffer, 'errorHandler');
-			const spyOnTimer = jest.spyOn(buffer, 'startTimer');
+			const spyOnRace = jest.spyOn(limitTimerRace, 'racePromises');
+			const spyOnErrorHandler = jest.spyOn(limitTimerRace, 'errorHandler');
+			const spyOnTimer = jest.spyOn(limitTimerRace, 'startTimer');
 			// force the Promise to reject
 			spyOnTimer.mockImplementation(() => {
 				throw new Error('customErrorMsg');
 			});
 
-			expect(buffer.raceInFlight).toBe(false);
+			expect(limitTimerRace.raceInFlight).toBe(false);
 
-			buffer.start();
+			limitTimerRace.start();
 
 			expect(spyOnRace).toBeCalledTimes(1);
 
-			expect(spyOnErrorHandler).toThrowError('SubscriptionBuffer error');
+			expect(spyOnErrorHandler).toThrowError('DeferredCallbackResolver error');
 
-			expect(bufferCallback).toBeCalledTimes(0);
+			expect(limitTimerRaceCallback).toBeCalledTimes(0);
 
-			buffer.close();
+			limitTimerRace.clear();
 		});
 
 		test('accepts custom error handler and throws custom error', async () => {
 			expect.assertions(4);
-			const bufferCallback = jest.fn();
-			const customErrorMsg = 'something went wrong with the buffer';
-			const bufferErrorHandler = jest.fn(err => {
+			const limitTimerRaceCallback = jest.fn();
+			const customErrorMsg =
+				'something went wrong with the DeferredCallbackResolver';
+			const limitTimerRaceErrorHandler = jest.fn(err => {
 				throw new Error(customErrorMsg);
 			});
 
 			// casting to any -> in order to access private members
-			const buffer: any = new SubscriptionBuffer({
+			const limitTimerRace: any = new DeferredCallbackResolver({
 				maxInterval: 500,
-				callback: bufferCallback,
-				errorHandler: bufferErrorHandler,
+				callback: limitTimerRaceCallback,
+				errorHandler: limitTimerRaceErrorHandler,
 			});
 
-			const spyOnRace = jest.spyOn(buffer, 'racePromises');
-			const spyOnErrorHandler = jest.spyOn(buffer, 'errorHandler');
-			const spyOnTimer = jest.spyOn(buffer, 'startTimer');
+			const spyOnRace = jest.spyOn(limitTimerRace, 'racePromises');
+			const spyOnErrorHandler = jest.spyOn(limitTimerRace, 'errorHandler');
+			const spyOnTimer = jest.spyOn(limitTimerRace, 'startTimer');
 			// force the 'racePromises' to fail
 			spyOnTimer.mockImplementation(() => {
 				throw new Error('timer error');
 			});
 
-			expect(buffer.raceInFlight).toBe(false);
+			expect(limitTimerRace.raceInFlight).toBe(false);
 
-			buffer.start();
+			limitTimerRace.start();
 
 			expect(spyOnRace).toBeCalledTimes(1);
 
 			expect(spyOnErrorHandler).toThrowError(customErrorMsg);
 
-			expect(bufferCallback).toBeCalledTimes(0);
+			expect(limitTimerRaceCallback).toBeCalledTimes(0);
 
-			buffer.close();
+			limitTimerRace.clear();
 		});
 	});
 });

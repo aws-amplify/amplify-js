@@ -68,7 +68,7 @@ import {
 	isNullOrUndefined,
 	registerNonModelClass,
 	sortCompareFunction,
-	SubscriptionBuffer,
+	DeferredCallbackResolver,
 } from '../util';
 
 setAutoFreeze(true);
@@ -1174,7 +1174,7 @@ class DataStore {
 
 			// a mechanism to return data after X amount of seconds OR after the
 			// "limit" (itemsChanged >= this.syncPageSize) has been reached, whichever comes first
-			const buffer = new SubscriptionBuffer({
+			const limitTimerRace = new DeferredCallbackResolver({
 				callback: generateAndEmitSnapshot,
 				errorHandler: observer.error,
 				maxInterval: 2000,
@@ -1212,11 +1212,11 @@ class DataStore {
 							itemsChanged.size - deletedItemIds.length >= this.syncPageSize;
 
 						if (limit || isSynced) {
-							buffer.resolveBasePromise();
+							limitTimerRace.resolve();
 						}
 
 						// kicks off every subsequent race as results sync down
-						buffer.start();
+						limitTimerRace.start();
 					});
 
 					// returns a set of initial/locally-available results

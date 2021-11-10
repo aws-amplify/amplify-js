@@ -23,7 +23,8 @@ import {
 	isModelAttributePrimaryKey,
 	isModelAttributeCompositeKey,
 	NonModelTypeConstructor,
-	SubscriptionBufferOptions,
+	DeferredCallbackResolverOptions,
+	LimitTimerRaceResolvedValues,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
 
@@ -698,7 +699,7 @@ export class DeferredPromise {
 	}
 }
 
-export class SubscriptionBuffer {
+export class DeferredCallbackResolver {
 	private limitPromise = new DeferredPromise();
 	private timerPromise: Promise<string>;
 	private maxInterval: number;
@@ -706,11 +707,13 @@ export class SubscriptionBuffer {
 	private raceInFlight = false;
 	private callback = () => {};
 	private errorHandler: (error: string) => void;
-	private defaultErrorHandler = (msg = 'SubscriptionBuffer error'): void => {
+	private defaultErrorHandler = (
+		msg = 'DeferredCallbackResolver error'
+	): void => {
 		throw new Error(msg);
 	};
 
-	constructor(options: SubscriptionBufferOptions) {
+	constructor(options: DeferredCallbackResolverOptions) {
 		this.callback = options.callback;
 		this.errorHandler = options.errorHandler || this.defaultErrorHandler;
 		this.maxInterval = options.maxInterval || 2000;
@@ -719,7 +722,7 @@ export class SubscriptionBuffer {
 	private startTimer(): void {
 		this.timerPromise = new Promise((resolve, reject) => {
 			this.timer = setTimeout(() => {
-				resolve('TIMER');
+				resolve(LimitTimerRaceResolvedValues.TIMER);
 			}, this.maxInterval);
 		});
 	}
@@ -738,7 +741,7 @@ export class SubscriptionBuffer {
 			this.errorHandler(err);
 		} finally {
 			// reset for the next race
-			this.close();
+			this.clear();
 			this.raceInFlight = false;
 			this.limitPromise = new DeferredPromise();
 
@@ -750,11 +753,11 @@ export class SubscriptionBuffer {
 		if (!this.raceInFlight) this.racePromises();
 	}
 
-	public close(): void {
+	public clear(): void {
 		clearTimeout(this.timer);
 	}
 
-	public resolveBasePromise(): void {
-		this.limitPromise.resolve('LIMIT');
+	public resolve(): void {
+		this.limitPromise.resolve(LimitTimerRaceResolvedValues.LIMIT);
 	}
 }
