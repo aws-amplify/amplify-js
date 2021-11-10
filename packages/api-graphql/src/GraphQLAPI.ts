@@ -209,7 +209,8 @@ export class GraphQLAPIClass {
 	getGraphqlOperationType(operation: GraphQLOperation) {
 		const doc = parse(operation);
 		const {
-			definitions: [{ kind: operationType }],
+			// @ts-ignore
+			definitions: [{ operation: operationType }],
 		} = doc;
 
 		return operationType;
@@ -227,7 +228,11 @@ export class GraphQLAPIClass {
 		additionalHeaders?: { [key: string]: string }
 	): T extends { subscription: true }
 		? Observable<GraphQLResult>
-		: Promise<GraphQLResult> {
+		: Promise<GraphQLResult>;
+	graphql(
+		{ query: paramQuery, variables, authMode, authToken }: GraphQLOptions,
+		additionalHeaders?: { [key: string]: string }
+	): Observable<GraphQLResult> | Promise<GraphQLResult> {
 		const query =
 			typeof paramQuery === 'string'
 				? parse(paramQuery)
@@ -264,9 +269,9 @@ export class GraphQLAPIClass {
 				return responsePromise;
 			case 'subscription':
 				return this._graphqlSubscribe({ query, variables, authMode }, headers);
+			default:
+				throw new Error(`invalid operation type: ${operationType}`);
 		}
-
-		throw new Error(`invalid operation type: ${operationType}`);
 	}
 
 	private async _graphql(
