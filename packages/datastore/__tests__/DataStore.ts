@@ -228,7 +228,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		(DataStore as any).syncPageSize = 10;
 	});
 
-	test('publishes prexisting local data immediately', async (done) => {
+	test('publishes preexisting local data immediately', async (done) => {
 		for (let i = 0; i < 5; i++) {
 			await DataStore.save(
 				new Post({
@@ -277,7 +277,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		}, 100);
 	});
 
-	test('publishes data saved after sync AND follows up with subsequent saves', async (done) => {
+	test('publishes preexisting local data AND follows up with subsequent saves', async (done) => {
 		const expecteds = [5, 15];
 
 		for (let i = 0; i < 5; i++) {
