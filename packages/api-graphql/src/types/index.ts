@@ -13,6 +13,7 @@
 // @ts-ignore
 import { GraphQLError } from 'graphql/error/GraphQLError';
 import { DocumentNode } from 'graphql/language/ast';
+import { Source } from 'graphql';
 
 export interface GraphQLOptions {
 	query: string | DocumentNode;
@@ -45,3 +46,9 @@ export enum GraphQLAuthError {
 	NO_FEDERATED_JWT = 'No federated jwt',
 	NO_AUTH_TOKEN = 'No auth token specified',
 }
+
+/**
+ * GraphQLSource or string, the type of the parameter for calling graphql.parse
+ * @see: https://graphql.org/graphql-js/language/#parse
+ */
+export type GraphQLOperation = Source | string;

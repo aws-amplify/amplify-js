@@ -26,7 +26,12 @@ import {
 import PubSub from '@aws-amplify/pubsub';
 import Auth from '@aws-amplify/auth';
 import Cache from '@aws-amplify/cache';
-import { GraphQLAuthError, GraphQLOptions, GraphQLResult } from './types';
+import {
+	GraphQLAuthError,
+	GraphQLOptions,
+	GraphQLResult,
+	GraphQLOperation,
+} from './types';
 import { RestClient } from '@aws-amplify/api-rest';
 const USER_AGENT_HEADER = 'x-amz-user-agent';
 
@@ -201,10 +206,10 @@ export class GraphQLAPIClass {
 	 * to get the operation type
 	 * @param operation
 	 */
-	getGraphqlOperationType(operation) {
+	getGraphqlOperationType(operation: GraphQLOperation) {
 		const doc = parse(operation);
 		const {
-			definitions: [{ operation: operationType }],
+			definitions: [{ kind: operationType }],
 		} = doc;
 
 		return operationType;
@@ -213,14 +218,16 @@ export class GraphQLAPIClass {
 	/**
 	 * Executes a GraphQL operation
 	 *
-	 * @param {GraphQLOptions} GraphQL Options
-	 * @param {object} additionalHeaders headers to merge in after any `graphql_headers` set in the config
-	 * @returns {Promise<GraphQLResult> | Observable<object>}
+	 * @param options GraphQL Options
+	 * @param [additionalHeaders] additionalHeaders headers to merge in after any `graphql_headers` set in the config
+	 * @returns An Observable if subscription is true, else a promise of the graphql result from the query.
 	 */
-	graphql(
-		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
+	graphql<T extends GraphQLOptions>(
+		{ query: paramQuery, variables, authMode, authToken }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
-	) {
+	): T extends { subscription: true }
+		? Observable<GraphQLResult>
+		: Promise<GraphQLResult> {
 		const query =
 			typeof paramQuery === 'string'
 				? parse(paramQuery)
