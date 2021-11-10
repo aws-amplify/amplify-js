@@ -183,9 +183,9 @@ export class APIClass {
 	/**
 	 * Executes a GraphQL operation
 	 *
-	 * @param {GraphQLOptions} GraphQL Options
-	 * @param {object} additionalHeaders headers to merge in after any `graphql_headers` set in the config
-	 * @returns {Promise<GraphQLResult> | Observable<object>}
+	 * @param GraphQL Options
+	 * @param additionalHeaders headers to merge in after any `graphql_headers` set in the config
+	 * @returns An Observable if subscription is true, else a promise of the graphql result from the query.
 	 */
 	graphql<T extends GraphQLOptions>(
 		options: T,
