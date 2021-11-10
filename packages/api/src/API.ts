@@ -17,6 +17,7 @@ import {
 	GraphQLAPIClass,
 	GraphQLOptions,
 	GraphQLResult,
+	GraphQLOperation,
 } from '@aws-amplify/api-graphql';
 import {
 	Amplify,
@@ -82,93 +83,98 @@ export class APIClass {
 
 	/**
 	 * Make a GET request
-	 * @param {string} apiName - The api name of the request
-	 * @param {string} path - The path of the request
-	 * @param {json} [init] - Request extra params
-	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+	 * @param apiName - The api name of the request
+	 * @param path - The path of the request
+	 * @param [init] - Request extra params
+	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	get(apiName, path, init): Promise<any> {
+	get(apiName: string, path: string, init: Record<string, any>): Promise<any> {
 		return this._restApi.get(apiName, path, init);
 	}
 
 	/**
 	 * Make a POST request
-	 * @param {string} apiName - The api name of the request
-	 * @param {string} path - The path of the request
-	 * @param {json} [init] - Request extra params
-	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+	 * @param apiName - The api name of the request
+	 * @param path - The path of the request
+	 * @param [init] - Request extra params
+	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	post(apiName, path, init): Promise<any> {
+	post(apiName: string, path: string, init: Record<string, any>): Promise<any> {
 		return this._restApi.post(apiName, path, init);
 	}
 
 	/**
 	 * Make a PUT request
-	 * @param {string} apiName - The api name of the request
-	 * @param {string} path - The path of the request
-	 * @param {json} [init] - Request extra params
-	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+	 * @param apiName - The api name of the request
+	 * @param path - The path of the request
+	 * @param [init] - Request extra params
+	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	put(apiName, path, init): Promise<any> {
+	put(apiName: string, path: string, init: Record<string, any>): Promise<any> {
 		return this._restApi.put(apiName, path, init);
 	}
 
 	/**
 	 * Make a PATCH request
-	 * @param {string} apiName - The api name of the request
-	 * @param {string} path - The path of the request
-	 * @param {json} [init] - Request extra params
-	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+	 * @param apiName - The api name of the request
+	 * @param path - The path of the request
+	 * @param [init] - Request extra params
+	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	patch(apiName, path, init): Promise<any> {
+	patch(
+		apiName: string,
+		path: string,
+		init: Record<string, any>
+	): Promise<any> {
 		return this._restApi.patch(apiName, path, init);
 	}
 
 	/**
 	 * Make a DEL request
-	 * @param {string} apiName - The api name of the request
-	 * @param {string} path - The path of the request
-	 * @param {json} [init] - Request extra params
-	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+	 * @param apiName - The api name of the request
+	 * @param path - The path of the request
+	 * @param [init] - Request extra params
+	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	del(apiName, path, init): Promise<any> {
+	del(apiName: string, path: string, init: Record<string, any>): Promise<any> {
 		return this._restApi.del(apiName, path, init);
 	}
 
 	/**
 	 * Make a HEAD request
-	 * @param {string} apiName - The api name of the request
-	 * @param {string} path - The path of the request
-	 * @param {json} [init] - Request extra params
-	 * @return {Promise} - A promise that resolves to an object with response status and JSON data, if successful.
+	 * @param apiName - The api name of the request
+	 * @param path - The path of the request
+	 * @param [init] - Request extra params
+	 * @return A promise that resolves to an object with response status and JSON data, if successful.
 	 */
-	head(apiName, path, init): Promise<any> {
+	head(apiName: string, path: string, init: Record<string, any>): Promise<any> {
 		return this._restApi.head(apiName, path, init);
 	}
 
 	/**
 	 * Checks to see if an error thrown is from an api request cancellation
-	 * @param {any} error - Any error
-	 * @return {boolean} - A boolean indicating if the error was from an api request cancellation
+	 * @param error - Any error
+	 * @return If the error was from an api request cancellation
 	 */
-	isCancel(error) {
+	isCancel(error: any): boolean {
 		return this._restApi.isCancel(error);
 	}
 	/**
 	 * Cancels an inflight request
-	 * @param {any} request - request to cancel
-	 * @return {boolean} - A boolean indicating if the request was cancelled
+	 * @param request - request to cancel
+	 * @param [message] - custom error message
+	 * @return If the request was cancelled
 	 */
-	cancel(request: Promise<any>, message?: string) {
+	cancel(request: Promise<any>, message?: string): boolean {
 		return this._restApi.cancel(request, message);
 	}
 
 	/**
 	 * Getting endpoint for API
-	 * @param {string} apiName - The name of the api
-	 * @return {string} - The endpoint of the api
+	 * @param apiName - The name of the api
+	 * @return The endpoint of the api
 	 */
-	async endpoint(apiName) {
+	async endpoint(apiName: string): Promise<string> {
 		return this._restApi.endpoint(apiName);
 	}
 
@@ -176,7 +182,7 @@ export class APIClass {
 	 * to get the operation type
 	 * @param operation
 	 */
-	getGraphqlOperationType(operation) {
+	getGraphqlOperationType(operation: GraphQLOperation) {
 		return this._graphqlApi.getGraphqlOperationType(operation);
 	}
 
