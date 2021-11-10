@@ -11,6 +11,17 @@ jest.mock('../../src/Storage/Common', () => {
 	return { calcKey };
 });
 
+jest.mock('@aws-sdk/client-s3', () => ({
+	S3Client: jest.fn().mockImplementation(() => ({
+		send: jest.fn(),
+		middlewareStack: {
+			add: jest.fn(),
+			remove: jest.fn(),
+		},
+		config: jest.fn(),
+	})),
+}));
+
 describe('S3Text test', () => {
 	describe('render test', () => {
 		test('render null if no test and no picker', () => {

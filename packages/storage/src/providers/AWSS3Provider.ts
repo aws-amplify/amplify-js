@@ -14,7 +14,6 @@ import {
 	ConsoleLogger as Logger,
 	Credentials,
 	Parser,
-	getAmplifyUserAgent,
 	ICredentials,
 	StorageHelper,
 	Hub,
@@ -35,7 +34,6 @@ import { formatUrl } from '@aws-sdk/util-format-url';
 import { createRequest } from '@aws-sdk/util-create-request';
 import { S3RequestPresigner } from '@aws-sdk/s3-request-presigner';
 import {
-	AxiosHttpHandler,
 	SEND_DOWNLOAD_PROGRESS_EVENT,
 	SEND_UPLOAD_PROGRESS_EVENT,
 } from './axios-http-handler';
@@ -65,14 +63,13 @@ import {
 	createPrefixMiddleware,
 	prefixMiddlewareOptions,
 	getPrefix,
+	autoAdjustClockskewMiddleware,
+	autoAdjustClockskewMiddlewareOptions,
+	createS3Client,
 } from '../common/S3ClientUtils';
 import { AWSS3ProviderManagedUpload } from './AWSS3ProviderManagedUpload';
 import { AWSS3UploadTask, TaskEvents } from './AWSS3UploadTask';
-import {
-	localTestingStorageEndpoint,
-	UPLOADS_STORAGE_KEY,
-	SET_CONTENT_LENGTH_HEADER,
-} from '../common/StorageConstants';
+import { UPLOADS_STORAGE_KEY } from '../common/StorageConstants';
 import * as events from 'events';
 import { CancelTokenSource } from 'axios';
 
@@ -80,8 +77,6 @@ const logger = new Logger('AWSS3Provider');
 
 const DEFAULT_STORAGE_LEVEL = 'public';
 const DEFAULT_PRESIGN_EXPIRATION = 900;
-// placeholder credentials in order to satisfy type requirement, always results in 403 when used
-const INVALID_CRED = { accessKeyId: '', secretAccessKey: '' };
 
 interface AddTaskInput {
 	accessLevel: StorageAccessLevel;
@@ -324,7 +319,6 @@ export class AWSS3Provider implements StorageProvider {
 		if (acl) params.ACL = acl;
 
 		const s3 = this._createNewS3Client(opt);
-		s3.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
 		try {
 			await s3.send(new CopyObjectCommand(params));
 			dispatchStorageEvent(
@@ -805,20 +799,6 @@ export class AWSS3Provider implements StorageProvider {
 		}
 	}
 
-	private async _credentialsProvider() {
-		try {
-			const credentials = await Credentials.get();
-			if (!credentials) return INVALID_CRED;
-			const cred = Credentials.shear(credentials);
-			logger.debug('credentials provider get credentials', cred);
-
-			return cred;
-		} catch (error) {
-			logger.warn('credentials provider error', error);
-			return INVALID_CRED;
-		}
-	}
-
 	/**
 	 * Creates an S3 client with new V3 aws sdk
 	 */
@@ -831,33 +811,11 @@ export class AWSS3Provider implements StorageProvider {
 		},
 		emitter?: events.EventEmitter
 	): S3Client {
-		const {
-			region,
-			cancelTokenSource,
-			dangerouslyConnectToHttpEndpointForTesting,
-			useAccelerateEndpoint = false,
-		} = config;
-		let localTestingConfig = {};
-
-		if (dangerouslyConnectToHttpEndpointForTesting) {
-			localTestingConfig = {
-				endpoint: localTestingStorageEndpoint,
-				tls: false,
-				bucketEndpoint: false,
-				forcePathStyle: true,
-			};
-		}
-
-		const s3client = new S3Client({
-			region,
-			// Using provider instead of a static credentials, so that if an upload task was in progress, but credentials gets
-			// changed or invalidated (e.g user signed out), the subsequent requests will fail.
-			credentials: this._credentialsProvider,
-			customUserAgent: getAmplifyUserAgent(),
-			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
-			useAccelerateEndpoint,
-		});
+		const s3client = createS3Client(config, emitter);
+		s3client.middlewareStack.add(
+			autoAdjustClockskewMiddleware(s3client.config),
+			autoAdjustClockskewMiddlewareOptions
+		);
 		return s3client;
 	}
 }
