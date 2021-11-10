@@ -38,7 +38,7 @@ export class APIClass {
 	 */
 	private _options;
 	private _restApi: RestAPIClass;
-	private _graphqlApi;
+	private _graphqlApi: GraphQLAPIClass;
 
 	Auth = Auth;
 	Cache = Cache;
@@ -187,10 +187,16 @@ export class APIClass {
 	 * @param {object} additionalHeaders headers to merge in after any `graphql_headers` set in the config
 	 * @returns {Promise<GraphQLResult> | Observable<object>}
 	 */
+	graphql<T extends GraphQLOptions>(
+		options: T,
+		additionalHeaders?: { [key: string]: string }
+	): T extends { subscription: true }
+		? Observable<any>
+		: Promise<GraphQLResult>;
 	graphql(
 		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
-	): Promise<GraphQLResult> | Observable<object> {
+	): Promise<GraphQLResult> | Observable<any> {
 		return this._graphqlApi.graphql(options, additionalHeaders);
 	}
 }
