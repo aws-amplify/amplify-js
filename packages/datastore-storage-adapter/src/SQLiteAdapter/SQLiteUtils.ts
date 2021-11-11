@@ -133,23 +133,25 @@ export function modelCreateTableStatement(
 		}
 
 		if (isModelFieldType(field.type)) {
+			let columnParam = `"${field.name}" TEXT`;
+
 			// add targetName as well as field name for BELONGS_TO relations
 			if (isTargetNameAssociation(field.association)) {
-				const required = field.isRequired ? ' NOT NULL' : '';
-
-				let columnParam = `"${field.name}" TEXT`;
 				// check if this field has been explicitly defined in the model
 				const fkDefinedInModel = Object.values(model.fields).find(
 					(f: ModelField) => f.name === field.association.targetName
 				);
 
-				// only add auto-generate it if not
+				// if the FK is not explicitly defined in the model, we have to add it here
 				if (!fkDefinedInModel) {
+					const required = field.isRequired ? ' NOT NULL' : '';
 					columnParam += `, "${field.association.targetName}" TEXT${required}`;
 				}
-
-				return acc + `, ${columnParam}`;
 			}
+
+			// ignore isRequired param for model fields, since they will not contain
+			// the related data locally
+			return acc + `, ${columnParam}`;
 		}
 
 		// default to TEXT

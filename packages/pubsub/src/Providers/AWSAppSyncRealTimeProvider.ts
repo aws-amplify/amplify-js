@@ -604,8 +604,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					const protocol = this.isSSLEnabled ? 'wss://' : 'ws://';
 					let discoverableEndpoint: string = appSyncGraphqlEndpoint
 						.replace('https://', protocol)
-						.replace('http://', protocol)
-						.replace('gogi-beta', 'grt-beta');
+						.replace('http://', protocol);
 
 					const payloadString = '{}';
 					const headerString = JSON.stringify(
@@ -628,7 +627,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 							customDomainPath
 						);
 					} else {
-						discoverableEndpoint = discoverableEndpoint.replace('appsync-api', 'appsync-realtime-api');
+						discoverableEndpoint = discoverableEndpoint.replace('appsync-api', 'appsync-realtime-api').replace('gogi-beta', 'grt-beta');
 					}
 
 					const awsRealTimeUrl = `${discoverableEndpoint}?header=${headerQs}&payload=${payloadQs}`;
