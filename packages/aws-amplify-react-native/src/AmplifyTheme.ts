@@ -11,7 +11,7 @@
  * and limitations under the License.
  */
 
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 // TODO: Add more specific theme object with keys
 export type AmplifyThemeType = Record<string, any>;
@@ -153,6 +153,9 @@ export default StyleSheet.create({
 	picker: {
 		flex: 1,
 		height: 44,
+		// ensure that longer text values render without truncation
+		// as the selected value of the Picker on Android
+		minWidth: Platform.OS === 'android' ? 16 : 0,
 	},
 	pickerItem: {
 		height: 44,

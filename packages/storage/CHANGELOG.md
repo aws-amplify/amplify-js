@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.5...@aws-amplify/storage@4.4.6) (2021-11-09)
+
+
+### Bug Fixes
+
+* **@aws-amplify/storage:** add useAccelerateEndpoint to create s3client ([#9144](https://github.com/aws-amplify/amplify-js/issues/9144)) ([853adc7](https://github.com/aws-amplify/amplify-js/commit/853adc7554f0a61922e3348d3626c73a5166266d))
+* **@aws-amplify/storage:** Automatically adjust systemClockoffset in Storage ([#9115](https://github.com/aws-amplify/amplify-js/issues/9115)) ([873941c](https://github.com/aws-amplify/amplify-js/commit/873941c655d9fe87a75238eadc0ae57dacc2fa16))
+
+
+
+
+
 ## [4.4.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.4...@aws-amplify/storage@4.4.5) (2021-10-28)
 
 
