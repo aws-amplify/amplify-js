@@ -193,16 +193,22 @@ export class APIClass {
 	 * @param additionalHeaders headers to merge in after any `graphql_headers` set in the config
 	 * @returns An Observable if subscription is true, else a promise of the graphql result from the query.
 	 */
-	graphql<T extends GraphQLOptions>(
-		options: T,
+	graphql<T = any>(
+		options: GraphQLOptions & { subscription: true },
 		additionalHeaders?: { [key: string]: string }
-	): T extends { subscription: true }
-		? Observable<any>
-		: Promise<GraphQLResult>;
-	graphql(
+	): Observable<T>;
+	graphql<T = any>(
+		options: GraphQLOptions & { subscription: false },
+		additionalHeaders?: { [key: string]: string }
+	): Promise<GraphQLResult<T>>;
+	graphql<T = any>(
 		options: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
-	): Promise<GraphQLResult> | Observable<any> {
+	): Promise<GraphQLResult<T>>;
+	graphql<T>(
+		options: GraphQLOptions,
+		additionalHeaders?: { [key: string]: string }
+	): Promise<GraphQLResult<T>> | Observable<GraphQLResult<T>> {
 		return this._graphqlApi.graphql(options, additionalHeaders);
 	}
 }

@@ -222,16 +222,10 @@ export class GraphQLAPIClass {
 	 * @param [additionalHeaders] additionalHeaders headers to merge in after any `graphql_headers` set in the config
 	 * @returns An Observable if subscription is true, else a promise of the graphql result from the query.
 	 */
-	graphql<T extends GraphQLOptions>(
+	graphql<T = any>(
 		{ query: paramQuery, variables, authMode, authToken }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
-	): T extends { subscription: true }
-		? Observable<GraphQLResult>
-		: Promise<GraphQLResult>;
-	graphql(
-		{ query: paramQuery, variables, authMode, authToken }: GraphQLOptions,
-		additionalHeaders?: { [key: string]: string }
-	): Observable<GraphQLResult> | Promise<GraphQLResult> {
+	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
 			typeof paramQuery === 'string'
 				? parse(paramQuery)
@@ -256,7 +250,7 @@ export class GraphQLAPIClass {
 			case 'mutation':
 				const cancellableToken = this._api.getCancellableToken();
 				const initParams = { cancellableToken };
-				const responsePromise = this._graphql(
+				const responsePromise = this._graphql<T>(
 					{ query, variables, authMode },
 					headers,
 					initParams
@@ -273,11 +267,11 @@ export class GraphQLAPIClass {
 		}
 	}
 
-	private async _graphql(
+	private async _graphql<T = any>(
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {},
 		initParams = {}
-	): Promise<GraphQLResult> {
+	): Promise<GraphQLResult<T>> {
 		if (!this._api) {
 			await this.createInstance();
 		}
