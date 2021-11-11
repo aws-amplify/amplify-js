@@ -60,12 +60,12 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(Context context,final Intent intent) {
         Log.i(LOG_TAG, "broadcaster received");
 
         // send the message to device emitter
         // Construct and load our normal React JS code bundle
-        ReactInstanceManager mReactInstanceManager = ((ReactApplication) context.getApplicationContext()).getReactNativeHost().getReactInstanceManager();
+        final ReactInstanceManager mReactInstanceManager = ((ReactApplication) context.getApplicationContext()).getReactNativeHost().getReactInstanceManager();
         ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
         if (reactContext != null) {
             emitNotificationOpenedEvent(reactContext, intent);
