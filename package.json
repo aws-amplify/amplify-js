@@ -40,7 +40,9 @@
 		],
 		"nohoist": [
 			"**/@types/react-native",
-			"**/@types/react-native/**"
+			"**/@types/react-native/**",
+			"aws-amplify-react-native/prettier",
+			"aws-amplify-react-native/eslint-plugin-prettier"
 		]
 	},
 	"repository": {
@@ -71,7 +73,7 @@
 		"jest-config": "24.8.0",
 		"json-loader": "^0.5.7",
 		"lerna": "^3.13.1",
-		"prettier": "^1.19.0",
+		"prettier": "^2.4.1",
 		"pretty-quick": "^1.11.1",
 		"rimraf": "^2.6.2",
 		"rollup": "^0.67.4",
@@ -85,7 +87,7 @@
 		"tslint": "^5.7.0",
 		"tslint-config-airbnb": "^5.8.0",
 		"typedoc": "^0.16.9",
-		"typescript": "~3.7.7",
+		"typescript": "~3.8.3",
 		"uglifyjs-webpack-plugin": "^0.4.6",
 		"uuid-validate": "^0.0.3",
 		"webpack": "^4.32.0",

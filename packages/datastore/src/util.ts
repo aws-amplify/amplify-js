@@ -23,6 +23,8 @@ import {
 	isModelAttributePrimaryKey,
 	isModelAttributeCompositeKey,
 	NonModelTypeConstructor,
+	DeferredCallbackResolverOptions,
+	LimitTimerRaceResolvedValues,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
 
@@ -681,3 +683,81 @@ export const isAWSIPAddress = (val: string): boolean => {
 		val
 	);
 };
+
+export class DeferredPromise {
+	public promise: Promise<string>;
+	public resolve: (value: string | PromiseLike<string>) => void;
+	public reject: () => void;
+	constructor() {
+		const self = this;
+		this.promise = new Promise(
+			(resolve: (value: string | PromiseLike<string>) => void, reject) => {
+				self.resolve = resolve;
+				self.reject = reject;
+			}
+		);
+	}
+}
+
+export class DeferredCallbackResolver {
+	private limitPromise = new DeferredPromise();
+	private timerPromise: Promise<string>;
+	private maxInterval: number;
+	private timer: ReturnType<typeof setTimeout>;
+	private raceInFlight = false;
+	private callback = () => {};
+	private errorHandler: (error: string) => void;
+	private defaultErrorHandler = (
+		msg = 'DeferredCallbackResolver error'
+	): void => {
+		throw new Error(msg);
+	};
+
+	constructor(options: DeferredCallbackResolverOptions) {
+		this.callback = options.callback;
+		this.errorHandler = options.errorHandler || this.defaultErrorHandler;
+		this.maxInterval = options.maxInterval || 2000;
+	}
+
+	private startTimer(): void {
+		this.timerPromise = new Promise((resolve, reject) => {
+			this.timer = setTimeout(() => {
+				resolve(LimitTimerRaceResolvedValues.TIMER);
+			}, this.maxInterval);
+		});
+	}
+
+	private async racePromises(): Promise<string> {
+		let winner: string;
+		try {
+			this.raceInFlight = true;
+			this.startTimer();
+			winner = await Promise.race([
+				this.timerPromise,
+				this.limitPromise.promise,
+			]);
+			this.callback();
+		} catch (err) {
+			this.errorHandler(err);
+		} finally {
+			// reset for the next race
+			this.clear();
+			this.raceInFlight = false;
+			this.limitPromise = new DeferredPromise();
+
+			return winner;
+		}
+	}
+
+	public start(): void {
+		if (!this.raceInFlight) this.racePromises();
+	}
+
+	public clear(): void {
+		clearTimeout(this.timer);
+	}
+
+	public resolve(): void {
+		this.limitPromise.resolve(LimitTimerRaceResolvedValues.LIMIT);
+	}
+}
