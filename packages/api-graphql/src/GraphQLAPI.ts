@@ -16,6 +16,7 @@ import {
 	print,
 	parse,
 	GraphQLError,
+	OperationTypeNode,
 } from 'graphql';
 import Observable from 'zen-observable-ts';
 import {
@@ -129,10 +130,8 @@ export class GraphQLAPIClass {
 		defaultAuthenticationType?,
 		additionalHeaders: { [key: string]: string } = {}
 	) {
-		const {
-			aws_appsync_authenticationType,
-			aws_appsync_apiKey: apiKey,
-		} = this._options;
+		const { aws_appsync_authenticationType, aws_appsync_apiKey: apiKey } =
+			this._options;
 		const authenticationType =
 			defaultAuthenticationType || aws_appsync_authenticationType || 'AWS_IAM';
 		let headers = {};
@@ -208,11 +207,10 @@ export class GraphQLAPIClass {
 	 * to get the operation type
 	 * @param operation
 	 */
-	getGraphqlOperationType(operation: GraphQLOperation) {
+	getGraphqlOperationType(operation: GraphQLOperation): OperationTypeNode {
 		const doc = parse(operation);
-		const definitions = doc.definitions as ReadonlyArray<
-			OperationDefinitionNode
-		>;
+		const definitions =
+			doc.definitions as ReadonlyArray<OperationDefinitionNode>;
 		const [{ operation: operationType }] = definitions;
 
 		return operationType;
@@ -235,11 +233,10 @@ export class GraphQLAPIClass {
 				: parse(print(paramQuery));
 
 		const [operationDef = {}] = query.definitions.filter(
-			def => def.kind === 'OperationDefinition'
+			(def) => def.kind === 'OperationDefinition'
 		);
-		const {
-			operation: operationType,
-		} = operationDef as OperationDefinitionNode;
+		const { operation: operationType } =
+			operationDef as OperationDefinitionNode;
 
 		const headers = additionalHeaders || {};
 
@@ -415,14 +412,14 @@ export class GraphQLAPIClass {
 	 */
 	_ensureCredentials() {
 		return this.Credentials.get()
-			.then(credentials => {
+			.then((credentials) => {
 				if (!credentials) return false;
 				const cred = this.Credentials.shear(credentials);
 				logger.debug('set credentials for api', cred);
 
 				return true;
 			})
-			.catch(err => {
+			.catch((err) => {
 				logger.warn('ensure credentials error', err);
 				return false;
 			});
