@@ -94,15 +94,18 @@ Visit our [Installation Guide for React Native](https://docs.amplify.aws/start/q
 
 ### Amplify 4.x.x has breaking changes for React Native. Please see the breaking changes below:
 
-- If you are using React Native or Expo, you will need to add `@react-native-async-storage/async-storage` as a dependency to your application, in addition to the other React Native dependencies:
+- If you are using React Native (vanilla or Expo), you will need to add the following React Native community dependencies:
+  - `@react-native-community/netinfo`
+  - `@react-native-async-storage/async-storage`
+  - `@react-native-picker/picker`
 
 ```
 // React Native
-yarn add aws-amplify amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage
+yarn add aws-amplify amazon-cognito-identity-js @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
 npx pod-install
 
 // Expo
-yarn add aws-amplify @react-native-community/netinfo @react-native-async-storage/async-storage
+yarn add aws-amplify @react-native-community/netinfo @react-native-async-storage/async-storage @react-native-picker/picker
 ```
 
 ### Amplify 3.x.x has breaking changes. Please see the breaking changes below:
