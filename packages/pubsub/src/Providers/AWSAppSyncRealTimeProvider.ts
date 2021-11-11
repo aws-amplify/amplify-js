@@ -600,11 +600,6 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			if (this.socketStatus === SOCKET_STATUS.CLOSED) {
 				try {
 					this.socketStatus = SOCKET_STATUS.CONNECTING;
-					// Creating websocket url with required query strings
-					const protocol = this.isSSLEnabled ? 'wss://' : 'ws://';
-					let discoverableEndpoint: string = appSyncGraphqlEndpoint
-						.replace('https://', protocol)
-						.replace('http://', protocol);
 
 					const payloadString = '{}';
 					const headerString = JSON.stringify(
@@ -622,13 +617,19 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 					const payloadQs = Buffer.from(payloadString).toString('base64');
 
-					if (this.isCustomDomain(discoverableEndpoint)) {
-						discoverableEndpoint = discoverableEndpoint.concat(
+					if (this.isCustomDomain(appSyncGraphqlEndpoint)) {
+						appSyncGraphqlEndpoint = appSyncGraphqlEndpoint.concat(
 							customDomainPath
 						);
 					} else {
-						discoverableEndpoint = discoverableEndpoint.replace('appsync-api', 'appsync-realtime-api').replace('gogi-beta', 'grt-beta');
+						appSyncGraphqlEndpoint = appSyncGraphqlEndpoint.replace('appsync-api', 'appsync-realtime-api').replace('gogi-beta', 'grt-beta');
 					}
+
+				    // Creating websocket url with required query strings
+					const protocol = this.isSSLEnabled ? 'wss://' : 'ws://';
+					const discoverableEndpoint: string = appSyncGraphqlEndpoint
+						.replace('https://', protocol)
+						.replace('http://', protocol);
 
 					const awsRealTimeUrl = `${discoverableEndpoint}?header=${headerQs}&payload=${payloadQs}`;
 
