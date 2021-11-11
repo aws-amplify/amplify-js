@@ -314,6 +314,56 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			}
 		}, 100);
 	});
+
+	test('publishes receives data until isSynced', async (done) => {
+		const expecteds = [5, 15, 22];
+
+		for (let i = 0; i < 5; i++) {
+			await DataStore.save(
+				new Post({
+					title: `the post ${i}`,
+				})
+			);
+		}
+
+		const sub = DataStore.observeQuery(Post).subscribe(
+			({ items, isSynced }) => {
+				const expected = expecteds.shift();
+				expect(items.length).toBe(expected);
+
+				for (let i = 0; i < expected; i++) {
+					expect(items[i].title).toEqual(`the post ${i}`);
+				}
+
+				if (isSynced) {
+					sub.unsubscribe();
+					done();
+				}
+			}
+		);
+
+		setTimeout(async () => {
+			for (let i = 5; i < 21; i++) {
+				await DataStore.save(
+					new Post({
+						title: `the post ${i}`,
+					})
+				);
+			}
+
+			// to ensure isSynced changes after the first result set comes through
+			// the subscription and BEFORE the last result, we use another timeout
+			// to change the sync status and fire off the last save.
+			setTimeout(async () => {
+				(DataStore as any).sync.getModelSyncedStatus = (model) => true;
+				await DataStore.save(
+					new Post({
+						title: `the post 21`,
+					})
+				);
+			}, 100);
+		}, 100);
+	});
 });
 
 describe('DataStore tests', () => {
