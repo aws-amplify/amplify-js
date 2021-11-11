@@ -53,6 +53,7 @@ import {
 	AuthModeStrategyType,
 	isNonModelFieldType,
 	isModelFieldType,
+	ObserveQueryOptions,
 } from '../types';
 import {
 	DATASTORE,
@@ -67,6 +68,7 @@ import {
 	isNullOrUndefined,
 	registerNonModelClass,
 	sortCompareFunction,
+	DeferredCallbackResolver,
 } from '../util';
 
 setAutoFreeze(true);
@@ -1152,12 +1154,12 @@ class DataStore {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
 			criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
-			paginationProducer?: ProducerPaginationInput<T>
+			paginationProducer?: ObserveQueryOptions<T>
 		): Observable<DataStoreSnapshot<T>>;
 	} = <T extends PersistentModel = PersistentModel>(
 		model: PersistentModelConstructor<T>,
 		criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
-		options?: ProducerPaginationInput<T>
+		options?: ObserveQueryOptions<T>
 	): Observable<DataStoreSnapshot<T>> => {
 		return new Observable<DataStoreSnapshot<T>>(observer => {
 			const items = new Map<string, T>();
@@ -1165,10 +1167,26 @@ class DataStore {
 			let deletedItemIds: string[] = [];
 			let handle: ZenObservable.Subscription;
 
+			const generateAndEmitSnapshot = (): void => {
+				const snapshot = generateSnapshot();
+				emitSnapshot(snapshot);
+			};
+
+			// a mechanism to return data after X amount of seconds OR after the
+			// "limit" (itemsChanged >= this.syncPageSize) has been reached, whichever comes first
+			const limitTimerRace = new DeferredCallbackResolver({
+				callback: generateAndEmitSnapshot,
+				errorHandler: observer.error,
+				maxInterval: 2000,
+			});
+
+			const { sort } = options || {};
+			const sortOptions = sort ? { sort } : undefined;
+
 			(async () => {
 				try {
 					// first, query and return any locally-available records
-					(await this.query(model, criteria, options)).forEach(item =>
+					(await this.query(model, criteria, sortOptions)).forEach(item =>
 						items.set(item.id, item)
 					);
 
@@ -1190,15 +1208,18 @@ class DataStore {
 
 						const isSynced = this.sync.getModelSyncedStatus(model);
 
-						if (
-							itemsChanged.size - deletedItemIds.length >= this.syncPageSize ||
-							isSynced
-						) {
-							generateAndEmitSnapshot();
+						const limit =
+							itemsChanged.size - deletedItemIds.length >= this.syncPageSize;
+
+						if (limit || isSynced) {
+							limitTimerRace.resolve();
 						}
+
+						// kicks off every subsequent race as results sync down
+						limitTimerRace.start();
 					});
 
-					// will return any locally-available items in the first snapshot
+					// returns a set of initial/locally-available results
 					generateAndEmitSnapshot();
 				} catch (err) {
 					observer.error(err);
@@ -1229,18 +1250,13 @@ class DataStore {
 				};
 			};
 
-			const emitSnapshot = (snapshot: DataStoreSnapshot<T>) => {
+			const emitSnapshot = (snapshot: DataStoreSnapshot<T>): void => {
 				// send the generated snapshot to the primary subscription
 				observer.next(snapshot);
 
 				// reset the changed items sets
 				itemsChanged.clear();
 				deletedItemIds = [];
-			};
-
-			const generateAndEmitSnapshot = () => {
-				const snapshot = generateSnapshot();
-				emitSnapshot(snapshot);
 			};
 
 			const sortItems = (itemsToSort: T[]): void => {
@@ -1258,7 +1274,7 @@ class DataStore {
 			};
 
 			// send one last snapshot when the model is fully synced
-			const hubCallback = ({ payload }) => {
+			const hubCallback = ({ payload }): void => {
 				const { event, data } = payload;
 				if (
 					event === ControlMessage.SYNC_ENGINE_MODEL_SYNCED &&

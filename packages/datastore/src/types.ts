@@ -555,6 +555,11 @@ export type ProducerPaginationInput<T extends PersistentModel> = {
 	page?: number;
 };
 
+export type ObserveQueryOptions<T extends PersistentModel> = Pick<
+	ProducerPaginationInput<T>,
+	'sort'
+>;
+
 export type PaginationInput<T extends PersistentModel> = {
 	sort?: SortPredicate<T>;
 	limit?: number;
@@ -784,4 +789,15 @@ export type ConflictHandler = (
 	| PersistentModel
 	| typeof DISCARD;
 export type ErrorHandler = (error: SyncError) => void;
+
+export type DeferredCallbackResolverOptions = {
+	callback: () => void;
+	maxInterval?: number;
+	errorHandler?: (error: string) => void;
+};
+
+export enum LimitTimerRaceResolvedValues {
+	LIMIT = 'LIMIT',
+	TIMER = 'TIMER',
+}
 //#endregion
