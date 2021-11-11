@@ -10,10 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-// @ts-ignore
-import { GraphQLError } from 'graphql/error/GraphQLError';
-import { DocumentNode } from 'graphql/language/ast';
-import { Source } from 'graphql';
+import { Source, DocumentNode, GraphQLError } from 'graphql';
 
 export interface GraphQLOptions {
 	query: string | DocumentNode;
