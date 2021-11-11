@@ -11,6 +11,7 @@
  * and limitations under the License.
  */
 import { Source, DocumentNode, GraphQLError } from 'graphql';
+export { OperationTypeNode } from 'graphql';
 
 export interface GraphQLOptions {
 	query: string | DocumentNode;

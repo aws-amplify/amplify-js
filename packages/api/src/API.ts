@@ -18,6 +18,7 @@ import {
 	GraphQLOptions,
 	GraphQLResult,
 	GraphQLOperation,
+	OperationTypeNode,
 } from '@aws-amplify/api-graphql';
 import {
 	Amplify,
@@ -182,7 +183,7 @@ export class APIClass {
 	 * to get the operation type
 	 * @param operation
 	 */
-	getGraphqlOperationType(operation: GraphQLOperation) {
+	getGraphqlOperationType(operation: GraphQLOperation): OperationTypeNode {
 		return this._graphqlApi.getGraphqlOperationType(operation);
 	}
 
