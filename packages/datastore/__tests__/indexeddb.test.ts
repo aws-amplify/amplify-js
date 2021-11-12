@@ -7,16 +7,19 @@ import { DATASTORE, SYNC, USER } from '../src/util';
 import {
 	Author,
 	Album,
-	Song,
 	Blog,
 	BlogOwner,
 	Comment,
+	Editor,
+	Forum,
+	ForumEditorJoin,
 	Nested,
 	Post,
 	PostAuthorJoin,
 	PostMetadata,
 	Person,
 	Project,
+	Song,
 	Team,
 } from './model';
 let db: idb.IDBPDatabase;
@@ -66,6 +69,9 @@ describe('Indexed db storage test', () => {
 			`${USER}_Blog`,
 			`${USER}_BlogOwner`,
 			`${USER}_Comment`,
+			`${USER}_Editor`,
+			`${USER}_Forum`,
+			`${USER}_ForumEditorJoin`,
 			`${USER}_Person`,
 			`${USER}_Post`,
 			`${USER}_PostAuthorJoin`,
@@ -339,6 +345,48 @@ describe('Indexed db storage test', () => {
 		);
 	});
 
+	test('query lazily MANY to MANY ', async () => {
+		const f1 = new Forum({ title: 'forum1' });
+		const f2 = new Forum({ title: 'forum2' });
+		await DataStore.save(f1);
+		await DataStore.save(f2);
+
+		const e1 = new Editor({ name: 'editor1' });
+		const e2 = new Editor({ name: 'editor2' });
+		await DataStore.save(e1);
+		await DataStore.save(e2);
+
+		const f1e1 = await DataStore.save(
+			new ForumEditorJoin({
+				forum: f1 as any,
+				editor: e1 as any,
+			})
+		);
+		const f1e2 = await DataStore.save(
+			new ForumEditorJoin({
+				forum: f1 as any,
+				editor: e2 as any,
+			})
+		);
+		const f2e2 = await DataStore.save(
+			new ForumEditorJoin({
+				forum: f2 as any,
+				editor: e2 as any,
+			})
+		);
+
+		const q1 = await DataStore.query(Forum, f1.id);
+		const q2 = await DataStore.query(Editor, e1.id);
+		const q3 = await DataStore.query(Editor, e2.id);
+		const editors = await q1.editors;
+		const forums = await q2.forums;
+		const forums2 = await q3.forums;
+
+		expect(editors).toStrictEqual(new AsyncCollection([f1e1, f1e2]));
+		expect(forums).toStrictEqual(new AsyncCollection([f1e1]));
+		expect(forums2).toStrictEqual(new AsyncCollection([f1e2, f2e2]));
+	});
+
 	test('Memoization Test', async () => {
 		expect.assertions(3);
 		const team1 = new Team({ name: 'team' });
@@ -404,7 +452,7 @@ describe('Indexed db storage test', () => {
 		expect(song).not.toBe(song3);
 	});
 
-	test('Test lazy validation', async () => {
+	test('Test lazy HAS_ONE/BELONGS_TO validation', async () => {
 		const owner1 = new BlogOwner({ name: 'Blog' });
 		expect(() => {
 			new Project({
@@ -413,6 +461,25 @@ describe('Indexed db storage test', () => {
 				team: owner1 as any,
 			});
 		}).toThrow('Value passed to Project.team is not an instance of Team');
+	});
+
+	test('Test lazy MANY to MANY validation', async () => {
+		const f1 = new Forum({ title: 'forum1' });
+		const f2 = new Forum({ title: 'forum2' });
+		await DataStore.save(f1);
+		await DataStore.save(f2);
+
+		const e1 = new Editor({ name: 'editor1' });
+		await DataStore.save(e1);
+
+		expect(() => {
+			new ForumEditorJoin({
+				forum: f1 as any,
+				editor: f2 as any,
+			});
+		}).toThrow(
+			'Value passed to ForumEditorJoin.editor is not an instance of Editor'
+		);
 	});
 
 	test('query with sort on a single field', async () => {
