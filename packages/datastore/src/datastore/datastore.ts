@@ -44,6 +44,7 @@ import {
 	SchemaNamespace,
 	SchemaNonModel,
 	SubscriptionMessage,
+	DataStoreSnapshot,
 	SyncConflict,
 	SyncError,
 	TypeConstructorMap,
@@ -52,6 +53,7 @@ import {
 	AuthModeStrategyType,
 	isNonModelFieldType,
 	isModelFieldType,
+	ObserveQueryOptions,
 } from '../types';
 import {
 	DATASTORE,
@@ -65,6 +67,8 @@ import {
 	USER,
 	isNullOrUndefined,
 	registerNonModelClass,
+	sortCompareFunction,
+	DeferredCallbackResolver,
 } from '../util';
 
 setAutoFreeze(true);
@@ -1146,6 +1150,150 @@ class DataStore {
 		});
 	};
 
+	observeQuery: {
+		<T extends PersistentModel>(
+			modelConstructor: PersistentModelConstructor<T>,
+			criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
+			paginationProducer?: ObserveQueryOptions<T>
+		): Observable<DataStoreSnapshot<T>>;
+	} = <T extends PersistentModel = PersistentModel>(
+		model: PersistentModelConstructor<T>,
+		criteria?: ProducerModelPredicate<T> | typeof PredicateAll,
+		options?: ObserveQueryOptions<T>
+	): Observable<DataStoreSnapshot<T>> => {
+		return new Observable<DataStoreSnapshot<T>>(observer => {
+			const items = new Map<string, T>();
+			const itemsChanged = new Map<string, T>();
+			let deletedItemIds: string[] = [];
+			let handle: ZenObservable.Subscription;
+
+			const generateAndEmitSnapshot = (): void => {
+				const snapshot = generateSnapshot();
+				emitSnapshot(snapshot);
+			};
+
+			// a mechanism to return data after X amount of seconds OR after the
+			// "limit" (itemsChanged >= this.syncPageSize) has been reached, whichever comes first
+			const limitTimerRace = new DeferredCallbackResolver({
+				callback: generateAndEmitSnapshot,
+				errorHandler: observer.error,
+				maxInterval: 2000,
+			});
+
+			const { sort } = options || {};
+			const sortOptions = sort ? { sort } : undefined;
+
+			(async () => {
+				try {
+					// first, query and return any locally-available records
+					(await this.query(model, criteria, sortOptions)).forEach(item =>
+						items.set(item.id, item)
+					);
+
+					// observe the model and send a stream of updates (debounced)
+					handle = this.observe(
+						model,
+						// @ts-ignore TODO: fix this TSlint error
+						criteria
+					).subscribe(({ element, model, opType }) => {
+						// Flag items which have been recently deleted
+						// NOTE: Merging of separate operations to the same model instance is handled upstream
+						// in the `mergePage` method within src/sync/merger.ts. The final state of a model instance
+						// depends on the LATEST record (for a given id).
+						if (opType === 'DELETE') {
+							deletedItemIds.push(element.id);
+						} else {
+							itemsChanged.set(element.id, element);
+						}
+
+						const isSynced = this.sync.getModelSyncedStatus(model);
+
+						const limit =
+							itemsChanged.size - deletedItemIds.length >= this.syncPageSize;
+
+						if (limit || isSynced) {
+							limitTimerRace.resolve();
+						}
+
+						// kicks off every subsequent race as results sync down
+						limitTimerRace.start();
+					});
+
+					// returns a set of initial/locally-available results
+					generateAndEmitSnapshot();
+				} catch (err) {
+					observer.error(err);
+				}
+			})();
+
+			// TODO: abstract this function into a util file to be able to write better unit tests
+			const generateSnapshot = (): DataStoreSnapshot<T> => {
+				const isSynced = this.sync.getModelSyncedStatus(model);
+				const itemsArray = [
+					...Array.from(items.values()),
+					...Array.from(itemsChanged.values()),
+				];
+
+				if (options?.sort) {
+					sortItems(itemsArray);
+				}
+
+				items.clear();
+				itemsArray.forEach(item => items.set(item.id, item));
+
+				// remove deleted items from the final result set
+				deletedItemIds.forEach(id => items.delete(id));
+
+				return {
+					items: Array.from(items.values()),
+					isSynced,
+				};
+			};
+
+			const emitSnapshot = (snapshot: DataStoreSnapshot<T>): void => {
+				// send the generated snapshot to the primary subscription
+				observer.next(snapshot);
+
+				// reset the changed items sets
+				itemsChanged.clear();
+				deletedItemIds = [];
+			};
+
+			const sortItems = (itemsToSort: T[]): void => {
+				const modelDefinition = getModelDefinition(model);
+				const pagination = this.processPagination(modelDefinition, options);
+
+				const sortPredicates = ModelSortPredicateCreator.getPredicates(
+					pagination.sort
+				);
+
+				if (sortPredicates.length) {
+					const compareFn = sortCompareFunction(sortPredicates);
+					itemsToSort.sort(compareFn);
+				}
+			};
+
+			// send one last snapshot when the model is fully synced
+			const hubCallback = ({ payload }): void => {
+				const { event, data } = payload;
+				if (
+					event === ControlMessage.SYNC_ENGINE_MODEL_SYNCED &&
+					data?.model?.name === model.name
+				) {
+					generateAndEmitSnapshot();
+					Hub.remove('api', hubCallback);
+				}
+			};
+			Hub.listen('datastore', hubCallback);
+
+			return () => {
+				if (handle) {
+					handle.unsubscribe();
+				}
+			};
+		});
+	};
+
 	configure = (config: DataStoreConfig = {}) => {
 		const {
 			DataStore: configDataStore,
@@ -1161,7 +1309,10 @@ class DataStore {
 			...configFromAmplify
 		} = config;
 
-		this.amplifyConfig = { ...configFromAmplify, ...this.amplifyConfig };
+		this.amplifyConfig = {
+			...configFromAmplify,
+			...this.amplifyConfig,
+		};
 
 		this.conflictHandler = this.setConflictHandler(config);
 		this.errorHandler = this.setErrorHandler(config);
@@ -1194,13 +1345,19 @@ class DataStore {
 
 		this.maxRecordsToSync =
 			(configDataStore && configDataStore.maxRecordsToSync) ||
-			this.maxRecordsToSync ||
-			configMaxRecordsToSync;
+			configMaxRecordsToSync ||
+			10000;
+
+		// store on config object, so that Sync, Subscription, and Mutation processors can have access
+		this.amplifyConfig.maxRecordsToSync = this.maxRecordsToSync;
 
 		this.syncPageSize =
 			(configDataStore && configDataStore.syncPageSize) ||
-			this.syncPageSize ||
-			configSyncPageSize;
+			configSyncPageSize ||
+			1000;
+
+		// store on config object, so that Sync, Subscription, and Mutation processors can have access
+		this.amplifyConfig.syncPageSize = this.syncPageSize;
 
 		this.fullSyncInterval =
 			(configDataStore && configDataStore.fullSyncInterval) ||

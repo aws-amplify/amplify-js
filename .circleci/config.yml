@@ -25,7 +25,7 @@ executors:
 
   js-test-executor:
     docker:
-      - image: cypress/included:5.2.0
+      - image: cypress/included:8.7.0
       - image: verdaccio/verdaccio
         auth:
           username: $DOCKERHUB_USERNAME
@@ -1011,9 +1011,9 @@ workflows:
       - integ_setup:
           filters:
             <<: *releasable_branches
-      # - unit_test: # TODO: Revert this once fixed issue with circle ci
-      #     requires:
-      #       - build
+      - unit_test:
+          requires:
+            - build
       - integ_react_auth:
           requires:
             - integ_setup
@@ -1262,7 +1262,7 @@ workflows:
           filters:
             <<: *releasable_branches
           requires:
-            # - unit_test # TODO: remove this once issue with circle ci is fixed
+            - unit_test
             - integ_react_predictions
             - integ_react_datastore
             - integ_react_datastore_multi_auth_one_rule
