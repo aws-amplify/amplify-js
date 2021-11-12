@@ -202,7 +202,7 @@ export class AuthPiece<
 		this.inputs = this.inputs || {};
 		const { name, value, type, checked } = evt.target;
 		const check_type = ['radio', 'checkbox'].includes(type);
-		this.inputs[name] = check_type ? checked : value;
+		this.inputs[name] = check_type ? `${checked}` : value;
 		this.inputs['checkedValue'] = check_type ? value : null;
 	}
 
@@ -224,7 +224,7 @@ export class AuthPiece<
 	}
 
 	showComponent(_theme?: any): React.ReactNode {
-		throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
+		throw "You must implement showComponent(theme) and don't forget to set this._validAuthStates.";
 	}
 }
 

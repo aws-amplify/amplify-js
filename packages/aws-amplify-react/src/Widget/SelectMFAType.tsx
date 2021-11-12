@@ -51,7 +51,7 @@ export interface ISelectMFATypeState {
 export class SelectMFAType extends React.Component<
 	ISelectMFATypeProps,
 	ISelectMFATypeState
-	> {
+> {
 	public inputs: any;
 	constructor(props) {
 		super(props);
@@ -75,7 +75,7 @@ export class SelectMFAType extends React.Component<
 		const { name, value, type, checked } = evt.target;
 		// @ts-ignore
 		const check_type = ['radio', 'checkbox'].includes(type);
-		this.inputs[value] = check_type ? checked : value;
+		this.inputs[value] = check_type ? `${checked}` : value;
 	}
 
 	verify() {
@@ -103,14 +103,14 @@ export class SelectMFAType extends React.Component<
 		}
 
 		Auth.setPreferredMFA(user, mfaMethod)
-			.then(data => {
+			.then((data) => {
 				logger.debug('set preferred mfa success', data);
 				this.setState({
 					selectMessage: 'Success! Your MFA Type is now: ' + mfaMethod,
 					showToast: true,
 				});
 			})
-			.catch(err => {
+			.catch((err) => {
 				const { message } = err;
 				if (
 					message === 'User has not set up software token mfa' ||

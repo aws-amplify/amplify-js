@@ -22,7 +22,7 @@ import {
 	ModelPredicate,
 	AuthModeStrategy,
 } from '../types';
-import { exhaustiveCheck, getNow, SYNC } from '../util';
+import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
 import { ModelMerger } from './merger';
 import { MutationEventOutbox } from './outbox';
@@ -95,6 +95,16 @@ export class SyncEngine {
 	private readonly modelMerger: ModelMerger;
 	private readonly outbox: MutationEventOutbox;
 	private readonly datastoreConnectivity: DataStoreConnectivity;
+	private readonly modelSyncedStatus: WeakMap<
+		PersistentModelConstructor<any>,
+		boolean
+	> = new WeakMap();
+
+	public getModelSyncedStatus(
+		modelConstructor: PersistentModelConstructor<any>
+	): boolean {
+		return this.modelSyncedStatus.get(modelConstructor);
+	}
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -126,8 +136,6 @@ export class SyncEngine {
 
 		this.syncQueriesProcessor = new SyncProcessor(
 			this.schema,
-			this.maxRecordsToSync,
-			this.syncPageSize,
 			this.syncPredicates,
 			this.amplifyConfig,
 			this.authModeStrategy
@@ -154,7 +162,7 @@ export class SyncEngine {
 	}
 
 	start(params: StartParams) {
-		return new Observable<ControlMessageType<ControlMessage>>(observer => {
+		return new Observable<ControlMessageType<ControlMessage>>((observer) => {
 			logger.log('starting sync engine...');
 
 			let subscriptions: ZenObservable.Subscription[] = [];
@@ -167,7 +175,7 @@ export class SyncEngine {
 					return;
 				}
 
-				const startPromise = new Promise(resolve => {
+				const startPromise = new Promise((resolve) => {
 					this.datastoreConnectivity.status().subscribe(async ({ online }) => {
 						// From offline to online
 						if (online && !this.online) {
@@ -181,11 +189,9 @@ export class SyncEngine {
 							});
 
 							let ctlSubsObservable: Observable<CONTROL_MSG>;
-							let dataSubsObservable: Observable<[
-								TransformerMutationType,
-								SchemaModel,
-								PersistentModel
-							]>;
+							let dataSubsObservable: Observable<
+								[TransformerMutationType, SchemaModel, PersistentModel]
+							>;
 
 							if (isNode) {
 								logger.warn(
@@ -205,12 +211,12 @@ export class SyncEngine {
 								try {
 									await new Promise((resolve, reject) => {
 										const ctlSubsSubscription = ctlSubsObservable.subscribe({
-											next: msg => {
+											next: (msg) => {
 												if (msg === CONTROL_MSG.CONNECTED) {
 													resolve();
 												}
 											},
-											error: err => {
+											error: (err) => {
 												reject(err);
 												const handleDisconnect = this.disconnectionHandler();
 												handleDisconnect(err);
@@ -236,9 +242,9 @@ export class SyncEngine {
 							//#region Base & Sync queries
 							try {
 								await new Promise((resolve, reject) => {
-									const syncQuerySubscription = this.syncQueriesObservable().subscribe(
-										{
-											next: message => {
+									const syncQuerySubscription =
+										this.syncQueriesObservable().subscribe({
+											next: (message) => {
 												const { type } = message;
 
 												if (
@@ -252,11 +258,10 @@ export class SyncEngine {
 											complete: () => {
 												resolve();
 											},
-											error: error => {
+											error: (error) => {
 												reject(error);
 											},
-										}
-									);
+										});
 
 									if (syncQuerySubscription) {
 										subscriptions.push(syncQuerySubscription);
@@ -282,13 +287,12 @@ export class SyncEngine {
 											item
 										);
 
-										this.storage.runExclusive(storage =>
+										this.storage.runExclusive((storage) =>
 											this.modelMerger.merge(storage, model)
 										);
 
 										observer.next({
-											type:
-												ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
+											type: ControlMessage.SYNC_ENGINE_OUTBOX_MUTATION_PROCESSED,
 											data: {
 												model: modelConstructor,
 												element: model,
@@ -320,7 +324,7 @@ export class SyncEngine {
 												item
 											);
 
-											this.storage.runExclusive(storage =>
+											this.storage.runExclusive((storage) =>
 												this.modelMerger.merge(storage, model)
 											);
 										}
@@ -338,7 +342,7 @@ export class SyncEngine {
 								},
 							});
 
-							subscriptions.forEach(sub => sub.unsubscribe());
+							subscriptions.forEach((sub) => sub.unsubscribe());
 							subscriptions = [];
 						}
 
@@ -355,9 +359,8 @@ export class SyncEngine {
 					})
 					.subscribe({
 						next: async ({ opType, model, element, condition }) => {
-							const namespace = this.schema.namespaces[
-								this.namespaceResolver(model)
-							];
+							const namespace =
+								this.schema.namespaces[this.namespaceResolver(model)];
 							const MutationEventConstructor = this.modelClasses[
 								'MutationEvent'
 							] as PersistentModelConstructor<MutationEvent>;
@@ -419,7 +422,7 @@ export class SyncEngine {
 			})();
 
 			return () => {
-				subscriptions.forEach(sub => sub.unsubscribe());
+				subscriptions.forEach((sub) => sub.unsubscribe());
 			};
 		});
 	}
@@ -461,7 +464,7 @@ export class SyncEngine {
 			return Observable.of<ControlMessageType<ControlMessage>>();
 		}
 
-		return new Observable<ControlMessageType<ControlMessage>>(observer => {
+		return new Observable<ControlMessageType<ControlMessage>>((observer) => {
 			let syncQueriesSubscription: ZenObservable.Subscription;
 			let waitTimeoutId: ReturnType<typeof setTimeout>;
 
@@ -487,7 +490,7 @@ export class SyncEngine {
 					let start: number;
 					let duration: number;
 					let newestStartedAt: number;
-					await new Promise(resolve => {
+					await new Promise((resolve) => {
 						syncQueriesSubscription = this.syncQueriesProcessor
 							.start(modelLastSync)
 							.subscribe({
@@ -521,11 +524,11 @@ export class SyncEngine {
 									 * If there are mutations in the outbox for a given id, those need to be
 									 * merged individually. Otherwise, we can merge them in batches.
 									 */
-									await this.storage.runExclusive(async storage => {
+									await this.storage.runExclusive(async (storage) => {
 										const idsInOutbox = await this.outbox.getModelIds(storage);
 
 										const oneByOne: ModelInstanceMetadata[] = [];
-										const page = items.filter(item => {
+										const page = items.filter((item) => {
 											if (!idsInOutbox.has(item.id)) {
 												return true;
 											}
@@ -595,16 +598,15 @@ export class SyncEngine {
 														isFullSync ? startedAt : lastFullSync
 												  );
 
-										modelMetadata = (this.modelClasses
-											.ModelMetadata as PersistentModelConstructor<any>).copyOf(
-											modelMetadata,
-											draft => {
-												draft.lastSync = startedAt;
-												draft.lastFullSync = isFullSync
-													? startedAt
-													: modelMetadata.lastFullSync;
-											}
-										);
+										modelMetadata = (
+											this.modelClasses
+												.ModelMetadata as PersistentModelConstructor<any>
+										).copyOf(modelMetadata, (draft) => {
+											draft.lastSync = startedAt;
+											draft.lastFullSync = isFullSync
+												? startedAt
+												: modelMetadata.lastFullSync;
+										});
 
 										await this.storage.save(
 											modelMetadata,
@@ -614,6 +616,8 @@ export class SyncEngine {
 										//#endregion
 
 										const counts = count.get(modelConstructor);
+
+										this.modelSyncedStatus.set(modelConstructor, true);
 
 										observer.next({
 											type: ControlMessage.SYNC_ENGINE_MODEL_SYNCED,
@@ -637,7 +641,7 @@ export class SyncEngine {
 										}
 									}
 								},
-								error: error => {
+								error: (error) => {
 									observer.error(error);
 								},
 							});
@@ -661,7 +665,7 @@ export class SyncEngine {
 						)})`
 					);
 
-					await new Promise(res => {
+					await new Promise((res) => {
 						waitTimeoutId = setTimeout(res, msNextFullSync);
 					});
 				}
@@ -703,11 +707,17 @@ export class SyncEngine {
 		const models: [string, SchemaModel][] = [];
 		let savedModel;
 
-		Object.values(this.schema.namespaces).forEach(namespace => {
+		Object.values(this.schema.namespaces).forEach((namespace) => {
 			Object.values(namespace.models)
 				.filter(({ syncable }) => syncable)
-				.forEach(model => {
+				.forEach((model) => {
 					models.push([namespace.name, model]);
+					if (namespace.name === USER) {
+						const modelConstructor = this.userModelClasses[
+							model.name
+						] as PersistentModelConstructor<any>;
+						this.modelSyncedStatus.set(modelConstructor, false);
+					}
 				});
 		});
 
@@ -741,9 +751,9 @@ export class SyncEngine {
 				const syncPredicateUpdated = prevSyncPredicate !== lastSyncPredicate;
 
 				[[savedModel]] = await this.storage.save(
-					(this.modelClasses.ModelMetadata as PersistentModelConstructor<
-						any
-					>).copyOf(modelMetadata, draft => {
+					(
+						this.modelClasses.ModelMetadata as PersistentModelConstructor<any>
+					).copyOf(modelMetadata, (draft) => {
 						draft.fullSyncInterval = fullSyncInterval;
 						// perform a base sync if the syncPredicate changed in between calls to DataStore.start
 						// ensures that the local store contains all the data specified by the syncExpression
@@ -787,7 +797,7 @@ export class SyncEngine {
 
 		const predicate = ModelPredicateCreator.createFromExisting<ModelMetadata>(
 			this.schema.namespaces[SYNC].models[ModelMetadata.name],
-			c => c.namespace('eq', namespace).model('eq', model)
+			(c) => c.namespace('eq', namespace).model('eq', model)
 		);
 
 		const [modelMetadata] = await this.storage.query(ModelMetadata, predicate, {
@@ -803,9 +813,8 @@ export class SyncEngine {
 	): SchemaModel {
 		const namespaceName = this.namespaceResolver(modelConstructor);
 
-		const modelDefinition = this.schema.namespaces[namespaceName].models[
-			modelConstructor.name
-		];
+		const modelDefinition =
+			this.schema.namespaces[namespaceName].models[modelConstructor.name];
 
 		return modelDefinition;
 	}

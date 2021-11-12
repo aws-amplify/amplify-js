@@ -7,6 +7,7 @@ import { DATASTORE, SYNC, USER } from '../src/util';
 import {
 	Author,
 	Album,
+	Song,
 	Blog,
 	BlogOwner,
 	Comment,
@@ -19,7 +20,6 @@ import {
 	PostMetadata,
 	Person,
 	Project,
-	Song,
 	Team,
 } from './model';
 let db: idb.IDBPDatabase;
@@ -260,7 +260,7 @@ describe('Indexed db storage test', () => {
 			.get(blog.id);
 
 		expect(get1['blogOwnerId']).toBe(owner.id);
-		const updated = Blog.copyOf(blog, draft => {
+		const updated = Blog.copyOf(blog, (draft) => {
 			draft.name = 'Avatar: The Last Airbender';
 		});
 
@@ -283,7 +283,7 @@ describe('Indexed db storage test', () => {
 
 		await DataStore.save(blog3);
 		const query1 = await DataStore.query(Blog);
-		query1.forEach(async item => {
+		query1.forEach(async (item) => {
 			const itemOwner = await item.owner;
 			if (itemOwner) {
 				expect(itemOwner).toHaveProperty('name');
@@ -308,7 +308,7 @@ describe('Indexed db storage test', () => {
 		expect(q1Post.id).toEqual(p.id);
 	});
 
-	test('query lazily HAS_ONE/BELONGS_TO with explicit Field', async done => {
+	test('query lazily HAS_ONE/BELONGS_TO with explicit Field', async (done) => {
 		const team1 = new Team({ name: 'team' });
 		const savedTeam = DataStore.save(team1);
 		const project1 = new Project({
@@ -320,7 +320,7 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(project1);
 
 		const q1 = await DataStore.query(Project, project1.id);
-		q1.team.then(value => {
+		q1.team.then((value) => {
 			expect(value.id).toEqual(team1.id);
 			done();
 		});
@@ -344,7 +344,6 @@ describe('Indexed db storage test', () => {
 			new AsyncCollection([savedSong1, savedSong2, savedSong3])
 		);
 	});
-
 	test('query lazily MANY to MANY ', async () => {
 		const f1 = new Forum({ title: 'forum1' });
 		const f2 = new Forum({ title: 'forum2' });
@@ -511,7 +510,7 @@ describe('Indexed db storage test', () => {
 		const sortedPersons = await DataStore.query(Person, null, {
 			page: 0,
 			limit: 20,
-			sort: s => s.firstName(SortDirection.DESCENDING),
+			sort: (s) => s.firstName(SortDirection.DESCENDING),
 		});
 
 		expect(sortedPersons[0].firstName).toEqual('Meow Meow');
@@ -544,11 +543,11 @@ describe('Indexed db storage test', () => {
 
 		const sortedPersons = await DataStore.query(
 			Person,
-			c => c.username.ne(undefined),
+			(c) => c.username.ne(undefined),
 			{
 				page: 0,
 				limit: 20,
-				sort: s =>
+				sort: (s) =>
 					s
 						.firstName(SortDirection.ASCENDING)
 						.lastName(SortDirection.ASCENDING)
@@ -575,14 +574,14 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(owner2);
 
 		await DataStore.save(
-			Blog.copyOf(blog, draft => {
+			Blog.copyOf(blog, (draft) => {
 				draft;
 			})
 		);
 		await DataStore.save(blog2);
 		await DataStore.save(blog3);
 
-		await DataStore.delete(Blog, c => c.name('beginsWith', 'Avatar'));
+		await DataStore.delete(Blog, (c) => c.name('beginsWith', 'Avatar'));
 
 		expect(await DataStore.query(Blog, blog.id)).toBeUndefined();
 		expect(await DataStore.query(Blog, blog2.id)).toBeDefined();
@@ -660,8 +659,8 @@ describe('Indexed db storage test', () => {
 			.index('postId')
 			.getAll(post.id);
 		expect(res).toHaveLength(0);
-		await DataStore.delete(Post, c => c);
-		await DataStore.delete(Author, c => c);
+		await DataStore.delete(Post, (c) => c);
+		await DataStore.delete(Author, (c) => c);
 	});
 
 	// skipping in this PR. will re-enable as part of cascading deletes work
@@ -733,8 +732,8 @@ describe('AsyncCollection toArray Test', () => {
 				input: { max: 3 },
 				expected: [0, 1, 2],
 			},
-		].forEach(Parameter => {
-			test(`Testing input of ${Parameter.input}`, async done => {
+		].forEach((Parameter) => {
+			test(`Testing input of ${Parameter.input}`, async (done) => {
 				const { input, expected } = Parameter;
 				const album1 = new Album({
 					name: "Lupe Fiasco's The Cool",
@@ -767,7 +766,7 @@ describe('AsyncCollection toArray Test', () => {
 				for (const num of expected) {
 					expectedValues.push(songsArray[num]);
 				}
-				songs.toArray(input).then(value => {
+				songs.toArray(input).then((value) => {
 					expect(value).toStrictEqual(expectedValues);
 					done();
 				});
@@ -812,9 +811,9 @@ describe('DB versions migration', () => {
 		function readBlob(blob: Blob): Promise<string> {
 			return new Promise((resolve, reject) => {
 				const reader = new FileReader();
-				reader.onabort = ev => reject(new Error('file read aborted'));
-				reader.onerror = ev => reject((ev.target as any).error);
-				reader.onload = ev => resolve((ev.target as any).result);
+				reader.onabort = (ev) => reject(new Error('file read aborted'));
+				reader.onerror = (ev) => reject((ev.target as any).error);
+				reader.onload = (ev) => resolve((ev.target as any).result);
 				reader.readAsText(blob);
 			});
 		}

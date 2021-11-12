@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 import {
 	AxiosHttpHandler,
 	reactNativeRequestTransformer,
@@ -57,7 +56,7 @@ describe('AxiosHttpHandler', () => {
 				method: 'get',
 				responseType: 'blob',
 				url: 'http://localhost:3000/?key=value',
-			})
+			});
 		});
 
 		it("should update data to null when it's undefined and content-type header is set", async () => {
@@ -157,16 +156,26 @@ describe('AxiosHttpHandler', () => {
 			);
 		});
 
-		it('axios request should log and re-throw error', async () => {
+		it('axios request should log errors', async () => {
 			axios.request = jest
 				.fn()
 				.mockImplementation(() => Promise.reject(new Error('err')));
 			const loggerSpy = jest.spyOn(Logger.prototype, '_log');
 			const handler = new AxiosHttpHandler();
+			await handler.handle(request, options);
+			expect(loggerSpy).toHaveBeenCalledWith('ERROR', 'err');
+		});
+
+		it('cancel request should throw error', async () => {
+			expect.assertions(1);
+			axios.isCancel = jest.fn().mockImplementation(() => true);
+			axios.request = jest
+				.fn()
+				.mockImplementation(() => Promise.reject(new Error('err')));
+			const handler = new AxiosHttpHandler();
 			await expect(handler.handle(request, options)).rejects.toThrowError(
 				'err'
 			);
-			expect(loggerSpy).toHaveBeenCalledWith('ERROR', 'err');
 		});
 	});
 
@@ -182,10 +191,10 @@ describe('AxiosHttpHandler', () => {
 		});
 
 		it('should run defaultTransformers logic on everything else', () => {
-			const mockTransformer = jest.fn()
+			const mockTransformer = jest.fn();
 			axios.defaults.transformRequest = [mockTransformer];
 			reactNativeRequestTransformer[0]('data', {});
 			expect(mockTransformer).toHaveBeenCalledTimes(1);
-		})
+		});
 	});
 });

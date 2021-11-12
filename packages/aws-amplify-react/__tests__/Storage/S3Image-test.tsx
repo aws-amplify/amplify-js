@@ -11,6 +11,17 @@ jest.mock('../../src/Storage/Common', () => {
 	return { calcKey };
 });
 
+jest.mock('@aws-sdk/client-s3', () => ({
+	S3Client: jest.fn().mockImplementation(() => ({
+		send: jest.fn(),
+		middlewareStack: {
+			add: jest.fn(),
+			remove: jest.fn(),
+		},
+		config: jest.fn(),
+	})),
+}));
+
 describe('S3Image', () => {
 	describe('render test', () => {
 		test('render null if no test and no picker', () => {
@@ -71,10 +82,7 @@ describe('S3Image', () => {
 			const wrapper = shallow(<S3Image />);
 			wrapper.setState({ src: 'imageSrc' });
 
-			wrapper
-				.find('div')
-				.at(1)
-				.simulate('click');
+			wrapper.find('div').at(1).simulate('click');
 
 			expect(spyon).toBeCalled();
 

@@ -11,13 +11,8 @@
  * and limitations under the License.
  */
 
+import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import {
-	ConsoleLogger as Logger,
-	getAmplifyUserAgent,
-	Credentials,
-} from '@aws-amplify/core';
-import {
-	S3Client,
 	PutObjectCommand,
 	PutObjectRequest,
 	CreateMultipartUploadCommand,
@@ -27,15 +22,24 @@ import {
 	ListPartsCommand,
 	AbortMultipartUploadCommand,
 	CompletedPart,
+	S3Client,
 } from '@aws-sdk/client-s3';
-import { AxiosHttpHandler, SEND_UPLOAD_PROGRESS_EVENT, SEND_DOWNLOAD_PROGRESS_EVENT } from './axios-http-handler';
+import {
+	SEND_UPLOAD_PROGRESS_EVENT,
+	SEND_DOWNLOAD_PROGRESS_EVENT,
+	AxiosHttpHandlerOptions,
+} from './axios-http-handler';
 import * as events from 'events';
+import {
+	createPrefixMiddleware,
+	prefixMiddlewareOptions,
+	autoAdjustClockskewMiddleware,
+	autoAdjustClockskewMiddlewareOptions,
+	createS3Client,
+} from '../common/S3ClientUtils';
 
 const logger = new Logger('AWSS3ProviderManagedUpload');
 
-const localTestingStorageEndpoint = 'http://localhost:20005';
-
-const SET_CONTENT_LENGTH_HEADER = 'contentLengthMiddleware';
 export declare interface Part {
 	bodyPart: any;
 	partNumber: number;
@@ -51,10 +55,11 @@ export class AWSS3ProviderManagedUpload {
 
 	// Data for current upload
 	private body = null;
-	private params = null;
+	private params: PutObjectRequest = null;
 	private opts = null;
 	private completedParts: CompletedPart[] = [];
 	private cancel = false;
+	private s3client: S3Client;
 
 	// Progress reporting
 	private bytesUploaded = 0;
@@ -65,6 +70,7 @@ export class AWSS3ProviderManagedUpload {
 		this.params = params;
 		this.opts = opts;
 		this.emitter = emitter;
+		this.s3client = this._createNewS3Client(opts, emitter);
 	}
 
 	public async upload() {
@@ -74,8 +80,7 @@ export class AWSS3ProviderManagedUpload {
 			// Multipart upload is not required. Upload the sanitized body as is
 			this.params.Body = this.body;
 			const putObjectCommand = new PutObjectCommand(this.params);
-			const s3 = await this._createNewS3Client(this.opts, this.emitter);
-			return s3.send(putObjectCommand);
+			return this.s3client.send(putObjectCommand);
 		} else {
 			// Step 1: Initiate the multi part upload
 			const uploadId = await this.createMultiPartUpload();
@@ -108,7 +113,7 @@ export class AWSS3ProviderManagedUpload {
 				await this.checkIfUploadCancelled(uploadId);
 			}
 
-			parts.map(part => {
+			parts.map((part) => {
 				this.removeEventListener(part);
 			});
 
@@ -139,29 +144,7 @@ export class AWSS3ProviderManagedUpload {
 		const createMultiPartUploadCommand = new CreateMultipartUploadCommand(
 			this.params
 		);
-		const s3 = await this._createNewS3Client(this.opts);
-
-		// @aws-sdk/client-s3 seems to be ignoring the `ContentType` parameter, so we
-		// are explicitly adding it via middleware.
-		// https://github.com/aws/aws-sdk-js-v3/issues/2000
-		s3.middlewareStack.add(
-			next => (args: any) => {
-				if (
-					this.params.ContentType &&
-					args &&
-					args.request &&
-					args.request.headers
-				) {
-					args.request.headers['Content-Type'] = this.params.ContentType;
-				}
-				return next(args);
-			},
-			{
-				step: 'build',
-			}
-		);
-
-		const response = await s3.send(createMultiPartUploadCommand);
+		const response = await this.s3client.send(createMultiPartUploadCommand);
 		logger.debug(response.UploadId);
 		return response.UploadId;
 	}
@@ -173,11 +156,17 @@ export class AWSS3ProviderManagedUpload {
 	protected async uploadParts(uploadId: string, parts: Part[]) {
 		try {
 			const allResults = await Promise.all(
-				parts.map(async part => {
+				parts.map(async (part) => {
 					this.setupEventListener(part);
-					const s3 = await this._createNewS3Client(this.opts, part.emitter);
-					const { Key, Bucket, SSECustomerAlgorithm, SSECustomerKey, SSECustomerKeyMD5 } = this.params;
-					return s3.send(
+					const options: AxiosHttpHandlerOptions = { emitter: part.emitter };
+					const {
+						Key,
+						Bucket,
+						SSECustomerAlgorithm,
+						SSECustomerKey,
+						SSECustomerKeyMD5,
+					} = this.params;
+					const res = await this.s3client.send(
 						new UploadPartCommand({
 							PartNumber: part.partNumber,
 							Body: part.bodyPart,
@@ -186,10 +175,11 @@ export class AWSS3ProviderManagedUpload {
 							Bucket,
 							...(SSECustomerAlgorithm && { SSECustomerAlgorithm }),
 							...(SSECustomerKey && { SSECustomerKey }),
-							...(SSECustomerKeyMD5 && { SSECustomerKeyMD5 })
-
-						})
+							...(SSECustomerKeyMD5 && { SSECustomerKeyMD5 }),
+						}),
+						options
 					);
+					return res;
 				})
 			);
 			// The order of resolved promises is the same as input promise order.
@@ -217,9 +207,8 @@ export class AWSS3ProviderManagedUpload {
 			MultipartUpload: { Parts: this.completedParts },
 		};
 		const completeUploadCommand = new CompleteMultipartUploadCommand(input);
-		const s3 = await this._createNewS3Client(this.opts);
 		try {
-			const data = await s3.send(completeUploadCommand);
+			const data = await this.s3client.send(completeUploadCommand);
 			return data.Key;
 		} catch (error) {
 			logger.error(
@@ -260,11 +249,10 @@ export class AWSS3ProviderManagedUpload {
 			UploadId: uploadId,
 		};
 
-		const s3 = await this._createNewS3Client(this.opts);
-		await s3.send(new AbortMultipartUploadCommand(input));
+		await this.s3client.send(new AbortMultipartUploadCommand(input));
 
 		// verify that all parts are removed.
-		const data = await s3.send(new ListPartsCommand(input));
+		const data = await this.s3client.send(new ListPartsCommand(input));
 
 		if (data && data.Parts && data.Parts.length > 0) {
 			throw new Error('Multi Part upload clean up failed');
@@ -277,7 +265,7 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	private setupEventListener(part: Part) {
-		part.emitter.on(SEND_UPLOAD_PROGRESS_EVENT, progress => {
+		part.emitter.on(SEND_UPLOAD_PROGRESS_EVENT, (progress) => {
 			this.progressChanged(
 				part.partNumber,
 				progress.loaded - part._lastUploadedBytes
@@ -343,55 +331,16 @@ export class AWSS3ProviderManagedUpload {
 		return false;
 	}
 
-	/**
-	 * @private
-	 * creates an S3 client with new V3 aws sdk
-	 */
-	protected async _createNewS3Client(config, emitter?: events.EventEmitter) {
-		const credentials = await this._getCredentials();
-		const {
-			region,
-			dangerouslyConnectToHttpEndpointForTesting,
-			cancelTokenSource,
-			useAccelerateEndpoint
-		} = config;
-		let localTestingConfig = {};
-
-		if (dangerouslyConnectToHttpEndpointForTesting) {
-			localTestingConfig = {
-				endpoint: localTestingStorageEndpoint,
-				tls: false,
-				bucketEndpoint: false,
-				forcePathStyle: true,
-			};
-		}
-
-		const client = new S3Client({
-			region,
-			credentials,
-			useAccelerateEndpoint,
-			...localTestingConfig,
-			requestHandler: new AxiosHttpHandler({}, emitter, cancelTokenSource),
-			customUserAgent: getAmplifyUserAgent(),
-		});
-		client.middlewareStack.remove(SET_CONTENT_LENGTH_HEADER);
-		return client;
-	}
-
-	/**
-	 * @private
-	 */
-	_getCredentials() {
-		return Credentials.get()
-			.then(credentials => {
-				if (!credentials) return false;
-				const cred = Credentials.shear(credentials);
-				logger.debug('set credentials for storage', cred);
-				return cred;
-			})
-			.catch(error => {
-				logger.warn('ensure credentials error', error);
-				return false;
-			});
+	protected _createNewS3Client(config, emitter?: events.EventEmitter) {
+		const s3client = createS3Client(config, emitter);
+		s3client.middlewareStack.add(
+			createPrefixMiddleware(this.opts, this.params.Key),
+			prefixMiddlewareOptions
+		);
+		s3client.middlewareStack.add(
+			autoAdjustClockskewMiddleware(s3client.config),
+			autoAdjustClockskewMiddlewareOptions
+		);
+		return s3client;
 	}
 }

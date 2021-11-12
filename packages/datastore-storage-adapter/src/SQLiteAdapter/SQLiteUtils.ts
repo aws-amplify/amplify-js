@@ -24,9 +24,9 @@ const { USER, isNonModelConstructor, isModelConstructor } = utils;
 
 export type ParameterizedStatement = [string, any[]];
 
-const keysFromModel = model =>
+const keysFromModel = (model) =>
 	Object.keys(model)
-		.map(k => `"${k}"`)
+		.map((k) => `"${k}"`)
 		.join(', ');
 
 const valuesFromModel = (model): [string, any[]] => {
@@ -36,7 +36,7 @@ const valuesFromModel = (model): [string, any[]] => {
 	return [paramaterized, values];
 };
 
-const updateSet: (model: any) => [any, any] = model => {
+const updateSet: (model: any) => [any, any] = (model) => {
 	const values = [];
 	const paramaterized = Object.entries(model)
 		.filter(([k]) => k !== 'id')
@@ -73,11 +73,11 @@ function prepareValueForDML(value: unknown): any {
 }
 
 export function generateSchemaStatements(schema: InternalSchema): string[] {
-	return Object.keys(schema.namespaces).flatMap(namespaceName => {
+	return Object.keys(schema.namespaces).flatMap((namespaceName) => {
 		const namespace = schema.namespaces[namespaceName];
 		const isUserModel = namespaceName === USER;
 
-		return Object.values(namespace.models).map(model =>
+		return Object.values(namespace.models).map((model) =>
 			modelCreateTableStatement(model, isUserModel)
 		);
 	});
@@ -90,9 +90,8 @@ export const implicitAuthFieldsForModel: (model: SchemaModel) => string[] = (
 		return [];
 	}
 
-	const authRules: ModelAttributeAuth = model.attributes.find(
-		isModelAttributeAuth
-	);
+	const authRules: ModelAttributeAuth =
+		model.attributes.find(isModelAttributeAuth);
 
 	if (!authRules) {
 		return [];
@@ -133,23 +132,25 @@ export function modelCreateTableStatement(
 		}
 
 		if (isModelFieldType(field.type)) {
+			let columnParam = `"${field.name}" TEXT`;
+
 			// add targetName as well as field name for BELONGS_TO relations
 			if (isTargetNameAssociation(field.association)) {
-				const required = field.isRequired ? ' NOT NULL' : '';
-
-				let columnParam = `"${field.name}" TEXT`;
 				// check if this field has been explicitly defined in the model
 				const fkDefinedInModel = Object.values(model.fields).find(
 					(f: ModelField) => f.name === field.association.targetName
 				);
 
-				// only add auto-generate it if not
+				// if the FK is not explicitly defined in the model, we have to add it here
 				if (!fkDefinedInModel) {
+					const required = field.isRequired ? ' NOT NULL' : '';
 					columnParam += `, "${field.association.targetName}" TEXT${required}`;
 				}
-
-				return acc + `, ${columnParam}`;
 			}
+
+			// ignore isRequired param for model fields, since they will not contain
+			// the related data locally
+			return acc + `, ${columnParam}`;
 		}
 
 		// default to TEXT
@@ -268,7 +269,7 @@ const whereConditionFromPredicateObject = ({
 				throw new Error('Cannot map predicate to a valid WHERE clause');
 		}
 		return [
-			`"${field}" ${logicalOperator} ${rightExp.map(_ => '?').join(' AND ')}`,
+			`"${field}" ${logicalOperator} ${rightExp.map((_) => '?').join(' AND ')}`,
 			rightExp,
 		];
 	}
@@ -317,9 +318,8 @@ export function whereClauseFromPredicate<T extends PersistentModel>(
 				`${isNegation ? 'NOT' : ''}(${groupResult.join(` ${filterType} `)})`
 			);
 		} else if (isPredicateObj(predicate)) {
-			const [condition, conditionParams] = whereConditionFromPredicateObject(
-				predicate
-			);
+			const [condition, conditionParams] =
+				whereConditionFromPredicateObject(predicate);
 
 			result.push(condition);
 			params.push(...conditionParams);
