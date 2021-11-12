@@ -19,8 +19,6 @@ import android.app.Application;
 import android.content.IntentFilter;
 import android.content.BroadcastReceiver;
 
-import androidx.annotation.NonNull;
-
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -31,9 +29,10 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
+import androidx.annotation.NonNull;
 
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationJsDelivery;
 import com.amazonaws.amplify.pushnotification.modules.RNPushNotificationBroadcastReceiver;
@@ -70,13 +69,20 @@ public class RNPushNotificationModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getToken(final Callback callback) {
         final Task<String> taskToken =  FirebaseMessaging.getInstance().getToken();
-			taskToken.addOnSuccessListener(new OnSuccessListener<String>() {
-				@Override
-				public void onSuccess(String token) {
-					Log.i(LOG_TAG, "getting token " + token);
-					callback.invoke(token);
-				}
-			});
+            taskToken.addOnCompleteListener(new OnCompleteListener<String>() {
+                @Override
+                public void onComplete(@NonNull Task<String> task) {
+                    if (task.isSuccessful()) {
+                        String token = task.getResult();
+                        Log.i(LOG_TAG, "getting token " + token);
+					    callback.invoke(token);
+                    } else {
+                        Exception exception = task.getException();
+                        Log.e(LOG_TAG, "Error getting token:" + exception);
+
+                    }
+                }
+            });
 
     }
 }

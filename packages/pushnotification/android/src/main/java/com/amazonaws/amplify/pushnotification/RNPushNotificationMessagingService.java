@@ -176,7 +176,7 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
 	@Override
 	public void onNewToken(String refreshedToken) {
 		// Get updated InstanceID token.
-		Log.v(LOG_TAG, "Refreshed token: " + refreshedToken);
+		Log.i(LOG_TAG, "Refreshed token: " + refreshedToken);
 
 		final Bundle bundle = createBundleWithToken(refreshedToken);
 		// We need to run this on the main thread, as the React code assumes that is true.
