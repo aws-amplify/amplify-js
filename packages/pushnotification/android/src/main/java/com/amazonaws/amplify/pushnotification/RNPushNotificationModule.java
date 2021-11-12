@@ -74,11 +74,12 @@ public class RNPushNotificationModule extends ReactContextBaseJavaModule {
                 public void onComplete(@NonNull Task<String> task) {
                     if (task.isSuccessful()) {
                         String token = task.getResult();
-                        Log.i(LOG_TAG, "getting token " + token);
+                        Log.i(LOG_TAG, "got token " + token);
                         callback.invoke(token);
                     } else {
                         Exception exception = task.getException();
-                        Log.e(LOG_TAG, "Error getting token:" + exception);
+                        Log.e(LOG_TAG, "Error getting token: " + exception);
+
                     }
                 }
             });

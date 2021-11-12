@@ -179,13 +179,13 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
 		Log.i(LOG_TAG, "Refreshed token: " + refreshedToken);
 
 		final Bundle bundle = createBundleWithToken(refreshedToken);
-		// We need to run this on the main thread, as the React code assumes that is true.
+		// We need to run this on the main thread, as the React Native code assumes that is true.
 		// Namely, DevServerHelper constructs a Handler() without a Looper, which triggers:
 		// "Can't create handler inside thread that has not called Looper.prepare()"
 		Handler handler = new Handler(Looper.getMainLooper());
 		handler.post(new Runnable() {
 			public void run() {
-				// Construct and load our normal React JS code bundle
+				// Construct and load our normal React code bundle
 				ReactInstanceManager mReactInstanceManager = ((ReactApplication) getApplication()).getReactNativeHost().getReactInstanceManager();
 				ReactContext context = mReactInstanceManager.getCurrentReactContext();
 				// If it's constructed, send a notification
