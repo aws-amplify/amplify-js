@@ -315,7 +315,7 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 		}, 100);
 	});
 
-	test('publishes receives data until isSynced', async (done) => {
+	test('publishes received in pages data until isSynced', async (done) => {
 		const expecteds = [5, 15, 22];
 
 		for (let i = 0; i < 5; i++) {
@@ -362,6 +362,106 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 					})
 				);
 			}, 100);
+		}, 100);
+	});
+
+	test('publishes received records individually after isSynced', async (done) => {
+		const expecteds = [5, 15, 16, 17, 18];
+
+		for (let i = 0; i < 5; i++) {
+			await DataStore.save(
+				new Post({
+					title: `the post ${i}`,
+				})
+			);
+		}
+
+		const sub = DataStore.observeQuery(Post).subscribe(
+			({ items, isSynced }) => {
+				const expected = expecteds.shift();
+				expect(items.length).toBe(expected);
+
+				for (let i = 0; i < expected; i++) {
+					expect(items[i].title).toEqual(`the post ${i}`);
+				}
+
+				if (expecteds.length === 0) {
+					sub.unsubscribe();
+					done();
+				}
+			}
+		);
+
+		setTimeout(async () => {
+			for (let i = 5; i < 15; i++) {
+				await DataStore.save(
+					new Post({
+						title: `the post ${i}`,
+					})
+				);
+			}
+
+			// to ensure isSynced changes after the first result set comes through
+			// the subscription and BEFORE the last result, we use another timeout
+			// to change the sync status and fire off the last save.
+			setTimeout(async () => {
+				(DataStore as any).sync.getModelSyncedStatus = (model) => true;
+				for (let i = 15; i < 18; i++) {
+					await DataStore.save(
+						new Post({
+							title: `the post ${i}`,
+						})
+					);
+				}
+			}, 100);
+		}, 100);
+	});
+
+	test('publishes preexisting local data AND follows up with subsequent saves with filters', async (done) => {
+		const expecteds = [5, 15];
+
+		for (let i = 0; i < 5; i++) {
+			await DataStore.save(
+				new Post({
+					title: `the post ${i}`,
+				})
+			);
+			await DataStore.save(
+				new Post({
+					title: `NOT the post ${i}`,
+				})
+			);
+		}
+
+		const sub = DataStore.observeQuery(Post, (p) =>
+			p.title.beginsWith('the post')
+		).subscribe(({ items, isSynced }) => {
+			const expected = expecteds.shift();
+			expect(items.length).toBe(expected);
+
+			for (let i = 0; i < expected; i++) {
+				expect(items[i].title).toEqual(`the post ${i}`);
+			}
+
+			if (expecteds.length === 0) {
+				sub.unsubscribe();
+				done();
+			}
+		});
+
+		setTimeout(async () => {
+			for (let i = 5; i < 15; i++) {
+				await DataStore.save(
+					new Post({
+						title: `the post ${i}`,
+					})
+				);
+				await DataStore.save(
+					new Post({
+						title: `NOT the post ${i}`,
+					})
+				);
+			}
 		}, 100);
 	});
 });
