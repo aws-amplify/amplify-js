@@ -79,7 +79,6 @@ public class RNPushNotificationModule extends ReactContextBaseJavaModule {
                     } else {
                         Exception exception = task.getException();
                         Log.e(LOG_TAG, "Error getting token: " + exception);
-
                     }
                 }
             });
