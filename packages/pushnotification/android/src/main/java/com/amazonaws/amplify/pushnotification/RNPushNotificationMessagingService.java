@@ -196,6 +196,7 @@ public class RNPushNotificationMessagingService extends FirebaseMessagingService
 					mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
 						public void onReactContextInitialized(ReactContext context) {
 							sendRegistrationToken((ReactApplicationContext) context, bundle);
+                            mReactInstanceManager.removeReactInstanceEventListener(this);
 						}
 					});
 					if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {

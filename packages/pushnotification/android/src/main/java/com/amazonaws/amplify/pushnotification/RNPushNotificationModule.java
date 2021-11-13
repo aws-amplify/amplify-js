@@ -67,18 +67,18 @@ public class RNPushNotificationModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getToken(final Callback callback) {
-        final Task<String> taskToken =  FirebaseMessaging.getInstance().getToken();
-            taskToken.addOnCompleteListener(new OnCompleteListener<String>() {
+    public void getToken(final Callback onSuccessCallback, final Callback onErrorCallback) {
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
                 @Override
                 public void onComplete(@NonNull Task<String> task) {
                     if (task.isSuccessful()) {
                         String token = task.getResult();
                         Log.i(LOG_TAG, "got token " + token);
-                        callback.invoke(token);
+                        onSuccessCallback.invoke(token);
                     } else {
                         Exception exception = task.getException();
                         Log.e(LOG_TAG, "Error getting token: " + exception);
+                        onErrorCallback.invoke(exception);
                     }
                 }
             });
