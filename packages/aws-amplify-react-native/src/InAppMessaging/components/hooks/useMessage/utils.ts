@@ -46,7 +46,7 @@ export const getPositionProp = (layout: InAppMessageLayout): InAppMessageCompone
 	}
 };
 
-const getActionHandler = (
+export const getActionHandler = (
 	{ action, url }: { action: InAppMessageAction; url?: string },
 	onActionCallback: () => void
 ) => ({

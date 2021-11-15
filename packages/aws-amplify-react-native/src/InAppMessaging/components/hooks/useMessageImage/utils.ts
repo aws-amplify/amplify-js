@@ -44,7 +44,7 @@ export const prefetchNetworkImage = async (url: string): Promise<ImageLoadingSta
 		logger.error(`Image failed to load: ${url}`);
 		return 'failed';
 	} catch (e) {
-		logger.error(`Image.prefetch failed: ${url}`);
+		logger.error(`Image.prefetch failed: ${e}`);
 		return 'failed';
 	}
 };

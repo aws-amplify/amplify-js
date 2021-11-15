@@ -28,18 +28,25 @@ import { MessageStylePropParams, MessageStyleProps } from './types';
  * @returns {InAppMessageComponentButtonStyle} resolved button container and text style arrays
  */
 export const getButtonComponentStyle = (
-	defaultButtonStyle: { buttonContainer: ViewStyle; buttonText: TextStyle },
-	messageButtonStyle: InAppMessageStyle,
-	overrideStyle: InAppMessageComponentButtonStyle
+	buttonDefaultStyle: { buttonContainer: ViewStyle; buttonText: TextStyle },
+	buttonMessageStyle: InAppMessageStyle,
+	buttonOverrideStyle: InAppMessageComponentButtonStyle
 ): InAppMessageComponentButtonStyle => {
 	// default component styles defined at the UI component level
-	const { buttonContainer, buttonText } = defaultButtonStyle;
+	const { buttonContainer: containerDefaultStyle = {}, buttonText: textDefaultStyle = {} } = buttonDefaultStyle ?? {};
 
 	// message specific styles in the in-app message payload, overrides default component styles
-	const { backgroundColor, borderRadius, color } = messageButtonStyle ?? {};
+	const { backgroundColor, borderRadius, color } = buttonMessageStyle ?? {};
+
+	const containerMessageStyle = {
+		...(backgroundColor ? { backgroundColor } : null),
+		...(borderRadius ? { borderRadius } : null),
+	};
+
+	const textMessageStyle = { ...(color ? { color } : null) };
 
 	// custom component override styles passed as style prop, overrides all previous styles
-	const { container, text } = overrideStyle ?? {};
+	const { container: containerOverrideStyle = {}, text: textOverrideStyle = {} } = buttonOverrideStyle ?? {};
 
 	return {
 		// the style prop of the React Native Pressable component used in the message UI accepts either a ViewStyle array
@@ -47,14 +54,16 @@ export const getButtonComponentStyle = (
 		// array. Utilizing the latter, we add an opacity value to the UI message button style during press events
 		container: ({ pressed } = { pressed: false }) => {
 			// default button press interaction opacity
-			const opacity = pressed ? BUTTON_PRESSED_OPACITY : null;
+			const pressedOpacity = { ...(pressed ? { opacity: BUTTON_PRESSED_OPACITY } : null) };
 
-			// pass `pressed` to container and evaluate if the consumer passed a function for custom button style
-			const finalOverrideContainerStyle = typeof container === 'function' ? container({ pressed }) : container;
+			// pass `pressed` to containerOverrideStyle and evaluate if the consumer passed a function for custom
+			// button style
+			const containerOverrideFinalStyle =
+				typeof containerOverrideStyle === 'function' ? containerOverrideStyle({ pressed }) : containerOverrideStyle;
 
-			return [{ opacity }, buttonContainer, { backgroundColor, borderRadius }, finalOverrideContainerStyle];
+			return [pressedOpacity, containerDefaultStyle, containerMessageStyle, containerOverrideFinalStyle];
 		},
-		text: [buttonText, { color }, text],
+		text: [textDefaultStyle, textMessageStyle, textOverrideStyle],
 	};
 };
 
@@ -68,31 +77,38 @@ export const getButtonComponentStyle = (
 export const getContainerAndWrapperStyle = ({ styleParams, layout }: MessageStylePropParams) => {
 	const { defaultStyle, messageStyle, overrideStyle } = styleParams;
 
+	const containerDefaultStyle = defaultStyle?.container ?? {};
+	const containerMessageStyle = messageStyle?.container ?? {};
+	const containerOverrideStyle = overrideStyle?.container ?? {};
+
+	const wrapperDefaultStyle = defaultStyle?.componentWrapper ?? {};
+
 	// banner layouts requires no special handling of container or wrapper styles
 	if (layout === 'TOP_BANNER' || layout === 'MIDDLE_BANNER' || layout === 'BOTTOM_BANNER') {
 		return {
-			componentWrapper: defaultStyle.componentWrapper,
-			container: [defaultStyle.container, messageStyle?.container, overrideStyle?.container],
+			componentWrapper: wrapperDefaultStyle,
+			container: [containerDefaultStyle, containerMessageStyle, containerOverrideStyle],
 		};
 	}
 
-	// in non-banner layouts the message and override container backgroundColor values are passed inside
-	// wrapperStyle to the MessageWrapper to ensure that the is applied to the entire screen
-	const { container: baseOverrideContainerStyle } = overrideStyle ?? {};
+	// in non-banner layouts container backgroundColor values should be applied as componentWrapper style
+	// to ensure that the backgroundColor is applied to the entire screen
+	const { backgroundColor: defaultBackgroundColor, ...restContainerDefaultStyle } = containerDefaultStyle;
+	const { backgroundColor: messageBackgroundColor, ...restContainerMessageStyle } = containerMessageStyle;
 
 	// flatten overrideStyle to access override backgroundColor
-	const flattenedOverrideStyle = StyleSheet.flatten(baseOverrideContainerStyle);
-	const { backgroundColor: overrideBackgroundColor, ...overrideContainerStyle } = flattenedOverrideStyle ?? {};
-	const { backgroundColor: messageBackgroundColor, ...messageContainerStyle } = messageStyle?.container;
+	const { backgroundColor: overrideBackgroundColor, ...restContainerOverrideStyle } =
+		StyleSheet.flatten(containerOverrideStyle);
 
-	// default and all non-backgroundColor container override style are applied to the container View
-	const container = [defaultStyle.container, messageContainerStyle, overrideContainerStyle];
+	// all non-backgroundColor container override style are applied to the container View
+	const container = [restContainerDefaultStyle, restContainerMessageStyle, restContainerOverrideStyle];
 
 	// use ternaries to prevent passing backgroundColor object with undefined or null value
 	const componentWrapper: StyleProp<ViewStyle> = [
-		defaultStyle.componentWrapper,
-		messageBackgroundColor ? { backgroundColor: messageBackgroundColor } : null,
-		overrideBackgroundColor ? { backgroundColor: overrideBackgroundColor } : null,
+		wrapperDefaultStyle,
+		{ ...(defaultBackgroundColor ? { backgroundColor: defaultBackgroundColor } : null) },
+		{ ...(messageBackgroundColor ? { backgroundColor: messageBackgroundColor } : null) },
+		{ ...(overrideBackgroundColor ? { backgroundColor: overrideBackgroundColor } : null) },
 	];
 
 	return { componentWrapper, container };
@@ -140,18 +156,18 @@ export function getMessageStyleProps({ styleParams, layout }: MessageStylePropPa
 	const { defaultStyle, messageStyle, overrideStyle } = styleParams;
 
 	// image style composed of default and override style
-	const image = [defaultStyle.image, overrideStyle?.image];
+	const image = [defaultStyle?.image, overrideStyle?.image];
 
 	const iconButton = {
 		// view style applied to icon button
-		container: [defaultStyle.iconButton, overrideStyle?.closeIconButton],
+		container: [defaultStyle?.iconButton, overrideStyle?.closeIconButton],
 		// close icon color, only specified as an overrideStyle
 		iconColor: overrideStyle?.closeIconColor,
 	};
 
 	// text style applied to message body and header respectively
-	const body = [defaultStyle.body, messageStyle?.body, overrideStyle?.body];
-	const header = [defaultStyle.header, messageStyle?.header, overrideStyle?.header];
+	const body = [defaultStyle?.body, messageStyle?.body, overrideStyle?.body];
+	const header = [defaultStyle?.header, messageStyle?.header, overrideStyle?.header];
 
 	// primary and secondary button container and text style
 	const primaryButton = getButtonComponentStyle(
@@ -165,7 +181,7 @@ export function getMessageStyleProps({ styleParams, layout }: MessageStylePropPa
 		overrideStyle?.secondaryButton
 	);
 
-	const { buttonsContainer, contentContainer, imageContainer, textContainer } = defaultStyle;
+	const { buttonsContainer, contentContainer, imageContainer, textContainer } = defaultStyle ?? {};
 
 	return {
 		body,

@@ -11,17 +11,16 @@
  * and limitations under the License.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Image } from 'react-native';
 import isNull from 'lodash/isNull';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { InAppMessageImage, InAppMessageLayout } from '@aws-amplify/notifications';
 
+import { FAILURE_IMAGE_DIMENSIONS } from './constants';
 import { ImageDimensions, UseMessageImage } from './types';
 import { getLayoutImageDimensions, prefetchNetworkImage } from './utils';
-
-const FAILURE_IMAGE_DIMENSIONS: ImageDimensions = { height: 0, width: 0 };
 
 const logger = new Logger('Notifications.InAppMessaging');
 
@@ -35,13 +34,23 @@ const logger = new Logger('Notifications.InAppMessaging');
 
 export default function useMessageImage(image: InAppMessageImage, layout: InAppMessageLayout): UseMessageImage {
 	const [imageDimensions, setImageDimensions] = useState<ImageDimensions>(null);
+	const hasFailure = useRef(false);
+
 	const { src } = image ?? {};
 
 	const hasSetDimensions = !isNull(imageDimensions);
 	const hasImage = !!src;
 
-	const hasRenderableImage = hasImage && hasSetDimensions;
+	const hasRenderableImage = hasImage && hasSetDimensions && !hasFailure.current;
 	const isImageFetching = hasImage && !hasSetDimensions;
+
+	const handleFailure = () => {
+		// must occur before setImageDimensions call
+		hasFailure.current = true;
+
+		// set failure dimension values
+		setImageDimensions(FAILURE_IMAGE_DIMENSIONS);
+	};
 
 	useEffect(() => {
 		if (hasImage) {
@@ -55,14 +64,13 @@ export default function useMessageImage(image: InAppMessageImage, layout: InAppM
 						},
 						(error) => {
 							logger.error(`Unable to retrieve size for image: ${error}`);
-
-							// set failure dimension values on size retrieval failure
-							setImageDimensions(FAILURE_IMAGE_DIMENSIONS);
+							// handle size retrieval error
+							handleFailure();
 						}
 					);
 				} else {
-					// set failure dimension values on prefetch failure
-					setImageDimensions(FAILURE_IMAGE_DIMENSIONS);
+					// handle prefetch failure
+					handleFailure();
 				}
 			});
 		}

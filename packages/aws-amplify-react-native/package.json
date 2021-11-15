@@ -4,7 +4,8 @@
 	"description": "AWS Amplify is a JavaScript library for Frontend and mobile developers building cloud-enabled applications.",
 	"main": "dist/index.js",
 	"scripts": {
-		"test": "npm run lint && jest -w 1 --passWithNoTests --coverage --maxWorkers 2 --config jest.config.js",
+		"test": "npm run lint && jest -w 1 --coverage --maxWorkers 2 --config jest.config.js",
+		"test:verbose": "npm run test -- --verbose",
 		"build": "npm run lint && npm run clean && babel src --out-dir dist --extensions '.ts,.tsx,.js,.jsx' --copy-files",
 		"watch": "npm run build -- --watch",
 		"build:cjs:watch": "npm run watch",
@@ -20,6 +21,7 @@
 		"@babel/core": "7.15.5",
 		"@babel/preset-env": "7.15.6",
 		"@react-native-picker/picker": "^1.2",
+		"@testing-library/react-hooks": "^7.0.2",
 		"@types/react": "^16.13.1",
 		"@types/react-native": "^0.63.45",
 		"@types/react-test-renderer": "^17.0.1",

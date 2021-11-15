@@ -45,7 +45,7 @@ export type MessageStyleProps = {
 };
 
 export type GetDefaultStyle = (
-	imageDimensions: ImageDimensions,
+	imageDimensions?: ImageDimensions,
 	additionalStyle?: Record<string, ImageStyle | TextStyle | ViewStyle>
 ) => InAppMessageComponentBaseStyle;
 
