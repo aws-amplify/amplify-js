@@ -5,16 +5,16 @@ import {
 	InAppMessage,
 	InAppMessageAction,
 	InAppMessageContent,
-	InAppMessageStyle,
 	InAppMessageTextAlign,
 	InAppMessagingEvent,
 } from '../../types';
-import { PinpointMessageEvent, MetricsComparator } from './types';
+import { AWSPinpointMessageEvent, MetricsComparator } from './types';
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 const DELIVERY_TYPE = 'IN_APP_MESSAGE';
 
 let eventNameMemo = {};
@@ -37,7 +37,7 @@ export const dispatchInAppMessagingEvent = (
 };
 
 export const recordAnalyticsEvent = (
-	event: PinpointMessageEvent,
+	event: AWSPinpointMessageEvent,
 	message: InAppMessage
 ) => {
 	if (!message) {
@@ -94,9 +94,9 @@ export const matchesAttributes = (
 	}
 	const memoKey = `${CampaignId}:${JSON.stringify(attributes)}`;
 	if (!eventAttributesMemo.hasOwnProperty(memoKey)) {
-		eventAttributesMemo[memoKey] = Object.entries(
-			Attributes
-		).every(([key, { Values }]) => Values.includes(attributes[key]));
+		eventAttributesMemo[memoKey] = Object.entries(Attributes).every(
+			([key, { Values }]) => Values.includes(attributes[key])
+		);
 	}
 	return eventAttributesMemo[memoKey];
 };
@@ -212,7 +212,7 @@ export const extractContent = ({
 	InAppMessage: message,
 }: PinpointInAppMessage): InAppMessageContent[] => {
 	return (
-		message?.Content?.map(content => {
+		message?.Content?.map((content) => {
 			const {
 				BackgroundColor,
 				BodyConfig,
@@ -236,7 +236,8 @@ export const extractContent = ({
 					content: HeaderConfig.Header,
 					style: {
 						color: HeaderConfig.TextColor,
-						textAlign: HeaderConfig.Alignment.toLowerCase() as InAppMessageTextAlign,
+						textAlign:
+							HeaderConfig.Alignment.toLowerCase() as InAppMessageTextAlign,
 					},
 				};
 			}
@@ -245,7 +246,8 @@ export const extractContent = ({
 					content: BodyConfig.Body,
 					style: {
 						color: BodyConfig.TextColor,
-						textAlign: BodyConfig.Alignment.toLowerCase() as InAppMessageTextAlign,
+						textAlign:
+							BodyConfig.Alignment.toLowerCase() as InAppMessageTextAlign,
 					},
 				};
 			}
