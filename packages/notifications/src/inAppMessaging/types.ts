@@ -11,6 +11,7 @@
  * and limitations under the License.
  */
 import { NotificationsCategory } from '../types';
+import { AWSPinpointProviderConfig } from './Providers/AWSPinpointProvider/types';
 
 export type NotificationsSubcategory = 'InAppMessaging';
 
@@ -45,6 +46,7 @@ export type InAppMessagingEvent = {
 
 export interface InAppMessagingConfig {
 	listenForAnalyticsEvents?: boolean;
+	AWSPinpoint?: AWSPinpointProviderConfig;
 }
 
 export interface InAppMessagingProvider {

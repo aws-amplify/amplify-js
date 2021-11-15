@@ -46,11 +46,11 @@ import {
 	UserInfo,
 } from '../../types';
 import {
+	AWSPinpointMessageEvent,
 	AWSPinpointUserInfo,
 	DailyInAppMessageCounter,
 	InAppMessageCountMap,
 	InAppMessageCounts,
-	PinpointMessageEvent,
 } from './types';
 import {
 	clearMemo,
@@ -123,19 +123,19 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 			addMessageInteractionEventListener((message: InAppMessage) => {
 				this.recordMessageEvent(
 					message,
-					PinpointMessageEvent.MESSAGE_DISPLAYED
+					AWSPinpointMessageEvent.MESSAGE_DISPLAYED
 				);
 			}, InAppMessageInteractionEvent.MESSAGE_DISPLAYED);
 			addMessageInteractionEventListener((message: InAppMessage) => {
 				this.recordMessageEvent(
 					message,
-					PinpointMessageEvent.MESSAGE_DISMISSED
+					AWSPinpointMessageEvent.MESSAGE_DISMISSED
 				);
 			}, InAppMessageInteractionEvent.MESSAGE_DISMISSED);
 			addMessageInteractionEventListener((message: InAppMessage) => {
 				this.recordMessageEvent(
 					message,
-					PinpointMessageEvent.MESSAGE_ACTION_TAKEN
+					AWSPinpointMessageEvent.MESSAGE_ACTION_TAKEN
 				);
 			}, InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN);
 		}
@@ -165,9 +165,8 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 			);
 			logger.debug('getting in-app messages', input);
 			const response = await pinpointClient.send(command);
-			const {
-				InAppMessageCampaigns: messages,
-			} = response.InAppMessagesResponse;
+			const { InAppMessageCampaigns: messages } =
+				response.InAppMessagesResponse;
 
 			dispatchInAppMessagingEvent('syncInAppMessages', messages);
 			return messages;
@@ -311,7 +310,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 		const credentialsUpdated =
 			!credentials ||
 			Object.keys(currentCredentials).some(
-				key => currentCredentials[key] !== credentials[key]
+				(key) => currentCredentials[key] !== credentials[key]
 			);
 		// If endpoint is already initialized, and nothing else is changing, just early return
 		if (
@@ -411,9 +410,8 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 		DailyCap,
 		TotalCap,
 	}: PinpointInAppMessage): boolean => {
-		const { sessionCount, dailyCount, totalCount } = this.getMessageCounts(
-			CampaignId
-		);
+		const { sessionCount, dailyCount, totalCount } =
+			this.getMessageCounts(CampaignId);
 		if (
 			!(sessionCount && SessionCap) &&
 			!(dailyCount && DailyCap) &&
@@ -504,9 +502,8 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 	};
 
 	private incrementCounts = async (messageId: string): Promise<void> => {
-		const { sessionCount, dailyCount, totalCount } = this.getMessageCounts(
-			messageId
-		);
+		const { sessionCount, dailyCount, totalCount } =
+			this.getMessageCounts(messageId);
 		this.setSessionCount(messageId, sessionCount + 1);
 		this.setDailyCount(dailyCount + 1);
 		this.setTotalCount(messageId, totalCount + 1);
@@ -515,7 +512,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 	private normalizeMessages = (
 		messages: PinpointInAppMessage[]
 	): InAppMessage[] => {
-		return messages.map(message => {
+		return messages.map((message) => {
 			const { CampaignId, InAppMessage } = message;
 			return {
 				id: CampaignId,
@@ -528,13 +525,13 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 
 	private recordMessageEvent = async (
 		message: InAppMessage,
-		event: PinpointMessageEvent
+		event: AWSPinpointMessageEvent
 	): Promise<void> => {
 		if (!this.initialized) {
 			await this.init();
 		}
 		recordAnalyticsEvent(event, message);
-		if (event === PinpointMessageEvent.MESSAGE_DISPLAYED) {
+		if (event === AWSPinpointMessageEvent.MESSAGE_DISPLAYED) {
 			await this.incrementCounts(message.id);
 		}
 	};
