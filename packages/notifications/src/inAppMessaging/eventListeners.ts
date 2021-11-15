@@ -19,7 +19,7 @@ export const notifyMessageInteractionEventListeners = (
 	message: InAppMessage,
 	event: InAppMessageInteractionEvent
 ): void => {
-	onMessageActionListeners[event].forEach(listener => {
+	onMessageActionListeners[event].forEach((listener) => {
 		listener.handleEvent(message);
 	});
 };

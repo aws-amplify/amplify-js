@@ -7,8 +7,8 @@ import {
 	SessionTrackerInterface,
 } from './types';
 
-const isActive = appState => appState === 'active';
-const isInactive = appState =>
+const isActive = (appState) => appState === 'active';
+const isInactive = (appState) =>
 	appState === 'inactive' || appState === 'background';
 
 const logger = new Logger('InAppMessagingSessionTracker');
@@ -40,7 +40,7 @@ export default class SessionTracker implements SessionTrackerInterface {
 		return 'ended';
 	};
 
-	private appStateChangeHandler = nextAppState => {
+	private appStateChangeHandler = (nextAppState) => {
 		// if going from active to inactive
 		if (isActive(this.currentAppState) && isInactive(nextAppState)) {
 			logger.debug('App has gone to the background');
