@@ -150,7 +150,7 @@ describe('Predicates', () => {
 	// function defineTests(f) {
 
 	describe('on local properties ', () => {
-		const getFlatAuthorsArrayFixture = function () {
+		const getFlatAuthorsArrayFixture = () => {
 			return [
 				'Adam West',
 				'Bob Jones',

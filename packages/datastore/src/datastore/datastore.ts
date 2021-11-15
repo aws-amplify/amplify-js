@@ -1315,9 +1315,13 @@ class DataStore {
 					.filter(({ model }) => namespaceResolver(model) === USER)
 					.subscribe({
 						next: async item => {
-							// `element` for UPDATE events aren't instances of `modelConstructor`.
-							// `executivePredicate` expects them to be. (what do our customers expect?)
-							if (isModelConstructor(modelConstructor)) {
+							// the `element` for UPDATE events isn't an instance of `modelConstructor`.
+							// however, `executivePredicate` expects an instance that supports lazy loaded
+							// associations. customers will presumably expect the same!
+							if (
+								isModelConstructor(modelConstructor) &&
+								!(item.element instanceof modelConstructor)
+							) {
 								item.element = modelInstanceCreator(
 									modelConstructor,
 									item.element

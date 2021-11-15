@@ -42,11 +42,12 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 	});
 
 	test('subscribe to all models', async (done) => {
-		DataStore.observe().subscribe(({ element, opType, model }) => {
+		const sub = DataStore.observe().subscribe(({ element, opType, model }) => {
 			expectType<PersistentModelConstructor<PersistentModel>>(model);
 			expectType<PersistentModel>(element);
 			expect(opType).toEqual('INSERT');
 			expect(element.field1).toEqual('Smurfs');
+			sub.unsubscribe();
 			done();
 		});
 		DataStore.save(
@@ -65,14 +66,17 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 			})
 		);
 
-		DataStore.observe(original).subscribe(({ element, opType, model }) => {
-			expectType<PersistentModelConstructor<Model>>(model);
-			expectType<Model>(element);
-			expect(opType).toEqual('UPDATE');
-			expect(element.id).toEqual(original.id);
-			expect(element.field1).toEqual('new field 1 value');
-			done();
-		});
+		const sub = DataStore.observe(original).subscribe(
+			({ element, opType, model }) => {
+				expectType<PersistentModelConstructor<Model>>(model);
+				expectType<Model>(element);
+				expect(opType).toEqual('UPDATE');
+				expect(element.id).toEqual(original.id);
+				expect(element.field1).toEqual('new field 1 value');
+				sub.unsubscribe();
+				done();
+			}
+		);
 
 		// decoy
 		await DataStore.save(
@@ -95,14 +99,17 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 			})
 		);
 
-		DataStore.observe(Model).subscribe(({ element, opType, model }) => {
-			expectType<PersistentModelConstructor<Model>>(model);
-			expectType<Model>(element);
-			expect(opType).toEqual('UPDATE');
-			expect(element.id).toEqual(original.id);
-			expect(element.field1).toEqual('new field 1 value');
-			done();
-		});
+		const sub = DataStore.observe(Model).subscribe(
+			({ element, opType, model }) => {
+				expectType<PersistentModelConstructor<Model>>(model);
+				expectType<Model>(element);
+				expect(opType).toEqual('UPDATE');
+				expect(element.id).toEqual(original.id);
+				expect(element.field1).toEqual('new field 1 value');
+				sub.unsubscribe();
+				done();
+			}
+		);
 
 		// decoy
 		await DataStore.save(
@@ -124,16 +131,17 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 			})
 		);
 
-		DataStore.observe(Model, (m) => m.field1.contains('new field 1')).subscribe(
-			({ element, opType, model }) => {
-				expectType<PersistentModelConstructor<Model>>(model);
-				expectType<Model>(element);
-				expect(opType).toEqual('UPDATE');
-				expect(element.id).toEqual(original.id);
-				expect(element.field1).toEqual('new field 1 value');
-				done();
-			}
-		);
+		const sub = DataStore.observe(Model, (m) =>
+			m.field1.contains('new field 1')
+		).subscribe(({ element, opType, model }) => {
+			expectType<PersistentModelConstructor<Model>>(model);
+			expectType<Model>(element);
+			expect(opType).toEqual('UPDATE');
+			expect(element.id).toEqual(original.id);
+			expect(element.field1).toEqual('new field 1 value');
+			sub.unsubscribe();
+			done();
+		});
 
 		// decoy
 		await DataStore.save(
@@ -156,16 +164,17 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 			})
 		);
 
-		DataStore.observe(Model, (m) => m.field1.contains('value')).subscribe(
-			({ element, opType, model }) => {
-				expectType<PersistentModelConstructor<Model>>(model);
-				expectType<Model>(element);
-				expect(opType).toEqual('DELETE');
-				expect(element.id).toEqual(original.id);
-				expect(element.field1).toEqual('somevalue');
-				done();
-			}
-		);
+		const sub = DataStore.observe(Model, (m) =>
+			m.field1.contains('value')
+		).subscribe(({ element, opType, model }) => {
+			expectType<PersistentModelConstructor<Model>>(model);
+			expectType<Model>(element);
+			expect(opType).toEqual('DELETE');
+			expect(element.id).toEqual(original.id);
+			expect(element.field1).toEqual('somevalue');
+			sub.unsubscribe();
+			done();
+		});
 
 		// decoy
 		await DataStore.save(
@@ -191,10 +200,11 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 			})
 		);
 
-		DataStore.observe(Comment, (comment) =>
+		const sub = DataStore.observe(Comment, (comment) =>
 			comment.post.title.eq(targetPost.title)
 		).subscribe(({ element: comment, opType, model }) => {
 			expect(comment.content).toEqual('good comment');
+			sub.unsubscribe();
 			done();
 		});
 
@@ -230,18 +240,11 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 			})
 		);
 
-		const nonTargetComment = await DataStore.save(
-			new Comment({
-				content: 'bad comment',
-				post: nonTargetPost,
-			})
+		await DataStore.save(
+			new Comment({ content: 'bad comment', post: nonTargetPost })
 		);
-
-		const targetPreComment = await DataStore.save(
-			new Comment({
-				content: 'pre good comment',
-				post: targetPost,
-			})
+		await DataStore.save(
+			new Comment({ content: 'pre good comment', post: targetPost })
 		);
 
 		const targetComment = await DataStore.save(
@@ -251,48 +254,29 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 			})
 		);
 
-		const targetPostComment = await DataStore.save(
-			new Comment({
-				content: 'post good comment',
-				post: targetPost,
-			})
+		await DataStore.save(
+			new Comment({ content: 'post good comment', post: targetPost })
 		);
 
-		// sanity check
-		const targetPostFetched = await DataStore.query(Post, targetPost.id);
-		expect((await targetPostFetched.comments.toArray()).length).toBe(3);
-		expect(
-			(await targetPostFetched.comments.toArray()).some(
-				(c) => c.content === 'good comment'
-			)
-		);
-
-		// const checkComment = await DataStore.query(Comment, targetComment.id);
-		// console.log('check comment', await checkComment.post);
-
-		// console.log('targetPost comments', await targetPost.comments.toArray());
-
-		// const targetPostCopy = Post.copyOf(targetPost, p => p.title = "COPIED");
-		// console.log('targetPost COPIED comments', await targetPostCopy.comments.toArray());
-
-		DataStore.observe(Post, (post) =>
+		const sub = DataStore.observe(Post, (post) =>
 			post.comments.content.eq(targetComment.content)
 		).subscribe(async ({ element: post, opType, model }) => {
 			expect(post.title).toEqual('expected update');
+			sub.unsubscribe();
 			done();
 		});
 
-		// decoy edit
+		// should not see this one come through the subscription.
 		await DataStore.save(
 			Post.copyOf(nonTargetPost, (p) => (p.title = 'decoy update'))
 		);
 
-		// the update we're looking for
+		// this is the update we expect to see come through, as it has
+		// 'good comment' in its `comments` field.
 		await DataStore.save(
 			Post.copyOf(targetPost, (p) => (p.title = 'expected update'))
 		);
 	});
-	1;
 });
 
 describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
@@ -310,19 +294,27 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 	//
 	// The tests should also account for that initial, empty snapshot.
 	//
-	// (And remember, snapshots are cumulative.)
+	// Remember: Snapshots are cumulative.
+	//
+	// And Also: Be careful when saving decoy records! Calling `done()` in a
+	// subscription body while any `DataStore.save()`'s are outstanding WILL
+	// result in cryptic errors that surface in subsequent tests!
+	//
+	// ("Error: An operation was called on an object on which it is not allowed ...")
 	//
 	// ~~~~ OK. Thanks! ~~~~
 	//
 	//   (That's it)
 	//
 
+	let Comment: PersistentModelConstructor<Comment>;
 	let Post: PersistentModelConstructor<Post>;
 
 	beforeEach(async () => {
 		({ initSchema, DataStore } = require('../src/datastore/datastore'));
 		const classes = initSchema(testSchema());
-		({ Post } = classes as {
+		({ Comment, Post } = classes as {
+			Comment: PersistentModelConstructor<Comment>;
 			Post: PersistentModelConstructor<Post>;
 		});
 		await DataStore.clear();
@@ -571,15 +563,80 @@ describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {
 			for (let i = 5; i < 15; i++) {
 				await DataStore.save(
 					new Post({
-						title: `the post ${i}`,
+						title: `NOT the post ${i}`,
 					})
 				);
 				await DataStore.save(
 					new Post({
-						title: `NOT the post ${i}`,
+						title: `the post ${i}`,
 					})
 				);
 			}
+		}, 100);
+	});
+
+	test('publishes with hasMany criteria', async (done) => {
+		// want to set up a few posts and a few "non-target" comments
+		// to ensure we can observe post based on a single comment that's
+		// somewhat "buried" alongside other comments.
+
+		const expectedMessages = ['this is my post. hooray!', 'expected update'];
+
+		const targetPost = await DataStore.save(
+			new Post({
+				title: 'this is my post. hooray!',
+			})
+		);
+
+		const nonTargetPost = await DataStore.save(
+			new Post({
+				title: 'this is NOT my post. boo!',
+			})
+		);
+
+		await DataStore.save(
+			new Comment({ content: 'bad comment', post: nonTargetPost })
+		);
+		await DataStore.save(
+			new Comment({ content: 'pre good comment', post: targetPost })
+		);
+
+		const targetComment = await DataStore.save(
+			new Comment({
+				content: 'good comment',
+				post: targetPost,
+			})
+		);
+
+		await DataStore.save(
+			new Comment({ content: 'post good comment', post: targetPost })
+		);
+
+		const sub = DataStore.observeQuery(Post, (post) =>
+			post.comments.content.eq(targetComment.content)
+		).subscribe(async ({ items, isSynced }) => {
+			expect(items.length).toBe(1);
+			expect(items[0].title).toEqual(expectedMessages.shift());
+			if (expectedMessages.length === 0) {
+				sub.unsubscribe();
+				done();
+			}
+		});
+
+		setTimeout(async () => {
+			// ensure we get individual results through the subscription.
+			(DataStore as any).sync.getModelSyncedStatus = (model) => true;
+
+			// should not see this one come through the subscription.
+			await DataStore.save(
+				Post.copyOf(nonTargetPost, (p) => (p.title = 'decoy update'))
+			);
+
+			// this is the update we expect to see come through, as it has
+			// 'good comment' in its `comments` field.
+			await DataStore.save(
+				Post.copyOf(targetPost, (p) => (p.title = 'expected update'))
+			);
 		}, 100);
 	});
 });
