@@ -358,6 +358,146 @@ export const newSchema: Schema = {
 				},
 			},
 		},
+		Forum: {
+			syncable: true,
+			name: 'Forum',
+			pluralName: 'Forums',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				title: {
+					name: 'title',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				editors: {
+					name: 'editors',
+					isArray: true,
+					type: {
+						model: 'ForumEditorJoin',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'HAS_MANY',
+						associatedWith: 'forum',
+					},
+				},
+			},
+		},
+		Editor: {
+			syncable: true,
+			name: 'Editor',
+			pluralName: 'Editors',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				name: {
+					name: 'name',
+					isArray: false,
+					type: 'String',
+					isRequired: true,
+					attributes: [],
+				},
+				forums: {
+					name: 'forums',
+					isArray: true,
+					type: {
+						model: 'ForumEditorJoin',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'HAS_MANY',
+						associatedWith: 'editor',
+					},
+				},
+			},
+		},
+		ForumEditorJoin: {
+			syncable: true,
+			name: 'ForumEditorJoin',
+			pluralName: 'ForumEditorJoins',
+			attributes: [
+				{
+					type: 'model',
+					properties: {},
+				},
+				{
+					type: 'key',
+					properties: {
+						name: 'byEditor',
+						fields: ['editorID', 'forumID'],
+					},
+				},
+				{
+					type: 'key',
+					properties: {
+						name: 'byForum',
+						fields: ['forumID', 'editorID'],
+					},
+				},
+			],
+			fields: {
+				id: {
+					name: 'id',
+					isArray: false,
+					type: 'ID',
+					isRequired: true,
+					attributes: [],
+				},
+				editor: {
+					name: 'editor',
+					isArray: false,
+					type: {
+						model: 'Editor',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'BELONGS_TO',
+						targetName: 'editorID',
+					},
+				},
+				forum: {
+					name: 'forum',
+					isArray: false,
+					type: {
+						model: 'Forum',
+					},
+					isRequired: false,
+					attributes: [],
+					association: {
+						connectionType: 'BELONGS_TO',
+						targetName: 'forumID',
+					},
+				},
+			},
+		},
 		BlogOwner: {
 			syncable: true,
 			name: 'BlogOwner',
