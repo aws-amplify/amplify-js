@@ -265,7 +265,7 @@ describe('InMemoryCache', () => {
 		});
 
 		test('execute function if specified when no such key in cache', () => {
-			const execFunc: Function = data => {
+			const execFunc: Function = (data) => {
 				return data * 5;
 			};
 

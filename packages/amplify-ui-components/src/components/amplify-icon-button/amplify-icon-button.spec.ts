@@ -14,7 +14,7 @@ async function snapshotTestIconButton(iconName: string) {
 
 describe('amplify-icon-button spec:', () => {
 	describe('Render logic ->', () => {
-		Object.keys(icons).map(name => {
+		Object.keys(icons).map((name) => {
 			it(`renders ${name} icon button correctly`, async () =>
 				snapshotTestIconButton(name));
 		});

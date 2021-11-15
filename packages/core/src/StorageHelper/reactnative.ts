@@ -72,7 +72,7 @@ class MemoryStorage {
 			MemoryStorage.syncPromise = new Promise((res, rej) => {
 				AsyncStorage.getAllKeys((errKeys, keys) => {
 					if (errKeys) rej(errKeys);
-					const memoryKeys = keys.filter(key =>
+					const memoryKeys = keys.filter((key) =>
 						key.startsWith(MEMORY_KEY_PREFIX)
 					);
 					AsyncStorage.multiGet(memoryKeys, (err, stores) => {

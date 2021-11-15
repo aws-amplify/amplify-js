@@ -20,10 +20,7 @@ describe('Picker test', () => {
 
 			const wrapper = shallow(<Picker />);
 
-			wrapper
-				.find('input')
-				.at(0)
-				.simulate('change', 'event');
+			wrapper.find('input').at(0).simulate('change', 'event');
 
 			expect(spyon).toBeCalledWith('event');
 

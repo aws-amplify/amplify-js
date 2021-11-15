@@ -26,7 +26,7 @@ export const h = (tag, props, ...children) => {
 		});
 	}
 
-	children.forEach(child => {
+	children.forEach((child) => {
 		if (['number', 'string'].includes(typeof child)) {
 			node.appendChild(document.createTextNode(child));
 		} else if (child === null) {

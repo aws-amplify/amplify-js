@@ -130,7 +130,7 @@ export const dict = {
 		'An account with the given email already exists.':
 			'Un utilisateur avec cette adresse email existe déjà.',
 		'Username cannot be empty': "Le nom d'utilisateur doit être renseigné",
-	},	
+	},
 
 	es: {
 		'Sign in to your account': 'Iniciar sesíon',
@@ -171,7 +171,7 @@ export const dict = {
 		'Invalid phone number format':
 			'Formato de n\xFAmero de tel\xE9fono inv\xE1lido.\nUtilice el formato de n\xFAmero de tel\xE9fono +12345678900',
 	},
-	
+
 	it: {
 		'Account recovery requires verified contact information':
 			'Ripristino del conto richiede un account verificati',

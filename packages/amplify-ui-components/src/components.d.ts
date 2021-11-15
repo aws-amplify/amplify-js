@@ -965,8 +965,7 @@ export namespace Components {
         /**
           * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
          */
-        "options": | SelectOptionsString
-		| SelectOptionsNumber;
+        "options": SelectOptionsString | SelectOptionsNumber;
         /**
           * Default selected option
          */
@@ -1048,9 +1047,7 @@ export namespace Components {
         /**
           * Override for handling the Auth.SignUp API call
          */
-        "handleSignUp": (
-		params: SignUpParams
-	) => Promise<ISignUpResult>;
+        "handleSignUp": (params: SignUpParams) => Promise<ISignUpResult>;
         /**
           * Fires when sign up form is submitted
          */
@@ -1110,9 +1107,7 @@ export namespace Components {
         /**
           * This is run after totp setup is complete. Useful if using this as standalone.
          */
-        "handleComplete": (
-		user: CognitoUserInterface
-	) => void | Promise<void>;
+        "handleComplete": (user: CognitoUserInterface) => void | Promise<void>;
         /**
           * Used for header text in totp setup component
          */
@@ -2521,8 +2516,7 @@ declare namespace LocalJSX {
         /**
           * The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number}
          */
-        "options"?: | SelectOptionsString
-		| SelectOptionsNumber;
+        "options"?: SelectOptionsString | SelectOptionsNumber;
         /**
           * Default selected option
          */
@@ -2604,9 +2598,7 @@ declare namespace LocalJSX {
         /**
           * Override for handling the Auth.SignUp API call
          */
-        "handleSignUp"?: (
-		params: SignUpParams
-	) => Promise<ISignUpResult>;
+        "handleSignUp"?: (params: SignUpParams) => Promise<ISignUpResult>;
         /**
           * Fires when sign up form is submitted
          */
@@ -2666,9 +2658,7 @@ declare namespace LocalJSX {
         /**
           * This is run after totp setup is complete. Useful if using this as standalone.
          */
-        "handleComplete"?: (
-		user: CognitoUserInterface
-	) => void | Promise<void>;
+        "handleComplete"?: (user: CognitoUserInterface) => void | Promise<void>;
         /**
           * Used for header text in totp setup component
          */

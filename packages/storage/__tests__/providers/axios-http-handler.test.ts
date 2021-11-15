@@ -25,7 +25,7 @@ describe('AxiosHttpHandler', () => {
 			port: 3000,
 			query: {},
 			headers: {},
-			clone: () => (null as unknown) as HttpRequest,
+			clone: () => null as unknown as HttpRequest,
 		};
 	});
 

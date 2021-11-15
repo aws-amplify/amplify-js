@@ -40,7 +40,7 @@ import { SignInAttributes } from './amplify-sign-in-interface';
 })
 export class AmplifySignIn {
 	/** Fires when sign in form is submitted */
-	@Prop() handleSubmit: (event: Event) => void = event => this.signIn(event);
+	@Prop() handleSubmit: (event: Event) => void = (event) => this.signIn(event);
 	/** Used for header text in sign in component */
 	@Prop() headerText: string = Translations.SIGN_IN_HEADER_TEXT;
 	/** Used for the submit button text in sign in component */
@@ -100,11 +100,12 @@ export class AmplifySignIn {
 		switch (fieldType) {
 			case 'username':
 			case 'email':
-				return event => (this.signInAttributes.userInput = event.target.value);
+				return (event) =>
+					(this.signInAttributes.userInput = event.target.value);
 			case 'phone_number':
-				return event => handlePhoneNumberChange(event, this.phoneNumber);
+				return (event) => handlePhoneNumberChange(event, this.phoneNumber);
 			case 'password':
-				return event => (this.signInAttributes.password = event.target.value);
+				return (event) => (this.signInAttributes.password = event.target.value);
 			default:
 				return () => {};
 		}
@@ -217,7 +218,7 @@ export class AmplifySignIn {
 			this.buildDefaultFormFields();
 		} else {
 			const newFields = [];
-			this.formFields.forEach(field => {
+			this.formFields.forEach((field) => {
 				const newField = { ...field };
 				// TODO: handle hint better
 				if (newField.type === 'password') {
@@ -238,7 +239,7 @@ export class AmplifySignIn {
 						newField['hint']
 					);
 				}
-				newField['handleInputChange'] = event =>
+				newField['handleInputChange'] = (event) =>
 					this.handleFormFieldInputWithCallback(event, field);
 				this.setFieldValue(newField, this.signInAttributes);
 				newFields.push(newField);
@@ -262,7 +263,9 @@ export class AmplifySignIn {
 				break;
 			case 'phone_number':
 				if ((field as PhoneFormFieldType).dialCode) {
-					this.phoneNumber.countryDialCodeValue = (field as PhoneFormFieldType).dialCode;
+					this.phoneNumber.countryDialCodeValue = (
+						field as PhoneFormFieldType
+					).dialCode;
 				}
 				this.phoneNumber.phoneNumberValue = field.value;
 				break;

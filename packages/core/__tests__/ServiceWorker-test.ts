@@ -33,7 +33,7 @@ describe('ServiceWorker test', () => {
 	});
 	describe('Register with status', () => {
 		const statuses = ['installing', 'waiting', 'active'];
-		statuses.forEach(status => {
+		statuses.forEach((status) => {
 			test(`can register (${status})`, () => {
 				const bla = { [status]: { addEventListener: () => {} } };
 				(global as any).navigator.serviceWorker = {
@@ -46,7 +46,7 @@ describe('ServiceWorker test', () => {
 			});
 		});
 
-		statuses.forEach(status => {
+		statuses.forEach((status) => {
 			test(`listeners are added (${status})`, async () => {
 				const bla = {
 					[status]: { addEventListener: jest.fn() },

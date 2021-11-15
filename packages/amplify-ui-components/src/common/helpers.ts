@@ -31,7 +31,7 @@ export const hasShadowDom = (el: HTMLElement) => {
 /**
  * Finds closest element that matches the selector from the ancestor tree.
  * Trasverses through shadow DOM and slots.
- * 
+ *
  * Adpated from: https://stackoverflow.com/a/56105394
  */
 export const closestElement = (selector: string, base: Element) => {
@@ -88,7 +88,7 @@ export const checkUsernameAlias = (usernameAlias: any) => {
 };
 
 export const onAuthUIStateChange = (authStateHandler: AuthStateHandler) => {
-	const authUIStateHandler = async data => {
+	const authUIStateHandler = async (data) => {
 		const { payload } = data;
 		switch (payload.event) {
 			case AUTH_STATE_CHANGE_EVENT:
@@ -109,18 +109,18 @@ export const onAuthUIStateChange = (authStateHandler: AuthStateHandler) => {
 		}
 	};
 	Hub.listen(UI_AUTH_CHANNEL, authUIStateHandler);
-	
+
 	const unsubscribe = () => {
 		// Replace user's `authStateHandler` with a noop so that we don't trigger side-effects during the async `authUIStateHandler` when unsubscribed
 		authStateHandler = () => {};
-		
+
 		Hub.remove(UI_AUTH_CHANNEL, authUIStateHandler);
-	}
-	
+	};
+
 	return unsubscribe;
 };
 
-export const isHintValid = field => {
+export const isHintValid = (field) => {
 	return !(field['hint'] === null || typeof field['hint'] === 'string');
 };
 

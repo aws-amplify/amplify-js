@@ -80,7 +80,7 @@ export class Picker extends React.Component<IPickerProps, {}> {
 					type="file"
 					accept={accept}
 					style={inputStyle}
-					onChange={e => this.handleInput(e)}
+					onChange={(e) => this.handleInput(e)}
 				/>
 			</div>
 		);

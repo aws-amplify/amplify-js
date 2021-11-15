@@ -17,7 +17,7 @@ jest.mock('react-native', () => ({
 	NativeModules: {
 		RNPushNotification: {
 			initialize: () => {},
-			getToken: callback => callback('token'),
+			getToken: (callback) => callback('token'),
 		},
 	},
 	Platform: {
@@ -26,13 +26,13 @@ jest.mock('react-native', () => ({
 }));
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
-	getItem: () => new Promise(res => res('item')),
+	getItem: () => new Promise((res) => res('item')),
 	setItem: jest.fn(),
 }));
 
 jest.mock('@react-native-community/push-notification-ios', () => ({
 	requestPermissions: () => {},
-	getInitialNotification: new Promise(res => res('notification')),
+	getInitialNotification: new Promise((res) => res('notification')),
 	addEventListener: () => {},
 }));
 
@@ -146,7 +146,7 @@ describe('PushNotification:', () => {
 			});
 		});
 
-		platforms.forEach(platform => {
+		platforms.forEach((platform) => {
 			test(`${platform} should return with empty config`, () => {
 				mockPlatform(platform);
 
@@ -259,7 +259,7 @@ describe('PushNotification:', () => {
 			const pushnotification = new PushNotification(null);
 			pushnotification.parseMessagefromAndroid = jest
 				.fn()
-				.mockImplementation(data => data);
+				.mockImplementation((data) => data);
 
 			pushnotification.configure(defaultConfig);
 			pushnotification.onRegister(handler);
@@ -317,7 +317,7 @@ describe('PushNotification:', () => {
 			const pushnotification = new PushNotification(null);
 			pushnotification.parseMessagefromAndroid = jest
 				.fn()
-				.mockImplementation(data => data);
+				.mockImplementation((data) => data);
 
 			pushnotification.configure(defaultConfig);
 			pushnotification.onNotification(handler);
@@ -333,7 +333,7 @@ describe('PushNotification:', () => {
 	});
 
 	describe('onNotificationOpened ->', () => {
-		platforms.forEach(platform => {
+		platforms.forEach((platform) => {
 			test(`${platform} handler should be called`, () => {
 				mockPlatform('ios');
 
@@ -342,7 +342,7 @@ describe('PushNotification:', () => {
 				const pushnotification = new PushNotification(null);
 				pushnotification.parseMessageData = jest
 					.fn()
-					.mockImplementation(data => data);
+					.mockImplementation((data) => data);
 
 				pushnotification.configure(defaultConfig);
 				pushnotification.onNotificationOpened(handler);

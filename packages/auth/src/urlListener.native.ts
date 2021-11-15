@@ -15,7 +15,7 @@ const logger = new Logger('urlListener');
 
 let handler;
 
-export default async callback => {
+export default async (callback) => {
 	if (handler) {
 		return;
 	}
@@ -45,7 +45,7 @@ export default async callback => {
 		subscription?.remove?.();
 		subscription = Linking.addEventListener('url', handler);
 	}
-	AppState.addEventListener('change', async newAppState => {
+	AppState.addEventListener('change', async (newAppState) => {
 		if (newAppState === 'active') {
 			const initialUrl = await Linking.getInitialURL();
 			handler({ url: initialUrl });

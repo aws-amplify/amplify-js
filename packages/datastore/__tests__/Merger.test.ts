@@ -53,7 +53,7 @@ describe('ModelMerger tests', () => {
 				},
 			];
 
-			await Storage.runExclusive(async storage => {
+			await Storage.runExclusive(async (storage) => {
 				await modelMerger.mergePage(storage, Model, items);
 			});
 
@@ -92,7 +92,7 @@ describe('ModelMerger tests', () => {
 				},
 			];
 
-			await Storage.runExclusive(async storage => {
+			await Storage.runExclusive(async (storage) => {
 				await modelMerger.mergePage(storage, Model, items);
 			});
 
@@ -132,7 +132,7 @@ describe('ModelMerger tests', () => {
 				},
 			];
 
-			await Storage.runExclusive(async storage => {
+			await Storage.runExclusive(async (storage) => {
 				await modelMerger.mergePage(storage, Model, items);
 			});
 

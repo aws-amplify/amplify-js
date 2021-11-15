@@ -12,7 +12,7 @@ jest
 
 jest.mock('axios', () => {
 	return {
-		default: signed_params => {
+		default: (signed_params) => {
 			return new Promise((res, rej) => {
 				const withCredentialsSuffix =
 					signed_params && signed_params.withCredentials

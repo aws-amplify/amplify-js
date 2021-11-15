@@ -74,26 +74,19 @@ export class S3Image extends React.Component<IS3ImageProps, IS3ImageState> {
 			);
 		}
 		Storage.get(key, { level: level ? level : 'public', track, identityId })
-			.then(url => {
+			.then((url) => {
 				if (this._isMounted) {
 					this.setState({
 						src: url,
 					});
 				}
 			})
-			.catch(err => logger.debug(err));
+			.catch((err) => logger.debug(err));
 	}
 
 	load() {
-		const {
-			imgKey,
-			path,
-			body,
-			contentType,
-			level,
-			track,
-			identityId,
-		} = this.props;
+		const { imgKey, path, body, contentType, level, track, identityId } =
+			this.props;
 		if (!imgKey && !path) {
 			logger.debug('empty imgKey and path');
 			return;
@@ -115,11 +108,11 @@ export class S3Image extends React.Component<IS3ImageProps, IS3ImageState> {
 				track,
 			});
 			ret
-				.then(data => {
+				.then((data) => {
 					logger.debug(data);
 					that.getImageSource(key, level, track, identityId);
 				})
-				.catch(err => logger.debug(err));
+				.catch((err) => logger.debug(err));
 		} else {
 			that.getImageSource(key, level, track, identityId);
 		}
@@ -163,12 +156,12 @@ export class S3Image extends React.Component<IS3ImageProps, IS3ImageState> {
 			contentType: type,
 			track,
 		})
-			.then(data => {
+			.then((data) => {
 				logger.debug('handle pick data', data);
 				that.getImageSource(key, level, track, identityId);
 				if (onUploadSuccess) onUploadSuccess();
 			})
-			.catch(err => logger.debug('handle pick error', err));
+			.catch((err) => logger.debug('handle pick error', err));
 	}
 
 	handleClick(evt) {

@@ -166,7 +166,7 @@ jest.mock('uuid', () => {
 });
 
 beforeEach(() => {
-	PinpointClient.prototype.send = jest.fn(async command => {
+	PinpointClient.prototype.send = jest.fn(async (command) => {
 		if (command instanceof UpdateEndpointCommand) {
 			return 'data';
 		}
@@ -484,7 +484,7 @@ describe('AnalyticsProvider test', () => {
 				analytics.configure(options);
 				const spyon = jest
 					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
+					.mockImplementationOnce(async (params) => {
 						return 'data';
 					});
 
@@ -526,7 +526,7 @@ describe('AnalyticsProvider test', () => {
 				analytics.configure(optionsWithClientContext);
 				const spyon = jest
 					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
+					.mockImplementationOnce(async (params) => {
 						return 'data';
 					});
 
@@ -570,7 +570,7 @@ describe('AnalyticsProvider test', () => {
 				analytics.configure(optionsWithDefaultEndpointConfigure);
 				const spyon = jest
 					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
+					.mockImplementationOnce(async (params) => {
 						return 'data';
 					});
 
@@ -629,7 +629,7 @@ describe('AnalyticsProvider test', () => {
 				analytics.configure(optionsWithDefaultEndpointConfigure);
 				const spyon = jest
 					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
+					.mockImplementationOnce(async (params) => {
 						return 'data';
 					});
 
@@ -696,7 +696,7 @@ describe('AnalyticsProvider test', () => {
 				analytics.configure(options);
 				const spyon = jest
 					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
+					.mockImplementationOnce(async (params) => {
 						throw { message: 'error' };
 					});
 
@@ -718,7 +718,7 @@ describe('AnalyticsProvider test', () => {
 				analytics.configure(options);
 				const spyon = jest
 					.spyOn(PinpointClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
+					.mockImplementationOnce(async (params) => {
 						throw mockError;
 					});
 
@@ -747,7 +747,7 @@ describe('AnalyticsProvider test', () => {
 				const spyonUpdateEndpoint = jest
 					.spyOn(PinpointClient.prototype, 'send')
 					// Reject with error the first time we execute updateEndpoint
-					.mockImplementationOnce(async params => {
+					.mockImplementationOnce(async (params) => {
 						throw mockExceededMaxError;
 					});
 

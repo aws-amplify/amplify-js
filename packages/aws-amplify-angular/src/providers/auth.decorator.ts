@@ -8,11 +8,11 @@ const logger = new Logger('AuthDecorator');
 function check(authState: Subject<AuthState>, Auth) {
 	// check for current authenticated user to init authState
 	Auth.currentAuthenticatedUser()
-		.then(user => {
+		.then((user) => {
 			logger.debug('has authenticated user', user);
 			authState.next({ state: 'signedIn', user });
 		})
-		.catch(err => {
+		.catch((err) => {
 			logger.debug('no authenticated user', err);
 			authState.next({ state: 'signedOut', user: null });
 		});
@@ -24,7 +24,7 @@ function listen(authState: Subject<AuthState>) {
 		Hub.listen(
 			'auth',
 			{
-				onHubCapsule: capsule => {
+				onHubCapsule: (capsule) => {
 					const { channel, payload } = capsule;
 					if (channel === 'auth') {
 						const { username } = payload.data;
@@ -43,7 +43,7 @@ function decorateSignIn(authState: Subject<AuthState>, Auth) {
 	Auth.signIn = (username: string, password: string): Promise<any> => {
 		return _signIn
 			.call(Auth, username, password)
-			.then(user => {
+			.then((user) => {
 				logger.debug('signIn success');
 				if (!user.challengeName) {
 					authState.next({ state: 'signedIn', user });
@@ -67,7 +67,7 @@ function decorateSignIn(authState: Subject<AuthState>, Auth) {
 				}
 				return user;
 			})
-			.catch(err => {
+			.catch((err) => {
 				logger.debug('signIn error', err);
 				throw err;
 			});
@@ -79,12 +79,12 @@ function decorateSignOut(authState: Subject<AuthState>, Auth) {
 	Auth.signOut = (opts: { global: boolean } | undefined): Promise<any> => {
 		return _signOut
 			.call(Auth, opts)
-			.then(data => {
+			.then((data) => {
 				logger.debug('signOut success');
 				authState.next({ state: 'signedOut', user: null });
 				return data;
 			})
-			.catch(err => {
+			.catch((err) => {
 				logger.debug('signOut error', err);
 				throw err;
 			});
@@ -101,12 +101,12 @@ function decorateSignUp(authState: Subject<AuthState>, Auth) {
 	): Promise<any> => {
 		return _signUp
 			.call(Auth, username, password, email, phone_number)
-			.then(data => {
+			.then((data) => {
 				logger.debug('signUp success');
 				authState.next({ state: 'confirmSignUp', user: { username } });
 				return data;
 			})
-			.catch(err => {
+			.catch((err) => {
 				logger.debug('signUp error', err);
 				throw err;
 			});
@@ -118,12 +118,12 @@ function decorateConfirmSignUp(authState: Subject<AuthState>, Auth) {
 	Auth.confirmSignUp = (username: string, code: string): Promise<any> => {
 		return _confirmSignUp
 			.call(Auth, username, code)
-			.then(data => {
+			.then((data) => {
 				logger.debug('confirmSignUp success');
 				authState.next({ state: 'signIn', user: { username } });
 				return data;
 			})
-			.catch(err => {
+			.catch((err) => {
 				logger.debug('confirmSignUp error', err);
 				throw err;
 			});

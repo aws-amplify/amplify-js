@@ -65,7 +65,7 @@ export class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 				'No Auth module found, please ensure @aws-amplify/auth is imported'
 			);
 		}
-		Auth.verifiedContact(user).then(data => {
+		Auth.verifiedContact(user).then((data) => {
 			if (!isEmpty(data.verified)) {
 				this.changeState('signedIn', user);
 			} else {
@@ -144,10 +144,10 @@ export class SignIn extends AuthPiece<ISignInProps, ISignInState> {
 		}
 		const hideSignUp =
 			!override.includes('SignUp') &&
-			hide.some(component => component === SignUp);
+			hide.some((component) => component === SignUp);
 		const hideForgotPassword =
 			!override.includes('ForgotPassword') &&
-			hide.some(component => component === ForgotPassword);
+			hide.some((component) => component === ForgotPassword);
 		return (
 			<FormSection theme={theme} data-test={auth.signIn.section}>
 				<SectionHeader theme={theme} data-test={auth.signIn.headerSection}>

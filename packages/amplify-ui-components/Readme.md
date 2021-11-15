@@ -120,7 +120,7 @@ import awsconfig from './aws-exports';
 Amplify.configure(awsconfig);
 
 new Vue({
-	render: h => h(App),
+	render: (h) => h(App),
 }).$mount('#app');
 ```
 

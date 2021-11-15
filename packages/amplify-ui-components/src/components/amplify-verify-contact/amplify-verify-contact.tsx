@@ -102,7 +102,7 @@ export class AmplifyVerifyContact {
 					}}
 					name="code"
 					placeholder={I18n.get(Translations.CODE_PLACEHOLDER)}
-					handleInputChange={event => this.handleInputChange(event)}
+					handleInputChange={(event) => this.handleInputChange(event)}
 				/>
 			</div>
 		);
@@ -132,7 +132,7 @@ export class AmplifyVerifyContact {
 						key="email"
 						name="contact"
 						value="email"
-						handleInputChange={event => this.handleInputChange(event)}
+						handleInputChange={(event) => this.handleInputChange(event)}
 						inputProps={{
 							'data-test': 'verify-contact-email-radio',
 						}}
@@ -145,7 +145,7 @@ export class AmplifyVerifyContact {
 						key="phone_number"
 						name="contact"
 						value="phone_number"
-						handleInputChange={event => this.handleInputChange(event)}
+						handleInputChange={(event) => this.handleInputChange(event)}
 						inputProps={{
 							'data-test': 'verify-contact-phone-number-radio',
 						}}
@@ -159,7 +159,7 @@ export class AmplifyVerifyContact {
 		return (
 			<Host>
 				<amplify-form-section
-					handleSubmit={event => this.handleSubmit(event)}
+					handleSubmit={(event) => this.handleSubmit(event)}
 					headerText={I18n.get(Translations.VERIFY_CONTACT_HEADER_TEXT)}
 					loading={this.loading}
 					secondaryFooterContent={

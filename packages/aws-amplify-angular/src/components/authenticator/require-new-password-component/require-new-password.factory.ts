@@ -63,9 +63,10 @@ export class RequireNewPasswordComponent implements OnInit, OnDestroy {
 						hide: this.hide,
 				  });
 
-		const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-			requireNewPasswordComponent.component
-		);
+		const componentFactory =
+			this.componentFactoryResolver.resolveComponentFactory(
+				requireNewPasswordComponent.component
+			);
 
 		const viewContainerRef = this.componentHost.viewContainerRef;
 		viewContainerRef.clear();

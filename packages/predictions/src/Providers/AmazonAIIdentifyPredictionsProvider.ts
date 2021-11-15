@@ -80,7 +80,8 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				};
 				Storage.get(source.key, storageConfig)
 					.then((url: string) => {
-						const parser = /https:\/\/([a-zA-Z0-9%-_.]+)\.s3\.[A-Za-z0-9%-._~]+\/([a-zA-Z0-9%-._~/]+)\?/;
+						const parser =
+							/https:\/\/([a-zA-Z0-9%-_.]+)\.s3\.[A-Za-z0-9%-._~]+\/([a-zA-Z0-9%-._~/]+)\?/;
 						const parsedURL = url.match(parser);
 						if (parsedURL.length < 3) rej('Invalid S3 key was given.');
 						res({
@@ -90,21 +91,21 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 							},
 						});
 					})
-					.catch(err => rej(err));
+					.catch((err) => rej(err));
 			} else if (isFileSource(source)) {
 				blobToArrayBuffer(source.file)
-					.then(buffer => {
+					.then((buffer) => {
 						res({ Bytes: new Uint8Array(buffer) });
 					})
-					.catch(err => rej(err));
+					.catch((err) => rej(err));
 			} else if (isBytesSource(source)) {
 				const bytes = source.bytes;
 				if (bytes instanceof Blob) {
 					blobToArrayBuffer(bytes)
-						.then(buffer => {
+						.then((buffer) => {
 							res({ Bytes: new Uint8Array(buffer) });
 						})
-						.catch(err => rej(err));
+						.catch((err) => rej(err));
 				}
 				if (bytes instanceof ArrayBuffer || bytes instanceof Buffer) {
 					res({ Bytes: new Uint8Array(bytes) } as Image);
@@ -243,10 +244,10 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			});
 			let inputImage: Image;
 			await this.configureSource(input.labels.source)
-				.then(data => {
+				.then((data) => {
 					inputImage = data;
 				})
-				.catch(err => {
+				.catch((err) => {
 					return Promise.reject(err);
 				});
 			const param = { Image: inputImage };
@@ -262,15 +263,15 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			}
 
 			return Promise.all(servicePromises)
-				.then(data => {
+				.then((data) => {
 					let identifyResult: IdentifyLabelsOutput = {};
 					// concatenate resolved promises to a single object
-					data.forEach(val => {
+					data.forEach((val) => {
 						identifyResult = { ...identifyResult, ...val };
 					});
 					return identifyResult;
 				})
-				.catch(err => Promise.reject(err));
+				.catch((err) => Promise.reject(err));
 		} catch (err) {
 			return Promise.reject(err);
 		}
@@ -288,9 +289,9 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			const detectLabelsCommand = new DetectLabelsCommand(param);
 			const data = await this.rekognitionClient.send(detectLabelsCommand);
 			if (!data.Labels) return { labels: null }; // no image was detected
-			const detectLabelData = data.Labels.map(val => {
+			const detectLabelData = data.Labels.map((val) => {
 				const boxes = val.Instances
-					? val.Instances.map(val => makeCamelCase(val.BoundingBox))
+					? val.Instances.map((val) => makeCamelCase(val.BoundingBox))
 					: undefined;
 				return {
 					name: val.Name,
@@ -362,8 +363,8 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 		});
 		let inputImage: Image;
 		await this.configureSource(input.entities.source)
-			.then(data => (inputImage = data))
-			.catch(err => {
+			.then((data) => (inputImage = data))
+			.catch((err) => {
 				return Promise.reject(err);
 			});
 
@@ -385,7 +386,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				const data = await this.rekognitionClient.send(
 					recognizeCelebritiesCommand
 				);
-				const faces = data.CelebrityFaces.map(celebrity => {
+				const faces = data.CelebrityFaces.map((celebrity) => {
 					return {
 						boundingBox: makeCamelCase(celebrity.Face.BoundingBox),
 						landmarks: makeCamelCaseArray(celebrity.Face.Landmarks),
@@ -420,7 +421,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 				const data = await this.rekognitionClient.send(
 					searchFacesByImageCommand
 				);
-				const faces = data.FaceMatches.map(val => {
+				const faces = data.FaceMatches.map((val) => {
 					return {
 						boundingBox: makeCamelCase(val.Face.BoundingBox),
 						metadata: {
@@ -439,7 +440,7 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 			try {
 				const detectFacesCommand = new DetectFacesCommand(param);
 				const data = await this.rekognitionClient.send(detectFacesCommand);
-				const faces = data.FaceDetails.map(detail => {
+				const faces = data.FaceDetails.map((detail) => {
 					// face attributes keys we want to extract from Rekognition's response
 					const attributeKeys = [
 						'Smile',
@@ -449,12 +450,12 @@ export class AmazonAIIdentifyPredictionsProvider extends AbstractIdentifyPredict
 						'Beard',
 						'Mustache',
 						'EyesOpen',
-						'MouthOpen'
+						'MouthOpen',
 					];
 					const faceAttributes = makeCamelCase(detail, attributeKeys);
 					if (detail.Emotions) {
 						faceAttributes['emotions'] = detail.Emotions.map(
-							emotion => emotion.Type
+							(emotion) => emotion.Type
 						);
 					}
 					return {

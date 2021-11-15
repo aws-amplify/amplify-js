@@ -93,9 +93,7 @@ export class UsernameFieldComponentCore implements OnInit {
 	}
 
 	@Output()
-	usernameFieldChanged: EventEmitter<UsernameFieldOutput> = new EventEmitter<
-		UsernameFieldOutput
-	>();
+	usernameFieldChanged: EventEmitter<UsernameFieldOutput> = new EventEmitter<UsernameFieldOutput>();
 
 	ngOnInit() {
 		if (

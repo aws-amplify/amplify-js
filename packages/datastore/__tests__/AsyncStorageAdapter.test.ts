@@ -70,7 +70,7 @@ describe('AsyncStorageAdapter tests', () => {
 		});
 
 		it('Should call getAll for query with a predicate', async () => {
-			const results = await DataStore.query(Model, c =>
+			const results = await DataStore.query(Model, (c) =>
 				c.field1('contains', 'value')
 			);
 
@@ -82,9 +82,9 @@ describe('AsyncStorageAdapter tests', () => {
 		it('Should call getAll & inMemoryPagination for query with a predicate and sort', async () => {
 			const results = await DataStore.query(
 				Model,
-				c => c.field1('contains', 'value'),
+				(c) => c.field1('contains', 'value'),
 				{
-					sort: s => s.dateCreated(SortDirection.DESCENDING),
+					sort: (s) => s.dateCreated(SortDirection.DESCENDING),
 				}
 			);
 
@@ -96,7 +96,7 @@ describe('AsyncStorageAdapter tests', () => {
 
 		it('Should call getAll & inMemoryPagination for query with sort', async () => {
 			const results = await DataStore.query(Model, Predicates.ALL, {
-				sort: s => s.dateCreated(SortDirection.DESCENDING),
+				sort: (s) => s.dateCreated(SortDirection.DESCENDING),
 			});
 
 			expect(results.length).toEqual(3);

@@ -48,11 +48,8 @@ class SubscriptionProcessor {
 		SchemaModel,
 		[TransformerMutationType, string, string][]
 	>();
-	private buffer: [
-		TransformerMutationType,
-		SchemaModel,
-		PersistentModel
-	][] = [];
+	private buffer: [TransformerMutationType, SchemaModel, PersistentModel][] =
+		[];
 	private dataObserver: ZenObservable.Observer<any>;
 
 	constructor(
@@ -114,7 +111,7 @@ class SubscriptionProcessor {
 		const iamPrivateAuth =
 			authMode === GRAPHQL_AUTH_MODE.AWS_IAM &&
 			rules.find(
-				rule => rule.authStrategy === 'private' && rule.provider === 'iam'
+				(rule) => rule.authStrategy === 'private' && rule.provider === 'iam'
 			);
 
 		if (iamPrivateAuth && userCredentials === USER_CREDENTIALS.unauth) {
@@ -126,7 +123,7 @@ class SubscriptionProcessor {
 		// OIDC token has a groupClaim. If so, we are returning auth info before
 		// any further owner-based auth checks.
 		const groupAuthRules = rules.filter(
-			rule =>
+			(rule) =>
 				rule.authStrategy === 'groups' &&
 				['userPools', 'oidc'].includes(rule.provider)
 		);
@@ -134,7 +131,7 @@ class SubscriptionProcessor {
 		const validGroup =
 			(authMode === GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS ||
 				authMode === GRAPHQL_AUTH_MODE.OPENID_CONNECT) &&
-			groupAuthRules.find(groupAuthRule => {
+			groupAuthRules.find((groupAuthRule) => {
 				// validate token against groupClaim
 				const cognitoUserGroups = getUserGroupsFromToken(
 					cognitoTokenPayload,
@@ -145,8 +142,8 @@ class SubscriptionProcessor {
 					groupAuthRule
 				);
 
-				return [...cognitoUserGroups, ...oidcUserGroups].find(userGroup => {
-					return groupAuthRule.groups.find(group => group === userGroup);
+				return [...cognitoUserGroups, ...oidcUserGroups].find((userGroup) => {
+					return groupAuthRule.groups.find((group) => group === userGroup);
 				});
 			});
 
@@ -163,13 +160,13 @@ class SubscriptionProcessor {
 		const cognitoOwnerAuthRules =
 			authMode === GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
 				? rules.filter(
-						rule =>
+						(rule) =>
 							rule.authStrategy === 'owner' && rule.provider === 'userPools'
 				  )
 				: [];
 
 		let ownerAuthInfo: AuthorizationInfo;
-		cognitoOwnerAuthRules.forEach(ownerAuthRule => {
+		cognitoOwnerAuthRules.forEach((ownerAuthRule) => {
 			const ownerValue = cognitoTokenPayload[ownerAuthRule.identityClaim];
 
 			if (ownerValue) {
@@ -192,11 +189,11 @@ class SubscriptionProcessor {
 		const oidcOwnerAuthRules =
 			authMode === GRAPHQL_AUTH_MODE.OPENID_CONNECT
 				? rules.filter(
-						rule => rule.authStrategy === 'owner' && rule.provider === 'oidc'
+						(rule) => rule.authStrategy === 'owner' && rule.provider === 'oidc'
 				  )
 				: [];
 
-		oidcOwnerAuthRules.forEach(ownerAuthRule => {
+		oidcOwnerAuthRules.forEach((ownerAuthRule) => {
 			const ownerValue = oidcTokenPayload[ownerAuthRule.identityClaim];
 
 			if (ownerValue) {
@@ -234,7 +231,7 @@ class SubscriptionProcessor {
 		Observable<CONTROL_MSG>,
 		Observable<[TransformerMutationType, SchemaModel, PersistentModel]>
 	] {
-		const ctlObservable = new Observable<CONTROL_MSG>(observer => {
+		const ctlObservable = new Observable<CONTROL_MSG>((observer) => {
 			const promises: Promise<void>[] = [];
 
 			// Creating subs for each model/operation combo so they can be unsubscribed
@@ -302,14 +299,14 @@ class SubscriptionProcessor {
 					// best effort to get oidc jwt
 				}
 
-				Object.values(this.schema.namespaces).forEach(namespace => {
+				Object.values(this.schema.namespaces).forEach((namespace) => {
 					Object.values(namespace.models)
 						.filter(({ syncable }) => syncable)
-						.forEach(async modelDefinition => {
+						.forEach(async (modelDefinition) => {
 							const modelAuthModes = await getModelAuthModes({
 								authModeStrategy: this.authModeStrategy,
-								defaultAuthMode: this.amplifyConfig
-									.aws_appsync_authenticationType,
+								defaultAuthMode:
+									this.amplifyConfig.aws_appsync_authenticationType,
 								modelName: modelDefinition.name,
 								schema: this.schema,
 							});
@@ -339,7 +336,7 @@ class SubscriptionProcessor {
 							};
 
 							// Retry failed subscriptions with next auth mode (if available)
-							const authModeRetry = async operation => {
+							const authModeRetry = async (operation) => {
 								const {
 									opType: transformerMutationType,
 									opName,
@@ -413,10 +410,11 @@ class SubscriptionProcessor {
 													return;
 												}
 
-												const predicatesGroup = ModelPredicateCreator.getPredicates(
-													this.syncPredicates.get(modelDefinition),
-													false
-												);
+												const predicatesGroup =
+													ModelPredicateCreator.getPredicates(
+														this.syncPredicates.get(modelDefinition),
+														false
+													);
 
 												const { [opName]: record } = data;
 
@@ -438,7 +436,7 @@ class SubscriptionProcessor {
 												}
 												this.drainBuffer();
 											},
-											error: subscriptionError => {
+											error: (subscriptionError) => {
 												const {
 													error: { errors: [{ message = '' } = {}] } = {
 														errors: [],
@@ -454,7 +452,9 @@ class SubscriptionProcessor {
 													// Unsubscribe and clear subscription array for model/operation
 													subscriptions[modelDefinition.name][
 														transformerMutationType
-													].forEach(subscription => subscription.unsubscribe());
+													].forEach((subscription) =>
+														subscription.unsubscribe()
+													);
 													subscriptions[modelDefinition.name][
 														transformerMutationType
 													] = [];
@@ -512,7 +512,7 @@ class SubscriptionProcessor {
 									(async () => {
 										let boundFunction: any;
 
-										await new Promise(res => {
+										await new Promise((res) => {
 											subscriptionReadyCallback = res;
 											boundFunction = this.hubQueryCompletionListener.bind(
 												this,
@@ -525,7 +525,7 @@ class SubscriptionProcessor {
 								);
 							};
 
-							operations.forEach(op => authModeRetry(op));
+							operations.forEach((op) => authModeRetry(op));
 						});
 				});
 
@@ -533,23 +533,23 @@ class SubscriptionProcessor {
 			})();
 
 			return () => {
-				Object.keys(subscriptions).forEach(modelName => {
-					subscriptions[modelName][
-						TransformerMutationType.CREATE
-					].forEach(subscription => subscription.unsubscribe());
-					subscriptions[modelName][
-						TransformerMutationType.UPDATE
-					].forEach(subscription => subscription.unsubscribe());
-					subscriptions[modelName][
-						TransformerMutationType.DELETE
-					].forEach(subscription => subscription.unsubscribe());
+				Object.keys(subscriptions).forEach((modelName) => {
+					subscriptions[modelName][TransformerMutationType.CREATE].forEach(
+						(subscription) => subscription.unsubscribe()
+					);
+					subscriptions[modelName][TransformerMutationType.UPDATE].forEach(
+						(subscription) => subscription.unsubscribe()
+					);
+					subscriptions[modelName][TransformerMutationType.DELETE].forEach(
+						(subscription) => subscription.unsubscribe()
+					);
 				});
 			};
 		});
 
 		const dataObservable = new Observable<
 			[TransformerMutationType, SchemaModel, PersistentModel]
-		>(observer => {
+		>((observer) => {
 			this.dataObserver = observer;
 			this.drainBuffer();
 
@@ -584,7 +584,7 @@ class SubscriptionProcessor {
 
 	private drainBuffer() {
 		if (this.dataObserver) {
-			this.buffer.forEach(data => this.dataObserver.next(data));
+			this.buffer.forEach((data) => this.dataObserver.next(data));
 			this.buffer = [];
 		}
 	}

@@ -150,7 +150,7 @@ export class ForgotPasswordComponentCore implements OnInit {
 	@Input() hide: string[] = [];
 
 	shouldHide(comp) {
-		return this.hide.filter(item => item === comp).length > 0;
+		return this.hide.filter((item) => item === comp).length > 0;
 	}
 
 	@Input()
@@ -214,7 +214,7 @@ export class ForgotPasswordComponentCore implements OnInit {
 			.then(() => {
 				this.code_sent = true;
 			})
-			.catch(err => {
+			.catch((err) => {
 				this._setError(err);
 				this.code_sent = false;
 			});
@@ -233,7 +233,7 @@ export class ForgotPasswordComponentCore implements OnInit {
 				this.onAlertClose();
 				this.amplifyService.setAuthState({ state: 'signIn', user });
 			})
-			.catch(err => this._setError(err));
+			.catch((err) => this._setError(err));
 	}
 
 	onSignIn() {

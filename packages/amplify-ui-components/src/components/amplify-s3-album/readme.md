@@ -1,7 +1,5 @@
 # amplify-s3-album
 
-
-
 <!-- Auto Generated Below -->
 
 

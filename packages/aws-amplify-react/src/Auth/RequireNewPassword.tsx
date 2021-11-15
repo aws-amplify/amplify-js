@@ -16,7 +16,7 @@ import * as React from 'react';
 import { I18n, ConsoleLogger as Logger, isEmpty } from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 
-import { AuthPiece, IAuthPieceProps, IAuthPieceState  } from './AuthPiece';
+import { AuthPiece, IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import {
 	FormSection,
 	SectionHeader,
@@ -51,7 +51,7 @@ export class RequireNewPassword extends AuthPiece<
 				'No Auth module found, please ensure @aws-amplify/auth is imported'
 			);
 		}
-		Auth.verifiedContact(user).then(data => {
+		Auth.verifiedContact(user).then((data) => {
 			if (!isEmpty(data.verified)) {
 				this.changeState('signedIn', user);
 			} else {
@@ -73,7 +73,7 @@ export class RequireNewPassword extends AuthPiece<
 			);
 		}
 		Auth.completeNewPassword(user, password, attrs)
-			.then(user => {
+			.then((user) => {
 				logger.debug('complete new password', user);
 				if (user.challengeName === 'SMS_MFA') {
 					this.changeState('confirmSignIn', user);
@@ -84,7 +84,7 @@ export class RequireNewPassword extends AuthPiece<
 					this.checkContact(user);
 				}
 			})
-			.catch(err => this.error(err));
+			.catch((err) => this.error(err));
 	}
 
 	showComponent(theme) {
@@ -119,7 +119,7 @@ export class RequireNewPassword extends AuthPiece<
 						data-test={auth.requireNewPassword.newPasswordInput}
 					/>
 
-					{requiredAttributes.map(attribute => (
+					{requiredAttributes.map((attribute) => (
 						<Input
 							placeholder={I18n.get(convertToPlaceholder(attribute))}
 							theme={theme}
@@ -154,7 +154,7 @@ export class RequireNewPassword extends AuthPiece<
 function convertToPlaceholder(str) {
 	return str
 		.split('_')
-		.map(part => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase())
+		.map((part) => part.charAt(0).toUpperCase() + part.substr(1).toLowerCase())
 		.join(' ');
 }
 

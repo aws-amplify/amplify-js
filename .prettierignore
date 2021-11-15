@@ -2,6 +2,7 @@ node_modules
 dist
 docs
 .vscode
+.github
 package.json
 yarn.lock
 package-lock.json

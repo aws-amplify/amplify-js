@@ -66,9 +66,10 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
 						usernameAttributes: this.usernameAttributes,
 				  });
 
-		const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-			authComponent.component
-		);
+		const componentFactory =
+			this.componentFactoryResolver.resolveComponentFactory(
+				authComponent.component
+			);
 
 		const viewContainerRef = this.componentHost.viewContainerRef;
 		viewContainerRef.clear();

@@ -91,22 +91,10 @@ describe('signUp without signUpConfig prop', () => {
 			};
 			const phone_number = '+12345678999';
 
-			wrapper
-				.find(Input)
-				.at(0)
-				.simulate('change', event_username);
-			wrapper
-				.find(Input)
-				.at(1)
-				.simulate('change', event_password);
-			wrapper
-				.find(Input)
-				.at(2)
-				.simulate('change', event_email);
-			wrapper
-				.find(PhoneField)
-				.at(0)
-				.simulate('changeText', phone_number);
+			wrapper.find(Input).at(0).simulate('change', event_username);
+			wrapper.find(Input).at(1).simulate('change', event_password);
+			wrapper.find(Input).at(2).simulate('change', event_email);
+			wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
 			await wrapper.find(Button).simulate('click');
 
 			expect(spyon).toBeCalledWith({
@@ -149,22 +137,10 @@ describe('signUp without signUpConfig prop', () => {
 			};
 			const phone_number = '+12345678999';
 
-			wrapper
-				.find(Input)
-				.at(0)
-				.simulate('change', event_username);
-			wrapper
-				.find(Input)
-				.at(1)
-				.simulate('change', event_password);
-			wrapper
-				.find(Input)
-				.at(2)
-				.simulate('change', event_email);
-			wrapper
-				.find(PhoneField)
-				.at(0)
-				.simulate('changeText', phone_number);
+			wrapper.find(Input).at(0).simulate('change', event_username);
+			wrapper.find(Input).at(1).simulate('change', event_password);
+			wrapper.find(Input).at(2).simulate('change', event_email);
+			wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
 
 			const button = wrapper.find(Button);
 			expect(button.props().disabled).toEqual(false);
@@ -185,12 +161,7 @@ describe('signUp without signUpConfig prop', () => {
 				requestPending: true,
 			});
 
-			expect(
-				wrapper
-					.update()
-					.find(Button)
-					.props().disabled
-			).toEqual(true);
+			expect(wrapper.update().find(Button).props().disabled).toEqual(true);
 		});
 
 		test('when clicking signUp with another format of phone number', async () => {
@@ -232,22 +203,10 @@ describe('signUp without signUpConfig prop', () => {
 
 			const phone_number = '+12345678901';
 
-			wrapper
-				.find(Input)
-				.at(0)
-				.simulate('change', event_username);
-			wrapper
-				.find(Input)
-				.at(1)
-				.simulate('change', event_password);
-			wrapper
-				.find(Input)
-				.at(2)
-				.simulate('change', event_email);
-			wrapper
-				.find(PhoneField)
-				.at(0)
-				.simulate('changeText', phone_number);
+			wrapper.find(Input).at(0).simulate('change', event_username);
+			wrapper.find(Input).at(1).simulate('change', event_password);
+			wrapper.find(Input).at(2).simulate('change', event_email);
+			wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
 			await wrapper.find(Button).simulate('click');
 
 			expect(spyon).toBeCalledWith({
@@ -302,22 +261,10 @@ describe('signUp without signUpConfig prop', () => {
 
 			const phone_number = undefined;
 
-			wrapper
-				.find(Input)
-				.at(0)
-				.simulate('change', event_username);
-			wrapper
-				.find(Input)
-				.at(1)
-				.simulate('change', event_password);
-			wrapper
-				.find(Input)
-				.at(2)
-				.simulate('change', event_email);
-			wrapper
-				.find(PhoneField)
-				.at(0)
-				.simulate('changeText', phone_number);
+			wrapper.find(Input).at(0).simulate('change', event_username);
+			wrapper.find(Input).at(1).simulate('change', event_password);
+			wrapper.find(Input).at(2).simulate('change', event_email);
+			wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
 			await wrapper.find(Button).simulate('click');
 
 			expect(spyon).not.toBeCalled();
@@ -532,15 +479,15 @@ describe('signUp with signUpConfig', () => {
 		});
 
 		const signup = new SignUp();
-		const defaultUsernameLabel = signup.defaultSignUpFields.find(i => {
+		const defaultUsernameLabel = signup.defaultSignUpFields.find((i) => {
 			return i.key === 'username';
 		}).label;
 
-		const customUsername = wrapper.find(InputLabel).findWhere(el => {
+		const customUsername = wrapper.find(InputLabel).findWhere((el) => {
 			return el.text() === 'NEW USERNAME LABEL';
 		});
 
-		const originalUsername = wrapper.find(InputLabel).findWhere(el => {
+		const originalUsername = wrapper.find(InputLabel).findWhere((el) => {
 			return el.text() === defaultUsernameLabel;
 		});
 
@@ -636,22 +583,10 @@ describe('signUp with signUpConfig', () => {
 			},
 		};
 
-		wrapper
-			.find(Input)
-			.at(0)
-			.simulate('change', event_username);
-		wrapper
-			.find(Input)
-			.at(1)
-			.simulate('change', event_password);
-		wrapper
-			.find(Input)
-			.at(2)
-			.simulate('change', event_email);
-		wrapper
-			.find(Input)
-			.at(3)
-			.simulate('change', event_phone);
+		wrapper.find(Input).at(0).simulate('change', event_username);
+		wrapper.find(Input).at(1).simulate('change', event_password);
+		wrapper.find(Input).at(2).simulate('change', event_email);
+		wrapper.find(Input).at(3).simulate('change', event_phone);
 		await wrapper.find(Button).simulate('click');
 
 		expect(spyon).not.toBeCalled();
@@ -709,22 +644,10 @@ describe('signUp with signUpConfig', () => {
 		};
 		const phone_number = '+12345678999';
 
-		wrapper
-			.find(Input)
-			.at(0)
-			.simulate('change', event_username);
-		wrapper
-			.find(Input)
-			.at(1)
-			.simulate('change', event_password);
-		wrapper
-			.find(Input)
-			.at(2)
-			.simulate('change', event_email);
-		wrapper
-			.find(PhoneField)
-			.at(0)
-			.simulate('changeText', phone_number);
+		wrapper.find(Input).at(0).simulate('change', event_username);
+		wrapper.find(Input).at(1).simulate('change', event_password);
+		wrapper.find(Input).at(2).simulate('change', event_email);
+		wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
 		await wrapper.find(Button).simulate('click');
 
 		expect(spyon).toBeCalled();
@@ -788,26 +711,11 @@ describe('signUp with signUpConfig', () => {
 			},
 		};
 
-		wrapper
-			.find(Input)
-			.at(0)
-			.simulate('change', event_username);
-		wrapper
-			.find(Input)
-			.at(1)
-			.simulate('change', event_password);
-		wrapper
-			.find(Input)
-			.at(2)
-			.simulate('change', event_email);
-		wrapper
-			.find(PhoneField)
-			.at(0)
-			.simulate('changeText', phone_number);
-		wrapper
-			.find(Input)
-			.at(3)
-			.simulate('change', event_z);
+		wrapper.find(Input).at(0).simulate('change', event_username);
+		wrapper.find(Input).at(1).simulate('change', event_password);
+		wrapper.find(Input).at(2).simulate('change', event_email);
+		wrapper.find(PhoneField).at(0).simulate('changeText', phone_number);
+		wrapper.find(Input).at(3).simulate('change', event_z);
 		await wrapper.find(Button).simulate('click');
 
 		expect(spyon).toBeCalled();
@@ -850,18 +758,9 @@ describe('signUp with signUpConfig', () => {
 			},
 		};
 
-		wrapper
-			.find(Input)
-			.at(0)
-			.simulate('change', event_username);
-		wrapper
-			.find(Input)
-			.at(1)
-			.simulate('change', event_password);
-		wrapper
-			.find(Input)
-			.at(2)
-			.simulate('change', event_email);
+		wrapper.find(Input).at(0).simulate('change', event_username);
+		wrapper.find(Input).at(1).simulate('change', event_password);
+		wrapper.find(Input).at(2).simulate('change', event_email);
 		await wrapper.find(Button).simulate('click');
 
 		expect(spyon).toBeCalled();

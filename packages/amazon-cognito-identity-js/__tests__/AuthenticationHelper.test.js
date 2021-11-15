@@ -592,7 +592,7 @@ describe('getLargeAValue()', () => {
 
 	test('when largeAValue exists, getLargeA should return it', async () => {
 		expect(instance.largeAValue).not.toBe(null);
-		await promisifyCallback(instance, 'getLargeAValue').then(res => {
+		await promisifyCallback(instance, 'getLargeAValue').then((res) => {
 			expect(res).toEqual(instance.largeAValue);
 		});
 	});
@@ -604,7 +604,7 @@ describe('getLargeAValue()', () => {
 				callback(bigIntError, null);
 			});
 
-		await promisifyCallback(instance, 'getLargeAValue').catch(e => {
+		await promisifyCallback(instance, 'getLargeAValue').catch((e) => {
 			expect(e).toEqual(bigIntError);
 		});
 
@@ -665,7 +665,7 @@ describe('generateHashDevice()', () => {
 			'generateHashDevice',
 			deviceGroupKey,
 			username
-		).catch(e => {
+		).catch((e) => {
 			expect(e).toEqual(bigIntError);
 		});
 	});
@@ -700,7 +700,7 @@ describe('calculateA()', () => {
 			});
 
 		await promisifyCallback(instance, 'calculateA', instance.smallAValue).catch(
-			e => {
+			(e) => {
 				expect(e).toEqual(bigIntError);
 			}
 		);
@@ -714,7 +714,7 @@ describe('calculateA()', () => {
 			});
 
 		await promisifyCallback(instance, 'calculateA', instance.smallAValue).catch(
-			e => {
+			(e) => {
 				expect(e).toEqual(new Error('Illegal paramater. A mod N cannot be 0.'));
 			}
 		);
@@ -797,7 +797,7 @@ describe('getPasswordAuthKey()', () => {
 			password,
 			realServerValue,
 			salt
-		).catch(e => {
+		).catch((e) => {
 			expect(e).toEqual(bigIntError);
 		});
 	});
@@ -810,7 +810,7 @@ describe('getPasswordAuthKey()', () => {
 			password,
 			badServerValue,
 			salt
-		).catch(e => {
+		).catch((e) => {
 			expect(e).toEqual(new Error('B cannot be zero.'));
 		});
 	});
@@ -830,7 +830,7 @@ describe('getPasswordAuthKey()', () => {
 			password,
 			realServerValue,
 			salt
-		).catch(e => {
+		).catch((e) => {
 			expect(e).toEqual(new Error('U cannot be zero.'));
 		});
 	});
@@ -865,7 +865,7 @@ describe('calculateS()', () => {
 			});
 
 		await promisifyCallback(instance, 'calculateS', xValue, serverValue).catch(
-			e => {
+			(e) => {
 				expect(e).toEqual(bigIntError);
 			}
 		);
@@ -885,7 +885,7 @@ describe('calculateS()', () => {
 			});
 
 		await promisifyCallback(instance, 'calculateS', xValue, serverValue).catch(
-			e => {
+			(e) => {
 				expect(e).toEqual(bigIntError);
 			}
 		);

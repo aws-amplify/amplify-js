@@ -252,11 +252,12 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 	}): Promise<string> {
 		return new Promise((res, rej) => {
 			let fullText = '';
-			connection.onmessage = message => {
+			connection.onmessage = (message) => {
 				try {
-					const decodedMessage = AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe(
-						message
-					);
+					const decodedMessage =
+						AmazonAIConvertPredictionsProvider.serializeDataFromTranscribe(
+							message
+						);
 					if (decodedMessage) {
 						fullText += decodedMessage + ' ';
 					}
@@ -266,12 +267,12 @@ export class AmazonAIConvertPredictionsProvider extends AbstractConvertPredictio
 				}
 			};
 
-			connection.onerror = errorEvent => {
+			connection.onerror = (errorEvent) => {
 				logger.debug({ errorEvent });
 				rej('failed to transcribe, network error');
 			};
 
-			connection.onclose = closeEvent => {
+			connection.onclose = (closeEvent) => {
 				logger.debug({ closeEvent });
 				return res(fullText.trim());
 			};

@@ -141,7 +141,7 @@ export class ConfirmSignUpComponentCore implements OnInit {
 		}
 	}
 	shouldHide(comp) {
-		return this.hide.filter(item => item === comp).length > 0;
+		return this.hide.filter((item) => item === comp).length > 0;
 	}
 
 	setUsername(username: string) {
@@ -157,7 +157,7 @@ export class ConfirmSignUpComponentCore implements OnInit {
 			.auth()
 			.confirmSignUp(this.username, this.code)
 			.then(() => this.logger.info('confirm success'))
-			.catch(err => this._setError(err));
+			.catch((err) => this._setError(err));
 	}
 
 	onResend() {
@@ -165,7 +165,7 @@ export class ConfirmSignUpComponentCore implements OnInit {
 			.auth()
 			.resendSignUp(this.username)
 			.then(() => this.logger.info('code resent'))
-			.catch(err => this._setError(err));
+			.catch((err) => this._setError(err));
 	}
 
 	onSignIn() {

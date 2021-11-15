@@ -9,7 +9,7 @@ import {
 jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 	const CognitoUserPool = () => {};
 
-	CognitoUserPool.prototype.CognitoUserPool = options => {
+	CognitoUserPool.prototype.CognitoUserPool = (options) => {
 		CognitoUserPool.prototype.options = options;
 		return CognitoUserPool;
 	};
@@ -17,7 +17,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 	CognitoUserPool.prototype.getCurrentUser = () => {
 		return {
 			username: 'username',
-			getSession: callback => {
+			getSession: (callback) => {
 				callback(null, {
 					getAccessToken: () => {
 						return {
@@ -47,16 +47,16 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	const CognitoUser = () => {};
 
-	CognitoUser.prototype.CognitoUser = options => {
+	CognitoUser.prototype.CognitoUser = (options) => {
 		CognitoUser.prototype.options = options;
 		return CognitoUser;
 	};
 
-	CognitoUser.prototype.getSession = callback => {
+	CognitoUser.prototype.getSession = (callback) => {
 		callback(null, 'session');
 	};
 
-	CognitoUser.prototype.getUserAttributes = callback => {
+	CognitoUser.prototype.getUserAttributes = (callback) => {
 		callback(null, 'attributes');
 	};
 
@@ -79,7 +79,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback.onSuccess('session');
 	};
 
-	CognitoUser.prototype.resendConfirmationCode = callback => {
+	CognitoUser.prototype.resendConfirmationCode = (callback) => {
 		callback(null, 'result');
 	};
 
@@ -91,7 +91,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback(null, 'SUCCESS');
 	};
 
-	CognitoUser.prototype.forgotPassword = callback => {
+	CognitoUser.prototype.forgotPassword = (callback) => {
 		callback.onSuccess();
 	};
 
@@ -99,13 +99,13 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback.onSuccess();
 	};
 
-	CognitoUser.prototype.signOut = callback => {
+	CognitoUser.prototype.signOut = (callback) => {
 		if (callback && typeof callback === 'function') {
 			callback();
 		}
 	};
 
-	CognitoUser.prototype.globalSignOut = callback => {
+	CognitoUser.prototype.globalSignOut = (callback) => {
 		callback.onSuccess();
 	};
 
@@ -129,7 +129,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback(null, 'SUCCESS');
 	};
 
-	CognitoUser.prototype.setAuthenticationFlowType = type => {};
+	CognitoUser.prototype.setAuthenticationFlowType = (type) => {};
 
 	CognitoUser.prototype.initiateAuth = (authenticationDetails, callback) => {
 		callback.customChallenge('challengeParam');
@@ -150,7 +150,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		return 'username';
 	};
 
-	CognitoUser.prototype.getUserData = callback => {
+	CognitoUser.prototype.getUserData = (callback) => {
 		callback(null, 'data');
 	};
 
@@ -196,7 +196,7 @@ describe('Hosted UI tests', () => {
 		jest.restoreAllMocks();
 	});
 
-	test('hosted UI in progress, signIn success', done => {
+	test('hosted UI in progress, signIn success', (done) => {
 		const auth = new Auth(authOptionsWithOAuth);
 		const user = new CognitoUser({
 			Username: 'username',
@@ -239,7 +239,7 @@ describe('Hosted UI tests', () => {
 
 		(auth as any).oAuthFlowInProgress = true;
 
-		auth.currentUserPoolUser().then(resUser => {
+		auth.currentUserPoolUser().then((resUser) => {
 			expect(resUser).toEqual(user);
 			expect(spyonGetCurrentUser).toBeCalledTimes(1);
 			done();
@@ -457,7 +457,7 @@ describe('Hosted UI tests', () => {
 		}
 	});
 
-	test('globalSignOut hosted ui, url opener', done => {
+	test('globalSignOut hosted ui, url opener', (done) => {
 		jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
 			return {
 				setItem() {},
@@ -508,7 +508,7 @@ describe('Hosted UI tests', () => {
 		auth.signOut({ global: true });
 	});
 
-	test('SignOut hosted ui, urlOpener', done => {
+	test('SignOut hosted ui, urlOpener', (done) => {
 		jest.spyOn(StorageHelper.prototype, 'getStorage').mockImplementation(() => {
 			return {
 				setItem() {},
@@ -519,17 +519,15 @@ describe('Hosted UI tests', () => {
 			};
 		});
 
-		const urlOpener = jest.fn(
-			(url: string): Promise<any> => {
-				return new Promise(() => {
-					expect(url).toEqual(
-						'https://xxxxxxxxxxxx-xxxxxx-xxx.auth.us-west-2.amazoncognito.com/logout?client_id=awsUserPoolsWebClientId&logout_uri=http%3A%2F%2Flocalhost%3A4200%2F'
-					);
+		const urlOpener = jest.fn((url: string): Promise<any> => {
+			return new Promise(() => {
+				expect(url).toEqual(
+					'https://xxxxxxxxxxxx-xxxxxx-xxx.auth.us-west-2.amazoncognito.com/logout?client_id=awsUserPoolsWebClientId&logout_uri=http%3A%2F%2Flocalhost%3A4200%2F'
+				);
 
-					done();
-				});
-			}
-		);
+				done();
+			});
+		});
 		const options = {
 			...authOptionsWithOAuth,
 		};

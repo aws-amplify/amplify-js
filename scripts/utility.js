@@ -7,14 +7,14 @@ const path = require('path');
 function iterateFiles(source) {
 	let fileList = [];
 	return new Promise((res, rej) => {
-		fs.readdir(source, function(err, files) {
+		fs.readdir(source, function (err, files) {
 			if (err) {
 				console.error('Could not list the directory.', err);
 				return rej(err);
 			}
 
 			Promise.all(
-				files.map(file => {
+				files.map((file) => {
 					const filePath = path.join(source, file);
 					return new Promise((res, rej) => {
 						fs.stat(filePath, (error, stat) => {
@@ -27,7 +27,7 @@ function iterateFiles(source) {
 								fileList.push(filePath);
 								return res();
 							} else if (stat.isDirectory()) {
-								iterateFiles(filePath).then(list => {
+								iterateFiles(filePath).then((list) => {
 									fileList = fileList.concat(list);
 									return res();
 								});

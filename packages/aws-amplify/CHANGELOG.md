@@ -7,25 +7,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package aws-amplify
 
-
-
-
-
 ## [4.3.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.3.4...aws-amplify@4.3.5) (2021-11-09)
 
 **Note:** Version bump only for package aws-amplify
 
-
-
-
-
 ## [4.3.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.3.3...aws-amplify@4.3.4) (2021-10-28)
 
 **Note:** Version bump only for package aws-amplify
-
-
-
-
 
 ## [4.3.3](https://github.com/aws-amplify/amplify-js/compare/aws-amplify@4.3.2...aws-amplify@4.3.3) (2021-10-21)
 

@@ -50,7 +50,7 @@ export class AudioRecorder {
 			this.audioContext = new AudioContext();
 			await navigator.mediaDevices
 				.getUserMedia({ audio: true })
-				.then(stream => {
+				.then((stream) => {
 					this.audioSupported = true;
 					this.setupAudioNodes(stream);
 				})
@@ -76,7 +76,7 @@ export class AudioRecorder {
 		const sourceNode = this.audioContext.createMediaStreamSource(stream);
 		const processorNode = this.audioContext.createScriptProcessor(4096, 1, 1);
 
-		processorNode.onaudioprocess = audioProcessingEvent => {
+		processorNode.onaudioprocess = (audioProcessingEvent) => {
 			if (!this.recording) return;
 			const stream = audioProcessingEvent.inputBuffer.getChannelData(0);
 			this.streamBuffer.push(new Float32Array(stream)); // set to a copy of the stream
@@ -107,8 +107,8 @@ export class AudioRecorder {
 		visualizer?: Visualizer
 	) {
 		if (this.recording || !this.audioSupported) return;
-		this.onSilence = onSilence || function() {};
-		this.visualizer = visualizer || function() {};
+		this.onSilence = onSilence || function () {};
+		this.visualizer = visualizer || function () {};
 
 		const context = this.audioContext;
 		try {
@@ -160,7 +160,7 @@ export class AudioRecorder {
 					};
 					this.playbackSource.start(0);
 				};
-				const errorCallback = err => {
+				const errorCallback = (err) => {
 					return rej(err);
 				};
 

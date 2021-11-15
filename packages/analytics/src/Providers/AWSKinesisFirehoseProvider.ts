@@ -47,7 +47,7 @@ export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 
 		const records = {};
 
-		group.map(params => {
+		group.map((params) => {
 			// split by streamName
 			const evt = params.event;
 			const { streamName, data } = evt;
@@ -62,7 +62,7 @@ export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 			records[streamName].push(record);
 		});
 
-		Object.keys(records).map(streamName => {
+		Object.keys(records).map((streamName) => {
 			logger.debug(
 				'putting records to kinesis',
 				streamName,
@@ -77,8 +77,10 @@ export class AWSKinesisFirehoseProvider extends AWSKinesisProvider {
 						DeliveryStreamName: streamName,
 					})
 				)
-				.then(res => logger.debug('Upload records to stream', streamName))
-				.catch(err => logger.debug('Failed to upload records to Kinesis', err));
+				.then((res) => logger.debug('Upload records to stream', streamName))
+				.catch((err) =>
+					logger.debug('Failed to upload records to Kinesis', err)
+				);
 		});
 	}
 

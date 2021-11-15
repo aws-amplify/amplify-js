@@ -27,7 +27,7 @@ export function withSSRContext(context: Context = {}) {
 	const amplify = new AmplifyClass();
 	const storage = new UniversalStorage({ req });
 
-	requiredModules.forEach(m => {
+	requiredModules.forEach((m) => {
 		if (!modules.includes(m)) {
 			// @ts-ignore This expression is not constructable.
 			// Type 'Function' has no construct signatures.ts(2351)
@@ -36,7 +36,7 @@ export function withSSRContext(context: Context = {}) {
 	});
 
 	// Associate new module instances with this amplify
-	modules.forEach(m => {
+	modules.forEach((m) => {
 		amplify.register(new m.constructor());
 	});
 

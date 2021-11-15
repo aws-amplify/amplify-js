@@ -25,18 +25,11 @@ import ConfirmSignUp from './ConfirmSignUp';
 import ForgotPassword from './ForgotPassword';
 import RequireNewPassword from './RequireNewPassword';
 import Greetings from './Greetings';
-import {
-	HubCapsule,
-	OnStateChangeType,
-	ISignUpConfig,
-	UsernameAttributesType,
-} from '../../types';
+import { HubCapsule, OnStateChangeType, ISignUpConfig, UsernameAttributesType } from '../../types';
 
 const logger = new Logger('Authenticator');
 
-const EmptyContainer: FC<{}> = ({ children }) => (
-	<React.Fragment>{children}</React.Fragment>
-);
+const EmptyContainer: FC<{}> = ({ children }) => <React.Fragment>{children}</React.Fragment>;
 
 class AuthDecorator {
 	onStateChange: (state: string) => void;
@@ -47,7 +40,7 @@ class AuthDecorator {
 
 	signIn(username: string, password: string) {
 		const that = this;
-		return Auth.signIn(username, password).then(data => {
+		return Auth.signIn(username, password).then((data) => {
 			that.onStateChange('signedIn');
 			return data;
 		});
@@ -79,10 +72,7 @@ interface IAuthenticatorState {
 	error?: string;
 }
 
-export default class Authenticator extends React.Component<
-	IAuthenticatorProps,
-	IAuthenticatorState
-> {
+export default class Authenticator extends React.Component<IAuthenticatorProps, IAuthenticatorState> {
 	_initialAuthState: string;
 	_isMounted: boolean;
 
@@ -129,16 +119,11 @@ export default class Authenticator extends React.Component<
 	}
 
 	handleStateChange(state: string, data?: any) {
-		if (state === undefined)
-			return logger.info('Auth state cannot be undefined');
+		if (state === undefined) return logger.info('Auth state cannot be undefined');
 
-		logger.info(
-			'Inside handleStateChange method current authState:',
-			this.state.authState
-		);
+		logger.info('Inside handleStateChange method current authState:', this.state.authState);
 
-		const nextAuthState =
-			state === 'signedOut' ? this._initialAuthState : state;
+		const nextAuthState = state === 'signedOut' ? this._initialAuthState : state;
 		const nextAuthData = data !== undefined ? data : this.state.authData;
 
 		if (this._isMounted) {
@@ -188,7 +173,7 @@ export default class Authenticator extends React.Component<
 		const { authState } = this.state;
 		const statesJumpToSignIn = ['signedIn', 'signedOut', 'loading'];
 		Auth.currentAuthenticatedUser()
-			.then(user => {
+			.then((user) => {
 				if (!this._isMounted) return;
 				if (user) {
 					this.checkContact(user);
@@ -198,7 +183,7 @@ export default class Authenticator extends React.Component<
 					}
 				}
 			})
-			.catch(err => {
+			.catch((err) => {
 				if (!this._isMounted) return;
 				logger.debug(err);
 				if (statesJumpToSignIn.includes(authState)) {
@@ -206,7 +191,7 @@ export default class Authenticator extends React.Component<
 						.then(() => {
 							this.handleStateChange(this._initialAuthState, null);
 						})
-						.catch(err => logger.warn('Failed to sign out', err));
+						.catch((err) => logger.warn('Failed to sign out', err));
 				}
 			});
 	}
@@ -219,9 +204,7 @@ export default class Authenticator extends React.Component<
 		// otherwise if truthy, use the supplied render prop
 		// otherwise if falsey, use EmptyContainer
 		const ContainerWrapper: any =
-			this.props.container === undefined
-				? Container
-				: this.props.container || EmptyContainer;
+			this.props.container === undefined ? Container : this.props.container || EmptyContainer;
 
 		const { hideDefault, signUpConfig, usernameAttributes } = this.props;
 		const props_children: any = this.props.children || [];
@@ -236,20 +219,18 @@ export default class Authenticator extends React.Component<
 			<RequireNewPassword />,
 			<Greetings />,
 		];
-		const children = (hideDefault ? [] : default_children)
-			.concat(props_children)
-			.map((child, index) => {
-				return React.cloneElement(child, {
-					key: 'auth_piece_' + index,
-					theme: theme,
-					messageMap: messageMap,
-					authState: authState,
-					authData: authData,
-					onStateChange: this.handleStateChange,
-					Auth: new AuthDecorator(this.handleStateChange),
-					usernameAttributes,
-				});
+		const children = (hideDefault ? [] : default_children).concat(props_children).map((child, index) => {
+			return React.cloneElement(child, {
+				key: 'auth_piece_' + index,
+				theme: theme,
+				messageMap: messageMap,
+				authState: authState,
+				authData: authData,
+				onStateChange: this.handleStateChange,
+				Auth: new AuthDecorator(this.handleStateChange),
+				usernameAttributes,
 			});
+		});
 		return <ContainerWrapper theme={theme}>{children}</ContainerWrapper>;
 	}
 }

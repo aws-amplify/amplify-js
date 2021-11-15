@@ -51,7 +51,7 @@ class IndexedDBAdapter implements Adapter {
 	private dbName: string = DB_NAME;
 
 	private async checkPrivate() {
-		const isPrivate = await isPrivateMode().then(isPrivate => {
+		const isPrivate = await isPrivateMode().then((isPrivate) => {
 			return isPrivate;
 		});
 		if (isPrivate) {
@@ -112,18 +112,20 @@ class IndexedDBAdapter implements Adapter {
 				this.db = await idb.openDB(this.dbName, VERSION, {
 					upgrade: async (db, oldVersion, newVersion, txn) => {
 						if (oldVersion === 0) {
-							Object.keys(theSchema.namespaces).forEach(namespaceName => {
+							Object.keys(theSchema.namespaces).forEach((namespaceName) => {
 								const namespace = theSchema.namespaces[namespaceName];
 
-								Object.keys(namespace.models).forEach(modelName => {
+								Object.keys(namespace.models).forEach((modelName) => {
 									const storeName = this.getStorename(namespaceName, modelName);
 									const store = db.createObjectStore(storeName, {
 										autoIncrement: true,
 									});
 
-									const indexes = this.schema.namespaces[namespaceName]
-										.relationships[modelName].indexes;
-									indexes.forEach(index => store.createIndex(index, index));
+									const indexes =
+										this.schema.namespaces[namespaceName].relationships[
+											modelName
+										].indexes;
+									indexes.forEach((index) => store.createIndex(index, index));
 
 									store.createIndex('byId', 'id', { unique: true });
 								});
@@ -291,7 +293,7 @@ class IndexedDBAdapter implements Adapter {
 		);
 
 		if (connectionStoreNames.length === 0) {
-			return records.map(record =>
+			return records.map((record) =>
 				this.modelInstanceCreator(modelConstructor, record)
 			);
 		}
@@ -348,7 +350,7 @@ class IndexedDBAdapter implements Adapter {
 			}
 		}
 
-		return records.map(record =>
+		return records.map((record) =>
 			this.modelInstanceCreator(modelConstructor, record)
 		);
 	}
@@ -415,7 +417,7 @@ class IndexedDBAdapter implements Adapter {
 		const idPredicate =
 			predicateObjs.length === 1 &&
 			(predicateObjs.find(
-				p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
+				(p) => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
 			) as PredicateObject<T>);
 
 		return idPredicate && idPredicate.operand;
@@ -430,7 +432,7 @@ class IndexedDBAdapter implements Adapter {
 		const all = <T[]>await this.getAll(storeName);
 
 		const filtered = predicateObjs
-			? all.filter(m => validatePredicate(m, type, predicateObjs))
+			? all.filter((m) => validatePredicate(m, type, predicateObjs))
 			: all;
 
 		return filtered;
@@ -533,9 +535,9 @@ class IndexedDBAdapter implements Adapter {
 			const storeName = this.getStorenameForModel(modelConstructor);
 
 			const models = await this.query(modelConstructor, condition);
-			const relations = this.schema.namespaces[nameSpace].relationships[
-				modelConstructor.name
-			].relationTypes;
+			const relations =
+				this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+					.relationTypes;
 
 			if (condition !== undefined) {
 				await this.deleteTraverse(
@@ -611,9 +613,9 @@ class IndexedDBAdapter implements Adapter {
 				}
 				await tx.done;
 
-				const relations = this.schema.namespaces[nameSpace].relationships[
-					modelConstructor.name
-				].relationTypes;
+				const relations =
+					this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+						.relationTypes;
 
 				await this.deleteTraverse(
 					relations,
@@ -623,9 +625,9 @@ class IndexedDBAdapter implements Adapter {
 					deleteQueue
 				);
 			} else {
-				const relations = this.schema.namespaces[nameSpace].relationships[
-					modelConstructor.name
-				].relationTypes;
+				const relations =
+					this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+						.relationTypes;
 
 				await this.deleteTraverse(
 					relations,
@@ -710,11 +712,13 @@ class IndexedDBAdapter implements Adapter {
 						const hasOneCustomField = targetName in model;
 						const value = hasOneCustomField ? model[targetName] : model.id;
 
-						const recordToDelete = <T>await this.db
-							.transaction(storeName, 'readwrite')
-							.objectStore(storeName)
-							.index(hasOneIndex)
-							.get(value);
+						const recordToDelete = <T>(
+							await this.db
+								.transaction(storeName, 'readwrite')
+								.objectStore(storeName)
+								.index(hasOneIndex)
+								.get(value)
+						);
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
@@ -755,7 +759,7 @@ class IndexedDBAdapter implements Adapter {
 
 		deleteQueue.push({
 			storeName: this.getStorename(nameSpace, srcModel),
-			items: models.map(record =>
+			items: models.map((record) =>
 				this.modelInstanceCreator(
 					this.getModelConstructorByModelName(nameSpace, srcModel),
 					record

@@ -151,7 +151,7 @@ export class SignInComponentCore implements OnInit {
 	}
 
 	shouldHide(comp) {
-		return this.hide.filter(item => item === comp).length > 0;
+		return this.hide.filter((item) => item === comp).length > 0;
 	}
 
 	setUsername(username: string) {
@@ -166,7 +166,7 @@ export class SignInComponentCore implements OnInit {
 		this.amplifyService
 			.auth()
 			.signIn(this.getSignInUsername(), this.password)
-			.then(user => {
+			.then((user) => {
 				if (
 					user['challengeName'] === 'SMS_MFA' ||
 					user['challengeName'] === 'SOFTWARE_TOKEN_MFA'
@@ -188,7 +188,7 @@ export class SignInComponentCore implements OnInit {
 					});
 				}
 			})
-			.catch(err => {
+			.catch((err) => {
 				this._setError(err);
 			});
 	}

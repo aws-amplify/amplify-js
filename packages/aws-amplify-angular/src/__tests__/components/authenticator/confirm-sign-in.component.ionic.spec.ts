@@ -137,9 +137,8 @@ describe('ConfirmSignInComponentIonic: ', () => {
 			user: {},
 		};
 		fixture.detectChanges();
-		const button = fixture.debugElement.nativeElement.querySelector(
-			'ion-button'
-		);
+		const button =
+			fixture.debugElement.nativeElement.querySelector('ion-button');
 		button.click();
 		expect(onConfirmSpy).toHaveBeenCalled();
 		expect(confirmSignInSpy).toHaveBeenCalled();

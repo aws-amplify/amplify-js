@@ -40,10 +40,11 @@ import {
 import { v1 as uuid } from 'uuid';
 import EventsBuffer from './EventBuffer';
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchAnalyticsEvent = (event, data) => {
 	Hub.dispatch('analytics', { event, data }, 'Analytics', AMPLIFY_SYMBOL);
@@ -127,12 +128,12 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 			if (!this._config.endpointId) {
 				const cacheKey = this.getProviderName() + '_' + this._config.appId;
 				this._getEndpointId(cacheKey)
-					.then(endpointId => {
+					.then((endpointId) => {
 						logger.debug('setting endpoint id from the cache', endpointId);
 						this._config.endpointId = endpointId;
 						dispatchAnalyticsEvent('pinpointProvider_configured', null);
 					})
-					.catch(err => {
+					.catch((err) => {
 						logger.debug('Failed to generate endpointId', err);
 					});
 			} else {
@@ -530,7 +531,7 @@ export class AWSPinpointProvider implements AnalyticsProvider {
 
 		// TODO: remove this middleware once a long term fix is implemented by aws-sdk-js team.
 		this.pinpointClient.middlewareStack.addRelativeTo(
-			next => args => {
+			(next) => (args) => {
 				delete args.request.headers['amz-sdk-invocation-id'];
 				delete args.request.headers['amz-sdk-request'];
 				return next(args);

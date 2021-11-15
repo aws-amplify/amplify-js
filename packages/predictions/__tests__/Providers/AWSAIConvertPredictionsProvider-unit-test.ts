@@ -13,13 +13,13 @@ import {
 import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
 
 const result = { TranslatedText: 'translatedText', TargetLanguageCode: 'es' };
-TranslateClient.prototype.send = jest.fn(command => {
+TranslateClient.prototype.send = jest.fn((command) => {
 	if (command instanceof TranslateTextCommand) {
 		return Promise.resolve(result);
 	}
 }) as any;
 
-PollyClient.prototype.send = jest.fn(command => {
+PollyClient.prototype.send = jest.fn((command) => {
 	if (command instanceof SynthesizeSpeechCommand) {
 		const result = {
 			AudioStream: {
@@ -30,7 +30,7 @@ PollyClient.prototype.send = jest.fn(command => {
 	}
 }) as any;
 
-(global as any).Response = jest.fn(stream => {
+(global as any).Response = jest.fn((stream) => {
 	const response = {
 		arrayBuffer: () => {
 			return 'dummyStream';
@@ -39,7 +39,7 @@ PollyClient.prototype.send = jest.fn(command => {
 	return response;
 });
 
-(global as any).WebSocket = jest.fn(url => {
+(global as any).WebSocket = jest.fn((url) => {
 	let onCloseCallback = null;
 	let onErrorCallback = null;
 	let onMsgCallback = null;
@@ -161,7 +161,7 @@ describe('Predictions convert provider test', () => {
 				return Promise.resolve(credentials);
 			});
 			window.URL.createObjectURL = jest.fn();
-			jest.spyOn(URL, 'createObjectURL').mockImplementation(blob => {
+			jest.spyOn(URL, 'createObjectURL').mockImplementation((blob) => {
 				return 'dummyURL';
 			});
 			return expect(

@@ -135,7 +135,7 @@ export class PhotoPickerComponentCore implements OnInit {
 		this.s3ImageFile = file;
 		const that = this;
 		const reader = new FileReader();
-		reader.onload = function(e) {
+		reader.onload = function (e) {
 			const target: any = e.target;
 			const url = target.result;
 			that.photoUrl = url;
@@ -150,11 +150,11 @@ export class PhotoPickerComponentCore implements OnInit {
 		this.amplifyService
 			.storage()
 			.put(this.s3ImagePath, this.s3ImageFile, this._storageOptions)
-			.then(result => {
+			.then((result) => {
 				this.uploaded.emit(result);
 				this.completeFileUpload();
 			})
-			.catch(error => {
+			.catch((error) => {
 				this.completeFileUpload(error);
 			});
 	}

@@ -49,10 +49,7 @@ describe('UsernameField', () => {
 		});
 
 		it('trigger emailChanged when input is filled', () => {
-			wrapper
-				.findAll('input')
-				.at(0)
-				.trigger('keyup');
+			wrapper.findAll('input').at(0).trigger('keyup');
 			expect(mockEmailChanged).toBeCalled();
 		});
 	});
@@ -83,10 +80,7 @@ describe('UsernameField', () => {
 		});
 
 		it('trigger emailChanged when input is filled', () => {
-			wrapper
-				.findAll('input')
-				.at(0)
-				.trigger('keyup');
+			wrapper.findAll('input').at(0).trigger('keyup');
 			expect(mockUsernameChanged).toBeCalled();
 		});
 	});
@@ -116,10 +110,7 @@ describe('UsernameField', () => {
 		});
 
 		it('trigger emailChanged when input is filled', () => {
-			wrapper
-				.findAll(PhoneField)
-				.at(0)
-				.vm.$emit('phone-number-changed');
+			wrapper.findAll(PhoneField).at(0).vm.$emit('phone-number-changed');
 			expect(mockPhoneNumberChanged).toBeCalled();
 		});
 	});

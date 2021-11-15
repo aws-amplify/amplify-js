@@ -56,7 +56,7 @@ export class AmplifyInput {
 			this.setAutoCompleteValue(targetInput.value);
 		} else {
 			// if value is not set, we start listening for it
-			targetInput.addEventListener('input', e => {
+			targetInput.addEventListener('input', (e) => {
 				const value = (e.target as HTMLInputElement).value;
 				this.setAutoCompleteValue(value);
 			});
@@ -125,7 +125,7 @@ export class AmplifyInput {
 					}
 					data-autocompleted={this.autoCompleted}
 					type={this.type}
-					onInput={event => {
+					onInput={(event) => {
 						this.autoCompleted = false;
 						this.handleInputChange(event);
 					}}

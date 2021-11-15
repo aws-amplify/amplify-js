@@ -25,7 +25,7 @@ const pkgRootPath = process.cwd();
 const pkgTscES5OutDir = path.join(pkgRootPath, 'lib');
 const pkgTscES6OutDir = path.join(pkgRootPath, 'lib-esm');
 const pkgSrcDir = path.join(pkgRootPath, 'src');
-const typeRoots = [rootPath, pkgRootPath].map(basePath =>
+const typeRoots = [rootPath, pkgRootPath].map((basePath) =>
 	path.join(basePath, 'node_modules/@types')
 );
 const packageJsonPath = path.join(pkgRootPath, 'package');
@@ -44,7 +44,7 @@ async function buildRollUp() {
 	const json = require('rollup-plugin-json');
 
 	// For more info see: https://github.com/rollup/rollup/issues/1518#issuecomment-321875784
-	const onwarn = warning => {
+	const onwarn = (warning) => {
 		if (warning.code === 'THIS_IS_UNDEFINED') {
 			return;
 		}
@@ -79,7 +79,7 @@ async function buildRollUp() {
 }
 
 const formatHost = {
-	getCanonicalFileName: path => path,
+	getCanonicalFileName: (path) => path,
 	getCurrentDirectory: ts.sys.getCurrentDirectory,
 	getNewLine: () => ts.sys.newLine,
 };
@@ -92,7 +92,7 @@ function runTypeScriptWithoutWatchMode(fileNames, options) {
 		.getPreEmitDiagnostics(program)
 		.concat(emitResult.diagnostics);
 
-	allDiagnostics.forEach(diagnostic => {
+	allDiagnostics.forEach((diagnostic) => {
 		reportErrorDiagnostic(diagnostic);
 	});
 
@@ -193,7 +193,7 @@ async function buildES5(typeScriptCompiler, watchMode) {
 
 	let fileList = [];
 	Promise.all(
-		include.map(async source => {
+		include.map(async (source) => {
 			const list = await utility.iterateFiles(source);
 			return (fileList = fileList.concat(list));
 		})
@@ -250,7 +250,7 @@ function buildES6(typeScriptCompiler, watchMode) {
 
 	let fileList = [];
 	Promise.all(
-		include.map(async source => {
+		include.map(async (source) => {
 			const list = await utility.iterateFiles(source);
 			return (fileList = fileList.concat(list));
 		})

@@ -65,7 +65,7 @@ export const validatePredicate = <T extends PersistentModel>(
 			exhaustiveCheck(groupType);
 	}
 
-	const result: boolean = predicatesOrGroups[filterType](predicateOrGroup => {
+	const result: boolean = predicatesOrGroups[filterType]((predicateOrGroup) => {
 		if (isPredicateObj(predicateOrGroup)) {
 			const { field, operator, operand } = predicateOrGroup;
 			const value = model[field];
@@ -206,8 +206,8 @@ export const processCompositeKeys = (
 			}
 
 			// does the current set share values with another set we've already added to `combined`?
-			const intersectingSetIdx = combined.findIndex(existingSet => {
-				return [...existingSet].some(f => sortKeyFieldsSet.has(f));
+			const intersectingSetIdx = combined.findIndex((existingSet) => {
+				return [...existingSet].some((f) => sortKeyFieldsSet.has(f));
 			});
 
 			if (intersectingSetIdx > -1) {
@@ -319,7 +319,7 @@ export const traverseModel = <T extends PersistentModel>(
 		instance: T;
 	}[] = [];
 
-	const newInstance = modelConstructor.copyOf(instance, draftInstance => {
+	const newInstance = modelConstructor.copyOf(instance, (draftInstance) => {
 		relation.relationTypes.forEach((rItem: RelationType) => {
 			const modelConstructor = getModelConstructorByModelName(
 				namespace.name,
@@ -432,7 +432,7 @@ export const getIndexFromAssociation = (
 	indexes: string[],
 	src: string
 ): string => {
-	const index = indexes.find(idx => idx === src);
+	const index = indexes.find((idx) => idx === src);
 	return index;
 };
 
@@ -453,7 +453,7 @@ export { USER, SYNC, STORAGE, DATASTORE };
 let privateModeCheckResult;
 
 export const isPrivateMode = () => {
-	return new Promise(resolve => {
+	return new Promise((resolve) => {
 		const dbname = uuid();
 		let db;
 
@@ -491,7 +491,7 @@ export const isPrivateMode = () => {
 	});
 };
 
-const randomBytes = function(nBytes: number): Buffer {
+const randomBytes = function (nBytes: number): Buffer {
 	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
 };
 const prng = () => randomBytes(1).readUInt8(0) / 0xff;

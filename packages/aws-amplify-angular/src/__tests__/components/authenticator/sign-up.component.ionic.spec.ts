@@ -84,9 +84,8 @@ describe('SignUpComponentCore: ', () => {
 	it('...should call onSignUp when button is clicked (but signUp will not be called if validation does not pass)', () => {
 		fixtureComponent._show = true;
 		fixture.detectChanges();
-		const button = fixture.debugElement.nativeElement.querySelector(
-			'ion-button'
-		);
+		const button =
+			fixture.debugElement.nativeElement.querySelector('ion-button');
 		button.click();
 		expect(onSignUpSpy).toHaveBeenCalled();
 		expect(signUpSpy).not.toHaveBeenCalled();
@@ -102,9 +101,8 @@ describe('SignUpComponentCore: ', () => {
 		fixtureComponent.country_code = '1';
 		fixtureComponent.local_phone_number = '123';
 		fixture.detectChanges();
-		const button = fixture.debugElement.nativeElement.querySelector(
-			'ion-button'
-		);
+		const button =
+			fixture.debugElement.nativeElement.querySelector('ion-button');
 		button.click();
 		expect(onSignUpSpy).toHaveBeenCalled();
 		expect(signUpSpy).toHaveBeenCalled();

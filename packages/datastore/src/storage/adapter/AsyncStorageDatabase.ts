@@ -144,7 +144,7 @@ class AsyncStorageDatabase {
 
 			const keysToDeleteArray = Array.from(keysToDelete);
 
-			keysToDeleteArray.forEach(key =>
+			keysToDeleteArray.forEach((key) =>
 				collection.delete(itemsMap[key].model.id)
 			);
 
@@ -163,12 +163,12 @@ class AsyncStorageDatabase {
 				return;
 			}
 
-			const entriesToSet = Array.from(keysToSave).map(key => [
+			const entriesToSet = Array.from(keysToSave).map((key) => [
 				key,
 				JSON.stringify(itemsMap[key].model),
 			]);
 
-			keysToSave.forEach(key => {
+			keysToSave.forEach((key) => {
 				const {
 					model: { id },
 					ulid,
@@ -285,7 +285,7 @@ class AsyncStorageDatabase {
 	 */
 	async clear() {
 		const allKeys = await this.storage.getAllKeys();
-		const allDataStoreKeys = allKeys.filter(key => key.startsWith(DB_NAME));
+		const allDataStoreKeys = allKeys.filter((key) => key.startsWith(DB_NAME));
 		await this.storage.multiRemove(allDataStoreKeys);
 		this._collectionInMemoryIndex.clear();
 	}

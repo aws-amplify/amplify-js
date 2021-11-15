@@ -83,7 +83,7 @@ describe('Chatbot', () => {
 
 		it('...should emit chatComplete when performOnComplete method called', () => {
 			testState = 0;
-			AmplifyEventBus.$on('chatComplete', val => {
+			AmplifyEventBus.$on('chatComplete', (val) => {
 				if (val === wrapper.vm.options.botTitle) {
 					testState = 3;
 				}

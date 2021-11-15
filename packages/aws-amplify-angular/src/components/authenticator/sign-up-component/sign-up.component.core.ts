@@ -209,7 +209,7 @@ export class SignUpComponentCore implements OnInit {
 	}
 
 	shouldHide(comp) {
-		return this.hide.filter(item => item === comp).length > 0;
+		return this.hide.filter((item) => item === comp).length > 0;
 	}
 
 	onSignUp() {
@@ -225,7 +225,7 @@ export class SignUpComponentCore implements OnInit {
 		this.user.attributes = {};
 
 		// format phone number if it is a signUpField
-		const phoneNumberRequested = this.signUpFields.find(el => {
+		const phoneNumberRequested = this.signUpFields.find((el) => {
 			return el.key === 'phone_number';
 		});
 		if (phoneNumberRequested) {
@@ -237,7 +237,7 @@ export class SignUpComponentCore implements OnInit {
 
 		// create user key and value arrays
 		const userKeys = Object.keys(this.user);
-		const userValues = userKeys.map(key => this.user[key]);
+		const userValues = userKeys.map((key) => this.user[key]);
 
 		// format data for Cognito user pool
 		userKeys.forEach((key, index) => {
@@ -250,7 +250,7 @@ export class SignUpComponentCore implements OnInit {
 		});
 
 		let labelCheck = false;
-		this.signUpFields.forEach(field => {
+		this.signUpFields.forEach((field) => {
 			if (field.label === this.getUsernameLabel()) {
 				this.amplifyService.logger(
 					`Changing the username to the value of ${field.label}`,
@@ -273,7 +273,7 @@ export class SignUpComponentCore implements OnInit {
 		this.amplifyService
 			.auth()
 			.signUp(this.user)
-			.then(user => {
+			.then((user) => {
 				const username = this.user.username;
 				this.user = {};
 				this.onAlertClose();
@@ -282,7 +282,7 @@ export class SignUpComponentCore implements OnInit {
 					user: { username: username },
 				});
 			})
-			.catch(err => this._setError(err));
+			.catch((err) => this._setError(err));
 	}
 
 	onSignIn() {
@@ -291,7 +291,7 @@ export class SignUpComponentCore implements OnInit {
 	}
 
 	needPrefix(key) {
-		const field = this.signUpFields.find(e => e.key === key);
+		const field = this.signUpFields.find((e) => e.key === key);
 		if (key.indexOf('custom:') !== 0) {
 			return field.custom;
 		} else if (key.indexOf('custom:') === 0 && field.custom === false) {
@@ -312,7 +312,7 @@ export class SignUpComponentCore implements OnInit {
 
 	sortFields() {
 		if (this.hiddenFields.length > 0) {
-			this.defaultSignUpFields = this.defaultSignUpFields.filter(d => {
+			this.defaultSignUpFields = this.defaultSignUpFields.filter((d) => {
 				return !this.hiddenFields.includes(d.key);
 			});
 		}
@@ -325,7 +325,7 @@ export class SignUpComponentCore implements OnInit {
 			if (!this._signUpConfig.hideAllDefaults) {
 				// see if fields passed to component should override defaults
 				this.defaultSignUpFields.forEach((f, i) => {
-					const matchKey = this.signUpFields.findIndex(d => {
+					const matchKey = this.signUpFields.findIndex((d) => {
 						return d.key === f.key;
 					});
 					if (matchKey === -1) {
@@ -374,14 +374,14 @@ export class SignUpComponentCore implements OnInit {
 	}
 
 	removeHiddenFields() {
-		return this.signUpFields.filter(f => {
+		return this.signUpFields.filter((f) => {
 			return !f.displayOrder || f.displayOrder !== -1;
 		});
 	}
 
 	validate() {
 		const invalids = [];
-		this.signUpFields.map(el => {
+		this.signUpFields.map((el) => {
 			if (el.key !== 'phone_number') {
 				if (el.required && !this.user[el.key]) {
 					el.invalid = true;

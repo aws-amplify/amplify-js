@@ -92,7 +92,7 @@ describe('ForgotPassword', () => {
 
 		it('...should emit authState when signIn method called', () => {
 			testState = 0;
-			AmplifyEventBus.$on('authState', val => {
+			AmplifyEventBus.$on('authState', (val) => {
 				if (val === 'signIn') {
 					testState = 1;
 				}

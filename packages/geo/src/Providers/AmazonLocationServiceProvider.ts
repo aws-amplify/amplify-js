@@ -180,11 +180,11 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		 * Here we want to flatten that to an array of results and change them to camelCase
 		 */
 		const PascalResults: PlaceResult[] = response.Results.map(
-			result => result.Place
+			(result) => result.Place
 		);
-		const results: Place[] = (camelcaseKeys(PascalResults, {
+		const results: Place[] = camelcaseKeys(PascalResults, {
 			deep: true,
-		}) as undefined) as Place[];
+		}) as undefined as Place[];
 
 		return results;
 	}
@@ -240,10 +240,10 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		 * which are Place objects in PascalCase.
 		 * Here we want to flatten that to an array of results and change them to camelCase
 		 */
-		const PascalResults = response.Results.map(result => result.Place);
-		const results: Place = (camelcaseKeys(PascalResults[0], {
+		const PascalResults = response.Results.map((result) => result.Place);
+		const results: Place = camelcaseKeys(PascalResults[0], {
 			deep: true,
-		}) as any) as Place;
+		}) as any as Place;
 
 		return results;
 	}

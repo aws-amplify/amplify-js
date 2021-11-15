@@ -41,7 +41,7 @@ interface ISumerianSceneState {
 export class SumerianScene extends React.Component<
 	ISumerianSceneProps,
 	ISumerianSceneState
-	> {
+> {
 	constructor(props) {
 		super(props);
 
@@ -57,7 +57,7 @@ export class SumerianScene extends React.Component<
 	}
 
 	setStateAsync(state) {
-		return new Promise(resolve => {
+		return new Promise((resolve) => {
 			this.setState(state, resolve);
 		});
 	}
@@ -105,7 +105,7 @@ export class SumerianScene extends React.Component<
 	async loadAndSetupScene(sceneName, sceneDomId) {
 		this.setStateAsync({ loading: true });
 		const sceneOptions = {
-			progressCallback: progress => {
+			progressCallback: (progress) => {
 				const percentage = progress * 100;
 				this.setState({ percentage });
 			},

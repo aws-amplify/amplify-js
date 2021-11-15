@@ -164,7 +164,7 @@ export class AWSS3UploadTask implements UploadTask {
 		);
 		const { Contents = [] } = listObjectRes;
 		const prefix = await this.prefixPromise;
-		const obj = Contents.find(o => o.Key === `${prefix}${key}`);
+		const obj = Contents.find((o) => o.Key === `${prefix}${key}`);
 		return obj;
 	}
 
@@ -229,8 +229,9 @@ export class AWSS3UploadTask implements UploadTask {
 	private _validateParams() {
 		if (this.file.size / this.partSize > MAX_PARTS) {
 			throw new Error(
-				`Too many parts. Number of parts is ${this.file.size /
-					this.partSize}, maximum is ${MAX_PARTS}.`
+				`Too many parts. Number of parts is ${
+					this.file.size / this.partSize
+				}, maximum is ${MAX_PARTS}.`
 			);
 		}
 	}
@@ -282,7 +283,7 @@ export class AWSS3UploadTask implements UploadTask {
 		});
 		// Remove the completed item from the inProgress array
 		this.inProgress = this.inProgress.filter(
-			job => job.uploadPartInput.PartNumber !== partNumber
+			(job) => job.uploadPartInput.PartNumber !== partNumber
 		);
 		if (this.queued.length && this.state !== AWSS3UploadTaskState.PAUSED)
 			this._startNextPart();
@@ -408,12 +409,12 @@ export class AWSS3UploadTask implements UploadTask {
 		this.bytesUploaded += cachedParts.reduce((acc, part) => acc + part.Size, 0);
 		// Find the set of part numbers that have already been uploaded
 		const uploadedPartNumSet = new Set(
-			cachedParts.map(part => part.PartNumber)
+			cachedParts.map((part) => part.PartNumber)
 		);
 		this.queued = this.queued.filter(
-			part => !uploadedPartNumSet.has(part.PartNumber)
+			(part) => !uploadedPartNumSet.has(part.PartNumber)
 		);
-		this.completedParts = cachedParts.map(part => ({
+		this.completedParts = cachedParts.map((part) => ({
 			PartNumber: part.PartNumber,
 			ETag: part.ETag,
 		}));
@@ -532,12 +533,12 @@ export class AWSS3UploadTask implements UploadTask {
 			0,
 			this.inProgress.length
 		);
-		removedInProgressReq.forEach(req => {
+		removedInProgressReq.forEach((req) => {
 			req.cancel(AWSS3ProviderUploadErrorStrings.UPLOAD_PAUSED_MESSAGE);
 		});
 		// Put all removed in progress parts back into the queue
 		this.queued.unshift(
-			...removedInProgressReq.map(req => req.uploadPartInput)
+			...removedInProgressReq.map((req) => req.uploadPartInput)
 		);
 	}
 }

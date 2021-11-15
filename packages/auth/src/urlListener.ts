@@ -12,7 +12,7 @@
  */
 import { JS } from '@aws-amplify/core';
 
-export default callback => {
+export default (callback) => {
 	if (JS.browserOrNode().isBrowser && window.location) {
 		const url = window.location.href;
 

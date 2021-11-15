@@ -35,18 +35,18 @@ const testOpts: any = {
 
 let mockLocalStorageItems = {};
 
-const mockLocalStorage = ({
-	getItem: jest.fn().mockImplementation(key => mockLocalStorageItems[key]),
+const mockLocalStorage = {
+	getItem: jest.fn().mockImplementation((key) => mockLocalStorageItems[key]),
 	setItem: jest.fn().mockImplementation((key, value) => {
 		mockLocalStorageItems[key] = value;
 	}),
 	clear: jest.fn().mockImplementation(() => {
 		mockLocalStorageItems = {};
 	}),
-	removeItem: jest.fn().mockImplementation(key => {
+	removeItem: jest.fn().mockImplementation((key) => {
 		mockLocalStorageItems[key] = undefined;
 	}),
-} as unknown) as Storage;
+} as unknown as Storage;
 
 describe('resumable upload task test', () => {
 	afterEach(() => {
@@ -89,15 +89,17 @@ describe('resumable upload task test', () => {
 			},
 			prefixPromise: Promise.resolve('prefix'),
 		};
-		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
-			if (command instanceof AbortMultipartUploadCommand) {
-				return Promise.resolve({ Key: input.params.Key });
-			} else if (command instanceof ListObjectsV2Command) {
-				return Promise.resolve({
-					Contents: [{ Key: input.params.Key, Size: 25048576 }],
-				});
-			}
-		});
+		jest
+			.spyOn(S3Client.prototype, 'send')
+			.mockImplementation(async (command) => {
+				if (command instanceof AbortMultipartUploadCommand) {
+					return Promise.resolve({ Key: input.params.Key });
+				} else if (command instanceof ListObjectsV2Command) {
+					return Promise.resolve({
+						Contents: [{ Key: input.params.Key, Size: 25048576 }],
+					});
+				}
+			});
 		const uploadTask = new AWSS3UploadTask(input);
 		expect(uploadTask.percent).toEqual(0);
 		expect(uploadTask.state).toEqual(AWSS3UploadTaskState.INIT);
@@ -109,39 +111,41 @@ describe('resumable upload task test', () => {
 		const cancelled = await uploadTask._cancel();
 		expect(uploadTask.state).toEqual(AWSS3UploadTaskState.CANCELLED);
 		expect(cancelled).toBe(true);
-		uploadTask._cancel().then(cancelled => {
+		uploadTask._cancel().then((cancelled) => {
 			expect(uploadTask.state).toEqual(AWSS3UploadTaskState.CANCELLED);
 			expect(cancelled).toBe(true);
 		});
 	});
 
 	test('should send listParts request if the upload task is cached', async () => {
-		jest.spyOn(S3Client.prototype, 'send').mockImplementation(async command => {
-			if (command instanceof ListPartsCommand) {
-				return Promise.resolve({
-					Parts: [
-						{
-							PartNumber: 1,
-							Size: 5 * 1024 * 1024,
-							ETag: 'etag-1',
-						},
-						{
-							PartNumber: 2,
-							Size: 5 * 1024 * 1024,
-							ETag: 'etag-2',
-						},
-					],
-				});
-			} else if (command instanceof CreateMultipartUploadCommand) {
-				return Promise.resolve({
-					UploadId: 'uploadId',
-				});
-			} else if (command instanceof ListObjectsV2Command) {
-				return Promise.resolve({
-					Contents: [{ Key: input.params.Key, Size: 25048576 }],
-				});
-			}
-		});
+		jest
+			.spyOn(S3Client.prototype, 'send')
+			.mockImplementation(async (command) => {
+				if (command instanceof ListPartsCommand) {
+					return Promise.resolve({
+						Parts: [
+							{
+								PartNumber: 1,
+								Size: 5 * 1024 * 1024,
+								ETag: 'etag-1',
+							},
+							{
+								PartNumber: 2,
+								Size: 5 * 1024 * 1024,
+								ETag: 'etag-2',
+							},
+						],
+					});
+				} else if (command instanceof CreateMultipartUploadCommand) {
+					return Promise.resolve({
+						UploadId: 'uploadId',
+					});
+				} else if (command instanceof ListObjectsV2Command) {
+					return Promise.resolve({
+						Contents: [{ Key: input.params.Key, Size: 25048576 }],
+					});
+				}
+			});
 		const file = new File(['TestFileContent'], 'testFileName');
 		Object.defineProperty(file, 'size', { value: 25048576 });
 		const emitter = new events.EventEmitter();

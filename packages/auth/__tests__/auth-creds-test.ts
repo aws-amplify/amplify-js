@@ -56,7 +56,7 @@ describe('credentials syncing tests', () => {
 
 		const spyCredentials = jest
 			.spyOn(Credentials, 'set')
-			.mockImplementationOnce(c => c);
+			.mockImplementationOnce((c) => c);
 
 		const username = 'test';
 		await auth.signIn({ username, password: 'test' });

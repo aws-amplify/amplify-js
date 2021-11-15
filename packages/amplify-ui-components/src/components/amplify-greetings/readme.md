@@ -1,7 +1,5 @@
 # amplify-greetings
 
-
-
 <!-- Auto Generated Below -->
 
 

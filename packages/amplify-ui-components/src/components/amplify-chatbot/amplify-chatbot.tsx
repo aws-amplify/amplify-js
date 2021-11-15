@@ -136,7 +136,7 @@ export class AmplifyChatbot {
 				time: this.silenceTime,
 				amplitude: this.silenceThreshold,
 			});
-			this.audioRecorder.init().catch(err => {
+			this.audioRecorder.init().catch((err) => {
 				this.setError(err, ChatErrorType.Recoverable);
 			});
 		}
@@ -182,7 +182,7 @@ export class AmplifyChatbot {
 	private handleSilence() {
 		this.chatState = ChatState.SendingVoice;
 		this.audioRecorder.stopRecording();
-		this.audioRecorder.exportWAV().then(blob => {
+		this.audioRecorder.exportWAV().then((blob) => {
 			this.sendVoiceMessage(blob);
 		});
 	}
@@ -271,7 +271,7 @@ export class AmplifyChatbot {
 					this.handleMicButton();
 				}
 			})
-			.catch(err => this.setError(err, ChatErrorType.Recoverable));
+			.catch((err) => this.setError(err, ChatErrorType.Recoverable));
 	}
 
 	private appendToChat(content: string, from: MessageFrom) {
@@ -307,7 +307,7 @@ export class AmplifyChatbot {
 	 * Rendering methods
 	 */
 	private messageJSX = (messages: Message[]) => {
-		const messageList = messages.map(message => (
+		const messageList = messages.map((message) => (
 			<div class={`bubble ${message.from}`}>{message.content}</div>
 		));
 		if (
@@ -358,7 +358,7 @@ export class AmplifyChatbot {
 			<amplify-input
 				placeholder={I18n.get(inputPlaceholder)}
 				description="text"
-				handleInputChange={evt => this.handleTextChange(evt)}
+				handleInputChange={(evt) => this.handleTextChange(evt)}
 				value={this.text}
 				disabled={this.chatState === ChatState.Error || !this.textEnabled}
 			/>
@@ -415,7 +415,7 @@ export class AmplifyChatbot {
 					<div class="body" data-test="chatbot-body">
 						{this.messageJSX(this.messages)}
 					</div>
-					<form onSubmit={e => this.handleSubmit(e)}>
+					<form onSubmit={(e) => this.handleSubmit(e)}>
 						<div class="footer" data-test="chatbot-footer">
 							{this.footerJSX()}
 						</div>

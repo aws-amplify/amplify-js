@@ -14,7 +14,7 @@ import * as React from 'react';
 import Tooltip from './Tooltip';
 import * as AmplifyUI from '@aws-amplify/ui';
 
-export const IconButton = props => {
+export const IconButton = (props) => {
 	let buttonIcon;
 	switch (props.variant) {
 		case 'sound-mute':

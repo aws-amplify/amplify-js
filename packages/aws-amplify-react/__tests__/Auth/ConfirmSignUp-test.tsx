@@ -76,14 +76,8 @@ describe('ConfirmSignIn', () => {
 				},
 			};
 
-			wrapper
-				.find(Input)
-				.at(0)
-				.simulate('change', event_code);
-			await wrapper
-				.find(Button)
-				.at(0)
-				.simulate('click');
+			wrapper.find(Input).at(0).simulate('change', event_code);
+			await wrapper.find(Button).at(0).simulate('click');
 
 			expect.assertions(2);
 			expect(spyon).toBeCalledWith('user', '123456');
@@ -97,7 +91,7 @@ describe('ConfirmSignIn', () => {
 		test('simulate clicking resend button with username already defined in auth data', async () => {
 			const spyon = jest
 				.spyOn(Auth, 'resendSignUp')
-				.mockImplementation(user => {
+				.mockImplementation((user) => {
 					return new Promise((res, rej) => {
 						res();
 					});
@@ -131,10 +125,7 @@ describe('ConfirmSignIn', () => {
 				},
 			};
 
-			await wrapper
-				.find(Link)
-				.at(0)
-				.simulate('click');
+			await wrapper.find(Link).at(0).simulate('click');
 
 			expect.assertions(1);
 			expect(spyon).toBeCalledWith('user');

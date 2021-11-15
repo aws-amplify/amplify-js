@@ -76,10 +76,7 @@ describe('S3Text test', () => {
 			const wrapper = shallow(<S3Text />);
 			wrapper.setState({ text: 'text' });
 
-			wrapper
-				.find('div')
-				.at(1)
-				.simulate('click');
+			wrapper.find('div').at(1).simulate('click');
 
 			expect(spyon).toBeCalled();
 

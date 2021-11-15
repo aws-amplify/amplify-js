@@ -41,7 +41,7 @@ export class AmplifyRequireNewPassword {
 	/** The text displayed inside of the submit button for the form */
 	@Prop() submitButtonText: string = Translations.CHANGE_PASSWORD_ACTION;
 	/** The function called when submitting a new password */
-	@Prop() handleSubmit: (event: Event) => void = event =>
+	@Prop() handleSubmit: (event: Event) => void = (event) =>
 		this.completeNewPassword(event);
 	/** Auth state change handler for this component */
 	@Prop()
@@ -53,7 +53,7 @@ export class AmplifyRequireNewPassword {
 		{
 			type: AuthFormField.Password,
 			required: true,
-			handleInputChange: event => this.handlePasswordChange(event),
+			handleInputChange: (event) => this.handlePasswordChange(event),
 			label: I18n.get(Translations.NEW_PASSWORD_LABEL),
 			placeholder: I18n.get(Translations.NEW_PASSWORD_PLACEHOLDER),
 			inputProps: {
@@ -103,8 +103,8 @@ export class AmplifyRequireNewPassword {
 			this.currentUser.challengeParam &&
 			this.currentUser.challengeParam.requiredAttributes
 		) {
-			const userRequiredAttributes = this.currentUser.challengeParam
-				.requiredAttributes;
+			const userRequiredAttributes =
+				this.currentUser.challengeParam.requiredAttributes;
 			const requiredAttributesMap = getRequiredAttributesMap();
 			userRequiredAttributes.forEach((attribute: string) => {
 				const formField = {
@@ -112,7 +112,7 @@ export class AmplifyRequireNewPassword {
 					required: true,
 					label: requiredAttributesMap[attribute].label,
 					placeholder: requiredAttributesMap[attribute].placeholder,
-					handleInputChange: event =>
+					handleInputChange: (event) =>
 						this.handleRequiredAttributeInputChange(attribute, event),
 					inputProps: {
 						'data-test': `require-new-password-${attribute}-input`,

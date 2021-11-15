@@ -117,10 +117,10 @@ export class S3Album extends React.Component<IS3AlbumProps, IS3AlbumState> {
 			contentType: type,
 			track,
 		})
-			.then(data => {
+			.then((data) => {
 				logger.debug('handle pick data', data);
 				const { items } = this.state;
-				if (items.filter(item => item.key === key).length === 0) {
+				if (items.filter((item) => item.key === key).length === 0) {
 					const list = items.concat(data);
 					this.marshal(list);
 				} else {
@@ -130,7 +130,7 @@ export class S3Album extends React.Component<IS3AlbumProps, IS3AlbumState> {
 					onLoad(data);
 				}
 			})
-			.catch(err => {
+			.catch((err) => {
 				logger.debug('handle pick error', err);
 				if (onError) {
 					onError(err);
@@ -160,7 +160,7 @@ export class S3Album extends React.Component<IS3AlbumProps, IS3AlbumState> {
 			return;
 		}
 
-		const selected_items = this.state.items.filter(item => item.selected);
+		const selected_items = this.state.items.filter((item) => item.selected);
 		onSelect(item, selected_items);
 	}
 
@@ -183,7 +183,7 @@ export class S3Album extends React.Component<IS3AlbumProps, IS3AlbumState> {
 		}
 
 		if (!this.props.select) {
-			this.state.items.forEach(item => (item.selected = false));
+			this.state.items.forEach((item) => (item.selected = false));
 		}
 		if (this.props.onSelect) {
 			this.props.onSelect(null, []);
@@ -205,11 +205,11 @@ export class S3Album extends React.Component<IS3AlbumProps, IS3AlbumState> {
 			track,
 			identityId,
 		})
-			.then(data => {
+			.then((data) => {
 				logger.debug('album list', data);
 				this.marshal(data);
 			})
-			.catch(err => {
+			.catch((err) => {
 				logger.warn(err);
 				return [];
 			});
@@ -221,7 +221,7 @@ export class S3Album extends React.Component<IS3AlbumProps, IS3AlbumState> {
 
 	marshal(list) {
 		const contentType = this.props.contentType || '';
-		list.forEach(item => {
+		list.forEach((item) => {
 			if (item.contentType) {
 				return;
 			}
@@ -279,7 +279,7 @@ export class S3Album extends React.Component<IS3AlbumProps, IS3AlbumState> {
 
 		const theme = this.props.theme || AmplifyTheme;
 
-		const list = items.map(item => {
+		const list = items.map((item) => {
 			const isText = item.contentType && isTextFile(item.contentType);
 			return isText ? (
 				<S3Text
@@ -294,18 +294,18 @@ export class S3Album extends React.Component<IS3AlbumProps, IS3AlbumState> {
 					onClick={() => this.handleClick(item)}
 				/>
 			) : (
-					<S3Image
-						key={item.key}
-						imgKey={item.key}
-						theme={theme}
-						style={theme.albumPhoto}
-						selected={item.selected}
-						translate={translateItem}
-						level={level}
-						identityId={identityId}
-						onClick={() => this.handleClick(item)}
-					/>
-				);
+				<S3Image
+					key={item.key}
+					imgKey={item.key}
+					theme={theme}
+					style={theme.albumPhoto}
+					selected={item.selected}
+					translate={translateItem}
+					level={level}
+					identityId={identityId}
+					onClick={() => this.handleClick(item)}
+				/>
+			);
 		});
 		return (
 			<div>

@@ -15,10 +15,11 @@ import { ConsoleLogger as Logger } from './Logger';
 
 const logger = new Logger('Hub');
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 interface IPattern {
 	pattern: RegExp;
 	callback: HubCallback;
@@ -80,7 +81,7 @@ export class HubClass {
 				logger.warn(`No listeners for ${channel}`);
 				return;
 			}
-			this.patterns = [...this.patterns.filter(x => x !== pattern)];
+			this.patterns = [...this.patterns.filter((x) => x !== pattern)];
 		} else {
 			const holder = this.listeners[channel];
 			if (!holder) {
@@ -170,7 +171,7 @@ export class HubClass {
 		const holder = this.listeners[channel];
 
 		if (holder) {
-			holder.forEach(listener => {
+			holder.forEach((listener) => {
 				logger.debug(`Dispatching to ${channel} with `, payload);
 				try {
 					listener.callback(capsule);
@@ -188,7 +189,7 @@ export class HubClass {
 
 			const payloadStr = payload.message;
 
-			this.patterns.forEach(pattern => {
+			this.patterns.forEach((pattern) => {
 				const match = payloadStr.match(pattern.pattern);
 				if (match) {
 					const [, ...groups] = match;

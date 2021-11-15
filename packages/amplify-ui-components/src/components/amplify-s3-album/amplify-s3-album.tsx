@@ -100,7 +100,7 @@ export class AmplifyS3Album {
 	}
 
 	private constructImgArray = (list: StorageObject[]) => {
-		list.map(item => {
+		list.map((item) => {
 			this.imgArr[`${item['key']}`] = item['key'];
 		});
 	};
@@ -134,7 +134,7 @@ export class AmplifyS3Album {
 			<div>
 				<div class="album-container">
 					<div class="grid-row">
-						{this.albumItems.map(item => {
+						{this.albumItems.map((item) => {
 							return (
 								<div class="grid-item" key={`key-${item.key}`}>
 									<amplify-s3-image
@@ -157,7 +157,7 @@ export class AmplifyS3Album {
 				{this.picker && (
 					<amplify-picker
 						pickerText={I18n.get(this.pickerText)}
-						inputHandler={e => this.handlePick(e)}
+						inputHandler={(e) => this.handlePick(e)}
 						acceptValue="image/*"
 					/>
 				)}

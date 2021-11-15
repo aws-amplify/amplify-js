@@ -1,7 +1,5 @@
 # amplify-hint
 
-
-
 <!-- Auto Generated Below -->
 
 

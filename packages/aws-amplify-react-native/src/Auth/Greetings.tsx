@@ -18,7 +18,7 @@ import { AmplifyButton } from '../AmplifyUI';
 import AmplifyTheme from '../AmplifyTheme';
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import TEST_ID from '../AmplifyTestIDs';
-import { setTestId } from '../Utils'
+import { setTestId } from '../Utils';
 
 interface IGreetingsProps extends IAuthPieceProps {
 	signedInMessage?: string;
@@ -27,10 +27,7 @@ interface IGreetingsProps extends IAuthPieceProps {
 
 interface IGreetingsState extends IAuthPieceState {}
 
-export default class Greetings extends AuthPiece<
-	IGreetingsProps,
-	IGreetingsState
-> {
+export default class Greetings extends AuthPiece<IGreetingsProps, IGreetingsState> {
 	constructor(props: IGreetingsProps) {
 		super(props);
 		this._validAuthStates = ['signedIn'];
@@ -41,7 +38,7 @@ export default class Greetings extends AuthPiece<
 	signOut() {
 		Auth.signOut()
 			.then(() => this.changeState('signedOut'))
-			.catch(err => this.error(err));
+			.catch((err) => this.error(err));
 	}
 
 	getMessage() {
@@ -71,10 +68,7 @@ export default class Greetings extends AuthPiece<
 		const theme = this.props.theme || AmplifyTheme;
 		return (
 			<View style={theme.navBar}>
-				<Text
-					style={theme.greetingMessage}
-					{...setTestId(TEST_ID.AUTH.GREETING_SIGNED_IN_TEXT)}
-				>
+				<Text style={theme.greetingMessage} {...setTestId(TEST_ID.AUTH.GREETING_SIGNED_IN_TEXT)}>
 					{this.getMessage()}
 				</Text>
 				<AmplifyButton

@@ -7,31 +7,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package aws-amplify-react
 
-
-
-
-
 ## [5.1.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@5.1.5...aws-amplify-react@5.1.6) (2021-11-09)
-
 
 ### Bug Fixes
 
-* **@aws-amplify/storage:** Automatically adjust systemClockoffset in Storage ([#9115](https://github.com/aws-amplify/amplify-js/issues/9115)) ([873941c](https://github.com/aws-amplify/amplify-js/commit/873941c655d9fe87a75238eadc0ae57dacc2fa16))
-
-
-
-
+- **@aws-amplify/storage:** Automatically adjust systemClockoffset in Storage ([#9115](https://github.com/aws-amplify/amplify-js/issues/9115)) ([873941c](https://github.com/aws-amplify/amplify-js/commit/873941c655d9fe87a75238eadc0ae57dacc2fa16))
 
 ## [5.1.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@5.1.4...aws-amplify-react@5.1.5) (2021-10-28)
 
-
 ### Bug Fixes
 
-* error when input type is checkbox ([#8048](https://github.com/aws-amplify/amplify-js/issues/8048)) ([5d01a1d](https://github.com/aws-amplify/amplify-js/commit/5d01a1d1dad122f7b17d286b362c48f4d8f66eff))
-
-
-
-
+- error when input type is checkbox ([#8048](https://github.com/aws-amplify/amplify-js/issues/8048)) ([5d01a1d](https://github.com/aws-amplify/amplify-js/commit/5d01a1d1dad122f7b17d286b362c48f4d8f66eff))
 
 ## [5.1.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@5.1.3...aws-amplify-react@5.1.4) (2021-10-21)
 

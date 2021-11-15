@@ -55,8 +55,10 @@ class TestCustomProvider implements StorageProvider {
 	}
 }
 
-class TestCustomProviderWithCopy extends TestCustomProvider
-	implements StorageProvider {
+class TestCustomProviderWithCopy
+	extends TestCustomProvider
+	implements StorageProvider
+{
 	copy(
 		src: { key: string },
 		dest: { key: string },
@@ -277,7 +279,7 @@ describe('Storage', () => {
 		test('vault level is always private', () => {
 			const storage = StorageCategory;
 			expect.assertions(3);
-			storage.vault.configure = jest.fn().mockImplementation(configure => {
+			storage.vault.configure = jest.fn().mockImplementation((configure) => {
 				expect(configure).toEqual({
 					AWSS3: { bucket: 'bucket', level: 'private', region: 'region' },
 				});
@@ -638,7 +640,7 @@ describe('Storage', () => {
 
 			test('call put object with all available config', async () => {
 				const putRes = await storage.put('key', 'object', {
-					progressCallback: _progress => {},
+					progressCallback: (_progress) => {},
 					serverSideEncryption: 'serverSideEncryption',
 					SSECustomerAlgorithm: 'aes256',
 					SSECustomerKey: 'key',
@@ -970,7 +972,7 @@ describe('Storage', () => {
 				.spyOn(axios.CancelToken, 'source')
 				.mockImplementation(() => {
 					return {
-						token: (tokenMock as unknown) as CancelToken,
+						token: tokenMock as unknown as CancelToken,
 						cancel: cancelMock,
 					};
 				});

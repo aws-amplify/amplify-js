@@ -331,7 +331,7 @@ describe('withFacebook test', () => {
 				}
 			};
 
-			const mockFn = jest.fn().mockImplementationOnce(callback => {
+			const mockFn = jest.fn().mockImplementationOnce((callback) => {
 				callback('response');
 			});
 			const mockFn2 = jest.fn();

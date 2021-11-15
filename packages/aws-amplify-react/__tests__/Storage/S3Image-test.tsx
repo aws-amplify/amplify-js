@@ -82,10 +82,7 @@ describe('S3Image', () => {
 			const wrapper = shallow(<S3Image />);
 			wrapper.setState({ src: 'imageSrc' });
 
-			wrapper
-				.find('div')
-				.at(1)
-				.simulate('click');
+			wrapper.find('div').at(1).simulate('click');
 
 			expect(spyon).toBeCalled();
 

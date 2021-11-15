@@ -555,7 +555,7 @@ _deleted`;
 			const limitTimerRaceCallback = jest.fn();
 			const customErrorMsg =
 				'something went wrong with the DeferredCallbackResolver';
-			const limitTimerRaceErrorHandler = jest.fn(err => {
+			const limitTimerRaceErrorHandler = jest.fn((err) => {
 				throw new Error(customErrorMsg);
 			});
 

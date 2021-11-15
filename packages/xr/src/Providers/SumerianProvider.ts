@@ -47,11 +47,11 @@ export class SumerianProvider extends AbstractXRProvider {
 			const scriptElement = document.createElement('script');
 			scriptElement.src = url;
 
-			scriptElement.addEventListener('load', event => {
+			scriptElement.addEventListener('load', (event) => {
 				resolve();
 			});
 
-			scriptElement.addEventListener('error', event => {
+			scriptElement.addEventListener('error', (event) => {
 				reject(new Error(`Failed to load script: ${url}`));
 			});
 

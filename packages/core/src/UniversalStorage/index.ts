@@ -27,7 +27,7 @@ export class UniversalStorage implements Storage {
 	clear() {
 		Array.from(new Array(this.length))
 			.map((_, i) => this.key(i))
-			.forEach(key => this.removeItem(key));
+			.forEach((key) => this.removeItem(key));
 	}
 
 	getItem(key: keyof Store) {

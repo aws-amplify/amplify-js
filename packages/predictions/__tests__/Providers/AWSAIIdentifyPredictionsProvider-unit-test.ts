@@ -32,7 +32,7 @@ import {
 } from '@aws-sdk/client-textract';
 
 // valid response
-RekognitionClient.prototype.send = jest.fn(command => {
+RekognitionClient.prototype.send = jest.fn((command) => {
 	if (command instanceof DetectLabelsCommand) {
 		const detectlabelsResponse: DetectLabelsCommandOutput = {
 			Labels: [
@@ -47,10 +47,11 @@ RekognitionClient.prototype.send = jest.fn(command => {
 		};
 		return Promise.resolve(detectlabelsResponse);
 	} else if (command instanceof DetectModerationLabelsCommand) {
-		const detectModerationLabelsResponse: DetectModerationLabelsCommandOutput = {
-			ModerationLabels: [{ Name: 'test', Confidence: 0.0 }],
-			$metadata: null,
-		};
+		const detectModerationLabelsResponse: DetectModerationLabelsCommandOutput =
+			{
+				ModerationLabels: [{ Name: 'test', Confidence: 0.0 }],
+				$metadata: null,
+			};
 		return Promise.resolve(detectModerationLabelsResponse);
 	} else if (command instanceof DetectFacesCommand) {
 		const detectFacesResponse: DetectFacesCommandOutput = {
@@ -203,7 +204,7 @@ const analyzeDocumentResponse = {
 	Blocks: TableAndFormBlocks,
 };
 
-TextractClient.prototype.send = jest.fn(command => {
+TextractClient.prototype.send = jest.fn((command) => {
 	if (command instanceof DetectDocumentTextCommand) {
 		return Promise.resolve(detectDocumentTextResponse);
 	} else if (command instanceof AnalyzeDocumentCommand) {
@@ -579,7 +580,7 @@ describe('Predictions identify provider test', () => {
 			};
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
-				.mockImplementationOnce(command => {
+				.mockImplementationOnce((command) => {
 					expect(
 						(command as DetectLabelsCommand).input.Image.S3Object.Name
 					).toMatch('public/key');
@@ -594,7 +595,7 @@ describe('Predictions identify provider test', () => {
 			};
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
-				.mockImplementationOnce(command => {
+				.mockImplementationOnce((command) => {
 					expect(
 						(command as DetectLabelsCommand).input.Image.S3Object.Name
 					).toMatch('private/identityId/key');
@@ -616,7 +617,7 @@ describe('Predictions identify provider test', () => {
 			};
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
-				.mockImplementationOnce(command => {
+				.mockImplementationOnce((command) => {
 					expect(
 						(command as DetectLabelsCommand).input.Image.S3Object.Name
 					).toMatch('protected/identityId/key');
@@ -631,7 +632,7 @@ describe('Predictions identify provider test', () => {
 			};
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
-				.mockImplementationOnce(command => {
+				.mockImplementationOnce((command) => {
 					expect((command as DetectLabelsCommand).input.Image.Bytes).toMatch(
 						'bytes'
 					);
@@ -647,7 +648,7 @@ describe('Predictions identify provider test', () => {
 			};
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
-				.mockImplementationOnce(command => {
+				.mockImplementationOnce((command) => {
 					expect(
 						(command as DetectLabelsCommand).input.Image.Bytes
 					).toMatchObject(fileInput);
@@ -664,7 +665,7 @@ describe('Predictions identify provider test', () => {
 			};
 			jest
 				.spyOn(RekognitionClient.prototype, 'send')
-				.mockImplementationOnce(command => {
+				.mockImplementationOnce((command) => {
 					expect(
 						(command as DetectLabelsCommand).input.Image.Bytes
 					).toMatchObject(fileInput);

@@ -33,10 +33,11 @@ import { CONTROL_MSG } from '../index';
 
 const logger = new Logger('AWSAppSyncRealTimeProvider');
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchApiEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('api', { event, data, message }, 'PubSub', AMPLIFY_SYMBOL);
@@ -142,7 +143,8 @@ const START_ACK_TIMEOUT = 15000;
  */
 const DEFAULT_KEEP_ALIVE_TIMEOUT = 5 * 60 * 1000;
 
-const standardDomainPattern = /^https:\/\/\w{26}\.appsync\-api\.\w{2}(?:(?:\-\w{2,})+)\-\d\.amazonaws.com\/graphql$/i;
+const standardDomainPattern =
+	/^https:\/\/\w{26}\.appsync\-api\.\w{2}(?:(?:\-\w{2,})+)\-\d\.amazonaws.com\/graphql$/i;
 
 const customDomainPath = '/realtime';
 
@@ -177,7 +179,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	): Observable<any> {
 		const { appSyncGraphqlEndpoint } = options;
 
-		return new Observable(observer => {
+		return new Observable((observer) => {
 			if (!appSyncGraphqlEndpoint) {
 				observer.error({
 					errors: [
@@ -195,7 +197,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					options,
 					observer,
 					subscriptionId,
-				}).catch(err => {
+				}).catch((err) => {
 					observer.error({
 						errors: [
 							{
@@ -338,10 +340,8 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		// E.g.unsubscribe gets invoked prior to finishing WebSocket handshake or START_ACK.
 		// Both subscriptionFailedCallback and subscriptionReadyCallback are used to synchronized this.
 
-		const {
-			subscriptionFailedCallback,
-			subscriptionReadyCallback,
-		} = this.subscriptionObserverMap.get(subscriptionId);
+		const { subscriptionFailedCallback, subscriptionReadyCallback } =
+			this.subscriptionObserverMap.get(subscriptionId);
 
 		// This must be done before sending the message in order to be listening immediately
 		this.subscriptionObserverMap.set(subscriptionId, {
@@ -362,18 +362,13 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 
 	// Waiting that subscription has been connected before trying to unsubscribe
 	private async _waitForSubscriptionToBeConnected(subscriptionId) {
-		const { subscriptionState } = this.subscriptionObserverMap.get(
-			subscriptionId
-		);
+		const { subscriptionState } =
+			this.subscriptionObserverMap.get(subscriptionId);
 		// This in case unsubscribe is invoked before sending start subscription message
 		if (subscriptionState === SUBSCRIPTION_STATUS.PENDING) {
 			return new Promise((res, rej) => {
-				const {
-					observer,
-					subscriptionState,
-					variables,
-					query,
-				} = this.subscriptionObserverMap.get(subscriptionId);
+				const { observer, subscriptionState, variables, query } =
+					this.subscriptionObserverMap.get(subscriptionId);
 				this.subscriptionObserverMap.set(subscriptionId, {
 					observer,
 					subscriptionState,
@@ -620,14 +615,15 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 					let discoverableEndpoint = appSyncGraphqlEndpoint;
 
 					if (this.isCustomDomain(discoverableEndpoint)) {
-						discoverableEndpoint = discoverableEndpoint.concat(
-							customDomainPath
-						);
+						discoverableEndpoint =
+							discoverableEndpoint.concat(customDomainPath);
 					} else {
-						discoverableEndpoint = discoverableEndpoint.replace('appsync-api', 'appsync-realtime-api').replace('gogi-beta', 'grt-beta');
+						discoverableEndpoint = discoverableEndpoint
+							.replace('appsync-api', 'appsync-realtime-api')
+							.replace('gogi-beta', 'grt-beta');
 					}
 
-				    // Creating websocket url with required query strings
+					// Creating websocket url with required query strings
 					const protocol = this.isSSLEnabled ? 'wss://' : 'ws://';
 					discoverableEndpoint = discoverableEndpoint
 						.replace('https://', protocol)
@@ -693,10 +689,10 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 			await (() => {
 				return new Promise((res, rej) => {
 					let ackOk = false;
-					this.awsRealTimeSocket.onerror = error => {
+					this.awsRealTimeSocket.onerror = (error) => {
 						logger.debug(`WebSocket error ${JSON.stringify(error)}`);
 					};
-					this.awsRealTimeSocket.onclose = event => {
+					this.awsRealTimeSocket.onclose = (event) => {
 						logger.debug(`WebSocket closed ${event.reason}`);
 						rej(new Error(JSON.stringify(event)));
 					};
@@ -715,14 +711,13 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 						if (type === MESSAGE_TYPES.GQL_CONNECTION_ACK) {
 							ackOk = true;
 							this.keepAliveTimeout = connectionTimeoutMs;
-							this.awsRealTimeSocket.onmessage = this._handleIncomingSubscriptionMessage.bind(
-								this
-							);
-							this.awsRealTimeSocket.onerror = err => {
+							this.awsRealTimeSocket.onmessage =
+								this._handleIncomingSubscriptionMessage.bind(this);
+							this.awsRealTimeSocket.onerror = (err) => {
 								logger.debug(err);
 								this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
 							};
-							this.awsRealTimeSocket.onclose = event => {
+							this.awsRealTimeSocket.onclose = (event) => {
 								logger.debug(`WebSocket closed ${event.reason}`);
 								this._errorDisconnect(CONTROL_MSG.CONNECTION_CLOSED);
 							};
@@ -866,7 +861,7 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 		if (!credentialsOK) {
 			throw new Error('No credentials');
 		}
-		const creds = await Credentials.get().then(credentials => ({
+		const creds = await Credentials.get().then((credentials) => ({
 			secret_key: credentials.secretAccessKey,
 			access_key: credentials.accessKeyId,
 			session_token: credentials.sessionToken,
@@ -899,14 +894,14 @@ export class AWSAppSyncRealTimeProvider extends AbstractPubSubProvider {
 	 */
 	_ensureCredentials() {
 		return Credentials.get()
-			.then(credentials => {
+			.then((credentials) => {
 				if (!credentials) return false;
 				const cred = Credentials.shear(credentials);
 				logger.debug('set credentials for AWSAppSyncRealTimeProvider', cred);
 
 				return true;
 			})
-			.catch(err => {
+			.catch((err) => {
 				logger.warn('ensure credentials error', err);
 				return false;
 			});

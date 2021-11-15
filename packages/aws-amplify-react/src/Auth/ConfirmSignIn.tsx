@@ -59,7 +59,7 @@ export class ConfirmSignIn extends AuthPiece<
 			);
 		}
 
-		Auth.verifiedContact(user).then(data => {
+		Auth.verifiedContact(user).then((data) => {
 			if (!isEmpty(data.verified)) {
 				this.changeState('signedIn', user);
 			} else {
@@ -87,7 +87,7 @@ export class ConfirmSignIn extends AuthPiece<
 			.then(() => {
 				this.checkContact(user);
 			})
-			.catch(err => this.error(err));
+			.catch((err) => this.error(err));
 	}
 
 	componentDidUpdate() {

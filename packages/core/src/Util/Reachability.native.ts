@@ -21,7 +21,7 @@ export default class ReachabilityNavigator implements Reachability {
 				'NetInfo must be passed to networkMonitor to enable reachability in React Native'
 			);
 		}
-		return new Observable(observer => {
+		return new Observable((observer) => {
 			logger.log('subscribing to reachability in React Native');
 
 			const unsubscribe = netInfo.addEventListener(

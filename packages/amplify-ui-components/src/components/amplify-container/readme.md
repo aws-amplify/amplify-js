@@ -1,7 +1,5 @@
 # amplify-container
 
-
-
 <!-- Auto Generated Below -->
 
 

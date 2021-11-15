@@ -42,11 +42,11 @@ import { handleSignIn } from '../../common/auth-helpers';
 })
 export class AmplifySignUp {
 	/** Fires when sign up form is submitted */
-	@Prop() handleSubmit: (event: Event) => void = event => this.signUp(event);
+	@Prop() handleSubmit: (event: Event) => void = (event) => this.signUp(event);
 	/** Override for handling the Auth.SignUp API call */
-	@Prop() handleSignUp: (
-		params: SignUpParams
-	) => Promise<ISignUpResult> = params => this.authSignUp(params);
+	@Prop() handleSignUp: (params: SignUpParams) => Promise<ISignUpResult> = (
+		params
+	) => this.authSignUp(params);
 	/** Engages when invalid actions occur, such as missing field, etc. */
 	@Prop() validationErrors: string;
 	/** Used for header text in sign up component */
@@ -98,16 +98,16 @@ export class AmplifySignUp {
 	private handleFormFieldInputChange(fieldType) {
 		switch (fieldType) {
 			case 'username':
-				return event => (this.signUpAttributes.username = event.target.value);
+				return (event) => (this.signUpAttributes.username = event.target.value);
 			case 'password':
-				return event => (this.signUpAttributes.password = event.target.value);
+				return (event) => (this.signUpAttributes.password = event.target.value);
 			case 'email':
-				return event =>
+				return (event) =>
 					(this.signUpAttributes.attributes.email = event.target.value);
 			case 'phone_number':
-				return event => handlePhoneNumberChange(event, this.phoneNumber);
+				return (event) => handlePhoneNumberChange(event, this.phoneNumber);
 			default:
-				return event =>
+				return (event) =>
 					(this.signUpAttributes.attributes[fieldType] = event.target.value);
 		}
 	}
@@ -147,9 +147,8 @@ export class AmplifySignUp {
 		switch (this.usernameAlias) {
 			case 'email':
 			case 'phone_number':
-				this.signUpAttributes.username = this.signUpAttributes.attributes[
-					this.usernameAlias
-				];
+				this.signUpAttributes.username =
+					this.signUpAttributes.attributes[this.usernameAlias];
 				break;
 			case 'username':
 			default:
@@ -337,9 +336,9 @@ export class AmplifySignUp {
 			this.buildDefaultFormFields();
 		} else {
 			const newFields = [];
-			this.formFields.forEach(field => {
+			this.formFields.forEach((field) => {
 				const newField = { ...field };
-				newField['handleInputChange'] = event =>
+				newField['handleInputChange'] = (event) =>
 					this.handleFormFieldInputWithCallback(event, field);
 				this.setFieldValue(field, this.signUpAttributes);
 				newFields.push(newField);
@@ -372,7 +371,9 @@ export class AmplifySignUp {
 				break;
 			case 'phone_number':
 				if ((field as PhoneFormFieldType).dialCode) {
-					this.phoneNumber.countryDialCodeValue = (field as PhoneFormFieldType).dialCode;
+					this.phoneNumber.countryDialCodeValue = (
+						field as PhoneFormFieldType
+					).dialCode;
 				}
 				this.phoneNumber.phoneNumberValue = field.value;
 				break;
@@ -422,7 +423,7 @@ export class AmplifySignUp {
 								<amplify-button
 									type="submit"
 									data-test="sign-up-create-account-button"
-                  disabled={this.loading}
+									disabled={this.loading}
 								>
 									{this.loading ? (
 										<amplify-loading-spinner />

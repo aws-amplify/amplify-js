@@ -128,7 +128,7 @@ describe('SignUp', () => {
 
 		it('...it should call Auth.signUp when signUp method is called and fields are populated', () => {
 			// eslint-disable-line
-			wrapper.vm.options.signUpFields.forEach(el => {
+			wrapper.vm.options.signUpFields.forEach((el) => {
 				el.value = 'iampopulated';
 			});
 			wrapper.vm.signUp();
@@ -231,7 +231,7 @@ describe('SignUp', () => {
 
 		it('...should overwrite existing fields from default array', () => {
 			const email = wrapper.vm.options.signUpFields.find(
-				x => x.key === 'email'
+				(x) => x.key === 'email'
 			);
 			expect(email.label).toEqual('Test Email');
 		});

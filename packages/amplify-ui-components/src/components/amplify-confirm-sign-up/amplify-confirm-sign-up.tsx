@@ -36,7 +36,7 @@ import { handleSignIn } from '../../common/auth-helpers';
 })
 export class AmplifyConfirmSignUp {
 	/** Fires when sign up form is submitted */
-	@Prop() handleSubmit: (submitEvent: Event) => void = event =>
+	@Prop() handleSubmit: (submitEvent: Event) => void = (event) =>
 		this.confirmSignUp(event);
 	/** Used for header text in confirm sign up component */
 	@Prop() headerText: string = Translations.CONFIRM_SIGN_UP_HEADER_TEXT;
@@ -141,7 +141,7 @@ export class AmplifyConfirmSignUp {
 			this.buildDefaultFormFields();
 		} else {
 			const newFields = [];
-			this.formFields.forEach(field => {
+			this.formFields.forEach((field) => {
 				const newField = { ...field };
 				if (newField.type === 'code') {
 					newField['hint'] = isHintValid(newField) ? (
@@ -158,7 +158,7 @@ export class AmplifyConfirmSignUp {
 						newField['hint']
 					);
 				}
-				newField['handleInputChange'] = event =>
+				newField['handleInputChange'] = (event) =>
 					this.handleFormFieldInputWithCallback(event, field);
 				newFields.push(newField);
 			});
@@ -170,11 +170,11 @@ export class AmplifyConfirmSignUp {
 		switch (fieldType) {
 			case 'username':
 			case 'email':
-				return event => (this.userInput = event.target.value);
+				return (event) => (this.userInput = event.target.value);
 			case 'phone_number':
-				return event => handlePhoneNumberChange(event, this.phoneNumber);
+				return (event) => handlePhoneNumberChange(event, this.phoneNumber);
 			case 'code':
-				return event => (this.code = event.target.value);
+				return (event) => (this.code = event.target.value);
 			default:
 				return;
 		}
@@ -192,7 +192,9 @@ export class AmplifyConfirmSignUp {
 				break;
 			case 'phone_number':
 				if ((field as PhoneFormFieldType).dialCode) {
-					this.phoneNumber.countryDialCodeValue = (field as PhoneFormFieldType).dialCode;
+					this.phoneNumber.countryDialCodeValue = (
+						field as PhoneFormFieldType
+					).dialCode;
 				}
 				this.phoneNumber.phoneNumberValue = field.value;
 				break;

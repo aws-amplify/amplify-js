@@ -46,7 +46,7 @@ class Mutex implements MutexInterface {
 	}
 
 	acquire(): Promise<MutexInterface.Releaser> {
-		const ticket = new Promise<MutexInterface.Releaser>(resolve =>
+		const ticket = new Promise<MutexInterface.Releaser>((resolve) =>
 			this._queue.push(resolve)
 		);
 
@@ -58,7 +58,7 @@ class Mutex implements MutexInterface {
 	}
 
 	runExclusive<T>(callback: MutexInterface.Worker<T>): Promise<T> {
-		return this.acquire().then(release => {
+		return this.acquire().then((release) => {
 			let result: T | Promise<T>;
 
 			try {
@@ -70,7 +70,7 @@ class Mutex implements MutexInterface {
 
 			return Promise.resolve(result).then(
 				(x: T) => (release(), x),
-				e => {
+				(e) => {
 					release();
 					throw e;
 				}

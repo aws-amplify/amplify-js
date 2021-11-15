@@ -125,7 +125,7 @@ export default class EventsBuffer {
 			},
 		};
 
-		Object.values(eventMap).forEach(item => {
+		Object.values(eventMap).forEach((item) => {
 			const { params } = item;
 			const { event, timestamp, config } = params;
 			const { name, attributes, metrics, eventId, session } = event;

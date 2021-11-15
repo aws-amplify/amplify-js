@@ -240,7 +240,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 			if (!(typeof currGroups === 'string') && currGroups.logGroups) {
 				const foundGroups = currGroups.logGroups.filter(
-					group => group.logGroupName === logGroupName
+					(group) => group.logGroupName === logGroupName
 				);
 				if (foundGroups.length > 0) {
 					this._dataTracker.verifiedLogGroup = foundGroups[0];
@@ -280,7 +280,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 			if (currStreams.logStreams) {
 				const foundStreams = currStreams.logStreams.filter(
-					stream => stream.logStreamName === logStreamName
+					(stream) => stream.logStreamName === logStreamName
 				);
 				if (foundStreams.length > 0) {
 					this._nextSequenceToken = foundStreams[0].uploadSequenceToken;
@@ -338,7 +338,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 	private async _ensureCredentials() {
 		return await Credentials.get()
-			.then(credentials => {
+			.then((credentials) => {
 				if (!credentials) return false;
 				const cred = Credentials.shear(credentials);
 				logger.debug('set credentials for logging', cred);
@@ -346,7 +346,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 
 				return true;
 			})
-			.catch(error => {
+			.catch((error) => {
 				logger.warn('ensure credentials error', error);
 				return false;
 			});

@@ -47,7 +47,7 @@ export async function retry(
 		logger.debug(`${functionToRetry.name} retrying in ${retryIn} ms`);
 
 		if (retryIn !== false) {
-			await new Promise(res => setTimeout(res, retryIn));
+			await new Promise((res) => setTimeout(res, retryIn));
 			return await retry(functionToRetry, args, delayFn, attempt + 1);
 		} else {
 			throw err;
@@ -61,7 +61,7 @@ function jitteredBackoff(maxDelayMs: number): DelayFunction {
 	const BASE_TIME_MS = 100;
 	const JITTER_FACTOR = 100;
 
-	return attempt => {
+	return (attempt) => {
 		const delay = 2 ** attempt * BASE_TIME_MS + JITTER_FACTOR * Math.random();
 		return delay > maxDelayMs ? false : delay;
 	};

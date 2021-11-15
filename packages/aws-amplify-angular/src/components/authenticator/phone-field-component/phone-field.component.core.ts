@@ -109,9 +109,7 @@ export class PhoneFieldComponentCore implements OnInit {
 	}
 
 	@Output()
-	phoneFieldChanged: EventEmitter<PhoneFieldOutput> = new EventEmitter<
-		PhoneFieldOutput
-	>();
+	phoneFieldChanged: EventEmitter<PhoneFieldOutput> = new EventEmitter<PhoneFieldOutput>();
 
 	ngOnInit() {}
 

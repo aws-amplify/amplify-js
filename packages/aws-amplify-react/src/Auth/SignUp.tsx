@@ -90,7 +90,7 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 
 	validate() {
 		const invalids = [];
-		this.signUpFields.map(el => {
+		this.signUpFields.map((el) => {
 			if (el.key !== 'phone_number') {
 				if (el.required && !this.inputs[el.key]) {
 					el.invalid = true;
@@ -116,7 +116,7 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 			this.props.signUpConfig.hiddenDefaults &&
 			this.props.signUpConfig.hiddenDefaults.length > 0
 		) {
-			this.defaultSignUpFields = this.defaultSignUpFields.filter(d => {
+			this.defaultSignUpFields = this.defaultSignUpFields.filter((d) => {
 				return !this.props.signUpConfig.hiddenDefaults.includes(d.key);
 			});
 		}
@@ -127,8 +127,8 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 				!this.props.signUpConfig.hideAllDefaults
 			) {
 				// see if fields passed to component should override defaults
-				this.defaultSignUpFields.forEach(f => {
-					const matchKey = this.signUpFields.findIndex(d => {
+				this.defaultSignUpFields.forEach((f) => {
+					const matchKey = this.signUpFields.findIndex((d) => {
 						return d.key === f.key;
 					});
 					if (matchKey === -1) {
@@ -174,7 +174,7 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 	}
 
 	needPrefix(key) {
-		const field = this.signUpFields.find(e => e.key === key);
+		const field = this.signUpFields.find((e) => e.key === key);
 		if (key.indexOf('custom:') !== 0) {
 			return field.custom;
 		} else if (key.indexOf('custom:') === 0 && field.custom === false) {
@@ -249,7 +249,7 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 			signup_info.attributes['phone_number'] = this.phone_number;
 
 		let labelCheck = false;
-		this.signUpFields.forEach(field => {
+		this.signUpFields.forEach((field) => {
 			if (field.label === this.getUsernameLabel()) {
 				logger.debug(`Changing the username to the value of ${field.label}`);
 				signup_info.username =
@@ -291,7 +291,7 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 					{I18n.get(this.header)}
 				</SectionHeader>
 				<SectionBody theme={theme} data-test={auth.signUp.bodySection}>
-					{this.signUpFields.map(field => {
+					{this.signUpFields.map((field) => {
 						return field.key !== 'phone_number' ? (
 							<FormField theme={theme} key={field.key}>
 								{field.required ? (
@@ -303,7 +303,8 @@ export class SignUp extends AuthPiece<ISignUpProps, IAuthPieceState> {
 								)}
 								<Input
 									autoFocus={
-										this.signUpFields.findIndex(f => f.key === field.key) === 0
+										this.signUpFields.findIndex((f) => f.key === field.key) ===
+										0
 									}
 									placeholder={I18n.get(field.placeholder)}
 									theme={theme}

@@ -1,7 +1,5 @@
 # amplify-s3-text
 
-
-
 <!-- Auto Generated Below -->
 
 

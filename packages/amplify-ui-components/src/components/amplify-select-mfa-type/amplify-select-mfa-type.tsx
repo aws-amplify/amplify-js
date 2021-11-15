@@ -25,7 +25,7 @@ export class AmplifySelectMFAType {
 	/** Current authenticated user in order to sign requests properly for TOTP */
 	@Prop() authData: CognitoUserInterface;
 	/** Fires when Verify is clicked */
-	@Prop() handleSubmit: (event: Event) => void = event => this.verify(event);
+	@Prop() handleSubmit: (event: Event) => void = (event) => this.verify(event);
 
 	@State() TOTPSetup: boolean = false;
 	@State() selectMessage: string = null;
@@ -137,7 +137,7 @@ export class AmplifySelectMFAType {
 					Translations.SELECT_MFA_TYPE_SUBMIT_BUTTON_TEXT
 				)}
 				headerText={I18n.get(Translations.SELECT_MFA_TYPE_HEADER_TEXT)}
-				handleSubmit={event => this.handleSubmit(event)}
+				handleSubmit={(event) => this.handleSubmit(event)}
 				loading={this.loading}
 			>
 				{SMS ? (
@@ -146,7 +146,7 @@ export class AmplifySelectMFAType {
 						name="MFAType"
 						value="SMS"
 						label="SMS"
-						handleInputChange={event => this.handleRadioButtonChange(event)}
+						handleInputChange={(event) => this.handleRadioButtonChange(event)}
 					/>
 				) : null}
 				{TOTP ? (
@@ -155,7 +155,7 @@ export class AmplifySelectMFAType {
 						name="MFAType"
 						value="TOTP"
 						label="TOTP"
-						handleInputChange={event => this.handleRadioButtonChange(event)}
+						handleInputChange={(event) => this.handleRadioButtonChange(event)}
 					/>
 				) : null}
 				{Optional ? (
@@ -164,7 +164,7 @@ export class AmplifySelectMFAType {
 						name="MFAType"
 						value="NOMFA"
 						label="No MFA"
-						handleInputChange={event => this.handleRadioButtonChange(event)}
+						handleInputChange={(event) => this.handleRadioButtonChange(event)}
 					/>
 				) : null}
 			</amplify-form-section>

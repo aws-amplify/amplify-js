@@ -90,14 +90,8 @@ describe('forgotPassword', () => {
 				},
 			};
 
-			wrapper
-				.find(Input)
-				.at(0)
-				.simulate('change', event_code);
-			wrapper
-				.find(Input)
-				.at(1)
-				.simulate('change', event_password);
+			wrapper.find(Input).at(0).simulate('change', event_code);
+			wrapper.find(Input).at(1).simulate('change', event_password);
 
 			await wrapper.find(Button).simulate('click');
 
@@ -129,10 +123,7 @@ describe('forgotPassword', () => {
 				},
 			};
 
-			wrapper
-				.find(Input)
-				.at(0)
-				.simulate('change', event_username);
+			wrapper.find(Input).at(0).simulate('change', event_username);
 
 			await wrapper.find(Button).simulate('click');
 

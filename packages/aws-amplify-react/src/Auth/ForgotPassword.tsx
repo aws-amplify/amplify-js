@@ -64,11 +64,11 @@ export class ForgotPassword extends AuthPiece<
 			);
 		}
 		Auth.forgotPassword(username)
-			.then(data => {
+			.then((data) => {
 				logger.debug(data);
 				this.setState({ delivery: data.CodeDeliveryDetails });
 			})
-			.catch(err => this.error(err));
+			.catch((err) => this.error(err));
 	}
 
 	submit() {
@@ -82,12 +82,12 @@ export class ForgotPassword extends AuthPiece<
 			);
 		}
 		Auth.forgotPasswordSubmit(username, code, password)
-			.then(data => {
+			.then((data) => {
 				logger.debug(data);
 				this.changeState('signIn');
 				this.setState({ delivery: null });
 			})
-			.catch(err => this.error(err));
+			.catch((err) => this.error(err));
 	}
 
 	sendView() {

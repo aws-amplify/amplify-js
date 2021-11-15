@@ -85,7 +85,7 @@ export class SessionTracker {
 					attributes,
 				},
 				this._config.provider
-			).catch(e => {
+			).catch((e) => {
 				logger.debug('record session stop event failed.', e);
 			});
 		} else {
@@ -95,7 +95,7 @@ export class SessionTracker {
 					attributes,
 				},
 				this._config.provider
-			).catch(e => {
+			).catch((e) => {
 				logger.debug('record session start event failed.', e);
 			});
 		}
@@ -109,7 +109,7 @@ export class SessionTracker {
 				? Promise.resolve(this._config.attributes())
 				: Promise.resolve(this._config.attributes);
 
-		customAttrs.then(custom => {
+		customAttrs.then((custom) => {
 			const attributes = Object.assign({}, custom);
 
 			this._tracker(
@@ -119,7 +119,7 @@ export class SessionTracker {
 					immediate: true,
 				},
 				this._config.provider
-			).catch(e => {
+			).catch((e) => {
 				logger.debug('record session stop event failed.', e);
 			});
 		});
@@ -147,7 +147,7 @@ export class SessionTracker {
 				attributes,
 			},
 			this._config.provider
-		).catch(e => {
+		).catch((e) => {
 			logger.debug('record session start event failed.', e);
 		});
 	}

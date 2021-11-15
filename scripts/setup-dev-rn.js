@@ -48,8 +48,8 @@ const UI_PACKAGES_PRESET = ['@aws-amplify/ui-react'];
 
 // Utility functions for string manipulation
 // Explicit functions as they are important in an osaScript
-const singleQuotedFormOf = content => `'${content}'`;
-const doubleQuotedFormOf = content => `"${content}"`;
+const singleQuotedFormOf = (content) => `'${content}'`;
+const doubleQuotedFormOf = (content) => `"${content}"`;
 // Sanatize the command by seperating it into base and args by &
 const sanatizeCommand = (base, args) => `("${base}${WHITE_SPACE}" & "${args}")`;
 
@@ -58,7 +58,7 @@ const aliasWml = sanatizeCommand(
 	'alias',
 	`npm-exec='PATH=$("npm " & "bin"):$PATH'`
 );
-const getDelay = seconds =>
+const getDelay = (seconds) =>
 	`${MULTILINE_FLAG}  ${singleQuotedFormOf(`delay ${seconds}`)}`;
 const openNewTab = `${MULTILINE_FLAG} ${singleQuotedFormOf(
 	'tell application "System Events" to tell process "Terminal" to keystroke "t" using command down'
@@ -77,7 +77,7 @@ const logger = winston.createLogger({
 });
 
 // Form the part of osaScript needed to run the given command
-const createDoCommand = command =>
+const createDoCommand = (command) =>
 	`${TO_DO_SCRIPT} ${command} ${IN_FRONT_WINDOW}`;
 
 // OSA script to open a new terminal and tabs for each command execution
@@ -87,7 +87,7 @@ function openTerminalWithTabs(commands, pkgRootPath) {
 	)} `;
 	const goToPackageRoot = sanatizeCommand('cd', pkgRootPath);
 
-	commands.forEach(command => {
+	commands.forEach((command) => {
 		// Split multiple commands to be run in the same using the char ;
 		const splitCommands = command.split(`${WHITE_SPACE};${WHITE_SPACE}`);
 		const hasTwoOrMoreCommands = splitCommands.length >= 2;
@@ -97,7 +97,7 @@ function openTerminalWithTabs(commands, pkgRootPath) {
 		)}${WHITE_SPACE}`;
 
 		if (hasTwoOrMoreCommands) {
-			splitCommands.forEach(splitCommand => {
+			splitCommands.forEach((splitCommand) => {
 				osaScript += `${getDelay(2)} ${createDoCommand(splitCommand)}`;
 			});
 		} else {
@@ -105,7 +105,7 @@ function openTerminalWithTabs(commands, pkgRootPath) {
 		}
 	});
 
-	exec(osaScript, error => {
+	exec(osaScript, (error) => {
 		if (error) {
 			return logger.error(`Error with one of the tabs: ${error}`);
 		}
@@ -153,7 +153,7 @@ function setupDevReactNative() {
 
 	// Exclude unrelated packages
 	const supportedPackages = getPackageNames('./packages/').filter(
-		packages => !EXCLUDED_PACKAGES.includes(packages)
+		(packages) => !EXCLUDED_PACKAGES.includes(packages)
 	);
 
 	// ALL Packages list formation
@@ -162,7 +162,7 @@ function setupDevReactNative() {
 	const esmPackages = [];
 	const cjsPackages = [];
 
-	requestedPackages.forEach(pack => {
+	requestedPackages.forEach((pack) => {
 		// Exit if the package is not within the supported list of packages
 		if (!supportedPackages.includes(pack)) {
 			logger.error(
@@ -222,10 +222,10 @@ const createWmlCommand = (requestedPackages, targetAppPath, pkgRootPath) => {
 };
 
 // Get all package names from under the packages directory
-const getPackageNames = source =>
+const getPackageNames = (source) =>
 	readdirSync(source, { withFileTypes: true })
-		.filter(dirent => dirent.isDirectory())
-		.map(dirent => require(`../packages/${dirent.name}/package.json`).name);
+		.filter((dirent) => dirent.isDirectory())
+		.map((dirent) => require(`../packages/${dirent.name}/package.json`).name);
 
 // Form all the wml add commands needed
 const buildWmlAddStrings = (packages, targetAppPath, pkgRootPath) => {
@@ -235,7 +235,7 @@ const buildWmlAddStrings = (packages, targetAppPath, pkgRootPath) => {
 		targetAppPath,
 		'node_modules'
 	);
-	packages.forEach(pack => {
+	packages.forEach((pack) => {
 		const packageName = pack.split('/')[1] ?? pack;
 
 		let sourceDirectoryName = '';

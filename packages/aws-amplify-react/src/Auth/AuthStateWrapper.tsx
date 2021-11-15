@@ -22,7 +22,7 @@ export interface IAuthStateWrapperState {
 export class AuthStateWrapper extends React.Component<
 	IAuthStateWrapperProps,
 	IAuthStateWrapperState
-> {	
+> {
 	constructor(props) {
 		super(props);
 
@@ -74,17 +74,17 @@ export class AuthStateWrapper extends React.Component<
 		}
 		// @ts-ignore
 		return Auth.currentUser()
-			.then(user => {
+			.then((user) => {
 				const state = user ? 'signedIn' : 'signIn';
 				this.handleStateChange(state, user);
 			})
-			.catch(err => logger.error(err));
+			.catch((err) => logger.error(err));
 	}
 
 	render() {
 		const { authState, authData } = this.state;
 		const theme = this.props.theme || AmplifyTheme;
-		const render_children = React.Children.map(this.props.children, child => {
+		const render_children = React.Children.map(this.props.children, (child) => {
 			if (!child) {
 				return null;
 			}

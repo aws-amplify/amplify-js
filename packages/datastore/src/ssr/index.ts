@@ -9,7 +9,7 @@ export function deserializeModel<T extends PersistentModel>(
 	init: T | T[]
 ) {
 	if (Array.isArray(init)) {
-		return init.map(init => deserializeModel(Model, init));
+		return init.map((init) => deserializeModel(Model, init));
 	}
 
 	// `fromJSON` is intentionally hidden from types as a "private" method (though it exists on the instance)

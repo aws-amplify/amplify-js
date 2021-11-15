@@ -14,18 +14,10 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
-import {
-	FormField,
-	LinkCell,
-	Header,
-	ErrorRow,
-	AmplifyButton,
-	SignedOutMessage,
-	Wrapper,
-} from '../AmplifyUI';
+import { FormField, LinkCell, Header, ErrorRow, AmplifyButton, SignedOutMessage, Wrapper } from '../AmplifyUI';
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import TEST_ID from '../AmplifyTestIDs';
-import { setTestId } from '../Utils'
+import { setTestId } from '../Utils';
 
 const logger = new Logger('ConfirmSignUp');
 
@@ -35,10 +27,7 @@ interface IConfirmSignUpState extends IAuthPieceState {
 	code: string | null;
 }
 
-export default class ConfirmSignUp extends AuthPiece<
-	IConfirmSignUpProps,
-	IConfirmSignUpState
-> {
+export default class ConfirmSignUp extends AuthPiece<IConfirmSignUpProps, IConfirmSignUpState> {
 	constructor(props: IConfirmSignUpProps) {
 		super(props);
 
@@ -58,8 +47,8 @@ export default class ConfirmSignUp extends AuthPiece<
 		const username = this.getUsernameFromInput();
 		logger.debug('Confirm Sign Up for ' + username);
 		Auth.confirmSignUp(username, code)
-			.then(data => this.changeState('signedUp'))
-			.catch(err => this.error(err));
+			.then((data) => this.changeState('signedUp'))
+			.catch((err) => this.error(err));
 	}
 
 	resend() {
@@ -67,7 +56,7 @@ export default class ConfirmSignUp extends AuthPiece<
 		logger.debug('Resend Sign Up for ' + username);
 		Auth.resendSignUp(username)
 			.then(() => logger.debug('code sent'))
-			.catch(err => this.error(err));
+			.catch((err) => this.error(err));
 	}
 
 	static getDerivedStateFromProps(props, state) {
@@ -93,7 +82,7 @@ export default class ConfirmSignUp extends AuthPiece<
 							{this.renderUsernameField(theme)}
 							<FormField
 								theme={theme}
-								onChangeText={text => this.setState({ code: text })}
+								onChangeText={(text) => this.setState({ code: text })}
 								label={I18n.get('Confirmation Code')}
 								placeholder={I18n.get('Enter your confirmation code')}
 								required={true}

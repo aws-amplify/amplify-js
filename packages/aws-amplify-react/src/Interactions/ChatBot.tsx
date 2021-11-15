@@ -173,7 +173,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 		if (!this.state.continueConversation) {
 			return;
 		}
-		audioControl.exportWAV(blob => {
+		audioControl.exportWAV((blob) => {
 			this.setState(
 				{
 					currentVoiceState: STATES.SENDING,
@@ -227,7 +227,8 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 				this.doneSpeakingHandler();
 			}
 		);
-		this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
+		this.listItemsRef.current.scrollTop =
+			this.listItemsRef.current.scrollHeight;
 	}
 
 	doneSpeakingHandler() {
@@ -336,7 +337,7 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 			return;
 		}
 
-		await new Promise(resolve =>
+		await new Promise((resolve) =>
 			this.setState(
 				{
 					dialog: [
@@ -368,7 +369,8 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 			],
 			inputText: '',
 		});
-		this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
+		this.listItemsRef.current.scrollTop =
+			this.listItemsRef.current.scrollHeight;
 	}
 
 	async changeInputText(event) {
@@ -388,7 +390,8 @@ export class ChatBot extends React.Component<IChatBotProps, IChatBotState> {
 					].filter(Boolean),
 				},
 				() => {
-					this.listItemsRef.current.scrollTop = this.listItemsRef.current.scrollHeight;
+					this.listItemsRef.current.scrollTop =
+						this.listItemsRef.current.scrollHeight;
 				}
 			);
 		};

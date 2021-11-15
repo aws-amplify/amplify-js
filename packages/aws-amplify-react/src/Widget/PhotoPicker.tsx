@@ -69,7 +69,7 @@ export class PhotoPicker extends React.Component<
 
 		if (preview && preview !== 'hidden') {
 			const reader = new FileReader();
-			reader.onload = function(e) {
+			reader.onload = function (e) {
 				const url = e.target.result;
 				// @ts-ignore
 				that.setState({ previewSrc: url });

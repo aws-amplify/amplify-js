@@ -19,10 +19,7 @@ import { Header } from '../AmplifyUI';
 import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
 
-export default class Loading extends AuthPiece<
-	IAuthPieceProps,
-	IAuthPieceState
-> {
+export default class Loading extends AuthPiece<IAuthPieceProps, IAuthPieceState> {
 	constructor(props: IAuthPieceProps) {
 		super(props);
 

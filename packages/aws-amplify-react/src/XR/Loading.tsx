@@ -15,7 +15,7 @@ import * as AmplifyUI from '@aws-amplify/ui';
 
 import { sumerianScene } from '../Amplify-UI/data-test-attributes';
 
-export const Loading = props => {
+export const Loading = (props) => {
 	return (
 		<div className={AmplifyUI.loadingOverlay} data-test={sumerianScene.loading}>
 			<div className={AmplifyUI.loadingContainer}>
@@ -60,16 +60,16 @@ export const Loading = props => {
 						{props.sceneError.displayText}
 					</div>
 				) : (
+					<div
+						className={AmplifyUI.loadingBar}
+						data-test={sumerianScene.loadingBar}
+					>
 						<div
-							className={AmplifyUI.loadingBar}
-							data-test={sumerianScene.loadingBar}
-						>
-							<div
-								className={AmplifyUI.loadingBarFill}
-								style={{ width: `${props.percentage}%` }}
-							/>
-						</div>
-					)}
+							className={AmplifyUI.loadingBarFill}
+							style={{ width: `${props.percentage}%` }}
+						/>
+					</div>
+				)}
 			</div>
 		</div>
 	);

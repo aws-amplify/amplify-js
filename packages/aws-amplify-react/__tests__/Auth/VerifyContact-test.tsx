@@ -139,10 +139,7 @@ describe.only('VerifyContent test', () => {
 			};
 			wrapper.setProps(props);
 
-			wrapper
-				.find(Button)
-				.at(0)
-				.simulate('click');
+			wrapper.find(Button).at(0).simulate('click');
 
 			// expect(spyon).toBeCalled();
 

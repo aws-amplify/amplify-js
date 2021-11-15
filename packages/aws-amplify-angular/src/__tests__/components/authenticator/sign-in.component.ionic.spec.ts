@@ -125,9 +125,8 @@ describe('SignInComponentIonic: ', () => {
 	it('...should call onSignIn when button is clicked', () => {
 		fixtureComponent._show = true;
 		fixture.detectChanges();
-		const button = fixture.debugElement.nativeElement.querySelector(
-			'ion-button'
-		);
+		const button =
+			fixture.debugElement.nativeElement.querySelector('ion-button');
 		button.click();
 		expect(onSignInSpy).toHaveBeenCalled();
 		expect(signInSpy).toHaveBeenCalled();

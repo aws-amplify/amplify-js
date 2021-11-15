@@ -28,11 +28,10 @@ import {
 import { Adapter } from './adapter';
 import getDefaultAdapter from './adapter/getDefaultAdapter';
 
-export type StorageSubscriptionMessage<
-	T extends PersistentModel
-> = SubscriptionMessage<T> & {
-	mutator?: Symbol;
-};
+export type StorageSubscriptionMessage<T extends PersistentModel> =
+	SubscriptionMessage<T> & {
+		mutator?: Symbol;
+	};
 
 export type StorageFacade = Omit<Adapter, 'setUp'>;
 export type Storage = InstanceType<typeof StorageClass>;
@@ -111,7 +110,7 @@ class StorageClass implements StorageFacade {
 
 		const result = await this.adapter.save(model, condition);
 
-		result.forEach(r => {
+		result.forEach((r) => {
 			const [originalElement, opType] = r;
 
 			// truthy when save is called by the Merger
@@ -135,9 +134,9 @@ class StorageClass implements StorageFacade {
 
 			const element = updateMutationInput || originalElement;
 
-			const modelConstructor = (Object.getPrototypeOf(
-				originalElement
-			) as Object).constructor as PersistentModelConstructor<T>;
+			const modelConstructor = (
+				Object.getPrototypeOf(originalElement) as Object
+			).constructor as PersistentModelConstructor<T>;
 
 			this.pushStream.next({
 				model: modelConstructor,
@@ -185,7 +184,7 @@ class StorageClass implements StorageFacade {
 			deleted = [deleted];
 		}
 
-		deleted.forEach(model => {
+		deleted.forEach((model) => {
 			const modelConstructor = (Object.getPrototypeOf(model) as Object)
 				.constructor as PersistentModelConstructor<T>;
 
@@ -311,19 +310,17 @@ class StorageClass implements StorageFacade {
 		const updatedElement = {};
 		// extract array of updated fields from patches
 		const updatedFields = <string[]>(
-			patches.map(patch => patch.path && patch.path[0])
+			patches.map((patch) => patch.path && patch.path[0])
 		);
 
 		// check model def for association and replace with targetName if exists
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
 		const namespace = this.namespaceResolver(modelConstructor);
-		const { fields } = this.schema.namespaces[namespace].models[
-			modelConstructor.name
-		];
-		const { primaryKey, compositeKeys = [] } = this.schema.namespaces[
-			namespace
-		].keys[modelConstructor.name];
+		const { fields } =
+			this.schema.namespaces[namespace].models[modelConstructor.name];
+		const { primaryKey, compositeKeys = [] } =
+			this.schema.namespaces[namespace].keys[modelConstructor.name];
 
 		// set original values for these fields
 		updatedFields.forEach((field: string) => {
@@ -410,7 +407,7 @@ class ExclusiveStorage implements StorageFacade {
 		mutator?: Symbol,
 		patchesTuple?: [Patch[], PersistentModel]
 	): Promise<[T, OpType.INSERT | OpType.UPDATE][]> {
-		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>(storage =>
+		return this.runExclusive<[T, OpType.INSERT | OpType.UPDATE][]>((storage) =>
 			storage.save<T>(model, condition, mutator, patchesTuple)
 		);
 	}
@@ -430,7 +427,7 @@ class ExclusiveStorage implements StorageFacade {
 		condition?: ModelPredicate<T>,
 		mutator?: Symbol
 	): Promise<[T[], T[]]> {
-		return this.runExclusive<[T[], T[]]>(storage => {
+		return this.runExclusive<[T[], T[]]>((storage) => {
 			if (isModelConstructor(modelOrModelConstructor)) {
 				const modelConstructor = modelOrModelConstructor;
 
@@ -448,7 +445,7 @@ class ExclusiveStorage implements StorageFacade {
 		predicate?: ModelPredicate<T>,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
-		return this.runExclusive<T[]>(storage =>
+		return this.runExclusive<T[]>((storage) =>
 			storage.query<T>(modelConstructor, predicate, pagination)
 		);
 	}
@@ -457,7 +454,7 @@ class ExclusiveStorage implements StorageFacade {
 		modelConstructor: PersistentModelConstructor<T>,
 		firstOrLast: QueryOne = QueryOne.FIRST
 	): Promise<T> {
-		return this.runExclusive<T>(storage =>
+		return this.runExclusive<T>((storage) =>
 			storage.queryOne<T>(modelConstructor, firstOrLast)
 		);
 	}

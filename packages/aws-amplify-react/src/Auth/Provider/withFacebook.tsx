@@ -43,7 +43,7 @@ export function withFacebook(Comp) {
 		signIn() {
 			const fb = window.FB;
 
-			fb.getLoginStatus(response => {
+			fb.getLoginStatus((response) => {
 				const payload = {
 					provider: Constants.FACEBOOK,
 				};
@@ -60,7 +60,7 @@ export function withFacebook(Comp) {
 					this.federatedSignIn(response.authResponse);
 				} else {
 					fb.login(
-						response => {
+						(response) => {
 							if (!response || !response.authResponse) {
 								return;
 							}
@@ -86,7 +86,7 @@ export function withFacebook(Comp) {
 			}
 
 			const fb = window.FB;
-			fb.api('/me', { fields: 'name,email,picture' }, response => {
+			fb.api('/me', { fields: 'name,email,picture' }, (response) => {
 				const user = {
 					name: response.name,
 					email: response.email,
@@ -107,10 +107,10 @@ export function withFacebook(Comp) {
 					{ token: accessToken, expires_at },
 					user
 				)
-					.then(credentials => {
+					.then((credentials) => {
 						return Auth.currentAuthenticatedUser();
 					})
-					.then(authUser => {
+					.then((authUser) => {
 						if (onStateChange) {
 							onStateChange('signedIn', authUser);
 						}
@@ -125,11 +125,11 @@ export function withFacebook(Comp) {
 				return Promise.resolve();
 			}
 
-			fb.getLoginStatus(response => {
+			fb.getLoginStatus((response) => {
 				if (response.status === 'connected') {
 					return new Promise((res, rej) => {
 						logger.debug('facebook signing out');
-						fb.logout(response => {
+						fb.logout((response) => {
 							res(response);
 						});
 					});
@@ -156,7 +156,7 @@ export function withFacebook(Comp) {
 				version: 'v2.11',
 			});
 
-			fb.getLoginStatus(response => logger.debug(response));
+			fb.getLoginStatus((response) => logger.debug(response));
 		}
 
 		initFB() {

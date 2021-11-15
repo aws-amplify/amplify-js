@@ -72,7 +72,7 @@ export class GeoClass {
 	 */
 	public getPluggable(providerName: string) {
 		const pluggable = this._pluggables.find(
-			pluggable => pluggable.getProviderName() === providerName
+			(pluggable) => pluggable.getProviderName() === providerName
 		);
 		if (pluggable === undefined) {
 			logger.debug('No plugin found with providerName', providerName);
@@ -86,7 +86,7 @@ export class GeoClass {
 	 */
 	public removePluggable(providerName: string) {
 		this._pluggables = this._pluggables.filter(
-			pluggable => pluggable.getProviderName() !== providerName
+			(pluggable) => pluggable.getProviderName() !== providerName
 		);
 		return;
 	}
@@ -104,7 +104,7 @@ export class GeoClass {
 		const amplifyConfig = parseMobileHubConfig(config);
 		this._config = Object.assign({}, this._config, amplifyConfig.Geo, config);
 
-		this._pluggables.forEach(pluggable => {
+		this._pluggables.forEach((pluggable) => {
 			pluggable.configure(this._config[pluggable.getProviderName()]);
 		});
 

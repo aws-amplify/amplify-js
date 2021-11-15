@@ -423,8 +423,8 @@ describe('Auth Strategies', () => {
 
 	describe('defaultAuthStrategy', () => {
 		test('default', () => {
-			const defaultAuthStrategy = require('../src/authModeStrategies/defaultAuthStrategy')
-				.defaultAuthStrategy;
+			const defaultAuthStrategy =
+				require('../src/authModeStrategies/defaultAuthStrategy').defaultAuthStrategy;
 			const schema = getAuthSchema();
 			expect(
 				defaultAuthStrategy({
@@ -448,8 +448,8 @@ async function testMultiAuthStrategy({
 }) {
 	mockCurrentUser({ hasAuthenticatedUser });
 
-	const multiAuthStrategy = require('../src/authModeStrategies/multiAuthStrategy')
-		.multiAuthStrategy;
+	const multiAuthStrategy =
+		require('../src/authModeStrategies/multiAuthStrategy').multiAuthStrategy;
 
 	const schema = getAuthSchema(authRules);
 

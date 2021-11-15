@@ -7,25 +7,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @aws-amplify/auth
 
-
-
-
-
 ## [4.3.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.12...@aws-amplify/auth@4.3.13) (2021-11-09)
 
 **Note:** Version bump only for package @aws-amplify/auth
 
-
-
-
-
 ## [4.3.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.11...@aws-amplify/auth@4.3.12) (2021-10-28)
 
 **Note:** Version bump only for package @aws-amplify/auth
-
-
-
-
 
 ## [4.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/auth@4.3.10...@aws-amplify/auth@4.3.11) (2021-10-21)
 

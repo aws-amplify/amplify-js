@@ -63,7 +63,7 @@ export const sortByField = (list, field, dir) => {
 	}
 
 	const dirX = dir && dir === 'desc' ? -1 : 1;
-	list.sort(function(a, b) {
+	list.sort(function (a, b) {
 		const a_val = a[field];
 		const b_val = b[field];
 
@@ -94,7 +94,7 @@ export const objectLessAttributes = (obj, less) => {
 		if (typeof less === 'string') {
 			delete ret[less];
 		} else {
-			less.forEach(attr => {
+			less.forEach((attr) => {
 				delete ret[attr];
 			});
 		}
@@ -109,11 +109,11 @@ export const filenameToContentType = (
 ) => {
 	const name = filename.toLowerCase();
 
-	const filtered = MIME_MAP.filter(mime => name.endsWith('.' + mime.ext));
+	const filtered = MIME_MAP.filter((mime) => name.endsWith('.' + mime.ext));
 	return filtered.length > 0 ? filtered[0].type : defVal;
 };
 
-export const isTextFile = contentType => {
+export const isTextFile = (contentType) => {
 	const type = contentType.toLowerCase();
 	if (type.startsWith('text/')) {
 		return true;
@@ -135,7 +135,7 @@ export const generateRandomString = () => {
 	return result;
 };
 
-export const makeQuerablePromise = promise => {
+export const makeQuerablePromise = (promise) => {
 	if (promise.isResolved) return promise;
 
 	let isPending = true;
@@ -143,12 +143,12 @@ export const makeQuerablePromise = promise => {
 	let isFullfilled = false;
 
 	const result = promise.then(
-		data => {
+		(data) => {
 			isFullfilled = true;
 			isPending = false;
 			return data;
 		},
-		e => {
+		(e) => {
 			isRejected = true;
 			isPending = false;
 			throw e;
@@ -167,8 +167,10 @@ export const isWebWorker = () => {
 		return false;
 	}
 	const selfContext = self as { WorkerGlobalScope? };
-	return typeof selfContext.WorkerGlobalScope !== 'undefined' &&
-		self instanceof selfContext.WorkerGlobalScope;
+	return (
+		typeof selfContext.WorkerGlobalScope !== 'undefined' &&
+		self instanceof selfContext.WorkerGlobalScope
+	);
 };
 
 export const browserOrNode = () => {
@@ -255,7 +257,7 @@ export const transferKeyToUpperCase = (
  * which means it's not Array, Function, Number, String, Boolean or Null
  * @param obj the Object
  */
-export const isStrictObject = obj => {
+export const isStrictObject = (obj) => {
 	return (
 		obj instanceof Object &&
 		!(obj instanceof Array) &&

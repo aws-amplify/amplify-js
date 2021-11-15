@@ -60,7 +60,7 @@ export class GreetingComponentCore implements OnInit {
 	}
 
 	subscribe() {
-		this.amplifyService.authStateChange$.subscribe(state =>
+		this.amplifyService.authStateChange$.subscribe((state) =>
 			this.setAuthState(state)
 		);
 	}

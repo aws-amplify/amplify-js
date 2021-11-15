@@ -69,7 +69,7 @@ export class SessionTracker {
 					immediate: false,
 				},
 				this._config.provider
-			).catch(e => {
+			).catch((e) => {
 				logger.debug('record session start event failed.', e);
 			});
 		}
@@ -87,7 +87,7 @@ export class SessionTracker {
 					immediate: false,
 				},
 				this._config.provider
-			).catch(e => {
+			).catch((e) => {
 				logger.debug('record session stop event failed.', e);
 			});
 		}
@@ -117,7 +117,7 @@ export class SessionTracker {
 				immediate: false,
 			},
 			this._config.provider
-		).catch(e => {
+		).catch((e) => {
 			logger.debug('record session start event failed.', e);
 		});
 	}

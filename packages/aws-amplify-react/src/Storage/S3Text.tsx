@@ -26,8 +26,8 @@ export interface IS3TextProps {
 	body?: any;
 	contentType?: any;
 	fileToKey?:
-	| string
-	| ((param: { name: string; size: number; type: string }) => string);
+		| string
+		| ((param: { name: string; size: number; type: string }) => string);
 	hidden?: any;
 	identityId?: any;
 	level?: StorageAccessLevel;
@@ -43,8 +43,8 @@ export interface IS3TextProps {
 	textKey?: string;
 	track?: any;
 	translate?:
-	| string
-	| ((params: { type: string; key: string; content: string }) => string);
+		| string
+		| ((params: { type: string; key: string; content: string }) => string);
 }
 
 export interface IS3TextState {
@@ -81,7 +81,7 @@ export class S3Text extends React.Component<IS3TextProps, IS3TextState> {
 			track,
 			identityId,
 		})
-			.then(data => {
+			.then((data) => {
 				logger.debug(data);
 				// @ts-ignore
 				const text = data.Body.toString('utf8');
@@ -90,22 +90,15 @@ export class S3Text extends React.Component<IS3TextProps, IS3TextState> {
 				}
 				this.handleOnLoad(text);
 			})
-			.catch(err => {
+			.catch((err) => {
 				logger.debug(err);
 				this.handleOnError(err);
 			});
 	}
 
 	load() {
-		const {
-			path,
-			textKey,
-			body,
-			contentType,
-			level,
-			track,
-			identityId,
-		} = this.props;
+		const { path, textKey, body, contentType, level, track, identityId } =
+			this.props;
 		if (!textKey && !path) {
 			logger.debug('empty textKey and path');
 			return;
@@ -127,11 +120,11 @@ export class S3Text extends React.Component<IS3TextProps, IS3TextState> {
 				track,
 			});
 			ret
-				.then(data => {
+				.then((data) => {
 					logger.debug(data);
 					that.getText(key, level, track, identityId);
 				})
-				.catch(err => logger.debug(err));
+				.catch((err) => logger.debug(err));
 		} else {
 			that.getText(key, level, track, identityId);
 		}
@@ -168,11 +161,11 @@ export class S3Text extends React.Component<IS3TextProps, IS3TextState> {
 			contentType: type,
 			track,
 		})
-			.then(data => {
+			.then((data) => {
 				logger.debug('handle pick data', data);
 				that.getText(key, level, track, identityId);
 			})
-			.catch(err => logger.debug('handle pick error', err));
+			.catch((err) => logger.debug('handle pick error', err));
 	}
 
 	handleClick(evt) {
@@ -224,10 +217,10 @@ export class S3Text extends React.Component<IS3TextProps, IS3TextState> {
 				typeof translate === 'string'
 					? translate
 					: translate({
-						type: 'text',
-						key: textKey,
-						content: text,
-					});
+							type: 'text',
+							key: textKey,
+							content: text,
+					  });
 		}
 		if (!text && !picker) {
 			return null;

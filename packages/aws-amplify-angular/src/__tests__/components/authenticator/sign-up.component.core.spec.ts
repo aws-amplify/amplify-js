@@ -95,11 +95,15 @@ describe('SignUpComponentCore (methods and UI): ', () => {
 
 	it('...should be created with 4 default signUpFields', () => {
 		expect(component.signUpFields.length).toBe(4);
-		expect(component.signUpFields.find(e => e.key === 'username')).toBeTruthy();
-		expect(component.signUpFields.find(e => e.key === 'password')).toBeTruthy();
-		expect(component.signUpFields.find(e => e.key === 'email')).toBeTruthy();
 		expect(
-			component.signUpFields.find(e => e.key === 'phone_number')
+			component.signUpFields.find((e) => e.key === 'username')
+		).toBeTruthy();
+		expect(
+			component.signUpFields.find((e) => e.key === 'password')
+		).toBeTruthy();
+		expect(component.signUpFields.find((e) => e.key === 'email')).toBeTruthy();
+		expect(
+			component.signUpFields.find((e) => e.key === 'phone_number')
 		).toBeTruthy();
 	});
 
@@ -119,17 +123,19 @@ describe('SignUpComponentCore (methods and UI): ', () => {
 		it('...should insert fields passed via signUpConfig', () => {
 			expect(component.signUpFields.length).toBe(5);
 			expect(
-				component.signUpFields.find(e => e.key === 'username')
+				component.signUpFields.find((e) => e.key === 'username')
 			).toBeTruthy();
 			expect(
-				component.signUpFields.find(e => e.key === 'password')
-			).toBeTruthy();
-			expect(component.signUpFields.find(e => e.key === 'email')).toBeTruthy();
-			expect(
-				component.signUpFields.find(e => e.key === 'phone_number')
+				component.signUpFields.find((e) => e.key === 'password')
 			).toBeTruthy();
 			expect(
-				component.signUpFields.find(e => e.key === 'testkey')
+				component.signUpFields.find((e) => e.key === 'email')
+			).toBeTruthy();
+			expect(
+				component.signUpFields.find((e) => e.key === 'phone_number')
+			).toBeTruthy();
+			expect(
+				component.signUpFields.find((e) => e.key === 'testkey')
 			).toBeTruthy();
 		});
 	});
@@ -200,18 +206,16 @@ describe('SignUpComponentCore (methods and UI): ', () => {
 	});
 
 	it('...should not display if _show is not set', () => {
-		const rootEl = fixture.debugElement.nativeElement.querySelector(
-			'.amplify-container'
-		);
+		const rootEl =
+			fixture.debugElement.nativeElement.querySelector('.amplify-container');
 		expect(rootEl).toBeFalsy();
 	});
 
 	it('...should display if _show is set', () => {
 		fixtureComponent._show = true;
 		fixture.detectChanges();
-		const rootEl = fixture.debugElement.nativeElement.querySelector(
-			'.amplify-container'
-		);
+		const rootEl =
+			fixture.debugElement.nativeElement.querySelector('.amplify-container');
 		expect(rootEl).toBeTruthy();
 	});
 
@@ -244,9 +248,8 @@ describe('SignUpComponentCore (methods and UI): ', () => {
 	it('...should call onSignIn when "amplify-form-link" is clicked', () => {
 		fixtureComponent._show = true;
 		fixture.detectChanges();
-		const a = fixture.debugElement.nativeElement.querySelector(
-			'.amplify-form-link'
-		);
+		const a =
+			fixture.debugElement.nativeElement.querySelector('.amplify-form-link');
 		a.click();
 		expect(onSignInSpy).toHaveBeenCalled();
 	});

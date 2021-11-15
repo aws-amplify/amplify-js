@@ -90,12 +90,12 @@ export class AuthenticatorComponentCore implements OnInit {
 			const loadStatus = this.amplifyService
 				.auth()
 				.currentAuthenticatedUser()
-				.then(user => {
+				.then((user) => {
 					if (this.authState.state === 'loading' && user) {
 						this.amplifyService.setAuthState({ state: 'signedIn', user });
 					}
 				})
-				.catch(e => {
+				.catch((e) => {
 					if (this.authState.state === 'loading') {
 						this.amplifyService.setAuthState({ state: 'signIn', user: null });
 					}
@@ -131,7 +131,7 @@ export class AuthenticatorComponentCore implements OnInit {
 
 	subscribe() {
 		this.amplifyService.authStateChange$.subscribe(
-			state => {
+			(state) => {
 				this.authState = state;
 			},
 			() => {
@@ -144,6 +144,6 @@ export class AuthenticatorComponentCore implements OnInit {
 	}
 
 	shouldHide(comp) {
-		return this.hide.filter(item => item === comp).length > 0;
+		return this.hide.filter((item) => item === comp).length > 0;
 	}
 }

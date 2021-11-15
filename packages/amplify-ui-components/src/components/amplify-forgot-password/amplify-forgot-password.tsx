@@ -47,9 +47,9 @@ export class AmplifyForgotPassword {
 	/** The form fields displayed inside of the forgot password form */
 	@Prop() formFields: FormFieldTypes | string[] = [];
 	/** The function called when making a request to reset password */
-	@Prop() handleSend: (event: Event) => void = event => this.send(event);
+	@Prop() handleSend: (event: Event) => void = (event) => this.send(event);
 	/** The function called when submitting a new password */
-	@Prop() handleSubmit: (event: Event) => void = event => this.submit(event);
+	@Prop() handleSubmit: (event: Event) => void = (event) => this.submit(event);
 	/** Auth state change handler for this component */
 	@Prop()
 	handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
@@ -85,9 +85,9 @@ export class AmplifyForgotPassword {
 			this.buildDefaultFormFields();
 		} else {
 			const newFields = [];
-			this.formFields.forEach(field => {
+			this.formFields.forEach((field) => {
 				const newField = { ...field };
-				newField['handleInputChange'] = event =>
+				newField['handleInputChange'] = (event) =>
 					this.handleFormFieldInputWithCallback(event, field);
 				newFields.push(newField);
 			});
@@ -141,13 +141,13 @@ export class AmplifyForgotPassword {
 		switch (fieldType) {
 			case 'username':
 			case 'email':
-				return event =>
+				return (event) =>
 					(this.forgotPasswordAttrs.userInput = event.target.value);
 			case 'phone_number':
-				return event => handlePhoneNumberChange(event, this.phoneNumber);
+				return (event) => handlePhoneNumberChange(event, this.phoneNumber);
 			case 'password':
 			case 'code':
-				return event =>
+				return (event) =>
 					(this.forgotPasswordAttrs[fieldType] = event.target.value);
 			default:
 				return;
@@ -169,7 +169,9 @@ export class AmplifyForgotPassword {
 				break;
 			case 'phone_number':
 				if ((field as PhoneFormFieldType).dialCode) {
-					this.phoneNumber.countryDialCodeValue = (field as PhoneFormFieldType).dialCode;
+					this.phoneNumber.countryDialCodeValue = (
+						field as PhoneFormFieldType
+					).dialCode;
 				}
 				this.phoneNumber.phoneNumberValue = field.value;
 				break;
@@ -274,8 +276,8 @@ export class AmplifyForgotPassword {
 
 	render() {
 		const submitFn = this.delivery
-			? event => this.handleSubmit(event)
-			: event => this.handleSend(event);
+			? (event) => this.handleSubmit(event)
+			: (event) => this.handleSend(event);
 		const submitButtonText = this.delivery
 			? this.submitButtonText
 			: this.sendButtonText;

@@ -30,14 +30,13 @@ class MutationEventOutbox {
 		storage: Storage,
 		mutationEvent: MutationEvent
 	): Promise<void> {
-		storage.runExclusive(async s => {
-			const mutationEventModelDefinition = this.schema.namespaces[SYNC].models[
-				'MutationEvent'
-			];
+		storage.runExclusive(async (s) => {
+			const mutationEventModelDefinition =
+				this.schema.namespaces[SYNC].models['MutationEvent'];
 
 			const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
 				mutationEventModelDefinition,
-				c =>
+				(c) =>
 					c
 						.modelId('eq', mutationEvent.modelId)
 						.id('ne', this.inProgressMutationEventId)
@@ -62,7 +61,7 @@ class MutationEventOutbox {
 					// data loss, since update mutations only include changed fields
 					const merged = this.mergeUserFields(first, mutationEvent);
 					await s.save(
-						this.MutationEvent.copyOf(first, draft => {
+						this.MutationEvent.copyOf(first, (draft) => {
 							draft.data = merged.data;
 						}),
 						undefined,
@@ -124,14 +123,14 @@ class MutationEventOutbox {
 		storage: StorageFacade,
 		model: T
 	): Promise<MutationEvent[]> {
-		const mutationEventModelDefinition = this.schema.namespaces[SYNC].models
-			.MutationEvent;
+		const mutationEventModelDefinition =
+			this.schema.namespaces[SYNC].models.MutationEvent;
 
 		const mutationEvents = await storage.query(
 			this.MutationEvent,
 			ModelPredicateCreator.createFromExisting(
 				mutationEventModelDefinition,
-				c => c.modelId('eq', model.id)
+				(c) => c.modelId('eq', model.id)
 			)
 		);
 
@@ -181,13 +180,12 @@ class MutationEventOutbox {
 			return;
 		}
 
-		const mutationEventModelDefinition = this.schema.namespaces[SYNC].models[
-			'MutationEvent'
-		];
+		const mutationEventModelDefinition =
+			this.schema.namespaces[SYNC].models['MutationEvent'];
 
 		const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
 			mutationEventModelDefinition,
-			c => c.modelId('eq', record.id).id('ne', this.inProgressMutationEventId)
+			(c) => c.modelId('eq', record.id).id('ne', this.inProgressMutationEventId)
 		);
 
 		const outdatedMutations = await storage.query(
@@ -199,12 +197,12 @@ class MutationEventOutbox {
 			return;
 		}
 
-		const reconciledMutations = outdatedMutations.map(m => {
+		const reconciledMutations = outdatedMutations.map((m) => {
 			const oldData = JSON.parse(m.data);
 
 			const newData = { ...oldData, _version, _lastChangedAt };
 
-			return this.MutationEvent.copyOf(m, draft => {
+			return this.MutationEvent.copyOf(m, (draft) => {
 				draft.data = JSON.stringify(newData);
 			});
 		});
@@ -213,7 +211,7 @@ class MutationEventOutbox {
 
 		await Promise.all(
 			reconciledMutations.map(
-				async m => await storage.save(m, undefined, this.ownSymbol)
+				async (m) => await storage.save(m, undefined, this.ownSymbol)
 			)
 		);
 	}
@@ -222,13 +220,8 @@ class MutationEventOutbox {
 		previous: MutationEvent,
 		current: MutationEvent
 	): MutationEvent {
-		const {
-			_version,
-			id,
-			_lastChangedAt,
-			_deleted,
-			...previousData
-		} = JSON.parse(previous.data);
+		const { _version, id, _lastChangedAt, _deleted, ...previousData } =
+			JSON.parse(previous.data);
 
 		const {
 			id: __id,

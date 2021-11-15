@@ -26,8 +26,9 @@ limitations under the License. */
 					v-bind:key="_country.label"
 					v-bind:value="_country.value"
 					v-bind:data-test="auth.genericAttrs.dialCodeSelect"
-					>{{ _country.label }}</option
 				>
+					{{ _country.label }}
+				</option>
 			</select>
 			<input
 				type="tel"

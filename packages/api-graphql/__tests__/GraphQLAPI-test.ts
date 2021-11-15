@@ -971,11 +971,13 @@ describe('API test', () => {
 			const doc = parse(SubscribeToEventComments);
 			const query = print(doc);
 
-			(api.graphql({
-				query,
-				variables,
-				authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
-			}) as any).subscribe();
+			(
+				api.graphql({
+					query,
+					variables,
+					authMode: GRAPHQL_AUTH_MODE.OPENID_CONNECT,
+				}) as any
+			).subscribe();
 
 			expect(spyon_pubsub).toBeCalledWith(
 				'',
@@ -985,7 +987,7 @@ describe('API test', () => {
 			);
 		});
 
-		test('happy-case-subscription', async done => {
+		test('happy-case-subscription', async (done) => {
 			jest
 				.spyOn(RestClient.prototype, 'post')
 				.mockImplementation(async (url, init) => ({
@@ -1022,9 +1024,9 @@ describe('API test', () => {
 			const doc = parse(SubscribeToEventComments);
 			const query = print(doc);
 
-			const observable = (api.graphql(
-				graphqlOperation(query, variables)
-			) as Observable<object>).subscribe({
+			const observable = (
+				api.graphql(graphqlOperation(query, variables)) as Observable<object>
+			).subscribe({
 				next: () => {
 					expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
 					const subscribeOptions = (PubSub.subscribe as any).mock.calls[0][1];
@@ -1038,7 +1040,7 @@ describe('API test', () => {
 			expect(observable).not.toBe(undefined);
 		});
 
-		test('happy case subscription with additionalHeaders', async done => {
+		test('happy case subscription with additionalHeaders', async (done) => {
 			jest
 				.spyOn(RestClient.prototype, 'post')
 				.mockImplementation(async (url, init) => ({
@@ -1079,10 +1081,12 @@ describe('API test', () => {
 				'x-custom-header': 'value',
 			};
 
-			const observable = (api.graphql(
-				graphqlOperation(query, variables),
-				additionalHeaders
-			) as Observable<object>).subscribe({
+			const observable = (
+				api.graphql(
+					graphqlOperation(query, variables),
+					additionalHeaders
+				) as Observable<object>
+			).subscribe({
 				next: () => {
 					expect(PubSub.subscribe).toHaveBeenCalledTimes(1);
 					const subscribeOptions = (PubSub.subscribe as any).mock.calls[0][1];

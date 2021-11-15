@@ -43,7 +43,7 @@ export function withGoogle(Comp) {
 			const ga = window.gapi.auth2.getAuthInstance();
 			const { onError } = this.props;
 			ga.signIn().then(
-				googleUser => {
+				(googleUser) => {
 					this.federatedSignIn(googleUser);
 					const payload = {
 						provider: Constants.GOOGLE,
@@ -58,7 +58,7 @@ export function withGoogle(Comp) {
 						logger.debug('Failed to cache auth source into localStorage', e);
 					}
 				},
-				error => {
+				(error) => {
 					if (onError) onError(error);
 					else throw error;
 				}
@@ -107,7 +107,7 @@ export function withGoogle(Comp) {
 				return Promise.resolve();
 			}
 
-			authInstance.then(googleAuth => {
+			authInstance.then((googleAuth) => {
 				if (!googleAuth) {
 					logger.debug('google Auth undefined');
 					return Promise.resolve();
@@ -141,7 +141,7 @@ export function withGoogle(Comp) {
 			const that = this;
 			const { google_client_id } = this.props;
 			const g = window.gapi;
-			g.load('auth2', function() {
+			g.load('auth2', function () {
 				g.auth2.init({
 					client_id: google_client_id,
 					scope: 'profile email openid',
@@ -166,7 +166,7 @@ export function withGoogle(Comp) {
 	};
 }
 
-const Button = props => (
+const Button = (props) => (
 	<SignInButton
 		id={googleSignInButton}
 		onClick={props.googleSignIn}

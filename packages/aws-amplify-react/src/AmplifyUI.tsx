@@ -17,7 +17,7 @@ import { objectLessAttributes } from '@aws-amplify/core';
 
 import AmplifyTheme from './AmplifyTheme';
 
-export const Container = props => {
+export const Container = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.container);
 	const p = objectLessAttributes(props, 'theme');
@@ -28,7 +28,7 @@ export const Container = props => {
 	);
 };
 
-export const FormContainer = props => {
+export const FormContainer = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.formContainer);
 	return beforeAfter(
@@ -38,7 +38,7 @@ export const FormContainer = props => {
 	);
 };
 
-export const FormSection = props => {
+export const FormSection = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.formSection);
 	return (
@@ -52,7 +52,7 @@ export const FormSection = props => {
 	);
 };
 
-export const ErrorSection = props => {
+export const ErrorSection = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.errorSection);
 	const p = objectLessAttributes(props, 'theme');
@@ -63,7 +63,7 @@ export const ErrorSection = props => {
 	);
 };
 
-export const ErrorSectionContent = props => {
+export const ErrorSectionContent = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.errorSectionContent);
 	return beforeAfter(
@@ -73,7 +73,7 @@ export const ErrorSectionContent = props => {
 	);
 };
 
-export const SectionHeader = props => {
+export const SectionHeader = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.sectionHeader);
 	const p = objectLessAttributes(props, 'theme');
@@ -86,7 +86,7 @@ export const SectionHeader = props => {
 	);
 };
 
-export const SectionHeaderContent = props => {
+export const SectionHeaderContent = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.sectionHeaderContent);
 	return beforeAfter(
@@ -96,18 +96,20 @@ export const SectionHeaderContent = props => {
 	);
 };
 
-export const SectionFooter = props => {
+export const SectionFooter = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.sectionFooter);
 	const p = objectLessAttributes(props, 'theme');
 	return beforeAfter(
 		<div {...p} className="amplify-section-footer" style={style}>
-			<SectionFooterContent theme={theme}>{props.children}</SectionFooterContent>
+			<SectionFooterContent theme={theme}>
+				{props.children}
+			</SectionFooterContent>
 		</div>
 	);
 };
 
-export const SectionFooterContent = props => {
+export const SectionFooterContent = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.sectionFooterContent);
 	return beforeAfter(
@@ -117,7 +119,7 @@ export const SectionFooterContent = props => {
 	);
 };
 
-export const SectionBody = props => {
+export const SectionBody = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.sectionBody);
 	const p = objectLessAttributes(props, 'theme');
@@ -128,7 +130,7 @@ export const SectionBody = props => {
 	);
 };
 
-export const ActionRow = props => {
+export const ActionRow = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.actionRow);
 	const p = objectLessAttributes(props, 'theme');
@@ -139,7 +141,7 @@ export const ActionRow = props => {
 	);
 };
 
-export const FormRow = props => {
+export const FormRow = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.formRow);
 	const p = objectLessAttributes(props, 'theme');
@@ -150,7 +152,7 @@ export const FormRow = props => {
 	);
 };
 
-export const InputRow = props => {
+export const InputRow = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.input);
 	const p = objectLessAttributes(props, 'theme');
@@ -161,7 +163,7 @@ export const InputRow = props => {
 	);
 };
 
-export const RadioRow = props => {
+export const RadioRow = (props) => {
 	const id = props.id || '_' + props.value;
 	const theme = props.theme || AmplifyTheme;
 	return (
@@ -174,7 +176,7 @@ export const RadioRow = props => {
 	);
 };
 
-export const Radio = props => {
+export const Radio = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.radio);
 	const p = objectLessAttributes(props, 'theme');
@@ -183,7 +185,7 @@ export const Radio = props => {
 	);
 };
 
-export const CheckboxRow = props => {
+export const CheckboxRow = (props) => {
 	const id = props.id || '_' + props.name;
 	const theme = props.theme || AmplifyTheme;
 	return (
@@ -196,7 +198,7 @@ export const CheckboxRow = props => {
 	);
 };
 
-export const Checkbox = props => {
+export const Checkbox = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.checkbox);
 	const p = objectLessAttributes(props, 'theme');
@@ -205,7 +207,7 @@ export const Checkbox = props => {
 	);
 };
 
-export const MessageRow = props => {
+export const MessageRow = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	return (
 		<FormRow theme={theme}>
@@ -214,7 +216,7 @@ export const MessageRow = props => {
 	);
 };
 
-export const MessageContent = props => {
+export const MessageContent = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	return beforeAfter(
 		<span className="amplify-message-content" style={theme.messageContent}>
@@ -223,7 +225,7 @@ export const MessageContent = props => {
 	);
 };
 
-export const ButtonRow = props => {
+export const ButtonRow = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	return beforeAfter(
 		<div className="amplify-action-row" style={theme.actionRow}>
@@ -232,7 +234,7 @@ export const ButtonRow = props => {
 	);
 };
 
-export const Button = props => {
+export const Button = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.button);
 	const p = objectLessAttributes(props, 'theme');
@@ -243,7 +245,7 @@ export const Button = props => {
 	);
 };
 
-export const ButtonContent = props => {
+export const ButtonContent = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	return beforeAfter(
 		<span className="amplify-button-content" style={theme.buttonContent}>
@@ -252,7 +254,7 @@ export const ButtonContent = props => {
 	);
 };
 
-export const SignInButton = props => {
+export const SignInButton = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.signInButton);
 	const p = objectLessAttributes(props, 'theme');
@@ -264,7 +266,7 @@ export const SignInButton = props => {
 	);
 };
 
-export const Link = props => {
+export const Link = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.a);
 	const p = objectLessAttributes(props, 'theme');
@@ -275,7 +277,7 @@ export const Link = props => {
 	);
 };
 
-export const Label = props => {
+export const Label = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.label);
 	const p = objectLessAttributes(props, 'theme');
@@ -286,7 +288,7 @@ export const Label = props => {
 	);
 };
 
-export const Space = props => {
+export const Space = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.space);
 	const p = objectLessAttributes(props, 'theme');
@@ -297,7 +299,7 @@ export const Space = props => {
 	);
 };
 
-export const NavBar = props => {
+export const NavBar = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.navBar);
 	const p = objectLessAttributes(props, 'theme');
@@ -308,7 +310,7 @@ export const NavBar = props => {
 	);
 };
 
-export const Nav = props => {
+export const Nav = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.nav);
 	const p = objectLessAttributes(props, 'theme');
@@ -319,7 +321,7 @@ export const Nav = props => {
 	);
 };
 
-export const NavRight = props => {
+export const NavRight = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.navRight);
 	const p = objectLessAttributes(props, 'theme');
@@ -330,7 +332,7 @@ export const NavRight = props => {
 	);
 };
 
-export const NavItem = props => {
+export const NavItem = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.navItem);
 	const p = objectLessAttributes(props, 'theme');
@@ -341,7 +343,7 @@ export const NavItem = props => {
 	);
 };
 
-export const NavButton = props => {
+export const NavButton = (props) => {
 	const theme = props.theme || AmplifyTheme;
 	const style = propStyle(props, theme.navButton);
 	const p = objectLessAttributes(props, 'theme');
@@ -354,7 +356,7 @@ export const NavButton = props => {
 	);
 };
 
-export const beforeAfter = el => {
+export const beforeAfter = (el) => {
 	const style = el.props.style || {};
 	const { before, after } = style;
 	if (!before && !after) {

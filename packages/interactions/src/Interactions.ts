@@ -57,7 +57,7 @@ export class InteractionsClass {
 		if (!Object.keys(bots_config).length && aws_bots_config) {
 			// Convert aws_bots_config to bots object
 			if (Array.isArray(aws_bots_config)) {
-				aws_bots_config.forEach(bot => {
+				aws_bots_config.forEach((bot) => {
 					this._options.bots[bot.name] = bot;
 				});
 			}
@@ -68,13 +68,15 @@ export class InteractionsClass {
 			!this._pluggables.AWSLexProvider &&
 			bots_config &&
 			Object.keys(bots_config)
-				.map(key => bots_config[key])
-				.find(bot => !bot.providerName || bot.providerName === 'AWSLexProvider')
+				.map((key) => bots_config[key])
+				.find(
+					(bot) => !bot.providerName || bot.providerName === 'AWSLexProvider'
+				)
 		) {
 			this._pluggables.AWSLexProvider = new AWSLexProvider();
 		}
 
-		Object.keys(this._pluggables).map(key => {
+		Object.keys(this._pluggables).map((key) => {
 			this._pluggables[key].configure(this._options.bots);
 		});
 

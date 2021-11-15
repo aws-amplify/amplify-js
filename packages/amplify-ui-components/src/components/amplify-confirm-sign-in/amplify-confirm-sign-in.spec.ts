@@ -31,7 +31,9 @@ describe('amplify-confirm-sign-in spec:', () => {
 			expect(confirmSignIn.formFields[0].type).toBe('code');
 			expect(confirmSignIn.formFields[0].required).toBe(true);
 			expect(confirmSignIn.formFields[0].handleInputChange).toBeDefined();
-			expect(typeof confirmSignIn.formFields[0].handleInputChange).toBe('function');
+			expect(typeof confirmSignIn.formFields[0].handleInputChange).toBe(
+				'function'
+			);
 		});
 
 		it('setup should have been called on componentWillLoad', () => {
@@ -44,37 +46,47 @@ describe('amplify-confirm-sign-in spec:', () => {
 			jest.spyOn(confirmSignIn, 'constructFormFieldOptions');
 			expect(confirmSignIn.constructedFormFieldOptions).toBeUndefined();
 			confirmSignIn.setup();
-			expect(confirmSignIn.constructFormFieldOptions)
-				.toHaveBeenCalledWith(confirmSignIn.formFields);
+			expect(confirmSignIn.constructFormFieldOptions).toHaveBeenCalledWith(
+				confirmSignIn.formFields
+			);
 			expect(confirmSignIn.constructedFormFieldOptions).toBeDefined();
 		});
 
 		it('constructFormFieldOptions should work as expected', () => {
 			expect(confirmSignIn.constructFormFieldOptions()).toBeUndefined();
-			expect(confirmSignIn.constructFormFieldOptions([]))
-				.toEqual(confirmSignIn.defaultFormFields);
-			expect(confirmSignIn.constructFormFieldOptions(['foo', 'bar']))
-				.toEqual(['foo', 'bar']);
+			expect(confirmSignIn.constructFormFieldOptions([])).toEqual(
+				confirmSignIn.defaultFormFields
+			);
+			expect(confirmSignIn.constructFormFieldOptions(['foo', 'bar'])).toEqual([
+				'foo',
+				'bar',
+			]);
 
-			let retVal = confirmSignIn.constructFormFieldOptions([{
-				type: 'text',
-			}]);
+			let retVal = confirmSignIn.constructFormFieldOptions([
+				{
+					type: 'text',
+				},
+			]);
 			expect(retVal).toHaveLength(1);
 			expect(retVal[0].type).toBe('text');
 			expect(retVal[0].handleInputChange).not.toBeDefined();
 
-			retVal = confirmSignIn.constructFormFieldOptions([{
-				type: 'code',
-			}]);
+			retVal = confirmSignIn.constructFormFieldOptions([
+				{
+					type: 'code',
+				},
+			]);
 			expect(retVal).toHaveLength(1);
 			expect(retVal[0].type).toBe('code');
 			expect(retVal[0].handleInputChange).toBeDefined();
 			expect(typeof retVal[0].handleInputChange).toBe('function');
 
-			const formFields = [{
-				type: 'code',
-				handleInputChange: () => {},
-			}];
+			const formFields = [
+				{
+					type: 'code',
+					handleInputChange: () => {},
+				},
+			];
 			retVal = confirmSignIn.constructFormFieldOptions(formFields);
 			expect(retVal).toHaveLength(1);
 			expect(retVal[0].type).toBe('code');

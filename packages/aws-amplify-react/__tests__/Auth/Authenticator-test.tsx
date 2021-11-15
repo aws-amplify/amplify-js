@@ -85,14 +85,8 @@ describe('Authenticator', () => {
 			};
 
 			const signInWrapper = wrapper.find(SignIn).dive();
-			signInWrapper
-				.find(InputRow)
-				.at(0)
-				.simulate('change', event_username);
-			signInWrapper
-				.find(InputRow)
-				.at(1)
-				.simulate('change', event_password);
+			signInWrapper.find(InputRow).at(0).simulate('change', event_username);
+			signInWrapper.find(InputRow).at(1).simulate('change', event_password);
 			await signInWrapper.find(Button).simulate('click');
 
 			expect(wrapper.state()).toEqual({
@@ -131,14 +125,8 @@ describe('Authenticator', () => {
 			};
 
 			const signInWrapper = wrapper.find(SignIn).dive();
-			signInWrapper
-				.find(Input)
-				.at(0)
-				.simulate('change', event_username);
-			signInWrapper
-				.find(Input)
-				.at(1)
-				.simulate('change', event_password);
+			signInWrapper.find(Input).at(0).simulate('change', event_username);
+			signInWrapper.find(Input).at(1).simulate('change', event_password);
 			await signInWrapper.find(Button).simulate('click');
 
 			expect(wrapper.state()).toEqual({

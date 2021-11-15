@@ -124,12 +124,12 @@ export function withAuth0(Comp, options?) {
 						)
 							.then(() => {
 								if (onStateChange) {
-									Auth.currentAuthenticatedUser().then(user => {
+									Auth.currentAuthenticatedUser().then((user) => {
 										onStateChange('signedIn', user);
 									});
 								}
 							})
-							.catch(e => {
+							.catch((e) => {
 								logger.debug('Failed to get the aws credentials', e);
 								if (onError) onError(e);
 							});
@@ -173,7 +173,7 @@ export function withAuth0(Comp, options?) {
 	};
 }
 
-const Button = props => (
+const Button = (props) => (
 	<SignInButton
 		id={auth0SignInButton}
 		onClick={props.auth0SignIn}

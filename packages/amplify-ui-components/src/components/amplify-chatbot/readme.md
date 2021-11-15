@@ -1,7 +1,5 @@
 # amplify-chatbot
 
-
-
 <!-- Auto Generated Below -->
 
 

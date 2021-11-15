@@ -1,7 +1,5 @@
 # amplify-s3-image-picker
 
-
-
 <!-- Auto Generated Below -->
 
 

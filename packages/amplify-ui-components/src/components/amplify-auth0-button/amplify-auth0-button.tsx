@@ -107,7 +107,7 @@ export class AmplifyAuth0Button {
 	render() {
 		return (
 			<amplify-sign-in-button
-				onClick={event => this.signInWithAuth0(event)}
+				onClick={(event) => this.signInWithAuth0(event)}
 				provider="auth0"
 			>
 				<script

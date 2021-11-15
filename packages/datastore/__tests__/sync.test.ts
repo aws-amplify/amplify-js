@@ -258,7 +258,7 @@ describe('Sync', () => {
 			'No current user',
 			'No credentials',
 			'No federated jwt',
-		].forEach(authError => {
+		].forEach((authError) => {
 			it(`should return NonRetryableError for client-side error: ${authError}`, async () => {
 				const rejectResponse = {
 					message: authError,
@@ -314,8 +314,8 @@ function jitteredRetrySyncProcessorSetup({
 		...coreMocks,
 	}));
 
-	const SyncProcessorClass = require('../src/sync/processors/sync')
-		.SyncProcessor;
+	const SyncProcessorClass =
+		require('../src/sync/processors/sync').SyncProcessor;
 
 	const testInternalSchema = {
 		namespaces: {},

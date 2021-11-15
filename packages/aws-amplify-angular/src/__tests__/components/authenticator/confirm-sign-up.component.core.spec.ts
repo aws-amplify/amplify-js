@@ -71,18 +71,16 @@ describe('ConfirmSignUpComponentCore: ', () => {
 	});
 
 	it('...should not display if _show is not set', () => {
-		const rootEl = fixture.debugElement.nativeElement.querySelector(
-			'.amplify-container'
-		);
+		const rootEl =
+			fixture.debugElement.nativeElement.querySelector('.amplify-container');
 		expect(rootEl).toBeFalsy();
 	});
 
 	it('...should display if _show is set', () => {
 		fixtureComponent._show = true;
 		fixture.detectChanges();
-		const rootEl = fixture.debugElement.nativeElement.querySelector(
-			'.amplify-container'
-		);
+		const rootEl =
+			fixture.debugElement.nativeElement.querySelector('.amplify-container');
 		expect(rootEl).toBeTruthy();
 	});
 

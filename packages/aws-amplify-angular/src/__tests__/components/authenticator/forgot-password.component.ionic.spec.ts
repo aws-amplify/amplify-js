@@ -100,9 +100,8 @@ describe('ForgotPasswordComponentIonic: ', () => {
 			user: {},
 		};
 		fixture.detectChanges();
-		const button = fixture.debugElement.nativeElement.querySelector(
-			'ion-button'
-		);
+		const button =
+			fixture.debugElement.nativeElement.querySelector('ion-button');
 		button.click();
 		expect(forgotPasswordSpy).not.toHaveBeenCalled();
 		expect(onSendSpy).toHaveBeenCalled();
@@ -120,9 +119,8 @@ describe('ForgotPasswordComponentIonic: ', () => {
 			user: {},
 		};
 		fixture.detectChanges();
-		const button = fixture.debugElement.nativeElement.querySelector(
-			'ion-button'
-		);
+		const button =
+			fixture.debugElement.nativeElement.querySelector('ion-button');
 		button.click();
 		expect(onSubmitSpy).toHaveBeenCalled();
 		expect(forgotPasswordSubmitSpy).toHaveBeenCalled();

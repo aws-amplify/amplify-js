@@ -102,7 +102,7 @@ export class AmplifyAuthenticator {
 		}
 
 		return Auth.currentAuthenticatedUser()
-			.then(user => {
+			.then((user) => {
 				dispatchAuthStateChangeEvent(AuthState.SignedIn, user);
 			})
 			.catch(() => {

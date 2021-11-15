@@ -114,13 +114,13 @@ export class Authenticator extends React.Component<
 			);
 		}
 		return Auth.currentAuthenticatedUser()
-			.then(user => {
+			.then((user) => {
 				if (!this._isMounted) {
 					return;
 				}
 				this.handleStateChange('signedIn', user);
 			})
-			.catch(err => {
+			.catch((err) => {
 				if (!this._isMounted) {
 					return;
 				}
@@ -134,7 +134,7 @@ export class Authenticator extends React.Component<
 					cachedAuthState === 'signedIn' ? Auth.signOut() : Promise.resolve();
 				promise
 					.then(() => this.handleStateChange(this._initialAuthState))
-					.catch(e => {
+					.catch((e) => {
 						logger.debug('Failed to sign out', e);
 					});
 			});
@@ -146,7 +146,7 @@ export class Authenticator extends React.Component<
 				'No Auth module found, please ensure @aws-amplify/auth is imported'
 			);
 		}
-		Auth.verifiedContact(user).then(data => {
+		Auth.verifiedContact(user).then((data) => {
 			if (!isEmpty(data.verified)) {
 				changeState('signedIn', user);
 			} else {
@@ -276,10 +276,10 @@ export class Authenticator extends React.Component<
 
 		const props_children_override = React.Children.map(
 			props_children,
-			child => child.props.override
+			(child) => child.props.override
 		);
 		hide = hide.filter(
-			component => !props_children.find(child => child.type === component)
+			(component) => !props_children.find((child) => child.type === component)
 		);
 
 		const render_props_children = React.Children.map(

@@ -26,7 +26,7 @@ export class AmplifyAmazonButton {
 	@Prop()
 	handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 
-	private federatedSignIn = response => {
+	private federatedSignIn = (response) => {
 		const { access_token, expires_in } = response;
 
 		if (!access_token) {
@@ -44,7 +44,7 @@ export class AmplifyAmazonButton {
 		const date = new Date();
 		const expires_at = expires_in * 1000 + date.getTime();
 
-		window['amazon'].Login.retrieveProfile(async userInfo => {
+		window['amazon'].Login.retrieveProfile(async (userInfo) => {
 			if (!userInfo.success) {
 				return logger.debug('Get user Info failed');
 			}
@@ -74,7 +74,7 @@ export class AmplifyAmazonButton {
 
 		window['amazon'].Login.setClientId(this.clientId);
 
-		window['amazon'].Login.authorize({ scope: 'profile' }, response => {
+		window['amazon'].Login.authorize({ scope: 'profile' }, (response) => {
 			if (response.error) {
 				return logger.debug('Failed to login with amazon: ' + response.error);
 			}
@@ -95,7 +95,7 @@ export class AmplifyAmazonButton {
 	render() {
 		return (
 			<amplify-sign-in-button
-				onClick={event => this.signInWithAmazon(event)}
+				onClick={(event) => this.signInWithAmazon(event)}
 				provider="amazon"
 			>
 				<script src="https://assets.loginwithamazon.com/sdk/na/login1.js"></script>

@@ -55,7 +55,7 @@ export class Connect extends React.Component<IConnectProps, IConnectState> {
 			// @ts-ignore
 			mutation: { query: mutation, mutationVariables = {} } = {},
 			subscription,
-			onSubscriptionMsg = prevData => prevData,
+			onSubscriptionMsg = (prevData) => prevData,
 		} = this.props;
 
 		let { data, mutation: mutationProp, errors } = this.getDefaultState();
@@ -98,7 +98,7 @@ export class Connect extends React.Component<IConnectProps, IConnectState> {
 
 		if (hasValidMutation) {
 			// @ts-ignore
-			mutationProp = async variables => {
+			mutationProp = async (variables) => {
 				const result = await API.graphql({ query: mutation, variables });
 
 				this.forceUpdate();
@@ -124,7 +124,7 @@ export class Connect extends React.Component<IConnectProps, IConnectState> {
 							this.setState({ data: newData });
 						}
 					},
-					error: err => console.error(err),
+					error: (err) => console.error(err),
 				});
 			} catch (err) {
 				errors = err.errors;

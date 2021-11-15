@@ -97,7 +97,7 @@ export class PageViewTracker {
 					attributes,
 				},
 				this._config.provider
-			).catch(e => {
+			).catch((e) => {
 				logger.debug('Failed to record the page view event', e);
 			});
 			sessionStorage.setItem(PREV_URL_KEY, url);
@@ -134,7 +134,7 @@ export class PageViewTracker {
 					attributes,
 				},
 				this._config.provider
-			).catch(e => {
+			).catch((e) => {
 				logger.debug('Failed to record the page view event', e);
 			});
 			sessionStorage.setItem(PREV_URL_KEY, url);

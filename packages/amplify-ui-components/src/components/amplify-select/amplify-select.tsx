@@ -17,9 +17,8 @@ const logger = new Logger('amplify-select');
 })
 export class AmplifySelect {
 	/** The options of the select input. Must be an Array of Objects with an Object shape of {label: string, value: string|number} */
-	@Prop() options:
-		| SelectOptionsString
-		| SelectOptionsNumber = DEFAULT_SELECT_OPTION;
+	@Prop() options: SelectOptionsString | SelectOptionsNumber =
+		DEFAULT_SELECT_OPTION;
 	/** Used for id field */
 	@Prop() fieldId: string;
 	/** The callback, called when the select is modified by the user. */
@@ -40,7 +39,7 @@ export class AmplifySelect {
 	}
 
 	isSelectedOptionValid(selected) {
-		if (selected && !this.options.some(option => option.value === selected)) {
+		if (selected && !this.options.some((option) => option.value === selected)) {
 			logger.warn(
 				'Selected option does not exist in options values, falling back to initial option'
 			);

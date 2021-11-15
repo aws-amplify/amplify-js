@@ -101,7 +101,7 @@ export class RequireNewPasswordComponentCore implements OnInit {
 	}
 
 	shouldHide(comp) {
-		return this.hide.filter(item => item === comp).length > 0;
+		return this.hide.filter((item) => item === comp).length > 0;
 	}
 
 	setPassword(password: string) {
@@ -118,7 +118,7 @@ export class RequireNewPasswordComponentCore implements OnInit {
 				this.onAlertClose();
 				this.amplifyService.setAuthState({ state: 'signIn', user });
 			})
-			.catch(err => this._setError(err));
+			.catch((err) => this._setError(err));
 	}
 
 	onSignIn() {

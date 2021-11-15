@@ -1,6 +1,6 @@
 import { calcKey } from '../../src/Storage/Common';
 
-window.encodeURI = name => {
+window.encodeURI = (name) => {
 	return name;
 };
 
@@ -17,7 +17,7 @@ describe('Storage Common test', () => {
 		});
 
 		test('happy case when fileToKey is a function', () => {
-			const mockFn = jest.fn().mockImplementation(obj => {
+			const mockFn = jest.fn().mockImplementation((obj) => {
 				let str = '';
 				for (const k in obj) {
 					str += obj[k] + ' ';
@@ -35,7 +35,7 @@ describe('Storage Common test', () => {
 		});
 
 		test('key is empty', () => {
-			const mockFn = jest.fn().mockImplementation(obj => {
+			const mockFn = jest.fn().mockImplementation((obj) => {
 				return null;
 			});
 

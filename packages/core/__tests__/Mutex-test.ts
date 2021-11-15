@@ -24,66 +24,66 @@
 
 import { Mutex } from '../src/Util';
 
-describe('Mutex', function() {
+describe('Mutex', function () {
 	let mutex: Mutex;
 
 	beforeEach(() => (mutex = new Mutex()));
 
-	test('ownership is exclusive', function() {
+	test('ownership is exclusive', function () {
 		let flag = false;
 
-		mutex.acquire().then(release =>
+		mutex.acquire().then((release) =>
 			setTimeout(() => {
 				flag = true;
 				release();
 			}, 50)
 		);
 
-		return mutex.acquire().then(release => {
+		return mutex.acquire().then((release) => {
 			release();
 
 			expect(flag).toBe(true);
 		});
 	});
 
-	test('runExclusive passes result (immediate)', function() {
+	test('runExclusive passes result (immediate)', function () {
 		return mutex
 			.runExclusive<number>(() => 10)
-			.then(value => expect(value).toBe(10));
+			.then((value) => expect(value).toBe(10));
 	});
 
-	test('runExclusive passes result (promise)', function() {
+	test('runExclusive passes result (promise)', function () {
 		return mutex
 			.runExclusive<number>(() => Promise.resolve(10))
-			.then(value => expect(value).toBe(10));
+			.then((value) => expect(value).toBe(10));
 	});
 
-	test('runExclusive passes rejection', function() {
+	test('runExclusive passes rejection', function () {
 		return mutex
 			.runExclusive<number>(() => Promise.reject('foo'))
 			.then(
 				() => Promise.reject('should have been rejected'),
-				value => expect(value).toBe('foo')
+				(value) => expect(value).toBe('foo')
 			);
 	});
 
-	test('runExclusive passes exception', function() {
+	test('runExclusive passes exception', function () {
 		return mutex
 			.runExclusive<number>(() => {
 				throw 'foo';
 			})
 			.then(
 				() => Promise.reject('should have been rejected'),
-				value => expect(value).toBe('foo')
+				(value) => expect(value).toBe('foo')
 			);
 	});
 
-	test('runExclusive is exclusive', function() {
+	test('runExclusive is exclusive', function () {
 		let flag = false;
 
 		mutex.runExclusive(
 			() =>
-				new Promise(resolve =>
+				new Promise((resolve) =>
 					setTimeout(() => {
 						flag = true;
 						resolve();
@@ -94,7 +94,7 @@ describe('Mutex', function() {
 		return mutex.runExclusive(() => expect(flag).toBe(true));
 	});
 
-	test('exceptions during runExclusive do not leave mutex locked', function() {
+	test('exceptions during runExclusive do not leave mutex locked', function () {
 		let flag = false;
 
 		mutex
@@ -110,11 +110,11 @@ describe('Mutex', function() {
 		return mutex.runExclusive(() => expect(flag).toBe(true));
 	});
 
-	test('new mutex is unlocked', function() {
+	test('new mutex is unlocked', function () {
 		expect(!mutex.isLocked()).toBe(true);
 	});
 
-	test('isLocked reflects the mutex state', async function() {
+	test('isLocked reflects the mutex state', async function () {
 		const lock1 = mutex.acquire(),
 			lock2 = mutex.acquire();
 

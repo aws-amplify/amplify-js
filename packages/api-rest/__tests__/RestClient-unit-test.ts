@@ -8,7 +8,7 @@ jest
 
 jest.mock('axios', () => {
 	return {
-		default: signed_params => {
+		default: (signed_params) => {
 			return new Promise((res, rej) => {
 				const withCredentialsSuffix =
 					signed_params && signed_params.withCredentials
@@ -476,9 +476,7 @@ describe('RestClient test', () => {
 			const restClient = new RestClient(apiOptions);
 			// if the request doesn't exist we can still say it is canceled successfully
 			expect(
-				restClient.cancel(
-					new Promise<any>((req, res) => {})
-				)
+				restClient.cancel(new Promise<any>((req, res) => {}))
 			).toBeTruthy();
 		});
 

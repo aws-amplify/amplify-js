@@ -26,7 +26,7 @@ export default class DataStoreConnectivity {
 		if (this.observer) {
 			throw new Error('Subscriber already exists');
 		}
-		return new Observable(observer => {
+		return new Observable((observer) => {
 			this.observer = observer;
 			// Will be used to forward socket connection changes, enhancing Reachability
 

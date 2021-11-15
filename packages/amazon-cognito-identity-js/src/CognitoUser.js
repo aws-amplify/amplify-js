@@ -481,7 +481,8 @@ export default class CognitoUser {
 			let userAttributes = null;
 			let rawRequiredAttributes = null;
 			const requiredAttributes = [];
-			const userAttributesPrefix = authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
+			const userAttributesPrefix =
+				authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
 
 			if (challengeParameters) {
 				userAttributes = JSON.parse(
@@ -523,7 +524,7 @@ export default class CognitoUser {
 		authenticationHelper.generateHashDevice(
 			dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceGroupKey,
 			dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey,
-			errGenHash => {
+			(errGenHash) => {
 				if (errGenHash) {
 					return callback.onFailure(errGenHash);
 				}
@@ -601,11 +602,12 @@ export default class CognitoUser {
 		const authenticationHelper = new AuthenticationHelper(
 			this.pool.getUserPoolId().split('_')[1]
 		);
-		const userAttributesPrefix = authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
+		const userAttributesPrefix =
+			authenticationHelper.getNewPasswordRequiredChallengeUserAttributePrefix();
 
 		const finalUserAttributes = {};
 		if (requiredAttributeData) {
-			Object.keys(requiredAttributeData).forEach(key => {
+			Object.keys(requiredAttributeData).forEach((key) => {
 				finalUserAttributes[userAttributesPrefix + key] =
 					requiredAttributeData[key];
 			});
@@ -781,7 +783,7 @@ export default class CognitoUser {
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
 		}
-		this.client.request('ConfirmSignUp', jsonReq, err => {
+		this.client.request('ConfirmSignUp', jsonReq, (err) => {
 			if (err) {
 				return callback(err, null);
 			}
@@ -901,7 +903,7 @@ export default class CognitoUser {
 					dataAuthenticate.AuthenticationResult.NewDeviceMetadata
 						.DeviceGroupKey,
 					dataAuthenticate.AuthenticationResult.NewDeviceMetadata.DeviceKey,
-					errGenHash => {
+					(errGenHash) => {
 						if (errGenHash) {
 							return callback.onFailure(errGenHash);
 						}
@@ -980,7 +982,7 @@ export default class CognitoUser {
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 				ClientMetadata: clientMetadata,
 			},
-			err => {
+			(err) => {
 				if (err) {
 					return callback(err, null);
 				}
@@ -1014,7 +1016,7 @@ export default class CognitoUser {
 				MFAOptions: mfaOptions,
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 			},
-			err => {
+			(err) => {
 				if (err) {
 					return callback(err, null);
 				}
@@ -1043,7 +1045,7 @@ export default class CognitoUser {
 				SoftwareTokenMfaSettings: softwareTokenMfaSettings,
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 			},
-			err => {
+			(err) => {
 				if (err) {
 					return callback(err, null);
 				}
@@ -1072,7 +1074,7 @@ export default class CognitoUser {
 				MFAOptions: mfaOptions,
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 			},
-			err => {
+			(err) => {
 				if (err) {
 					return callback(err, null);
 				}
@@ -1099,7 +1101,7 @@ export default class CognitoUser {
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 				ClientMetadata: clientMetadata,
 			},
-			err => {
+			(err) => {
 				if (err) {
 					return callback(err, null);
 				}
@@ -1132,7 +1134,7 @@ export default class CognitoUser {
 				UserAttributes: attributes,
 				ClientMetadata: clientMetadata,
 			},
-			err => {
+			(err) => {
 				if (err) {
 					return callback(err, null);
 				}
@@ -1228,7 +1230,7 @@ export default class CognitoUser {
 	 */
 	refreshSessionIfPossible(options = {}) {
 		// best effort, if not possible
-		return new Promise(resolve => {
+		return new Promise((resolve) => {
 			const refresh = this.signInUserSession.getRefreshToken();
 			if (refresh && refresh.getToken()) {
 				this.refreshSession(refresh, resolve, options.clientMetadata);
@@ -1260,7 +1262,7 @@ export default class CognitoUser {
 
 		if (!userData) {
 			this.fetchUserData()
-				.then(data => {
+				.then((data) => {
 					callback(null, data);
 				})
 				.catch(callback);
@@ -1269,10 +1271,10 @@ export default class CognitoUser {
 
 		if (this.isFetchUserDataAndTokenRequired(params)) {
 			this.fetchUserData()
-				.then(data => {
+				.then((data) => {
 					return this.refreshSessionIfPossible(params).then(() => data);
 				})
-				.then(data => callback(null, data))
+				.then((data) => callback(null, data))
 				.catch(callback);
 			return;
 		}
@@ -1314,7 +1316,7 @@ export default class CognitoUser {
 	 * be directly called by the consumers.
 	 */
 	fetchUserData() {
-		return this.createGetUserRequest().then(data => {
+		return this.createGetUserRequest().then((data) => {
 			this.cacheUserData(data);
 			return data;
 		});
@@ -1337,7 +1339,7 @@ export default class CognitoUser {
 				UserAttributeNames: attributeList,
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 			},
-			err => {
+			(err) => {
 				if (err) {
 					return callback(err, null);
 				}
@@ -1497,9 +1499,8 @@ export default class CognitoUser {
 				) {
 					authenticationResult.RefreshToken = refreshToken.getToken();
 				}
-				this.signInUserSession = this.getCognitoUserSession(
-					authenticationResult
-				);
+				this.signInUserSession =
+					this.getCognitoUserSession(authenticationResult);
 				this.cacheTokens();
 				return wrappedCallback(null, this.signInUserSession);
 			}
@@ -1700,7 +1701,7 @@ export default class CognitoUser {
 		if (this.getUserContextData()) {
 			jsonReq.UserContextData = this.getUserContextData();
 		}
-		this.client.request('ConfirmForgotPassword', jsonReq, err => {
+		this.client.request('ConfirmForgotPassword', jsonReq, (err) => {
 			if (err) {
 				return callback.onFailure(err);
 			}
@@ -1763,7 +1764,7 @@ export default class CognitoUser {
 				Code: confirmationCode,
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 			},
-			err => {
+			(err) => {
 				if (err) {
 					return callback.onFailure(err);
 				}
@@ -1820,7 +1821,7 @@ export default class CognitoUser {
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 				DeviceKey: deviceKey,
 			},
-			err => {
+			(err) => {
 				if (err) {
 					return callback.onFailure(err);
 				}
@@ -1840,7 +1841,7 @@ export default class CognitoUser {
 	forgetDevice(callback) {
 		this.forgetSpecificDevice(this.deviceKey, {
 			onFailure: callback.onFailure,
-			onSuccess: result => {
+			onSuccess: (result) => {
 				this.deviceKey = null;
 				this.deviceGroupKey = null;
 				this.randomPassword = null;
@@ -1869,7 +1870,7 @@ export default class CognitoUser {
 				DeviceKey: this.deviceKey,
 				DeviceRememberedStatus: 'remembered',
 			},
-			err => {
+			(err) => {
 				if (err) {
 					return callback.onFailure(err);
 				}
@@ -1898,7 +1899,7 @@ export default class CognitoUser {
 				DeviceKey: this.deviceKey,
 				DeviceRememberedStatus: 'not_remembered',
 			},
-			err => {
+			(err) => {
 				if (err) {
 					return callback.onFailure(err);
 				}
@@ -1957,7 +1958,7 @@ export default class CognitoUser {
 			{
 				AccessToken: this.signInUserSession.getAccessToken().getJwtToken(),
 			},
-			err => {
+			(err) => {
 				if (err) {
 					return callback.onFailure(err);
 				}
@@ -1985,7 +1986,7 @@ export default class CognitoUser {
 				return revokeTokenCallback(error);
 			}
 
-			this.revokeTokens(err => {
+			this.revokeTokens((err) => {
 				this.cleanClientData();
 
 				revokeTokenCallback(err);
@@ -2051,7 +2052,7 @@ export default class CognitoUser {
 				Token: token,
 				ClientId: this.pool.getClientId(),
 			},
-			err => {
+			(err) => {
 				if (err) {
 					return callback(err);
 				}

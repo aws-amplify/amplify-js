@@ -41,7 +41,7 @@ describe('User-Attribute-validation', () => {
 					Value: 'false',
 				});
 
-				return new Promise(res => {
+				return new Promise((res) => {
 					res([emailAttribute, emailVerified, phoneAttribute, phoneVerified]);
 				});
 			});
@@ -103,7 +103,7 @@ describe('User-Attribute-validation', () => {
 
 		const spyGetUserData = jest
 			.spyOn(CognitoUser.prototype, 'getUserData')
-			.mockImplementation(callback => {
+			.mockImplementation((callback) => {
 				const emailAttribute = {
 					Name: 'email',
 					Value: 'hello@amzn.com',

@@ -49,7 +49,7 @@ export class AmplifyGoogleButton {
 			.catch(this.handleError);
 	}
 
-	private handleError = error => {
+	private handleError = (error) => {
 		console.error(error);
 	};
 
@@ -60,7 +60,7 @@ export class AmplifyGoogleButton {
 		window['gapi'].load('auth2');
 	};
 
-	private handleUser = async user => {
+	private handleUser = async (user) => {
 		if (
 			!Auth ||
 			typeof Auth.federatedSignIn !== 'function' ||
@@ -103,7 +103,7 @@ export class AmplifyGoogleButton {
 	render() {
 		return (
 			<amplify-sign-in-button
-				onClick={event => this.signInWithGoogle(event)}
+				onClick={(event) => this.signInWithGoogle(event)}
 				provider="google"
 			>
 				<script

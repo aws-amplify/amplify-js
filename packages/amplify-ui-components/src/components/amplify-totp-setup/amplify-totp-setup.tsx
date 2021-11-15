@@ -39,9 +39,8 @@ export class AmplifyTOTPSetup {
 	/** Used for customizing the issuer string in the qr code image */
 	@Prop() issuer: string = Translations.TOTP_ISSUER;
 	/** This is run after totp setup is complete. Useful if using this as standalone. */
-	@Prop() handleComplete: (
-		user: CognitoUserInterface
-	) => void | Promise<void> = this.onTOTPEvent;
+	@Prop() handleComplete: (user: CognitoUserInterface) => void | Promise<void> =
+		this.onTOTPEvent;
 	/** Set this to true if this component is running outside the default `amplify-authenticator` usage */
 	@Prop() standalone: boolean = false;
 
@@ -62,7 +61,7 @@ export class AmplifyTOTPSetup {
 		 * it is even rendered. So instead we watch for authstate changes and run setup conditionally.
 		 */
 		if (!this.standalone) {
-			this.removeHubListener = onAuthUIStateChange(authState => {
+			this.removeHubListener = onAuthUIStateChange((authState) => {
 				if (authState === AuthState.TOTPSetup) this.setup();
 			});
 		}
@@ -183,7 +182,7 @@ export class AmplifyTOTPSetup {
 				<amplify-form-section
 					headerText={I18n.get(this.headerText)}
 					submitButtonText={I18n.get(Translations.TOTP_SUBMIT_BUTTON_TEXT)}
-					handleSubmit={event => this.verifyTotpToken(event)}
+					handleSubmit={(event) => this.verifyTotpToken(event)}
 					loading={this.loading}
 				>
 					<div class="totp-setup">
@@ -198,7 +197,7 @@ export class AmplifyTOTPSetup {
 							inputProps={this.inputProps}
 							fieldId="totpCode"
 							name="totpCode"
-							handleInputChange={event => this.handleTotpInputChange(event)}
+							handleInputChange={(event) => this.handleTotpInputChange(event)}
 						/>
 					</div>
 				</amplify-form-section>

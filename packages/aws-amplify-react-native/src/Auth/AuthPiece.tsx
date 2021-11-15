@@ -20,7 +20,7 @@ import AmplifyMessageMap from '../AmplifyMessageMap';
 import { FormField, PhoneField } from '../AmplifyUI';
 import TEST_ID from '../AmplifyTestIDs';
 import { OnStateChangeType, UsernameAttributesType } from '../../types';
-import { setTestId } from '../Utils'
+import { setTestId } from '../Utils';
 
 const logger = new Logger('AuthPiece');
 
@@ -48,10 +48,10 @@ export interface IAuthPieceState {
 	username?: string;
 }
 
-export default class AuthPiece<
-	Props extends IAuthPieceProps,
-	State extends IAuthPieceState
-> extends React.Component<Props, State> {
+export default class AuthPiece<Props extends IAuthPieceProps, State extends IAuthPieceState> extends React.Component<
+	Props,
+	State
+> {
 	_isHidden: boolean;
 	_validAuthStates: String[];
 
@@ -86,7 +86,7 @@ export default class AuthPiece<
 			return (
 				<FormField
 					theme={theme}
-					onChangeText={text => this.setState({ email: text })}
+					onChangeText={(text) => this.setState({ email: text })}
 					label={I18n.get('Email')}
 					placeholder={I18n.get('Enter your email')}
 					required={true}
@@ -99,7 +99,7 @@ export default class AuthPiece<
 				<PhoneField
 					theme={theme}
 					key={'phone_number'}
-					onChangeText={text => this.setState({ phone_number: text })}
+					onChangeText={(text) => this.setState({ phone_number: text })}
 					label={I18n.get('Phone Number')}
 					placeholder={I18n.get('Enter your phone number')}
 					keyboardType="phone-pad"
@@ -112,7 +112,7 @@ export default class AuthPiece<
 			return (
 				<FormField
 					theme={theme}
-					onChangeText={text => this.setState({ username: text })}
+					onChangeText={(text) => this.setState({ username: text })}
 					label={I18n.get(this.getUsernameLabel())}
 					placeholder={I18n.get('Enter your username')}
 					required={true}
@@ -135,7 +135,7 @@ export default class AuthPiece<
 	}
 
 	checkContact(user: any) {
-		Auth.verifiedContact(user).then(data => {
+		Auth.verifiedContact(user).then((data) => {
 			logger.debug('verified user attributes', data);
 			if (!JS.isEmpty(data.verified)) {
 				this.changeState('signedIn', user);
@@ -158,8 +158,7 @@ export default class AuthPiece<
 			msg = JSON.stringify(err);
 		}
 
-		const map =
-			this.props.errorMessage || this.props.messageMap || AmplifyMessageMap;
+		const map = this.props.errorMessage || this.props.messageMap || AmplifyMessageMap;
 		msg = typeof map === 'string' ? map : map(msg);
 		this.setState({ error: msg });
 		Keyboard.dismiss();

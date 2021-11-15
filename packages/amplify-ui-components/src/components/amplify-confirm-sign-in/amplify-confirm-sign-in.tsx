@@ -26,7 +26,7 @@ import { checkContact } from '../../common/auth-helpers';
 })
 export class AmplifyConfirmSignIn {
 	/** Fires when confirm sign in form is submitted */
-	@Prop() handleSubmit: (event: Event) => void = event => this.confirm(event);
+	@Prop() handleSubmit: (event: Event) => void = (event) => this.confirm(event);
 	/** Used for header text in confirm sign in component */
 	@Prop() headerText: string = Translations.CONFIRM_SMS_CODE;
 	/** Used for the submit button text in confirm sign in component */
@@ -39,7 +39,7 @@ export class AmplifyConfirmSignIn {
 		{
 			type: 'code',
 			required: true,
-			handleInputChange: event => this.handleCodeChange(event),
+			handleInputChange: (event) => this.handleCodeChange(event),
 		},
 	];
 	/**
@@ -137,7 +137,7 @@ export class AmplifyConfirmSignIn {
 			} else {
 				// This is a code input field. Attach input handler.
 				content.push({
-					handleInputChange: event => this.handleCodeChange(event),
+					handleInputChange: (event) => this.handleCodeChange(event),
 					...(formField as FormFieldType), // `inputProps` will be passed over here.
 				});
 			}

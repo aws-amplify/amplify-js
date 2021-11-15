@@ -63,14 +63,14 @@ export class SignOut extends AuthPiece<ISignOutProps, ISignOutState> {
 	findState() {
 		if (!this.props.authState && !this.props.authData) {
 			Auth.currentAuthenticatedUser()
-				.then(user => {
+				.then((user) => {
 					this.setState({
 						authState: 'signedIn',
 						authData: user,
 						stateFromStorage: true,
 					});
 				})
-				.catch(err => logger.error(err));
+				.catch((err) => logger.error(err));
 		} else if (this.props.stateFromStorage) {
 			this.setState({
 				stateFromStorage: true,
@@ -118,12 +118,8 @@ export class SignOut extends AuthPiece<ISignOutProps, ISignOutState> {
 			);
 		}
 		logger.debug('sign out from the source', payload);
-		const {
-			googleSignOut,
-			facebookSignOut,
-			amazonSignOut,
-			auth0SignOut,
-		} = this.props;
+		const { googleSignOut, facebookSignOut, amazonSignOut, auth0SignOut } =
+			this.props;
 		// @ts-ignore
 		switch (payload.provider) {
 			case Constants.GOOGLE:
@@ -158,7 +154,7 @@ export class SignOut extends AuthPiece<ISignOutProps, ISignOutState> {
 					this.changeState('signedOut');
 				}
 			})
-			.catch(err => {
+			.catch((err) => {
 				logger.debug(err);
 				this.error(err);
 			});

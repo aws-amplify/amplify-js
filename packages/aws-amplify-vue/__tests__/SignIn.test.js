@@ -81,7 +81,7 @@ describe('SignIn', () => {
 		});
 		it('...should emit customConfirmSignIn state when signIn function is called and response indicates a custom challenge', async () => {
 			let customTestState = 0;
-			AmplifyEventBus.$on('authState', val => {
+			AmplifyEventBus.$on('authState', (val) => {
 				if (val === 'customConfirmSignIn') {
 					customTestState = 3;
 				}
@@ -91,7 +91,7 @@ describe('SignIn', () => {
 		});
 		it('...should emit authState when forgot method called', () => {
 			testState = 0;
-			AmplifyEventBus.$on('authState', val => {
+			AmplifyEventBus.$on('authState', (val) => {
 				if (val === 'forgotPassword') {
 					testState = 1;
 				}
@@ -101,7 +101,7 @@ describe('SignIn', () => {
 		});
 		it('...should emit authState when signUp method called', () => {
 			testState = 0;
-			AmplifyEventBus.$on('authState', val => {
+			AmplifyEventBus.$on('authState', (val) => {
 				if (val === 'signUp') {
 					testState = 2;
 				}

@@ -26,7 +26,7 @@ export class AmplifyFacebookButton {
 	@Prop()
 	handleAuthStateChange: AuthStateHandler = dispatchAuthStateChangeEvent;
 
-	private federatedSignIn = authResponse => {
+	private federatedSignIn = (authResponse) => {
 		const { accessToken, expiresIn } = authResponse;
 
 		if (!accessToken) {
@@ -45,7 +45,7 @@ export class AmplifyFacebookButton {
 		const expires_at = expiresIn * 1000 + date.getTime();
 		const fields = 'name,email';
 
-		window['FB'].api('/me', { fields }, async response => {
+		window['FB'].api('/me', { fields }, async (response) => {
 			const user = {
 				name: response.name,
 				email: response.email,
@@ -64,7 +64,7 @@ export class AmplifyFacebookButton {
 	};
 
 	private getLoginStatus = () => {
-		window['FB'].getLoginStatus(response => {
+		window['FB'].getLoginStatus((response) => {
 			try {
 				window.localStorage.setItem(
 					AUTH_SOURCE_KEY,
@@ -102,7 +102,7 @@ export class AmplifyFacebookButton {
 		const scope = 'public_profile,email';
 
 		window['FB'].login(
-			response => {
+			(response) => {
 				if (response && response.authResponse) {
 					this.federatedSignIn(response.authResponse);
 				}
@@ -114,7 +114,7 @@ export class AmplifyFacebookButton {
 	render() {
 		return (
 			<amplify-sign-in-button
-				onClick={event => this.signInWithFacebook(event)}
+				onClick={(event) => this.signInWithFacebook(event)}
 				provider="facebook"
 			>
 				<script

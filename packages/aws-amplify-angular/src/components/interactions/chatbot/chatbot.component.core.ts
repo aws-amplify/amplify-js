@@ -223,14 +223,14 @@ export class ChatbotComponentCore implements OnInit {
 				message.botSentTime = new Date().toLocaleTimeString();
 				this.messages.push(message);
 			})
-			.catch(error => this.logger.error(error));
+			.catch((error) => this.logger.error(error));
 	}
 
 	onSilenceHandler = () => {
 		if (!this.continueConversation) {
 			return;
 		}
-		this.audioControl.exportWAV(blob => {
+		this.audioControl.exportWAV((blob) => {
 			this.currentVoiceState = STATES.SENDING.MESSAGE;
 			this.audioInput = blob;
 			this.micText = STATES.SENDING.ICON;

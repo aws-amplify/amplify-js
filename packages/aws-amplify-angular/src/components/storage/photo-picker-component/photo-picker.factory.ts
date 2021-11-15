@@ -73,9 +73,10 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
 						storageOptions: this.storageOptions,
 				  });
 
-		const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-			photoPickerComponent.component
-		);
+		const componentFactory =
+			this.componentFactoryResolver.resolveComponentFactory(
+				photoPickerComponent.component
+			);
 
 		const viewContainerRef = this.componentHost.viewContainerRef;
 		viewContainerRef.clear();
@@ -83,15 +84,15 @@ export class PhotoPickerComponent implements OnInit, OnDestroy {
 		const componentRef = viewContainerRef.createComponent(componentFactory);
 		(<PhotoPickerClass>componentRef.instance).data = photoPickerComponent.data;
 
-		componentRef.instance.picked.subscribe(e => {
+		componentRef.instance.picked.subscribe((e) => {
 			this.picked.emit(e);
 		});
 
-		componentRef.instance.loaded.subscribe(e => {
+		componentRef.instance.loaded.subscribe((e) => {
 			this.loaded.emit(e);
 		});
 
-		componentRef.instance.uploaded.subscribe(e => {
+		componentRef.instance.uploaded.subscribe((e) => {
 			this.uploaded.emit(e);
 		});
 	}

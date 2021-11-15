@@ -49,7 +49,7 @@ const normalizeHeaders = (
 };
 
 export const reactNativeRequestTransformer: AxiosTransformer[] = [
-	function(data, headers) {
+	function (data, headers) {
 		if (isBlob(data)) {
 			normalizeHeaders(headers, 'Content-Type');
 			normalizeHeaders(headers, 'Accept');
@@ -129,7 +129,7 @@ export class AxiosHttpHandler implements HttpHandler {
 			if (
 				axiosRequest.headers[
 					Object.keys(axiosRequest.headers).find(
-						key => key.toLowerCase() === 'content-type'
+						(key) => key.toLowerCase() === 'content-type'
 					)
 				]
 			) {
@@ -137,11 +137,11 @@ export class AxiosHttpHandler implements HttpHandler {
 			}
 		}
 		if (emitter) {
-			axiosRequest.onUploadProgress = function(event) {
+			axiosRequest.onUploadProgress = function (event) {
 				emitter.emit(SEND_UPLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
-			axiosRequest.onDownloadProgress = function(event) {
+			axiosRequest.onDownloadProgress = function (event) {
 				emitter.emit(SEND_DOWNLOAD_PROGRESS_EVENT, event);
 				logger.debug(event);
 			};
@@ -168,7 +168,7 @@ export class AxiosHttpHandler implements HttpHandler {
 		const raceOfPromises = [
 			axios
 				.request(axiosRequest)
-				.then(response => {
+				.then((response) => {
 					return {
 						response: new HttpResponse({
 							headers: response.headers,
@@ -177,7 +177,7 @@ export class AxiosHttpHandler implements HttpHandler {
 						}),
 					};
 				})
-				.catch(error => {
+				.catch((error) => {
 					// Error
 					if (
 						error.message !==

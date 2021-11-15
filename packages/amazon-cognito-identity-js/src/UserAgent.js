@@ -1,10 +1,10 @@
-import { getUserAgent } from "./Platform";
+import { getUserAgent } from './Platform';
 // constructor
-function UserAgent() { }
+function UserAgent() {}
 // public
 UserAgent.prototype.userAgent = getUserAgent();
 
-export const appendToCognitoUserAgent = content => {
+export const appendToCognitoUserAgent = (content) => {
 	if (!content) {
 		return;
 	}

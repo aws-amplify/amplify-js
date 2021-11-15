@@ -247,7 +247,7 @@ describe('authenticateUserDefaultAuth()', () => {
 	test('errOnAValue fails gracefully', () => {
 		jest
 			.spyOn(AuthenticationHelper.prototype, 'getLargeAValue')
-			.mockImplementation(cb => cb('test error', 12345));
+			.mockImplementation((cb) => cb('test error', 12345));
 
 		user.authenticateUserDefaultAuth(authDetails, callback);
 
@@ -581,7 +581,7 @@ describe('getDeviceResponse()', () => {
 		const err = new Error('Cannot get large A value for some reason.');
 		jest
 			.spyOn(AuthenticationHelper.prototype, 'getLargeAValue')
-			.mockImplementation(cb => cb(err, 12345));
+			.mockImplementation((cb) => cb(err, 12345));
 
 		user.getDeviceResponse(callback, {});
 		expect(callback.onFailure).toBeCalledWith(err);
@@ -590,7 +590,7 @@ describe('getDeviceResponse()', () => {
 	test('Auth helper getLargeAValue happy path', () => {
 		jest
 			.spyOn(AuthenticationHelper.prototype, 'getLargeAValue')
-			.mockImplementation(cb => cb(null, 12345));
+			.mockImplementation((cb) => cb(null, 12345));
 		const spyon2 = jest.spyOn(user, 'getUserContextData');
 
 		user.getDeviceResponse(callback, {});
@@ -1536,7 +1536,7 @@ describe('deleteAttributes()', () => {
 
 		const getUserDataSpy = jest
 			.spyOn(cognitoUser, 'getUserData')
-			.mockImplementationOnce(cb => cb());
+			.mockImplementationOnce((cb) => cb());
 
 		cognitoUser.deleteAttributes([], callback);
 		expect(getUserDataSpy).toBeCalled();

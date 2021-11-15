@@ -65,9 +65,10 @@ export class S3AlbumComponent implements OnInit, OnDestroy {
 						options: this.options,
 				  });
 
-		const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-			albumComponent.component
-		);
+		const componentFactory =
+			this.componentFactoryResolver.resolveComponentFactory(
+				albumComponent.component
+			);
 
 		const viewContainerRef = this.componentHost.viewContainerRef;
 		viewContainerRef.clear();
@@ -75,7 +76,7 @@ export class S3AlbumComponent implements OnInit, OnDestroy {
 		const componentRef = viewContainerRef.createComponent(componentFactory);
 		(<S3AlbumClass>componentRef.instance).data = albumComponent.data;
 
-		componentRef.instance.selected.subscribe(e => {
+		componentRef.instance.selected.subscribe((e) => {
 			this.selected.emit(e);
 		});
 	}

@@ -168,11 +168,11 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		delay,
 		times
 	): Promise<boolean> {
-		const wait = ms => new Promise(r => setTimeout(r, ms));
+		const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 		return new Promise((resolve, reject) => {
 			return operation(params)
 				.then(resolve)
-				.catch(reason => {
+				.catch((reason) => {
 					if (times - 1 > 0) {
 						return wait(delay)
 							.then(
@@ -260,10 +260,8 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 			const events: RecordEventPayload[] = [];
 			for (let i = 0; i < groupLen; i += 1) {
 				const params: RequestParams = group.shift();
-				const eventPayload: RecordEventPayload = this._generateSingleRecordPayload(
-					params,
-					sessionInfo
-				);
+				const eventPayload: RecordEventPayload =
+					this._generateSingleRecordPayload(params, sessionInfo);
 				events.push(eventPayload);
 			}
 			const payload = <PutEventsCommandInput>{};
@@ -271,12 +269,12 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 			payload.sessionId = sessionInfo.sessionId;
 			payload.userId = sessionInfo.userId;
 			payload.eventList = [];
-			events.forEach(event => {
+			events.forEach((event) => {
 				// @ts-ignore
 				payload.eventList.push(event);
 			});
 			const command: PutEventsCommand = new PutEventsCommand(payload);
-			this._personalize.send(command, err => {
+			this._personalize.send(command, (err) => {
 				if (err) logger.debug('Failed to call putEvents in Personalize', err);
 				else logger.debug('Put events');
 			});
@@ -335,7 +333,7 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 		}
 		eventsGroups.push(group);
 
-		eventsGroups.map(group => {
+		eventsGroups.map((group) => {
 			this._sendEvents(group);
 		});
 	}
@@ -396,12 +394,12 @@ export class AmazonPersonalizeProvider implements AnalyticsProvider {
 	private _getCredentials() {
 		const that = this;
 		return Credentials.get()
-			.then(credentials => {
+			.then((credentials) => {
 				if (!credentials) return null;
 				logger.debug('set credentials for analytics', that._config.credentials);
 				return Credentials.shear(credentials);
 			})
-			.catch(err => {
+			.catch((err) => {
 				logger.debug('ensure credentials error', err);
 				return null;
 			});

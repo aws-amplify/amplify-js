@@ -5,38 +5,23 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.1.15...@aws-amplify/pubsub@4.2.0) (2021-11-12)
 
-
 ### Bug Fixes
 
-* AWSAppSyncRealTimeProvider websocket init fix ([#9200](https://github.com/aws-amplify/amplify-js/issues/9200)) ([99dbdda](https://github.com/aws-amplify/amplify-js/commit/99dbddad8c8b0d017c9004961b53b6f9198719b7))
-
+- AWSAppSyncRealTimeProvider websocket init fix ([#9200](https://github.com/aws-amplify/amplify-js/issues/9200)) ([99dbdda](https://github.com/aws-amplify/amplify-js/commit/99dbddad8c8b0d017c9004961b53b6f9198719b7))
 
 ### Features
 
-* **amplify-js:** add CD support ([#9171](https://github.com/aws-amplify/amplify-js/issues/9171)) ([d30709f](https://github.com/aws-amplify/amplify-js/commit/d30709fd25236026af8378ab7ac7dad1ec914f83))
-
-
-
-
+- **amplify-js:** add CD support ([#9171](https://github.com/aws-amplify/amplify-js/issues/9171)) ([d30709f](https://github.com/aws-amplify/amplify-js/commit/d30709fd25236026af8378ab7ac7dad1ec914f83))
 
 ## [4.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.1.14...@aws-amplify/pubsub@4.1.15) (2021-11-09)
 
-
 ### Reverts
 
-* uuid dependency upgrade ([#9159](https://github.com/aws-amplify/amplify-js/issues/9159)) ([4ef8aa9](https://github.com/aws-amplify/amplify-js/commit/4ef8aa9c7c25dbe921fd02b6205b8defb93fbaec))
-
-
-
-
+- uuid dependency upgrade ([#9159](https://github.com/aws-amplify/amplify-js/issues/9159)) ([4ef8aa9](https://github.com/aws-amplify/amplify-js/commit/4ef8aa9c7c25dbe921fd02b6205b8defb93fbaec))
 
 ## [4.1.14](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.1.13...@aws-amplify/pubsub@4.1.14) (2021-10-28)
 
 **Note:** Version bump only for package @aws-amplify/pubsub
-
-
-
-
 
 ## [4.1.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/pubsub@4.1.12...@aws-amplify/pubsub@4.1.13) (2021-10-21)
 

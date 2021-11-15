@@ -80,7 +80,7 @@ export class S3ImageComponentCore implements OnInit {
 		this.amplifyService
 			.storage()
 			.get(path, options)
-			.then(url => (this.url = url))
-			.catch(e => console.error(e));
+			.then((url) => (this.url = url))
+			.catch((e) => console.error(e));
 	}
 }

@@ -14,7 +14,7 @@ import * as Paho from 'paho-mqtt';
 
 const pahoClientMockCache = {};
 
-const mockConnect = jest.fn(options => {
+const mockConnect = jest.fn((options) => {
 	options.onSuccess();
 });
 
@@ -54,7 +54,7 @@ const credentials = {
 const testPubSubAsync = (pubsub, topic, message, options?) =>
 	new Promise((resolve, reject) => {
 		const obs = pubsub.subscribe(topic, options).subscribe({
-			next: data => {
+			next: (data) => {
 				expect(data.value).toEqual(message);
 				obs.unsubscribe();
 				resolve();
@@ -91,7 +91,7 @@ const testAppSyncAsync = (pubsub, topic, message) =>
 		};
 
 		const obs = pubsub.subscribe(topic, opt).subscribe({
-			next: data => {
+			next: (data) => {
 				expect(data.value.data[testTopicAlias]).toEqual(message);
 				obs.unsubscribe();
 				resolve();
@@ -157,7 +157,7 @@ describe('PubSub', () => {
 	});
 
 	describe('AWSIoTProvider', () => {
-		test('subscribe and publish to the same topic using AWSIoTProvider', async done => {
+		test('subscribe and publish to the same topic using AWSIoTProvider', async (done) => {
 			const config = {
 				PubSub: {
 					aws_pubsub_region: 'region',
@@ -177,12 +177,12 @@ describe('PubSub', () => {
 				provider: awsIotProvider,
 			};
 			const obs = pubsub.subscribe('topicA').subscribe({
-				next: data => {
+				next: (data) => {
 					expect(data).toEqual(expectedData);
 					done();
 				},
 				complete: () => console.log('done'),
-				error: error => console.log('error', error),
+				error: (error) => console.log('error', error),
 			});
 
 			await pubsub.publish('topicA', 'my message');
@@ -258,7 +258,7 @@ describe('PubSub', () => {
 			});
 		});
 
-		test('trigger observer error when disconnected', done => {
+		test('trigger observer error when disconnected', (done) => {
 			const pubsub = new PubSub();
 
 			const awsIotProvider = new AWSIoTProvider({
@@ -426,16 +426,16 @@ describe('PubSub', () => {
 			pubsub.addPluggable(mqttOverWSProvider);
 
 			const subscription1 = pubsub.subscribe(['topic1', 'topic2']).subscribe({
-				next: _data => {
+				next: (_data) => {
 					console.log({ _data });
 				},
 				complete: () => console.log('done'),
-				error: error => console.log('error', error),
+				error: (error) => console.log('error', error),
 			});
 
 			// TODO: we should now when the connection is established to wait for that first
 			await (() => {
-				return new Promise(res => {
+				return new Promise((res) => {
 					setTimeout(res, 100);
 				});
 			})();
@@ -461,24 +461,24 @@ describe('PubSub', () => {
 				pubsub.addPluggable(mqttOverWSProvider);
 
 				const subscription1 = pubsub.subscribe(['topic1', 'topic2']).subscribe({
-					next: _data => {
+					next: (_data) => {
 						console.log({ _data });
 					},
 					complete: () => console.log('done'),
-					error: error => console.log('error', error),
+					error: (error) => console.log('error', error),
 				});
 
 				const subscription2 = pubsub.subscribe(['topic3', 'topic4']).subscribe({
-					next: _data => {
+					next: (_data) => {
 						console.log({ _data });
 					},
 					complete: () => console.log('done'),
-					error: error => console.log('error', error),
+					error: (error) => console.log('error', error),
 				});
 
 				// TODO: we should now when the connection is established to wait for that first
 				await (() => {
-					return new Promise(res => {
+					return new Promise((res) => {
 						setTimeout(res, 100);
 					});
 				})();

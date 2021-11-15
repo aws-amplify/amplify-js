@@ -7,25 +7,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @aws-amplify/ui-vue
 
-
-
-
-
 ## [1.1.17](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@1.1.16...@aws-amplify/ui-vue@1.1.17) (2021-11-09)
 
 **Note:** Version bump only for package @aws-amplify/ui-vue
 
-
-
-
-
 ## [1.1.16](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@1.1.15...@aws-amplify/ui-vue@1.1.16) (2021-10-28)
 
 **Note:** Version bump only for package @aws-amplify/ui-vue
-
-
-
-
 
 ## [1.1.15](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-vue@1.1.14...@aws-amplify/ui-vue@1.1.15) (2021-10-21)
 

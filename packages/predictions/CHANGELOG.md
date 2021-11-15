@@ -7,28 +7,15 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 **Note:** Version bump only for package @aws-amplify/predictions
 
-
-
-
-
 ## [4.0.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.22...@aws-amplify/predictions@4.0.23) (2021-11-09)
-
 
 ### Reverts
 
-* uuid dependency upgrade ([#9159](https://github.com/aws-amplify/amplify-js/issues/9159)) ([4ef8aa9](https://github.com/aws-amplify/amplify-js/commit/4ef8aa9c7c25dbe921fd02b6205b8defb93fbaec))
-
-
-
-
+- uuid dependency upgrade ([#9159](https://github.com/aws-amplify/amplify-js/issues/9159)) ([4ef8aa9](https://github.com/aws-amplify/amplify-js/commit/4ef8aa9c7c25dbe921fd02b6205b8defb93fbaec))
 
 ## [4.0.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.21...@aws-amplify/predictions@4.0.22) (2021-10-28)
 
 **Note:** Version bump only for package @aws-amplify/predictions
-
-
-
-
 
 ## [4.0.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/predictions@4.0.20...@aws-amplify/predictions@4.0.21) (2021-10-21)
 

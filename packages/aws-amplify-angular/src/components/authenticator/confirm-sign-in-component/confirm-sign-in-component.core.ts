@@ -107,7 +107,7 @@ export class ConfirmSignInComponentCore implements OnInit {
 	}
 
 	shouldHide(comp) {
-		return this.hide.filter(item => item === comp).length > 0;
+		return this.hide.filter((item) => item === comp).length > 0;
 	}
 
 	setCode(code: string) {
@@ -126,7 +126,7 @@ export class ConfirmSignInComponentCore implements OnInit {
 				this.onAlertClose();
 				this.amplifyService.setAuthState({ state: 'signedIn', user });
 			})
-			.catch(err => this._setError(err));
+			.catch((err) => this._setError(err));
 	}
 
 	onSignIn() {

@@ -66,9 +66,10 @@ export class S3ImageComponent implements OnInit, OnDestroy {
 						options: this.options,
 				  });
 
-		const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-			imageComponent.component
-		);
+		const componentFactory =
+			this.componentFactoryResolver.resolveComponentFactory(
+				imageComponent.component
+			);
 
 		const viewContainerRef = this.componentHost.viewContainerRef;
 		viewContainerRef.clear();
@@ -76,7 +77,7 @@ export class S3ImageComponent implements OnInit, OnDestroy {
 		const componentRef = viewContainerRef.createComponent(componentFactory);
 		(<S3ImageClass>componentRef.instance).data = imageComponent.data;
 
-		componentRef.instance.selected.subscribe(e => {
+		componentRef.instance.selected.subscribe((e) => {
 			this.selected.emit(e);
 		});
 	}

@@ -113,7 +113,7 @@ export class AWSS3ProviderManagedUpload {
 				await this.checkIfUploadCancelled(uploadId);
 			}
 
-			parts.map(part => {
+			parts.map((part) => {
 				this.removeEventListener(part);
 			});
 
@@ -156,7 +156,7 @@ export class AWSS3ProviderManagedUpload {
 	protected async uploadParts(uploadId: string, parts: Part[]) {
 		try {
 			const allResults = await Promise.all(
-				parts.map(async part => {
+				parts.map(async (part) => {
 					this.setupEventListener(part);
 					const options: AxiosHttpHandlerOptions = { emitter: part.emitter };
 					const {
@@ -265,7 +265,7 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	private setupEventListener(part: Part) {
-		part.emitter.on(SEND_UPLOAD_PROGRESS_EVENT, progress => {
+		part.emitter.on(SEND_UPLOAD_PROGRESS_EVENT, (progress) => {
 			this.progressChanged(
 				part.partNumber,
 				progress.loaded - part._lastUploadedBytes

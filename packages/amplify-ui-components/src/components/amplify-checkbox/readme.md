@@ -1,7 +1,5 @@
 # amplify-checkbox
 
-
-
 <!-- Auto Generated Below -->
 
 

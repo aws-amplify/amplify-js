@@ -30,7 +30,7 @@ import {
 	Coordinates,
 } from '../../src/types';
 
-LocationClient.prototype.send = jest.fn(async command => {
+LocationClient.prototype.send = jest.fn(async (command) => {
 	if (
 		command instanceof SearchPlaceIndexForTextCommand ||
 		command instanceof SearchPlaceIndexForPositionCommand

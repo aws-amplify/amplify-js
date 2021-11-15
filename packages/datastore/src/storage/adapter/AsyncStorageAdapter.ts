@@ -168,7 +168,7 @@ export class AsyncStorageAdapter implements Adapter {
 		);
 
 		if (connectionStoreNames.length === 0) {
-			return records.map(record =>
+			return records.map((record) =>
 				this.modelInstanceCreator(modelConstructor, record)
 			);
 		}
@@ -222,7 +222,7 @@ export class AsyncStorageAdapter implements Adapter {
 			}
 		}
 
-		return records.map(record =>
+		return records.map((record) =>
 			this.modelInstanceCreator(modelConstructor, record)
 		);
 	}
@@ -284,7 +284,7 @@ export class AsyncStorageAdapter implements Adapter {
 		const idPredicate =
 			predicateObjs.length === 1 &&
 			(predicateObjs.find(
-				p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
+				(p) => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
 			) as PredicateObject<T>);
 
 		return idPredicate && idPredicate.operand;
@@ -299,7 +299,7 @@ export class AsyncStorageAdapter implements Adapter {
 		const all = <T[]>await this.getAll(storeName);
 
 		const filtered = predicateObjs
-			? all.filter(m => validatePredicate(m, type, predicateObjs))
+			? all.filter((m) => validatePredicate(m, type, predicateObjs))
 			: all;
 
 		return filtered;
@@ -352,9 +352,9 @@ export class AsyncStorageAdapter implements Adapter {
 			// models to be deleted.
 			const models = await this.query(modelConstructor, condition);
 			// TODO: refactor this to use a function like getRelations()
-			const relations = this.schema.namespaces[nameSpace].relationships[
-				modelConstructor.name
-			].relationTypes;
+			const relations =
+				this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+					.relationTypes;
 
 			if (condition !== undefined) {
 				await this.deleteTraverse(
@@ -419,9 +419,9 @@ export class AsyncStorageAdapter implements Adapter {
 					throw new Error(msg);
 				}
 
-				const relations = this.schema.namespaces[nameSpace].relationships[
-					modelConstructor.name
-				].relationTypes;
+				const relations =
+					this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+						.relationTypes;
 				await this.deleteTraverse(
 					relations,
 					[model],
@@ -430,9 +430,9 @@ export class AsyncStorageAdapter implements Adapter {
 					deleteQueue
 				);
 			} else {
-				const relations = this.schema.namespaces[nameSpace].relationships[
-					modelConstructor.name
-				].relationTypes;
+				const relations =
+					this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+						.relationTypes;
 
 				await this.deleteTraverse(
 					relations,
@@ -513,7 +513,7 @@ export class AsyncStorageAdapter implements Adapter {
 
 						const allRecords = await this.db.getAll(storeName);
 						const recordToDelete = allRecords.filter(
-							childItem => childItem[hasOneIndex] === value
+							(childItem) => childItem[hasOneIndex] === value
 						);
 
 						await this.deleteTraverse(
@@ -530,7 +530,7 @@ export class AsyncStorageAdapter implements Adapter {
 					for await (const model of models) {
 						const allRecords = await this.db.getAll(storeName);
 						const childrenArray = allRecords.filter(
-							childItem => childItem[index] === model.id
+							(childItem) => childItem[index] === model.id
 						);
 
 						await this.deleteTraverse(
@@ -554,7 +554,7 @@ export class AsyncStorageAdapter implements Adapter {
 
 		deleteQueue.push({
 			storeName: this.getStorename(nameSpace, srcModel),
-			items: models.map(record =>
+			items: models.map((record) =>
 				this.modelInstanceCreator(
 					this.getModelConstructorByModelName(nameSpace, srcModel),
 					record

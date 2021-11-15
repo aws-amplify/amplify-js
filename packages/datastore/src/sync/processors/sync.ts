@@ -46,10 +46,10 @@ class SyncProcessor {
 	}
 
 	private generateQueries() {
-		Object.values(this.schema.namespaces).forEach(namespace => {
+		Object.values(this.schema.namespaces).forEach((namespace) => {
 			Object.values(namespace.models)
 				.filter(({ syncable }) => syncable)
-				.forEach(model => {
+				.forEach((model) => {
 					const [[, ...opNameQuery]] = buildGraphQLOperation(
 						namespace,
 						model,
@@ -65,10 +65,11 @@ class SyncProcessor {
 		if (!this.syncPredicates) {
 			return null;
 		}
-		const predicatesGroup: PredicatesGroup<any> = ModelPredicateCreator.getPredicates(
-			this.syncPredicates.get(model),
-			false
-		);
+		const predicatesGroup: PredicatesGroup<any> =
+			ModelPredicateCreator.getPredicates(
+				this.syncPredicates.get(model),
+				false
+			);
 
 		if (!predicatesGroup) {
 			return null;
@@ -227,7 +228,7 @@ class SyncProcessor {
 						if (hasItems) {
 							const result = error;
 							result.data[opName].items = result.data[opName].items.filter(
-								item => item !== null
+								(item) => item !== null
 							);
 
 							if (error.errors) {
@@ -251,14 +252,14 @@ class SyncProcessor {
 						error &&
 						error.errors &&
 						(error.errors as [any]).some(
-							err => err.errorType === 'Unauthorized'
+							(err) => err.errorType === 'Unauthorized'
 						);
 					if (unauthorized) {
 						const result = error;
 
 						if (hasItems) {
 							result.data[opName].items = result.data[opName].items.filter(
-								item => item !== null
+								(item) => item !== null
 							);
 						} else {
 							result.data[opName] = {
@@ -286,7 +287,7 @@ class SyncProcessor {
 		let processing = true;
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
-		const observable = new Observable<SyncModelPage>(observer => {
+		const observable = new Observable<SyncModelPage>((observer) => {
 			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce(
 				(map, namespace) => {
 					for (const modelName of Array.from(
@@ -314,11 +315,11 @@ class SyncProcessor {
 					const parents = this.schema.namespaces[
 						namespace
 					].modelTopologicalOrdering.get(modelDefinition.name);
-					const promises = parents.map(parent =>
+					const promises = parents.map((parent) =>
 						parentPromises.get(`${namespace}_${parent}`)
 					);
 
-					const promise = new Promise<void>(async res => {
+					const promise = new Promise<void>(async (res) => {
 						await Promise.all(promises);
 
 						do {

@@ -148,12 +148,12 @@ describe('PhotoPicker', () => {
 				{ type: 'fakeFile' },
 				{ contentType: 'fakeFile' }
 			)
-				.then(res => {
+				.then((res) => {
 					expect(mockCompleteFileUpload).toHaveBeenCalledWith(res.key);
 					expect(wrapper.vm.file).toBe(null);
 					expect(wrapper.vm.s3ImageFile).toBe(null);
 				})
-				.catch(e => e);
+				.catch((e) => e);
 		});
 
 		it('...should call pick when file input is activated', () => {

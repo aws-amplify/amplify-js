@@ -27,9 +27,7 @@ import { SumerianSceneComponentIonic } from './sumerian-scene.component.ionic';
 
 @Component({
 	selector: 'amplify-sumerian-scene',
-	template: `
-		<ng-template component-host></ng-template>
-	`,
+	template: ` <ng-template component-host></ng-template> `,
 })
 export class SumerianSceneComponent implements OnInit, OnDestroy {
 	@Input() framework: string;
@@ -55,9 +53,10 @@ export class SumerianSceneComponent implements OnInit, OnDestroy {
 						sceneName: this.sceneName,
 				  });
 
-		let componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-			sumerianScene.component
-		);
+		let componentFactory =
+			this.componentFactoryResolver.resolveComponentFactory(
+				sumerianScene.component
+			);
 
 		let viewContainerRef = this.componentHost.viewContainerRef;
 		viewContainerRef.clear();

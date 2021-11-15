@@ -60,7 +60,7 @@ export class AmplifyS3TextPicker {
 					fallbackText={I18n.get(this.fallbackText)}
 				/>
 				<amplify-picker
-					inputHandler={e => this.handleInput(e)}
+					inputHandler={(e) => this.handleInput(e)}
 					acceptValue={'text/*'}
 				></amplify-picker>
 			</Host>

@@ -188,7 +188,7 @@ export class CredentialsClass {
 		// refreshHandler will retry network errors, otherwise it will
 		// return NonRetryableError to break out of jitteredExponentialRetry
 		return jitteredExponentialRetry(refreshHandler, [], MAX_DELAY_MS)
-			.then(data => {
+			.then((data) => {
 				logger.debug('refresh federated token sucessfully', data);
 				return this._setCredentialsFromFederation({
 					provider,
@@ -198,7 +198,7 @@ export class CredentialsClass {
 					expires_at: data.expires_at,
 				});
 			})
-			.catch(e => {
+			.catch((e) => {
 				const isNetworkError =
 					typeof e === 'string' &&
 					e.toLowerCase().lastIndexOf('network error', e.length) === 0;
@@ -256,7 +256,7 @@ export class CredentialsClass {
 			);
 		}
 
-		const identityId = this._identityId = await this._getGuestIdentityId();
+		const identityId = (this._identityId = await this._getGuestIdentityId());
 
 		const cognitoClient = new CognitoIdentityClient({
 			region,
@@ -296,16 +296,16 @@ export class CredentialsClass {
 				return credentialsFromCognitoIdentity();
 			};
 
-			credentials = credentialsProvider().catch(async err => {
+			credentials = credentialsProvider().catch(async (err) => {
 				throw err;
 			});
 		}
 
 		return this._loadCredentials(credentials, 'guest', false, null)
-			.then(res => {
+			.then((res) => {
 				return res;
 			})
-			.catch(async e => {
+			.catch(async (e) => {
 				// If identity id is deleted in the console, we make one attempt to recreate it
 				// and remove existing id from cache.
 				if (
@@ -334,7 +334,7 @@ export class CredentialsClass {
 						return credentialsFromCognitoIdentity();
 					};
 
-					credentials = credentialsProvider().catch(async err => {
+					credentials = credentialsProvider().catch(async (err) => {
 						throw err;
 					});
 
@@ -446,19 +446,14 @@ export class CredentialsClass {
 			}
 
 			const {
-				Credentials: {
-					AccessKeyId,
-					Expiration,
-					SecretKey,
-					SessionToken,
-				},
+				Credentials: { AccessKeyId, Expiration, SecretKey, SessionToken },
 				// single source of truth for the primary identity associated with the logins
 				// only if a guest identity is used for a first-time user, that guest identity will become its primary identity
 				IdentityId: primaryIdentityId,
 			} = await cognitoClient.send(
 				new GetCredentialsForIdentityCommand({
-				  IdentityId: guestIdentityId || generatedOrRetrievedIdentityId,
-				  Logins: logins,
+					IdentityId: guestIdentityId || generatedOrRetrievedIdentityId,
+					Logins: logins,
 				})
 			);
 
@@ -466,9 +461,13 @@ export class CredentialsClass {
 			if (guestIdentityId) {
 				// if guestIdentity is found and used by GetCredentialsForIdentity
 				// it will be linked to the logins provided, and disqualified as an unauth identity
-				logger.debug(`The guest identity ${guestIdentityId} has been successfully linked to the logins`);
+				logger.debug(
+					`The guest identity ${guestIdentityId} has been successfully linked to the logins`
+				);
 				if (guestIdentityId === primaryIdentityId) {
-					logger.debug(`The guest identity ${guestIdentityId} has become the primary identity`);
+					logger.debug(
+						`The guest identity ${guestIdentityId} has become the primary identity`
+					);
 				}
 				// remove it from local storage to avoid being used as a guest Identity by _setCredentialsForGuest
 				await this._removeGuestIdentityId();
@@ -481,10 +480,10 @@ export class CredentialsClass {
 				sessionToken: SessionToken,
 				expiration: Expiration,
 				identityId: primaryIdentityId,
-			  };
+			};
 		};
 
-		const credentials = credentialsProvider().catch(async err => {
+		const credentials = credentialsProvider().catch(async (err) => {
 			throw err;
 		});
 
@@ -500,7 +499,7 @@ export class CredentialsClass {
 		const that = this;
 		return new Promise((res, rej) => {
 			credentials
-				.then(async credentials => {
+				.then(async (credentials) => {
 					logger.debug('Load credentials successfully', credentials);
 					if (this._identityId && !credentials.identityId) {
 						credentials['identityId'] = this._identityId;
@@ -537,7 +536,7 @@ export class CredentialsClass {
 					res(that._credentials);
 					return;
 				})
-				.catch(err => {
+				.catch((err) => {
 					if (err) {
 						logger.debug('Failed to load credentials', credentials);
 						logger.debug('Error loading credentials', err);
@@ -587,7 +586,7 @@ export class CredentialsClass {
 			await this._storageSync;
 			this._storage.setItem(
 				this._getCognitoIdentityIdStorageKey(identityPoolId),
-				identityId,
+				identityId
 			);
 		} catch (e) {
 			logger.debug('Failed to cache guest identityId', e);

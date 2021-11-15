@@ -63,7 +63,7 @@ export class TextPicker extends React.Component<
 
 		if (preview) {
 			const reader = new FileReader();
-			reader.onload = function(e) {
+			reader.onload = function (e) {
 				const text = e.target.result;
 				// @ts-ignore
 				that.setState({ previewText: text });

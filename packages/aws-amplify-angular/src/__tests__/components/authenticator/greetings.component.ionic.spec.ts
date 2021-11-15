@@ -61,18 +61,16 @@ describe('GreetingsComponentCore: ', () => {
 	});
 
 	it('...should not display if _show is not set', () => {
-		const rootEl = fixture.debugElement.nativeElement.querySelector(
-			'.amplify-greeting'
-		);
+		const rootEl =
+			fixture.debugElement.nativeElement.querySelector('.amplify-greeting');
 		expect(rootEl).toBeFalsy();
 	});
 
 	it('...should display if _show is set', () => {
 		fixtureComponent.signedIn = true;
 		fixture.detectChanges();
-		const rootEl = fixture.debugElement.nativeElement.querySelector(
-			'.amplify-greeting'
-		);
+		const rootEl =
+			fixture.debugElement.nativeElement.querySelector('.amplify-greeting');
 		expect(rootEl).toBeTruthy();
 	});
 });

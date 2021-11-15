@@ -97,7 +97,7 @@ describe('AWSCloudWatchProvider', () => {
 				const provider = new AWSCloudWatchProvider(testConfig);
 				const clientSpy = jest
 					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
+					.mockImplementationOnce(async (params) => {
 						return 'data';
 					});
 
@@ -118,7 +118,7 @@ describe('AWSCloudWatchProvider', () => {
 				const provider = new AWSCloudWatchProvider(testConfig);
 				const clientSpy = jest
 					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
+					.mockImplementationOnce(async (params) => {
 						return 'data';
 					});
 
@@ -138,7 +138,7 @@ describe('AWSCloudWatchProvider', () => {
 				const provider = new AWSCloudWatchProvider(testConfig);
 				const clientSpy = jest
 					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
+					.mockImplementationOnce(async (params) => {
 						return 'data';
 					});
 
@@ -159,7 +159,7 @@ describe('AWSCloudWatchProvider', () => {
 				const provider = new AWSCloudWatchProvider(testConfig);
 				const clientSpy = jest
 					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementationOnce(async params => {
+					.mockImplementationOnce(async (params) => {
 						return 'data';
 					});
 
@@ -206,7 +206,7 @@ describe('AWSCloudWatchProvider', () => {
 				const provider = new AWSCloudWatchProvider(testConfig);
 				const clientSpy = jest
 					.spyOn(CloudWatchLogsClient.prototype, 'send')
-					.mockImplementation(async params => {
+					.mockImplementation(async (params) => {
 						return 'data';
 					});
 

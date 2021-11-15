@@ -1,7 +1,7 @@
 jest.mock('amazon-cognito-identity-js/lib/CognitoUserSession', () => {
 	const CognitoUserSession = () => {};
 
-	CognitoUserSession.prototype.CognitoUserSession = options => {
+	CognitoUserSession.prototype.CognitoUserSession = (options) => {
 		CognitoUserSession.prototype.options = options;
 		return CognitoUserSession;
 	};
@@ -20,7 +20,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserSession', () => {
 jest.mock('amazon-cognito-identity-js/lib/CognitoIdToken', () => {
 	const CognitoIdToken = () => {};
 
-	CognitoIdToken.prototype.CognitoIdToken = value => {
+	CognitoIdToken.prototype.CognitoIdToken = (value) => {
 		CognitoIdToken.prototype.idToken = value;
 		return CognitoIdToken;
 	};
@@ -35,7 +35,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoIdToken', () => {
 jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 	const CognitoUserPool = () => {};
 
-	CognitoUserPool.prototype.CognitoUserPool = options => {
+	CognitoUserPool.prototype.CognitoUserPool = (options) => {
 		CognitoUserPool.prototype.options = options;
 		return CognitoUserPool;
 	};
@@ -54,7 +54,7 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 		callback(null, 'signUpResult');
 	};
 	CognitoUserPool.prototype.storage = {
-		sync: callback => {
+		sync: (callback) => {
 			callback(null, 'data');
 		},
 	};
@@ -65,17 +65,17 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUserPool', () => {
 jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 	const CognitoUser = () => {};
 
-	CognitoUser.prototype.CognitoUser = options => {
+	CognitoUser.prototype.CognitoUser = (options) => {
 		CognitoUser.prototype.options = options;
 		return CognitoUser;
 	};
 
-	CognitoUser.prototype.getSession = callback => {
+	CognitoUser.prototype.getSession = (callback) => {
 		// throw 3;
 		callback(null, 'session');
 	};
 
-	CognitoUser.prototype.getUserAttributes = callback => {
+	CognitoUser.prototype.getUserAttributes = (callback) => {
 		callback(null, 'attributes');
 	};
 
@@ -98,11 +98,11 @@ jest.mock('amazon-cognito-identity-js/lib/CognitoUser', () => {
 		callback.onSuccess('session');
 	};
 
-	CognitoUser.prototype.resendConfirmationCode = callback => {
+	CognitoUser.prototype.resendConfirmationCode = (callback) => {
 		callback(null, 'result');
 	};
 
-	CognitoUser.prototype.forgotPassword = callback => {
+	CognitoUser.prototype.forgotPassword = (callback) => {
 		callback.onSuccess();
 	};
 

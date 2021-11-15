@@ -75,9 +75,10 @@ export class ChatBotComponent implements OnInit, OnDestroy {
 				? new ComponentMount(ChatbotComponentIonic, interactionParams)
 				: new ComponentMount(ChatbotComponentCore, interactionParams);
 
-		const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-			interactionComponent.component
-		);
+		const componentFactory =
+			this.componentFactoryResolver.resolveComponentFactory(
+				interactionComponent.component
+			);
 
 		const viewContainerRef = this.componentHost.viewContainerRef;
 		viewContainerRef.clear();
@@ -85,7 +86,7 @@ export class ChatBotComponent implements OnInit, OnDestroy {
 		const componentRef = viewContainerRef.createComponent(componentFactory);
 		(<ChatBotClass>componentRef.instance).data = interactionComponent.data;
 
-		componentRef.instance.complete.subscribe(e => {
+		componentRef.instance.complete.subscribe((e) => {
 			this.complete.emit(e);
 		});
 	}

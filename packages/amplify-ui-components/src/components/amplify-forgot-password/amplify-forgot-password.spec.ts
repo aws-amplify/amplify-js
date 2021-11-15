@@ -40,10 +40,13 @@ describe('amplify-forgot-password spec:', () => {
 			expect(event.preventDefault).toHaveBeenCalledWith();
 			expect(amplifyForgotPassword.loading).toBe(true);
 			expect(Auth.forgotPassword).toHaveBeenCalledWith(
-				amplifyForgotPassword.forgotPasswordAttrs.userInput.trim());
+				amplifyForgotPassword.forgotPasswordAttrs.userInput.trim()
+			);
 			expect(amplifyForgotPassword.delivery).toBe(null);
 			await promise;
-			expect(amplifyForgotPassword.delivery).toBe('CodeDeliveryDetails mocked value');
+			expect(amplifyForgotPassword.delivery).toBe(
+				'CodeDeliveryDetails mocked value'
+			);
 			expect(amplifyForgotPassword.loading).toBe(false);
 		});
 
@@ -57,7 +60,8 @@ describe('amplify-forgot-password spec:', () => {
 			expect(Auth.forgotPasswordSubmit).toHaveBeenCalledWith(
 				amplifyForgotPassword.forgotPasswordAttrs.userInput.trim(),
 				amplifyForgotPassword.forgotPasswordAttrs.code,
-				amplifyForgotPassword.forgotPasswordAttrs.password);
+				amplifyForgotPassword.forgotPasswordAttrs.password
+			);
 			expect(amplifyForgotPassword.delivery).toBe('bar');
 			await promise;
 			expect(amplifyForgotPassword.delivery).toBeNull();

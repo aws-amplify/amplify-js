@@ -224,7 +224,7 @@ export class AuthPiece<
 	}
 
 	showComponent(_theme?: any): React.ReactNode {
-		throw 'You must implement showComponent(theme) and don\'t forget to set this._validAuthStates.';
+		throw "You must implement showComponent(theme) and don't forget to set this._validAuthStates.";
 	}
 }
 

@@ -1,6 +1,6 @@
 import 'jest-preset-angular';
 
-window.alert = msg => {
+window.alert = (msg) => {
 	console.log(msg);
 };
 

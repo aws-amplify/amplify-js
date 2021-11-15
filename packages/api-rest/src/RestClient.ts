@@ -192,11 +192,11 @@ export class RestClient {
 
 		// Signing the request in case there credentials are available
 		return this.Credentials.get().then(
-			credentials => {
+			(credentials) => {
 				return this._signed({ ...params }, credentials, isAllResponse, {
 					region,
 					service,
-				}).catch(error => {
+				}).catch((error) => {
 					if (DateUtils.isClockSkewError(error)) {
 						const { headers } = error.response;
 						const dateHeader = headers && (headers.date || headers.Date);
@@ -218,7 +218,7 @@ export class RestClient {
 					throw error;
 				});
 			},
-			err => {
+			(err) => {
 				logger.debug('No credentials available, the request will be unsigned');
 				return this._request(params, isAllResponse);
 			}
@@ -340,7 +340,7 @@ export class RestClient {
 			return response;
 		}
 
-		cloud_logic_array.forEach(v => {
+		cloud_logic_array.forEach((v) => {
 			if (v.name === apiName) {
 				response = v.endpoint;
 				if (typeof v.region === 'string') {
@@ -366,10 +366,8 @@ export class RestClient {
 	/** private methods **/
 
 	private _signed(params, credentials, isAllResponse, { service, region }) {
-		const {
-			signerServiceInfo: signerServiceInfoParams,
-			...otherParams
-		} = params;
+		const { signerServiceInfo: signerServiceInfoParams, ...otherParams } =
+			params;
 
 		const endpoint_region: string =
 			region || this._region || this._options.region;
@@ -403,8 +401,8 @@ export class RestClient {
 		delete signed_params.headers['host'];
 
 		return axios(signed_params)
-			.then(response => (isAllResponse ? response : response.data))
-			.catch(error => {
+			.then((response) => (isAllResponse ? response : response.data))
+			.catch((error) => {
 				logger.debug(error);
 				throw error;
 			});
@@ -412,8 +410,8 @@ export class RestClient {
 
 	private _request(params, isAllResponse = false) {
 		return axios(params)
-			.then(response => (isAllResponse ? response : response.data))
-			.catch(error => {
+			.then((response) => (isAllResponse ? response : response.data))
+			.catch((error) => {
 				logger.debug(error);
 				throw error;
 			});

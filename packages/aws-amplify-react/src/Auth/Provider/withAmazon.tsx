@@ -42,7 +42,7 @@ export function withAmazon(Comp) {
 		signIn() {
 			const amz = window.amazon;
 			const options = { scope: 'profile' };
-			amz.Login.authorize(options, response => {
+			amz.Login.authorize(options, (response) => {
 				if (response.error) {
 					logger.debug('Failed to login with amazon: ' + response.error);
 					return;
@@ -74,7 +74,7 @@ export function withAmazon(Comp) {
 			}
 
 			const amz = window.amazon;
-			amz.Login.retrieveProfile(userInfo => {
+			amz.Login.retrieveProfile((userInfo) => {
 				if (!userInfo.success) {
 					logger.debug('Get user Info failed');
 					return;
@@ -99,10 +99,10 @@ export function withAmazon(Comp) {
 					{ token: access_token, expires_at },
 					user
 				)
-					.then(credentials => {
+					.then((credentials) => {
 						return Auth.currentAuthenticatedUser();
 					})
-					.then(authUser => {
+					.then((authUser) => {
 						if (onStateChange) {
 							onStateChange('signedIn', authUser);
 						}
@@ -155,7 +155,7 @@ export function withAmazon(Comp) {
 	};
 }
 
-const Button = props => (
+const Button = (props) => (
 	<SignInButton
 		id={amazonSignInButton}
 		onClick={props.amazonSignIn}

@@ -172,7 +172,7 @@ export class SQLiteAdapter implements StorageAdapter {
 		);
 
 		if (connectionTableNames.length === 0) {
-			return records.map(record =>
+			return records.map((record) =>
 				this.modelInstanceCreator(modelConstructor, record)
 			);
 		}
@@ -242,7 +242,7 @@ export class SQLiteAdapter implements StorageAdapter {
 			}
 		}
 
-		return records.map(record =>
+		return records.map((record) =>
 			this.modelInstanceCreator(modelConstructor, record)
 		);
 	}
@@ -302,7 +302,7 @@ export class SQLiteAdapter implements StorageAdapter {
 		const idPredicate =
 			predicateObjs.length === 1 &&
 			(predicateObjs.find(
-				p => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
+				(p) => isPredicateObj(p) && p.field === 'id' && p.operator === 'eq'
 			) as PredicateObject<T>);
 
 		return idPredicate && idPredicate.operand;

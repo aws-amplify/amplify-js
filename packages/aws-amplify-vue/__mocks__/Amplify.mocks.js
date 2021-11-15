@@ -39,7 +39,7 @@ module.exports = {
 		list: jest.fn(() => Promise.resolve({})),
 	},
 	I18n: {
-		get: jest.fn(key => {
+		get: jest.fn((key) => {
 			return `i18n ${key}`;
 		}),
 	},

@@ -40,7 +40,7 @@ export function categorizeRekognitionBlocks(
 		},
 	};
 	// We categorize each block by running a forEach loop through them.
-	blocks.forEach(block => {
+	blocks.forEach((block) => {
 		switch (block.Type) {
 			case 'LINE':
 				response.text.lines.push(block.DetectedText);
@@ -103,7 +103,7 @@ export function categorizeTextractBlocks(
 	const keyValueBlocks: BlockList = Array();
 	const blockMap: { [id: string]: Block } = {};
 
-	blocks.forEach(block => {
+	blocks.forEach((block) => {
 		switch (block.BlockType) {
 			case 'LINE':
 				response.text.lines.push(block.Text);
@@ -154,14 +154,14 @@ export function categorizeTextractBlocks(
 	// Post-process complex structures if they exist.
 	if (tableBlocks.length !== 0) {
 		const tableResponse: Table[] = Array();
-		tableBlocks.forEach(table => {
+		tableBlocks.forEach((table) => {
 			tableResponse.push(constructTable(table, blockMap));
 		});
 		response.text.tables = tableResponse;
 	}
 	if (keyValueBlocks.length !== 0) {
 		const keyValueResponse: KeyValue[] = Array();
-		keyValueBlocks.forEach(keyValue => {
+		keyValueBlocks.forEach((keyValue) => {
 			// We need the KeyValue blocks of EntityType = `KEY`, which has both key and value references.
 			const entityTypes = Array.from(keyValue.EntityTypes);
 			if (entityTypes.indexOf('KEY') !== -1) {

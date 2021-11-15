@@ -520,7 +520,7 @@ let items = await API.get('myCloudApi', '/items', {
 ##### prefix: `Amplify Get** 4`
 
 ```js
-exports.handler = function(event, context, callback) {
+exports.handler = function (event, context, callback) {
 	console.log(event.queryStringParameters);
 };
 ```
@@ -535,7 +535,7 @@ app.use(awsServerlessExpressMiddleware.eventContext());
 ##### prefix: `Amplify Get** 6`
 
 ```js
-app.get('/items', function(req, res) {
+app.get('/items', function (req, res) {
 	// req.apiGateway.event.queryStringParameters
 	res.json(req.apiGateway.event);
 });
@@ -558,10 +558,10 @@ let myInit = {
 };
 
 API.post(apiName, path, myInit)
-	.then(response => {
+	.then((response) => {
 		// Add your code here
 	})
-	.catch(error => {
+	.catch((error) => {
 		console.log(error.response);
 	});
 ```
@@ -594,10 +594,10 @@ let myInit = {
 };
 
 API.put(apiName, path, myInit)
-	.then(response => {
+	.then((response) => {
 		// Add your code here
 	})
-	.catch(error => {
+	.catch((error) => {
 		console.log(error.response);
 	});
 ```
@@ -642,10 +642,10 @@ let myInit = {
 };
 
 API.del(apiName, path, myInit)
-	.then(response => {
+	.then((response) => {
 		// Add your code here
 	})
-	.catch(error => {
+	.catch((error) => {
 		console.log(error.response);
 	});
 ```
@@ -675,7 +675,7 @@ let myInit = {
 	// OPTIONAL
 	headers: {}, // OPTIONAL
 };
-API.head(apiName, path, myInit).then(response => {
+API.head(apiName, path, myInit).then((response) => {
 	// Add your code here
 });
 ```
@@ -926,7 +926,7 @@ const SubscribeToEventComments = `subscription SubscribeToEventComments($eventId
 const subscription = API.graphql(
 	graphqlOperation(SubscribeToEventComments, { eventId: '123' })
 ).subscribe({
-	next: eventData => console.log(eventData),
+	next: (eventData) => console.log(eventData),
 });
 
 // Stop receiving data updates from the subscription
@@ -977,7 +977,7 @@ class App extends React.Component {
 			<div>
 				<h3>All events</h3>
 				<ul>
-					{events.map(event => (
+					{events.map((event) => (
 						<li key={event.id}>
 							{event.name} ({event.id})
 						</li>
@@ -1110,16 +1110,16 @@ global.fetch = require('node-fetch');
 import { Auth } from 'aws-amplify';
 
 Auth.signIn(username, password)
-	.then(user => console.log(user))
-	.catch(err => console.log(err));
+	.then((user) => console.log(user))
+	.catch((err) => console.log(err));
 
 // If MFA is enabled, sign-in should be confirmed with the congirmation code
 // `user` : Return object from Auth.signIn()
 // `code` : Confirmation code
 // `mfaType` : MFA Type e.g. SMS, TOTP.
 Auth.confirmSignIn(user, code, mfaType)
-	.then(data => console.log(data))
-	.catch(err => console.log(err));
+	.then((data) => console.log(data))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Sign Up`
@@ -1137,16 +1137,16 @@ Auth.signUp({
 	},
 	validationData: [], //optional
 })
-	.then(data => console.log(data))
-	.catch(err => console.log(err));
+	.then((data) => console.log(data))
+	.catch((err) => console.log(err));
 
 // After retrieveing the confirmation code from the user
 Auth.confirmSignUp(username, code, {
 	// Optional. Force user confirmation irrespective of existing alias. By default set to True.
 	forceAliasCreation: true,
 })
-	.then(data => console.log(data))
-	.catch(err => console.log(err));
+	.then((data) => console.log(data))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Sign Out`
@@ -1155,8 +1155,8 @@ Auth.confirmSignUp(username, code, {
 import { Auth } from 'aws-amplify';
 
 Auth.signOut()
-	.then(data => console.log(data))
-	.catch(err => console.log(err));
+	.then((data) => console.log(data))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Change Password`
@@ -1165,11 +1165,11 @@ Auth.signOut()
 import { Auth } from 'aws-amplify';
 
 Auth.currentAuthenticatedUser()
-	.then(user => {
+	.then((user) => {
 		return Auth.changePassword(user, 'oldPassword', 'newPassword');
 	})
-	.then(data => console.log(data))
-	.catch(err => console.log(err));
+	.then((data) => console.log(data))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Forgot Password`
@@ -1178,13 +1178,13 @@ Auth.currentAuthenticatedUser()
 import { Auth } from 'aws-amplify';
 
 Auth.forgotPassword(username)
-	.then(data => console.log(data))
-	.catch(err => console.log(err));
+	.then((data) => console.log(data))
+	.catch((err) => console.log(err));
 
 // Collect confirmation code and new password, then
 Auth.forgotPasswordSubmit(username, code, new_password)
-	.then(data => console.log(data))
-	.catch(err => console.log(err));
+	.then((data) => console.log(data))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Retrieve Current Session`
@@ -1202,7 +1202,7 @@ var userPool = new AmazonCognitoIdentity.CognitoUserPool(data);
 var cognitoUser = userPool.getCurrentUser();
 
 if (cognitoUser != null) {
-	cognitoUser.getSession(function(err, session) {
+	cognitoUser.getSession(function (err, session) {
 		if (err) {
 			alert(err);
 			return;
@@ -1219,7 +1219,7 @@ if (cognitoUser != null) {
 					AWS.config.credentials.params.Logins[
 						'cognito-idp.<YOUR-REGION>.amazonaws.com/<YOUR_USER_POOL_ID>'
 					] = session.getIdToken().getJwtToken();
-					AWS.config.credentials.refresh(err => {
+					AWS.config.credentials.refresh((err) => {
 						if (err) {
 							console.log(err);
 						} else {
@@ -1265,7 +1265,7 @@ import { Auth } from 'aws-amplify';
 
 // Retrieve active Google user session
 const ga = window.gapi.auth2.getAuthInstance();
-ga.signIn().then(googleUser => {
+ga.signIn().then((googleUser) => {
 	const { id_token, expires_at } = googleUser.getAuthResponse();
 	const profile = googleUser.getBasicProfile();
 	const user = {
@@ -1296,7 +1296,7 @@ ga.signIn().then(googleUser => {
 import { Cache } from 'aws-amplify';
 
 // Run this after the sign-in
-Cache.getItem('federatedInfo').then(federatedInfo => {
+Cache.getItem('federatedInfo').then((federatedInfo) => {
 	const { token } = federatedInfo;
 });
 ```
@@ -1369,16 +1369,13 @@ import { Authenticator } from 'aws-amplify-react-native';
 
 export default class App extends React.Component {
 	async signIn() {
-		const {
-			type,
-			token,
-			expires,
-		} = await Expo.Facebook.logInWithReadPermissionsAsync(
-			'YOUR_FACEBOOK_APP_ID',
-			{
-				permissions: ['public_profile'],
-			}
-		);
+		const { type, token, expires } =
+			await Expo.Facebook.logInWithReadPermissionsAsync(
+				'YOUR_FACEBOOK_APP_ID',
+				{
+					permissions: ['public_profile'],
+				}
+			);
 		if (type === 'success') {
 			// sign in with federated identity
 			Auth.federatedSignIn(
@@ -1386,10 +1383,10 @@ export default class App extends React.Component {
 				{ token, expires_at: expires },
 				{ name: 'USER_NAME' }
 			)
-				.then(credentials => {
+				.then((credentials) => {
 					console.log('get aws credentials', credentials);
 				})
-				.catch(e => {
+				.catch((e) => {
 					console.log(e);
 				});
 		}
@@ -1490,7 +1487,7 @@ import { Auth } from 'aws-amplify';
 
 // To setup TOTP, first you need to get a `authorization code` from Amazon Cognito
 // `user` is the current Authenticated user
-Auth.setupTOTP(user).then(code => {
+Auth.setupTOTP(user).then((code) => {
 	// You can directly display the `code` to the user or convert it to a QR code to be scanned.
 	// E.g., use following code sample to render a QR code with `qrcode.react` component:
 	//      import QRCode from 'qrcode.react';
@@ -1508,7 +1505,7 @@ Auth.verifyTotpToken(user, challengeAnswer)
 		Auth.setPreferredMFA(user, 'TOTP');
 		// ...
 	})
-	.catch(e => {
+	.catch((e) => {
 		// Token is not verified
 	});
 ```
@@ -1521,11 +1518,11 @@ import { Auth } from 'aws-amplify';
 // You can select preferred mfa type, for example:
 // Select TOTP as preferred
 Auth.setPreferredMFA(user, 'TOTP')
-	.then(data => {
+	.then((data) => {
 		console.log(data);
 		// ...
 	})
-	.catch(e => {});
+	.catch((e) => {});
 
 // Select SMS as preferred
 Auth.setPreferredMFA(user, 'SMS');
@@ -1577,7 +1574,7 @@ Auth.configure({
 ##### prefix: `Amplify Creating A Captcha`
 
 ```js
-export const handler = async event => {
+export const handler = async (event) => {
 	if (!event.request.session || event.request.session.length === 0) {
 		event.response.publicChallengeParameters = {
 			captchaUrl: 'url/123.jpg',
@@ -1594,7 +1591,7 @@ export const handler = async event => {
 ##### prefix: `Amplify Defining A Custom Challenge`
 
 ```js
-export const handler = async event => {
+export const handler = async (event) => {
 	if (!event.request.session || event.request.session.length === 0) {
 		// If we don't have a session or it is empty then send a CUSTOM_CHALLENGE
 		event.response.challengeName = 'CUSTOM_CHALLENGE';
@@ -1641,16 +1638,16 @@ import { Auth } from 'aws-amplify';
 let challengeResponse = 'the answer for the challenge';
 
 Auth.signIn(username)
-	.then(user => {
+	.then((user) => {
 		if (user.challengeName === 'CUSTOM_CHALLENGE') {
 			Auth.sendCustomChallengeAnswer(user, challengeResponse)
-				.then(user => console.log(user))
-				.catch(err => console.log(err));
+				.then((user) => console.log(user))
+				.catch((err) => console.log(err));
 		} else {
 			console.log(user);
 		}
 	})
-	.catch(err => console.log(err));
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Working With User Attributes`
@@ -1696,7 +1693,7 @@ let result = await Auth.verifyCurrentUserAttributeSubmit('email', 'abc123');
 ```js
 import Route53 from 'aws-sdk/clients/route53';
 
-Auth.currentCredentials().then(credentials => {
+Auth.currentCredentials().then((credentials) => {
 	const route53 = new Route53({
 		apiVersion: '2013-04-01',
 		credentials: Auth.essentialCredentials(credentials),
@@ -1894,7 +1891,7 @@ import { Hub, Logger } from 'aws-amplify';
 
 const alex = new Logger('Alexander_the_auth_watcher');
 
-alex.onHubCapsule = capsule => {
+alex.onHubCapsule = (capsule) => {
 	switch (capsule.payload.event) {
 		case 'signIn':
 			alex.error('user signed in'); //[ERROR] Alexander_the_auth_watcher - user signed in
@@ -2002,7 +1999,7 @@ console.log(response.message);
 ##### prefix: `Amplify Oncomplete() Method`
 
 ```js
-var handleComplete = function(err, confirmation) {
+var handleComplete = function (err, confirmation) {
 	if (err) {
 		alert('bot conversation failed');
 		return;
@@ -2239,7 +2236,7 @@ Amplify.addPluggable(
 ##### prefix: `Amplify Aws Iot 3`
 
 ```js
-Auth.currentCredentials().then(info => {
+Auth.currentCredentials().then((info) => {
 	const cognitoIdentityId = info._identityId;
 });
 ```
@@ -2266,8 +2263,8 @@ Amplify.addPluggable(
 
 ```js
 PubSub.subscribe('myTopic').subscribe({
-	next: data => console.log('Message received', data),
-	error: error => console.error(error),
+	next: (data) => console.log('Message received', data),
+	error: (error) => console.error(error),
 	close: () => console.log('Done'),
 });
 ```
@@ -2298,8 +2295,8 @@ await PubSub.publish(['myTopic1', 'myTopic2'], {
 
 ```js
 const sub1 = PubSub.subscribe('myTopicA').subscribe({
-	next: data => console.log('Message received', data),
-	error: error => console.error(error),
+	next: (data) => console.log('Message received', data),
+	error: (error) => console.error(error),
 	close: () => console.log('Done'),
 });
 
@@ -2361,7 +2358,7 @@ PushNotification.configure(aws_exports);
 
 ```js
 // get the notification data
-PushNotification.onNotification(notification => {
+PushNotification.onNotification((notification) => {
 	// Note that the notification object structure is different from Android and IOS
 	console.log('in app notification', notification);
 
@@ -2370,7 +2367,7 @@ PushNotification.onNotification(notification => {
 });
 
 // get the registration token
-PushNotification.onRegister(token => {
+PushNotification.onRegister((token) => {
 	console.log('in app registration', token);
 });
 ```
@@ -2402,7 +2399,7 @@ myServiceWorker.enablePush('BLx__NGvdasMNkjd6VYPdzQJVBkb2qafh');
  * Listen for incoming Push events
  */
 
-addEventListener('push', event => {
+addEventListener('push', (event) => {
 	var data = {};
 	console.log('[Service Worker] Push Received.');
 	console.log(`[Service Worker] Push had this data: "${event.data.text()}"`);
@@ -2444,7 +2441,7 @@ myServiceWorker.send({
  * other clients (browser restrictions currently exist)
  * https://developer.mozilla.org/en-US/docs/Web/API/Client/postMessage
  */
-addEventListener('message', event => {
+addEventListener('message', (event) => {
 	console.log('[Service Worker] Message Event: ', event.data);
 });
 ```
@@ -2528,8 +2525,8 @@ Storage.configure({
 
 ```js
 Storage.put('test.txt', 'Hello')
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Put 2`
@@ -2539,8 +2536,8 @@ Storage.put('test.txt', 'Protected Content', {
 	level: 'protected',
 	contentType: 'text/plain',
 })
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Put 3`
@@ -2550,8 +2547,8 @@ Storage.put('test.txt', 'Private Content', {
 	level: 'private',
 	contentType: 'text/plain',
 })
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Put 4`
@@ -2563,13 +2560,17 @@ class S3ImageUpload extends React.Component {
 		Storage.put('example.png', file, {
 			contentType: 'image/png',
 		})
-			.then(result => console.log(result))
-			.catch(err => console.log(err));
+			.then((result) => console.log(result))
+			.catch((err) => console.log(err));
 	}
 
 	render() {
 		return (
-			<input type="file" accept="image/png" onChange={e => this.onChange(e)} />
+			<input
+				type="file"
+				accept="image/png"
+				onChange={(e) => this.onChange(e)}
+			/>
 		);
 	}
 }
@@ -2597,16 +2598,16 @@ readFile(imagePath).then(buffer => {
 
 ```js
 Storage.get('test.txt')
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Get 2`
 
 ```js
 Storage.get('test.txt', { level: 'protected' })
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Get 3`
@@ -2616,64 +2617,64 @@ Storage.get('test.txt', {
 	level: 'protected',
 	identityId: 'xxxxxxx', // the identityId of that user
 })
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Get 4`
 
 ```js
 Storage.get('test.txt', { level: 'private' })
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Get 5`
 
 ```js
 Storage.get('test.txt', { expires: 60 })
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Remove`
 
 ```js
 Storage.remove('test.txt')
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Remove 2`
 
 ```js
 Storage.remove('test.txt', { level: 'protected' })
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Remove 3`
 
 ```js
 Storage.remove('test.txt', { level: 'private' })
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify List`
 
 ```js
 Storage.list('photos/')
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify List 2`
 
 ```js
 Storage.list('photos/', { level: 'protected' })
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify List 3`
@@ -2683,16 +2684,16 @@ Storage.list('photos/', {
 	level: 'protected',
 	identityId: 'xxxxxxx', // the identityId of that user
 })
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify List 4`
 
 ```js
 Storage.list('photos/', { level: 'private' })
-	.then(result => console.log(result))
-	.catch(err => console.log(err));
+	.then((result) => console.log(result))
+	.catch((err) => console.log(err));
 ```
 
 ##### prefix: `Amplify Tracking Events`

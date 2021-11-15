@@ -33,18 +33,12 @@ describe('PhoneField', () => {
 	});
 
 	it('emit phone number changed when country code changed', () => {
-		wrapper
-			.findAll('select')
-			.at(0)
-			.trigger('change');
+		wrapper.findAll('select').at(0).trigger('change');
 		expect(mockPhoneNumberChanged).toBeCalled();
 	});
 
 	it('emit phone number changed when local phone numer changed', () => {
-		wrapper
-			.findAll('input')
-			.at(0)
-			.trigger('keyup');
+		wrapper.findAll('input').at(0).trigger('keyup');
 		expect(mockPhoneNumberChanged).toBeCalled();
 	});
 });

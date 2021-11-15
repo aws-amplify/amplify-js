@@ -31,12 +31,12 @@ let Comment: PersistentModelConstructor<InstanceType<typeof CommentType>>;
 let Nested: NonModelTypeConstructor<InstanceType<typeof NestedType>>;
 let Post: PersistentModelConstructor<InstanceType<typeof PostType>>;
 let Person: PersistentModelConstructor<InstanceType<typeof PersonType>>;
-let PostAuthorJoin: PersistentModelConstructor<InstanceType<
-	typeof PostAuthorJoinType
->>;
-let PostMetadata: NonModelTypeConstructor<InstanceType<
-	typeof PostMetadataType
->>;
+let PostAuthorJoin: PersistentModelConstructor<
+	InstanceType<typeof PostAuthorJoinType>
+>;
+let PostMetadata: NonModelTypeConstructor<
+	InstanceType<typeof PostMetadataType>
+>;
 
 const inmemoryMap = new Map<string, string>();
 
@@ -54,7 +54,7 @@ jest.mock('../src/storage/adapter/InMemoryStore', () => {
 			);
 		};
 		multiRemove = async (keys: string[]) => {
-			return keys.forEach(k => inmemoryMap.delete(k));
+			return keys.forEach((k) => inmemoryMap.delete(k));
 		};
 		setItem = async (key: string, value: string) => {
 			return inmemoryMap.set(key, value);
@@ -75,8 +75,9 @@ jest.mock('../src/storage/adapter/InMemoryStore', () => {
 	};
 });
 
-jest.mock('../src/storage/adapter/getDefaultAdapter/index', () => () =>
-	AsyncStorageAdapter
+jest.mock(
+	'../src/storage/adapter/getDefaultAdapter/index',
+	() => () => AsyncStorageAdapter
 );
 
 /**
@@ -237,7 +238,7 @@ describe('AsyncStorage tests', () => {
 		);
 
 		expect(get1['blogOwnerId']).toBe(owner.id);
-		const updated = Blog.copyOf(blog, draft => {
+		const updated = Blog.copyOf(blog, (draft) => {
 			draft.name = 'Avatar: The Last Airbender';
 		});
 
@@ -260,7 +261,7 @@ describe('AsyncStorage tests', () => {
 
 		await DataStore.save(blog3);
 		const query1 = await DataStore.query(Blog);
-		query1.forEach(item => {
+		query1.forEach((item) => {
 			if (item.owner) {
 				expect(item.owner).toHaveProperty('name');
 			}
@@ -313,7 +314,7 @@ describe('AsyncStorage tests', () => {
 		const sortedPersons = await DataStore.query(Person, null, {
 			page: 0,
 			limit: 20,
-			sort: s => s.firstName(SortDirection.DESCENDING),
+			sort: (s) => s.firstName(SortDirection.DESCENDING),
 		});
 
 		expect(sortedPersons[0].firstName).toEqual('Meow Meow');
@@ -346,11 +347,11 @@ describe('AsyncStorage tests', () => {
 
 		const sortedPersons = await DataStore.query(
 			Person,
-			c => c.username('ne', undefined),
+			(c) => c.username('ne', undefined),
 			{
 				page: 0,
 				limit: 20,
-				sort: s =>
+				sort: (s) =>
 					s
 						.firstName(SortDirection.ASCENDING)
 						.lastName(SortDirection.ASCENDING)
@@ -377,14 +378,14 @@ describe('AsyncStorage tests', () => {
 		await DataStore.save(owner2);
 
 		await DataStore.save(
-			Blog.copyOf(blog, draft => {
+			Blog.copyOf(blog, (draft) => {
 				draft;
 			})
 		);
 		await DataStore.save(blog2);
 		await DataStore.save(blog3);
 
-		await DataStore.delete(Blog, c => c.name('beginsWith', 'Avatar'));
+		await DataStore.delete(Blog, (c) => c.name('beginsWith', 'Avatar'));
 
 		expect(await DataStore.query(Blog, blog.id)).toBeUndefined();
 		expect(await DataStore.query(Blog, blog2.id)).toBeDefined();
@@ -461,8 +462,8 @@ describe('AsyncStorage tests', () => {
 
 		expect(postAuthorJoins).toHaveLength(0);
 
-		await DataStore.delete(Post, c => c);
-		await DataStore.delete(Author, c => c);
+		await DataStore.delete(Post, (c) => c);
+		await DataStore.delete(Author, (c) => c);
 	});
 
 	test('delete cascade', async () => {

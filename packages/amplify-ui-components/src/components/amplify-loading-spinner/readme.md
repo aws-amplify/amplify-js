@@ -1,7 +1,5 @@
 # amplify-loading-spinner
 
-
-
 <!-- Auto Generated Below -->
 
 

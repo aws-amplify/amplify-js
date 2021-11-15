@@ -18,7 +18,7 @@ const credentials = {
 jest.useFakeTimers();
 
 beforeEach(() => {
-	FirehoseClient.prototype.send = jest.fn(async command => {
+	FirehoseClient.prototype.send = jest.fn(async (command) => {
 		if (command instanceof PutRecordBatchCommand) {
 			return 'data';
 		}

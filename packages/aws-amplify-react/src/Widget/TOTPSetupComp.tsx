@@ -95,7 +95,7 @@ export class TOTPSetupComp extends React.Component<
 		}
 
 		Auth.setupTOTP(user)
-			.then(data => {
+			.then((data) => {
 				logger.debug('secret key', data);
 				const code =
 					'otpauth://totp/' +
@@ -108,7 +108,7 @@ export class TOTPSetupComp extends React.Component<
 					issuer;
 				this.setState({ code });
 			})
-			.catch(err => logger.debug('totp setup failed', err));
+			.catch((err) => logger.debug('totp setup failed', err));
 	}
 
 	verifyTotpToken() {
@@ -136,12 +136,12 @@ export class TOTPSetupComp extends React.Component<
 						logger.debug('set up totp success!');
 						this.triggerTOTPEvent('Setup TOTP', 'SUCCESS', user);
 					})
-					.catch(err => {
+					.catch((err) => {
 						this.setState({ setupMessage: 'Setup TOTP failed!' });
 						logger.error(err);
 					});
 			})
-			.catch(err => {
+			.catch((err) => {
 				this.setState({ setupMessage: 'Setup TOTP failed!' });
 				logger.error(err);
 			});

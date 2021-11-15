@@ -150,7 +150,7 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 		}
 		eventsGroups.push(group);
 
-		eventsGroups.map(evts => {
+		eventsGroups.map((evts) => {
 			this._sendEvents(evts);
 		});
 	}
@@ -167,7 +167,7 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 
 		const records = {};
 
-		group.map(params => {
+		group.map((params) => {
 			// spit by streamName
 			const evt = params.event;
 			const { streamName } = evt;
@@ -186,7 +186,7 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 			records[streamName].push(record);
 		});
 
-		Object.keys(records).map(async streamName => {
+		Object.keys(records).map(async (streamName) => {
 			logger.debug(
 				'putting records to kinesis with records',
 				records[streamName]
@@ -240,12 +240,12 @@ export class AWSKinesisProvider implements AnalyticsProvider {
 	 */
 	private _getCredentials() {
 		return Credentials.get()
-			.then(credentials => {
+			.then((credentials) => {
 				if (!credentials) return null;
 				logger.debug('set credentials for analytics', this._config.credentials);
 				return Credentials.shear(credentials);
 			})
-			.catch(err => {
+			.catch((err) => {
 				logger.debug('ensure credentials error', err);
 				return null;
 			});

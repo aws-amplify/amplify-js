@@ -20,7 +20,7 @@ async function matchIcon(iconName: string) {
 
 /** Tests */
 describe('amplify-icon e2e:', () => {
-	Object.keys(icons).map(name => {
+	Object.keys(icons).map((name) => {
 		it(`renders with the ${name} icon`, async () => matchIcon(name));
 	});
 });

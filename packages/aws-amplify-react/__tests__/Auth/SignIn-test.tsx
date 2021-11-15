@@ -86,18 +86,9 @@ describe('SignIn', () => {
 				},
 			};
 
-			wrapper
-				.find(Input)
-				.at(0)
-				.simulate('change', event_username);
-			wrapper
-				.find(Input)
-				.at(1)
-				.simulate('change', event_password);
-			wrapper
-				.find('form')
-				.at(0)
-				.simulate('submit', fakeEvent);
+			wrapper.find(Input).at(0).simulate('change', event_username);
+			wrapper.find(Input).at(1).simulate('change', event_password);
+			wrapper.find('form').at(0).simulate('submit', fakeEvent);
 
 			await Promise.resolve();
 
@@ -145,18 +136,9 @@ describe('SignIn', () => {
 				},
 			};
 
-			wrapper
-				.find(Input)
-				.at(0)
-				.simulate('change', event_username);
-			wrapper
-				.find(Input)
-				.at(1)
-				.simulate('change', event_password);
-			wrapper
-				.find('form')
-				.at(0)
-				.simulate('submit', fakeEvent);
+			wrapper.find(Input).at(0).simulate('change', event_username);
+			wrapper.find(Input).at(1).simulate('change', event_password);
+			wrapper.find('form').at(0).simulate('submit', fakeEvent);
 
 			await Promise.resolve();
 
@@ -220,18 +202,9 @@ describe('SignIn', () => {
 				},
 			};
 
-			wrapper
-				.find(Input)
-				.at(0)
-				.simulate('change', event_username);
-			wrapper
-				.find(Input)
-				.at(1)
-				.simulate('change', event_password);
-			wrapper
-				.find('form')
-				.at(0)
-				.simulate('submit', fakeEvent);
+			wrapper.find(Input).at(0).simulate('change', event_username);
+			wrapper.find(Input).at(1).simulate('change', event_password);
+			wrapper.find('form').at(0).simulate('submit', fakeEvent);
 
 			// expect(spyon_changeState).toBeCalled();
 
@@ -289,18 +262,9 @@ describe('SignIn', () => {
 				},
 			};
 
-			wrapper
-				.find(Input)
-				.at(0)
-				.simulate('change', event_username);
-			wrapper
-				.find(Input)
-				.at(1)
-				.simulate('change', event_password);
-			wrapper
-				.find('form')
-				.at(0)
-				.simulate('submit', fakeEvent);
+			wrapper.find(Input).at(0).simulate('change', event_username);
+			wrapper.find(Input).at(1).simulate('change', event_password);
+			wrapper.find('form').at(0).simulate('submit', fakeEvent);
 
 			// expect(spyon_changeState).toBeCalled();
 
@@ -339,19 +303,10 @@ describe('SignIn', () => {
 				},
 			};
 
-			wrapper
-				.find(Input)
-				.at(0)
-				.simulate('change', event_username);
-			wrapper
-				.find(Input)
-				.at(1)
-				.simulate('change', event_password);
+			wrapper.find(Input).at(0).simulate('change', event_username);
+			wrapper.find(Input).at(1).simulate('change', event_password);
 
-			wrapper
-				.find('form')
-				.at(0)
-				.simulate('submit', fakeEvent);
+			wrapper.find('form').at(0).simulate('submit', fakeEvent);
 
 			spyon.mockClear();
 			spyon2.mockClear();

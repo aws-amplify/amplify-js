@@ -38,11 +38,17 @@ describe('JS test', () => {
 		});
 
 		test('equal no change', () => {
-			const arr = [{ a: 1, b: 1 }, { a: 1, b: 2 }];
+			const arr = [
+				{ a: 1, b: 1 },
+				{ a: 1, b: 2 },
+			];
 
 			JS.sortByField(arr, 'a', 'desc');
 
-			expect(arr).toEqual([{ a: 1, b: 1 }, { a: 1, b: 2 }]);
+			expect(arr).toEqual([
+				{ a: 1, b: 1 },
+				{ a: 1, b: 2 },
+			]);
 		});
 	});
 
@@ -266,7 +272,7 @@ describe('JS test', () => {
 			expect(JS.isStrictObject(new Number(1))).toBeFalsy();
 			expect(JS.isStrictObject(new Boolean(true))).toBeFalsy();
 			expect(JS.isStrictObject(new String('string'))).toBeFalsy();
-			expect(JS.isStrictObject(function() {})).toBeFalsy();
+			expect(JS.isStrictObject(function () {})).toBeFalsy();
 		});
 	});
 });

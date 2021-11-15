@@ -89,9 +89,8 @@ describe('ConfirmSignUpComponentIonic: ', () => {
 	it('...should call onConfirm when ion-button is clicked', () => {
 		fixtureComponent._show = true;
 		fixture.detectChanges();
-		const button = fixture.debugElement.nativeElement.querySelector(
-			'ion-button'
-		);
+		const button =
+			fixture.debugElement.nativeElement.querySelector('ion-button');
 		button.click();
 		expect(onConfirmSpy).toHaveBeenCalled();
 		expect(confirmSignUpSpy).toHaveBeenCalled();

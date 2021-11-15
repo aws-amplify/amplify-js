@@ -25,7 +25,7 @@ export const PredicateAll = Symbol('A predicate that matches all records');
 
 export class Predicates {
 	public static get ALL(): typeof PredicateAll {
-		const predicate = <ProducerModelPredicate<any>>(c => c);
+		const predicate = <ProducerModelPredicate<any>>((c) => c);
 
 		predicatesAllSet.add(predicate);
 

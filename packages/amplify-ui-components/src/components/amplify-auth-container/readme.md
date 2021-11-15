@@ -1,7 +1,5 @@
 # amplify-auth-container
 
-
-
 <!-- Auto Generated Below -->
 
 

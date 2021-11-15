@@ -5,22 +5,13 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [6.0.1](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@5.0.5...aws-amplify-react-native@6.0.1) (2021-11-12)
 
-
 ### Bug Fixes
 
-* **aws-amplify-react-native:** migrate to community picker ([#9158](https://github.com/aws-amplify/amplify-js/issues/9158)) ([55ce697](https://github.com/aws-amplify/amplify-js/commit/55ce69707007c4afc23b58c037317cf7dee44703))
-
-
-
-
+- **aws-amplify-react-native:** migrate to community picker ([#9158](https://github.com/aws-amplify/amplify-js/issues/9158)) ([55ce697](https://github.com/aws-amplify/amplify-js/commit/55ce69707007c4afc23b58c037317cf7dee44703))
 
 ## [5.0.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@5.0.4...aws-amplify-react-native@5.0.5) (2021-10-28)
 
 **Note:** Version bump only for package aws-amplify-react-native
-
-
-
-
 
 ## [5.0.4](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react-native@5.0.3...aws-amplify-react-native@5.0.4) (2021-10-21)
 

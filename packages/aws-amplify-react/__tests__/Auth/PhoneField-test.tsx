@@ -23,10 +23,7 @@ describe('PhoneField', () => {
 				value: '1',
 			},
 		};
-		wrapper
-			.find('select')
-			.at(0)
-			.simulate('change', event);
+		wrapper.find('select').at(0).simulate('change', event);
 		expect(mockOnChangeText).toBeCalled();
 	});
 
@@ -43,10 +40,7 @@ describe('PhoneField', () => {
 				value: '1234567890',
 			},
 		};
-		wrapper
-			.find(Input)
-			.at(0)
-			.simulate('change', event);
+		wrapper.find(Input).at(0).simulate('change', event);
 		expect(mockOnChangeText).toBeCalled();
 	});
 });

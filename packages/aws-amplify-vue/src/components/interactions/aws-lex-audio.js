@@ -25,7 +25,7 @@
 			var l = (n[o] = { exports: {} });
 			t[o][0].call(
 				l.exports,
-				function(e) {
+				function (e) {
 					var n = t[o][1][e];
 					return s(n ? n : e);
 				},
@@ -45,8 +45,8 @@
 })(
 	{
 		1: [
-			function(require, module, exports) {
-				(function() {
+			function (require, module, exports) {
+				(function () {
 					'use strict';
 					var rec = require('./recorder.js');
 					var recorder,
@@ -61,7 +61,7 @@
 					 * export captured audio, play an audio buffer, and check if audio
 					 * is supported.
 					 */
-					exports.audioControl = function(options) {
+					exports.audioControl = function (options) {
 						options = options || {};
 						this.checkAudioSupport = options.checkAudioSupport !== false;
 
@@ -87,19 +87,19 @@
 						 * @param {silenceDetectionConfig} - Specify custom silence detection values.
 						 * @throws {Error} If audio is not supported.
 						 */
-						var startRecording = function(
+						var startRecording = function (
 							onSilence,
 							visualizer,
 							silenceDetectionConfig
 						) {
 							onSilence =
 								onSilence ||
-								function() {
+								function () {
 									/* no op */
 								};
 							visualizer =
 								visualizer ||
-								function() {
+								function () {
 									/* no op */
 								};
 							audioSupported = audioSupported !== false;
@@ -118,7 +118,7 @@
 						 *
 						 * @throws {Error} If audio is not supported.
 						 */
-						var stopRecording = function() {
+						var stopRecording = function () {
 							audioSupported = audioSupported !== false;
 							if (!audioSupported) {
 								throw new Error(UNSUPPORTED);
@@ -140,7 +140,7 @@
 						 * @param {sampleRate} The sample rate to use in the export.
 						 * @throws {Error} If audio is not supported.
 						 */
-						var exportWAV = function(callback, sampleRate) {
+						var exportWAV = function (callback, sampleRate) {
 							audioSupported = audioSupported !== false;
 							if (!audioSupported) {
 								throw new Error(UNSUPPORTED);
@@ -165,7 +165,7 @@
 						 * @param {Uint8Array} buffer - The audio buffer to play.
 						 * @param {?onPlaybackComplete} callback - Called when audio playback is complete.
 						 */
-						var playHtmlAudioElement = function(buffer, callback) {
+						var playHtmlAudioElement = function (buffer, callback) {
 							if (typeof buffer === 'undefined') {
 								return;
 							}
@@ -173,7 +173,7 @@
 							var audio = document.createElement('audio');
 							var objectUrl = window.URL.createObjectURL(myBlob);
 							audio.src = objectUrl;
-							audio.addEventListener('ended', function() {
+							audio.addEventListener('ended', function () {
 								audio.currentTime = 0;
 								if (typeof callback === 'function') {
 									callback();
@@ -193,21 +193,21 @@
 						 * @param {Uint8Array} buffer - The audio buffer to play.
 						 * @param {?onPlaybackComplete} callback - Called when audio playback is complete.
 						 */
-						var play = function(buffer, callback) {
+						var play = function (buffer, callback) {
 							if (typeof buffer === 'undefined') {
 								return;
 							}
 							var myBlob = new Blob([buffer]);
 							// We'll use a FileReader to create and ArrayBuffer out of the audio response.
 							var fileReader = new FileReader();
-							fileReader.onload = function() {
+							fileReader.onload = function () {
 								// Once we have an ArrayBuffer we can create our BufferSource and decode the result as an AudioBuffer.
 								playbackSource = audioRecorder
 									.audioContext()
 									.createBufferSource();
 								audioRecorder
 									.audioContext()
-									.decodeAudioData(this.result, function(buf) {
+									.decodeAudioData(this.result, function (buf) {
 										// Set the source buffer as our new AudioBuffer.
 										playbackSource.buffer = buf;
 										// Set the destination (the actual audio-rendering device--your device's speakers).
@@ -215,7 +215,7 @@
 											audioRecorder.audioContext().destination
 										);
 										// Add an "on ended" callback.
-										playbackSource.onended = function(event) {
+										playbackSource.onended = function (event) {
 											if (typeof callback === 'function') {
 												callback();
 											}
@@ -231,7 +231,7 @@
 						 * Stops the playback source (created by the play method) if it exists. The `onPlaybackComplete`
 						 * callback will be called.
 						 */
-						var stop = function() {
+						var stop = function () {
 							if (typeof playbackSource === 'undefined') {
 								return;
 							}
@@ -241,7 +241,7 @@
 						/**
 						 * Clear the recording buffer.
 						 */
-						var clear = function() {
+						var clear = function () {
 							recorder.clear();
 						};
 
@@ -256,10 +256,10 @@
 						 * Checks that getUserMedia is supported and the user has given us access to the mic.
 						 * @param {onAudioSupported} callback - Called with the result.
 						 */
-						var supportsAudio = function(callback) {
+						var supportsAudio = function (callback) {
 							callback =
 								callback ||
-								function() {
+								function () {
 									/* no op */
 								};
 							if (
@@ -269,11 +269,11 @@
 								audioRecorder = rec.audioRecorder();
 								audioRecorder
 									.requestDevice()
-									.then(function(stream) {
+									.then(function (stream) {
 										audioSupported = true;
 										callback(audioSupported);
 									})
-									.catch(function(error) {
+									.catch(function (error) {
 										audioSupported = false;
 										callback(audioSupported);
 									});
@@ -303,8 +303,8 @@
 			{ './recorder.js': 5 },
 		],
 		2: [
-			function(require, module, exports) {
-				(function() {
+			function (require, module, exports) {
+				(function () {
 					'use strict';
 					var AudioControl = require('./control.js').audioControl;
 
@@ -322,7 +322,7 @@
 					var lexruntime,
 						audioControl = new AudioControl({ checkAudioSupport: false });
 
-					exports.conversation = function(
+					exports.conversation = function (
 						config,
 						onStateChange,
 						onSuccess,
@@ -337,22 +337,22 @@
 						this.messages = MESSAGES;
 						onStateChange =
 							onStateChange ||
-							function() {
+							function () {
 								/* no op */
 							};
 						this.onSuccess =
 							onSuccess ||
-							function() {
+							function () {
 								/* no op */
 							};
 						this.onError =
 							onError ||
-							function() {
+							function () {
 								/* no op */
 							};
 						this.onAudioData =
 							onAudioData ||
-							function() {
+							function () {
 								/* no op */
 							};
 
@@ -372,14 +372,14 @@
 
 						lexruntime = new AWS.LexRuntime();
 
-						this.onSilence = function() {
+						this.onSilence = function () {
 							if (config.silenceDetection) {
 								audioControl.stopRecording();
 								currentState.advanceConversation();
 							}
 						};
 
-						this.transition = function(conversation) {
+						this.transition = function (conversation) {
 							currentState = conversation;
 							var state = currentState.state;
 							onStateChange(state.message);
@@ -402,8 +402,8 @@
 							}
 						};
 
-						this.advanceConversation = function() {
-							audioControl.supportsAudio(function(supported) {
+						this.advanceConversation = function () {
+							audioControl.supportsAudio(function (supported) {
 								if (supported) {
 									currentState.advanceConversation();
 								} else {
@@ -412,12 +412,12 @@
 							});
 						};
 
-						this.updateConfig = function(newValue) {
+						this.updateConfig = function (newValue) {
 							this.config = applyDefaults(newValue);
 							this.lexConfig = this.config.lexConfig;
 						};
 
-						this.reset = function() {
+						this.reset = function () {
 							audioControl.clear();
 							currentState = new Initial(currentState.state);
 						};
@@ -431,10 +431,10 @@
 						};
 					};
 
-					var Initial = function(state) {
+					var Initial = function (state) {
 						this.state = state;
 						state.message = state.messages.PASSIVE;
-						this.advanceConversation = function() {
+						this.advanceConversation = function () {
 							audioControl.startRecording(
 								state.onSilence,
 								state.onAudioData,
@@ -444,23 +444,23 @@
 						};
 					};
 
-					var Listening = function(state) {
+					var Listening = function (state) {
 						this.state = state;
 						state.message = state.messages.LISTENING;
-						this.advanceConversation = function() {
-							audioControl.exportWAV(function(blob) {
+						this.advanceConversation = function () {
+							audioControl.exportWAV(function (blob) {
 								state.audioInput = blob;
 								state.transition(new Sending(state));
 							});
 						};
 					};
 
-					var Sending = function(state) {
+					var Sending = function (state) {
 						this.state = state;
 						state.message = state.messages.SENDING;
-						this.advanceConversation = function() {
+						this.advanceConversation = function () {
 							state.lexConfig.inputStream = state.audioInput;
-							lexruntime.postContent(state.lexConfig, function(err, data) {
+							lexruntime.postContent(state.lexConfig, function (err, data) {
 								if (err) {
 									state.onError(err);
 									state.transition(new Initial(state));
@@ -473,12 +473,12 @@
 						};
 					};
 
-					var Speaking = function(state) {
+					var Speaking = function (state) {
 						this.state = state;
 						state.message = state.messages.SPEAKING;
-						this.advanceConversation = function() {
+						this.advanceConversation = function () {
 							if (state.audioOutput.contentType === 'audio/mpeg') {
-								audioControl.play(state.audioOutput.audioStream, function() {
+								audioControl.play(state.audioOutput.audioStream, function () {
 									if (
 										state.audioOutput.dialogState === 'ReadyForFulfillment' ||
 										state.audioOutput.dialogState === 'Fulfilled' ||
@@ -501,7 +501,7 @@
 						};
 					};
 
-					var applyDefaults = function(config) {
+					var applyDefaults = function (config) {
 						config = config || {};
 						config.silenceDetection = config.hasOwnProperty('silenceDetection')
 							? config.silenceDetection
@@ -532,15 +532,16 @@
 			{ './control.js': 1 },
 		],
 		3: [
-			function(require, module, exports) {
-				(function(global) {
+			function (require, module, exports) {
+				(function (global) {
 					/**
 					 * @module LexAudio
 					 * @description The global namespace for Amazon Lex Audio
 					 */
 					global.LexAudio = global.LexAudio || {};
 					global.LexAudio.audioControl = require('./control.js').audioControl;
-					global.LexAudio.conversation = require('./conversation.js').conversation;
+					global.LexAudio.conversation =
+						require('./conversation.js').conversation;
 					module.exports = global.LexAudio;
 				}.call(
 					this,
@@ -556,14 +557,14 @@
 			{ './control.js': 1, './conversation.js': 2 },
 		],
 		4: [
-			function(require, module, exports) {
+			function (require, module, exports) {
 				var bundleFn = arguments[3];
 				var sources = arguments[4];
 				var cache = arguments[5];
 
 				var stringify = JSON.stringify;
 
-				module.exports = function(fn, options) {
+				module.exports = function (fn, options) {
 					var wkey;
 					var cacheKeys = Object.keys(cache);
 
@@ -628,7 +629,7 @@
 						bundleFn +
 						')({' +
 						Object.keys(workerSources)
-							.map(function(key) {
+							.map(function (key) {
 								return (
 									stringify(key) +
 									':[' +
@@ -658,8 +659,8 @@
 			{},
 		],
 		5: [
-			function(require, module, exports) {
-				(function() {
+			function (require, module, exports) {
+				(function () {
 					'use strict';
 					var work = require('webworkify');
 					var worker = work(require('./worker.js'));
@@ -669,18 +670,17 @@
 					 * The Recorder object. Sets up the onaudioprocess callback and communicates
 					 * with the web worker to perform audio actions.
 					 */
-					var recorder = function(source, silenceDetectionConfig) {
+					var recorder = function (source, silenceDetectionConfig) {
 						silenceDetectionConfig = silenceDetectionConfig || {};
 						silenceDetectionConfig.time = silenceDetectionConfig.hasOwnProperty(
 							'time'
 						)
 							? silenceDetectionConfig.time
 							: 1500;
-						silenceDetectionConfig.amplitude = silenceDetectionConfig.hasOwnProperty(
-							'amplitude'
-						)
-							? silenceDetectionConfig.amplitude
-							: 0.2;
+						silenceDetectionConfig.amplitude =
+							silenceDetectionConfig.hasOwnProperty('amplitude')
+								? silenceDetectionConfig.amplitude
+								: 0.2;
 
 						var recording = false,
 							currCallback,
@@ -691,7 +691,7 @@
 						// Create a ScriptProcessorNode with a bufferSize of 4096 and a single input and output channel
 						var node = source.context.createScriptProcessor(4096, 1, 1);
 
-						worker.onmessage = function(message) {
+						worker.onmessage = function (message) {
 							var blob = message.data;
 							currCallback(blob);
 						};
@@ -708,7 +708,7 @@
 						 * @param {?onSilenceCallback} onSilence - Called when silence is detected.
 						 * @param {?visualizerCallback} visualizer - Can be used to visualize the captured buffer.
 						 */
-						var record = function(onSilence, visualizer) {
+						var record = function (onSilence, visualizer) {
 							silenceCallback = onSilence;
 							visualizationCallback = visualizer;
 							start = Date.now();
@@ -718,14 +718,14 @@
 						/**
 						 * Sets recording to false.
 						 */
-						var stop = function() {
+						var stop = function () {
 							recording = false;
 						};
 
 						/**
 						 * Posts "clear" message to the worker.
 						 */
-						var clear = function() {
+						var clear = function () {
 							stop();
 							worker.postMessage({ command: 'clear' });
 						};
@@ -735,7 +735,7 @@
 						 * @param {onExportComplete} callback - Called when the export is complete.
 						 * @param {sampleRate} The sample rate to use in the export.
 						 */
-						var exportWAV = function(callback, sampleRate) {
+						var exportWAV = function (callback, sampleRate) {
 							currCallback = callback;
 							worker.postMessage({
 								command: 'export',
@@ -749,7 +749,7 @@
 						 * If the elapsed time reaches the time threshold the silence callback is called. If there is a
 						 * visualizationCallback it invokes the visualization callback with the time domain data.
 						 */
-						var analyse = function() {
+						var analyse = function () {
 							analyser.fftSize = 2048;
 							var bufferLength = analyser.fftSize;
 							var dataArray = new Uint8Array(bufferLength);
@@ -784,7 +784,7 @@
 						 * called for the audioprocess event that is dispatched to ScriptProcessorNode node types.
 						 * @param {AudioProcessingEvent} audioProcessingEvent - The audio processing event.
 						 */
-						node.onaudioprocess = function(audioProcessingEvent) {
+						node.onaudioprocess = function (audioProcessingEvent) {
 							if (!recording) {
 								return;
 							}
@@ -816,11 +816,11 @@
 					 * Audio recorder object. Handles setting up the audio context,
 					 * accessing the mike, and creating the Recorder object.
 					 */
-					exports.audioRecorder = function() {
+					exports.audioRecorder = function () {
 						/**
 						 * Creates an audio context and calls getUserMedia to request the mic (audio).
 						 */
-						var requestDevice = function() {
+						var requestDevice = function () {
 							if (typeof audio_context === 'undefined') {
 								window.AudioContext =
 									window.AudioContext || window.webkitAudioContext;
@@ -829,19 +829,19 @@
 
 							return navigator.mediaDevices
 								.getUserMedia({ audio: true })
-								.then(function(stream) {
+								.then(function (stream) {
 									audio_stream = stream;
 								});
 						};
 
-						var createRecorder = function(silenceDetectionConfig) {
+						var createRecorder = function (silenceDetectionConfig) {
 							return recorder(
 								audio_context.createMediaStreamSource(audio_stream),
 								silenceDetectionConfig
 							);
 						};
 
-						var audioContext = function() {
+						var audioContext = function () {
 							return audio_context;
 						};
 
@@ -856,14 +856,14 @@
 			{ './worker.js': 6, webworkify: 4 },
 		],
 		6: [
-			function(require, module, exports) {
-				module.exports = function(self) {
+			function (require, module, exports) {
+				module.exports = function (self) {
 					'use strict';
 					var recLength = 0,
 						recBuffer = [],
 						recordSampleRate;
 
-					self.addEventListener('message', function(e) {
+					self.addEventListener('message', function (e) {
 						switch (e.data.command) {
 							case 'init':
 								init(e.data.config);

@@ -14,19 +14,11 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Auth, I18n, Logger } from 'aws-amplify';
-import {
-	FormField,
-	AmplifyButton,
-	LinkCell,
-	Header,
-	ErrorRow,
-	SignedOutMessage,
-	Wrapper,
-} from '../AmplifyUI';
+import { FormField, AmplifyButton, LinkCell, Header, ErrorRow, SignedOutMessage, Wrapper } from '../AmplifyUI';
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
-import { setTestId } from '../Utils'
+import { setTestId } from '../Utils';
 
 const logger = new Logger('ForgotPassword');
 
@@ -38,10 +30,7 @@ interface IForgotPasswordState extends IAuthPieceState {
 	password?: string;
 }
 
-export default class ForgotPassword extends AuthPiece<
-	IForgotPasswordProps,
-	IForgotPasswordState
-> {
+export default class ForgotPassword extends AuthPiece<IForgotPasswordProps, IForgotPasswordState> {
 	constructor(props: IForgotPasswordProps) {
 		super(props);
 
@@ -69,22 +58,22 @@ export default class ForgotPassword extends AuthPiece<
 			return;
 		}
 		Auth.forgotPassword(username)
-			.then(data => {
+			.then((data) => {
 				logger.debug(data);
 				this.setState({ delivery: data.CodeDeliveryDetails });
 			})
-			.catch(err => this.error(err));
+			.catch((err) => this.error(err));
 	}
 
 	submit() {
 		const { code, password } = this.state;
 		const username = this.getUsernameFromInput();
 		Auth.forgotPasswordSubmit(username, code, password)
-			.then(data => {
+			.then((data) => {
 				logger.debug(data);
 				this.changeState('signIn');
 			})
-			.catch(err => this.error(err));
+			.catch((err) => this.error(err));
 	}
 
 	forgotBody(theme: AmplifyThemeType) {
@@ -107,7 +96,7 @@ export default class ForgotPassword extends AuthPiece<
 			<View style={theme.sectionBody}>
 				<FormField
 					theme={theme}
-					onChangeText={text => this.setState({ code: text })}
+					onChangeText={(text) => this.setState({ code: text })}
 					label={I18n.get('Confirmation Code')}
 					placeholder={I18n.get('Enter your confirmation code')}
 					required={true}
@@ -115,7 +104,7 @@ export default class ForgotPassword extends AuthPiece<
 				/>
 				<FormField
 					theme={theme}
-					onChangeText={text => this.setState({ password: text })}
+					onChangeText={(text) => this.setState({ password: text })}
 					label={I18n.get('Password')}
 					placeholder={I18n.get('Enter your new password')}
 					secureTextEntry={true}

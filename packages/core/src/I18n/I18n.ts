@@ -133,7 +133,7 @@ export class I18n {
 	 *                                vocabularies of each language as value
 	 */
 	putVocabularies(vocabularies) {
-		Object.keys(vocabularies).map(key => {
+		Object.keys(vocabularies).map((key) => {
 			this.putVocabulariesForLanguage(key, vocabularies[key]);
 		});
 	}

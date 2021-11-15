@@ -84,18 +84,16 @@ describe('ForgotPasswordComponentCore: ', () => {
 	});
 
 	it('...should not display if _show is not set', () => {
-		const rootEl = fixture.debugElement.nativeElement.querySelector(
-			'.amplify-container'
-		);
+		const rootEl =
+			fixture.debugElement.nativeElement.querySelector('.amplify-container');
 		expect(rootEl).toBeFalsy();
 	});
 
 	it('...should display if _show is set', () => {
 		fixtureComponent._show = true;
 		fixture.detectChanges();
-		const rootEl = fixture.debugElement.nativeElement.querySelector(
-			'.amplify-container'
-		);
+		const rootEl =
+			fixture.debugElement.nativeElement.querySelector('.amplify-container');
 		expect(rootEl).toBeTruthy();
 	});
 
@@ -142,9 +140,8 @@ describe('ForgotPasswordComponentCore: ', () => {
 			user: {},
 		};
 		fixture.detectChanges();
-		const a = fixture.debugElement.nativeElement.querySelector(
-			'.amplify-form-link'
-		);
+		const a =
+			fixture.debugElement.nativeElement.querySelector('.amplify-form-link');
 		a.click();
 		expect(onSendSpy).toHaveBeenCalled();
 		expect(forgotPasswordSpy).toHaveBeenCalled();
@@ -157,9 +154,8 @@ describe('ForgotPasswordComponentCore: ', () => {
 			user: {},
 		};
 		fixture.detectChanges();
-		const a = fixture.debugElement.nativeElement.querySelector(
-			'.amplify-form-link'
-		);
+		const a =
+			fixture.debugElement.nativeElement.querySelector('.amplify-form-link');
 		a.click();
 		expect(onSignInSpy).toHaveBeenCalled();
 	});

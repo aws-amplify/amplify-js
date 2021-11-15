@@ -91,7 +91,7 @@ describe('S3ClientUtils tests', () => {
 			'key'
 		);
 		const { output: publicPrefix } = await publicPrefixMiddleware(
-			arg =>
+			(arg) =>
 				Promise.resolve({
 					output: arg.input.Key,
 					response: null,
@@ -99,7 +99,7 @@ describe('S3ClientUtils tests', () => {
 			null
 		)({ input: { Key: 'key' } });
 		const { output: protectedPrefix } = await protectedPrefixMiddleware(
-			arg =>
+			(arg) =>
 				Promise.resolve({
 					output: arg.input.Key,
 					response: null,
@@ -107,7 +107,7 @@ describe('S3ClientUtils tests', () => {
 			null
 		)({ input: { Key: 'key' } });
 		const { output: privatePrefix } = await privatePrefixMiddleware(
-			arg =>
+			(arg) =>
 				Promise.resolve({
 					output: arg.input.Key,
 					response: null,
@@ -179,7 +179,7 @@ describe('S3ClientUtils tests', () => {
 		const oneHourInMs = 1000 * 60 * 60;
 		try {
 			await middleware(
-				arg =>
+				(arg) =>
 					Promise.reject({
 						ServerTime: new Date(dateNow + oneHourInMs),
 						Code: 'RequestTimeTooSkewed',

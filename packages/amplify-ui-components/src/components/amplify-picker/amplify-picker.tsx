@@ -25,7 +25,7 @@ export class AmplifyPicker {
 					title={I18n.get(this.pickerText)}
 					type="file"
 					accept={this.acceptValue}
-					onChange={e => this.inputHandler(e)}
+					onChange={(e) => this.inputHandler(e)}
 				/>
 			</div>
 		);

@@ -134,9 +134,8 @@ type PickProviderOutput<
 		: Promise<any>
 	: DefaultOutput;
 
-export type StorageGetOutput<
-	T extends StorageProvider | Record<string, any>
-> = PickProviderOutput<Promise<S3ProviderGetOuput<T>>, T, 'get'>;
+export type StorageGetOutput<T extends StorageProvider | Record<string, any>> =
+	PickProviderOutput<Promise<S3ProviderGetOuput<T>>, T, 'get'>;
 
 export type StoragePutOutput<T> = PickProviderOutput<
 	S3ProviderPutOutput<T>,

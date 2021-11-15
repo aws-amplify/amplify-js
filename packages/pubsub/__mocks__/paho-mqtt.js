@@ -3,7 +3,7 @@ import * as Paho from 'paho-mqtt';
 Paho.Client = jest.fn().mockImplementation((host, port, path, clientId) => {
 	var client = {};
 
-	client.connect = jest.fn(options => {
+	client.connect = jest.fn((options) => {
 		options.onSuccess();
 	});
 	client.send = jest.fn((topic, message) => {

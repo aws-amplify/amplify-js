@@ -14,19 +14,11 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Auth, I18n, Logger, JS } from 'aws-amplify';
-import {
-	AmplifyButton,
-	FormField,
-	LinkCell,
-	Header,
-	ErrorRow,
-	SignedOutMessage,
-	Wrapper,
-} from '../AmplifyUI';
+import { AmplifyButton, FormField, LinkCell, Header, ErrorRow, SignedOutMessage, Wrapper } from '../AmplifyUI';
 import AuthPiece, { IAuthPieceProps, IAuthPieceState } from './AuthPiece';
 import { AmplifyThemeType } from '../AmplifyTheme';
 import TEST_ID from '../AmplifyTestIDs';
-import { setTestId } from '../Utils'
+import { setTestId } from '../Utils';
 
 const logger = new Logger('ConfirmSignIn');
 
@@ -36,10 +28,7 @@ interface IConfirmSignInState extends IAuthPieceState {
 	code?: string;
 }
 
-export default class ConfirmSignIn extends AuthPiece<
-	IConfirmSignInProps,
-	IConfirmSignInState
-> {
+export default class ConfirmSignIn extends AuthPiece<IConfirmSignInProps, IConfirmSignInState> {
 	constructor(props: IConfirmSignInProps) {
 		super(props);
 
@@ -58,8 +47,8 @@ export default class ConfirmSignIn extends AuthPiece<
 		const { code } = this.state;
 		logger.debug('Confirm Sign In for ' + user.username);
 		Auth.confirmSignIn(user, code)
-			.then(data => this.checkContact(user))
-			.catch(err => this.error(err));
+			.then((data) => this.checkContact(user))
+			.catch((err) => this.error(err));
 	}
 
 	showComponent(theme: AmplifyThemeType) {
@@ -73,7 +62,7 @@ export default class ConfirmSignIn extends AuthPiece<
 						<View style={theme.sectionBody}>
 							<FormField
 								theme={theme}
-								onChangeText={text => this.setState({ code: text })}
+								onChangeText={(text) => this.setState({ code: text })}
 								label={I18n.get('Confirmation Code')}
 								placeholder={I18n.get('Enter your confirmation code')}
 								required={true}

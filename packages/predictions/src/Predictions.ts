@@ -82,7 +82,7 @@ export class PredictionsClass {
 	 */
 	public getPluggable(providerName: string): AbstractPredictionsProvider {
 		const pluggable = this.getAllProviders().find(
-			pluggable => pluggable.getProviderName() === providerName
+			(pluggable) => pluggable.getProviderName() === providerName
 		);
 		if (pluggable === undefined) {
 			logger.debug('No plugin found with providerName=>', providerName);
@@ -96,13 +96,13 @@ export class PredictionsClass {
 	 */
 	public removePluggable(providerName: string) {
 		this._convertPluggables = this._convertPluggables.filter(
-			pluggable => pluggable.getProviderName() !== providerName
+			(pluggable) => pluggable.getProviderName() !== providerName
 		);
 		this._identifyPluggables = this._identifyPluggables.filter(
-			pluggable => pluggable.getProviderName() !== providerName
+			(pluggable) => pluggable.getProviderName() !== providerName
 		);
 		this._interpretPluggables = this._interpretPluggables.filter(
-			pluggable => pluggable.getProviderName() !== providerName
+			(pluggable) => pluggable.getProviderName() !== providerName
 		);
 		return;
 	}
@@ -117,7 +117,7 @@ export class PredictionsClass {
 		predictionsConfig = { ...predictionsConfig, ...options };
 		this._options = Object.assign({}, this._options, predictionsConfig);
 		logger.debug('configure Predictions', this._options);
-		this.getAllProviders().forEach(pluggable =>
+		this.getAllProviders().forEach((pluggable) =>
 			this.configurePluggable(pluggable)
 		);
 	}
@@ -194,7 +194,7 @@ export class PredictionsClass {
 		// there is only one provider configured to error out if the name provided is not the one matched.
 		if (providerOptions && providerOptions.providerName) {
 			return [...pluggables].find(
-				pluggable =>
+				(pluggable) =>
 					pluggable.getProviderName() === providerOptions.providerName
 			);
 		} else {

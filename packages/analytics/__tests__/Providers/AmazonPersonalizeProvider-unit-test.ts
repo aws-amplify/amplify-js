@@ -32,7 +32,7 @@ jest.useFakeTimers();
 jest.mock('@aws-sdk/client-personalize-events');
 
 beforeEach(() => {
-	PersonalizeEventsClient.prototype.send = jest.fn(async command => {
+	PersonalizeEventsClient.prototype.send = jest.fn(async (command) => {
 		if (command instanceof PutEventsCommand) {
 			return 'data';
 		}

@@ -70,7 +70,7 @@ export class RestAPIClass {
 
 		if (Array.isArray(opt.endpoints)) {
 			// Check if endpoints has custom_headers and validate if is a function
-			opt.endpoints.forEach(endpoint => {
+			opt.endpoints.forEach((endpoint) => {
 				if (
 					typeof endpoint.custom_header !== 'undefined' &&
 					typeof endpoint.custom_header !== 'function'
@@ -303,7 +303,7 @@ export class RestAPIClass {
 			throw new Error(`API category not configured`);
 		}
 
-		const apiConfig = cloud_logic_array.find(api => api.name === apiName);
+		const apiConfig = cloud_logic_array.find((api) => api.name === apiName);
 
 		if (!apiConfig) {
 			throw new Error(`API ${apiName} does not exist`);

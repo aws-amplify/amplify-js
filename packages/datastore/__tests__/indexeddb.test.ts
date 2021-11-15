@@ -246,7 +246,7 @@ describe('Indexed db storage test', () => {
 			.get(blog.id);
 
 		expect(get1['blogOwnerId']).toBe(owner.id);
-		const updated = Blog.copyOf(blog, draft => {
+		const updated = Blog.copyOf(blog, (draft) => {
 			draft.name = 'Avatar: The Last Airbender';
 		});
 
@@ -269,7 +269,7 @@ describe('Indexed db storage test', () => {
 
 		await DataStore.save(blog3);
 		const query1 = await DataStore.query(Blog);
-		query1.forEach(item => {
+		query1.forEach((item) => {
 			if (item.owner) {
 				expect(item.owner).toHaveProperty('name');
 			}
@@ -322,7 +322,7 @@ describe('Indexed db storage test', () => {
 		const sortedPersons = await DataStore.query(Person, null, {
 			page: 0,
 			limit: 20,
-			sort: s => s.firstName(SortDirection.DESCENDING),
+			sort: (s) => s.firstName(SortDirection.DESCENDING),
 		});
 
 		expect(sortedPersons[0].firstName).toEqual('Meow Meow');
@@ -355,11 +355,11 @@ describe('Indexed db storage test', () => {
 
 		const sortedPersons = await DataStore.query(
 			Person,
-			c => c.username('ne', undefined),
+			(c) => c.username('ne', undefined),
 			{
 				page: 0,
 				limit: 20,
-				sort: s =>
+				sort: (s) =>
 					s
 						.firstName(SortDirection.ASCENDING)
 						.lastName(SortDirection.ASCENDING)
@@ -386,14 +386,14 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(owner2);
 
 		await DataStore.save(
-			Blog.copyOf(blog, draft => {
+			Blog.copyOf(blog, (draft) => {
 				draft;
 			})
 		);
 		await DataStore.save(blog2);
 		await DataStore.save(blog3);
 
-		await DataStore.delete(Blog, c => c.name('beginsWith', 'Avatar'));
+		await DataStore.delete(Blog, (c) => c.name('beginsWith', 'Avatar'));
 
 		expect(await DataStore.query(Blog, blog.id)).toBeUndefined();
 		expect(await DataStore.query(Blog, blog2.id)).toBeDefined();
@@ -471,8 +471,8 @@ describe('Indexed db storage test', () => {
 			.index('postId')
 			.getAll(post.id);
 		expect(res).toHaveLength(0);
-		await DataStore.delete(Post, c => c);
-		await DataStore.delete(Author, c => c);
+		await DataStore.delete(Post, (c) => c);
+		await DataStore.delete(Author, (c) => c);
 	});
 
 	test('delete cascade', async () => {
@@ -564,9 +564,9 @@ describe('DB versions migration', () => {
 		function readBlob(blob: Blob): Promise<string> {
 			return new Promise((resolve, reject) => {
 				const reader = new FileReader();
-				reader.onabort = ev => reject(new Error('file read aborted'));
-				reader.onerror = ev => reject((ev.target as any).error);
-				reader.onload = ev => resolve((ev.target as any).result);
+				reader.onabort = (ev) => reject(new Error('file read aborted'));
+				reader.onerror = (ev) => reject((ev.target as any).error);
+				reader.onload = (ev) => resolve((ev.target as any).result);
 				reader.readAsText(blob);
 			});
 		}

@@ -51,7 +51,7 @@ describe('Util', () => {
 		});
 	});
 
-	test('jitteredExponential retry happy case', done => {
+	test('jitteredExponential retry happy case', (done) => {
 		const resolveAt = 3;
 		expect.assertions(3);
 		function createRetryableFunction() {
@@ -89,7 +89,7 @@ describe('Util', () => {
 		expect(testFunc).toBeCalledTimes(1);
 	});
 	test('Should throw an Error when NetInfo is not passed to networkMonitor in React Native Reachability', () => {
-		const subscribe = netInfo => {
+		const subscribe = (netInfo) => {
 			new ReachabilityNative().networkMonitor(netInfo);
 		};
 

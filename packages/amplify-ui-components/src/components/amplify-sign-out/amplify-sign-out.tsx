@@ -44,7 +44,7 @@ export class AmplifySignOut {
 		return (
 			<amplify-button
 				slot="sign-out"
-				onClick={event => this.signOut(event)}
+				onClick={(event) => this.signOut(event)}
 				data-test="sign-out-button"
 			>
 				{I18n.get(this.buttonText)}

@@ -107,7 +107,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 			if (!clientIdObservers) {
 				return;
 			}
-			clientIdObservers.forEach(observer => {
+			clientIdObservers.forEach((observer) => {
 				observer.error('Disconnected, error code: ' + errorCode);
 				// removing observers for disconnected clientId
 				this._topicObservers.forEach((observerForTopic, observerTopic) => {
@@ -122,7 +122,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 			this._clientIdObservers.delete(clientId);
 
 			// Removing topics that are not listen by an observer
-			topicsToDelete.forEach(topic => {
+			topicsToDelete.forEach((topic) => {
 				this._topicObservers.delete(topic);
 			});
 		}
@@ -163,7 +163,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		clientId: string,
 		options: MqttProvidertOptions = {}
 	): Promise<any> {
-		return await this.clientsQueue.get(clientId, clientId =>
+		return await this.clientsQueue.get(clientId, (clientId) =>
 			this.newClient({ ...options, clientId })
 		);
 	}
@@ -186,18 +186,14 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		const client = await this.connect(this.clientId, { url });
 
 		logger.debug('Publishing to topic(s)', targetTopics.join(','), message);
-		targetTopics.forEach(topic => client.send(topic, message));
+		targetTopics.forEach((topic) => client.send(topic, message));
 	}
 
-	protected _topicObservers: Map<
-		string,
-		Set<SubscriptionObserver<any>>
-	> = new Map();
+	protected _topicObservers: Map<string, Set<SubscriptionObserver<any>>> =
+		new Map();
 
-	protected _clientIdObservers: Map<
-		string,
-		Set<SubscriptionObserver<any>>
-	> = new Map();
+	protected _clientIdObservers: Map<string, Set<SubscriptionObserver<any>>> =
+		new Map();
 
 	private _onMessage(topic: string, msg: any) {
 		try {
@@ -213,8 +209,8 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 				parsedMessage[topicSymbol] = topic;
 			}
 
-			matchedTopicObservers.forEach(observersForTopic => {
-				observersForTopic.forEach(observer => observer.next(parsedMessage));
+			matchedTopicObservers.forEach((observersForTopic) => {
+				observersForTopic.forEach((observer) => observer.next(parsedMessage));
 			});
 		} catch (error) {
 			logger.warn('Error handling message', error, msg);
@@ -228,8 +224,8 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 		const targetTopics = ([] as string[]).concat(topics);
 		logger.debug('Subscribing to topic(s)', targetTopics.join(','));
 
-		return new Observable(observer => {
-			targetTopics.forEach(topic => {
+		return new Observable((observer) => {
+			targetTopics.forEach((topic) => {
 				// this._topicObservers is used to notify the observers according to the topic received on the message
 				let observersForTopic = this._topicObservers.get(topic);
 
@@ -259,7 +255,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 
 				try {
 					client = await this.connect(clientId, { url });
-					targetTopics.forEach(topic => {
+					targetTopics.forEach((topic) => {
 						client.subscribe(topic);
 					});
 				} catch (e) {
@@ -278,7 +274,7 @@ export class MqttOverWSProvider extends AbstractPubSubProvider {
 						this._clientIdObservers.delete(clientId);
 					}
 
-					targetTopics.forEach(topic => {
+					targetTopics.forEach((topic) => {
 						const observersForTopic =
 							this._topicObservers.get(topic) ||
 							(new Set() as Set<SubscriptionObserver<any>>);

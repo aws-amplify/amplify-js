@@ -40,7 +40,7 @@ export function trackLifecycle(
 		}
 
 		track(event) {
-			const filtered = this.trackEvents.filter(item => item === event);
+			const filtered = this.trackEvents.filter((item) => item === event);
 			if (filtered.length > 0) {
 				if (Analytics && typeof Analytics.record === 'function') {
 					Analytics.record({

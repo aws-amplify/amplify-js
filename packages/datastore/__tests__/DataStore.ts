@@ -169,7 +169,7 @@ describe('DataStore tests', () => {
 				dateCreated: new Date().toISOString(),
 			});
 
-			const model2 = Model.copyOf(model1, draft => {
+			const model2 = Model.copyOf(model1, (draft) => {
 				draft.field1 = 'edited';
 			});
 
@@ -192,7 +192,7 @@ describe('DataStore tests', () => {
 				dateCreated: new Date().toISOString(),
 			});
 
-			const model2 = Model.copyOf(model1, draft => {
+			const model2 = Model.copyOf(model1, (draft) => {
 				(<any>draft).id = 'a-new-id';
 			});
 
@@ -239,7 +239,7 @@ describe('DataStore tests', () => {
 				optionalField1: 'something-else',
 			});
 
-			const model2 = Model.copyOf(model1, draft => {
+			const model2 = Model.copyOf(model1, (draft) => {
 				(<any>draft).optionalField1 = undefined;
 			});
 
@@ -260,7 +260,7 @@ describe('DataStore tests', () => {
 				dateCreated: new Date().toISOString(),
 			});
 
-			const model2 = Model.copyOf(model1, draft => {
+			const model2 = Model.copyOf(model1, (draft) => {
 				(<any>draft).optionalField1 = null;
 			});
 
@@ -291,8 +291,8 @@ describe('DataStore tests', () => {
 
 	describe('Initialization', () => {
 		test('start is called only once', async () => {
-			const storage: StorageType = require('../src/storage/storage')
-				.ExclusiveStorage;
+			const storage: StorageType =
+				require('../src/storage/storage').ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
@@ -311,8 +311,8 @@ describe('DataStore tests', () => {
 		});
 
 		test('It is initialized when observing (no query)', async () => {
-			const storage: StorageType = require('../src/storage/storage')
-				.ExclusiveStorage;
+			const storage: StorageType =
+				require('../src/storage/storage').ExclusiveStorage;
 
 			const classes = initSchema(testSchema());
 
@@ -364,7 +364,7 @@ describe('DataStore tests', () => {
 						init: jest.fn(),
 						save,
 						query,
-						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						runExclusive: jest.fn((fn) => fn.bind(this, _mock)()),
 					};
 
 					return _mock;
@@ -407,7 +407,7 @@ describe('DataStore tests', () => {
 						init: jest.fn(),
 						save,
 						query,
-						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						runExclusive: jest.fn((fn) => fn.bind(this, _mock)()),
 					};
 
 					return _mock;
@@ -431,7 +431,7 @@ describe('DataStore tests', () => {
 
 			await DataStore.save(model);
 
-			model = Model.copyOf(model, draft => {
+			model = Model.copyOf(model, (draft) => {
 				draft.field1 = 'edited';
 			});
 
@@ -460,7 +460,7 @@ describe('DataStore tests', () => {
 						init: jest.fn(),
 						save,
 						query,
-						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						runExclusive: jest.fn((fn) => fn.bind(this, _mock)()),
 					};
 
 					return _mock;
@@ -485,7 +485,7 @@ describe('DataStore tests', () => {
 
 			await DataStore.save(model);
 
-			model = Model.copyOf(model, draft => {
+			model = Model.copyOf(model, (draft) => {
 				draft.emails = [...draft.emails, 'joe@doe.com'];
 			});
 
@@ -493,7 +493,7 @@ describe('DataStore tests', () => {
 
 			expect(result).toMatchObject(model);
 
-			model = Model.copyOf(model, draft => {
+			model = Model.copyOf(model, (draft) => {
 				draft.emails.push('joe@doe.com');
 			});
 
@@ -540,7 +540,7 @@ describe('DataStore tests', () => {
 						init: jest.fn(),
 						save,
 						query,
-						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						runExclusive: jest.fn((fn) => fn.bind(this, _mock)()),
 					};
 
 					return _mock;
@@ -571,13 +571,13 @@ describe('DataStore tests', () => {
 			});
 
 			expect(() => {
-				Model.copyOf(model, draft => {
+				Model.copyOf(model, (draft) => {
 					(draft as any).createdAt = '2021-06-03T20:56:23.201Z';
 				});
 			}).toThrow('createdAt is read-only.');
 
 			expect(() => {
-				Model.copyOf(model, draft => {
+				Model.copyOf(model, (draft) => {
 					(draft as any).updatedAt = '2021-06-03T20:56:23.201Z';
 				});
 			}).toThrow('updatedAt is read-only.');
@@ -861,14 +861,14 @@ describe('DataStore tests', () => {
 			).toHaveProperty('extraAttribute');
 
 			expect(() => {
-				Model.copyOf(<any>undefined, d => d);
+				Model.copyOf(<any>undefined, (d) => d);
 			}).toThrow('The source object is not a valid model');
 			expect(() => {
 				const source = new Model({
 					field1: 'something',
 					dateCreated: new Date().toISOString(),
 				});
-				Model.copyOf(source, d => (d.field1 = <any>1234));
+				Model.copyOf(source, (d) => (d.field1 = <any>1234));
 			}).toThrow(
 				'Field field1 should be of type string, number received. 1234'
 			);
@@ -908,7 +908,7 @@ describe('DataStore tests', () => {
 
 		test('Delete many returns many', async () => {
 			const models: Model[] = [];
-			const save = jest.fn(model => {
+			const save = jest.fn((model) => {
 				model instanceof Model && models.push(model);
 			});
 			const query = jest.fn(() => models);
@@ -922,7 +922,7 @@ describe('DataStore tests', () => {
 						save,
 						query,
 						delete: _delete,
-						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						runExclusive: jest.fn((fn) => fn.bind(this, _mock)()),
 					};
 
 					return _mock;
@@ -957,19 +957,19 @@ describe('DataStore tests', () => {
 				);
 			}
 
-			const deleted = await DataStore.delete(Model, m =>
+			const deleted = await DataStore.delete(Model, (m) =>
 				m.field1('eq', 'someField')
 			);
 
 			expect(deleted.length).toEqual(10);
-			deleted.forEach(deletedItem => {
+			deleted.forEach((deletedItem) => {
 				expect(deletedItem.field1).toEqual('someField');
 			});
 		});
 
 		test('Delete one returns one', async () => {
 			let model: Model;
-			const save = jest.fn(saved => (model = saved));
+			const save = jest.fn((saved) => (model = saved));
 			const query = jest.fn(() => [model]);
 			const _delete = jest.fn(() => [[model], [model]]);
 
@@ -981,7 +981,7 @@ describe('DataStore tests', () => {
 						save,
 						query,
 						delete: _delete,
-						runExclusive: jest.fn(fn => fn.bind(this, _mock)()),
+						runExclusive: jest.fn((fn) => fn.bind(this, _mock)()),
 					};
 					return _mock;
 				});
@@ -1114,7 +1114,7 @@ describe('DataStore tests', () => {
 				expect(oneModelById).toBeInstanceOf(Model);
 			});
 			test('with criteria', async () => {
-				const multiModelWithCriteria = await DataStore.query(Model, c =>
+				const multiModelWithCriteria = await DataStore.query(Model, (c) =>
 					c.field1('contains', 'something')
 				);
 				expectType<Model[]>(multiModelWithCriteria);
@@ -1150,8 +1150,9 @@ describe('DataStore tests', () => {
 				expect(oneModelById).toBeInstanceOf(Model);
 			});
 			test('with criteria', async () => {
-				const multiModelWithCriteria = await DataStore.query<Model>(Model, c =>
-					c.field1('contains', 'something')
+				const multiModelWithCriteria = await DataStore.query<Model>(
+					Model,
+					(c) => c.field1('contains', 'something')
 				);
 				expectType<Model[]>(multiModelWithCriteria);
 				const [one] = multiModelWithCriteria;
@@ -1202,7 +1203,7 @@ describe('DataStore tests', () => {
 				});
 			});
 			test('subscribe to model with criteria', async () => {
-				DataStore.observe(Model, c => c.field1('ne', 'somevalue')).subscribe(
+				DataStore.observe(Model, (c) => c.field1('ne', 'somevalue')).subscribe(
 					({ element, model }) => {
 						expectType<PersistentModelConstructor<Model>>(model);
 						expectType<Model>(element);
@@ -1238,7 +1239,7 @@ describe('DataStore tests', () => {
 				);
 			});
 			test('subscribe to model with criteria', async () => {
-				DataStore.observe<Model>(Model, c =>
+				DataStore.observe<Model>(Model, (c) =>
 					c.field1('ne', 'somevalue')
 				).subscribe(({ element, model }) => {
 					expectType<PersistentModelConstructor<Model>>(model);

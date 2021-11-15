@@ -83,11 +83,11 @@ export class S3AlbumComponentCore implements OnInit {
 		this.amplifyService
 			.storage()
 			.list(path, options)
-			.then(data => {
-				this.list = data.map(item => {
+			.then((data) => {
+				this.list = data.map((item) => {
 					return { path: item.key };
 				});
 			})
-			.catch(e => console.error(e));
+			.catch((e) => console.error(e));
 	}
 }

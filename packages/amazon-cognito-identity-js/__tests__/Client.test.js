@@ -17,7 +17,7 @@ describe('Client unit test suite', () => {
 		test('Promisify request happy case', () => {
 			netRequestMockSuccess(true);
 			const data = client.promisifyRequest({}, {});
-			Promise.resolve(data).then(res => {
+			Promise.resolve(data).then((res) => {
 				expect(res).toEqual({});
 			});
 		});
@@ -25,7 +25,7 @@ describe('Client unit test suite', () => {
 		test('Promisify request throws an error', () => {
 			netRequestMockSuccess(false);
 			const error = client.promisifyRequest({}, {});
-			Promise.resolve(error).catch(err => {
+			Promise.resolve(error).catch((err) => {
 				expect(err).toMatchObject(networkError);
 			});
 		});
@@ -45,7 +45,7 @@ describe('Client unit test suite', () => {
 				json: async () => ({ endpoint: endpoint }),
 			});
 
-			await promisifyCallback(client, 'request', '', {}).then(res => {
+			await promisifyCallback(client, 'request', '', {}).then((res) => {
 				expect(res).toMatchObject({ endpoint: endpoint });
 			});
 		});
@@ -56,7 +56,7 @@ describe('Client unit test suite', () => {
 
 			fetch.mockRejectedValue(networkError);
 
-			await promisifyCallback(client, 'request', '', {}).catch(err => {
+			await promisifyCallback(client, 'request', '', {}).catch((err) => {
 				expect(err).toMatchObject({ message: 'Network error' });
 			});
 		});
@@ -69,7 +69,7 @@ describe('Client unit test suite', () => {
 				json: async () => ({ __type: 'test' }),
 			});
 
-			await promisifyCallback(client, 'request', '', {}).catch(err => {
+			await promisifyCallback(client, 'request', '', {}).catch((err) => {
 				expect(err).toMatchObject({ code: 'test' });
 			});
 		});

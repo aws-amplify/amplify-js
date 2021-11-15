@@ -63,9 +63,10 @@ export class ConfirmSignInComponent implements OnInit, OnDestroy {
 						hide: this.hide,
 				  });
 
-		const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-			authComponent.component
-		);
+		const componentFactory =
+			this.componentFactoryResolver.resolveComponentFactory(
+				authComponent.component
+			);
 
 		const viewContainerRef = this.componentHost.viewContainerRef;
 		viewContainerRef.clear();

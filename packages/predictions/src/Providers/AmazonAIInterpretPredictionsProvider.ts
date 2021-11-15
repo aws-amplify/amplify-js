@@ -45,9 +45,8 @@ export class AmazonAIInterpretPredictionsProvider extends AbstractInterpretPredi
 				} = {},
 			} = ({} = input);
 
-			const {
-				text: { source: { language = undefined } = {} } = {},
-			} = ({} = input as any); // language is only required for specific interpret types
+			const { text: { source: { language = undefined } = {} } = {} } = ({} =
+				input as any); // language is only required for specific interpret types
 
 			const comprehendClient = new ComprehendClient({
 				credentials,

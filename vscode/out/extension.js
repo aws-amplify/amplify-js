@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /*
 'use strict';
 // The module 'vscode' contains the VS Code extensibility API
@@ -29,5 +29,5 @@ export function activate(context: vscode.ExtensionContext) {
 // this method is called when your extension is deactivated
 export function deactivate() {
 }
-*/ 
+*/
 //# sourceMappingURL=extension.js.map

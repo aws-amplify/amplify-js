@@ -57,7 +57,7 @@ describe('withAuth0 test', () => {
 					return <div />;
 				}
 			};
-			const mockFn = jest.fn().mockImplementationOnce(callback => {
+			const mockFn = jest.fn().mockImplementationOnce((callback) => {
 				callback(null, {
 					idToken: 'idToken',
 					expiresIn: 3000,
@@ -103,7 +103,7 @@ describe('withAuth0 test', () => {
 					return <div />;
 				}
 			};
-			const mockFn = jest.fn().mockImplementationOnce(callback => {
+			const mockFn = jest.fn().mockImplementationOnce((callback) => {
 				callback('err', null);
 			});
 			const mockFn2 = jest.fn().mockImplementationOnce((token, callback) => {
@@ -143,7 +143,7 @@ describe('withAuth0 test', () => {
 					return <div />;
 				}
 			};
-			const mockFn = jest.fn().mockImplementationOnce(callback => {
+			const mockFn = jest.fn().mockImplementationOnce((callback) => {
 				callback('err', null);
 			});
 			const mockFn2 = jest.fn().mockImplementationOnce((token, callback) => {
@@ -183,7 +183,7 @@ describe('withAuth0 test', () => {
 					return <div />;
 				}
 			};
-			const mockFn = jest.fn().mockImplementationOnce(callback => {
+			const mockFn = jest.fn().mockImplementationOnce((callback) => {
 				callback('err', null);
 			});
 			const mockFn2 = jest.fn().mockImplementationOnce((token, callback) => {

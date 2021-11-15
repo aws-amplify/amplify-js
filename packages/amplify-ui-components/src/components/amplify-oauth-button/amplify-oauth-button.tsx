@@ -21,7 +21,7 @@ export class AmplifyOAuthButton {
 	render() {
 		return (
 			<amplify-sign-in-button
-				onClick={event => this.signInWithOAuth(event)}
+				onClick={(event) => this.signInWithOAuth(event)}
 				provider="oauth"
 			>
 				{this.config.label || I18n.get(Translations.SIGN_IN_WITH_AWS)}

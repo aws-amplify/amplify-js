@@ -20,7 +20,7 @@ const requiredModules = ['Auth', 'I18n', 'Logger'];
 const AmplifyPlugin = {
 	install(Vue, AmplifyModules) {
 		const missingModules = [];
-		requiredModules.forEach(r => {
+		requiredModules.forEach((r) => {
 			if (!Object.keys(AmplifyModules).includes(r)) {
 				missingModules.push(r);
 			}

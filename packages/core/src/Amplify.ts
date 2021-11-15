@@ -61,7 +61,7 @@ export class AmplifyClass {
 		// Plus, it reduces `if` statements within the `constructor` and `configure` of each module
 		Object.entries(this._modules).forEach(([Name, comp]) => {
 			// e.g. Auth.*
-			Object.keys(comp).forEach(property => {
+			Object.keys(comp).forEach((property) => {
 				// e.g. Auth["Credentials"] = this._modules["Credentials"] when set
 				if (this._modules[property]) {
 					comp[property] = this._modules[property];
@@ -69,7 +69,7 @@ export class AmplifyClass {
 			});
 		});
 
-		this._components.map(comp => {
+		this._components.map((comp) => {
 			comp.configure(this._config);
 		});
 
@@ -82,7 +82,7 @@ export class AmplifyClass {
 			pluggable['getCategory'] &&
 			typeof pluggable['getCategory'] === 'function'
 		) {
-			this._components.map(comp => {
+			this._components.map((comp) => {
 				if (
 					comp['addPluggable'] &&
 					typeof comp['addPluggable'] === 'function'

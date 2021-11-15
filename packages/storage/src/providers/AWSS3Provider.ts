@@ -104,7 +104,7 @@ export class AWSS3Provider implements StorageProvider {
 	constructor(config?: StorageOptions) {
 		this._config = config ? config : {};
 		this._storage = new StorageHelper().getStorage();
-		Hub.listen('auth', data => {
+		Hub.listen('auth', (data) => {
 			const { payload } = data;
 			if (payload.event === 'signOut' || payload.event === 'signIn') {
 				this._storage.removeItem(UPLOADS_STORAGE_KEY);
@@ -158,7 +158,7 @@ export class AWSS3Provider implements StorageProvider {
 			throw new Error(StorageErrorStrings.INVALID_BLOB);
 		}
 
-		emitter.on(TaskEvents.UPLOAD_PROGRESS, event => {
+		emitter.on(TaskEvents.UPLOAD_PROGRESS, (event) => {
 			if (progressCallback) {
 				if (typeof progressCallback === 'function') {
 					progressCallback(event);
@@ -171,7 +171,7 @@ export class AWSS3Provider implements StorageProvider {
 			}
 		});
 
-		emitter.on(TaskEvents.UPLOAD_COMPLETE, event => {
+		emitter.on(TaskEvents.UPLOAD_COMPLETE, (event) => {
 			if (completeCallback) {
 				if (typeof completeCallback === 'function') {
 					completeCallback(event);
@@ -184,7 +184,7 @@ export class AWSS3Provider implements StorageProvider {
 			}
 		});
 
-		emitter.on(TaskEvents.ERROR, err => {
+		emitter.on(TaskEvents.ERROR, (err) => {
 			if (errorCallback) {
 				if (typeof errorCallback === 'function') {
 					errorCallback(err);
@@ -418,7 +418,7 @@ export class AWSS3Provider implements StorageProvider {
 			try {
 				if (progressCallback) {
 					if (typeof progressCallback === 'function') {
-						emitter.on(SEND_DOWNLOAD_PROGRESS_EVENT, progress => {
+						emitter.on(SEND_DOWNLOAD_PROGRESS_EVENT, (progress) => {
 							progressCallback(progress);
 						});
 					} else {
@@ -593,7 +593,7 @@ export class AWSS3Provider implements StorageProvider {
 		try {
 			if (progressCallback) {
 				if (typeof progressCallback === 'function') {
-					emitter.on(SEND_UPLOAD_PROGRESS_EVENT, progress => {
+					emitter.on(SEND_UPLOAD_PROGRESS_EVENT, (progress) => {
 						progressCallback(progress);
 					});
 				} else {
@@ -604,7 +604,7 @@ export class AWSS3Provider implements StorageProvider {
 				}
 			}
 
-			return uploader.upload().then(response => {
+			return uploader.upload().then((response) => {
 				logger.debug('upload result', response);
 				dispatchStorageEvent(
 					track,
@@ -714,7 +714,7 @@ export class AWSS3Provider implements StorageProvider {
 			const response = await s3.send(listObjectsCommand);
 			let list: S3ProviderListOutput = [];
 			if (response && response.Contents) {
-				list = response.Contents.map(item => {
+				list = response.Contents.map((item) => {
 					return {
 						key: item.Key.substr(prefix.length),
 						eTag: item.ETag,

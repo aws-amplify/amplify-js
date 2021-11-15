@@ -22,7 +22,7 @@ export * from './API';
 export * from './Storage';
 export * from './Interactions';
 
-const configure = function(config) {
+const configure = function (config) {
 	const msg = [
 		'',
 		'\x1b[33mWarning: Amplify.configure() is deprecated from aws-amplify-react-native.',

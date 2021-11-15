@@ -155,7 +155,7 @@ export class SumerianSceneComponentCore implements OnInit, OnDestroy {
 		);
 	}
 
-	progressCallback = progress => {
+	progressCallback = (progress) => {
 		const percentage = progress * 100;
 		this.loadPercentage = percentage;
 	};

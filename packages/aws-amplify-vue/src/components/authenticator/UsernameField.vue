@@ -69,7 +69,7 @@ export default {
 			auth,
 		};
 	},
-	mounted: function() {
+	mounted: function () {
 		if (window && window.location && window.location.search) {
 			const searchParams = new URLSearchParams(window.location.search);
 			const usernameParam = searchParams

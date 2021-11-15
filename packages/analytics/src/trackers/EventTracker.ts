@@ -49,7 +49,7 @@ export class EventTracker {
 		Object.assign(this._config, opts);
 
 		if (!this._config.enable) {
-			Object.keys(this._delegates).forEach(key => {
+			Object.keys(this._delegates).forEach((key) => {
 				if (typeof this._delegates[key].destroy === 'function')
 					this._delegates[key].destroy();
 			});
@@ -59,7 +59,7 @@ export class EventTracker {
 			Object.keys(this._delegates).length === 0
 		) {
 			const selector = '[' + this._config.selectorPrefix + 'on]';
-			this._config.events.forEach(evt => {
+			this._config.events.forEach((evt) => {
 				this._delegates[evt] = delegate(
 					document,
 					evt,
@@ -85,7 +85,7 @@ export class EventTracker {
 
 		const attrs = element.getAttribute(this._config.selectorPrefix + 'attrs');
 		if (attrs) {
-			attrs.split(/\s*,\s*/).forEach(attr => {
+			attrs.split(/\s*,\s*/).forEach((attr) => {
 				const tmp = attr.trim().split(/\s*:\s*/);
 				customAttrs[tmp[0]] = tmp[1];
 			});
@@ -118,7 +118,7 @@ export class EventTracker {
 				attributes,
 			},
 			this._config.provider
-		).catch(e => {
+		).catch((e) => {
 			logger.debug(`Failed to record the ${event.type} event', ${e}`);
 		});
 	}

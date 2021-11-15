@@ -93,18 +93,16 @@ describe('ConfirmSignInComponentCore: ', () => {
 	});
 
 	it('...should not display if _show is not set', () => {
-		const rootEl = fixture.debugElement.nativeElement.querySelector(
-			'.amplify-container'
-		);
+		const rootEl =
+			fixture.debugElement.nativeElement.querySelector('.amplify-container');
 		expect(rootEl).toBeFalsy();
 	});
 
 	it('...should display if _show is set', () => {
 		fixtureComponent._show = true;
 		fixture.detectChanges();
-		const rootEl = fixture.debugElement.nativeElement.querySelector(
-			'.amplify-container'
-		);
+		const rootEl =
+			fixture.debugElement.nativeElement.querySelector('.amplify-container');
 		expect(rootEl).toBeTruthy();
 	});
 
@@ -126,9 +124,8 @@ describe('ConfirmSignInComponentCore: ', () => {
 	it('...should call onSignIn when "a" tag is clicked', () => {
 		fixtureComponent._show = true;
 		fixture.detectChanges();
-		const a = fixture.debugElement.nativeElement.querySelector(
-			'.amplify-form-link'
-		);
+		const a =
+			fixture.debugElement.nativeElement.querySelector('.amplify-form-link');
 		a.click();
 		expect(onSignInSpy).toHaveBeenCalled();
 	});

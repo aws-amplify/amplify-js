@@ -6,4 +6,4 @@ describe('User agent version', () => {
 		const userAgent = new UserAgent();
 		expect(userAgent.userAgent).toEqual(`aws-amplify/${version} js`);
 	});
-})
+});

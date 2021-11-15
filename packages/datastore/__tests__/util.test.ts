@@ -389,10 +389,10 @@ describe('datastore util', () => {
 			// '2021-99-99',
 			// '2021-01-21+99:02'
 		];
-		valid.forEach(test => {
+		valid.forEach((test) => {
 			expect(isAWSDate(test)).toBe(true);
 		});
-		invalid.forEach(test => {
+		invalid.forEach((test) => {
 			expect(isAWSDate(test)).toBe(false);
 		});
 	});
@@ -422,10 +422,10 @@ describe('datastore util', () => {
 			'12:30:.500Z',
 			'12:30:24.500+5:30:00',
 		];
-		valid.forEach(test => {
+		valid.forEach((test) => {
 			expect(isAWSTime(test)).toBe(true);
 		});
-		invalid.forEach(test => {
+		invalid.forEach((test) => {
 			expect(isAWSTime(test)).toBe(false);
 		});
 	});
@@ -460,10 +460,10 @@ describe('datastore util', () => {
 			'2021-01-11T1:3',
 			'20211-01-11T12:30:.500Z',
 		];
-		valid.forEach(test => {
+		valid.forEach((test) => {
 			expect(isAWSDateTime(test)).toBe(true);
 		});
-		invalid.forEach(test => {
+		invalid.forEach((test) => {
 			expect(isAWSDateTime(test)).toBe(false);
 		});
 	});
@@ -471,10 +471,10 @@ describe('datastore util', () => {
 	test('isAWSTimestamp', () => {
 		const valid = [0, 123, 123456, 123456789];
 		const invalid = [-1, -123, -123456, -1234567];
-		valid.forEach(test => {
+		valid.forEach((test) => {
 			expect(isAWSTimestamp(test)).toBe(true);
 		});
-		invalid.forEach(test => {
+		invalid.forEach((test) => {
 			expect(isAWSTimestamp(test)).toBe(false);
 		});
 	});
@@ -493,10 +493,10 @@ describe('datastore util', () => {
 			'a@ b.c',
 			'a@b. c',
 		];
-		valid.forEach(test => {
+		valid.forEach((test) => {
 			expect(isAWSEmail(test)).toBe(true);
 		});
-		invalid.forEach(test => {
+		invalid.forEach((test) => {
 			expect(isAWSEmail(test)).toBe(false);
 		});
 	});
@@ -522,10 +522,10 @@ describe('datastore util', () => {
 			'{‘a’: 1}',
 			'Unquoted string',
 		];
-		valid.forEach(test => {
+		valid.forEach((test) => {
 			expect(isAWSJSON(test)).toBe(true);
 		});
-		invalid.forEach(test => {
+		invalid.forEach((test) => {
 			expect(isAWSJSON(test)).toBe(false);
 		});
 	});
@@ -533,10 +533,10 @@ describe('datastore util', () => {
 	test('isAWSURL', () => {
 		const valid = ['http://localhost/', 'schema://anything', 'smb://a/b/c?d=e'];
 		const invalid = ['', '//', '//example', 'example'];
-		valid.forEach(test => {
+		valid.forEach((test) => {
 			expect(isAWSURL(test)).toBe(true);
 		});
-		invalid.forEach(test => {
+		invalid.forEach((test) => {
 			expect(isAWSURL(test)).toBe(false);
 		});
 	});
@@ -550,10 +550,10 @@ describe('datastore util', () => {
 			'+44123456789',
 		];
 		const invalid = ['', '+', '+-', 'a', 'bad-number'];
-		valid.forEach(test => {
+		valid.forEach((test) => {
 			expect(isAWSPhone(test)).toBe(true);
 		});
-		invalid.forEach(test => {
+		invalid.forEach((test) => {
 			expect(isAWSPhone(test)).toBe(false);
 		});
 	});
@@ -585,10 +585,10 @@ describe('datastore util', () => {
 			'::ffff:10.0.0',
 			' ::ffff:10.0.0',
 		];
-		valid.forEach(test => {
+		valid.forEach((test) => {
 			expect(isAWSIPAddress(test)).toBe(true);
 		});
-		invalid.forEach(test => {
+		invalid.forEach((test) => {
 			expect(isAWSIPAddress(test)).toBe(false);
 		});
 	});

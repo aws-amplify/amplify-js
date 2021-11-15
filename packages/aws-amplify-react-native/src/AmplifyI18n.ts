@@ -27,8 +27,7 @@ const dict = {
 		'Reset password': 'Passwort zurücksetzen',
 		'User does not exist': 'Dieser Benutzer existiert nicht',
 		'User already exists': 'Dieser Benutzer existiert bereits',
-		'Incorrect username or password':
-			'Falscher Benutzername oder falsches Passwort',
+		'Incorrect username or password': 'Falscher Benutzername oder falsches Passwort',
 		'Invalid password format': 'Ungültiges Passwort-Format',
 		'Create account': 'Hier registrieren',
 		'Forgot Password': 'Passwort vergessen',
@@ -59,11 +58,9 @@ const dict = {
 		'Sign in': 'Anmelden',
 		'Create a new account': 'Erstelle einen neuen Account',
 		'Reset your password': 'Zurücksetzen des Passworts',
-		'An account with the given email already exists.':
-			'Ein Account mit dieser Email existiert bereits.',
+		'An account with the given email already exists.': 'Ein Account mit dieser Email existiert bereits.',
 		'Username cannot be empty': 'Benutzername darf nicht leer sein',
-		'Password attempts exceeded':
-			'Die maximale Anzahl der fehlerhaften Anmeldeversuche wurde erreicht',
+		'Password attempts exceeded': 'Die maximale Anzahl der fehlerhaften Anmeldeversuche wurde erreicht',
 	},
 	fr: {
 		'Loading...': "S'il vous plaît, attendez",
@@ -110,8 +107,7 @@ Veuillez utiliser un format de numéro de téléphone du +12345678900`,
 		'Reset your password': 'Réinitialisez votre mot de passe',
 		'Enter your username': "Saisissez votre nom d'utilisateur",
 		'Enter your password': 'Saisissez votre mot de passe',
-		'An account with the given email already exists.':
-			'Un utilisateur avec cette adresse email existe déjà.',
+		'An account with the given email already exists.': 'Un utilisateur avec cette adresse email existe déjà.',
 		'Username cannot be empty': "Le nom d'utilisateur doit être renseigné",
 	},
 
@@ -150,19 +146,16 @@ Veuillez utiliser un format de numéro de téléphone du +12345678900`,
 		'Username cannot be empty': 'El campo de usuario no puede estar vacido',
 		'User does not exist': 'El usuario no existe',
 		'User already exists': 'El usuario ya existe',
-		'Incorrect username or password':
-			'Nombre de usuario o contraseña incorrecta',
+		'Incorrect username or password': 'Nombre de usuario o contraseña incorrecta',
 		'Invalid password format': 'Formato de contraseña inválido',
 		'Invalid phone number format':
 			'Formato de n\xFAmero de tel\xE9fono inv\xE1lido.\nUtilice el formato de n\xFAmero de tel\xE9fono +12345678900',
 	},
-	
+
 	it: {
 		Loading: 'Caricamento in corso',
-		'Account recovery requires verified contact information':
-			'Ripristino del conto richiede un account verificati',
-		'An account with the given email already exists.':
-			'Un account con questa email esiste già.',
+		'Account recovery requires verified contact information': 'Ripristino del conto richiede un account verificati',
+		'An account with the given email already exists.': 'Un account con questa email esiste già.',
 		'Back to Sign In': 'Torna alla Login',
 		'Change Password': 'Cambia la password',
 		Code: 'Codice',
@@ -188,8 +181,7 @@ Veuillez utiliser un format de numéro de téléphone du +12345678900`,
 		'New Password': 'Nuova password',
 		'No account? ': 'Nessun account?',
 		Password: 'Password',
-		'Password attempts exceeded':
-			'Il numero massimo di tentativi di accesso falliti è stato raggiunto',
+		'Password attempts exceeded': 'Il numero massimo di tentativi di accesso falliti è stato raggiunto',
 		'Phone Number': 'Numero di telefono',
 		'Resend Code': 'Codice Rispedisci',
 		'Reset password': 'Ripristina password',
@@ -233,8 +225,7 @@ Veuillez utiliser un format de numéro de téléphone du +12345678900`,
 		Verify: '验证',
 		'Verify Contact': '验证联系方式',
 		Code: '确认码',
-		'Account recovery requires verified contact information':
-			'账户恢复需要验证过的联系方式',
+		'Account recovery requires verified contact information': '账户恢复需要验证过的联系方式',
 
 		'User does not exist': '用户不存在',
 		'User already exists': '用户已经存在',
