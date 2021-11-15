@@ -7,7 +7,6 @@ import {
 	AsyncCollection,
 	Schema,
 } from '../src/index';
-// import { AsyncCollection } from '../src/datastore/datastore';
 import { newSchema } from './schema';
 
 declare class BlogModel {

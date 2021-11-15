@@ -194,11 +194,6 @@ export function testSchema(): Schema {
 						association: {
 							connectionType: 'HAS_MANY',
 							associatedWith: 'post',
-
-							// i THINK this is the wrong. it currently throws an error
-							// on lazy loading. do we need to support this?
-
-							// associatedWith: 'postId',
 						},
 					},
 				},
