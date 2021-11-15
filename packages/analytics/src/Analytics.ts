@@ -29,10 +29,11 @@ import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
 const logger = new Logger('AnalyticsClass');
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchAnalyticsEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch(
@@ -104,7 +105,7 @@ export class AnalyticsClass {
 			this._config['autoSessionRecord'] = true;
 		}
 
-		this._pluggables.forEach(pluggable => {
+		this._pluggables.forEach((pluggable) => {
 			// for backward compatibility
 			const providerConfig =
 				pluggable.getProviderName() === 'AWSPinpoint' &&
@@ -208,7 +209,15 @@ export class AnalyticsClass {
 	 * @return - A promise which resolves if buffer doesn't overflow
 	 */
 	public async startSession(provider?: string) {
-		const params = { event: { name: '_session.start' }, provider };
+		const event = { name: '_session.start' };
+		const params = { event, provider };
+
+		dispatchAnalyticsEvent(
+			'record',
+			event,
+			'Recording Analytics session start event'
+		);
+
 		return this._sendEvent(params);
 	}
 
@@ -217,7 +226,15 @@ export class AnalyticsClass {
 	 * @return - A promise which resolves if buffer doesn't overflow
 	 */
 	public async stopSession(provider?: string) {
-		const params = { event: { name: '_session.stop' }, provider };
+		const event = { name: '_session.stop' };
+		const params = { event, provider };
+
+		dispatchAnalyticsEvent(
+			'record',
+			event,
+			'Recording Analytics session stop event'
+		);
+
 		return this._sendEvent(params);
 	}
 
@@ -268,7 +285,7 @@ export class AnalyticsClass {
 		const provider = params.provider ? params.provider : 'AWSPinpoint';
 
 		return new Promise((resolve, reject) => {
-			this._pluggables.forEach(pluggable => {
+			this._pluggables.forEach((pluggable) => {
 				if (pluggable.getProviderName() === provider) {
 					pluggable.record(params, { resolve, reject });
 				}
@@ -302,7 +319,7 @@ export class AnalyticsClass {
 let endpointUpdated = false;
 let authConfigured = false;
 let analyticsConfigured = false;
-const listener = capsule => {
+const listener = (capsule) => {
 	const { channel, payload } = capsule;
 	logger.debug('on hub capsule ' + channel, payload);
 
@@ -321,7 +338,7 @@ const listener = capsule => {
 	}
 };
 
-const storageEvent = payload => {
+const storageEvent = (payload) => {
 	const {
 		data: { attrs, metrics },
 	} = payload;
@@ -334,19 +351,19 @@ const storageEvent = payload => {
 				attributes: attrs,
 				metrics,
 			})
-			.catch(e => {
+			.catch((e) => {
 				logger.debug('Failed to send the storage event automatically', e);
 			});
 	}
 };
 
-const authEvent = payload => {
+const authEvent = (payload) => {
 	const { event } = payload;
 	if (!event) {
 		return;
 	}
 
-	const recordAuthEvent = async eventName => {
+	const recordAuthEvent = async (eventName) => {
 		if (authConfigured && analyticsConfigured) {
 			try {
 				return await _instance.record({ name: `_userauth.${eventName}` });
@@ -377,7 +394,7 @@ const authEvent = payload => {
 	}
 };
 
-const analyticsEvent = payload => {
+const analyticsEvent = (payload) => {
 	const { event } = payload;
 	if (!event) return;
 
@@ -394,7 +411,7 @@ const analyticsEvent = payload => {
 const sendEvents = () => {
 	const config = _instance.configure();
 	if (!endpointUpdated && config['autoSessionRecord']) {
-		_instance.updateEndpoint({ immediate: true }).catch(e => {
+		_instance.updateEndpoint({ immediate: true }).catch((e) => {
 			logger.debug('Failed to update the endpoint', e);
 		});
 		endpointUpdated = true;
