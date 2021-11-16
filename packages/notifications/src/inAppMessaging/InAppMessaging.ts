@@ -154,26 +154,41 @@ export default class InAppMessaging {
 	syncMessages = (): Promise<void[]> =>
 		Promise.all<void>(
 			this.pluggables.map(async (pluggable) => {
-				const messages = await pluggable.getInAppMessages();
-				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
-				await this.setMessages(key, messages);
+				try {
+					const messages = await pluggable.getInAppMessages();
+					const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
+					await this.setMessages(key, messages);
+				} catch (err) {
+					logger.error('Failed to sync messages');
+					throw err;
+				}
 			})
 		);
 
 	clearMessages = (): Promise<void[]> =>
 		Promise.all<void>(
 			this.pluggables.map(async (pluggable) => {
-				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
-				await this.removeMessages(key);
+				try {
+					const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
+					await this.removeMessages(key);
+				} catch (err) {
+					logger.error('Failed to clear messages');
+					throw err;
+				}
 			})
 		);
 
 	dispatchEvent = async (event: InAppMessagingEvent): Promise<void> => {
 		const messages: InAppMessage[][] = await Promise.all<InAppMessage[]>(
 			this.pluggables.map(async (pluggable) => {
-				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
-				const messages = await this.getMessages(key);
-				return pluggable.processInAppMessages(messages, event);
+				try {
+					const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
+					const messages = await this.getMessages(key);
+					return pluggable.processInAppMessages(messages, event);
+				} catch (err) {
+					logger.error('Failed to dispatch event');
+					throw err;
+				}
 			})
 		);
 
