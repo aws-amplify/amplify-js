@@ -1329,20 +1329,21 @@ class DataStore {
 							// the `element` for UPDATE events isn't an instance of `modelConstructor`.
 							// however, `executivePredicate` expects an instance that supports lazy loaded
 							// associations. customers will presumably expect the same!
+							let message = item;
 							if (
 								isModelConstructor(modelConstructor) &&
 								!(item.element instanceof modelConstructor)
 							) {
-								item.element = modelInstanceCreator(
-									modelConstructor,
-									item.element
-								);
+								message = {
+									...message,
+									element: modelInstanceCreator(modelConstructor, item.element),
+								};
 							}
 							if (
 								!executivePredicate ||
-								(await executivePredicate.matches(item.element))
+								(await executivePredicate.matches(message.element))
 							) {
-								observer.next(item as SubscriptionMessage<T>);
+								observer.next(message as SubscriptionMessage<T>);
 							}
 						},
 						error: err => observer.error(err),
