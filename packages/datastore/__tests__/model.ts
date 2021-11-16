@@ -98,6 +98,45 @@ declare class PostAuthorJoinModel {
 	): PostAuthorJoinModel;
 }
 
+declare class ForumModel {
+	readonly id: string;
+	readonly title: string;
+	readonly editors?: AsyncCollection<ForumEditorJoinModel>;
+	constructor(init: ModelInit<ForumModel>);
+	static copyOf(
+		source: ForumModel,
+		mutator: (
+			draft: MutableModel<ForumModel>
+		) => MutableModel<ForumModel> | void
+	): ForumModel;
+}
+
+declare class ForumEditorJoinModel {
+	readonly id: string;
+	readonly editor?: Promise<EditorModel>;
+	readonly forum?: Promise<ForumModel>;
+	constructor(init: ModelInit<ForumEditorJoinModel>);
+	static copyOf(
+		source: ForumEditorJoinModel,
+		mutator: (
+			draft: MutableModel<ForumEditorJoinModel>
+		) => MutableModel<ForumEditorJoinModel> | void
+	): ForumEditorJoinModel;
+}
+
+declare class EditorModel {
+	readonly id: string;
+	readonly name: string;
+	readonly forums?: AsyncCollection<ForumEditorJoinModel>;
+	constructor(init: ModelInit<EditorModel>);
+	static copyOf(
+		source: EditorModel,
+		mutator: (
+			draft: MutableModel<EditorModel>
+		) => MutableModel<EditorModel> | void
+	): EditorModel;
+}
+
 declare class AuthorModel {
 	readonly id: string;
 	readonly name: string;
@@ -164,6 +203,9 @@ const {
 	Album,
 	Song,
 	Post,
+	Forum,
+	ForumEditorJoin,
+	Editor,
 	Comment,
 	Blog,
 	BlogOwner,
@@ -178,6 +220,9 @@ const {
 	Album: PersistentModelConstructor<AlbumModel>;
 	Song: PersistentModelConstructor<SongModel>;
 	Post: PersistentModelConstructor<PostModel>;
+	Forum: PersistentModelConstructor<ForumModel>;
+	ForumEditorJoin: PersistentModelConstructor<ForumEditorJoinModel>;
+	Editor: PersistentModelConstructor<EditorModel>;
 	Comment: PersistentModelConstructor<CommentModel>;
 	Blog: PersistentModelConstructor<BlogModel>;
 	BlogOwner: PersistentModelConstructor<BlogOwnerModel>;
@@ -195,6 +240,9 @@ export {
 	Album,
 	Song,
 	Post,
+	Forum,
+	ForumEditorJoin,
+	Editor,
 	Comment,
 	Blog,
 	BlogOwner,

@@ -602,6 +602,19 @@ const createModelClass = <T extends PersistentModel>(
 						const relatedModel: PersistentModelConstructor<
 							typeof relatedModelName
 						> = getModelConstructorByModelName(USER, relatedModelName);
+						const relatedModelDefinition = getModelDefinition(relatedModel);
+						if (
+							relatedModelDefinition.fields[associatedWith].type.hasOwnProperty(
+								'model'
+							)
+						) {
+							const result = await instance.query(relatedModel, (c) =>
+								c[associatedWith].id.eq(this.id)
+							);
+							const asyncResult = new AsyncCollection(result);
+							instanceMemos[field] = asyncResult;
+							return asyncResult;
+						}
 						const result = await instance.query(relatedModel, (c) =>
 							c[associatedWith].eq(this.id)
 						);

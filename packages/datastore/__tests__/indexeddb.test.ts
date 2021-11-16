@@ -11,6 +11,9 @@ import {
 	Blog,
 	BlogOwner,
 	Comment,
+	Editor,
+	Forum,
+	ForumEditorJoin,
 	Nested,
 	Post,
 	PostAuthorJoin,
@@ -66,6 +69,9 @@ describe('Indexed db storage test', () => {
 			`${USER}_Blog`,
 			`${USER}_BlogOwner`,
 			`${USER}_Comment`,
+			`${USER}_Editor`,
+			`${USER}_Forum`,
+			`${USER}_ForumEditorJoin`,
 			`${USER}_Person`,
 			`${USER}_Post`,
 			`${USER}_PostAuthorJoin`,
@@ -254,7 +260,7 @@ describe('Indexed db storage test', () => {
 			.get(blog.id);
 
 		expect(get1['blogOwnerId']).toBe(owner.id);
-		const updated = Blog.copyOf(blog, draft => {
+		const updated = Blog.copyOf(blog, (draft) => {
 			draft.name = 'Avatar: The Last Airbender';
 		});
 
@@ -277,7 +283,7 @@ describe('Indexed db storage test', () => {
 
 		await DataStore.save(blog3);
 		const query1 = await DataStore.query(Blog);
-		query1.forEach(async item => {
+		query1.forEach(async (item) => {
 			const itemOwner = await item.owner;
 			if (itemOwner) {
 				expect(itemOwner).toHaveProperty('name');
@@ -302,7 +308,7 @@ describe('Indexed db storage test', () => {
 		expect(q1Post.id).toEqual(p.id);
 	});
 
-	test('query lazily HAS_ONE/BELONGS_TO with explicit Field', async done => {
+	test('query lazily HAS_ONE/BELONGS_TO with explicit Field', async (done) => {
 		const team1 = new Team({ name: 'team' });
 		const savedTeam = DataStore.save(team1);
 		const project1 = new Project({
@@ -314,7 +320,7 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(project1);
 
 		const q1 = await DataStore.query(Project, project1.id);
-		q1.team.then(value => {
+		q1.team.then((value) => {
 			expect(value.id).toEqual(team1.id);
 			done();
 		});
@@ -337,6 +343,48 @@ describe('Indexed db storage test', () => {
 		expect(songs).toStrictEqual(
 			new AsyncCollection([savedSong1, savedSong2, savedSong3])
 		);
+	});
+
+	test('query lazily MANY to MANY ', async () => {
+		const f1 = new Forum({ title: 'forum1' });
+		const f2 = new Forum({ title: 'forum2' });
+		await DataStore.save(f1);
+		await DataStore.save(f2);
+
+		const e1 = new Editor({ name: 'editor1' });
+		const e2 = new Editor({ name: 'editor2' });
+		await DataStore.save(e1);
+		await DataStore.save(e2);
+
+		const f1e1 = await DataStore.save(
+			new ForumEditorJoin({
+				forum: f1 as any,
+				editor: e1 as any,
+			})
+		);
+		const f1e2 = await DataStore.save(
+			new ForumEditorJoin({
+				forum: f1 as any,
+				editor: e2 as any,
+			})
+		);
+		const f2e2 = await DataStore.save(
+			new ForumEditorJoin({
+				forum: f2 as any,
+				editor: e2 as any,
+			})
+		);
+
+		const q1 = await DataStore.query(Forum, f1.id);
+		const q2 = await DataStore.query(Editor, e1.id);
+		const q3 = await DataStore.query(Editor, e2.id);
+		const editors = await q1.editors;
+		const forums = await q2.forums;
+		const forums2 = await q3.forums;
+
+		expect(editors).toStrictEqual(new AsyncCollection([f1e1, f1e2]));
+		expect(forums).toStrictEqual(new AsyncCollection([f1e1]));
+		expect(forums2).toStrictEqual(new AsyncCollection([f1e2, f2e2]));
 	});
 
 	test('Memoization Test', async () => {
@@ -404,7 +452,7 @@ describe('Indexed db storage test', () => {
 		expect(song).not.toBe(song3);
 	});
 
-	test('Test lazy validation', async () => {
+	test('Test lazy HAS_ONE/BELONGS_TO validation', async () => {
 		const owner1 = new BlogOwner({ name: 'Blog' });
 		expect(() => {
 			new Project({
@@ -413,6 +461,25 @@ describe('Indexed db storage test', () => {
 				team: owner1 as any,
 			});
 		}).toThrow('Value passed to Project.team is not an instance of Team');
+	});
+
+	test('Test lazy MANY to MANY validation', async () => {
+		const f1 = new Forum({ title: 'forum1' });
+		const f2 = new Forum({ title: 'forum2' });
+		await DataStore.save(f1);
+		await DataStore.save(f2);
+
+		const e1 = new Editor({ name: 'editor1' });
+		await DataStore.save(e1);
+
+		expect(() => {
+			new ForumEditorJoin({
+				forum: f1 as any,
+				editor: f2 as any,
+			});
+		}).toThrow(
+			'Value passed to ForumEditorJoin.editor is not an instance of Editor'
+		);
 	});
 
 	test('query with sort on a single field', async () => {
@@ -444,7 +511,7 @@ describe('Indexed db storage test', () => {
 		const sortedPersons = await DataStore.query(Person, null, {
 			page: 0,
 			limit: 20,
-			sort: s => s.firstName(SortDirection.DESCENDING),
+			sort: (s) => s.firstName(SortDirection.DESCENDING),
 		});
 
 		expect(sortedPersons[0].firstName).toEqual('Meow Meow');
@@ -477,11 +544,11 @@ describe('Indexed db storage test', () => {
 
 		const sortedPersons = await DataStore.query(
 			Person,
-			c => c.username.ne(undefined),
+			(c) => c.username.ne(undefined),
 			{
 				page: 0,
 				limit: 20,
-				sort: s =>
+				sort: (s) =>
 					s
 						.firstName(SortDirection.ASCENDING)
 						.lastName(SortDirection.ASCENDING)
@@ -508,14 +575,14 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(owner2);
 
 		await DataStore.save(
-			Blog.copyOf(blog, draft => {
+			Blog.copyOf(blog, (draft) => {
 				draft;
 			})
 		);
 		await DataStore.save(blog2);
 		await DataStore.save(blog3);
 
-		await DataStore.delete(Blog, c => c.name('beginsWith', 'Avatar'));
+		await DataStore.delete(Blog, (c) => c.name('beginsWith', 'Avatar'));
 
 		expect(await DataStore.query(Blog, blog.id)).toBeUndefined();
 		expect(await DataStore.query(Blog, blog2.id)).toBeDefined();
@@ -593,8 +660,8 @@ describe('Indexed db storage test', () => {
 			.index('postId')
 			.getAll(post.id);
 		expect(res).toHaveLength(0);
-		await DataStore.delete(Post, c => c);
-		await DataStore.delete(Author, c => c);
+		await DataStore.delete(Post, (c) => c);
+		await DataStore.delete(Author, (c) => c);
 	});
 
 	// skipping in this PR. will re-enable as part of cascading deletes work
@@ -666,8 +733,8 @@ describe('AsyncCollection toArray Test', () => {
 				input: { max: 3 },
 				expected: [0, 1, 2],
 			},
-		].forEach(Parameter => {
-			test(`Testing input of ${Parameter.input}`, async done => {
+		].forEach((Parameter) => {
+			test(`Testing input of ${Parameter.input}`, async (done) => {
 				const { input, expected } = Parameter;
 				const album1 = new Album({
 					name: "Lupe Fiasco's The Cool",
@@ -700,7 +767,7 @@ describe('AsyncCollection toArray Test', () => {
 				for (const num of expected) {
 					expectedValues.push(songsArray[num]);
 				}
-				songs.toArray(input).then(value => {
+				songs.toArray(input).then((value) => {
 					expect(value).toStrictEqual(expectedValues);
 					done();
 				});
@@ -745,9 +812,9 @@ describe('DB versions migration', () => {
 		function readBlob(blob: Blob): Promise<string> {
 			return new Promise((resolve, reject) => {
 				const reader = new FileReader();
-				reader.onabort = ev => reject(new Error('file read aborted'));
-				reader.onerror = ev => reject((ev.target as any).error);
-				reader.onload = ev => resolve((ev.target as any).result);
+				reader.onabort = (ev) => reject(new Error('file read aborted'));
+				reader.onerror = (ev) => reject((ev.target as any).error);
+				reader.onload = (ev) => resolve((ev.target as any).result);
 				reader.readAsText(blob);
 			});
 		}
