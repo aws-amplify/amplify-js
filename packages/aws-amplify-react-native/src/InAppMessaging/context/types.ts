@@ -18,6 +18,7 @@ import {
 	BannerMessageProps,
 	CarouselMessageProps,
 	FullScreenMessageProps,
+	ModalMessageProps,
 	InAppMessageComponentStyles,
 } from '../components';
 
@@ -25,6 +26,7 @@ export type InAppMessageComponents = {
 	BannerMessage?: (props: BannerMessageProps) => ReactElement;
 	CarouselMessage?: (props: CarouselMessageProps) => ReactElement;
 	FullScreenMessage?: (props: FullScreenMessageProps) => ReactElement;
+	ModalMessage?: (props: ModalMessageProps) => ReactElement;
 };
 
 export type InAppMessagingContextType = {
