@@ -23,6 +23,8 @@ import {
 	isModelAttributePrimaryKey,
 	isModelAttributeCompositeKey,
 	NonModelTypeConstructor,
+	DeferredCallbackResolverOptions,
+	LimitTimerRaceResolvedValues,
 } from './types';
 import { WordArray } from 'amazon-cognito-identity-js';
 
@@ -63,7 +65,7 @@ export const validatePredicate = <T extends PersistentModel>(
 			exhaustiveCheck(groupType);
 	}
 
-	const result: boolean = predicatesOrGroups[filterType](predicateOrGroup => {
+	const result: boolean = predicatesOrGroups[filterType]((predicateOrGroup) => {
 		if (isPredicateObj(predicateOrGroup)) {
 			const { field, operator, operand } = predicateOrGroup;
 			const value = model[field];
@@ -204,8 +206,8 @@ export const processCompositeKeys = (
 			}
 
 			// does the current set share values with another set we've already added to `combined`?
-			const intersectingSetIdx = combined.findIndex(existingSet => {
-				return [...existingSet].some(f => sortKeyFieldsSet.has(f));
+			const intersectingSetIdx = combined.findIndex((existingSet) => {
+				return [...existingSet].some((f) => sortKeyFieldsSet.has(f));
 			});
 
 			if (intersectingSetIdx > -1) {
@@ -317,7 +319,7 @@ export const traverseModel = <T extends PersistentModel>(
 		instance: T;
 	}[] = [];
 
-	const newInstance = modelConstructor.copyOf(instance, draftInstance => {
+	const newInstance = modelConstructor.copyOf(instance, (draftInstance) => {
 		relation.relationTypes.forEach((rItem: RelationType) => {
 			const modelConstructor = getModelConstructorByModelName(
 				namespace.name,
@@ -430,7 +432,7 @@ export const getIndexFromAssociation = (
 	indexes: string[],
 	src: string
 ): string => {
-	const index = indexes.find(idx => idx === src);
+	const index = indexes.find((idx) => idx === src);
 	return index;
 };
 
@@ -451,7 +453,7 @@ export { USER, SYNC, STORAGE, DATASTORE };
 let privateModeCheckResult;
 
 export const isPrivateMode = () => {
-	return new Promise(resolve => {
+	return new Promise((resolve) => {
 		const dbname = uuid();
 		let db;
 
@@ -489,7 +491,7 @@ export const isPrivateMode = () => {
 	});
 };
 
-const randomBytes = function(nBytes: number): Buffer {
+const randomBytes = function (nBytes: number): Buffer {
 	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
 };
 const prng = () => randomBytes(1).readUInt8(0) / 0xff;
@@ -681,3 +683,81 @@ export const isAWSIPAddress = (val: string): boolean => {
 		val
 	);
 };
+
+export class DeferredPromise {
+	public promise: Promise<string>;
+	public resolve: (value: string | PromiseLike<string>) => void;
+	public reject: () => void;
+	constructor() {
+		const self = this;
+		this.promise = new Promise(
+			(resolve: (value: string | PromiseLike<string>) => void, reject) => {
+				self.resolve = resolve;
+				self.reject = reject;
+			}
+		);
+	}
+}
+
+export class DeferredCallbackResolver {
+	private limitPromise = new DeferredPromise();
+	private timerPromise: Promise<string>;
+	private maxInterval: number;
+	private timer: ReturnType<typeof setTimeout>;
+	private raceInFlight = false;
+	private callback = () => {};
+	private errorHandler: (error: string) => void;
+	private defaultErrorHandler = (
+		msg = 'DeferredCallbackResolver error'
+	): void => {
+		throw new Error(msg);
+	};
+
+	constructor(options: DeferredCallbackResolverOptions) {
+		this.callback = options.callback;
+		this.errorHandler = options.errorHandler || this.defaultErrorHandler;
+		this.maxInterval = options.maxInterval || 2000;
+	}
+
+	private startTimer(): void {
+		this.timerPromise = new Promise((resolve, reject) => {
+			this.timer = setTimeout(() => {
+				resolve(LimitTimerRaceResolvedValues.TIMER);
+			}, this.maxInterval);
+		});
+	}
+
+	private async racePromises(): Promise<string> {
+		let winner: string;
+		try {
+			this.raceInFlight = true;
+			this.startTimer();
+			winner = await Promise.race([
+				this.timerPromise,
+				this.limitPromise.promise,
+			]);
+			this.callback();
+		} catch (err) {
+			this.errorHandler(err);
+		} finally {
+			// reset for the next race
+			this.clear();
+			this.raceInFlight = false;
+			this.limitPromise = new DeferredPromise();
+
+			return winner;
+		}
+	}
+
+	public start(): void {
+		if (!this.raceInFlight) this.racePromises();
+	}
+
+	public clear(): void {
+		clearTimeout(this.timer);
+	}
+
+	public resolve(): void {
+		this.limitPromise.resolve(LimitTimerRaceResolvedValues.LIMIT);
+	}
+}

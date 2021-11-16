@@ -1,11 +1,13 @@
 import {
 	AuthModeStrategy,
 	InternalSchema,
+	LimitTimerRaceResolvedValues,
 	SchemaModel,
 	SchemaNamespace,
 } from '../src/types';
 import { generateSelectionSet, getModelAuthModes } from '../src/sync/utils';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
+import { DeferredCallbackResolver } from '../src/util';
 
 describe('DataStore - utils', () => {
 	describe('generateSelectionSet', () => {
@@ -454,6 +456,135 @@ _deleted`;
 
 				expect(authModes).toEqual(expectedAuthModes);
 			}
+		});
+	});
+
+	describe('DeferredCallbackResolver utility class', () => {
+		beforeEach(() => {
+			jest.clearAllMocks();
+		});
+
+		test('happy path - limit wins', async () => {
+			expect.assertions(5);
+			const limitTimerRaceCallback = jest.fn();
+
+			// casting to any -> in order to access private members
+			const limitTimerRace: any = new DeferredCallbackResolver({
+				maxInterval: 500,
+				callback: limitTimerRaceCallback,
+			});
+
+			const spyOnRace = jest.spyOn(limitTimerRace, 'racePromises');
+
+			expect(limitTimerRace.raceInFlight).toBe(false);
+
+			limitTimerRace.start();
+
+			expect(spyOnRace).toBeCalledTimes(1);
+			limitTimerRace.resolve();
+
+			const winner = await spyOnRace.mock.results[0].value;
+			expect(winner).toEqual(LimitTimerRaceResolvedValues.LIMIT);
+
+			expect(limitTimerRace.raceInFlight).toBe(false);
+			expect(limitTimerRaceCallback).toBeCalledTimes(1);
+
+			limitTimerRace.clear();
+		});
+
+		test('happy path - timer wins', async () => {
+			expect.assertions(5);
+			const limitTimerRaceCallback = jest.fn();
+
+			// casting to any -> in order to access private members
+			const limitTimerRace: any = new DeferredCallbackResolver({
+				maxInterval: 500,
+				callback: limitTimerRaceCallback,
+			});
+
+			const spyOnRace = jest.spyOn(limitTimerRace, 'racePromises');
+
+			expect(limitTimerRace.raceInFlight).toBe(false);
+
+			limitTimerRace.start();
+
+			expect(spyOnRace).toBeCalledTimes(1);
+
+			const winner = await spyOnRace.mock.results[0].value;
+			expect(winner).toEqual(LimitTimerRaceResolvedValues.TIMER);
+
+			expect(limitTimerRace.raceInFlight).toBe(false);
+			expect(limitTimerRaceCallback).toBeCalledTimes(1);
+
+			limitTimerRace.clear();
+		});
+
+		test('throws default error', async () => {
+			expect.assertions(4);
+			const limitTimerRaceCallback = jest.fn();
+
+			// casting to any -> in order to access private members
+			const limitTimerRace: any = new DeferredCallbackResolver({
+				maxInterval: 500,
+				callback: limitTimerRaceCallback,
+			});
+
+			const spyOnRace = jest.spyOn(limitTimerRace, 'racePromises');
+			const spyOnErrorHandler = jest.spyOn(limitTimerRace, 'errorHandler');
+			const spyOnTimer = jest.spyOn(limitTimerRace, 'startTimer');
+			// force the Promise to reject
+			spyOnTimer.mockImplementation(() => {
+				throw new Error('customErrorMsg');
+			});
+
+			expect(limitTimerRace.raceInFlight).toBe(false);
+
+			limitTimerRace.start();
+
+			expect(spyOnRace).toBeCalledTimes(1);
+
+			expect(spyOnErrorHandler).toThrowError('DeferredCallbackResolver error');
+
+			expect(limitTimerRaceCallback).toBeCalledTimes(0);
+
+			limitTimerRace.clear();
+		});
+
+		test('accepts custom error handler and throws custom error', async () => {
+			expect.assertions(4);
+			const limitTimerRaceCallback = jest.fn();
+			const customErrorMsg =
+				'something went wrong with the DeferredCallbackResolver';
+			const limitTimerRaceErrorHandler = jest.fn((err) => {
+				throw new Error(customErrorMsg);
+			});
+
+			// casting to any -> in order to access private members
+			const limitTimerRace: any = new DeferredCallbackResolver({
+				maxInterval: 500,
+				callback: limitTimerRaceCallback,
+				errorHandler: limitTimerRaceErrorHandler,
+			});
+
+			const spyOnRace = jest.spyOn(limitTimerRace, 'racePromises');
+			const spyOnErrorHandler = jest.spyOn(limitTimerRace, 'errorHandler');
+			const spyOnTimer = jest.spyOn(limitTimerRace, 'startTimer');
+			// force the 'racePromises' to fail
+			spyOnTimer.mockImplementation(() => {
+				throw new Error('timer error');
+			});
+
+			expect(limitTimerRace.raceInFlight).toBe(false);
+
+			limitTimerRace.start();
+
+			expect(spyOnRace).toBeCalledTimes(1);
+
+			expect(spyOnErrorHandler).toThrowError(customErrorMsg);
+
+			expect(limitTimerRaceCallback).toBeCalledTimes(0);
+
+			limitTimerRace.clear();
 		});
 	});
 });

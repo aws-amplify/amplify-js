@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.1.3...@aws-amplify/analytics@5.1.4) (2021-11-12)
+
+**Note:** Version bump only for package @aws-amplify/analytics
+
+## [5.1.3](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.1.2...@aws-amplify/analytics@5.1.3) (2021-11-09)
+
+### Reverts
+
+- uuid dependency upgrade ([#9159](https://github.com/aws-amplify/amplify-js/issues/9159)) ([4ef8aa9](https://github.com/aws-amplify/amplify-js/commit/4ef8aa9c7c25dbe921fd02b6205b8defb93fbaec))
+
 ## [5.1.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/analytics@5.1.1...@aws-amplify/analytics@5.1.2) (2021-10-28)
 
 **Note:** Version bump only for package @aws-amplify/analytics
