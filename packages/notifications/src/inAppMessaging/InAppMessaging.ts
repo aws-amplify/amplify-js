@@ -258,7 +258,8 @@ export default class InAppMessaging {
 			}
 			this.storageSynced = true;
 		} catch (err) {
-			logger.error('Failed to sync storage', err);
+			logger.error('Failed to sync storage');
+			throw err;
 		}
 	};
 
@@ -271,7 +272,8 @@ export default class InAppMessaging {
 			const storedMessages = storage.getItem(key);
 			return storedMessages ? JSON.parse(storedMessages) : [];
 		} catch (err) {
-			logger.error('Failed to retrieve in-app messages from storage', err);
+			logger.error('Failed to retrieve in-app messages from storage');
+			throw err;
 		}
 	};
 
@@ -290,7 +292,8 @@ export default class InAppMessaging {
 			const { storage } = this.config;
 			storage.setItem(key, JSON.stringify(messages));
 		} catch (err) {
-			logger.error('Failed to store in-app messages', err);
+			logger.error('Failed to store in-app messages');
+			throw err;
 		}
 	};
 
@@ -302,7 +305,8 @@ export default class InAppMessaging {
 			const { storage } = this.config;
 			storage.removeItem(key);
 		} catch (err) {
-			logger.error('Failed to remove in-app messages from storage', err);
+			logger.error('Failed to remove in-app messages from storage');
+			throw err;
 		}
 	};
 
