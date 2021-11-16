@@ -374,17 +374,40 @@ export type PersistentModelMetaData = {
 	readOnlyFields: string;
 };
 
+export interface AsyncCollection<T> extends AsyncIterable<T> {
+	toArray({ max }: { max?: number }): Promise<T[]>;
+}
+
+export type SettableFieldType<T> = T extends Promise<infer InnerPromiseType>
+	? InnerPromiseType
+	: T extends AsyncCollection<infer InnerCollectionType>
+	? InnerCollectionType[]
+	: T;
+
+export type PredicateFieldType<T> = NonNullable<
+	Scalar<
+		T extends Promise<infer InnerPromiseType>
+			? InnerPromiseType
+			: T extends AsyncCollection<infer InnerCollectionType>
+			? InnerCollectionType
+			: T
+	>
+>;
+
+type DeepWritable<T> = {
+	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
+		? T[P]
+		: DeepWritable<T[P]>;
+};
+
 export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
 export type ModelInit<
 	T,
 	K extends PersistentModelMetaData = {
 		readOnlyFields: 'createdAt' | 'updatedAt';
 	}
-> = Omit<T, 'id' | K['readOnlyFields']>;
-type DeepWritable<T> = {
-	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
-		? T[P]
-		: DeepWritable<T[P]>;
+> = {
+	[P in keyof Omit<T, 'id' | K['readOnlyFields']>]: SettableFieldType<T[P]>;
 };
 
 export type MutableModel<
@@ -394,8 +417,17 @@ export type MutableModel<
 	}
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
-> = DeepWritable<Omit<T, 'id' | K['readOnlyFields']>> &
-	Readonly<Pick<T, 'id' | K['readOnlyFields']>>;
+> = {
+	[P in keyof (DeepWritable<Omit<T, 'id' | K['readOnlyFields']>> &
+		Readonly<Pick<T, 'id' | K['readOnlyFields']>>)]: SettableFieldType<T[P]>;
+	// TODO: switch to this when adding cascading saves?
+	// T[P] extends Promise<infer InnerPromiseType>
+	// 	? MutableModel<InnerPromiseType>
+	// 	: T[P] extends AsyncCollection<infer InnerCollectionType>
+	// 	? MutableModel<InnerCollectionType>[]
+	// 	: T[P]
+	// ;
+};
 
 export type ModelInstanceMetadata = {
 	id: string;

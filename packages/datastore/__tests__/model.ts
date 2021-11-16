@@ -12,8 +12,8 @@ import { newSchema } from './schema';
 declare class BlogModel {
 	readonly id: string;
 	readonly name: string;
-	readonly posts?: AsyncCollection<PostModel>;
-	readonly owner: BlogOwnerModel;
+	readonly posts: AsyncCollection<PostModel>;
+	readonly owner: Promise<BlogOwnerModel>;
 	constructor(init: ModelInit<BlogModel>);
 	static copyOf(
 		source: BlogModel,
@@ -24,11 +24,11 @@ declare class BlogModel {
 declare class PostModel {
 	readonly id: string;
 	readonly title: string;
-	readonly blog?: BlogModel;
-	readonly reference?: PostModel;
-	readonly comments?: AsyncCollection<CommentModel>;
-	readonly authors?: AsyncCollection<PostAuthorJoinModel>;
-	readonly metadata?: PostMetadataType;
+	readonly blog: Promise<BlogModel | null>;
+	readonly reference: Promise<PostModel | null>;
+	readonly comments: AsyncCollection<CommentModel>;
+	readonly authors: AsyncCollection<PostAuthorJoinModel>;
+	readonly metadata: Promise<PostMetadataType | null>;
 	constructor(init: ModelInit<PostModel>);
 	static copyOf(
 		source: PostModel,
@@ -40,7 +40,7 @@ declare class ProjectModel {
 	readonly id: string;
 	readonly name?: string;
 	readonly teamID?: string;
-	readonly team?: Promise<TeamModel>;
+	readonly team: Promise<TeamModel | null>;
 	constructor(init: ModelInit<ProjectModel>);
 	static copyOf(
 		source: ProjectModel,
@@ -63,7 +63,7 @@ declare class TeamModel {
 declare class PostMetadataType {
 	readonly rating: number;
 	readonly tags?: string[];
-	readonly nested?: NestedType;
+	readonly nested: Promise<NestedType | null>;
 	constructor(init: ModelInit<PostMetadataType>);
 }
 
@@ -75,7 +75,7 @@ declare class NestedType {
 declare class CommentModel {
 	readonly id: string;
 	readonly content?: string;
-	readonly post?: PostModel;
+	readonly post: Promise<PostModel | null>;
 	constructor(init: ModelInit<CommentModel>);
 	static copyOf(
 		source: CommentModel,
@@ -87,8 +87,8 @@ declare class CommentModel {
 
 declare class PostAuthorJoinModel {
 	readonly id: string;
-	readonly author?: AuthorModel;
-	readonly post?: PostModel;
+	readonly author: Promise<AuthorModel | null>;
+	readonly post: Promise<PostModel | null>;
 	constructor(init: ModelInit<PostAuthorJoinModel>);
 	static copyOf(
 		source: PostAuthorJoinModel,
@@ -101,7 +101,7 @@ declare class PostAuthorJoinModel {
 declare class ForumModel {
 	readonly id: string;
 	readonly title: string;
-	readonly editors?: AsyncCollection<ForumEditorJoinModel>;
+	readonly editors: AsyncCollection<ForumEditorJoinModel>;
 	constructor(init: ModelInit<ForumModel>);
 	static copyOf(
 		source: ForumModel,
@@ -113,8 +113,8 @@ declare class ForumModel {
 
 declare class ForumEditorJoinModel {
 	readonly id: string;
-	readonly editor?: Promise<EditorModel>;
-	readonly forum?: Promise<ForumModel>;
+	readonly editor: Promise<EditorModel | null>;
+	readonly forum: Promise<ForumModel | null>;
 	constructor(init: ModelInit<ForumEditorJoinModel>);
 	static copyOf(
 		source: ForumEditorJoinModel,
@@ -127,7 +127,7 @@ declare class ForumEditorJoinModel {
 declare class EditorModel {
 	readonly id: string;
 	readonly name: string;
-	readonly forums?: AsyncCollection<ForumEditorJoinModel>;
+	readonly forums: AsyncCollection<ForumEditorJoinModel>;
 	constructor(init: ModelInit<EditorModel>);
 	static copyOf(
 		source: EditorModel,
@@ -140,7 +140,7 @@ declare class EditorModel {
 declare class AuthorModel {
 	readonly id: string;
 	readonly name: string;
-	readonly posts?: AsyncCollection<PostAuthorJoinModel>;
+	readonly posts: AsyncCollection<PostAuthorJoinModel>;
 	constructor(init: ModelInit<AuthorModel>);
 	static copyOf(
 		source: AuthorModel,
@@ -153,7 +153,7 @@ declare class AuthorModel {
 declare class BlogOwnerModel {
 	readonly name: string;
 	readonly id: string;
-	readonly blog?: BlogModel;
+	readonly blog: Promise<BlogModel | null>;
 	constructor(init: ModelInit<BlogOwnerModel>);
 	static copyOf(
 		source: BlogOwnerModel,
@@ -186,7 +186,7 @@ declare class SongModel {
 declare class AlbumModel {
 	readonly id: string;
 	readonly name: string;
-	readonly songs?: AsyncCollection<SongModel | null>;
+	readonly songs: AsyncCollection<SongModel>;
 	readonly createdAt?: string;
 	readonly updatedAt?: string;
 	constructor(init: ModelInit<AlbumModel>);

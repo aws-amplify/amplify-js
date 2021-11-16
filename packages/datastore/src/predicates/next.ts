@@ -4,6 +4,8 @@ import {
 	ModelFieldType,
 	ModelMeta,
 	AllOperators,
+	AsyncCollection,
+	PredicateFieldType,
 } from '../types';
 
 import { ModelPredicateCreator as FlatModelPredicateCreator } from './index';
@@ -19,20 +21,6 @@ type MatchableTypes =
 	| boolean[];
 
 type AllFieldOperators = keyof AllOperators;
-
-interface AsyncCollection<T> extends AsyncIterable<T> {
-	toArray({ max }: { max?: number }): Promise<T[]>;
-}
-
-type FinalFieldType<T> = NonNullable<
-	Scalar<
-		T extends Promise<infer InnerPromiseType>
-			? InnerPromiseType
-			: T extends AsyncCollection<infer InnerCollectionType>
-			? InnerCollectionType
-			: T
-	>
->;
 
 const ops: AllFieldOperators[] = [
 	'eq',
@@ -93,8 +81,8 @@ type ModelPredicateNegation<RT extends PersistentModel> = (
 ) => FinalModelPredicate;
 
 type ModelPredicate<RT extends PersistentModel> = {
-	[K in keyof RT]-?: FinalFieldType<RT[K]> extends PersistentModel
-		? ModelPredicate<FinalFieldType<RT[K]>>
+	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
+		? ModelPredicate<PredicateFieldType<RT[K]>>
 		: ValuePredicate<RT, RT[K]>;
 } & {
 	or: ModelPredicateOperator<RT>;

@@ -14,7 +14,7 @@ export declare class Model {
 	public readonly dateCreated: string;
 	public readonly emails?: string[];
 	public readonly ips?: (string | null)[];
-	public readonly metadata?: Metadata;
+	public readonly metadata?: Promise<Metadata>;
 	public readonly createdAt?: string;
 	public readonly updatedAt?: string;
 
@@ -44,7 +44,7 @@ export declare class Post {
 export declare class Comment {
 	public readonly id: string;
 	public readonly content: string;
-	public readonly post: Post;
+	public readonly post: Promise<Post>;
 }
 
 export declare class User {
