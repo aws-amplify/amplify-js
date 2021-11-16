@@ -12,12 +12,13 @@
  */
 
 import { ColorValue, ImageStyle, StyleProp, TextStyle, ViewStyle } from 'react-native';
-
 import { InAppMessageButton, InAppMessageContent, InAppMessageLayout } from '@aws-amplify/notifications';
 
+import { ButtonProps } from '../ui';
+
 export type InAppMessageComponentButtonStyle = {
-	container?: StyleProp<ViewStyle>;
-	text?: StyleProp<TextStyle>;
+	container?: ButtonProps['style'];
+	text?: ButtonProps['textStyle'];
 };
 
 export type InAppMessageComponentStyle = {
