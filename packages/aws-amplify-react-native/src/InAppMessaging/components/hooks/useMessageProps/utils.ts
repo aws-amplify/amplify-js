@@ -45,7 +45,7 @@ export const getButtonComponentStyle = (
 		// the style prop of the React Native Pressable component used in the message UI accepts either a ViewStyle array
 		// or a function receiving a boolean reflecting whether the component is currently pressed, returning a ViewStyle
 		// array. Utilizing the latter, we add an opacity value to the UI message button style during press events
-		container: ({ pressed }) => {
+		container: ({ pressed } = { pressed: false }) => {
 			// default button press interaction opacity
 			const opacity = pressed ? BUTTON_PRESSED_OPACITY : null;
 
