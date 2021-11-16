@@ -339,10 +339,8 @@ describe('Indexed db storage test', () => {
 
 		const q1 = await DataStore.query(Album, album1.id);
 
-		const songs = await q1.songs;
-		expect(songs).toStrictEqual(
-			new AsyncCollection([savedSong1, savedSong2, savedSong3])
-		);
+		const songs = await q1.songs.toArray();
+		expect(songs).toStrictEqual([savedSong1, savedSong2, savedSong3]);
 	});
 
 	test('query lazily MANY to MANY ', async () => {
@@ -378,13 +376,13 @@ describe('Indexed db storage test', () => {
 		const q1 = await DataStore.query(Forum, f1.id);
 		const q2 = await DataStore.query(Editor, e1.id);
 		const q3 = await DataStore.query(Editor, e2.id);
-		const editors = await q1.editors;
-		const forums = await q2.forums;
-		const forums2 = await q3.forums;
+		const editors = await q1.editors.toArray();
+		const forums = await q2.forums.toArray();
+		const forums2 = await q3.forums.toArray();
 
-		expect(editors).toStrictEqual(new AsyncCollection([f1e1, f1e2]));
-		expect(forums).toStrictEqual(new AsyncCollection([f1e1]));
-		expect(forums2).toStrictEqual(new AsyncCollection([f1e2, f2e2]));
+		expect(editors).toStrictEqual([f1e1, f1e2]);
+		expect(forums).toStrictEqual([f1e1]);
+		expect(forums2).toStrictEqual([f1e2, f2e2]);
 	});
 
 	test('Memoization Test', async () => {

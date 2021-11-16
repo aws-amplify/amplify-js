@@ -529,6 +529,7 @@ const createModelClass = <T extends PersistentModel>(
 			if (Array.isArray(json)) {
 				return json.map(init => this.fromJSON(init));
 			}
+			2;
 
 			const instance = modelInstanceCreator(clazz, json);
 			const modelValidator = validateModelFields(modelDefinition);
@@ -558,6 +559,7 @@ const createModelClass = <T extends PersistentModel>(
 		const relatedModelName = type['model'];
 
 		Object.defineProperty(clazz.prototype, modelDefinition.fields[field].name, {
+			// enumerable: true,
 			set(model: PersistentModel) {
 				if (!model || !model.id) return;
 				// Avoid validation error when processing AppSync response with nested
@@ -588,7 +590,7 @@ const createModelClass = <T extends PersistentModel>(
 					this[targetName] = model.id;
 				}
 			},
-			async get() {
+			get() {
 				const instanceMemos = modelInstanceAssociationsMap.get(this) || {};
 				if (instanceMemos.hasOwnProperty(targetName)) {
 					return instanceMemos[targetName];
@@ -610,17 +612,17 @@ const createModelClass = <T extends PersistentModel>(
 								'model'
 							)
 						) {
-							const result = await instance.query(relatedModel, c =>
+							const resultPromise = instance.query(relatedModel, c =>
 								c[associatedWith].id.eq(this.id)
 							);
-							const asyncResult = new AsyncCollection(result);
+							const asyncResult = new AsyncCollection(resultPromise);
 							instanceMemos[field] = asyncResult;
 							return asyncResult;
 						}
-						const result = await instance.query(relatedModel, c =>
+						const resultPromise = instance.query(relatedModel, c =>
 							c[associatedWith].eq(this.id)
 						);
-						const asyncResult = new AsyncCollection(result);
+						const asyncResult = new AsyncCollection(resultPromise);
 						instanceMemos[field] = asyncResult;
 						return asyncResult;
 					}
@@ -634,10 +636,10 @@ const createModelClass = <T extends PersistentModel>(
 					relatedModelName
 				);
 
-				const result = await instance.query(relatedModel, associatedId);
-				instanceMemos[targetName] = result;
+				const resultPromise = instance.query(relatedModel, associatedId);
+				instanceMemos[targetName] = resultPromise;
 				modelInstanceAssociationsMap.set(this, instanceMemos);
-				return result;
+				return resultPromise;
 			},
 		});
 	}
@@ -646,21 +648,21 @@ const createModelClass = <T extends PersistentModel>(
 };
 
 export class AsyncCollection<T> implements AsyncIterable<T> {
-	start: number;
-	end: number;
-	values: Array<any>;
-	constructor(values: Array<any>) {
-		this.start = 0;
-		this.end = values.length;
+	values: Array<any> | Promise<Array<any>>;
+
+	constructor(values: Array<any> | Promise<Array<any>>) {
 		this.values = values;
 	}
+
 	[Symbol.asyncIterator](): AsyncIterator<T> {
-		let index = this.start;
+		let values;
+		let index = 0;
 		return {
 			next: async () => {
-				if (index < this.end) {
+				if (!values) values = await this.values;
+				if (index < values.length) {
 					const result = {
-						value: this.values[index],
+						value: values[index],
 						done: false,
 					};
 					index++;
@@ -673,6 +675,7 @@ export class AsyncCollection<T> implements AsyncIterable<T> {
 			},
 		};
 	}
+
 	async toArray({
 		max = Number.MAX_SAFE_INTEGER,
 	}: { max?: number } = {}): Promise<T[]> {
@@ -1312,6 +1315,14 @@ class DataStore {
 					.filter(({ model }) => namespaceResolver(model) === USER)
 					.subscribe({
 						next: async item => {
+							// `element` for UPDATE events aren't instances of `modelConstructor`.
+							// `executivePredicate` expects them to be. (what do our customers expect?)
+							if (isModelConstructor(modelConstructor)) {
+								item.element = modelInstanceCreator(
+									modelConstructor,
+									item.element
+								);
+							}
 							if (
 								!executivePredicate ||
 								(await executivePredicate.matches(item.element))

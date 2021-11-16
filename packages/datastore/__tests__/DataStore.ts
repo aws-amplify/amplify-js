@@ -13,7 +13,7 @@ import {
 	PersistentModel,
 	PersistentModelConstructor,
 } from '../src/types';
-import { Model, Post, Metadata, testSchema } from './helpers';
+import { Comment, Model, Post, Metadata, testSchema } from './helpers';
 
 let initSchema: typeof initSchemaType;
 let DataStore: typeof DataStoreType;
@@ -26,13 +26,15 @@ const nameOf = <T>(name: keyof T) => name;
 const expectType: <T>(param: T) => void = () => {};
 
 describe('DataStore observe, unmocked, with fake-indexeddb', () => {
+	let Comment: PersistentModelConstructor<Comment>;
 	let Model: PersistentModelConstructor<Model>;
 	let Post: PersistentModelConstructor<Post>;
 
 	beforeEach(async () => {
 		({ initSchema, DataStore } = require('../src/datastore/datastore'));
 		const classes = initSchema(testSchema());
-		({ Model, Post } = classes as {
+		({ Comment, Model, Post } = classes as {
+			Comment: PersistentModelConstructor<Comment>;
 			Model: PersistentModelConstructor<Model>;
 			Post: PersistentModelConstructor<Post>;
 		});
@@ -175,6 +177,122 @@ describe('DataStore observe, unmocked, with fake-indexeddb', () => {
 
 		await DataStore.delete(original);
 	});
+
+	test('subscribe with belongsTo criteria', async (done) => {
+		const targetPost = await DataStore.save(
+			new Post({
+				title: 'this is my post. hooray!',
+			})
+		);
+
+		const nonTargetPost = await DataStore.save(
+			new Post({
+				title: 'this is NOT my post. boo!',
+			})
+		);
+
+		DataStore.observe(Comment, (comment) =>
+			comment.post.title.eq(targetPost.title)
+		).subscribe(({ element: comment, opType, model }) => {
+			expect(comment.content).toEqual('good comment');
+			done();
+		});
+
+		await DataStore.save(
+			new Comment({
+				content: 'bad comment',
+				post: nonTargetPost,
+			})
+		);
+
+		await DataStore.save(
+			new Comment({
+				content: 'good comment',
+				post: targetPost,
+			})
+		);
+	});
+
+	test('subscribe with hasMany criteria', async (done) => {
+		// want to set up a few posts and a few "non-target" comments
+		// to ensure we can observe post based on a single comment that's
+		// somewhat "buried" alongside other comments.
+
+		const targetPost = await DataStore.save(
+			new Post({
+				title: 'this is my post. hooray!',
+			})
+		);
+
+		const nonTargetPost = await DataStore.save(
+			new Post({
+				title: 'this is NOT my post. boo!',
+			})
+		);
+
+		const nonTargetComment = await DataStore.save(
+			new Comment({
+				content: 'bad comment',
+				post: nonTargetPost,
+			})
+		);
+
+		const targetPreComment = await DataStore.save(
+			new Comment({
+				content: 'pre good comment',
+				post: targetPost,
+			})
+		);
+
+		const targetComment = await DataStore.save(
+			new Comment({
+				content: 'good comment',
+				post: targetPost,
+			})
+		);
+
+		const targetPostComment = await DataStore.save(
+			new Comment({
+				content: 'post good comment',
+				post: targetPost,
+			})
+		);
+
+		// sanity check
+		const targetPostFetched = await DataStore.query(Post, targetPost.id);
+		expect((await targetPostFetched.comments.toArray()).length).toBe(3);
+		expect(
+			(await targetPostFetched.comments.toArray()).some(
+				(c) => c.content === 'good comment'
+			)
+		);
+
+		// const checkComment = await DataStore.query(Comment, targetComment.id);
+		// console.log('check comment', await checkComment.post);
+
+		// console.log('targetPost comments', await targetPost.comments.toArray());
+
+		// const targetPostCopy = Post.copyOf(targetPost, p => p.title = "COPIED");
+		// console.log('targetPost COPIED comments', await targetPostCopy.comments.toArray());
+
+		DataStore.observe(Post, (post) =>
+			post.comments.content.eq(targetComment.content)
+		).subscribe(async ({ element: post, opType, model }) => {
+			expect(post.title).toEqual('expected update');
+			done();
+		});
+
+		// decoy edit
+		await DataStore.save(
+			Post.copyOf(nonTargetPost, (p) => (p.title = 'decoy update'))
+		);
+
+		// the update we're looking for
+		await DataStore.save(
+			Post.copyOf(targetPost, (p) => (p.title = 'expected update'))
+		);
+	});
+	1;
 });
 
 describe('DataStore observeQuery, with fake-indexeddb and fake sync', () => {

@@ -7,12 +7,13 @@ import {
 	AsyncCollection,
 	Schema,
 } from '../src/index';
+// import { AsyncCollection } from '../src/datastore/datastore';
 import { newSchema } from './schema';
 
 declare class BlogModel {
 	readonly id: string;
 	readonly name: string;
-	readonly posts?: PostModel[];
+	readonly posts?: AsyncCollection<PostModel>;
 	readonly owner: BlogOwnerModel;
 	constructor(init: ModelInit<BlogModel>);
 	static copyOf(
@@ -26,8 +27,8 @@ declare class PostModel {
 	readonly title: string;
 	readonly blog?: BlogModel;
 	readonly reference?: PostModel;
-	readonly comments?: CommentModel[];
-	readonly authors?: PostAuthorJoinModel[];
+	readonly comments?: AsyncCollection<CommentModel>;
+	readonly authors?: AsyncCollection<PostAuthorJoinModel>;
 	readonly metadata?: PostMetadataType;
 	constructor(init: ModelInit<PostModel>);
 	static copyOf(
@@ -140,7 +141,7 @@ declare class EditorModel {
 declare class AuthorModel {
 	readonly id: string;
 	readonly name: string;
-	readonly posts?: PostAuthorJoinModel[];
+	readonly posts?: AsyncCollection<PostAuthorJoinModel>;
 	constructor(init: ModelInit<AuthorModel>);
 	static copyOf(
 		source: AuthorModel,

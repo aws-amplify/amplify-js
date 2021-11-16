@@ -5,6 +5,7 @@ import {
 	InternalSchema,
 	SchemaModel,
 } from '../src/types';
+import { AsyncCollection } from '../src/datastore/datastore';
 
 export declare class Model {
 	public readonly id: string;
@@ -37,6 +38,7 @@ export declare class Metadata {
 export declare class Post {
 	public readonly id: string;
 	public readonly title: string;
+	public readonly comments?: AsyncCollection<Comment>;
 }
 
 export declare class Comment {
@@ -191,7 +193,12 @@ export function testSchema(): Schema {
 						isArrayNullable: true,
 						association: {
 							connectionType: 'HAS_MANY',
-							associatedWith: 'postId',
+							associatedWith: 'post',
+
+							// i THINK this is the wrong. it currently throws an error
+							// on lazy loading. do we need to support this?
+
+							// associatedWith: 'postId',
 						},
 					},
 				},
