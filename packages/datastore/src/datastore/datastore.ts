@@ -604,7 +604,6 @@ const createModelClass = <T extends PersistentModel>(
 						const relatedModel: PersistentModelConstructor<
 							typeof relatedModelName
 						> = getModelConstructorByModelName(USER, relatedModelName);
-<<<<<<< HEAD
 						const relatedModelDefinition = getModelDefinition(relatedModel);
 						if (
 							relatedModelDefinition.fields[associatedWith].type.hasOwnProperty(
@@ -620,18 +619,6 @@ const createModelClass = <T extends PersistentModel>(
 						}
 						const resultPromise = instance.query(relatedModel, c =>
 							c[associatedWith].eq(this.id)
-=======
-
-						const relatedModelDefinition = getModelDefinition(relatedModel);
-						const associatedWithExplicitIdField =
-							!relatedModelDefinition.fields[
-								associatedWith
-							].type.hasOwnProperty('model');
-						const resultPromise = instance.query(relatedModel, (c) =>
-							associatedWithExplicitIdField
-								? c[associatedWith].eq(this.id)
-								: c[associatedWith].id.eq(this.id)
->>>>>>> 86d85966a (cleanup; harden has many predicate selection)
 						);
 						const asyncResult = new AsyncCollection(resultPromise);
 						instanceMemos[field] = asyncResult;
