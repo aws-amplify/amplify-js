@@ -154,9 +154,14 @@ export default class InAppMessaging {
 	syncMessages = (): Promise<void[]> =>
 		Promise.all<void>(
 			this.pluggables.map(async (pluggable) => {
-				const messages = await pluggable.getInAppMessages();
-				const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
-				await this.setMessages(key, messages);
+				try {
+					const messages = await pluggable.getInAppMessages();
+					const key = `${pluggable.getProviderName()}${STORAGE_KEY_SUFFIX}`;
+					await this.setMessages(key, messages);
+				} catch (err) {
+					logger.error('Failed to sync messages', err);
+					throw err;
+				}
 			})
 		);
 
@@ -189,9 +194,14 @@ export default class InAppMessaging {
 
 	identifyUser = (userId: string, userInfo: UserInfo): Promise<void[]> =>
 		Promise.all<void>(
-			this.pluggables.map(async (pluggable) =>
-				pluggable.identifyUser(userId, userInfo)
-			)
+			this.pluggables.map(async (pluggable) => {
+				try {
+					await pluggable.identifyUser(userId, userInfo);
+				} catch (err) {
+					logger.error('Failed to identify user', err);
+					throw err;
+				}
+			})
 		);
 
 	onMessageReceived = (
