@@ -13,5 +13,5 @@ export {
 	InAppMessagingConfig,
 	InAppMessagingEvent,
 	UserInfo,
-} from './inAppMessaging';
+} from './InAppMessaging';
 export { NotificationsConfig } from './types';
