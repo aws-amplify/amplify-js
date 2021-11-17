@@ -375,7 +375,7 @@ export type PersistentModelMetaData = {
 };
 
 export interface AsyncCollection<T> extends AsyncIterable<T> {
-	toArray({ max }: { max?: number }): Promise<T[]>;
+	toArray({ max }?: { max?: number }): Promise<T[]>;
 }
 
 export type SettableFieldType<T> = T extends Promise<infer InnerPromiseType>
@@ -409,12 +409,6 @@ type OptionalRelativesOf<T> =
 type OmitOptionalRelatives<T> = Omit<T, OptionalRelativesOf<T>>;
 type PickOptionalRelatives<T> = Pick<T, OptionalRelativesOf<T>>;
 
-type DeepWritable<T> = {
-	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
-		? T[P]
-		: DeepWritable<T[P]>;
-};
-
 export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
 
 export type ModelInit<
@@ -432,6 +426,12 @@ export type ModelInit<
 	>]+?: SettableFieldType<T[P]>;
 };
 
+type DeepWritable<T> = {
+	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
+		? T[P]
+		: DeepWritable<T[P]>;
+};
+
 export type MutableModel<
 	T extends Record<string, any>,
 	K extends PersistentModelMetaData = {
@@ -439,11 +439,8 @@ export type MutableModel<
 	}
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
-> = {
-	[P in keyof DeepWritable<Omit<T, 'id' | K['readOnlyFields']>>]: DeepWritable<
-		SettableFieldType<T[P]>
-	>;
-} & Readonly<Pick<T, 'id' | K['readOnlyFields']>>;
+> = DeepWritable<Omit<T, 'id' | K['readOnlyFields']>> &
+	Readonly<Pick<T, 'id' | K['readOnlyFields']>>;
 
 export type ModelInstanceMetadata = {
 	id: string;

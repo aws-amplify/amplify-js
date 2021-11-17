@@ -69,10 +69,10 @@ class MutationProcessor {
 	}
 
 	private generateQueries() {
-		Object.values(this.schema.namespaces).forEach(namespace => {
+		Object.values(this.schema.namespaces).forEach((namespace) => {
 			Object.values(namespace.models)
 				.filter(({ syncable }) => syncable)
-				.forEach(model => {
+				.forEach((model) => {
 					const [createMutation] = buildGraphQLOperation(
 						namespace,
 						model,
@@ -103,7 +103,7 @@ class MutationProcessor {
 	}
 
 	public start(): Observable<MutationProcessorEvent> {
-		const observable = new Observable<MutationProcessorEvent>(observer => {
+		const observable = new Observable<MutationProcessorEvent>((observer) => {
 			this.observer = observer;
 
 			this.resume();
@@ -159,7 +159,7 @@ class MutationProcessor {
 							operation,
 							data,
 							condition,
-							modelConstructor,
+							modelConstructor as any,
 							this.MutationEvent,
 							head,
 							operationAuthModes[authModeAttempts]
@@ -200,7 +200,7 @@ class MutationProcessor {
 
 			if (result === undefined) {
 				logger.debug('done retrying');
-				await this.storage.runExclusive(async storage => {
+				await this.storage.runExclusive(async (storage) => {
 					await this.outbox.dequeue(storage);
 				});
 				continue;
@@ -209,7 +209,7 @@ class MutationProcessor {
 			const record = result.data[opName];
 			let hasMore = false;
 
-			await this.storage.runExclusive(async storage => {
+			await this.storage.runExclusive(async (storage) => {
 				// using runExclusive to prevent possible race condition
 				// when another record gets enqueued between dequeue and peek
 				await this.outbox.dequeue(storage, record, operation);
@@ -251,19 +251,14 @@ class MutationProcessor {
 				MutationEvent: PersistentModelConstructor<MutationEvent>,
 				mutationEvent: MutationEvent
 			) => {
-				const [
-					query,
-					variables,
-					graphQLCondition,
-					opName,
-					modelDefinition,
-				] = this.createQueryVariables(
-					namespaceName,
-					model,
-					operation,
-					data,
-					condition
-				);
+				const [query, variables, graphQLCondition, opName, modelDefinition] =
+					this.createQueryVariables(
+						namespaceName,
+						model,
+						operation,
+						data,
+						condition
+					);
 
 				const authToken = await getTokenForCustomAuth(
 					authMode,
@@ -358,17 +353,18 @@ class MutationProcessor {
 								const namespace = this.schema.namespaces[namespaceName];
 
 								// convert retry with to tryWith
-								const updatedMutation = createMutationInstanceFromModelOperation(
-									namespace.relationships,
-									modelDefinition,
-									opType,
-									modelConstructor,
-									retryWith,
-									graphQLCondition,
-									MutationEvent,
-									this.modelInstanceCreator,
-									mutationEvent.id
-								);
+								const updatedMutation =
+									createMutationInstanceFromModelOperation(
+										namespace.relationships,
+										modelDefinition,
+										opType,
+										modelConstructor,
+										retryWith,
+										graphQLCondition,
+										MutationEvent,
+										this.modelInstanceCreator,
+										mutationEvent.id
+									);
 
 								await this.storage.save(updatedMutation);
 

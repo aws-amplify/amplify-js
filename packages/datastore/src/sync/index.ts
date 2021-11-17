@@ -600,8 +600,8 @@ export class SyncEngine {
 											this.modelClasses
 												.ModelMetadata as PersistentModelConstructor<any>
 										).copyOf(modelMetadata, draft => {
-											draft.lastSync = startedAt;
-											draft.lastFullSync = isFullSync
+											(draft.lastSync as any) = startedAt;
+											(draft.lastFullSync as any) = isFullSync
 												? startedAt
 												: modelMetadata.lastFullSync;
 										});
@@ -752,13 +752,13 @@ export class SyncEngine {
 					(
 						this.modelClasses.ModelMetadata as PersistentModelConstructor<any>
 					).copyOf(modelMetadata, draft => {
-						draft.fullSyncInterval = fullSyncInterval;
+						(draft.fullSyncInterval as any) = fullSyncInterval;
 						// perform a base sync if the syncPredicate changed in between calls to DataStore.start
 						// ensures that the local store contains all the data specified by the syncExpression
 						if (syncPredicateUpdated) {
 							draft.lastSync = null;
 							draft.lastFullSync = null;
-							draft.lastSyncPredicate = lastSyncPredicate;
+							(draft.lastSyncPredicate as any) = lastSyncPredicate;
 						}
 					})
 				);
