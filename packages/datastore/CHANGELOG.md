@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.6.0...@aws-amplify/datastore@3.6.1) (2021-11-16)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+# [3.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.5.2...@aws-amplify/datastore@3.6.0) (2021-11-12)
+
+
+### Features
+
+* **@aws-amplify/datastore:** ObserveQuery performance and type enhancements ([#9141](https://github.com/aws-amplify/amplify-js/issues/9141)) ([755ce09](https://github.com/aws-amplify/amplify-js/commit/755ce09f5152c54d215f023089f30b2c98ace33a))
+
+
+
+
+
 ## [3.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.5.1...@aws-amplify/datastore@3.5.2) (2021-11-09)
 
 

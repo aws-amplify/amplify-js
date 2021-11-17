@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.6...@aws-amplify/core@4.3.7) (2021-11-16)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.3.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.5...@aws-amplify/core@4.3.6) (2021-11-12)
+
+
+### Reverts
+
+* Revert "chore:update-@aws-sdk/client-cloudwatch-logs (#9189)" (#9192) ([36fe262](https://github.com/aws-amplify/amplify-js/commit/36fe26243247c45cdb3f5391d91f0641c9cd5b99)), closes [#9189](https://github.com/aws-amplify/amplify-js/issues/9189) [#9192](https://github.com/aws-amplify/amplify-js/issues/9192)
+
+
+
+
+
 ## [4.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.4...@aws-amplify/core@4.3.5) (2021-11-09)
 
 **Note:** Version bump only for package @aws-amplify/core
