@@ -11,12 +11,8 @@
  * and limitations under the License.
  */
 
-import {
-	Amplify,
-	ConsoleLogger as Logger,
-	parseMobileHubConfig,
-} from '@aws-amplify/core';
-import InAppMessaging from './inAppMessaging';
+import { Amplify, ConsoleLogger as Logger } from '@aws-amplify/core';
+import InAppMessaging from './InAppMessaging';
 import { NotificationsCategory, NotificationsConfig } from './types';
 
 const logger = new Logger('Notifications');
@@ -41,20 +37,15 @@ class NotificationsClass {
 	 * Configure Notifications
 	 * @param {Object} config - Notifications configuration object
 	 */
-	configure = ({ ...config }: NotificationsConfig = {}) => {
-		this.config = {
-			...this.config,
-			...(parseMobileHubConfig(config).Notifications ?? {}),
-			...config,
-		};
+	configure = ({ Notifications: config }: NotificationsConfig = {}) => {
+		this.config = { ...this.config, ...config };
 
 		logger.debug('configure Notifications', config);
 
-		const inAppMessagingConfig = this.inAppMessaging.configure(
-			this.config.inAppMessaging
-		);
+		// Configure sub-categories
+		this.inAppMessaging.configure(this.config.InAppMessages);
 
-		return { ...inAppMessagingConfig };
+		return this.config;
 	};
 
 	get InAppMessaging() {
