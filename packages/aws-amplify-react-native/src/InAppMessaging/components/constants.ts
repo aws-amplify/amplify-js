@@ -47,6 +47,11 @@ export const ICON_BUTTON_HIT_SLOP = 10;
 
 // component specific constants
 
+// Message UI Buttons
+
+// default value applied in React Native TouchableOpacity
+export const BUTTON_PRESSED_OPACITY = 0.2;
+
 // BannerMessage
 // iOS shadow values
 export const BANNER_SHADOW_HEIGHT = 2;

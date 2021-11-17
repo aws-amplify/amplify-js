@@ -14,6 +14,7 @@
 import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { InAppMessageStyle } from '@aws-amplify/notifications';
 
+import { BUTTON_PRESSED_OPACITY } from '../../constants';
 import { InAppMessageComponentBaseProps, InAppMessageComponentButtonStyle } from '../../types';
 import { MessageStylePropParams, MessageStyleProps } from './types';
 
@@ -41,7 +42,18 @@ export const getButtonComponentStyle = (
 	const { container, text } = overrideStyle ?? {};
 
 	return {
-		container: [buttonContainer, { backgroundColor, borderRadius }, container],
+		// the style prop of the React Native Pressable component used in the message UI accepts either a ViewStyle array
+		// or a function receiving a boolean reflecting whether the component is currently pressed, returning a ViewStyle
+		// array. Utilizing the latter, we add an opacity value to the UI message button style during press events
+		container: ({ pressed } = { pressed: false }) => {
+			// default button press interaction opacity
+			const opacity = pressed ? BUTTON_PRESSED_OPACITY : null;
+
+			// pass `pressed` to container and evaluate if the consumer passed a function for custom button style
+			const finalOverrideContainerStyle = typeof container === 'function' ? container({ pressed }) : container;
+
+			return [{ opacity }, buttonContainer, { backgroundColor, borderRadius }, finalOverrideContainerStyle];
+		},
 		text: [buttonText, { color }, text],
 	};
 };

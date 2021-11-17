@@ -10,10 +10,12 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { InAppMessagingConfig } from './inAppMessaging';
+import { InAppMessagingConfig } from './InAppMessaging';
 
 export type NotificationsCategory = 'Notifications';
 
-export interface NotificationsConfig {
-	InAppMessaging?: InAppMessagingConfig;
+export interface NotificationsConfig extends Record<any, any> {
+	Notifications?: {
+		InAppMessaging?: InAppMessagingConfig;
+	};
 }
