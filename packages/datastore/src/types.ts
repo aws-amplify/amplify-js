@@ -402,12 +402,12 @@ type KeysOfSuperType<T, FilterType> = {
 	[P in keyof T]: FilterType extends T[P] ? P : never;
 }[keyof T];
 
-type OptionalGenericsOf<T> =
+type OptionalRelativesOf<T> =
 	| KeysOfType<T, AsyncCollection<any>>
 	| KeysOfSuperType<T, Promise<null>>;
 
-type OmitOptionalGenerics<T> = Omit<T, OptionalGenericsOf<T>>;
-type PickOptionalGenerics<T> = Pick<T, OptionalGenericsOf<T>>;
+type OmitOptionalRelatives<T> = Omit<T, OptionalRelativesOf<T>>;
+type PickOptionalRelatives<T> = Pick<T, OptionalRelativesOf<T>>;
 
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
@@ -423,11 +423,11 @@ export type ModelInit<
 		readOnlyFields: 'createdAt' | 'updatedAt';
 	}
 > = {
-	[P in keyof OmitOptionalGenerics<
+	[P in keyof OmitOptionalRelatives<
 		Omit<T, 'id' | K['readOnlyFields']>
 	>]: SettableFieldType<T[P]>;
 } & {
-	[P in keyof PickOptionalGenerics<
+	[P in keyof PickOptionalRelatives<
 		Omit<T, 'id' | K['readOnlyFields']>
 	>]+?: SettableFieldType<T[P]>;
 };
@@ -440,24 +440,10 @@ export type MutableModel<
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
 > = {
-	[P in keyof DeepWritable<
-		Omit<T, 'id' | K['readOnlyFields']>
-	>]: SettableFieldType<T[P]>;
+	[P in keyof DeepWritable<Omit<T, 'id' | K['readOnlyFields']>>]: DeepWritable<
+		SettableFieldType<T[P]>
+	>;
 } & Readonly<Pick<T, 'id' | K['readOnlyFields']>>;
-
-// {
-
-// 	[P in keyof (DeepWritable<Omit<T, 'id' | K['readOnlyFields']>> &
-// 		Readonly<Pick<T, 'id' | K['readOnlyFields']>>)]: SettableFieldType<T[P]>;
-
-// 	// TODO: switch to this when adding cascading saves?
-// 	// T[P] extends Promise<infer InnerPromiseType>
-// 	// 	? MutableModel<InnerPromiseType>
-// 	// 	: T[P] extends AsyncCollection<infer InnerCollectionType>
-// 	// 	? MutableModel<InnerCollectionType>[]
-// 	// 	: T[P]
-// 	// ;
-// };
 
 export type ModelInstanceMetadata = {
 	id: string;
