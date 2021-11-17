@@ -80,8 +80,9 @@ export interface InAppMessagingProvider {
 export type InAppMessageLayout =
 	| 'BOTTOM_BANNER'
 	| 'CAROUSEL'
+	| 'FULL_SCREEN'
 	| 'MIDDLE_BANNER'
-	| 'OVERLAYS'
+	| 'MODAL'
 	| 'TOP_BANNER';
 
 export type InAppMessageAction = 'CLOSE' | 'DEEP_LINK' | 'LINK';

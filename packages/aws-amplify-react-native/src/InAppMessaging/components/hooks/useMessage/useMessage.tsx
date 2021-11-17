@@ -15,12 +15,12 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { Notifications, InAppMessageInteractionEvent } from '@aws-amplify/notifications';
 import isNil from 'lodash/isNil';
 
-import { InAppMessageComponents } from '../../../context';
 import { useInAppMessaging } from '../../../hooks';
 
 import DefaultBannerMessage, { BannerMessageProps } from '../../BannerMessage';
-import { CarouselMessageProps } from '../../CarouselMessage';
+import DefaultCarouselMessage, { CarouselMessageProps } from '../../CarouselMessage';
 import DefaultFullScreenMessage, { FullScreenMessageProps } from '../../FullScreenMessage';
+import DefaultModalMessage, { ModalMessageProps } from '../../ModalMessage';
 
 import { InAppMessageComponent, InAppMessageComponentProps } from './types';
 import { getContentProps, getPositionProp } from './utils';
@@ -28,9 +28,6 @@ import { getContentProps, getPositionProp } from './utils';
 const { InAppMessaging } = Notifications;
 
 const logger = new Logger('Notifications.InAppMessaging');
-
-// TODO: replace with Amplify default component
-const DefaultCarouselMessage: InAppMessageComponents['CarouselMessage'] = () => null;
 
 /**
  * Utility hook for parsing a message and retrieving its corresponding UI component and props
@@ -46,6 +43,7 @@ export default function useMessage(): {
 		BannerMessage = DefaultBannerMessage,
 		CarouselMessage = DefaultCarouselMessage,
 		FullScreenMessage = DefaultFullScreenMessage,
+		ModalMessage = DefaultModalMessage,
 	} = components;
 
 	if (isNil(inAppMessage)) {
@@ -92,7 +90,7 @@ export default function useMessage(): {
 			};
 			return { Component: CarouselMessage, props };
 		}
-		case 'OVERLAYS': {
+		case 'FULL_SCREEN': {
 			const props: FullScreenMessageProps = {
 				...getContentProps(content?.[0], onActionCallback),
 				layout,
@@ -101,6 +99,16 @@ export default function useMessage(): {
 				style: style?.FullScreenMessage,
 			};
 			return { Component: FullScreenMessage, props };
+		}
+		case 'MODAL': {
+			const props: ModalMessageProps = {
+				...getContentProps(content?.[0], onActionCallback),
+				layout,
+				onClose,
+				onDisplay,
+				style: style?.ModalMessage,
+			};
+			return { Component: ModalMessage, props };
 		}
 		default: {
 			logger.info(`Received unknown InAppMessage layout: ${layout}`);

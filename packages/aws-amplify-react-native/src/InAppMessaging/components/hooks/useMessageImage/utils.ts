@@ -15,7 +15,12 @@ import { Image } from 'react-native';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { InAppMessageLayout } from '@aws-amplify/notifications';
 
-import { BANNER_IMAGE_SCREEN_SIZE, CAROUSEL_IMAGE_SCREEN_SIZE, FULL_SCREEN_IMAGE_SCREEN_SIZE } from './constants';
+import {
+	BANNER_IMAGE_SCREEN_SIZE,
+	CAROUSEL_IMAGE_SCREEN_SIZE,
+	FULL_SCREEN_IMAGE_SCREEN_SIZE,
+	MODAL_IMAGE_SCREEN_SIZE,
+} from './constants';
 import { ImageDimensions, ImageLoadingState } from './types';
 
 const logger = new Logger('Notifications.InAppMessaging');
@@ -25,7 +30,8 @@ const inAppMessageImageSizes: Record<InAppMessageLayout, number> = {
 	MIDDLE_BANNER: BANNER_IMAGE_SCREEN_SIZE,
 	TOP_BANNER: BANNER_IMAGE_SCREEN_SIZE,
 	CAROUSEL: CAROUSEL_IMAGE_SCREEN_SIZE,
-	OVERLAYS: FULL_SCREEN_IMAGE_SCREEN_SIZE,
+	FULL_SCREEN: FULL_SCREEN_IMAGE_SCREEN_SIZE,
+	MODAL: MODAL_IMAGE_SCREEN_SIZE,
 };
 
 export const prefetchNetworkImage = async (url: string): Promise<ImageLoadingState> => {

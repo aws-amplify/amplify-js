@@ -58,6 +58,7 @@ import {
 	extractContent,
 	extractMetadata,
 	getStartOfDay,
+	interpretLayout,
 	isBeforeEndDate,
 	logger,
 	matchesAttributes,
@@ -517,7 +518,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 			return {
 				id: CampaignId,
 				content: extractContent(message),
-				layout: InAppMessage.Layout as InAppMessageLayout,
+				layout: interpretLayout(InAppMessage.Layout),
 				metadata: extractMetadata(message),
 			};
 		});

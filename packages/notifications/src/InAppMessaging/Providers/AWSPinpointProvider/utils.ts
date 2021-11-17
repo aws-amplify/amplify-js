@@ -1,10 +1,14 @@
 import { Amplify, ConsoleLogger, Hub } from '@aws-amplify/core';
-import { InAppMessageCampaign as PinpointInAppMessage } from '@aws-sdk/client-pinpoint';
+import {
+	InAppMessageCampaign as PinpointInAppMessage,
+	Layout as PinpointInAppMessageLayout,
+} from '@aws-sdk/client-pinpoint';
 import isEmpty from 'lodash/isEmpty';
 import {
 	InAppMessage,
 	InAppMessageAction,
 	InAppMessageContent,
+	InAppMessageLayout,
 	InAppMessageTextAlign,
 	InAppMessagingEvent,
 } from '../../types';
@@ -206,6 +210,30 @@ export const clearMemo = () => {
 	eventNameMemo = {};
 	eventAttributesMemo = {};
 	eventMetricsMemo = {};
+};
+
+// in the pinpoint console when a message is created with a Modal or Full Screen layout,
+// it is assigned a layout value of MOBILE_FEED or OVERLAYS respectively in the message payload.
+// In the future, Pinpoint will be updating the layout values in the aforementioned scenario
+// to MODAL and FULL_SCREEN.
+//
+// This utility acts as a safeguard to ensure that:
+// - 1. the usage of MOBILE_FEED and OVERLAYS as values for message layouts are not leaked
+//      outside the Pinpoint provider
+// - 2. Amplify correctly handles the legacy layout values from Pinpoint after they are updated
+export const interpretLayout = (
+	layout: PinpointInAppMessage['InAppMessage']['Layout']
+): InAppMessageLayout => {
+	if (layout === PinpointInAppMessageLayout.MOBILE_FEED) {
+		return 'MODAL';
+	}
+
+	if (layout === PinpointInAppMessageLayout.OVERLAYS) {
+		return 'FULL_SCREEN';
+	}
+
+	// cast as PinpointInAppMessage['InAppMessage']['Layout'] allows `string` as a value
+	return layout as InAppMessageLayout;
 };
 
 export const extractContent = ({
