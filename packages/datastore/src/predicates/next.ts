@@ -4,7 +4,6 @@ import {
 	ModelFieldType,
 	ModelMeta,
 	AllOperators,
-	AsyncCollection,
 	PredicateFieldType,
 } from '../types';
 
