@@ -159,9 +159,7 @@ describe('IndexedDBAdapter tests', () => {
 	describe('Save', () => {
 		let User: PersistentModelConstructor<User>;
 		let Profile: PersistentModelConstructor<Profile>;
-		let profile1Id: string;
 		let profile: Profile;
-		let user1Id: string;
 
 		beforeAll(async () => {
 			({ initSchema, DataStore } = require('../src/datastore/datastore'));
@@ -179,27 +177,27 @@ describe('IndexedDBAdapter tests', () => {
 			profile = await DataStore.save(
 				new Profile({ firstName: 'Rick', lastName: 'Bob' })
 			);
-			({ id: profile1Id } = profile);
 		});
 
 		it('should allow linking model via model field', async () => {
 			const savedUser = await DataStore.save(
 				new User({ name: 'test', profile })
 			);
-			({ id: user1Id } = savedUser);
+			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
-			expect(user.profileID).toEqual(profile1Id);
+			expect(user.profileID).toEqual(profile.id);
 			expect(user.profile).toEqual(profile);
 		});
 
 		it('should allow linking model via FK', async () => {
-			({ id: user1Id } = await DataStore.save(
-				new User({ name: 'test', profileID: profile1Id })
-			));
+			const savedUser = await DataStore.save(
+				new User({ name: 'test', profileID: profile.id })
+			);
+			const user1Id = savedUser.id;
 
 			const user = await DataStore.query(User, user1Id);
-			expect(user.profileID).toEqual(profile1Id);
+			expect(user.profileID).toEqual(profile.id);
 			expect(user.profile).toEqual(profile);
 		});
 	});
