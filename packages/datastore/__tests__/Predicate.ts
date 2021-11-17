@@ -600,7 +600,7 @@ describe('Predicates', () => {
 			const owner = {
 				id: `ownerId${name}`,
 				name,
-			} as ModelOf<ModelOf<typeof BlogOwner>>;
+			} as ModelOf<typeof BlogOwner>; // ModelOf<ModelOf<typeof BlogOwner>>;
 			return owner;
 		});
 
@@ -608,10 +608,10 @@ describe('Predicates', () => {
 			const blog = {
 				id: `BlogID${owner.id}`,
 				name: `${owner.name}'s Blog`,
-				owner,
+				owner: Promise.resolve(owner),
 				posts: new AsyncCollection([]),
 				blogOwnerId: owner.id,
-			} as ModelOf<ModelOf<typeof Blog>>;
+			} as ModelOf<typeof Blog>;
 			(owner as any).blog = blog;
 			return blog;
 		});
@@ -623,8 +623,8 @@ describe('Predicates', () => {
 						id: `postID${blog.id}${n}`,
 						title: `${blog.name} post ${n}`,
 						postBlogId: blog.id,
-						blog,
-					} as ModelOf<typeof Post>;
+						blog: Promise.resolve(blog),
+					} as unknown as ModelOf<typeof Post>;
 					(blog.posts.values as any).push(post);
 					return post;
 				});

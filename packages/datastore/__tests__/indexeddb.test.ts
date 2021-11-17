@@ -310,7 +310,7 @@ describe('Indexed db storage test', () => {
 
 	test('query lazily HAS_ONE/BELONGS_TO with explicit Field', async (done) => {
 		const team1 = new Team({ name: 'team' });
-		const savedTeam = DataStore.save(team1);
+		const savedTeam = await DataStore.save(team1);
 		const project1 = new Project({
 			name: 'Avatar: Last Airbender',
 			teamID: team1.id,
@@ -388,7 +388,7 @@ describe('Indexed db storage test', () => {
 	test('Memoization Test', async () => {
 		expect.assertions(3);
 		const team1 = new Team({ name: 'team' });
-		const savedTeam = DataStore.save(team1);
+		const savedTeam = await DataStore.save(team1);
 		const project1 = new Project({
 			name: 'Avatar: Last Airbender',
 			teamID: team1.id,

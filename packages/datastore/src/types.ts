@@ -381,7 +381,7 @@ export interface AsyncCollection<T> extends AsyncIterable<T> {
 export type SettableFieldType<T> = T extends Promise<infer InnerPromiseType>
 	? InnerPromiseType
 	: T extends AsyncCollection<infer InnerCollectionType>
-	? InnerCollectionType[]
+	? InnerCollectionType[] | undefined
 	: T;
 
 export type PredicateFieldType<T> = NonNullable<
@@ -394,6 +394,21 @@ export type PredicateFieldType<T> = NonNullable<
 	>
 >;
 
+type KeysOfType<T, FilterType> = {
+	[P in keyof T]: T[P] extends FilterType ? P : never;
+}[keyof T];
+
+type KeysOfSuperType<T, FilterType> = {
+	[P in keyof T]: FilterType extends T[P] ? P : never;
+}[keyof T];
+
+type OptionalGenericsOf<T> =
+	| KeysOfType<T, AsyncCollection<any>>
+	| KeysOfSuperType<T, Promise<null>>;
+
+type OmitOptionalGenerics<T> = Omit<T, OptionalGenericsOf<T>>;
+type PickOptionalGenerics<T> = Pick<T, OptionalGenericsOf<T>>;
+
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
 		? T[P]
@@ -401,13 +416,20 @@ type DeepWritable<T> = {
 };
 
 export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
+
 export type ModelInit<
 	T,
 	K extends PersistentModelMetaData = {
 		readOnlyFields: 'createdAt' | 'updatedAt';
 	}
 > = {
-	[P in keyof Omit<T, 'id' | K['readOnlyFields']>]: SettableFieldType<T[P]>;
+	[P in keyof OmitOptionalGenerics<
+		Omit<T, 'id' | K['readOnlyFields']>
+	>]: SettableFieldType<T[P]>;
+} & {
+	[P in keyof PickOptionalGenerics<
+		Omit<T, 'id' | K['readOnlyFields']>
+	>]+?: SettableFieldType<T[P]>;
 };
 
 export type MutableModel<
@@ -418,16 +440,24 @@ export type MutableModel<
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
 > = {
-	[P in keyof (DeepWritable<Omit<T, 'id' | K['readOnlyFields']>> &
-		Readonly<Pick<T, 'id' | K['readOnlyFields']>>)]: SettableFieldType<T[P]>;
-	// TODO: switch to this when adding cascading saves?
-	// T[P] extends Promise<infer InnerPromiseType>
-	// 	? MutableModel<InnerPromiseType>
-	// 	: T[P] extends AsyncCollection<infer InnerCollectionType>
-	// 	? MutableModel<InnerCollectionType>[]
-	// 	: T[P]
-	// ;
-};
+	[P in keyof DeepWritable<
+		Omit<T, 'id' | K['readOnlyFields']>
+	>]: SettableFieldType<T[P]>;
+} & Readonly<Pick<T, 'id' | K['readOnlyFields']>>;
+
+// {
+
+// 	[P in keyof (DeepWritable<Omit<T, 'id' | K['readOnlyFields']>> &
+// 		Readonly<Pick<T, 'id' | K['readOnlyFields']>>)]: SettableFieldType<T[P]>;
+
+// 	// TODO: switch to this when adding cascading saves?
+// 	// T[P] extends Promise<infer InnerPromiseType>
+// 	// 	? MutableModel<InnerPromiseType>
+// 	// 	: T[P] extends AsyncCollection<infer InnerCollectionType>
+// 	// 	? MutableModel<InnerCollectionType>[]
+// 	// 	: T[P]
+// 	// ;
+// };
 
 export type ModelInstanceMetadata = {
 	id: string;

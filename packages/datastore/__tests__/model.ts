@@ -28,7 +28,7 @@ declare class PostModel {
 	readonly reference: Promise<PostModel | null>;
 	readonly comments: AsyncCollection<CommentModel>;
 	readonly authors: AsyncCollection<PostAuthorJoinModel>;
-	readonly metadata: Promise<PostMetadataType | null>;
+	readonly metadata?: PostMetadataType;
 	constructor(init: ModelInit<PostModel>);
 	static copyOf(
 		source: PostModel,
@@ -63,7 +63,7 @@ declare class TeamModel {
 declare class PostMetadataType {
 	readonly rating: number;
 	readonly tags?: string[];
-	readonly nested: Promise<NestedType | null>;
+	readonly nested?: NestedType;
 	constructor(init: ModelInit<PostMetadataType>);
 }
 
