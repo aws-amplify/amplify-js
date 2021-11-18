@@ -68,10 +68,7 @@ export default class InAppMessaging {
 		logger.debug('configure InAppMessaging', this.config);
 
 		this.pluggables.forEach((pluggable) => {
-			pluggable.configure({
-				...this.config,
-				...(this.config[pluggable.getProviderName()] ?? {}),
-			});
+			pluggable.configure(this.config[pluggable.getProviderName()]);
 		});
 
 		if (this.pluggables.length === 0) {
