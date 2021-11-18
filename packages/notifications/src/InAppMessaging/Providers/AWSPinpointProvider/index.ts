@@ -113,8 +113,9 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 	}
 
 	configure = (config = {}): object => {
-		logger.debug('configure', config);
 		this.config = { ...this.config, ...config };
+
+		logger.debug('configure AWSPinpointProvider', this.config);
 
 		// some configuration steps should not be re-run even if provider is re-configured for some reason
 		if (!this.configured) {
@@ -151,7 +152,7 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 			await this.init();
 		}
 		// There is no way to granuarly reconcile the filter memoization as the keys are composited from a message id and
-		// event properties thus opting to just clear them out when syncing messages rather than leave potentially
+		// event properties thus opting to just clear them out when getting messages rather than leave potentially
 		// obsolete entries that will no longer serve any purpose.
 		clearMemo();
 		try {
@@ -168,17 +169,16 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 			const response = await pinpointClient.send(command);
 			const { InAppMessageCampaigns: messages } =
 				response.InAppMessagesResponse;
-
-			dispatchInAppMessagingEvent('syncInAppMessages', messages);
+			dispatchInAppMessagingEvent('getInAppMessages', messages);
 			return messages;
 		} catch (err) {
-			logger.error('Error syncing in-app messages', err);
+			logger.error('Error getting in-app messages', err);
 			throw err;
 		}
 	};
 
 	processInAppMessages = async (
-		messages: [],
+		messages: any[],
 		event: InAppMessagingEvent
 	): Promise<InAppMessage[]> => {
 		if (!this.initialized) {
@@ -413,17 +413,10 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 	}: PinpointInAppMessage): boolean => {
 		const { sessionCount, dailyCount, totalCount } =
 			this.getMessageCounts(CampaignId);
-		if (
-			!(sessionCount && SessionCap) &&
-			!(dailyCount && DailyCap) &&
-			!(totalCount && TotalCap)
-		) {
-			return true;
-		}
 		return (
-			sessionCount < SessionCap &&
-			dailyCount < DailyCap &&
-			totalCount < TotalCap
+			(!SessionCap || sessionCount < SessionCap) &&
+			(!DailyCap || dailyCount < DailyCap) &&
+			(!TotalCap || totalCount < TotalCap)
 		);
 	};
 
