@@ -25,7 +25,7 @@ export function getSQLiteType(
 		case 'Float':
 			return 'REAL';
 		default:
-			const _: never = scalar;
-			throw new Error(`unknown type ${scalar}`);
+			const _: never = scalar as never;
+			throw new Error(`unknown type ${scalar as string}`);
 	}
 }
