@@ -414,9 +414,9 @@ export default class AWSPinpointProvider implements InAppMessagingProvider {
 		const { sessionCount, dailyCount, totalCount } =
 			this.getMessageCounts(CampaignId);
 		return (
-			(sessionCount < SessionCap || !SessionCap) &&
-			(dailyCount < DailyCap || !DailyCap) &&
-			(totalCount < TotalCap || !TotalCap)
+			(!SessionCap || sessionCount < SessionCap) &&
+			(!DailyCap || dailyCount < DailyCap) &&
+			(!TotalCap || totalCount < TotalCap)
 		);
 	};
 
