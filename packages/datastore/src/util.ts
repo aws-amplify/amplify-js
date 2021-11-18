@@ -337,6 +337,7 @@ export const traverseModel = <T extends PersistentModel>(
 							);
 						} catch (error) {
 							// Do nothing
+							console.log(error);
 						}
 
 						result.push({
@@ -345,9 +346,20 @@ export const traverseModel = <T extends PersistentModel>(
 							instance: modelInstance,
 						});
 
-						(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
-							draftInstance[rItem.fieldName]
-						)).id;
+						// targetName will be defined for Has One if feature flag
+						// https://docs.amplify.aws/cli/reference/feature-flags/#useAppsyncModelgenPlugin
+						// is true (default as of 5/7/21)
+						// Making this conditional for backward-compatibility
+						if (rItem.targetName) {
+							(<any>draftInstance)[rItem.targetName] = (<PersistentModel>(
+								draftInstance[rItem.fieldName]
+							)).id;
+							delete draftInstance[rItem.fieldName];
+						} else {
+							(<any>draftInstance)[rItem.fieldName] = (<PersistentModel>(
+								draftInstance[rItem.fieldName]
+							)).id;
+						}
 					}
 
 					break;
@@ -491,7 +503,7 @@ export const isPrivateMode = () => {
 	});
 };
 
-const randomBytes = function(nBytes: number): Buffer {
+const randomBytes = (nBytes: number): Buffer => {
 	return Buffer.from(new WordArray().random(nBytes).toString(), 'hex');
 };
 const prng = () => randomBytes(1).readUInt8(0) / 0xff;
