@@ -80,10 +80,11 @@ const USER_ADMIN_SCOPE = 'aws.cognito.signin.user.admin';
 // 10 sec, following this guide https://www.nngroup.com/articles/response-times-3-important-limits/
 const OAUTH_FLOW_MS_TIMEOUT = 10 * 1000;
 
-const AMPLIFY_SYMBOL = (typeof Symbol !== 'undefined' &&
-typeof Symbol.for === 'function'
-	? Symbol.for('amplify_default')
-	: '@@amplify_default') as Symbol;
+const AMPLIFY_SYMBOL = (
+	typeof Symbol !== 'undefined' && typeof Symbol.for === 'function'
+		? Symbol.for('amplify_default')
+		: '@@amplify_default'
+) as Symbol;
 
 const dispatchAuthEvent = (event: string, data: any, message: string) => {
 	Hub.dispatch('auth', { event, data, message }, 'Auth', AMPLIFY_SYMBOL);
@@ -325,7 +326,7 @@ export class AuthClass {
 
 			const attrs = params['attributes'];
 			if (attrs) {
-				Object.keys(attrs).map(key => {
+				Object.keys(attrs).map((key) => {
 					attributes.push(
 						new CognitoUserAttribute({ Name: key, Value: attrs[key] })
 					);
@@ -335,7 +336,7 @@ export class AuthClass {
 			const validationDataObject = params['validationData'];
 			if (validationDataObject) {
 				validationData = [];
-				Object.keys(validationDataObject).map(key => {
+				Object.keys(validationDataObject).map((key) => {
 					validationData.push(
 						new CognitoUserAttribute({
 							Name: key,
@@ -530,7 +531,7 @@ export class AuthClass {
 	): IAuthenticationCallback {
 		const that = this;
 		return {
-			onSuccess: async session => {
+			onSuccess: async (session) => {
 				logger.debug(session);
 				delete user['challengeName'];
 				delete user['challengeParam'];
@@ -558,7 +559,7 @@ export class AuthClass {
 					}
 				}
 			},
-			onFailure: err => {
+			onFailure: (err) => {
 				logger.debug('signIn failure', err);
 				dispatchAuthEvent(
 					'signIn_failure',
@@ -567,7 +568,7 @@ export class AuthClass {
 				);
 				reject(err);
 			},
-			customChallenge: challengeParam => {
+			customChallenge: (challengeParam) => {
 				logger.debug('signIn custom challenge answer required');
 				user['challengeName'] = 'CUSTOM_CHALLENGE';
 				user['challengeParam'] = challengeParam;
@@ -629,11 +630,11 @@ export class AuthClass {
 				authDetails,
 				this.authCallbacks(
 					user,
-					value => {
+					(value) => {
 						this.pendingSignIn = null;
 						resolve(value);
 					},
-					error => {
+					(error) => {
 						this.pendingSignIn = null;
 						reject(error);
 					}
@@ -773,7 +774,7 @@ export class AuthClass {
 	 */
 	public async setPreferredMFA(
 		user: CognitoUser | any,
-		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA' 
+		mfaMethod: 'TOTP' | 'SMS' | 'NOMFA' | 'SMS_MFA' | 'SOFTWARE_TOKEN_MFA'
 	): Promise<string> {
 		const clientMetadata = this._config.clientMetadata; // TODO: verify behavior if this is override during signIn
 
@@ -793,7 +794,7 @@ export class AuthClass {
 				};
 				break;
 			case 'SMS':
-			case 'SMS_MFA':	
+			case 'SMS_MFA':
 				smsMfaSettings = {
 					PreferredMfa: true,
 					Enabled: true,
@@ -821,7 +822,7 @@ export class AuthClass {
 				// we need to disable every mfa type in that list
 				if (mfaList && mfaList.length !== 0) {
 					// to disable SMS or TOTP if exists in that list
-					mfaList.forEach(mfaType => {
+					mfaList.forEach((mfaType) => {
 						if (mfaType === 'SMS_MFA') {
 							smsMfaSettings = {
 								PreferredMfa: false,
@@ -923,12 +924,12 @@ export class AuthClass {
 	public setupTOTP(user: CognitoUser | any): Promise<string> {
 		return new Promise((res, rej) => {
 			user.associateSoftwareToken({
-				onFailure: err => {
+				onFailure: (err) => {
 					logger.debug('associateSoftwareToken failed', err);
 					rej(err);
 					return;
 				},
-				associateSecretCode: secretCode => {
+				associateSecretCode: (secretCode) => {
 					logger.debug('associateSoftwareToken sucess', secretCode);
 					res(secretCode);
 					return;
@@ -950,12 +951,12 @@ export class AuthClass {
 		logger.debug('verification totp token', user, challengeAnswer);
 		return new Promise((res, rej) => {
 			user.verifySoftwareToken(challengeAnswer, 'My TOTP device', {
-				onFailure: err => {
+				onFailure: (err) => {
 					logger.debug('verifyTotpToken failed', err);
 					rej(err);
 					return;
 				},
-				onSuccess: data => {
+				onSuccess: (data) => {
 					dispatchAuthEvent(
 						'signIn',
 						user,
@@ -989,7 +990,7 @@ export class AuthClass {
 			user.sendMFACode(
 				code,
 				{
-					onSuccess: async session => {
+					onSuccess: async (session) => {
 						logger.debug(session);
 						try {
 							await this.Credentials.clear();
@@ -1008,7 +1009,7 @@ export class AuthClass {
 							resolve(user);
 						}
 					},
-					onFailure: err => {
+					onFailure: (err) => {
 						logger.debug('confirm signIn failure', err);
 						reject(err);
 					},
@@ -1035,7 +1036,7 @@ export class AuthClass {
 				password,
 				requiredAttributes,
 				{
-					onSuccess: async session => {
+					onSuccess: async (session) => {
 						logger.debug(session);
 						try {
 							await this.Credentials.clear();
@@ -1053,7 +1054,7 @@ export class AuthClass {
 							resolve(user);
 						}
 					},
-					onFailure: err => {
+					onFailure: (err) => {
 						logger.debug('completeNewPassword failure', err);
 						dispatchAuthEvent(
 							'completeNewPassword_failure',
@@ -1120,24 +1121,20 @@ export class AuthClass {
 	 **/
 	public deleteUserAttributes(
 		user: CognitoUser | any,
-		attributeNames: string[],
+		attributeNames: string[]
 	) {
 		const that = this;
 		return new Promise((resolve, reject) => {
-			that.userSession(user).then(session => {
-				user.deleteAttributes(
-					attributeNames,
-					(err, result) => {
-						if (err) {
-							return reject(err);
-						} else {
-							return resolve(result);
-						}
+			that.userSession(user).then((session) => {
+				user.deleteAttributes(attributeNames, (err, result) => {
+					if (err) {
+						return reject(err);
+					} else {
+						return resolve(result);
 					}
-				);
+				});
 			});
 		});
-
 	}
 
 	/**
@@ -1153,7 +1150,7 @@ export class AuthClass {
 		const attributeList: ICognitoUserAttributeData[] = [];
 		const that = this;
 		return new Promise((resolve, reject) => {
-			that.userSession(user).then(session => {
+			that.userSession(user).then((session) => {
 				for (const key in attributes) {
 					if (key !== 'sub' && key.indexOf('_verified') < 0) {
 						const attr: ICognitoUserAttributeData = {
@@ -1186,7 +1183,7 @@ export class AuthClass {
 		user: CognitoUser | any
 	): Promise<CognitoUserAttribute[]> {
 		return new Promise((resolve, reject) => {
-			this.userSession(user).then(session => {
+			this.userSession(user).then((session) => {
 				user.getUserAttributes((err, attributes) => {
 					if (err) {
 						reject(err);
@@ -1200,7 +1197,7 @@ export class AuthClass {
 
 	public verifiedContact(user: CognitoUser | any) {
 		const that = this;
-		return this.userAttributes(user).then(attributes => {
+		return this.userAttributes(user).then((attributes) => {
 			const attrs = that.attributesToObject(attributes);
 			const unverified = {};
 			const verified = {};
@@ -1242,7 +1239,7 @@ export class AuthClass {
 					if (this.isOAuthInProgress()) {
 						logger.debug('OAuth signIn in progress, waiting for resolution...');
 
-						await new Promise(res => {
+						await new Promise((res) => {
 							const timeoutId = setTimeout(() => {
 								logger.debug('OAuth signIn in progress timeout');
 
@@ -1349,7 +1346,7 @@ export class AuthClass {
 						{ clientMetadata }
 					);
 				})
-				.catch(e => {
+				.catch((e) => {
 					logger.debug('Failed to sync cache info into memory', e);
 					return rej(e);
 				});
@@ -1430,20 +1427,20 @@ export class AuthClass {
 		return new Promise((res, rej) => {
 			that
 				.currentUserPoolUser()
-				.then(user => {
+				.then((user) => {
 					that
 						.userSession(user)
-						.then(session => {
+						.then((session) => {
 							res(session);
 							return;
 						})
-						.catch(e => {
+						.catch((e) => {
 							logger.debug('Failed to get the current session', e);
 							rej(e);
 							return;
 						});
 				})
-				.catch(e => {
+				.catch((e) => {
 					logger.debug('Failed to get the current user', e);
 					rej(e);
 					return;
@@ -1511,11 +1508,11 @@ export class AuthClass {
 			return this.Credentials.refreshFederatedToken(federatedInfo);
 		} else {
 			return this.currentSession()
-				.then(session => {
+				.then((session) => {
 					logger.debug('getting session success', session);
 					return this.Credentials.set(session, 'session');
 				})
-				.catch(error => {
+				.catch((error) => {
 					logger.debug('getting session failed', error);
 					return this.Credentials.set(null, 'guest');
 				});
@@ -1588,7 +1585,7 @@ export class AuthClass {
 		const that = this;
 		return that
 			.currentUserPoolUser()
-			.then(user => that.verifyUserAttribute(user, attr));
+			.then((user) => that.verifyUserAttribute(user, attr));
 	}
 
 	/**
@@ -1604,7 +1601,7 @@ export class AuthClass {
 		const that = this;
 		return that
 			.currentUserPoolUser()
-			.then(user => that.verifyUserAttributeSubmit(user, attr, code));
+			.then((user) => that.verifyUserAttributeSubmit(user, attr, code));
 	}
 
 	private async cognitoIdentitySignOut(
@@ -1636,7 +1633,7 @@ export class AuthClass {
 							return rej(err);
 						}
 						user.globalSignOut({
-							onSuccess: data => {
+							onSuccess: (data) => {
 								logger.debug('global sign out success');
 								if (isSignedInHostedUI) {
 									this.oAuthSignOutRedirect(res, rej);
@@ -1644,7 +1641,7 @@ export class AuthClass {
 									return res();
 								}
 							},
-							onFailure: err => {
+							onFailure: (err) => {
 								logger.debug('global sign out failed', err);
 								return rej(err);
 							},
@@ -1742,7 +1739,7 @@ export class AuthClass {
 		clientMetadata: ClientMetaData = this._config.clientMetadata
 	): Promise<'SUCCESS'> {
 		return new Promise((resolve, reject) => {
-			this.userSession(user).then(session => {
+			this.userSession(user).then((session) => {
 				user.changePassword(
 					oldPassword,
 					newPassword,
@@ -1784,7 +1781,7 @@ export class AuthClass {
 						resolve();
 						return;
 					},
-					onFailure: err => {
+					onFailure: (err) => {
 						logger.debug('forgot password failure', err);
 						dispatchAuthEvent(
 							'forgotPassword_failure',
@@ -1794,7 +1791,7 @@ export class AuthClass {
 						reject(err);
 						return;
 					},
-					inputVerificationCode: data => {
+					inputVerificationCode: (data) => {
 						dispatchAuthEvent(
 							'forgotPassword',
 							user,
@@ -1850,7 +1847,7 @@ export class AuthClass {
 						resolve(success);
 						return;
 					},
-					onFailure: err => {
+					onFailure: (err) => {
 						dispatchAuthEvent(
 							'forgotPasswordSubmit_failure',
 							err,
@@ -1874,7 +1871,7 @@ export class AuthClass {
 		const source = this.Credentials.getCredSource();
 
 		if (!source || source === 'aws' || source === 'userPool') {
-			const user = await this.currentUserPoolUser().catch(err =>
+			const user = await this.currentUserPoolUser().catch((err) =>
 				logger.error(err)
 			);
 			if (!user) {
@@ -1970,8 +1967,8 @@ export class AuthClass {
 				/*Note: Invenstigate automatically adding trailing slash */
 				const redirect_uri = isCognitoHostedOpts(this._config.oauth)
 					? this._config.oauth.redirectSignIn
-					: this._config.oauth.redirectUri;
-
+					: (options as FederatedSignInOptions).redirectUri ||
+					  this._config.oauth.redirectUri;
 				this._oAuthHandler.oauthSignIn(
 					this._config.oauth.responseType,
 					this._config.oauth.domain,
@@ -2041,24 +2038,20 @@ export class AuthClass {
 
 			const hasCodeOrError = !!(parse(currentUrl).query || '')
 				.split('&')
-				.map(entry => entry.split('='))
+				.map((entry) => entry.split('='))
 				.find(([k]) => k === 'code' || k === 'error');
 
 			const hasTokenOrError = !!(parse(currentUrl).hash || '#')
 				.substr(1)
 				.split('&')
-				.map(entry => entry.split('='))
+				.map((entry) => entry.split('='))
 				.find(([k]) => k === 'access_token' || k === 'error');
 
 			if (hasCodeOrError || hasTokenOrError) {
 				this._storage.setItem('amplify-redirected-from-hosted-ui', 'true');
 				try {
-					const {
-						accessToken,
-						idToken,
-						refreshToken,
-						state,
-					} = await this._oAuthHandler.handleAuthResponse(currentUrl);
+					const { accessToken, idToken, refreshToken, state } =
+						await this._oAuthHandler.handleAuthResponse(currentUrl);
 					const session = new CognitoUserSession({
 						IdToken: new CognitoIdToken({ IdToken: idToken }),
 						RefreshToken: new CognitoRefreshToken({
@@ -2115,10 +2108,7 @@ export class AuthClass {
 					);
 
 					if (isCustomStateIncluded) {
-						const customState = state
-							.split('-')
-							.splice(1)
-							.join('-');
+						const customState = state.split('-').splice(1).join('-');
 
 						dispatchAuthEvent(
 							'customOAuthState',
@@ -2182,7 +2172,7 @@ export class AuthClass {
 	private attributesToObject(attributes) {
 		const obj = {};
 		if (attributes) {
-			attributes.map(attribute => {
+			attributes.map((attribute) => {
 				if (
 					attribute.Name === 'email_verified' ||
 					attribute.Name === 'phone_number_verified'
@@ -2261,10 +2251,10 @@ export class AuthClass {
 		currUser.getCachedDeviceKeyAndPassword();
 		return new Promise((res, rej) => {
 			currUser.setDeviceStatusRemembered({
-				onSuccess: data => {
+				onSuccess: (data) => {
 					res(data);
 				},
-				onFailure: err => {
+				onFailure: (err) => {
 					if (err.code === 'InvalidParameterException') {
 						rej(new AuthError(AuthErrorTypes.DeviceConfig));
 					} else if (err.code === 'NetworkError') {
@@ -2290,10 +2280,10 @@ export class AuthClass {
 		currUser.getCachedDeviceKeyAndPassword();
 		return new Promise((res, rej) => {
 			currUser.forgetDevice({
-				onSuccess: data => {
+				onSuccess: (data) => {
 					res(data);
 				},
-				onFailure: err => {
+				onFailure: (err) => {
 					if (err.code === 'InvalidParameterException') {
 						rej(new AuthError(AuthErrorTypes.DeviceConfig));
 					} else if (err.code === 'NetworkError') {
@@ -2320,7 +2310,7 @@ export class AuthClass {
 		return new Promise((res, rej) => {
 			const cb = {
 				onSuccess(data) {
-					const deviceList: IAuthDevice[] = data.Devices.map(device => {
+					const deviceList: IAuthDevice[] = data.Devices.map((device) => {
 						const deviceName =
 							device.DeviceAttributes.find(
 								({ Name }) => Name === 'device_name'
@@ -2334,7 +2324,7 @@ export class AuthClass {
 					});
 					res(deviceList);
 				},
-				onFailure: err => {
+				onFailure: (err) => {
 					if (err.code === 'InvalidParameterException') {
 						rej(new AuthError(AuthErrorTypes.DeviceConfig));
 					} else if (err.code === 'NetworkError') {
@@ -2352,4 +2342,3 @@ export class AuthClass {
 export const Auth = new AuthClass(null);
 
 Amplify.register(Auth);
-
