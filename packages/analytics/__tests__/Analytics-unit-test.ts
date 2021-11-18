@@ -4,30 +4,9 @@ jest.mock('../src/vendor/dom-utils', () => {
 	};
 });
 
-import {
-	ClientDevice,
-	Parser,
-	ConsoleLogger as Logger,
-	Credentials,
-} from '@aws-amplify/core';
-import { AnalyticsOptions, EventAttributes, EventMetrics } from '../src/types';
+import { ClientDevice, Parser, Hub } from '@aws-amplify/core';
 import { AnalyticsClass as Analytics } from '../src/Analytics';
 import AWSAnalyticsProvider from '../src/Providers/AWSPinpointProvider';
-
-const options: AnalyticsOptions = {
-	appId: 'appId',
-	platform: 'platform',
-	clientId: 'clientId',
-	region: 'region',
-};
-
-const credentials = {
-	accessKeyId: 'accessKeyId',
-	sessionToken: 'sessionToken',
-	secretAccessKey: 'secretAccessKey',
-	identityId: 'identityId',
-	authenticated: true,
-};
 
 jest.useFakeTimers();
 
@@ -37,7 +16,12 @@ const record_spyon = jest
 		return handlers.resolve();
 	});
 
+const hubSpy = jest.spyOn(Hub, 'dispatch');
+
 describe('Analytics test', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
 	describe('configure test', () => {
 		test('happy case with default parser', () => {
 			const analytics = new Analytics();
@@ -83,6 +67,16 @@ describe('Analytics test', () => {
 			analytics.configure({ mock: 'value' });
 
 			await analytics.startSession();
+			expect(hubSpy).toBeCalledWith(
+				'analytics',
+				{
+					event: 'record',
+					data: { name: '_session.start' },
+					message: 'Recording Analytics session start event',
+				},
+				'Analytics',
+				expect.anything()
+			);
 			expect(record_spyon).toBeCalled();
 		});
 	});
@@ -95,6 +89,16 @@ describe('Analytics test', () => {
 			analytics.configure({ mock: 'value' });
 
 			await analytics.stopSession();
+			expect(hubSpy).toBeCalledWith(
+				'analytics',
+				{
+					event: 'record',
+					data: { name: '_session.stop' },
+					message: 'Recording Analytics session stop event',
+				},
+				'Analytics',
+				expect.anything()
+			);
 			expect(record_spyon).toBeCalled();
 		});
 	});
@@ -105,12 +109,23 @@ describe('Analytics test', () => {
 			const provider = new AWSAnalyticsProvider();
 			analytics.addPluggable(provider);
 			analytics.configure({ mock: 'value' });
-
-			await analytics.record({
+			const event = {
 				name: 'event',
 				attributes: 'attributes',
 				metrics: 'metrics',
-			});
+			};
+
+			await analytics.record(event);
+			expect(hubSpy).toBeCalledWith(
+				'analytics',
+				{
+					event: 'record',
+					data: event,
+					message: 'Recording Analytics event',
+				},
+				'Analytics',
+				expect.anything()
+			);
 			expect(record_spyon).toBeCalled();
 		});
 	});
