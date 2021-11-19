@@ -42,8 +42,8 @@
 	},
 	"homepage": "https://docs.amplify.aws/",
 	"dependencies": {
-		"@aws-amplify/cache": "4.0.27",
-		"@aws-amplify/core": "4.3.7",
+		"@aws-amplify/cache": "in-app-messaging",
+		"@aws-amplify/core": "in-app-messaging",
 		"@aws-sdk/client-pinpoint": "^3.33.0",
 		"lodash": "^4.17.21",
 		"uuid": "^3.2.1"
