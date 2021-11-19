@@ -28,7 +28,7 @@ const logger = new Logger('TEST_LOGGER');
 
 const deepLink = 'DEEP_LINK';
 const link = 'LINK';
-const url = 'https://Invalid.amplify.aws/';
+const url = 'https://docs.amplify.aws/';
 
 const error = 'ERROR';
 
