@@ -28,6 +28,7 @@ import {
 	BatchPutGeofenceRequestEntry,
 	BatchPutGeofenceCommandOutput,
 } from '@aws-sdk/client-location';
+import { validateCoordinates } from '../util';
 
 import {
 	GeoConfig,
@@ -210,6 +211,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		if (!credentialsOK) {
 			throw new Error('No credentials');
 		}
+
+		validateCoordinates(coordinates[0], coordinates[1]);
 
 		this._verifySearchIndex(options?.searchIndexName);
 
