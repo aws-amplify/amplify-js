@@ -426,12 +426,6 @@ export type ModelInit<
 	>]+?: SettableFieldType<T[P]>;
 };
 
-type DeepWritable<T> = {
-	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
-		? T[P]
-		: DeepWritable<T[P]>;
-};
-
 export type MutableModel<
 	T extends Record<string, any>,
 	K extends PersistentModelMetaData = {
@@ -439,8 +433,12 @@ export type MutableModel<
 	}
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
-> = DeepWritable<Omit<T, 'id' | K['readOnlyFields']>> &
-	Readonly<Pick<T, 'id' | K['readOnlyFields']>>;
+> = {
+	-readonly [P in keyof Omit<
+		T,
+		'id' | K['readOnlyFields']
+	>]-?: SettableFieldType<T[P]>;
+};
 
 export type ModelInstanceMetadata = {
 	id: string;

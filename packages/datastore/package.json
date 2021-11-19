@@ -74,7 +74,8 @@
 					],
 					"allowJs": true,
 					"esModuleInterop": true,
-					"downlevelIteration": true
+					"downlevelIteration": true,
+					"alwaysStrict": true
 				}
 			}
 		},

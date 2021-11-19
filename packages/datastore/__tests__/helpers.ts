@@ -1,10 +1,4 @@
-import {
-	ModelInit,
-	MutableModel,
-	Schema,
-	InternalSchema,
-	SchemaModel,
-} from '../src/types';
+import { ModelInit, MutableModel, Schema, InternalSchema } from '../src/types';
 import { AsyncCollection } from '../src/datastore/datastore';
 
 export declare class Model {
