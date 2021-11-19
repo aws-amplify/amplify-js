@@ -43,8 +43,8 @@
 	"devDependencies": {
 		"@react-native-community/netinfo": "4.7.0",
 		"@types/uuid": "3.4.5",
-		"dexie": "3.0.3",
-		"dexie-export-import": "1.0.0-rc.2",
+		"dexie": "3.2.0",
+		"dexie-export-import": "1.0.3",
 		"fake-indexeddb": "3.0.0"
 	},
 	"dependencies": {
