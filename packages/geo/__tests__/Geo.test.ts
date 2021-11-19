@@ -290,7 +290,7 @@ describe('Geo', () => {
 	});
 
 	describe('searchByCoordinates', () => {
-		const testCoordinates: Coordinates = [12345, 67890];
+		const testCoordinates: Coordinates = [45, 90];
 
 		test('should search with just coordinate input', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {

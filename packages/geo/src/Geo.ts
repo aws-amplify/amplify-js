@@ -17,6 +17,8 @@ import {
 } from '@aws-amplify/core';
 import { AmazonLocationServiceProvider } from './Providers/AmazonLocationServiceProvider';
 
+import { validateCoordinates } from './util';
+
 import {
 	GeoConfig,
 	Coordinates,
@@ -166,6 +168,9 @@ export class GeoClass {
 	) {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
+
+		const [lng, lat] = coordinates;
+		validateCoordinates(lng, lat);
 
 		try {
 			return await prov.searchByCoordinates(coordinates, options);
