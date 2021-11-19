@@ -121,7 +121,7 @@ export class SyncEngine {
 	) {
 		const MutationEvent = this.modelClasses[
 			'MutationEvent'
-		] as PersistentModelConstructor<any>;
+		] as PersistentModelConstructor<MutationEvent>;
 
 		this.outbox = new MutationEventOutbox(
 			this.schema,
