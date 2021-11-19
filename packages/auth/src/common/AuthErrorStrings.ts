@@ -22,7 +22,7 @@ export enum AuthErrorStrings {
 	/**
    * **The user provides an invalid password required to sign-in for a valid username.**
 	 *
-	 * @see `AuthErrorStrings.USER_DOES_NOT_EXIST` will occur if username does not exist
+	 * @see `AuthErrorStrings.USER_DOES_NOT_EXIST` will occur if username and/or password is incorrect
    */
 	INCORRECT_USERNAME_OR_PASSWORD = 'Incorrect username or password.',
 
