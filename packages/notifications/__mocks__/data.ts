@@ -45,7 +45,7 @@ export const notificationsConfig = {
 	InAppMessaging: inAppMessagingConfig,
 };
 
-export const adohcConfig: NotificationsConfig = {
+export const adhocConfig: NotificationsConfig = {
 	Notifications: {
 		InAppMessaging: {
 			AWSPinpoint: {

@@ -12,7 +12,7 @@
  */
 import { Amplify } from '@aws-amplify/core';
 import Notifications from '../src/Notifications';
-import { adohcConfig, awsConfig, notificationsConfig } from '../__mocks__/data';
+import { adhocConfig, awsConfig, notificationsConfig } from '../__mocks__/data';
 
 jest.mock('@aws-amplify/core');
 
@@ -41,8 +41,8 @@ describe('Notifications', () => {
 		});
 
 		test('works with adhoc config', () => {
-			const config = Notifications.configure(adohcConfig);
-			expect(config).toStrictEqual(adohcConfig.Notifications);
+			const config = Notifications.configure(adhocConfig);
+			expect(config).toStrictEqual(adhocConfig.Notifications);
 		});
 	});
 });
