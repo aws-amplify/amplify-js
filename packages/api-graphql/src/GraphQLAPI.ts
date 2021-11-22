@@ -224,7 +224,7 @@ export class GraphQLAPIClass {
 	 * @returns An Observable if subscription is true, else a promise of the graphql result from the query.
 	 */
 	graphql<T = any>(
-		{ query: paramQuery, variables, authMode, authToken }: GraphQLOptions,
+		{ query: paramQuery, variables = {}, authMode, authToken }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	): Observable<GraphQLResult<T>> | Promise<GraphQLResult<T>> {
 		const query =
