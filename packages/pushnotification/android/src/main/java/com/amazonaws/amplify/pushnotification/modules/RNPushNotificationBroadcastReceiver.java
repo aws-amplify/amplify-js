@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
  * the License. A copy of the License is located at
@@ -60,16 +60,33 @@ public class RNPushNotificationBroadcastReceiver extends BroadcastReceiver {
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(Context context,final Intent intent) {
         Log.i(LOG_TAG, "broadcaster received");
 
         // send the message to device emitter
         // Construct and load our normal React JS code bundle
-        ReactInstanceManager mReactInstanceManager = ((ReactApplication) context.getApplicationContext()).getReactNativeHost().getReactInstanceManager();
+        final ReactInstanceManager mReactInstanceManager = ((ReactApplication) context.getApplicationContext()).getReactNativeHost().getReactInstanceManager();
         ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-        RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery((ReactApplicationContext) reactContext);
-        jsDelivery.emitNotificationOpened(intent.getBundleExtra("notification"));
-
+        if (reactContext != null) {
+            emitNotificationOpenedEvent(reactContext, intent);
+        } else {
+            // If the ReactContext is null, add a listener to use it when it becomes initialized
+            mReactInstanceManager.addReactInstanceEventListener(new ReactInstanceManager.ReactInstanceEventListener() {
+                public void onReactContextInitialized(ReactContext currentReactContext) {
+                    emitNotificationOpenedEvent(currentReactContext, intent);
+                    mReactInstanceManager.removeReactInstanceEventListener(this);
+                }
+            });
+            // Build the ReactContext in the background
+            if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
+                mReactInstanceManager.createReactContextInBackground();
+            }
+        }
         openApp(context);
+    }
+
+    private void emitNotificationOpenedEvent(ReactContext reactContext, Intent intent){
+            RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery((ReactApplicationContext) reactContext);
+            jsDelivery.emitNotificationOpened(intent.getBundleExtra("notification"));
     }
 }
