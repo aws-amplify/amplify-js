@@ -48,7 +48,8 @@ export declare class Comment {
 export declare class User {
 	public readonly id: string;
 	public readonly name: string;
-	public readonly profileID: string;
+	public readonly profile?: Profile;
+	public readonly profileID?: string;
 }
 export declare class Profile {
 	public readonly id: string;

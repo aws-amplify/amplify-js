@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.7.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.6.1...@aws-amplify/datastore@3.7.0) (2021-11-18)
+
+
+### Features
+
+* **@aws-amplify/datastore:** hasOne CRUD improvements ([#9239](https://github.com/aws-amplify/amplify-js/issues/9239)) ([d521d17](https://github.com/aws-amplify/amplify-js/commit/d521d17c45a246c63c02a29e103e8a3db374c11e))
+
+
+
+
+
+## [3.6.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.6.0...@aws-amplify/datastore@3.6.1) (2021-11-16)
+
+**Note:** Version bump only for package @aws-amplify/datastore
+
+
+
+
+
+# [3.6.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.5.2...@aws-amplify/datastore@3.6.0) (2021-11-12)
+
+
+### Features
+
+* **@aws-amplify/datastore:** ObserveQuery performance and type enhancements ([#9141](https://github.com/aws-amplify/amplify-js/issues/9141)) ([755ce09](https://github.com/aws-amplify/amplify-js/commit/755ce09f5152c54d215f023089f30b2c98ace33a))
+
+
+
+
+
+## [3.5.2](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.5.1...@aws-amplify/datastore@3.5.2) (2021-11-09)
+
+
+### Bug Fixes
+
+* **@aws-amplify/datastore:** use forEach instead of map to iterate over unsubscribe callbacks ([#9146](https://github.com/aws-amplify/amplify-js/issues/9146)) ([ec6ee1c](https://github.com/aws-amplify/amplify-js/commit/ec6ee1c066a283e4e34a287db5712f2bb944e6ba))
+
+
+### Reverts
+
+* uuid dependency upgrade ([#9159](https://github.com/aws-amplify/amplify-js/issues/9159)) ([4ef8aa9](https://github.com/aws-amplify/amplify-js/commit/4ef8aa9c7c25dbe921fd02b6205b8defb93fbaec))
+
+
+
+
+
 ## [3.5.1](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore@3.5.0...@aws-amplify/datastore@3.5.1) (2021-10-28)
 
 **Note:** Version bump only for package @aws-amplify/datastore

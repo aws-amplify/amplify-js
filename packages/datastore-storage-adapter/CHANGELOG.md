@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.2.0](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@1.1.13...@aws-amplify/datastore-storage-adapter@1.2.0) (2021-11-18)
+
+
+### Features
+
+* **@aws-amplify/datastore:** hasOne CRUD improvements ([#9239](https://github.com/aws-amplify/amplify-js/issues/9239)) ([d521d17](https://github.com/aws-amplify/amplify-js/commit/d521d17c45a246c63c02a29e103e8a3db374c11e))
+
+
+
+
+
+## [1.1.13](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@1.1.12...@aws-amplify/datastore-storage-adapter@1.1.13) (2021-11-16)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+
+
+
+
+## [1.1.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@1.1.11...@aws-amplify/datastore-storage-adapter@1.1.12) (2021-11-12)
+
+**Note:** Version bump only for package @aws-amplify/datastore-storage-adapter
+
+
+
+
+
+## [1.1.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@1.1.10...@aws-amplify/datastore-storage-adapter@1.1.11) (2021-11-09)
+
+
+### Bug Fixes
+
+* **datastore-storage-adapter:** don't enforce required model fields in sql ([#9166](https://github.com/aws-amplify/amplify-js/issues/9166)) ([fbe1f2e](https://github.com/aws-amplify/amplify-js/commit/fbe1f2ebddb1a155d74e7f45e30a61b95a608af1))
+
+
+
+
+
 ## [1.1.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/datastore-storage-adapter@1.1.9...@aws-amplify/datastore-storage-adapter@1.1.10) (2021-10-28)
 
 **Note:** Version bump only for package @aws-amplify/datastore-storage-adapter

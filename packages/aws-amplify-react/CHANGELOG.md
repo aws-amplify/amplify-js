@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.9](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@5.1.8...aws-amplify-react@5.1.9) (2021-11-18)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [5.1.8](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@5.1.7...aws-amplify-react@5.1.8) (2021-11-16)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [5.1.7](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@5.1.6...aws-amplify-react@5.1.7) (2021-11-12)
+
+**Note:** Version bump only for package aws-amplify-react
+
+
+
+
+
+## [5.1.6](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@5.1.5...aws-amplify-react@5.1.6) (2021-11-09)
+
+
+### Bug Fixes
+
+* **@aws-amplify/storage:** Automatically adjust systemClockoffset in Storage ([#9115](https://github.com/aws-amplify/amplify-js/issues/9115)) ([873941c](https://github.com/aws-amplify/amplify-js/commit/873941c655d9fe87a75238eadc0ae57dacc2fa16))
+
+
+
+
+
 ## [5.1.5](https://github.com/aws-amplify/amplify-js/compare/aws-amplify-react@5.1.4...aws-amplify-react@5.1.5) (2021-10-28)
 
 

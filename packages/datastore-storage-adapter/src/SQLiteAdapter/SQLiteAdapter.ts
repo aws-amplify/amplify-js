@@ -194,21 +194,19 @@ export class SQLiteAdapter implements StorageAdapter {
 			switch (relationType) {
 				case 'HAS_ONE':
 					for await (const recordItem of records) {
-						if (recordItem[fieldName]) {
-							const [queryStatement, params] = queryByIdStatement(
-								recordItem[fieldName],
-								tableName
-							);
+						const getByfield = recordItem[targetName] ? targetName : fieldName;
+						if (!recordItem[getByfield]) break;
 
-							const connectionRecord = await this.db.get(
-								queryStatement,
-								params
-							);
+						const [queryStatement, params] = queryByIdStatement(
+							recordItem[getByfield],
+							tableName
+						);
 
-							recordItem[fieldName] =
-								connectionRecord &&
-								this.modelInstanceCreator(modelConstructor, connectionRecord);
-						}
+						const connectionRecord = await this.db.get(queryStatement, params);
+
+						recordItem[fieldName] =
+							connectionRecord &&
+							this.modelInstanceCreator(modelConstructor, connectionRecord);
 					}
 
 					break;
@@ -236,7 +234,7 @@ export class SQLiteAdapter implements StorageAdapter {
 					// TODO: Lazy loading
 					break;
 				default:
-					const _: never = relationType;
+					const _: never = relationType as never;
 					throw new Error(`invalid relation type ${relationType}`);
 					break;
 			}
