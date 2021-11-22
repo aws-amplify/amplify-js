@@ -18,7 +18,6 @@ export interface GraphQLOptions {
 	variables?: object;
 	authMode?: keyof typeof GRAPHQL_AUTH_MODE;
 	authToken?: string;
-	subscription?: boolean;
 }
 
 export enum GRAPHQL_AUTH_MODE {
