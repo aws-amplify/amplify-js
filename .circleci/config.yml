@@ -1136,9 +1136,9 @@ workflows:
   build_test_deploy:
     jobs:
       - build
-      # - integ_setup:
-      #     filters:
-      #       <<: *releasable_branches
+      - integ_setup:
+          filters:
+            <<: *releasable_branches
       # - unit_test:
       #     requires:
       #       - build
