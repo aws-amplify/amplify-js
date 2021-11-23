@@ -22,3 +22,6 @@ export {
 	GraphQLResult,
 	GRAPHQL_AUTH_MODE,
 } from '@aws-amplify/api-graphql';
+
+export type GraphQLQuery<T> = T & { __queryType: 'query' };
+export type GraphQLSubscription<T> = T & { __queryType: 'subscription' };
