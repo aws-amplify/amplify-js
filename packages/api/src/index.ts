@@ -13,6 +13,7 @@
 
 import { API } from './API';
 
+export { GraphQLQuery, GraphQLSubscription } from './types';
 export { API, APIClass } from './API';
 export {
 	graphqlOperation,
