@@ -19,7 +19,13 @@ import {
 } from '@aws-amplify/core';
 import { AWSPinpointProvider } from './Providers/AWSPinpointProvider';
 
-import { AnalyticsProvider, EventMetrics } from './types';
+import {
+	AnalyticsProvider,
+	EventAttributes,
+	EventMetrics,
+	AnalyticsEvent,
+	AutoTrackOpts,
+} from './types';
 import { PageViewTracker, EventTracker, SessionTracker } from './trackers';
 
 const logger = new Logger('AnalyticsClass');
@@ -45,6 +51,8 @@ const trackers = {
 	session: SessionTracker,
 };
 
+type TrackerType = keyof typeof trackers;
+type Tracker = typeof trackers[TrackerType];
 let _instance = null;
 
 /**
@@ -53,8 +61,8 @@ let _instance = null;
 export class AnalyticsClass {
 	private _config;
 	private _pluggables: AnalyticsProvider[];
-	private _disabled;
-	private _trackers;
+	private _disabled: boolean;
+	private _trackers: Tracker;
 
 	/**
 	 * Initialize Analtyics
@@ -64,7 +72,6 @@ export class AnalyticsClass {
 		this._config = {};
 		this._pluggables = [];
 		this._disabled = false;
-		this._trackers = {};
 		_instance = this;
 
 		this.record = this.record.bind(this);
@@ -100,7 +107,7 @@ export class AnalyticsClass {
 			this._config['autoSessionRecord'] = true;
 		}
 
-		this._pluggables.forEach((pluggable) => {
+		this._pluggables.forEach(pluggable => {
 			// for backward compatibility
 			const providerConfig =
 				pluggable.getProviderName() === 'AWSPinpoint' &&
@@ -130,7 +137,7 @@ export class AnalyticsClass {
 
 	/**
 	 * add plugin into Analytics category
-	 * @param {Object} pluggable - an instance of the plugin
+	 * @param pluggable - an instance of the plugin
 	 */
 	public addPluggable(pluggable: AnalyticsProvider) {
 		if (pluggable && pluggable.getCategory() === 'Analytics') {
@@ -149,9 +156,9 @@ export class AnalyticsClass {
 
 	/**
 	 * Get the plugin object
-	 * @param providerName - the name of the plugin
+	 * @param providerName - the name of the provider to be removed
 	 */
-	public getPluggable(providerName) {
+	public getPluggable(providerName: string): AnalyticsProvider {
 		for (let i = 0; i < this._pluggables.length; i += 1) {
 			const pluggable = this._pluggables[i];
 			if (pluggable.getProviderName() === providerName) {
@@ -165,9 +172,9 @@ export class AnalyticsClass {
 
 	/**
 	 * Remove the plugin object
-	 * @param providerName - the name of the plugin
+	 * @param providerName - the name of the provider to be removed
 	 */
-	public removePluggable(providerName) {
+	public removePluggable(providerName: string): void {
 		let idx = 0;
 		while (idx < this._pluggables.length) {
 			if (this._pluggables[idx].getProviderName() === providerName) {
@@ -201,6 +208,7 @@ export class AnalyticsClass {
 
 	/**
 	 * Record Session start
+	 * @param [provider] - name of the provider.
 	 * @return - A promise which resolves if buffer doesn't overflow
 	 */
 	public async startSession(provider?: string) {
@@ -210,6 +218,7 @@ export class AnalyticsClass {
 
 	/**
 	 * Record Session stop
+	 * @param [provider] - name of the provider.
 	 * @return - A promise which resolves if buffer doesn't overflow
 	 */
 	public async stopSession(provider?: string) {
@@ -219,14 +228,26 @@ export class AnalyticsClass {
 
 	/**
 	 * Record one analytic event and send it to Pinpoint
-	 * @param {String} name - The name of the event
-	 * @param {Object} [attributes] - Attributes of the event
-	 * @param {Object} [metrics] - Event metrics
+	 * @param event - An object with the name of the event, attributes of the event and event metrics.
+	 * @param [provider] - name of the provider.
+	 */
+	public async record(event: AnalyticsEvent, provider?: string);
+	/**
+	 * Record one analytic event and send it to Pinpoint
+	 * @deprecated Use the new syntax and pass in the event as an object instead.
+	 * @param name - The name of the event
+	 * @param [attributes] - Attributes of the event
+	 * @param [metrics] - Event metrics
 	 * @return - A promise which resolves if buffer doesn't overflow
 	 */
 	public async record(
-		event: string | object,
-		provider?,
+		eventName: string,
+		attributes?: EventAttributes,
+		metrics?: EventMetrics
+	);
+	public async record(
+		event: string | AnalyticsEvent,
+		providerOrAttributes?: string | EventAttributes,
 		metrics?: EventMetrics
 	) {
 		let params = null;
@@ -235,24 +256,24 @@ export class AnalyticsClass {
 			params = {
 				event: {
 					name: event,
-					attributes: provider,
+					attributes: providerOrAttributes,
 					metrics,
 				},
 				provider: 'AWSPinpoint',
 			};
 		} else {
-			params = { event, provider };
+			params = { event, provider: providerOrAttributes };
 		}
 		return this._sendEvent(params);
 	}
 
-	public async updateEndpoint(attrs, provider?) {
+	public async updateEndpoint(attrs: Record<string, any>, provider?: string) {
 		const event = { ...attrs, name: '_update_endpoint' };
 
 		return this.record(event, provider);
 	}
 
-	private _sendEvent(params) {
+	private _sendEvent(params: { event: AnalyticsEvent; provider?: string }) {
 		if (this._disabled) {
 			logger.debug('Analytics has been disabled');
 			return Promise.resolve();
@@ -261,7 +282,7 @@ export class AnalyticsClass {
 		const provider = params.provider ? params.provider : 'AWSPinpoint';
 
 		return new Promise((resolve, reject) => {
-			this._pluggables.forEach((pluggable) => {
+			this._pluggables.forEach(pluggable => {
 				if (pluggable.getProviderName() === provider) {
 					pluggable.record(params, { resolve, reject });
 				}
@@ -269,7 +290,12 @@ export class AnalyticsClass {
 		});
 	}
 
-	public autoTrack(trackerType, opts) {
+	/**
+	 * Enable or disable auto tracking
+	 * @param trackerType - The type of tracker to activate.
+	 * @param [opts] - Auto tracking options.
+	 */
+	public autoTrack(trackerType: TrackerType, opts: AutoTrackOpts) {
 		if (!trackers[trackerType]) {
 			logger.debug('invalid tracker type');
 			return;
@@ -295,7 +321,7 @@ export class AnalyticsClass {
 let endpointUpdated = false;
 let authConfigured = false;
 let analyticsConfigured = false;
-const listener = (capsule) => {
+const listener = capsule => {
 	const { channel, payload } = capsule;
 	logger.debug('on hub capsule ' + channel, payload);
 
@@ -314,7 +340,7 @@ const listener = (capsule) => {
 	}
 };
 
-const storageEvent = (payload) => {
+const storageEvent = payload => {
 	const {
 		data: { attrs, metrics },
 	} = payload;
@@ -327,19 +353,19 @@ const storageEvent = (payload) => {
 				attributes: attrs,
 				metrics,
 			})
-			.catch((e) => {
+			.catch(e => {
 				logger.debug('Failed to send the storage event automatically', e);
 			});
 	}
 };
 
-const authEvent = (payload) => {
+const authEvent = payload => {
 	const { event } = payload;
 	if (!event) {
 		return;
 	}
 
-	const recordAuthEvent = async (eventName) => {
+	const recordAuthEvent = async eventName => {
 		if (authConfigured && analyticsConfigured) {
 			try {
 				return await _instance.record({ name: `_userauth.${eventName}` });
@@ -370,7 +396,7 @@ const authEvent = (payload) => {
 	}
 };
 
-const analyticsEvent = (payload) => {
+const analyticsEvent = payload => {
 	const { event } = payload;
 	if (!event) return;
 
@@ -387,7 +413,7 @@ const analyticsEvent = (payload) => {
 const sendEvents = () => {
 	const config = _instance.configure();
 	if (!endpointUpdated && config['autoSessionRecord']) {
-		_instance.updateEndpoint({ immediate: true }).catch((e) => {
+		_instance.updateEndpoint({ immediate: true }).catch(e => {
 			logger.debug('Failed to update the endpoint', e);
 		});
 		endpointUpdated = true;
