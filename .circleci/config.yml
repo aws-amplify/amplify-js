@@ -619,7 +619,7 @@ jobs:
           test_name: 'React DataStore CLI v2'
           framework: react
           category: datastore
-          sample_name: many-to-many-v2
+          sample_name: v2/many-to-many-v2
           spec: many-to-many
           browser: << parameters.browser >>
 
@@ -653,7 +653,7 @@ jobs:
           test_name: 'React DataStore Multi-Auth - One Rule CLI v2'
           framework: react
           category: datastore
-          sample_name: multi-auth-v2
+          sample_name: v2/multi-auth-v2
           spec: multi-auth-one-rule
           browser: << parameters.browser >>
 
@@ -687,7 +687,7 @@ jobs:
           test_name: 'React DataStore Multi-Auth - Two Rules CLI v2'
           framework: react
           category: datastore
-          sample_name: multi-auth-v2
+          sample_name: v2/multi-auth-v2
           spec: multi-auth-two-rules
           browser: << parameters.browser >>
 
@@ -721,7 +721,7 @@ jobs:
           test_name: 'React DataStore Multi-Auth - Three Plus Rules CLI v2'
           framework: react
           category: datastore
-          sample_name: multi-auth-v2
+          sample_name: v2/multi-auth-v2
           spec: multi-auth-three-plus-rules
           browser: << parameters.browser >>
 
@@ -755,7 +755,7 @@ jobs:
           test_name: 'DataStore - Subs Disabled CLI v2'
           framework: react
           category: datastore
-          sample_name: subs-disabled-v2
+          sample_name: v2/subs-disabled-v2
           spec: subs-disabled
           browser: << parameters.browser >>
 
@@ -789,7 +789,7 @@ jobs:
           test_name: 'DataStore - Subs Disabled CLI v2'
           framework: react
           category: datastore
-          sample_name: consecutive-saves-v2
+          sample_name: v2/consecutive-saves-v2
           spec: consecutive-saves
           browser: << parameters.browser >>
 
@@ -983,14 +983,14 @@ jobs:
           test_name: 'DataStore Auth CLI v2 - Chrome'
           framework: react
           category: datastore
-          sample_name: << parameters.scenario >>-v2
+          sample_name: v2/<< parameters.scenario >>-v2
           spec: << parameters.scenario >>
           browser: chrome
       - integ_test_js:
           test_name: 'DataStore Auth CLI v2 - Firefox'
           framework: react
           category: datastore
-          sample_name: << parameters.scenario >>-v2
+          sample_name: v2/<< parameters.scenario >>-v2
           spec: << parameters.scenario >>
           browser: firefox
 
