@@ -17,6 +17,9 @@ import {
 	Coordinates,
 	Place,
 	MapStyle,
+	GeofenceInput,
+	GeofenceOptions,
+	Geofence,
 } from './Geo';
 
 export interface GeoProvider {
@@ -35,10 +38,18 @@ export interface GeoProvider {
 	// get the map resource listed as default
 	getDefaultMap(): MapStyle;
 
+	// search by a text string and return a list of places
 	searchByText(text: string, options?: SearchByTextOptions): Promise<Place[]>;
 
+	// search by coordinates and return a matching place
 	searchByCoordinates(
 		coordinates: Coordinates,
 		options?: SearchByCoordinatesOptions
 	): Promise<Place>;
+
+	// create a geofence
+	createGeofence(
+		geofence: GeofenceInput | GeofenceInput[],
+		options?: GeofenceOptions
+	): Promise<Geofence>;
 }

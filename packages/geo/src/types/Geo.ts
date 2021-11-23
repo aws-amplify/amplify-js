@@ -22,6 +22,10 @@ export interface GeoConfig {
 			items: string[];
 			default: string;
 		};
+		geofenceCollections?: {
+			items: string[];
+			default: string;
+		};
 	};
 }
 
@@ -31,10 +35,10 @@ export interface MapStyle {
 	style: string;
 }
 
-export type Latitude = number;
 export type Longitude = number;
+export type Latitude = number;
 
-/// P
+// Coordinates are a tuple of longitude and latitude
 export type Coordinates = [Longitude, Latitude];
 
 // SW Longitude point for bounding box
@@ -73,6 +77,7 @@ export type SearchByTextOptions =
 	| SearchByTextOptionsWithBiasPosition
 	| SearchByTextOptionsWithSearchAreaConstraints;
 
+// Options object for searchByCoodinates
 export type SearchByCoordinatesOptions = {
 	maxResults?: number;
 	searchIndexName?: string;
@@ -97,3 +102,42 @@ export interface Place {
 	street?: string;
 	subRegion?: string;
 }
+
+// Array of 4 or more coordinates, where the first and last coordinate are the same to form a closed boundary
+export type LinearRing = Coordinates[];
+
+// An array of one or more linear rings, this allows shapes where there are holes in the middle
+export type Polygon = LinearRing[];
+
+// Geometry object for Geofence Geometry
+export type GeofenceGeometry = {
+	polygon: Polygon;
+};
+
+// Geofence object used as input for createGeofence and updateGeofence
+export type GeofenceInput = {
+	geofenceId: string;
+	geometry: GeofenceGeometry;
+};
+
+// Options object for createGeofence and updateGeofence
+export type GeofenceOptions = {
+	providerName?: string;
+};
+
+// Status types for Geofences
+export type GeofenceStatus =
+	| 'ACTIVE'
+	| 'PENDING'
+	| 'FAILED'
+	| 'DELETED'
+	| 'DELETING';
+
+// Output object for createGeofence, updateGeofence, and describeGeofence
+export type Geofence = {
+	geofenceId: string;
+	geometry: GeofenceGeometry;
+	createTime: Date;
+	updateTime: Date;
+	status?: GeofenceStatus;
+};
