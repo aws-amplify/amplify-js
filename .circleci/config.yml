@@ -1415,15 +1415,15 @@ workflows:
       # #       - build
       # #     filters:
       # #       <<: *releasable_branches
-      # - integ_datastore_auth:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *datastore_auth_scenarios
+      - integ_datastore_auth:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *datastore_auth_scenarios
       - integ_datastore_auth_v2:
           requires:
             - integ_setup
