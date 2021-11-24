@@ -123,6 +123,7 @@ export type GeofenceInput = {
 // Options object for createGeofence and updateGeofence
 export type GeofenceOptions = {
 	providerName?: string;
+	collectionName?: string;
 };
 
 // Error type for errors related to Geofence API calls
