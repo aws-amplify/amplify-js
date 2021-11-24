@@ -1,4 +1,3 @@
-import { Coordinates } from './../../../.history/packages/geo/src/types/Geo_20211108163019';
 /*
  * Copyright 2017-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
