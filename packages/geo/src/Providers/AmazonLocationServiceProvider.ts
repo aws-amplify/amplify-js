@@ -262,7 +262,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * Create geofences inside of a geofence collection
 	 * @param geofences - Single or array of geofence objects to create
 	 * @param options? - Optional parameters for creating geofences
-	 * @returns {Promise<GeofenceResults} - Promise that resolves to and object with:
+	 * @returns {Promise<GeofenceResults>} - Promise that resolves to an object with:
 	 *   successes: list of geofences successfully created
 	 *   errors: list of geofences that failed to create
 	 */
