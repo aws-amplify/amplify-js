@@ -195,7 +195,7 @@ export const singleGeofenceResults = {
 	errors: [],
 };
 
-export const multipleGeofencesResults = {
+export const batchGeofencesResults = {
 	successes: [
 		{
 			createTime: '2020-04-01T21:00:00.000Z',

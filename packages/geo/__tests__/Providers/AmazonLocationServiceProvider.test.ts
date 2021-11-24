@@ -28,7 +28,7 @@ import {
 	validGeofences,
 	geofencesWithInvalidId,
 	singleGeofenceResults,
-	multipleGeofencesResults,
+	batchGeofencesResults,
 } from '../data';
 import {
 	SearchByTextOptions,
@@ -429,7 +429,7 @@ describe('AmazonLocationServiceProvider', () => {
 				.fn()
 				.mockImplementationOnce(command => {
 					if (command instanceof BatchPutGeofenceCommand) {
-						return multipleGeofencesResults;
+						return batchGeofencesResults;
 					}
 				});
 
@@ -438,7 +438,7 @@ describe('AmazonLocationServiceProvider', () => {
 
 			const results = await locationProvider.createGeofences(validGeofences);
 
-			expect(results).toEqual(multipleGeofencesResults);
+			expect(results).toEqual(batchGeofencesResults);
 		});
 
 		test('should error if there is a bad geofence in the input', async () => {

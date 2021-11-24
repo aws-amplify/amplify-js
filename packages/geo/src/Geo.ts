@@ -20,12 +20,16 @@ import { AmazonLocationServiceProvider } from './Providers/AmazonLocationService
 import { validateCoordinates } from './util';
 
 import {
+	Place,
 	GeoConfig,
 	Coordinates,
 	SearchByTextOptions,
 	SearchByCoordinatesOptions,
 	GeoProvider,
 	MapStyle,
+	GeofenceInput,
+	GeofenceOptions,
+	GeofenceResults,
 } from './types';
 
 const logger = new Logger('Geo');
@@ -144,7 +148,10 @@ export class GeoClass {
 	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
 	 * @returns {Promise<Place[]>} - Promise resolves to a list of Places that match search parameters
 	 */
-	public async searchByText(text: string, options?: SearchByTextOptions) {
+	public async searchByText(
+		text: string,
+		options?: SearchByTextOptions
+	): Promise<Place[]> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
 
@@ -165,7 +172,7 @@ export class GeoClass {
 	public async searchByCoordinates(
 		coordinates: Coordinates,
 		options?: SearchByCoordinatesOptions
-	) {
+	): Promise<Place> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
 
@@ -174,6 +181,29 @@ export class GeoClass {
 
 		try {
 			return await prov.searchByCoordinates(coordinates, options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Create geofences inside of a geofence collection
+	 * @param geofences - Single or array of geofence objects to create
+	 * @param options? - Optional parameters for creating geofences
+	 * @returns {Promise<GeofenceResults} - Promise that resolves to and object with:
+	 *   successes: list of geofences successfully created
+	 *   errors: list of geofences that failed to create
+	 */
+	public async createGeofences(
+		geofences: GeofenceInput | GeofenceInput[],
+		options?: GeofenceOptions
+	): Promise<GeofenceResults> {
+		const { providerName = DEFAULT_PROVIDER } = options || {};
+		const prov = this.getPluggable(providerName);
+
+		try {
+			return await prov.createGeofences(geofences, options);
 		} catch (error) {
 			logger.debug(error);
 			throw error;

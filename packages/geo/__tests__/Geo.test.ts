@@ -12,10 +12,12 @@
  */
 import { Credentials } from '@aws-amplify/core';
 import {
+	BatchPutGeofenceCommand,
 	LocationClient,
 	SearchPlaceIndexForPositionCommand,
 	SearchPlaceIndexForTextCommand,
 } from '@aws-sdk/client-location';
+import camelcaseKeys from 'camelcase-keys';
 
 import { GeoClass } from '../src/Geo';
 import { AmazonLocationServiceProvider } from '../src/Providers/AmazonLocationServiceProvider';
@@ -30,6 +32,10 @@ import {
 	awsConfig,
 	TestPlacePascalCase,
 	testPlaceCamelCase,
+	validGeofences,
+	validGeofence1,
+	singleGeofenceResults,
+	batchGeofencesResults,
 } from './data';
 
 LocationClient.prototype.send = jest.fn(async command => {
@@ -348,6 +354,88 @@ describe('Geo', () => {
 			geo.removePluggable('AmazonLocationService');
 
 			await expect(geo.searchByCoordinates(testCoordinates)).rejects.toThrow(
+				'No plugin found in Geo for the provider'
+			);
+		});
+	});
+
+	describe('createGeofences', () => {
+		test('createGeofences with a single geofence', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementationOnce(command => {
+					if (command instanceof BatchPutGeofenceCommand) {
+						return singleGeofenceResults;
+					}
+				});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const results = await geo.createGeofences(validGeofence1);
+			expect(results).toEqual(singleGeofenceResults);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			const output = {
+				Entries: [
+					camelcaseKeys(validGeofence1, {
+						deep: true,
+						pascalCase: true,
+					}),
+				],
+				CollectionName: 'geofenceCollectionExample',
+			};
+
+			expect(input).toEqual(output);
+		});
+
+		test('createGeofences with multiple geofences', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementationOnce(command => {
+					if (command instanceof BatchPutGeofenceCommand) {
+						return batchGeofencesResults;
+					}
+				});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const results = await geo.createGeofences(validGeofences);
+			expect(results).toEqual(batchGeofencesResults);
+
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			const output = {
+				Entries: camelcaseKeys(validGeofences, {
+					deep: true,
+					pascalCase: true,
+				}),
+
+				CollectionName: 'geofenceCollectionExample',
+			};
+
+			expect(input).toEqual(output);
+		});
+		test('should fail if there is no provider', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+			geo.removePluggable('AmazonLocationService');
+
+			await expect(geo.createGeofences(validGeofence1)).rejects.toThrow(
 				'No plugin found in Geo for the provider'
 			);
 		});
