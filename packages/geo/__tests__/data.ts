@@ -12,6 +12,14 @@
  */
 import camelcaseKeys from 'camelcase-keys';
 
+import {
+	Coordinates,
+	LinearRing,
+	Polygon,
+	GeofenceInput,
+	GeofenceGeometry,
+} from '../src/types';
+
 export const credentials = {
 	accessKeyId: 'accessKeyId',
 	sessionToken: 'sessionToken',
@@ -38,6 +46,10 @@ export const awsConfig = {
 				items: ['geoJSSearchExample'],
 				default: 'geoJSSearchExample',
 			},
+			geofenceCollections: {
+				items: ['geofenceCollectionExample'],
+				default: 'geofenceCollectionExample',
+			},
 			region: 'us-west-2',
 		},
 	},
@@ -62,3 +74,112 @@ export const TestPlacePascalCase = {
 export const testPlaceCamelCase = camelcaseKeys(TestPlacePascalCase, {
 	deep: true,
 });
+
+// Coordinates
+export const validCoordinates1: Coordinates = [
+	-123.14695358276366, 49.290090146520434,
+];
+export const validCoordinates2: Coordinates = [
+	-123.1358814239502, 49.294960279811974,
+];
+export const validCoordinates3: Coordinates = [
+	-123.15021514892577, 49.29300108863353,
+];
+export const validCoordinates4: Coordinates = [
+	-123.14909934997559, 49.29132171993048,
+];
+export const validCoordinates5: Coordinates = [
+	-123.14695358276361, 49.290090146520431,
+];
+
+export const invalidLngCoordinates1: Coordinates = [181, 0];
+export const invalidLngCoordinates2: Coordinates = [-181, 0];
+export const invalidLngCoordinates: LinearRing = [
+	invalidLngCoordinates1,
+	invalidLngCoordinates2,
+];
+
+export const invalidLatCoordinates1: Coordinates = [0, -91];
+export const invalidLatCoordinates2: Coordinates = [0, 91];
+export const invalidLatCoordinates: LinearRing = [
+	invalidLatCoordinates1,
+	invalidLatCoordinates2,
+];
+
+export const infiniteLngCoordinate1: Coordinates = [Infinity, 0];
+export const infiniteLngCoordinate2: Coordinates = [-Infinity, 0];
+export const infiniteLatCoordinate1: Coordinates = [0, Infinity];
+export const infiniteLatCoordinate2: Coordinates = [0, -Infinity];
+export const infiniteCoordinates: LinearRing = [
+	infiniteLngCoordinate1,
+	infiniteLngCoordinate2,
+	infiniteLatCoordinate1,
+	infiniteLatCoordinate2,
+];
+
+// Linear Rings
+export const validLinearRing: LinearRing = [
+	validCoordinates1,
+	validCoordinates2,
+	validCoordinates3,
+	validCoordinates4,
+	validCoordinates1,
+];
+
+export const linearRingIncomplete: LinearRing = [
+	validCoordinates1,
+	validCoordinates2,
+	validCoordinates3,
+	validCoordinates4,
+];
+export const linearRingTooSmall: LinearRing = [
+	validCoordinates1,
+	validCoordinates2,
+	validCoordinates1,
+];
+export const linearRingBadCoordinates: LinearRing = [
+	invalidLngCoordinates1,
+	validCoordinates2,
+	validCoordinates3,
+	validCoordinates4,
+];
+
+// Polygons
+export const validPolygon: Polygon = [validLinearRing];
+export const polygonTooBig: Polygon = [validLinearRing, validLinearRing];
+
+// Geometry
+export const validGeometry: GeofenceGeometry = {
+	polygon: validPolygon,
+};
+
+// Geofences
+export const validGeofence1: GeofenceInput = {
+	geofenceId: 'validGeofenceId1',
+	geometry: validGeometry,
+};
+export const validGeofence2: GeofenceInput = {
+	geofenceId: 'validGeofenceId2',
+	geometry: validGeometry,
+};
+export const validGeofence3: GeofenceInput = {
+	geofenceId: 'validGeofenceId3',
+	geometry: validGeometry,
+};
+export const geofenceWithInvalidId: GeofenceInput = {
+	geofenceId: 't|-|!$ !$ N()T V@|_!D',
+	geometry: validGeometry,
+};
+export const validGeofences = [validGeofence1, validGeofence2, validGeofence3];
+export const geofencesWithDuplicate = [
+	validGeofence1,
+	validGeofence2,
+	validGeofence3,
+	validGeofence1,
+];
+export const geofencesWithInvalidId = [
+	validGeofence1,
+	validGeofence2,
+	validGeofence3,
+	geofenceWithInvalidId,
+];

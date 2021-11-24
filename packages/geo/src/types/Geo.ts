@@ -106,7 +106,7 @@ export interface Place {
 // Array of 4 or more coordinates, where the first and last coordinate are the same to form a closed boundary
 export type LinearRing = Coordinates[];
 
-// An array of one or more linear rings, this allows shapes where there are holes in the middle
+// An array of one linear ring
 export type Polygon = LinearRing[];
 
 // Geometry object for Geofence Geometry
@@ -123,6 +123,7 @@ export type GeofenceInput = {
 // Options object for createGeofence and updateGeofence
 export type GeofenceOptions = {
 	providerName?: string;
+	collectionName?: string;
 };
 
 // Status types for Geofences
@@ -133,11 +134,21 @@ export type GeofenceStatus =
 	| 'DELETED'
 	| 'DELETING';
 
-// Output object for createGeofence, updateGeofence, and describeGeofence
-export type Geofence = {
+// Base geofence object
+export type GeofenceBase = {
 	geofenceId: string;
-	geometry: GeofenceGeometry;
 	createTime: Date;
 	updateTime: Date;
+};
+
+// Output object for createGeofence and updateGeofence
+export type GeofenceResults = {
+	successes: Geofence[];
+	errors: any;
+};
+
+// Output object for getGeofence
+export type Geofence = GeofenceBase & {
+	geometry: GeofenceGeometry;
 	status?: GeofenceStatus;
 };
