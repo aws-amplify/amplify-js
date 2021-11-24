@@ -82,7 +82,7 @@ export function validatePolygon(polygon: Polygon): boolean {
 	if (!Array.isArray(polygon)) {
 		const errorString = `Polygon ${JSON.stringify(
 			polygon
-		)} is of incorrect structure`;
+		)} is of incorrect structure. It should be an array of 'LinearRing'`;
 		logger.warn(errorString);
 		throw new Error(errorString);
 	}
