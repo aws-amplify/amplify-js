@@ -28,7 +28,6 @@ import {
 	BatchPutGeofenceRequestEntry,
 	BatchPutGeofenceCommandOutput,
 } from '@aws-sdk/client-location';
-import { validateCoordinates } from '../util';
 
 import {
 	GeoConfig,
