@@ -212,8 +212,6 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw new Error('No credentials');
 		}
 
-		validateCoordinates(coordinates[0], coordinates[1]);
-
 		this._verifySearchIndex(options?.searchIndexName);
 
 		const locationServiceInput: SearchPlaceIndexForPositionCommandInput = {
