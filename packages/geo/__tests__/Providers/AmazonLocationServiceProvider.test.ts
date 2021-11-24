@@ -301,36 +301,6 @@ describe('AmazonLocationServiceProvider', () => {
 			});
 		});
 
-		test('should error for bad longitude', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
-			});
-
-			const locationProvider = new AmazonLocationServiceProvider();
-			locationProvider.configure(awsConfig.geo.amazon_location_service);
-
-			await expect(
-				locationProvider.searchByCoordinates([190, 90])
-			).rejects.toThrow(
-				'Longitude must be between -180 and 180 degrees inclusive.'
-			);
-		});
-
-		test('should error for bad latitude', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
-			});
-
-			const locationProvider = new AmazonLocationServiceProvider();
-			locationProvider.configure(awsConfig.geo.amazon_location_service);
-
-			await expect(
-				locationProvider.searchByCoordinates([90, 190])
-			).rejects.toThrow(
-				'Latitude must be between -90 and 90 degrees inclusive.'
-			);
-		});
-
 		test('should use options when given', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);

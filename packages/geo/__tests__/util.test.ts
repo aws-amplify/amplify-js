@@ -34,9 +34,9 @@ import {
 } from './data';
 
 describe('validateCoordinates', () => {
-	test('should return true for valid coordinates', () => {
+	test('should not throw an error for valid coordinates', () => {
 		validLinearRing.forEach(([lng, lat]) => {
-			expect(validateCoordinates(lng, lat)).toBeTruthy();
+			expect(() => validateCoordinates(lng, lat)).not.toThrowError();
 		});
 	});
 
@@ -66,9 +66,9 @@ describe('validateCoordinates', () => {
 });
 
 describe('validateLinearRing', () => {
-	test('should return true for a valid LinearRing', () => {
+	test('should not throw an error for a valid LinearRing', () => {
 		const result = validateLinearRing(validLinearRing);
-		expect(result).toBeTruthy();
+		expect(() => result).not.toThrowError();
 	});
 	test('should error if first and last coordinates do not match', () => {
 		expect(() => validateLinearRing(linearRingIncomplete)).toThrowError(
@@ -82,14 +82,14 @@ describe('validateLinearRing', () => {
 	});
 	test('should error if any coordinates are not valid', () => {
 		expect(() => validateLinearRing(linearRingBadCoordinates)).toThrowError(
-			'One or more of the coordinates are not valid'
+			'One or more of the coordinates are not valid: [{"coordinates":[181,0],"error":"Longitude must be between -180 and 180 degrees inclusive."},{"coordinates":[0,-91],"error":"Latitude must be between -90 and 90 degrees inclusive."}]'
 		);
 	});
 });
 
 describe('validatePolygon', () => {
-	test('should return true for a valid Polygon', () => {
-		expect(validatePolygon(validPolygon)).toBeTruthy();
+	test('should not throw an error for a valid Polygon', () => {
+		expect(() => validatePolygon(validPolygon)).not.toThrowError();
 	});
 	test('should error if polygon is not a length of 1', () => {
 		expect(() => validatePolygon(polygonTooBig)).toThrowError(
@@ -106,9 +106,9 @@ describe('validatePolygon', () => {
 });
 
 describe('validateGeofences', () => {
-	test('should return true for valid geofences', () => {
+	test('should not throw an error for valid geofences', () => {
 		const result = validateGeofences(validGeofences);
-		expect(result).toBeTruthy();
+		expect(() => result).not.toThrowError();
 	});
 	test('should error if a geofenceId is not unique', () => {
 		expect(() => validateGeofences(geofencesWithDuplicate)).toThrowError(

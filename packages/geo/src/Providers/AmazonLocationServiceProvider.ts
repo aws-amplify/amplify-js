@@ -212,8 +212,6 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw new Error('No credentials');
 		}
 
-		validateCoordinates(coordinates[0], coordinates[1]);
-
 		this._verifySearchIndex(options?.searchIndexName);
 
 		const locationServiceInput: SearchPlaceIndexForPositionCommandInput = {
@@ -300,7 +298,8 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		// Create the BatchPutGeofence input
 		const geofenceInput: BatchPutGeofenceCommandInput = {
 			Entries: PascalGeofences,
-			CollectionName: this._config.geofenceCollections.default,
+			CollectionName:
+				options?.collectionName || this._config.geofenceCollections.default,
 		};
 
 		// Map options to Amazon Location Service input object
@@ -319,7 +318,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		try {
 			response = await client.send(command);
 		} catch (error) {
-			logger.debug(error);
+			logger.warn(error);
 			throw error;
 		}
 
@@ -373,7 +372,6 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			logger.warn(errorString);
 			throw new Error(errorString);
 		}
-		// TODO: if optionalSearchIndex is given, make API call to verify it exists
 	}
 
 	private _verifyGeofenceCollections(optionalGeofenceCollectionName?: string) {
@@ -387,6 +385,5 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			logger.warn(errorString);
 			throw new Error(errorString);
 		}
-		// TODO: if optionalGeofenceCollectionName is given, make API call to verify it exists
 	}
 }

@@ -15,7 +15,7 @@ import { ConsoleLogger as Logger } from '@aws-amplify/core';
 
 const logger = new Logger('Geo');
 
-export function validateCoordinates(lng: Longitude, lat: Latitude): boolean {
+export function validateCoordinates(lng: Longitude, lat: Latitude): void {
 	if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
 		throw new Error(`Invalid coordinates: [${lng},${lat}]`);
 	}
@@ -30,7 +30,6 @@ export function validateCoordinates(lng: Longitude, lat: Latitude): boolean {
 		logger.warn(errorString);
 		throw new Error(errorString);
 	}
-	return true;
 }
 
 export function validateGeofenceId(geofenceId: string) {
@@ -42,8 +41,6 @@ export function validateGeofenceId(geofenceId: string) {
 		logger.warn(errorString);
 		throw new Error(errorString);
 	}
-
-	return true;
 }
 
 export function validateLinearRing(linearRing: LinearRing) {
@@ -54,13 +51,19 @@ export function validateLinearRing(linearRing: LinearRing) {
 		throw new Error(errorString);
 	}
 
-	// Validate all coordinates are valid
-	try {
-		linearRing.forEach(coordinates =>
-			validateCoordinates(coordinates[0], coordinates[1])
-		);
-	} catch (error) {
-		const errorString = 'One or more of the coordinates are not valid';
+	// Validate all coordinates are valid, error with which ones are bad
+	const badCoordinates = [];
+	linearRing.forEach(coordinates => {
+		try {
+			validateCoordinates(coordinates[0], coordinates[1]);
+		} catch (error) {
+			badCoordinates.push({ coordinates, error: error.message });
+		}
+	});
+	if (badCoordinates.length > 0) {
+		const errorString = `One or more of the coordinates are not valid: ${JSON.stringify(
+			badCoordinates
+		)}`;
 		logger.warn(errorString);
 		throw new Error(errorString);
 	}
@@ -74,11 +77,9 @@ export function validateLinearRing(linearRing: LinearRing) {
 		logger.warn(errorString);
 		throw new Error(errorString);
 	}
-
-	return true;
 }
 
-export function validatePolygon(polygon: Polygon): boolean {
+export function validatePolygon(polygon: Polygon): void {
 	if (!Array.isArray(polygon)) {
 		const errorString = `Polygon ${JSON.stringify(
 			polygon
@@ -93,10 +94,9 @@ export function validatePolygon(polygon: Polygon): boolean {
 		logger.warn(errorString);
 		throw new Error(errorString);
 	}
-	return true;
 }
 
-export function validateGeofences(geofences: any[]) {
+export function validateGeofences(geofences: Geofence[]) {
 	const geofenceIds = {};
 
 	geofences.forEach((geofence: Geofence) => {
@@ -149,6 +149,4 @@ export function validateGeofences(geofences: any[]) {
 		const [linearRing] = polygon;
 		validateLinearRing(linearRing);
 	});
-
-	return true;
 }

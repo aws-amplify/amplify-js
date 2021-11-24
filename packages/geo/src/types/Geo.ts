@@ -135,10 +135,10 @@ export type GeofenceStatus =
 	| 'DELETING';
 
 // Base geofence object
-export type GeofenceBase = {
+type GeofenceBase = {
 	geofenceId: string;
-	createTime: Date;
-	updateTime: Date;
+	createTime?: Date;
+	updateTime?: Date;
 };
 
 // Output object for createGeofence and updateGeofence

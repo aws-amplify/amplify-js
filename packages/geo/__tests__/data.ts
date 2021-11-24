@@ -139,6 +139,7 @@ export const linearRingTooSmall: LinearRing = [
 ];
 export const linearRingBadCoordinates: LinearRing = [
 	invalidLngCoordinates1,
+	invalidLatCoordinates1,
 	validCoordinates2,
 	validCoordinates3,
 	validCoordinates4,
