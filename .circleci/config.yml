@@ -1211,15 +1211,15 @@ workflows:
       #     matrix:
       #       parameters:
       #         <<: *test_browsers
-      # - integ_react_datastore:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
+      - integ_react_datastore:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_datastore_v2:
           requires:
             - integ_setup
@@ -1229,15 +1229,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      # - integ_react_datastore_multi_auth_one_rule:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
+      - integ_react_datastore_multi_auth_one_rule:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_datastore_multi_auth_one_rule_v2:
           requires:
             - integ_setup
@@ -1247,15 +1247,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      # - integ_react_datastore_multi_auth_two_rules:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
+      - integ_react_datastore_multi_auth_two_rules:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_datastore_multi_auth_two_rules_v2:
           requires:
             - integ_setup
@@ -1265,15 +1265,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      # - integ_react_datastore_multi_auth_three_plus_rules:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
+      - integ_react_datastore_multi_auth_three_plus_rules:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_datastore_multi_auth_three_plus_rules_v2:
           requires:
             - integ_setup
@@ -1283,15 +1283,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      # - integ_react_datastore_subs_disabled:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
+      - integ_react_datastore_subs_disabled:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_datastore_subs_disabled_v2:
           requires:
             - integ_setup
@@ -1301,15 +1301,15 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
-      # - integ_react_datastore_consecutive_saves:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *test_browsers
+      - integ_react_datastore_consecutive_saves:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_datastore_consecutive_saves_v2:
           requires:
             - integ_setup
@@ -1415,15 +1415,15 @@ workflows:
       # #       - build
       # #     filters:
       # #       <<: *releasable_branches
-      # - integ_datastore_auth:
-      #     requires:
-      #       - integ_setup
-      #       - build
-      #     filters:
-      #       <<: *releasable_branches
-      #     matrix:
-      #       parameters:
-      #         <<: *datastore_auth_scenarios
+      - integ_datastore_auth:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *datastore_auth_scenarios
       - integ_datastore_auth_v2:
           requires:
             - integ_setup
