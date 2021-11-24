@@ -183,3 +183,35 @@ export const geofencesWithInvalidId = [
 	validGeofence3,
 	geofenceWithInvalidId,
 ];
+
+export const singleGeofenceResults = {
+	successes: [
+		{
+			createTime: '2020-04-01T21:00:00.000Z',
+			updateTime: '2020-04-01T21:00:00.000Z',
+			geofenceId: 'testGeofenceId1',
+		},
+	],
+	errors: [],
+};
+
+export const multipleGeofencesResults = {
+	successes: [
+		{
+			createTime: '2020-04-01T21:00:00.000Z',
+			updateTime: '2020-04-01T21:00:00.000Z',
+			geofenceId: 'testGeofenceId1',
+		},
+		{
+			createTime: '2020-04-01T21:00:00.000Z',
+			updateTime: '2020-04-01T21:00:00.000Z',
+			geofenceId: 'testGeofenceId2',
+		},
+		{
+			createTime: '2020-04-01T21:00:00.000Z',
+			updateTime: '2020-04-01T21:00:00.000Z',
+			geofenceId: 'testGeofenceId3',
+		},
+	],
+	errors: [],
+};

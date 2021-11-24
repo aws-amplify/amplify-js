@@ -15,6 +15,7 @@ import {
 	LocationClient,
 	SearchPlaceIndexForTextCommand,
 	SearchPlaceIndexForPositionCommand,
+	BatchPutGeofenceCommand,
 } from '@aws-sdk/client-location';
 
 import { AmazonLocationServiceProvider } from '../../src/Providers/AmazonLocationServiceProvider';
@@ -23,6 +24,11 @@ import {
 	awsConfig,
 	TestPlacePascalCase,
 	testPlaceCamelCase,
+	validGeofence1,
+	validGeofences,
+	geofencesWithInvalidId,
+	singleGeofenceResults,
+	multipleGeofencesResults,
 } from '../data';
 import {
 	SearchByTextOptions,
@@ -91,7 +97,7 @@ describe('AmazonLocationServiceProvider', () => {
 			const provider = new AmazonLocationServiceProvider();
 			provider.configure();
 			expect(() => provider.getAvailableMaps()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
 			);
 		});
 
@@ -115,7 +121,7 @@ describe('AmazonLocationServiceProvider', () => {
 			provider.configure();
 
 			expect(() => provider.getDefaultMap()).toThrow(
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after"
+				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
 			);
 		});
 
@@ -126,7 +132,7 @@ describe('AmazonLocationServiceProvider', () => {
 			});
 
 			expect(() => provider.getDefaultMap()).toThrow(
-				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after"
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after"
 			);
 		});
 
@@ -265,8 +271,8 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure({});
 
-			expect(locationProvider.searchByText(testString)).rejects.toThrow(
-				'No Search Index found, please run `amplify add geo` to add one and ensure to run `amplify push` after.'
+			await expect(locationProvider.searchByText(testString)).rejects.toThrow(
+				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.'
 			);
 		});
 	});
@@ -384,10 +390,84 @@ describe('AmazonLocationServiceProvider', () => {
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure({});
 
-			expect(
+			await expect(
 				locationProvider.searchByCoordinates(testCoordinates)
 			).rejects.toThrow(
-				'No Search Index found, please run `amplify add geo` to add one and ensure to run `amplify push` after.'
+				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.'
+			);
+		});
+	});
+
+	describe('createGeofences', () => {
+		test('createGeofences with a single geofence', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementationOnce(command => {
+					if (command instanceof BatchPutGeofenceCommand) {
+						return singleGeofenceResults;
+					}
+				});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			const results = await locationProvider.createGeofences(validGeofence1);
+
+			expect(results).toEqual(singleGeofenceResults);
+		});
+
+		test('createGeofences with multiple geofences', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementationOnce(command => {
+					if (command instanceof BatchPutGeofenceCommand) {
+						return multipleGeofencesResults;
+					}
+				});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			const results = await locationProvider.createGeofences(validGeofences);
+
+			expect(results).toEqual(multipleGeofencesResults);
+		});
+
+		test('should error if there is a bad geofence in the input', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			await expect(
+				locationProvider.createGeofences(geofencesWithInvalidId)
+			).rejects.toThrowError(
+				`Invalid geofenceId: t|-|!$ !$ N()T V@|_!D Ids can only contain alphanumeric characters, hyphens, underscores and periods.`
+			);
+		});
+
+		test('should error if there are no geofenceCollections in config', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure({});
+
+			await expect(
+				locationProvider.createGeofences(validGeofence1)
+			).rejects.toThrow(
+				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.'
 			);
 		});
 	});

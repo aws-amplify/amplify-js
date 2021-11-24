@@ -23,9 +23,13 @@ import {
 	SearchPlaceIndexForTextCommand,
 	SearchPlaceIndexForPositionCommand,
 	SearchPlaceIndexForPositionCommandInput,
+	BatchPutGeofenceCommand,
+	BatchPutGeofenceCommandInput,
+	BatchPutGeofenceRequestEntry,
+	BatchPutGeofenceCommandOutput,
 } from '@aws-sdk/client-location';
-import { validateCoordinates } from '../util';
 
+import { validateCoordinates, validateGeofences } from '../util';
 import {
 	GeoConfig,
 	SearchByTextOptions,
@@ -34,6 +38,9 @@ import {
 	Place,
 	AmazonLocationServiceMapStyle,
 	Coordinates,
+	GeofenceInput,
+	GeofenceOptions,
+	GeofenceResults,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServiceProvider');
@@ -252,6 +259,79 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	}
 
 	/**
+	 * Create geofences inside of a geofence collection
+	 * @param geofences - Single or array of geofence objects to create
+	 * @param options? - Optional parameters for creating geofences
+	 * @returns {Promise<GeofenceResults} - Promise that resolves to and object with:
+	 *   successes: list of geofences successfully created
+	 *   errors: list of geofences that failed to create
+	 */
+	public async createGeofences(
+		geofences: GeofenceInput | GeofenceInput[],
+		options?: GeofenceOptions
+	): Promise<GeofenceResults> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			throw new Error('No credentials');
+		}
+
+		this._verifyGeofenceCollections(options?.collectionName);
+
+		// If single geofence input, make it an array for batch API call
+		let geofenceInputArray;
+		if (!Array.isArray(geofences)) {
+			geofenceInputArray = [geofences];
+		} else {
+			geofenceInputArray = geofences;
+		}
+
+		// Validate all geofenceIds are unique and valid
+		validateGeofences(geofenceInputArray);
+
+		// Convert geofences to PascalCase for Amazon Location Service format
+		const PascalGeofences: BatchPutGeofenceRequestEntry[] = camelcaseKeys(
+			geofenceInputArray,
+			{
+				deep: true,
+				pascalCase: true,
+			}
+		);
+
+		// Create the BatchPutGeofence input
+		const geofenceInput: BatchPutGeofenceCommandInput = {
+			Entries: PascalGeofences,
+			CollectionName: this._config.geofenceCollections.default,
+		};
+
+		// Map options to Amazon Location Service input object
+		if (options?.collectionName) {
+			geofenceInput.CollectionName = options.collectionName;
+		}
+
+		const client = new LocationClient({
+			credentials: this._config.credentials,
+			region: this._config.region,
+			customUserAgent: getAmplifyUserAgent(),
+		});
+		const command = new BatchPutGeofenceCommand(geofenceInput);
+
+		let response: BatchPutGeofenceCommandOutput;
+		try {
+			response = await client.send(command);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		// Convert results to camelCase
+		const results: GeofenceResults = camelcaseKeys(response, {
+			deep: true,
+		}) as any as GeofenceResults;
+
+		return results;
+	}
+
+	/**
 	 * @private
 	 */
 	private async _ensureCredentials(): Promise<boolean> {
@@ -271,13 +351,13 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	private _verifyMapResources() {
 		if (!this._config.maps) {
 			const errorString =
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after";
+				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after";
 			logger.warn(errorString);
 			throw new Error(errorString);
 		}
 		if (!this._config.maps.default) {
 			const errorString =
-				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after";
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after";
 			logger.warn(errorString);
 			throw new Error(errorString);
 		}
@@ -289,9 +369,24 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			!optionalSearchIndex
 		) {
 			const errorString =
-				'No Search Index found, please run `amplify add geo` to add one and ensure to run `amplify push` after.';
+				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.';
 			logger.warn(errorString);
 			throw new Error(errorString);
 		}
+		// TODO: if optionalSearchIndex is given, make API call to verify it exists
+	}
+
+	private _verifyGeofenceCollections(optionalGeofenceCollectionName?: string) {
+		if (
+			(!this._config.geofenceCollections ||
+				!this._config.geofenceCollections.default) &&
+			!optionalGeofenceCollectionName
+		) {
+			const errorString =
+				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.';
+			logger.warn(errorString);
+			throw new Error(errorString);
+		}
+		// TODO: if optionalGeofenceCollectionName is given, make API call to verify it exists
 	}
 }

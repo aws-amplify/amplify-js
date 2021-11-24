@@ -10,7 +10,6 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
 import {
 	SearchByTextOptions,
 	SearchByCoordinatesOptions,
@@ -19,7 +18,7 @@ import {
 	MapStyle,
 	GeofenceInput,
 	GeofenceOptions,
-	Geofence,
+	GeofenceResults,
 } from './Geo';
 
 export interface GeoProvider {
@@ -48,8 +47,8 @@ export interface GeoProvider {
 	): Promise<Place>;
 
 	// create a geofence
-	createGeofence(
-		geofence: GeofenceInput | GeofenceInput[],
+	createGeofences(
+		geofences: GeofenceInput | GeofenceInput[],
 		options?: GeofenceOptions
-	): Promise<Geofence>;
+	): Promise<GeofenceResults>;
 }
