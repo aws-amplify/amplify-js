@@ -177,7 +177,12 @@ export class GeoClass {
 		const prov = this.getPluggable(providerName);
 
 		const [lng, lat] = coordinates;
-		validateCoordinates(lng, lat);
+		try {
+			validateCoordinates(lng, lat);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
 
 		try {
 			return await prov.searchByCoordinates(coordinates, options);

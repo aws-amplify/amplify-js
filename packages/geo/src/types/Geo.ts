@@ -109,15 +109,15 @@ export type LinearRing = Coordinates[];
 // An array of one linear ring
 export type Polygon = LinearRing[];
 
-// Geometry object for Geofence Geometry
-export type GeofenceGeometry = {
+// Geometry object for Polygon
+export type PolygonGeometry = {
 	polygon: Polygon;
 };
 
 // Geofence object used as input for createGeofence and updateGeofence
 export type GeofenceInput = {
 	geofenceId: string;
-	geometry: GeofenceGeometry;
+	geometry: PolygonGeometry;
 };
 
 // Options object for createGeofence and updateGeofence
@@ -141,10 +141,25 @@ type GeofenceBase = {
 	updateTime?: Date;
 };
 
+// Error type for errors for Amazon Location Service batchPutGeofence API
+type GeofenceError = {
+	error: {
+		code:
+			| 'AccessDeniedError'
+			| 'ConflictError'
+			| 'InternalServerError'
+			| 'ResourceNotFoundError'
+			| 'ThrottlingError'
+			| 'ValidationError';
+		message: string;
+	};
+	geofenceId: string;
+};
+
 // Output object for createGeofence and updateGeofence
 export type GeofenceResults = {
 	successes: Geofence[];
-	errors: any;
+	errors: GeofenceError[];
 };
 
 // Output object for getGeofence
