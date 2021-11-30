@@ -10,8 +10,15 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { Longitude, Latitude, Geofence, Polygon, LinearRing } from './types';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
+
+import {
+	Longitude,
+	Latitude,
+	GeofenceInput,
+	Polygon,
+	LinearRing,
+} from './types';
 
 const logger = new Logger('Geo');
 
@@ -94,12 +101,21 @@ export function validatePolygon(polygon: Polygon): void {
 		logger.warn(errorString);
 		throw new Error(errorString);
 	}
+	const verticesCount = polygon.reduce(
+		(prev, linearRing) => prev + linearRing.length,
+		0
+	);
+	if (verticesCount > 1000) {
+		const errorString = `Polygon has more than the maximum 1000 vertices.`;
+		logger.warn(errorString);
+		throw new Error(errorString);
+	}
 }
 
-export function validateGeofences(geofences: Geofence[]) {
+export function validateGeofences(geofences: GeofenceInput[]) {
 	const geofenceIds = {};
 
-	geofences.forEach((geofence: Geofence) => {
+	geofences.forEach((geofence: GeofenceInput) => {
 		// verify all required properties are present
 		if (!geofence.geofenceId) {
 			const errorString = `Geofence ${JSON.stringify(
@@ -131,7 +147,11 @@ export function validateGeofences(geofences: Geofence[]) {
 		} = geofence;
 
 		// Validate geofenceId is valid
-		validateGeofenceId(geofenceId);
+		try {
+			validateGeofenceId(geofenceId);
+		} catch (error) {
+			throw error;
+		}
 
 		// Validate geofenceId is unique
 		if (geofenceIds[geofenceId]) {
@@ -143,7 +163,17 @@ export function validateGeofences(geofences: Geofence[]) {
 		}
 
 		// Validate polygon length and structure
-		validatePolygon(polygon);
+		try {
+			validatePolygon(polygon);
+		} catch (error) {
+			if (
+				error.message === `Polygon has more than the maximum 1000 vertices.`
+			) {
+				const errorString = `Geofence ${geofenceId} has more than the maximum of 1000 vertices`;
+				logger.warn(errorString);
+				throw new Error(errorString);
+			}
+		}
 
 		// Validate LinearRing length, structure, and coordinates
 		const [linearRing] = polygon;

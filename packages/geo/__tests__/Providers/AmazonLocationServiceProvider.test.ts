@@ -15,7 +15,6 @@ import {
 	LocationClient,
 	SearchPlaceIndexForTextCommand,
 	SearchPlaceIndexForPositionCommand,
-	BatchPutGeofenceCommand,
 } from '@aws-sdk/client-location';
 
 import { AmazonLocationServiceProvider } from '../../src/Providers/AmazonLocationServiceProvider';
@@ -24,11 +23,9 @@ import {
 	awsConfig,
 	TestPlacePascalCase,
 	testPlaceCamelCase,
-	validGeofence1,
 	validGeofences,
-	geofencesWithInvalidId,
-	singleGeofenceResults,
-	batchGeofencesResults,
+	batchGeofencesCamelcaseResults,
+	mockBatchPutGeofenceCommand,
 } from '../data';
 import {
 	SearchByTextOptions,
@@ -369,27 +366,6 @@ describe('AmazonLocationServiceProvider', () => {
 	});
 
 	describe('createGeofences', () => {
-		test('createGeofences with a single geofence', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
-			});
-
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementationOnce(command => {
-					if (command instanceof BatchPutGeofenceCommand) {
-						return singleGeofenceResults;
-					}
-				});
-
-			const locationProvider = new AmazonLocationServiceProvider();
-			locationProvider.configure(awsConfig.geo.amazon_location_service);
-
-			const results = await locationProvider.createGeofences(validGeofence1);
-
-			expect(results).toEqual(singleGeofenceResults);
-		});
-
 		test('createGeofences with multiple geofences', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
@@ -397,33 +373,14 @@ describe('AmazonLocationServiceProvider', () => {
 
 			LocationClient.prototype.send = jest
 				.fn()
-				.mockImplementationOnce(command => {
-					if (command instanceof BatchPutGeofenceCommand) {
-						return batchGeofencesResults;
-					}
-				});
+				.mockImplementation(mockBatchPutGeofenceCommand);
 
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
 			const results = await locationProvider.createGeofences(validGeofences);
 
-			expect(results).toEqual(batchGeofencesResults);
-		});
-
-		test('should error if there is a bad geofence in the input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
-			});
-
-			const locationProvider = new AmazonLocationServiceProvider();
-			locationProvider.configure(awsConfig.geo.amazon_location_service);
-
-			await expect(
-				locationProvider.createGeofences(geofencesWithInvalidId)
-			).rejects.toThrowError(
-				`Invalid geofenceId: t|-|!$ !$ N()T V@|_!D Ids can only contain alphanumeric characters, hyphens, underscores and periods.`
-			);
+			expect(results).toEqual(batchGeofencesCamelcaseResults);
 		});
 
 		test('should error if there are no geofenceCollections in config', async () => {
@@ -435,7 +392,7 @@ describe('AmazonLocationServiceProvider', () => {
 			locationProvider.configure({});
 
 			await expect(
-				locationProvider.createGeofences(validGeofence1)
+				locationProvider.createGeofences(validGeofences)
 			).rejects.toThrow(
 				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.'
 			);

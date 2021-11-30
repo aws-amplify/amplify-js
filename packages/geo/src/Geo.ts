@@ -17,7 +17,7 @@ import {
 } from '@aws-amplify/core';
 import { AmazonLocationServiceProvider } from './Providers/AmazonLocationServiceProvider';
 
-import { validateCoordinates } from './util';
+import { validateCoordinates, validateGeofences } from './util';
 
 import {
 	Place,
@@ -29,7 +29,7 @@ import {
 	MapStyle,
 	GeofenceInput,
 	GeofenceOptions,
-	GeofenceResults,
+	CreateUpdateGeofenceResults,
 } from './types';
 
 const logger = new Logger('Geo');
@@ -196,19 +196,35 @@ export class GeoClass {
 	 * Create geofences inside of a geofence collection
 	 * @param geofences - Single or array of geofence objects to create
 	 * @param options? - Optional parameters for creating geofences
-	 * @returns {Promise<GeofenceResults>} - Promise that resolves to an object with:
+	 * @returns {Promise<CreateUpdateGeofenceResults>} - Promise that resolves to an object with:
 	 *   successes: list of geofences successfully created
 	 *   errors: list of geofences that failed to create
 	 */
 	public async createGeofences(
 		geofences: GeofenceInput | GeofenceInput[],
 		options?: GeofenceOptions
-	): Promise<GeofenceResults> {
+	): Promise<CreateUpdateGeofenceResults> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
 
+		// If single geofence input, make it an array for batch call
+		let geofenceInputArray;
+		if (!Array.isArray(geofences)) {
+			geofenceInputArray = [geofences];
+		} else {
+			geofenceInputArray = geofences;
+		}
+
+		// Validate all geofenceIds are unique and valid
 		try {
-			return await prov.createGeofences(geofences, options);
+			validateGeofences(geofenceInputArray);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		try {
+			return await prov.createGeofences(geofenceInputArray, options);
 		} catch (error) {
 			logger.debug(error);
 			throw error;

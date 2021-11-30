@@ -123,47 +123,31 @@ export type GeofenceInput = {
 // Options object for createGeofence and updateGeofence
 export type GeofenceOptions = {
 	providerName?: string;
-	collectionName?: string;
-};
-
-// Status types for Geofences
-export type GeofenceStatus =
-	| 'ACTIVE'
-	| 'PENDING'
-	| 'FAILED'
-	| 'DELETED'
-	| 'DELETING';
-
-// Base geofence object
-type GeofenceBase = {
-	geofenceId: string;
-	createTime?: Date;
-	updateTime?: Date;
 };
 
 // Error type for errors for Amazon Location Service batchPutGeofence API
-type GeofenceError = {
+export type GeofenceError = {
 	error: {
-		code:
-			| 'AccessDeniedError'
-			| 'ConflictError'
-			| 'InternalServerError'
-			| 'ResourceNotFoundError'
-			| 'ThrottlingError'
-			| 'ValidationError';
+		code: string;
 		message: string;
 	};
 	geofenceId: string;
 };
 
-// Output object for createGeofence and updateGeofence
-export type GeofenceResults = {
-	successes: Geofence[];
-	errors: GeofenceError[];
+// Base geofence object
+export type GeofenceBase = {
+	geofenceId: string;
+	createTime: Date;
+	updateTime: Date;
 };
 
 // Output object for getGeofence
 export type Geofence = GeofenceBase & {
-	geometry: GeofenceGeometry;
-	status?: GeofenceStatus;
+	geometry: PolygonGeometry;
+};
+
+// Output object for createGeofence and updateGeofence
+export type CreateUpdateGeofenceResults = {
+	successes: GeofenceBase[];
+	errors: GeofenceError[];
 };

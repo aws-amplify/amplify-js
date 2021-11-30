@@ -10,6 +10,7 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
+import { BatchPutGeofenceCommand } from '@aws-sdk/client-location';
 import camelcaseKeys from 'camelcase-keys';
 
 import {
@@ -17,7 +18,7 @@ import {
 	LinearRing,
 	Polygon,
 	GeofenceInput,
-	GeofenceGeometry,
+	PolygonGeometry,
 } from '../src/types';
 
 export const credentials = {
@@ -150,7 +151,7 @@ export const validPolygon: Polygon = [validLinearRing];
 export const polygonTooBig: Polygon = [validLinearRing, validLinearRing];
 
 // Geometry
-export const validGeometry: GeofenceGeometry = {
+export const validGeometry: PolygonGeometry = {
 	polygon: validPolygon,
 };
 
@@ -171,7 +172,15 @@ export const geofenceWithInvalidId: GeofenceInput = {
 	geofenceId: 't|-|!$ !$ N()T V@|_!D',
 	geometry: validGeometry,
 };
-export const validGeofences = [validGeofence1, validGeofence2, validGeofence3];
+
+export const validGeofences = [];
+for (let i = 0; i < 132; i++) {
+	validGeofences.push({
+		geofenceId: `validGeofenceId${i}`,
+		geometry: validGeometry,
+	});
+}
+
 export const geofencesWithDuplicate = [
 	validGeofence1,
 	validGeofence2,
@@ -185,34 +194,39 @@ export const geofencesWithInvalidId = [
 	geofenceWithInvalidId,
 ];
 
-export const singleGeofenceResults = {
+export const singleGeofenceCamelcaseResults = {
 	successes: [
 		{
 			createTime: '2020-04-01T21:00:00.000Z',
 			updateTime: '2020-04-01T21:00:00.000Z',
-			geofenceId: 'testGeofenceId1',
+			geofenceId: 'validGeofenceId1',
 		},
 	],
 	errors: [],
 };
 
-export const batchGeofencesResults = {
-	successes: [
-		{
+export const batchGeofencesCamelcaseResults = {
+	successes: validGeofences.map(({ geofenceId }, i) => {
+		return {
 			createTime: '2020-04-01T21:00:00.000Z',
 			updateTime: '2020-04-01T21:00:00.000Z',
-			geofenceId: 'testGeofenceId1',
-		},
-		{
-			createTime: '2020-04-01T21:00:00.000Z',
-			updateTime: '2020-04-01T21:00:00.000Z',
-			geofenceId: 'testGeofenceId2',
-		},
-		{
-			createTime: '2020-04-01T21:00:00.000Z',
-			updateTime: '2020-04-01T21:00:00.000Z',
-			geofenceId: 'testGeofenceId3',
-		},
-	],
+			geofenceId,
+		};
+	}),
 	errors: [],
 };
+
+export function mockBatchPutGeofenceCommand(command) {
+	if (command instanceof BatchPutGeofenceCommand) {
+		return {
+			Successes: command.input.Entries.map(geofence => {
+				return {
+					CreateTime: '2020-04-01T21:00:00.000Z',
+					UpdateTime: '2020-04-01T21:00:00.000Z',
+					GeofenceId: geofence.GeofenceId,
+				};
+			}),
+			Errors: [],
+		};
+	}
+}

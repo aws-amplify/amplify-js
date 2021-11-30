@@ -34,8 +34,10 @@ import {
 	testPlaceCamelCase,
 	validGeofences,
 	validGeofence1,
-	singleGeofenceResults,
-	batchGeofencesResults,
+	singleGeofenceCamelcaseResults,
+	batchGeofencesCamelcaseResults,
+	mockBatchPutGeofenceCommand,
+	geofencesWithInvalidId,
 } from './data';
 
 LocationClient.prototype.send = jest.fn(async command => {
@@ -367,18 +369,16 @@ describe('Geo', () => {
 
 			LocationClient.prototype.send = jest
 				.fn()
-				.mockImplementationOnce(command => {
-					if (command instanceof BatchPutGeofenceCommand) {
-						return singleGeofenceResults;
-					}
-				});
+				.mockImplementationOnce(mockBatchPutGeofenceCommand);
 
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
 
+			// Check that results are what's expected
 			const results = await geo.createGeofences(validGeofence1);
-			expect(results).toEqual(singleGeofenceResults);
+			expect(results).toEqual(singleGeofenceCamelcaseResults);
 
+			// Expect that the API was called with the proper input
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
 			const input = spyon.mock.calls[0][0].input;
 			const output = {
@@ -390,7 +390,6 @@ describe('Geo', () => {
 				],
 				CollectionName: 'geofenceCollectionExample',
 			};
-
 			expect(input).toEqual(output);
 		});
 
@@ -401,31 +400,37 @@ describe('Geo', () => {
 
 			LocationClient.prototype.send = jest
 				.fn()
-				.mockImplementationOnce(command => {
-					if (command instanceof BatchPutGeofenceCommand) {
-						return batchGeofencesResults;
-					}
-				});
+				.mockImplementation(mockBatchPutGeofenceCommand);
 
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
 
+			// Check that results are what's expected
 			const results = await geo.createGeofences(validGeofences);
-			expect(results).toEqual(batchGeofencesResults);
+			expect(results).toEqual(batchGeofencesCamelcaseResults);
 
-			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
-			const output = {
-				Entries: camelcaseKeys(validGeofences, {
-					deep: true,
-					pascalCase: true,
-				}),
-
-				CollectionName: 'geofenceCollectionExample',
-			};
-
-			expect(input).toEqual(output);
+			// Expect that the API was called the right amount of times
+			const expectedNumberOfCalls = Math.floor(validGeofences.length / 10) + 1;
+			expect(LocationClient.prototype.send).toHaveBeenCalledTimes(
+				expectedNumberOfCalls
+			);
 		});
+
+		test('should error if there is a bad geofence in the input', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			await expect(
+				geo.createGeofences(geofencesWithInvalidId)
+			).rejects.toThrowError(
+				`Invalid geofenceId: t|-|!$ !$ N()T V@|_!D Ids can only contain alphanumeric characters, hyphens, underscores and periods.`
+			);
+		});
+
 		test('should fail if there is no provider', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
