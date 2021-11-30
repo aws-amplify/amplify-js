@@ -44,10 +44,10 @@ export default function useMessageImage(image: InAppMessageImage, layout: InAppM
 
 	useEffect(() => {
 		if (shouldPrefetch) {
+			setPrefetchStatus(ImagePrefetchStatus.FETCHING);
+
 			prefetchNetworkImage(src).then((prefetchResult) => {
 				if (prefetchResult === 'loaded') {
-					setPrefetchStatus(ImagePrefetchStatus.FETCHING);
-
 					// get image size once loaded
 					Image.getSize(
 						src,
