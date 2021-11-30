@@ -383,10 +383,12 @@ describe('Geo', () => {
 			const input = spyon.mock.calls[0][0].input;
 			const output = {
 				Entries: [
-					camelcaseKeys(validGeofence1, {
-						deep: true,
-						pascalCase: true,
-					}),
+					{
+						GeofenceId: validGeofence1.geofenceId,
+						Geometry: {
+							Polygon: validGeofence1.geometry.polygon,
+						},
+					},
 				],
 				CollectionName: 'geofenceCollectionExample',
 			};

@@ -18,7 +18,7 @@ import {
 	MapStyle,
 	GeofenceInput,
 	GeofenceOptions,
-	GeofenceResults,
+	CreateUpdateGeofenceResults,
 } from './Geo';
 
 export interface GeoProvider {
@@ -50,5 +50,5 @@ export interface GeoProvider {
 	createGeofences(
 		geofences: GeofenceInput | GeofenceInput[],
 		options?: GeofenceOptions
-	): Promise<GeofenceResults>;
+	): Promise<CreateUpdateGeofenceResults>;
 }

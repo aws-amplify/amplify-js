@@ -128,8 +128,8 @@ export type GeofenceOptions = {
 // Error type for errors related to Geofence API calls
 export type GeofenceError = {
 	error: {
-		code: string;
-		message: string;
+		code?: string;
+		message?: string;
 	};
 	geofenceId: string;
 };

@@ -39,7 +39,7 @@ import {
 	Coordinates,
 	GeofenceInput,
 	AmazonLocationServiceGeofenceOptions,
-	AmazonLocationServiceCreateUpdateGeofenceResults,
+	CreateUpdateGeofenceResults,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServiceProvider');
@@ -266,7 +266,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	public async createGeofences(
 		geofences: GeofenceInput[],
 		options?: AmazonLocationServiceGeofenceOptions
-	): Promise<AmazonLocationServiceCreateUpdateGeofenceResults> {
+	): Promise<CreateUpdateGeofenceResults> {
 		const credentialsOK = await this._ensureCredentials();
 		if (!credentialsOK) {
 			throw new Error('No credentials');
@@ -279,25 +279,20 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw error;
 		}
 
-		// If single geofence input, make it an array for batch API call
-		let geofenceInputArray;
-		if (!Array.isArray(geofences)) {
-			geofenceInputArray = [geofences];
-		} else {
-			geofenceInputArray = geofences;
-		}
-
 		// Convert geofences to PascalCase for Amazon Location Service format
-		const PascalGeofences: BatchPutGeofenceRequestEntry[] = camelcaseKeys(
-			geofenceInputArray,
-			{
-				deep: true,
-				pascalCase: true,
+		const PascalGeofences: BatchPutGeofenceRequestEntry[] = geofences.map(
+			({ geofenceId, geometry: { polygon } }) => {
+				return {
+					GeofenceId: geofenceId,
+					Geometry: {
+						Polygon: polygon,
+					},
+				};
 			}
 		);
 
 		// Create results object
-		const results = {
+		const results: CreateUpdateGeofenceResults = {
 			successes: [],
 			errors: [],
 		};

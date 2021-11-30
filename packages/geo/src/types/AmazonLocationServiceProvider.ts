@@ -1,11 +1,4 @@
-import {
-	MapStyle,
-	GeofenceOptions,
-	Geofence,
-	GeofenceBase,
-	GeofenceError,
-	CreateUpdateGeofenceResults,
-} from './Geo';
+import { MapStyle, GeofenceOptions, Geofence } from './Geo';
 
 // Maps
 export interface AmazonLocationServiceMapStyle extends MapStyle {
@@ -15,14 +8,6 @@ export interface AmazonLocationServiceMapStyle extends MapStyle {
 // Geofences
 export type AmazonLocationServiceGeofenceOptions = GeofenceOptions & {
 	collectionName?: string;
-};
-
-type AmazonLocationServiceError = GeofenceError & {
-	error: {
-		code: string;
-		message: string;
-	};
-	geofenceId: string;
 };
 
 // Status types for Geofences
@@ -36,9 +21,3 @@ export type AmazonLocationServiceGeofenceStatus =
 export type AmazonLocationServiceGeofence = Geofence & {
 	status: AmazonLocationServiceGeofenceStatus;
 };
-
-export type AmazonLocationServiceCreateUpdateGeofenceResults =
-	CreateUpdateGeofenceResults & {
-		successes: GeofenceBase[];
-		errors: AmazonLocationServiceError[];
-	};
