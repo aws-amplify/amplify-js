@@ -13,13 +13,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Image } from 'react-native';
-import isNull from 'lodash/isNull';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { InAppMessageImage, InAppMessageLayout } from '@aws-amplify/notifications';
 
-import { FAILURE_IMAGE_DIMENSIONS } from './constants';
-import { ImageDimensions, UseMessageImage } from './types';
+import { INITIAL_IMAGE_DIMENSIONS } from './constants';
+import { ImageDimensions, ImagePrefetchStatus, UseMessageImage } from './types';
 import { getLayoutImageDimensions, prefetchNetworkImage } from './utils';
 
 const logger = new Logger('Notifications.InAppMessaging');
@@ -33,48 +32,45 @@ const logger = new Logger('Notifications.InAppMessaging');
  */
 
 export default function useMessageImage(image: InAppMessageImage, layout: InAppMessageLayout): UseMessageImage {
-	const [imageDimensions, setImageDimensions] = useState<ImageDimensions>(null);
-	const hasFailure = useRef(false);
+	const [prefetchStatus, setPrefetchStatus] = useState<ImagePrefetchStatus>(ImagePrefetchStatus.INITIAL);
+	const imageDimensions = useRef<ImageDimensions>(INITIAL_IMAGE_DIMENSIONS).current;
 
 	const { src } = image ?? {};
-
-	const hasSetDimensions = !isNull(imageDimensions);
 	const hasImage = !!src;
 
-	const hasRenderableImage = hasImage && hasSetDimensions && !hasFailure.current;
-	const isImageFetching = hasImage && !hasSetDimensions;
-
-	const handleFailure = () => {
-		// must occur before setImageDimensions call
-		hasFailure.current = true;
-
-		// set failure dimension values
-		setImageDimensions(FAILURE_IMAGE_DIMENSIONS);
-	};
+	const shouldPrefetch = hasImage && prefetchStatus === ImagePrefetchStatus.INITIAL;
+	const isImageFetching = shouldPrefetch || prefetchStatus === ImagePrefetchStatus.FETCHING;
+	const hasRenderableImage = hasImage && prefetchStatus === ImagePrefetchStatus.SUCCESS;
 
 	useEffect(() => {
-		if (hasImage) {
-			prefetchNetworkImage(src).then((loadingState) => {
-				if (loadingState === 'loaded') {
+		if (shouldPrefetch) {
+			prefetchNetworkImage(src).then((prefetchResult) => {
+				if (prefetchResult === 'loaded') {
+					setPrefetchStatus(ImagePrefetchStatus.FETCHING);
+
 					// get image size once loaded
 					Image.getSize(
 						src,
-						(width, height) => {
-							setImageDimensions(getLayoutImageDimensions(height, width, layout));
+						(imageWidth, imageHeight) => {
+							const { height, width } = getLayoutImageDimensions(imageHeight, imageWidth, layout);
+							imageDimensions.height = height;
+							imageDimensions.width = width;
+
+							setPrefetchStatus(ImagePrefetchStatus.SUCCESS);
 						},
 						(error) => {
-							logger.error(`Unable to retrieve size for image: ${error}`);
 							// handle size retrieval error
-							handleFailure();
+							logger.error(`Unable to retrieve size for image: ${error}`);
+							setPrefetchStatus(ImagePrefetchStatus.FAILURE);
 						}
 					);
 				} else {
 					// handle prefetch failure
-					handleFailure();
+					setPrefetchStatus(ImagePrefetchStatus.FAILURE);
 				}
 			});
 		}
-	}, [hasImage, layout, src]);
+	}, [imageDimensions, layout, shouldPrefetch, src]);
 
 	return { hasRenderableImage, imageDimensions, isImageFetching };
 }

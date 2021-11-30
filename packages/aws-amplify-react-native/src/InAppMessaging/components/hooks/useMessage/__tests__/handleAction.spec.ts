@@ -62,7 +62,7 @@ describe('handleAction', () => {
 			await handleAction(action as InAppMessageAction, invalidUrl);
 
 			expect(logger.info).toHaveBeenCalledWith(`Handle action: ${action}`);
-			expect(logger.warn).toHaveBeenCalledWith(`Invalid url value provided: ${invalidUrl}`);
+			expect(logger.warn).toHaveBeenCalledWith(`url values must be of type string: ${invalidUrl}`);
 			expect(logger.info).toHaveBeenCalledTimes(1);
 			expect(logger.warn).toHaveBeenCalledTimes(1);
 			expect(Linking.canOpenURL).not.toHaveBeenCalled();
@@ -77,10 +77,10 @@ describe('handleAction', () => {
 			await handleAction(action as InAppMessageAction, invalidUrl);
 
 			expect(logger.info).toHaveBeenCalledWith(`Handle action: ${action}`);
-			expect(logger.warn).toHaveBeenCalledWith(`Invalid url value provided: ${invalidUrl}`);
+			expect(logger.warn).toHaveBeenCalledWith(`url values must be of type string: ${invalidUrl}`);
 			expect(logger.info).toHaveBeenCalledTimes(1);
 			expect(logger.warn).toHaveBeenCalledTimes(1);
-			expect(Linking.canOpenURL).not.toHaveBeenCalledWith();
+			expect(Linking.canOpenURL).not.toHaveBeenCalled();
 		}
 	);
 

@@ -116,15 +116,15 @@ describe('useMessage', () => {
 		['ModalMessage', 'MODAL', CustomModalMessage],
 	])(
 		'returns a custom %s component for a %s layout in place of the default component when provided',
-		(componentKey, layout, component) => {
+		(componentKey, layout, CustomComponent) => {
 			mockUseInAppMessaging.mockReturnValueOnce({
-				components: { [componentKey]: component },
+				components: { [componentKey]: CustomComponent },
 				inAppMessage: { layout },
 			});
 
 			const { Component } = useMessage();
 
-			expect(Component).toBe(component);
+			expect(Component).toBe(CustomComponent);
 		}
 	);
 

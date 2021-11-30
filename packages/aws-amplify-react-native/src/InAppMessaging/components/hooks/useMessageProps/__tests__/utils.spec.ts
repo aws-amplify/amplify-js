@@ -18,76 +18,99 @@ import { BUTTON_PRESSED_OPACITY } from '../../../constants';
 import { InAppMessageComponentBaseProps, InAppMessageComponentBaseStyle } from '../../../types';
 import { StyleParams } from '../types';
 
-import { getButtonComponentStyle, getContainerAndWrapperStyle, getMessageStyle, getMessageStyleProps } from '../utils';
+import { getComponentButtonStyle, getContainerAndWrapperStyle, getMessageStyle, getMessageStyleProps } from '../utils';
 
 type ResolveContainerStyle = { container: (state?: PressableStateCallbackType) => StyleProp<ViewStyle> };
 
 const EMPTY_STYLE = Object.freeze({});
 
-describe('getButtonComponentStyle', () => {
+describe('getComponentButtonStyle', () => {
 	const pressedOpacity = { opacity: BUTTON_PRESSED_OPACITY };
 
-	it('returns the expected output in the happy path', () => {
-		const buttonDefaultStyle = { buttonContainer: { backgroundColor: 'white' }, buttonText: { color: 'red' } };
-		const buttonMessageStyle = { backgroundColor: 'maroon', borderRadius: 4, color: 'teal' };
-		const buttonOverrideStyle = { container: { backgroundColor: 'pink' }, text: { color: 'black' } };
+	it.each(['primaryButton' as const, 'secondaryButton' as const])(
+		'returns the expected output in the happy path for a %s',
+		(buttonType) => {
+			const defaultStyle = {
+				buttonContainer: { backgroundColor: 'white' },
+				buttonText: { color: 'red' },
+			} as InAppMessageComponentBaseStyle;
+			const messageStyle = { [buttonType]: { backgroundColor: 'maroon', borderRadius: 4, color: 'teal' } };
+			const overrideStyle = { [buttonType]: { container: { backgroundColor: 'pink' }, text: { color: 'black' } } };
+			const styleParams = { defaultStyle, messageStyle, overrideStyle };
 
-		const expectedContainerPressedStyle = [
-			pressedOpacity,
-			{ backgroundColor: 'white' },
-			{ backgroundColor: 'maroon', borderRadius: 4 },
-			{ backgroundColor: 'pink' },
-		];
-		const expectedContainerUnpressedStyle = [
-			EMPTY_STYLE,
-			{ backgroundColor: 'white' },
-			{ backgroundColor: 'maroon', borderRadius: 4 },
-			{ backgroundColor: 'pink' },
-		];
+			const expectedContainerPressedStyle = [
+				pressedOpacity,
+				{ backgroundColor: 'white' },
+				{ backgroundColor: 'maroon', borderRadius: 4 },
+				{ backgroundColor: 'pink' },
+			];
+			const expectedContainerUnpressedStyle = [
+				EMPTY_STYLE,
+				{ backgroundColor: 'white' },
+				{ backgroundColor: 'maroon', borderRadius: 4 },
+				{ backgroundColor: 'pink' },
+			];
 
-		const expectedTextStyle = [{ color: 'red' }, { color: 'teal' }, { color: 'black' }];
+			const expectedTextStyle = [{ color: 'red' }, { color: 'teal' }, { color: 'black' }];
 
-		const output = getButtonComponentStyle(buttonDefaultStyle, buttonMessageStyle, buttonOverrideStyle);
+			const output = getComponentButtonStyle({ styleParams, buttonType });
 
-		const containerPressedStyle = (output as ResolveContainerStyle).container({ pressed: true });
-		const containerUnpressedStyle = (output as ResolveContainerStyle).container({ pressed: false });
+			const containerPressedStyle = (output as ResolveContainerStyle).container({ pressed: true });
+			const containerUnpressedStyle = (output as ResolveContainerStyle).container({ pressed: false });
 
-		expect(containerPressedStyle).toEqual(expectedContainerPressedStyle);
-		expect(containerUnpressedStyle).toEqual(expectedContainerUnpressedStyle);
+			expect(containerPressedStyle).toStrictEqual(expectedContainerPressedStyle);
+			expect(containerUnpressedStyle).toStrictEqual(expectedContainerUnpressedStyle);
 
-		expect(output.text).toEqual(expectedTextStyle);
-	});
+			expect(output.text).toStrictEqual(expectedTextStyle);
+		}
+	);
 
-	it.each([{}, null])('correctly handles a value of %s passed as buttonMessageStyle', (buttonMessageStyle) => {
-		const buttonDefaultStyle = { buttonContainer: { backgroundColor: 'white' }, buttonText: { color: 'red' } };
+	it.each([{}, null])('correctly handles a value of %s passed as messageStyle.primaryButton', (messageStyle) => {
+		const defaultStyle = {
+			buttonContainer: { backgroundColor: 'white' },
+			buttonText: { color: 'red' },
+		} as InAppMessageComponentBaseStyle;
+		const styleParams = { defaultStyle, messageStyle, overrideStyle: null };
 
-		const output = getButtonComponentStyle(buttonDefaultStyle, buttonMessageStyle, null);
+		const output = getComponentButtonStyle({ styleParams, buttonType: 'primaryButton' });
 
 		const buttonContainerStyle = (output as ResolveContainerStyle).container({ pressed: true });
 
-		expect(buttonContainerStyle).toEqual([pressedOpacity, { backgroundColor: 'white' }, EMPTY_STYLE, EMPTY_STYLE]);
-		expect(output.text).toEqual([{ color: 'red' }, EMPTY_STYLE, EMPTY_STYLE]);
+		expect(buttonContainerStyle).toStrictEqual([
+			pressedOpacity,
+			{ backgroundColor: 'white' },
+			EMPTY_STYLE,
+			EMPTY_STYLE,
+		]);
+		expect(output.text).toStrictEqual([{ color: 'red' }, EMPTY_STYLE, EMPTY_STYLE]);
 	});
 
 	describe('button container style', () => {
 		it('returns unpressed button container style when press event is not provided', () => {
-			const buttonDefaultStyle = { buttonContainer: { backgroundColor: 'white' }, buttonText: {} };
+			const defaultStyle = {
+				buttonContainer: { backgroundColor: 'white' },
+				buttonText: {},
+			} as InAppMessageComponentBaseStyle;
+			const styleParams = { defaultStyle, messageStyle: null, overrideStyle: null };
 
-			const output = getButtonComponentStyle(buttonDefaultStyle, EMPTY_STYLE, EMPTY_STYLE);
+			const output = getComponentButtonStyle({ styleParams, buttonType: 'primaryButton' });
 
 			const buttonContainerStyle = (output as ResolveContainerStyle).container();
 
 			const expectedButtonContainerStyle = [EMPTY_STYLE, { backgroundColor: 'white' }, EMPTY_STYLE, EMPTY_STYLE];
 
-			expect(buttonContainerStyle).toEqual(expectedButtonContainerStyle);
+			expect(buttonContainerStyle).toStrictEqual(expectedButtonContainerStyle);
 		});
 
 		it('correctly evaluates button container override style when it is a function', () => {
 			const pressedStyle = { backgroundColor: 'seafoam' };
 			const unpressedStyle = { backgroundColor: 'fuschia' };
-			const buttonOverrideStyle = { container: ({ pressed }) => (pressed ? pressedStyle : unpressedStyle) };
+			const overrideStyle = {
+				primaryButton: { container: ({ pressed }) => (pressed ? pressedStyle : unpressedStyle) },
+			};
+			const styleParams = { defaultStyle: null, messageStyle: null, overrideStyle };
 
-			const output = getButtonComponentStyle(null, null, buttonOverrideStyle);
+			const output = getComponentButtonStyle({ styleParams, buttonType: 'primaryButton' });
 
 			const containerPressedStyle = (output as ResolveContainerStyle).container({ pressed: true });
 			const containerUnpressedStyle = (output as ResolveContainerStyle).container({ pressed: false });
@@ -95,8 +118,8 @@ describe('getButtonComponentStyle', () => {
 			const expectedContainerPressedStyle = [pressedOpacity, EMPTY_STYLE, EMPTY_STYLE, pressedStyle];
 			const expectedContainerUnressedStyle = [EMPTY_STYLE, EMPTY_STYLE, EMPTY_STYLE, unpressedStyle];
 
-			expect(containerPressedStyle).toEqual(expectedContainerPressedStyle);
-			expect(containerUnpressedStyle).toEqual(expectedContainerUnressedStyle);
+			expect(containerPressedStyle).toStrictEqual(expectedContainerPressedStyle);
+			expect(containerUnpressedStyle).toStrictEqual(expectedContainerUnressedStyle);
 		});
 	});
 });
@@ -123,8 +146,8 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const expectedWrapperStyle = { opacity: 0.4 };
 
-		expect(output.container).toEqual(expectedContainerStyle);
-		expect(output.componentWrapper).toEqual(expectedWrapperStyle);
+		expect(output.container).toStrictEqual(expectedContainerStyle);
+		expect(output.componentWrapper).toStrictEqual(expectedWrapperStyle);
 	});
 
 	it('returns the expected output for a non-banner component in the happy path', () => {
@@ -149,8 +172,8 @@ describe('getContainerAndWrapperStyle', () => {
 			{ backgroundColor: 'pink' },
 		];
 
-		expect(output.container).toEqual(expectedContainerStyle);
-		expect(output.componentWrapper).toEqual(expectedWrapperStyle);
+		expect(output.container).toStrictEqual(expectedContainerStyle);
+		expect(output.componentWrapper).toStrictEqual(expectedWrapperStyle);
 	});
 
 	it('correctly handles a style array passed as the argument of overrideStyle.container', () => {
@@ -175,8 +198,8 @@ describe('getContainerAndWrapperStyle', () => {
 			{ backgroundColor: 'pink' },
 		];
 
-		expect(output.container).toEqual(expectedContainerStyle);
-		expect(output.componentWrapper).toEqual(expectedWrapperStyle);
+		expect(output.container).toStrictEqual(expectedContainerStyle);
+		expect(output.componentWrapper).toStrictEqual(expectedWrapperStyle);
 	});
 
 	it('returns the expected output for a banner component with null style arguments', () => {
@@ -193,8 +216,8 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const expectedWrapperStyle = EMPTY_STYLE;
 
-		expect(output.container).toEqual(expectedContainerStyle);
-		expect(output.componentWrapper).toEqual(expectedWrapperStyle);
+		expect(output.container).toStrictEqual(expectedContainerStyle);
+		expect(output.componentWrapper).toStrictEqual(expectedWrapperStyle);
 	});
 
 	it('returns the expected output for a non-banner component with empty style arguments', () => {
@@ -211,8 +234,8 @@ describe('getContainerAndWrapperStyle', () => {
 
 		const expectedWrapperStyle = [EMPTY_STYLE, EMPTY_STYLE, EMPTY_STYLE, EMPTY_STYLE];
 
-		expect(output.container).toEqual(expectedContainerStyle);
-		expect(output.componentWrapper).toEqual(expectedWrapperStyle);
+		expect(output.container).toStrictEqual(expectedContainerStyle);
+		expect(output.componentWrapper).toStrictEqual(expectedWrapperStyle);
 	});
 });
 

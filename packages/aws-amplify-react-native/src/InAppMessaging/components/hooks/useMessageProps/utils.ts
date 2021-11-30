@@ -11,32 +11,28 @@
  * and limitations under the License.
  */
 
-import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import { InAppMessageStyle } from '@aws-amplify/notifications';
+import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { BUTTON_PRESSED_OPACITY } from '../../constants';
 import { InAppMessageComponentBaseProps, InAppMessageComponentButtonStyle } from '../../types';
-import { MessageStylePropParams, MessageStyleProps } from './types';
+import { ButtonStylePropParams, MessageStylePropParams, MessageStyleProps } from './types';
 
 /**
  * Parse and assign appropriate button container and text style from style objects params
  *
- * @param {defaultButtonStyle} object - default button style specified at the component level
- * @param {messageButtonStyle} object - message button style from message payload
- * @param {overrideStyle} object - custom style passed to component
- *
+ * @param {params} object - contains message styleParams and button type
  * @returns {InAppMessageComponentButtonStyle} resolved button container and text style arrays
  */
-export const getButtonComponentStyle = (
-	buttonDefaultStyle: { buttonContainer: ViewStyle; buttonText: TextStyle },
-	buttonMessageStyle: InAppMessageStyle,
-	buttonOverrideStyle: InAppMessageComponentButtonStyle
-): InAppMessageComponentButtonStyle => {
+export const getComponentButtonStyle = ({
+	styleParams,
+	buttonType,
+}: ButtonStylePropParams): InAppMessageComponentButtonStyle => {
+	const { defaultStyle, messageStyle, overrideStyle } = styleParams;
 	// default component styles defined at the UI component level
-	const { buttonContainer: containerDefaultStyle = {}, buttonText: textDefaultStyle = {} } = buttonDefaultStyle ?? {};
+	const { buttonContainer: containerDefaultStyle = {}, buttonText: textDefaultStyle = {} } = defaultStyle ?? {};
 
 	// message specific styles in the in-app message payload, overrides default component styles
-	const { backgroundColor, borderRadius, color } = buttonMessageStyle ?? {};
+	const { backgroundColor, borderRadius, color } = messageStyle?.[buttonType] ?? {};
 
 	const containerMessageStyle = {
 		...(backgroundColor ? { backgroundColor } : null),
@@ -46,7 +42,7 @@ export const getButtonComponentStyle = (
 	const textMessageStyle = { ...(color ? { color } : null) };
 
 	// custom component override styles passed as style prop, overrides all previous styles
-	const { container: containerOverrideStyle = {}, text: textOverrideStyle = {} } = buttonOverrideStyle ?? {};
+	const { container: containerOverrideStyle = {}, text: textOverrideStyle = {} } = overrideStyle?.[buttonType] ?? {};
 
 	return {
 		// the style prop of the React Native Pressable component used in the message UI accepts either a ViewStyle array
@@ -54,7 +50,7 @@ export const getButtonComponentStyle = (
 		// array. Utilizing the latter, we add an opacity value to the UI message button style during press events
 		container: ({ pressed } = { pressed: false }) => {
 			// default button press interaction opacity
-			const pressedOpacity = { ...(pressed ? { opacity: BUTTON_PRESSED_OPACITY } : null) };
+			const pressedOpacity = pressed ? { opacity: BUTTON_PRESSED_OPACITY } : {};
 
 			// pass `pressed` to containerOverrideStyle and evaluate if the consumer passed a function for custom
 			// button style
@@ -106,9 +102,9 @@ export const getContainerAndWrapperStyle = ({ styleParams, layout }: MessageStyl
 	// use ternaries to prevent passing backgroundColor object with undefined or null value
 	const componentWrapper: StyleProp<ViewStyle> = [
 		wrapperDefaultStyle,
-		{ ...(defaultBackgroundColor ? { backgroundColor: defaultBackgroundColor } : null) },
-		{ ...(messageBackgroundColor ? { backgroundColor: messageBackgroundColor } : null) },
-		{ ...(overrideBackgroundColor ? { backgroundColor: overrideBackgroundColor } : null) },
+		defaultBackgroundColor ? { backgroundColor: defaultBackgroundColor } : {},
+		messageBackgroundColor ? { backgroundColor: messageBackgroundColor } : {},
+		overrideBackgroundColor ? { backgroundColor: overrideBackgroundColor } : {},
 	];
 
 	return { componentWrapper, container };
@@ -118,7 +114,7 @@ export const getContainerAndWrapperStyle = ({ styleParams, layout }: MessageStyl
  * Utility for extracting message payload style
  *
  * @param {props} - message props
- * @returns message payload specific style
+ * @returns {object} - contains message payload specific style
  */
 
 export const getMessageStyle = ({
@@ -153,6 +149,10 @@ export function getMessageStyleProps({ styleParams, layout }: MessageStylePropPa
 	// view style applied to the componentWrapper and primary container views
 	const { componentWrapper, container } = getContainerAndWrapperStyle({ styleParams, layout });
 
+	// primary and secondary button container and text style
+	const primaryButton = getComponentButtonStyle({ styleParams, buttonType: 'primaryButton' });
+	const secondaryButton = getComponentButtonStyle({ styleParams, buttonType: 'secondaryButton' });
+
 	const { defaultStyle, messageStyle, overrideStyle } = styleParams;
 
 	// image style composed of default and override style
@@ -168,18 +168,6 @@ export function getMessageStyleProps({ styleParams, layout }: MessageStylePropPa
 	// text style applied to message body and header respectively
 	const body = [defaultStyle?.body, messageStyle?.body, overrideStyle?.body];
 	const header = [defaultStyle?.header, messageStyle?.header, overrideStyle?.header];
-
-	// primary and secondary button container and text style
-	const primaryButton = getButtonComponentStyle(
-		defaultStyle,
-		messageStyle?.primaryButton,
-		overrideStyle?.primaryButton
-	);
-	const secondaryButton = getButtonComponentStyle(
-		defaultStyle,
-		messageStyle?.secondaryButton,
-		overrideStyle?.secondaryButton
-	);
 
 	const { buttonsContainer, contentContainer, imageContainer, textContainer } = defaultStyle ?? {};
 

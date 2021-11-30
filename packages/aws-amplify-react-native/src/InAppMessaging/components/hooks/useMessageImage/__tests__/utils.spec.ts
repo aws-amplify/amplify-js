@@ -70,7 +70,7 @@ describe('getLayoutImageDimensions', () => {
 
 		const output = getLayoutImageDimensions(imageHeight, imageWidth, 'TOP_BANNER');
 
-		expect(output).toEqual({
+		expect(output).toStrictEqual({
 			height: BANNER_IMAGE_SCREEN_SIZE,
 			width: BANNER_IMAGE_SCREEN_SIZE,
 		});
@@ -82,7 +82,7 @@ describe('getLayoutImageDimensions', () => {
 
 		const output = getLayoutImageDimensions(imageHeight, imageWidth, 'TOP_BANNER');
 
-		expect(output).toEqual({
+		expect(output).toStrictEqual({
 			height: BANNER_IMAGE_SCREEN_SIZE,
 			width: imageHeight * BANNER_IMAGE_SCREEN_MULTIPLIER,
 		});
@@ -94,7 +94,7 @@ describe('getLayoutImageDimensions', () => {
 
 		const output = getLayoutImageDimensions(imageHeight, imageWidth, 'TOP_BANNER');
 
-		expect(output).toEqual({
+		expect(output).toStrictEqual({
 			height: imageWidth * BANNER_IMAGE_SCREEN_MULTIPLIER,
 			width: BANNER_IMAGE_SCREEN_SIZE,
 		});

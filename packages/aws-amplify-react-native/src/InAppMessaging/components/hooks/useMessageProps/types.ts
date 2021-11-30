@@ -86,3 +86,15 @@ export type MessageStylePropParams = {
 	 */
 	styleParams: StyleParams;
 };
+
+export type ButtonStylePropParams = {
+	/**
+	 * message button types
+	 */
+	buttonType: 'primaryButton' | 'secondaryButton';
+
+	/**
+	 * style params to derive resolved style from
+	 */
+	styleParams: StyleParams;
+};

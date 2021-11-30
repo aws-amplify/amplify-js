@@ -61,12 +61,12 @@ describe('getPositionProp', () => {
 describe('getContentProps', () => {
 	it('returns the expected output in the happy path', () => {
 		const output = getContentProps(baseContent, onActionCallback);
-		expect(output).toEqual(baseContent);
+		expect(output).toStrictEqual(baseContent);
 	});
 
 	it('returns the expected output when a primary button is provided', () => {
 		const output = getContentProps({ ...baseContent, primaryButton }, onActionCallback);
-		expect(output).toEqual({
+		expect(output).toStrictEqual({
 			...baseContent,
 			primaryButton: {
 				title: primaryButton.title,
@@ -77,7 +77,7 @@ describe('getContentProps', () => {
 
 	it('returns the expected output when a secondary button is provided', () => {
 		const output = getContentProps({ ...baseContent, secondaryButton }, onActionCallback);
-		expect(output).toEqual({
+		expect(output).toStrictEqual({
 			...baseContent,
 			secondaryButton: {
 				title: secondaryButton.title,
@@ -88,7 +88,7 @@ describe('getContentProps', () => {
 
 	it('returns an empty props object when content is null', () => {
 		const output = getContentProps(null, onActionCallback);
-		expect(output).toEqual({});
+		expect(output).toStrictEqual({});
 	});
 });
 

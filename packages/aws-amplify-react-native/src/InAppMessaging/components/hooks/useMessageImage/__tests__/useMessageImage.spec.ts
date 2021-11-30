@@ -16,7 +16,7 @@ import { renderHook } from '@testing-library/react-hooks';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { InAppMessageImage } from '@aws-amplify/notifications';
 
-import { FAILURE_IMAGE_DIMENSIONS } from '../constants';
+import { INITIAL_IMAGE_DIMENSIONS } from '../constants';
 import { getLayoutImageDimensions, prefetchNetworkImage } from '../utils';
 import useMessageImage from '../useMessageImage';
 
@@ -48,15 +48,15 @@ describe('useMessageImage', () => {
 		const { result, waitForNextUpdate } = renderHook(() => useMessageImage(image, 'TOP_BANNER'));
 
 		// first render
-		expect(result.current).toEqual({
+		expect(result.current).toStrictEqual({
 			hasRenderableImage: false,
-			imageDimensions: null,
+			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
 			isImageFetching: true,
 		});
 
 		await waitForNextUpdate();
 
-		expect(result.current).toEqual({
+		expect(result.current).toStrictEqual({
 			hasRenderableImage: true,
 			imageDimensions,
 			isImageFetching: false,
@@ -74,9 +74,9 @@ describe('useMessageImage', () => {
 		const { result, waitForNextUpdate } = renderHook(() => useMessageImage(image, 'TOP_BANNER'));
 
 		// first render
-		expect(result.current).toEqual({
+		expect(result.current).toStrictEqual({
 			hasRenderableImage: false,
-			imageDimensions: null,
+			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
 			isImageFetching: true,
 		});
 
@@ -85,9 +85,9 @@ describe('useMessageImage', () => {
 		expect(logger.error).toHaveBeenCalledWith(`Unable to retrieve size for image: ${error}`);
 		expect(logger.error).toHaveBeenCalledTimes(1);
 
-		expect(result.current).toEqual({
+		expect(result.current).toStrictEqual({
 			hasRenderableImage: false,
-			imageDimensions: FAILURE_IMAGE_DIMENSIONS,
+			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
 			isImageFetching: false,
 		});
 	});
@@ -98,9 +98,9 @@ describe('useMessageImage', () => {
 		const { result, waitForNextUpdate } = renderHook(() => useMessageImage(image, 'TOP_BANNER'));
 
 		// first render
-		expect(result.current).toEqual({
+		expect(result.current).toStrictEqual({
 			hasRenderableImage: false,
-			imageDimensions: null,
+			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
 			isImageFetching: true,
 		});
 
@@ -108,9 +108,9 @@ describe('useMessageImage', () => {
 
 		expect(logger.error).not.toHaveBeenCalled();
 
-		expect(result.current).toEqual({
+		expect(result.current).toStrictEqual({
 			hasRenderableImage: false,
-			imageDimensions: FAILURE_IMAGE_DIMENSIONS,
+			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
 			isImageFetching: false,
 		});
 	});
@@ -118,9 +118,9 @@ describe('useMessageImage', () => {
 	it('returns the expected values when the image argument is an empty object', () => {
 		const { result } = renderHook(() => useMessageImage({} as InAppMessageImage, 'TOP_BANNER'));
 
-		expect(result.current).toEqual({
+		expect(result.current).toStrictEqual({
 			hasRenderableImage: false,
-			imageDimensions: null,
+			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
 			isImageFetching: false,
 		});
 	});
@@ -128,9 +128,9 @@ describe('useMessageImage', () => {
 	it('returns the expected values when the image argument is null', () => {
 		const { result } = renderHook(() => useMessageImage(null, 'TOP_BANNER'));
 
-		expect(result.current).toEqual({
+		expect(result.current).toStrictEqual({
 			hasRenderableImage: false,
-			imageDimensions: null,
+			imageDimensions: INITIAL_IMAGE_DIMENSIONS,
 			isImageFetching: false,
 		});
 	});
