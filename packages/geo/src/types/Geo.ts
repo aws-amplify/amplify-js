@@ -125,7 +125,7 @@ export type GeofenceOptions = {
 	providerName?: string;
 };
 
-// Error type for errors for Amazon Location Service batchPutGeofence API
+// Error type for errors related to Geofence API calls
 export type GeofenceError = {
 	error: {
 		code: string;
