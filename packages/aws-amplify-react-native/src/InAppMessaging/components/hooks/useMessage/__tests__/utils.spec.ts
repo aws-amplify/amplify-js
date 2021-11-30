@@ -94,9 +94,7 @@ describe('getContentProps', () => {
 
 describe('getActionHandler', () => {
 	beforeEach(() => {
-		onActionCallback.mockClear();
-		(handleAction as jest.Mock).mockClear();
-		(logger.error as jest.Mock).mockClear();
+		jest.clearAllMocks();
 	});
 
 	it('behaves as expected in the happy path', async () => {

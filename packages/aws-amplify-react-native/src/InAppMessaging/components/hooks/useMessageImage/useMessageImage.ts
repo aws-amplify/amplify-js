@@ -32,44 +32,46 @@ const logger = new Logger('Notifications.InAppMessaging');
  */
 
 export default function useMessageImage(image: InAppMessageImage, layout: InAppMessageLayout): UseMessageImage {
-	const [prefetchStatus, setPrefetchStatus] = useState<ImagePrefetchStatus>(ImagePrefetchStatus.INITIAL);
+	const { src } = image ?? {};
+	const shouldPrefetch = !!src;
+
+	// set initial status to fetching if prefetch is required
+	const [prefetchStatus, setPrefetchStatus] = useState<ImagePrefetchStatus>(
+		shouldPrefetch ? ImagePrefetchStatus.FETCHING : null
+	);
 	const imageDimensions = useRef<ImageDimensions>(INITIAL_IMAGE_DIMENSIONS).current;
 
-	const { src } = image ?? {};
-	const hasImage = !!src;
-
-	const shouldPrefetch = hasImage && prefetchStatus === ImagePrefetchStatus.INITIAL;
-	const isImageFetching = shouldPrefetch || prefetchStatus === ImagePrefetchStatus.FETCHING;
-	const hasRenderableImage = hasImage && prefetchStatus === ImagePrefetchStatus.SUCCESS;
+	const isImageFetching = prefetchStatus === ImagePrefetchStatus.FETCHING;
+	const hasRenderableImage = prefetchStatus === ImagePrefetchStatus.SUCCESS;
 
 	useEffect(() => {
-		if (shouldPrefetch) {
-			setPrefetchStatus(ImagePrefetchStatus.FETCHING);
-
-			prefetchNetworkImage(src).then((prefetchResult) => {
-				if (prefetchResult === 'loaded') {
-					// get image size once loaded
-					Image.getSize(
-						src,
-						(imageWidth, imageHeight) => {
-							const { height, width } = getLayoutImageDimensions(imageHeight, imageWidth, layout);
-							imageDimensions.height = height;
-							imageDimensions.width = width;
-
-							setPrefetchStatus(ImagePrefetchStatus.SUCCESS);
-						},
-						(error) => {
-							// handle size retrieval error
-							logger.error(`Unable to retrieve size for image: ${error}`);
-							setPrefetchStatus(ImagePrefetchStatus.FAILURE);
-						}
-					);
-				} else {
-					// handle prefetch failure
-					setPrefetchStatus(ImagePrefetchStatus.FAILURE);
-				}
-			});
+		if (!shouldPrefetch) {
+			return;
 		}
+
+		prefetchNetworkImage(src).then((prefetchResult) => {
+			if (prefetchResult === 'loaded') {
+				// get image size once loaded
+				Image.getSize(
+					src,
+					(imageWidth, imageHeight) => {
+						const { height, width } = getLayoutImageDimensions(imageHeight, imageWidth, layout);
+						imageDimensions.height = height;
+						imageDimensions.width = width;
+
+						setPrefetchStatus(ImagePrefetchStatus.SUCCESS);
+					},
+					(error) => {
+						// handle size retrieval error
+						logger.error(`Unable to retrieve size for image: ${error}`);
+						setPrefetchStatus(ImagePrefetchStatus.FAILURE);
+					}
+				);
+			} else {
+				// handle prefetch failure
+				setPrefetchStatus(ImagePrefetchStatus.FAILURE);
+			}
+		});
 	}, [imageDimensions, layout, shouldPrefetch, src]);
 
 	return { hasRenderableImage, imageDimensions, isImageFetching };

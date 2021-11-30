@@ -34,12 +34,7 @@ const error = 'ERROR';
 
 describe('handleAction', () => {
 	beforeEach(() => {
-		(Linking.canOpenURL as jest.Mock).mockClear();
-		(Linking.openURL as jest.Mock).mockClear();
-
-		(logger.error as jest.Mock).mockClear();
-		(logger.info as jest.Mock).mockClear();
-		(logger.warn as jest.Mock).mockClear();
+		jest.clearAllMocks();
 	});
 
 	it.each([deepLink, link])('handles a %s action as expected in the happy path', async (action) => {
@@ -62,7 +57,7 @@ describe('handleAction', () => {
 			await handleAction(action as InAppMessageAction, invalidUrl);
 
 			expect(logger.info).toHaveBeenCalledWith(`Handle action: ${action}`);
-			expect(logger.warn).toHaveBeenCalledWith(`url values must be of type string: ${invalidUrl}`);
+			expect(logger.warn).toHaveBeenCalledWith(`url must be of type string: ${invalidUrl}`);
 			expect(logger.info).toHaveBeenCalledTimes(1);
 			expect(logger.warn).toHaveBeenCalledTimes(1);
 			expect(Linking.canOpenURL).not.toHaveBeenCalled();
@@ -77,7 +72,7 @@ describe('handleAction', () => {
 			await handleAction(action as InAppMessageAction, invalidUrl);
 
 			expect(logger.info).toHaveBeenCalledWith(`Handle action: ${action}`);
-			expect(logger.warn).toHaveBeenCalledWith(`url values must be of type string: ${invalidUrl}`);
+			expect(logger.warn).toHaveBeenCalledWith(`url must be of type string: ${invalidUrl}`);
 			expect(logger.info).toHaveBeenCalledTimes(1);
 			expect(logger.warn).toHaveBeenCalledTimes(1);
 			expect(Linking.canOpenURL).not.toHaveBeenCalled();
