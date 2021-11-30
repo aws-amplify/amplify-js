@@ -366,17 +366,16 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		try {
 			await this._validateLogGroupExistsAndCreate(this._config.logGroupName);
 
+			this._nextSequenceToken = undefined;
+
 			const logStream = await this._validateLogStreamExists(
 				this._config.logGroupName,
 				this._config.logStreamName
 			);
-			if (!logStream) {
-				this._nextSequenceToken = '';
 
-				return '';
+			if (logStream) {
+				this._nextSequenceToken = logStream.uploadSequenceToken;
 			}
-
-			this._nextSequenceToken = logStream.uploadSequenceToken || '';
 
 			return this._nextSequenceToken;
 		} catch (err) {
@@ -475,7 +474,7 @@ class AWSCloudWatchProvider implements LoggingProvider {
 		payload: PutLogEventsCommandInput
 	): Promise<PutLogEventsCommandOutput> {
 		try {
-			this._nextSequenceToken = '';
+			this._nextSequenceToken = undefined;
 			this._dataTracker.eventUploadInProgress = true;
 
 			const seqToken = await this._getNextSequenceToken();
