@@ -53,7 +53,7 @@
 		"@aws-sdk/eventstream-marshaller": "3.6.1",
 		"@aws-sdk/util-utf8-node": "3.6.1",
 		"tslib": "^1.8.0",
-		"uuid": "^3.2.1"
+		"uuid": "^8.3.2"
 	},
 	"jest": {
 		"globals": {
