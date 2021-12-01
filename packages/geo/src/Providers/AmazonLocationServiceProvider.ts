@@ -308,10 +308,25 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			const tenGeofences = PascalGeofences.splice(0, 10);
 
 			// Make API call for the 10 geofences
-			const response = await this._AmazonLocationServiceBatchPutGeofenceCall(
-				tenGeofences,
-				options?.collectionName
-			);
+			let response;
+			try {
+				response = await this._AmazonLocationServiceBatchPutGeofenceCall(
+					tenGeofences,
+					options?.collectionName
+				);
+			} catch (error) {
+				// If the API call fails, add the geofences to the errors array and move to next batch
+				tenGeofences.forEach(geofence => {
+					results.errors.push({
+						geofenceId: geofence.GeofenceId,
+						error: {
+							code: 'APIConnectionError',
+							message: error.message,
+						},
+					});
+				});
+				continue;
+			}
 
 			// Push all successes to results
 			response.Successes.forEach(success => {
