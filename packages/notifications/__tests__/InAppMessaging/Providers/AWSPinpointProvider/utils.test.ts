@@ -327,26 +327,6 @@ describe('AWSPinpoint InAppMessaging Provider Utils', () => {
 		expect(isBeforeEndDate(message)).toBe(true);
 	});
 
-	test('isQuietTime checks if a message is currently in quiet time', () => {
-		const message = cloneDeep(pinpointInAppMessage);
-		const anHourAgo = new Date(new Date().getTime() - HOUR_IN_MS);
-		const anHourFromNow = new Date(new Date().getTime() + HOUR_IN_MS);
-		message.Schedule.QuietTime = {
-			Start: `${String(anHourAgo.getHours()).padStart(2, '0')}:${String(
-				anHourAgo.getMinutes()
-			).padStart(2, '0')}`,
-			End: `${String(anHourFromNow.getHours()).padStart(2, '0')}:${String(
-				anHourFromNow.getMinutes()
-			).padStart(2, '0')}`,
-		};
-
-		expect(isQuietTime(message)).toBe(true);
-
-		message.Schedule.QuietTime = null;
-
-		expect(isQuietTime(message)).toBe(false);
-	});
-
 	test('extractContent extracts Pinpoint content into a normalized shape', () => {
 		const message = cloneDeep(pinpointInAppMessage);
 
