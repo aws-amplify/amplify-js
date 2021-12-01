@@ -12,6 +12,7 @@
  */
 
 import { Dimensions } from 'react-native';
+import { ImageDimensions } from './types';
 
 // as images are not expected to be responsive to orientation changes get screen dimensions at app start
 const SCREEN_DIMENSIONS = Dimensions.get('screen');
@@ -23,7 +24,14 @@ const BASE_SCREEN_DIMENSION =
 // base size that message images should fill
 // - all banner message images should fill 20 percent of the base screen dimension
 // - all other components should fill 60 percent of the base screen dimension
-export const BANNER_IMAGE_SCREEN_SIZE = 0.2 * BASE_SCREEN_DIMENSION;
-export const CAROUSEL_IMAGE_SCREEN_SIZE = 0.6 * BASE_SCREEN_DIMENSION;
-export const FULL_SCREEN_IMAGE_SCREEN_SIZE = 0.6 * BASE_SCREEN_DIMENSION;
-export const MODAL_IMAGE_SCREEN_SIZE = 0.6 * BASE_SCREEN_DIMENSION;
+export const BANNER_IMAGE_SCREEN_MULTIPLIER = 0.2;
+export const CAROUSEL_IMAGE_SCREEN_MULTIPLIER = 0.6;
+export const FULL_SCREEN_IMAGE_SCREEN_MULTIPLIER = 0.6;
+export const MODAL_IMAGE_SCREEN_MULTIPLIER = 0.6;
+
+export const BANNER_IMAGE_SCREEN_SIZE = BANNER_IMAGE_SCREEN_MULTIPLIER * BASE_SCREEN_DIMENSION;
+export const CAROUSEL_IMAGE_SCREEN_SIZE = CAROUSEL_IMAGE_SCREEN_MULTIPLIER * BASE_SCREEN_DIMENSION;
+export const FULL_SCREEN_IMAGE_SCREEN_SIZE = FULL_SCREEN_IMAGE_SCREEN_MULTIPLIER * BASE_SCREEN_DIMENSION;
+export const MODAL_IMAGE_SCREEN_SIZE = MODAL_IMAGE_SCREEN_MULTIPLIER * BASE_SCREEN_DIMENSION;
+
+export const INITIAL_IMAGE_DIMENSIONS: ImageDimensions = { height: null, width: null };

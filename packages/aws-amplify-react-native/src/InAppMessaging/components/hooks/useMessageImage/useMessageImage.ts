@@ -11,17 +11,15 @@
  * and limitations under the License.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Image } from 'react-native';
-import isNull from 'lodash/isNull';
 
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
 import { InAppMessageImage, InAppMessageLayout } from '@aws-amplify/notifications';
 
-import { ImageDimensions, UseMessageImage } from './types';
+import { INITIAL_IMAGE_DIMENSIONS } from './constants';
+import { ImageDimensions, ImagePrefetchStatus, UseMessageImage } from './types';
 import { getLayoutImageDimensions, prefetchNetworkImage } from './utils';
-
-const FAILURE_IMAGE_DIMENSIONS: ImageDimensions = { height: 0, width: 0 };
 
 const logger = new Logger('Notifications.InAppMessaging');
 
@@ -34,39 +32,47 @@ const logger = new Logger('Notifications.InAppMessaging');
  */
 
 export default function useMessageImage(image: InAppMessageImage, layout: InAppMessageLayout): UseMessageImage {
-	const [imageDimensions, setImageDimensions] = useState<ImageDimensions>(null);
 	const { src } = image ?? {};
+	const shouldPrefetch = !!src;
 
-	const hasSetDimensions = !isNull(imageDimensions);
-	const hasImage = !!src;
+	// set initial status to fetching if prefetch is required
+	const [prefetchStatus, setPrefetchStatus] = useState<ImagePrefetchStatus>(
+		shouldPrefetch ? ImagePrefetchStatus.FETCHING : null
+	);
+	const imageDimensions = useRef<ImageDimensions>(INITIAL_IMAGE_DIMENSIONS).current;
 
-	const hasRenderableImage = hasImage && hasSetDimensions;
-	const isImageFetching = hasImage && !hasSetDimensions;
+	const isImageFetching = prefetchStatus === ImagePrefetchStatus.FETCHING;
+	const hasRenderableImage = prefetchStatus === ImagePrefetchStatus.SUCCESS;
 
 	useEffect(() => {
-		if (hasImage) {
-			prefetchNetworkImage(src).then((loadingState) => {
-				if (loadingState === 'loaded') {
-					// get image size once loaded
-					Image.getSize(
-						src,
-						(width, height) => {
-							setImageDimensions(getLayoutImageDimensions(height, width, layout));
-						},
-						(error) => {
-							logger.error(`Unable to retrieve size for image: ${error}`);
-
-							// set failure dimension values on size retrieval failure
-							setImageDimensions(FAILURE_IMAGE_DIMENSIONS);
-						}
-					);
-				} else {
-					// set failure dimension values on prefetch failure
-					setImageDimensions(FAILURE_IMAGE_DIMENSIONS);
-				}
-			});
+		if (!shouldPrefetch) {
+			return;
 		}
-	}, [hasImage, layout, src]);
+
+		prefetchNetworkImage(src).then((prefetchResult) => {
+			if (prefetchResult === 'loaded') {
+				// get image size once loaded
+				Image.getSize(
+					src,
+					(imageWidth, imageHeight) => {
+						const { height, width } = getLayoutImageDimensions(imageHeight, imageWidth, layout);
+						imageDimensions.height = height;
+						imageDimensions.width = width;
+
+						setPrefetchStatus(ImagePrefetchStatus.SUCCESS);
+					},
+					(error) => {
+						// handle size retrieval error
+						logger.error(`Unable to retrieve size for image: ${error}`);
+						setPrefetchStatus(ImagePrefetchStatus.FAILURE);
+					}
+				);
+			} else {
+				// handle prefetch failure
+				setPrefetchStatus(ImagePrefetchStatus.FAILURE);
+			}
+		});
+	}, [imageDimensions, layout, shouldPrefetch, src]);
 
 	return { hasRenderableImage, imageDimensions, isImageFetching };
 }

@@ -45,7 +45,7 @@ export type MessageStyleProps = {
 };
 
 export type GetDefaultStyle = (
-	imageDimensions: ImageDimensions,
+	imageDimensions?: ImageDimensions,
 	additionalStyle?: Record<string, ImageStyle | TextStyle | ViewStyle>
 ) => InAppMessageComponentBaseStyle;
 
@@ -80,6 +80,18 @@ export type MessageStylePropParams = {
 	 * message specific layout
 	 */
 	layout: InAppMessageLayout;
+
+	/**
+	 * style params to derive resolved style from
+	 */
+	styleParams: StyleParams;
+};
+
+export type ButtonStylePropParams = {
+	/**
+	 * message button types
+	 */
+	buttonType: 'primaryButton' | 'secondaryButton';
 
 	/**
 	 * style params to derive resolved style from

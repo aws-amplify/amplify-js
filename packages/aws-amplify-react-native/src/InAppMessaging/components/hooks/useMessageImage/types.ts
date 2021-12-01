@@ -16,7 +16,14 @@ export type ImageDimensions = {
 	width: number;
 };
 
-export type ImageLoadingState = 'loading' | 'loaded' | 'failed';
+export type ImageLoadingState = 'loaded' | 'failed';
+
+export enum ImagePrefetchStatus {
+	INITIAL = 'INITIAL',
+	FETCHING = 'FETCHING',
+	SUCCESS = 'SUCCESS',
+	FAILURE = 'FAILURE',
+}
 
 export type UseMessageImage = {
 	hasRenderableImage: boolean;

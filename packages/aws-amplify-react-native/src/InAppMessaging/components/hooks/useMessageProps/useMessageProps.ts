@@ -43,7 +43,7 @@ export default function useMessageProps(
 
 	useEffect(() => {
 		if (!hasDisplayed.current && shouldRenderMessage) {
-			onDisplay();
+			onDisplay?.();
 			hasDisplayed.current = true;
 		}
 	}, [onDisplay, shouldRenderMessage]);

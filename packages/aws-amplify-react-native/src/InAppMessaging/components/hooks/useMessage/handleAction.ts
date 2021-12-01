@@ -13,6 +13,7 @@
 
 import { Linking } from 'react-native';
 import { ConsoleLogger as Logger } from '@aws-amplify/core';
+import isString from 'lodash/isString';
 
 import { InAppMessageComponentActionHandler } from './types';
 
@@ -21,24 +22,29 @@ const logger = new Logger('Notifications.InAppMessaging');
 const handleAction: InAppMessageComponentActionHandler = async (action, url) => {
 	logger.info(`Handle action: ${action}`);
 
-	if ((action === 'LINK' || action === 'DEEP_LINK') && url) {
-		let supported;
+	if (action === 'LINK' || action === 'DEEP_LINK') {
+		if (!isString(url)) {
+			logger.warn(`url must be of type string: ${url}`);
+			return;
+		}
+
+		let supported: boolean;
 		try {
 			supported = await Linking.canOpenURL(url);
 		} catch (e) {
 			logger.error(`Call to Linking.canOpenURL failed: ${e}`);
 		}
 
-		if (supported) {
-			try {
-				logger.info(`Opening url: ${url}`);
-				await Linking.openURL(url);
-			} catch (e) {
-				logger.error(`Call to Linking.openURL failed: ${e}`);
-			}
-		} else {
-			// TODO: determine how to allow for custom reporting of this scenario
-			logger.warn(`Unsupported url given: ${url}`);
+		if (!supported) {
+			logger.warn(`Unsupported url provided: ${url}`);
+			return;
+		}
+
+		try {
+			logger.info(`Opening url: ${url}`);
+			await Linking.openURL(url);
+		} catch (e) {
+			logger.error(`Call to Linking.openURL failed: ${e}`);
 		}
 	}
 };
