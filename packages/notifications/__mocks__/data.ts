@@ -66,6 +66,24 @@ export const simpleEvent: InAppMessagingEvent = { name: 'foo' };
 
 export const simpleMessages = [{ id: 'foo' }, { id: 'bar' }];
 
+export const closestExpiryMessage: InAppMessage = {
+	id: 'closest-expiry',
+	layout: 'CAROUSEL',
+	content: [],
+	metadata: {
+		endDate: '2021-01-01T00:00:00Z',
+	},
+};
+
+export const customHandledMessage: InAppMessage = {
+	id: 'custom-handled',
+	layout: 'MIDDLE_BANNER',
+	content: [],
+	metadata: {
+		endDate: '2021-03-01T00:00:00Z',
+	},
+};
+
 export const inAppMessages: InAppMessage[] = [
 	{
 		id: 'top-banner',
@@ -81,14 +99,7 @@ export const inAppMessages: InAppMessage[] = [
 		layout: 'MIDDLE_BANNER',
 		content: [],
 	},
-	{
-		id: 'custom-handled',
-		layout: 'MIDDLE_BANNER',
-		content: [],
-		metadata: {
-			endDate: '2021-03-01T00:00:00Z',
-		},
-	},
+	{ ...customHandledMessage },
 	{
 		id: 'bottom-banner',
 		layout: 'BOTTOM_BANNER',
@@ -97,14 +108,7 @@ export const inAppMessages: InAppMessage[] = [
 			endDate: '2021-02-01T00:00:00Z',
 		},
 	},
-	{
-		id: 'closest-expiry',
-		layout: 'CAROUSEL',
-		content: [],
-		metadata: {
-			endDate: '2021-01-01T00:00:00Z',
-		},
-	},
+	{ ...closestExpiryMessage },
 	{
 		id: 'no-end-date-2',
 		layout: 'MIDDLE_BANNER',

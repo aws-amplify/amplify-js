@@ -27,6 +27,8 @@ import {
 } from '../../src/InAppMessaging/eventListeners';
 
 import {
+	closestExpiryMessage,
+	customHandledMessage,
 	inAppMessagingConfig,
 	inAppMessages,
 	simpleEvent,
@@ -34,16 +36,17 @@ import {
 	userId,
 	userInfo,
 } from '../../__mocks__/data';
-import { mockPluggable, mockStorage } from '../../__mocks__/mocks';
+import { mockInAppMessagingProvider, mockStorage } from '../../__mocks__/mocks';
 
 jest.mock('@aws-amplify/core');
 jest.mock('../../src/InAppMessaging/eventListeners');
+
+const PROVIDER_NAME = 'InAppMessagingProvider';
 
 const getStorageSpy = jest.spyOn(StorageHelper.prototype, 'getStorage');
 const loggerDebugSpy = jest.spyOn(ConsoleLogger.prototype, 'debug');
 const loggerErrorSpy = jest.spyOn(ConsoleLogger.prototype, 'error');
 const hubSpy = jest.spyOn(Hub, 'listen');
-const PROVIDER_NAME = 'InAppMessagingProvider';
 
 describe('InAppMessaging', () => {
 	let inAppMessaging: InAppMessaging;
@@ -51,11 +54,11 @@ describe('InAppMessaging', () => {
 		jest.clearAllMocks();
 		getStorageSpy.mockReturnValue(mockStorage);
 		inAppMessaging = new InAppMessaging();
-		inAppMessaging.addPluggable(mockPluggable);
-		mockPluggable.getCategory.mockReturnValue('Notifications');
-		mockPluggable.getInAppMessages.mockReturnValue(simpleMessages);
-		mockPluggable.getProviderName.mockReturnValue(PROVIDER_NAME);
-		mockPluggable.getSubCategory.mockReturnValue('InAppMessaging');
+		inAppMessaging.addPluggable(mockInAppMessagingProvider);
+		mockInAppMessagingProvider.getCategory.mockReturnValue('Notifications');
+		mockInAppMessagingProvider.getInAppMessages.mockReturnValue(simpleMessages);
+		mockInAppMessagingProvider.getProviderName.mockReturnValue(PROVIDER_NAME);
+		mockInAppMessagingProvider.getSubCategory.mockReturnValue('InAppMessaging');
 	});
 
 	test('returns the correct module name', () => {
@@ -64,7 +67,7 @@ describe('InAppMessaging', () => {
 
 	describe('Pluggables', () => {
 		test('can be added', () => {
-			expect(mockPluggable.configure).toBeCalled();
+			expect(mockInAppMessagingProvider.configure).toBeCalled();
 		});
 
 		test('can be gotten', () => {
@@ -73,11 +76,13 @@ describe('InAppMessaging', () => {
 
 		test('can be removed', () => {
 			inAppMessaging.removePluggable(PROVIDER_NAME);
+
 			expect(inAppMessaging.getPluggable(PROVIDER_NAME)).toBeNull();
 		});
 
 		test('cannot be removed if not found', () => {
 			inAppMessaging.removePluggable('InvalidProvider');
+
 			expect(loggerDebugSpy).toBeCalledWith(
 				expect.stringContaining('InvalidProvider')
 			);
@@ -85,26 +90,31 @@ describe('InAppMessaging', () => {
 
 		test('cannot be added if duplicate', () => {
 			expect(() => {
-				inAppMessaging.addPluggable(mockPluggable);
+				inAppMessaging.addPluggable(mockInAppMessagingProvider);
 			}).toThrow(/has already been added/);
 		});
 
 		test('cannot be added if invalid', () => {
 			inAppMessaging.removePluggable(PROVIDER_NAME);
-			mockPluggable.configure.mockClear();
-			mockPluggable.getSubCategory.mockReturnValue('InvalidSubCategory');
-			expect(mockPluggable.configure).not.toBeCalled();
+			mockInAppMessagingProvider.configure.mockClear();
+			mockInAppMessagingProvider.getSubCategory.mockReturnValue(
+				'InvalidSubCategory'
+			);
+
+			expect(mockInAppMessagingProvider.configure).not.toBeCalled();
 		});
 	});
 
 	describe('configure', () => {
 		test('can be called without input', () => {
 			const config = inAppMessaging.configure();
+
 			expect(config).toMatchObject({});
 		});
 
 		test('attaches a storage helper to the config', () => {
 			const config = inAppMessaging.configure(inAppMessagingConfig);
+
 			expect(config).toStrictEqual({
 				...inAppMessagingConfig,
 				storage: mockStorage,
@@ -132,13 +142,16 @@ describe('InAppMessaging', () => {
 				analyticsListener(configuredCapsule);
 				return () => {};
 			});
+
 			inAppMessaging.configure();
+
 			expect(hubSpy).toBeCalled();
 			expect(dispatchEventSpy).toBeCalledTimes(1);
 		});
 
 		test('does not listen to analytics events if `listenForAnalyticsEvents` is false', () => {
 			inAppMessaging.configure({ listenForAnalyticsEvents: false });
+
 			expect(hubSpy).not.toBeCalled();
 		});
 	});
@@ -146,6 +159,7 @@ describe('InAppMessaging', () => {
 	describe('syncMessages', () => {
 		test('Gets in-app messages from added providers and stores them', async () => {
 			await inAppMessaging.syncMessages();
+
 			expect(mockStorage.setItem).toBeCalledWith(
 				expect.stringContaining(PROVIDER_NAME),
 				JSON.stringify(simpleMessages)
@@ -153,18 +167,22 @@ describe('InAppMessaging', () => {
 		});
 
 		test('only tries to store messages if there are messages to store', async () => {
-			mockPluggable.getInAppMessages.mockReturnValue(null);
+			mockInAppMessagingProvider.getInAppMessages.mockReturnValue(null);
+
 			await inAppMessaging.syncMessages();
+
 			expect(mockStorage.setItem).not.toBeCalled();
 		});
 
 		test('rejects if there is a failure getting messages', async () => {
-			mockPluggable.getInAppMessages.mockImplementation(() => {
+			mockInAppMessagingProvider.getInAppMessages.mockImplementation(() => {
 				throw new Error();
 			});
+
 			await expect(inAppMessaging.syncMessages()).rejects.toStrictEqual(
 				expect.any(Error)
 			);
+
 			expect(mockStorage.setItem).not.toBeCalled();
 		});
 
@@ -172,7 +190,9 @@ describe('InAppMessaging', () => {
 			mockStorage.sync.mockImplementation(() => {
 				throw new Error();
 			});
+
 			await inAppMessaging.syncMessages();
+
 			expect(loggerErrorSpy).toBeCalledWith(
 				expect.stringContaining('Failed to sync'),
 				expect.any(Error)
@@ -183,7 +203,9 @@ describe('InAppMessaging', () => {
 			mockStorage.setItem.mockImplementation(() => {
 				throw new Error();
 			});
+
 			await inAppMessaging.syncMessages();
+
 			expect(loggerErrorSpy).toBeCalledWith(
 				expect.stringContaining('Failed to store'),
 				expect.any(Error)
@@ -194,6 +216,7 @@ describe('InAppMessaging', () => {
 	describe('clearMessages', () => {
 		test('clears in-app messages from store', async () => {
 			await inAppMessaging.clearMessages();
+
 			expect(mockStorage.removeItem).toBeCalledWith(
 				expect.stringContaining(PROVIDER_NAME)
 			);
@@ -203,7 +226,9 @@ describe('InAppMessaging', () => {
 			mockStorage.removeItem.mockImplementation(() => {
 				throw new Error();
 			});
+
 			await inAppMessaging.clearMessages();
+
 			expect(loggerErrorSpy).toBeCalledWith(
 				expect.stringContaining('Failed to remove'),
 				expect.any(Error)
@@ -214,10 +239,14 @@ describe('InAppMessaging', () => {
 	describe('dispatchEvent', () => {
 		test('gets in-app messages from store and notifies listeners', async () => {
 			const [message] = inAppMessages;
-			mockPluggable.processInAppMessages.mockReturnValue([message]);
+			mockInAppMessagingProvider.processInAppMessages.mockReturnValue([
+				message,
+			]);
 			mockStorage.getItem.mockReturnValue(JSON.stringify(simpleMessages));
+
 			await inAppMessaging.dispatchEvent(simpleEvent);
-			expect(mockPluggable.processInAppMessages).toBeCalledWith(
+
+			expect(mockInAppMessagingProvider.processInAppMessages).toBeCalledWith(
 				simpleMessages,
 				simpleEvent
 			);
@@ -228,9 +257,11 @@ describe('InAppMessaging', () => {
 		});
 
 		test('does not notify listeners if no messages are returned', async () => {
-			mockPluggable.processInAppMessages.mockReturnValue([]);
+			mockInAppMessagingProvider.processInAppMessages.mockReturnValue([]);
 			mockStorage.getItem.mockReturnValue(JSON.stringify(simpleMessages));
+
 			await inAppMessaging.dispatchEvent(simpleEvent);
+
 			expect(notifyMessageInteractionEventListeners).not.toBeCalled();
 		});
 
@@ -238,7 +269,9 @@ describe('InAppMessaging', () => {
 			mockStorage.getItem.mockImplementation(() => {
 				throw new Error();
 			});
+
 			await inAppMessaging.dispatchEvent(simpleEvent);
+
 			expect(loggerErrorSpy).toBeCalledWith(
 				expect.stringContaining('Failed to retrieve'),
 				expect.any(Error)
@@ -249,13 +282,18 @@ describe('InAppMessaging', () => {
 	describe('identifyUser', () => {
 		test('identifies users with pluggables', async () => {
 			await inAppMessaging.identifyUser(userId, userInfo);
-			expect(mockPluggable.identifyUser).toBeCalledWith(userId, userInfo);
+
+			expect(mockInAppMessagingProvider.identifyUser).toBeCalledWith(
+				userId,
+				userInfo
+			);
 		});
 
 		test('rejects if there is a failure identifying user', async () => {
-			mockPluggable.identifyUser.mockImplementation(() => {
+			mockInAppMessagingProvider.identifyUser.mockImplementation(() => {
 				throw new Error();
 			});
+
 			await expect(
 				inAppMessaging.identifyUser(userId, userInfo)
 			).rejects.toStrictEqual(expect.any(Error));
@@ -266,6 +304,7 @@ describe('InAppMessaging', () => {
 		const handler = jest.fn();
 		test('can be listened to by onMessageReceived', () => {
 			inAppMessaging.onMessageReceived(handler);
+
 			expect(addMessageInteractionEventListener).toBeCalledWith(
 				handler,
 				InAppMessageInteractionEvent.MESSAGE_RECEIVED
@@ -274,6 +313,7 @@ describe('InAppMessaging', () => {
 
 		test('can be listened to by onMessageDisplayed', () => {
 			inAppMessaging.onMessageDisplayed(handler);
+
 			expect(addMessageInteractionEventListener).toBeCalledWith(
 				handler,
 				InAppMessageInteractionEvent.MESSAGE_DISPLAYED
@@ -282,6 +322,7 @@ describe('InAppMessaging', () => {
 
 		test('can be listened to by onMessageDismissed', () => {
 			inAppMessaging.onMessageDismissed(handler);
+
 			expect(addMessageInteractionEventListener).toBeCalledWith(
 				handler,
 				InAppMessageInteractionEvent.MESSAGE_DISMISSED
@@ -290,6 +331,7 @@ describe('InAppMessaging', () => {
 
 		test('can be listened to by onMessageActionTaken', () => {
 			inAppMessaging.onMessageActionTaken(handler);
+
 			expect(addMessageInteractionEventListener).toBeCalledWith(
 				handler,
 				InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN
@@ -298,10 +340,12 @@ describe('InAppMessaging', () => {
 
 		test('can be notified by notifyMessageInteraction', () => {
 			const [message] = inAppMessages;
+
 			inAppMessaging.notifyMessageInteraction(
 				message,
 				InAppMessageInteractionEvent.MESSAGE_RECEIVED
 			);
+
 			expect(notifyMessageInteractionEventListeners).toBeCalledWith(
 				message,
 				InAppMessageInteractionEvent.MESSAGE_RECEIVED
@@ -311,28 +355,30 @@ describe('InAppMessaging', () => {
 
 	describe('Conflict handling', () => {
 		test('has a default implementation', async () => {
-			mockPluggable.processInAppMessages.mockReturnValue(inAppMessages);
-			await inAppMessaging.dispatchEvent(simpleEvent);
-			const closetExpiry = inAppMessages.find(
-				(message) => message.id === 'closest-expiry'
+			mockInAppMessagingProvider.processInAppMessages.mockReturnValue(
+				inAppMessages
 			);
+
+			await inAppMessaging.dispatchEvent(simpleEvent);
+
 			expect(notifyMessageInteractionEventListeners).toBeCalledWith(
-				closetExpiry,
+				closestExpiryMessage,
 				InAppMessageInteractionEvent.MESSAGE_RECEIVED
 			);
 		});
 
 		test('can be customized through setConflictHandler', async () => {
-			mockPluggable.processInAppMessages.mockReturnValue(inAppMessages);
-			const customConflictHandler = (messages) =>
-				messages.find((message) => message.id === 'custom-handled');
+			const customConflictHandler = messages =>
+				messages.find(message => message.id === 'custom-handled');
+			mockInAppMessagingProvider.processInAppMessages.mockReturnValue(
+				inAppMessages
+			);
+
 			inAppMessaging.setConflictHandler(customConflictHandler);
 			await inAppMessaging.dispatchEvent(simpleEvent);
-			const customHandled = inAppMessages.find(
-				(message) => message.id === 'custom-handled'
-			);
+
 			expect(notifyMessageInteractionEventListeners).toBeCalledWith(
-				customHandled,
+				customHandledMessage,
 				InAppMessageInteractionEvent.MESSAGE_RECEIVED
 			);
 		});

@@ -32,16 +32,19 @@ describe('Notifications', () => {
 	describe('configure', () => {
 		test('can be called without input', () => {
 			const config = Notifications.configure();
+
 			expect(config).toStrictEqual({});
 		});
 
 		test('works with aws-exports', () => {
 			const config = Notifications.configure(awsConfig);
+
 			expect(config).toStrictEqual(notificationsConfig);
 		});
 
 		test('works with adhoc config', () => {
 			const config = Notifications.configure(adhocConfig);
+
 			expect(config).toStrictEqual(adhocConfig.Notifications);
 		});
 	});

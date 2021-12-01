@@ -14,7 +14,7 @@ export const mockHub = {
 	listen: jest.fn(),
 };
 
-export const mockPluggable = {
+export const mockInAppMessagingProvider = {
 	configure: jest.fn(),
 	getCategory: jest.fn(),
 	getInAppMessages: jest.fn(),

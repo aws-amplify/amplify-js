@@ -68,13 +68,13 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 		mockStorage.setItem.mockImplementation((key, val) => {
 			mockStorageMemory[key] = val;
 		});
-		mockStorage.getItem.mockImplementation((key) => mockStorageMemory[key]);
+		mockStorage.getItem.mockImplementation(key => mockStorageMemory[key]);
 	});
 	beforeEach(() => {
 		jest.clearAllMocks();
 		getStorageSpy.mockReturnValue(mockStorage);
 		credentialsGetSpy.mockResolvedValue(credentials);
-		credentialsShearSpy.mockImplementation((credentials) => credentials);
+		credentialsShearSpy.mockImplementation(credentials => credentials);
 		mockStorageMemory = {};
 		provider = new AWSPinpointProvider();
 	});
@@ -94,11 +94,13 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 	describe('configure', () => {
 		test('can be called without input', () => {
 			const config = provider.configure();
+
 			expect(config).toMatchObject({});
 		});
 
 		test('attaches a storage helper to the config', () => {
 			const config = provider.configure(awsPinpointConfig);
+
 			expect(config).toStrictEqual({
 				...awsPinpointConfig,
 				storage: mockStorage,
@@ -118,12 +120,15 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 					InAppMessageCampaigns: messages,
 				},
 			});
+
 			expect(await provider.getInAppMessages()).toStrictEqual(messages);
 		});
 
 		test('throws an error if credentials are empty', async () => {
 			credentialsGetSpy.mockResolvedValue(null);
+
 			await expect(provider.getInAppMessages()).rejects.toThrow();
+
 			expect(logger.debug).toBeCalledWith('no credentials found');
 		});
 
@@ -131,7 +136,9 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 			credentialsGetSpy.mockImplementation(() => {
 				throw new Error();
 			});
+
 			await expect(provider.getInAppMessages()).rejects.toThrow();
+
 			expect(logger.error).toBeCalledWith(
 				expect.stringContaining('Error getting credentials'),
 				expect.any(Error)
@@ -142,7 +149,9 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 			clientSendSpy.mockImplementationOnce(() => {
 				throw new Error();
 			});
+
 			await expect(provider.getInAppMessages()).rejects.toThrow();
+
 			expect(logger.error).toBeCalledWith(
 				expect.stringContaining('Error getting in-app messages'),
 				expect.any(Error)
@@ -172,6 +181,7 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 				messages,
 				simpleEvent
 			);
+
 			expect(result.id).toBe('uuid-4');
 		});
 
@@ -180,6 +190,7 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 				messages,
 				simpleEvent
 			);
+
 			expect(result.id).toBe('uuid-3');
 		});
 	});
@@ -191,6 +202,7 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 
 		test('updates Pinpoint endpoint', async () => {
 			await provider.identifyUser(userId, userInfo);
+
 			expect(logger.debug).toBeCalledWith(
 				'updating endpoint',
 				expect.objectContaining(pinpointEndpointPayload)
@@ -202,7 +214,9 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 			clientSendSpy.mockImplementationOnce(() => {
 				throw new Error();
 			});
+
 			await expect(provider.identifyUser(userId, userInfo)).rejects.toThrow();
+
 			expect(logger.error).toBeCalledWith(
 				expect.stringContaining('Error identifying user'),
 				expect.any(Error)
@@ -232,13 +246,17 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 
 		test('messages stop being processed if session cap is met', async () => {
 			expect(getStorageSpy).toBeCalled();
+
 			provider.configure(awsPinpointConfig);
 			const message = cloneDeep(pinpointInAppMessage);
 			message.SessionCap = 1;
+
 			expect(
 				await provider.processInAppMessages([message], simpleEvent)
 			).toHaveLength(1);
+
 			notify(displayedMessage);
+
 			expect(
 				await provider.processInAppMessages([message], simpleEvent)
 			).toHaveLength(0);
@@ -246,13 +264,17 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 
 		test('messages stop being processed if daily cap is met', async () => {
 			expect(getStorageSpy).toBeCalled();
+
 			provider.configure(awsPinpointConfig);
 			const message = cloneDeep(pinpointInAppMessage);
 			message.DailyCap = 1;
+
 			expect(
 				await provider.processInAppMessages([message], simpleEvent)
 			).toHaveLength(1);
+
 			notify(displayedMessage);
+
 			expect(
 				await provider.processInAppMessages([message], simpleEvent)
 			).toHaveLength(0);
@@ -260,13 +282,17 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 
 		test('messages stop being processed if total cap is met', async () => {
 			expect(getStorageSpy).toBeCalled();
+
 			provider.configure(awsPinpointConfig);
 			const message = cloneDeep(pinpointInAppMessage);
 			message.TotalCap = 1;
+
 			expect(
 				await provider.processInAppMessages([message], simpleEvent)
 			).toHaveLength(1);
+
 			notify(displayedMessage);
+
 			expect(
 				await provider.processInAppMessages([message], simpleEvent)
 			).toHaveLength(0);
@@ -274,6 +300,7 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 
 		test('session caps are tracked per message', async () => {
 			expect(getStorageSpy).toBeCalled();
+
 			provider.configure(awsPinpointConfig);
 			const firstMessage = cloneDeep(pinpointInAppMessage);
 			firstMessage.SessionCap = 1;
@@ -283,14 +310,19 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 			};
 			secondMessage.SessionCap = 1;
 			const messages = [firstMessage, secondMessage];
+
 			expect(
 				await provider.processInAppMessages(messages, simpleEvent)
 			).toHaveLength(2);
+
 			notify(displayedMessage);
+
 			expect(
 				await provider.processInAppMessages(messages, simpleEvent)
 			).toHaveLength(1);
+
 			notify({ ...displayedMessage, id: 'uuid-2' });
+
 			expect(
 				await provider.processInAppMessages(messages, simpleEvent)
 			).toHaveLength(0);
@@ -298,6 +330,7 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 
 		test('daily caps are tracked across messages', async () => {
 			expect(getStorageSpy).toBeCalled();
+
 			provider.configure(awsPinpointConfig);
 			const firstMessage = cloneDeep(pinpointInAppMessage);
 			firstMessage.DailyCap = 1;
@@ -307,10 +340,13 @@ describe('AWSPinpoint InAppMessaging Provider', () => {
 			};
 			secondMessage.DailyCap = 1;
 			const messages = [firstMessage, secondMessage];
+
 			expect(
 				await provider.processInAppMessages(messages, simpleEvent)
 			).toHaveLength(2);
+
 			notify(displayedMessage);
+
 			expect(
 				await provider.processInAppMessages(messages, simpleEvent)
 			).toHaveLength(0);

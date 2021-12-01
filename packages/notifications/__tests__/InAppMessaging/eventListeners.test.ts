@@ -35,6 +35,7 @@ describe('Interaction event listeners', () => {
 			messageReceivedHandler,
 			InAppMessageInteractionEvent.MESSAGE_RECEIVED
 		);
+
 		expect(listener).toBeDefined();
 	});
 
@@ -47,6 +48,7 @@ describe('Interaction event listeners', () => {
 			message,
 			InAppMessageInteractionEvent.MESSAGE_RECEIVED
 		);
+
 		expect(messageReceivedHandler).toBeCalled();
 	});
 
@@ -55,11 +57,13 @@ describe('Interaction event listeners', () => {
 			messageReceivedHandler,
 			InAppMessageInteractionEvent.MESSAGE_RECEIVED
 		);
+
 		listener.remove();
 		notifyMessageInteractionEventListeners(
 			message,
 			InAppMessageInteractionEvent.MESSAGE_RECEIVED
 		);
+
 		expect(messageReceivedHandler).not.toBeCalled();
 	});
 
@@ -92,6 +96,7 @@ describe('Interaction event listeners', () => {
 			message,
 			InAppMessageInteractionEvent.MESSAGE_ACTION_TAKEN
 		);
+
 		// no listener added
 		expect(messageReceivedHandler).toBeCalledTimes(0);
 		// two listeners added
