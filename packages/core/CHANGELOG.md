@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.8...@aws-amplify/core@4.3.9) (2021-12-02)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** Use undefined for default sequence token with CloudWatch logging ([#9181](https://github.com/aws-amplify/amplify-js/issues/9181)) ([6f217aa](https://github.com/aws-amplify/amplify-js/commit/6f217aa89e672fc4665816756994e6245b19227e))
+
+
+
+
+
 ## [4.3.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.7...@aws-amplify/core@4.3.8) (2021-11-18)
 
 **Note:** Version bump only for package @aws-amplify/core

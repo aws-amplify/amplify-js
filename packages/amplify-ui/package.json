@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/ui",
-	"private": "true",
-  "version": "2.0.3",
+  "private": "true",
+  "version": "2.0.4",
   "main": "dist/aws-amplify-ui.js",
   "types": "lib/index.d.ts",
   "publishConfig": {
