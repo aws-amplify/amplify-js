@@ -216,6 +216,17 @@ export const batchGeofencesCamelcaseResults = {
 	errors: [],
 };
 
+export function createGeofenceInputArray(numberOfGeofences) {
+	const geofences = [];
+	for (let i = 0; i < numberOfGeofences; i++) {
+		geofences.push({
+			geofenceId: `validGeofenceId${i}`,
+			geometry: validGeometry,
+		});
+	}
+	return geofences;
+}
+
 export function mockBatchPutGeofenceCommand(command) {
 	if (command instanceof BatchPutGeofenceCommand) {
 		return {

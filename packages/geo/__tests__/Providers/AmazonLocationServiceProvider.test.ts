@@ -26,6 +26,7 @@ import {
 	validGeofences,
 	batchGeofencesCamelcaseResults,
 	mockBatchPutGeofenceCommand,
+	createGeofenceInputArray,
 } from '../data';
 import {
 	SearchByTextOptions,
@@ -381,6 +382,46 @@ describe('AmazonLocationServiceProvider', () => {
 			const results = await locationProvider.createGeofences(validGeofences);
 
 			expect(results).toEqual(batchGeofencesCamelcaseResults);
+		});
+
+		test('createGeofences calls batchPutGeofences in batches of 10 from input', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementation(mockBatchPutGeofenceCommand);
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			const input = createGeofenceInputArray(44);
+
+			const spyonProvider = jest.spyOn(locationProvider, 'createGeofences');
+			const spyonClient = jest.spyOn(LocationClient.prototype, 'send');
+
+			const results = await locationProvider.createGeofences(input);
+
+			const expected = {
+				successes: input.map(({ geofenceId }) => {
+					return {
+						geofenceId,
+						createTime: '2020-04-01T21:00:00.000Z',
+						updateTime: '2020-04-01T21:00:00.000Z',
+					};
+				}),
+				errors: [],
+			};
+			expect(results).toEqual(expected);
+
+			const spyProviderInput = spyonProvider.mock.calls[0][0];
+
+			const spyClientInput = spyonClient.mock.calls;
+
+			expect(spyClientInput.length).toEqual(
+				Math.ceil(spyProviderInput.length / 10)
+			);
 		});
 
 		test('should error if there are no geofenceCollections in config', async () => {
