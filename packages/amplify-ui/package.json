@@ -1,6 +1,5 @@
 {
   "name": "@aws-amplify/ui",
-  "private": "false",
   "version": "2.0.4",
   "main": "dist/aws-amplify-ui.js",
   "types": "lib/index.d.ts",
