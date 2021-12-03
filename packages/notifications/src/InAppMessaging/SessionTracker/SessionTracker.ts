@@ -22,15 +22,17 @@ import {
 let hidden: string;
 let visibilityChange: string;
 
-if (typeof document.hidden !== 'undefined') {
-	hidden = 'hidden';
-	visibilityChange = 'visibilitychange';
-} else if (typeof document['msHidden'] !== 'undefined') {
-	hidden = 'msHidden';
-	visibilityChange = 'msvisibilitychange';
-} else if (typeof document['webkitHidden'] !== 'undefined') {
-	hidden = 'webkitHidden';
-	visibilityChange = 'webkitvisibilitychange';
+if (document) {
+	if (typeof document.hidden !== 'undefined') {
+		hidden = 'hidden';
+		visibilityChange = 'visibilitychange';
+	} else if (typeof document['msHidden'] !== 'undefined') {
+		hidden = 'msHidden';
+		visibilityChange = 'msvisibilitychange';
+	} else if (typeof document['webkitHidden'] !== 'undefined') {
+		hidden = 'webkitHidden';
+		visibilityChange = 'webkitvisibilitychange';
+	}
 }
 
 const logger = new Logger('InAppMessagingSessionTracker');
@@ -43,12 +45,12 @@ export default class SessionTracker implements SessionTrackerInterface {
 	}
 
 	start = (): SessionState => {
-		document.addEventListener(visibilityChange, this.visibilityChangeHandler);
+		document?.addEventListener(visibilityChange, this.visibilityChangeHandler);
 		return this.getSessionState();
 	};
 
 	end = (): SessionState => {
-		document.removeEventListener(
+		document?.removeEventListener(
 			visibilityChange,
 			this.visibilityChangeHandler
 		);
@@ -56,13 +58,17 @@ export default class SessionTracker implements SessionTrackerInterface {
 	};
 
 	private getSessionState = (): SessionState => {
-		if (!document[hidden]) {
+		if (document && !document[hidden]) {
 			return 'started';
 		}
+		// If, for any reason, document is undefined the session will never start
 		return 'ended';
 	};
 
 	private visibilityChangeHandler = () => {
+		if (!document) {
+			return;
+		}
 		if (document[hidden]) {
 			logger.debug('App is now hidden');
 			this.sessionStateChangeHandler('ended');
