@@ -436,7 +436,6 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		try {
 			response = await client.send(command);
 		} catch (error) {
-			logger.warn(error);
 			throw error;
 		}
 		return response;

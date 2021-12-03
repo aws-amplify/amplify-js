@@ -424,6 +424,62 @@ describe('AmazonLocationServiceProvider', () => {
 			);
 		});
 
+		test('createGeofences properly handles errors with bad network calls', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			const input = createGeofenceInputArray(44);
+			input[22].geofenceId = 'badId';
+			const validEntries = [...input.slice(0, 20), ...input.slice(30, 44)];
+
+			const spyonClient = jest.spyOn(LocationClient.prototype, 'send');
+			spyonClient.mockImplementation(geofenceInput => {
+				const entries = geofenceInput.input as any;
+
+				if (entries.Entries.some(entry => entry.GeofenceId === 'badId')) {
+					return Promise.reject(new Error('Bad network call'));
+				}
+
+				const resolution = {
+					Successes: entries.Entries.map(({ GeofenceId }) => {
+						return {
+							GeofenceId,
+							CreateTime: '2020-04-01T21:00:00.000Z',
+							UpdateTime: '2020-04-01T21:00:00.000Z',
+						};
+					}),
+					Errors: [],
+				};
+				return Promise.resolve(resolution);
+			});
+
+			const results = await locationProvider.createGeofences(input);
+			const badResults = input.slice(20, 30).map(input => {
+				return {
+					error: {
+						code: 'APIConnectionError',
+						message: 'Bad network call',
+					},
+					geofenceId: input.geofenceId,
+				};
+			});
+			const expected = {
+				successes: validEntries.map(({ geofenceId }) => {
+					return {
+						geofenceId,
+						createTime: '2020-04-01T21:00:00.000Z',
+						updateTime: '2020-04-01T21:00:00.000Z',
+					};
+				}),
+				errors: badResults,
+			};
+			expect(results).toEqual(expected);
+		});
+
 		test('should error if there are no geofenceCollections in config', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
