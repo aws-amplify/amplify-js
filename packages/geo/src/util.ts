@@ -16,7 +16,7 @@ import {
 	Longitude,
 	Latitude,
 	GeofenceInput,
-	Polygon,
+	GeofencePolygon,
 	LinearRing,
 } from './types';
 
@@ -86,7 +86,7 @@ export function validateLinearRing(linearRing: LinearRing) {
 	}
 }
 
-export function validatePolygon(polygon: Polygon): void {
+export function validatePolygon(polygon: GeofencePolygon): void {
 	if (!Array.isArray(polygon)) {
 		const errorString = `Polygon ${JSON.stringify(
 			polygon

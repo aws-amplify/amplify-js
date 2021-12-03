@@ -25,13 +25,16 @@ import {
 	testPlaceCamelCase,
 	validGeofences,
 	batchGeofencesCamelcaseResults,
-	mockBatchPutGeofenceCommand,
 	createGeofenceInputArray,
+	mockBatchPutGeofenceCommand,
+	validGeometry,
+	mockGetGeofenceCommand,
 } from '../data';
 import {
 	SearchByTextOptions,
 	SearchByCoordinatesOptions,
 	Coordinates,
+	AmazonLocationServiceGeofence,
 } from '../../src/types';
 
 LocationClient.prototype.send = jest.fn(async command => {
@@ -389,10 +392,6 @@ describe('AmazonLocationServiceProvider', () => {
 				return Promise.resolve(credentials);
 			});
 
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementation(mockBatchPutGeofenceCommand);
-
 			const locationProvider = new AmazonLocationServiceProvider();
 			locationProvider.configure(awsConfig.geo.amazon_location_service);
 
@@ -491,6 +490,47 @@ describe('AmazonLocationServiceProvider', () => {
 			await expect(
 				locationProvider.createGeofences(validGeofences)
 			).rejects.toThrow(
+				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.'
+			);
+		});
+	});
+
+	describe('getGeofence', () => {
+		test('getGeofence returns the right geofence', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementation(mockGetGeofenceCommand);
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			const results: AmazonLocationServiceGeofence =
+				await locationProvider.getGeofence('geofenceId');
+
+			const expected = {
+				geofenceId: 'geofenceId',
+				geometry: validGeometry,
+				createTime: '2020-04-01T21:00:00.000Z',
+				updateTime: '2020-04-01T21:00:00.000Z',
+				status: 'ACTIVE',
+			};
+
+			await expect(results).toEqual(expected);
+		});
+
+		test('should error if there are no geofenceCollections in config', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure({});
+
+			await expect(locationProvider.getGeofence('geofenceId')).rejects.toThrow(
 				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.'
 			);
 		});

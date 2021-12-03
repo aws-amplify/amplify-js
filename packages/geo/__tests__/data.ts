@@ -10,13 +10,16 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-import { BatchPutGeofenceCommand } from '@aws-sdk/client-location';
+import {
+	BatchPutGeofenceCommand,
+	GetGeofenceCommand,
+} from '@aws-sdk/client-location';
 import camelcaseKeys from 'camelcase-keys';
 
 import {
 	Coordinates,
 	LinearRing,
-	Polygon,
+	GeofencePolygon,
 	GeofenceInput,
 	PolygonGeometry,
 } from '../src/types';
@@ -147,8 +150,11 @@ export const linearRingBadCoordinates: LinearRing = [
 ];
 
 // Polygons
-export const validPolygon: Polygon = [validLinearRing];
-export const polygonTooBig: Polygon = [validLinearRing, validLinearRing];
+export const validPolygon: GeofencePolygon = [validLinearRing];
+export const polygonTooBig: GeofencePolygon = [
+	validLinearRing,
+	validLinearRing,
+];
 
 // Geometry
 export const validGeometry: PolygonGeometry = {
@@ -239,5 +245,21 @@ export function mockBatchPutGeofenceCommand(command) {
 			}),
 			Errors: [],
 		};
+	}
+}
+
+export function mockGetGeofenceCommand(command) {
+	const geofence = {
+		GeofenceId: command.input.GeofenceId,
+		Geometry: {
+			Polygon: validPolygon,
+		},
+		CreateTime: '2020-04-01T21:00:00.000Z',
+		UpdateTime: '2020-04-01T21:00:00.000Z',
+		Status: 'ACTIVE',
+	};
+
+	if (command instanceof GetGeofenceCommand) {
+		return geofence;
 	}
 }

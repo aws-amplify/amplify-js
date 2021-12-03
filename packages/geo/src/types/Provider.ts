@@ -16,6 +16,7 @@ import {
 	Coordinates,
 	Place,
 	MapStyle,
+	Geofence,
 	GeofenceInput,
 	GeofenceOptions,
 	CreateUpdateGeofenceResults,
@@ -46,9 +47,12 @@ export interface GeoProvider {
 		options?: SearchByCoordinatesOptions
 	): Promise<Place>;
 
-	// create a geofence
+	// create geofences
 	createGeofences(
-		geofences: GeofenceInput | GeofenceInput[],
+		geofences: GeofenceInput[],
 		options?: GeofenceOptions
 	): Promise<CreateUpdateGeofenceResults>;
+
+	// get a single geofence
+	getGeofence(geofenceId: string, options?: GeofenceOptions): Promise<Geofence>;
 }
