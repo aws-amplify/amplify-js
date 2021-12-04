@@ -263,21 +263,22 @@ export function mockBatchPutGeofenceCommand(command) {
 			Errors: [],
 		};
 	}
+	if (command instanceof GetGeofenceCommand) {
+		return mockGetGeofenceCommand(command);
+	}
 }
 
 export function mockGetGeofenceCommand(command) {
-	const geofence = {
-		GeofenceId: command.input.GeofenceId,
-		Geometry: {
-			Polygon: validPolygon,
-		},
-		CreateTime: '2020-04-01T21:00:00.000Z',
-		UpdateTime: '2020-04-01T21:00:00.000Z',
-		Status: 'ACTIVE',
-	};
-
 	if (command instanceof GetGeofenceCommand) {
-		return geofence;
+		return {
+			GeofenceId: command.input.GeofenceId,
+			Geometry: {
+				Polygon: validPolygon,
+			},
+			CreateTime: '2020-04-01T21:00:00.000Z',
+			UpdateTime: '2020-04-01T21:00:00.000Z',
+			Status: 'ACTIVE',
+		};
 	}
 }
 

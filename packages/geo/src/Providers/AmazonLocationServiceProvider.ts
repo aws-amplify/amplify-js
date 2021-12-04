@@ -600,56 +600,64 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			successes: [],
 			errors: [],
 		};
+
+		const batches = [];
+
 		while (PascalGeofences.length > 0) {
 			// Splice off 10 geofences from input clone due to Amazon Location Service API limit
-			const tenGeofences = PascalGeofences.splice(0, 10);
+			batches.push(PascalGeofences.splice(0, 10));
+		}
 
-			// Make API call for the 10 geofences
-			let response: BatchPutGeofenceCommandOutput;
-			try {
-				response = await this._AmazonLocationServiceBatchPutGeofenceCall(
-					tenGeofences,
-					options?.collectionName || this._config.geofenceCollections.default
-				);
-			} catch (error) {
-				// If the API call fails, add the geofences to the errors array and move to next batch
-				tenGeofences.forEach(geofence => {
-					results.errors.push({
-						geofenceId: geofence.GeofenceId,
-						error: {
-							code: 'APIConnectionError',
-							message: error.message,
-						},
+		await Promise.all(
+			batches.map(async batch => {
+				// for (const batch of batches) {
+				// Make API call for the 10 geofences
+				let response: BatchPutGeofenceCommandOutput;
+				try {
+					response = await this._AmazonLocationServiceBatchPutGeofenceCall(
+						batch,
+						options?.collectionName || this._config.geofenceCollections.default
+					);
+				} catch (error) {
+					// If the API call fails, add the geofences to the errors array and move to next batch
+					batch.forEach(geofence => {
+						results.errors.push({
+							geofenceId: geofence.GeofenceId,
+							error: {
+								code: 'APIConnectionError',
+								message: error.message,
+							},
+						});
+					});
+					return;
+				}
+
+				// Push all successes to results
+				response.Successes.forEach(success => {
+					const { GeofenceId, CreateTime, UpdateTime } = success;
+					results.successes.push({
+						geofenceId: GeofenceId,
+						createTime: CreateTime,
+						updateTime: UpdateTime,
 					});
 				});
-				continue;
-			}
 
-			// Push all successes to results
-			response.Successes.forEach(success => {
-				const { GeofenceId, CreateTime, UpdateTime } = success;
-				results.successes.push({
-					geofenceId: GeofenceId,
-					createTime: CreateTime,
-					updateTime: UpdateTime,
+				// Push all errors to results
+				response.Errors.forEach(error => {
+					const {
+						Error: { Code, Message },
+						GeofenceId,
+					} = error;
+					results.errors.push({
+						error: {
+							code: Code,
+							message: Message,
+						},
+						geofenceId: GeofenceId,
+					});
 				});
-			});
-
-			// Push all errors to results
-			response.Errors.forEach(error => {
-				const {
-					Error: { Code, Message },
-					GeofenceId,
-				} = error;
-				results.errors.push({
-					error: {
-						code: Code,
-						message: Message,
-					},
-					geofenceId: GeofenceId,
-				});
-			});
-		}
+			})
+		);
 		return results;
 	}
 }
