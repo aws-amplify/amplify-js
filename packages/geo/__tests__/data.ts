@@ -14,6 +14,7 @@ import {
 	BatchPutGeofenceCommand,
 	GetGeofenceCommand,
 	ListGeofencesCommand,
+	BatchDeleteGeofenceCommand,
 } from '@aws-sdk/client-location';
 import camelcaseKeys from 'camelcase-keys';
 
@@ -298,18 +299,15 @@ export function mockListGeofencesCommand(command) {
 	}
 }
 
-export function mockListGeofencesCommand(command) {
-	if (command instanceof ListGeofencesCommand) {
-		const geofences = createGeofenceOutputArray(200);
-		if (command.input.NextToken === 'THIS IS YOUR TOKEN') {
-			return {
-				Entries: geofences.slice(100, 200),
-				NextToken: 'THIS IS YOUR SECOND TOKEN',
-			};
-		}
+export function mockDeleteGeofencesCommand(command) {
+	if (command instanceof BatchDeleteGeofenceCommand) {
 		return {
-			Entries: geofences.slice(0, 100),
-			NextToken: 'THIS IS YOUR TOKEN',
+			Successes: command.input.GeofenceIds.map(geofenceId => {
+				return {
+					GeofenceId: geofenceId,
+				};
+			}),
+			Errors: [],
 		};
 	}
 }

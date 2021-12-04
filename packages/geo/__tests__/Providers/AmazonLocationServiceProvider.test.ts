@@ -30,6 +30,7 @@ import {
 	validGeometry,
 	mockGetGeofenceCommand,
 	mockListGeofencesCommand,
+	mockDeleteGeofencesCommand,
 } from '../data';
 import {
 	SearchByTextOptions,
@@ -719,6 +720,49 @@ describe('AmazonLocationServiceProvider', () => {
 			locationProvider.configure({});
 
 			await expect(locationProvider.listGeofences()).rejects.toThrow(
+				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.'
+			);
+		});
+	});
+
+	describe('deleteGeofences', () => {
+		test('deleteGeofences deletes given geofences successfully', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementation(mockDeleteGeofencesCommand);
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			const geofenceIds = validGeofences.map(({ geofenceId }) => geofenceId);
+
+			const results = await locationProvider.deleteGeofences(geofenceIds);
+
+			const expected = {
+				successes: geofenceIds,
+				errors: [],
+			};
+
+			expect(results).toEqual(expected);
+		});
+
+		test('should error if there are no geofenceCollections in config', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure({});
+
+			const geofenceIds = validGeofences.map(({ geofenceId }) => geofenceId);
+
+			await expect(
+				locationProvider.deleteGeofences(geofenceIds)
+			).rejects.toThrow(
 				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.'
 			);
 		});

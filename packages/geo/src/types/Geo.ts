@@ -128,8 +128,8 @@ export type GeofenceOptions = {
 // Error type for errors related to Geofence API calls
 export type GeofenceError = {
 	error: {
-		code?: string;
-		message?: string;
+		code: string;
+		message: string;
 	};
 	geofenceId: string;
 };
@@ -161,4 +161,10 @@ export type ListGeofenceOptions = GeofenceOptions & {
 export type ListGeofenceResults = {
 	entries: Geofence[];
 	nextToken: string;
+};
+
+// Results object for deleteGeofence
+export type DeleteGeofencesResults = {
+	successes: string[];
+	errors: GeofenceError[];
 };
