@@ -226,6 +226,45 @@ export class GeoClass {
 		}
 	}
 
+	/**
+	 * Update geofences inside of a geofence collection
+	 * @param geofences - Single or array of geofence objects to create
+	 * @param options? - Optional parameters for creating geofences
+	 * @returns {Promise<CreateUpdateGeofenceResults>} - Promise that resolves to an object with:
+	 *   successes: list of geofences successfully created
+	 *   errors: list of geofences that failed to create
+	 */
+	public async updateGeofences(
+		geofences: GeofenceInput | GeofenceInput[],
+		options?: GeofenceOptions
+	): Promise<CreateUpdateGeofenceResults> {
+		const { providerName = DEFAULT_PROVIDER } = options || {};
+		const prov = this.getPluggable(providerName);
+
+		// If single geofence input, make it an array for batch call
+		let geofenceInputArray;
+		if (!Array.isArray(geofences)) {
+			geofenceInputArray = [geofences];
+		} else {
+			geofenceInputArray = geofences;
+		}
+
+		// Validate all geofences are unique and valid
+		try {
+			validateGeofences(geofenceInputArray);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		try {
+			return await prov.updateGeofences(geofenceInputArray, options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+	}
+
 	public async getGeofence(
 		geofenceId: string,
 		options?: GeofenceOptions

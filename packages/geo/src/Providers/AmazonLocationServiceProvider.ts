@@ -290,80 +290,70 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw error;
 		}
 
-		// Convert geofences to PascalCase for Amazon Location Service format
-		const PascalGeofences: BatchPutGeofenceRequestEntry[] = geofences.map(
-			({ geofenceId, geometry: { polygon } }) => {
-				return {
-					GeofenceId: geofenceId,
-					Geometry: {
-						Polygon: polygon,
-					},
-				};
-			}
-		);
+		// TODO: Check if any geofenceIds already exist
+		// Error with any IDs that already exist before making API call
+		// const geofenceIds: string[] = geofences.map(({ geofenceId }) => geofenceId);
+		// const geofenceIdsExist = [];
+		// geofenceIds.forEach(async geofenceId => {
+		// 	try {
+		// 		await this.getGeofence(geofenceId);
+		// 	} catch (error) {
+		// 		geofenceIdsExist.push(geofenceId);
+		// 	}
+		// });
+		// if (geofenceIdsExist.length > 0) {
+		// 	throw new Error(
+		// 		`GeofenceIds ${JSON.stringify(geofenceIdsExist)} already exist`
+		// 	);
+		// }
 
-		// Create results object
-		const results: CreateUpdateGeofenceResults = {
-			successes: [],
-			errors: [],
-		};
+		const results = await this._batchPutGeofence(geofences, options);
 
-		/**
-		 * Amazon Location Service BatchPutGeofence API can only accept up to 10 geofences
-		 * at a time. So, we will make one call for every 10 geofence objects from the
-		 * input and batch the results together to return.
-		 * https://docs.aws.amazon.com/location-geofences/latest/APIReference/API_BatchPutGeofence.html
-		 */
-		while (PascalGeofences.length > 0) {
-			// Splice off 10 geofences from input clone due to Amazon Location Service API limit
-			const tenGeofences = PascalGeofences.splice(0, 10);
+		return results;
+	}
 
-			// Make API call for the 10 geofences
-			let response: BatchPutGeofenceCommandOutput;
-			try {
-				response = await this._AmazonLocationServiceBatchPutGeofenceCall(
-					tenGeofences,
-					options?.collectionName
-				);
-			} catch (error) {
-				// If the API call fails, add the geofences to the errors array and move to next batch
-				tenGeofences.forEach(geofence => {
-					results.errors.push({
-						geofenceId: geofence.GeofenceId,
-						error: {
-							code: 'APIConnectionError',
-							message: error.message,
-						},
-					});
-				});
-				continue;
-			}
-
-			// Push all successes to results
-			response.Successes.forEach(success => {
-				const { GeofenceId, CreateTime, UpdateTime } = success;
-				results.successes.push({
-					geofenceId: GeofenceId,
-					createTime: CreateTime,
-					updateTime: UpdateTime,
-				});
-			});
-
-			// Push all errors to results
-			response.Errors.forEach(error => {
-				const {
-					Error: { Code, Message },
-					GeofenceId,
-				} = error;
-				results.errors.push({
-					error: {
-						code: Code,
-						message: Message,
-					},
-					geofenceId: GeofenceId,
-				});
-			});
+	/**
+	 * Update geofences inside of a geofence collection
+	 * @param geofences - Array of geofence objects to create
+	 * @param options? - Optional parameters for creating geofences
+	 * @returns {Promise<AmazonLocationServiceCreateUpdateGeofenceResults>} - Promise that resolves to an object with:
+	 *   successes: list of geofences successfully created
+	 *   errors: list of geofences that failed to create
+	 */
+	public async updateGeofences(
+		geofences: GeofenceInput[],
+		options?: AmazonLocationServiceGeofenceOptions
+	): Promise<CreateUpdateGeofenceResults> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			throw new Error('No credentials');
 		}
+
+		try {
+			this._verifyGeofenceCollections(options?.collectionName);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		// TODO: Check if any geofenceIds do not exist
+		// Error with any IDs that do not exist before making API call
+		// const geofenceIds: string[] = geofences.map(({ geofenceId }) => geofenceId);
+		// const geofenceIdsDoNotExist = [];
+		// geofenceIds.forEach(async geofenceId => {
+		// 	try {
+		// 		await this.getGeofence(geofenceId);
+		// 	} catch (error) {
+		// 		geofenceIdsDoNotExist.push(geofenceId);
+		// 	}
+		// });
+		// if (geofenceIdsDoNotExist.length > 0) {
+		// 	throw new Error(
+		// 		`GeofenceIds ${JSON.stringify(geofenceIdsDoNotExist)} do not exist`
+		// 	);
+		// }
+
+		const results = await this._batchPutGeofence(geofences, options);
 
 		return results;
 	}
@@ -592,5 +582,74 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw error;
 		}
 		return response;
+	}
+
+	private async _batchPutGeofence(geofences, options) {
+		// Convert geofences to PascalCase for Amazon Location Service format
+		const PascalGeofences: BatchPutGeofenceRequestEntry[] = geofences.map(
+			({ geofenceId, geometry: { polygon } }) => {
+				return {
+					GeofenceId: geofenceId,
+					Geometry: {
+						Polygon: polygon,
+					},
+				};
+			}
+		);
+		const results: CreateUpdateGeofenceResults = {
+			successes: [],
+			errors: [],
+		};
+		while (PascalGeofences.length > 0) {
+			// Splice off 10 geofences from input clone due to Amazon Location Service API limit
+			const tenGeofences = PascalGeofences.splice(0, 10);
+
+			// Make API call for the 10 geofences
+			let response: BatchPutGeofenceCommandOutput;
+			try {
+				response = await this._AmazonLocationServiceBatchPutGeofenceCall(
+					tenGeofences,
+					options?.collectionName || this._config.geofenceCollections.default
+				);
+			} catch (error) {
+				// If the API call fails, add the geofences to the errors array and move to next batch
+				tenGeofences.forEach(geofence => {
+					results.errors.push({
+						geofenceId: geofence.GeofenceId,
+						error: {
+							code: 'APIConnectionError',
+							message: error.message,
+						},
+					});
+				});
+				continue;
+			}
+
+			// Push all successes to results
+			response.Successes.forEach(success => {
+				const { GeofenceId, CreateTime, UpdateTime } = success;
+				results.successes.push({
+					geofenceId: GeofenceId,
+					createTime: CreateTime,
+					updateTime: UpdateTime,
+				});
+			});
+
+			// Push all errors to results
+			response.Errors.forEach(error => {
+				const {
+					Error: { Code, Message },
+					GeofenceId,
+				} = error;
+				results.errors.push({
+					error: {
+						code: Code,
+						message: Message,
+					},
+					geofenceId: GeofenceId,
+				});
+			});
+		}
+		return results;
 	}
 }
