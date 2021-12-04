@@ -302,11 +302,6 @@ export function mockListGeofencesCommand(command) {
 export function mockDeleteGeofencesCommand(command) {
 	if (command instanceof BatchDeleteGeofenceCommand) {
 		return {
-			Successes: command.input.GeofenceIds.map(geofenceId => {
-				return {
-					GeofenceId: geofenceId,
-				};
-			}),
 			Errors: [],
 		};
 	}

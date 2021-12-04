@@ -508,6 +508,14 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		return results;
 	}
 
+	/**
+	 * Delete geofences from a geofence collection
+	 * @param geofenceIds: string|string[]
+	 * @param options?: GeofenceOptions
+	 * @returns {Promise<DeleteGeofencesResults>} - Promise that resolves to an object with:
+	 *  successes: list of geofences successfully deleted
+	 *  errors: list of geofences that failed to delete
+	 */
 	public async deleteGeofences(
 		geofenceIds: string[],
 		options?: AmazonLocationServiceGeofenceOptions
@@ -525,32 +533,49 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw error;
 		}
 
-		// TODO: batchDeleteGeofence due to 10 geofences per request limit
-		// const results = await this._batchDeleteGeofence(geofenceIds, options);
-
-		const response = await this._AmazonLocationServiceBatchDeleteGeofenceCall(
-			geofenceIds,
-			options?.collectionName
-		);
-
-		// Convert response to camelCase for return
-		const { Errors } = response;
-
-		const errorGeofenceIds = Errors.map(({ GeofenceId }) => GeofenceId);
-		const camelcaseErrors: AmazonLocationServiceBatchGeofenceError[] =
-			Errors.map(({ GeofenceId, Error: { Code, Message } }) => ({
-				geofenceId: GeofenceId,
-				error: {
-					code: Code,
-					message: Message as AmazonLocationServiceBatchGeofenceErrorMessages,
-				},
-			}));
-
 		const results: AmazonLocationServiceDeleteGeofencesResults = {
-			errors: camelcaseErrors,
-			successes: geofenceIds.filter(Id => !errorGeofenceIds.includes(Id)),
+			successes: [],
+			errors: [],
 		};
 
+		const batches = [];
+
+		let count = 0;
+		while (count < geofenceIds.length) {
+			batches.push(geofenceIds.slice(count, (count += 10)));
+		}
+
+		await Promise.all(
+			batches.map(async batch => {
+				let response;
+				try {
+					response = await this._AmazonLocationServiceBatchDeleteGeofenceCall(
+						batch,
+						options?.collectionName || this._config.geofenceCollections.default
+					);
+				} catch (error) {
+					// If the API call fails, add the geofences to the errors array and move to next batch
+					batch.forEach(geofenceId => {
+						const errorObject = {
+							geofenceId,
+							error: {
+								code: error.message,
+								message: error.message,
+							},
+						};
+						results.errors.push(errorObject);
+					});
+					return;
+				}
+
+				const badGeofenceIds = results.errors.map(
+					({ geofenceId }) => geofenceId
+				);
+				results.successes.push(
+					...batch.filter(Id => !badGeofenceIds.includes(Id))
+				);
+			})
+		);
 		return results;
 	}
 
@@ -740,67 +765,5 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw error;
 		}
 		return response;
-	}
-
-	// TODO: Fix this function
-	private async _batchDeleteGeofence(
-		geofenceIds: string[],
-		options: AmazonLocationServiceGeofenceOptions
-	) {
-		// Convert geofences to PascalCase for Amazon Location Ser
-		const results: AmazonLocationServiceDeleteGeofencesResults = {
-			successes: [],
-			errors: [],
-		};
-
-		for (let index = 0; index < geofenceIds.length; index + 10) {
-			// Slice off 10 geofences from input clone due to Amazon Location Service API limit
-			const batch = geofenceIds.slice(index, index + 10);
-			console.log(
-				'💣🔥>>>>>>> ~ file: AmazonLocationServiceProvider.ts ~ line 744 ~ AmazonLocationServiceProvider ~ _batchDeleteGeofence ~ batch',
-				batch
-			);
-
-			// Make API call for the 10 geofences
-			let response: BatchDeleteGeofenceCommandOutput;
-			try {
-				response = await this._AmazonLocationServiceBatchDeleteGeofenceCall(
-					geofenceIds,
-					options?.collectionName
-				);
-			} catch (error) {
-				// If the API call fails, add the geofences to the errors array and move to next batch
-				batch.forEach(geofence => {
-					results.errors.push({
-						geofenceId: geofence,
-						error: {
-							code: 'APIConnectionError',
-							message: error.message,
-						},
-					});
-				});
-				continue;
-			}
-
-			// Convert response to camelCase for return
-
-			const Errors: BatchDeleteGeofenceError[] = response.Errors;
-			const errorGeofenceIds = Errors.map(({ GeofenceId }) => GeofenceId);
-			const camelcaseErrors: AmazonLocationServiceBatchGeofenceError[] =
-				Errors.map(({ GeofenceId, Error: { Code, Message } }) => ({
-					geofenceId: GeofenceId,
-					error: {
-						code: Code,
-						message: Message as AmazonLocationServiceBatchGeofenceErrorMessages,
-					},
-				}));
-
-			results.errors = [...results.errors, ...camelcaseErrors];
-			results.successes = [
-				...results.successes,
-				...geofenceIds.filter(Id => !errorGeofenceIds.includes(Id)),
-			];
-		}
-		return results;
 	}
 }

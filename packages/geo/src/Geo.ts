@@ -37,6 +37,7 @@ import {
 	Geofence,
 	ListGeofenceOptions,
 	ListGeofenceResults,
+	DeleteGeofencesResults,
 } from './types';
 
 const logger = new Logger('Geo');
@@ -194,7 +195,7 @@ export class GeoClass {
 	}
 
 	/**
-	 * Create geofences inside of a geofence collection
+	 * Create geofences
 	 * @param geofences - Single or array of geofence objects to create
 	 * @param options? - Optional parameters for creating geofences
 	 * @returns {Promise<CreateUpdateGeofenceResults>} - Promise that resolves to an object with:
@@ -227,7 +228,7 @@ export class GeoClass {
 	}
 
 	/**
-	 * Update geofences inside of a geofence collection
+	 * Update geofences
 	 * @param geofences - Single or array of geofence objects to create
 	 * @param options? - Optional parameters for creating geofences
 	 * @returns {Promise<CreateUpdateGeofenceResults>} - Promise that resolves to an object with:
@@ -265,6 +266,12 @@ export class GeoClass {
 		}
 	}
 
+	/**
+	 * Get a single geofence by geofenceId
+	 * @param geofenceId: string
+	 * @param options?: GeofenceOptions
+	 * @returns Promise<Geofence> - Promise that resolves to a geofence object
+	 */
 	public async getGeofence(
 		geofenceId: string,
 		options?: GeofenceOptions
@@ -283,7 +290,7 @@ export class GeoClass {
 	}
 
 	/**
-	 * List geofences from a geofence collection
+	 * List geofences
 	 * @param  options?: ListGeofenceOptions
 	 * @returns {Promise<ListGeofencesResults>} - Promise that resolves to an object with:
 	 *   entries: list of geofences - 100 geofences are listed per page
@@ -297,6 +304,52 @@ export class GeoClass {
 
 		try {
 			return await prov.listGeofences(options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Delete geofences
+	 * @param geofenceIds: string|string[]
+	 * @param options?: GeofenceOptions
+	 * @returns {Promise<DeleteGeofencesResults>} - Promise that resolves to an object with:
+	 *  successes: list of geofences successfully deleted
+	 *  errors: list of geofences that failed to delete
+	 */
+	public async deleteGeofences(
+		geofenceIds: string | string[],
+		options?: GeofenceOptions
+	): Promise<DeleteGeofencesResults> {
+		const { providerName = DEFAULT_PROVIDER } = options || {};
+		const prov = this.getPluggable(providerName);
+
+		// If single geofence input, make it an array for batch call
+		let geofenceIdsInputArray;
+		if (!Array.isArray(geofenceIds)) {
+			geofenceIdsInputArray = [geofenceIds];
+		} else {
+			geofenceIdsInputArray = geofenceIds;
+		}
+
+		// Validate all geofenceIds are valid
+		const badGeofenceIds = geofenceIdsInputArray.filter(geofenceId => {
+			try {
+				validateGeofenceId(geofenceId);
+			} catch (error) {
+				return false;
+			}
+		});
+		if (badGeofenceIds.length > 0) {
+			const errorString = `Invalid geofence ids: ${badGeofenceIds}`;
+			logger.debug(errorString);
+			throw new Error(errorString);
+		}
+
+		//  Delete geofences
+		try {
+			return await prov.deleteGeofences(geofenceIdsInputArray, options);
 		} catch (error) {
 			logger.debug(error);
 			throw error;

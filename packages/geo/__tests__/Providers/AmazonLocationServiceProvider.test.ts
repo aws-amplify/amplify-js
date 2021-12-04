@@ -750,6 +750,90 @@ describe('AmazonLocationServiceProvider', () => {
 			expect(results).toEqual(expected);
 		});
 
+		test('deleteGeofences calls batchDeleteGeofences in batches of 10 from input', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			const geofenceIds = validGeofences.map(({ geofenceId }) => geofenceId);
+
+			const spyonProvider = jest.spyOn(locationProvider, 'deleteGeofences');
+			const spyonClient = jest.spyOn(LocationClient.prototype, 'send');
+			spyonClient.mockImplementation(mockDeleteGeofencesCommand);
+
+			const results = await locationProvider.deleteGeofences(geofenceIds);
+
+			const expected = {
+				successes: geofenceIds,
+				errors: [],
+			};
+			expect(results).toEqual(expected);
+
+			const spyProviderInput = spyonProvider.mock.calls[0][0];
+
+			const spyClientInput = spyonClient.mock.calls;
+
+			expect(spyClientInput.length).toEqual(
+				Math.ceil(spyProviderInput.length / 10)
+			);
+		});
+
+		test('deleteGeofences properly handles errors with bad network calls', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			const input = createGeofenceInputArray(44).map(
+				({ geofenceId }) => geofenceId
+			);
+			input[22] = 'badId';
+			const validEntries = [...input.slice(0, 20), ...input.slice(30, 44)];
+
+			const spyonClient = jest.spyOn(LocationClient.prototype, 'send');
+			spyonClient.mockImplementation(geofenceInput => {
+				const entries = geofenceInput.input as any;
+
+				if (entries.GeofenceIds.some(entry => entry === 'badId')) {
+					return Promise.reject(new Error('ResourceDoesNotExist'));
+				}
+
+				const resolution = {
+					Errors: [
+						{
+							Error: {
+								Code: 'ResourceDoesNotExist',
+								Message: 'Resource does not exist',
+							},
+							GeofenceId: 'badId',
+						},
+					],
+				};
+				return Promise.resolve(resolution);
+			});
+
+			const results = await locationProvider.deleteGeofences(input);
+			const badResults = input.slice(20, 30).map(geofenceId => {
+				return {
+					error: {
+						code: 'ResourceDoesNotExist',
+						message: 'ResourceDoesNotExist',
+					},
+					geofenceId,
+				};
+			});
+			const expected = {
+				successes: validEntries,
+				errors: badResults,
+			};
+			expect(results).toEqual(expected);
+		});
+
 		test('should error if there are no geofenceCollections in config', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
