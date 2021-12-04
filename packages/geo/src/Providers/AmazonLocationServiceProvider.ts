@@ -30,6 +30,9 @@ import {
 	GetGeofenceCommand,
 	GetGeofenceCommandInput,
 	GetGeofenceCommandOutput,
+	ListGeofencesCommand,
+	ListGeofencesCommandInput,
+	ListGeofencesCommandOutput,
 } from '@aws-sdk/client-location';
 
 import {
@@ -42,6 +45,8 @@ import {
 	Coordinates,
 	GeofenceInput,
 	AmazonLocationServiceGeofenceOptions,
+	AmazonLocationServiceListGeofenceOptions,
+	ListGeofenceResults,
 	AmazonLocationServiceGeofenceStatus,
 	CreateUpdateGeofenceResults,
 	AmazonLocationServiceGeofence,
@@ -423,6 +428,86 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		};
 
 		return geofence;
+	}
+
+	/**
+	 * List geofences from a geofence collection
+	 * @param  options?: ListGeofenceOptions
+	 * @returns {Promise<ListGeofencesResults>} - Promise that resolves to an object with:
+	 *   entries: list of geofences - 100 geofences are listed per page
+	 *   nextToken: token for next page of geofences
+	 */
+	public async listGeofences(
+		options?: AmazonLocationServiceListGeofenceOptions
+	): Promise<ListGeofenceResults> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			throw new Error('No credentials');
+		}
+
+		// Verify geofence collection exists in aws-config.js
+		try {
+			this._verifyGeofenceCollections(options?.collectionName);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		// Create Amazon Location Service Client
+		const client = new LocationClient({
+			credentials: this._config.credentials,
+			region: this._config.region,
+			customUserAgent: getAmplifyUserAgent(),
+		});
+
+		// Create Amazon Location Service input
+		const listGeofencesInput: ListGeofencesCommandInput = {
+			NextToken: options?.nextToken,
+			CollectionName:
+				options?.collectionName || this._config.geofenceCollections.default,
+		};
+
+		// Create Amazon Location Service command
+		const command: ListGeofencesCommand = new ListGeofencesCommand(
+			listGeofencesInput
+		);
+
+		// Make API call
+		let response: ListGeofencesCommandOutput;
+		try {
+			response = await client.send(command);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		// Convert response to camelCase for return
+		const { NextToken, Entries } = response;
+
+		const results: ListGeofenceResults = {
+			entries: Entries.map(
+				({
+					GeofenceId,
+					CreateTime,
+					UpdateTime,
+					Status,
+					Geometry: { Polygon },
+				}) => {
+					return {
+						geofenceId: GeofenceId,
+						createTime: CreateTime,
+						updateTime: UpdateTime,
+						status: Status,
+						geometry: {
+							polygon: Polygon as GeofencePolygon,
+						},
+					};
+				}
+			),
+			nextToken: NextToken,
+		};
+
+		return results;
 	}
 
 	/**

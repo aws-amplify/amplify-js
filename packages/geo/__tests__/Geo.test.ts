@@ -38,6 +38,7 @@ import {
 	mockBatchPutGeofenceCommand,
 	geofencesWithInvalidId,
 	mockGetGeofenceCommand,
+	mockListGeofencesCommand,
 } from './data';
 
 LocationClient.prototype.send = jest.fn(async command => {
@@ -497,6 +498,54 @@ describe('Geo', () => {
 			const badGeofenceId = 't|-|!$ !$ N()T V@|_!D';
 			await expect(geo.getGeofence(badGeofenceId)).rejects.toThrow(
 				`Invalid geofenceId: ${badGeofenceId} Ids can only contain alphanumeric characters, hyphens, underscores and periods.`
+			);
+		});
+	});
+
+	describe('listGeofences', () => {
+		test('listGeofences gets the first 100 geofences when no arguments are given', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementationOnce(mockListGeofencesCommand);
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			// Check that results are what's expected
+			const results = await geo.listGeofences();
+			expect(results.entries.length).toEqual(100);
+		});
+
+		test('listGeofences gets the second 100 geofences when nextToken is passed', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementation(mockListGeofencesCommand);
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			// Check that results are what's expected
+
+			const first100Geofences = await geo.listGeofences();
+
+			const second100Geofences = await geo.listGeofences({
+				nextToken: first100Geofences.nextToken,
+			});
+
+			expect(second100Geofences.entries.length).toEqual(100);
+			expect(second100Geofences.entries[0].geofenceId).toEqual(
+				'validGeofenceId100'
+			);
+			expect(second100Geofences.entries[99].geofenceId).toEqual(
+				'validGeofenceId199'
 			);
 		});
 	});

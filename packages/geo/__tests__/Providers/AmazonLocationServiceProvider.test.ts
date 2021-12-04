@@ -29,6 +29,7 @@ import {
 	mockBatchPutGeofenceCommand,
 	validGeometry,
 	mockGetGeofenceCommand,
+	mockListGeofencesCommand,
 } from '../data';
 import {
 	SearchByTextOptions,
@@ -531,6 +532,65 @@ describe('AmazonLocationServiceProvider', () => {
 			locationProvider.configure({});
 
 			await expect(locationProvider.getGeofence('geofenceId')).rejects.toThrow(
+				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.'
+			);
+		});
+	});
+
+	describe('listGeofences', () => {
+		test('listGeofences gets the first 100 geofences when no arguments are given', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementation(mockListGeofencesCommand);
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			const geofences = await locationProvider.listGeofences();
+
+			expect(geofences.entries.length).toEqual(100);
+		});
+
+		test('listGeofences gets the second 100 geofences when nextToken is passed', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementation(mockListGeofencesCommand);
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure(awsConfig.geo.amazon_location_service);
+
+			const first100Geofences = await locationProvider.listGeofences();
+
+			const second100Geofences = await locationProvider.listGeofences({
+				nextToken: first100Geofences.nextToken,
+			});
+
+			expect(second100Geofences.entries.length).toEqual(100);
+			expect(second100Geofences.entries[0].geofenceId).toEqual(
+				'validGeofenceId100'
+			);
+			expect(second100Geofences.entries[99].geofenceId).toEqual(
+				'validGeofenceId199'
+			);
+		});
+
+		test('should error if there are no geofenceCollections in config', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			const locationProvider = new AmazonLocationServiceProvider();
+			locationProvider.configure({});
+
+			await expect(locationProvider.listGeofences()).rejects.toThrow(
 				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.'
 			);
 		});

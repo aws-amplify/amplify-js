@@ -13,6 +13,7 @@
 import {
 	BatchPutGeofenceCommand,
 	GetGeofenceCommand,
+	ListGeofencesCommand,
 } from '@aws-sdk/client-location';
 import camelcaseKeys from 'camelcase-keys';
 
@@ -233,6 +234,22 @@ export function createGeofenceInputArray(numberOfGeofences) {
 	return geofences;
 }
 
+export function createGeofenceOutputArray(numberOfGeofences) {
+	const geofences = [];
+	for (let i = 0; i < numberOfGeofences; i++) {
+		geofences.push({
+			GeofenceId: `validGeofenceId${i}`,
+			Geometry: {
+				Polygon: validPolygon,
+			},
+			Status: 'ACTIVE',
+			CreateTime: '2020-04-01T21:00:00.000Z',
+			UpdateTime: '2020-04-01T21:00:00.000Z',
+		});
+	}
+	return geofences;
+}
+
 export function mockBatchPutGeofenceCommand(command) {
 	if (command instanceof BatchPutGeofenceCommand) {
 		return {
@@ -261,5 +278,21 @@ export function mockGetGeofenceCommand(command) {
 
 	if (command instanceof GetGeofenceCommand) {
 		return geofence;
+	}
+}
+
+export function mockListGeofencesCommand(command) {
+	if (command instanceof ListGeofencesCommand) {
+		const geofences = createGeofenceOutputArray(200);
+		if (command.input.NextToken === 'THIS IS YOUR TOKEN') {
+			return {
+				Entries: geofences.slice(100, 200),
+				NextToken: 'THIS IS YOUR SECOND TOKEN',
+			};
+		}
+		return {
+			Entries: geofences.slice(0, 100),
+			NextToken: 'THIS IS YOUR TOKEN',
+		};
 	}
 }

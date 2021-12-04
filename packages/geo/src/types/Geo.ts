@@ -141,13 +141,24 @@ type GeofenceBase = {
 	updateTime?: Date;
 };
 
-// Output object for getGeofence
+// Results object for getGeofence
 export type Geofence = GeofenceBase & {
 	geometry: PolygonGeometry;
 };
 
-// Output object for createGeofence and updateGeofence
+// Results object for createGeofence and updateGeofence
 export type CreateUpdateGeofenceResults = {
 	successes: GeofenceBase[];
 	errors: GeofenceError[];
+};
+
+// Options object for listGeofence
+export type ListGeofenceOptions = GeofenceOptions & {
+	nextToken?: string;
+};
+
+// Results options for listGeofence
+export type ListGeofenceResults = {
+	entries: Geofence[];
+	nextToken: string;
 };

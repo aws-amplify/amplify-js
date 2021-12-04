@@ -1,4 +1,9 @@
-import { MapStyle, GeofenceOptions, Geofence } from './Geo';
+import {
+	MapStyle,
+	GeofenceOptions,
+	ListGeofenceOptions,
+	Geofence,
+} from './Geo';
 
 // Maps
 export interface AmazonLocationServiceMapStyle extends MapStyle {
@@ -20,4 +25,8 @@ export type AmazonLocationServiceGeofenceStatus =
 
 export type AmazonLocationServiceGeofence = Geofence & {
 	status: AmazonLocationServiceGeofenceStatus;
+};
+
+export type AmazonLocationServiceListGeofenceOptions = ListGeofenceOptions & {
+	collectionName?: string;
 };
