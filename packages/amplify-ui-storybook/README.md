@@ -1,12 +1,5 @@
-# @aws-amplify/ui-storybook
+# `@amplify-ui/ui-storybook`
 
-Collection of stories & documentation for `@aws-amplify/ui-components` and related view libraries.
+**Note** – We have discontinued developing this library as part of the Amplify JS repository.
 
-## Local Development
-
-_All commands take place in the monorepo root._
-
-1. `yarn bootstrap`
-1. In another tab, `yarn lerna run build:watch --parallel --scope="@aws-amplify/ui-*" --stream`.
-1. `yarn workspace @aws-amplify/ui-storybook start`
-1. Check out the stories!
+**This package has moved to the [aws-amplify/amplify-ui](https://github.com/aws-amplify/amplify-ui/tree/legacy/legacy/amplify-ui-storybook) repository.**
