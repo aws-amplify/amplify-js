@@ -230,7 +230,7 @@ export class AWSS3UploadTask implements UploadTask {
 		if (this.file.size / this.partSize > MAX_PARTS) {
 			throw new Error(
 				`Too many parts. Number of parts is ${this.file.size /
-				this.partSize}, maximum is ${MAX_PARTS}.`
+					this.partSize}, maximum is ${MAX_PARTS}.`
 			);
 		}
 	}
