@@ -182,7 +182,6 @@ export class GeoClass {
 		const prov = this.getPluggable(providerName);
 
 		const [lng, lat] = coordinates;
-
 		try {
 			validateCoordinates(lng, lat);
 			return await prov.searchByCoordinates(coordinates, options);
@@ -215,15 +214,9 @@ export class GeoClass {
 			geofenceInputArray = geofences;
 		}
 
-		// Validate all geofences are unique and valid
 		try {
+			// Validate all geofences are unique and valid before calling Provider
 			validateGeofences(geofenceInputArray);
-		} catch (error) {
-			logger.debug(error);
-			throw error;
-		}
-
-		try {
 			return await prov.createGeofences(geofenceInputArray, options);
 		} catch (error) {
 			logger.debug(error);
@@ -238,15 +231,9 @@ export class GeoClass {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
 
-		// Validate geofenceId is valid
 		try {
+			// Validate geofenceId is valid before calling Provider
 			validateGeofenceId(geofenceId);
-		} catch (error) {
-			logger.debug(error);
-			throw error;
-		}
-
-		try {
 			return await prov.getGeofence(geofenceId, options);
 		} catch (error) {
 			logger.debug(error);
