@@ -263,21 +263,38 @@ export function mockBatchPutGeofenceCommand(command) {
 			Errors: [],
 		};
 	}
+	if (command instanceof GetGeofenceCommand) {
+		return mockGetGeofenceCommand(command);
+	}
 }
 
 export function mockGetGeofenceCommand(command) {
-	const geofence = {
-		GeofenceId: command.input.GeofenceId,
-		Geometry: {
-			Polygon: validPolygon,
-		},
-		CreateTime: '2020-04-01T21:00:00.000Z',
-		UpdateTime: '2020-04-01T21:00:00.000Z',
-		Status: 'ACTIVE',
-	};
-
 	if (command instanceof GetGeofenceCommand) {
-		return geofence;
+		return {
+			GeofenceId: command.input.GeofenceId,
+			Geometry: {
+				Polygon: validPolygon,
+			},
+			CreateTime: '2020-04-01T21:00:00.000Z',
+			UpdateTime: '2020-04-01T21:00:00.000Z',
+			Status: 'ACTIVE',
+		};
+	}
+}
+
+export function mockListGeofencesCommand(command) {
+	if (command instanceof ListGeofencesCommand) {
+		const geofences = createGeofenceOutputArray(200);
+		if (command.input.NextToken === 'THIS IS YOUR TOKEN') {
+			return {
+				Entries: geofences.slice(100, 200),
+				NextToken: 'THIS IS YOUR SECOND TOKEN',
+			};
+		}
+		return {
+			Entries: geofences.slice(0, 100),
+			NextToken: 'THIS IS YOUR TOKEN',
+		};
 	}
 }
 

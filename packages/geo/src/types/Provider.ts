@@ -55,6 +55,12 @@ export interface GeoProvider {
 		options?: GeofenceOptions
 	): Promise<CreateUpdateGeofenceResults>;
 
+	// update geofences
+	updateGeofences(
+		geofences: GeofenceInput[],
+		options?: GeofenceOptions
+	): Promise<CreateUpdateGeofenceResults>;
+
 	// get a single geofence
 	getGeofence(
 		geofenceId: string,
