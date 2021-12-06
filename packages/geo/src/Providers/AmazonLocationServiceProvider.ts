@@ -23,6 +23,10 @@ import {
 	SearchPlaceIndexForTextCommand,
 	SearchPlaceIndexForPositionCommand,
 	SearchPlaceIndexForPositionCommandInput,
+	BatchPutGeofenceCommand,
+	BatchPutGeofenceCommandInput,
+	BatchPutGeofenceRequestEntry,
+	BatchPutGeofenceCommandOutput,
 } from '@aws-sdk/client-location';
 
 import {
@@ -33,6 +37,9 @@ import {
 	Place,
 	AmazonLocationServiceMapStyle,
 	Coordinates,
+	GeofenceInput,
+	AmazonLocationServiceGeofenceOptions,
+	CreateUpdateGeofenceResults,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServiceProvider');
@@ -182,9 +189,9 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		const PascalResults: PlaceResult[] = response.Results.map(
 			result => result.Place
 		);
-		const results: Place[] = (camelcaseKeys(PascalResults, {
+		const results: Place[] = camelcaseKeys(PascalResults, {
 			deep: true,
-		}) as undefined) as Place[];
+		}) as undefined as Place[];
 
 		return results;
 	}
@@ -241,9 +248,111 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		 * Here we want to flatten that to an array of results and change them to camelCase
 		 */
 		const PascalResults = response.Results.map(result => result.Place);
-		const results: Place = (camelcaseKeys(PascalResults[0], {
+		const results: Place = camelcaseKeys(PascalResults[0], {
 			deep: true,
-		}) as any) as Place;
+		}) as any as Place;
+
+		return results;
+	}
+
+	/**
+	 * Create geofences inside of a geofence collection
+	 * @param geofences - Array of geofence objects to create
+	 * @param options? - Optional parameters for creating geofences
+	 * @returns {Promise<AmazonLocationServiceCreateUpdateGeofenceResults>} - Promise that resolves to an object with:
+	 *   successes: list of geofences successfully created
+	 *   errors: list of geofences that failed to create
+	 */
+	public async createGeofences(
+		geofences: GeofenceInput[],
+		options?: AmazonLocationServiceGeofenceOptions
+	): Promise<CreateUpdateGeofenceResults> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			throw new Error('No credentials');
+		}
+
+		try {
+			this._verifyGeofenceCollections(options?.collectionName);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		// Convert geofences to PascalCase for Amazon Location Service format
+		const PascalGeofences: BatchPutGeofenceRequestEntry[] = geofences.map(
+			({ geofenceId, geometry: { polygon } }) => {
+				return {
+					GeofenceId: geofenceId,
+					Geometry: {
+						Polygon: polygon,
+					},
+				};
+			}
+		);
+
+		// Create results object
+		const results: CreateUpdateGeofenceResults = {
+			successes: [],
+			errors: [],
+		};
+
+		/**
+		 * Amazon Location Service BatchPutGeofence API can only accept up to 10 geofences
+		 * at a time. So, we will make one call for every 10 geofence objects from the
+		 * input and batch the results together to return.
+		 * https://docs.aws.amazon.com/location-geofences/latest/APIReference/API_BatchPutGeofence.html
+		 */
+		while (PascalGeofences.length > 0) {
+			// Splice off 10 geofences from input clone due to Amazon Location Service API limit
+			const tenGeofences = PascalGeofences.splice(0, 10);
+
+			// Make API call for the 10 geofences
+			let response;
+			try {
+				response = await this._AmazonLocationServiceBatchPutGeofenceCall(
+					tenGeofences,
+					options?.collectionName
+				);
+			} catch (error) {
+				// If the API call fails, add the geofences to the errors array and move to next batch
+				tenGeofences.forEach(geofence => {
+					results.errors.push({
+						geofenceId: geofence.GeofenceId,
+						error: {
+							code: 'APIConnectionError',
+							message: error.message,
+						},
+					});
+				});
+				continue;
+			}
+
+			// Push all successes to results
+			response.Successes.forEach(success => {
+				const { GeofenceId, CreateTime, UpdateTime } = success;
+				results.successes.push({
+					geofenceId: GeofenceId,
+					createTime: CreateTime,
+					updateTime: UpdateTime,
+				});
+			});
+
+			// Push all errors to results
+			response.Errors.forEach(error => {
+				const {
+					Error: { Code, Message },
+					GeofenceId,
+				} = error;
+				results.errors.push({
+					error: {
+						code: Code,
+						message: Message,
+					},
+					geofenceId: GeofenceId,
+				});
+			});
+		}
 
 		return results;
 	}
@@ -268,13 +377,13 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	private _verifyMapResources() {
 		if (!this._config.maps) {
 			const errorString =
-				"No map resources found in amplify config, run 'amplify add geo' to create them and ensure to run `amplify push` after";
+				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after";
 			logger.warn(errorString);
 			throw new Error(errorString);
 		}
 		if (!this._config.maps.default) {
 			const errorString =
-				"No default map resource found in amplify config, run 'amplify add geo' to create one and ensure to run `amplify push` after";
+				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after";
 			logger.warn(errorString);
 			throw new Error(errorString);
 		}
@@ -286,9 +395,49 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			!optionalSearchIndex
 		) {
 			const errorString =
-				'No Search Index found, please run `amplify add geo` to add one and ensure to run `amplify push` after.';
+				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.';
 			logger.warn(errorString);
 			throw new Error(errorString);
 		}
+	}
+
+	private _verifyGeofenceCollections(optionalGeofenceCollectionName?: string) {
+		if (
+			(!this._config.geofenceCollections ||
+				!this._config.geofenceCollections.default) &&
+			!optionalGeofenceCollectionName
+		) {
+			const errorString =
+				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.';
+			logger.warn(errorString);
+			throw new Error(errorString);
+		}
+	}
+
+	private async _AmazonLocationServiceBatchPutGeofenceCall(
+		PascalGeofences: BatchPutGeofenceRequestEntry[],
+		collectionName?: string
+	) {
+		// Create the BatchPutGeofence input
+		const geofenceInput: BatchPutGeofenceCommandInput = {
+			Entries: PascalGeofences,
+			CollectionName:
+				collectionName || this._config.geofenceCollections.default,
+		};
+
+		const client = new LocationClient({
+			credentials: this._config.credentials,
+			region: this._config.region,
+			customUserAgent: getAmplifyUserAgent(),
+		});
+		const command = new BatchPutGeofenceCommand(geofenceInput);
+
+		let response: BatchPutGeofenceCommandOutput;
+		try {
+			response = await client.send(command);
+		} catch (error) {
+			throw error;
+		}
+		return response;
 	}
 }

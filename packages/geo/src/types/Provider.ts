@@ -10,13 +10,15 @@
  * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
  * and limitations under the License.
  */
-
 import {
 	SearchByTextOptions,
 	SearchByCoordinatesOptions,
 	Coordinates,
 	Place,
 	MapStyle,
+	GeofenceInput,
+	GeofenceOptions,
+	CreateUpdateGeofenceResults,
 } from './Geo';
 
 export interface GeoProvider {
@@ -35,10 +37,18 @@ export interface GeoProvider {
 	// get the map resource listed as default
 	getDefaultMap(): MapStyle;
 
+	// search by a text string and return a list of places
 	searchByText(text: string, options?: SearchByTextOptions): Promise<Place[]>;
 
+	// search by coordinates and return a matching place
 	searchByCoordinates(
 		coordinates: Coordinates,
 		options?: SearchByCoordinatesOptions
 	): Promise<Place>;
+
+	// create a geofence
+	createGeofences(
+		geofences: GeofenceInput | GeofenceInput[],
+		options?: GeofenceOptions
+	): Promise<CreateUpdateGeofenceResults>;
 }
