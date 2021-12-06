@@ -71,7 +71,8 @@
 			"__tests__/model.ts",
 			"__tests__/schema.ts",
 			"__tests__/helpers.ts",
-			"__tests__/data.ts"
+			"__tests__/testData.ts",
+			"__tests__/testUtils.ts"
 		],
 		"moduleFileExtensions": [
 			"ts",
