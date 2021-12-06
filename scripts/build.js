@@ -148,11 +148,7 @@ function reportWatchStatusChanged(diagnostic, newLine, options, errorCount) {
 }
 
 async function buildES5(typeScriptCompiler, watchMode) {
-	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
-		packageInfo.name
-	)
-		? 'react'
-		: undefined;
+	const jsx = undefined;
 	// tsconfig for ES5 generating
 	let compilerOptions = {
 		esModuleInterop: true,
@@ -205,11 +201,7 @@ async function buildES5(typeScriptCompiler, watchMode) {
 }
 
 function buildES6(typeScriptCompiler, watchMode) {
-	const jsx = ['@aws-amplify/ui-react', 'aws-amplify-react'].includes(
-		packageInfo.name
-	)
-		? 'react'
-		: undefined;
+	const jsx = undefined;
 	// tsconfig for ESM generating
 	let compilerOptions = {
 		esModuleInterop: true,

@@ -27,7 +27,6 @@
 
 const packageFolderMap = {
 	'amazon-cognito-identity-js': 'amazon-cognito-identity-js',
-	'amplify-ui': '@aws-amplify/ui',
 	analytics: '@aws-amplify/analytics',
 	api: '@aws-amplify/api',
 	auth: '@aws-amplify/auth',

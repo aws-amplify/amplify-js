@@ -89,7 +89,7 @@ yarn build --scope @aws-amplify/auth
 
 ```
 yarn run test --scope @aws-amplify/auth
-yarn run test --scope @aws-amplify/ui-components
+yarn run test --scope @aws-amplify/datastore
 ```
 
 > Note: There is a commit hook that will run the tests prior to committing. Please make sure if you are going to provide a pull request to be sure you include unit tests with your functionality and that all tests pass.
