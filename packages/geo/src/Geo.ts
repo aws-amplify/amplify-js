@@ -18,12 +18,26 @@ import {
 import { AmazonLocationServiceProvider } from './Providers/AmazonLocationServiceProvider';
 
 import {
+	validateCoordinates,
+	validateGeofences,
+	validateGeofenceId,
+} from './util';
+
+import {
+	Place,
 	GeoConfig,
 	Coordinates,
 	SearchByTextOptions,
 	SearchByCoordinatesOptions,
 	GeoProvider,
 	MapStyle,
+	GeofenceInput,
+	GeofenceOptions,
+	SaveGeofencesResults,
+	Geofence,
+	ListGeofenceOptions,
+	ListGeofenceResults,
+	DeleteGeofencesResults,
 } from './types';
 
 const logger = new Logger('Geo');
@@ -142,7 +156,10 @@ export class GeoClass {
 	 * @param  {SearchByTextOptions} options? - Optional parameters to the search
 	 * @returns {Promise<Place[]>} - Promise resolves to a list of Places that match search parameters
 	 */
-	public async searchByText(text: string, options?: SearchByTextOptions) {
+	public async searchByText(
+		text: string,
+		options?: SearchByTextOptions
+	): Promise<Place[]> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
 
@@ -163,12 +180,137 @@ export class GeoClass {
 	public async searchByCoordinates(
 		coordinates: Coordinates,
 		options?: SearchByCoordinatesOptions
-	) {
+	): Promise<Place> {
+		const { providerName = DEFAULT_PROVIDER } = options || {};
+		const prov = this.getPluggable(providerName);
+
+		const [lng, lat] = coordinates;
+		try {
+			validateCoordinates(lng, lat);
+			return await prov.searchByCoordinates(coordinates, options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Create geofences
+	 * @param geofences - Single or array of geofence objects to create
+	 * @param options? - Optional parameters for creating geofences
+	 * @returns {Promise<SaveGeofencesResults>} - Promise that resolves to an object with:
+	 *   successes: list of geofences successfully created
+	 *   errors: list of geofences that failed to create
+	 */
+	public async saveGeofences(
+		geofences: GeofenceInput | GeofenceInput[],
+		options?: GeofenceOptions
+	): Promise<SaveGeofencesResults> {
+		const { providerName = DEFAULT_PROVIDER } = options || {};
+		const prov = this.getPluggable(providerName);
+
+		// If single geofence input, make it an array for batch call
+		let geofenceInputArray;
+		if (!Array.isArray(geofences)) {
+			geofenceInputArray = [geofences];
+		} else {
+			geofenceInputArray = geofences;
+		}
+
+		try {
+			// Validate all geofences are unique and valid before calling Provider
+			validateGeofences(geofenceInputArray);
+			return await prov.saveGeofences(geofenceInputArray, options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Get a single geofence by geofenceId
+	 * @param geofenceId: string
+	 * @param options?: GeofenceOptions
+	 * @returns Promise<Geofence> - Promise that resolves to a geofence object
+	 */
+	public async getGeofence(
+		geofenceId: string,
+		options?: GeofenceOptions
+	): Promise<Geofence> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
 
 		try {
-			return await prov.searchByCoordinates(coordinates, options);
+			// Validate geofenceId is valid before calling Provider
+			validateGeofenceId(geofenceId);
+			return await prov.getGeofence(geofenceId, options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+	}
+
+	/**
+	 * List geofences
+	 * @param  options?: ListGeofenceOptions
+	 * @returns {Promise<ListGeofencesResults>} - Promise that resolves to an object with:
+	 *   entries: list of geofences - 100 geofences are listed per page
+	 *   nextToken: token for next page of geofences
+	 */
+	public async listGeofences(
+		options?: ListGeofenceOptions
+	): Promise<ListGeofenceResults> {
+		const { providerName = DEFAULT_PROVIDER } = options || {};
+		const prov = this.getPluggable(providerName);
+
+		try {
+			return await prov.listGeofences(options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Delete geofences
+	 * @param geofenceIds: string|string[]
+	 * @param options?: GeofenceOptions
+	 * @returns {Promise<DeleteGeofencesResults>} - Promise that resolves to an object with:
+	 *  successes: list of geofences successfully deleted
+	 *  errors: list of geofences that failed to delete
+	 */
+	public async deleteGeofences(
+		geofenceIds: string | string[],
+		options?: GeofenceOptions
+	): Promise<DeleteGeofencesResults> {
+		const { providerName = DEFAULT_PROVIDER } = options || {};
+		const prov = this.getPluggable(providerName);
+
+		// If single geofence input, make it an array for batch call
+		let geofenceIdsInputArray;
+		if (!Array.isArray(geofenceIds)) {
+			geofenceIdsInputArray = [geofenceIds];
+		} else {
+			geofenceIdsInputArray = geofenceIds;
+		}
+
+		// Validate all geofenceIds are valid
+		const badGeofenceIds = geofenceIdsInputArray.filter(geofenceId => {
+			try {
+				validateGeofenceId(geofenceId);
+			} catch (error) {
+				return false;
+			}
+		});
+		if (badGeofenceIds.length > 0) {
+			const errorString = `Invalid geofence ids: ${badGeofenceIds}`;
+			logger.debug(errorString);
+			throw new Error(errorString);
+		}
+
+		//  Delete geofences
+		try {
+			return await prov.deleteGeofences(geofenceIdsInputArray, options);
 		} catch (error) {
 			logger.debug(error);
 			throw error;
