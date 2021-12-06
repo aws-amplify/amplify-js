@@ -12,12 +12,10 @@
  */
 import { Credentials } from '@aws-amplify/core';
 import {
-	BatchPutGeofenceCommand,
 	LocationClient,
 	SearchPlaceIndexForPositionCommand,
 	SearchPlaceIndexForTextCommand,
 } from '@aws-sdk/client-location';
-import camelcaseKeys from 'camelcase-keys';
 
 import { GeoClass } from '../src/Geo';
 import { AmazonLocationServiceProvider } from '../src/Providers/AmazonLocationServiceProvider';
@@ -32,12 +30,14 @@ import {
 	awsConfig,
 	TestPlacePascalCase,
 	testPlaceCamelCase,
+	validGeometry,
 	validGeofences,
 	validGeofence1,
 	singleGeofenceCamelcaseResults,
 	batchGeofencesCamelcaseResults,
 	mockBatchPutGeofenceCommand,
 	geofencesWithInvalidId,
+	mockGetGeofenceCommand,
 } from './data';
 
 LocationClient.prototype.send = jest.fn(async command => {
@@ -444,6 +444,59 @@ describe('Geo', () => {
 
 			await expect(geo.createGeofences(validGeofence1)).rejects.toThrow(
 				'No plugin found in Geo for the provider'
+			);
+		});
+	});
+
+	describe('getGeofence', () => {
+		test('getGeofence returns the right geofence', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementationOnce(mockGetGeofenceCommand);
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			// Check that results are what's expected
+			const results = await geo.getGeofence('testGeofenceId');
+			const expected = {
+				geofenceId: 'testGeofenceId',
+				geometry: validGeometry,
+				createTime: '2020-04-01T21:00:00.000Z',
+				updateTime: '2020-04-01T21:00:00.000Z',
+				status: 'ACTIVE',
+			};
+			expect(results).toEqual(expected);
+
+			// Expect that the API was called with the proper input
+			const spyon = jest.spyOn(LocationClient.prototype, 'send');
+			const input = spyon.mock.calls[0][0].input;
+			const output = {
+				GeofenceId: 'testGeofenceId',
+				CollectionName: 'geofenceCollectionExample',
+			};
+			expect(input).toEqual(output);
+		});
+
+		test('getGeofence errors when a bad geofenceId is given', async () => {
+			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+				return Promise.resolve(credentials);
+			});
+
+			LocationClient.prototype.send = jest
+				.fn()
+				.mockImplementationOnce(mockGetGeofenceCommand);
+
+			const geo = new GeoClass();
+			geo.configure(awsConfig);
+
+			const badGeofenceId = 't|-|!$ !$ N()T V@|_!D';
+			await expect(geo.getGeofence(badGeofenceId)).rejects.toThrow(
+				`Invalid geofenceId: ${badGeofenceId} Ids can only contain alphanumeric characters, hyphens, underscores and periods.`
 			);
 		});
 	});

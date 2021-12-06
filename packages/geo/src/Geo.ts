@@ -17,7 +17,11 @@ import {
 } from '@aws-amplify/core';
 import { AmazonLocationServiceProvider } from './Providers/AmazonLocationServiceProvider';
 
-import { validateCoordinates, validateGeofences } from './util';
+import {
+	validateCoordinates,
+	validateGeofences,
+	validateGeofenceId,
+} from './util';
 
 import {
 	Place,
@@ -30,6 +34,7 @@ import {
 	GeofenceInput,
 	GeofenceOptions,
 	CreateUpdateGeofenceResults,
+	Geofence,
 } from './types';
 
 const logger = new Logger('Geo');
@@ -179,12 +184,6 @@ export class GeoClass {
 		const [lng, lat] = coordinates;
 		try {
 			validateCoordinates(lng, lat);
-		} catch (error) {
-			logger.debug(error);
-			throw error;
-		}
-
-		try {
 			return await prov.searchByCoordinates(coordinates, options);
 		} catch (error) {
 			logger.debug(error);
@@ -215,16 +214,27 @@ export class GeoClass {
 			geofenceInputArray = geofences;
 		}
 
-		// Validate all geofenceIds are unique and valid
 		try {
+			// Validate all geofences are unique and valid before calling Provider
 			validateGeofences(geofenceInputArray);
+			return await prov.createGeofences(geofenceInputArray, options);
 		} catch (error) {
 			logger.debug(error);
 			throw error;
 		}
+	}
+
+	public async getGeofence(
+		geofenceId: string,
+		options?: GeofenceOptions
+	): Promise<Geofence> {
+		const { providerName = DEFAULT_PROVIDER } = options || {};
+		const prov = this.getPluggable(providerName);
 
 		try {
-			return await prov.createGeofences(geofenceInputArray, options);
+			// Validate geofenceId is valid before calling Provider
+			validateGeofenceId(geofenceId);
+			return await prov.getGeofence(geofenceId, options);
 		} catch (error) {
 			logger.debug(error);
 			throw error;

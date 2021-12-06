@@ -27,6 +27,9 @@ import {
 	BatchPutGeofenceCommandInput,
 	BatchPutGeofenceRequestEntry,
 	BatchPutGeofenceCommandOutput,
+	GetGeofenceCommand,
+	GetGeofenceCommandInput,
+	GetGeofenceCommandOutput,
 } from '@aws-sdk/client-location';
 
 import {
@@ -39,7 +42,10 @@ import {
 	Coordinates,
 	GeofenceInput,
 	AmazonLocationServiceGeofenceOptions,
+	AmazonLocationServiceGeofenceStatus,
 	CreateUpdateGeofenceResults,
+	AmazonLocationServiceGeofence,
+	GeofencePolygon,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServiceProvider');
@@ -308,7 +314,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			const tenGeofences = PascalGeofences.splice(0, 10);
 
 			// Make API call for the 10 geofences
-			let response;
+			let response: BatchPutGeofenceCommandOutput;
 			try {
 				response = await this._AmazonLocationServiceBatchPutGeofenceCall(
 					tenGeofences,
@@ -355,6 +361,68 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		}
 
 		return results;
+	}
+
+	/**
+	 * Get geofence from a geofence collection
+	 * @param geofenceId:string
+	 * @param options?: Optional parameters for getGeofence
+	 * @returns {Promise<AmazonLocationServiceGeofence>} - Promise that resolves to a geofence object
+	 */
+	public async getGeofence(
+		geofenceId: string,
+		options?: AmazonLocationServiceGeofenceOptions
+	): Promise<AmazonLocationServiceGeofence> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			throw new Error('No credentials');
+		}
+
+		// Verify geofence collection exists in aws-config.js
+		try {
+			this._verifyGeofenceCollections(options?.collectionName);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		// Create Amazon Location Service Client
+		const client = new LocationClient({
+			credentials: this._config.credentials,
+			region: this._config.region,
+			customUserAgent: getAmplifyUserAgent(),
+		});
+
+		// Create Amazon Location Service command
+		const commandInput: GetGeofenceCommandInput = {
+			GeofenceId: geofenceId,
+			CollectionName:
+				options?.collectionName || this._config.geofenceCollections.default,
+		};
+		const command = new GetGeofenceCommand(commandInput);
+
+		// Make API call
+		let response: GetGeofenceCommandOutput;
+		try {
+			response = await client.send(command);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		// Convert response to camelCase for return
+		const { GeofenceId, CreateTime, UpdateTime, Status, Geometry } = response;
+		const geofence: AmazonLocationServiceGeofence = {
+			createTime: CreateTime,
+			geofenceId: GeofenceId,
+			geometry: {
+				polygon: Geometry.Polygon as GeofencePolygon,
+			},
+			status: Status as AmazonLocationServiceGeofenceStatus,
+			updateTime: UpdateTime,
+		};
+
+		return geofence;
 	}
 
 	/**

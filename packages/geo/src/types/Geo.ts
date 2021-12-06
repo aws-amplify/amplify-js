@@ -107,11 +107,11 @@ export interface Place {
 export type LinearRing = Coordinates[];
 
 // An array of one linear ring
-export type Polygon = LinearRing[];
+export type GeofencePolygon = LinearRing[];
 
 // Geometry object for Polygon
 export type PolygonGeometry = {
-	polygon: Polygon;
+	polygon: GeofencePolygon;
 };
 
 // Geofence object used as input for createGeofence and updateGeofence
@@ -135,10 +135,10 @@ export type GeofenceError = {
 };
 
 // Base geofence object
-export type GeofenceBase = {
+type GeofenceBase = {
 	geofenceId: string;
-	createTime: Date;
-	updateTime: Date;
+	createTime?: Date;
+	updateTime?: Date;
 };
 
 // Output object for getGeofence
