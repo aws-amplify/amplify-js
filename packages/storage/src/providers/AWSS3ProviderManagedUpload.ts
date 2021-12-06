@@ -122,7 +122,7 @@ export class AWSS3ProviderManagedUpload {
 				return await this.finishMultiPartUpload(uploadId);
 			}
 		} catch (error) {
-			logger.error('Error. Cancelling the multipart upload', error.message);
+			logger.error('Error. Cancelling the multipart upload. ', error.message);
 			throw error.message;
 		}
 	}
@@ -196,7 +196,7 @@ export class AWSS3ProviderManagedUpload {
 			}
 		} catch (error) {
 			logger.error(
-				'error happened while uploading a part. Cancelling the multipart upload',
+				'Error happened while uploading a part. Cancelling the multipart upload',
 				error
 			);
 			this.cancelUpload();
@@ -216,11 +216,10 @@ export class AWSS3ProviderManagedUpload {
 			const data = await this.s3client.send(completeUploadCommand);
 			return data.Key;
 		} catch (error) {
-			logger.error(
-				`error happened while finishing the upload. Cancelling the multipart upload ${error}`
-			);
 			this.cancelUpload();
-			throw new Error(error.message);
+			throw new Error(
+				`Error happened while finishing the upload. ${error.message}`
+			);
 		}
 	}
 
