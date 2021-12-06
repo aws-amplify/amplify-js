@@ -22,7 +22,7 @@
 		"esModuleInterop": true,
 		"typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
 		// temporary fix
-		"types": ["node", "lodash"]
+		"types": ["node"]
 	},
 	"include": ["src/**/*"]
 }
