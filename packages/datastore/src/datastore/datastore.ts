@@ -258,108 +258,101 @@ function modelInstanceCreator<T extends PersistentModel = PersistentModel>(
 	return <T>new modelConstructor(init);
 }
 
-const validateModelFields = (modelDefinition: SchemaModel | SchemaNonModel) => (
-	k: string,
-	v: any
-) => {
-	const fieldDefinition = modelDefinition.fields[k];
+const validateModelFields =
+	(modelDefinition: SchemaModel | SchemaNonModel) => (k: string, v: any) => {
+		const fieldDefinition = modelDefinition.fields[k];
 
-	if (fieldDefinition !== undefined) {
-		const {
-			type,
-			isRequired,
-			isArrayNullable,
-			name,
-			isArray,
-		} = fieldDefinition;
+		if (fieldDefinition !== undefined) {
+			const { type, isRequired, isArrayNullable, name, isArray } =
+				fieldDefinition;
 
-		if (
-			((!isArray && isRequired) || (isArray && !isArrayNullable)) &&
-			(v === null || v === undefined)
-		) {
-			throw new Error(`Field ${name} is required`);
-		}
-
-		if (isGraphQLScalarType(type)) {
-			const jsType = GraphQLScalarType.getJSType(type);
-			const validateScalar = GraphQLScalarType.getValidationFunction(type);
-
-			if (type === 'AWSJSON') {
-				if (typeof v === jsType) {
-					return;
-				}
-				if (typeof v === 'string') {
-					try {
-						JSON.parse(v);
-						return;
-					} catch (error) {
-						throw new Error(`Field ${name} is an invalid JSON object. ${v}`);
-					}
-				}
+			if (
+				((!isArray && isRequired) || (isArray && !isArrayNullable)) &&
+				(v === null || v === undefined)
+			) {
+				throw new Error(`Field ${name} is required`);
 			}
 
-			if (isArray) {
-				let errorTypeText: string = jsType;
-				if (!isRequired) {
-					errorTypeText = `${jsType} | null | undefined`;
-				}
+			if (isGraphQLScalarType(type)) {
+				const jsType = GraphQLScalarType.getJSType(type);
+				const validateScalar = GraphQLScalarType.getValidationFunction(type);
 
-				if (!Array.isArray(v) && !isArrayNullable) {
-					throw new Error(
-						`Field ${name} should be of type [${errorTypeText}], ${typeof v} received. ${v}`
-					);
-				}
-
-				if (
-					!isNullOrUndefined(v) &&
-					(<[]>v).some(e =>
-						isNullOrUndefined(e) ? isRequired : typeof e !== jsType
-					)
-				) {
-					const elemTypes = (<[]>v)
-						.map(e => (e === null ? 'null' : typeof e))
-						.join(',');
-
-					throw new Error(
-						`All elements in the ${name} array should be of type ${errorTypeText}, [${elemTypes}] received. ${v}`
-					);
-				}
-
-				if (validateScalar && !isNullOrUndefined(v)) {
-					const validationStatus = (<[]>v).map(e => {
-						if (!isNullOrUndefined(e)) {
-							return validateScalar(e);
-						} else if (isNullOrUndefined(e) && !isRequired) {
-							return true;
-						} else {
-							return false;
+				if (type === 'AWSJSON') {
+					if (typeof v === jsType) {
+						return;
+					}
+					if (typeof v === 'string') {
+						try {
+							JSON.parse(v);
+							return;
+						} catch (error) {
+							throw new Error(`Field ${name} is an invalid JSON object. ${v}`);
 						}
-					});
+					}
+				}
 
-					if (!validationStatus.every(s => s)) {
+				if (isArray) {
+					let errorTypeText: string = jsType;
+					if (!isRequired) {
+						errorTypeText = `${jsType} | null | undefined`;
+					}
+
+					if (!Array.isArray(v) && !isArrayNullable) {
 						throw new Error(
-							`All elements in the ${name} array should be of type ${type}, validation failed for one or more elements. ${v}`
+							`Field ${name} should be of type [${errorTypeText}], ${typeof v} received. ${v}`
 						);
 					}
+
+					if (
+						!isNullOrUndefined(v) &&
+						(<[]>v).some(e =>
+							isNullOrUndefined(e) ? isRequired : typeof e !== jsType
+						)
+					) {
+						const elemTypes = (<[]>v)
+							.map(e => (e === null ? 'null' : typeof e))
+							.join(',');
+
+						throw new Error(
+							`All elements in the ${name} array should be of type ${errorTypeText}, [${elemTypes}] received. ${v}`
+						);
+					}
+
+					if (validateScalar && !isNullOrUndefined(v)) {
+						const validationStatus = (<[]>v).map(e => {
+							if (!isNullOrUndefined(e)) {
+								return validateScalar(e);
+							} else if (isNullOrUndefined(e) && !isRequired) {
+								return true;
+							} else {
+								return false;
+							}
+						});
+
+						if (!validationStatus.every(s => s)) {
+							throw new Error(
+								`All elements in the ${name} array should be of type ${type}, validation failed for one or more elements. ${v}`
+							);
+						}
+					}
+				} else if (!isRequired && v === undefined) {
+					return;
+				} else if (typeof v !== jsType && v !== null) {
+					throw new Error(
+						`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`
+					);
+				} else if (
+					!isNullOrUndefined(v) &&
+					validateScalar &&
+					!validateScalar(v)
+				) {
+					throw new Error(
+						`Field ${name} should be of type ${type}, validation failed. ${v}`
+					);
 				}
-			} else if (!isRequired && v === undefined) {
-				return;
-			} else if (typeof v !== jsType && v !== null) {
-				throw new Error(
-					`Field ${name} should be of type ${jsType}, ${typeof v} received. ${v}`
-				);
-			} else if (
-				!isNullOrUndefined(v) &&
-				validateScalar &&
-				!validateScalar(v)
-			) {
-				throw new Error(
-					`Field ${name} should be of type ${type}, validation failed. ${v}`
-				);
 			}
 		}
-	}
-};
+	};
 
 const castInstanceType = (
 	modelDefinition: SchemaModel | SchemaNonModel,
@@ -414,11 +407,10 @@ const createModelClass = <T extends PersistentModel>(
 				(draft: Draft<T & ModelInstanceMetadata>) => {
 					initializeInstance(init, modelDefinition, draft);
 
-					const modelInstanceMetadata: ModelInstanceMetadata = instancesMetadata.has(
-						init
-					)
-						? <ModelInstanceMetadata>(<unknown>init)
-						: <ModelInstanceMetadata>{};
+					const modelInstanceMetadata: ModelInstanceMetadata =
+						instancesMetadata.has(init)
+							? <ModelInstanceMetadata>(<unknown>init)
+							: <ModelInstanceMetadata>{};
 					const {
 						id: _id,
 						_version,
@@ -614,9 +606,8 @@ async function checkSchemaVersion(
 	storage: Storage,
 	version: string
 ): Promise<void> {
-	const Setting = dataStoreClasses.Setting as PersistentModelConstructor<
-		Setting
-	>;
+	const Setting =
+		dataStoreClasses.Setting as PersistentModelConstructor<Setting>;
 
 	const modelDefinition = schema.namespaces[DATASTORE].models.Setting;
 
@@ -704,10 +695,8 @@ class DataStore {
 	private sync: SyncEngine;
 	private syncPageSize: number;
 	private syncExpressions: SyncExpression[];
-	private syncPredicates: WeakMap<
-		SchemaModel,
-		ModelPredicate<any>
-	> = new WeakMap<SchemaModel, ModelPredicate<any>>();
+	private syncPredicates: WeakMap<SchemaModel, ModelPredicate<any>> =
+		new WeakMap<SchemaModel, ModelPredicate<any>>();
 	private sessionId: string;
 	private storageAdapter: Adapter;
 
@@ -1206,7 +1195,7 @@ class DataStore {
 							itemsChanged.set(element.id, element);
 						}
 
-						const isSynced = this.sync.getModelSyncedStatus(model);
+						const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
 
 						const limit =
 							itemsChanged.size - deletedItemIds.length >= this.syncPageSize;
@@ -1228,7 +1217,7 @@ class DataStore {
 
 			// TODO: abstract this function into a util file to be able to write better unit tests
 			const generateSnapshot = (): DataStoreSnapshot<T> => {
-				const isSynced = this.sync.getModelSyncedStatus(model);
+				const isSynced = this.sync?.getModelSyncedStatus(model) ?? false;
 				const itemsArray = [
 					...Array.from(items.values()),
 					...Array.from(itemsChanged.values()),
