@@ -20,10 +20,7 @@ body:
           | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
           | `amazon-cognito-identity-js`    | [![version](https://img.shields.io/npm/v/amazon-cognito-identity-js/latest.svg)](https://www.npmjs.com/package/amazon-cognito-identity-js)       |
           | `aws-amplify`                   | [![version](https://img.shields.io/npm/v/aws-amplify/latest.svg)](https://www.npmjs.com/package/aws-amplify)                                     |
-          | `aws-amplify-angular`           | [![version](https://img.shields.io/npm/v/aws-amplify-angular/latest.svg)](https://www.npmjs.com/package/aws-amplify-angular)                     |
-          | `aws-amplify-react`             | [![version](https://img.shields.io/npm/v/aws-amplify-react/latest.svg)](https://www.npmjs.com/package/aws-amplify-react)                         |
           | `aws-amplify-react-native`      | [![version](https://img.shields.io/npm/v/aws-amplify-react-native/latest.svg)](https://www.npmjs.com/package/aws-amplify-react-native)           |
-          | `aws-amplify-vue`               | [![version](https://img.shields.io/npm/v/aws-amplify-vue/latest.svg)](https://www.npmjs.com/package/aws-amplify-vue)                             |
           | `@aws-amplify/analytics`        | [![version](https://img.shields.io/npm/v/@aws-amplify/analytics/latest.svg)](https://www.npmjs.com/package/@aws-amplify/analytics)               |
           | `@aws-amplify/api`              | [![version](https://img.shields.io/npm/v/@aws-amplify/api/latest.svg)](https://www.npmjs.com/package/@aws-amplify/api)                           |
           | `@aws-amplify/api-graphql`      | [![version](https://img.shields.io/npm/v/@aws-amplify/api-graphql/latest.svg)](https://www.npmjs.com/package/@aws-amplify/api-graphql)           |
@@ -37,11 +34,6 @@ body:
           | `@aws-amplify/pubsub`           | [![version](https://img.shields.io/npm/v/@aws-amplify/pubsub/latest.svg)](https://www.npmjs.com/package/@aws-amplify/pubsub)                     |
           | `@aws-amplify/pushnotification` | [![version](https://img.shields.io/npm/v/@aws-amplify/pushnotification/latest.svg)](https://www.npmjs.com/package/@aws-amplify/pushnotification) |
           | `@aws-amplify/storage`          | [![version](https://img.shields.io/npm/v/@aws-amplify/storage/latest.svg)](https://www.npmjs.com/package/@aws-amplify/storage)                   |
-          | `@aws-amplify/ui`               | [![version](https://img.shields.io/npm/v/@aws-amplify/ui/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui)                             |
-          | `@aws-amplify/ui-angular`       | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-angular/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-angular)             |
-          | `@aws-amplify/ui-components`    | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-components/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-components)       |
-          | `@aws-amplify/ui-react`         | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-react/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-react)                 |
-          | `@aws-amplify/ui-vue`           | [![version](https://img.shields.io/npm/v/@aws-amplify/ui-vue/latest.svg)](https://www.npmjs.com/package/@aws-amplify/ui-vue)                     |
           | `@aws-amplify/xr`               | [![version](https://img.shields.io/npm/v/@aws-amplify/xr/latest.svg)](https://www.npmjs.com/package/@aws-amplify/xr)                             |
 
         </details>
