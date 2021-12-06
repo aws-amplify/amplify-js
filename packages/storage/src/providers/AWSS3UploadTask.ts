@@ -229,8 +229,9 @@ export class AWSS3UploadTask implements UploadTask {
 	private _validateParams() {
 		if (this.file.size / this.partSize > MAX_PARTS) {
 			throw new Error(
-				`Too many parts. Number of parts is ${this.file.size /
-					this.partSize}, maximum is ${MAX_PARTS}.`
+				`Too many parts. Number of parts is ${
+					this.file.size / this.partSize
+				}, maximum is ${MAX_PARTS}.`
 			);
 		}
 	}

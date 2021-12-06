@@ -74,51 +74,59 @@ export class AWSS3ProviderManagedUpload {
 	}
 
 	public async upload() {
-		this.body = await this.validateAndSanitizeBody(this.params.Body);
-		this.totalBytesToUpload = this.byteLength(this.body);
-		if (this.totalBytesToUpload <= this.minPartSize) {
-			// Multipart upload is not required. Upload the sanitized body as is
-			this.params.Body = this.body;
-			const putObjectCommand = new PutObjectCommand(this.params);
-			return this.s3client.send(putObjectCommand);
-		} else {
-			// Step 1: Initiate the multi part upload
-			const uploadId = await this.createMultiPartUpload();
+		try {
+			this.body = await this.validateAndSanitizeBody(this.params.Body);
+			this.totalBytesToUpload = this.byteLength(this.body);
+			if (this.totalBytesToUpload <= this.minPartSize) {
+				// Multipart upload is not required. Upload the sanitized body as is
+				this.params.Body = this.body;
+				const putObjectCommand = new PutObjectCommand(this.params);
+				return this.s3client.send(putObjectCommand);
+			} else {
+				// Step 1: Initiate the multi part upload
+				const uploadId = await this.createMultiPartUpload();
 
-			// Step 2: Upload chunks in parallel as requested
-			const numberOfPartsToUpload = Math.ceil(
-				this.totalBytesToUpload / this.minPartSize
-			);
-
-			const parts: Part[] = this.createParts();
-			for (
-				let start = 0;
-				start < numberOfPartsToUpload;
-				start += this.queueSize
-			) {
-				/** This first block will try to cancel the upload if the cancel
-				 *	request came before any parts uploads have started.
-				 **/
-				await this.checkIfUploadCancelled(uploadId);
-
-				// Upload as many as `queueSize` parts simultaneously
-				await this.uploadParts(
-					uploadId,
-					parts.slice(start, start + this.queueSize)
+				// Step 2: Upload chunks in parallel as requested
+				const numberOfPartsToUpload = Math.ceil(
+					this.totalBytesToUpload / this.minPartSize
 				);
 
-				/** Call cleanup a second time in case there were part upload requests
-				 *  in flight. This is to ensure that all parts are cleaned up.
-				 */
-				await this.checkIfUploadCancelled(uploadId);
+				const parts: Part[] = this.createParts();
+				for (
+					let start = 0;
+					start < numberOfPartsToUpload;
+					start += this.queueSize
+				) {
+					/** This first block will try to cancel the upload if the cancel
+					 *	request came before any parts uploads have started.
+					 **/
+					await this.checkIfUploadCancelled(uploadId);
+
+					// Upload as many as `queueSize` parts simultaneously
+					await this.uploadParts(
+						uploadId,
+						parts.slice(start, start + this.queueSize)
+					);
+
+					/** Call cleanup a second time in case there were part upload requests
+					 *  in flight. This is to ensure that all parts are cleaned up.
+					 */
+					await this.checkIfUploadCancelled(uploadId);
+				}
+
+				parts.map(part => {
+					this.removeEventListener(part);
+				});
+
+				// Step 3: Finalize the upload such that S3 can recreate the file
+				await this.finishMultiPartUpload(uploadId);
+				return;
 			}
-
-			parts.map(part => {
-				this.removeEventListener(part);
-			});
-
-			// Step 3: Finalize the upload such that S3 can recreate the file
-			return await this.finishMultiPartUpload(uploadId);
+		} catch (error) {
+			logger.error('LOGGER : Error. Cancelling the multipart upload', error);
+			throw new Error(
+				'THROWN from upload(): Error. Cancelling the multipart upload. ' + error
+			);
 		}
 	}
 
@@ -211,12 +219,10 @@ export class AWSS3ProviderManagedUpload {
 			const data = await this.s3client.send(completeUploadCommand);
 			return data.Key;
 		} catch (error) {
-			logger.error(
-				'error happened while finishing the upload. Cancelling the multipart upload',
-				error
-			);
+			let errorMessage = `error happened while finishing the upload. Cancelling the multipart upload ${error}`;
+			logger.error(errorMessage);
 			this.cancelUpload();
-			return;
+			throw new Error(errorMessage);
 		}
 	}
 
