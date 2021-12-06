@@ -36,7 +36,6 @@ import {
 	BatchDeleteGeofenceCommand,
 	BatchDeleteGeofenceCommandInput,
 	BatchDeleteGeofenceCommandOutput,
-	BatchDeleteGeofenceError,
 } from '@aws-sdk/client-location';
 
 import {
@@ -56,9 +55,6 @@ import {
 	AmazonLocationServiceGeofence,
 	GeofencePolygon,
 	AmazonLocationServiceDeleteGeofencesResults,
-	AmazonLocationServiceBatchGeofenceError,
-	AmazonLocationServiceBatchGeofenceErrorMessages,
-	GeofenceError,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServiceProvider');
@@ -568,7 +564,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 					return;
 				}
 
-				const badGeofenceIds = results.errors.map(
+				const badGeofenceIds = response.Errors.map(
 					({ geofenceId }) => geofenceId
 				);
 				results.successes.push(
