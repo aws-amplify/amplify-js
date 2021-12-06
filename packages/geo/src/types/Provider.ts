@@ -19,6 +19,8 @@ import {
 	Geofence,
 	GeofenceInput,
 	GeofenceOptions,
+	ListGeofenceOptions,
+	ListGeofenceResults,
 	CreateUpdateGeofenceResults,
 } from './Geo';
 
@@ -54,5 +56,11 @@ export interface GeoProvider {
 	): Promise<CreateUpdateGeofenceResults>;
 
 	// get a single geofence
-	getGeofence(geofenceId: string, options?: GeofenceOptions): Promise<Geofence>;
+	getGeofence(
+		geofenceId: string,
+		options?: ListGeofenceOptions
+	): Promise<Geofence>;
+
+	// 	list all geofences
+	listGeofences(options?: ListGeofenceOptions): Promise<ListGeofenceResults>;
 }

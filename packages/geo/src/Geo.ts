@@ -35,6 +35,8 @@ import {
 	GeofenceOptions,
 	CreateUpdateGeofenceResults,
 	Geofence,
+	ListGeofenceOptions,
+	ListGeofenceResults,
 } from './types';
 
 const logger = new Logger('Geo');
@@ -235,6 +237,27 @@ export class GeoClass {
 			// Validate geofenceId is valid before calling Provider
 			validateGeofenceId(geofenceId);
 			return await prov.getGeofence(geofenceId, options);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+	}
+
+	/**
+	 * List geofences from a geofence collection
+	 * @param  options?: ListGeofenceOptions
+	 * @returns {Promise<ListGeofencesResults>} - Promise that resolves to an object with:
+	 *   entries: list of geofences - 100 geofences are listed per page
+	 *   nextToken: token for next page of geofences
+	 */
+	public async listGeofences(
+		options?: ListGeofenceOptions
+	): Promise<ListGeofenceResults> {
+		const { providerName = DEFAULT_PROVIDER } = options || {};
+		const prov = this.getPluggable(providerName);
+
+		try {
+			return await prov.listGeofences(options);
 		} catch (error) {
 			logger.debug(error);
 			throw error;
