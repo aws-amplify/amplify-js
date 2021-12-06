@@ -119,14 +119,11 @@ export class AWSS3ProviderManagedUpload {
 				});
 
 				// Step 3: Finalize the upload such that S3 can recreate the file
-				await this.finishMultiPartUpload(uploadId);
-				return;
+				return await this.finishMultiPartUpload(uploadId);
 			}
 		} catch (error) {
-			logger.error('LOGGER : Error. Cancelling the multipart upload', error);
-			throw new Error(
-				'THROWN from upload(): Error. Cancelling the multipart upload. ' + error
-			);
+			logger.error('Error. Cancelling the multipart upload', error.message);
+			throw error.message;
 		}
 	}
 
@@ -219,10 +216,11 @@ export class AWSS3ProviderManagedUpload {
 			const data = await this.s3client.send(completeUploadCommand);
 			return data.Key;
 		} catch (error) {
-			let errorMessage = `error happened while finishing the upload. Cancelling the multipart upload ${error}`;
-			logger.error(errorMessage);
+			logger.error(
+				`error happened while finishing the upload. Cancelling the multipart upload ${error}`
+			);
 			this.cancelUpload();
-			throw new Error(errorMessage);
+			throw new Error(error.message);
 		}
 	}
 
