@@ -921,14 +921,20 @@ img { max-width: 100%; }
 			<li class=" tsd-kind-constructor tsd-parent-kind-class">
 				<a href="apiclass.html#constructor" class="tsd-kind-icon">constructor</a>
 			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
-				<a href="apiclass.html#_ensurecredentials" class="tsd-kind-icon">_ensure<wbr>Credentials</a>
+			<li class=" tsd-kind-property tsd-parent-kind-class">
+				<a href="apiclass.html#auth" class="tsd-kind-icon">Auth</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-class">
+				<a href="apiclass.html#cache" class="tsd-kind-icon">Cache</a>
+			</li>
+			<li class=" tsd-kind-property tsd-parent-kind-class">
+				<a href="apiclass.html#credentials" class="tsd-kind-icon">Credentials</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="apiclass.html#cancel" class="tsd-kind-icon">cancel</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="apiclass.html#configure" class="tsd-kind-icon">configure</a>
-			</li>
-			<li class=" tsd-kind-method tsd-parent-kind-class">
-				<a href="apiclass.html#createinstance" class="tsd-kind-icon">create<wbr>Instance</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="apiclass.html#del" class="tsd-kind-icon">del</a>
@@ -952,6 +958,9 @@ img { max-width: 100%; }
 				<a href="apiclass.html#head" class="tsd-kind-icon">head</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
+				<a href="apiclass.html#iscancel" class="tsd-kind-icon">is<wbr>Cancel</a>
+			</li>
+			<li class=" tsd-kind-method tsd-parent-kind-class">
 				<a href="apiclass.html#patch" class="tsd-kind-icon">patch</a>
 			</li>
 			<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -968,9 +977,12 @@ img { max-width: 100%; }
 <div class="content-wrap">
 	<section class="tsd-panel tsd-comment">
 		<div class="tsd-comment tsd-typography">
-			<div class="lead">
-				<p>Export Cloud Logic APIs</p>
-			</div>
+			<dl class="tsd-comment-tags">
+				<dt>deprecated</dt>
+				<dd><p>Use RestApi or GraphQLAPI to reduce your application bundle size
+					Export Cloud Logic APIs</p>
+				</dd>
+			</dl>
 		</div>
 	</section>
 	<section class="tsd-panel tsd-hierarchy">
@@ -992,11 +1004,18 @@ img { max-width: 100%; }
 					</ul>
 				</section>
 				<section class="tsd-index-section ">
+					<h3>Properties</h3>
+					<ul class="tsd-index-list">
+						<li class="tsd-kind-property tsd-parent-kind-class"><a href="apiclass.html#auth" class="tsd-kind-icon">Auth</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-class"><a href="apiclass.html#cache" class="tsd-kind-icon">Cache</a></li>
+						<li class="tsd-kind-property tsd-parent-kind-class"><a href="apiclass.html#credentials" class="tsd-kind-icon">Credentials</a></li>
+					</ul>
+				</section>
+				<section class="tsd-index-section ">
 					<h3>Methods</h3>
 					<ul class="tsd-index-list">
-						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="apiclass.html#_ensurecredentials" class="tsd-kind-icon">_ensure<wbr>Credentials</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="apiclass.html#cancel" class="tsd-kind-icon">cancel</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="apiclass.html#configure" class="tsd-kind-icon">configure</a></li>
-						<li class="tsd-kind-method tsd-parent-kind-class"><a href="apiclass.html#createinstance" class="tsd-kind-icon">create<wbr>Instance</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="apiclass.html#del" class="tsd-kind-icon">del</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="apiclass.html#endpoint" class="tsd-kind-icon">endpoint</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="apiclass.html#get" class="tsd-kind-icon">get</a></li>
@@ -1004,6 +1023,7 @@ img { max-width: 100%; }
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="apiclass.html#getmodulename" class="tsd-kind-icon">get<wbr>Module<wbr>Name</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="apiclass.html#graphql" class="tsd-kind-icon">graphql</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="apiclass.html#head" class="tsd-kind-icon">head</a></li>
+						<li class="tsd-kind-method tsd-parent-kind-class"><a href="apiclass.html#iscancel" class="tsd-kind-icon">is<wbr>Cancel</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="apiclass.html#patch" class="tsd-kind-icon">patch</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="apiclass.html#post" class="tsd-kind-icon">post</a></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><a href="apiclass.html#put" class="tsd-kind-icon">put</a></li>
@@ -1024,12 +1044,12 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/API.ts#L44">packages/api/src/API.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L45">packages/api/src/API.ts:45</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Initialize Storage with AWS configuration</p>
+							<p>Initialize API with AWS configuration</p>
 						</div>
 					</div>
 					<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1038,7 +1058,7 @@ img { max-width: 100%; }
 							<h5>options: <span class="tsd-signature-type">any</span></h5>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Configuration object for storage</p>
+									<p>Configuration object for API</p>
 								</div>
 							</div>
 						</li>
@@ -1049,23 +1069,74 @@ img { max-width: 100%; }
 		</section>
 	</section>
 	<section class="tsd-panel-group tsd-member-group ">
+		<h2>Properties</h2>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+			<a name="auth" class="tsd-anchor"></a>
+			<h3>Auth</h3>
+			<div class="tsd-signature tsd-kind-icon">Auth<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AuthClass</span><span class="tsd-signature-symbol"> = Auth</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L43">packages/api/src/API.ts:43</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+			<a name="cache" class="tsd-anchor"></a>
+			<h3>Cache</h3>
+			<div class="tsd-signature tsd-kind-icon">Cache<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ICache</span><span class="tsd-signature-symbol"> = Cache</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L44">packages/api/src/API.ts:44</a></li>
+				</ul>
+			</aside>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+			<a name="credentials" class="tsd-anchor"></a>
+			<h3>Credentials</h3>
+			<div class="tsd-signature tsd-kind-icon">Credentials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">CredentialsClass</span><span class="tsd-signature-symbol"> = Credentials</span></div>
+			<aside class="tsd-sources">
+				<ul>
+					<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L45">packages/api/src/API.ts:45</a></li>
+				</ul>
+			</aside>
+		</section>
+	</section>
+	<section class="tsd-panel-group tsd-member-group ">
 		<h2>Methods</h2>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
-			<a name="_ensurecredentials" class="tsd-anchor"></a>
-			<h3><span class="tsd-flag ts-flagPrivate">Private</span> _ensure<wbr>Credentials</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-				<li class="tsd-signature tsd-kind-icon">_ensure<wbr>Credentials<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="cancel" class="tsd-anchor"></a>
+			<h3>cancel</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">cancel<span class="tsd-signature-symbol">(</span>request<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/API.ts#L488">packages/api/src/API.ts:488</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L162">packages/api/src/API.ts:162</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Cancels an inflight request</p>
+						</div>
 					</div>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>request: <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>request to cancel</p>
+							</div>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> message: <span class="tsd-signature-type">string</span></h5>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+					<ul>
+						<li>A boolean indicating if the request was cancelled</li>
+					</ul>
 				</li>
 			</ul>
 		</section>
@@ -1079,7 +1150,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/API.ts#L64">packages/api/src/API.ts:64</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L67">packages/api/src/API.ts:67</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1101,34 +1172,6 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-			<a name="createinstance" class="tsd-anchor"></a>
-			<h3>create<wbr>Instance</h3>
-			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">create<wbr>Instance<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">never</span><span class="tsd-signature-symbol">&gt;</span></li>
-			</ul>
-			<ul class="tsd-descriptions">
-				<li class="tsd-description">
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/API.ts#L118">packages/api/src/API.ts:118</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Create an instance of API for the library</p>
-						</div>
-					</div>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">true</span>
-						<span class="tsd-signature-symbol"> | </span>
-						<span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">never</span><span class="tsd-signature-symbol">&gt;</span>
-					</h4>
-					<ul>
-						<li>A promise of true if Success</li>
-					</ul>
-				</li>
-			</ul>
-		</section>
-		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 			<a name="del" class="tsd-anchor"></a>
 			<h3>del</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1138,7 +1181,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/API.ts#L227">packages/api/src/API.ts:227</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L134">packages/api/src/API.ts:134</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1175,13 +1218,13 @@ img { max-width: 100%; }
 			<a name="endpoint" class="tsd-anchor"></a>
 			<h3>endpoint</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">endpoint<span class="tsd-signature-symbol">(</span>apiName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">endpoint<span class="tsd-signature-symbol">(</span>apiName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/API.ts#L271">packages/api/src/API.ts:271</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L171">packages/api/src/API.ts:171</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1198,7 +1241,7 @@ img { max-width: 100%; }
 							</div>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
 					<ul>
 						<li>The endpoint of the api</li>
 					</ul>
@@ -1215,7 +1258,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/API.ts#L135">packages/api/src/API.ts:135</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L90">packages/api/src/API.ts:90</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1258,7 +1301,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/API.ts#L337">packages/api/src/API.ts:337</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L179">packages/api/src/API.ts:179</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1288,7 +1331,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/API.ts#L55">packages/api/src/API.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L58">packages/api/src/API.ts:58</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -1299,13 +1342,13 @@ img { max-width: 100%; }
 			<a name="graphql" class="tsd-anchor"></a>
 			<h3>graphql</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-				<li class="tsd-signature tsd-kind-icon">graphql<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/graphqlresult.html" class="tsd-signature-type">GraphQLResult</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				<li class="tsd-signature tsd-kind-icon">graphql<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">GraphQLOptions</span>, additionalHeaders<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLResult</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></li>
 			</ul>
 			<ul class="tsd-descriptions">
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/API.ts#L352">packages/api/src/API.ts:352</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L190">packages/api/src/API.ts:190</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1316,23 +1359,23 @@ img { max-width: 100%; }
 					<h4 class="tsd-parameters-title">Parameters</h4>
 					<ul class="tsd-parameters">
 						<li>
-							<h5>__namedParameters: <span class="tsd-signature-type">object</span></h5>
+							<h5>options: <span class="tsd-signature-type">GraphQLOptions</span></h5>
+						</li>
+						<li>
+							<h5><span class="tsd-flag ts-flagOptional">Optional</span> additionalHeaders: <span class="tsd-signature-type">object</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>headers to merge in after any <code>graphql_headers</code> set in the config</p>
+							</div>
 							<ul class="tsd-parameters">
-								<li class="tsd-parameter">
-									<h5>auth<wbr>Mode<span class="tsd-signature-symbol">: </span><a href="../enums/graphql_auth_mode.html" class="tsd-signature-type">GRAPHQL_AUTH_MODE</a></h5>
-								</li>
-								<li class="tsd-parameter">
-									<h5>param<wbr>Query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
-								</li>
-								<li class="tsd-parameter">
-									<h5>variables<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></h5>
+								<li class="tsd-parameter-index-signature">
+									<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 						</li>
 					</ul>
-					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/graphqlresult.html" class="tsd-signature-type">GraphQLResult</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">GraphQLResult</span><span class="tsd-signature-symbol">&gt;</span>
 						<span class="tsd-signature-symbol"> | </span>
-						<span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>
+						<span class="tsd-signature-type">Observable</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span>
 					</h4>
 				</li>
 			</ul>
@@ -1347,7 +1390,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/API.ts#L250">packages/api/src/API.ts:250</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L145">packages/api/src/API.ts:145</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1381,6 +1424,40 @@ img { max-width: 100%; }
 			</ul>
 		</section>
 		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<a name="iscancel" class="tsd-anchor"></a>
+			<h3>is<wbr>Cancel</h3>
+			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<li class="tsd-signature tsd-kind-icon">is<wbr>Cancel<span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+			</ul>
+			<ul class="tsd-descriptions">
+				<li class="tsd-description">
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L154">packages/api/src/API.ts:154</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Checks to see if an error thrown is from an api request cancellation</p>
+						</div>
+					</div>
+					<h4 class="tsd-parameters-title">Parameters</h4>
+					<ul class="tsd-parameters">
+						<li>
+							<h5>error: <span class="tsd-signature-type">any</span></h5>
+							<div class="tsd-comment tsd-typography">
+								<p>Any error</p>
+							</div>
+						</li>
+					</ul>
+					<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+					<ul>
+						<li>A boolean indicating if the error was from an api request cancellation</li>
+					</ul>
+				</li>
+			</ul>
+		</section>
+		<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 			<a name="patch" class="tsd-anchor"></a>
 			<h3>patch</h3>
 			<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1390,7 +1467,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/API.ts#L204">packages/api/src/API.ts:204</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L123">packages/api/src/API.ts:123</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1433,7 +1510,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/API.ts#L158">packages/api/src/API.ts:158</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L101">packages/api/src/API.ts:101</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1476,7 +1553,7 @@ img { max-width: 100%; }
 				<li class="tsd-description">
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/a047ce73/packages/api/src/API.ts#L181">packages/api/src/API.ts:181</a></li>
+							<li>Defined in <a href="https://github.com/aws-amplify/amplify-js/blob/b2f703375/packages/api/src/API.ts#L112">packages/api/src/API.ts:112</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
