@@ -367,7 +367,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	 * Get geofence from a geofence collection
 	 * @param geofenceId:string
 	 * @param options?: Optional parameters for getGeofence
-	 * @returns {Promise<AmazonLocationServiceGeofence} - Promise that resolves to a geofence object
+	 * @returns {Promise<AmazonLocationServiceGeofence>} - Promise that resolves to a geofence object
 	 */
 	public async getGeofence(
 		geofenceId: string,
