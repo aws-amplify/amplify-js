@@ -142,6 +142,8 @@ describe('Outbox tests', () => {
 			_version: (updatedModel1 as any)._version + 1, // increment version like we would expect coming back from AppSync
 			_lastChangedAt: Date.now(),
 			_deleted: false,
+			createdAt: '2021-11-30T20:51:00.250Z',
+			updatedAt: '2021-11-30T20:52:00.250Z',
 		};
 
 		await Storage.runExclusive(async s => {
@@ -166,6 +168,8 @@ describe('Outbox tests', () => {
 				_version: inProgressData._version + 1, // increment version like we would expect coming back from AppSync
 				_lastChangedAt: Date.now(),
 				_deleted: false,
+				createdAt: '2021-11-30T20:51:00.250Z',
+				updatedAt: '2021-11-30T20:52:00.250Z',
 			};
 
 			await processMutationResponse(
@@ -320,9 +324,8 @@ async function instantiateOutbox(): Promise<void> {
 	Storage = <StorageType>DataStore.storage;
 	anyStorage = Storage;
 
-	const namespaceResolver = anyStorage.storage.namespaceResolver.bind(
-		anyStorage
-	);
+	const namespaceResolver =
+		anyStorage.storage.namespaceResolver.bind(anyStorage);
 
 	({ modelInstanceCreator } = anyStorage.storage);
 
