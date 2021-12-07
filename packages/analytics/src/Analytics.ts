@@ -51,8 +51,8 @@ const trackers = {
 	session: SessionTracker,
 };
 
-type TrackerType = keyof typeof trackers;
-type Tracker = typeof trackers[TrackerType];
+type TrackerTypes = keyof typeof trackers;
+type Trackers = typeof trackers[TrackerTypes];
 let _instance = null;
 
 /**
@@ -62,7 +62,7 @@ export class AnalyticsClass {
 	private _config;
 	private _pluggables: AnalyticsProvider[];
 	private _disabled: boolean;
-	private _trackers: Tracker;
+	private _trackers: Trackers;
 
 	/**
 	 * Initialize Analtyics
@@ -298,7 +298,7 @@ export class AnalyticsClass {
 	 * @param trackerType - The type of tracker to activate.
 	 * @param [opts] - Auto tracking options.
 	 */
-	public autoTrack(trackerType: TrackerType, opts: AutoTrackOpts) {
+	public autoTrack(trackerType: TrackerTypes, opts: AutoTrackOpts) {
 		if (!trackers[trackerType]) {
 			logger.debug('invalid tracker type');
 			return;
