@@ -22,6 +22,7 @@ import {
 	ListGeofenceOptions,
 	ListGeofenceResults,
 	CreateUpdateGeofenceResults,
+	DeleteGeofencesResults,
 } from './Geo';
 
 export interface GeoProvider {
@@ -69,4 +70,10 @@ export interface GeoProvider {
 
 	// 	list all geofences
 	listGeofences(options?: ListGeofenceOptions): Promise<ListGeofenceResults>;
+
+	// Delete geofences
+	deleteGeofences(
+		geofenceIds: string[],
+		options?: GeofenceOptions
+	): Promise<DeleteGeofencesResults>;
 }

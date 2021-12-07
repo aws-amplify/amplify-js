@@ -33,6 +33,9 @@ import {
 	ListGeofencesCommand,
 	ListGeofencesCommandInput,
 	ListGeofencesCommandOutput,
+	BatchDeleteGeofenceCommand,
+	BatchDeleteGeofenceCommandInput,
+	BatchDeleteGeofenceCommandOutput,
 } from '@aws-sdk/client-location';
 
 import {
@@ -51,6 +54,7 @@ import {
 	CreateUpdateGeofenceResults,
 	AmazonLocationServiceGeofence,
 	GeofencePolygon,
+	AmazonLocationServiceDeleteGeofencesResults,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServiceProvider');
@@ -501,6 +505,77 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 	}
 
 	/**
+	 * Delete geofences from a geofence collection
+	 * @param geofenceIds: string|string[]
+	 * @param options?: GeofenceOptions
+	 * @returns {Promise<DeleteGeofencesResults>} - Promise that resolves to an object with:
+	 *  successes: list of geofences successfully deleted
+	 *  errors: list of geofences that failed to delete
+	 */
+	public async deleteGeofences(
+		geofenceIds: string[],
+		options?: AmazonLocationServiceGeofenceOptions
+	): Promise<AmazonLocationServiceDeleteGeofencesResults> {
+		const credentialsOK = await this._ensureCredentials();
+		if (!credentialsOK) {
+			throw new Error('No credentials');
+		}
+
+		// Verify geofence collection exists in aws-config.js
+		try {
+			this._verifyGeofenceCollections(options?.collectionName);
+		} catch (error) {
+			logger.debug(error);
+			throw error;
+		}
+
+		const results: AmazonLocationServiceDeleteGeofencesResults = {
+			successes: [],
+			errors: [],
+		};
+
+		const batches = [];
+
+		let count = 0;
+		while (count < geofenceIds.length) {
+			batches.push(geofenceIds.slice(count, (count += 10)));
+		}
+
+		await Promise.all(
+			batches.map(async batch => {
+				let response;
+				try {
+					response = await this._AmazonLocationServiceBatchDeleteGeofenceCall(
+						batch,
+						options?.collectionName || this._config.geofenceCollections.default
+					);
+				} catch (error) {
+					// If the API call fails, add the geofences to the errors array and move to next batch
+					batch.forEach(geofenceId => {
+						const errorObject = {
+							geofenceId,
+							error: {
+								code: error.message,
+								message: error.message,
+							},
+						};
+						results.errors.push(errorObject);
+					});
+					return;
+				}
+
+				const badGeofenceIds = response.Errors.map(
+					({ geofenceId }) => geofenceId
+				);
+				results.successes.push(
+					...batch.filter(Id => !badGeofenceIds.includes(Id))
+				);
+			})
+		);
+		return results;
+	}
+
+	/**
 	 * @private
 	 */
 	private async _ensureCredentials(): Promise<boolean> {
@@ -659,5 +734,32 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			})
 		);
 		return results;
+	}
+
+	private async _AmazonLocationServiceBatchDeleteGeofenceCall(
+		geofenceIds: string[],
+		collectionName?: string
+	): Promise<BatchDeleteGeofenceCommandOutput> {
+		// Create the BatchDeleteGeofence input
+		const deleteGeofencesInput: BatchDeleteGeofenceCommandInput = {
+			GeofenceIds: geofenceIds,
+			CollectionName:
+				collectionName || this._config.geofenceCollections.default,
+		};
+
+		const client = new LocationClient({
+			credentials: this._config.credentials,
+			region: this._config.region,
+			customUserAgent: getAmplifyUserAgent(),
+		});
+		const command = new BatchDeleteGeofenceCommand(deleteGeofencesInput);
+
+		let response: BatchDeleteGeofenceCommandOutput;
+		try {
+			response = await client.send(command);
+		} catch (error) {
+			throw error;
+		}
+		return response;
 	}
 }

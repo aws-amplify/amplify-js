@@ -3,6 +3,8 @@ import {
 	GeofenceOptions,
 	ListGeofenceOptions,
 	Geofence,
+	DeleteGeofencesResults,
+	GeofenceError,
 } from './Geo';
 
 // Maps
@@ -23,10 +25,36 @@ export type AmazonLocationServiceGeofenceStatus =
 	| 'DELETED'
 	| 'DELETING';
 
-export type AmazonLocationServiceGeofence = Geofence & {
+export type AmazonLocationServiceGeofence = Omit<Geofence, 'status'> & {
 	status: AmazonLocationServiceGeofenceStatus;
 };
 
+// List Geofences
 export type AmazonLocationServiceListGeofenceOptions = ListGeofenceOptions & {
 	collectionName?: string;
+};
+
+// Delete Geofences
+export type AmazonLocationServiceBatchGeofenceErrorMessages =
+	| 'AccessDeniedException'
+	| 'InternalServerException'
+	| 'ResourceNotFoundException'
+	| 'ThrottlingException'
+	| 'ValidationException';
+
+export type AmazonLocationServiceBatchGeofenceError = Omit<
+	GeofenceError,
+	'error'
+> & {
+	error: {
+		code: string;
+		message: AmazonLocationServiceBatchGeofenceErrorMessages;
+	};
+};
+
+export type AmazonLocationServiceDeleteGeofencesResults = Omit<
+	DeleteGeofencesResults,
+	'errors'
+> & {
+	errors: AmazonLocationServiceBatchGeofenceError[];
 };
