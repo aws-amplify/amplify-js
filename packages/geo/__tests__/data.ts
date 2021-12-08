@@ -264,8 +264,23 @@ export function mockBatchPutGeofenceCommand(command) {
 			Errors: [],
 		};
 	}
+}
+
+export function mockBatchPutGeofenceCommandWithNoGetError(command) {
+	if (command instanceof BatchPutGeofenceCommand) {
+		return mockBatchPutGeofenceCommand(command);
+	}
 	if (command instanceof GetGeofenceCommand) {
 		return mockGetGeofenceCommand(command);
+	}
+}
+
+export function mockBatchPutGeofenceCommandWithGetError(command) {
+	if (command instanceof BatchPutGeofenceCommand) {
+		return mockBatchPutGeofenceCommand(command);
+	}
+	if (command instanceof GetGeofenceCommand) {
+		return mockBadGetGeofenceCommand(command);
 	}
 }
 
@@ -280,6 +295,12 @@ export function mockGetGeofenceCommand(command) {
 			UpdateTime: '2020-04-01T21:00:00.000Z',
 			Status: 'ACTIVE',
 		};
+	}
+}
+
+export function mockBadGetGeofenceCommand(command) {
+	if (command instanceof GetGeofenceCommand) {
+		return Promise.reject(`Geofence ${command.input.GeofenceId} not found`);
 	}
 }
 

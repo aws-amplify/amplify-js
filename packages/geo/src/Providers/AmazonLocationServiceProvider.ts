@@ -294,22 +294,20 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw error;
 		}
 
-		// TODO: Check if any geofenceIds already exist
-		// Error with any IDs that already exist before making API call
-		// const geofenceIds: string[] = geofences.map(({ geofenceId }) => geofenceId);
-		// const geofenceIdsExist = [];
-		// geofenceIds.forEach(async geofenceId => {
-		// 	try {
-		// 		await this.getGeofence(geofenceId);
-		// 	} catch (error) {
-		// 		geofenceIdsExist.push(geofenceId);
-		// 	}
-		// });
-		// if (geofenceIdsExist.length > 0) {
-		// 	throw new Error(
-		// 		`GeofenceIds ${JSON.stringify(geofenceIdsExist)} already exist`
-		// 	);
-		// }
+		// Check if any geofenceIds already exist in the collection
+		const geofenceIds: string[] = geofences.map(({ geofenceId }) => geofenceId);
+		let existingGeofences;
+		try {
+			existingGeofences = await this._checkIfGeofencesExist(geofenceIds);
+		} catch (error) {
+			console.log(error);
+		}
+		// Error if any geofenceIds already exist in the collection
+		if (existingGeofences.length > 0) {
+			throw new Error(
+				`GeofenceIds ${JSON.stringify(existingGeofences)} already exist`
+			);
+		}
 
 		const results = await this._batchPutGeofence(geofences, options);
 
@@ -340,22 +338,25 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			throw error;
 		}
 
-		// TODO: Check if any geofenceIds do not exist
-		// Error with any IDs that do not exist before making API call
-		// const geofenceIds: string[] = geofences.map(({ geofenceId }) => geofenceId);
-		// const geofenceIdsDoNotExist = [];
-		// geofenceIds.forEach(async geofenceId => {
-		// 	try {
-		// 		await this.getGeofence(geofenceId);
-		// 	} catch (error) {
-		// 		geofenceIdsDoNotExist.push(geofenceId);
-		// 	}
-		// });
-		// if (geofenceIdsDoNotExist.length > 0) {
-		// 	throw new Error(
-		// 		`GeofenceIds ${JSON.stringify(geofenceIdsDoNotExist)} do not exist`
-		// 	);
-		// }
+		// Check if any geofenceIds already exist in the collection
+		const geofenceIds: string[] = geofences.map(({ geofenceId }) => geofenceId);
+		let existingGeofences;
+		try {
+			existingGeofences = await this._checkIfGeofencesExist(geofenceIds);
+		} catch (error) {
+			console.log(error);
+		}
+		// Error if any geofenceIds do not already exist in the collection
+		const geofencesThatDoNotExist = geofenceIds.filter(
+			geofenceId => !existingGeofences.includes(geofenceId)
+		);
+		if (geofencesThatDoNotExist.length !== 0) {
+			throw new Error(
+				`GeofenceIds ${JSON.stringify(
+					geofencesThatDoNotExist
+				)} do not already exist`
+			);
+		}
 
 		const results = await this._batchPutGeofence(geofences, options);
 
@@ -587,7 +588,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			this._config.credentials = cred;
 			return true;
 		} catch (error) {
-			logger.warn('Ensure credentials error. Credentials are:', error);
+			logger.debug('Ensure credentials error. Credentials are:', error);
 			return false;
 		}
 	}
@@ -596,13 +597,13 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		if (!this._config.maps) {
 			const errorString =
 				"No map resources found in amplify config, run 'amplify add geo' to create one and run `amplify push` after";
-			logger.warn(errorString);
+			logger.debug(errorString);
 			throw new Error(errorString);
 		}
 		if (!this._config.maps.default) {
 			const errorString =
 				"No default map resource found in amplify config, run 'amplify add geo' to create one and run `amplify push` after";
-			logger.warn(errorString);
+			logger.debug(errorString);
 			throw new Error(errorString);
 		}
 	}
@@ -614,7 +615,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		) {
 			const errorString =
 				'No Search Index found in amplify config, please run `amplify add geo` to create one and run `amplify push` after.';
-			logger.warn(errorString);
+			logger.debug(errorString);
 			throw new Error(errorString);
 		}
 	}
@@ -627,7 +628,7 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 		) {
 			const errorString =
 				'No Geofence Collections found, please run `amplify add geo` to create one and run `amplify push` after.';
-			logger.warn(errorString);
+			logger.debug(errorString);
 			throw new Error(errorString);
 		}
 	}
@@ -734,6 +735,30 @@ export class AmazonLocationServiceProvider implements GeoProvider {
 			})
 		);
 		return results;
+	}
+
+	// Check if any geofenceIds exists in the collection already
+	private async _checkIfGeofencesExist(
+		geofenceIds: string[],
+		collectionName?: string
+	) {
+		const geofenceIdsThatExist = [];
+		await Promise.all(
+			geofenceIds.map(async geofenceId => {
+				try {
+					const geofenceExists = await this.getGeofence(geofenceId, {
+						collectionName,
+					});
+					if (geofenceExists) {
+						geofenceIdsThatExist.push(geofenceId);
+					}
+				} catch (error) {
+					logger.debug(error);
+					return;
+				}
+			})
+		);
+		return geofenceIdsThatExist;
 	}
 
 	private async _AmazonLocationServiceBatchDeleteGeofenceCall(

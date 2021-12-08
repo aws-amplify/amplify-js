@@ -39,6 +39,7 @@ import {
 	geofencesWithInvalidId,
 	mockGetGeofenceCommand,
 	mockListGeofencesCommand,
+	mockBatchPutGeofenceCommandWithNoGetError,
 } from './data';
 
 LocationClient.prototype.send = jest.fn(async command => {
@@ -364,13 +365,13 @@ describe('Geo', () => {
 
 	describe('createGeofences', () => {
 		test('createGeofences with a single geofence', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
 			});
 
 			LocationClient.prototype.send = jest
 				.fn()
-				.mockImplementationOnce(mockBatchPutGeofenceCommand);
+				.mockImplementation(mockBatchPutGeofenceCommand);
 
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
@@ -381,8 +382,9 @@ describe('Geo', () => {
 
 			// Expect that the API was called with the proper input
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
-			const output = {
+			// mock.calls[0] is for getGeofence, so we need the input from calls[1]
+			const input = spyon.mock.calls[1][0].input;
+			const expectedInput = {
 				Entries: [
 					{
 						GeofenceId: validGeofence1.geofenceId,
@@ -393,11 +395,11 @@ describe('Geo', () => {
 				],
 				CollectionName: 'geofenceCollectionExample',
 			};
-			expect(input).toEqual(output);
+			expect(input).toEqual(expectedInput);
 		});
 
 		test('createGeofences with multiple geofences', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
 			});
 
@@ -413,14 +415,18 @@ describe('Geo', () => {
 			expect(results).toEqual(batchGeofencesCamelcaseResults);
 
 			// Expect that the API was called the right amount of times
-			const expectedNumberOfCalls = Math.floor(validGeofences.length / 10) + 1;
+			const numberOfBatchCalls = Math.ceil(validGeofences.length / 10);
+			const numberOfGetGeofenceCalls = validGeofences.length;
+			const expectedNumberOfCalls =
+				numberOfBatchCalls + numberOfGetGeofenceCalls;
+
 			expect(LocationClient.prototype.send).toHaveBeenCalledTimes(
 				expectedNumberOfCalls
 			);
 		});
 
 		test('should error if there is a bad geofence in the input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
 			});
 
@@ -435,7 +441,7 @@ describe('Geo', () => {
 		});
 
 		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
 			});
 
@@ -451,13 +457,13 @@ describe('Geo', () => {
 
 	describe('updateGeofences', () => {
 		test('updateGeofences with a single geofence', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
 			});
 
 			LocationClient.prototype.send = jest
 				.fn()
-				.mockImplementationOnce(mockBatchPutGeofenceCommand);
+				.mockImplementation(mockBatchPutGeofenceCommandWithNoGetError);
 
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
@@ -468,7 +474,9 @@ describe('Geo', () => {
 
 			// Expect that the API was called with the proper input
 			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
+			// mock.calls[0] is for getGeofence, so we need the input from calls[1]
+
+			const input = spyon.mock.calls[1][0].input;
 			const output = {
 				Entries: [
 					{
@@ -484,13 +492,13 @@ describe('Geo', () => {
 		});
 
 		test('updateGeofences with multiple geofences', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
 			});
 
 			LocationClient.prototype.send = jest
 				.fn()
-				.mockImplementation(mockBatchPutGeofenceCommand);
+				.mockImplementation(mockBatchPutGeofenceCommandWithNoGetError);
 
 			const geo = new GeoClass();
 			geo.configure(awsConfig);
@@ -500,14 +508,18 @@ describe('Geo', () => {
 			expect(results).toEqual(batchGeofencesCamelcaseResults);
 
 			// Expect that the API was called the right amount of times
-			const expectedNumberOfCalls = Math.floor(validGeofences.length / 10) + 1;
+			const numberOfBatchCalls = Math.ceil(validGeofences.length / 10);
+			const numberOfGetGeofenceCalls = validGeofences.length;
+			const expectedNumberOfCalls =
+				numberOfBatchCalls + numberOfGetGeofenceCalls;
+
 			expect(LocationClient.prototype.send).toHaveBeenCalledTimes(
 				expectedNumberOfCalls
 			);
 		});
 
 		test('should error if there is a bad geofence in the input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
 			});
 
@@ -522,7 +534,7 @@ describe('Geo', () => {
 		});
 
 		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
+			jest.spyOn(Credentials, 'get').mockImplementation(() => {
 				return Promise.resolve(credentials);
 			});
 

@@ -29,12 +29,12 @@ export function validateCoordinates(lng: Longitude, lat: Latitude): void {
 	if (lat < -90 || lat > 90) {
 		const errorString =
 			'Latitude must be between -90 and 90 degrees inclusive.';
-		logger.warn(errorString);
+		logger.debug(errorString);
 		throw new Error(errorString);
 	} else if (lng < -180 || lng > 180) {
 		const errorString =
 			'Longitude must be between -180 and 180 degrees inclusive.';
-		logger.warn(errorString);
+		logger.debug(errorString);
 		throw new Error(errorString);
 	}
 }
@@ -45,7 +45,7 @@ export function validateGeofenceId(geofenceId: string) {
 	// Check if geofenceId is valid
 	if (!geofenceIdRegex.test(geofenceId)) {
 		const errorString = `Invalid geofenceId: ${geofenceId} Ids can only contain alphanumeric characters, hyphens, underscores and periods.`;
-		logger.warn(errorString);
+		logger.debug(errorString);
 		throw new Error(errorString);
 	}
 }
@@ -54,7 +54,7 @@ export function validateLinearRing(linearRing: LinearRing) {
 	// Validate LinearRing size, must be at least 4 points
 	if (linearRing.length < 4) {
 		const errorString = 'LinearRing must contain 4 or more coordinates.';
-		logger.warn(errorString);
+		logger.debug(errorString);
 		throw new Error(errorString);
 	}
 
@@ -71,7 +71,7 @@ export function validateLinearRing(linearRing: LinearRing) {
 		const errorString = `One or more of the coordinates are not valid: ${JSON.stringify(
 			badCoordinates
 		)}`;
-		logger.warn(errorString);
+		logger.debug(errorString);
 		throw new Error(errorString);
 	}
 
@@ -81,7 +81,7 @@ export function validateLinearRing(linearRing: LinearRing) {
 
 	if (lngA !== lngB || latA !== latB) {
 		const errorString = `LinearRing's first and last coordinates are not the same`;
-		logger.warn(errorString);
+		logger.debug(errorString);
 		throw new Error(errorString);
 	}
 }
@@ -91,14 +91,14 @@ export function validatePolygon(polygon: GeofencePolygon): void {
 		const errorString = `Polygon ${JSON.stringify(
 			polygon
 		)} is of incorrect structure. It should be an array of 'LinearRing'`;
-		logger.warn(errorString);
+		logger.debug(errorString);
 		throw new Error(errorString);
 	}
 	if (!(polygon.length === 1)) {
 		const errorString = `Polygon ${JSON.stringify(
 			polygon
 		)} geometry.polygon must have a single LinearRing array`;
-		logger.warn(errorString);
+		logger.debug(errorString);
 		throw new Error(errorString);
 	}
 	const verticesCount = polygon.reduce(
@@ -107,7 +107,7 @@ export function validatePolygon(polygon: GeofencePolygon): void {
 	);
 	if (verticesCount > 1000) {
 		const errorString = `Polygon has more than the maximum 1000 vertices.`;
-		logger.warn(errorString);
+		logger.debug(errorString);
 		throw new Error(errorString);
 	}
 }
@@ -121,7 +121,7 @@ export function validateGeofences(geofences: GeofenceInput[]) {
 			const errorString = `Geofence ${JSON.stringify(
 				geofence
 			)} is missing geofenceId`;
-			logger.warn(errorString);
+			logger.debug(errorString);
 			throw new Error(errorString);
 		}
 
@@ -129,7 +129,7 @@ export function validateGeofences(geofences: GeofenceInput[]) {
 			const errorString = `Geofence ${JSON.stringify(
 				geofence
 			)} is missing geometry`;
-			logger.warn(errorString);
+			logger.debug(errorString);
 			throw new Error(errorString);
 		}
 
@@ -137,7 +137,7 @@ export function validateGeofences(geofences: GeofenceInput[]) {
 			const errorString = `Geofence ${JSON.stringify(
 				geofence
 			)} is missing geometry.polygon`;
-			logger.warn(errorString);
+			logger.debug(errorString);
 			throw new Error(errorString);
 		}
 
@@ -156,7 +156,7 @@ export function validateGeofences(geofences: GeofenceInput[]) {
 		// Validate geofenceId is unique
 		if (geofenceIds[geofenceId]) {
 			const errorString = `Duplicate geofenceId: ${geofenceId}`;
-			logger.warn(errorString);
+			logger.debug(errorString);
 			throw new Error(errorString);
 		} else {
 			geofenceIds[geofenceId] = true;
@@ -170,7 +170,7 @@ export function validateGeofences(geofences: GeofenceInput[]) {
 				error.message === `Polygon has more than the maximum 1000 vertices.`
 			) {
 				const errorString = `Geofence ${geofenceId} has more than the maximum of 1000 vertices`;
-				logger.warn(errorString);
+				logger.debug(errorString);
 				throw new Error(errorString);
 			}
 		}
