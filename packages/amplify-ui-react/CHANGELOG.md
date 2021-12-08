@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.28](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@1.2.27...@aws-amplify/ui-react@1.2.28) (2021-12-03)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [1.2.27](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@1.2.26...@aws-amplify/ui-react@1.2.27) (2021-12-02)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [1.2.26](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@1.2.25...@aws-amplify/ui-react@1.2.26) (2021-11-18)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [1.2.25](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@1.2.24...@aws-amplify/ui-react@1.2.25) (2021-11-16)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [1.2.24](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@1.2.23...@aws-amplify/ui-react@1.2.24) (2021-11-12)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [1.2.23](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@1.2.22...@aws-amplify/ui-react@1.2.23) (2021-11-09)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
+## [1.2.22](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@1.2.21...@aws-amplify/ui-react@1.2.22) (2021-10-28)
+
+**Note:** Version bump only for package @aws-amplify/ui-react
+
+
+
+
+
 ## [1.2.21](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/ui-react@1.2.20...@aws-amplify/ui-react@1.2.21) (2021-10-21)
 
 **Note:** Version bump only for package @aws-amplify/ui-react
