@@ -250,15 +250,9 @@ export class GeoClass {
 			geofenceInputArray = geofences;
 		}
 
-		// Validate all geofences are unique and valid
 		try {
+			// Validate all geofences are unique and valid
 			validateGeofences(geofenceInputArray);
-		} catch (error) {
-			logger.debug(error);
-			throw error;
-		}
-
-		try {
 			return await prov.updateGeofences(geofenceInputArray, options);
 		} catch (error) {
 			logger.debug(error);
