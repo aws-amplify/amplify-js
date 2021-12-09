@@ -25,13 +25,15 @@ import {
 	testPlaceCamelCase,
 	validGeofences,
 	batchGeofencesCamelcaseResults,
+	validGeometry,
+} from '../testData';
+import {
 	createGeofenceInputArray,
 	mockBatchPutGeofenceCommand,
-	validGeometry,
 	mockGetGeofenceCommand,
 	mockListGeofencesCommand,
 	mockDeleteGeofencesCommand,
-} from '../data';
+} from '../testUtils';
 import {
 	SearchByTextOptions,
 	SearchByCoordinatesOptions,

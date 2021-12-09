@@ -35,11 +35,14 @@ import {
 	validGeofence1,
 	singleGeofenceCamelcaseResults,
 	batchGeofencesCamelcaseResults,
-	mockBatchPutGeofenceCommand,
 	geofencesWithInvalidId,
+} from './testData';
+
+import {
+	mockBatchPutGeofenceCommand,
 	mockGetGeofenceCommand,
 	mockListGeofencesCommand,
-} from './data';
+} from './testUtils';
 
 LocationClient.prototype.send = jest.fn(async command => {
 	if (

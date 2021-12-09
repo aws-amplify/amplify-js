@@ -31,7 +31,7 @@ import {
 	validGeofences,
 	geofencesWithDuplicate,
 	geofencesWithInvalidId,
-} from './data';
+} from './testData';
 
 describe('Geo utility functions', () => {
 	describe('validateCoordinates', () => {
