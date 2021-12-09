@@ -362,8 +362,8 @@ describe('Geo', () => {
 		});
 	});
 
-	describe('createGeofences', () => {
-		test('createGeofences with a single geofence', async () => {
+	describe('saveGeofences', () => {
+		test('saveGeofences with a single geofence', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
 			});
@@ -376,7 +376,7 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 
 			// Check that results are what's expected
-			const results = await geo.createGeofences(validGeofence1);
+			const results = await geo.saveGeofences(validGeofence1);
 			expect(results).toEqual(singleGeofenceCamelcaseResults);
 
 			// Expect that the API was called with the proper input
@@ -396,7 +396,7 @@ describe('Geo', () => {
 			expect(input).toEqual(output);
 		});
 
-		test('createGeofences with multiple geofences', async () => {
+		test('saveGeofences with multiple geofences', async () => {
 			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
 				return Promise.resolve(credentials);
 			});
@@ -409,7 +409,7 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 
 			// Check that results are what's expected
-			const results = await geo.createGeofences(validGeofences);
+			const results = await geo.saveGeofences(validGeofences);
 			expect(results).toEqual(batchGeofencesCamelcaseResults);
 
 			// Expect that the API was called the right amount of times
@@ -428,7 +428,7 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 
 			await expect(
-				geo.createGeofences(geofencesWithInvalidId)
+				geo.saveGeofences(geofencesWithInvalidId)
 			).rejects.toThrowError(
 				`Invalid geofenceId: t|-|!$ !$ N()T V@|_!D Ids can only contain alphanumeric characters, hyphens, underscores and periods.`
 			);
@@ -443,94 +443,7 @@ describe('Geo', () => {
 			geo.configure(awsConfig);
 			geo.removePluggable('AmazonLocationService');
 
-			await expect(geo.createGeofences(validGeofence1)).rejects.toThrow(
-				'No plugin found in Geo for the provider'
-			);
-		});
-	});
-
-	describe('updateGeofences', () => {
-		test('updateGeofences with a single geofence', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
-			});
-
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementationOnce(mockBatchPutGeofenceCommand);
-
-			const geo = new GeoClass();
-			geo.configure(awsConfig);
-
-			// Check that results are what's expected
-			const results = await geo.updateGeofences(validGeofence1);
-			expect(results).toEqual(singleGeofenceCamelcaseResults);
-
-			// Expect that the API was called with the proper input
-			const spyon = jest.spyOn(LocationClient.prototype, 'send');
-			const input = spyon.mock.calls[0][0].input;
-			const output = {
-				Entries: [
-					{
-						GeofenceId: validGeofence1.geofenceId,
-						Geometry: {
-							Polygon: validGeofence1.geometry.polygon,
-						},
-					},
-				],
-				CollectionName: 'geofenceCollectionExample',
-			};
-			expect(input).toEqual(output);
-		});
-
-		test('updateGeofences with multiple geofences', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
-			});
-
-			LocationClient.prototype.send = jest
-				.fn()
-				.mockImplementation(mockBatchPutGeofenceCommand);
-
-			const geo = new GeoClass();
-			geo.configure(awsConfig);
-
-			// Check that results are what's expected
-			const results = await geo.updateGeofences(validGeofences);
-			expect(results).toEqual(batchGeofencesCamelcaseResults);
-
-			// Expect that the API was called the right amount of times
-			const expectedNumberOfCalls = Math.floor(validGeofences.length / 10) + 1;
-			expect(LocationClient.prototype.send).toHaveBeenCalledTimes(
-				expectedNumberOfCalls
-			);
-		});
-
-		test('should error if there is a bad geofence in the input', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
-			});
-
-			const geo = new GeoClass();
-			geo.configure(awsConfig);
-
-			await expect(
-				geo.updateGeofences(geofencesWithInvalidId)
-			).rejects.toThrowError(
-				`Invalid geofenceId: t|-|!$ !$ N()T V@|_!D Ids can only contain alphanumeric characters, hyphens, underscores and periods.`
-			);
-		});
-
-		test('should fail if there is no provider', async () => {
-			jest.spyOn(Credentials, 'get').mockImplementationOnce(() => {
-				return Promise.resolve(credentials);
-			});
-
-			const geo = new GeoClass();
-			geo.configure(awsConfig);
-			geo.removePluggable('AmazonLocationService');
-
-			await expect(geo.updateGeofences(validGeofence1)).rejects.toThrow(
+			await expect(geo.saveGeofences(validGeofence1)).rejects.toThrow(
 				'No plugin found in Geo for the provider'
 			);
 		});

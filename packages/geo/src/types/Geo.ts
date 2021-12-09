@@ -114,13 +114,13 @@ export type PolygonGeometry = {
 	polygon: GeofencePolygon;
 };
 
-// Geofence object used as input for createGeofence and updateGeofence
+// Geofence object used as input for saveGeofences
 export type GeofenceInput = {
 	geofenceId: string;
 	geometry: PolygonGeometry;
 };
 
-// Options object for createGeofence and updateGeofence
+// Options object for saveGeofences
 export type GeofenceOptions = {
 	providerName?: string;
 };
@@ -146,8 +146,8 @@ export type Geofence = GeofenceBase & {
 	geometry: PolygonGeometry;
 };
 
-// Results object for createGeofence and updateGeofence
-export type CreateUpdateGeofenceResults = {
+// Results object for saveGeofences
+export type SaveGeofencesResults = {
 	successes: GeofenceBase[];
 	errors: GeofenceError[];
 };

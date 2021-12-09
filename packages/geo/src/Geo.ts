@@ -33,7 +33,7 @@ import {
 	MapStyle,
 	GeofenceInput,
 	GeofenceOptions,
-	CreateUpdateGeofenceResults,
+	SaveGeofencesResults,
 	Geofence,
 	ListGeofenceOptions,
 	ListGeofenceResults,
@@ -198,14 +198,14 @@ export class GeoClass {
 	 * Create geofences
 	 * @param geofences - Single or array of geofence objects to create
 	 * @param options? - Optional parameters for creating geofences
-	 * @returns {Promise<CreateUpdateGeofenceResults>} - Promise that resolves to an object with:
+	 * @returns {Promise<SaveGeofencesResults>} - Promise that resolves to an object with:
 	 *   successes: list of geofences successfully created
 	 *   errors: list of geofences that failed to create
 	 */
-	public async createGeofences(
+	public async saveGeofences(
 		geofences: GeofenceInput | GeofenceInput[],
 		options?: GeofenceOptions
-	): Promise<CreateUpdateGeofenceResults> {
+	): Promise<SaveGeofencesResults> {
 		const { providerName = DEFAULT_PROVIDER } = options || {};
 		const prov = this.getPluggable(providerName);
 
@@ -220,40 +220,7 @@ export class GeoClass {
 		try {
 			// Validate all geofences are unique and valid before calling Provider
 			validateGeofences(geofenceInputArray);
-			return await prov.createGeofences(geofenceInputArray, options);
-		} catch (error) {
-			logger.debug(error);
-			throw error;
-		}
-	}
-
-	/**
-	 * Update geofences
-	 * @param geofences - Single or array of geofence objects to create
-	 * @param options? - Optional parameters for creating geofences
-	 * @returns {Promise<CreateUpdateGeofenceResults>} - Promise that resolves to an object with:
-	 *   successes: list of geofences successfully created
-	 *   errors: list of geofences that failed to create
-	 */
-	public async updateGeofences(
-		geofences: GeofenceInput | GeofenceInput[],
-		options?: GeofenceOptions
-	): Promise<CreateUpdateGeofenceResults> {
-		const { providerName = DEFAULT_PROVIDER } = options || {};
-		const prov = this.getPluggable(providerName);
-
-		// If single geofence input, make it an array for batch call
-		let geofenceInputArray;
-		if (!Array.isArray(geofences)) {
-			geofenceInputArray = [geofences];
-		} else {
-			geofenceInputArray = geofences;
-		}
-
-		try {
-			// Validate all geofences are unique and valid
-			validateGeofences(geofenceInputArray);
-			return await prov.updateGeofences(geofenceInputArray, options);
+			return await prov.saveGeofences(geofenceInputArray, options);
 		} catch (error) {
 			logger.debug(error);
 			throw error;

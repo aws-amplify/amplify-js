@@ -21,7 +21,7 @@ import {
 	GeofenceOptions,
 	ListGeofenceOptions,
 	ListGeofenceResults,
-	CreateUpdateGeofenceResults,
+	SaveGeofencesResults,
 	DeleteGeofencesResults,
 } from './Geo';
 
@@ -51,16 +51,10 @@ export interface GeoProvider {
 	): Promise<Place>;
 
 	// create geofences
-	createGeofences(
+	saveGeofences(
 		geofences: GeofenceInput[],
 		options?: GeofenceOptions
-	): Promise<CreateUpdateGeofenceResults>;
-
-	// update geofences
-	updateGeofences(
-		geofences: GeofenceInput[],
-		options?: GeofenceOptions
-	): Promise<CreateUpdateGeofenceResults>;
+	): Promise<SaveGeofencesResults>;
 
 	// get a single geofence
 	getGeofence(
