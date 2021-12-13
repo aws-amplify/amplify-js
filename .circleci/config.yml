@@ -792,6 +792,40 @@ jobs:
           spec: consecutive-saves
           browser: << parameters.browser >>
 
+  integ_react_datastore_observe_query:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/observe-query
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Observe Query'
+          framework: react
+          category: datastore
+          sample_name: observe-query
+          spec: observe-query
+          browser: << parameters.browser >>
+
+  integ_react_datastore_observe_query_v2:
+    parameters:
+      browser:
+        type: string
+    executor: js-test-executor
+    <<: *test_env_vars
+    working_directory: ~/amplify-js-samples-staging/samples/react/datastore/v2/observe-query-v2
+    steps:
+      - prepare_test_env
+      - integ_test_js:
+          test_name: 'DataStore - Observe Query CLI v2'
+          framework: react
+          category: datastore
+          sample_name: v2/observe-query-v2
+          spec: observe-query
+          browser: << parameters.browser >>
+
   integ_react_storage:
     parameters:
       browser:
@@ -1317,6 +1351,24 @@ workflows:
           matrix:
             parameters:
               <<: *test_browsers
+      - integ_react_datastore_observe_query:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
+      - integ_react_datastore_observe_query_v2:
+          requires:
+            - integ_setup
+            - build
+          filters:
+            <<: *releasable_branches
+          matrix:
+            parameters:
+              <<: *test_browsers
       - integ_react_storage:
           requires:
             - integ_setup
@@ -1465,6 +1517,8 @@ workflows:
             - integ_react_datastore_subs_disabled_v2
             - integ_react_datastore_consecutive_saves
             - integ_react_datastore_consecutive_saves_v2
+            - integ_react_datastore_observe_query
+            - integ_react_datastore_observe_query_v2
             - integ_react_storage
             - integ_react_storage_multipart_progress
             - integ_react_storage_copy
