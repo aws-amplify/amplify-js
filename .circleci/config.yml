@@ -1454,11 +1454,17 @@ workflows:
             - unit_test
             - integ_react_predictions
             - integ_react_datastore
+            - integ_react_datastore_v2
             - integ_react_datastore_multi_auth_one_rule
+            - integ_react_datastore_multi_auth_one_rule_v2
             - integ_react_datastore_multi_auth_two_rules
+            - integ_react_datastore_multi_auth_two_rules_v2
             - integ_react_datastore_multi_auth_three_plus_rules
+            - integ_react_datastore_multi_auth_three_plus_rules_v2
             - integ_react_datastore_subs_disabled
+            - integ_react_datastore_subs_disabled_v2
             - integ_react_datastore_consecutive_saves
+            - integ_react_datastore_consecutive_saves_v2
             - integ_react_storage
             - integ_react_storage_multipart_progress
             - integ_react_storage_copy
@@ -1478,6 +1484,7 @@ workflows:
             - integ_rn_ios_push_notifications
             - integ_rn_android_storage
             - integ_datastore_auth
+            - integ_datastore_auth_v2
             - integ_duplicate_packages
             - integ_auth_test_cypress_no_ui
             - integ_react_geo
