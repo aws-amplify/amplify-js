@@ -45,4 +45,12 @@ module.exports = {
 		VERIFY_CONTACT_TEXT: 'aws-amplify__auth--verify-contact-text',
 		VERIFY_BUTTON: 'aws-amplify__auth--verify-button',
 	},
+	IN_APP_MESSAGING: {
+		BODY: 'aws-amplify__in-app-messaging--body',
+		CLOSE_BUTTON: 'aws-amplify__in-app-messaging--close-button',
+		HEADER: 'aws-amplify__in-app-messaging--header',
+		IMAGE: 'aws-amplify__in-app-messaging--image',
+		PRIMARY_BUTTON: 'aws-amplify__in-app-messaging--primary-button',
+		SECONDARY_BUTTON: 'aws-amplify__in-app-messaging--secondary-button',
+	},
 };

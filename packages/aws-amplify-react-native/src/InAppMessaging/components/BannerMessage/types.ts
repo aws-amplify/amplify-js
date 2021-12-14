@@ -19,7 +19,7 @@ import {
 } from '../types';
 
 export interface BannerMessageProps extends InAppMessageComponentBaseProps {
-	position: InAppMessageComponentPosition;
+	position?: InAppMessageComponentPosition;
 }
 
 export interface BannerMessageStyle extends InAppMessageComponentBaseStyle {}
