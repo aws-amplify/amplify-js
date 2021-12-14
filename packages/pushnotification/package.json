@@ -49,9 +49,6 @@
     "@aws-amplify/core": "4.3.10",
     "@react-native-community/push-notification-ios": "1.0.3"
   },
-  "peerdependencies": {
-    "react-native": "^0.55.0"
-  },
   "jest": {
     "globals": {
       "ts-jest": {
