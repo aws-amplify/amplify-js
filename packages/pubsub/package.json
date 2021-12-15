@@ -48,7 +48,7 @@
     "@aws-amplify/auth": "4.3.18",
     "@aws-amplify/cache": "4.0.30",
     "@aws-amplify/core": "4.3.10",
-    "graphql": "14.0.0",
+    "graphql": "15.8.0",
     "paho-mqtt": "^1.1.0",
     "uuid": "^3.2.1",
     "zen-observable-ts": "0.8.19"
