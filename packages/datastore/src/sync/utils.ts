@@ -26,8 +26,8 @@ import {
 	ModelOperation,
 	InternalSchema,
 	AuthModeStrategy,
+	ModelAttributes,
 } from '../types';
-import { exhaustiveCheck } from '../util';
 import { MutationEvent } from './';
 
 const logger = new Logger('DataStore');
@@ -47,7 +47,7 @@ export enum TransformerMutationType {
 	GET = 'Get',
 }
 
-const dummyMetadata: Omit<ModelInstanceMetadata, 'id'> = {
+const dummyMetadata: Partial<Omit<ModelInstanceMetadata, 'id'>> = {
 	_version: undefined,
 	_lastChangedAt: undefined,
 	_deleted: undefined,
@@ -104,9 +104,11 @@ function getOwnerFields(
 ): string[] {
 	const ownerFields: string[] = [];
 	if (isSchemaModel(modelDefinition) && modelDefinition.attributes) {
-		modelDefinition.attributes.forEach(attr => {
+		modelDefinition.attributes.forEach((attr) => {
 			if (attr.properties && attr.properties.rules) {
-				const rule = attr.properties.rules.find(rule => rule.allow === 'owner');
+				const rule = attr.properties.rules.find(
+					(rule) => rule.allow === 'owner'
+				);
 				if (rule && rule.ownerField) {
 					ownerFields.push(rule.ownerField);
 				}
@@ -122,7 +124,7 @@ function getScalarFields(
 	const { fields } = modelDefinition;
 
 	const result = Object.values(fields)
-		.filter(field => {
+		.filter((field) => {
 			if (isGraphQLScalarType(field.type) || isEnumFieldType(field.type)) {
 				return true;
 			}
@@ -139,16 +141,17 @@ function getScalarFields(
 }
 
 function getConnectionFields(modelDefinition: SchemaModel): string[] {
-	const result = [];
+	const result: string[] = [];
 
 	Object.values(modelDefinition.fields)
 		.filter(({ association }) => association && Object.keys(association).length)
 		.forEach(({ name, association }) => {
-			const { connectionType } = association;
+			const { connectionType } = association || {};
 
 			switch (connectionType) {
 				case 'HAS_ONE':
 				case 'HAS_MANY':
+					// case 'MANY_TO_MANY':
 					// Intentionally blank
 					break;
 				case 'BELONGS_TO':
@@ -157,7 +160,7 @@ function getConnectionFields(modelDefinition: SchemaModel): string[] {
 					}
 					break;
 				default:
-					exhaustiveCheck(connectionType);
+					throw new Error(`Invalid connection type ${connectionType}`);
 			}
 		});
 
@@ -168,7 +171,7 @@ function getNonModelFields(
 	namespace: SchemaNamespace,
 	modelDefinition: SchemaModel | SchemaNonModel
 ): string[] {
-	const result = [];
+	const result: string[] = [];
 
 	Object.values(modelDefinition.fields).forEach(({ name, type }) => {
 		if (isNonModelFieldType(type)) {
@@ -177,13 +180,12 @@ function getNonModelFields(
 				({ name }) => name
 			);
 
-			const nested = [];
-			Object.values(typeDefinition.fields).forEach(field => {
+			const nested: string[] = [];
+			Object.values(typeDefinition.fields).forEach((field) => {
 				const { type, name } = field;
 
 				if (isNonModelFieldType(type)) {
 					const typeDefinition = namespace.nonModels![type.nonModel];
-
 					nested.push(
 						`${name} { ${generateSelectionSet(namespace, typeDefinition)} }`
 					);
@@ -201,15 +203,15 @@ export function getAuthorizationRules(
 	modelDefinition: SchemaModel
 ): AuthorizationRule[] {
 	// Searching for owner authorization on attributes
-	const authConfig = []
-		.concat(modelDefinition.attributes)
-		.find(attr => attr && attr.type === 'auth');
+	const authConfig = ([] as ModelAttributes)
+		.concat(modelDefinition.attributes || [])
+		.find((attr) => attr && attr.type === 'auth');
 
 	const { properties: { rules = [] } = {} } = authConfig || {};
 
 	const resultRules: AuthorizationRule[] = [];
 	// Multiple rules can be declared for allow: owner
-	rules.forEach(rule => {
+	rules.forEach((rule) => {
 		// setting defaults for backwards compatibility with old cli
 		const {
 			identityClaim = 'cognito:username',
@@ -241,9 +243,9 @@ export function getAuthorizationRules(
 		if (isOwnerAuth) {
 			// look for the subscription level override
 			// only pay attention to the public level
-			const modelConfig = (<typeof modelDefinition.attributes>[])
-				.concat(modelDefinition.attributes)
-				.find(attr => attr && attr.type === 'model');
+			const modelConfig = ([] as ModelAttributes)
+				.concat(modelDefinition.attributes || [])
+				.find((attr) => attr && attr.type === 'model');
 
 			// find the subscriptions level. ON is default
 			const { properties: { subscriptions: { level = 'on' } = {} } = {} } =
@@ -350,15 +352,15 @@ export function buildGraphQLOperation(
 			break;
 
 		default:
-			exhaustiveCheck(graphQLOpType);
+			throw new Error(`Invalid graphQlOpType ${graphQLOpType}`);
 	}
 
 	return [
 		[
-			transformerMutationType,
-			operation,
+			transformerMutationType!,
+			operation!,
 			`${GraphQLOperationType[graphQLOpType]} operation${documentArgs}{
-		${operation}${operationArgs}{
+		${operation!}${operationArgs}{
 			${selectionSet}
 		}
 	}`,
@@ -392,7 +394,7 @@ export function createMutationInstanceFromModelOperation<
 			operation = TransformerMutationType.DELETE;
 			break;
 		default:
-			exhaustiveCheck(opType);
+			throw new Error(`Invalid opType ${opType}`);
 	}
 
 	// stringify nested objects of type AWSJSON
@@ -417,7 +419,7 @@ export function createMutationInstanceFromModelOperation<
 		data: JSON.stringify(element, replacer),
 		modelId: element.id,
 		model: model.name,
-		operation,
+		operation: operation!,
 		condition: JSON.stringify(condition),
 	});
 
@@ -433,7 +435,7 @@ export function predicateToGraphQLCondition(
 		return result;
 	}
 
-	predicate.predicates.forEach(p => {
+	predicate.predicates.forEach((p) => {
 		if (isPredicateObj(p)) {
 			const { field, operator, operand } = p;
 
@@ -464,10 +466,10 @@ export function predicateToGraphQLFilter(
 
 	result[type] = isList ? [] : {};
 
-	const appendToFilter = value =>
+	const appendToFilter = (value) =>
 		isList ? result[type].push(value) : (result[type] = value);
 
-	predicates.forEach(predicate => {
+	predicates.forEach((predicate) => {
 		if (isPredicateObj(predicate)) {
 			const { field, operator, operand } = predicate;
 
@@ -515,11 +517,9 @@ export async function getModelAuthModes({
 	defaultAuthMode: GRAPHQL_AUTH_MODE;
 	modelName: string;
 	schema: InternalSchema;
-}): Promise<
-	{
-		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
-	}
-> {
+}): Promise<{
+	[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+}> {
 	const operations = Object.values(ModelOperation);
 
 	const modelAuthModes: {
@@ -533,7 +533,7 @@ export async function getModelAuthModes({
 
 	try {
 		await Promise.all(
-			operations.map(async operation => {
+			operations.map(async (operation) => {
 				const authModes = await authModeStrategy({
 					schema,
 					modelName,
@@ -563,7 +563,7 @@ export function getForbiddenError(error) {
 	];
 	let forbiddenError;
 	if (error && error.errors) {
-		forbiddenError = (error.errors as [any]).find(err =>
+		forbiddenError = (error.errors as [any]).find((err) =>
 			forbiddenErrorMessages.includes(err.message)
 		);
 	} else if (error && error.message) {
@@ -581,7 +581,7 @@ export function getClientSideAuthError(error) {
 	const clientSideError =
 		error &&
 		error.message &&
-		clientSideAuthErrors.find(clientError =>
+		clientSideAuthErrors.find((clientError) =>
 			error.message.includes(clientError)
 		);
 	return clientSideError || null;

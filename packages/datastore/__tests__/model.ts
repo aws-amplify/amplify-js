@@ -24,8 +24,8 @@ declare class BlogModel {
 declare class PostModel {
 	readonly id: string;
 	readonly title: string;
-	readonly blog: Promise<BlogModel | null>;
-	readonly reference: Promise<PostModel | null>;
+	readonly blog: Promise<BlogModel | undefined>;
+	readonly reference: Promise<PostModel | undefined>;
 	readonly comments: AsyncCollection<CommentModel>;
 	readonly authors: AsyncCollection<PostAuthorJoinModel>;
 	readonly metadata?: PostMetadataType;
@@ -40,7 +40,7 @@ declare class ProjectModel {
 	readonly id: string;
 	readonly name?: string;
 	readonly teamID?: string;
-	readonly team: Promise<TeamModel | null>;
+	readonly team: Promise<TeamModel | undefined>;
 	constructor(init: ModelInit<ProjectModel>);
 	static copyOf(
 		source: ProjectModel,
@@ -75,7 +75,7 @@ declare class NestedType {
 declare class CommentModel {
 	readonly id: string;
 	readonly content?: string;
-	readonly post: Promise<PostModel | null>;
+	readonly post: Promise<PostModel | undefined>;
 	constructor(init: ModelInit<CommentModel>);
 	static copyOf(
 		source: CommentModel,
@@ -87,8 +87,8 @@ declare class CommentModel {
 
 declare class PostAuthorJoinModel {
 	readonly id: string;
-	readonly author: Promise<AuthorModel | null>;
-	readonly post: Promise<PostModel | null>;
+	readonly author: Promise<AuthorModel | undefined>;
+	readonly post: Promise<PostModel | undefined>;
 	constructor(init: ModelInit<PostAuthorJoinModel>);
 	static copyOf(
 		source: PostAuthorJoinModel,
@@ -113,8 +113,8 @@ declare class ForumModel {
 
 declare class ForumEditorJoinModel {
 	readonly id: string;
-	readonly editor: Promise<EditorModel | null>;
-	readonly forum: Promise<ForumModel | null>;
+	readonly editor: Promise<EditorModel | undefined>;
+	readonly forum: Promise<ForumModel | undefined>;
 	constructor(init: ModelInit<ForumEditorJoinModel>);
 	static copyOf(
 		source: ForumEditorJoinModel,
@@ -153,7 +153,7 @@ declare class AuthorModel {
 declare class BlogOwnerModel {
 	readonly name: string;
 	readonly id: string;
-	readonly blog: Promise<BlogModel | null>;
+	readonly blog: Promise<BlogModel | undefined>;
 	constructor(init: ModelInit<BlogOwnerModel>);
 	static copyOf(
 		source: BlogOwnerModel,

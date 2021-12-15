@@ -67,7 +67,7 @@ function getStorageFake(collections) {
 			if (!predicate) {
 				return baseSet;
 			} else {
-				const predicates = ModelPredicateCreator.getPredicates(predicate);
+				const predicates = ModelPredicateCreator.getPredicates(predicate)!;
 				return baseSet.filter((item) =>
 					flatPredicateMatches(item, 'and', [predicates])
 				);

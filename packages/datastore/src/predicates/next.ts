@@ -79,7 +79,7 @@ type ModelPredicateNegation<RT extends PersistentModel> = (
 	predicate: SingularModelPredicateExtender<RT> | FinalModelPredicate
 ) => FinalModelPredicate;
 
-type ModelPredicate<RT extends PersistentModel> = {
+export type ModelPredicate<RT extends PersistentModel> = {
 	[K in keyof RT]-?: PredicateFieldType<RT[K]> extends PersistentModel
 		? ModelPredicate<PredicateFieldType<RT[K]>>
 		: ValuePredicate<RT, RT[K]>;
@@ -136,7 +136,7 @@ function applyConditionsToV1Predicate<T>(
 	negateChildren: boolean
 ): T {
 	let p = predicate;
-	const finalConditions = [];
+	const finalConditions: FieldCondition[] = [];
 
 	for (const c of conditions) {
 		if (negateChildren) {
@@ -346,7 +346,7 @@ export class GroupCondition {
 	 */
 	async fetch(
 		storage: StorageAdapter,
-		breadcrumb = [],
+		breadcrumb: string[] = [],
 		negate = false
 	): Promise<Record<string, any>[]> {
 		const resultGroups: Array<Record<string, any>[]> = [];
@@ -423,7 +423,7 @@ export class GroupCondition {
 						rightHandField = 'id';
 					}
 
-					const joinConditions = [];
+					const joinConditions: FieldCondition[] = [];
 					for (const relative of relatives) {
 						// await right-hand value, b/c it will eventually be lazy-loaded in some cases.
 						const rightHandValue =
@@ -481,7 +481,7 @@ export class GroupCondition {
 			JSON.stringify(this.model.pkField.map((name) => item[name]));
 
 		// will be used for intersecting or unioning results
-		let resultIndex: Map<string, Record<string, any>>;
+		let resultIndex: Map<string, Record<string, any>> | undefined;
 
 		if (operator === 'and') {
 			if (resultGroups.length === 0) {
@@ -519,7 +519,7 @@ export class GroupCondition {
 			}
 		}
 
-		return Array.from(resultIndex.values());
+		return Array.from(resultIndex?.values() || []);
 	}
 
 	/**
@@ -615,7 +615,7 @@ export function predicateFor<T extends PersistentModel>(
 	query?: GroupCondition,
 	tail?: GroupCondition
 ): ModelPredicate<T> {
-	let starter: GroupCondition;
+	let starter: GroupCondition | undefined;
 	// if we don't have an existing query + tail to build onto,
 	// we need to start a new query chain.
 	if (!query || !tail) {
@@ -755,7 +755,7 @@ export function predicateFor<T extends PersistentModel>(
 								return {
 									__query: newlink.__query,
 									__tail: newlink.__tail,
-									filter: (items) => {
+									filter: (items: any[]) => {
 										return asyncFilter(items, (i) =>
 											newlink.__query.matches(i)
 										);
@@ -773,12 +773,17 @@ export function predicateFor<T extends PersistentModel>(
 						// the use has just typed '.someRelatedModel'. we need to given them
 						// back a predicate chain.
 
+						const relatedMeta = (def.type as ModelFieldType).modelConstructor;
+						if (!relatedMeta) {
+							throw new Error('Related model metadata is missing');
+						}
+
 						// `Model.reletedModelField` returns a copy of the original link,
 						// and will contains copies of internal GroupConditions
 						// to head off mutability concerns.
 						const [newquery, oldtail] = link.__query.copy(link.__tail);
 						const newtail = new GroupCondition(
-							(def.type as ModelFieldType).modelConstructor,
+							relatedMeta,
 							fieldName,
 							def.association.connectionType,
 							'and',
@@ -790,7 +795,7 @@ export function predicateFor<T extends PersistentModel>(
 						// it to push the *new* tail onto the end of it.
 						(oldtail as GroupCondition).operands.push(newtail);
 						const newlink = predicateFor(
-							(def.type as ModelFieldType).modelConstructor,
+							relatedMeta,
 							undefined,
 							newquery,
 							newtail

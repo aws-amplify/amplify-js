@@ -291,7 +291,7 @@ describe('Indexed db storage test', () => {
 		});
 	});
 
-	test('query M:1 eager load', async () => {
+	test('query M:1 lazy load', async () => {
 		const p = new Post({
 			title: 'Avatar',
 			blog,
@@ -304,8 +304,8 @@ describe('Indexed db storage test', () => {
 		await DataStore.save(c2);
 
 		const q1 = await DataStore.query(Comment, c1.id);
-		const q1Post = await q1.post;
-		expect(q1Post.id).toEqual(p.id);
+		const q1Post = await q1!.post;
+		expect(q1Post!.id).toEqual(p.id);
 	});
 
 	test('query lazily HAS_ONE/BELONGS_TO with explicit Field', async (done) => {
@@ -319,9 +319,9 @@ describe('Indexed db storage test', () => {
 
 		await DataStore.save(project1);
 
-		const q1 = await DataStore.query(Project, project1.id);
+		const q1 = (await DataStore.query(Project, project1.id))!;
 		q1.team.then((value) => {
-			expect(value.id).toEqual(team1.id);
+			expect(value!.id).toEqual(team1.id);
 			done();
 		});
 	});
@@ -339,7 +339,7 @@ describe('Indexed db storage test', () => {
 
 		const q1 = await DataStore.query(Album, album1.id);
 
-		const songs = await q1.songs.toArray();
+		const songs = await q1!.songs.toArray();
 		expect(songs).toStrictEqual([savedSong1, savedSong2, savedSong3]);
 	});
 
@@ -373,9 +373,9 @@ describe('Indexed db storage test', () => {
 			})
 		);
 
-		const q1 = await DataStore.query(Forum, f1.id);
-		const q2 = await DataStore.query(Editor, e1.id);
-		const q3 = await DataStore.query(Editor, e2.id);
+		const q1 = (await DataStore.query(Forum, f1.id))!;
+		const q2 = (await DataStore.query(Editor, e1.id))!;
+		const q3 = (await DataStore.query(Editor, e2.id))!;
 		const editors = await q1.editors.toArray();
 		const forums = await q2.forums.toArray();
 		const forums2 = await q3.forums.toArray();
@@ -396,8 +396,8 @@ describe('Indexed db storage test', () => {
 		});
 		await DataStore.save(project1);
 
-		const q1 = await DataStore.query(Project, project1.id);
-		const q2 = await DataStore.query(Project, project1.id);
+		const q1 = (await DataStore.query(Project, project1.id))!;
+		const q2 = (await DataStore.query(Project, project1.id))!;
 
 		// Ensure that model fields are actually promises
 		if (
@@ -433,8 +433,8 @@ describe('Indexed db storage test', () => {
 		);
 		await DataStore.save(new Song({ name: 'Superstar', songID: album1.id }));
 
-		const q1 = await DataStore.query(Album, album1.id);
-		const q2 = await DataStore.query(Album, album1.id);
+		const q1 = (await DataStore.query(Album, album1.id))!;
+		const q2 = (await DataStore.query(Album, album1.id))!;
 
 		const song = await q1.songs;
 		const song2 = await q1.songs;
@@ -603,7 +603,7 @@ describe('Indexed db storage test', () => {
 		await DataStore.delete(Comment, c1.id);
 
 		expect(await DataStore.query(Comment, c1.id)).toBeUndefined;
-		expect((await DataStore.query(Comment, c2.id)).id).toEqual(c2.id);
+		expect((await DataStore.query(Comment, c2.id))?.id).toEqual(c2.id);
 	});
 
 	test('delete 1:M function', async () => {
@@ -630,7 +630,7 @@ describe('Indexed db storage test', () => {
 		await DataStore.delete(Post, post.id);
 		expect(await DataStore.query(Comment, c1.id)).toBeUndefined();
 		expect(await DataStore.query(Comment, c2.id)).toBeUndefined();
-		expect((await DataStore.query(Comment, c3.id)).id).toEqual(c3.id);
+		expect((await DataStore.query(Comment, c3.id))?.id).toEqual(c3.id);
 		expect(await DataStore.query(Post, post.id)).toBeUndefined();
 	});
 
@@ -760,8 +760,8 @@ describe('AsyncCollection toArray Test', () => {
 				const savedSong4 = await DataStore.save(song4);
 				const songsArray = [savedSong1, savedSong2, savedSong3, savedSong4];
 				const q1 = await DataStore.query(Album, album1.id);
-				const songs = await q1.songs;
-				const expectedValues = [];
+				const songs = await q1!.songs;
+				const expectedValues: any[] = [];
 				for (const num of expected) {
 					expectedValues.push(songsArray[num]);
 				}

@@ -35,7 +35,7 @@ export class ModelSortPredicateCreator {
 					const result = (sortDirection: SortDirection) => {
 						ModelSortPredicateCreator.sortPredicateGroupsMap
 							.get(receiver)
-							.push({ field, sortDirection });
+							?.push({ field, sortDirection });
 
 						return receiver;
 					};
@@ -66,7 +66,12 @@ export class ModelSortPredicateCreator {
 			throw new Error('The predicate is not valid');
 		}
 
-		return ModelSortPredicateCreator.sortPredicateGroupsMap.get(predicate);
+		const g = ModelSortPredicateCreator.sortPredicateGroupsMap.get(predicate);
+		if (g) {
+			return g;
+		} else {
+			throw new Error('Predicate group not found');
+		}
 	}
 
 	// transforms cb-style predicate into Proxy

@@ -1,5 +1,5 @@
 import { ModelMerger } from '../src/sync/merger';
-import { PersistentModelConstructor } from '../src/';
+import { PersistentModelConstructor, ModelInstanceMetadata } from '../src/';
 import {
 	DataStore as DataStoreType,
 	initSchema as initSchemaType,
@@ -53,8 +53,8 @@ describe('ModelMerger tests', () => {
 				},
 			];
 
-			await Storage.runExclusive(async storage => {
-				await modelMerger.mergePage(storage, Model, items);
+			await Storage.runExclusive(async (storage) => {
+				await modelMerger.mergePage(storage, Model, items as any);
 			});
 
 			const record = await DataStore.query(Model, modelId);
@@ -92,14 +92,14 @@ describe('ModelMerger tests', () => {
 				},
 			];
 
-			await Storage.runExclusive(async storage => {
-				await modelMerger.mergePage(storage, Model, items);
+			await Storage.runExclusive(async (storage) => {
+				await modelMerger.mergePage(storage, Model, items as any);
 			});
 
 			const record = await DataStore.query(Model, modelId);
 
-			expect(record.field1).toEqual('Another Update');
-			expect(record.optionalField1).toEqual('Optional');
+			expect(record!.field1).toEqual('Another Update');
+			expect(record!.optionalField1).toEqual('Optional');
 		});
 
 		test('create > delete > create => create', async () => {
@@ -132,14 +132,14 @@ describe('ModelMerger tests', () => {
 				},
 			];
 
-			await Storage.runExclusive(async storage => {
-				await modelMerger.mergePage(storage, Model, items);
+			await Storage.runExclusive(async (storage) => {
+				await modelMerger.mergePage(storage, Model, items as any);
 			});
 
 			const record = await DataStore.query(Model, modelId);
 
 			expect(record).not.toBeUndefined();
-			expect(record.field1).toEqual('New Create with the same id');
+			expect(record!.field1).toEqual('New Create with the same id');
 		});
 	});
 });

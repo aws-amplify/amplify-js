@@ -371,10 +371,7 @@ describe('Storage tests', () => {
 
 				await DataStore.save(
 					Model.copyOf(model, (draft) => {
-						draft.metadata = {
-							...model.metadata,
-							penNames: ['bob'],
-						};
+						draft.metadata.penNames = ['bob'];
 					})
 				);
 
@@ -391,6 +388,98 @@ describe('Storage tests', () => {
 				expect(modelUpdate.element.metadata).toMatchObject(
 					expectedValueMetadata
 				);
+			});
+
+			test('TENTATIVE: directly modifying nested model raises hell', () => {
+				// but NOT this one. (post is a model type)
+				// (draft.post as any).title = 'whatever';
+				// TODO ???
+			});
+
+			test('allowing nested BELONGS_TO to be set', async () => {
+				const classes = initSchema(testSchema());
+
+				const { Post, Comment } = classes as {
+					Post: PersistentModelConstructor<Post>;
+					Comment: PersistentModelConstructor<Comment>;
+				};
+
+				const originalPost = await DataStore.save(
+					new Post({
+						title: 'my best post ever',
+					})
+				);
+
+				const newPost = await DataStore.save(
+					new Post({
+						title: 'oops. i mean this is my best post',
+					})
+				);
+
+				const comment = await DataStore.save(
+					new Comment({
+						content: 'your post is not that great, actually ....',
+						post: originalPost,
+					})
+				);
+
+				await DataStore.save(
+					Comment.copyOf(comment, (draft) => {
+						draft.post = newPost;
+					})
+				);
+
+				const updatedComment = await DataStore.query(Comment, comment.id);
+
+				expect((await updatedComment.post).title).toEqual(
+					'oops. i mean this is my best post'
+				);
+			});
+
+			// TODO
+			test.skip('allowing nested HAS_MANY to be set', async () => {
+				const classes = initSchema(testSchema());
+
+				const { Post, Comment } = classes as {
+					Post: PersistentModelConstructor<Post>;
+					Comment: PersistentModelConstructor<Comment>;
+				};
+
+				const post = await DataStore.save(
+					new Post({
+						title: 'my best post ever',
+					})
+				);
+
+				const comment = await DataStore.save(
+					new Comment({
+						content: 'comment 1',
+						post,
+					})
+				);
+
+				await DataStore.save(
+					Post.copyOf(post, (updated) => {
+						updated.comments = [
+							comment,
+							new Comment({
+								content: 'comment 2',
+							}),
+						];
+					})
+				);
+
+				const test = await DataStore.query(Post, post.id);
+
+				// might have to sort
+				expect((await test.comments.toArray()).map((c) => c.content)).toEqual([
+					'comment 1',
+					'comment 2',
+				]);
+			});
+
+			test('allowing nested HAS_ONE to be set', async () => {
+				// TODO
 			});
 
 			test('custom type unchanged', async () => {

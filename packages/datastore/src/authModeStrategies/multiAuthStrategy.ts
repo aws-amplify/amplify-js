@@ -18,7 +18,7 @@ function getProviderFromRule(
 	if (rule.allow === 'public' && !rule.provider) {
 		return ModelAttributeAuthProvider.API_KEY;
 	}
-	return rule.provider;
+	return rule.provider!;
 }
 
 function sortAuthRulesWithPriority(rules: ModelAttributeAuthProperty[]) {
@@ -62,7 +62,7 @@ function getAuthRules({
 	// Using Set to ensure uniqueness
 	const authModes = new Set<GRAPHQL_AUTH_MODE>();
 
-	rules.forEach(rule => {
+	rules.forEach((rule) => {
 		switch (rule.allow) {
 			case ModelAttributeAuthAllow.CUSTOM:
 				// custom with no provider -> function
@@ -135,7 +135,11 @@ export const multiAuthStrategy: AuthModeStrategy = async ({
 	const { attributes } = schema.namespaces.user.models[modelName];
 
 	if (attributes) {
-		const authAttribute = attributes.find(attr => attr.type === 'auth');
+		const authAttribute = attributes.find((attr) => attr.type === 'auth');
+
+		if (!authAttribute) {
+			throw new Error('Invalid auth attribute');
+		}
 
 		if (authAttribute.properties && authAttribute.properties.rules) {
 			const sortedRules = sortAuthRulesWithPriority(
