@@ -2131,10 +2131,18 @@ export class AuthClass {
 					return credentials;
 				} catch (err) {
 					logger.debug('Error in cognito hosted auth response', err);
-
+					
+					const isUnregisteredCallback =
+						err && err.message === 'Unregistered OAuth Callback';
 					// Just like a successful handling of `?code`, replace the window history to "dispose" of the `code`.
 					// Otherwise, reloading the page will throw errors as the `code` has already been spent.
-					if (window && typeof window.history !== 'undefined') {
+					// Do not redirect if the callback is not registered in oauth config, as it can be used by the third party
+					// see https://github.com/aws-amplify/amplify-js/issues/9208
+					if (
+						window &&
+						typeof window.history !== 'undefined' &&
+						!isUnregisteredCallback
+					) {
 						window.history.replaceState(
 							{},
 							null,

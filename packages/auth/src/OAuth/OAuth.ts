@@ -129,7 +129,12 @@ export default class OAuth {
 		const redirectSignInPathname =
 			parse(this._config.redirectSignIn).pathname || '/';
 
-		if (!code || currentUrlPathname !== redirectSignInPathname) {
+		if (currentUrlPathname !== redirectSignInPathname) {
+			// explicitly throw an error to notify caller about the invalid callback url
+			throw new Error('Unregistered OAuth callback');
+		}
+
+		if (!code) {
 			return;
 		}
 
