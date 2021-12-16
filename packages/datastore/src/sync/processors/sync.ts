@@ -46,10 +46,10 @@ class SyncProcessor {
 	}
 
 	private generateQueries() {
-		Object.values(this.schema.namespaces).forEach(namespace => {
+		Object.values(this.schema.namespaces).forEach((namespace) => {
 			Object.values(namespace.models)
 				.filter(({ syncable }) => syncable)
-				.forEach(model => {
+				.forEach((model) => {
 					const [[, ...opNameQuery]] = buildGraphQLOperation(
 						namespace,
 						model,
@@ -63,15 +63,16 @@ class SyncProcessor {
 
 	private graphqlFilterFromPredicate(model: SchemaModel): GraphQLFilter {
 		if (!this.syncPredicates) {
-			return null;
+			return null!;
 		}
-		const predicatesGroup: PredicatesGroup<any> = ModelPredicateCreator.getPredicates(
-			this.syncPredicates.get(model),
-			false
-		);
+		const predicatesGroup: PredicatesGroup<any> =
+			ModelPredicateCreator.getPredicates(
+				this.syncPredicates.get(model)!,
+				false
+			)!;
 
 		if (!predicatesGroup) {
-			return null;
+			return null!;
 		}
 
 		return predicateToGraphQLFilter(predicatesGroup);
@@ -83,7 +84,7 @@ class SyncProcessor {
 		modelDefinition: SchemaModel,
 		lastSync: number,
 		nextToken: string,
-		limit: number = null,
+		limit: number = null!,
 		filter: GraphQLFilter
 	): Promise<{ nextToken: string; startedAt: number; items: T[] }> {
 		const [opName, query] = this.typeQuery.get(modelDefinition);
@@ -227,7 +228,7 @@ class SyncProcessor {
 						if (hasItems) {
 							const result = error;
 							result.data[opName].items = result.data[opName].items.filter(
-								item => item !== null
+								(item) => item !== null
 							);
 
 							if (error.errors) {
@@ -251,14 +252,14 @@ class SyncProcessor {
 						error &&
 						error.errors &&
 						(error.errors as [any]).some(
-							err => err.errorType === 'Unauthorized'
+							(err) => err.errorType === 'Unauthorized'
 						);
 					if (unauthorized) {
 						const result = error;
 
 						if (hasItems) {
 							result.data[opName].items = result.data[opName].items.filter(
-								item => item !== null
+								(item) => item !== null
 							);
 						} else {
 							result.data[opName] = {
@@ -286,14 +287,14 @@ class SyncProcessor {
 		let processing = true;
 		const { maxRecordsToSync, syncPageSize } = this.amplifyConfig;
 		const parentPromises = new Map<string, Promise<void>>();
-		const observable = new Observable<SyncModelPage>(observer => {
+		const observable = new Observable<SyncModelPage>((observer) => {
 			const sortedTypesLastSyncs = Object.values(this.schema.namespaces).reduce(
 				(map, namespace) => {
 					for (const modelName of Array.from(
-						namespace.modelTopologicalOrdering.keys()
+						namespace.modelTopologicalOrdering!.keys()
 					)) {
 						const typeLastSync = typesLastSync.get(namespace.models[modelName]);
-						map.set(namespace.models[modelName], typeLastSync);
+						map.set(namespace.models[modelName], typeLastSync!);
 					}
 					return map;
 				},
@@ -304,21 +305,21 @@ class SyncProcessor {
 				.filter(([{ syncable }]) => syncable)
 				.map(async ([modelDefinition, [namespace, lastSync]]) => {
 					let done = false;
-					let nextToken: string = null;
-					let startedAt: number = null;
-					let items: ModelInstanceMetadata[] = null;
+					let nextToken: string = null!;
+					let startedAt: number = null!;
+					let items: ModelInstanceMetadata[] = null!;
 
 					let recordsReceived = 0;
 					const filter = this.graphqlFilterFromPredicate(modelDefinition);
 
 					const parents = this.schema.namespaces[
 						namespace
-					].modelTopologicalOrdering.get(modelDefinition.name);
-					const promises = parents.map(parent =>
+					].modelTopologicalOrdering!.get(modelDefinition.name);
+					const promises = parents!.map((parent) =>
 						parentPromises.get(`${namespace}_${parent}`)
 					);
 
-					const promise = new Promise<void>(async res => {
+					const promise = new Promise<void>(async (res) => {
 						await Promise.all(promises);
 
 						do {

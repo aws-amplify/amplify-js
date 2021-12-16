@@ -24,7 +24,7 @@ import {
 	SchemaModel,
 	TypeConstructorMap,
 } from '../../types';
-import { exhaustiveCheck, USER } from '../../util';
+import { USER } from '../../util';
 import { MutationEventOutbox } from '../outbox';
 import {
 	buildGraphQLOperation,
@@ -46,7 +46,7 @@ type MutationProcessorEvent = {
 };
 
 class MutationProcessor {
-	private observer: ZenObservable.Observer<MutationProcessorEvent>;
+	private observer!: ZenObservable.Observer<MutationProcessorEvent>;
 	private readonly typeQuery = new WeakMap<
 		SchemaModel,
 		[TransformerMutationType, string, string][]
@@ -136,7 +136,7 @@ class MutationProcessor {
 			] as PersistentModelConstructor<MutationEvent>;
 			let result: GraphQLResult<Record<string, PersistentModel>>;
 			let opName: string;
-			let modelDefinition: SchemaModel;
+			let modelDefinition!: SchemaModel;
 			try {
 				const modelAuthModes = await getModelAuthModes({
 					authModeStrategy: this.authModeStrategy,
@@ -198,7 +198,7 @@ class MutationProcessor {
 				}
 			}
 
-			if (result === undefined) {
+			if (result! === undefined) {
 				logger.debug('done retrying');
 				await this.storage.runExclusive(async (storage) => {
 					await this.outbox.dequeue(storage);
@@ -206,7 +206,7 @@ class MutationProcessor {
 				continue;
 			}
 
-			const record = result.data[opName];
+			const record = result!.data![opName!];
 			let hasMore = false;
 
 			await this.storage.runExclusive(async (storage) => {
@@ -216,7 +216,7 @@ class MutationProcessor {
 				hasMore = (await this.outbox.peek(storage)) !== undefined;
 			});
 
-			this.observer.next({
+			this.observer.next!({
 				operation,
 				modelDefinition,
 				model: record,
@@ -305,7 +305,7 @@ class MutationProcessor {
 									retryWith = DISCARD;
 								} else {
 									try {
-										retryWith = await this.conflictHandler({
+										retryWith = await this.conflictHandler!({
 											modelConstructor,
 											localModel: this.modelInstanceCreator(
 												modelConstructor,
@@ -355,7 +355,7 @@ class MutationProcessor {
 								// convert retry with to tryWith
 								const updatedMutation =
 									createMutationInstanceFromModelOperation(
-										namespace.relationships,
+										namespace.relationships!,
 										modelDefinition,
 										opType,
 										modelConstructor,
@@ -371,7 +371,7 @@ class MutationProcessor {
 								throw new NonRetryableError('RetryMutation');
 							} else {
 								try {
-									await this.errorHandler({
+									await this.errorHandler!({
 										localModel: this.modelInstanceCreator(
 											modelConstructor,
 											variables.input
@@ -382,7 +382,7 @@ class MutationProcessor {
 										errorInfo: error.errorInfo,
 										remoteModel: error.data
 											? this.modelInstanceCreator(modelConstructor, error.data)
-											: null,
+											: null!,
 									});
 								} catch (err) {
 									logger.warn('failed to execute errorHandler', err);
@@ -425,11 +425,11 @@ class MutationProcessor {
 		condition: string
 	): [string, Record<string, any>, GraphQLCondition, string, SchemaModel] {
 		const modelDefinition = this.schema.namespaces[namespaceName].models[model];
-		const { primaryKey } = this.schema.namespaces[namespaceName].keys[model];
+		const { primaryKey } = this.schema.namespaces[namespaceName].keys![model];
 
 		const queriesTuples = this.typeQuery.get(modelDefinition);
 
-		const [, opName, query] = queriesTuples.find(
+		const [, opName, query] = queriesTuples!.find(
 			([transformerMutationType]) => transformerMutationType === operation
 		);
 
@@ -526,8 +526,11 @@ class MutationProcessor {
 			case TransformerMutationType.GET: // Intentionally blank
 				break;
 			default:
-				exhaustiveCheck(operation);
+				throw new Error(`Invalid operation ${operation}`);
 		}
+
+		// make TS happy ...
+		return undefined!;
 	}
 
 	public pause() {

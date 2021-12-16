@@ -17,7 +17,7 @@ import { TransformerMutationType } from './utils';
 
 // TODO: Persist deleted ids
 class MutationEventOutbox {
-	private inProgressMutationEventId: string;
+	private inProgressMutationEventId!: string;
 
 	constructor(
 		private readonly schema: InternalSchema,
@@ -81,7 +81,7 @@ class MutationEventOutbox {
 					await s.delete(this.MutationEvent, predicate);
 				}
 
-				merged = merged || mutationEvent;
+				merged = merged! || mutationEvent;
 
 				// Enqueue new one
 				await s.save(merged, undefined, this.ownSymbol);
@@ -97,11 +97,11 @@ class MutationEventOutbox {
 		const head = await this.peek(storage);
 
 		if (record) {
-			await this.syncOutboxVersionsOnDequeue(storage, record, head, recordOp);
+			await this.syncOutboxVersionsOnDequeue(storage, record, head, recordOp!);
 		}
 
 		await storage.delete(head);
-		this.inProgressMutationEventId = undefined;
+		this.inProgressMutationEventId = undefined!;
 
 		return head;
 	}
@@ -114,9 +114,9 @@ class MutationEventOutbox {
 	public async peek(storage: StorageFacade): Promise<MutationEvent> {
 		const head = await storage.queryOne(this.MutationEvent, QueryOne.FIRST);
 
-		this.inProgressMutationEventId = head ? head.id : undefined;
+		this.inProgressMutationEventId = head ? head.id : undefined!;
 
-		return head;
+		return head!;
 	}
 
 	public async getForModel<T extends PersistentModel>(

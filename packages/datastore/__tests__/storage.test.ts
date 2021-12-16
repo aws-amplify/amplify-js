@@ -121,7 +121,7 @@ describe('Storage tests', () => {
 
 				await DataStore.save(
 					Model.copyOf(model, (draft) => {
-						draft.optionalField1 = null;
+						draft.optionalField1 = null!;
 					})
 				);
 
@@ -207,7 +207,7 @@ describe('Storage tests', () => {
 
 				await DataStore.save(
 					Model.copyOf(model, (draft) => {
-						draft.emails.push('joe@doe.com');
+						draft.emails!.push('joe@doe.com');
 					})
 				);
 
@@ -298,7 +298,7 @@ describe('Storage tests', () => {
 
 				await DataStore.save(
 					Model.copyOf(model, (draft) => {
-						draft.emails = null;
+						draft.emails = null!;
 					})
 				);
 
@@ -331,7 +331,7 @@ describe('Storage tests', () => {
 						draft.metadata = {
 							...draft.metadata,
 							penNames: ['bob'],
-						};
+						} as any;
 					})
 				);
 
@@ -371,7 +371,7 @@ describe('Storage tests', () => {
 
 				await DataStore.save(
 					Model.copyOf(model, (draft) => {
-						draft.metadata.penNames = ['bob'];
+						draft.metadata!.penNames = ['bob'];
 					})
 				);
 
@@ -431,7 +431,7 @@ describe('Storage tests', () => {
 
 				const updatedComment = await DataStore.query(Comment, comment.id);
 
-				expect((await updatedComment.post).title).toEqual(
+				expect((await updatedComment!.post).title).toEqual(
 					'oops. i mean this is my best post'
 				);
 			});
@@ -458,13 +458,18 @@ describe('Storage tests', () => {
 					})
 				);
 
+				new Comment({
+					content: 'comment 1',
+					post,
+				});
+
 				await DataStore.save(
 					Post.copyOf(post, (updated) => {
 						updated.comments = [
 							comment,
 							new Comment({
 								content: 'comment 2',
-							}),
+							} as any),
 						];
 					})
 				);
@@ -472,7 +477,7 @@ describe('Storage tests', () => {
 				const test = await DataStore.query(Post, post.id);
 
 				// might have to sort
-				expect((await test.comments.toArray()).map((c) => c.content)).toEqual([
+				expect((await test!.comments.toArray()).map((c) => c.content)).toEqual([
 					'comment 1',
 					'comment 2',
 				]);

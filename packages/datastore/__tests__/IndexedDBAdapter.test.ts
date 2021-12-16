@@ -58,7 +58,7 @@ describe('IndexedDBAdapter tests', () => {
 		it('Should call getById for query by id', async () => {
 			const result = await DataStore.query(Model, model1Id);
 
-			expect(result.field1).toEqual('Some value');
+			expect(result!.field1).toEqual('Some value');
 			expect(spyOnGetOne).toHaveBeenCalled();
 			expect(spyOnGetAll).not.toHaveBeenCalled();
 			expect(spyOnEngine).not.toHaveBeenCalled();
@@ -66,7 +66,7 @@ describe('IndexedDBAdapter tests', () => {
 		});
 
 		it('Should call getAll & inMemoryPagination for query with a predicate', async () => {
-			const results = await DataStore.query(Model, c =>
+			const results = await DataStore.query(Model, (c) =>
 				c.field1.eq('another value')
 			);
 
@@ -78,7 +78,7 @@ describe('IndexedDBAdapter tests', () => {
 
 		it('Should call getAll & inMemoryPagination for query with sort', async () => {
 			const results = await DataStore.query(Model, Predicates.ALL, {
-				sort: s => s.dateCreated(SortDirection.DESCENDING),
+				sort: (s) => s.dateCreated(SortDirection.DESCENDING),
 			});
 
 			expect(results.length).toEqual(3);
@@ -142,8 +142,8 @@ describe('IndexedDBAdapter tests', () => {
 			let profile = await DataStore.query(Profile, profile1Id);
 
 			// double-checking that both of the records exist at first
-			expect(user.id).toEqual(user1Id);
-			expect(profile.id).toEqual(profile1Id);
+			expect(user!.id).toEqual(user1Id);
+			expect(profile!.id).toEqual(profile1Id);
 
 			await DataStore.delete(User, user1Id);
 
