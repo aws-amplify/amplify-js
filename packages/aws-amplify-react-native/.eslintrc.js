@@ -71,7 +71,7 @@ module.exports = {
 				object: true,
 			},
 		],
-		'prettier/prettier': ['error'],
+		'prettier/prettier': ['error', {'endOfLine': 'auto'}],
 		'react/jsx-props-no-spreading': 'off',
 		'react/jsx-wrap-multilines': ['error', { declaration: 'ignore' }],
 		'react/no-array-index-key': 'off',
