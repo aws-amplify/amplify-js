@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"noImplicitAny": false,
+		"lib": [
+			"DOM",
+			"ES2017",
+			"ES2018.AsyncIterable",
+			"ES2018.AsyncGenerator",
+			"ES2019"
+		],
+		"downlevelIteration": true,
+		"target": "ES5",
+		"module": "ES2015",
+		"moduleResolution": "Node",
+		"declaration": true,
+		"noEmitOnError": true,
+		"incremental": true,
+		"tsBuildInfoFile": "./lib-esm/.tsbuildinfo",
+		"typeRoots": ["../../node_modules/@types", "./node_modules/@types"],
+		"types": ["node"],
+		"outDir": "./lib-esm",
+		"inlineSourceMap": true,
+		"inlineSources": true
+	}
+}

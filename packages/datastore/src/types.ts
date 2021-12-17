@@ -335,10 +335,8 @@ export type NonModelTypeConstructor<T> = {
 
 // Class for model
 export type PersistentModelConstructor<
-	T extends PersistentModel,
-	K extends PersistentModelMetaData = {
-		readOnlyFields: 'createdAt' | 'updatedAt';
-	}
+	T extends PersistentModel<K>,
+	K extends PersistentModelMetaData = DefaultPersistentModelMetaData
 > = {
 	new (init: ModelInit<T, K>): T;
 	copyOf(src: T, mutator: (draft: MutableModel<T, K>) => void): T;
@@ -349,18 +347,62 @@ export type TypeConstructorMap = Record<
 	PersistentModelConstructor<any> | NonModelTypeConstructor<any>
 >;
 
+export declare const __foo__: unique symbol;
+export type Brand<T, K> = T & { [__foo__]: K };
+
+export type ManagedIdentifier = Brand<{ field: 'id' }, 'ManagedIdentifier'>; // datastore generates a uuid for you
+export type OptionallyManagedIdentifier = Brand<
+	{ field: 'id' },
+	'OptionallyManagedIdentifier'
+>; // you can provide a value, if not, datastore generates a uuid for you
+export type CustomIdentifier<F extends string> = Brand<
+	{ fields: F },
+	'CustomIdentifier'
+>; // you provide the values
+
+export type Identifier =
+	| ManagedIdentifier
+	| OptionallyManagedIdentifier
+	| CustomIdentifier<any>;
+
+export type IdentifierFields<X extends Identifier = ManagedIdentifier> =
+	X extends ManagedIdentifier | OptionallyManagedIdentifier
+		? { [K in X['field']]: string }
+		: X extends CustomIdentifier<infer J>
+		? { [K in J]: string }
+		: { [K in ManagedIdentifier['field']]: string };
+
+type IdentifierFieldsInit<X extends Identifier = ManagedIdentifier> =
+	X extends ManagedIdentifier
+		? {}
+		: X extends OptionallyManagedIdentifier
+		? { [K in X['field']]?: string }
+		: X extends CustomIdentifier<infer J>
+		? { [K in J]: string }
+		: {};
+
 // Instance of model
 export type PersistentModelMetaData = {
+	identifier?: Identifier;
 	readOnlyFields: string;
 };
 
-export type PersistentModel = Readonly<{ id: string } & Record<string, any>>;
+export type PersistentModel<
+	META extends PersistentModelMetaData = DefaultPersistentModelMetaData
+> = Readonly<
+	IdentifierFields<META['identifier']> &
+		Record<META['readOnlyFields'] | string, any>
+>;
+
 export type ModelInit<
+	T extends PersistentModel<M>,
+	M extends PersistentModelMetaData = DefaultPersistentModelMetaData
+> = Omit<
 	T,
-	K extends PersistentModelMetaData = {
-		readOnlyFields: 'createdAt' | 'updatedAt';
-	}
-> = Omit<T, 'id' | K['readOnlyFields']>;
+	keyof IdentifierFields<M['identifier']> | M['readOnlyFields'] | symbol
+> &
+	IdentifierFieldsInit<M['identifier']>;
+
 type DeepWritable<T> = {
 	-readonly [P in keyof T]: T[P] extends TypeName<T[P]>
 		? T[P]
@@ -368,17 +410,17 @@ type DeepWritable<T> = {
 };
 
 export type MutableModel<
-	T extends Record<string, any>,
-	K extends PersistentModelMetaData = {
-		readOnlyFields: 'createdAt' | 'updatedAt';
-	}
+	T extends PersistentModel<M>,
+	M extends PersistentModelMetaData = DefaultPersistentModelMetaData
 	// This provides Intellisense with ALL of the properties, regardless of read-only
 	// but will throw a linting error if trying to overwrite a read-only property
-> = DeepWritable<Omit<T, 'id' | K['readOnlyFields']>> &
-	Readonly<Pick<T, 'id' | K['readOnlyFields']>>;
+> = DeepWritable<
+	Omit<T, keyof IdentifierFields<M['identifier']> | M['readOnlyFields']>
+> &
+	Readonly<IdentifierFields<M['identifier']> & Pick<T, M['readOnlyFields']>>;
 
 export type ModelInstanceMetadata = {
-	id: string;
+	id: string; // TODO: Problematic!!!
 	_version: number;
 	_lastChangedAt: number;
 	_deleted: boolean;
@@ -800,3 +842,226 @@ export enum LimitTimerRaceResolvedValues {
 	TIMER = 'TIMER',
 }
 //#endregion
+
+//#region ManagedId
+
+type PostManagedIdMetaData = {
+	identifier: ManagedIdentifier;
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+declare class PostManagedId {
+	readonly id: string;
+	readonly title: string;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(init: ModelInit<PostManagedId, PostManagedIdMetaData>);
+	static copyOf(
+		source: PostManagedId,
+		mutator: (
+			draft: MutableModel<PostManagedId, PostManagedIdMetaData>
+		) => MutableModel<PostManagedId, PostManagedIdMetaData> | void
+	): PostManagedId;
+}
+
+const p1 = new PostManagedId({
+	// id: 'sadasd',
+	// tenantId: 'tenantABC',
+	// postId: 'xxxxxxxxx',
+	title: 'asdasdasd',
+});
+
+PostManagedId.copyOf(p1, d => {
+	d.id;
+	// d.id = 'dddd'; // This should fail with a compiler error
+	d.title = 'qweqweqer';
+	d.createdAt?.substring(0);
+});
+
+//#endregion
+
+//#region OptionalId
+
+type PostOptionalIdMetaData = {
+	identifier: OptionallyManagedIdentifier;
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+declare class PostOptionalId {
+	readonly id: string;
+	readonly title: string;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(init: ModelInit<PostOptionalId, PostOptionalIdMetaData>);
+	static copyOf(
+		source: PostOptionalId,
+		mutator: (
+			draft: MutableModel<PostOptionalId, PostOptionalIdMetaData>
+		) => MutableModel<PostOptionalId, PostOptionalIdMetaData> | void
+	): PostOptionalId;
+}
+
+const p2 = new PostOptionalId({
+	id: 'sadasd',
+	// tenantId: 'tenantABC',
+	// postId: 'xxxxxxxxx',
+	title: 'asdasdasd',
+});
+
+PostOptionalId.copyOf(p2, d => {
+	d.id;
+	// d.id = 'dddd'; // This should fail with a compiler error
+	d.title = 'iuiouoiuo';
+});
+
+//#endregion
+
+//#region CustomId - multi
+
+type PostCustomIdMetaData = {
+	identifier: CustomIdentifier<'tenantId' | 'postId'>;
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+declare class PostCustomId {
+	// readonly id: string;
+	readonly tenantId: string;
+	readonly postId: string;
+	readonly title: string;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(init: ModelInit<PostCustomId, PostCustomIdMetaData>);
+	static copyOf(
+		source: PostCustomId,
+		mutator: (
+			draft: MutableModel<PostCustomId, PostCustomIdMetaData>
+		) => MutableModel<PostCustomId, PostCustomIdMetaData> | void
+	): PostCustomId;
+}
+
+const p3 = new PostCustomId({
+	// id: 'sadasd',
+	tenantId: 'tenantABC',
+	postId: 'xxxxxxxxx',
+	title: 'asdasdasd',
+});
+
+PostCustomId.copyOf(p3, d => {
+	// d.id; // This should fail with a compiler error
+	d.tenantId;
+	d.postId;
+	// d.tenantId = 'dsdsd'; // This should fail with a compiler error
+	d.title = 'iuiouoiuo';
+});
+
+//#endregion
+
+//#region CustomId - single renamed
+
+type PostCustomIdRenamedMetaData = {
+	identifier: CustomIdentifier<'myId'>;
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+declare class PostCustomIRenamed {
+	readonly myId: string;
+	readonly title: string;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(init: ModelInit<PostCustomIRenamed, PostCustomIdRenamedMetaData>);
+	static copyOf(
+		source: PostCustomIRenamed,
+		mutator: (
+			draft: MutableModel<PostCustomIRenamed, PostCustomIdRenamedMetaData>
+		) => MutableModel<PostCustomIRenamed, PostCustomIdRenamedMetaData> | void
+	): PostCustomIRenamed;
+}
+
+const p3b = new PostCustomIRenamed({
+	myId: 'sadasd',
+	// d.tenantId = 'dsdsd'; // This should fail with a compiler error
+	title: 'asdasdasd',
+});
+
+PostCustomIRenamed.copyOf(p3b, d => {
+	// d.id; // This should fail with a compiler error
+	d.myId;
+	// d.myId = 'dsdsd'; // This should fail with a compiler error
+	d.title = 'iuiouoiuo';
+});
+
+//#endregion
+
+//#region BackwardsCompatible
+
+type PostNoIdMetaData = {
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+declare class PostNoId {
+	readonly id: string;
+	readonly title: string;
+	readonly createdAt?: string;
+	readonly updatedAt?: string;
+	constructor(init: ModelInit<PostNoId, PostNoIdMetaData>);
+	static copyOf(
+		source: PostNoId,
+		mutator: (
+			draft: MutableModel<PostNoId, PostNoIdMetaData>
+		) => MutableModel<PostNoId, PostNoIdMetaData> | void
+	): PostNoId;
+}
+
+const p4 = new PostNoId({
+	// id: 'sadasd',
+	title: 'asdasdasd',
+});
+
+PostNoId.copyOf(p4, d => {
+	d.id;
+	// d.id = 'dsdsd'; // This should fail with a compiler error
+	d.title = 'iuiouoiuo';
+});
+
+//#endregion
+
+declare class DataStore {
+	static query<
+		T extends PersistentModel<K>,
+		K extends PersistentModelMetaData = DefaultPersistentModelMetaData
+	>(
+		modelConstructor: PersistentModelConstructor<T, K>,
+		idOrCriteria?:
+			| IdentifierFields<K['identifier']>
+			| (K['identifier'] extends CustomIdentifier<any> ? never : string)
+			| ProducerModelPredicate<T>
+			| typeof PredicateAll,
+		paginationProducer?: ProducerPaginationInput<T>
+	): T;
+}
+
+export type DefaultPersistentModelMetaData = {
+	identifier: ManagedIdentifier;
+	readOnlyFields: 'createdAt' | 'updatedAt';
+};
+
+// Backwards compatible
+const _x11 = DataStore.query(PostNoId, 'XXXXXXX');
+const _x1 = DataStore.query(PostNoId, { id: 'XXXXXXX' });
+
+const _x2a = DataStore.query(PostManagedId, 'XXXXXXX');
+const _x2 = DataStore.query(PostManagedId, { id: 'XXXXXXX' });
+
+const _x3 = DataStore.query(PostOptionalId, { id: 'XXXXXXX' });
+// const _x4aa = DataStore.query(PostCustomId, 'sdsdsdssdds'); // This should fail
+
+// OK ?
+const _x4a = DataStore.query(PostCustomId, {
+	tenantId: 'XXXXXXX',
+	postId: 'XXXXXXX',
+});
+const _x4aa = DataStore.query(PostCustomId, c =>
+	c.tenantId('eq', 'AAAAA').postId('eq', 'BBBBB')
+);
+
+// const _x4b = DataStore.query(PostCustomIRenamed, 'ddddd'); // This should fail
+const _x4bb = DataStore.query(PostCustomIRenamed, { myId: 'XXX' });
+
+// const _x4c = DataStore.query(i, 'ddddd', 'dddddd'); // This should fail
+
+const _x4 = DataStore.query(PostCustomId, _x4a);
