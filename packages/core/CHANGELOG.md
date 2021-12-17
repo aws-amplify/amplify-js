@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.3.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.10...@aws-amplify/core@4.3.11) (2021-12-16)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.3.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.9...@aws-amplify/core@4.3.10) (2021-12-03)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.3.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.8...@aws-amplify/core@4.3.9) (2021-12-02)
+
+
+### Bug Fixes
+
+* **@aws-amplify/core:** Use undefined for default sequence token with CloudWatch logging ([#9181](https://github.com/aws-amplify/amplify-js/issues/9181)) ([6f217aa](https://github.com/aws-amplify/amplify-js/commit/6f217aa89e672fc4665816756994e6245b19227e))
+
+
+
+
+
+## [4.3.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.7...@aws-amplify/core@4.3.8) (2021-11-18)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.3.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.6...@aws-amplify/core@4.3.7) (2021-11-16)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
+## [4.3.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.5...@aws-amplify/core@4.3.6) (2021-11-12)
+
+
+### Reverts
+
+* Revert "chore:update-@aws-sdk/client-cloudwatch-logs (#9189)" (#9192) ([36fe262](https://github.com/aws-amplify/amplify-js/commit/36fe26243247c45cdb3f5391d91f0641c9cd5b99)), closes [#9189](https://github.com/aws-amplify/amplify-js/issues/9189) [#9192](https://github.com/aws-amplify/amplify-js/issues/9192)
+
+
+
+
+
+## [4.3.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.4...@aws-amplify/core@4.3.5) (2021-11-09)
+
+**Note:** Version bump only for package @aws-amplify/core
+
+
+
+
+
 ## [4.3.4](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/core@4.3.3...@aws-amplify/core@4.3.4) (2021-10-28)
 
 **Note:** Version bump only for package @aws-amplify/core

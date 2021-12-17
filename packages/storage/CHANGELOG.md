@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.4.12](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.11...@aws-amplify/storage@4.4.12) (2021-12-16)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [4.4.11](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.10...@aws-amplify/storage@4.4.11) (2021-12-03)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [4.4.10](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.9...@aws-amplify/storage@4.4.10) (2021-12-02)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [4.4.9](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.8...@aws-amplify/storage@4.4.9) (2021-11-18)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [4.4.8](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.7...@aws-amplify/storage@4.4.8) (2021-11-16)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [4.4.7](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.6...@aws-amplify/storage@4.4.7) (2021-11-12)
+
+**Note:** Version bump only for package @aws-amplify/storage
+
+
+
+
+
+## [4.4.6](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.5...@aws-amplify/storage@4.4.6) (2021-11-09)
+
+
+### Bug Fixes
+
+* **@aws-amplify/storage:** add useAccelerateEndpoint to create s3client ([#9144](https://github.com/aws-amplify/amplify-js/issues/9144)) ([853adc7](https://github.com/aws-amplify/amplify-js/commit/853adc7554f0a61922e3348d3626c73a5166266d))
+* **@aws-amplify/storage:** Automatically adjust systemClockoffset in Storage ([#9115](https://github.com/aws-amplify/amplify-js/issues/9115)) ([873941c](https://github.com/aws-amplify/amplify-js/commit/873941c655d9fe87a75238eadc0ae57dacc2fa16))
+
+
+
+
+
 ## [4.4.5](https://github.com/aws-amplify/amplify-js/compare/@aws-amplify/storage@4.4.4...@aws-amplify/storage@4.4.5) (2021-10-28)
 
 

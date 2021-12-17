@@ -1,6 +1,6 @@
 {
 	"name": "@aws-amplify/geo",
-	"version": "1.1.4",
+	"version": "1.1.11",
 	"description": "Geo category for aws-amplify",
 	"main": "./lib/index.js",
 	"module": "./lib-esm/index.js",
@@ -41,8 +41,8 @@
 	},
 	"homepage": "https://aws-amplify.github.io/",
 	"dependencies": {
-		"@aws-amplify/core": "4.3.4",
-		"@aws-sdk/client-location": "3.22.0",
+		"@aws-amplify/core": "4.3.11",
+		"@aws-sdk/client-location": "3.41.0",
 		"camelcase-keys": "6.2.2"
 	},
 	"jest": {
