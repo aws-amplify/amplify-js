@@ -167,4 +167,18 @@ export class ModelPredicateCreator {
 			<any>id
 		);
 	}
+
+	static createForPk<T extends PersistentModel>(
+		modelDefinition: SchemaModel,
+		field: string,
+		value: string
+	) {
+		return ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition)[
+			field
+		](
+			// @ts-ignore - TODO: remove after fixing type
+			'eq',
+			<any>value
+		);
+	}
 }

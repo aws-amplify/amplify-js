@@ -15,6 +15,8 @@ import { PredicateAll } from './predicates';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { Adapter } from './storage/adapter';
 
+const ID = 'id';
+
 //#region Schema types
 export type Schema = UserSchema & {
 	version: string;
@@ -120,6 +122,7 @@ type ModelAttributeKey = {
 type ModelAttributePrimaryKey = {
 	type: 'key';
 	properties: {
+		name: never;
 		fields: string[];
 	};
 };
@@ -157,6 +160,30 @@ export function isModelAttributeCompositeKey(
 		attr.properties.name !== undefined &&
 		attr.properties.fields.length > 2
 	);
+}
+
+export function extractKeyIfExists(
+	modelDefinition: SchemaModel
+): ModelAttribute | undefined {
+	const keyAttribute = modelDefinition.attributes?.find(isModelAttributeKey);
+	return keyAttribute;
+}
+
+export function extractPrimaryKeyFieldName(
+	modelDefinition: SchemaModel
+): string {
+	// TODO: handle sortKey, compositeKey
+	const keyAttribute = extractKeyIfExists(modelDefinition);
+	if (keyAttribute && isModelAttributePrimaryKey(keyAttribute)) {
+		const [pkFieldName] = keyAttribute.properties.fields;
+		return pkFieldName;
+	}
+
+	return ID;
+}
+
+export function isPrimaryKeyId(fieldName: string): boolean {
+	return fieldName === ID;
 }
 
 export type ModelAttributeAuthProperty = {
@@ -407,15 +434,14 @@ export type DataStoreSnapshot<T extends PersistentModel> = {
 
 //#region Predicates
 
-export type PredicateExpression<M extends PersistentModel, FT> = TypeName<
+export type PredicateExpression<
+	M extends PersistentModel,
 	FT
-> extends keyof MapTypeToOperands<FT>
+> = TypeName<FT> extends keyof MapTypeToOperands<FT>
 	? (
 			operator: keyof MapTypeToOperands<FT>[TypeName<FT>],
 			// make the operand type match the type they're trying to filter on
-			operand: MapTypeToOperands<FT>[TypeName<FT>][keyof MapTypeToOperands<
-				FT
-			>[TypeName<FT>]]
+			operand: MapTypeToOperands<FT>[TypeName<FT>][keyof MapTypeToOperands<FT>[TypeName<FT>]]
 	  ) => ModelPredicate<M>
 	: never;
 
@@ -483,8 +509,7 @@ export type PredicateGroups<T extends PersistentModel> = {
 
 export type ModelPredicate<M extends PersistentModel> = {
 	[K in keyof M]-?: PredicateExpression<M, NonNullable<M[K]>>;
-} &
-	PredicateGroups<M>;
+} & PredicateGroups<M>;
 
 export type ProducerModelPredicate<M extends PersistentModel> = (
 	condition: ModelPredicate<M>
@@ -574,9 +599,10 @@ export type SortPredicate<T extends PersistentModel> = {
 	[K in keyof T]-?: SortPredicateExpression<T, NonNullable<T[K]>>;
 };
 
-export type SortPredicateExpression<M extends PersistentModel, FT> = TypeName<
+export type SortPredicateExpression<
+	M extends PersistentModel,
 	FT
-> extends keyof MapTypeToOperands<FT>
+> = TypeName<FT> extends keyof MapTypeToOperands<FT>
 	? (sortDirection: keyof typeof SortDirection) => SortPredicate<M>
 	: never;
 
@@ -585,9 +611,8 @@ export enum SortDirection {
 	DESCENDING = 'DESCENDING',
 }
 
-export type SortPredicatesGroup<
-	T extends PersistentModel
-> = SortPredicateObject<T>[];
+export type SortPredicatesGroup<T extends PersistentModel> =
+	SortPredicateObject<T>[];
 
 export type SortPredicateObject<T extends PersistentModel> = {
 	field: keyof T;

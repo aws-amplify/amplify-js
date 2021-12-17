@@ -54,6 +54,8 @@ import {
 	isNonModelFieldType,
 	isModelFieldType,
 	ObserveQueryOptions,
+	extractPrimaryKeyFieldName,
+	isPrimaryKeyId,
 } from '../types';
 import {
 	DATASTORE,
@@ -411,27 +413,33 @@ const createModelClass = <T extends PersistentModel>(
 						instancesMetadata.has(init)
 							? <ModelInstanceMetadata>(<unknown>init)
 							: <ModelInstanceMetadata>{};
-					const {
-						id: _id,
-						_version,
-						_lastChangedAt,
-						_deleted,
-					} = modelInstanceMetadata;
 
-					// instancesIds are set by modelInstanceCreator, it is accessible only internally
-					const isInternal = _id !== null && _id !== undefined;
+					// split codepath depending on PK
+					const pk = extractPrimaryKeyFieldName(modelDefinition);
+					if (isPrimaryKeyId(pk)) {
+						const { id: _id } = modelInstanceMetadata;
 
-					const id = isInternal
-						? _id
-						: modelDefinition.syncable
-						? uuid4()
-						: ulid();
+						// instancesIds are set by modelInstanceCreator, it is accessible only internally
 
-					if (!isInternal) {
-						checkReadOnlyPropertyOnCreate(draft, modelDefinition);
+						// TODO: can no longer rely on this to determine whether instance is being created
+						// internally or not
+						// look into passing an optional Symbol from internal classes instead
+						const isInternal = _id !== null && _id !== undefined;
+
+						const id = isInternal
+							? _id
+							: modelDefinition.syncable
+							? uuid4()
+							: ulid();
+
+						if (!isInternal) {
+							checkReadOnlyPropertyOnCreate(draft, modelDefinition);
+						}
+
+						draft.id = id;
 					}
 
-					draft.id = id;
+					const { _version, _lastChangedAt, _deleted } = modelInstanceMetadata;
 
 					if (modelDefinition.syncable) {
 						draft._version = _version;
@@ -901,12 +909,14 @@ class DataStore {
 			condition
 		);
 
+		const pk = extractPrimaryKeyFieldName(modelDefinition);
+
 		const [savedModel] = await this.storage.runExclusive(async s => {
 			await s.save(model, producedCondition, undefined, patchesTuple);
 
 			return s.query(
 				modelConstructor,
-				ModelPredicateCreator.createForId(modelDefinition, model.id)
+				ModelPredicateCreator.createForPk(modelDefinition, pk, model[pk])
 			);
 		});
 
@@ -1024,10 +1034,12 @@ class DataStore {
 			}
 
 			const modelDefinition = getModelDefinition(modelConstructor);
+			const pk = extractPrimaryKeyFieldName(modelDefinition);
 
-			const idPredicate = ModelPredicateCreator.createForId<T>(
+			const idPredicate = ModelPredicateCreator.createForPk<T>(
 				modelDefinition,
-				model.id
+				pk,
+				model[pk]
 			);
 
 			if (idOrCriteria) {
