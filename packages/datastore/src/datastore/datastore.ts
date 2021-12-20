@@ -409,8 +409,11 @@ const createModelClass = <T extends PersistentModel>(
 				(draft: Draft<T & ModelInstanceMetadata>) => {
 					initializeInstance(init, modelDefinition, draft);
 
+					// TODO: rename (think about fn/purpose)
+					const isInternallyConstructed = instancesMetadata.has(init);
+
 					const modelInstanceMetadata: ModelInstanceMetadata =
-						instancesMetadata.has(init)
+						isInternallyConstructed
 							? <ModelInstanceMetadata>(<unknown>init)
 							: <ModelInstanceMetadata>{};
 
@@ -420,10 +423,6 @@ const createModelClass = <T extends PersistentModel>(
 						const { id: _id } = modelInstanceMetadata;
 
 						// instancesIds are set by modelInstanceCreator, it is accessible only internally
-
-						// TODO: can no longer rely on this to determine whether instance is being created
-						// internally or not
-						// look into passing an optional Symbol from internal classes instead
 						const isInternal = _id !== null && _id !== undefined;
 
 						const id = isInternal
@@ -432,11 +431,11 @@ const createModelClass = <T extends PersistentModel>(
 							? uuid4()
 							: ulid();
 
-						if (!isInternal) {
-							checkReadOnlyPropertyOnCreate(draft, modelDefinition);
-						}
-
 						draft.id = id;
+					}
+
+					if (!isInternallyConstructed) {
+						checkReadOnlyPropertyOnCreate(draft, modelDefinition);
 					}
 
 					const { _version, _lastChangedAt, _deleted } = modelInstanceMetadata;
@@ -465,7 +464,11 @@ const createModelClass = <T extends PersistentModel>(
 				source,
 				draft => {
 					fn(<MutableModel<T>>(draft as unknown));
-					draft.id = source.id;
+
+					const pk = extractPrimaryKeyFieldName(modelDefinition);
+					// @ts-ignore TODO: fix type
+					draft[pk] = source[pk];
+
 					const modelValidator = validateModelFields(modelDefinition);
 					Object.entries(draft).forEach(([k, v]) => {
 						const parsedValue = castInstanceType(modelDefinition, k, v);
