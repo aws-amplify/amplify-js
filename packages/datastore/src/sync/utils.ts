@@ -26,6 +26,8 @@ import {
 	ModelOperation,
 	InternalSchema,
 	AuthModeStrategy,
+	extractPrimaryKeyFieldName,
+	isPrimaryKeyId,
 } from '../types';
 import { exhaustiveCheck } from '../util';
 import { MutationEvent } from './';
@@ -381,6 +383,18 @@ export function createMutationInstanceFromModelOperation<
 ): MutationEvent {
 	let operation: TransformerMutationType;
 
+	console.log(relationships);
+	console.log(modelDefinition);
+	console.log(opType);
+	console.log(model);
+	console.log(element);
+	console.log(condition);
+	console.log(MutationEventConstructor);
+	console.log(modelInstanceCreator);
+	console.log(id);
+	console.log('begins here');
+	debugger;
+
 	switch (opType) {
 		case OpType.INSERT:
 			operation = TransformerMutationType.CREATE;
@@ -412,14 +426,32 @@ export function createMutationInstanceFromModelOperation<
 		return v;
 	};
 
+	// TODO: explain
+	let modelId;
+
+	const pk = extractPrimaryKeyFieldName(modelDefinition);
+
+	if (!element.id) {
+		modelId = element[pk];
+	} else {
+		modelId = element.id;
+	}
+
+	console.log('done');
+	debugger;
+
+	// TODO: create util to identify custom PK - for now, using hardcoded 'customId`
 	const mutationEvent = modelInstanceCreator(MutationEventConstructor, {
 		...(id ? { id } : {}),
 		data: JSON.stringify(element, replacer),
-		modelId: element.id,
+		modelId,
 		model: model.name,
 		operation,
 		condition: JSON.stringify(condition),
+		// customId: element.customId,
 	});
+
+	debugger;
 
 	return mutationEvent;
 }
@@ -515,11 +547,9 @@ export async function getModelAuthModes({
 	defaultAuthMode: GRAPHQL_AUTH_MODE;
 	modelName: string;
 	schema: InternalSchema;
-}): Promise<
-	{
-		[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
-	}
-> {
+}): Promise<{
+	[key in ModelOperation]: GRAPHQL_AUTH_MODE[];
+}> {
 	const operations = Object.values(ModelOperation);
 
 	const modelAuthModes: {

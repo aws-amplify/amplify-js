@@ -34,6 +34,8 @@ class MutationEventOutbox {
 			const mutationEventModelDefinition =
 				this.schema.namespaces[SYNC].models['MutationEvent'];
 
+			// modelid is the id of the record in the mutationEvent store/table
+			// id is the id of the actual record that was mutated (that we'll be sending to AppSync)
 			const predicate = ModelPredicateCreator.createFromExisting<MutationEvent>(
 				mutationEventModelDefinition,
 				c =>
@@ -115,6 +117,8 @@ class MutationEventOutbox {
 		const head = await storage.queryOne(this.MutationEvent, QueryOne.FIRST);
 
 		this.inProgressMutationEventId = head ? head.id : undefined;
+		console.log('UPDATE THIS????');
+		debugger;
 
 		return head;
 	}
@@ -133,10 +137,14 @@ class MutationEventOutbox {
 				c => c.modelId('eq', model.id)
 			)
 		);
+		console.log('what is this?');
+		debugger;
 
 		return mutationEvents;
 	}
 
+	// modelid is the id of the record in the mutationEvent store/table
+	// id is the id of the actual record that was mutated (that we'll be sending to AppSync)
 	public async getModelIds(storage: StorageFacade): Promise<Set<string>> {
 		const mutationEvents = await storage.query(this.MutationEvent);
 
@@ -144,6 +152,9 @@ class MutationEventOutbox {
 
 		mutationEvents.forEach(({ modelId }) => result.add(modelId));
 
+		console.log('custom id should now be included in the mutation events');
+		console.log(result);
+		debugger;
 		return result;
 	}
 
@@ -190,6 +201,9 @@ class MutationEventOutbox {
 			mutationEventModelDefinition,
 			c => c.modelId('eq', record.id).id('ne', this.inProgressMutationEventId)
 		);
+
+		console.log('update this???????', predicate);
+		debugger;
 
 		const outdatedMutations = await storage.query(
 			this.MutationEvent,
@@ -242,6 +256,9 @@ class MutationEventOutbox {
 			...previousData,
 			...currentData,
 		});
+
+		console.log('UPDATE ANY OF THESE???????');
+		debugger;
 
 		return this.modelInstanceCreator(this.MutationEvent, {
 			...current,

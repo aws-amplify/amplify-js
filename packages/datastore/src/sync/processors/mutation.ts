@@ -251,19 +251,14 @@ class MutationProcessor {
 				MutationEvent: PersistentModelConstructor<MutationEvent>,
 				mutationEvent: MutationEvent
 			) => {
-				const [
-					query,
-					variables,
-					graphQLCondition,
-					opName,
-					modelDefinition,
-				] = this.createQueryVariables(
-					namespaceName,
-					model,
-					operation,
-					data,
-					condition
-				);
+				const [query, variables, graphQLCondition, opName, modelDefinition] =
+					this.createQueryVariables(
+						namespaceName,
+						model,
+						operation,
+						data,
+						condition
+					);
 
 				const authToken = await getTokenForCustomAuth(
 					authMode,
@@ -352,23 +347,30 @@ class MutationProcessor {
 										authToken,
 									});
 
+									console.log('something needs updated here?');
+									debugger;
+
 									return [serverData, opName, modelDefinition];
 								}
 
 								const namespace = this.schema.namespaces[namespaceName];
 
 								// convert retry with to tryWith
-								const updatedMutation = createMutationInstanceFromModelOperation(
-									namespace.relationships,
-									modelDefinition,
-									opType,
-									modelConstructor,
-									retryWith,
-									graphQLCondition,
-									MutationEvent,
-									this.modelInstanceCreator,
-									mutationEvent.id
-								);
+								const updatedMutation =
+									createMutationInstanceFromModelOperation(
+										namespace.relationships,
+										modelDefinition,
+										opType,
+										modelConstructor,
+										retryWith,
+										graphQLCondition,
+										MutationEvent,
+										this.modelInstanceCreator,
+										mutationEvent.id
+									);
+
+								console.log('is model id here, in the right place??');
+								debugger;
 
 								await this.storage.save(updatedMutation);
 
@@ -448,6 +450,9 @@ class MutationProcessor {
 		} else {
 			deleteInput['id'] = parsedData.id;
 		}
+
+		console.log('whats going on here?');
+		debugger;
 
 		const filteredData =
 			operation === TransformerMutationType.DELETE

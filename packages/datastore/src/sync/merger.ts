@@ -44,6 +44,9 @@ class ModelMerger {
 			itemsMap.set(item.id, item);
 		}
 
+		console.log('whats happening up here^^^^^');
+		debugger;
+
 		const page = [...itemsMap.values()];
 
 		return await storage.batchSave(modelConstructor, page, this.ownSymbol);

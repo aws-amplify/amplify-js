@@ -419,6 +419,15 @@ const createModelClass = <T extends PersistentModel>(
 
 					// split codepath depending on PK
 					const pk = extractPrimaryKeyFieldName(modelDefinition);
+					console.log(pk);
+					console.log(modelDefinition);
+					console.log(modelInstanceMetadata);
+
+					console.log(
+						'something happening in DS?, perhaps the model instance metadata???'
+					);
+					debugger;
+
 					if (isPrimaryKeyId(pk)) {
 						const { id: _id } = modelInstanceMetadata;
 
@@ -448,6 +457,8 @@ const createModelClass = <T extends PersistentModel>(
 				}
 			);
 
+			console.log(instance);
+			debugger;
 			return instance;
 		}
 
@@ -716,6 +727,7 @@ class DataStore {
 	}
 
 	start = async (): Promise<void> => {
+		// debugger;
 		if (this.initialized === undefined) {
 			logger.debug('Starting DataStore');
 			this.initialized = new Promise((res, rej) => {
@@ -820,6 +832,7 @@ class DataStore {
 		paginationProducer?: ProducerPaginationInput<T>
 	): Promise<T | T[] | undefined> => {
 		await this.start();
+		// debugger;
 
 		//#region Input validation
 
@@ -889,6 +902,7 @@ class DataStore {
 		condition?: ProducerModelPredicate<T>
 	): Promise<T> => {
 		await this.start();
+		// debugger;
 
 		// Immer patches for constructing a correct update mutation input
 		// Allows us to only include changed fields for updates
@@ -976,6 +990,7 @@ class DataStore {
 		idOrCriteria?: string | ProducerModelPredicate<T> | typeof PredicateAll
 	) => {
 		await this.start();
+		// debugger;
 
 		let condition: ModelPredicate<T>;
 
@@ -1078,6 +1093,7 @@ class DataStore {
 		idOrCriteria?: string | ProducerModelPredicate<T>
 	): Observable<SubscriptionMessage<T>> => {
 		let predicate: ModelPredicate<T>;
+		// debugger;
 
 		const modelConstructor: PersistentModelConstructor<T> =
 			modelOrConstructor && isValidModelConstructor(modelOrConstructor)
@@ -1099,6 +1115,7 @@ class DataStore {
 
 				return this.observe(modelConstructor, model.id);
 			} else {
+				// debugger;
 				const msg =
 					'The model is not an instance of a PersistentModelConstructor';
 				logger.error(msg, { model });
