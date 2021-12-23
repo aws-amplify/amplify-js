@@ -26,8 +26,8 @@ import {
 	ModelOperation,
 	InternalSchema,
 	AuthModeStrategy,
-	extractPrimaryKeyFieldName,
-	isPrimaryKeyId,
+	extractPrimaryKeyFieldNames,
+	// isPrimaryKeyId,
 } from '../types';
 import { exhaustiveCheck } from '../util';
 import { MutationEvent } from './';
@@ -429,10 +429,11 @@ export function createMutationInstanceFromModelOperation<
 	// TODO: explain
 	let modelId;
 
-	const pk = extractPrimaryKeyFieldName(modelDefinition);
+	const pk = extractPrimaryKeyFieldNames(modelDefinition);
 
 	if (!element.id) {
-		modelId = element[pk];
+		// TODO:
+		modelId = element[pk[0]];
 	} else {
 		modelId = element.id;
 	}

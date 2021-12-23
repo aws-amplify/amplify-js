@@ -21,7 +21,7 @@ import {
 	TypeConstructorMap,
 	ModelPredicate,
 	AuthModeStrategy,
-	extractPrimaryKeyFieldName,
+	extractPrimaryKeyFieldNames,
 } from '../types';
 import { exhaustiveCheck, getNow, SYNC, USER } from '../util';
 import DataStoreConnectivity from './datastoreConnectivity';
@@ -540,10 +540,11 @@ export class SyncEngine {
 										const oneByOne: ModelInstanceMetadata[] = [];
 										const page = items.filter(item => {
 											let itemId;
-											const pk = extractPrimaryKeyFieldName(modelDefinition);
+											const pk = extractPrimaryKeyFieldNames(modelDefinition);
 
 											if (!item.id) {
-												itemId = item[pk];
+												// TODO
+												itemId = item[pk[0]];
 											} else {
 												itemId = item.id;
 											}
