@@ -54,8 +54,9 @@ import {
 	isNonModelFieldType,
 	isModelFieldType,
 	ObserveQueryOptions,
-	extractPrimaryKeyFieldName,
-	isPrimaryKeyId,
+	extractPrimaryKeyFieldNames,
+	isIdManaged,
+	isIdOptionallyManaged,
 } from '../types';
 import {
 	DATASTORE,
@@ -409,41 +410,36 @@ const createModelClass = <T extends PersistentModel>(
 				(draft: Draft<T & ModelInstanceMetadata>) => {
 					initializeInstance(init, modelDefinition, draft);
 
-					// TODO: rename (think about fn/purpose)
-					const isInternallyConstructed = instancesMetadata.has(init);
+					// model is initialized inside a DataStore component (e.g. by Sync Engine, Storage Engine, etc.)
+					const isInternallyInitialized = instancesMetadata.has(init);
 
 					const modelInstanceMetadata: ModelInstanceMetadata =
-						isInternallyConstructed
+						isInternallyInitialized
 							? <ModelInstanceMetadata>(<unknown>init)
 							: <ModelInstanceMetadata>{};
 
-					// split codepath depending on PK
-					const pk = extractPrimaryKeyFieldName(modelDefinition);
-					console.log(pk);
-					console.log(modelDefinition);
-					console.log(modelInstanceMetadata);
+					const modelConstructor = Object.getPrototypeOf(this).constructor;
+					const namespaceName = namespaceResolver(modelConstructor);
+					const isUserModel = namespaceName === USER;
+					const { id: _id } = modelInstanceMetadata;
 
-					console.log(
-						'something happening in DS?, perhaps the model instance metadata???'
-					);
-					debugger;
+					if (isIdManaged(modelDefinition)) {
+						const isInternalModel = _id !== null && _id !== undefined;
 
-					if (isPrimaryKeyId(pk)) {
-						const { id: _id } = modelInstanceMetadata;
-
-						// instancesIds are set by modelInstanceCreator, it is accessible only internally
-						const isInternal = _id !== null && _id !== undefined;
-
-						const id = isInternal
+						const id = isInternalModel
 							? _id
-							: modelDefinition.syncable
+							: modelDefinition.syncable || isUserModel
 							? uuid4()
 							: ulid();
 
 						draft.id = id;
+					} else if (isIdOptionallyManaged(modelDefinition)) {
+						// only auto-populate if the id was not provided
+						const id = _id || uuid4();
+						draft.id = id;
 					}
 
-					if (!isInternallyConstructed) {
+					if (!isInternallyInitialized) {
 						checkReadOnlyPropertyOnCreate(draft, modelDefinition);
 					}
 
@@ -454,6 +450,9 @@ const createModelClass = <T extends PersistentModel>(
 						draft._lastChangedAt = _lastChangedAt;
 						draft._deleted = _deleted;
 					}
+
+					console.log('understand the above');
+					debugger;
 				}
 			);
 
@@ -476,9 +475,12 @@ const createModelClass = <T extends PersistentModel>(
 				draft => {
 					fn(<MutableModel<T>>(draft as unknown));
 
-					const pk = extractPrimaryKeyFieldName(modelDefinition);
+					const [pk, ...sortKey] = extractPrimaryKeyFieldNames(modelDefinition);
+					// Keys are immutable
 					// @ts-ignore TODO: fix type
 					draft[pk] = source[pk];
+					// @ts-ignore TODO: fix type TODO: double check if SK should be immutable
+					sortKey.forEach(key => (draft[key] = source[key]));
 
 					const modelValidator = validateModelFields(modelDefinition);
 					Object.entries(draft).forEach(([k, v]) => {
@@ -819,6 +821,7 @@ class DataStore {
 	query: {
 		<T extends PersistentModel>(
 			modelConstructor: PersistentModelConstructor<T>,
+			// @manuelig - should we rename this to primaryKey here and elsewhere?
 			id: string
 		): Promise<T | undefined>;
 		<T extends PersistentModel>(
@@ -850,11 +853,14 @@ class DataStore {
 		}
 
 		const modelDefinition = getModelDefinition(modelConstructor);
+		const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+
 		let predicate: ModelPredicate<T>;
 
 		if (isQueryOne(idOrCriteria)) {
-			predicate = ModelPredicateCreator.createForId<T>(
+			predicate = ModelPredicateCreator.createForSingleField<T>(
 				modelDefinition,
+				keyFields[0],
 				idOrCriteria
 			);
 		} else {
@@ -894,7 +900,10 @@ class DataStore {
 			pagination
 		);
 
-		return isQueryOne(idOrCriteria) ? result[0] : result;
+		const isPkUnique = keyFields.length === 1;
+		const returnOne = isQueryOne(idOrCriteria) && isPkUnique;
+
+		return returnOne ? result[0] : result;
 	};
 
 	save = async <T extends PersistentModel>(
@@ -926,14 +935,12 @@ class DataStore {
 			condition
 		);
 
-		const pk = extractPrimaryKeyFieldName(modelDefinition);
-
 		const [savedModel] = await this.storage.runExclusive(async s => {
 			await s.save(model, producedCondition, undefined, patchesTuple);
 
 			return s.query(
 				modelConstructor,
-				ModelPredicateCreator.createForPk(modelDefinition, pk, model[pk])
+				ModelPredicateCreator.createForPk(modelDefinition, model)
 			);
 		});
 
@@ -1013,8 +1020,12 @@ class DataStore {
 			}
 
 			if (typeof idOrCriteria === 'string') {
-				condition = ModelPredicateCreator.createForId<T>(
+				const modelDefinition = getModelDefinition(modelConstructor);
+				const [keyField] = extractPrimaryKeyFieldNames(modelDefinition);
+
+				condition = ModelPredicateCreator.createForSingleField<T>(
 					getModelDefinition(modelConstructor),
+					keyField,
 					idOrCriteria
 				);
 			} else {
@@ -1052,12 +1063,10 @@ class DataStore {
 			}
 
 			const modelDefinition = getModelDefinition(modelConstructor);
-			const pk = extractPrimaryKeyFieldName(modelDefinition);
 
-			const idPredicate = ModelPredicateCreator.createForPk<T>(
+			const pkPredicate = ModelPredicateCreator.createForPk<T>(
 				modelDefinition,
-				pk,
-				model[pk]
+				model
 			);
 
 			if (idOrCriteria) {
@@ -1068,9 +1077,9 @@ class DataStore {
 					throw new Error(msg);
 				}
 
-				condition = idOrCriteria(idPredicate);
+				condition = idOrCriteria(pkPredicate);
 			} else {
-				condition = idPredicate;
+				condition = pkPredicate;
 			}
 
 			const [[deleted]] = await this.storage.delete(model, condition);
@@ -1138,8 +1147,12 @@ class DataStore {
 		}
 
 		if (typeof idOrCriteria === 'string') {
-			predicate = ModelPredicateCreator.createForId<T>(
+			const modelDefinition = getModelDefinition(modelConstructor);
+			const [keyField] = extractPrimaryKeyFieldNames(modelDefinition);
+
+			predicate = ModelPredicateCreator.createForSingleField<T>(
 				getModelDefinition(modelConstructor),
+				keyField,
 				idOrCriteria
 			);
 		} else {
