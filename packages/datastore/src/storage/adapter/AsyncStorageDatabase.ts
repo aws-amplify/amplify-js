@@ -42,6 +42,10 @@ class AsyncStorageDatabase {
 	async init(): Promise<void> {
 		this._collectionInMemoryIndex.clear();
 
+		// What needs to be done here?
+		// Create indices by PK here?
+		debugger;
+
 		const allKeys: string[] = await this.storage.getAllKeys();
 
 		const keysForCollectionEntries = [];
@@ -86,6 +90,8 @@ class AsyncStorageDatabase {
 	}
 
 	async save<T extends PersistentModel>(item: T, storeName: string) {
+		// What needs to be done here?
+		debugger;
 		const ulid =
 			this.getCollectionIndex(storeName).get(item.id) ||
 			this.getMonotonicFactory(storeName)();
@@ -101,6 +107,8 @@ class AsyncStorageDatabase {
 		storeName: string,
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
+		// What needs to be done here?
+		debugger;
 		if (items.length === 0) {
 			return [];
 		}
@@ -208,10 +216,14 @@ class AsyncStorageDatabase {
 		const itemKey = this.getKeyForItem(storeName, id, ulid);
 		const recordAsString = await this.storage.getItem(itemKey);
 		const record = recordAsString && JSON.parse(recordAsString);
+		// What needs to be done here?
+		debugger;
 		return record;
 	}
 
 	async getOne(firstOrLast: QueryOne, storeName: string) {
+		// What needs to be done here?
+		debugger;
 		const collection = this.getCollectionIndex(storeName);
 
 		const [itemId, ulid] =
@@ -242,6 +254,8 @@ class AsyncStorageDatabase {
 		storeName: string,
 		pagination?: PaginationInput<T>
 	): Promise<T[]> {
+		// What needs to be done here?
+		debugger;
 		const collection = this.getCollectionIndex(storeName);
 
 		const { page = 0, limit = 0 } = pagination || {};
@@ -273,6 +287,8 @@ class AsyncStorageDatabase {
 	}
 
 	async delete(id: string, storeName: string) {
+		// What needs to be done here?
+		debugger;
 		const ulid = this.getCollectionIndex(storeName).get(id);
 		const itemKey = this.getKeyForItem(storeName, id, ulid);
 
@@ -284,6 +300,8 @@ class AsyncStorageDatabase {
 	 * Clear the AsyncStorage of all DataStore entries
 	 */
 	async clear() {
+		// What needs to be done here?
+		debugger;
 		const allKeys = await this.storage.getAllKeys();
 		const allDataStoreKeys = allKeys.filter(key => key.startsWith(DB_NAME));
 		await this.storage.multiRemove(allDataStoreKeys);
@@ -291,14 +309,20 @@ class AsyncStorageDatabase {
 	}
 
 	private getKeyForItem(storeName: string, id: string, ulid: string): string {
+		// What needs to be done here?
+		debugger;
 		return `${this.getKeyPrefixForStoreItems(storeName)}::${ulid}::${id}`;
 	}
 
 	private getLegacyKeyForItem(storeName: string, id: string): string {
+		// What needs to be done here?
+		debugger;
 		return `${this.getKeyPrefixForStoreItems(storeName)}::${id}`;
 	}
 
 	private getKeyPrefixForStoreItems(storeName: string): string {
+		// What needs to be done here?
+		debugger;
 		return `${DB_NAME}::${storeName}::${DATA}`;
 	}
 }

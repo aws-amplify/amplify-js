@@ -61,6 +61,47 @@ export class AsyncStorageAdapter implements Adapter {
 		return storeName;
 	}
 
+	// private getNamespaceAndModelFromStorename(storeName: string) {
+	// 	const [namespaceName, ...modelNameArr] = storeName.split('_');
+	// 	return {
+	// 		namespaceName,
+	// 		modelName: modelNameArr.join('_'),
+	// 	};
+	// }
+
+	// private getIndexKeyPath(namespaceName: string, modelName: string): string[] {
+	// 	const keyPath =
+	// 		this.schema.namespaces[namespaceName].keys[modelName].primaryKey;
+
+	// 	if (keyPath) {
+	// 		return keyPath;
+	// 	}
+
+	// 	return ['id'];
+	// }
+
+	// private getIndexKeyValues<T extends PersistentModel>(model: T): string[] {
+	// 	const modelConstructor = Object.getPrototypeOf(model)
+	// 		.constructor as PersistentModelConstructor<T>;
+	// 	const namespaceName = this.namespaceResolver(modelConstructor);
+	// 	const keys = this.getIndexKeyPath(namespaceName, modelConstructor.name);
+
+	// 	const keyValues = keys.map(field => model[field]);
+	// 	return keyValues;
+	// }
+
+	// private keysEqual(keysA, keysB): boolean {
+	// 	if (keysA.length !== keysB.length) {
+	// 		return false;
+	// 	}
+
+	// 	if (keysA.length === 1) {
+	// 		return keysA[0] === keysB[0];
+	// 	}
+
+	// 	return keysA.every((key, idx) => key === keysB[idx]);
+	// }
+
 	async setUp(
 		theSchema: InternalSchema,
 		namespaceResolver: NamespaceResolver,
@@ -70,6 +111,8 @@ export class AsyncStorageAdapter implements Adapter {
 			modelName: string
 		) => PersistentModelConstructor<any>
 	) {
+		// AsyncStorageAdapter setup
+		debugger;
 		if (!this.initPromise) {
 			this.initPromise = new Promise((res, rej) => {
 				this.resolve = res;
@@ -101,6 +144,9 @@ export class AsyncStorageAdapter implements Adapter {
 		const modelConstructor = Object.getPrototypeOf(model)
 			.constructor as PersistentModelConstructor<T>;
 		const storeName = this.getStorenameForModel(modelConstructor);
+
+		const namespaceName = this.namespaceResolver(modelConstructor);
+
 		const connectedModels = traverseModel(
 			modelConstructor.name,
 			model,
@@ -108,16 +154,27 @@ export class AsyncStorageAdapter implements Adapter {
 			this.modelInstanceCreator,
 			this.getModelConstructorByModelName
 		);
-		const namespaceName = this.namespaceResolver(modelConstructor);
+
+		// replace above with
+		// this.schema.namespaces[namespaceName],
+		debugger;
+
 		const set = new Set<string>();
 		const connectionStoreNames = Object.values(connectedModels).map(
 			({ modelName, item, instance }) => {
 				const storeName = this.getStorename(namespaceName, modelName);
 				set.add(storeName);
+				// replace return below with:
+				// const keys = this.getIndexKeyPath(namespaceName, modelName);
+				// return { storeName, item, instance, keys };
+				debugger;
 				return { storeName, item, instance };
 			}
 		);
 		const fromDB = await this.db.get(model.id, storeName);
+		// const keyValues = this.getIndexKeyValues(model);
+		// const fromDB = await this._get(store, keyValues);
+		debugger;
 
 		if (condition && fromDB) {
 			const predicates = ModelPredicateCreator.getPredicates(condition);
@@ -137,12 +194,26 @@ export class AsyncStorageAdapter implements Adapter {
 
 		for await (const resItem of connectionStoreNames) {
 			const { storeName, item, instance } = resItem;
+			// const { storeName, item, instance, keys } = resItem;
+			debugger;
 			const { id } = item;
+			// const itemKeyValues = keys.map(key => item[key]);
+			debugger;
 
 			const fromDB = <T>await this.db.get(id, storeName);
+			// const keyValues = this.getIndexKeyValues(model);
+			// const fromDB = await this._get(store, keyValues);
 			const opType: OpType = fromDB ? OpType.UPDATE : OpType.INSERT;
 
+			// No replacement:
+			// const modelKeyValues = this.getIndexKeyValues(model);
+			// const keysEqual = this.keysEqual(itemKeyValues, modelKeyValues);
+			debugger;
+
 			if (id === model.id || opType === OpType.INSERT) {
+				// if (keysEqual || opType === OpType.INSERT) {
+				// Replace condition, but is anything needed to adjust how we save, as in below?
+				// const key = await store.index('byPk').getKey(itemKeyValues);
 				await this.db.save(item, storeName);
 
 				result.push([instance, opType]);
@@ -269,6 +340,10 @@ export class AsyncStorageAdapter implements Adapter {
 		id: string
 	): Promise<T> {
 		const record = <T>await this.db.get(id, storeName);
+		// IndexedDB is:
+		// const record = <T>await this._get(storeName, [id]);
+		// so try:
+		// const record = <T>awaait this.db.get([id], storeName);
 		return record;
 	}
 
@@ -397,10 +472,15 @@ export class AsyncStorageAdapter implements Adapter {
 			const modelConstructor = Object.getPrototypeOf(model)
 				.constructor as PersistentModelConstructor<T>;
 			const nameSpace = this.namespaceResolver(modelConstructor);
+			// const namespaceName = this.namespaceResolver(modelConstructor);
+			debugger;
 
 			const storeName = this.getStorenameForModel(modelConstructor);
 			if (condition) {
 				const fromDB = await this.db.get(model.id, storeName);
+				// const keyValues = this.getIndexKeyValues(model);
+				// const fromDB = await this.db.get(keyValues, storeName);
+				debugger;
 
 				if (fromDB === undefined) {
 					const msg = 'Model instance not found in storage';
@@ -423,23 +503,36 @@ export class AsyncStorageAdapter implements Adapter {
 				const relations =
 					this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
 						.relationTypes;
-				await this.deleteTraverse(
-					relations,
-					[model],
-					modelConstructor.name,
-					nameSpace,
-					deleteQueue
-				);
-			} else {
-				const relations =
-					this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
-						.relationTypes;
+
+				// this.schema.namespaces[namespaceName].relationships[
+				// 		modelConstructor.name
+				// 	].relationTypes;
+				debugger;
 
 				await this.deleteTraverse(
 					relations,
 					[model],
 					modelConstructor.name,
 					nameSpace,
+					// namespaceName,
+					deleteQueue
+				);
+				debugger;
+			} else {
+				const relations =
+					this.schema.namespaces[nameSpace].relationships[modelConstructor.name]
+						.relationTypes;
+
+				// this.schema.namespaces[namespaceName].relationships[
+				// 	modelConstructor.name
+				// ].relationTypes;
+
+				await this.deleteTraverse(
+					relations,
+					[model],
+					modelConstructor.name,
+					nameSpace,
+					// namespaceName,
 					deleteQueue
 				);
 			}

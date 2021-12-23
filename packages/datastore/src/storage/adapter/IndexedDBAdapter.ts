@@ -130,6 +130,8 @@ class IndexedDBAdapter implements Adapter {
 		sessionId?: string
 	) {
 		await this.checkPrivate();
+		// IndexedDBAdapter setup
+		debugger;
 		if (!this.initPromise) {
 			this.initPromise = new Promise((res, rej) => {
 				this.resolve = res;
