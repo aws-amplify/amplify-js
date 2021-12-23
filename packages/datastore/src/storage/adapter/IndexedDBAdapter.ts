@@ -35,7 +35,6 @@ import { Adapter } from './index';
 const logger = new Logger('DataStore');
 
 const DB_NAME = 'amplify-datastore';
-``;
 class IndexedDBAdapter implements Adapter {
 	private schema: InternalSchema;
 	private namespaceResolver: NamespaceResolver;
