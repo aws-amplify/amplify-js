@@ -7,6 +7,8 @@ import {
 	PredicatesGroup,
 	ProducerModelPredicate,
 	SchemaModel,
+	extractPrimaryKeyFieldNames,
+	extractPrimaryKeyValues,
 } from '../types';
 import { exhaustiveCheck } from '../util';
 
@@ -158,27 +160,31 @@ export class ModelPredicateCreator {
 		);
 	}
 
-	static createForId<T extends PersistentModel>(
+	static createForSingleField<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
-		id: string
+		fieldName: string,
+		value: string
 	) {
-		return ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition).id(
-			'eq',
-			<any>id
-		);
+		return ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition)[
+			fieldName
+		](<any>'eq', <any>value);
 	}
 
 	static createForPk<T extends PersistentModel>(
 		modelDefinition: SchemaModel,
-		field: string,
-		value: string
+		model: T
 	) {
-		return ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition)[
-			field
-		](
-			// @ts-ignore - TODO: remove after fixing type
-			'eq',
-			<any>value
-		);
+		const keyFields = extractPrimaryKeyFieldNames(modelDefinition);
+		const keyValues = extractPrimaryKeyValues(model, keyFields);
+
+		let modelPredicate =
+			ModelPredicateCreator.createPredicateBuilder<T>(modelDefinition);
+
+		keyFields.forEach((field, idx) => {
+			const operand = keyValues[idx];
+			modelPredicate = modelPredicate[field](<any>'eq', <any>operand);
+		});
+
+		return modelPredicate;
 	}
 }
