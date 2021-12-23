@@ -347,8 +347,8 @@ class MutationProcessor {
 										authToken,
 									});
 
-									console.log('something needs updated here?');
-									debugger;
+									// TODO: double check
+									// debugger;
 
 									return [serverData, opName, modelDefinition];
 								}
@@ -369,8 +369,7 @@ class MutationProcessor {
 										mutationEvent.id
 									);
 
-								console.log('is model id here, in the right place??');
-								debugger;
+								// debugger;
 
 								await this.storage.save(updatedMutation);
 
@@ -451,8 +450,8 @@ class MutationProcessor {
 			deleteInput['id'] = parsedData.id;
 		}
 
-		console.log('whats going on here?');
-		debugger;
+		// TODO: double check
+		// debugger;
 
 		const filteredData =
 			operation === TransformerMutationType.DELETE

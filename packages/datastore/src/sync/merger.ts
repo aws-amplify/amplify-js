@@ -44,8 +44,7 @@ class ModelMerger {
 			itemsMap.set(item.id, item);
 		}
 
-		console.log('whats happening up here^^^^^');
-		debugger;
+		// debugger;
 
 		const page = [...itemsMap.values()];
 

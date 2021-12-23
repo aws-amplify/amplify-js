@@ -362,8 +362,6 @@ async function createMutationEvent(model): Promise<MutationEvent> {
 	const modelConstructor = (Object.getPrototypeOf(originalElement) as Object)
 		.constructor as PersistentModelConstructor<any>;
 
-	console.log('am i passing the model id?');
-	debugger;
 	return createMutationInstanceFromModelOperation(
 		undefined,
 		undefined,

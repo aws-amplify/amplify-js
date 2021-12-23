@@ -117,8 +117,8 @@ class MutationEventOutbox {
 		const head = await storage.queryOne(this.MutationEvent, QueryOne.FIRST);
 
 		this.inProgressMutationEventId = head ? head.id : undefined;
-		console.log('UPDATE THIS????');
-		debugger;
+		// console.log('double check this');
+		// debugger;
 
 		return head;
 	}
@@ -137,8 +137,7 @@ class MutationEventOutbox {
 				c => c.modelId('eq', model.id)
 			)
 		);
-		console.log('what is this?');
-		debugger;
+		// debugger;
 
 		return mutationEvents;
 	}
@@ -152,9 +151,9 @@ class MutationEventOutbox {
 
 		mutationEvents.forEach(({ modelId }) => result.add(modelId));
 
-		console.log('custom id should now be included in the mutation events');
-		console.log(result);
-		debugger;
+		// console.log('custom id should now be included in the mutation events');
+		// console.log(result);
+		// debugger;
 		return result;
 	}
 
@@ -202,8 +201,8 @@ class MutationEventOutbox {
 			c => c.modelId('eq', record.id).id('ne', this.inProgressMutationEventId)
 		);
 
-		console.log('update this???????', predicate);
-		debugger;
+		// TODO: double check ids here
+		// debugger;
 
 		const outdatedMutations = await storage.query(
 			this.MutationEvent,
@@ -257,8 +256,8 @@ class MutationEventOutbox {
 			...currentData,
 		});
 
-		console.log('UPDATE ANY OF THESE???????');
-		debugger;
+		// TODO: double check ids here
+		// debugger;
 
 		return this.modelInstanceCreator(this.MutationEvent, {
 			...current,

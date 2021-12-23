@@ -57,7 +57,6 @@ export declare class MutationEvent {
 	public readonly modelId: string;
 	public readonly condition: string;
 	public data: string;
-	public readonly customId?: string;
 }
 
 declare class ModelMetadata {
@@ -73,7 +72,6 @@ declare class ModelMetadata {
 	public readonly lastSync?: number;
 	public readonly lastFullSync?: number;
 	public readonly lastSyncPredicate?: null | string;
-	public readonly customId?: string;
 }
 
 export enum ControlMessage {
@@ -167,7 +165,7 @@ export class SyncEngine {
 	start(params: StartParams) {
 		return new Observable<ControlMessageType<ControlMessage>>(observer => {
 			logger.log('starting sync engine...');
-			debugger;
+			// debugger;
 
 			let subscriptions: ZenObservable.Subscription[] = [];
 
@@ -380,8 +378,7 @@ export class SyncEngine {
 								this.modelInstanceCreator
 							);
 
-							console.log('is customID present?');
-							debugger;
+							// debugger;
 
 							await this.outbox.enqueue(this.storage, mutationEvent);
 
@@ -533,9 +530,8 @@ export class SyncEngine {
 									 */
 									await this.storage.runExclusive(async storage => {
 										const idsInOutbox = await this.outbox.getModelIds(storage);
-										console.log('IDS IN OUTBOX DO NOT MATCH ITEMS');
 										console.log(items);
-										debugger;
+										// debugger;
 
 										const oneByOne: ModelInstanceMetadata[] = [];
 										const page = items.filter(item => {
@@ -549,8 +545,7 @@ export class SyncEngine {
 												itemId = item.id;
 											}
 
-											console.log('ensure this is happening correctly');
-											debugger;
+											// debugger;
 											if (!idsInOutbox.has(itemId)) {
 												return true;
 											}

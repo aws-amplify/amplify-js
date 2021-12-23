@@ -451,13 +451,12 @@ const createModelClass = <T extends PersistentModel>(
 						draft._deleted = _deleted;
 					}
 
-					console.log('understand the above');
-					debugger;
+					// debugger;
 				}
 			);
 
 			console.log(instance);
-			debugger;
+			// debugger;
 			return instance;
 		}
 
