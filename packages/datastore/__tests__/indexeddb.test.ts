@@ -16,6 +16,7 @@ import {
 	Person,
 } from './model';
 let db: idb.IDBPDatabase;
+const DB_VERSION = 3;
 
 const indexedDB = require('fake-indexeddb');
 const IDBKeyRange = require('fake-indexeddb/lib/FDBKeyRange');
@@ -31,7 +32,7 @@ describe('Indexed db storage test', () => {
 
 	beforeAll(async () => {
 		await DataStore.start();
-		db = await idb.openDB('amplify-datastore', 2);
+		db = await idb.openDB('amplify-datastore', DB_VERSION);
 	});
 
 	beforeEach(async () => {
@@ -52,6 +53,8 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('setup function', async () => {
+		expect.assertions(8);
+
 		const createdObjStores = db.objectStoreNames;
 		const expectedStores = [
 			`${DATASTORE}_Setting`,
@@ -80,8 +83,8 @@ describe('Indexed db storage test', () => {
 			`${USER}_PostAuthorJoin`
 		);
 
-		expect(commentStore.rawIndexes.has('byId')).toBe(true); // checks byIdIndex
-		expect(postAuthorStore.rawIndexes.has('byId')).toBe(true); // checks byIdIndex
+		expect(commentStore.rawIndexes.has('byPk')).toBe(true); // checks byPkIndex
+		expect(postAuthorStore.rawIndexes.has('byPk')).toBe(true); // checks byPkIndex
 		expect(commentStore.rawIndexes.has('commentPostId')).toBe(true); // checks 1:M
 		expect(postAuthorStore.rawIndexes.has('postId')).toBe(true); // checks M:M
 		expect(postAuthorStore.rawIndexes.has('authorId')).toBe(true); // checks M:M
@@ -94,8 +97,8 @@ describe('Indexed db storage test', () => {
 		const get1 = await db
 			.transaction(`${USER}_Blog`, 'readonly')
 			.objectStore(`${USER}_Blog`)
-			.index('byId')
-			.get(blog.id);
+			.index('byPk')
+			.get([blog.id]);
 
 		expect(get1).toBeDefined();
 
@@ -108,8 +111,8 @@ describe('Indexed db storage test', () => {
 		const get2 = await db
 			.transaction(`${USER}_BlogOwner`, 'readonly')
 			.objectStore(`${USER}_BlogOwner`)
-			.index('byId')
-			.get(owner.id);
+			.index('byPk')
+			.get([owner.id]);
 
 		expect([...Object.keys(owner)].sort()).toEqual(
 			expect.arrayContaining(Object.keys(get2).sort())
@@ -119,8 +122,8 @@ describe('Indexed db storage test', () => {
 		const get3 = await db
 			.transaction(`${USER}_Blog`, 'readonly')
 			.objectStore(`${USER}_Blog`)
-			.index('byId')
-			.get(blog2.id);
+			.index('byPk')
+			.get([blog2.id]);
 
 		expect([...Object.keys(blog2).sort(), 'blogOwnerId']).toEqual(
 			expect.arrayContaining(Object.keys(get3).sort())
@@ -145,8 +148,8 @@ describe('Indexed db storage test', () => {
 		const postFromDB = await db
 			.transaction(`${USER}_Post`, 'readonly')
 			.objectStore(`${USER}_Post`)
-			.index('byId')
-			.get(p.id);
+			.index('byPk')
+			.get([p.id]);
 
 		expect(postFromDB.metadata).toMatchObject({
 			rating: 3,
@@ -168,8 +171,8 @@ describe('Indexed db storage test', () => {
 		const getComment = await db
 			.transaction(`${USER}_Comment`, 'readonly')
 			.objectStore(`${USER}_Comment`)
-			.index('byId')
-			.get(c1.id);
+			.index('byPk')
+			.get([c1.id]);
 
 		expect([...Object.keys(c1), 'commentPostId'].sort()).toEqual(
 			expect.arrayContaining(Object.keys(getComment).sort())
@@ -194,8 +197,8 @@ describe('Indexed db storage test', () => {
 		const getPost = await db
 			.transaction(`${USER}_Post`, 'readonly')
 			.objectStore(`${USER}_Post`)
-			.index('byId')
-			.get(post.id);
+			.index('byPk')
+			.get([post.id]);
 
 		expect(getPost.author).toBeUndefined();
 
@@ -208,15 +211,15 @@ describe('Indexed db storage test', () => {
 		const getA1 = await db
 			.transaction(`${USER}_Author`, 'readonly')
 			.objectStore(`${USER}_Author`)
-			.index('byId')
-			.get(a1.id);
+			.index('byPk')
+			.get([a1.id]);
 		expect(getA1.name).toEqual('author1');
 
 		const getA2 = await db
 			.transaction(`${USER}_Author`, 'readonly')
 			.objectStore(`${USER}_Author`)
-			.index('byId')
-			.get(a2.id);
+			.index('byPk')
+			.get([a2.id]);
 		expect(getA2.name).toEqual('author2');
 
 		await DataStore.save(new PostAuthorJoin({ post, author: a1 }));
@@ -242,8 +245,8 @@ describe('Indexed db storage test', () => {
 		const get1 = await db
 			.transaction(`${USER}_Blog`, 'readonly')
 			.objectStore(`${USER}_Blog`)
-			.index('byId')
-			.get(blog.id);
+			.index('byPk')
+			.get([blog.id]);
 
 		expect(get1['blogOwnerId']).toBe(owner.id);
 		const updated = Blog.copyOf(blog, draft => {
@@ -254,8 +257,8 @@ describe('Indexed db storage test', () => {
 		const get2 = await db
 			.transaction(`${USER}_Blog`, 'readonly')
 			.objectStore(`${USER}_Blog`)
-			.index('byId')
-			.get(blog.id);
+			.index('byPk')
+			.get([blog.id]);
 
 		expect(get2.name).toEqual(updated.name);
 	});
@@ -277,6 +280,8 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('query M:1 eager load', async () => {
+		expect.assertions(1);
+
 		const p = new Post({
 			title: 'Avatar',
 			blog,
@@ -294,6 +299,8 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('query with sort on a single field', async () => {
+		expect.assertions(4);
+
 		const p1 = new Person({
 			firstName: 'John',
 			lastName: 'Snow',
@@ -332,6 +339,8 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('query with sort on multiple fields', async () => {
+		expect.assertions(3);
+
 		const p1 = new Person({
 			firstName: 'John',
 			lastName: 'Snow',
@@ -373,6 +382,8 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('delete 1:1 function', async () => {
+		expect.assertions(5);
+
 		await DataStore.save(blog);
 		await DataStore.save(owner);
 
@@ -401,6 +412,8 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('delete M:1 function', async () => {
+		expect.assertions(2);
+
 		const post = new Post({
 			title: 'Avatar',
 			blog,
@@ -415,11 +428,13 @@ describe('Indexed db storage test', () => {
 
 		await DataStore.delete(Comment, c1.id);
 
-		expect(await DataStore.query(Comment, c1.id)).toBeUndefined;
+		expect(await DataStore.query(Comment, c1.id)).toBeUndefined();
 		expect((await DataStore.query(Comment, c2.id)).id).toEqual(c2.id);
 	});
 
 	test('delete 1:M function', async () => {
+		expect.assertions(4);
+
 		const post = new Post({
 			title: 'Avatar 1',
 			blog,
@@ -448,6 +463,8 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('delete M:M function', async () => {
+		expect.assertions(1);
+
 		const a1 = new Author({ name: 'author1' });
 		const a2 = new Author({ name: 'author2' });
 		const a3 = new Author({ name: 'author3' });
@@ -476,6 +493,8 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('delete cascade', async () => {
+		expect.assertions(9);
+
 		const a1 = await DataStore.save(new Author({ name: 'author1' }));
 		const a2 = await DataStore.save(new Author({ name: 'author2' }));
 		const blog = new Blog({
@@ -513,6 +532,8 @@ describe('Indexed db storage test', () => {
 	});
 
 	test('delete non existent', async () => {
+		expect.assertions(2);
+
 		const author = new Author({ name: 'author1' });
 
 		const deleted = await DataStore.delete(author);
@@ -534,7 +555,7 @@ describe('DB versions migration', () => {
 		await DataStore.clear();
 	});
 
-	test('Migration from v1 to v2', async () => {
+	test(`Migration from v1 to v${DB_VERSION}`, async () => {
 		const v1Data = require('./v1schema.data.json');
 
 		const blob = new Blob([JSON.stringify(v1Data)], {
@@ -544,18 +565,18 @@ describe('DB versions migration', () => {
 		// Import V1
 		(await Dexie.import(blob)).close();
 
-		// Migrate to V2
+		// Migrate to latest
 		await DataStore.start();
 
-		// Open V2
-		db = await idb.openDB('amplify-datastore', 2);
+		// Open latest
+		db = await idb.openDB('amplify-datastore', DB_VERSION);
 
 		expect(db.objectStoreNames).toMatchObject(
 			v1Data.data.tables.map(({ name }) => name)
 		);
 
 		for (const storeName of db.objectStoreNames) {
-			expect(db.transaction(storeName).store.indexNames).toContain('byId');
+			expect(db.transaction(storeName).store.indexNames).toContain('byPk');
 		}
 
 		const dexie = await new Dexie('amplify-datastore').open();
@@ -574,10 +595,12 @@ describe('DB versions migration', () => {
 		const exportedJSON = await readBlob(exportedBlob);
 		const exported = JSON.parse(exportedJSON);
 
+		console.log(exported.data.tables);
+
 		for (const { schema } of exported.data.tables) {
-			expect(schema.split(',')).toContain('&id');
+			expect(schema.split(',')).toContain('&[id]');
 		}
 
-		expect(exported).toMatchSnapshot('v2-schema');
+		expect(exported).toMatchSnapshot(`v${DB_VERSION}-schema`);
 	});
 });

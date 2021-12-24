@@ -88,7 +88,7 @@ class IndexedDBAdapter implements Adapter {
 
 	private getIndexKeyPath(namespaceName: string, modelName: string): string[] {
 		const keyPath =
-			this.schema.namespaces[namespaceName].keys[modelName].primaryKey;
+			this.schema.namespaces[namespaceName]?.keys[modelName].primaryKey;
 
 		if (keyPath) {
 			return keyPath;
@@ -384,10 +384,8 @@ class IndexedDBAdapter implements Adapter {
 						const getByfield = recordItem[targetName] ? targetName : fieldName;
 						if (!recordItem[getByfield]) break;
 
-						const connectionRecord = await this._get(
-							store,
-							recordItem[getByfield]
-						);
+						const key = [recordItem[getByfield]];
+						const connectionRecord = await this._get(store, key);
 
 						recordItem[fieldName] =
 							connectionRecord &&
@@ -398,10 +396,8 @@ class IndexedDBAdapter implements Adapter {
 				case 'BELONGS_TO':
 					for await (const recordItem of records) {
 						if (recordItem[targetName]) {
-							const connectionRecord = await this._get(
-								store,
-								recordItem[targetName]
-							);
+							const key = [recordItem[targetName]];
+							const connectionRecord = await this._get(store, key);
 
 							recordItem[fieldName] =
 								connectionRecord &&
@@ -789,7 +785,7 @@ class IndexedDBAdapter implements Adapter {
 
 						const hasOneCustomField = targetName in model;
 						const keyValues = this.getIndexKeyValues(model);
-						const value = hasOneCustomField ? model[targetName] : keyValues;
+						const value = hasOneCustomField ? model[targetName] : keyValues[0];
 						if (!value) break;
 
 						const recordToDelete = <T>(
@@ -818,7 +814,7 @@ class IndexedDBAdapter implements Adapter {
 							.transaction(storeName, 'readwrite')
 							.objectStore(storeName)
 							.index(index)
-							.getAll(keyValues);
+							.getAll(keyValues[0]);
 
 						await this.deleteTraverse(
 							this.schema.namespaces[nameSpace].relationships[modelName]
