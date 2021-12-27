@@ -180,6 +180,8 @@ describe('IndexedDBAdapter tests', () => {
 		});
 
 		it('should allow linking model via model field', async () => {
+			expect.assertions(2);
+
 			const savedUser = await DataStore.save(
 				new User({ name: 'test', profile })
 			);
@@ -191,6 +193,8 @@ describe('IndexedDBAdapter tests', () => {
 		});
 
 		it('should allow linking model via FK', async () => {
+			expect.assertions(2);
+
 			const savedUser = await DataStore.save(
 				new User({ name: 'test', profileID: profile.id })
 			);

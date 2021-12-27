@@ -418,9 +418,6 @@ const createModelClass = <T extends PersistentModel>(
 							? <ModelInstanceMetadata>(<unknown>init)
 							: <ModelInstanceMetadata>{};
 
-					const modelConstructor = Object.getPrototypeOf(this).constructor;
-					const namespaceName = namespaceResolver(modelConstructor);
-					const isUserModel = namespaceName === USER;
 					const { id: _id } = modelInstanceMetadata;
 
 					if (isIdManaged(modelDefinition)) {
@@ -428,7 +425,7 @@ const createModelClass = <T extends PersistentModel>(
 
 						const id = isInternalModel
 							? _id
-							: modelDefinition.syncable || isUserModel
+							: modelDefinition.syncable
 							? uuid4()
 							: ulid();
 

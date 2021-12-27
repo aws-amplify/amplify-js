@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DB versions migration Migration from v1 to v2: v2-schema 1`] = `
+exports[`DB versions migration Migration from v1 to v3: v3-schema 1`] = `
 Object {
   "data": Object {
     "data": Array [
@@ -503,52 +503,52 @@ Object {
       },
     ],
     "databaseName": "amplify-datastore",
-    "databaseVersion": 0.2,
+    "databaseVersion": 0.3,
     "tables": Array [
       Object {
         "name": "datastore_Setting",
         "rowCount": 1,
-        "schema": "++,&id",
+        "schema": "++,&[id]",
       },
       Object {
         "name": "sync_ModelMetadata",
         "rowCount": 0,
-        "schema": "++,&id",
+        "schema": "++,&[id]",
       },
       Object {
         "name": "sync_MutationEvent",
         "rowCount": 0,
-        "schema": "++,&id",
+        "schema": "++,&[id]",
       },
       Object {
         "name": "user_Author",
         "rowCount": 2,
-        "schema": "++,&id",
+        "schema": "++,&[id]",
       },
       Object {
         "name": "user_Blog",
         "rowCount": 6,
-        "schema": "++,&id",
+        "schema": "++,blogOwnerId,&[id]",
       },
       Object {
         "name": "user_BlogOwner",
         "rowCount": 9,
-        "schema": "++,&id",
+        "schema": "++,&[id]",
       },
       Object {
         "name": "user_Comment",
         "rowCount": 2,
-        "schema": "++,&id",
+        "schema": "++,&[id],commentPostId",
       },
       Object {
         "name": "user_Post",
         "rowCount": 2,
-        "schema": "++,&id",
+        "schema": "++,&[id],postBlogId,referencePostId",
       },
       Object {
         "name": "user_PostAuthorJoin",
         "rowCount": 0,
-        "schema": "++,&id",
+        "schema": "++,authorId,&[id],postId",
       },
     ],
   },
