@@ -117,7 +117,6 @@ class MutationEventOutbox {
 		const head = await storage.queryOne(this.MutationEvent, QueryOne.FIRST);
 
 		this.inProgressMutationEventId = head ? head.id : undefined;
-		// console.log('double check this');
 		// debugger;
 
 		return head;

@@ -85,7 +85,7 @@ class AsyncStorageDatabase {
 
 		// TODO: https://github.com/aws-amplify/amplify-js/pull/9379/files#diff-75c76069840355a3f346f2f35c443018e4a5716ed128191602499c3b39935cfcL82
 		// STEP THROUGH THIS, WHAT IS HAPPENING HERE?
-		debugger;
+		// debugger;
 
 		const allKeys: string[] = await this.storage.getAllKeys();
 
@@ -94,7 +94,7 @@ class AsyncStorageDatabase {
 		for (const key of allKeys) {
 			const [dbName, storeName, recordType, ulidOrId, id] = key.split('::');
 			// TODO: Retrieve by PK instead of ID, push to collection?
-			debugger;
+			// debugger;
 
 			if (dbName === DB_NAME) {
 				if (recordType === DATA) {
@@ -134,7 +134,7 @@ class AsyncStorageDatabase {
 
 	async save<T extends PersistentModel>(item: T, storeName: string) {
 		// What needs to be done here?
-		debugger;
+		// debugger;
 		const ulid =
 			this.getCollectionIndex(storeName).get(item.id) ||
 			this.getMonotonicFactory(storeName)();
@@ -151,7 +151,7 @@ class AsyncStorageDatabase {
 		items: ModelInstanceMetadata[]
 	): Promise<[T, OpType][]> {
 		// What needs to be done here?
-		debugger;
+		// debugger;
 		if (items.length === 0) {
 			return [];
 		}
@@ -258,19 +258,19 @@ class AsyncStorageDatabase {
 	): Promise<T> {
 		// https://github.com/aws-amplify/amplify-js/pull/9379/files#diff-75c76069840355a3f346f2f35c443018e4a5716ed128191602499c3b39935cfcR253
 		// Retrieve by PK instead of ID
-		debugger;
+		// debugger;
 		const ulid = this.getCollectionIndex(storeName).get(id);
 		const itemKey = this.getKeyForItem(storeName, id, ulid);
 		const recordAsString = await this.storage.getItem(itemKey);
 		const record = recordAsString && JSON.parse(recordAsString);
 		// What needs to be done here?
-		debugger;
+		// debugger;
 		return record;
 	}
 
 	async getOne(firstOrLast: QueryOne, storeName: string) {
 		// What needs to be done here?
-		debugger;
+		// debugger;
 		const collection = this.getCollectionIndex(storeName);
 
 		const [itemId, ulid] =
@@ -303,7 +303,7 @@ class AsyncStorageDatabase {
 	): Promise<T[]> {
 		const collection = this.getCollectionIndex(storeName);
 		// What is in collection? ids are used below
-		debugger;
+		// debugger;
 
 		const { page = 0, limit = 0 } = pagination || {};
 		const start = Math.max(0, page * limit) || 0;
@@ -335,7 +335,7 @@ class AsyncStorageDatabase {
 
 	async delete(id: string, storeName: string) {
 		// What needs to be done here?
-		debugger;
+		// debugger;
 		const ulid = this.getCollectionIndex(storeName).get(id);
 		const itemKey = this.getKeyForItem(storeName, id, ulid);
 
@@ -348,7 +348,7 @@ class AsyncStorageDatabase {
 	 */
 	async clear() {
 		// What needs to be done here?
-		debugger;
+		// debugger;
 		const allKeys = await this.storage.getAllKeys();
 		const allDataStoreKeys = allKeys.filter(key => key.startsWith(DB_NAME));
 		await this.storage.multiRemove(allDataStoreKeys);
@@ -357,19 +357,19 @@ class AsyncStorageDatabase {
 
 	private getKeyForItem(storeName: string, id: string, ulid: string): string {
 		// What needs to be done here?
-		debugger;
+		// debugger;
 		return `${this.getKeyPrefixForStoreItems(storeName)}::${ulid}::${id}`;
 	}
 
 	private getLegacyKeyForItem(storeName: string, id: string): string {
 		// What needs to be done here?
-		debugger;
+		// debugger;
 		return `${this.getKeyPrefixForStoreItems(storeName)}::${id}`;
 	}
 
 	private getKeyPrefixForStoreItems(storeName: string): string {
 		// What needs to be done here?
-		debugger;
+		// debugger;
 		return `${DB_NAME}::${storeName}::${DATA}`;
 	}
 }

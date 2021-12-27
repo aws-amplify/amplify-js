@@ -196,8 +196,8 @@ class StorageClass implements StorageFacade {
 					: undefined;
 			}
 
-			console.log('check above id');
-			debugger;
+			// console.log('check above id');
+			// debugger;
 
 			this.pushStream.next({
 				model: modelConstructor,
